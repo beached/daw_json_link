@@ -28,6 +28,7 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <daw/daw_exception.h>
 #include <daw/daw_parser_addons.h>
@@ -95,8 +96,9 @@ namespace daw {
 
 		  public:
 			static result_t<Derived> from_json_string( c_str_iterator first, c_str_iterator const last );
+			static std::vector<Derived> from_json_array_string( c_str_iterator first, c_str_iterator const last );
 			static std::string to_json_string( Derived const &obj );
-			std::string to_json_string( );
+			std::string to_json_string( ) const;
 		}; // daw_json_link
 
 		// Implementations
@@ -253,6 +255,24 @@ namespace daw {
 		}
 
 		template<typename Derived>
+		std::vector<Derived> daw_json_link<Derived>::from_json_array_string( c_str_iterator first, c_str_iterator const last ) {
+			std::vector<Derived> result;
+			auto pos = daw::parser::skip_ws( first, last );
+			daw::exception::daw_throw_on_false( '[' == *pos.first, "Expected json array but none found" );
+			pos = daw::parser::skip_ws( ++pos.first, last );
+			while( ']' != *pos.first ) {
+				daw::exception::daw_throw_on_false( '{' == *pos.first, "Expected start of json object" );
+				auto item = from_json_string( pos.first, last );
+				result.push_back( std::move( item.result ) );
+				pos = daw::parser::skip_ws( item.position, last );
+				if( ',' == *pos.first ) {
+					pos = daw::parser::skip_ws( ++pos.first, last );
+				}
+			}
+			return result;
+		}
+
+		template<typename Derived>
 		std::string daw_json_link<Derived>::to_json_string( Derived const &obj ) {
 			auto const &member_map = check_map( );
 			std::string result = "{";
@@ -270,7 +290,7 @@ namespace daw {
 		}
 
 		template<typename Derived>
-		std::string daw_json_link<Derived>::to_json_string( ) {
+		std::string daw_json_link<Derived>::to_json_string( ) const {
 			return to_json_string( this_as_derived( ) );
 		}
 	} // namespace json

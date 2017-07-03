@@ -24,23 +24,25 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <daw/daw_memory_mapped_file.h>
+
 #include "daw_json_link.h"
 
-struct A: public daw::json::daw_json_link<A> {
+struct A : public daw::json::daw_json_link<A> {
 	int a;
 	double b;
 	bool c;
 	std::string d;
 
 	static void json_link_map( ) {
-		link_json_integer_fn( "a", []( A & obj, int value ) { obj.a = std::move( value ); },
-							  []( A const & obj ) { return obj.a; } );
-		link_json_real_fn( "b", []( A & obj, double value ) { obj.b = std::move( value ); },
-						   []( A const & obj ) { return obj.b; } );
-		link_json_boolean_fn( "c", []( A & obj, bool value ) { obj.c = std::move( value ); },
-							  []( A const & obj ) { return obj.c; } );
-		link_json_string_fn( "d", []( A & obj, std::string value ) { obj.d = std::move( value ); },
-							 []( A const & obj ) { return obj.d; } );
+		link_json_integer_fn( "a", []( A &obj, int value ) { obj.a = std::move( value ); },
+		                      []( A const &obj ) { return obj.a; } );
+		link_json_real_fn( "b", []( A &obj, double value ) { obj.b = std::move( value ); },
+		                   []( A const &obj ) { return obj.b; } );
+		link_json_boolean_fn( "c", []( A &obj, bool value ) { obj.c = std::move( value ); },
+		                      []( A const &obj ) { return obj.c; } );
+		link_json_string_fn( "d", []( A &obj, std::string value ) { obj.d = std::move( value ); },
+		                     []( A const &obj ) { return obj.d; } );
 	}
 };
 struct A2 {
@@ -50,22 +52,38 @@ struct A2 {
 	std::string d;
 };
 
-struct B: public daw::json::daw_json_link<B> {
+struct B : public daw::json::daw_json_link<B> {
 	A a;
 
 	static void json_link_map( ) {
-		link_json_object_fn( "a", []( B & obj, A value ) { obj.a = std::move( value ); },
-							 []( B const & obj ) { return obj.a; } );
+		link_json_object_fn( "a", []( B &obj, A value ) { obj.a = std::move( value ); },
+		                     []( B const &obj ) { return obj.a; } );
 	}
 };
 
 int main( int argc, char **argv ) {
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
 	boost::string_view str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
+	std::string const str_array = "[" + str.to_string( ) + "," + str.to_string( ) + "]";
 	auto a = B::from_json_string( str.begin( ), str.end( ) ).result;
 	std::cout << a.to_json_string( ) << '\n';
 
+	std::cout << "Attemping json array '" << str_array << "'\n[";
+	bool is_first = true;
+	auto c = B::from_json_array_string( str_array.data( ), str_array.data( ) + str_array.size( ) );
+
+	for( auto const &item : c ) {
+		if( !is_first ) {
+			std::cout << ",";
+		} else {
+			is_first = false;
+		}
+		std::cout << item.to_json_string( ) << "]\n";
+	}
+
+	daw::filesystem::MemoryMappedFile<char> json_file{{"test.json"}};
+	daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
+	auto d = B::from_json_array_string( json_file.data( ), json_file.data( ) + json_file.size( ) );
 	return EXIT_SUCCESS;
 }
-
 
