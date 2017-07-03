@@ -29,19 +29,33 @@
 struct A: public daw::json::daw_json_link<A> {
 	int a;
 	double b;
+	bool c;
+	std::string d;
 
 	static void json_link_map( ) {
-		using std::to_string;
-		link_json_integer( "a", []( A &obj, int64_t value ) { obj.a = std::move( value ); },
-						   []( A const &obj ) { return to_string( obj.a ); } );
-		link_json_real( "b", []( A &obj, double value ) { obj.b = std::move( value ); },
-		                   []( A const &obj ) { return to_string( obj.b ); } );
+		link_json_integer_fn( "a", []( A & obj, int value ) { obj.a = std::move( value ); },
+							  []( A const & obj ) { return obj.a; } );
+		link_json_real_fn( "b", []( A & obj, double value ) { obj.b = std::move( value ); },
+						   []( A const & obj ) { return obj.b; } );
+		link_json_boolean_fn( "c", []( A & obj, bool value ) { obj.c = std::move( value ); },
+							  []( A const & obj ) { return obj.c; } );
+		link_json_string_fn( "d", []( A & obj, std::string value ) { obj.d = std::move( value ); },
+							 []( A const & obj ) { return obj.d; } );
+	}
+};
+
+struct B: public daw::json::daw_json_link<B> {
+	A a;
+
+	static void json_link_map( ) {
+		link_json_object_fn( "a", []( B & obj, A value ) { obj.a = std::move( value ); },
+							 []( B const & obj ) { return obj.a; } );
 	}
 };
 
 int main( int argc, char **argv ) {
-	boost::string_view str = "{ \"a\" : 5, \"b\" : 6.6 }";
-	auto a = A::from_json_string( str.begin( ), str.end( ) ).result;
+	boost::string_view str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
+	auto a = B::from_json_string( str.begin( ), str.end( ) ).result;
 	std::cout << a.to_json_string( ) << '\n';
 
 	return EXIT_SUCCESS;

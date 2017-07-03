@@ -8,8 +8,8 @@ struct A {
 	std::string b;
 
 	static void json_link_map( ) {
-		link_json_integer( "a", a );
-		link_json_string( "b", b );
+		link_json_integer_fn( "a", a );
+		link_json_string_fn( "b", b );
 	}
 };
 

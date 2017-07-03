@@ -79,32 +79,32 @@ namespace daw {
 				namespace impl {
 					result_t<bool> parse_true( c_str_iterator first, c_str_iterator const last ) {
 						boost::string_view const true_str = "true";
-						auto const found = std::search( first, last, true_str.begin( ), true_str.end( ) ) != last;
-						daw::exception::daw_throw_on_false( found, "Expected string 'true', did not find it" );
+						auto pos = std::search( first, last, true_str.begin( ), true_str.end( ) );
+						daw::exception::daw_throw_on_false( pos != last, "Expected string 'true', did not find it" );
 						return result_t<bool>{
-						    std::next( first, static_cast<std::iterator_traits<decltype( first )>::difference_type>(
-						                          true_str.size( ) ) ),
+						    std::next( pos, static_cast<std::iterator_traits<decltype( first )>::difference_type>(
+						                        true_str.size( ) ) ),
 						    true};
 					}
 
 					result_t<bool> parse_false( c_str_iterator first, c_str_iterator const last ) {
 						boost::string_view const false_str = "false";
-						auto const found = std::search( first, last, false_str.begin( ), false_str.end( ) ) != last;
-						daw::exception::daw_throw_on_false( found, "Expected string 'false', did not find it" );
+						auto pos = std::search( first, last, false_str.begin( ), false_str.end( ) );
+						daw::exception::daw_throw_on_false( pos != last, "Expected string 'false', did not find it" );
 						return result_t<bool>{
-						    std::next( first, static_cast<std::iterator_traits<decltype( first )>::difference_type>(
-						                          false_str.size( ) ) ),
+						    std::next( pos, static_cast<std::iterator_traits<decltype( first )>::difference_type>(
+						                        false_str.size( ) ) ),
 						    false};
 					}
-				}	// namespace impl
+				} // namespace impl
 			}	// namespace
 
-			result_t<bool> parse_json_bool( c_str_iterator first, c_str_iterator const last ) {
+			result_t<bool> parse_json_boolean( c_str_iterator first, c_str_iterator const last ) {
 				auto trimmed = daw::parser::trim_left( first, last );
 				if( *trimmed.begin( ) == 't' ) {
-					return impl::parse_true( trimmed.end( ), last );
+					return impl::parse_true( trimmed.first, last );
 				} else if( *trimmed.begin( ) == 'f' ) {
-					return impl::parse_false( trimmed.end( ), last );
+					return impl::parse_false( trimmed.first, last );
 				}
 				daw::exception::daw_throw( "Expected boolean, couldn't find one" );
 			}

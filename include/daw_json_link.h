@@ -79,10 +79,19 @@ namespace daw {
 
 		  protected:
 			template<typename Setter, typename Getter>
-			static void link_json_integer( std::string member_name, Setter setter, Getter getter );
+			static void link_json_integer_fn( std::string member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
-			static void link_json_real( std::string member_name, Setter setter, Getter getter );
+				static void link_json_real_fn( std::string member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
+			static void link_json_boolean_fn( std::string member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
+			static void link_json_string_fn( std::string member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
+			static void link_json_object_fn( std::string member_name, Setter setter, Getter getter );
 
 		  public:
 			static result_t<Derived> from_json_string( c_str_iterator first, c_str_iterator const last );
@@ -107,7 +116,7 @@ namespace daw {
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_integer( std::string member_name, Setter setter, Getter getter ) {
+		void daw_json_link<Derived>::link_json_integer_fn( std::string member_name, Setter setter, Getter getter ) {
 
 			auto funcs = impl::json_link_functions_t<Derived>{
 			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
@@ -117,7 +126,8 @@ namespace daw {
 			    },
 			    [getter, member_name]( Derived const &obj ) -> std::string {
 				    using namespace std::string_literals;
-				    return "\""s + member_name + "\":"s + getter( obj );
+					using std::to_string;
+					return "\""s + member_name + "\":"s + to_string( getter( obj ) );
 			    }};
 
 			get_map( )[member_name] = std::move( funcs );
@@ -125,7 +135,7 @@ namespace daw {
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_real( std::string member_name, Setter setter, Getter getter ) {
+		void daw_json_link<Derived>::link_json_real_fn( std::string member_name, Setter setter, Getter getter ) {
 			auto funcs = impl::json_link_functions_t<Derived>{
 			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
 				    auto result = daw::json::parsers::parse_json_real( first, last );
@@ -134,7 +144,59 @@ namespace daw {
 			    },
 			    [getter, member_name]( Derived const &obj ) -> std::string {
 				    using namespace std::string_literals;
-				    return "\""s + member_name + "\":"s + getter( obj );
+					using std::to_string;
+					return "\""s + member_name + "\":"s + to_string( getter( obj ) );
+			    }};
+			get_map( )[member_name] = std::move( funcs );
+		}
+
+		template<typename Derived>
+		template<typename Setter, typename Getter>
+		void daw_json_link<Derived>::link_json_boolean_fn( std::string member_name, Setter setter, Getter getter ) {
+			auto funcs = impl::json_link_functions_t<Derived>{
+			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
+				    auto result = daw::json::parsers::parse_json_boolean( first, last );
+				    setter( obj, std::move( result.result ) );
+				    return result.position;
+			    },
+			    [getter, member_name]( Derived const &obj ) -> std::string {
+				    using namespace std::string_literals;
+					using std::to_string;
+				    return "\""s + member_name + "\":"s + (getter( obj ) ? "true"s : "false"s);
+			    }};
+			get_map( )[member_name] = std::move( funcs );
+		}
+
+		template<typename Derived>
+		template<typename Setter, typename Getter>
+		void daw_json_link<Derived>::link_json_string_fn( std::string member_name, Setter setter, Getter getter ) {
+			auto funcs = impl::json_link_functions_t<Derived>{
+			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
+				    auto result = daw::json::parsers::parse_json_string( first, last );
+				    setter( obj, std::move( result.result ) );
+				    return result.position;
+			    },
+			    [getter, member_name]( Derived const &obj ) -> std::string {
+				    using namespace std::string_literals;
+				    return "\""s + member_name + "\":\""s + getter( obj ) + "\""s;
+			    }};
+			get_map( )[member_name] = std::move( funcs );
+		}
+
+		template<typename Derived>
+		template<typename Setter, typename Getter>
+		void daw_json_link<Derived>::link_json_object_fn( std::string member_name, Setter setter, Getter getter ) {
+			using member_t = std::decay_t<decltype( getter( std::declval<Derived>( ) ) )>;
+			auto funcs = impl::json_link_functions_t<Derived>{
+			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
+					auto result = member_t::from_json_string( first, last );
+				    setter( obj, std::move( result.result ) );
+				    return result.position;
+			    },
+			    [getter, member_name]( Derived const &obj ) -> std::string {
+				    using namespace std::string_literals;
+					using std::to_string;
+				    return "\""s + member_name + "\":"s + getter( obj ).to_json_string( );
 			    }};
 			get_map( )[member_name] = std::move( funcs );
 		}
