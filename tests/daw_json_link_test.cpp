@@ -73,6 +73,23 @@ auto make_path_str( std::string s ) {
 }
 #endif
 
+std::string to_si_bytes( double d ) {
+	using std::to_string;
+	if( d < 1024.0 ) {
+		return to_string( d ) + " bytes";
+	}
+	d /= 1024.0;
+	if( d < 1024.0 ) {
+		return to_string( d ) + " KB";
+	}
+	d /= 1024.0;
+	if( d < 1024.0 ) {
+		return to_string( d ) + " KB";
+	}
+	d /= 1024.0;
+	return to_string( d ) + " GB";
+}
+
 int main( int argc, char **argv ) {
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
 	boost::string_view str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
@@ -80,25 +97,18 @@ int main( int argc, char **argv ) {
 	auto a = B::from_json_string( str.begin( ), str.end( ) ).result;
 	std::cout << a.to_json_string( ) << '\n';
 
-	std::cout << "Attemping json array '" << str_array << "'\n[";
-	bool is_first = true;
+	std::cout << "Attemping json array '" << str_array << "'\n";
 	auto c = B::from_json_array_string( str_array.data( ), str_array.data( ) + str_array.size( ) );
+	
+	std::cout << to_json_string( c ) << std::endl;
 
-	for( auto const &item : c ) {
-		if( !is_first ) {
-			std::cout << ",";
-		} else {
-			is_first = false;
-		}
-		std::cout << item.to_json_string( ) << "]\n";
-	}
 	if( boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
 		daw::filesystem::MemoryMappedFile<char> json_file{make_path_str( "test.json" ).data( )};
 		daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
 		auto lapsed_time = daw::benchmark( [&json_file]( ) {
 			B::from_json_array_string( json_file.data( ), json_file.data( ) + json_file.size( ) );
 		} );
-		std::cout << "To process " << json_file.size( ) << " bytes, it took " << lapsed_time << " seconds\n";
+		std::cout << "To process " << json_file.size( ) << " bytes, it took " << lapsed_time << " seconds. " << to_si_bytes( json_file.size( )/lapsed_time ) << "/second\n";
 	}
 	return EXIT_SUCCESS;
 }

@@ -134,14 +134,13 @@ namespace daw {
 			auto funcs = impl::make_json_link_functions<Derived>(
 			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
 				    auto result = daw::json::parsers::parse_json_integer( first, last );
-					daw::exception::daw_throw_on_false( daw::can_fit<member_t>( result.result ), "Invalid json string.  String was empty" );
+					daw::exception::dbg_throw_on_false( daw::can_fit<member_t>( result.result ), "Invalid json string.  String was empty" );
 				    setter( obj, static_cast<member_t>( result.result ) );
 				    return result.position;
 			    },
-			    [getter, member_name]( Derived const &obj ) -> std::string {
-				    using namespace std::string_literals;
+			    [getter]( Derived const &obj ) -> std::string {
 				    using std::to_string;
-				    return "\""s + member_name + "\":"s + to_string( getter( obj ) );
+				    return to_string( getter( obj ) );
 			    } );
 
 			get_map( )[member_name] = std::move( funcs );
@@ -156,10 +155,9 @@ namespace daw {
 				    setter( obj, std::move( result.result ) );
 				    return result.position;
 			    },
-			    [getter, member_name]( Derived const &obj ) -> std::string {
-				    using namespace std::string_literals;
+			    [getter]( Derived const &obj ) -> std::string {
 					using std::to_string;
-					return "\""s + member_name + "\":"s + to_string( getter( obj ) );
+					return to_string( getter( obj ) );
 			    });
 			get_map( )[member_name] = std::move( funcs );
 		}
@@ -173,10 +171,9 @@ namespace daw {
 				    setter( obj, std::move( result.result ) );
 				    return result.position;
 			    },
-			    [getter, member_name]( Derived const &obj ) -> std::string {
-				    using namespace std::string_literals;
+			    [getter]( Derived const &obj ) -> std::string {
 					using std::to_string;
-				    return "\""s + member_name + "\":"s + (getter( obj ) ? "true"s : "false"s);
+				    return getter( obj ) ? "true" : "false";
 			    });
 			get_map( )[member_name] = std::move( funcs );
 		}
@@ -190,9 +187,9 @@ namespace daw {
 				    setter( obj, std::move( result.result ) );
 				    return result.position;
 			    },
-			    [getter, member_name]( Derived const &obj ) -> std::string {
-				    using namespace std::string_literals;
-				    return "\""s + member_name + "\":\""s + getter( obj ) + "\""s;
+			    [getter]( Derived const &obj ) -> std::string {
+					using namespace std::string_literals;
+				    return "\""s + getter( obj ) + "\""s;
 			    });
 			get_map( )[member_name] = std::move( funcs );
 		}
@@ -207,10 +204,8 @@ namespace daw {
 				    setter( obj, std::move( result.result ) );
 				    return result.position;
 			    },
-			    [getter, member_name]( Derived const &obj ) -> std::string {
-				    using namespace std::string_literals;
-					using std::to_string;
-				    return "\""s + member_name + "\":"s + getter( obj ).to_json_string( );
+			    [getter]( Derived const &obj ) -> std::string {
+				    return getter( obj ).to_json_string( );
 			    });
 			get_map( )[member_name] = std::move( funcs );
 		}
@@ -288,6 +283,7 @@ namespace daw {
 		std::string daw_json_link<Derived>::to_json_string( Derived const &obj ) {
 			auto const &member_map = check_map( );
 			std::string result = "{";
+			using namespace std::string_literals;
 			bool is_first = true;
 			for( auto const &member_func : member_map ) {
 				if( !is_first ) {
@@ -295,7 +291,7 @@ namespace daw {
 				} else {
 					is_first = false;
 				}
-				result += member_func.second.getter( obj );
+				result += "\""s + member_func.first + "\":"s + member_func.second.getter( obj );
 			}
 			result.push_back( '}' );
 			return result;
@@ -304,6 +300,27 @@ namespace daw {
 		template<typename Derived>
 		std::string daw_json_link<Derived>::to_json_string( ) const {
 			return to_json_string( this_as_derived( ) );
+		}
+
+		template<typename Derived>
+		std::string to_json_string( daw_json_link<Derived> const & obj ) {
+			return obj.to_json_string( );
+		}
+
+		template<typename Container>
+		std::string to_json_string( Container const & container ) {
+			std::string result = "[";
+			using std::begin;
+			using std::end;
+			auto it = begin( container );
+			if( it != end( container ) ) {
+				result += it->to_json_string( );
+				for( ; it != end( container ); ++it ) {
+					result += ',' + it->to_json_string( );
+				}
+			}
+			result += ']';
+			return result;
 		}
 	} // namespace json
 } // namespace daw
