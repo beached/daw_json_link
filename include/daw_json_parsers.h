@@ -34,7 +34,7 @@
 namespace daw {
 	namespace json {
 		namespace parsers {
-			bool is_null( c_str_iterator first, c_str_iterator const last );
+			result_t<bool> is_null( c_str_iterator first, c_str_iterator const last );
 			result_t<std::string> parse_json_string( c_str_iterator first, c_str_iterator const last );
 			result_t<int64_t> parse_json_integer( c_str_iterator first, c_str_iterator const last );
 			result_t<double> parse_json_real( c_str_iterator first, c_str_iterator const last );

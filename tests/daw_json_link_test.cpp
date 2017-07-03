@@ -27,12 +27,22 @@
 #include "daw_json_link.h"
 
 struct A: public daw::json::daw_json_link<A> {
+	int a;
+	double b;
+
+	static void json_link_map( ) {
+		using std::to_string;
+		link_json_integer( "a", []( A &obj, int64_t value ) { obj.a = std::move( value ); },
+						   []( A const &obj ) { return to_string( obj.a ); } );
+		link_json_real( "b", []( A &obj, double value ) { obj.b = std::move( value ); },
+		                   []( A const &obj ) { return to_string( obj.b ); } );
+	}
 };
 
 int main( int argc, char **argv ) {
-	boost::string_view str = "{ }";
-	auto a = A::from_json_string( str.begin( ), str.end( ) );
-
+	boost::string_view str = "{ \"a\" : 5, \"b\" : 6.6 }";
+	auto a = A::from_json_string( str.begin( ), str.end( ) ).result;
+	std::cout << a.to_json_string( ) << '\n';
 
 	return EXIT_SUCCESS;
 }

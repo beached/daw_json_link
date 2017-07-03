@@ -71,7 +71,7 @@ set( SOURCE_FILES
 #install( TARGETS daw_json_link DESTINATION lib )
 install( DIRECTORY ${HEADER_FOLDER}/ DESTINATION include/daw/json )
 
-add_executable( daw_json_link_test_bin ${HEADER_FILES} ${TEST_FOLDER}/daw_json_link_test.cpp )
+add_executable( daw_json_link_test_bin ${HEADER_FILES} ${SOURCE_FILES} ${TEST_FOLDER}/daw_json_link_test.cpp )
 add_dependencies( daw_json_link_test_bin header_libraries_prj char_range_prj date_prj )
 target_link_libraries( daw_json_link_test_bin char_range ${Boost_LIBRARIES} )
 add_test( daw_json_link_test daw_json_link_test_bin )

@@ -20,9 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
-
 #include <boost/utility/string_view.hpp>
+#include <iterator>
 #include <string>
 
 #include <daw/daw_exception.h>
@@ -34,15 +33,16 @@
 namespace daw {
 	namespace json {
 		namespace parsers {
-			bool is_null( c_str_iterator first, c_str_iterator const last ) {
+			result_t<bool> is_null( c_str_iterator first, c_str_iterator const last ) {
 				boost::string_view const null_str = "null";
 				auto const trimmed = daw::parser::trim_left( first, last );
 				auto pos = std::search( trimmed.begin( ), trimmed.end( ), null_str.begin( ), null_str.end( ) );
 				if( pos != last ) {
-					pos = std::next( pos, null_str.size( ) );
-					return daw::parser::make_find_result( std::move( pos ), std::move( last ), true );
+					pos = std::next(
+					    pos, static_cast<std::iterator_traits<decltype( pos )>::difference_type>( null_str.size( ) ) );
+					return { std::move( pos ), true };
 				}
-				return daw::parser::make_find_result( std::move( first ), std::move( last ), false );
+				return { std::move( pos ), false };
 			}
 
 			result_t<std::string> parse_json_string( c_str_iterator first, c_str_iterator const last ) {
@@ -51,43 +51,60 @@ namespace daw {
 				return result_t<std::string>{std::next(parse_result.last), std::string{parse_result.first, parse_result.last}};
 			}
 
+			namespace {
+				namespace impl {
+					auto to_char_const_ptr( char const * ptr ) {
+						return ptr;
+					}
+				}	// namespace impl
+			}	// namespace anonymous
+
 			result_t<int64_t> parse_json_integer( c_str_iterator first, c_str_iterator const last ) {
-				auto const parse_result = daw::parser::find_number( first, last );
-				daw::exception::daw_throw_on_false( parse_result.result, "Expected integer, couldn't find one" );
-				int64_t destination;
-				daw::parser::parse_int( parse_result.first, parse_result.last, destination );
-				return result_t<int64_t>{parse_result.last, std::move( destination )};
+				auto const parse_result = daw::parser::skip_ws( first, last );
+				daw::exception::daw_throw_on_true( parse_result.first == parse_result.last, "Unexpected empty string" );
+				char * end_char;
+				int64_t result = static_cast<int64_t>( strtod( parse_result.begin( ), &end_char ) );
+				return result_t<int64_t>{ parse_result.begin( ) + std::distance( parse_result.begin( ), impl::to_char_const_ptr( end_char ) ), std::move( result ) };
 			}
 
 			result_t<double> parse_json_real( c_str_iterator first, c_str_iterator const last ) {
-				auto const parse_result = daw::parser::find_number( first, last );
-				daw::exception::daw_throw_on_false( parse_result.result, "Expected integer, couldn't find one" );
-				daw::parser::parse_int( parse_result.first, parse_result.last, destination );
-				return result_t<double>{parse_result.last, std::strod( parse_result.first )};
+				auto const parse_result = daw::parser::skip_ws( first, last );
+				daw::exception::daw_throw_on_true( parse_result.first == parse_result.last, "Unexpected empty string" );
+				char * end_char;
+				double result = strtod( parse_result.begin( ), &end_char );
+				return result_t<double>{ parse_result.begin( ) + std::distance( parse_result.begin( ), impl::to_char_const_ptr( end_char ) ), std::move( result ) };
 			}
 
-			namespace impl {
-				result_t<bool> parse_true( c_str_iterator first, c_str_iterator const last ) {
-					boost::string_view const true_str = "true";
-					auto const found = std::search( first, last, true_str.begin( ), true_str.end( ) ) != last;
-					daw::exception::daw_throw_on_false( found, "Expected string 'true', did not find it" );
-					return result_t<bool>{std::next( first, true_str.size( ) ), true};
-				}
+			namespace {
+				namespace impl {
+					result_t<bool> parse_true( c_str_iterator first, c_str_iterator const last ) {
+						boost::string_view const true_str = "true";
+						auto const found = std::search( first, last, true_str.begin( ), true_str.end( ) ) != last;
+						daw::exception::daw_throw_on_false( found, "Expected string 'true', did not find it" );
+						return result_t<bool>{
+						    std::next( first, static_cast<std::iterator_traits<decltype( first )>::difference_type>(
+						                          true_str.size( ) ) ),
+						    true};
+					}
 
-				result_t<bool> parse_false( c_str_iterator first, c_str_iterator const last ) {
-					boost::string_view const false_str = "false";
-					auto const found = std::search( first, last, false_str.begin( ), false_str.end( ) ) != last;
-					daw::exception::daw_throw_on_false( found, "Expected string 'false', did not find it" );
-					return result_t<bool>{std::next( first, false_str.size( ) ), false};
-				}
-			} // namespace impl
+					result_t<bool> parse_false( c_str_iterator first, c_str_iterator const last ) {
+						boost::string_view const false_str = "false";
+						auto const found = std::search( first, last, false_str.begin( ), false_str.end( ) ) != last;
+						daw::exception::daw_throw_on_false( found, "Expected string 'false', did not find it" );
+						return result_t<bool>{
+						    std::next( first, static_cast<std::iterator_traits<decltype( first )>::difference_type>(
+						                          false_str.size( ) ) ),
+						    false};
+					}
+				}	// namespace impl
+			}	// namespace
 
 			result_t<bool> parse_json_bool( c_str_iterator first, c_str_iterator const last ) {
 				auto trimmed = daw::parser::trim_left( first, last );
-				if( *trimmed == 't' ) {
-					return parse_true( trimmed, last );
-				} else if( *trimmed == 'f' ) {
-					return parse_false( trimmed, last );
+				if( *trimmed.begin( ) == 't' ) {
+					return impl::parse_true( trimmed.end( ), last );
+				} else if( *trimmed.begin( ) == 'f' ) {
+					return impl::parse_false( trimmed.end( ), last );
 				}
 				daw::exception::daw_throw( "Expected boolean, couldn't find one" );
 			}
