@@ -92,7 +92,7 @@ int main( int argc, char **argv ) {
 		}
 		std::cout << item.to_json_string( ) << "]\n";
 	}
-	if( false && boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
+	if( boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
 		daw::filesystem::MemoryMappedFile<char> json_file{make_path_str( "test.json" ).data( )};
 		daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
 		auto lapsed_time = daw::benchmark( [&json_file]( ) {
