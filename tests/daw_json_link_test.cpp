@@ -69,7 +69,7 @@ auto make_path_str( std::string s ) {
 	return converter.from_bytes( s );
 }
 #else
-	return std::move( s );
+	return s;
 }
 #endif
 
