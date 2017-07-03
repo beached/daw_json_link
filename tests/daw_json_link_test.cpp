@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright (c) 2017 Darrell Wright
 //
@@ -24,9 +24,11 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <daw/daw_benchmark.h>
 #include <daw/daw_memory_mapped_file.h>
 
 #include "daw_json_link.h"
+#include <codecvt>
 
 struct A : public daw::json::daw_json_link<A> {
 	int a;
@@ -61,6 +63,16 @@ struct B : public daw::json::daw_json_link<B> {
 	}
 };
 
+auto make_path_str( std::string s ) {
+#ifdef WIN32
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.from_bytes( s );
+}
+#else
+	return std::move( s );
+}
+#endif
+
 int main( int argc, char **argv ) {
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
 	boost::string_view str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
@@ -80,10 +92,13 @@ int main( int argc, char **argv ) {
 		}
 		std::cout << item.to_json_string( ) << "]\n";
 	}
-
-	daw::filesystem::MemoryMappedFile<char> json_file{{"test.json"}};
-	daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
-	auto d = B::from_json_array_string( json_file.data( ), json_file.data( ) + json_file.size( ) );
+	if( false && boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
+		daw::filesystem::MemoryMappedFile<char> json_file{make_path_str( "test.json" ).data( )};
+		daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
+		auto lapsed_time = daw::benchmark( [&json_file]( ) {
+			B::from_json_array_string( json_file.data( ), json_file.data( ) + json_file.size( ) );
+		} );
+		std::cout << "To process " << json_file.size( ) << " bytes, it took " << lapsed_time << " seconds\n";
+	}
 	return EXIT_SUCCESS;
 }
-
