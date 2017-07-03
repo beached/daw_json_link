@@ -43,6 +43,12 @@ struct A: public daw::json::daw_json_link<A> {
 							 []( A const & obj ) { return obj.d; } );
 	}
 };
+struct A2 {
+	int a;
+	double b;
+	bool c;
+	std::string d;
+};
 
 struct B: public daw::json::daw_json_link<B> {
 	A a;
@@ -54,6 +60,7 @@ struct B: public daw::json::daw_json_link<B> {
 };
 
 int main( int argc, char **argv ) {
+	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
 	boost::string_view str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
 	auto a = B::from_json_string( str.begin( ), str.end( ) ).result;
 	std::cout << a.to_json_string( ) << '\n';
