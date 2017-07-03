@@ -12,5 +12,9 @@ struct A {
 		link_json_string( "b", b );
 	}
 };
+
+std::string some_json_string = ...
+
+auto a = A::from_json_string( some_json_string.begin( ), some_json_string.end( ) );
 ```
 
