@@ -34,12 +34,102 @@
 namespace daw {
 	namespace json {
 		namespace parsers {
-			result_t<bool> is_null( c_str_iterator first, c_str_iterator const last );
-			result_t<std::string> parse_json_string( c_str_iterator first, c_str_iterator const last );
-			result_t<int64_t> parse_json_integer( c_str_iterator first, c_str_iterator const last );
-			result_t<double> parse_json_real( c_str_iterator first, c_str_iterator const last );
-			result_t<bool> parse_json_boolean( c_str_iterator first, c_str_iterator const last );
+			namespace {
+				namespace impl {
+					constexpr result_t<double> parse_number( c_str_iterator first, c_str_iterator const last ) {
+						double r = 0.0;
+						bool neg = false;
+						if( *first == '-' ) {
+							neg = true;
+							++first;
+						}
+						while( *first >= '0' && *first <= '9' ) {
+							r = ( r * 10.0 ) + ( *first - '0' );
+							++first;
+						}
+						if( *first == '.' ) {
+							double f = 0.0;
+							int n = 0;
+							++first;
+							while( *first >= '0' && *first <= '9' ) {
+								f = ( f * 10.0 ) + ( *first - '0' );
+								++first;
+								++n;
+							}
+							r += f / std::pow( 10.0, n );
+						}
+						if( neg ) {
+							r = -r;
+						}
+						return {first, r};
+					}
+
+					constexpr result_t<bool> parse_false( c_str_iterator const first, c_str_iterator const last ) {
+						daw::exception::daw_throw_on_false( ( last - first ) >= 5,
+						                                    "Expected boolean false, something else found" );
+						auto const a = 'a' == *( first + 1 );
+						auto const l = 'l' == *( first + 2 );
+						auto const s = 's' == *( first + 3 );
+						auto const e = 'e' == *( first + 4 );
+						auto const value = a | l | s | e;
+						daw::exception::dbg_throw_on_false( value, "Expected boolean false, something else found" );
+						return {( first + 5 ), false};
+					}
+
+					constexpr result_t<bool> parse_true( c_str_iterator const first, c_str_iterator const last ) {
+						daw::exception::daw_throw_on_false( ( last - first ) >= 4,
+						                                    "Expected boolean true, something else found" );
+						auto const t = 't' == *( first + 0 );
+						auto const r = 'r' == *( first + 1 );
+						auto const u = 'u' == *( first + 2 );
+						auto const e = 'e' == *( first + 3 );
+						auto const value = t | r | u | e;
+						daw::exception::dbg_throw_on_false( value, "Expected boolean true, something else found" );
+						return {( first + 4 ), true};
+					}
+				} // namespace impl
+			}	// namespace anonymous
+
+			constexpr result_t<int64_t> parse_json_integer( c_str_iterator first, c_str_iterator const last ) {
+				auto result = impl::parse_number( first, last );
+				return {result.position, static_cast<int64_t>( result.result )};
+			}
+
+			constexpr result_t<double> parse_json_real( c_str_iterator first, c_str_iterator const last ) {
+				return impl::parse_number( first, last );
+			}
 			result_t<bool> skip_json_value( c_str_iterator first, c_str_iterator const last );
+
+			constexpr result_t<bool> is_null( c_str_iterator first, c_str_iterator const last ) noexcept {
+				auto const trimmed = daw::parser::trim_left( first, last );
+				if( ( last - trimmed.first ) < 4 ) {
+					return {trimmed.first, false};
+				}
+				auto const n = 'n' == *( trimmed.first + 1 );
+				auto const u = 'u' == *( trimmed.first + 2 );
+				auto const l = 'l' == *( trimmed.first + 3 );
+				auto const l2 = 'l' == *( trimmed.first + 4 );
+				auto const value = n | u | l | l2;
+				return {trimmed.first, value};
+			}
+
+			constexpr result_t<bool> parse_json_boolean( c_str_iterator first, c_str_iterator const last ) {
+				auto trimmed = daw::parser::trim_left( first, last );
+				if( *trimmed.begin( ) == 'f' ) {
+					return impl::parse_false( trimmed.first, last );
+				}
+				return impl::parse_true( trimmed.first, last );
+			}
+
+			//result_t<std::string> parse_json_string( c_str_iterator first, c_str_iterator const last );
+
+			template<typename Iterator>
+			constexpr result_t<std::string> parse_json_string( Iterator first, Iterator const last ) {
+			//constexpr result_t<std::string> parse_json_string( c_str_iterator first, c_str_iterator const last ) {
+				auto const parse_result = daw::parser::parse_string_literal( first, last );
+				daw::exception::daw_throw_on_false( parse_result.found, "Expected string, couldn't find one" );
+				return {std::next( parse_result.last ), std::string{parse_result.first, parse_result.last}};
+			}
 		} // namespace parsers
 	}     // namespace json
 } // namespace daw

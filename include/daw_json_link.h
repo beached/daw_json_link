@@ -53,7 +53,7 @@ namespace daw {
 			};
 
 			template<typename Derived>
-			auto make_json_link_functions( typename json_link_functions_t<Derived>::setter_t setter, typename json_link_functions_t<Derived>::getter_t getter,
+			constexpr auto make_json_link_functions( typename json_link_functions_t<Derived>::setter_t setter, typename json_link_functions_t<Derived>::getter_t getter,
 			                          bool is_optional = false ) {
 				return json_link_functions_t<Derived>{std::move( setter ), std::move( getter ), is_optional};
 			}
