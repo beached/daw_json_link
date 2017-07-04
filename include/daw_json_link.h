@@ -76,7 +76,7 @@ namespace daw {
 			}
 
 			template<typename LinkData>
-			static auto find_link_func_member( LinkData const & link_data, size_t hash ) {
+			static auto find_link_func_member( LinkData const & link_data, size_t const hash ) {
 				auto result = std::find_if( link_data.begin( ), link_data.end( ), [hash]( auto const & v ) { return hash == v.hash; } );
 				return std::make_pair( result != link_data.end( ), result );
 			}
@@ -101,6 +101,8 @@ namespace daw {
 			static json_link_functions_data_t &check_map( ) {
 				std::lock_guard<std::mutex> guard( get_mutex( ) );
 				if( get_link_data( ).empty( ) ) {
+					// This should really only ever happen once, unless there is no linking of values
+					// But who cares about that case
 					Derived::json_link_map( );
 				}
 				return get_link_data( );
