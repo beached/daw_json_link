@@ -119,13 +119,11 @@ namespace daw {
 				return impl::parse_true( trimmed.first, last );
 			}
 
-			// result_t<std::string> parse_json_string( c_str_iterator first, c_str_iterator const last );
-
 			template<typename Iterator>
-			constexpr result_t<std::string> parse_json_string( Iterator first, Iterator const last ) {
+			constexpr result_t<std::pair<Iterator, Iterator>> parse_json_string( Iterator first, Iterator const last ) {
 				auto const parse_result = daw::parser::parse_string_literal( first, last );
 				daw::exception::daw_throw_on_false( parse_result.found, "Expected string, couldn't find one" );
-				return {std::next( parse_result.last ), std::string{parse_result.first, parse_result.last}};
+				return {std::next( parse_result.last ), std::make_pair( parse_result.first, parse_result.last )};
 			}
 		} // namespace parsers
 	}     // namespace json
