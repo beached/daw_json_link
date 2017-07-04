@@ -233,7 +233,8 @@ namespace daw {
 		}
 
 		template<typename Derived>
-		result_t<Derived> daw_json_link<Derived>::from_json_string( c_str_iterator first, c_str_iterator const last ) {
+		result_t<Derived> daw_json_link<Derived>::from_json_string( c_str_iterator const first,
+		                                                            c_str_iterator const last ) {
 			auto pos = daw::parser::trim_left( first, last );
 			daw::exception::daw_throw_on_false( last != pos.first, "Invalid json string.  String was empty" );
 			daw::exception::daw_throw_on_false( '{' == *pos.first,
@@ -294,7 +295,7 @@ namespace daw {
 		}
 
 		template<typename Derived>
-		std::vector<Derived> daw_json_link<Derived>::from_json_array_string( c_str_iterator first,
+		std::vector<Derived> daw_json_link<Derived>::from_json_array_string( c_str_iterator const first,
 		                                                                     c_str_iterator const last ) {
 			std::vector<Derived> result;
 			auto pos = daw::parser::skip_ws( first, last );
