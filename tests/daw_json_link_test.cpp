@@ -84,10 +84,14 @@ std::string to_si_bytes( double d ) {
 	}
 	d /= 1024.0;
 	if( d < 1024.0 ) {
-		return to_string( d ) + " KB";
+		return to_string( d ) + " MB";
 	}
 	d /= 1024.0;
-	return to_string( d ) + " GB";
+	if( d < 1024.0 ) {
+		return to_string( d ) + " GB";
+	}
+	d /= 1024.0;
+	return to_string( d ) + " TB";
 }
 
 int main( int argc, char **argv ) {
@@ -99,7 +103,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << "Attemping json array '" << str_array << "'\n";
 	auto c = B::from_json_array_string( str_array.data( ), str_array.data( ) + str_array.size( ) );
-	
+
 	std::cout << to_json_string( c ) << std::endl;
 
 	if( boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
@@ -108,7 +112,8 @@ int main( int argc, char **argv ) {
 		auto lapsed_time = daw::benchmark( [&json_file]( ) {
 			B::from_json_array_string( json_file.data( ), json_file.data( ) + json_file.size( ) );
 		} );
-		std::cout << "To process " << json_file.size( ) << " bytes, it took " << lapsed_time << " seconds. " << to_si_bytes( json_file.size( )/lapsed_time ) << "/second\n";
+		std::cout << "To process " << to_si_bytes( json_file.size( ) ) << " bytes, it took " << lapsed_time
+		          << " seconds. " << to_si_bytes( json_file.size( ) / lapsed_time ) << "/second\n";
 	}
 	return EXIT_SUCCESS;
 }
