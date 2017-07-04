@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright (c) 2017 Darrell Wright
 //
@@ -54,7 +54,8 @@ namespace daw {
 			struct json_link_functions_info {
 				size_t hash;
 				std::string name;
-				using setter_t = std::function<c_str_iterator( Derived &, c_str_iterator first, c_str_iterator const last )>;
+				using setter_t =
+				    std::function<c_str_iterator( Derived &, c_str_iterator first, c_str_iterator const last )>;
 				using getter_t = std::function<std::string( Derived const & )>;
 				setter_t setter;
 				getter_t getter;
@@ -67,18 +68,19 @@ namespace daw {
 				    , setter{std::move( setter_func )}
 				    , getter{std::move( getter_func )}
 				    , is_optional{std::move( optional )} {}
-			};	// json_link_functions_info
+			}; // json_link_functions_info
 			using json_link_functions_data_t = std::vector<json_link_functions_info>;
 
-			static json_link_functions_data_t & get_link_data( ) {
+			static json_link_functions_data_t &get_link_data( ) {
 				static json_link_functions_data_t result;
 				return result;
 			}
 
 			template<typename LinkData>
-			static auto find_link_func_member( LinkData const & link_data, size_t const hash ) {
-				auto result = std::find_if( link_data.begin( ), link_data.end( ), [hash]( auto const & v ) { return hash == v.hash; } );
-				return std::make_pair( result != link_data.end( ), result );
+			static auto find_link_func_member( LinkData const &link_data, size_t const hash ) {
+				auto result = std::find_if( link_data.cbegin( ), link_data.cend( ),
+				                            [hash]( auto const &v ) { return hash == v.hash; } );
+				return std::make_pair( result != link_data.cend( ), result );
 			}
 
 			constexpr static decltype( auto ) json_link_data_size( ) noexcept {
@@ -98,14 +100,15 @@ namespace daw {
 				return s_mutex;
 			}
 
-			static json_link_functions_data_t &check_map( ) {
+			static json_link_functions_data_t const &check_map( ) {
 				std::lock_guard<std::mutex> guard( get_mutex( ) );
-				if( get_link_data( ).empty( ) ) {
+				auto &result = get_link_data( );
+				if( result.empty( ) ) {
 					// This should really only ever happen once, unless there is no linking of values
 					// But who cares about that case
 					Derived::json_link_map( );
 				}
-				return get_link_data( );
+				return result;
 			}
 
 			Derived const &this_as_derived( ) const {
@@ -146,7 +149,8 @@ namespace daw {
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_integer_fn( boost::string_view member_name, Setter setter, Getter getter ) {
+		void daw_json_link<Derived>::link_json_integer_fn( boost::string_view member_name, Setter setter,
+		                                                   Getter getter ) {
 			using member_t = std::decay_t<decltype( getter( std::declval<Derived>( ) ) )>;
 			add_json_link_function(
 			    member_name,
@@ -174,14 +178,15 @@ namespace daw {
 				    return result.position;
 			    },
 			    [getter]( Derived const &obj ) -> std::string {
-					using std::to_string;
-					return to_string( getter( obj ) );
-			    });
+				    using std::to_string;
+				    return to_string( getter( obj ) );
+			    } );
 		}
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_boolean_fn( boost::string_view member_name, Setter setter, Getter getter ) {
+		void daw_json_link<Derived>::link_json_boolean_fn( boost::string_view member_name, Setter setter,
+		                                                   Getter getter ) {
 			add_json_link_function(
 			    member_name,
 			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
@@ -197,18 +202,19 @@ namespace daw {
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_string_fn( boost::string_view member_name, Setter setter, Getter getter ) {
+		void daw_json_link<Derived>::link_json_string_fn( boost::string_view member_name, Setter setter,
+		                                                  Getter getter ) {
 			add_json_link_function(
 			    member_name,
 			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
 				    auto result = daw::json::parsers::parse_json_string( first, last );
-				    setter( obj, std::string{ result.result.first, result.result.second } );
+				    setter( obj, std::string{result.result.first, result.result.second} );
 				    return result.position;
 			    },
 			    [getter]( Derived const &obj ) -> std::string {
-					using namespace std::string_literals;
+				    using namespace std::string_literals;
 				    return "\""s + getter( obj ) + "\""s;
-			    });
+			    } );
 		}
 
 		template<typename Derived>
@@ -248,7 +254,6 @@ namespace daw {
 				auto const member_name_str = std::string{member_name.result.first, member_name.result.second};
 				auto const member_name_hash = std::hash<std::string>{}( member_name_str );
 
-
 				pos.first = member_name.position;
 				pos = daw::parser::skip_ws( pos.first, last );
 				daw::exception::daw_throw_on_false( ':' == *pos.first,
@@ -256,7 +261,7 @@ namespace daw {
 
 				pos = daw::parser::skip_ws( ++pos.first, last );
 
-				auto const json_link_function = find_link_func_member( member_map, member_name_hash );
+				auto const &json_link_function = find_link_func_member( member_map, member_name_hash );
 				if( json_link_function.first ) {
 					found_members.push_back( member_name_hash );
 					pos.first = json_link_function.second->setter( result, pos.first, last );
@@ -289,7 +294,8 @@ namespace daw {
 		}
 
 		template<typename Derived>
-		std::vector<Derived> daw_json_link<Derived>::from_json_array_string( c_str_iterator first, c_str_iterator const last ) {
+		std::vector<Derived> daw_json_link<Derived>::from_json_array_string( c_str_iterator first,
+		                                                                     c_str_iterator const last ) {
 			std::vector<Derived> result;
 			auto pos = daw::parser::skip_ws( first, last );
 			daw::exception::daw_throw_on_false( '[' == *pos.first, "Expected json array but none found" );
@@ -330,12 +336,12 @@ namespace daw {
 		}
 
 		template<typename Derived>
-		std::string to_json_string( daw_json_link<Derived> const & obj ) {
+		std::string to_json_string( daw_json_link<Derived> const &obj ) {
 			return obj.to_json_string( );
 		}
 
 		template<typename Container>
-		std::string to_json_string( Container const & container ) {
+		std::string to_json_string( Container const &container ) {
 			std::string result = "[";
 			using std::begin;
 			using std::end;
