@@ -35,36 +35,6 @@
 namespace daw {
 	namespace json {
 		namespace parsers {
-			/*
-			result_t<std::string> parse_json_string( c_str_iterator first, c_str_iterator const last ) {
-				auto const parse_result = daw::parser::parse_string_literal( first, last );
-				daw::exception::daw_throw_on_false( parse_result.found, "Expected string, couldn't find one" );
-				return {std::next( parse_result.last ), std::string{parse_result.first, parse_result.last}};
-			}
-	
-			namespace {
-				namespace impl {
-					constexpr auto to_char_const_ptr( char const * ptr ) noexcept {
-						return ptr;
-					}
-				}	// namespace impl
-			}	// namespace anonymous
-			result_t<int64_t> parse_json_integer( c_str_iterator first, c_str_iterator const last ) {
-				auto const parse_result = daw::parser::skip_ws( first, last );
-				daw::exception::daw_throw_on_true( parse_result.first == parse_result.last, "Unexpected empty string" );
-				char * end_char;
-				int64_t result = static_cast<int64_t>( strtod( parse_result.begin( ), &end_char ) );
-				return result_t<int64_t>{ parse_result.begin( ) + std::distance( parse_result.begin( ), impl::to_char_const_ptr( end_char ) ), std::move( result ) };
-			}
-
-			result_t<double> parse_json_real( c_str_iterator first, c_str_iterator const last ) {
-				auto const parse_result = daw::parser::skip_ws( first, last );
-				daw::exception::daw_throw_on_true( parse_result.first == parse_result.last, "Unexpected empty string" );
-				char * end_char;
-				double result = strtod( parse_result.begin( ), &end_char );
-				return result_t<double>{ parse_result.begin( ) + std::distance( parse_result.begin( ), impl::to_char_const_ptr( end_char ) ), std::move( result ) };
-			}
-			*/
 			result_t<bool> skip_json_value( c_str_iterator first, c_str_iterator const last ) {
 				daw::exception::daw_throw( "skip_json_value isn't implemented yet" );
 			}
