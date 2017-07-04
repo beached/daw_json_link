@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright (c) 2017 Darrell Wright
 //
@@ -21,9 +21,6 @@
 // SOFTWARE.
 
 #pragma once
-
-#include <boost/utility/string_view.hpp>
-#include <string>
 
 #include <daw/daw_exception.h>
 #include <daw/daw_parser_addons.h>
@@ -71,8 +68,9 @@ namespace daw {
 						auto const l = 'l' == *( first + 2 );
 						auto const s = 's' == *( first + 3 );
 						auto const e = 'e' == *( first + 4 );
-						auto const value = a | l | s | e;
-						daw::exception::dbg_throw_on_false( value, "Expected boolean false, something else found" );
+						auto const value = a * l * s * e;
+						daw::exception::dbg_throw_on_false( value != 0,
+						                                    "Expected boolean false, something else found" );
 						return {( first + 5 ), false};
 					}
 
@@ -83,12 +81,12 @@ namespace daw {
 						auto const r = 'r' == *( first + 1 );
 						auto const u = 'u' == *( first + 2 );
 						auto const e = 'e' == *( first + 3 );
-						auto const value = t | r | u | e;
-						daw::exception::dbg_throw_on_false( value, "Expected boolean true, something else found" );
+						auto const value = t * r * u * e;
+						daw::exception::dbg_throw_on_false( value != 0, "Expected boolean true, something else found" );
 						return {( first + 4 ), true};
 					}
 				} // namespace impl
-			}	// namespace anonymous
+			}     // namespace
 
 			constexpr result_t<int64_t> parse_json_integer( c_str_iterator first, c_str_iterator const last ) {
 				auto result = impl::parse_number( first, last );
@@ -109,8 +107,8 @@ namespace daw {
 				auto const u = 'u' == *( trimmed.first + 2 );
 				auto const l = 'l' == *( trimmed.first + 3 );
 				auto const l2 = 'l' == *( trimmed.first + 4 );
-				auto const value = n | u | l | l2;
-				return {trimmed.first, value};
+				auto const value = n * u * l * l2;
+				return {trimmed.first, value != 0};
 			}
 
 			constexpr result_t<bool> parse_json_boolean( c_str_iterator first, c_str_iterator const last ) {
@@ -121,7 +119,7 @@ namespace daw {
 				return impl::parse_true( trimmed.first, last );
 			}
 
-			//result_t<std::string> parse_json_string( c_str_iterator first, c_str_iterator const last );
+			// result_t<std::string> parse_json_string( c_str_iterator first, c_str_iterator const last );
 
 			template<typename Iterator>
 			constexpr result_t<std::string> parse_json_string( Iterator first, Iterator const last ) {
@@ -132,4 +130,3 @@ namespace daw {
 		} // namespace parsers
 	}     // namespace json
 } // namespace daw
-

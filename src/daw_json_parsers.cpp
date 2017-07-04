@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright (c) 2017 Darrell Wright
 //
@@ -20,16 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <boost/utility/string_view.hpp>
-#include <cctype>
-#include <iterator>
-#include <string>
-#include <tuple>
-
 #include <daw/daw_exception.h>
-#include <daw/daw_parser_addons.h>
-#include <daw/daw_parser_helper.h>
 
+#include "daw_json_common.h"
 #include "daw_json_parsers.h"
 
 namespace daw {
@@ -41,4 +34,3 @@ namespace daw {
 		} // namespace parsers
 	}     // namespace json
 } // namespace daw
-
