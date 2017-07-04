@@ -94,7 +94,7 @@ namespace daw {
 
 			template<typename LinkData>
 			static auto find_link_func_member( LinkData const & link_data, size_t hash ) {
-				auto result = std::find_if( link_data.begin( ), link_data.end( ), [hash]( auto const v ) { return hash == v; } );
+				auto result = std::find_if( link_data.begin( ), link_data.end( ), [hash]( auto const & v ) { return hash == v.hash; } );
 				return std::make_pair( result != link_data.end( ), result );
 			}
 
@@ -295,8 +295,8 @@ namespace daw {
 
 			for( auto const &member : member_map ) {
 				using namespace std::string_literals;
-				daw::exception::daw_throw_on_true( !member.second.link_functions.is_optional && !member_found( member.second.hash ),
-				                                   "Missing non-optional member '"s + member.second.name + "'"s );
+				daw::exception::daw_throw_on_true( !member.link_functions.is_optional && !member_found( member.hash ),
+				                                   "Missing non-optional member '"s + member.name + "'"s );
 			}
 			return result_t<Derived>{std::next( pos.first ), std::move( result )};
 		}
