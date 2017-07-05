@@ -96,6 +96,7 @@ std::string to_si_bytes( double d ) {
 }
 
 int main( int argc, char **argv ) {
+	using namespace std::string_literals;
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
 	constexpr daw::string_view const str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
 	std::string const str_array = "[" + str.to_string( ) + "," + str.to_string( ) + "]";
@@ -103,10 +104,23 @@ int main( int argc, char **argv ) {
 	std::cout << a.to_json_string( ) << '\n';
 
 	std::cout << "Attemping json array '" << str_array << "'\n";
-	auto c = B::from_json_array_string( daw::string_view{str_array.data( ), str_array.size( )} );
+	auto c = B::from_json_array_string( str_array );
 
 	std::cout << to_json_string( c ) << std::endl;
-
+	{
+		constexpr auto const SZ = 10'000'000;
+		auto str_array2 = "["s + str.to_string( );
+		str_array2.reserve( (str.size( )+1)*SZ + 2 );
+		for( size_t n=0; n<SZ; ++n ) {
+			str_array2 += ","s + str.to_string( );
+		}
+		str_array2 += "]"s;
+		auto lapsed_time2 = daw::benchmark( [&str_array2]( ) {
+			B::from_json_array_string( str_array2 );
+		} );
+		std::cout << "To process " << to_si_bytes( str_array2.size( ) ) << " bytes, it took " << lapsed_time2
+		          << " seconds. " << to_si_bytes( str_array2.size( ) / lapsed_time2 ) << "/second\n";
+	}
 	if( boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
 		daw::filesystem::MemoryMappedFile<char> json_file{make_path_str( "test.json" ).data( )};
 		daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
