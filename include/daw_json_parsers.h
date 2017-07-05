@@ -138,6 +138,7 @@ namespace daw {
 			template<typename CharT>
 			constexpr result_t<bool> skip_json_value( daw::basic_string_view<CharT> view ) {
 				daw::exception::daw_throw( "skip_json_value isn't implemented yet" );
+				return {view, false};
 			}
 
 			template<typename CharT>
