@@ -68,7 +68,6 @@ set( HEADER_FILES
 )
 
 set( SOURCE_FILES
-	${SOURCE_FOLDER}/daw_json_parsers.cpp
 )
 
 #install( TARGETS daw_json_link DESTINATION lib )

@@ -33,6 +33,7 @@
 #include <daw/daw_exception.h>
 #include <daw/daw_parser_addons.h>
 #include <daw/daw_parser_helper.h>
+#include <daw/daw_string_view.h>
 #include <daw/daw_utility.h>
 
 #include "daw_json_common.h"
@@ -43,7 +44,7 @@ namespace daw {
 		template<typename Derived>
 		class daw_json_link {
 			using set_function_t =
-			    std::function<c_str_iterator( Derived &, c_str_iterator first, c_str_iterator const last )>;
+			    std::function<daw::string_view( Derived &, daw::string_view str_rng )>;
 			using get_function_t = std::function<std::string( Derived & )>;
 
 			using json_integer_t = int64_t;
@@ -131,9 +132,27 @@ namespace daw {
 			template<typename Setter, typename Getter>
 			static void link_json_object_fn( boost::string_view member_name, Setter setter, Getter getter );
 
+			template<typename Setter, typename Getter>
+			static void link_json_integer_array_fn( boost::string_view member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
+			static void link_json_real_array_fn( boost::string_view member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
+			static void link_json_boolean_array_fn( boost::string_view member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
+			static void link_json_string_array_fn( boost::string_view member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
+			static void link_json_object_array_fn( boost::string_view member_name, Setter setter, Getter getter );
+
 		  public:
-			static result_t<Derived> from_json_string( c_str_iterator first, c_str_iterator const last );
-			static std::vector<Derived> from_json_array_string( c_str_iterator first, c_str_iterator const last );
+			template<typename Iterator>
+			static result_t<Derived> from_json_string( Iterator const first, Iterator const last );
+
+			template<typename Iterator>
+			static std::vector<Derived> from_json_array_string( Iterator const first, Iterator const last );
 			static std::string to_json_string( Derived const &obj );
 			std::string to_json_string( ) const;
 		}; // daw_json_link
@@ -144,6 +163,132 @@ namespace daw {
 		template<typename Derived>
 		bool &daw_json_link<Derived>::ignore_missing( ) {
 			static bool result = false;
+			return result;
+		}
+
+		template<typename Derived>
+		template<typename Iterator>
+		result_t<Derived> daw_json_link<Derived>::from_json_string( Iterator const first, Iterator const last ) {
+			auto pos = daw::parser::trim_left( first, last );
+			daw::exception::daw_throw_on_false( last != pos.first, "Invalid json string.  String was empty" );
+			daw::exception::daw_throw_on_false( '{' == *pos.first,
+			                                    "Invalid json string.  Could not find start of object" );
+			auto const &member_map = check_map( );
+
+			std::vector<size_t> found_members;
+			found_members.reserve( member_map.size( ) );
+
+			++pos.first;
+			Derived result;
+			pos = daw::parser::skip_ws( pos.first, last );
+			while( pos.first != last ) {
+				if( '}' == *pos.first ) {
+					break;
+				}
+				auto const member_name = daw::json::parsers::parse_json_string( pos.first, last );
+				auto const member_name_str = std::string{member_name.result.first, member_name.result.second};
+				auto const member_name_hash = std::hash<std::string>{}( member_name_str );
+
+				pos.first = member_name.position;
+				pos = daw::parser::skip_ws( pos.first, last );
+				daw::exception::daw_throw_on_false( ':' == *pos.first,
+				                                    "Expected name/value separator character ':', but not found" );
+
+				pos = daw::parser::skip_ws( ++pos.first, last );
+
+				auto const &json_link_function = find_link_func_member( member_map, member_name_hash );
+				if( json_link_function.first ) {
+					found_members.emplace_back( member_name_hash );
+					pos.first = json_link_function.second->setter( result, pos.first, last );
+				} else if( !ignore_missing( ) ) {
+					using namespace std::string_literals;
+					daw::exception::daw_throw( "Json string contains a member name '"s + member_name_str +
+					                           "' that isn't linked"s );
+				} else {
+					pos.first = daw::json::parsers::skip_json_value( pos.first, last ).position;
+				}
+				pos = daw::parser::skip_ws( pos.first, last );
+				if( ',' == *pos.first ) {
+					++pos.first;
+				} else if( '}' != *pos.first ) {
+					daw::exception::daw_throw( "Invalid Json object.  No ',' character separating members" );
+				}
+				pos = daw::parser::skip_ws( pos.first, last );
+			}
+
+			auto const member_found = [&found_members]( size_t hash ) -> bool {
+				return std::find( found_members.cbegin( ), found_members.cend( ), hash ) != found_members.cend( );
+			};
+
+			for( auto const &member : member_map ) {
+				using namespace std::string_literals;
+				daw::exception::daw_throw_on_true( !member.is_optional && !member_found( member.hash ),
+				                                   "Missing non-optional member '"s + member.name + "'"s );
+			}
+			return result_t<Derived>{std::next( pos.first ), std::move( result )};
+		}
+
+		template<typename Derived>
+		template<typename Iterator>
+		std::vector<Derived> daw_json_link<Derived>::from_json_array_string( Iterator const first,
+		                                                                     Iterator const last ) {
+			std::vector<Derived> result;
+			auto pos = daw::parser::skip_ws( first, last );
+			daw::exception::daw_throw_on_false( '[' == *pos.first, "Expected json array but none found" );
+			pos = daw::parser::skip_ws( ++pos.first, last );
+			while( ']' != *pos.first ) {
+				daw::exception::daw_throw_on_false( '{' == *pos.first, "Expected start of json object" );
+				auto item = from_json_string( pos.first, last );
+				result.emplace_back( std::move( item.result ) );
+				pos = daw::parser::skip_ws( item.position, last );
+				if( ',' == *pos.first ) {
+					pos = daw::parser::skip_ws( ++pos.first, last );
+				}
+			}
+			return result;
+		}
+
+		template<typename Derived>
+		std::string daw_json_link<Derived>::to_json_string( Derived const &obj ) {
+			auto const &member_map = check_map( );
+			std::string result = "{";
+			using namespace std::string_literals;
+			bool is_first = true;
+			for( auto const &member_func : member_map ) {
+				if( !is_first ) {
+					result.push_back( ',' );
+				} else {
+					is_first = false;
+				}
+				result += "\""s + member_func.name + "\":"s + member_func.getter( obj );
+			}
+			result.push_back( '}' );
+			return result;
+		}
+
+		template<typename Derived>
+		std::string daw_json_link<Derived>::to_json_string( ) const {
+			return to_json_string( this_as_derived( ) );
+		}
+
+		template<typename Derived>
+		std::string to_json_string( daw_json_link<Derived> const &obj ) {
+			return obj.to_json_string( );
+		}
+
+		template<typename Container>
+		std::string to_json_string( Container const &container ) {
+			std::string result = "[";
+			using std::begin;
+			using std::end;
+			auto it = begin( container );
+			if( it != end( container ) ) {
+				result += it->to_json_string( );
+				for( ; it != end( container ); ++it ) {
+					result += ',' + it->to_json_string( );
+				}
+			}
+			result += ']';
 			return result;
 		}
 
@@ -233,128 +378,25 @@ namespace daw {
 		}
 
 		template<typename Derived>
-		result_t<Derived> daw_json_link<Derived>::from_json_string( c_str_iterator const first,
-		                                                            c_str_iterator const last ) {
-			auto pos = daw::parser::trim_left( first, last );
-			daw::exception::daw_throw_on_false( last != pos.first, "Invalid json string.  String was empty" );
-			daw::exception::daw_throw_on_false( '{' == *pos.first,
-			                                    "Invalid json string.  Could not find start of object" );
-			auto const &member_map = check_map( );
-
-			std::vector<size_t> found_members;
-			found_members.reserve( member_map.size( ) );
-
-			++pos.first;
-			Derived result;
-			pos = daw::parser::skip_ws( pos.first, last );
-			while( pos.first != last ) {
-				if( '}' == *pos.first ) {
-					break;
-				}
-				auto const member_name = daw::json::parsers::parse_json_string( pos.first, last );
-				auto const member_name_str = std::string{member_name.result.first, member_name.result.second};
-				auto const member_name_hash = std::hash<std::string>{}( member_name_str );
-
-				pos.first = member_name.position;
-				pos = daw::parser::skip_ws( pos.first, last );
-				daw::exception::daw_throw_on_false( ':' == *pos.first,
-				                                    "Expected name/value separator character ':', but not found" );
-
-				pos = daw::parser::skip_ws( ++pos.first, last );
-
-				auto const &json_link_function = find_link_func_member( member_map, member_name_hash );
-				if( json_link_function.first ) {
-					found_members.push_back( member_name_hash );
-					pos.first = json_link_function.second->setter( result, pos.first, last );
-				} else if( !ignore_missing( ) ) {
-					using namespace std::string_literals;
-					daw::exception::daw_throw( "Json string contains a member name '"s + member_name_str +
-					                           "' that isn't linked"s );
-				} else {
-					pos.first = daw::json::parsers::skip_json_value( pos.first, last ).position;
-				}
-				pos = daw::parser::skip_ws( pos.first, last );
-				if( ',' == *pos.first ) {
-					++pos.first;
-				} else if( '}' != *pos.first ) {
-					daw::exception::daw_throw( "Invalid Json object.  No ',' character separating members" );
-				}
-				pos = daw::parser::skip_ws( pos.first, last );
-			}
-
-			auto const member_found = [&found_members]( size_t hash ) -> bool {
-				return std::find( found_members.cbegin( ), found_members.cend( ), hash ) != found_members.cend( );
-			};
-
-			for( auto const &member : member_map ) {
-				using namespace std::string_literals;
-				daw::exception::daw_throw_on_true( !member.is_optional && !member_found( member.hash ),
-				                                   "Missing non-optional member '"s + member.name + "'"s );
-			}
-			return result_t<Derived>{std::next( pos.first ), std::move( result )};
+		template<typename Setter, typename Getter>
+		void daw_json_link<Derived>::link_json_integer_array_fn( boost::string_view member_name, Setter setter,
+		                                                                Getter getter ) {
+			/*
+			add_json_link_function(
+			    member_name,
+			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
+				    auto result = daw::json::parsers::parse_json_integer_array( first, last, setter );
+				    daw::exception::dbg_throw_on_false( daw::can_fit<member_t>( result.result ),
+				                                        "Invalid json string.  String was empty" );
+				    setter( obj, static_cast<member_t>( std::move( result.result ) ) );
+				    return result.position;
+			    },
+			    [getter]( Derived const &obj ) -> std::string {
+				    using std::to_string;
+				    return to_string( getter( obj ) );
+			    } );
+				*/
 		}
 
-		template<typename Derived>
-		std::vector<Derived> daw_json_link<Derived>::from_json_array_string( c_str_iterator const first,
-		                                                                     c_str_iterator const last ) {
-			std::vector<Derived> result;
-			auto pos = daw::parser::skip_ws( first, last );
-			daw::exception::daw_throw_on_false( '[' == *pos.first, "Expected json array but none found" );
-			pos = daw::parser::skip_ws( ++pos.first, last );
-			while( ']' != *pos.first ) {
-				daw::exception::daw_throw_on_false( '{' == *pos.first, "Expected start of json object" );
-				auto item = from_json_string( pos.first, last );
-				result.push_back( std::move( item.result ) );
-				pos = daw::parser::skip_ws( item.position, last );
-				if( ',' == *pos.first ) {
-					pos = daw::parser::skip_ws( ++pos.first, last );
-				}
-			}
-			return result;
-		}
-
-		template<typename Derived>
-		std::string daw_json_link<Derived>::to_json_string( Derived const &obj ) {
-			auto const &member_map = check_map( );
-			std::string result = "{";
-			using namespace std::string_literals;
-			bool is_first = true;
-			for( auto const &member_func : member_map ) {
-				if( !is_first ) {
-					result.push_back( ',' );
-				} else {
-					is_first = false;
-				}
-				result += "\""s + member_func.name + "\":"s + member_func.getter( obj );
-			}
-			result.push_back( '}' );
-			return result;
-		}
-
-		template<typename Derived>
-		std::string daw_json_link<Derived>::to_json_string( ) const {
-			return to_json_string( this_as_derived( ) );
-		}
-
-		template<typename Derived>
-		std::string to_json_string( daw_json_link<Derived> const &obj ) {
-			return obj.to_json_string( );
-		}
-
-		template<typename Container>
-		std::string to_json_string( Container const &container ) {
-			std::string result = "[";
-			using std::begin;
-			using std::end;
-			auto it = begin( container );
-			if( it != end( container ) ) {
-				result += it->to_json_string( );
-				for( ; it != end( container ); ++it ) {
-					result += ',' + it->to_json_string( );
-				}
-			}
-			result += ']';
-			return result;
-		}
 	} // namespace json
 } // namespace daw
