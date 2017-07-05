@@ -43,8 +43,8 @@ namespace daw {
 
 					template<typename CharT>
 					constexpr result_t<double> parse_number( daw::basic_string_view<CharT> view ) noexcept {
-						double r = 0.0;
-						bool neg = false;
+						auto r = 0.0;
+						auto neg = false;
 						if( '-' == view.front( ) ) {
 							neg = true;
 							view.remove_prefix( );
@@ -54,8 +54,8 @@ namespace daw {
 							view.remove_prefix( );
 						}
 						if( '.' == view.front( ) ) {
-							double f = 0.0;
-							int n = 0;
+							auto f = 0.0;
+							uint_fast8_t n = 0;
 							view.remove_prefix( );
 							while( view.front( ) >= '0' && view.front( ) <= '9' ) {
 								f = ( f * 10.0 ) + ( view.front( ) - '0' );
@@ -124,12 +124,14 @@ namespace daw {
 
 			template<typename CharT>
 			constexpr result_t<int64_t> parse_json_integer( daw::basic_string_view<CharT> view ) noexcept {
+				view = impl::skip_ws( view );
 				auto result = impl::parse_number( view );
 				return {result.view, static_cast<int64_t>( result.result )};
 			}
 
 			template<typename CharT>
 			constexpr result_t<double> parse_json_real( daw::basic_string_view<CharT> view ) noexcept {
+				view = impl::skip_ws( view );
 				return impl::parse_number( view );
 			}
 
@@ -167,6 +169,7 @@ namespace daw {
 
 			template<typename CharT>
 			constexpr result_t<daw::string_view> parse_json_string( daw::basic_string_view<CharT> view ) {
+				view = impl::skip_ws( view );
 				auto const parse_result = impl::parse_string_literal( view );
 				view.remove_prefix( parse_result.size( ) + 2 );
 				return {view, parse_result};
