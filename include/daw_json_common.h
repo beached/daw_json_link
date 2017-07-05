@@ -22,13 +22,13 @@
 
 #pragma once
 
+#include <daw/daw_string_view.h>
+
 namespace daw {
 	namespace json {
-		using c_str_iterator = char const *;
-
 		template<typename Result>
 		struct result_t {
-			c_str_iterator position;
+			daw::string_view view;
 			Result result;
 		};	// result_t
 	} // namespace json

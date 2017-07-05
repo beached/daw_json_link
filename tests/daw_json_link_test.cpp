@@ -99,11 +99,11 @@ int main( int argc, char **argv ) {
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
 	constexpr daw::string_view const str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
 	std::string const str_array = "[" + str.to_string( ) + "," + str.to_string( ) + "]";
-	auto a = B::from_json_string( str.begin( ), str.end( ) ).result;
+	auto a = B::from_json_string( str ).result;
 	std::cout << a.to_json_string( ) << '\n';
 
 	std::cout << "Attemping json array '" << str_array << "'\n";
-	auto c = B::from_json_array_string( (daw::json::c_str_iterator)str_array.data( ), (daw::json::c_str_iterator)(str_array.data( ) + str_array.size( )) );
+	auto c = B::from_json_array_string( daw::string_view{str_array.data( ), str_array.size( )} );
 
 	std::cout << to_json_string( c ) << std::endl;
 
@@ -111,7 +111,7 @@ int main( int argc, char **argv ) {
 		daw::filesystem::MemoryMappedFile<char> json_file{make_path_str( "test.json" ).data( )};
 		daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
 		auto lapsed_time = daw::benchmark( [&json_file]( ) {
-			B::from_json_array_string( (daw::json::c_str_iterator)json_file.data( ), (daw::json::c_str_iterator)(json_file.data( ) + json_file.size( )) );
+			B::from_json_array_string( daw::string_view{json_file.data( ), json_file.size( )} );
 		} );
 		std::cout << "To process " << to_si_bytes( json_file.size( ) ) << " bytes, it took " << lapsed_time
 		          << " seconds. " << to_si_bytes( json_file.size( ) / lapsed_time ) << "/second\n";

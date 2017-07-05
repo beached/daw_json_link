@@ -30,28 +30,34 @@
 
 namespace daw {
 	namespace json {
-		namespace parsers {
+		namespace parser {
 			namespace {
 				namespace impl {
-					template<typename Iterator>
-					constexpr result_t<double> parse_number( Iterator first, Iterator const last ) {
+					template<typename CharT>
+					constexpr auto skip_ws( daw::basic_string_view<CharT> view ) noexcept {
+						auto result = daw::parser::until_false( view.cbegin( ), view.cend( ), daw::parser::is_unicode_whitespace<CharT> );
+						return daw::basic_string_view<CharT>{ result.last, static_cast<size_t>(view.cend( ) - result.last) };
+					}
+
+					template<typename CharT>
+					constexpr result_t<double> parse_number( daw::basic_string_view<CharT> view ) noexcept {
 						double r = 0.0;
 						bool neg = false;
-						if( *first == '-' ) {
+						if( '-' == view.front( ) ) {
 							neg = true;
-							++first;
+							view.remove_prefix( );
 						}
-						while( *first >= '0' && *first <= '9' ) {
-							r = ( r * 10.0 ) + ( *first - '0' );
-							++first;
+						while( view.front( ) >= '0' && view.front( ) <= '9' ) {
+							r = ( r * 10.0 ) + ( view.front( ) - '0' );
+							view.remove_prefix( );
 						}
-						if( *first == '.' ) {
+						if( '.' == view.front( ) ) {
 							double f = 0.0;
 							int n = 0;
-							++first;
-							while( *first >= '0' && *first <= '9' ) {
-								f = ( f * 10.0 ) + ( *first - '0' );
-								++first;
+							view.remove_prefix( );
+							while( view.front( ) >= '0' && view.front( ) <= '9' ) {
+								f = ( f * 10.0 ) + ( view.front( ) - '0' );
+								view.remove_prefix( );
 								++n;
 							}
 							r += f / std::pow( 10.0, n );
@@ -59,83 +65,90 @@ namespace daw {
 						if( neg ) {
 							r = -r;
 						}
-						return {first, r};
+						return {view, r};
 					}
 
-					template<typename Iterator>
-					constexpr result_t<bool> parse_false( Iterator const first, Iterator const last ) {
-						daw::exception::daw_throw_on_false( ( last - first ) >= 5,
+					template<typename CharT>
+					constexpr result_t<bool> parse_false( daw::basic_string_view<CharT> view ) {
+						daw::exception::daw_throw_on_false( view.size( ) >= 5,
 						                                    "Expected boolean false, something else found" );
-						auto const a = 'a' == *( first + 1 );
-						auto const l = 'l' == *( first + 2 );
-						auto const s = 's' == *( first + 3 );
-						auto const e = 'e' == *( first + 4 );
-						auto const value = a * l * s * e;
-						daw::exception::dbg_throw_on_false( value != 0,
-						                                    "Expected boolean false, something else found" );
-						return {( first + 5 ), false};
+						auto const a = 'a' == view[1];
+						auto const l = 'l' == view[2];
+						auto const s = 's' == view[3];
+						auto const e = 'e' == view[4];
+						auto const value = (a * l * s * e) != 0;
+						daw::exception::dbg_throw_on_false( value, "Expected boolean false, something else found" );
+						view.remove_prefix( 5 );
+						return {view, false};
 					}
 
-					template<typename Iterator>
-					constexpr result_t<bool> parse_true( Iterator const first, Iterator const last ) {
-						daw::exception::daw_throw_on_false( ( last - first ) >= 4,
+					template<typename CharT>
+					constexpr result_t<bool> parse_true( daw::basic_string_view<CharT> view ) {
+						daw::exception::daw_throw_on_false( view.size( ) >= 4,
 						                                    "Expected boolean true, something else found" );
-						auto const t = 't' == *( first + 0 );
-						auto const r = 'r' == *( first + 1 );
-						auto const u = 'u' == *( first + 2 );
-						auto const e = 'e' == *( first + 3 );
-						auto const value = t * r * u * e;
-						daw::exception::dbg_throw_on_false( value != 0, "Expected boolean true, something else found" );
-						return {( first + 4 ), true};
+						auto const t = 't' == view[0];
+						auto const r = 'r' == view[1];
+						auto const u = 'u' == view[2];
+						auto const e = 'e' == view[3];
+						auto const value = (t * r * u * e) != 0;
+						daw::exception::dbg_throw_on_false( value, "Expected boolean true, something else found" );
+						view.remove_prefix( 4 );
+						return {view, true};
 					}
 				} // namespace impl
 			}     // namespace
 
-			template<typename Iterator>
-			constexpr result_t<int64_t> parse_json_integer( Iterator const first, Iterator const last ) {
-				auto result = impl::parse_number( first, last );
-				return {result.position, static_cast<int64_t>( result.result )};
+			template<typename CharT>
+			constexpr result_t<int64_t> parse_json_integer( daw::basic_string_view<CharT> view ) noexcept {
+				auto result = impl::parse_number( view );
+				return {result.view, static_cast<int64_t>( result.result )};
 			}
 
-			template<typename Iterator>
-			constexpr result_t<double> parse_json_real( Iterator const first, Iterator const last ) {
-				return impl::parse_number( first, last );
+			template<typename CharT>
+			constexpr result_t<double> parse_json_real( daw::basic_string_view<CharT> view ) noexcept {
+				return impl::parse_number( view );
 			}
 
-			template<typename Iterator>
-			result_t<bool> skip_json_value( Iterator const first, Iterator const last ) {
+			template<typename CharT>
+			constexpr result_t<bool> skip_json_value( daw::basic_string_view<CharT> view ) {
 				daw::exception::daw_throw( "skip_json_value isn't implemented yet" );
 			}
 
-			template<typename Iterator>
-			constexpr result_t<bool> is_null( Iterator const first, Iterator const last ) noexcept {
-				auto const trimmed = daw::parser::trim_left( first, last );
-				if( ( last - trimmed.first ) < 4 ) {
-					return {trimmed.first, false};
+			template<typename CharT>
+			constexpr result_t<bool> is_null( daw::basic_string_view<CharT> view ) noexcept {
+				view = impl::skip_ws( view );
+				if( view.size( ) < 4 ) {
+					return {view, false};
 				}
-				auto const n = 'n' == *( trimmed.first + 1 );
-				auto const u = 'u' == *( trimmed.first + 2 );
-				auto const l = 'l' == *( trimmed.first + 3 );
-				auto const l2 = 'l' == *( trimmed.first + 4 );
-				auto const value = n * u * l * l2;
-				return {trimmed.first, value != 0};
+				auto const n = 'n' == view[0];
+				auto const u = 'u' == view[1];
+				auto const l = 'l' == view[2];
+				auto const l2 = 'l' == view[3];
+				auto const value = (n * u * l * l2) != 0;
+
+				if( value ) {
+					view.remove_prefix( 4 );
+				}
+				return {view, value};
 			}
 
-			template<typename Iterator>
-			constexpr result_t<bool> parse_json_boolean( Iterator const first, Iterator const last ) {
-				auto trimmed = daw::parser::trim_left( first, last );
-				if( *trimmed.begin( ) == 'f' ) {
-					return impl::parse_false( trimmed.first, last );
+			template<typename CharT>
+			constexpr result_t<bool> parse_json_boolean( daw::basic_string_view<CharT> view ) {
+				view = impl::skip_ws( view );
+				if( 'f' == view.front( ) ) {
+					return impl::parse_false( view );
 				}
-				return impl::parse_true( trimmed.first, last );
+				return impl::parse_true( view );
 			}
 
-			template<typename Iterator>
-			constexpr result_t<std::pair<Iterator, Iterator>> parse_json_string( Iterator const first, Iterator const last ) {
-				auto const parse_result = daw::parser::parse_string_literal( first, last );
+			template<typename CharT>
+			constexpr result_t<daw::string_view> parse_json_string( daw::basic_string_view<CharT> view ) {
+				// TODO Adapt parse_string_literal to string_view
+				auto const parse_result = daw::parser::parse_string_literal( view.cbegin( ), view.cend( ) );
 				daw::exception::daw_throw_on_false( parse_result.found, "Expected string, couldn't find one" );
-				return {std::next( parse_result.last ), std::make_pair( parse_result.first, parse_result.last )};
+				view.remove_prefix( ( parse_result.last - view.cbegin( ) ) + 1 );
+				return {view, daw::string_view{ parse_result.first, static_cast<size_t>(parse_result.last - parse_result.first) } };
 			}
-		} // namespace parsers
+		} // namespace parser
 	}     // namespace json
 } // namespace daw
