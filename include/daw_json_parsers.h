@@ -108,10 +108,11 @@ namespace daw {
 						size_t last_it = 0;
 						bool found = false;
 						while( it < view.size( ) ) {
-							if( ( found = daw::parser::is_a( view[it], quote_char ) ) &&
-							    !daw::parser::is_escape( view[last_it] ) ) {
+							found = daw::parser::is_a( view[it], quote_char );
+							if( found && !daw::parser::is_escape( view[last_it] ) ) {
 								break;
 							}
+							found = false;
 							last_it = it++;
 						}
 						daw::exception::daw_throw_on_false( found, "Could not find end of string before end of input" );
@@ -172,7 +173,7 @@ namespace daw {
 			constexpr result_t<daw::string_view> parse_json_string( daw::basic_string_view<CharT> view ) {
 				view = impl::skip_ws( view );
 				auto const parse_result = impl::parse_string_literal( view );
-				view.remove_prefix( parse_result.size( ) + 2 );
+				view.remove_prefix( parse_result.size( ) + 2 );	// 2 quotes
 				return {view, parse_result};
 			}
 		} // namespace parser

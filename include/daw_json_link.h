@@ -76,13 +76,13 @@ namespace daw {
 			}
 
 			template<typename LinkData>
-			static auto find_link_func_member( LinkData const &link_data, size_t const hash ) {
+			static constexpr auto find_link_func_member( LinkData const &link_data, size_t const hash ) {
 				auto result = std::find_if( link_data.cbegin( ), link_data.cend( ),
 				                            [hash]( auto const &v ) { return hash == v.hash; } );
 				return std::make_pair( result != link_data.cend( ), result );
 			}
 
-			constexpr static decltype( auto ) json_link_data_size( ) noexcept {
+			static constexpr decltype( auto ) json_link_data_size( ) noexcept {
 				return get_link_data( ).size( );
 			}
 
@@ -93,7 +93,8 @@ namespace daw {
 				get_link_data( ).emplace_back( name, std::move( setter ), std::move( getter ), is_optional );
 			}
 
-			static bool &ignore_missing( );
+			static bool &ignore_missing( ) noexcept;
+
 			static std::mutex &get_mutex( ) {
 				static std::mutex s_mutex;
 				return s_mutex;
@@ -110,7 +111,7 @@ namespace daw {
 				return result;
 			}
 
-			Derived const &this_as_derived( ) const {
+			constexpr Derived const &this_as_derived( ) const noexcept {
 				return *static_cast<Derived const *>( this );
 			}
 
@@ -157,7 +158,7 @@ namespace daw {
 		//
 		//
 		template<typename Derived>
-		bool &daw_json_link<Derived>::ignore_missing( ) {
+		bool &daw_json_link<Derived>::ignore_missing( ) noexcept {
 			static bool result = false;
 			return result;
 		}
@@ -226,7 +227,7 @@ namespace daw {
 			}
 			view = parser::impl::skip_ws( view );
 			view.remove_prefix( );
-			return result_t<Derived>{ view, std::move( result )};
+			return result_t<Derived>{view, std::move( result )};
 		}
 
 		template<typename Derived>
@@ -302,61 +303,57 @@ namespace daw {
 		void daw_json_link<Derived>::link_json_integer_fn( daw::string_view member_name, Setter setter,
 		                                                   Getter getter ) {
 			using member_t = std::decay_t<decltype( getter( std::declval<Derived>( ) ) )>;
-			add_json_link_function(
-			    member_name,
-			    [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
-				    auto result = daw::json::parser::parse_json_integer( view );
-				    daw::exception::dbg_throw_on_false( daw::can_fit<member_t>( result.result ),
-				                                        "Invalid json string.  String was empty" );
-				    setter( obj, static_cast<member_t>( result.result ) );
-					view = result.view;
-					return view;
-			    },
-			    [getter]( Derived const &obj ) -> std::string {
-				    using std::to_string;
-				    return to_string( getter( obj ) );
-			    } );
+			add_json_link_function( member_name,
+			                        [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
+				                        auto result = daw::json::parser::parse_json_integer( view );
+				                        daw::exception::dbg_throw_on_false( daw::can_fit<member_t>( result.result ),
+				                                                            "Invalid json string.  String was empty" );
+				                        setter( obj, static_cast<member_t>( result.result ) );
+				                        view = result.view;
+				                        return view;
+			                        },
+			                        [getter]( Derived const &obj ) -> std::string {
+				                        using std::to_string;
+				                        return to_string( getter( obj ) );
+			                        } );
 		}
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
 		void daw_json_link<Derived>::link_json_real_fn( daw::string_view member_name, Setter setter, Getter getter ) {
-			add_json_link_function(
-			    member_name,
-			    [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
-				    auto result = daw::json::parser::parse_json_real( view );
-				    setter( obj, std::move( result.result ) );
-					view = result.view;
-					return view;
-			    },
-			    [getter]( Derived const &obj ) -> std::string {
-				    using std::to_string;
-				    return to_string( getter( obj ) );
-			    } );
+			add_json_link_function( member_name,
+			                        [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
+				                        auto result = daw::json::parser::parse_json_real( view );
+				                        setter( obj, std::move( result.result ) );
+				                        view = result.view;
+				                        return view;
+			                        },
+			                        [getter]( Derived const &obj ) -> std::string {
+				                        using std::to_string;
+				                        return to_string( getter( obj ) );
+			                        } );
 		}
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
 		void daw_json_link<Derived>::link_json_boolean_fn( daw::string_view member_name, Setter setter,
 		                                                   Getter getter ) {
-			add_json_link_function(
-			    member_name,
-			    [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
-				    auto result = daw::json::parser::parse_json_boolean( view );
-				    setter( obj, std::move( result.result ) );
-					view = result.view;
-					return view;
-			    },
-			    [getter]( Derived const &obj ) -> std::string {
-				    using std::to_string;
-				    return getter( obj ) ? "true" : "false";
-			    } );
+			add_json_link_function( member_name,
+			                        [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
+				                        auto result = daw::json::parser::parse_json_boolean( view );
+				                        setter( obj, std::move( result.result ) );
+				                        view = result.view;
+				                        return view;
+			                        },
+			                        [getter]( Derived const &obj ) -> std::string {
+				                        using std::to_string;
+				                        return getter( obj ) ? "true" : "false";
+			                        } );
 		}
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_string_fn( daw::string_view member_name, Setter setter,
-		                                                  Getter getter ) {
+		void daw_json_link<Derived>::link_json_string_fn( daw::string_view member_name, Setter setter, Getter getter ) {
 			add_json_link_function( member_name,
 			                        [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
 				                        auto result = daw::json::parser::parse_json_string( view );
@@ -372,8 +369,7 @@ namespace daw {
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_object_fn( daw::string_view member_name, Setter setter,
-		                                                  Getter getter ) {
+		void daw_json_link<Derived>::link_json_object_fn( daw::string_view member_name, Setter setter, Getter getter ) {
 			using member_t = std::decay_t<decltype( getter( std::declval<Derived>( ) ) )>;
 			add_json_link_function(
 			    member_name,
@@ -389,22 +385,22 @@ namespace daw {
 		template<typename Derived>
 		template<typename Setter, typename Getter>
 		void daw_json_link<Derived>::link_json_integer_array_fn( daw::string_view member_name, Setter setter,
-		                                                                Getter getter ) {
+		                                                         Getter getter ) {
 			/*
 			add_json_link_function(
 			    member_name,
 			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
-				    auto result = daw::json::parser::parse_json_integer_array( first, last, setter );
-				    daw::exception::dbg_throw_on_false( daw::can_fit<member_t>( result.result ),
-				                                        "Invalid json string.  String was empty" );
-				    setter( obj, static_cast<member_t>( std::move( result.result ) ) );
-				    return result.position;
+			        auto result = daw::json::parser::parse_json_integer_array( first, last, setter );
+			        daw::exception::dbg_throw_on_false( daw::can_fit<member_t>( result.result ),
+			                                            "Invalid json string.  String was empty" );
+			        setter( obj, static_cast<member_t>( std::move( result.result ) ) );
+			        return result.position;
 			    },
 			    [getter]( Derived const &obj ) -> std::string {
-				    using std::to_string;
-				    return to_string( getter( obj ) );
+			        using std::to_string;
+			        return to_string( getter( obj ) );
 			    } );
-				*/
+			    */
 		}
 
 	} // namespace json
