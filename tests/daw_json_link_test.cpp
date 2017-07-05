@@ -38,13 +38,13 @@ struct A : public daw::json::daw_json_link<A> {
 	std::string d;
 
 	static void json_link_map( ) {
-		link_json_integer_fn( "a", []( A &obj, int value ) { obj.a = std::move( value ); },
+		link_json_integer_fn( "aaaaaa", []( A &obj, int value ) { obj.a = std::move( value ); },
 		                      []( A const &obj ) { return obj.a; } );
-		link_json_real_fn( "b", []( A &obj, double value ) { obj.b = std::move( value ); },
+		link_json_real_fn( "bbbbbb", []( A &obj, double value ) { obj.b = std::move( value ); },
 		                   []( A const &obj ) { return obj.b; } );
-		link_json_boolean_fn( "c", []( A &obj, bool value ) { obj.c = std::move( value ); },
+		link_json_boolean_fn( "cccccc", []( A &obj, bool value ) { obj.c = std::move( value ); },
 		                      []( A const &obj ) { return obj.c; } );
-		link_json_string_fn( "d", []( A &obj, std::string value ) { obj.d = std::move( value ); },
+		link_json_string_fn( "dddddd", []( A &obj, std::string value ) { obj.d = std::move( value ); },
 		                     []( A const &obj ) { return obj.d; } );
 	}
 };
@@ -59,7 +59,7 @@ struct B : public daw::json::daw_json_link<B> {
 	A a;
 
 	static void json_link_map( ) {
-		link_json_object_fn( "a", []( B &obj, A value ) { obj.a = std::move( value ); },
+		link_json_object_fn( "aaaaaa", []( B &obj, A value ) { obj.a = std::move( value ); },
 		                     []( B const &obj ) { return obj.a; } );
 	}
 };
@@ -98,7 +98,8 @@ std::string to_si_bytes( double d ) {
 int main( int argc, char **argv ) {
 	using namespace std::string_literals;
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
-	constexpr daw::string_view const str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
+	//constexpr daw::string_view const str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
+	constexpr daw::string_view const str = "{ \"aaaaaa\": { \"aaaaaa\" : 55555, \"bbbbbb\" : 6666666.6, \"cccccc\" : true, \"dddddd\": \"fddffdffffffffffhello\" }}";
 	std::string const str_array = "[" + str.to_string( ) + "," + str.to_string( ) + "]";
 	auto a = B::from_json_string( str ).result;
 	std::cout << a.to_json_string( ) << '\n';
