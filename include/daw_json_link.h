@@ -165,7 +165,7 @@ namespace daw {
 		template<typename Derived>
 		result_t<Derived> daw_json_link<Derived>::from_json_string( daw::string_view view ) {
 			view = parser::impl::skip_ws( view );
-			daw::exception::daw_throw_on_false( view.empty( ), "Invalid json string.  String was empty" );
+			daw::exception::daw_throw_on_true( view.empty( ), "Invalid json string.  String was empty" );
 			daw::exception::daw_throw_on_false( '{' == view.front( ),
 			                                    "Invalid json string.  Could not find start of object" );
 			auto const &member_map = check_map( );
@@ -224,6 +224,8 @@ namespace daw {
 				daw::exception::daw_throw_on_true( !member.is_optional && !member_found( member.hash ),
 				                                   "Missing non-optional member '"s + member.name + "'"s );
 			}
+			view = parser::impl::skip_ws( view );
+			view.remove_prefix( );
 			return result_t<Derived>{ view, std::move( result )};
 		}
 

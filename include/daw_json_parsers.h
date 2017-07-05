@@ -35,8 +35,10 @@ namespace daw {
 				namespace impl {
 					template<typename CharT>
 					constexpr auto skip_ws( daw::basic_string_view<CharT> view ) noexcept {
-						auto result = daw::parser::until_false( view.cbegin( ), view.cend( ), daw::parser::is_unicode_whitespace<CharT> );
-						return daw::basic_string_view<CharT>{ result.last, static_cast<size_t>(view.cend( ) - result.last) };
+						auto result = daw::parser::until_false( view.cbegin( ), view.cend( ),
+						                                        daw::parser::is_unicode_whitespace<CharT> );
+						return daw::basic_string_view<CharT>{result.last,
+						                                     static_cast<size_t>( view.cend( ) - result.last )};
 					}
 
 					template<typename CharT>
@@ -76,7 +78,7 @@ namespace daw {
 						auto const l = 'l' == view[2];
 						auto const s = 's' == view[3];
 						auto const e = 'e' == view[4];
-						auto const value = (a * l * s * e) != 0;
+						auto const value = ( a * l * s * e ) != 0;
 						daw::exception::dbg_throw_on_false( value, "Expected boolean false, something else found" );
 						view.remove_prefix( 5 );
 						return {view, false};
@@ -90,10 +92,32 @@ namespace daw {
 						auto const r = 'r' == view[1];
 						auto const u = 'u' == view[2];
 						auto const e = 'e' == view[3];
-						auto const value = (t * r * u * e) != 0;
+						auto const value = ( t * r * u * e ) != 0;
 						daw::exception::dbg_throw_on_false( value, "Expected boolean true, something else found" );
 						view.remove_prefix( 4 );
 						return {view, true};
+					}
+
+					template<typename CharT>
+					constexpr auto parse_string_literal( daw::basic_string_view<CharT> view ) {
+						auto const quote_char = view.front( );
+						daw::exception::daw_throw_on_false( daw::parser::is_quote( quote_char ),
+						                                    "Start of string does not beging with quote character" );
+
+						size_t it = 1;
+						size_t last_it = 0;
+						bool found = false;
+						while( it < view.size( ) ) {
+							if( ( found = daw::parser::is_a( view[it], quote_char ) ) &&
+							    !daw::parser::is_escape( view[last_it] ) ) {
+								break;
+							}
+							last_it = it++;
+						}
+						daw::exception::daw_throw_on_false( found, "Could not find end of string before end of input" );
+						view.remove_prefix( );
+						view.remove_suffix( view.size( ) - it + 1 );
+						return view;
 					}
 				} // namespace impl
 			}     // namespace
@@ -124,7 +148,7 @@ namespace daw {
 				auto const u = 'u' == view[1];
 				auto const l = 'l' == view[2];
 				auto const l2 = 'l' == view[3];
-				auto const value = (n * u * l * l2) != 0;
+				auto const value = ( n * u * l * l2 ) != 0;
 
 				if( value ) {
 					view.remove_prefix( 4 );
@@ -143,11 +167,9 @@ namespace daw {
 
 			template<typename CharT>
 			constexpr result_t<daw::string_view> parse_json_string( daw::basic_string_view<CharT> view ) {
-				// TODO Adapt parse_string_literal to string_view
-				auto const parse_result = daw::parser::parse_string_literal( view.cbegin( ), view.cend( ) );
-				daw::exception::daw_throw_on_false( parse_result.found, "Expected string, couldn't find one" );
-				view.remove_prefix( ( parse_result.last - view.cbegin( ) ) + 1 );
-				return {view, daw::string_view{ parse_result.first, static_cast<size_t>(parse_result.last - parse_result.first) } };
+				auto const parse_result = impl::parse_string_literal( view );
+				view.remove_prefix( parse_result.size( ) + 2 );
+				return {view, parse_result};
 			}
 		} // namespace parser
 	}     // namespace json
