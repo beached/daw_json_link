@@ -220,10 +220,10 @@ namespace daw {
 			template<typename CharT, typename ItemSetter>
 			constexpr daw::string_view parse_json_string_array( daw::basic_string_view<CharT> view,
 			                                                     ItemSetter item_setter ) {
-				return parse_json_array( view, item_setter, &parse_json_boolean<CharT> );
+				return parse_json_array( view, item_setter, &parse_json_string<CharT> );
 			}
 
-			template<typename CharT, typename ItemSetter, typename ObjT>
+			template<typename ObjT, typename CharT, typename ItemSetter>
 			constexpr daw::string_view parse_json_object_array( daw::basic_string_view<CharT> view,
 			                                                     ItemSetter item_setter ) {
 				return parse_json_array( view, item_setter, &ObjT::from_json_string );

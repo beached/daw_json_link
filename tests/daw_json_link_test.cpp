@@ -58,12 +58,24 @@ struct A2 {
 struct B : public daw::json::daw_json_link<B> {
 	A a;
 	std::vector<int64_t> b;
+	std::vector<double> c;
+	std::vector<bool> d;
+	std::vector<std::string> e;
+	std::vector<A> f;
 
 	static void json_link_map( ) {
 		link_json_object_fn( "aaaaaa", []( B &obj, A value ) { obj.a = std::move( value ); },
 		                     []( B const &obj ) { return obj.a; } );
-		link_json_integer_array_fn( "b", []( B &obj, int64_t value ) { obj.b.push_back( std::move( value ) ); },
+		link_json_integer_array_fn( "b", []( B &obj, auto value ) { obj.b.push_back( std::move( value ) ); },
 		                            []( B const &obj ) { return obj.b; } );
+		link_json_real_array_fn( "c", []( B &obj, auto value ) { obj.c.push_back( std::move( value ) ); },
+		                            []( B const &obj ) { return obj.c; } );
+		link_json_boolean_array_fn( "d", []( B &obj, auto value ) { obj.d.push_back( std::move( value ) ); },
+		                            []( B const &obj ) { return obj.d; } );
+		link_json_string_array_fn( "e", []( B &obj, auto value ) { obj.e.push_back( std::move( value ) ); },
+		                            []( B const &obj ) { return obj.e; } );
+		link_json_object_array_fn( "f", []( B &obj, auto value ) { obj.f.push_back( std::move( value ) ); },
+		                            []( B const &obj ) { return obj.f; } );
 	}
 };
 
@@ -102,7 +114,34 @@ int main( int argc, char **argv ) {
 	using namespace std::string_literals;
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
 	//constexpr daw::string_view const str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
-	constexpr daw::string_view const str = "{ \"aaaaaa\": { \"aaaaaa\" : 55555, \"bbbbbb\" : 6666666.6, \"cccccc\" : true, \"dddddd\": \"fddffdffffffffffhello\" }, \"b\": [1,2,3,4,5,6,7,8,9] }";
+	constexpr daw::string_view const str = R"(
+{
+  "aaaaaa": { 
+    "aaaaaa": 55555,
+    "bbbbbb": 6666666.6,
+    "cccccc": true,
+    "dddddd": "fddffdffffffffffhello"
+  },
+  "b": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "c": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0],
+  "d": [true, false, true, true],
+  "e": ["hello", "good bye", "ha ha ha"],
+  "f": [
+  {
+  	"aaaaaa": 55555,
+  	"bbbbbb": 6666666.6,
+  	"cccccc": true,
+  	"dddddd": "fddffdffffffffffhello"
+  }
+  ,{
+  	"aaaaaa": 55555,
+  	"bbbbbb": 6666666.6,
+  	"cccccc": true,
+  	"dddddd": "fddffdffffffffffhello"
+  }
+  ]
+}
+	)";
 	std::string const str_array = "[" + str + "," + str + "]";
 	auto a = B::from_json_string( str ).result;
 	std::cout << a.to_json_string( ) << '\n';
@@ -112,13 +151,14 @@ int main( int argc, char **argv ) {
 
 	std::cout << to_json_string( c ) << std::endl;
 	{
-		constexpr auto const SZ = 10'000'000;
+		constexpr auto const SZ = 5'000'000;
 		auto str_array2 = "["s + str;
 		str_array2.reserve( (str.size( )+1)*SZ + 2 );
 		for( size_t n=0; n<SZ; ++n ) {
 			str_array2 += ","s + str;
 		}
 		str_array2 += "]"s;
+		std::cout << "Using an string of size " << to_si_bytes( str_array2.size( ) ) << '\n';
 		auto lapsed_time2 = daw::benchmark( [&str_array2]( ) {
 			B::from_json_array_string( str_array2 );
 		} );

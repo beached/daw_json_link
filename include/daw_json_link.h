@@ -384,9 +384,14 @@ namespace daw {
 		}
 
 		namespace impl {
+			std::string to_string( std::string s ) {
+				return s;
+			}
+
 			template<typename Container>
 			std::string container_to_string( Container const & c ) {
 			        using std::to_string;
+					using daw::json::impl::to_string;
 					using std::begin;
 					using std::end;
 					std::string result = "[";
@@ -399,6 +404,22 @@ namespace daw {
 					result += "]";
 					return result;
 			}
+
+			template<typename Container>
+			std::string object_container_to_string( Container const & c ) {
+					using std::begin;
+					using std::end;
+					std::string result = "[";
+					auto it = begin( c );
+					result += it->to_json_string( );
+					std::advance( it, 1 );
+					for( ; it != end( c ); ++it ) {
+						result += "," + it->to_json_string( );
+					}
+					result += "]";
+					return result;
+			}
+
 		} // namespace impl
 		template<typename Derived>
 		template<typename Setter, typename Getter>
@@ -466,7 +487,7 @@ namespace daw {
 			    member_name,
 			    [item_setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
 					auto const setter = [&obj, &item_setter]( auto value ) {
-						item_setter( obj, std::move( value ) );
+						item_setter( obj, value.to_string( ) );
 					};
 				    auto result = daw::json::parser::parse_json_string_array( view, setter );
 			        return result;
@@ -493,7 +514,7 @@ namespace daw {
 			    },
 			    [getter]( Derived const &obj ) -> std::string {
 					auto const & container = getter( obj );
-					return impl::container_to_string( container );
+					return impl::object_container_to_string( container );
 			    } );
 		}
 
