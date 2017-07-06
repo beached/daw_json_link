@@ -79,6 +79,25 @@ struct B : public daw::json::daw_json_link<B> {
 	}
 };
 
+struct C : public daw::json::daw_json_link<B> {
+	A a;
+	std::vector<int64_t> b;
+	std::vector<double> c;
+	std::vector<bool> d;
+	std::vector<std::string> e;
+	std::vector<A> f;
+
+	static void json_link_map( ) {
+		link_json_object( "aaaaaa", a );
+		link_json_integer_array( "b", b );
+		link_json_real_array( "c", c );
+		link_json_boolean_array( "d", d );
+		link_json_string_array( "e", e );
+		link_json_object_array( "f", f );
+	}
+};
+
+
 auto make_path_str( std::string s ) {
 #ifdef WIN32
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
