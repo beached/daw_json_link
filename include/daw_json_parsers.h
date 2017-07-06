@@ -173,30 +173,60 @@ namespace daw {
 			constexpr result_t<daw::string_view> parse_json_string( daw::basic_string_view<CharT> view ) {
 				view = impl::skip_ws( view );
 				auto const parse_result = impl::parse_string_literal( view );
-				view.remove_prefix( parse_result.size( ) + 2 );	// 2 quotes
+				view.remove_prefix( parse_result.size( ) + 2 ); // 2 quotes
 				return {view, parse_result};
 			}
 
-			template<typename CharT, typename ItemSetter>
-			constexpr daw::string_view parse_json_integer_array( daw::basic_string_view<CharT> view , ItemSetter item_setter ) {
+			template<typename CharT, typename ItemSetter, typename Parser>
+			constexpr daw::string_view parse_json_array( daw::basic_string_view<CharT> view, ItemSetter item_setter,
+			                                             Parser parser ) {
 				view = impl::skip_ws( view );
 				daw::exception::daw_throw_on_false( '[' == view.front( ), "Could not find start of array" );
 				while( !view.empty( ) && ']' != view.front( ) ) {
 					view.remove_prefix( );
 					view = impl::skip_ws( view );
-					auto result = impl::parse_number( view );
-					item_setter( static_cast<int64_t>( result.result ) );
+					auto result = parser( view );
+					item_setter( result.result );
+					view = result.view;
 					view = impl::skip_ws( view );
 					if( ',' != view.front( ) ) {
 						break;
 					}
 				}
 				daw::exception::daw_throw_on_true( view.empty( ), "Could not find end of array" );
-				view.remove_prefix( );
-				view = impl::skip_ws( view );
-				daw::exception::daw_throw_on_true( view.empty( ), "Could not find end of array" );
 				daw::exception::daw_throw_on_false( ']' == view.front( ), "Could not find end of array" );
+				view.remove_prefix( );
 				return view;
+			}
+
+			template<typename CharT, typename ItemSetter>
+			constexpr daw::string_view parse_json_integer_array( daw::basic_string_view<CharT> view,
+			                                                     ItemSetter item_setter ) {
+				return parse_json_array( view, item_setter, &parse_json_integer<CharT> );
+			}
+
+			template<typename CharT, typename ItemSetter>
+			constexpr daw::string_view parse_json_real_array( daw::basic_string_view<CharT> view,
+			                                                     ItemSetter item_setter ) {
+				return parse_json_array( view, item_setter, &parse_json_real<CharT> );
+			}
+
+			template<typename CharT, typename ItemSetter>
+			constexpr daw::string_view parse_json_boolean_array( daw::basic_string_view<CharT> view,
+			                                                     ItemSetter item_setter ) {
+				return parse_json_array( view, item_setter, &parse_json_boolean<CharT> );
+			}
+
+			template<typename CharT, typename ItemSetter>
+			constexpr daw::string_view parse_json_string_array( daw::basic_string_view<CharT> view,
+			                                                     ItemSetter item_setter ) {
+				return parse_json_array( view, item_setter, &parse_json_boolean<CharT> );
+			}
+
+			template<typename CharT, typename ItemSetter, typename ObjT>
+			constexpr daw::string_view parse_json_object_array( daw::basic_string_view<CharT> view,
+			                                                     ItemSetter item_setter ) {
+				return parse_json_array( view, item_setter, &ObjT::from_json_string );
 			}
 		} // namespace parser
 	}     // namespace json
