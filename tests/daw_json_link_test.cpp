@@ -57,10 +57,13 @@ struct A2 {
 
 struct B : public daw::json::daw_json_link<B> {
 	A a;
+	std::vector<int64_t> b;
 
 	static void json_link_map( ) {
 		link_json_object_fn( "aaaaaa", []( B &obj, A value ) { obj.a = std::move( value ); },
 		                     []( B const &obj ) { return obj.a; } );
+		link_json_integer_array_fn( "b", []( B &obj, int64_t value ) { obj.b.push_back( std::move( value ) ); },
+		                            []( B const &obj ) { return obj.b; } );
 	}
 };
 
@@ -99,7 +102,7 @@ int main( int argc, char **argv ) {
 	using namespace std::string_literals;
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
 	//constexpr daw::string_view const str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
-	constexpr daw::string_view const str = "{ \"aaaaaa\": { \"aaaaaa\" : 55555, \"bbbbbb\" : 6666666.6, \"cccccc\" : true, \"dddddd\": \"fddffdffffffffffhello\" }}";
+	constexpr daw::string_view const str = "{ \"aaaaaa\": { \"aaaaaa\" : 55555, \"bbbbbb\" : 6666666.6, \"cccccc\" : true, \"dddddd\": \"fddffdffffffffffhello\" }, \"b\": [1,2,3,4,5,6,7,8,9] }";
 	std::string const str_array = "[" + str + "," + str + "]";
 	auto a = B::from_json_string( str ).result;
 	std::cout << a.to_json_string( ) << '\n';

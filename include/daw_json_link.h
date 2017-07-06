@@ -25,6 +25,7 @@
 #include <boost/optional.hpp>
 #include <cstdint>
 #include <functional>
+#include <iterator>
 #include <mutex>
 #include <string>
 #include <unordered_map>
@@ -382,25 +383,40 @@ namespace daw {
 			    [getter]( Derived const &obj ) -> std::string { return getter( obj ).to_json_string( ); } );
 		}
 
+		namespace impl {
+			template<typename Container>
+			std::string container_to_string( Container const & c ) {
+			        using std::to_string;
+					using std::begin;
+					using std::end;
+					std::string result = "[";
+					auto it = begin( c );
+					result += to_string( *it );
+					std::advance( it, 1 );
+					for( ; it != end( c ); ++it ) {
+						result += "," + to_string( *it );
+					}
+					result += "]";
+					return result;
+			}
+		} // namespace impl
 		template<typename Derived>
 		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_integer_array_fn( daw::string_view member_name, Setter setter,
+		void daw_json_link<Derived>::link_json_integer_array_fn( daw::string_view member_name, Setter item_setter,
 		                                                         Getter getter ) {
-			/*
 			add_json_link_function(
 			    member_name,
-			    [setter]( Derived &obj, c_str_iterator first, c_str_iterator const last ) mutable -> c_str_iterator {
-			        auto result = daw::json::parser::parse_json_integer_array( first, last, setter );
-			        daw::exception::dbg_throw_on_false( daw::can_fit<member_t>( result.result ),
-			                                            "Invalid json string.  String was empty" );
-			        setter( obj, static_cast<member_t>( std::move( result.result ) ) );
-			        return result.position;
+			    [item_setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
+					auto const setter = [&obj, &item_setter]( auto value ) {
+						item_setter( obj, std::move( value ) );
+					};
+				    auto result = daw::json::parser::parse_json_integer_array( view, setter );
+			        return result;
 			    },
 			    [getter]( Derived const &obj ) -> std::string {
-			        using std::to_string;
-			        return to_string( getter( obj ) );
+					auto const & container = getter( obj );
+					return impl::container_to_string( container );
 			    } );
-			    */
 		}
 
 	} // namespace json

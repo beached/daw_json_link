@@ -176,6 +176,28 @@ namespace daw {
 				view.remove_prefix( parse_result.size( ) + 2 );	// 2 quotes
 				return {view, parse_result};
 			}
+
+			template<typename CharT, typename ItemSetter>
+			constexpr daw::string_view parse_json_integer_array( daw::basic_string_view<CharT> view , ItemSetter item_setter ) {
+				view = impl::skip_ws( view );
+				daw::exception::daw_throw_on_false( '[' == view.front( ), "Could not find start of array" );
+				while( !view.empty( ) && ']' != view.front( ) ) {
+					view.remove_prefix( );
+					view = impl::skip_ws( view );
+					auto result = impl::parse_number( view );
+					item_setter( static_cast<int64_t>( result.result ) );
+					view = impl::skip_ws( view );
+					if( ',' != view.front( ) ) {
+						break;
+					}
+				}
+				daw::exception::daw_throw_on_true( view.empty( ), "Could not find end of array" );
+				view.remove_prefix( );
+				view = impl::skip_ws( view );
+				daw::exception::daw_throw_on_true( view.empty( ), "Could not find end of array" );
+				daw::exception::daw_throw_on_false( ']' == view.front( ), "Could not find end of array" );
+				return view;
+			}
 		} // namespace parser
 	}     // namespace json
 } // namespace daw
