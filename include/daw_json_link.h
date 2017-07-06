@@ -62,7 +62,7 @@ namespace daw {
 
 				json_link_functions_info( daw::string_view n, setter_t setter_func, getter_t getter_func,
 				                          bool optional = false )
-				    : hash{std::hash<std::string>{}( n.to_string( ) )}
+				    : hash{std::hash<daw::string_view>{}( n )}
 				    , name{n.to_string( )}
 				    , setter{std::move( setter_func )}
 				    , getter{std::move( getter_func )}
@@ -184,7 +184,7 @@ namespace daw {
 				}
 				auto const member_name = daw::json::parser::parse_json_string( view );
 				auto const member_name_str = member_name.result.to_string( );
-				auto const member_name_hash = std::hash<std::string>{}( member_name_str );
+				auto const member_name_hash = std::hash<daw::string_view>{}( member_name.result );
 
 				view = member_name.view;
 				view = parser::impl::skip_ws( view );
