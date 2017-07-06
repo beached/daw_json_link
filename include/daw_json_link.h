@@ -60,7 +60,7 @@ namespace daw {
 				getter_t getter;
 				bool is_optional;
 
-				json_link_functions_info( daw::string_view n, setter_t setter_func, getter_t getter_func,
+				constexpr json_link_functions_info( daw::string_view n, setter_t setter_func, getter_t getter_func,
 				                          bool optional = false )
 				    : hash{std::hash<daw::string_view>{}( n )}
 				    , name{n.to_string( )}

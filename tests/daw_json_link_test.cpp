@@ -100,7 +100,7 @@ int main( int argc, char **argv ) {
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
 	//constexpr daw::string_view const str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
 	constexpr daw::string_view const str = "{ \"aaaaaa\": { \"aaaaaa\" : 55555, \"bbbbbb\" : 6666666.6, \"cccccc\" : true, \"dddddd\": \"fddffdffffffffffhello\" }}";
-	std::string const str_array = "[" + str.to_string( ) + "," + str.to_string( ) + "]";
+	std::string const str_array = "[" + str + "," + str + "]";
 	auto a = B::from_json_string( str ).result;
 	std::cout << a.to_json_string( ) << '\n';
 
@@ -110,10 +110,10 @@ int main( int argc, char **argv ) {
 	std::cout << to_json_string( c ) << std::endl;
 	{
 		constexpr auto const SZ = 10'000'000;
-		auto str_array2 = "["s + str.to_string( );
+		auto str_array2 = "["s + str;
 		str_array2.reserve( (str.size( )+1)*SZ + 2 );
 		for( size_t n=0; n<SZ; ++n ) {
-			str_array2 += ","s + str.to_string( );
+			str_array2 += ","s + str;
 		}
 		str_array2 += "]"s;
 		auto lapsed_time2 = daw::benchmark( [&str_array2]( ) {
