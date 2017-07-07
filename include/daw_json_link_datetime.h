@@ -81,7 +81,8 @@ namespace daw {
 			}
 
 			template<typename Duration>
-			constexpr int64_t epoch_from_timestamp( std::chrono::time_point<std::chrono::system_clock, Duration> const &t ) noexcept {
+			constexpr int64_t
+			epoch_from_timestamp( std::chrono::time_point<std::chrono::system_clock, Duration> const &t ) noexcept {
 				using namespace date;
 				using namespace std::chrono;
 				std::chrono::system_clock::time_point const epoch{};
@@ -95,29 +96,29 @@ namespace daw {
 #define link_json_timestamp( json_name, member_name, formats )                                                         \
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
-		                     daw::json::impl::string_to_tp( obj.member_name, value.to_string( ), formats );           \
+		                     daw::json::impl::string_to_tp( obj.member_name, value.to_string( ), formats );            \
 	                     },                                                                                            \
 	                     []( auto const &obj ) -> std::string {                                                        \
 		                     return daw::json::impl::tp_to_string( obj.member_name, *std::begin( formats ) );          \
 	                     } );
 
 #define link_json_iso8601_timestamp( json_name, member_name )                                                          \
-	link_json_string_fn(                                                                                               \
-	    json_name,                                                                                                     \
-	    []( auto &obj, daw::string_view value ) -> void {                                                              \
-		    obj.member_name =                                                                                          \
-		        daw::json::impl::string_to_tp( value.to_string( ), daw::json::impl::get_iso8601_formats( ) );          \
-	    },                                                                                                             \
-	    []( auto const &obj ) -> std::string {                                                                         \
-		    return daw::json::impl::tp_to_string( obj.member_name, daw::json::impl::get_iso8601_formats( ).front( ) ); \
-	    } );
+	link_json_string_fn( json_name,                                                                                    \
+	                     []( auto &obj, daw::string_view value ) -> void {                                             \
+		                     daw::json::impl::string_to_tp( value.to_string( ), obj.member_name,                       \
+		                                                    daw::json::impl::get_iso8601_formats( ) );                 \
+	                     },                                                                                            \
+	                     []( auto const &obj ) -> std::string {                                                        \
+		                     return daw::json::impl::tp_to_string( obj.member_name,                                    \
+		                                                           daw::json::impl::get_iso8601_formats( ).front( ) ); \
+	                     } );
 
 #define link_json_timestamp_optional( json_name, member_name, formats, default_value )                                 \
 	link_json_string_optional_fn(                                                                                      \
 	    json_name,                                                                                                     \
 	    []( auto &obj, boost::optional<daw::string_view> value ) -> void {                                             \
 		    if( value ) {                                                                                              \
-			    obj.member_name = daw::json::impl::string_to_tp( value.to_string( ), formats );                        \
+			    daw::json::impl::string_to_tp( value.to_string( ), *obj.member_name, formats );                        \
 		    } else {                                                                                                   \
 			    obj.member_name = default_value;                                                                       \
 		    }                                                                                                          \
@@ -134,8 +135,8 @@ namespace daw {
 	link_json_string_optional_fn( json_name,                                                                           \
 	                              []( auto &obj, boost::optional<daw::string_view> value ) -> void {                   \
 		                              if( value ) {                                                                    \
-			                              obj.member_name = daw::json::impl::string_to_tp(                             \
-			                                  value.to_string( ), daw::json::impl::get_iso8601_formats( ) );           \
+			                              daw::json::impl::string_to_tp( value.to_string( ), *obj.member_name,         \
+			                                                             daw::json::impl::get_iso8601_formats( ) );    \
 		                              } else {                                                                         \
 			                              obj.member_name = default_value;                                             \
 		                              }                                                                                \
