@@ -42,7 +42,7 @@ namespace daw {
 			}
 
 			template<typename Duration, typename Formats>
-			std::string string_to_tp( std::string const str, Formats const &fmts ) {
+			auto string_to_tp( std::string const str, Formats const &fmts ) {
 				std::istringstream in;
 				std::chrono::time_point<std::chrono::system_clock, Duration> tp;
 				for( auto const &fmt : fmts ) {
@@ -56,6 +56,13 @@ namespace daw {
 				}
 				daw::exception::daw_throw_on_true( in.fail( ), "Failed to parse timestamp string" );
 				return tp;
+			}
+
+			template<typename Duration, typename Formats>
+			void string_to_tp( std::string &&str,
+			                   std::chrono::time_point<std::chrono::system_clock, Duration> &out_value,
+			                   Formats const &fmts ) {
+				out_value = string_to_tp<Duration>( std::forward<std::string>( str ), fmts );
 			}
 
 			auto const &get_iso8601_formats( ) noexcept {
@@ -88,7 +95,7 @@ namespace daw {
 #define link_json_timestamp( json_name, member_name, formats )                                                         \
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
-		                     obj.member_name = daw::json::impl::string_to_tp( value.to_string( ), formats );           \
+		                     daw::json::impl::string_to_tp( obj.member_name, value.to_string( ), formats );           \
 	                     },                                                                                            \
 	                     []( auto const &obj ) -> std::string {                                                        \
 		                     return daw::json::impl::tp_to_string( obj.member_name, *std::begin( formats ) );          \
