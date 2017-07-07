@@ -66,7 +66,7 @@ namespace daw {
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
 		                     obj.member_name = daw::json::impl::string_to_tp( value.to_string( ), formats );           \
 	                     },                                                                                            \
-	                     []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {                      \
+	                     []( auto const &obj ) -> std::string {                      \
 		                     return daw::json::impl::tp_to_string( obj.member_name, *std::begin( formats ) );          \
 	                     } );
 
@@ -77,7 +77,7 @@ namespace daw {
 		                     static constexpr std::array<std::string, 2> const fmts = {"%FT%TZ"s, "%FT%T%Ez"s};        \
 		                     obj.member_name = daw::json::impl::string_to_tp( value.to_string( ), fmts );              \
 	                     },                                                                                            \
-	                     []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {                      \
+	                     []( auto const &obj ) -> std::string {                      \
 		                     return daw::json::impl::tp_to_string( obj.member_name, "%FT%TZ" );                        \
 	                     } );
 
