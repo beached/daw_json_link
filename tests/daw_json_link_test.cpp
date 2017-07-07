@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <boost/optional.hpp>
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
@@ -37,8 +38,9 @@ struct A : public daw::json::daw_json_link<A> {
 	double b;
 	bool c;
 	std::string d;
+	boost::optional<std::string> e;
 
-	A( ) : a{0}, b{1.2345}, c{true}, d{"sixseveneightnine"} {};
+	A( ) : a{0}, b{1.2345}, c{true}, d{"sixseveneightnine"}, e{boost::none} {};
 	~A( ) = default;
 	A( A const & ) = default;
 	A( A && ) = default;
@@ -54,6 +56,12 @@ struct A : public daw::json::daw_json_link<A> {
 		                      []( A const &obj ) { return obj.c; } );
 		link_json_string_fn( "dddddd", []( A &obj, daw::string_view value ) { obj.d = value.to_string( ); },
 		                     []( A const &obj ) { return obj.d; } );
+		link_json_string_optional_fn( "e",
+		                              []( A &obj, boost::optional<daw::string_view> value ) {
+			                              obj.e = value ? boost::optional<std::string>{value->to_string( )}
+			                                            : boost::optional<std::string>{boost::none};
+		                              },
+		                              []( A const &obj ) { return obj.e; } );
 	}
 };
 struct A2 {
@@ -95,13 +103,14 @@ struct B : public daw::json::daw_json_link<B> {
 	}
 };
 
-struct C : public daw::json::daw_json_link<B> {
+struct C : public daw::json::daw_json_link<C> {
 	A a;
 	std::vector<int64_t> b;
 	std::vector<double> c;
 	std::vector<bool> d;
 	std::vector<std::string> e;
 	std::vector<A> f;
+	boost::optional<std::string> g;
 
 	static void json_link_map( ) {
 		link_json_object( "aaaaaa", a );
@@ -110,6 +119,7 @@ struct C : public daw::json::daw_json_link<B> {
 		link_json_boolean_array( "d", d );
 		link_json_string_array( "e", e );
 		link_json_object_array( "f", f );
+		link_json_string_optional( "g", g, boost::none );
 	}
 };
 
@@ -146,37 +156,10 @@ std::string to_si_bytes( double d ) {
 }
 
 int main( int argc, char **argv ) {
-	/*
 	using namespace std::string_literals;
+	B b;
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
-	constexpr daw::string_view const str = R"(
-{
-  "aaaaaa": {
-    "aaaaaa": 55555,
-    "bbbbbb": 6666666.6,
-    "cccccc": true,
-    "dddddd": "fddffdffffffffffhello"
-  },
-  "b": [1, 2, 3, 4, 5, 6, 7, 8, 9],
-  "c": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0],
-  "d": [true, false, true, true],
-  "e": ["hello", "good bye", "ha ha ha"],
-  "f": [
-  {
-  	"aaaaaa": 55555,
-  	"bbbbbb": 6666666.6,
-  	"cccccc": true,
-  	"dddddd": "fddffdffffffffffhello"
-  }
-  ,{
-  	"aaaaaa": 55555,
-  	"bbbbbb": 6666666.6,
-  	"cccccc": true,
-  	"dddddd": "fddffdffffffffffhello"
-  }
-  ]
-}
-	)";
+	auto const str = b.to_json_string( );
 	std::string const str_array = "[" + str + "," + str + "]";
 	auto a = B::from_json_string( str ).result;
 	std::cout << a.to_json_string( ) << '\n';
@@ -200,7 +183,6 @@ int main( int argc, char **argv ) {
 		std::cout << "To process " << to_si_bytes( str_array2.size( ) ) << " bytes, it took " << lapsed_time2
 		          << " seconds. " << to_si_bytes( str_array2.size( ) / lapsed_time2 ) << "/second\n";
 	}
-	*/
 	if( boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
 		daw::filesystem::MemoryMappedFile<char> json_file{make_path_str( "test.json" ).data( )};
 		daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
@@ -212,7 +194,7 @@ int main( int argc, char **argv ) {
 		          << " seconds. " << to_si_bytes( json_file.size( ) / lapsed_time ) << "/second\n";
 	}
 /*
-	B b;
+   // Create sample json file
 	std::fstream s{"test.json", std::ios::binary | std::ios::out};
 	s << '[';
 	std::string const str = b.to_json_string( );

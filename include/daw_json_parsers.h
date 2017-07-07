@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <boost/optional.hpp>
+
 #include <daw/daw_exception.h>
 #include <daw/daw_parser_addons.h>
 #include <daw/daw_parser_helper.h>
@@ -172,6 +174,18 @@ namespace daw {
 			template<typename CharT>
 			constexpr result_t<daw::string_view> parse_json_string( daw::basic_string_view<CharT> view ) {
 				view = impl::skip_ws( view );
+				auto const parse_result = impl::parse_string_literal( view );
+				view.remove_prefix( parse_result.size( ) + 2 ); // 2 quotes
+				return {view, parse_result};
+			}
+
+			template<typename CharT>
+			constexpr result_t<boost::optional<daw::string_view>> parse_json_string_optional( daw::basic_string_view<CharT> view ) {
+				auto const null_result = is_null( view );
+				view = null_result.view;
+				if( null_result.result ) {
+					return {view, boost::none};
+				}
 				auto const parse_result = impl::parse_string_literal( view );
 				view.remove_prefix( parse_result.size( ) + 2 ); // 2 quotes
 				return {view, parse_result};

@@ -122,6 +122,9 @@ namespace daw {
 			static void link_json_string_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
+			static void link_json_string_optional_fn( daw::string_view member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
 			static void link_json_object_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
@@ -296,7 +299,7 @@ namespace daw {
 		                                                   Getter getter ) {
 			using member_t = std::decay_t<decltype( getter( std::declval<Derived>( ) ) )>;
 			add_json_link_function( member_name,
-			                        [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
+			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto result = daw::json::parser::parse_json_integer( view );
 				                        daw::exception::dbg_throw_on_false( daw::can_fit<member_t>( result.result ),
 				                                                            "Invalid json string.  String was empty" );
@@ -314,7 +317,7 @@ namespace daw {
 		template<typename Setter, typename Getter>
 		void daw_json_link<Derived>::link_json_real_fn( daw::string_view member_name, Setter setter, Getter getter ) {
 			add_json_link_function( member_name,
-			                        [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
+			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto result = daw::json::parser::parse_json_real( view );
 				                        setter( obj, std::move( result.result ) );
 				                        view = result.view;
@@ -331,7 +334,7 @@ namespace daw {
 		void daw_json_link<Derived>::link_json_boolean_fn( daw::string_view member_name, Setter setter,
 		                                                   Getter getter ) {
 			add_json_link_function( member_name,
-			                        [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
+			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto result = daw::json::parser::parse_json_boolean( view );
 				                        setter( obj, std::move( result.result ) );
 				                        view = result.view;
@@ -347,7 +350,7 @@ namespace daw {
 		template<typename Setter, typename Getter>
 		void daw_json_link<Derived>::link_json_string_fn( daw::string_view member_name, Setter setter, Getter getter ) {
 			add_json_link_function( member_name,
-			                        [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
+			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto result = daw::json::parser::parse_json_string( view );
 				                        setter( obj, result.result );
 				                        view = result.view;
@@ -361,11 +364,30 @@ namespace daw {
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
+		void daw_json_link<Derived>::link_json_string_optional_fn( daw::string_view member_name, Setter setter, Getter getter ) {
+			add_json_link_function( member_name,
+			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
+				                        auto result = daw::json::parser::parse_json_string_optional( view );
+				                       	setter( obj, result.result );
+				                        return result.view;
+			                        },
+			                        [getter]( Derived const &obj ) -> std::string {
+				                        using namespace std::string_literals;
+										auto value = getter( obj );
+										if( value ) {
+					                        return "\""s + *value + "\""s;
+				                        }
+										return "null";
+			                        } );
+		}
+
+		template<typename Derived>
+		template<typename Setter, typename Getter>
 		void daw_json_link<Derived>::link_json_object_fn( daw::string_view member_name, Setter setter, Getter getter ) {
 			using member_t = std::decay_t<decltype( getter( std::declval<Derived>( ) ) )>;
 			add_json_link_function(
 			    member_name,
-			    [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
+			    [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				    auto result = member_t::from_json_string( view );
 				    setter( obj, std::move( result.result ) );
 				    view = result.view;
@@ -535,6 +557,18 @@ namespace daw {
 #define link_json_string( json_name, member_name )                                                                     \
 	link_json_string_fn(                                                                                               \
 	    json_name, []( auto &obj, daw::string_view value ) -> void { obj.member_name = value.to_string( ); },         \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
+
+#define link_json_string_optional( json_name, member_name, null_value )                                                \
+	link_json_string_optional_fn(                                                                                      \
+	    json_name,                                                                                                     \
+	    []( auto &obj, boost::optional<daw::string_view> value ) -> void {                                             \
+		    if( value ) {                                                                                              \
+			    obj.member_name = value->to_string( );                                                                 \
+		    } else {                                                                                                   \
+			    obj.member_name = null_value;                                                                          \
+		    }                                                                                                          \
+	    },                                                                                                             \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_object( json_name, member_name )                                                                     \
