@@ -22,12 +22,14 @@
 
 #pragma once
 
+#include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 #include <cstdint>
 #include <functional>
 #include <iostream>
 #include <iterator>
 #include <mutex>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -365,20 +367,21 @@ namespace daw {
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_string_optional_fn( daw::string_view member_name, Setter setter, Getter getter ) {
+		void daw_json_link<Derived>::link_json_string_optional_fn( daw::string_view member_name, Setter setter,
+		                                                           Getter getter ) {
 			add_json_link_function( member_name,
 			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto result = daw::json::parser::parse_json_string_optional( view );
-				                       	setter( obj, result.result );
+				                        setter( obj, result.result );
 				                        return result.view;
 			                        },
 			                        [getter]( Derived const &obj ) -> std::string {
 				                        using namespace std::string_literals;
-										auto value = getter( obj );
-										if( value ) {
+				                        auto value = getter( obj );
+				                        if( value ) {
 					                        return "\""s + *value + "\""s;
 				                        }
-										return "null";
+				                        return "null";
 			                        } );
 		}
 
@@ -557,8 +560,17 @@ namespace daw {
 
 #define link_json_string( json_name, member_name )                                                                     \
 	link_json_string_fn(                                                                                               \
-	    json_name, []( auto &obj, daw::string_view value ) -> void { obj.member_name = value.to_string( ); },         \
+	    json_name, []( auto &obj, daw::string_view value ) -> void { obj.member_name = value.to_string( ); },          \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
+
+#define link_json_streamable( json_name, member_name )                                                                 \
+	link_json_string_fn(                                                                                               \
+	    json_name,                                                                                                     \
+	    []( auto &obj, daw::string_view value ) -> void {                                                              \
+		    std::stringstream ss{value.to_string( )};                                                                  \
+		    ss >> obj.member_name;                                                                                     \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::string { return boost::lexical_cast<std::string>( obj.member_name ); } );
 
 #define link_json_string_optional( json_name, member_name, null_value )                                                \
 	link_json_string_optional_fn(                                                                                      \
@@ -607,7 +619,7 @@ namespace daw {
 #define link_json_string_array( json_name, member_name )                                                               \
 	link_json_string_array_fn(                                                                                         \
 	    json_name,                                                                                                     \
-	    []( auto &obj, daw::string_view value ) -> void {                                                             \
+	    []( auto &obj, daw::string_view value ) -> void {                                                              \
 		    obj.member_name.insert( std::end( obj.member_name ), value.to_string( ) );                                 \
 	    },                                                                                                             \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
