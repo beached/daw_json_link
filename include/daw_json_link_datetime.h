@@ -150,7 +150,8 @@ namespace daw {
 	                              } );
 
 #define link_json_epoch_milliseconds_timestamp( json_name, member_name )                                               \
-	link_json_integer_fn( json_name,                                                                                   \
-	                      []( auto &obj, int64_t value ) -> void { obj.member_name = timestamp_from_epoch( value ); }, \
-	                      []( auto const &obj ) -> int64_t { return epoch_from_timestamp( obj.member_name ); } );
+	link_json_integer_fn(                                                                                              \
+	    json_name,                                                                                                     \
+	    []( auto &obj, int64_t value ) -> void { obj.member_name = daw::json::impl::timestamp_from_epoch( value ); },  \
+	    []( auto const &obj ) -> int64_t { return daw::json::impl::epoch_from_timestamp( obj.member_name ); } );
 
