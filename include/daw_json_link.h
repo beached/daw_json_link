@@ -623,19 +623,3 @@ namespace daw {
 	} // namespace json
 } // namespace daw
 
-template<typename Derived>
-std::ostream &operator<<( std::ostream &os, daw::json::daw_json_link<Derived> const &obj ) {
-	os << obj.to_json_string( );
-	return os;
-}
-
-template<typename Derived>
-std::istream &operator>>( std::istream &is, daw::json::daw_json_link<Derived> const &obj ) {
-	// TODO find a way, if possible, to get a char const * from istream
-	auto const data_size = static_cast<size_t>( is.rdbuf( )->in_avail( ) );
-	std::string temporary;
-	temporary.reserve( data_size );
-	is.read( &temporary[0], data_size );
-	obj.from_json_string( temporary );
-	return is;
-}
