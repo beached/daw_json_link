@@ -36,7 +36,7 @@ std::istream &operator>>( std::istream &is, daw::json::daw_json_link<Derived> co
 	auto const data_size = static_cast<size_t>( is.rdbuf( )->in_avail( ) );
 	std::string temporary;
 	temporary.reserve( data_size );
-	is.read( &temporary[0], data_size );
+	is.read( &temporary[0], static_cast<std::streamsize>( data_size ) );
 	obj.from_json_string( temporary );
 	return is;
 }
