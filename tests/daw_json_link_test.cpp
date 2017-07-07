@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_memory_mapped_file.h>
@@ -167,6 +168,11 @@ int main( int argc, char **argv ) {
 	std::cout << "Attemping json array '" << str_array << "'\n";
 	auto c = B::from_json_array_string( str_array );
 
+	{
+		B b_test;
+		std::stringstream ss{str};
+		ss >> b_test;
+	}
 	std::cout << to_json_string( c ) << std::endl;
 	{
 		constexpr auto const SZ = 6'500'000;
