@@ -78,8 +78,8 @@ add_dependencies( daw_json_link_test_bin header_libraries_prj char_range_prj dat
 target_link_libraries( daw_json_link_test_bin char_range ${Boost_LIBRARIES} )
 add_test( daw_json_link_test daw_json_link_test_bin )
 
-add_executable( gh_events_test_bin ${HEADER_FILES} ${TEST_FOLDER}/gh_events.cpp )
-add_dependencies( gh_events_test_bin header_libraries_prj char_range_prj date_prj )
-target_link_libraries( gh_events_test_bin char_range ${Boost_LIBRARIES} )
-add_test( gh_events_test gh_events_test_bin )
+#add_executable( gh_events_test_bin ${HEADER_FILES} ${TEST_FOLDER}/gh_events.cpp )
+#add_dependencies( gh_events_test_bin header_libraries_prj char_range_prj date_prj )
+#target_link_libraries( gh_events_test_bin char_range ${Boost_LIBRARIES} )
+#add_test( gh_events_test gh_events_test_bin )
 
