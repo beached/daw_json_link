@@ -159,7 +159,7 @@ namespace daw {
 					return {view, boost::none};
 				}
 				auto const parse_result = impl::parse_number( view );
-				return {view, static_cast<int64_t>( parse_result )};
+				return {parse_result.view, static_cast<int64_t>( parse_result.result )};
 			}
 
 			template<typename CharT>
@@ -175,8 +175,7 @@ namespace daw {
 				if( null_result.result ) {
 					return {view, boost::none};
 				}
-				auto const parse_result = impl::parse_number( view );
-				return {view, parse_result};
+				return {parse_result.view, parse_result.result};
 			}
 
 			template<typename CharT>
