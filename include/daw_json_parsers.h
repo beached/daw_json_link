@@ -126,6 +126,24 @@ namespace daw {
 			}     // namespace
 
 			template<typename CharT>
+			constexpr result_t<bool> is_null( daw::basic_string_view<CharT> view ) noexcept {
+				view = impl::skip_ws( view );
+				if( view.size( ) < 4 ) {
+					return {view, false};
+				}
+				auto const n = 'n' == view[0];
+				auto const u = 'u' == view[1];
+				auto const l = 'l' == view[2];
+				auto const l2 = 'l' == view[3];
+				auto const value = ( n * u * l * l2 ) != 0;
+
+				if( value ) {
+					view.remove_prefix( 4 );
+				}
+				return {view, value};
+			}
+
+			template<typename CharT>
 			constexpr result_t<int64_t> parse_json_integer( daw::basic_string_view<CharT> view ) noexcept {
 				view = impl::skip_ws( view );
 				auto result = impl::parse_number( view );
@@ -133,7 +151,8 @@ namespace daw {
 			}
 
 			template<typename CharT>
-			constexpr result_t<boost::optional<int64_t>> parse_json_integer_optional( daw::basic_string_view<CharT> view ) {
+			constexpr result_t<boost::optional<int64_t>>
+			parse_json_integer_optional( daw::basic_string_view<CharT> view ) {
 				auto const null_result = is_null( view );
 				view = null_result.view;
 				if( null_result.result ) {
@@ -142,7 +161,6 @@ namespace daw {
 				auto const parse_result = impl::parse_number( view );
 				return {view, static_cast<int64_t>( parse_result )};
 			}
-
 
 			template<typename CharT>
 			constexpr result_t<double> parse_json_real( daw::basic_string_view<CharT> view ) noexcept {
@@ -168,24 +186,6 @@ namespace daw {
 			}
 
 			template<typename CharT>
-			constexpr result_t<bool> is_null( daw::basic_string_view<CharT> view ) noexcept {
-				view = impl::skip_ws( view );
-				if( view.size( ) < 4 ) {
-					return {view, false};
-				}
-				auto const n = 'n' == view[0];
-				auto const u = 'u' == view[1];
-				auto const l = 'l' == view[2];
-				auto const l2 = 'l' == view[3];
-				auto const value = ( n * u * l * l2 ) != 0;
-
-				if( value ) {
-					view.remove_prefix( 4 );
-				}
-				return {view, value};
-			}
-
-			template<typename CharT>
 			constexpr result_t<bool> parse_json_boolean( daw::basic_string_view<CharT> view ) {
 				view = impl::skip_ws( view );
 				if( 'f' == view.front( ) ) {
@@ -195,7 +195,8 @@ namespace daw {
 			}
 
 			template<typename CharT>
-			constexpr result_t<boost::optional<bool>> parse_json_boolean_optional( daw::basic_string_view<CharT> view ) {
+			constexpr result_t<boost::optional<bool>>
+			parse_json_boolean_optional( daw::basic_string_view<CharT> view ) {
 				auto const null_result = is_null( view );
 				view = null_result.view;
 				if( null_result.result ) {
@@ -203,7 +204,7 @@ namespace daw {
 				}
 				if( 'f' == view.front( ) ) {
 					auto result = impl::parse_false( view );
-					return { result.view, result.result };
+					return {result.view, result.result};
 				}
 				auto result = impl::parse_true( view );
 				return {result.view, result.result};
@@ -218,7 +219,8 @@ namespace daw {
 			}
 
 			template<typename CharT>
-			constexpr result_t<boost::optional<daw::string_view>> parse_json_string_optional( daw::basic_string_view<CharT> view ) {
+			constexpr result_t<boost::optional<daw::string_view>>
+			parse_json_string_optional( daw::basic_string_view<CharT> view ) {
 				auto const null_result = is_null( view );
 				view = null_result.view;
 				if( null_result.result ) {
@@ -260,7 +262,7 @@ namespace daw {
 
 			template<typename CharT, typename ItemSetter>
 			constexpr daw::string_view parse_json_real_array( daw::basic_string_view<CharT> view,
-			                                                     ItemSetter item_setter ) {
+			                                                  ItemSetter item_setter ) {
 				return parse_json_array( view, item_setter, &parse_json_real<CharT> );
 			}
 
@@ -272,13 +274,13 @@ namespace daw {
 
 			template<typename CharT, typename ItemSetter>
 			constexpr daw::string_view parse_json_string_array( daw::basic_string_view<CharT> view,
-			                                                     ItemSetter item_setter ) {
+			                                                    ItemSetter item_setter ) {
 				return parse_json_array( view, item_setter, &parse_json_string<CharT> );
 			}
 
 			template<typename ObjT, typename CharT, typename ItemSetter>
 			constexpr daw::string_view parse_json_object_array( daw::basic_string_view<CharT> view,
-			                                                     ItemSetter item_setter ) {
+			                                                    ItemSetter item_setter ) {
 				return parse_json_array( view, item_setter, &ObjT::from_json_string );
 			}
 		} // namespace parser
