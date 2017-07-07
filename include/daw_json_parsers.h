@@ -175,6 +175,7 @@ namespace daw {
 				if( null_result.result ) {
 					return {view, boost::none};
 				}
+				auto parse_result = impl::parse_number( view );
 				return {parse_result.view, parse_result.result};
 			}
 
