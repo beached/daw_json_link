@@ -22,6 +22,7 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 
 #include <daw/daw_benchmark.h>
@@ -37,6 +38,13 @@ struct A : public daw::json::daw_json_link<A> {
 	bool c;
 	std::string d;
 
+	A( ) : a{0}, b{1.2345}, c{true}, d{"sixseveneightnine"} {};
+	~A( ) = default;
+	A( A const & ) = default;
+	A( A && ) = default;
+	A &operator=( A const & ) = default;
+	A &operator=( A && ) = default;
+
 	static void json_link_map( ) {
 		link_json_integer_fn( "aaaaaa", []( A &obj, int value ) { obj.a = std::move( value ); },
 		                      []( A const &obj ) { return obj.a; } );
@@ -44,7 +52,7 @@ struct A : public daw::json::daw_json_link<A> {
 		                   []( A const &obj ) { return obj.b; } );
 		link_json_boolean_fn( "cccccc", []( A &obj, bool value ) { obj.c = std::move( value ); },
 		                      []( A const &obj ) { return obj.c; } );
-		link_json_string_fn( "dddddd", []( A &obj, std::string value ) { obj.d = std::move( value ); },
+		link_json_string_fn( "dddddd", []( A &obj, daw::string_view value ) { obj.d = value.to_string( ); },
 		                     []( A const &obj ) { return obj.d; } );
 	}
 };
@@ -63,6 +71,14 @@ struct B : public daw::json::daw_json_link<B> {
 	std::vector<std::string> e;
 	std::vector<A> f;
 
+	B( ): a{ }, b{ }, c{ }, d{ }, e{ }, f{ } { }
+	~B( ) = default;
+	B( B const & ) = default;
+	B( B && ) = default;
+	B &operator=( B const & ) = default;
+	B &operator=( B && ) = default;
+
+
 	static void json_link_map( ) {
 		link_json_object_fn( "aaaaaa", []( B &obj, A value ) { obj.a = std::move( value ); },
 		                     []( B const &obj ) { return obj.a; } );
@@ -72,8 +88,8 @@ struct B : public daw::json::daw_json_link<B> {
 		                            []( B const &obj ) { return obj.c; } );
 		link_json_boolean_array_fn( "d", []( B &obj, auto value ) { obj.d.push_back( std::move( value ) ); },
 		                            []( B const &obj ) { return obj.d; } );
-		link_json_string_array_fn( "e", []( B &obj, auto value ) { obj.e.push_back( std::move( value ) ); },
-		                            []( B const &obj ) { return obj.e; } );
+		link_json_string_array_fn( "e", []( B &obj, auto value ) { obj.e.push_back( value.to_string( ) ); },
+		                           []( B const &obj ) { return obj.e; } );
 		link_json_object_array_fn( "f", []( B &obj, auto value ) { obj.f.push_back( std::move( value ) ); },
 		                            []( B const &obj ) { return obj.f; } );
 	}
@@ -130,12 +146,12 @@ std::string to_si_bytes( double d ) {
 }
 
 int main( int argc, char **argv ) {
+	/*
 	using namespace std::string_literals;
 	std::cout << "Size of linked class->" << sizeof( A ) << " vs size of unlinked->" << sizeof( A2 ) << '\n';
-	//constexpr daw::string_view const str = "{ \"a\": { \"a\" : 5, \"b\" : 6.6, \"c\" : true, \"d\": \"hello\" }}";
 	constexpr daw::string_view const str = R"(
 {
-  "aaaaaa": { 
+  "aaaaaa": {
     "aaaaaa": 55555,
     "bbbbbb": 6666666.6,
     "cccccc": true,
@@ -170,7 +186,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << to_json_string( c ) << std::endl;
 	{
-		constexpr auto const SZ = 5'000'000;
+		constexpr auto const SZ = 6'500'000;
 		auto str_array2 = "["s + str;
 		str_array2.reserve( (str.size( )+1)*SZ + 2 );
 		for( size_t n=0; n<SZ; ++n ) {
@@ -184,14 +200,28 @@ int main( int argc, char **argv ) {
 		std::cout << "To process " << to_si_bytes( str_array2.size( ) ) << " bytes, it took " << lapsed_time2
 		          << " seconds. " << to_si_bytes( str_array2.size( ) / lapsed_time2 ) << "/second\n";
 	}
+	*/
 	if( boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
 		daw::filesystem::MemoryMappedFile<char> json_file{make_path_str( "test.json" ).data( )};
 		daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
+		std::cout << "Test file is of size " << to_si_bytes( json_file.size( ) ) << '\n';
 		auto lapsed_time = daw::benchmark( [&json_file]( ) {
 			B::from_json_array_string( daw::string_view{json_file.data( ), json_file.size( )} );
 		} );
 		std::cout << "To process " << to_si_bytes( json_file.size( ) ) << " bytes, it took " << lapsed_time
 		          << " seconds. " << to_si_bytes( json_file.size( ) / lapsed_time ) << "/second\n";
 	}
+/*
+	B b;
+	std::fstream s{"test.json", std::ios::binary | std::ios::out};
+	s << '[';
+	std::string const str = b.to_json_string( );
+	auto const count = (1024ull*1024ull*1024ull*15ull)/str.size( );
+	s << str;
+	for( size_t n=0; n<count; ++n ) {
+		s << ',' << str;
+	}
+	s << ']';
+	*/
 	return EXIT_SUCCESS;
 }

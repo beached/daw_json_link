@@ -44,14 +44,6 @@ namespace daw {
 	namespace json {
 		template<typename Derived>
 		class daw_json_link {
-			using set_function_t = std::function<daw::string_view( Derived &, daw::string_view view )>;
-			using get_function_t = std::function<std::string( Derived & )>;
-
-			using json_integer_t = int64_t;
-			using json_real_t = double;
-			using json_boolean_t = bool;
-			using json_string_t = std::string;
-
 			struct json_link_functions_info {
 				size_t hash;
 				std::string name;
@@ -241,7 +233,6 @@ namespace daw {
 			view = parser::impl::skip_ws( view );
 
 			while( ']' != view.front( ) ) {
-				daw::exception::daw_throw_on_false( '{' == view.front( ), "Expected start of json object" );
 				auto item = from_json_string( view );
 				result.emplace_back( std::move( item.result ) );
 				view = item.view;
@@ -358,7 +349,7 @@ namespace daw {
 			add_json_link_function( member_name,
 			                        [setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
 				                        auto result = daw::json::parser::parse_json_string( view );
-				                        setter( obj, result.result.to_string( ) );
+				                        setter( obj, result.result );
 				                        view = result.view;
 				                        return view;
 			                        },
@@ -388,6 +379,11 @@ namespace daw {
 				return s;
 			}
 
+			std::string to_string( bool b ) noexcept {
+				using namespace std::string_literals;
+				return b ? "true"s : "false"s;
+			}
+
 			template<typename Container>
 			std::string container_to_string( Container const &c ) {
 				using daw::json::impl::to_string;
@@ -396,10 +392,12 @@ namespace daw {
 				using std::to_string;
 				std::string result = "[";
 				auto it = begin( c );
-				result += to_string( *it );
-				std::advance( it, 1 );
-				for( ; it != end( c ); ++it ) {
-					result += "," + to_string( *it );
+				if( it != end( c ) ) {
+					result += to_string( *it );
+					std::advance( it, 1 );
+					for( ; it != end( c ); ++it ) {
+						result += "," + to_string( *it );
+					}
 				}
 				result += "]";
 				return result;
@@ -411,10 +409,12 @@ namespace daw {
 				using std::end;
 				std::string result = "[";
 				auto it = begin( c );
-				result += it->to_json_string( );
-				std::advance( it, 1 );
-				for( ; it != end( c ); ++it ) {
-					result += "," + it->to_json_string( );
+				if( it != end( c ) ) {
+					result += it->to_json_string( );
+					std::advance( it, 1 );
+					for( ; it != end( c ); ++it ) {
+						result += "," + it->to_json_string( );
+					}
 				}
 				result += "]";
 				return result;
@@ -426,8 +426,8 @@ namespace daw {
 		void daw_json_link<Derived>::link_json_integer_array_fn( daw::string_view member_name, Setter item_setter,
 		                                                         Getter getter ) {
 			add_json_link_function( member_name,
-			                        [item_setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
-				                        auto const setter = [&obj, &item_setter]( auto value ) {
+			                        [item_setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
+				                        auto const setter = [&obj, &item_setter]( int64_t value ) {
 					                        item_setter( obj, std::move( value ) );
 				                        };
 				                        auto result = daw::json::parser::parse_json_integer_array( view, setter );
@@ -444,8 +444,8 @@ namespace daw {
 		void daw_json_link<Derived>::link_json_real_array_fn( daw::string_view member_name, Setter item_setter,
 		                                                      Getter getter ) {
 			add_json_link_function( member_name,
-			                        [item_setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
-				                        auto const setter = [&obj, &item_setter]( auto value ) {
+			                        [item_setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
+				                        auto const setter = [&obj, &item_setter]( double value ) {
 					                        item_setter( obj, std::move( value ) );
 				                        };
 				                        auto result = daw::json::parser::parse_json_real_array( view, setter );
@@ -462,8 +462,8 @@ namespace daw {
 		void daw_json_link<Derived>::link_json_boolean_array_fn( daw::string_view member_name, Setter item_setter,
 		                                                         Getter getter ) {
 			add_json_link_function( member_name,
-			                        [item_setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
-				                        auto const setter = [&obj, &item_setter]( auto value ) {
+			                        [item_setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
+				                        auto const setter = [&obj, &item_setter]( bool value ) {
 					                        item_setter( obj, std::move( value ) );
 				                        };
 				                        auto result = daw::json::parser::parse_json_boolean_array( view, setter );
@@ -480,9 +480,9 @@ namespace daw {
 		void daw_json_link<Derived>::link_json_string_array_fn( daw::string_view member_name, Setter item_setter,
 		                                                        Getter getter ) {
 			add_json_link_function( member_name,
-			                        [item_setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
-				                        auto const setter = [&obj, &item_setter]( auto value ) {
-					                        item_setter( obj, value.to_string( ) );
+			                        [item_setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
+				                        auto const setter = [&obj, &item_setter]( daw::string_view value ) {
+					                        item_setter( obj, value );
 				                        };
 				                        auto result = daw::json::parser::parse_json_string_array( view, setter );
 				                        return result;
@@ -500,7 +500,7 @@ namespace daw {
 			using member_t = std::decay_t<decltype( *std::begin( getter( std::declval<Derived>( ) ) ) )>;
 			add_json_link_function(
 			    member_name,
-			    [item_setter]( Derived &obj, daw::string_view view ) mutable -> daw::string_view {
+			    [item_setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				    auto const setter = [&obj, &item_setter]( auto value ) { item_setter( obj, std::move( value ) ); };
 				    auto result = daw::json::parser::parse_json_object_array<member_t>( view, setter );
 				    return result;
@@ -512,62 +512,78 @@ namespace daw {
 		}
 
 #define link_json_integer( json_name, member_name )                                                                    \
-	link_json_integer_fn( json_name,                                                                                   \
-	                      []( auto &obj, int64_t value ) {                                                             \
-		                      obj.member_name = static_cast<std::decay_t<decltype( obj.member_name )>>( value );       \
-	                      },                                                                                           \
-	                      []( auto const &obj ) { return obj.member_name; } );
+	link_json_integer_fn(                                                                                              \
+	    json_name,                                                                                                     \
+	    []( auto &obj, int64_t value ) -> void {                                                                       \
+		    obj.member_name = static_cast<std::decay_t<decltype( obj.member_name )>>( value );                         \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_real( json_name, member_name )                                                                       \
-	link_json_real_fn( json_name,                                                                                      \
-	                   []( auto &obj, double value ) {                                                                 \
-		                   obj.member_name = static_cast<std::decay_t<decltype( obj.member_name )>>( value );          \
-	                   },                                                                                              \
-	                   []( auto const &obj ) { return obj.member_name; } );
+	link_json_real_fn(                                                                                                 \
+	    json_name,                                                                                                     \
+	    []( auto &obj, double value ) -> void {                                                                        \
+		    obj.member_name = static_cast<std::decay_t<decltype( obj.member_name )>>( value );                         \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_boolean( json_name, member_name )                                                                    \
-	link_json_boolean_fn( json_name, []( auto &obj, bool value ) { obj.member_name = value; },                         \
-	                      []( auto const &obj ) { return obj.member_name; } );
+	link_json_boolean_fn(                                                                                              \
+	    json_name, []( auto &obj, bool value ) -> void { obj.member_name = value; },                                   \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_string( json_name, member_name )                                                                     \
-	link_json_string_fn( json_name, []( auto &obj, std::string value ) { obj.member_name = std::move( value ); },      \
-	                     []( auto const &obj ) { return obj.member_name; } );
+	link_json_string_fn(                                                                                               \
+	    json_name, []( auto &obj, daw::string_view value ) -> void { obj.member_name = value.to_string( ); },         \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_object( json_name, member_name )                                                                     \
 	link_json_object_fn(                                                                                               \
 	    json_name,                                                                                                     \
-	    []( auto &obj, std::decay_t<decltype( obj.member_name )> value ) { obj.member_name = std::move( value ); },    \
-	    []( auto const &obj ) { return obj.member_name; } );
+	    []( auto &obj, std::decay_t<decltype( obj.member_name )> value ) -> void {                                     \
+		    obj.member_name = std::move( value );                                                                      \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_integer_array( json_name, member_name )                                                              \
 	link_json_integer_array_fn(                                                                                        \
 	    json_name,                                                                                                     \
-	    []( auto &obj, auto value ) { obj.member_name.insert( std::end( obj.member_name ), std::move( value ) ); },    \
-	    []( auto const &obj ) { return obj.member_name; } );
+	    []( auto &obj, int64_t value ) -> void {                                                                       \
+		    obj.member_name.insert( std::end( obj.member_name ), std::move( value ) );                                 \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_real_array( json_name, member_name )                                                                 \
 	link_json_real_array_fn(                                                                                           \
 	    json_name,                                                                                                     \
-	    []( auto &obj, auto value ) { obj.member_name.insert( std::end( obj.member_name ), std::move( value ) ); },    \
-	    []( auto const &obj ) { return obj.member_name; } );
+	    []( auto &obj, double value ) -> void {                                                                        \
+		    obj.member_name.insert( std::end( obj.member_name ), std::move( value ) );                                 \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_boolean_array( json_name, member_name )                                                              \
 	link_json_boolean_array_fn(                                                                                        \
 	    json_name,                                                                                                     \
-	    []( auto &obj, auto value ) { obj.member_name.insert( std::end( obj.member_name ), std::move( value ) ); },    \
-	    []( auto const &obj ) { return obj.member_name; } );
+	    []( auto &obj, bool value ) -> void {                                                                          \
+		    obj.member_name.insert( std::end( obj.member_name ), std::move( value ) );                                 \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_string_array( json_name, member_name )                                                               \
 	link_json_string_array_fn(                                                                                         \
 	    json_name,                                                                                                     \
-	    []( auto &obj, auto value ) { obj.member_name.insert( std::end( obj.member_name ), std::move( value ) ); },    \
-	    []( auto const &obj ) { return obj.member_name; } );
+	    []( auto &obj, daw::string_view value ) -> void {                                                             \
+		    obj.member_name.insert( std::end( obj.member_name ), value.to_string( ) );                                 \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_object_array( json_name, member_name )                                                               \
 	link_json_object_array_fn(                                                                                         \
 	    json_name,                                                                                                     \
-	    []( auto &obj, auto value ) { obj.member_name.insert( std::end( obj.member_name ), std::move( value ) ); },    \
-	    []( auto const &obj ) { return obj.member_name; } );
+	    []( auto &obj, auto value ) -> void {                                                                          \
+		    obj.member_name.insert( std::end( obj.member_name ), std::move( value ) );                                 \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 	} // namespace json
 } // namespace daw

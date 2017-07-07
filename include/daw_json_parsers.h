@@ -182,8 +182,8 @@ namespace daw {
 			                                             Parser parser ) {
 				view = impl::skip_ws( view );
 				daw::exception::daw_throw_on_false( '[' == view.front( ), "Could not find start of array" );
+				view.remove_prefix( );
 				while( !view.empty( ) && ']' != view.front( ) ) {
-					view.remove_prefix( );
 					view = impl::skip_ws( view );
 					auto result = parser( view );
 					item_setter( result.result );
@@ -192,6 +192,7 @@ namespace daw {
 					if( ',' != view.front( ) ) {
 						break;
 					}
+					view.remove_prefix( );
 				}
 				daw::exception::daw_throw_on_true( view.empty( ), "Could not find end of array" );
 				daw::exception::daw_throw_on_false( ']' == view.front( ), "Could not find end of array" );
