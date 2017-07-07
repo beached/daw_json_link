@@ -64,6 +64,7 @@ include_directories( ${HEADER_FOLDER} )
 
 set( HEADER_FILES
 	${HEADER_FOLDER}/daw_json_link.h
+	${HEADER_FOLDER}/daw_json_link_datetime.h
 	${HEADER_FOLDER}/daw_json_link_streams.h
 	${HEADER_FOLDER}/daw_json_parsers.h
 )
