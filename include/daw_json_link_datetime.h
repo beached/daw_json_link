@@ -58,10 +58,28 @@ namespace daw {
 				return tp;
 			}
 
-			auto const &get_iso8601_formats( ) {
+			auto const &get_iso8601_formats( ) noexcept {
 				using namespace std::string_literals;
 				static std::array<std::string, 2> const fmts = {"%FT%TZ"s, "%FT%T%Ez"s};
 				return fmts;
+			}
+
+			template<typename Integer>
+			constexpr auto timestamp_from_epoch( Integer i ) noexcept {
+				using namespace date;
+				using namespace std::chrono;
+				std::chrono::system_clock::time_point const epoch{};
+				auto result = epoch + milliseconds{i};
+				return result;
+			}
+
+			template<typename Duration>
+			constexpr int64_t epoch_from_timestamp( std::chrono::time_point<std::chrono::system_clock, Duration> const &t ) noexcept {
+				using namespace date;
+				using namespace std::chrono;
+				std::chrono::system_clock::time_point const epoch{};
+				return static_cast<int64_t>(
+				    std::chrono::duration_cast<std::chrono::milliseconds>( t - epoch ).count( ) );
 			}
 		} // namespace impl
 	}     // namespace json
@@ -123,4 +141,9 @@ namespace daw {
 			                              return boost::optional<std::string>{};                                       \
 		                              }                                                                                \
 	                              } );
+
+#define link_json_epoch_milliseconds_timestamp( json_name, member_name, formats )                                      \
+	link_json_integer_fn( json_name,                                                                                   \
+	                      []( auto &obj, int64_t value ) -> void { obj.member_name = timestamp_from_epoch( value ); }, \
+	                      []( auto const &obj ) -> int64_t { return epoch_from_timestamp( obj.member_name ); } );
 

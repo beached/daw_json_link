@@ -22,12 +22,7 @@
 
 #pragma once
 
-namespace daw {
-	namespace json {
-		template<typename Derived>
-		class daw_json_link;
-	} // namespace json
-} // namespace daw
+#include "daw_json_link.h"
 
 template<typename Derived>
 std::ostream &operator<<( std::ostream &os, daw::json::daw_json_link<Derived> const &obj ) {

@@ -33,6 +33,7 @@
 
 #include "daw_json_link.h"
 #include "daw_json_link_streams.h"
+#include "daw_json_link_datetime.h"
 
 #include <codecvt>
 
