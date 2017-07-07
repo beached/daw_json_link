@@ -68,7 +68,7 @@ namespace daw {
 		                     return daw::json::impl::tp_to_string( obj.member_name, *std::begin( formats ) );          \
 	                     } );
 
-#define link_json_iso8601_timestamp( json_name, member_name, formats )                                                 \
+#define link_json_iso8601_timestamp( json_name, member_name )                                                          \
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
 		                     using namespace std::string_literals;                                                     \
