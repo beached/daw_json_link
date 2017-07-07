@@ -683,7 +683,7 @@ namespace daw {
 	    []( auto const &obj ) -> std::string { return boost::lexical_cast<std::string>( obj.member_name ); } );
 
 #define link_json_streamable_optional( json_name, member_name, default_value )                                         \
-	static_assert( std::is_convertible_v<decltype( operator<<( std::declval<std::ostream>( ) ) ), member_name>,        \
+	static_assert( std::is_convertible<decltype( operator<<( std::declval<std::ostream>( ) ) ), member_name>::value,   \
 	               std::ostream, member_name##" must have an operator<< overload" );                                   \
 	link_json_string_optional_fn( json_name,                                                                           \
 	                              []( auto &obj, boost::optional<daw::string_view> value ) -> void {                   \
