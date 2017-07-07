@@ -57,6 +57,12 @@ namespace daw {
 				daw::exception::daw_throw_on_true( in.fail( ), "Failed to parse timestamp string" );
 				return tp;
 			}
+
+			auto const &get_iso8601_formats( ) {
+				using namespace std::string_literals;
+				static std::array<std::string, 2> const fmts = {"%FT%TZ"s, "%FT%T%Ez"s};
+				return fmts;
+			}
 		} // namespace impl
 	}     // namespace json
 } // namespace daw
@@ -66,18 +72,55 @@ namespace daw {
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
 		                     obj.member_name = daw::json::impl::string_to_tp( value.to_string( ), formats );           \
 	                     },                                                                                            \
-	                     []( auto const &obj ) -> std::string {                      \
+	                     []( auto const &obj ) -> std::string {                                                        \
 		                     return daw::json::impl::tp_to_string( obj.member_name, *std::begin( formats ) );          \
 	                     } );
 
 #define link_json_iso8601_timestamp( json_name, member_name )                                                          \
-	link_json_string_fn( json_name,                                                                                    \
-	                     []( auto &obj, daw::string_view value ) -> void {                                             \
-		                     using namespace std::string_literals;                                                     \
-		                     static std::array<std::string, 2> const fmts = {"%FT%TZ"s, "%FT%T%Ez"s};        \
-		                     obj.member_name = daw::json::impl::string_to_tp( value.to_string( ), fmts );              \
-	                     },                                                                                            \
-	                     []( auto const &obj ) -> std::string {                      \
-		                     return daw::json::impl::tp_to_string( obj.member_name, "%FT%TZ" );                        \
-	                     } );
+	link_json_string_fn(                                                                                               \
+	    json_name,                                                                                                     \
+	    []( auto &obj, daw::string_view value ) -> void {                                                              \
+		    obj.member_name =                                                                                          \
+		        daw::json::impl::string_to_tp( value.to_string( ), daw::json::impl::get_iso8601_formats( ) );          \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::string {                                                                         \
+		    return daw::json::impl::tp_to_string( obj.member_name, daw::json::impl::get_iso8601_formats( ).front( ) ); \
+	    } );
+
+#define link_json_timestamp_optional( json_name, member_name, formats, default_value )                                 \
+	link_json_string_optional_fn(                                                                                      \
+	    json_name,                                                                                                     \
+	    []( auto &obj, boost::optional<daw::string_view> value ) -> void {                                             \
+		    if( value ) {                                                                                              \
+			    obj.member_name = daw::json::impl::string_to_tp( value.to_string( ), formats );                        \
+		    } else {                                                                                                   \
+			    obj.member_name = default_value;                                                                       \
+		    }                                                                                                          \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> boost::optional<std::string> {                                                        \
+		    if( obj.member_name ) {                                                                                    \
+			    return daw::json::impl::tp_to_string( obj.member_name, *std::begin( formats ) );                       \
+		    } else {                                                                                                   \
+			    return boost::optional<std::string>{};                                                                 \
+		    }                                                                                                          \
+	    } );
+
+#define link_json_iso8601_timestamp_optional( json_name, member_name, default_value )                                  \
+	link_json_string_optional_fn( json_name,                                                                           \
+	                              []( auto &obj, boost::optional<daw::string_view> value ) -> void {                   \
+		                              if( value ) {                                                                    \
+			                              obj.member_name = daw::json::impl::string_to_tp(                             \
+			                                  value.to_string( ), daw::json::impl::get_iso8601_formats( ) );           \
+		                              } else {                                                                         \
+			                              obj.member_name = default_value;                                             \
+		                              }                                                                                \
+	                              },                                                                                   \
+	                              []( auto const &obj ) -> std::string {                                               \
+		                              if( obj.member_name ) {                                                          \
+			                              return daw::json::impl::tp_to_string(                                        \
+			                                  obj.member_name, daw::json::impl::get_iso8601_formats( ).front( ) );     \
+		                              } else {                                                                         \
+			                              return boost::optional<std::string>{};                                       \
+		                              }                                                                                \
+	                              } );
 
