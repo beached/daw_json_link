@@ -116,7 +116,13 @@ namespace daw {
 			static void link_json_integer_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
+			static void link_json_integer_optional_fn( daw::string_view member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
 			static void link_json_real_fn( daw::string_view member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
+			static void link_json_real_optional_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
 			static void link_json_boolean_fn( daw::string_view member_name, Setter setter, Getter getter );
@@ -318,6 +324,27 @@ namespace daw {
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
+		void daw_json_link<Derived>::link_json_integer_optional_fn( daw::string_view member_name, Setter setter,
+		                                                            Getter getter ) {
+			add_json_link_function( member_name,
+			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
+				                        auto result = daw::json::parser::parse_json_integer_optional( view );
+				                        setter( obj, result.result );
+				                        return result.view;
+			                        },
+			                        [getter]( Derived const &obj ) -> std::string {
+				                        using namespace std::string_literals;
+				                        auto value = getter( obj );
+				                        if( value ) {
+					                        using std::to_string;
+					                        return to_string( *value );
+				                        }
+				                        return "null";
+			                        } );
+		}
+
+		template<typename Derived>
+		template<typename Setter, typename Getter>
 		void daw_json_link<Derived>::link_json_real_fn( daw::string_view member_name, Setter setter, Getter getter ) {
 			add_json_link_function( member_name,
 			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
@@ -331,6 +358,29 @@ namespace daw {
 				                        return to_string( getter( obj ) );
 			                        } );
 		}
+
+		template<typename Derived>
+		template<typename Setter, typename Getter>
+		void daw_json_link<Derived>::link_json_real_optional_fn( daw::string_view member_name, Setter setter,
+		                                                            Getter getter ) {
+			add_json_link_function( member_name,
+			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
+				                        auto result = daw::json::parser::parse_json_real_optional( view );
+				                        setter( obj, result.result );
+				                        return result.view;
+			                        },
+			                        [getter]( Derived const &obj ) -> std::string {
+				                        using namespace std::string_literals;
+				                        auto value = getter( obj );
+				                        if( value ) {
+					                        using std::to_string;
+					                        return to_string( *value );
+				                        }
+				                        return "null";
+			                        } );
+		}
+
+
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
@@ -545,11 +595,35 @@ namespace daw {
 	    },                                                                                                             \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
+#define link_json_integer_optional( json_name, member_name, default_value )                                            \
+	link_json_integer_optional_fn(                                                                                     \
+	    json_name,                                                                                                     \
+	    []( auto &obj, boost::optional<int64_t> value ) -> void {                                                      \
+		    if( value ) {                                                                                              \
+			    obj.member_name = *value;                                                                              \
+		    } else {                                                                                                   \
+			    obj.member_name = default_value;                                                                       \
+		    }                                                                                                          \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
+
 #define link_json_real( json_name, member_name )                                                                       \
 	link_json_real_fn(                                                                                                 \
 	    json_name,                                                                                                     \
 	    []( auto &obj, double value ) -> void {                                                                        \
 		    obj.member_name = static_cast<std::decay_t<decltype( obj.member_name )>>( value );                         \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
+
+#define link_json_real_optional( json_name, member_name, default_value )                                               \
+	link_json_real_optional_fn(                                                                                        \
+	    json_name,                                                                                                     \
+	    []( auto &obj, boost::optional<double> value ) -> void {                                                       \
+		    if( value ) {                                                                                              \
+			    obj.member_name = *value;                                                                              \
+		    } else {                                                                                                   \
+			    obj.member_name = default_value;                                                                       \
+		    }                                                                                                          \
 	    },                                                                                                             \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 

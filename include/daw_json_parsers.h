@@ -133,10 +133,35 @@ namespace daw {
 			}
 
 			template<typename CharT>
+			constexpr result_t<boost::optional<int64_t>> parse_json_integer_optional( daw::basic_string_view<CharT> view ) {
+				auto const null_result = is_null( view );
+				view = null_result.view;
+				if( null_result.result ) {
+					return {view, boost::none};
+				}
+				auto const parse_result = impl::parse_number( view );
+				return {view, static_cast<int64_t>( parse_result )};
+			}
+
+
+			template<typename CharT>
 			constexpr result_t<double> parse_json_real( daw::basic_string_view<CharT> view ) noexcept {
 				view = impl::skip_ws( view );
 				return impl::parse_number( view );
 			}
+
+			template<typename CharT>
+			constexpr result_t<boost::optional<double>> parse_json_real_optional( daw::basic_string_view<CharT> view ) {
+				auto const null_result = is_null( view );
+				view = null_result.view;
+				if( null_result.result ) {
+					return {view, boost::none};
+				}
+				auto const parse_result = impl::parse_number( view );
+				return {view, parse_result};
+			}
+
+
 
 			template<typename CharT>
 			constexpr result_t<bool> skip_json_value( daw::basic_string_view<CharT> view ) {
