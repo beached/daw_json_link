@@ -572,14 +572,32 @@ namespace daw {
 	    },                                                                                                             \
 	    []( auto const &obj ) -> std::string { return boost::lexical_cast<std::string>( obj.member_name ); } );
 
-#define link_json_string_optional( json_name, member_name, null_value )                                                \
+#define link_json_streamable_optional( json_name, member_name, default_value )                                         \
+	link_json_string_optional_fn( json_name,                                                                           \
+	                              []( auto &obj, boost::optional<daw::string_view> value ) -> void {                   \
+		                              if( value ) {                                                                    \
+			                              std::stringstream ss{value->to_string( )};                                   \
+			                              ss >> obj.member_name;                                                       \
+		                              } else {                                                                         \
+			                              obj.member_name = default_value;                                             \
+		                              }                                                                                \
+	                              },                                                                                   \
+	                              []( auto const &obj ) -> boost::optional<std::string> {                              \
+		                              if( obj.member_name ) {                                                          \
+			                              return boost::lexical_cast<std::string>( *obj.member_name );                 \
+		                              } else {                                                                         \
+			                              return boost::optional<std::string>{};                                       \
+		                              }                                                                                \
+	                              } );
+
+#define link_json_string_optional( json_name, member_name, default_value )                                             \
 	link_json_string_optional_fn(                                                                                      \
 	    json_name,                                                                                                     \
 	    []( auto &obj, boost::optional<daw::string_view> value ) -> void {                                             \
 		    if( value ) {                                                                                              \
 			    obj.member_name = value->to_string( );                                                                 \
 		    } else {                                                                                                   \
-			    obj.member_name = null_value;                                                                          \
+			    obj.member_name = default_value;                                                                       \
 		    }                                                                                                          \
 	    },                                                                                                             \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
