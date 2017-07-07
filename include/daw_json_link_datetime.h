@@ -37,7 +37,7 @@ namespace daw {
 		namespace impl {
 			template<typename Duration>
 			decltype( auto ) tp_to_string( std::chrono::time_point<std::chrono::system_clock, Duration> &tp,
-			                               daw::string_view fmts ) {
+			                               daw::string_view fmt ) {
 				return date::format( fmt.to_string( ), tp );
 			}
 
