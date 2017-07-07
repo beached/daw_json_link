@@ -74,7 +74,7 @@ namespace daw {
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
 		                     using namespace std::string_literals;                                                     \
-		                     static constexpr std::array<std::string, 2> const fmts = {"%FT%TZ"s, "%FT%T%Ez"s};        \
+		                     static std::array<std::string, 2> const fmts = {"%FT%TZ"s, "%FT%T%Ez"s};        \
 		                     obj.member_name = daw::json::impl::string_to_tp( value.to_string( ), fmts );              \
 	                     },                                                                                            \
 	                     []( auto const &obj ) -> std::string {                      \
