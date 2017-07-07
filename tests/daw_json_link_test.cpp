@@ -32,6 +32,8 @@
 #include <daw/daw_string_view.h>
 
 #include "daw_json_link.h"
+#include "daw_json_link_streams.h"
+
 #include <codecvt>
 
 struct A : public daw::json::daw_json_link<A> {
