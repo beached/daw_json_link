@@ -687,7 +687,7 @@ namespace daw {
 	                              []( auto &obj, boost::optional<daw::string_view> value ) -> void {                   \
 		                              if( value ) {                                                                    \
 			                              std::stringstream ss{value->to_string( )};                                   \
-			                              ss >> obj.member_name;                                                       \
+			                              ss >> *obj.member_name;                                                       \
 		                              } else {                                                                         \
 			                              obj.member_name = default_value;                                             \
 		                              }                                                                                \
