@@ -161,8 +161,6 @@ namespace daw {
 				return {view, parse_result};
 			}
 
-
-
 			template<typename CharT>
 			constexpr result_t<bool> skip_json_value( daw::basic_string_view<CharT> view ) {
 				daw::exception::daw_throw( "skip_json_value isn't implemented yet" );
@@ -194,6 +192,21 @@ namespace daw {
 					return impl::parse_false( view );
 				}
 				return impl::parse_true( view );
+			}
+
+			template<typename CharT>
+			constexpr result_t<boost::optional<bool>> parse_json_boolean_optional( daw::basic_string_view<CharT> view ) {
+				auto const null_result = is_null( view );
+				view = null_result.view;
+				if( null_result.result ) {
+					return {view, boost::none};
+				}
+				if( 'f' == view.front( ) ) {
+					auto result = impl::parse_false( view );
+					return { result.view, result.result };
+				}
+				auto result = impl::parse_true( view );
+				return {result.view, result.result};
 			}
 
 			template<typename CharT>

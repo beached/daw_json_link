@@ -128,6 +128,9 @@ namespace daw {
 			static void link_json_boolean_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
+			static void link_json_boolean_optional_fn( daw::string_view member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
 			static void link_json_string_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
@@ -401,6 +404,27 @@ namespace daw {
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
+		void daw_json_link<Derived>::link_json_boolean_optional_fn( daw::string_view member_name, Setter setter,
+		                                                            Getter getter ) {
+			add_json_link_function( member_name,
+			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
+				                        auto result = daw::json::parser::parse_json_boolean_optional( view );
+				                        setter( obj, result.result );
+				                        return result.view;
+			                        },
+			                        [getter]( Derived const &obj ) -> std::string {
+				                        using namespace std::string_literals;
+				                        auto value = getter( obj );
+				                        if( value ) {
+					                        using std::to_string;
+					                        return to_string( *value );
+				                        }
+				                        return "null";
+			                        } );
+		}
+
+		template<typename Derived>
+		template<typename Setter, typename Getter>
 		void daw_json_link<Derived>::link_json_string_fn( daw::string_view member_name, Setter setter, Getter getter ) {
 			add_json_link_function( member_name,
 			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
@@ -630,6 +654,18 @@ namespace daw {
 #define link_json_boolean( json_name, member_name )                                                                    \
 	link_json_boolean_fn(                                                                                              \
 	    json_name, []( auto &obj, bool value ) -> void { obj.member_name = value; },                                   \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
+
+#define link_json_boolean_optional( json_name, member_name, default_value )                                            \
+	link_json_boolean_optional_fn(                                                                                     \
+	    json_name,                                                                                                     \
+	    []( auto &obj, boost::optional<bool> value ) -> void {                                                         \
+		    if( value ) {                                                                                              \
+			    obj.member_name = *value;                                                                              \
+		    } else {                                                                                                   \
+			    obj.member_name = default_value;                                                                       \
+		    }                                                                                                          \
+	    },                                                                                                             \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_string( json_name, member_name )                                                                     \
