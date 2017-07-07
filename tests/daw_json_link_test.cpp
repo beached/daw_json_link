@@ -44,7 +44,7 @@ struct A : public daw::json::daw_json_link<A> {
 	std::string d;
 	boost::optional<std::string> e;
 
-	A( ) : a{0}, b{1.2345}, c{true}, d{"sixseveneightnine"}, e{boost::none} {};
+	A( ) : a{0}, b{1.2345}, c{true}, d{"sixseveneightnine"}, e{boost::none} {}
 	~A( ) = default;
 	A( A const & ) = default;
 	A( A && ) = default;

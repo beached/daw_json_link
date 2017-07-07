@@ -151,8 +151,7 @@ namespace daw {
 			}
 
 			template<typename CharT>
-			constexpr result_t<boost::optional<int64_t>>
-			parse_json_integer_optional( daw::basic_string_view<CharT> view ) {
+			result_t<boost::optional<int64_t>> parse_json_integer_optional( daw::basic_string_view<CharT> view ) {
 				auto const null_result = is_null( view );
 				view = null_result.view;
 				if( null_result.result ) {
@@ -169,7 +168,7 @@ namespace daw {
 			}
 
 			template<typename CharT>
-			constexpr result_t<boost::optional<double>> parse_json_real_optional( daw::basic_string_view<CharT> view ) {
+			result_t<boost::optional<double>> parse_json_real_optional( daw::basic_string_view<CharT> view ) {
 				auto const null_result = is_null( view );
 				view = null_result.view;
 				if( null_result.result ) {
@@ -195,8 +194,7 @@ namespace daw {
 			}
 
 			template<typename CharT>
-			constexpr result_t<boost::optional<bool>>
-			parse_json_boolean_optional( daw::basic_string_view<CharT> view ) {
+			result_t<boost::optional<bool>> parse_json_boolean_optional( daw::basic_string_view<CharT> view ) {
 				auto const null_result = is_null( view );
 				view = null_result.view;
 				if( null_result.result ) {
@@ -219,7 +217,7 @@ namespace daw {
 			}
 
 			template<typename CharT>
-			constexpr result_t<boost::optional<daw::string_view>>
+			result_t<boost::optional<daw::string_view>>
 			parse_json_string_optional( daw::basic_string_view<CharT> view ) {
 				auto const null_result = is_null( view );
 				view = null_result.view;
