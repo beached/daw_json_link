@@ -64,9 +64,10 @@ namespace daw {
 				out_value = string_to_tp<Duration>( std::forward<std::string>( str ), fmts );
 			}
 
+			template<typename String = std::string>
 			auto const &get_iso8601_formats( ) noexcept {
 				using namespace std::string_literals;
-				static std::array<std::string, 2> const fmts = {{"%FT%TZ"s, "%FT%T%Ez"s}};
+				static std::array<String, 2> const fmts = {{"%FT%TZ"s, "%FT%T%Ez"s}};
 				return fmts;
 			}
 
