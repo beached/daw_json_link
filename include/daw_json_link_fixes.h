@@ -22,14 +22,11 @@
 
 #pragma once
 
-#include <array>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <chrono>
-#include <date/date.h>
 #include <string>
 
 #include <daw/daw_string_view.h>
 
+#include "daw_json_parsers.h"
 #include "daw_json_link.h"
 
 #define link_json_quoted_integer( json_name, member_name, formats )                                                 \
@@ -44,4 +41,18 @@
 		                     using std::to_string;                                                                     \
 		                     return "\""s + to_string( obj.member_name ) + "\""s;                                      \
 	                     } );
+
+#define link_json_quoted_real( json_name, member_name, formats )                                                 \
+	link_json_string_fn( json_name,                                                                                    \
+	                     []( auto &obj, daw::string_view value ) -> void {                                             \
+		                     auto number_result = daw::json::impl::parse_number( value );                              \
+		                     obj.member_name =                                                                         \
+		                         static_cast<std::decay_t<decltype( obj.member_name )>>( number_result.result );       \
+	                     },                                                                                            \
+	                     []( auto const &obj ) -> std::string {                                                        \
+		                     using namespace std::string_literals;                                                     \
+		                     using std::to_string;                                                                     \
+		                     return "\""s + to_string( obj.member_name ) + "\""s;                                      \
+	                     } );
+
 
