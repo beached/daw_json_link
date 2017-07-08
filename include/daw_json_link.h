@@ -481,9 +481,10 @@ namespace daw {
 		template<typename Setter, typename Getter>
 		void daw_json_link<Derived>::link_json_object_optional_fn( daw::string_view member_name, Setter setter,
 		                                                           Getter getter ) {
+			using member_t = std::decay_t<declval(getter( Derived ) )>;
 			add_json_link_function( member_name,
 			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				                        auto result = daw::json::parser::parse_json_object_optional<Derived>( view );
+				                        auto result = daw::json::parser::parse_json_object_optional<member_t>( view );
 				                        setter( obj, std::move( result.result ) );
 				                        return result.view;
 			                        },
