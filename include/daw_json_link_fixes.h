@@ -26,10 +26,10 @@
 
 #include <daw/daw_string_view.h>
 
-#include "daw_json_parsers.h"
 #include "daw_json_link.h"
+#include "daw_json_parsers.h"
 
-#define link_json_quoted_integer( json_name, member_name, formats )                                                 \
+#define link_json_quoted_integer( json_name, member_name )                                                             \
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
 		                     auto number_result = daw::json::impl::parse_number( value );                              \
@@ -42,7 +42,7 @@
 		                     return "\""s + to_string( obj.member_name ) + "\""s;                                      \
 	                     } );
 
-#define link_json_quoted_real( json_name, member_name, formats )                                                 \
+#define link_json_quoted_real( json_name, member_name )                                                                \
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
 		                     auto number_result = daw::json::impl::parse_number( value );                              \
@@ -54,5 +54,4 @@
 		                     using std::to_string;                                                                     \
 		                     return "\""s + to_string( obj.member_name ) + "\""s;                                      \
 	                     } );
-
 
