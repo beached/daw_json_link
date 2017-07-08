@@ -720,6 +720,18 @@ namespace daw {
 	    },                                                                                                             \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
+#define link_json_object_optional( json_name, member_name, default_value )                                             \
+	link_json_object_optional_fn(                                                                                      \
+	    json_name,                                                                                                     \
+	    []( auto &obj, boost::optional<std::decay_t<decltype( obj.member_name )>> value ) -> void {                    \
+		    if( value ) {                                                                                              \
+			    obj.member_name = *value;                                                                              \
+		    } else {                                                                                                   \
+			    obj.member_name = default_value;                                                                       \
+		    }                                                                                                          \
+	    },                                                                                                             \
+	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
+
 #define link_json_integer_array( json_name, member_name )                                                              \
 	link_json_integer_array_fn(                                                                                        \
 	    json_name,                                                                                                     \
