@@ -32,7 +32,7 @@
 #define link_json_quoted_integer( json_name, member_name )                                                             \
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
-		                     auto number_result = daw::json::impl::parse_number( value );                              \
+		                     auto number_result = daw::json::parser::impl::parse_number( value );                              \
 		                     obj.member_name =                                                                         \
 		                         static_cast<std::decay_t<decltype( obj.member_name )>>( number_result.result );       \
 	                     },                                                                                            \
@@ -45,7 +45,7 @@
 #define link_json_quoted_real( json_name, member_name )                                                                \
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
-		                     auto number_result = daw::json::impl::parse_number( value );                              \
+		                     auto number_result = daw::json::parser::impl::parse_number( value );                              \
 		                     obj.member_name =                                                                         \
 		                         static_cast<std::decay_t<decltype( obj.member_name )>>( number_result.result );       \
 	                     },                                                                                            \
