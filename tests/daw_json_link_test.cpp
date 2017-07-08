@@ -32,9 +32,10 @@
 #include <daw/daw_string_view.h>
 
 #include "daw_json_link.h"
+#include "daw_json_link_fixes.h"
+#include "daw_json_link_file.h"
 #include "daw_json_link_streams.h"
 #include "daw_json_link_datetime.h"
-#include "daw_json_link_fixes.h"
 
 #include <codecvt>
 
@@ -197,8 +198,8 @@ int main( int argc, char **argv ) {
 		daw::filesystem::MemoryMappedFile<char> json_file{make_path_str( "test.json" ).data( )};
 		daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
 		std::cout << "Test file is of size " << to_si_bytes( json_file.size( ) ) << '\n';
-		auto lapsed_time = daw::benchmark( [&json_file]( ) {
-			B::from_json_array_string( daw::string_view{json_file.data( ), json_file.size( )} );
+		auto lapsed_time = daw::benchmark( []( ) -> void {
+			auto const result = daw::json::array_from_file<B>( "test.json" );
 		} );
 		std::cout << "To process " << to_si_bytes( json_file.size( ) ) << " bytes, it took " << lapsed_time
 		          << " seconds. " << to_si_bytes( json_file.size( ) / lapsed_time ) << "/second\n";
