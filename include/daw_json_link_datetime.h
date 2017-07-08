@@ -163,3 +163,47 @@ namespace daw {
 	                   },                                                                                              \
 	                   []( auto const &obj ) -> double { return static_cast<double>( obj.member_name.count( ) ); } );
 
+#define link_json_real_duration_optional( json_name, member_name, default_value )                                      \
+	link_json_real_optional_fn( json_name,                                                                             \
+	                            []( auto &obj, boost::optional<double> value ) -> void {                               \
+		                            if( value ) {                                                                      \
+			                            using member_t = std::decay_t<decltype( *obj.member_name )>;                   \
+			                            obj.member_name = member_t{static_cast<long int>( *value )};                   \
+		                            } else {                                                                           \
+			                            obj.member_name = default_value;                                               \
+		                            }                                                                                  \
+	                            },                                                                                     \
+	                            []( auto const &obj ) -> boot::optional<double> {                                      \
+		                            if( obj.member_name ) {                                                            \
+			                            return static_cast<double>( obj.member_name->count( ) );                       \
+		                            } else {                                                                           \
+			                            return boost::optional<double>{};                                              \
+		                            }                                                                                  \
+	                            } );
+
+#define link_json_integer_duration( json_name, member_name )                                                              \
+	link_json_integer_fn( json_name,                                                                                      \
+	                   []( auto &obj, int64_t value ) -> void {                                                         \
+		                   using member_t = std::decay_t<decltype( obj.member_name )>;                                 \
+		                   obj.member_name = member_t{static_cast<long int>( value )};                                 \
+	                   },                                                                                              \
+	                   []( auto const &obj ) -> int64_t { return static_cast<int64_t>( obj.member_name.count( ) ); } );
+
+#define link_json_integer_duration_optional( json_name, member_name, default_value )                                      \
+	link_json_integer_optional_fn( json_name,                                                                             \
+	                            []( auto &obj, boost::optional<int64_t> value ) -> void {                               \
+		                            if( value ) {                                                                      \
+			                            using member_t = std::decay_t<decltype( *obj.member_name )>;                   \
+			                            obj.member_name = member_t{static_cast<long int>( *value )};                   \
+		                            } else {                                                                           \
+			                            obj.member_name = default_value;                                               \
+		                            }                                                                                  \
+	                            },                                                                                     \
+	                            []( auto const &obj ) -> boot::optional<int64_t> {                                      \
+		                            if( obj.member_name ) {                                                            \
+			                            return static_cast<int64_t>( obj.member_name->count( ) );                       \
+		                            } else {                                                                           \
+			                            return boost::optional<int64_t>{};                                              \
+		                            }                                                                                  \
+	                            } );
+
