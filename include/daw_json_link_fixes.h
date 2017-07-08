@@ -32,7 +32,7 @@
 
 #include "daw_json_link.h"
 
-#define link_json_string_to_integer( json_name, member_name, formats )                                                 \
+#define link_json_quoted_integer( json_name, member_name, formats )                                                 \
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
 		                     auto number_result = daw::json::impl::parse_number( value );                              \
