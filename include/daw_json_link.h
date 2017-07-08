@@ -347,7 +347,7 @@ namespace daw {
 					                        return to_string( *value );
 				                        }
 				                        return "null";
-			                        } );
+			                        }, true );
 		}
 
 		template<typename Derived>
@@ -384,7 +384,7 @@ namespace daw {
 					                        return to_string( *value );
 				                        }
 				                        return "null";
-			                        } );
+			                        }, true );
 		}
 
 
@@ -424,7 +424,7 @@ namespace daw {
 					                        return to_string( *value );
 				                        }
 				                        return "null";
-			                        } );
+			                        }, true );
 		}
 
 		template<typename Derived>
@@ -460,7 +460,7 @@ namespace daw {
 					                        return "\""s + *value + "\""s;
 				                        }
 				                        return "null";
-			                        } );
+			                        }, true );
 		}
 
 		template<typename Derived>
@@ -496,7 +496,7 @@ namespace daw {
 											return value->to_json_string( );
 				                        }
 				                        return "null";
-			                        } );
+			                        }, true );
 		}
 
 		namespace impl {
