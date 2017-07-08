@@ -161,5 +161,5 @@ namespace daw {
 		                   using member_t = std::decay_t<decltype( obj.member_name )>;                                 \
 		                   obj.member_name = member_t{static_cast<long int>( value )};                                 \
 	                   },                                                                                              \
-	                   []( auto const &obj ) -> double { return static_cast<double>( obj.member_name.count( ) ) } );
+	                   []( auto const &obj ) -> double { return static_cast<double>( obj.member_name.count( ) ); } );
 
