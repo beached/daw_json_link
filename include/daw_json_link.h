@@ -31,6 +31,7 @@
 #include <mutex>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -499,11 +500,13 @@ namespace daw {
 		}
 
 		namespace impl {
-			std::string to_string( std::string s ) {
+			template<typename CharT, typename Traits>
+			auto to_string( std::basic_string<CharT, Traits> s ) {
 				return s;
 			}
 
-			std::string to_string( bool b ) noexcept {
+			template<typename Boolean, typename = std::enable_if_t<std::is_same<bool, Boolean>::value>>
+			std::string to_string( Boolean b ) noexcept {
 				using namespace std::string_literals;
 				return b ? "true"s : "false"s;
 			}
