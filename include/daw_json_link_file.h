@@ -34,7 +34,7 @@
 namespace daw {
 	namespace json {
 		template<typename Derived>
-		Derived from_file( daw::string_view path_str ) {
+		auto from_file( daw::string_view path_str ) {
 			using namespace std::string_literals;
 			static auto const make_path_str = []( daw::string_view s ) {
 #ifdef WIN32
