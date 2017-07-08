@@ -70,7 +70,7 @@
 		                              if( obj.member_name ) {                                                          \
 			                              using namespace std::string_literals;                                        \
 			                              using std::to_string;                                                        \
-			                              return "\""s + to_string( obj.member_name ) + "\""s;                         \
+			                              return "\""s + to_string( *obj.member_name ) + "\""s;                         \
 		                              } else {                                                                         \
 			                              return boost::optional<std::string>{};                                       \
 		                              }                                                                                \
@@ -91,7 +91,7 @@
 		                              if( obj.member_name ) {                                                          \
 			                              using namespace std::string_literals;                                        \
 			                              using std::to_string;                                                        \
-			                              return "\""s + to_string( obj.member_name ) + "\""s;                         \
+			                              return "\""s + to_string( *obj.member_name ) + "\""s;                         \
 		                              } else {                                                                         \
 			                              return boost::optional<std::string>{};                                       \
 		                              }                                                                                \
