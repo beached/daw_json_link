@@ -32,7 +32,7 @@
 #define link_json_quoted_integer( json_name, member_name )                                                             \
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
-		                     auto number_result = daw::json::parser::impl::parse_number( value );                              \
+		                     auto number_result = daw::json::parser::impl::parse_number( value );                      \
 		                     obj.member_name =                                                                         \
 		                         static_cast<std::decay_t<decltype( obj.member_name )>>( number_result.result );       \
 	                     },                                                                                            \
@@ -45,7 +45,7 @@
 #define link_json_quoted_real( json_name, member_name )                                                                \
 	link_json_string_fn( json_name,                                                                                    \
 	                     []( auto &obj, daw::string_view value ) -> void {                                             \
-		                     auto number_result = daw::json::parser::impl::parse_number( value );                              \
+		                     auto number_result = daw::json::parser::impl::parse_number( value );                      \
 		                     obj.member_name =                                                                         \
 		                         static_cast<std::decay_t<decltype( obj.member_name )>>( number_result.result );       \
 	                     },                                                                                            \
@@ -54,4 +54,46 @@
 		                     using std::to_string;                                                                     \
 		                     return "\""s + to_string( obj.member_name ) + "\""s;                                      \
 	                     } );
+
+#define link_json_quoted_integer_optional( json_name, member_name, default_value )                                     \
+	link_json_string_optional_fn( json_name,                                                                           \
+	                              []( auto &obj, boost::optional<daw::string_view> value ) -> void {                   \
+		                              if( value ) {                                                                    \
+			                              auto number_result = daw::json::parser::impl::parse_number( *value );        \
+			                              obj.member_name = static_cast<std::decay_t<decltype( obj.member_name )>>(    \
+			                                  number_result.result );                                                  \
+		                              } else {                                                                         \
+			                              obj.member_name = default_value;                                             \
+		                              }                                                                                \
+	                              },                                                                                   \
+	                              []( auto const &obj ) -> boost::optional<std::string> {                              \
+		                              if( obj.member_name ) {                                                          \
+			                              using namespace std::string_literals;                                        \
+			                              using std::to_string;                                                        \
+			                              return "\""s + to_string( obj.member_name ) + "\""s;                         \
+		                              } else {                                                                         \
+			                              return "null";                                                               \
+		                              }                                                                                \
+	                              } );
+
+#define link_json_quoted_real_optional( json_name, member_name, default_value )                                     \
+	link_json_string_optional_fn( json_name,                                                                           \
+	                              []( auto &obj, boost::optional<daw::string_view> value ) -> void {                   \
+		                              if( value ) {                                                                    \
+			                              auto number_result = daw::json::parser::impl::parse_number( *value );        \
+			                              obj.member_name = static_cast<std::decay_t<decltype( obj.member_name )>>(    \
+			                                  number_result.result );                                                  \
+		                              } else {                                                                         \
+			                              obj.member_name = default_value;                                             \
+		                              }                                                                                \
+	                              },                                                                                   \
+	                              []( auto const &obj ) -> boost::optional<std::string> {                              \
+		                              if( obj.member_name ) {                                                          \
+			                              using namespace std::string_literals;                                        \
+			                              using std::to_string;                                                        \
+			                              return "\""s + to_string( obj.member_name ) + "\""s;                         \
+		                              } else {                                                                         \
+			                              return "null";                                                               \
+		                              }                                                                                \
+	                              } );
 
