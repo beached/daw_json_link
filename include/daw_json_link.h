@@ -140,7 +140,7 @@ namespace daw {
 			static void link_json_object_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
-			void link_json_object_optional_fn( daw::string_view member_name, Setter setter, Getter getter );
+			static void link_json_object_optional_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
 			static void link_json_integer_array_fn( daw::string_view member_name, Setter setter, Getter getter );
