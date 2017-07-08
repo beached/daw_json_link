@@ -229,6 +229,17 @@ namespace daw {
 				return {view, parse_result};
 			}
 
+			template<typename Derived, typename CharT>
+			result_t<boost::optional<Derived>> parse_json_object_optional( daw::basic_string_view<CharT> view ) {
+				auto const null_result = is_null( view );
+				view = null_result.view;
+				if( null_result.result ) {
+					return {view, boost::none};
+				}
+				auto result = Derived::from_json_string( view );
+				return {result.view, std::move( result.result )};
+			}
+
 			template<typename CharT, typename ItemSetter, typename Parser>
 			constexpr daw::string_view parse_json_array( daw::basic_string_view<CharT> view, ItemSetter item_setter,
 			                                             Parser parser ) {

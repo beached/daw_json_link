@@ -140,6 +140,9 @@ namespace daw {
 			static void link_json_object_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
+			void link_json_object_optional_fn( daw::string_view member_name, Setter setter, Getter getter );
+
+			template<typename Setter, typename Getter>
 			static void link_json_integer_array_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
@@ -472,6 +475,26 @@ namespace daw {
 				    return view;
 			    },
 			    [getter]( Derived const &obj ) -> std::string { return getter( obj ).to_json_string( ); } );
+		}
+
+		template<typename Derived>
+		template<typename Setter, typename Getter>
+		void daw_json_link<Derived>::link_json_object_optional_fn( daw::string_view member_name, Setter setter,
+		                                                           Getter getter ) {
+			add_json_link_function( member_name,
+			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
+				                        auto result = daw::json::parser::parse_json_object_optional<Derived>( view );
+				                        setter( obj, std::move( result.result ) );
+				                        return result.view;
+			                        },
+			                        [getter]( Derived const &obj ) -> std::string {
+				                        using namespace std::string_literals;
+				                        auto const & value = getter( obj );
+				                        if( value ) {
+											return value->to_json_string( );
+				                        }
+				                        return "null";
+			                        } );
 		}
 
 		namespace impl {
