@@ -34,6 +34,25 @@
 namespace daw {
 	namespace json {
 		template<typename Derived>
+		Derived from_file( daw::string_view path_str ) {
+			using namespace std::string_literals;
+			static auto const make_path_str = []( daw::string_view s ) {
+#ifdef WIN32
+				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+				return converter.from_bytes( s.to_string( ) );
+#else
+				return s.to_string( );
+#endif
+			};
+			auto const localized_path = make_path_str( path_str );
+			daw::exception::daw_throw_on_false( boost::filesystem::exists( localized_path ), path_str + " does not exist" );
+			daw::filesystem::MemoryMappedFile<char> json_file{localized_path };
+			daw::exception::daw_throw_on_false( json_file, "Failed to open test file '"s + localized_path + "'"s );
+
+			return Derived::from_json_string( daw::string_view{json_file.data( ), json_file.size( )} );
+		}
+
+		template<typename Derived>
 		std::vector<Derived> array_from_file( daw::string_view path_str ) {
 			using namespace std::string_literals;
 			static auto const make_path_str = []( daw::string_view s ) {
