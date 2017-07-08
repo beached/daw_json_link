@@ -155,3 +155,11 @@ namespace daw {
 	    []( auto &obj, int64_t value ) -> void { obj.member_name = daw::json::impl::timestamp_from_epoch( value ); },  \
 	    []( auto const &obj ) -> int64_t { return daw::json::impl::epoch_from_timestamp( obj.member_name ); } );
 
+#define link_json_real_duration( json_name, member_name )                                                              \
+	link_json_real_fn( json_name,                                                                                      \
+	                   []( auto &obj, double value ) -> void {                                                         \
+		                   using member_t = std::decay_t<decltype( obj.member_name )>;                                 \
+		                   obj.member_name = member_t{static_cast<long int>( value )};                                 \
+	                   },                                                                                              \
+	                   []( auto const &obj ) -> double { return static_cast<double>( obj.member_name.count( ) } );
+
