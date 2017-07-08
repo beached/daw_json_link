@@ -72,7 +72,7 @@
 			                              using std::to_string;                                                        \
 			                              return "\""s + to_string( obj.member_name ) + "\""s;                         \
 		                              } else {                                                                         \
-			                              return "null";                                                               \
+			                              return boost::optional<std::string>{};                                       \
 		                              }                                                                                \
 	                              } );
 
@@ -93,7 +93,7 @@
 			                              using std::to_string;                                                        \
 			                              return "\""s + to_string( obj.member_name ) + "\""s;                         \
 		                              } else {                                                                         \
-			                              return "null";                                                               \
+			                              return boost::optional<std::string>{};                                       \
 		                              }                                                                                \
 	                              } );
 
