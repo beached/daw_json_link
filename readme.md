@@ -15,6 +15,6 @@ struct A {
 
 std::string some_json_string = ...
 
-auto a = A::from_json_string( some_json_string.begin( ), some_json_string.end( ) );
+auto a = A::from_json_string( some_json_string );
 ```
 
