@@ -35,9 +35,8 @@
 namespace daw {
 	namespace json {
 		namespace impl {
-			template<typename Duration>
-			decltype( auto ) tp_to_string( std::chrono::time_point<std::chrono::system_clock, Duration> &tp,
-			                               daw::string_view fmt ) {
+			template<typename TimePoint>
+			decltype( auto ) tp_to_string( TimePoint const &tp, daw::string_view fmt ) {
 				return date::format( fmt.to_string( ), tp );
 			}
 
