@@ -109,8 +109,8 @@ namespace daw {
 		                                                    daw::json::impl::get_iso8601_formats( ) );                 \
 	                     },                                                                                            \
 	                     []( auto const &obj ) -> std::string {                                                        \
-		                     return daw::json::impl::tp_to_string( obj.member_name,                                    \
-		                                                           daw::json::impl::get_iso8601_formats( ).front( ) ); \
+		                     return daw::json::impl::tp_to_string(                                                     \
+		                         obj.member_name, *std::begin( daw::json::impl::get_iso8601_formats( ) ) );            \
 	                     } );
 
 #define link_json_timestamp_optional( json_name, member_name, formats, default_value )                                 \
