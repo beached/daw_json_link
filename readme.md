@@ -8,13 +8,13 @@ struct A {
 	std::string b;
 
 	static void json_link_map( ) {
-		link_json_integer_fn( "a", a );
-		link_json_string_fn( "b", b );
+		link_json_integer( "a", a );
+		link_json_string( "b", b );
 	}
 };
 
 std::string some_json_string = ...
 
-auto a = A::from_json_string( some_json_string.begin( ), some_json_string.end( ) );
+auto a = A::from_json_string( some_json_string );
 ```
 
