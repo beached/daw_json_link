@@ -748,7 +748,7 @@ namespace daw {
 	    json_name,                                                                                                     \
 	    []( auto &obj, boost::optional<std::decay_t<decltype( obj.member_name )>> value ) -> void {                    \
 		    if( value ) {                                                                                              \
-			    obj.member_name = *value;                                                                              \
+			    obj.member_name = std::move( *value );                                                                 \
 		    } else {                                                                                                   \
 			    obj.member_name = default_value;                                                                       \
 		    }                                                                                                          \
