@@ -173,7 +173,7 @@ namespace daw {
 			                            obj.member_name = default_value;                                               \
 		                            }                                                                                  \
 	                            },                                                                                     \
-	                            []( auto const &obj ) -> boot::optional<double> {                                      \
+	                            []( auto const &obj ) -> boost::optional<double> {                                      \
 		                            if( obj.member_name ) {                                                            \
 			                            return static_cast<double>( obj.member_name->count( ) );                       \
 		                            } else {                                                                           \
@@ -199,7 +199,7 @@ namespace daw {
 			                            obj.member_name = default_value;                                               \
 		                            }                                                                                  \
 	                            },                                                                                     \
-	                            []( auto const &obj ) -> boot::optional<int64_t> {                                      \
+	                            []( auto const &obj ) -> boost::optional<int64_t> {                                      \
 		                            if( obj.member_name ) {                                                            \
 			                            return static_cast<int64_t>( obj.member_name->count( ) );                       \
 		                            } else {                                                                           \
