@@ -429,11 +429,12 @@ namespace daw {
 		}
 
 		template<typename CharT, typename TraitT>
-		std::basic_string<CharT, TraitT> unescape_string( daw::basic_string_view<CharT, TraitT> src ) {
+		auto unescape_string( daw::basic_string_view<CharT, TraitT> src ) {
+			using result_t = std::basic_string<CharT, TraitT>;
 			if( src.empty( ) ) {
-				return std::string{};
+				return result_t{};
 			}
-			std::string result;
+			result_t result;
 			result.reserve( src.size( ) );
 			for( size_t n = 0; n < src.size( ); ++n ) {
 				if( src[n] == '\\' ) {
