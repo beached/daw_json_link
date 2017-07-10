@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <daw/daw_heap_array.h>
+
 #include "daw_json_link.h"
 
 template<typename Derived>
@@ -34,9 +36,8 @@ template<typename Derived>
 std::istream &operator>>( std::istream &is, daw::json::daw_json_link<Derived> const &obj ) {
 	// TODO find a way, if possible, to get a char const * from istream
 	auto const data_size = static_cast<size_t>( is.rdbuf( )->in_avail( ) );
-	std::string temporary;
-	temporary.reserve( data_size );
-	is.read( &temporary[0], static_cast<std::streamsize>( data_size ) );
-	obj.from_json_string( temporary );
+	daw::heap_array<char> temporary( data_size );
+	is.read( temporary.data( ), static_cast<std::streamsize>( data_size ) );
+	obj.from_json_string( daw::string_view{temporary.data( ), temporary.size( )} );
 	return is;
 }

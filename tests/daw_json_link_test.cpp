@@ -70,11 +70,20 @@ struct A : public daw::json::daw_json_link<A> {
 		                              []( A const &obj ) { return obj.e; } );
 	}
 };
+
 struct A2 {
 	int a;
 	double b;
 	bool c;
 	std::string d;
+	boost::optional<std::string> e;
+
+	A2( ) : a{0}, b{1.2345}, c{true}, d{"sixseveneightnine"}, e{boost::none} {}
+	~A2( ) = default;
+	A2( A2 const & ) = default;
+	A2( A2 && ) = default;
+	A2 &operator=( A2 const & ) = default;
+	A2 &operator=( A2 && ) = default;
 };
 
 struct B : public daw::json::daw_json_link<B> {
