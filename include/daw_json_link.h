@@ -749,16 +749,14 @@ namespace daw {
 #define link_json_string( json_name, member_name )                                                                     \
 	link_json_string_fn(                                                                                               \
 	    json_name,                                                                                                     \
-	    []( auto &obj, daw::string_view value ) -> void {                                                              \
-		    obj.member_name = daw::json::unescape_string( value.to_string( ) );                                        \
-	    },                                                                                                             \
+	    []( auto &obj, daw::string_view value ) -> void { obj.member_name = daw::json::unescape_string( value ); },    \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_streamable( json_name, member_name )                                                                 \
 	link_json_string_fn(                                                                                               \
 	    json_name,                                                                                                     \
 	    []( auto &obj, daw::string_view value ) -> void {                                                              \
-		    std::stringstream ss{daw::json::unescape_string( value.to_string( ) )};                                    \
+		    std::stringstream ss{daw::json::unescape_string( value )};                                                 \
 		    ss >> obj.member_name;                                                                                     \
 	    },                                                                                                             \
 	    []( auto const &obj ) -> std::string { return boost::lexical_cast<std::string>( obj.member_name ); } );
