@@ -434,7 +434,7 @@ namespace daw {
 			}
 			std::string result;
 			result.reserve( src.size( ) );
-			for( size_t n = 0; n < src.size( ) - 1; ++n ) {
+			for( size_t n = 0; n < src.size( ); ++n ) {
 				if( src[n] == '\\' ) {
 					++n;
 					switch( src[n] ) {
