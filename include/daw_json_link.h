@@ -428,7 +428,8 @@ namespace daw {
 			                        true );
 		}
 
-		std::string unescape_string( daw::string_view src ) {
+		template<typename CharT, typename TraitT>
+		std::basic_string<CharT, TraitT> unescape_string( daw::basic_string_view<CharT, TraitT> src ) {
 			if( src.empty( ) ) {
 				return std::string{};
 			}
