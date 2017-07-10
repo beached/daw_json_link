@@ -49,7 +49,7 @@ namespace daw {
 			daw::filesystem::MemoryMappedFile<char> json_file{localized_path };
 			daw::exception::daw_throw_on_false( json_file, "Failed to open test file '"s + localized_path + "'"s );
 
-			return Derived::from_json_string( daw::string_view{json_file.data( ), json_file.size( )} );
+			return Derived::from_json_string( daw::string_view{json_file.data( ), json_file.size( )} ).result;
 		}
 
 		template<typename Derived>

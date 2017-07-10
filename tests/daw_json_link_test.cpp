@@ -194,6 +194,7 @@ int main( int argc, char **argv ) {
 		std::cout << "To process " << to_si_bytes( str_array2.size( ) ) << " bytes, it took " << lapsed_time2
 		          << " seconds. " << to_si_bytes( str_array2.size( ) / lapsed_time2 ) << "/second\n";
 	}
+	/*
 	if( boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
 		daw::filesystem::MemoryMappedFile<char> json_file{make_path_str( "test.json" ).data( )};
 		daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
@@ -204,6 +205,7 @@ int main( int argc, char **argv ) {
 		std::cout << "To process " << to_si_bytes( json_file.size( ) ) << " bytes, it took " << lapsed_time
 		          << " seconds. " << to_si_bytes( json_file.size( ) / lapsed_time ) << "/second\n";
 	}
+	*/
 /*
    // Create sample json file
 	std::fstream s{"test.json", std::ios::binary | std::ios::out};

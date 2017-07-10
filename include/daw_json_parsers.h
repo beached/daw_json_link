@@ -291,7 +291,7 @@ namespace daw {
 
 			template<typename ObjT, typename CharT, typename Traits, typename ItemSetter>
 			constexpr daw::string_view parse_json_object_array( daw::basic_string_view<CharT, Traits> view,
-			                                                    ItemSetter item_setter ) {
+			                                                             ItemSetter item_setter ) {
 				return parse_json_array( view, item_setter, &ObjT::from_json_string );
 			}
 		} // namespace parser

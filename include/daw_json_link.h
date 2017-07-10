@@ -347,7 +347,8 @@ namespace daw {
 					                        return to_string( *value );
 				                        }
 				                        return "null";
-			                        }, true );
+			                        },
+			                        true );
 		}
 
 		template<typename Derived>
@@ -369,7 +370,7 @@ namespace daw {
 		template<typename Derived>
 		template<typename Setter, typename Getter>
 		void daw_json_link<Derived>::link_json_real_optional_fn( daw::string_view member_name, Setter setter,
-		                                                            Getter getter ) {
+		                                                         Getter getter ) {
 			add_json_link_function( member_name,
 			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto result = daw::json::parser::parse_json_real_optional( view );
@@ -384,10 +385,9 @@ namespace daw {
 					                        return to_string( *value );
 				                        }
 				                        return "null";
-			                        }, true );
+			                        },
+			                        true );
 		}
-
-
 
 		template<typename Derived>
 		template<typename Setter, typename Getter>
@@ -424,7 +424,54 @@ namespace daw {
 					                        return to_string( *value );
 				                        }
 				                        return "null";
-			                        }, true );
+			                        },
+			                        true );
+		}
+
+		std::string unescape_string( daw::string_view src ) {
+			if( src.empty( ) ) {
+				return std::string{};
+			}
+			std::string result;
+			result.reserve( src.size( ) );
+			for( size_t n = 0; n < src.size( ) - 1; ++n ) {
+				if( src[n] == '\\' ) {
+					++n;
+					switch( src[n] ) {
+					case 'b':
+						result += '\b';
+						break;
+					case 'f':
+						result += '\f';
+						break;
+					case 'n':
+						result += '\n';
+						break;
+					case 'r':
+						result += '\r';
+						break;
+					case 't':
+						result += '\t';
+						break;
+					case '\'':
+						result += '\'';
+						break;
+					case '\\':
+						result += '\\';
+						break;
+					case '/':
+						result += '/';
+						break;
+					// TODO /u for unicode escaping
+					default:
+						result += src[n];
+					}
+				} else {
+					result += src[n];
+				}
+			}
+			result.shrink_to_fit( );
+			return result;
 		}
 
 		template<typename Derived>
@@ -460,7 +507,8 @@ namespace daw {
 					                        return "\""s + *value + "\""s;
 				                        }
 				                        return "null";
-			                        }, true );
+			                        },
+			                        true );
 		}
 
 		template<typename Derived>
@@ -491,12 +539,13 @@ namespace daw {
 			                        },
 			                        [getter]( Derived const &obj ) -> std::string {
 				                        using namespace std::string_literals;
-				                        auto const & value = getter( obj );
+				                        auto const &value = getter( obj );
 				                        if( value ) {
-											return value->to_json_string( );
+					                        return value->to_json_string( );
 				                        }
 				                        return "null";
-			                        }, true );
+			                        },
+			                        true );
 		}
 
 		namespace impl {
@@ -697,14 +746,17 @@ namespace daw {
 
 #define link_json_string( json_name, member_name )                                                                     \
 	link_json_string_fn(                                                                                               \
-	    json_name, []( auto &obj, daw::string_view value ) -> void { obj.member_name = value.to_string( ); },          \
+	    json_name,                                                                                                     \
+	    []( auto &obj, daw::string_view value ) -> void {                                                              \
+		    obj.member_name = daw::json::unescape_string( value.to_string( ) );                                        \
+	    },                                                                                                             \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
 #define link_json_streamable( json_name, member_name )                                                                 \
 	link_json_string_fn(                                                                                               \
 	    json_name,                                                                                                     \
 	    []( auto &obj, daw::string_view value ) -> void {                                                              \
-		    std::stringstream ss{value.to_string( )};                                                                  \
+		    std::stringstream ss{daw::json::unescape_string( value.to_string( ) )};                                    \
 		    ss >> obj.member_name;                                                                                     \
 	    },                                                                                                             \
 	    []( auto const &obj ) -> std::string { return boost::lexical_cast<std::string>( obj.member_name ); } );
@@ -713,7 +765,7 @@ namespace daw {
 	link_json_string_optional_fn( json_name,                                                                           \
 	                              []( auto &obj, boost::optional<daw::string_view> value ) -> void {                   \
 		                              if( value ) {                                                                    \
-			                              std::stringstream ss{value->to_string( )};                                   \
+			                              std::stringstream ss{daw::json::unescape_string( *value )};                  \
 			                              ss >> *obj.member_name;                                                      \
 		                              } else {                                                                         \
 			                              obj.member_name = default_value;                                             \
@@ -732,7 +784,7 @@ namespace daw {
 	    json_name,                                                                                                     \
 	    []( auto &obj, boost::optional<daw::string_view> value ) -> void {                                             \
 		    if( value ) {                                                                                              \
-			    obj.member_name = value->to_string( );                                                                 \
+			    obj.member_name = daw::json::unescape_string( *value );                                                \
 		    } else {                                                                                                   \
 			    obj.member_name = default_value;                                                                       \
 		    }                                                                                                          \
@@ -750,7 +802,7 @@ namespace daw {
 #define link_json_object_optional( json_name, member_name, default_value )                                             \
 	link_json_object_optional_fn(                                                                                      \
 	    json_name,                                                                                                     \
-	    []( auto &obj, boost::optional<std::decay_t<decltype( *obj.member_name )>> value ) -> void {                    \
+	    []( auto &obj, boost::optional<std::decay_t<decltype( *obj.member_name )>> value ) -> void {                   \
 		    if( value ) {                                                                                              \
 			    obj.member_name = std::move( *value );                                                                 \
 		    } else {                                                                                                   \
@@ -787,7 +839,7 @@ namespace daw {
 	link_json_string_array_fn(                                                                                         \
 	    json_name,                                                                                                     \
 	    []( auto &obj, daw::string_view value ) -> void {                                                              \
-		    obj.member_name.insert( std::end( obj.member_name ), value.to_string( ) );                                 \
+		    obj.member_name.insert( std::end( obj.member_name ), daw::json::unescape_string( value ) );                \
 	    },                                                                                                             \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
 
