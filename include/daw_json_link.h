@@ -67,6 +67,7 @@ namespace daw {
 			}; // json_link_functions_info
 			using json_link_functions_data_t = std::vector<json_link_functions_info>;
 
+			// Do not call outside of json_link_map chain.  Use check_map
 			static json_link_functions_data_t &get_link_data( ) {
 				static json_link_functions_data_t result;
 				return result;
@@ -92,20 +93,10 @@ namespace daw {
 
 			static bool &ignore_missing( ) noexcept;
 
-			static std::mutex &get_mutex( ) {
-				static std::mutex s_mutex;
-				return s_mutex;
-			}
-
 			static json_link_functions_data_t const &check_map( ) {
-				std::lock_guard<std::mutex> guard( get_mutex( ) );
-				auto &result = get_link_data( );
-				if( result.empty( ) ) {
-					// This should really only ever happen once, unless there is no linking of values
-					// But who cares about that case
-					Derived::json_link_map( );
-				}
-				return result;
+				static std::once_flag flag;
+				std::call_once( flag, []( ) { Derived::json_link_map( ); } );
+				return get_link_data( );
 			}
 
 			constexpr Derived const &this_as_derived( ) const noexcept {
