@@ -784,7 +784,7 @@ namespace daw {
 #define link_json_object( json_name, member_name )                                                                     \
 	link_json_object_fn(                                                                                               \
 	    json_name,                                                                                                     \
-	    []( auto &obj, std::decay_t<decltype( obj.member_name )> value ) -> void {                                     \
+	    []( auto &obj, std::decay_t<decltype( member_name )> value ) -> void {                                         \
 		    obj.member_name = std::move( value );                                                                      \
 	    },                                                                                                             \
 	    []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & { return obj.member_name; } );
@@ -843,4 +843,3 @@ namespace daw {
 
 	} // namespace json
 } // namespace daw
-
