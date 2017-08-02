@@ -186,7 +186,6 @@ namespace daw {
 					break;
 				}
 				auto const member_name = daw::json::parser::parse_json_string( view );
-				auto const member_name_str = member_name.result.to_string( );
 				auto const member_name_hash = std::hash<daw::string_view>{}( member_name.result );
 
 				view = member_name.view;
@@ -204,7 +203,7 @@ namespace daw {
 					view = json_link_function.second->setter( result, view );
 				} else if( !ignore_missing( ) ) {
 					using namespace std::string_literals;
-					daw::exception::daw_throw( "Json string contains a member name '"s + member_name_str +
+					daw::exception::daw_throw( "Json string contains a member name '"s + member_name.result +
 					                           "' that isn't linked"s );
 				} else {
 					view = daw::json::parser::skip_json_value( view ).view;
