@@ -543,7 +543,7 @@ namespace daw {
 		namespace impl {
 			template<typename CharT, typename Traits>
 			auto to_string( std::basic_string<CharT, Traits> s ) {
-				return s;
+				return "\"" + s + "\"";
 			}
 
 			template<typename Boolean, typename = std::enable_if_t<std::is_same<bool, Boolean>::value>>
