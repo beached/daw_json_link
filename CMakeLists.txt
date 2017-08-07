@@ -4,7 +4,7 @@ project( daw_json_link_prj )
 
 include( ExternalProject )
 
-find_package( Boost 1.60.0 COMPONENTS system filesystem regex iostreams unit_test_framework REQUIRED ) 
+find_package( Boost 1.58.0 COMPONENTS system filesystem regex iostreams unit_test_framework REQUIRED ) 
 
 enable_testing( )
 add_definitions( -DBOOST_TEST_DYN_LINK ) 
