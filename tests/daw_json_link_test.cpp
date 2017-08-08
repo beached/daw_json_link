@@ -205,7 +205,7 @@ int main( int argc, char **argv ) {
 	}
 	/*
 	if( boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
-	    daw::filesystem::MemoryMappedFile<char> json_file{make_path_str( "test.json" ).data( )};
+	    daw::filesystem::memory_mapped_file_t<char> json_file{make_path_str( "test.json" ).data( )};
 	    daw::exception::daw_throw_on_false( json_file, "Failed to open test file 'test.json'" );
 	    std::cout << "Test file is of size " << to_si_bytes( json_file.size( ) ) << '\n';
 	    auto lapsed_time = daw::benchmark( []( ) -> void {
