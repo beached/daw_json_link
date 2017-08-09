@@ -33,99 +33,95 @@
 namespace daw {
 	namespace json {
 		namespace parser {
-			namespace {
-				namespace impl {
-					template<typename CharT, typename Traits>
-					constexpr auto skip_ws( daw::basic_string_view<CharT, Traits> view ) noexcept {
-						auto result = daw::parser::until_false( view.cbegin( ), view.cend( ),
-						                                        daw::parser::is_unicode_whitespace<CharT> );
-						return daw::basic_string_view<CharT, Traits>{result.last,
-						                                     static_cast<size_t>( view.cend( ) - result.last )};
-					}
+			namespace impl {
+				template<typename CharT, typename Traits>
+				constexpr auto skip_ws( daw::basic_string_view<CharT, Traits> view ) noexcept {
+					auto result = daw::parser::until_false( view.cbegin( ), view.cend( ),
+					                                        daw::parser::is_unicode_whitespace<CharT> );
+					return daw::basic_string_view<CharT, Traits>{result.last,
+					                                             static_cast<size_t>( view.cend( ) - result.last )};
+				}
 
-					template<typename CharT, typename Traits>
-					constexpr result_t<double> parse_number( daw::basic_string_view<CharT, Traits> view ) noexcept {
-						auto r = 0.0;
-						auto neg = false;
-						if( '-' == view.front( ) ) {
-							neg = true;
-							view.remove_prefix( );
-						}
-						while( view.front( ) >= '0' && view.front( ) <= '9' ) {
-							r = ( r * 10.0 ) + ( view.front( ) - '0' );
-							view.remove_prefix( );
-						}
-						if( '.' == view.front( ) ) {
-							auto f = 0.0;
-							uint_fast8_t n = 0;
-							view.remove_prefix( );
-							while( view.front( ) >= '0' && view.front( ) <= '9' ) {
-								f = ( f * 10.0 ) + ( view.front( ) - '0' );
-								view.remove_prefix( );
-								++n;
-							}
-							r += f / std::pow( 10.0, n );
-						}
-						if( neg ) {
-							r = -r;
-						}
-						return {view, r};
-					}
-
-					template<typename CharT, typename Traits>
-					constexpr result_t<bool> parse_false( daw::basic_string_view<CharT, Traits> view ) {
-						daw::exception::daw_throw_on_false( view.size( ) >= 5,
-						                                    "Expected boolean false, something else found" );
-						auto const a = 'a' == view[1];
-						auto const l = 'l' == view[2];
-						auto const s = 's' == view[3];
-						auto const e = 'e' == view[4];
-						auto const value = ( a * l * s * e ) != 0;
-						daw::exception::dbg_throw_on_false( value, "Expected boolean false, something else found" );
-						view.remove_prefix( 5 );
-						return {view, false};
-					}
-
-					template<typename CharT, typename Traits>
-					constexpr result_t<bool> parse_true( daw::basic_string_view<CharT, Traits> view ) {
-						daw::exception::daw_throw_on_false( view.size( ) >= 4,
-						                                    "Expected boolean true, something else found" );
-						auto const t = 't' == view[0];
-						auto const r = 'r' == view[1];
-						auto const u = 'u' == view[2];
-						auto const e = 'e' == view[3];
-						auto const value = ( t * r * u * e ) != 0;
-						daw::exception::dbg_throw_on_false( value, "Expected boolean true, something else found" );
-						view.remove_prefix( 4 );
-						return {view, true};
-					}
-
-					template<typename CharT, typename Traits>
-					constexpr auto parse_string_literal( daw::basic_string_view<CharT, Traits> view ) {
-						auto const quote_char = view.front( );
-						daw::exception::daw_throw_on_false( daw::parser::is_quote( quote_char ),
-						                                    "Start of string does not beging with quote character" );
-
-						size_t it = 1;
-						size_t last_it = 0;
-						bool found = false;
-						while( it < view.size( ) ) {
-							found = daw::parser::is_a( view[it], quote_char );
-							if( found && !daw::parser::is_escape( view[last_it] ) ) {
-								break;
-							}
-							found = false;
-							last_it = it++;
-						}
-						daw::exception::daw_throw_on_false( found, "Could not find end of string before end of input" );
+				template<typename CharT, typename Traits>
+				constexpr result_t<double> parse_number( daw::basic_string_view<CharT, Traits> view ) noexcept {
+					auto r = 0.0;
+					auto neg = false;
+					if( '-' == view.front( ) ) {
+						neg = true;
 						view.remove_prefix( );
-						view.remove_suffix( view.size( ) - it + 1 );
-						return view;
 					}
-				} // namespace impl
+					while( view.front( ) >= '0' && view.front( ) <= '9' ) {
+						r = ( r * 10.0 ) + ( view.front( ) - '0' );
+						view.remove_prefix( );
+					}
+					if( '.' == view.front( ) ) {
+						auto f = 0.0;
+						uint_fast8_t n = 0;
+						view.remove_prefix( );
+						while( view.front( ) >= '0' && view.front( ) <= '9' ) {
+							f = ( f * 10.0 ) + ( view.front( ) - '0' );
+							view.remove_prefix( );
+							++n;
+						}
+						r += f / std::pow( 10.0, n );
+					}
+					if( neg ) {
+						r = -r;
+					}
+					return {view, r};
+				}
 
+				template<typename CharT, typename Traits>
+				constexpr result_t<bool> parse_false( daw::basic_string_view<CharT, Traits> view ) {
+					daw::exception::daw_throw_on_false( view.size( ) >= 5,
+					                                    "Expected boolean false, something else found" );
+					auto const a = 'a' == view[1];
+					auto const l = 'l' == view[2];
+					auto const s = 's' == view[3];
+					auto const e = 'e' == view[4];
+					auto const value = ( a * l * s * e ) != 0;
+					daw::exception::dbg_throw_on_false( value, "Expected boolean false, something else found" );
+					view.remove_prefix( 5 );
+					return {view, false};
+				}
 
-			}     // namespace
+				template<typename CharT, typename Traits>
+				constexpr result_t<bool> parse_true( daw::basic_string_view<CharT, Traits> view ) {
+					daw::exception::daw_throw_on_false( view.size( ) >= 4,
+					                                    "Expected boolean true, something else found" );
+					auto const t = 't' == view[0];
+					auto const r = 'r' == view[1];
+					auto const u = 'u' == view[2];
+					auto const e = 'e' == view[3];
+					auto const value = ( t * r * u * e ) != 0;
+					daw::exception::dbg_throw_on_false( value, "Expected boolean true, something else found" );
+					view.remove_prefix( 4 );
+					return {view, true};
+				}
+
+				template<typename CharT, typename Traits>
+				constexpr auto parse_string_literal( daw::basic_string_view<CharT, Traits> view ) {
+					auto const quote_char = view.front( );
+					daw::exception::daw_throw_on_false( daw::parser::is_quote( quote_char ),
+					                                    "Start of string does not beging with quote character" );
+
+					size_t it = 1;
+					size_t last_it = 0;
+					bool found = false;
+					while( it < view.size( ) ) {
+						found = daw::parser::is_a( view[it], quote_char );
+						if( found && !daw::parser::is_escape( view[last_it] ) ) {
+							break;
+						}
+						found = false;
+						last_it = it++;
+					}
+					daw::exception::daw_throw_on_false( found, "Could not find end of string before end of input" );
+					view.remove_prefix( );
+					view.remove_suffix( view.size( ) - it + 1 );
+					return view;
+				}
+			} // namespace impl
 
 			template<typename CharT, typename Traits>
 			constexpr result_t<bool> is_null( daw::basic_string_view<CharT, Traits> view ) noexcept {
@@ -153,7 +149,8 @@ namespace daw {
 			}
 
 			template<typename CharT, typename Traits>
-			result_t<boost::optional<int64_t>> parse_json_integer_optional( daw::basic_string_view<CharT, Traits> view ) {
+			result_t<boost::optional<int64_t>>
+			parse_json_integer_optional( daw::basic_string_view<CharT, Traits> view ) {
 				auto const null_result = is_null( view );
 				view = null_result.view;
 				if( null_result.result ) {
@@ -232,7 +229,8 @@ namespace daw {
 			}
 
 			template<typename Derived, typename CharT, typename Traits>
-			result_t<boost::optional<Derived>> parse_json_object_optional( daw::basic_string_view<CharT, Traits> view ) {
+			result_t<boost::optional<Derived>>
+			parse_json_object_optional( daw::basic_string_view<CharT, Traits> view ) {
 				auto const null_result = is_null( view );
 				view = null_result.view;
 				if( null_result.result ) {
@@ -243,8 +241,8 @@ namespace daw {
 			}
 
 			template<typename CharT, typename Traits, typename ItemSetter, typename Parser>
-			constexpr daw::string_view parse_json_array( daw::basic_string_view<CharT, Traits> view, ItemSetter item_setter,
-			                                             Parser parser ) {
+			constexpr daw::string_view parse_json_array( daw::basic_string_view<CharT, Traits> view,
+			                                             ItemSetter item_setter, Parser parser ) {
 				view = impl::skip_ws( view );
 				daw::exception::daw_throw_on_false( '[' == view.front( ), "Could not find start of array" );
 				view.remove_prefix( );
@@ -291,7 +289,7 @@ namespace daw {
 
 			template<typename ObjT, typename CharT, typename Traits, typename ItemSetter>
 			constexpr daw::string_view parse_json_object_array( daw::basic_string_view<CharT, Traits> view,
-			                                                             ItemSetter item_setter ) {
+			                                                    ItemSetter item_setter ) {
 				return parse_json_array( view, item_setter, &ObjT::from_json_string );
 			}
 		} // namespace parser

@@ -63,7 +63,7 @@ namespace daw {
 				    , name{n.to_string( )}
 				    , setter{std::move( setter_func )}
 				    , getter{std::move( getter_func )}
-				    , is_optional{std::move( optional )} {}
+				    , is_optional{optional} {}
 			}; // json_link_functions_info
 			using json_link_functions_data_t = std::vector<json_link_functions_info>;
 
@@ -135,19 +135,19 @@ namespace daw {
 			static void link_json_object_optional_fn( daw::string_view member_name, Setter setter, Getter getter );
 
 			template<typename Setter, typename Getter>
-			static void link_json_integer_array_fn( daw::string_view member_name, Setter setter, Getter getter );
+			static void link_json_integer_array_fn( daw::string_view member_name, Setter item_setter, Getter getter );
 
 			template<typename Setter, typename Getter>
-			static void link_json_real_array_fn( daw::string_view member_name, Setter setter, Getter getter );
+			static void link_json_real_array_fn( daw::string_view member_name, Setter item_setter, Getter getter );
 
 			template<typename Setter, typename Getter>
-			static void link_json_boolean_array_fn( daw::string_view member_name, Setter setter, Getter getter );
+			static void link_json_boolean_array_fn( daw::string_view member_name, Setter item_setter, Getter getter );
 
 			template<typename Setter, typename Getter>
-			static void link_json_string_array_fn( daw::string_view member_name, Setter setter, Getter getter );
+			static void link_json_string_array_fn( daw::string_view member_name, Setter item_setter, Getter getter );
 
 			template<typename Setter, typename Getter>
-			static void link_json_object_array_fn( daw::string_view member_name, Setter setter, Getter getter );
+			static void link_json_object_array_fn( daw::string_view member_name, Setter item_setter, Getter getter );
 
 		  public:
 			static result_t<Derived> from_json_string( daw::string_view view );
@@ -347,7 +347,7 @@ namespace daw {
 			add_json_link_function( member_name,
 			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto result = daw::json::parser::parse_json_real( view );
-				                        setter( obj, std::move( result.result ) );
+				                        setter( obj, result.result );
 				                        view = result.view;
 				                        return view;
 			                        },
@@ -386,7 +386,7 @@ namespace daw {
 			add_json_link_function( member_name,
 			                        [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto result = daw::json::parser::parse_json_boolean( view );
-				                        setter( obj, std::move( result.result ) );
+				                        setter( obj, result.result );
 				                        view = result.view;
 				                        return view;
 			                        },
@@ -596,7 +596,7 @@ namespace daw {
 			add_json_link_function( member_name,
 			                        [item_setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto const setter = [&obj, &item_setter]( int64_t value ) {
-					                        item_setter( obj, std::move( value ) );
+					                        item_setter( obj, value );
 				                        };
 				                        auto result = daw::json::parser::parse_json_integer_array( view, setter );
 				                        return result;
@@ -614,7 +614,7 @@ namespace daw {
 			add_json_link_function( member_name,
 			                        [item_setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto const setter = [&obj, &item_setter]( double value ) {
-					                        item_setter( obj, std::move( value ) );
+					                        item_setter( obj, value );
 				                        };
 				                        auto result = daw::json::parser::parse_json_real_array( view, setter );
 				                        return result;
@@ -632,7 +632,7 @@ namespace daw {
 			add_json_link_function( member_name,
 			                        [item_setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
 				                        auto const setter = [&obj, &item_setter]( bool value ) {
-					                        item_setter( obj, std::move( value ) );
+					                        item_setter( obj, value );
 				                        };
 				                        auto result = daw::json::parser::parse_json_boolean_array( view, setter );
 				                        return result;

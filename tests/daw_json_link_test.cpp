@@ -49,16 +49,16 @@ struct A : public daw::json::daw_json_link<A> {
 	A( ) : a{0}, b{1.2345}, c{true}, d{"sixseveneightnine"}, e{boost::none} {}
 	~A( ) = default;
 	A( A const & ) = default;
-	A( A && ) = default;
+	A( A && ) noexcept = default;
 	A &operator=( A const & ) = default;
-	A &operator=( A && ) = default;
+	A &operator=( A && ) noexcept = default;
 
 	static void json_link_map( ) {
-		link_json_integer_fn( "aaaaaa", []( A &obj, int value ) { obj.a = std::move( value ); },
+		link_json_integer_fn( "aaaaaa", []( A &obj, int value ) { obj.a = value; },
 		                      []( A const &obj ) { return obj.a; } );
-		link_json_real_fn( "bbbbbb", []( A &obj, double value ) { obj.b = std::move( value ); },
+		link_json_real_fn( "bbbbbb", []( A &obj, double value ) { obj.b = value; },
 		                   []( A const &obj ) { return obj.b; } );
-		link_json_boolean_fn( "cccccc", []( A &obj, bool value ) { obj.c = std::move( value ); },
+		link_json_boolean_fn( "cccccc", []( A &obj, bool value ) { obj.c = value; },
 		                      []( A const &obj ) { return obj.c; } );
 		link_json_string_fn( "dddddd", []( A &obj, daw::string_view value ) { obj.d = value.to_string( ); },
 		                     []( A const &obj ) { return obj.d; } );
@@ -81,9 +81,9 @@ struct A2 {
 	A2( ) : a{0}, b{1.2345}, c{true}, d{"sixseveneightnine"}, e{boost::none} {}
 	~A2( ) = default;
 	A2( A2 const & ) = default;
-	A2( A2 && ) = default;
+	A2( A2 && ) noexcept = default;
 	A2 &operator=( A2 const & ) = default;
-	A2 &operator=( A2 && ) = default;
+	A2 &operator=( A2 && ) noexcept = default;
 };
 
 struct B : public daw::json::daw_json_link<B> {
@@ -94,12 +94,12 @@ struct B : public daw::json::daw_json_link<B> {
 	std::vector<std::string> e;
 	std::vector<A> f;
 
-	B( ) : a{}, b{}, c{}, d{}, e{}, f{} {}
+	B( ) = default;
 	~B( ) = default;
 	B( B const & ) = default;
-	B( B && ) = default;
+	B( B && ) noexcept = default;
 	B &operator=( B const & ) = default;
-	B &operator=( B && ) = default;
+	B &operator=( B && ) noexcept = default;
 
 	static void json_link_map( ) {
 		link_json_object_fn( "aaaaaa", []( B &obj, A value ) { obj.a = std::move( value ); },
