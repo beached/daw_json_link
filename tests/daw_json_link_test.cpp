@@ -40,13 +40,13 @@
 #include <codecvt>
 
 struct A : public daw::json::daw_json_link<A> {
-	int a;
 	double b;
-	bool c;
-	std::string d;
 	boost::optional<std::string> e;
+	std::string d;
+	int a;
+	bool c;
 
-	A( ) : a{0}, b{1.2345}, c{true}, d{"sixseveneightnine"}, e{boost::none} {}
+	A( ) : b{1.2345}, e{boost::none}, d{"sixseveneightnine"}, a{0}, c{true} {}
 	~A( ) = default;
 	A( A const & ) = default;
 	A( A && ) noexcept = default;
@@ -72,13 +72,13 @@ struct A : public daw::json::daw_json_link<A> {
 };
 
 struct A2 {
-	int a;
 	double b;
-	bool c;
-	std::string d;
 	boost::optional<std::string> e;
+	std::string d;
+	int a;
+	bool c;
 
-	A2( ) : a{0}, b{1.2345}, c{true}, d{"sixseveneightnine"}, e{boost::none} {}
+	A2( ) : b{1.2345}, e{boost::none}, d{"sixseveneightnine"}, a{0}, c{true} {}
 	~A2( ) = default;
 	A2( A2 const & ) = default;
 	A2( A2 && ) noexcept = default;
