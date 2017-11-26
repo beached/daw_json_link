@@ -4,13 +4,13 @@ project( daw_json_link_prj )
 
 include( ExternalProject )
 
-find_package( Boost 1.58.0 COMPONENTS system filesystem regex iostreams unit_test_framework REQUIRED ) 
+find_package( Boost 1.58.0 COMPONENTS system filesystem regex iostreams unit_test_framework REQUIRED )
 
 enable_testing( )
-add_definitions( -DBOOST_TEST_DYN_LINK ) 
+add_definitions( -DBOOST_TEST_DYN_LINK )
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL 'MSVC' )
-	add_compile_options( -D_WIN32_WINNT=0x0601 /std:c++latest ) 
+	add_compile_options( -D_WIN32_WINNT=0x0601 /std:c++latest )
 else( )
 	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
 		add_compile_options(-std=c++14 -march=native -pthread -Weverything -Wno-c++98-compat -Wno-covered-switch-default -Wno-padded -Wno-exit-time-destructors -Wno-c++98-compat-pedantic -Wno-unused-parameter -Wno-missing-noreturn -Wno-missing-prototypes -Wno-disabled-macro-expansion)
@@ -23,7 +23,7 @@ else( )
 	endif( )
 endif( )
 
-externalproject_add( 
+externalproject_add(
 	header_libraries_prj
 	GIT_REPOSITORY "https://github.com/beached/header_libraries.git"
 	GIT_TAG "master"
@@ -32,7 +32,7 @@ externalproject_add(
 	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
 )
 
-externalproject_add( 
+externalproject_add(
 	char_range_prj
 	GIT_REPOSITORY "https://github.com/beached/char_range.git"
 	GIT_TAG "master"
@@ -43,7 +43,7 @@ externalproject_add(
 
 externalproject_add(
 	date_prj
-	GIT_REPOSITORY "https://github.com/beached/date.git"
+	GIT_REPOSITORY "https://github.com/howardhinnant/date.git"
 	SOURCE_DIR "${CMAKE_BINARY_DIR}/dependencies/date"
 	GIT_TAG "master"
 	INSTALL_DIR "${CMAKE_BINARY_DIR}/install"
