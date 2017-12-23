@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2017 Darrell Wright
 //
@@ -43,27 +43,49 @@ namespace daw {
 				}
 
 				template<typename CharT, typename Traits>
+				constexpr bool is_digit( daw::basic_string_view<CharT, Traits> view ) noexcept {
+					if( view.empty( ) ) {
+						return false;
+					}
+					auto const c = view.front( );
+					return '0' <= c && c <= '9';
+				}
+
+				template<typename CharT, typename Traits>
+				constexpr auto to_digit( daw::basic_string_view<CharT, Traits> & view ) noexcept {
+					return view.pop_front( ) - '0';
+				}
+
+				constexpr double pow10( size_t const e ) noexcept {
+					double result = 1.0;
+					for( size_t n=0; n<e; ++n ) {
+						result *= 10.0;
+					}
+					return result;
+				}
+
+				template<typename CharT, typename Traits>
 				constexpr result_t<double> parse_number( daw::basic_string_view<CharT, Traits> view ) noexcept {
-					auto r = 0.0;
-					auto neg = false;
-					if( '-' == view.front( ) ) {
-						neg = true;
+					double r = 0.0;
+					bool neg = view.front( "-" ) == '-';
+					if( neg ) {
 						view.remove_prefix( );
 					}
-					while( view.front( ) >= '0' && view.front( ) <= '9' ) {
-						r = ( r * 10.0 ) + ( view.front( ) - '0' );
-						view.remove_prefix( );
+
+					while( is_digit( view ) ) {
+						r *= 10.0;
+						r += to_digit( view );
 					}
 					if( '.' == view.front( ) ) {
-						auto f = 0.0;
+						double f = 0.0;
 						uint_fast8_t n = 0;
 						view.remove_prefix( );
-						while( view.front( ) >= '0' && view.front( ) <= '9' ) {
-							f = ( f * 10.0 ) + ( view.front( ) - '0' );
-							view.remove_prefix( );
+						while( is_digit( view ) ) {
+							f *= 10.0;
+							f += to_digit( view );
 							++n;
 						}
-						r += f / std::pow( 10.0, n );
+						r += f / pow10( n );
 					}
 					if( neg ) {
 						r = -r;
