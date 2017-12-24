@@ -67,7 +67,7 @@ namespace daw {
 				template<typename CharT, typename Traits>
 				constexpr result_t<double> parse_number( daw::basic_string_view<CharT, Traits> view ) noexcept {
 					double r = 0.0;
-					bool neg = view.front( "-" ) == '-';
+					bool neg = view.front( ) == '-';
 					if( neg ) {
 						view.remove_prefix( );
 					}
