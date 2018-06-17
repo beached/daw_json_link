@@ -2,8 +2,6 @@ cmake_minimum_required( VERSION 2.8.12 )
 
 project( daw_json_link_prj )
 
-include( ExternalProject )
-
 find_package( Boost 1.58.0 COMPONENTS system filesystem regex iostreams unit_test_framework REQUIRED )
 
 enable_testing( )
@@ -23,35 +21,11 @@ else( )
 	endif( )
 endif( )
 
-externalproject_add(
-	header_libraries_prj
-	GIT_REPOSITORY "https://github.com/beached/header_libraries.git"
-	GIT_TAG "master"
-	SOURCE_DIR "${CMAKE_BINARY_DIR}/deps/headlibs"
-	INSTALL_DIR "${CMAKE_BINARY_DIR}/install"
-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
-)
-
-externalproject_add(
-	char_range_prj
-	GIT_REPOSITORY "https://github.com/beached/char_range.git"
-	GIT_TAG "master"
-	SOURCE_DIR "${CMAKE_BINARY_DIR}/deps/chrrng"
-	INSTALL_DIR "${CMAKE_BINARY_DIR}/install"
-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
-)
-
-externalproject_add(
-	date_prj
-	GIT_REPOSITORY "https://github.com/howardhinnant/date.git"
-	SOURCE_DIR "${CMAKE_BINARY_DIR}/dependencies/date"
-	GIT_TAG "master"
-	INSTALL_DIR "${CMAKE_BINARY_DIR}/install"
-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
-)
-
 include_directories( SYSTEM "${CMAKE_BINARY_DIR}/install/include" )
 link_directories( "${CMAKE_BINARY_DIR}/install/lib" )
+
+include_directories( SYSTEM "${CMAKE_SOURCE_DIR}/dependent_projects/build/install/include" )
+link_directories( "${CMAKE_SOURCE_DIR}/dependent_projects/build/install/lib" )
 
 include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
 link_directories( ${Boost_LIBRARY_DIRS} )
@@ -78,7 +52,6 @@ add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
 install( DIRECTORY ${HEADER_FOLDER}/ DESTINATION include/daw/json )
 
 add_executable( daw_json_link_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${SOURCE_FILES} ${TEST_FOLDER}/daw_json_link_test.cpp )
-add_dependencies( daw_json_link_test_bin header_libraries_prj char_range_prj date_prj )
 target_link_libraries( daw_json_link_test_bin char_range ${Boost_LIBRARIES} )
 add_test( daw_json_link_test daw_json_link_test_bin )
 add_dependencies( check daw_json_link_test_bin )

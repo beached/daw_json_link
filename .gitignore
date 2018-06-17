@@ -1,4 +1,3 @@
-
 #ignore thumbnails created by windows
 Thumbs.db
 #Ignore files build by Visual Studio
@@ -46,7 +45,6 @@ _ReSharper*/
 x64/
 x86/
 build/
-cmake-build-*/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -193,3 +191,4 @@ nbproject/*
 *.cd
 *.cd
 a.out
+cmake-build-*/*
