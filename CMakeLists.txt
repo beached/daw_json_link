@@ -21,9 +21,6 @@ else( )
 	endif( )
 endif( )
 
-include_directories( SYSTEM "${CMAKE_BINARY_DIR}/install/include" )
-link_directories( "${CMAKE_BINARY_DIR}/install/lib" )
-
 include_directories( SYSTEM "${CMAKE_SOURCE_DIR}/dependent_projects/build/install/include" )
 link_directories( "${CMAKE_SOURCE_DIR}/dependent_projects/build/install/lib" )
 
@@ -55,4 +52,9 @@ add_executable( daw_json_link_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${SOURCE
 target_link_libraries( daw_json_link_test_bin char_range ${Boost_LIBRARIES} )
 add_test( daw_json_link_test daw_json_link_test_bin )
 add_dependencies( check daw_json_link_test_bin )
+
+add_executable( daw_json_link_v3_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${SOURCE_FILES} ${TEST_FOLDER}/daw_json_link_v3_test.cpp )
+target_link_libraries( daw_json_link_v3_test_bin char_range ${Boost_LIBRARIES} )
+add_test( daw_json_link_v3_test daw_json_link_v3_test_bin )
+add_dependencies( check daw_json_link_v3_test_bin )
 
