@@ -23,25 +23,24 @@
 #include <cassert>
 #include <chrono>
 
-#include "daw_json_link_v3.h"
+#include "daw/json/daw_json_link_v3.h"
 
 struct test_001_t {
 	int i = 0;
-	double d =0.0;
+	double d = 0.0;
 	bool b = false;
-	std::chrono::system_clock::time_point tp = std::chrono::system_clock::time_point( );
+	std::chrono::system_clock::time_point tp =
+	  std::chrono::system_clock::time_point( );
 
 	static constexpr auto get_json_link( ) noexcept {
-		using json_link_t = daw::json::link<test_001_t>
-			::json_number<int>
-			::json_number<double>
-			::json_bool<bool>
-			::json_string<std::chrono::system_clock::time_point>;
+		using json_link_t =
+		  daw::json::link<test_001_t>::json_number<int>::json_number<double>::
+		    json_bool<bool>::json_string<std::chrono::system_clock::time_point>;
 
 		return json_link_t( "i", "d", "b", "tp" );
 	}
 
-	constexpr test_001_t( ) noexcept = default;//delete;
+	constexpr test_001_t( ) noexcept = delete;
 	constexpr test_001_t(
 	  int Int, double Double, bool Bool,
 	  std::chrono::system_clock::time_point TimePoint ) noexcept
@@ -53,11 +52,12 @@ struct test_001_t {
 
 struct test_002_t {
 	int i = 0;
-	double d =0.0;
+	double d = 0.0;
 	bool b = false;
-	std::chrono::system_clock::time_point tp = std::chrono::system_clock::time_point( );
+	std::chrono::system_clock::time_point tp =
+	  std::chrono::system_clock::time_point( );
 
-	constexpr test_002_t( ) noexcept = default;// delete;
+	constexpr test_002_t( ) noexcept = delete;
 	constexpr test_002_t(
 	  int Int, double Double, bool Bool,
 	  std::chrono::system_clock::time_point TimePoint ) noexcept
@@ -67,15 +67,12 @@ struct test_002_t {
 	  , tp( TimePoint ) {}
 };
 
+constexpr auto get_json_link( daw::tag<test_002_t> ) noexcept {
+	using json_link_t =
+	  daw::json::link<test_002_t>::json_number<int>::json_number<double>::
+	    json_bool<bool>::json_string<std::chrono::system_clock::time_point>;
 
-constexpr auto get_json_link( test_002_t * ) noexcept {
-	using json_link_t = daw::json::link<test_002_t>
-		::json_number<int>
-		::json_number<double>
-		::json_bool<bool>
-		::json_string<std::chrono::system_clock::time_point>;
-
-		return json_link_t( "i", "d", "b", "tp" );
+	return json_link_t( "i", "d", "b", "tp" );
 }
 
 int main( ) {
@@ -86,13 +83,12 @@ int main( ) {
 			"tp": "2018-06-22T15:05:37Z"
 		})";
 
-	auto data = daw::json::import_class<test_001_t>( json_data );
-	//assert( data.i == 1 );
-	//assert( data.d == 2.2 );
+	constexpr auto data = daw::json::parse_class<test_001_t>( json_data );
+	// assert( data.i == 1 );
+	// assert( data.d == 2.2 );
 
-	auto data2 = daw::json::import_class<test_002_t>( json_data );
-	//assert( data.i == 1 );
-	//assert( data.d == 2.2 );
+	constexpr auto data2 = daw::json::parse_class<test_002_t>( json_data );
+	// assert( data.i == 1 );
+	// assert( data.d == 2.2 );
 	return 0;
 }
-

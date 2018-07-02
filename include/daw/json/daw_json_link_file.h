@@ -3,14 +3,14 @@
 // Copyright (c) 2017-2018 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files( the "Software" ), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
-// copies of the Software, and to permit persons to whom the Software is
+// of this software and associated documentation files( the "Software" ), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and / or
+// sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -45,11 +45,16 @@ namespace daw {
 #endif
 			};
 			auto const localized_path = make_path_str( path_str );
-			daw::exception::daw_throw_on_false( boost::filesystem::exists( localized_path ), path_str + " does not exist" );
-			daw::filesystem::memory_mapped_file_t<char> json_file{localized_path };
-			daw::exception::daw_throw_on_false( json_file, "Failed to open test file '"s + localized_path + "'"s );
+			daw::exception::daw_throw_on_false(
+			  boost::filesystem::exists( localized_path ),
+			  path_str + " does not exist" );
+			daw::filesystem::memory_mapped_file_t<char> json_file{localized_path};
+			daw::exception::daw_throw_on_false(
+			  json_file, "Failed to open test file '"s + localized_path + "'"s );
 
-			return Derived::from_json_string( daw::string_view{json_file.data( ), json_file.size( )} ).result;
+			return Derived::from_json_string(
+			         daw::string_view{json_file.data( ), json_file.size( )} )
+			  .result;
 		}
 
 		template<typename Derived>
@@ -64,13 +69,15 @@ namespace daw {
 #endif
 			};
 			auto const localized_path = make_path_str( path_str );
-			daw::exception::daw_throw_on_false( boost::filesystem::exists( localized_path ), path_str + " does not exist" );
-			daw::filesystem::memory_mapped_file_t<char> json_file{localized_path };
-			daw::exception::daw_throw_on_false( json_file, "Failed to open test file '"s + localized_path + "'"s );
+			daw::exception::daw_throw_on_false(
+			  boost::filesystem::exists( localized_path ),
+			  path_str + " does not exist" );
+			daw::filesystem::memory_mapped_file_t<char> json_file{localized_path};
+			daw::exception::daw_throw_on_false(
+			  json_file, "Failed to open test file '"s + localized_path + "'"s );
 
-			return Derived::from_json_array_string( daw::string_view{json_file.data( ), json_file.size( )} );
+			return Derived::from_json_array_string(
+			  daw::string_view{json_file.data( ), json_file.size( )} );
 		}
 	} // namespace json
-}    // namespace daw
-
-
+} // namespace daw
