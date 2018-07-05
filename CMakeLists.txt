@@ -47,7 +47,7 @@ set( SOURCE_FILES
 #set( CMAKE_CTEST_COMMAND ctest -V )
 add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
 
-install( DIRECTORY ${HEADER_FOLDER}/daw/json DESTINATION include/daw/json )
+install( DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/ )
 
 add_executable( daw_json_link_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${SOURCE_FILES} ${TEST_FOLDER}/daw_json_link_test.cpp )
 target_link_libraries( daw_json_link_test_bin char_range ${Boost_LIBRARIES} )
