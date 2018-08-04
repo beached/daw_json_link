@@ -34,7 +34,7 @@ namespace daw {
 		struct json_link_exception {};
 
 		template<typename... Args>
-		stuct decoder_t;
+		struct decoder_t;
 
 		template<typename T>
 		constexpr decltype( auto ) parse_class( daw::string_view str );
@@ -54,7 +54,8 @@ namespace daw {
 			struct json_number_t {
 				template<typename... DecoderArgs>
 				constexpr decltype( auto )
-				operator( )( daw::string_view str, decoder_t<Args...> const &decoder,
+				operator( )( daw::string_view str,
+				             decoder_t<DecoderArgs...> const &decoder,
 				             daw::string_view JsonLabel ) {
 					return parse_json_number( tag<T>{}, str );
 				}
@@ -170,7 +171,7 @@ namespace daw {
 			struct decoder_t {
 				std::array<daw::string_view, sizeof...( Args )> labels = {};
 				using types = std::tuple<Args...>;
-				using size = std::integral_constant < size_t, sizeof...( Args );
+				using size = std::integral_constant<size_t, sizeof...( Args )>;
 
 				template<typename T>
 				using json_number = decoder_t<Args..., json_number_t<T>>;
@@ -267,7 +268,7 @@ namespace daw {
 				               "free function get_json_link( daw::tag<T>{} )" );
 			}
 
-			constexpr auto find_next_string( daw_string_view &str ) noexcept {
+			constexpr auto find_next_string( daw::string_view &str ) noexcept {
 				// Must be called from outside a string
 				str.remove_prefix( str.find( '"' ) );
 				if( str.empty( ) ) {
@@ -284,24 +285,27 @@ namespace daw {
 						in_escape = c == '\\' ? !in_escape : false;
 					}
 				} find_end_of_string;
-				
+
 				auto result = str.pop_front( find_end_of_string );
 				return result;
 			}
 
 			struct unknown_lablel_exception {};
 
-			constexpr auto ensure_label_is_known( decoder_t const &link_types,
+			template<typename... Args>
+			constexpr auto ensure_label_is_known( decoder_t<Args...> const &link_types,
 			                                      daw::string_view label ) {
 				auto pos = std::find( link_types.labels.cbegin( ),
 				                      link_types.labels.cend( ), label );
 				if( pos == link_types.labels.cend( ) ) {
 					throw unknown_lablel_exception{};
 				}
-				return static_cast<size_t>( std::distance( link_types.labels.cbegin( ), pos ) );
+				return static_cast<size_t>(
+				  std::distance( link_types.labels.cbegin( ), pos ) );
 			}
 
-			constexpr auto find_part( decoder_t const &link_types,
+			template<typename... Args>
+			constexpr auto find_part( decoder_t<Args...> const &link_types,
 			                          daw::string_view &str ) {
 
 				auto const lbl = find_next_string( str );
@@ -309,18 +313,52 @@ namespace daw {
 				return lbl;
 			}
 
-			constexpr void skip_value( daw::string_view & str ) noexcept {
+			constexpr void skip_json_class( daw::string_view &str ) {
+				// non-validating moving paste json class
+				daw::exception::DebugAssert( str.front( ) == '{', "Expected {" );
+				intmax_t brace_count = 1;
+				while( !str.empty( ) && brace_count > 0 ) {
+					str.remove_prefix( );
+					impl::skip_whitespace( str );
+					switch( str.front( ) ) {
+					case '"':
+						find_next_string( str );
+						break;
+					case '{':
+						++brace_count;
+						break;
+					case '}':
+						--brace_count;
+						break;
+					}
+				}
+				daw::exception::Assert( brace_count == 0, "Unexpected brace count" );
+			}
+
+			constexpr void skip_value( daw::string_view &str ) noexcept {
 				impl::skip_whitespace( str );
 				if( str.empty( ) ) {
 					return;
 				}
+				switch( str.front( ) ) {
+				case '"':
+					find_next_string( str );
+					break;
+				case '{':
+					skip_json_class( str );
+					break;
+				case '[':
+					skip_json_array( str );
+					break;
+				}
 				if( str.front( ) == '"' ) {
 					find_next_string( str );
-				} 
+				}
 				str.remove_prefix( str.find( '"' ) - 1 );
 			}
 
-			constexpr auto find_parts( decoder_t const &link_types,
+			template<typename... Args>
+			constexpr auto find_parts( decoder_t<Args...> const &link_types,
 			                           daw::string_view str ) {
 				std::array<daw::string_view, link_types.size> result{};
 				auto part = find_next_string( link_types, str );
@@ -353,3 +391,4 @@ namespace daw {
 		}
 	} // namespace json
 } // namespace daw
+
