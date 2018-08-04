@@ -26,3 +26,5 @@ include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
 
 include( "dependencies.txt" )
 
+add_library( dependency_stub STATIC stub.cpp )
+add_dependencies( dependency_stub header_libraries_prj char_range_prj date_prj )

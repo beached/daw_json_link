@@ -22,13 +22,10 @@ externalproject_add(
 	char_range_prj
 	GIT_REPOSITORY "https://github.com/beached/char_range.git"
 	GIT_TAG "master"
-	SOURCE_DIR "${CMAKE_BINARY_DIR}/deps/chrrng"
+	SOURCE_DIR "${CMAKE_BINARY_DIR}/deps/char_range"
 	INSTALL_DIR "${CMAKE_BINARY_DIR}/install"
 	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
 )
 
 include_directories( SYSTEM "${CMAKE_BINARY_DIR}/install/include" )
 link_directories( "${CMAKE_BINARY_DIR}/install/lib" )
-
-add_library( dependency_stub STATIC stub.cpp )
-add_dependencies( dependency_stub header_libraries_prj char_range_prj date_prj )

@@ -21,13 +21,15 @@ ELSE( )
 	ENDIF()
 ENDIF()
 
-include_directories( "./include" )
 if( EXISTS "${CMAKE_SOURCE_DIR}/dependent_projects/build" )
 	add_custom_target( dependency_stub )
 	include_directories( SYSTEM "${CMAKE_SOURCE_DIR}/dependent_projects/build/install/include" )
 	link_directories( "${CMAKE_SOURCE_DIR}/dependent_projects/build/install/lib" )
 else( )
 	include( "${CMAKE_SOURCE_DIR}/dependent_projects/dependencies.txt" )
+
+	add_library( dependency_stub STATIC "${CMAKE_SOURCE_DIR}/dependent_projects/stub.cpp" )
+	add_dependencies( dependency_stub header_libraries_prj char_range_prj date_prj )
 endif( )
 
 include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
@@ -50,13 +52,13 @@ add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
 
 add_executable( daw_json_link_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_link_test.cpp )
 target_link_libraries( daw_json_link_test_bin char_range ${Boost_LIBRARIES} )
-add_definitions( daw_json_link_test_bin dependency_stub )
+add_dependencies( daw_json_link_test_bin dependency_stub )
 add_test( daw_json_link_test daw_json_link_test_bin )
 add_dependencies( check daw_json_link_test_bin )
 
 add_executable( daw_json_link_v3_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_link_v3_test.cpp )
 target_link_libraries( daw_json_link_v3_test_bin char_range ${Boost_LIBRARIES} )
-add_definitions( daw_json_link_v3_test_bin dependency_stub )
+add_dependencies( daw_json_link_v3_test_bin dependency_stub )
 add_test( daw_json_link_v3_test daw_json_link_v3_test_bin )
 add_dependencies( check daw_json_link_v3_test_bin )
 
