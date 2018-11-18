@@ -1,0 +1,15 @@
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL 'MSVC' )
+	add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 )
+else( )
+	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
+		add_compile_options( -march=native -ftemplate-backtrace-limit=0 -pthread -Weverything -Wno-c++98-compat -Wno-covered-switch-default -Wnull-dereference -Wno-padded -Wno-exit-time-destructors -Wno-c++98-compat-pedantic -Wno-unused-parameter -Wno-missing-noreturn -Wno-missing-prototypes -Wno-disabled-macro-expansion -Wno-missing-braces)
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g -O3")
+	elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
+		add_compile_options(-march=native -pthread -Wall -Wno-deprecated-declarations -Wduplicated-cond -Wlogical-op -Wnull-dereference -Wold-style-cast -Wshadow)
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g -O3")
+	endif( )
+endif( )
+
+
