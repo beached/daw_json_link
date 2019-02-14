@@ -31,7 +31,6 @@
 #include <daw/daw_bounded_string.h>
 #include <daw/daw_exception.h>
 #include <daw/daw_parser_helper_sv.h>
-#include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
@@ -94,7 +93,7 @@ namespace daw {
 					  : is_nullable( Nullable )
 					  , value_str( sv ) {}
 
-					constexpr explicit operator bool( ) const noexcept {
+					explicit constexpr operator bool( ) const noexcept {
 						return is_nullable or !value_str.empty( );
 					}
 				};
@@ -253,8 +252,8 @@ namespace daw {
 					using constructor_t = typename ParseInfo::constructor_t;
 
 					if constexpr( is_floating_point_v<result_t> ) {
-						// TODO
-						return constructor_t{}( static_cast<result_t>( 0.12345 ) );
+						//TODO
+						return constructor_t{}( static_cast<result_t>( 0.0 ) );
 					} else {
 						return constructor_t{}(
 						  parser::parse_int<result_t>( pos.value_str ) );

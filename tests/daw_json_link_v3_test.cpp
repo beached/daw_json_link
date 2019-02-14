@@ -27,15 +27,6 @@
 
 #include "daw/json/daw_json_link_v3.h"
 
-struct B {
-	int a;
-};
-
-constexpr auto describe_json_class( B ) noexcept {
-	using namespace daw::json;
-	return json_parser_t<json_number<"a", int>>{};
-}
-
 struct test_001_t {
 	int i = 0;
 	double d = 0.0;
@@ -43,7 +34,7 @@ struct test_001_t {
 	daw::string_view s{};
 	std::vector<int> y{};
 
-	test_001_t( int Int, double Double, B, bool Bool, daw::string_view S,
+	test_001_t( int Int, double Double, bool Bool, daw::string_view S,
 	            std::vector<int> Y ) noexcept
 	  : i( Int )
 	  , d( Double )
@@ -57,7 +48,6 @@ auto describe_json_class( test_001_t ) noexcept {
 	return json_parser_t<
 	json_number<"i", int>,
 				 json_number<"d">,
-	       json_class<"z", B>,
 	       json_bool<"b">,
 	       json_string<"s", daw::string_view>,
 	       json_array<"y", std::vector<int>, json_number<"", int>>
