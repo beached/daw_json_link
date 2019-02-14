@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2018 Darrell Wright
+// Copyright (c) 2018-2019 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -29,11 +29,10 @@ struct B {
 	int a;
 };
 
-constexpr auto get_json_link( B ) noexcept {
+constexpr auto describe_json_parser( B ) noexcept {
 	using namespace daw::json;
-	return json_link<json_number<"a", int>>{};
+	return json_parser_t<json_number<"a", int>>{};
 }
-
 
 struct test_001_t {
 	int i = 0;
@@ -41,16 +40,17 @@ struct test_001_t {
 	bool b = false;
 	daw::string_view s{};
 
-	constexpr test_001_t( int Int, double Double, B, bool Bool, daw::string_view S ) noexcept
+	constexpr test_001_t( int Int, double Double, B, bool Bool,
+	                      daw::string_view S ) noexcept
 	  : i( Int )
 	  , d( Double )
 	  , b( Bool )
 	  , s( S ) {}
 };
 
-constexpr auto get_json_link( test_001_t ) noexcept {
+constexpr auto describe_json_parser( test_001_t ) noexcept {
 	using namespace daw::json;
-	return json_link<json_number<"i", int>, json_number<"d">, json_class<"z", B>,
+	return json_parser_t<json_number<"i", int>, json_number<"d">, json_class<"z", B>,
 	                 json_bool<"b">, json_string<"s", daw::string_view>>{};
 }
 
@@ -68,16 +68,17 @@ constexpr auto const json_data =
 
 auto func( daw::string_view sv ) {
 	auto data = daw::json::from_json_t<test_001_t>( sv );
+
+	return data;
+}
+
+int main( ) {
+	auto data = func( json_data );
 	std::clog << "result: i->" << data.i << '\n';
 	std::clog << "result: d->" << data.d << '\n';
 	std::clog << "result: b->" << data.b << '\n';
 	std::clog << "result: s->" << data.s << '\n';
 	return data.i;
-}
-
-int main( ) {
-	auto result = func( json_data );
-	return result;
 
 	// assert( data.i == 1 );
 	// assert( data.d == 2.2 );

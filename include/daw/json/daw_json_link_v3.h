@@ -51,6 +51,14 @@ namespace daw {
 		};
 
 		template<typename T>
+		using json_parser_description_t =
+		  decltype( describe_json_parser( std::declval<T>( ) ) );
+
+		template<typename T>
+		inline constexpr bool has_json_parser_description_v =
+		  daw::is_detected_v<json_parser_description_t, T>;
+
+		template<typename T>
 		T from_json_t( daw::string_view sv );
 
 		template<JsonParseTypes v>
@@ -319,7 +327,8 @@ namespace daw {
 			std::clog << "parsing string: #" << pos.value_str << "#\n";
 
 			using result_t = typename ParseInfo::parse_to_t;
-			return daw::construct_a<result_t>{}( pos.value_str.data( ), pos.value_str.size( ) );
+			return daw::construct_a<result_t>{}( pos.value_str.data( ),
+			                                     pos.value_str.size( ) );
 		}
 
 		template<typename ParseInfo>
@@ -340,7 +349,7 @@ namespace daw {
 		}
 
 		template<typename... JsonMembers>
-		struct json_link {
+		struct json_parser_t {
 			template<size_t... Is>
 			static constexpr size_t find_string_capacity( ) noexcept {
 				return ( JsonMembers::name.extent + ... );
@@ -445,9 +454,13 @@ namespace daw {
 
 		template<typename T>
 		T from_json_t( daw::string_view sv ) {
+			static_assert(
+			  has_json_parser_description_v<T>,
+			  "A function call describe_json_parser must exist for type." );
+
 			std::clog << "from_json_t" << std::endl;
-			using parse_info_t = decltype( get_json_link( std::declval<T>( ) ) );
-			return parse_info_t::template parse<T>( sv );
+
+			return json_parser_description_t<T>::template parse<T>( sv );
 		}
 
 	} // namespace json
