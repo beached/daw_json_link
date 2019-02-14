@@ -519,12 +519,17 @@ namespace daw {
 			return impl::json_parser_description_t<T>::template parse<T>( sv );
 		}
 
-		template<typename T>
-		auto from_json_array_t( daw::string_view sv ) {
-			using parser_t = json_array<"", std::vector<typename T::parse_to_t>, T>;
+		template<typename JsonElement,
+		         typename Container = std::vector<typename JsonElement::parse_to_t>,
+		         typename Constructor = daw::construct_a<Container>,
+		         typename Appender = impl::basic_appender<Container>>
+		constexpr auto from_json_array_t( daw::string_view sv ) {
+			using parser_t =
+			  json_array<"", Container, JsonElement, false, Constructor, Appender>;
 
 			return impl::parse_value<parser_t>(
-			  impl::ParseTag<impl::JsonParseTypes::Array>{}, impl::value_pos( false, sv ) );
+			  impl::ParseTag<impl::JsonParseTypes::Array>{},
+			  impl::value_pos( false, sv ) );
 		}
 
 	} // namespace json
