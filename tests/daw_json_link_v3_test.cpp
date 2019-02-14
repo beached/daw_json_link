@@ -25,42 +25,33 @@
 
 #include "daw/json/daw_json_link_v3.h"
 
+struct B {
+	int a;
+};
+
+constexpr auto get_json_link( B ) noexcept {
+	using namespace daw::json;
+	return json_link<json_number<"a", int>>{};
+}
+
+
 struct test_001_t {
 	int i = 0;
 	double d = 0.0;
 	bool b = false;
+	daw::string_view s{};
 
-	constexpr test_001_t( int Int, double Double, bool Bool ) noexcept
+	constexpr test_001_t( int Int, double Double, B, bool Bool, daw::string_view S ) noexcept
 	  : i( Int )
 	  , d( Double )
-	  , b( Bool ) {}
+	  , b( Bool )
+	  , s( S ) {}
 };
 
 constexpr auto get_json_link( test_001_t ) noexcept {
 	using namespace daw::json;
-	return json_link<json_number<"i", int>, json_number<"d">, json_bool<"b">>{};
-}
-
-struct test_002_t {
-	int i = 0;
-	double d = 0.0;
-	bool b = false;
-	std::chrono::system_clock::time_point tp{};
-
-	constexpr test_002_t( ) noexcept = default; // delete;
-	constexpr test_002_t(
-	  int Int, double Double, bool Bool,
-	  std::chrono::system_clock::time_point TimePoint ) noexcept
-	  : i( Int )
-	  , d( Double )
-	  , b( Bool )
-	  , tp( TimePoint ) {}
-};
-
-auto get_json_link( test_002_t ) {
-	using namespace daw::json;
-	return json_link<json_number<"i", int>, json_number<"d", double>,
-	                 json_bool<"b">, json_date<"tp">>{};
+	return json_link<json_number<"i", int>, json_number<"d">, json_class<"z", B>,
+	                 json_bool<"b">, json_string<"s", daw::string_view>>{};
 }
 
 constexpr auto const json_data =
@@ -70,17 +61,17 @@ constexpr auto const json_data =
 			"b": true,
 			"x": { "b": false, "c": [1,2,3] },
 			"y": [1,2,3,4],
-			"z": [{ "a": 1 }, { "a": 2 }],
-	    "tp": "2018-06-22T15:05:37Z"
+			"z": { "a": 1 },
+	    "tp": "2018-06-22T15:05:37Z",
+			"s": "yo yo yo"
 	  })";
 
 auto func( daw::string_view sv ) {
-	using link_t = decltype( get_json_link( std::declval<test_001_t>( ) ) );
-
 	auto data = daw::json::from_json_t<test_001_t>( sv );
 	std::clog << "result: i->" << data.i << '\n';
 	std::clog << "result: d->" << data.d << '\n';
 	std::clog << "result: b->" << data.b << '\n';
+	std::clog << "result: s->" << data.s << '\n';
 	return data.i;
 }
 

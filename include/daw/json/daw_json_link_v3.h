@@ -50,6 +50,9 @@ namespace daw {
 			Class
 		};
 
+		template<typename T>
+		T from_json_t( daw::string_view sv );
+
 		template<JsonParseTypes v>
 		using ParseTag = std::integral_constant<JsonParseTypes, v>;
 
@@ -148,7 +151,7 @@ namespace daw {
 					break;
 				case '"':
 					if( !is_escaped ) {
-						in_quotes != in_quotes;
+						in_quotes = !in_quotes;
 						sv.remove_prefix( );
 						continue;
 					}
@@ -170,7 +173,6 @@ namespace daw {
 			std::clog << "class #" << tmp_sv << "#\n";
 			auto pos = sv.find_first_of( ",}]" );
 			daw::exception::precondition_check( pos != sv.npos, "Invalid class" );
-			auto result = sv.pop_front( pos );
 			sv.remove_prefix( );
 			sv = daw::parser::trim_left( sv );
 			std::clog << "skip_class 2#" << sv << "#\n";
@@ -195,7 +197,7 @@ namespace daw {
 					break;
 				case '"':
 					if( !is_escaped ) {
-						in_quotes != in_quotes;
+						in_quotes = !in_quotes;
 						sv.remove_prefix( );
 						continue;
 					}
@@ -217,7 +219,6 @@ namespace daw {
 			std::clog << "array #" << tmp_sv << "#\n";
 			auto pos = sv.find_first_of( ",}]" );
 			daw::exception::precondition_check( pos != sv.npos, "Invalid array" );
-			auto result = sv.pop_front( pos );
 			sv.remove_prefix( );
 			sv = daw::parser::trim_left( sv );
 			std::clog << "skip_array 2#" << sv << "#\n";
@@ -282,6 +283,14 @@ namespace daw {
 			using parse_to_t = T;
 		};
 
+		template<daw::basic_bounded_string Name, typename T, bool Nullable = false>
+		struct json_class {
+			static constexpr auto const name = Name;
+			static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = T;
+		};
+
 		template<typename ParseInfo>
 		auto parse_value( ParseTag<JsonParseTypes::Number>, value_pos pos ) {
 			using result_t = typename ParseInfo::parse_to_t;
@@ -310,7 +319,7 @@ namespace daw {
 			std::clog << "parsing string: #" << pos.value_str << "#\n";
 
 			using result_t = typename ParseInfo::parse_to_t;
-			return result_t{};
+			return daw::construct_a<result_t>{}( pos.value_str.data( ), pos.value_str.size( ) );
 		}
 
 		template<typename ParseInfo>
@@ -327,7 +336,7 @@ namespace daw {
 
 			std::clog << "parsing class: #" << pos.value_str << "#\n";
 			using result_t = typename ParseInfo::parse_to_t;
-			return result_t{};
+			return from_json_t<result_t>( pos.value_str );
 		}
 
 		template<typename... JsonMembers>
@@ -388,7 +397,6 @@ namespace daw {
 				  "Supplied types cannot be used for construction of this type" );
 
 				auto sv_orig = sv;
-				auto const first_pos = sv.begin( );
 
 				sv = daw::parser::trim_left( sv );
 				daw::exception::precondition_check( sv.front( ) == '{' );
