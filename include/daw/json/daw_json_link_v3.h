@@ -23,9 +23,9 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 #include <limits>
 #include <string>
-//#include <iostream>
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_bounded_string.h>
@@ -38,6 +38,10 @@
 
 namespace daw {
 	namespace json {
+		constexpr char to_lower( char c ) noexcept {
+			return c | ' ';
+		}
+
 		enum class JsonParseTypes : uint_fast8_t {
 			Number,
 			Bool,
@@ -65,12 +69,15 @@ namespace daw {
 		};
 
 		struct value_pos {
-			size_t first = std::numeric_limits<size_t>::max( );
-			size_t last = std::numeric_limits<size_t>::max( );
+			daw::string_view value_str{};
 			bool is_nullable;
 
 			constexpr value_pos( bool Nullable ) noexcept
 			  : is_nullable( Nullable ) {}
+
+			constexpr explicit operator bool( ) const noexcept {
+				return is_nullable or !value_str.empty( );
+			}
 		};
 
 		template<typename string_t>
@@ -84,58 +91,65 @@ namespace daw {
 
 		daw::string_view parse_name( daw::string_view &sv ) {
 			sv = daw::parser::trim_left( sv );
-//			std::cout << sv.front( ) << std::endl;
+			std::clog << "parse_name1#" << sv << "#\n";
+			std::clog << "front #" << sv.front( ) << "#\n";
 			daw::exception::precondition_check( sv.front( ) == '"' );
 			sv.remove_prefix( );
-			auto result = sv.pop_front( '"' );
+			auto name = sv.pop_front( "\"" );
+			std::clog << "name #" << name << "#\n";
 			sv = daw::parser::trim_left( sv );
-			sv.remove_prefix( ':' );
+			std::clog << "find :#" << sv.pop_front( ":" ) << "#\n";
 			sv = daw::parser::trim_left( sv );
+			std::clog << "parse_name2#" << sv << "#\n";
+			return name;
+		}
+
+		daw::string_view skip_string( daw::string_view &sv ) noexcept {
+			// Assumes front()  == '"'
+			std::clog << "skip_string 1#" << sv << "#\n";
+			auto tmp = sv.substr( 1 );
+			auto result = tmp.pop_front( "\"" );
+			sv = tmp;
+			auto pos = sv.find_first_of( ",}]" );
+			daw::exception::precondition_check( pos != sv.npos, "Invalid class" );
+			sv.remove_prefix( pos + 1 );
+			sv = daw::parser::trim_left( sv );
+			std::clog << "skip_string 2#" << sv << "#\n";
 			return result;
 		}
 
-		constexpr daw::string_view skip_string( daw::string_view sv ) noexcept {
-			// Assumes front()  == '"'
+		daw::string_view skip_other( daw::string_view &sv ) noexcept {
+			std::clog << "skip_other 1#" << sv << "#\n";
+			auto pos = sv.find_first_of( ",}]" );
+			daw::exception::precondition_check( pos != sv.npos, "Invalid class" );
+			auto result = sv.pop_front( pos );
 			sv.remove_prefix( );
-			sv.pop_front( '"' );
-			if( sv.front( ) == ',' ) {
-				sv.remove_prefix( );
-			}
-			return sv;
+			sv = daw::parser::trim_left( sv );
+			std::clog << "skip_other 2#" << sv << "#\n";
+			return result;
 		}
 
-		constexpr daw::string_view skip_other( daw::string_view sv ) noexcept {
-			sv.pop_front( ' ' );
-			if( sv.front( ) == ',' ) {
-				sv.remove_prefix( );
-			}
-			return sv;
-		}
-
-		constexpr daw::string_view skip_class( daw::string_view sv ) noexcept {
+		constexpr daw::string_view skip_class( daw::string_view &sv ) noexcept {
 			// TODO
-			return sv;
+			return {};
 		}
 
-		constexpr daw::string_view skip_array( daw::string_view sv ) noexcept {
+		constexpr daw::string_view skip_array( daw::string_view &sv ) noexcept {
 			// TODO
-			return sv;
+			return {};
 		}
 
-		constexpr void skip_value( daw::string_view &sv ) {
+		constexpr daw::string_view skip_value( daw::string_view &sv ) {
 			sv = daw::parser::trim_left( sv );
 			switch( sv.front( ) ) {
 			case '"':
-				sv = skip_string( sv );
-				break;
+				return skip_string( sv );
 			case '[':
-				sv = skip_array( sv );
-				break;
+				return skip_array( sv );
 			case '{':
-				sv = skip_class( sv );
+				return skip_class( sv );
 			default:
-				sv = skip_other( sv );
-				break;
+				return skip_other( sv );
 			}
 		}
 		// Keep a stack of the class/array positions and
@@ -148,8 +162,7 @@ namespace daw {
 			static_assert( std::is_arithmetic_v<T>,
 			               "Number must be an arithmentic type" );
 			static constexpr auto const name = Name;
-			static constexpr JsonParseTypes expected_type =
-			  JsonParseTypes::Number;
+			static constexpr JsonParseTypes expected_type = JsonParseTypes::Number;
 			static constexpr bool nullable = Nullable;
 			using parse_to_t = T;
 		};
@@ -165,7 +178,7 @@ namespace daw {
 			using parse_to_t = T;
 		};
 
-		template<daw::basic_bounded_string Name, typename T = void, //std::string,
+		template<daw::basic_bounded_string Name, typename T = void, // std::string,
 		         bool Nullable = false>
 		struct json_string {
 			static constexpr auto const name = Name;
@@ -185,43 +198,49 @@ namespace daw {
 		};
 
 		template<typename ParseInfo>
-		constexpr auto parse_value( ParseTag<JsonParseTypes::Number>, value_pos pos,
-		                            daw::string_view sv ) {
+		auto parse_value( ParseTag<JsonParseTypes::Number>, value_pos pos ) {
 			using result_t = typename ParseInfo::parse_to_t;
+			std::clog << "parsing number: #" << pos.value_str << "#\n";
 			if constexpr( is_floating_point_v<result_t> ) {
 				// TODO
 				return static_cast<result_t>( 0.12345 );
 			} else {
-				return daw::parser::parse_int<result_t>(
-				  sv.substr( pos.first, pos.last - pos.first ) );
+				return daw::parser::parse_int<result_t>( pos.value_str );
 			}
 		}
 
 		template<typename ParseInfo>
-		constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>, value_pos pos,
-		                            daw::string_view sv ) {
+		constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
+		                            value_pos pos ) {
+			using result_t = typename ParseInfo::parse_to_t;
+			std::clog << "parsing bool: #" << pos.value_str << "#\n";
+
+			return daw::construct_a<result_t>{}( to_lower( pos.value_str.front( ) ) ==
+			                                     't' );
+		}
+
+		template<typename ParseInfo>
+		constexpr auto parse_value( ParseTag<JsonParseTypes::String>,
+		                            value_pos pos ) {
+			std::clog << "parsing string: #" << pos.value_str << "#\n";
+
 			using result_t = typename ParseInfo::parse_to_t;
 			return result_t{};
 		}
 
 		template<typename ParseInfo>
-		constexpr auto parse_value( ParseTag<JsonParseTypes::String>, value_pos pos,
-		                            daw::string_view sv ) {
-
+		constexpr auto parse_value( ParseTag<JsonParseTypes::Date>,
+		                            value_pos pos ) {
+			std::clog << "parsing date: #" << pos.value_str << "#\n";
 			using result_t = typename ParseInfo::parse_to_t;
 			return result_t{};
 		}
 
 		template<typename ParseInfo>
-		constexpr auto parse_value( ParseTag<JsonParseTypes::Date>, value_pos pos,
-		                            daw::string_view sv ) {
-			using result_t = typename ParseInfo::parse_to_t;
-			return result_t{};
-		}
+		constexpr auto parse_value( ParseTag<JsonParseTypes::Class>,
+		                            value_pos pos ) {
 
-		template<typename ParseInfo>
-		constexpr auto parse_value( ParseTag<JsonParseTypes::Class>, value_pos pos,
-		                            daw::string_view sv ) {
+			std::clog << "parsing class: #" << pos.value_str << "#\n";
 			using result_t = typename ParseInfo::parse_to_t;
 			return result_t{};
 		}
@@ -272,45 +291,51 @@ namespace daw {
 			  daw::string_view sv ) {
 				using type_t = daw::traits::nth_type<N, JsonMembers...>;
 				return parse_value<type_t>( ParseTag<type_t::expected_type>{},
-				                            locations[N], sv );
+				                            locations[N] );
 			}
 
 		private:
 			template<typename Result, size_t... Is>
 			static Result parse_json_class( daw::string_view sv,
-			                               std::index_sequence<Is...> ) {
+			                                std::index_sequence<Is...> ) {
 				static_assert(
 				  daw::can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
 				  "Supplied types cannot be used for construction of this type" );
 
-				std::array locations = {
-				  value_pos( is_json_nullable_v<JsonMembers> )...};
 				auto sv_orig = sv;
 				auto const first_pos = sv.begin( );
+
 				sv = daw::parser::trim_left( sv );
 				daw::exception::precondition_check( sv.front( ) == '{' );
 				sv.remove_prefix( );
 				sv = daw::parser::trim_left( sv );
-				while( !sv.empty( ) and sv.front( ) != '}' ) {
-//					std::cout << "parse_json_class: " << sv << std::endl;
-					auto name = parse_name( sv );
-					if( !has_name( name ) ) {
-						skip_value( sv );
-						continue;
+
+				auto const locations = [&]( ) {
+					std::array result = {value_pos( is_json_nullable_v<JsonMembers> )...};
+
+					while( !sv.empty( ) and sv.front( ) != '}' ) {
+						std::clog << "parse_json_class: " << std::endl;
+						auto name = parse_name( sv );
+						if( !has_name( name ) ) {
+							std::clog << "skipping: " << name << '\n';
+							skip_value( sv );
+							continue;
+						}
+						size_t const pos = find_name( name );
+						result[pos].value_str = skip_value( sv );
+						sv = daw::parser::trim_left( sv );
 					}
-					size_t const pos = find_name( name );
-					locations[pos].first = std::distance( first_pos, sv.begin( ) );
-					skip_value( sv );
-					locations[pos].last = std::distance( first_pos, sv.begin( ) );
-					sv = daw::parser::trim_left( sv );
-				}
+					return result;
+				}( );
 				// Ensure locations of all parts there
+				std::clog << "locations\n";
+				for( auto const &loc : locations ) {
+					std::clog << "{'" << loc.value_str << "', " << loc.is_nullable
+					          << "}\n";
+				}
 				daw::exception::precondition_check( daw::algorithm::all_of(
-				  begin( locations ), end( locations ), []( auto const &loc ) {
-					  return loc.is_nullable or
-					         ( loc.first != std::numeric_limits<size_t>::max( ) and
-					           loc.last != std::numeric_limits<size_t>::max( ) );
-				  } ) );
+				  begin( locations ), end( locations ),
+				  []( auto const &loc ) -> bool { return static_cast<bool>( loc ); } ) );
 
 				return daw::construct_a<Result>{}(
 				  parse_item<Is>( locations, sv_orig )... );
@@ -319,12 +344,14 @@ namespace daw {
 		public:
 			template<typename Result>
 			static constexpr decltype( auto ) parse( daw::string_view sv ) {
-				return parse_json_class<Result>( sv, std::index_sequence_for<JsonMembers...>{} );
+				return parse_json_class<Result>(
+				  sv, std::index_sequence_for<JsonMembers...>{} );
 			}
 		};
 
 		template<typename T>
 		T from_json_t( daw::string_view sv ) {
+			std::clog << "from_json_t" << std::endl;
 			using parse_info_t = decltype( get_json_link( std::declval<T>( ) ) );
 			return parse_info_t::template parse<T>( sv );
 		}

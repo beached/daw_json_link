@@ -75,6 +75,9 @@ auto func( daw::string_view sv ) {
 	using link_t = decltype( get_json_link( std::declval<test_001_t>( ) ) );
 
 	auto data = daw::json::from_json_t<test_001_t>( sv );
+	std::clog << "result: i->" << data.i << '\n';
+	std::clog << "result: d->" << data.d << '\n';
+	std::clog << "result: b->" << data.b << '\n';
 	return data.i;
 }
 
