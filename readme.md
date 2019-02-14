@@ -22,12 +22,12 @@ struct TestClass {
 auto describe_json_class( TestClass ) noexcept {
 	using namespace daw::json;
 	return json_parser_t<
-	json_number<"i", int>,
-				 json_number<"d">,
-	       json_bool<"b">,
-	       json_string<"s", daw::string_view>,
-	       json_array<"y", std::vector<int>, json_number<"", int>>
-	       >{};
+		json_number<"i", int>,
+		json_number<"d">,
+		json_bool<"b">,
+		json_string<"s", daw::string_view>,
+		json_array<"y", std::vector<int>, json_number<"", int>>
+ 	>{};
 }
 
 std::string json_data = ...;
@@ -46,8 +46,9 @@ struct AggClass {
 auto describe_json_class( TestClass ) noexcept {
 	using namespace daw::json;
 	return json_parser_t<
-	json_number<"a", int>,
-	json_number<"b">>{};
+		json_number<"a", int>,
+		json_number<"b">
+	>{};
 }
 ```
 Works too.
