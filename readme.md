@@ -43,7 +43,7 @@ struct AggClass {
 	int a{};
 	double b{};
 };
-auto describe_json_class( TestClass ) noexcept {
+auto describe_json_class( AggClass ) noexcept {
 	using namespace daw::json;
 	return json_parser_t<
 		json_number<"a", int>,
