@@ -36,7 +36,7 @@ std::string json_array_data = ...;
 auto test_class = daw::json::from_json<TestClass>( json_data );
 auto arry_of_test_class = daw::json::from_json_array<json_class<"", TestClass>>( json_data );
 ```
-Both aggregate and normal construction is supported.  A class like:
+Both aggregate and normal construction is supported.  The description provides the values needed to construct your type and the order.  The order specified is the order they are placed into the constructor.  There are customization points to provide a way of constructing your type too(TODO discuss customization points)  A class like:
 
 ```cpp
 struct AggClass {
