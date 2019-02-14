@@ -61,5 +61,11 @@ add_dependencies( daw_json_link_v3_test_bin dependency_stub )
 add_test( daw_json_link_v3_test daw_json_link_v3_test_bin )
 add_dependencies( check daw_json_link_v3_test_bin )
 
+add_executable( city_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/city_test.cpp )
+target_link_libraries( city_test_bin utf_range ${Boost_LIBRARIES} )
+add_dependencies( city_test_bin dependency_stub )
+add_test( city_test city_test_bin )
+add_dependencies( check city_test_bin )
+
 install( DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/ )
 

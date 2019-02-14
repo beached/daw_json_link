@@ -22,8 +22,8 @@
 
 #pragma once
 
+#include <chrono>
 #include <cstdint>
-//#include <iostream>
 #include <limits>
 #include <string>
 
@@ -84,11 +84,15 @@ namespace daw {
 				};
 
 				struct value_pos {
-					string_view value_str{};
 					bool is_nullable;
+					string_view value_str{};
 
 					explicit constexpr value_pos( bool Nullable ) noexcept
 					  : is_nullable( Nullable ) {}
+
+					constexpr value_pos( bool Nullable, daw::string_view sv ) noexcept
+					  : is_nullable( Nullable )
+					  , value_str( sv ) {}
 
 					constexpr explicit operator bool( ) const noexcept {
 						return is_nullable or !value_str.empty( );
@@ -308,10 +312,9 @@ namespace daw {
 					auto add_value = typename ParseInfo::appender_t( result );
 					while( !pos.value_str.empty( ) and pos.value_str.front( ) != ']' ) {
 						auto val_str = skip_value( pos.value_str );
-						value_pos vp( element_t::nullable );
-						vp.value_str = val_str;
 						add_value( parse_value<element_t>(
-						  ParseTag<element_t::expected_type>{}, vp ) );
+						  ParseTag<element_t::expected_type>{},
+						  value_pos( element_t::nullable, val_str ) ) );
 
 						pos.value_str = daw::parser::trim_left( pos.value_str );
 					}
@@ -458,7 +461,7 @@ namespace daw {
 			using constructor_t = Constructor;
 		};
 
-		template<basic_bounded_string Name, typename T = void, // std::string,
+		template<basic_bounded_string Name, typename T = std::string,
 		         bool Nullable = false, typename Constructor = daw::construct_a<T>>
 		struct json_string {
 			static constexpr auto const name = Name;
@@ -510,10 +513,18 @@ namespace daw {
 		template<typename T>
 		constexpr T from_json_t( daw::string_view sv ) {
 			static_assert(
-			  true or impl::has_json_parser_description_v<T>,
+			  impl::has_json_parser_description_v<T>,
 			  "A function call describe_json_parser must exist for type." );
 
 			return impl::json_parser_description_t<T>::template parse<T>( sv );
+		}
+
+		template<typename T>
+		auto from_json_array_t( daw::string_view sv ) {
+			using parser_t = json_array<"", std::vector<typename T::parse_to_t>, T>;
+
+			return impl::parse_value<parser_t>(
+			  impl::ParseTag<impl::JsonParseTypes::Array>{}, impl::value_pos( false, sv ) );
 		}
 
 	} // namespace json
