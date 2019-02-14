@@ -24,6 +24,8 @@
 #include <iostream>
 #include <vector>
 
+#include <daw/daw_benchmark.h>
+
 #include "daw/json/daw_json_link_v3.h"
 
 struct City {
@@ -55,8 +57,11 @@ int main( int argc, char **argv ) {
 	auto json_data = std::string( std::istream_iterator<char>( in_file ),
 	                              std::istream_iterator<char>( ) );
 	in_file.close( );
+	auto json_sv = daw::string_view( json_data );
+	size_t count = *daw::bench_n_test<2>( "cities parsing", [ ]( auto && sv ) {
+		auto const data = daw::json::from_json_array_t<json_class<"", City>>( sv );
+		return data.size( );
+	}, json_sv );
 
-  auto const data = daw::json::from_json_array_t<json_class<"", City>>( json_data );
-
-	std::cout << "element count: " << data.size( ) << '\n';
+	std::cout << "element count: " << count << '\n';
 }
