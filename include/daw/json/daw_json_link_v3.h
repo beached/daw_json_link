@@ -105,6 +105,7 @@ namespace daw {
 		}
 
 		daw::string_view skip_string( daw::string_view &sv ) noexcept {
+			// TODO: handle escaped quotes
 			// Assumes front()  == '"'
 			std::clog << "skip_string 1#" << sv << "#\n";
 			auto tmp = sv.substr( 1 );
@@ -129,14 +130,98 @@ namespace daw {
 			return result;
 		}
 
-		constexpr daw::string_view skip_class( daw::string_view &sv ) noexcept {
-			// TODO
-			return {};
+		daw::string_view skip_class( daw::string_view &sv ) noexcept {
+			std::clog << "skip_class 1#" << sv << "#\n";
+			size_t bracket_count = 1;
+			bool is_escaped = false;
+			bool in_quotes = false;
+			auto tmp_sv = sv;
+			sv.remove_prefix( );
+			while( !sv.empty( ) and bracket_count > 0 ) {
+				switch( sv.front( ) ) {
+				case '\\':
+					if( !in_quotes and !is_escaped ) {
+						is_escaped = true;
+						sv.remove_prefix( );
+						continue;
+					}
+					break;
+				case '"':
+					if( !is_escaped ) {
+						in_quotes != in_quotes;
+						sv.remove_prefix( );
+						continue;
+					}
+					break;
+				case '{':
+					if( !in_quotes and !is_escaped ) {
+						++bracket_count;
+					}
+					break;
+				case '}':
+					if( !in_quotes and !is_escaped ) {
+						--bracket_count;
+					}
+				}
+				is_escaped = false;
+				sv.remove_prefix( );
+			}
+			tmp_sv = tmp_sv.pop_front( tmp_sv.size( ) - sv.size( ) );
+			std::clog << "class #" << tmp_sv << "#\n";
+			auto pos = sv.find_first_of( ",}]" );
+			daw::exception::precondition_check( pos != sv.npos, "Invalid class" );
+			auto result = sv.pop_front( pos );
+			sv.remove_prefix( );
+			sv = daw::parser::trim_left( sv );
+			std::clog << "skip_class 2#" << sv << "#\n";
+			return tmp_sv;
 		}
 
-		constexpr daw::string_view skip_array( daw::string_view &sv ) noexcept {
-			// TODO
-			return {};
+		daw::string_view skip_array( daw::string_view &sv ) noexcept {
+			std::clog << "skip_array 1#" << sv << "#\n";
+			size_t bracket_count = 1;
+			bool is_escaped = false;
+			bool in_quotes = false;
+			auto tmp_sv = sv;
+			sv.remove_prefix( );
+			while( !sv.empty( ) and bracket_count > 0 ) {
+				switch( sv.front( ) ) {
+				case '\\':
+					if( !in_quotes and !is_escaped ) {
+						is_escaped = true;
+						sv.remove_prefix( );
+						continue;
+					}
+					break;
+				case '"':
+					if( !is_escaped ) {
+						in_quotes != in_quotes;
+						sv.remove_prefix( );
+						continue;
+					}
+					break;
+				case '[':
+					if( !in_quotes and !is_escaped ) {
+						++bracket_count;
+					}
+					break;
+				case ']':
+					if( !in_quotes and !is_escaped ) {
+						--bracket_count;
+					}
+				}
+				is_escaped = false;
+				sv.remove_prefix( );
+			}
+			tmp_sv = tmp_sv.pop_front( tmp_sv.size( ) - sv.size( ) );
+			std::clog << "array #" << tmp_sv << "#\n";
+			auto pos = sv.find_first_of( ",}]" );
+			daw::exception::precondition_check( pos != sv.npos, "Invalid array" );
+			auto result = sv.pop_front( pos );
+			sv.remove_prefix( );
+			sv = daw::parser::trim_left( sv );
+			std::clog << "skip_array 2#" << sv << "#\n";
+			return tmp_sv;
 		}
 
 		constexpr daw::string_view skip_value( daw::string_view &sv ) {
@@ -334,8 +419,9 @@ namespace daw {
 					          << "}\n";
 				}
 				daw::exception::precondition_check( daw::algorithm::all_of(
-				  begin( locations ), end( locations ),
-				  []( auto const &loc ) -> bool { return static_cast<bool>( loc ); } ) );
+				  begin( locations ), end( locations ), []( auto const &loc ) -> bool {
+					  return static_cast<bool>( loc );
+				  } ) );
 
 				return daw::construct_a<Result>{}(
 				  parse_item<Is>( locations, sv_orig )... );
