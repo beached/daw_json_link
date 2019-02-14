@@ -1,6 +1,6 @@
 # daw_json_link v3
 
-For now v3 is focussed on deserialization.  This can be accomplished by writing a function called describe_json_class with a single arugment that is your type.  The library is only concerned with it's return value.  For example:
+For now v3 is focussed on deserialization.  This can be accomplished by writing a function called describe_json_class with a single arugment that is your type.  The library is only concerned with it's return value.  Also, needs C++ 20.  For example:
 
 ```C++
 struct TestClass {
