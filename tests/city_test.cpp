@@ -35,21 +35,13 @@ struct City {
 	double lng;
 };
 
-constexpr auto describe_json_parser( City ) noexcept {
+constexpr auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 	return json_parser_t<json_string<"country", daw::string_view>,
 	                     json_string<"name", daw::string_view>,
-	                     json_number<"lat">, json_number<"lng">>{};
+	                     json_number<"lat">,
+	                     json_number<"lng">>{};
 }
-
-struct counter {
-	size_t value = 0;
-
-	template<typename T>
-	constexpr void push_back( T&& ) noexcept {
-		++value;
-	}
-};
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;
@@ -68,8 +60,9 @@ int main( int argc, char **argv ) {
 	in_file.close( );
 	auto json_sv = daw::string_view( json_data );
 	auto count = *daw::bench_n_test<2>( "cities parsing", [ ]( auto && sv ) {
-		return daw::json::from_json_array_t<json_class<"", City>, counter>( sv );
+		auto const data = daw::json::from_json_array_t<json_class<"", City>>( sv );
+		return data.size( );
 	}, json_sv );
 
-	std::cout << "element count: " << count.value << '\n';
+	std::cout << "element count: " << count << '\n';
 }

@@ -59,7 +59,7 @@ namespace daw {
 
 				template<typename T>
 				using json_parser_description_t =
-				  decltype( describe_json_parser( std::declval<T &>( ) ) );
+				  decltype( describe_json_class( std::declval<T &>( ) ) );
 
 				template<typename T>
 				inline constexpr bool has_json_parser_description_v =
@@ -514,7 +514,7 @@ namespace daw {
 		constexpr T from_json_t( daw::string_view sv ) {
 			static_assert(
 			  impl::has_json_parser_description_v<T>,
-			  "A function call describe_json_parser must exist for type." );
+			  "A function call describe_json_class must exist for type." );
 
 			return impl::json_parser_description_t<T>::template parse<T>( sv );
 		}

@@ -31,7 +31,7 @@ struct B {
 	int a;
 };
 
-constexpr auto describe_json_parser( B ) noexcept {
+constexpr auto describe_json_class( B ) noexcept {
 	using namespace daw::json;
 	return json_parser_t<json_number<"a", int>>{};
 }
@@ -52,7 +52,7 @@ struct test_001_t {
 	  , y( Y ) {}
 };
 
-auto describe_json_parser( test_001_t ) noexcept {
+auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
 	return json_parser_t<
 	json_number<"i", int>,
