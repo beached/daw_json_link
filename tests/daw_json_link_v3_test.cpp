@@ -22,6 +22,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <iostream>
 
 #include "daw/json/daw_json_link_v3.h"
 
@@ -66,14 +67,8 @@ constexpr auto const json_data =
 			"s": "yo yo yo"
 	  })";
 
-auto func( daw::string_view sv ) {
-	auto data = daw::json::from_json_t<test_001_t>( sv );
-
-	return data;
-}
-
 int main( ) {
-	auto data = func( json_data );
+	constexpr auto data = daw::json::from_json_t<test_001_t>( json_data );
 	std::clog << "result: i->" << data.i << '\n';
 	std::clog << "result: d->" << data.d << '\n';
 	std::clog << "result: b->" << data.b << '\n';
