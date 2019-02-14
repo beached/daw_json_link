@@ -60,7 +60,7 @@ int main( int argc, char **argv ) {
 	in_file.close( );
 	auto json_sv = daw::string_view( json_data );
 	auto count = *daw::bench_n_test<2>( "cities parsing", [ ]( auto && sv ) {
-		auto const data = daw::json::from_json_array_t<json_class<"", City>>( sv );
+		auto const data = daw::json::from_json_array<json_class<"", City>>( sv );
 		return data.size( );
 	}, json_sv );
 

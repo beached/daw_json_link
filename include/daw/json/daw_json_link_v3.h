@@ -39,7 +39,7 @@
 namespace daw {
 	namespace json {
 		template<typename T>
-		constexpr T from_json_t( daw::string_view sv );
+		constexpr T from_json( daw::string_view sv );
 
 		namespace impl {
 			namespace {
@@ -293,7 +293,7 @@ namespace daw {
 
 					using result_t = typename ParseInfo::parse_to_t;
 
-					return from_json_t<result_t>( pos.value_str );
+					return from_json<result_t>( pos.value_str );
 				}
 
 				template<typename ParseInfo>
@@ -510,7 +510,7 @@ namespace daw {
 		};
 
 		template<typename T>
-		constexpr T from_json_t( daw::string_view sv ) {
+		constexpr T from_json( daw::string_view sv ) {
 			static_assert(
 			  impl::has_json_parser_description_v<T>,
 			  "A function call describe_json_class must exist for type." );
@@ -522,7 +522,7 @@ namespace daw {
 		         typename Container = std::vector<typename JsonElement::parse_to_t>,
 		         typename Constructor = daw::construct_a<Container>,
 		         typename Appender = impl::basic_appender<Container>>
-		constexpr auto from_json_array_t( daw::string_view sv ) {
+		constexpr auto from_json_array( daw::string_view sv ) {
 			using parser_t =
 			  json_array<"", Container, JsonElement, false, Constructor, Appender>;
 

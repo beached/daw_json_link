@@ -33,8 +33,8 @@ auto describe_json_class( TestClass ) noexcept {
 std::string json_data = ...;
 std::string json_array_data = ...;
 
-auto test_class = daw::json::from_json_t<TestClass>( json_data );
-auto arry_of_test_class = daw::json::from_json_array_t<json_class<"", TestClass>>( json_data );
+auto test_class = daw::json::from_json<TestClass>( json_data );
+auto arry_of_test_class = daw::json::from_json_array<json_class<"", TestClass>>( json_data );
 ```
 Both aggregate and normal construction is supported.  A class like:
 
