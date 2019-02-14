@@ -67,7 +67,7 @@ constexpr auto const json_data =
 	  })";
 
 int main( ) {
-	auto data = daw::json::from_json_t<test_001_t>( json_data );
+	auto data = daw::json::from_json<test_001_t>( json_data );
 	std::clog << "result: i->" << data.i << '\n';
 	std::clog << "result: d->" << data.d << '\n';
 	std::clog << "result: b->" << data.b << '\n';
