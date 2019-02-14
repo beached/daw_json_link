@@ -23,6 +23,7 @@
 #include <cassert>
 #include <chrono>
 #include <iostream>
+#include <vector>
 
 #include "daw/json/daw_json_link_v3.h"
 
@@ -40,19 +41,27 @@ struct test_001_t {
 	double d = 0.0;
 	bool b = false;
 	daw::string_view s{};
+	std::vector<int> y{};
 
-	constexpr test_001_t( int Int, double Double, B, bool Bool,
-	                      daw::string_view S ) noexcept
+	test_001_t( int Int, double Double, B, bool Bool, daw::string_view S,
+	            std::vector<int> Y ) noexcept
 	  : i( Int )
 	  , d( Double )
 	  , b( Bool )
-	  , s( S ) {}
+	  , s( S )
+	  , y( Y ) {}
 };
 
-constexpr auto describe_json_parser( test_001_t ) noexcept {
+auto describe_json_parser( test_001_t ) noexcept {
 	using namespace daw::json;
-	return json_parser_t<json_number<"i", int>, json_number<"d">, json_class<"z", B>,
-	                 json_bool<"b">, json_string<"s", daw::string_view>>{};
+	return json_parser_t<
+	json_number<"i", int>,
+				 json_number<"d">,
+	       json_class<"z", B>,
+	       json_bool<"b">,
+	       json_string<"s", daw::string_view>,
+	       json_array<"y", std::vector<int>, json_number<"", int>>
+	       >{};
 }
 
 constexpr auto const json_data =
@@ -68,11 +77,17 @@ constexpr auto const json_data =
 	  })";
 
 int main( ) {
-	constexpr auto data = daw::json::from_json_t<test_001_t>( json_data );
+	auto data = daw::json::from_json_t<test_001_t>( json_data );
 	std::clog << "result: i->" << data.i << '\n';
 	std::clog << "result: d->" << data.d << '\n';
 	std::clog << "result: b->" << data.b << '\n';
 	std::clog << "result: s->" << data.s << '\n';
+	std::clog << "result: y-> [ ";
+	for( auto const & v: data.y ) {
+		std::clog << v << ", ";
+	}
+	std::clog << "]\n";
+
 	return data.i;
 
 	// assert( data.i == 1 );
