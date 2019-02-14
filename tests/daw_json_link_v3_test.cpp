@@ -29,35 +29,25 @@ struct test_001_t {
 	int i = 0;
 	double d = 0.0;
 	bool b = false;
-	std::chrono::system_clock::time_point tp =
-	  std::chrono::system_clock::time_point( );
 
-	static constexpr auto get_json_link( ) noexcept {
-		using json_link_t =
-		  daw::json::link<test_001_t>::json_number<int>::json_number<double>::
-		    json_bool<bool>::json_string<std::chrono::system_clock::time_point>;
-
-		return json_link_t( "i", "d", "b", "tp" );
-	}
-
-	constexpr test_001_t( ) noexcept = delete;
-	constexpr test_001_t(
-	  int Int, double Double, bool Bool,
-	  std::chrono::system_clock::time_point TimePoint ) noexcept
+	constexpr test_001_t( int Int, double Double, bool Bool ) noexcept
 	  : i( Int )
 	  , d( Double )
-	  , b( Bool )
-	  , tp( TimePoint ) {}
+	  , b( Bool ) {}
 };
+
+constexpr auto get_json_link( test_001_t ) noexcept {
+	using namespace daw::json;
+	return json_link<json_number<"i", int>, json_number<"d">, json_bool<"b">>{};
+}
 
 struct test_002_t {
 	int i = 0;
 	double d = 0.0;
 	bool b = false;
-	std::chrono::system_clock::time_point tp =
-	  std::chrono::system_clock::time_point( );
+	std::chrono::system_clock::time_point tp{};
 
-	constexpr test_002_t( ) noexcept = delete;
+	constexpr test_002_t( ) noexcept = default; // delete;
 	constexpr test_002_t(
 	  int Int, double Double, bool Bool,
 	  std::chrono::system_clock::time_point TimePoint ) noexcept
@@ -67,28 +57,35 @@ struct test_002_t {
 	  , tp( TimePoint ) {}
 };
 
-constexpr auto get_json_link( daw::tag<test_002_t> ) noexcept {
-	using json_link_t =
-	  daw::json::link<test_002_t>::json_number<int>::json_number<double>::
-	    json_bool<bool>::json_string<std::chrono::system_clock::time_point>;
+auto get_json_link( test_002_t ) {
+	using namespace daw::json;
+	return json_link<json_number<"i", int>, json_number<"d", double>,
+	                 json_bool<"b">, json_date<"tp">>{};
+}
 
-	return json_link_t( "i", "d", "b", "tp" );
+constexpr auto const json_data =
+  R"({
+	    "i": 55,
+	    "d": 2.2,
+			"b": true,
+	    "tp": "2018-06-22T15:05:37Z"
+	  })";
+
+auto func( daw::string_view sv ) {
+	using link_t = decltype( get_json_link( std::declval<test_001_t>( ) ) );
+
+	auto data = daw::json::from_json_t<test_001_t>( sv );
+	return data.i;
 }
 
 int main( ) {
-	constexpr auto const json_data =
-	  R"({
-			"i": 1,
-			"d": 2.2, 
-			"tp": "2018-06-22T15:05:37Z"
-		})";
+	auto result = func( json_data );
+	return result;
 
-	constexpr auto data = daw::json::parse_class<test_001_t>( json_data );
 	// assert( data.i == 1 );
 	// assert( data.d == 2.2 );
 
-	constexpr auto data2 = daw::json::parse_class<test_002_t>( json_data );
+	// constexpr auto data2 = daw::json::from_json_t<test_002_t>( json_data );
 	// assert( data.i == 1 );
 	// assert( data.d == 2.2 );
-	return 0;
 }

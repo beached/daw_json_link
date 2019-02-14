@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2018 Darrell Wright
+// Copyright (c) 2018-2019 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -22,373 +22,312 @@
 
 #pragma once
 
-#include <tuple>
+#include <cstdint>
+#include <limits>
+#include <string>
+//#include <iostream>
 
+#include <daw/daw_algorithm.h>
+#include <daw/daw_bounded_string.h>
+#include <daw/daw_exception.h>
 #include <daw/daw_parser_helper_sv.h>
+#include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 
 namespace daw {
 	namespace json {
-		struct json_link_exception {};
-
-		template<typename... Args>
-		struct decoder_t;
-
-		template<typename T>
-		constexpr decltype( auto ) parse_class( daw::string_view str );
-
-		namespace impl {
-			constexpr void skip_whitespace( daw::string_view &str ) noexcept {
-				struct is_whitespace {
-					constexpr bool operator( )( char c ) const noexcept {
-						return daw::parser::is_unicode_whitespace( c );
-					}
-				};
-
-				str.remove_prefix( str.find_first_not_of_if( is_whitespace( ) ) );
-			}
-
-			template<typename T>
-			struct json_number_t {
-				template<typename... DecoderArgs>
-				constexpr decltype( auto )
-				operator( )( daw::string_view str,
-				             decoder_t<DecoderArgs...> const &decoder,
-				             daw::string_view JsonLabel ) {
-					return parse_json_number( tag<T>{}, str );
-				}
-
-				static constexpr bool
-				is_expected_type( daw::string_view &str ) noexcept {
-					skip_whitespace( str );
-					if( str.empty( ) ) {
-						return false;
-					}
-					switch( str.front( ) ) {
-					case '-':
-					case '1':
-					case '2':
-					case '3':
-					case '4':
-					case '5':
-					case '6':
-					case '7':
-					case '8':
-					case '9':
-						return true;
-					case '0':
-					default:
-						return false;
-					}
-				}
-			};
-
-			template<typename T>
-			struct json_bool_t {
-				constexpr decltype( auto ) operator( )( daw::string_view str ) {
-					return parse_json_bool( tag<T>{}, str );
-				}
-
-				static constexpr bool
-				is_expected_type( daw::string_view &str ) noexcept {
-					skip_whitespace( str );
-					if( str.empty( ) ) {
-						return false;
-					}
-					switch( str.front( ) ) {
-					case 't':
-					case 'f':
-						return true;
-					default:
-						return false;
-					}
-				}
-			};
-
-			template<typename T>
-			struct json_string_t {
-				constexpr decltype( auto ) operator( )( daw::string_view str ) {
-					return parse_json_string( tag<T>{}, str );
-				}
-
-				static constexpr bool
-				is_expected_type( daw::string_view &str ) noexcept {
-					skip_whitespace( str );
-					if( str.empty( ) ) {
-						return false;
-					}
-					return str.front( ) == '"';
-				}
-			};
-
-			template<typename T>
-			struct json_class_t {
-				constexpr decltype( auto ) operator( )( daw::string_view str ) {
-					return parse_class<T>( str );
-				}
-
-				static constexpr bool
-				is_expected_type( daw::string_view &str ) noexcept {
-					skip_whitespace( str );
-					if( str.empty( ) ) {
-						return false;
-					}
-					return str.front( ) == '{';
-				}
-			};
-
-			template<typename T>
-			struct json_array_t {
-
-				static constexpr bool
-				is_expected_type( daw::string_view &str ) noexcept {
-					skip_whitespace( str );
-					if( str.empty( ) ) {
-						return false;
-					}
-					return str.front( ) == '[';
-				}
-			};
-
-			template<typename T>
-			struct json_class_root_t {};
-
-			template<typename T>
-			constexpr void
-			is_first_json_class_root_test( json_class_root_t<T> * ) noexcept {}
-
-			template<typename T>
-			using is_first_json_class_root_detect = decltype(
-			  is_first_json_class_root_test( static_cast<T *>( nullptr ) ) );
-
-			template<typename T, typename...>
-			constexpr bool is_first_json_class_root_v =
-			  daw::is_detected_v<is_first_json_class_root_detect, T>;
-
-			template<typename... Args>
-			struct decoder_t {
-				std::array<daw::string_view, sizeof...( Args )> labels = {};
-				using types = std::tuple<Args...>;
-				using size = std::integral_constant<size_t, sizeof...( Args )>;
-
-				template<typename T>
-				using json_number = decoder_t<Args..., json_number_t<T>>;
-
-				template<typename T>
-				using json_bool = decoder_t<Args..., json_bool_t<T>>;
-
-				template<typename T>
-				using json_string = decoder_t<Args..., json_string_t<T>>;
-
-				template<typename T>
-				using json_class = decoder_t<Args..., json_class_t<T>>;
-
-				template<typename T>
-				using json_array = decoder_t<Args..., json_array_t<T>>;
-
-				template<typename... JsonLabels>
-				constexpr decoder_t( JsonLabels &&... lbls ) noexcept
-				  : labels{daw::string_view( lbls )...} {
-
-					static_assert(
-					  ( sizeof...( JsonLabels ) + 1 ) == sizeof...( Args ),
-					  "There is a mismatch between arg count and the label count" );
-
-					static_assert(
-					  impl::is_first_json_class_root_v<Args...>,
-					  "Unexpected class, first must be json_class_root_t<T>" );
-				}
-			};
-		} // namespace impl
-
-		template<typename ClassType>
-		struct link {
-			template<typename T>
-			using json_number = impl::decoder_t<impl::json_class_root_t<ClassType>,
-			                                    impl::json_number_t<T>>;
-
-			template<typename T>
-			using json_bool = impl::decoder_t<impl::json_class_root_t<ClassType>,
-			                                  impl::json_bool_t<T>>;
-
-			template<typename T>
-			using json_string = impl::decoder_t<impl::json_class_root_t<ClassType>,
-			                                    impl::json_string_t<T>>;
-
-			template<typename T>
-			using json_class = impl::decoder_t<impl::json_class_root_t<ClassType>,
-			                                   impl::json_class_t<T>>;
-
-			template<typename T>
-			using json_array = impl::decoder_t<impl::json_class_root_t<ClassType>,
-			                                   impl::json_array_t<T>>;
+		enum class JsonParseTypes : uint_fast8_t {
+			Number,
+			Bool,
+			String,
+			Date,
+			Class
 		};
 
-		namespace impl {
-			template<typename T>
-			using get_json_link_member_detect = decltype( T::get_json_link( ) );
+		template<JsonParseTypes v>
+		using ParseTag = std::integral_constant<JsonParseTypes, v>;
 
-			template<typename T>
-			using get_json_link_func_detect = decltype( get_json_link( tag<T>{} ) );
+		template<typename string_t>
+		struct kv_t {
+			string_t name;
+			JsonParseTypes expected_type;
+			bool nullable;
+			size_t pos;
 
-			template<typename T>
-			constexpr bool get_json_link_member_v =
-			  daw::is_detected_v<get_json_link_member_detect, T>;
+			constexpr kv_t( string_t Name, JsonParseTypes Expected, bool Nullable,
+			                size_t Pos )
+			  : name( std::move( Name ) )
+			  , expected_type( Expected )
+			  , nullable( Nullable )
+			  , pos( Pos ) {}
+		};
 
-			template<typename T>
-			constexpr bool get_json_link_func_v =
-			  daw::is_detected_v<get_json_link_func_detect, T>;
+		struct value_pos {
+			size_t first = std::numeric_limits<size_t>::max( );
+			size_t last = std::numeric_limits<size_t>::max( );
+			bool is_nullable;
 
-			template<typename T>
-			constexpr bool no_get_json_link_v =
-			  !get_json_link_member_v<T> && !get_json_link_func_v<T>;
+			constexpr value_pos( bool Nullable ) noexcept
+			  : is_nullable( Nullable ) {}
+		};
 
-			template<typename T, std::enable_if_t<get_json_link_member_v<T>,
-			                                      std::nullptr_t> = nullptr>
-			constexpr decltype( auto )
-			call_get_json_link( ) noexcept( noexcept( T::get_json_link( ) ) ) {
+		template<typename string_t>
+		kv_t( string_t )->kv_t<string_t>;
 
-				return T::get_json_link( );
+		template<typename JsonType>
+		using json_parse_to = typename JsonType::parse_to_t;
+
+		template<typename JsonType>
+		inline constexpr bool is_json_nullable_v = JsonType::nullable;
+
+		daw::string_view parse_name( daw::string_view &sv ) {
+			sv = daw::parser::trim_left( sv );
+//			std::cout << sv.front( ) << std::endl;
+			daw::exception::precondition_check( sv.front( ) == '"' );
+			sv.remove_prefix( );
+			auto result = sv.pop_front( '"' );
+			sv = daw::parser::trim_left( sv );
+			sv.remove_prefix( ':' );
+			sv = daw::parser::trim_left( sv );
+			return result;
+		}
+
+		constexpr daw::string_view skip_string( daw::string_view sv ) noexcept {
+			// Assumes front()  == '"'
+			sv.remove_prefix( );
+			sv.pop_front( '"' );
+			if( sv.front( ) == ',' ) {
+				sv.remove_prefix( );
+			}
+			return sv;
+		}
+
+		constexpr daw::string_view skip_other( daw::string_view sv ) noexcept {
+			sv.pop_front( ' ' );
+			if( sv.front( ) == ',' ) {
+				sv.remove_prefix( );
+			}
+			return sv;
+		}
+
+		constexpr daw::string_view skip_class( daw::string_view sv ) noexcept {
+			// TODO
+			return sv;
+		}
+
+		constexpr daw::string_view skip_array( daw::string_view sv ) noexcept {
+			// TODO
+			return sv;
+		}
+
+		constexpr void skip_value( daw::string_view &sv ) {
+			sv = daw::parser::trim_left( sv );
+			switch( sv.front( ) ) {
+			case '"':
+				sv = skip_string( sv );
+				break;
+			case '[':
+				sv = skip_array( sv );
+				break;
+			case '{':
+				sv = skip_class( sv );
+			default:
+				sv = skip_other( sv );
+				break;
+			}
+		}
+		// Keep a stack of the class/array positions and
+		// skip individual values of other types until
+		// stack is empty
+
+		template<daw::basic_bounded_string Name, typename T = double,
+		         bool Nullable = false>
+		struct json_number {
+			static_assert( std::is_arithmetic_v<T>,
+			               "Number must be an arithmentic type" );
+			static constexpr auto const name = Name;
+			static constexpr JsonParseTypes expected_type =
+			  JsonParseTypes::Number;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = T;
+		};
+
+		template<daw::basic_bounded_string Name, typename T = bool,
+		         bool Nullable = false>
+		struct json_bool {
+			static_assert( std::is_convertible_v<bool, T>,
+			               "Supplied result type must be convertable from bool" );
+			static constexpr auto const name = Name;
+			static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = T;
+		};
+
+		template<daw::basic_bounded_string Name, typename T = void, //std::string,
+		         bool Nullable = false>
+		struct json_string {
+			static constexpr auto const name = Name;
+			static constexpr JsonParseTypes expected_type = JsonParseTypes::String;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = T;
+		};
+
+		template<daw::basic_bounded_string Name,
+		         typename T = std::chrono::system_clock::time_point,
+		         bool Nullable = false>
+		struct json_date {
+			static constexpr auto const name = Name;
+			static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = T;
+		};
+
+		template<typename ParseInfo>
+		constexpr auto parse_value( ParseTag<JsonParseTypes::Number>, value_pos pos,
+		                            daw::string_view sv ) {
+			using result_t = typename ParseInfo::parse_to_t;
+			if constexpr( is_floating_point_v<result_t> ) {
+				// TODO
+				return static_cast<result_t>( 0.12345 );
+			} else {
+				return daw::parser::parse_int<result_t>(
+				  sv.substr( pos.first, pos.last - pos.first ) );
+			}
+		}
+
+		template<typename ParseInfo>
+		constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>, value_pos pos,
+		                            daw::string_view sv ) {
+			using result_t = typename ParseInfo::parse_to_t;
+			return result_t{};
+		}
+
+		template<typename ParseInfo>
+		constexpr auto parse_value( ParseTag<JsonParseTypes::String>, value_pos pos,
+		                            daw::string_view sv ) {
+
+			using result_t = typename ParseInfo::parse_to_t;
+			return result_t{};
+		}
+
+		template<typename ParseInfo>
+		constexpr auto parse_value( ParseTag<JsonParseTypes::Date>, value_pos pos,
+		                            daw::string_view sv ) {
+			using result_t = typename ParseInfo::parse_to_t;
+			return result_t{};
+		}
+
+		template<typename ParseInfo>
+		constexpr auto parse_value( ParseTag<JsonParseTypes::Class>, value_pos pos,
+		                            daw::string_view sv ) {
+			using result_t = typename ParseInfo::parse_to_t;
+			return result_t{};
+		}
+
+		template<typename... JsonMembers>
+		struct json_link {
+			template<size_t... Is>
+			static constexpr size_t find_string_capacity( ) noexcept {
+				return ( JsonMembers::name.extent + ... );
+			}
+			using string_t = daw::basic_bounded_string<char, find_string_capacity( )>;
+
+			template<size_t N>
+			static constexpr kv_t<string_t> get_item( ) noexcept {
+				using type_t = daw::traits::nth_type<N, JsonMembers...>;
+				return {type_t::name, type_t::expected_type, type_t::nullable, N};
 			}
 
-			template<typename T, std::enable_if_t<get_json_link_func_v<T>,
-			                                      std::nullptr_t> = nullptr>
-			constexpr decltype( auto )
-			call_get_json_link( ) noexcept( noexcept( get_json_link( tag<T>{} ) ) ) {
-				return get_json_link( tag<T>{} );
+			template<size_t... Is>
+			static constexpr auto make_map( std::index_sequence<Is...> ) noexcept {
+
+				return std::array{get_item<Is>( )...};
 			}
 
-			template<typename T, std::enable_if_t<no_get_json_link_v<T>,
-			                                      std::nullptr_t> = nullptr>
-			constexpr void call_get_json_link( ) noexcept {
-				static_assert( !no_get_json_link_v<T>,
-				               "There is no member function T::get_json_link( ) or a "
-				               "free function get_json_link( daw::tag<T>{} )" );
+			static constexpr auto name_map =
+			  make_map( std::index_sequence_for<JsonMembers...>{} );
+
+			static constexpr bool has_name( daw::string_view key ) noexcept {
+				auto result = daw::algorithm::find_if(
+				  begin( name_map ), end( name_map ),
+				  [key]( auto const &kv ) { return kv.name == key; } );
+				return result != std::end( name_map );
 			}
 
-			constexpr auto find_next_string( daw::string_view &str ) noexcept {
-				// Must be called from outside a string
-				str.remove_prefix( str.find( '"' ) );
-				if( str.empty( ) ) {
-					return daw::string_view( );
+			static constexpr size_t find_name( daw::string_view key ) noexcept {
+				auto result = daw::algorithm::find_if(
+				  begin( name_map ), end( name_map ),
+				  [key]( auto const &kv ) { return kv.name == key; } );
+				if( result == std::end( name_map ) ) {
+					std::terminate( );
 				}
+				return std::distance( begin( name_map ), result );
+			}
 
-				struct {
-					bool in_escape = false;
+			template<size_t N>
+			static constexpr decltype( auto ) parse_item(
+			  std::array<value_pos, sizeof...( JsonMembers )> const &locations,
+			  daw::string_view sv ) {
+				using type_t = daw::traits::nth_type<N, JsonMembers...>;
+				return parse_value<type_t>( ParseTag<type_t::expected_type>{},
+				                            locations[N], sv );
+			}
 
-					bool operator( )( char c ) noexcept {
-						if( c == '"' && !in_escape ) {
-							return true;
-						}
-						in_escape = c == '\\' ? !in_escape : false;
+		private:
+			template<typename Result, size_t... Is>
+			static Result parse_json_class( daw::string_view sv,
+			                               std::index_sequence<Is...> ) {
+				static_assert(
+				  daw::can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
+				  "Supplied types cannot be used for construction of this type" );
+
+				std::array locations = {
+				  value_pos( is_json_nullable_v<JsonMembers> )...};
+				auto sv_orig = sv;
+				auto const first_pos = sv.begin( );
+				sv = daw::parser::trim_left( sv );
+				daw::exception::precondition_check( sv.front( ) == '{' );
+				sv.remove_prefix( );
+				sv = daw::parser::trim_left( sv );
+				while( !sv.empty( ) and sv.front( ) != '}' ) {
+//					std::cout << "parse_json_class: " << sv << std::endl;
+					auto name = parse_name( sv );
+					if( !has_name( name ) ) {
+						skip_value( sv );
+						continue;
 					}
-				} find_end_of_string;
-
-				auto result = str.pop_front( find_end_of_string );
-				return result;
-			}
-
-			struct unknown_lablel_exception {};
-
-			template<typename... Args>
-			constexpr auto ensure_label_is_known( decoder_t<Args...> const &link_types,
-			                                      daw::string_view label ) {
-				auto pos = std::find( link_types.labels.cbegin( ),
-				                      link_types.labels.cend( ), label );
-				if( pos == link_types.labels.cend( ) ) {
-					throw unknown_lablel_exception{};
+					size_t const pos = find_name( name );
+					locations[pos].first = std::distance( first_pos, sv.begin( ) );
+					skip_value( sv );
+					locations[pos].last = std::distance( first_pos, sv.begin( ) );
+					sv = daw::parser::trim_left( sv );
 				}
-				return static_cast<size_t>(
-				  std::distance( link_types.labels.cbegin( ), pos ) );
+				// Ensure locations of all parts there
+				daw::exception::precondition_check( daw::algorithm::all_of(
+				  begin( locations ), end( locations ), []( auto const &loc ) {
+					  return loc.is_nullable or
+					         ( loc.first != std::numeric_limits<size_t>::max( ) and
+					           loc.last != std::numeric_limits<size_t>::max( ) );
+				  } ) );
+
+				return daw::construct_a<Result>{}(
+				  parse_item<Is>( locations, sv_orig )... );
 			}
 
-			template<typename... Args>
-			constexpr auto find_part( decoder_t<Args...> const &link_types,
-			                          daw::string_view &str ) {
-
-				auto const lbl = find_next_string( str );
-				ensure_label_is_known( link_types, lbl );
-				return lbl;
+		public:
+			template<typename Result>
+			static constexpr decltype( auto ) parse( daw::string_view sv ) {
+				return parse_json_class<Result>( sv, std::index_sequence_for<JsonMembers...>{} );
 			}
-
-			constexpr void skip_json_class( daw::string_view &str ) {
-				// non-validating moving paste json class
-				daw::exception::DebugAssert( str.front( ) == '{', "Expected {" );
-				intmax_t brace_count = 1;
-				while( !str.empty( ) && brace_count > 0 ) {
-					str.remove_prefix( );
-					impl::skip_whitespace( str );
-					switch( str.front( ) ) {
-					case '"':
-						find_next_string( str );
-						break;
-					case '{':
-						++brace_count;
-						break;
-					case '}':
-						--brace_count;
-						break;
-					}
-				}
-				daw::exception::Assert( brace_count == 0, "Unexpected brace count" );
-			}
-
-			constexpr void skip_value( daw::string_view &str ) noexcept {
-				impl::skip_whitespace( str );
-				if( str.empty( ) ) {
-					return;
-				}
-				switch( str.front( ) ) {
-				case '"':
-					find_next_string( str );
-					break;
-				case '{':
-					skip_json_class( str );
-					break;
-				case '[':
-					skip_json_array( str );
-					break;
-				}
-				if( str.front( ) == '"' ) {
-					find_next_string( str );
-				}
-				str.remove_prefix( str.find( '"' ) - 1 );
-			}
-
-			template<typename... Args>
-			constexpr auto find_parts( decoder_t<Args...> const &link_types,
-			                           daw::string_view str ) {
-				std::array<daw::string_view, link_types.size> result{};
-				auto part = find_next_string( link_types, str );
-				do {
-					auto const lbl_pos = ensure_label_is_known( link_types, lbl );
-					results[lbl_pos] = part;
-
-					skip_value( str );
-					part = find_next_string( link_types, str );
-				} while( part );
-
-				return parts;
-			}
-		} // namespace impl
+		};
 
 		template<typename T>
-		constexpr decltype( auto ) parse_class( daw::string_view str ) {
-			auto const link_types = impl::call_get_json_link<T>( );
-			auto const parts = find_parts( link_types );
-
-			if( str.empty( ) ) {
-				throw json_link_exception{};
-			}
-			if( str.front( ) != '{' || str.back( ) != '}' ) {
-				throw json_link_exception{};
-			}
-			str.remove_prefix( );
-			str.remove_suffix( );
-			str = daw::parser::trim_left( str str.size( ) - 2 ) );
+		T from_json_t( daw::string_view sv ) {
+			using parse_info_t = decltype( get_json_link( std::declval<T>( ) ) );
+			return parse_info_t::template parse<T>( sv );
 		}
+
 	} // namespace json
 } // namespace daw
-

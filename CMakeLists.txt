@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 2.8.12 )
 
 project( daw_json_link_prj )
-
+#set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 find_package( Boost 1.58.0 COMPONENTS system iostreams filesystem regex unit_test_framework REQUIRED )
 enable_testing( )
 add_definitions( -DBOOST_TEST_DYN_LINK )
@@ -50,13 +50,13 @@ set( HEADER_FILES
 add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
 
 add_executable( daw_json_link_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_link_test.cpp )
-target_link_libraries( daw_json_link_test_bin char_range ${Boost_LIBRARIES} )
+target_link_libraries( daw_json_link_test_bin utf_range ${Boost_LIBRARIES} )
 add_dependencies( daw_json_link_test_bin dependency_stub )
 add_test( daw_json_link_test daw_json_link_test_bin )
 add_dependencies( check daw_json_link_test_bin )
 
 add_executable( daw_json_link_v3_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_link_v3_test.cpp )
-target_link_libraries( daw_json_link_v3_test_bin char_range ${Boost_LIBRARIES} )
+target_link_libraries( daw_json_link_v3_test_bin utf_range ${Boost_LIBRARIES} )
 add_dependencies( daw_json_link_v3_test_bin dependency_stub )
 add_test( daw_json_link_v3_test daw_json_link_v3_test_bin )
 add_dependencies( check daw_json_link_v3_test_bin )
