@@ -87,13 +87,4 @@ int main( ) {
 		std::clog << v << ", ";
 	}
 	std::clog << "]\n";
-
-	return data.i;
-
-	// assert( data.i == 1 );
-	// assert( data.d == 2.2 );
-
-	// constexpr auto data2 = daw::json::from_json_t<test_002_t>( json_data );
-	// assert( data.i == 1 );
-	// assert( data.d == 2.2 );
 }
