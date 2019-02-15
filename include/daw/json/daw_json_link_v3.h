@@ -141,7 +141,7 @@ namespace daw {
 				}
 
 				constexpr daw::string_view
-				skip_string( daw::string_view &sv ) noexcept {
+				skip_string( daw::string_view &sv ) {
 					size_t pos = 0;
 					bool found = false;
 					auto result = daw::string_view{};
@@ -164,7 +164,7 @@ namespace daw {
 					return result;
 				}
 
-				constexpr daw::string_view skip_other( daw::string_view &sv ) noexcept {
+				constexpr daw::string_view skip_other( daw::string_view &sv ) {
 					auto pos = sv.find_first_of( ",}]\n" );
 					exception::precondition_check( pos != sv.npos, "Invalid class" );
 					auto result = sv.pop_front( pos );
@@ -173,7 +173,9 @@ namespace daw {
 					return result;
 				}
 
-				constexpr daw::string_view skip_class( daw::string_view &sv ) noexcept {
+				template<char Left, char Right>
+				constexpr daw::string_view skip_bracketed_item( daw::string_view & sv ) {
+
 					size_t bracket_count = 1;
 					bool is_escaped = false;
 					bool in_quotes = false;
@@ -195,12 +197,12 @@ namespace daw {
 								continue;
 							}
 							break;
-						case '{':
+						case Left:
 							if( !in_quotes and !is_escaped ) {
 								++bracket_count;
 							}
 							break;
-						case '}':
+						case Right:
 							if( !in_quotes and !is_escaped ) {
 								--bracket_count;
 							}
@@ -210,53 +212,19 @@ namespace daw {
 					}
 					tmp_sv = tmp_sv.pop_front( tmp_sv.size( ) - sv.size( ) );
 					auto pos = sv.find_first_of( ",}]" );
-					exception::precondition_check( pos != sv.npos, "Invalid class" );
+					struct bracketed_item_parse_exception{};
+					exception::precondition_check<bracketed_item_parse_exception>( pos != sv.npos );
 					sv.remove_prefix( );
 					sv = parser::trim_left( sv );
 					return tmp_sv;
 				}
 
-				constexpr daw::string_view skip_array( daw::string_view &sv ) noexcept {
-					size_t bracket_count = 1;
-					bool is_escaped = false;
-					bool in_quotes = false;
-					auto tmp_sv = sv;
-					sv.remove_prefix( );
-					while( !sv.empty( ) and bracket_count > 0 ) {
-						switch( sv.front( ) ) {
-						case '\\':
-							if( !in_quotes and !is_escaped ) {
-								is_escaped = true;
-								sv.remove_prefix( );
-								continue;
-							}
-							break;
-						case '"':
-							if( !is_escaped ) {
-								in_quotes = !in_quotes;
-								sv.remove_prefix( );
-								continue;
-							}
-							break;
-						case '[':
-							if( !in_quotes and !is_escaped ) {
-								++bracket_count;
-							}
-							break;
-						case ']':
-							if( !in_quotes and !is_escaped ) {
-								--bracket_count;
-							}
-						}
-						is_escaped = false;
-						sv.remove_prefix( );
-					}
-					tmp_sv = tmp_sv.pop_front( tmp_sv.size( ) - sv.size( ) );
-					auto pos = sv.find_first_of( ",}]" );
-					exception::precondition_check( pos != sv.npos, "Invalid array" );
-					sv.remove_prefix( );
-					sv = parser::trim_left( sv );
-					return tmp_sv;
+				constexpr daw::string_view skip_class( daw::string_view &sv ) {
+					return skip_bracketed_item<'{', '}'>( sv );
+				}
+
+				constexpr daw::string_view skip_array( daw::string_view &sv ) {
+					return skip_bracketed_item<'[', ']'>( sv );
 				}
 
 				constexpr daw::string_view skip_value( daw::string_view &sv ) {
