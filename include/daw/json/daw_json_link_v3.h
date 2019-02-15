@@ -251,7 +251,8 @@ namespace daw {
 					using constructor_t = typename ParseInfo::constructor_t;
 					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
 
-					if( pos.value_str.empty( ) ) {
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
 						daw::exception::precondition_check<
 						  missing_nonnullable_value_expection>( ParseInfo::nullable );
 						return constructor_t{}( );
@@ -269,7 +270,8 @@ namespace daw {
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 				                            value_pos pos ) {
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) ) {
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
 						daw::exception::precondition_check<
 						  missing_nonnullable_value_expection>( ParseInfo::nullable );
 						return constructor_t{}( );
@@ -282,7 +284,8 @@ namespace daw {
 				                            value_pos pos ) {
 
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) ) {
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
 						daw::exception::precondition_check<
 						  missing_nonnullable_value_expection>( ParseInfo::nullable );
 						return constructor_t{}( );
@@ -296,7 +299,8 @@ namespace daw {
 				                            value_pos pos ) {
 
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) ) {
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
 						daw::exception::precondition_check<
 						  missing_nonnullable_value_expection>( ParseInfo::nullable );
 						return constructor_t{}( );
@@ -311,7 +315,8 @@ namespace daw {
 
 					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) ) {
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
 						daw::exception::precondition_check<
 						  missing_nonnullable_value_expection>( ParseInfo::nullable );
 						return constructor_t{}( );
@@ -324,7 +329,8 @@ namespace daw {
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
 				                            value_pos pos ) {
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) ) {
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
 						daw::exception::precondition_check<
 						  missing_nonnullable_value_expection>( ParseInfo::nullable );
 						return constructor_t{}( );
