@@ -23,6 +23,7 @@
 #include <cassert>
 #include <chrono>
 #include <iostream>
+#include <optional>
 #include <vector>
 
 #include "daw/json/daw_json_link_v3.h"
@@ -33,25 +34,28 @@ struct test_001_t {
 	bool b = false;
 	daw::string_view s{};
 	std::vector<int> y{};
+	std::optional<int> o{};
+	std::optional<int> o2{};
 
 	test_001_t( int Int, double Double, bool Bool, daw::string_view S,
-	            std::vector<int> Y ) noexcept
+	            std::vector<int> Y, std::optional<int> O,
+	            std::optional<int> O2 ) noexcept
 	  : i( Int )
 	  , d( Double )
 	  , b( Bool )
 	  , s( S )
-	  , y( Y ) {}
+	  , y( Y )
+	  , o( O )
+	  , o2( O2 ) {}
 };
 
 auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
-	return json_parser_t<
-	json_number<"i", int>,
-				 json_number<"d">,
-	       json_bool<"b">,
-	       json_string<"s", daw::string_view>,
-	       json_array<"y", std::vector<int>, json_number<"", int>>
-	       >{};
+	return json_parser_t<json_number<"i", int>, json_number<"d">, json_bool<"b">,
+	                     json_string<"s", daw::string_view>,
+	                     json_array<"y", std::vector<int>, json_number<"", int>>,
+	                     json_number<"o", std::optional<int>, true>,
+	                       json_number<"o2", std::optional<int>, true>>{};
 }
 
 constexpr auto const json_data =
@@ -63,7 +67,8 @@ constexpr auto const json_data =
 			"y": [1,2,3,4],
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
-			"s": "yo yo yo"
+			"s": "yo yo yo",
+			"o": 1344
 	  })";
 
 int main( ) {
@@ -72,9 +77,21 @@ int main( ) {
 	std::clog << "result: d->" << data.d << '\n';
 	std::clog << "result: b->" << data.b << '\n';
 	std::clog << "result: s->" << data.s << '\n';
-	std::clog << "result: y-> [ ";
-	for( auto const & v: data.y ) {
+	std::clog << "result: y->[ ";
+	for( auto const &v : data.y ) {
 		std::clog << v << ", ";
 	}
 	std::clog << "]\n";
+	std::clog << "result o->";
+	if( !data.o ) {
+		std::clog << "empty\n";
+	} else {
+		std::clog << *data.o << '\n';
+	}
+		std::clog << "result o2->";
+	if( !data.o2 ) {
+		std::clog << "empty\n";
+	} else {
+		std::clog << *data.o2 << '\n';
+	}
 }
