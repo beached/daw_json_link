@@ -55,7 +55,7 @@ auto describe_json_class( test_001_t ) noexcept {
 	                     json_string<"s", daw::string_view>,
 	                     json_array<"y", std::vector<int>, json_number<"", int>>,
 	                     json_number<"o", std::optional<int>, true>,
-	                       json_number<"o2", std::optional<int>, true>>{};
+	                     json_number<"o2", std::optional<int>, true>>{};
 }
 
 constexpr auto const json_data =
@@ -88,7 +88,7 @@ int main( ) {
 	} else {
 		std::clog << *data.o << '\n';
 	}
-		std::clog << "result o2->";
+	std::clog << "result o2->";
 	if( !data.o2 ) {
 		std::clog << "empty\n";
 	} else {
