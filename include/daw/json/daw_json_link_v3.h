@@ -546,19 +546,6 @@ namespace daw {
 			return impl::json_parser_description_t<T>::template parse<T>( json_data );
 		}
 
-		template<typename JsonElement,
-		         typename Container = std::vector<typename JsonElement::parse_to_t>,
-		         typename Constructor = daw::construct_a<Container>,
-		         typename Appender = impl::basic_appender<Container>>
-		constexpr auto from_json_array( daw::string_view json_data ) {
-			using parser_t =
-			  json_array<"", Container, JsonElement, false, Constructor, Appender>;
-
-			return impl::parse_value<parser_t>(
-			  impl::ParseTag<impl::JsonParseTypes::Array>{},
-			  impl::value_pos( false, json_data ) );
-		}
-
 		template<typename JsonElement>
 		class json_array_iterator {
 			daw::string_view m_state{};
@@ -629,5 +616,19 @@ namespace daw {
 				return !( *this == rhs );
 			}
 		};
+
+		template<typename JsonElement,
+		         typename Container = std::vector<typename JsonElement::parse_to_t>,
+		         typename Constructor = daw::construct_a<Container>,
+		         typename Appender = impl::basic_appender<Container>>
+		constexpr auto from_json_array( daw::string_view json_data ) {
+			using parser_t =
+			  json_array<"", Container, JsonElement, false, Constructor, Appender>;
+
+			return impl::parse_value<parser_t>(
+			  impl::ParseTag<impl::JsonParseTypes::Array>{},
+			  impl::value_pos( false, json_data ) );
+		}
+
 	} // namespace json
 } // namespace daw
