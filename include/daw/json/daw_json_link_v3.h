@@ -126,12 +126,23 @@ namespace daw {
 				skip_string( daw::string_view &sv ) noexcept {
 					// TODO: handle escaped quotes
 					// Assumes front()  == '"'
-					auto tmp = sv.substr( 1 );
-					auto result = tmp.pop_front( "\"" );
-					sv = tmp;
-					auto pos = sv.find_first_of( ",}]" );
+					size_t pos = 0;
+					bool found = false;
+					auto result = daw::string_view{};
+					while( pos != daw::string_view::npos and !found ) {
+						++pos;
+						pos = sv.find_first_of( "\"", pos );
+						if( pos != daw::string_view::npos and sv[pos-1] != '\\' ) {
+							result = sv.pop_front( pos );
+							found = true;
+							continue;
+						}
+					}
 					exception::precondition_check( pos != daw::string_view::npos,
-					                               "Invalid class" );
+																				 "Invalid class" );
+					pos = sv.find_first_of( ",}]" );
+					exception::precondition_check( pos != daw::string_view::npos,
+																				 "Invalid class" );
 					sv.remove_prefix( pos + 1 );
 					sv = parser::trim_left( sv );
 					return result;
@@ -234,6 +245,7 @@ namespace daw {
 
 				constexpr daw::string_view skip_value( daw::string_view &sv ) {
 					sv = parser::trim_left( sv );
+					daw::exception::precondition_check( !sv.empty( ) );
 					switch( sv.front( ) ) {
 					case '"':
 						return skip_string( sv );
@@ -412,7 +424,7 @@ namespace daw {
 				auto sv_orig = sv;
 
 				sv = parser::trim_left( sv );
-				exception::precondition_check( sv.front( ) == '{' );
+				exception::precondition_check( !sv.empty( ) and sv.front( ) == '{' );
 				sv.remove_prefix( );
 				sv = parser::trim_left( sv );
 
