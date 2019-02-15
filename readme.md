@@ -1,6 +1,8 @@
-# daw_json_link v3
+# JSON Link v3
 
-For now v3 is focussed on deserialization.  This can be accomplished by writing a function called describe_json_class with a single arugment that is your type.  The library is only concerned with it's return value.  Also, needs C++ 20.  For example:
+## Note: this requires C++20 which isn't released yet and is still early testing.
+
+For now v3 is focussed on deserialization.  This can be accomplished by writing a function called describe_json_class with a single arugment that is your type.  The library is only concerned with it's return value. For example:
 
 ```C++
 #include <daw/json/daw_json_link_v3.h>
