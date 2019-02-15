@@ -24,6 +24,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <limits>
 #include <string>
 
@@ -252,8 +253,8 @@ namespace daw {
 					using constructor_t = typename ParseInfo::constructor_t;
 
 					if constexpr( is_floating_point_v<result_t> ) {
-						//TODO
-						return constructor_t{}( static_cast<result_t>( 0.0 ) );
+						return constructor_t{}(
+						  static_cast<result_t>( std::strtod( pos.value_str.data( ), nullptr ) ) );
 					} else {
 						return constructor_t{}(
 						  parser::parse_int<result_t>( pos.value_str ) );
@@ -510,26 +511,33 @@ namespace daw {
 		};
 
 		template<typename T>
-		constexpr T from_json( daw::string_view sv ) {
+		constexpr T from_json( daw::string_view json_data ) {
 			static_assert(
 			  impl::has_json_parser_description_v<T>,
 			  "A function call describe_json_class must exist for type." );
 
-			return impl::json_parser_description_t<T>::template parse<T>( sv );
+			return impl::json_parser_description_t<T>::template parse<T>( json_data );
 		}
 
 		template<typename JsonElement,
 		         typename Container = std::vector<typename JsonElement::parse_to_t>,
 		         typename Constructor = daw::construct_a<Container>,
 		         typename Appender = impl::basic_appender<Container>>
-		constexpr auto from_json_array( daw::string_view sv ) {
+		constexpr auto from_json_array( daw::string_view json_data ) {
 			using parser_t =
 			  json_array<"", Container, JsonElement, false, Constructor, Appender>;
 
 			return impl::parse_value<parser_t>(
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
-			  impl::value_pos( false, sv ) );
+			  impl::value_pos( false, json_data ) );
 		}
 
+		/*
+		template<typename JsonElement, typename OutputIterator, typename
+		UnaryOperator> constexpr OutputIterator transform_json_array(
+		daw::string_view json_data, UnaryOperator && unary_op ) {
+
+		}
+		 */
 	} // namespace json
 } // namespace daw
