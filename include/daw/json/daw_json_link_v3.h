@@ -44,6 +44,24 @@ namespace daw {
 
 		namespace impl {
 			namespace {
+				template<typename T>
+				struct nullable_type {
+					using type = T;
+				};
+
+				template<template<class> class C, class... Args>
+				struct nullable_type<C<Args...>> {
+					using type = daw::traits::first_type<Args...>;
+				};
+
+				template<typename T>
+				struct nullable_type<T const *const> {
+					using type = T;
+				};
+
+				template<typename T>
+				using nullable_type_t = typename nullable_type<T>::type;
+
 				constexpr char to_lower( char c ) noexcept {
 					return c | ' ';
 				}
@@ -124,32 +142,30 @@ namespace daw {
 
 				constexpr daw::string_view
 				skip_string( daw::string_view &sv ) noexcept {
-					// TODO: handle escaped quotes
-					// Assumes front()  == '"'
 					size_t pos = 0;
 					bool found = false;
 					auto result = daw::string_view{};
 					while( pos != daw::string_view::npos and !found ) {
 						++pos;
 						pos = sv.find_first_of( "\"", pos );
-						if( pos != daw::string_view::npos and sv[pos-1] != '\\' ) {
+						if( pos != daw::string_view::npos and sv[pos - 1] != '\\' ) {
 							result = sv.pop_front( pos );
 							found = true;
 							continue;
 						}
 					}
 					exception::precondition_check( pos != daw::string_view::npos,
-																				 "Invalid class" );
-					pos = sv.find_first_of( ",}]" );
+					                               "Invalid class" );
+					pos = sv.find_first_of( ",}]\n" );
 					exception::precondition_check( pos != daw::string_view::npos,
-																				 "Invalid class" );
+					                               "Invalid class" );
 					sv.remove_prefix( pos + 1 );
 					sv = parser::trim_left( sv );
 					return result;
 				}
 
 				constexpr daw::string_view skip_other( daw::string_view &sv ) noexcept {
-					auto pos = sv.find_first_of( ",}]" );
+					auto pos = sv.find_first_of( ",}]\n" );
 					exception::precondition_check( pos != sv.npos, "Invalid class" );
 					auto result = sv.pop_front( pos );
 					sv.remove_prefix( );
@@ -258,18 +274,25 @@ namespace daw {
 					}
 				}
 
+				struct missing_nonnullable_value_expection {};
+
 				template<typename ParseInfo>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Number>,
 				                            value_pos pos ) {
-					using result_t = typename ParseInfo::parse_to_t;
 					using constructor_t = typename ParseInfo::constructor_t;
+					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
 
-					if constexpr( is_floating_point_v<result_t> ) {
-						return constructor_t{}(
-						  static_cast<result_t>( std::strtod( pos.value_str.data( ), nullptr ) ) );
+					if( pos.value_str.empty( ) ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
+					if constexpr( is_floating_point_v<element_t> ) {
+						return constructor_t{}( static_cast<element_t>(
+						  std::strtod( pos.value_str.data( ), nullptr ) ) );
 					} else {
-						return constructor_t{}(
-						  parser::parse_int<result_t>( pos.value_str ) );
+						return constructor_t{}( static_cast<element_t>(
+						  parser::parse_int<int64_t>( pos.value_str ) ) );
 					}
 				}
 
@@ -277,7 +300,11 @@ namespace daw {
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 				                            value_pos pos ) {
 					using constructor_t = typename ParseInfo::constructor_t;
-
+					if( pos.value_str.empty( ) ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
 					return constructor_t{}( to_lower( pos.value_str.front( ) ) == 't' );
 				}
 
@@ -286,7 +313,11 @@ namespace daw {
 				                            value_pos pos ) {
 
 					using constructor_t = typename ParseInfo::constructor_t;
-
+					if( pos.value_str.empty( ) ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
 					return constructor_t{}( pos.value_str.data( ),
 					                        pos.value_str.size( ) );
 				}
@@ -296,6 +327,11 @@ namespace daw {
 				                            value_pos pos ) {
 
 					using constructor_t = typename ParseInfo::constructor_t;
+					if( pos.value_str.empty( ) ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
 					return constructor_t{}( pos.value_str.data( ),
 					                        pos.value_str.size( ) );
 				}
@@ -304,15 +340,25 @@ namespace daw {
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Class>,
 				                            value_pos pos ) {
 
-					using result_t = typename ParseInfo::parse_to_t;
-
-					return from_json<result_t>( pos.value_str );
+					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
+					using constructor_t = typename ParseInfo::constructor_t;
+					if( pos.value_str.empty( ) ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
+					return from_json<element_t>( pos.value_str );
 				}
 
 				template<typename ParseInfo>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
 				                            value_pos pos ) {
-
+					using constructor_t = typename ParseInfo::constructor_t;
+					if( pos.value_str.empty( ) ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
 					struct invalid_array {};
 					daw::exception::precondition_check<invalid_array>(
 					  pos.value_str.front( ) == '[' );
@@ -450,7 +496,7 @@ namespace daw {
 		template<basic_bounded_string Name, typename T = double,
 		         bool Nullable = false, typename Constructor = daw::construct_a<T>>
 		struct json_number {
-			static_assert( std::is_arithmetic_v<T>,
+			static_assert( std::is_arithmetic_v<T> or Nullable,
 			               "Number must be an arithmentic type" );
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
@@ -543,13 +589,5 @@ namespace daw {
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
 			  impl::value_pos( false, json_data ) );
 		}
-
-		/*
-		template<typename JsonElement, typename OutputIterator, typename
-		UnaryOperator> constexpr OutputIterator transform_json_array(
-		daw::string_view json_data, UnaryOperator && unary_op ) {
-
-		}
-		 */
 	} // namespace json
 } // namespace daw
