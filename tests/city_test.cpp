@@ -39,8 +39,7 @@ constexpr auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 	return json_parser_t<json_string<"country", daw::string_view>,
 	                     json_string<"name", daw::string_view>,
-	                     json_number<"lat">,
-	                     json_number<"lng">>{};
+	                     json_number<"lat">, json_number<"lng">>{};
 }
 
 int main( int argc, char **argv ) {
@@ -59,10 +58,20 @@ int main( int argc, char **argv ) {
 	                              std::istream_iterator<char>( ) );
 	in_file.close( );
 	auto json_sv = daw::string_view( json_data );
-	auto count = *daw::bench_n_test<2>( "cities parsing", [ ]( auto && sv ) {
-		auto const data = daw::json::from_json_array<json_class<"", City>>( sv );
-		return data.size( );
-	}, json_sv );
+	auto count = *daw::bench_n_test<2>(
+	  "cities parsing",
+	  []( auto &&sv ) {
+		  auto const data = daw::json::from_json_array<json_class<"", City>>( sv );
+		  return data.size( );
+	  },
+	  json_sv );
 
 	std::cout << "element count: " << count << '\n';
+
+	auto data = std::vector<City>( );
+	using iterator_t = daw::json::json_array_iterator<json_class<"", City>>;
+	std::copy( iterator_t( json_data ), iterator_t( ),
+	           std::back_inserter( data ) );
+
+	std::cout << "count 2: " << data.size( ) << '\n';
 }

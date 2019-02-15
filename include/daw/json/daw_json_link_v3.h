@@ -25,6 +25,7 @@
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
+#include <iterator>
 #include <limits>
 #include <string>
 
@@ -140,8 +141,7 @@ namespace daw {
 					return name;
 				}
 
-				constexpr daw::string_view
-				skip_string( daw::string_view &sv ) {
+				constexpr daw::string_view skip_string( daw::string_view &sv ) {
 					size_t pos = 0;
 					bool found = false;
 					auto result = daw::string_view{};
@@ -174,7 +174,7 @@ namespace daw {
 				}
 
 				template<char Left, char Right>
-				constexpr daw::string_view skip_bracketed_item( daw::string_view & sv ) {
+				constexpr daw::string_view skip_bracketed_item( daw::string_view &sv ) {
 
 					size_t bracket_count = 1;
 					bool is_escaped = false;
@@ -211,9 +211,10 @@ namespace daw {
 						sv.remove_prefix( );
 					}
 					tmp_sv = tmp_sv.pop_front( tmp_sv.size( ) - sv.size( ) );
-					auto pos = sv.find_first_of( ",}]" );
-					struct bracketed_item_parse_exception{};
-					exception::precondition_check<bracketed_item_parse_exception>( pos != sv.npos );
+					auto pos = sv.find_first_of( ",}]\n" );
+					struct bracketed_item_parse_exception {};
+					exception::precondition_check<bracketed_item_parse_exception>(
+					  pos != sv.npos );
 					sv.remove_prefix( );
 					sv = parser::trim_left( sv );
 					return tmp_sv;
@@ -318,6 +319,7 @@ namespace daw {
 					return from_json<element_t>( pos.value_str );
 				}
 
+				struct invalid_array {};
 				template<typename ParseInfo>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
 				                            value_pos pos ) {
@@ -327,7 +329,6 @@ namespace daw {
 						  missing_nonnullable_value_expection>( ParseInfo::nullable );
 						return constructor_t{}( );
 					}
-					struct invalid_array {};
 					daw::exception::precondition_check<invalid_array>(
 					  pos.value_str.front( ) == '[' );
 					pos.value_str.remove_prefix( );
@@ -346,21 +347,21 @@ namespace daw {
 					}
 					return result;
 				}
+
+				template<typename Container>
+				struct basic_appender {
+					daw::back_inserter_iterator<Container> appender;
+
+					constexpr basic_appender( Container &container ) noexcept
+					  : appender( container ) {}
+
+					template<typename T>
+					constexpr void operator( )( T &&value ) {
+						*appender = std::forward<T>( value );
+					}
+				};
 			} // namespace
-
-			template<typename Container>
-			struct basic_appender {
-				daw::back_inserter_iterator<Container> appender;
-
-				constexpr basic_appender( Container &container ) noexcept
-				  : appender( container ) {}
-
-				template<typename T>
-				constexpr void operator( )( T &&value ) {
-					*appender = std::forward<T>( value );
-				}
-			};
-		} // namespace impl
+		}   // namespace impl
 
 		template<typename... JsonMembers>
 		class json_parser_t {
@@ -557,5 +558,76 @@ namespace daw {
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
 			  impl::value_pos( false, json_data ) );
 		}
+
+		template<typename JsonElement>
+		class json_array_iterator {
+			daw::string_view m_state{};
+			daw::string_view m_cur_value{};
+
+		public:
+			using value_type = typename JsonElement::parse_to_t;
+			using reference = value_type;
+			using pointer = value_type;
+			using difference_type = ptrdiff_t;
+			// Can do forward iteration and be stored
+			using iterator_category = std::input_iterator_tag;
+
+			constexpr json_array_iterator( ) noexcept = default;
+
+			constexpr json_array_iterator( daw::string_view json_data )
+			  : m_state( json_data ) {
+				daw::exception::precondition_check<impl::invalid_array>(
+				  m_state.front( ) == '[' );
+
+				m_state.remove_prefix( );
+				m_state = daw::parser::trim_left( m_state );
+
+				if( m_state.empty( ) ) {
+					return;
+				}
+				m_cur_value = impl::skip_value( m_state );
+				m_state = daw::parser::trim_left( m_state );
+			}
+
+			constexpr value_type operator*( ) const {
+				daw::exception::precondition_check<impl::invalid_array>(
+				  !m_cur_value.empty( ) );
+
+				return impl::parse_value<JsonElement>(
+				  impl::ParseTag<JsonElement::expected_type>{},
+				  impl::value_pos( false, m_cur_value ) );
+			}
+
+			constexpr json_array_iterator &operator++( ) {
+				if( m_state.empty( ) or m_state.front( ) == ']' ) {
+					m_cur_value = daw::string_view{};
+					return *this;
+				}
+				m_cur_value = impl::skip_value( m_state );
+				m_state = daw::parser::trim_left( m_state );
+				return *this;
+			}
+
+			constexpr json_array_iterator &operator++( int ) {
+				auto tmp = *this;
+				++( *this );
+				return tmp;
+			}
+
+			explicit constexpr operator bool( ) const noexcept {
+				return !m_cur_value.empty( );
+			}
+
+			constexpr bool operator==( json_array_iterator const &rhs ) const
+			  noexcept {
+				return ( m_cur_value.empty( ) and !rhs ) or
+				       ( m_state == rhs.m_state and m_cur_value == rhs.m_cur_value );
+			}
+
+			constexpr bool operator!=( json_array_iterator const &rhs ) const
+			  noexcept {
+				return !( *this == rhs );
+			}
+		};
 	} // namespace json
 } // namespace daw
