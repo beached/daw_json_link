@@ -56,3 +56,33 @@ auto describe_json_class( AggClass ) {
 }
 ```
 Works too.
+
+Iterating over JSON arrays.  The input iterator ```daw::json::json_array_iterator<JsonElement>``` allows one to iterator over the array of JSON elements.  It is technically an input iterator but can be stored and reused like a forward iterator.  It does not return a reference but a value.
+```cpp
+
+#include <daw/json/daw_json_link_v3.h>
+
+struct AggClass {
+	int a{};
+	double b{};
+};
+auto describe_json_class( AggClass ) {
+	using namespace daw::json;
+	return json_parser_t<
+		json_number<"a", int>,
+		json_number<"b">
+	>{};
+
+int main( ) {
+	auto json_array_data = ...;
+	using iterator_t = daw::json::json_array_iterator<JsonElement<"", AggClass>>;
+	auto pos = std::find_if( iterator_t( json_array_data ), iterator_t( ), []( AggData const & element ) { return b > 1000.0; } )
+	if( pos == iterator_t( ) ) {
+		std::cout << "Not found\n";
+	} else {
+		std::cout << "Found\n";
+	}
+}
+```
+
+	
