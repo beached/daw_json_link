@@ -76,7 +76,9 @@ auto describe_json_class( AggClass ) {
 int main( ) {
 	auto json_array_data = ...;
 	using iterator_t = daw::json::json_array_iterator<JsonElement<"", AggClass>>;
-	auto pos = std::find_if( iterator_t( json_array_data ), iterator_t( ), []( AggData const & element ) { return b > 1000.0; } )
+	auto pos = std::find_if( iterator_t( json_array_data ),
+														iterator_t( ), 
+														[]( AggData const & element ) { return b > 1000.0; } )
 	if( pos == iterator_t( ) ) {
 		std::cout << "Not found\n";
 	} else {
