@@ -15,6 +15,8 @@ if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 	set( DEP_ROOT_DIR "${DEP_ROOT_DIR_BASE}/debug" )
 elseif( "${CMAKE_BUILD_TYPE}" STREQUAL "Release" )
 	set( DEP_ROOT_DIR "${DEP_ROOT_DIR_BASE}/release" )
+elseif( "${CMAKE_BUILD_TYPE}" STREQUAL "" )
+	set( DEP_ROOT_DIR "${DEP_ROOT_DIR_BASE}/release" )
 endif( )
 
 message( "Building for: ${CMAKE_BUILD_TYPE}" )
@@ -41,28 +43,16 @@ include_directories( ${HEADER_FOLDER} )
 
 set( HEADER_FILES
 	${HEADER_FOLDER}/daw/json/daw_json_link.h
-	${HEADER_FOLDER}/daw/json/daw_json_link_v3.h
-	${HEADER_FOLDER}/daw/json/daw_json_link_datetime.h
-	${HEADER_FOLDER}/daw/json/daw_json_link_streams.h
-	${HEADER_FOLDER}/daw/json/daw_json_parsers.h
 )
 
 add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
 
 add_executable( daw_json_link_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_link_test.cpp )
-target_link_libraries( daw_json_link_test_bin utf_range ${Boost_LIBRARIES} )
 add_dependencies( daw_json_link_test_bin dependency_stub )
 add_test( daw_json_link_test daw_json_link_test_bin )
 add_dependencies( check daw_json_link_test_bin )
 
-add_executable( daw_json_link_v3_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_link_v3_test.cpp )
-target_link_libraries( daw_json_link_v3_test_bin utf_range ${Boost_LIBRARIES} )
-add_dependencies( daw_json_link_v3_test_bin dependency_stub )
-add_test( daw_json_link_v3_test daw_json_link_v3_test_bin )
-add_dependencies( check daw_json_link_v3_test_bin )
-
 add_executable( city_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/city_test.cpp )
-target_link_libraries( city_test_bin utf_range ${Boost_LIBRARIES} )
 add_dependencies( city_test_bin dependency_stub )
 add_test( city_test city_test_bin )
 add_dependencies( check city_test_bin )

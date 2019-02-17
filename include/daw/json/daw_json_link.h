@@ -1,6 +1,6 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
-// Copyright (c) 2017-2018 Darrell Wright
+// Copyright (c) 2018-2019 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -22,946 +22,619 @@
 
 #pragma once
 
-#include <boost/lexical_cast.hpp>
-#include <boost/optional.hpp>
+#include <chrono>
 #include <cstdint>
-#include <functional>
-#include <iostream>
+#include <cstdlib>
 #include <iterator>
-#include <mutex>
-#include <sstream>
+#include <limits>
 #include <string>
-#include <type_traits>
-#include <unordered_map>
-#include <vector>
 
+#include <daw/daw_algorithm.h>
+#include <daw/daw_bounded_string.h>
 #include <daw/daw_exception.h>
-#include <daw/daw_parser_addons.h>
-#include <daw/daw_parser_helper.h>
+#include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_string_view.h>
+#include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
-
-#include "daw_json_common.h"
-#include "daw_json_parsers.h"
+#include <daw/iterator/daw_back_inserter.h>
 
 namespace daw {
 	namespace json {
-		template<typename Derived>
-		class daw_json_link {
-			struct json_link_functions_info {
-				size_t hash;
-				std::string name;
-				using setter_t =
-				  std::function<daw::string_view( Derived &, daw::string_view view )>;
-				using getter_t = std::function<std::string( Derived const & )>;
-				setter_t setter;
-				getter_t getter;
-				bool is_optional;
-
-				constexpr json_link_functions_info( daw::string_view n,
-				                                    setter_t setter_func,
-				                                    getter_t getter_func,
-				                                    bool optional = false )
-				  : hash{std::hash<daw::string_view>{}( n )}
-				  , name{n.to_string( )}
-				  , setter{std::move( setter_func )}
-				  , getter{std::move( getter_func )}
-				  , is_optional{optional} {}
-			}; // json_link_functions_info
-			using json_link_functions_data_t = std::vector<json_link_functions_info>;
-
-			// Do not call outside of json_link_map chain.  Use check_map
-			static json_link_functions_data_t &get_link_data( ) {
-				static json_link_functions_data_t result;
-				return result;
-			}
-
-			template<typename LinkData>
-			static constexpr auto find_link_func_member( LinkData const &link_data,
-			                                             size_t const hash ) {
-				auto result =
-				  std::find_if( link_data.cbegin( ), link_data.cend( ),
-				                [hash]( auto const &v ) { return hash == v.hash; } );
-				return std::make_pair( result != link_data.cend( ), result );
-			}
-
-			static constexpr decltype( auto ) json_link_data_size( ) noexcept {
-				return get_link_data( ).size( );
-			}
-
-			static void add_json_link_function(
-			  daw::string_view name,
-			  typename json_link_functions_info::setter_t setter,
-			  typename json_link_functions_info::getter_t getter,
-			  bool is_optional = false ) {
-				get_link_data( ).emplace_back( name, std::move( setter ),
-				                               std::move( getter ), is_optional );
-			}
-
-			static bool &ignore_missing( ) noexcept;
-
-			static json_link_functions_data_t const &check_map( ) {
-				static std::once_flag flag;
-				std::call_once( flag, []( ) { Derived::json_link_map( ); } );
-				return get_link_data( );
-			}
-
-			constexpr Derived const &this_as_derived( ) const noexcept {
-				return *static_cast<Derived const *>( this );
-			}
-
-		protected:
-			template<typename Setter, typename Getter>
-			static void link_json_integer_fn( daw::string_view member_name,
-			                                  Setter setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_integer_optional_fn( daw::string_view member_name,
-			                                           Setter setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_real_fn( daw::string_view member_name,
-			                               Setter setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_real_optional_fn( daw::string_view member_name,
-			                                        Setter setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_boolean_fn( daw::string_view member_name,
-			                                  Setter setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_boolean_optional_fn( daw::string_view member_name,
-			                                           Setter setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_string_fn( daw::string_view member_name,
-			                                 Setter setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_string_optional_fn( daw::string_view member_name,
-			                                          Setter setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_object_fn( daw::string_view member_name,
-			                                 Setter setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_object_optional_fn( daw::string_view member_name,
-			                                          Setter setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_integer_array_fn( daw::string_view member_name,
-			                                        Setter item_setter,
-			                                        Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_real_array_fn( daw::string_view member_name,
-			                                     Setter item_setter, Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_boolean_array_fn( daw::string_view member_name,
-			                                        Setter item_setter,
-			                                        Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_string_array_fn( daw::string_view member_name,
-			                                       Setter item_setter,
-			                                       Getter getter );
-
-			template<typename Setter, typename Getter>
-			static void link_json_object_array_fn( daw::string_view member_name,
-			                                       Setter item_setter,
-			                                       Getter getter );
-
-		public:
-			static result_t<Derived> from_json_string( daw::string_view view );
-			static std::vector<Derived>
-			from_json_array_string( daw::string_view view );
-
-			static std::string to_json_string( Derived const &obj );
-			std::string to_json_string( ) const;
-		}; // daw_json_link
-
-		// Implementations
-		//
-		//
-		template<typename Derived>
-		bool &daw_json_link<Derived>::ignore_missing( ) noexcept {
-			static bool result = false;
-			return result;
-		}
-
-		template<typename Derived>
-		result_t<Derived>
-		daw_json_link<Derived>::from_json_string( daw::string_view view ) {
-			view = parser::impl::skip_ws( view );
-			daw::exception::daw_throw_on_true(
-			  view.empty( ), "Invalid json string.  String was empty" );
-			daw::exception::daw_throw_on_false(
-			  '{' == view.front( ),
-			  "Invalid json string.  Could not find start of object" );
-			auto const &member_map = check_map( );
-
-			std::vector<size_t> found_members;
-			found_members.reserve( member_map.size( ) );
-
-			view.remove_prefix( );
-			view = parser::impl::skip_ws( view );
-			Derived result;
-
-			while( !view.empty( ) ) {
-				if( '}' == view.front( ) ) {
-					break;
-				}
-				auto const member_name = daw::json::parser::parse_json_string( view );
-				auto const member_name_hash =
-				  std::hash<daw::string_view>{}( member_name.result );
-
-				view = member_name.view;
-				view = parser::impl::skip_ws( view );
-
-				daw::exception::daw_throw_on_false(
-				  ':' == view.front( ),
-				  "Expected name/value separator character ':', but not found" );
-
-				view.remove_prefix( );
-				view = parser::impl::skip_ws( view );
-
-				auto const &json_link_function =
-				  find_link_func_member( member_map, member_name_hash );
-				if( json_link_function.first ) {
-					found_members.emplace_back( member_name_hash );
-					view = json_link_function.second->setter( result, view );
-				} else if( !ignore_missing( ) ) {
-					using namespace std::string_literals;
-					daw::exception::daw_throw( "Json string contains a member name '"s +
-					                           member_name.result +
-					                           "' that isn't linked"s );
-				} else {
-					view = daw::json::parser::skip_json_value( view ).view;
-				}
-
-				view = parser::impl::skip_ws( view );
-				if( ',' == view.front( ) ) {
-					view.remove_prefix( );
-				} else if( '}' != view.front( ) ) {
-					daw::exception::daw_throw(
-					  "Invalid Json object.  No ',' character separating members" );
-				}
-				view = parser::impl::skip_ws( view );
-			}
-
-			auto const member_found = [&found_members]( size_t hash ) -> bool {
-				return std::find( found_members.cbegin( ), found_members.cend( ),
-				                  hash ) != found_members.cend( );
-			};
-
-			for( auto const &member : member_map ) {
-				using namespace std::string_literals;
-				daw::exception::daw_throw_on_true(
-				  !member.is_optional && !member_found( member.hash ),
-				  "Missing non-optional member '"s + member.name + "'"s );
-			}
-			view = parser::impl::skip_ws( view );
-			view.remove_prefix( );
-			return result_t<Derived>{view, std::move( result )};
-		}
-
-		template<typename Derived>
-		std::vector<Derived>
-		daw_json_link<Derived>::from_json_array_string( daw::string_view view ) {
-
-			std::vector<Derived> result;
-			view = parser::impl::skip_ws( view );
-			daw::exception::daw_throw_on_false(
-			  '[' == view.front( ), "Expected json array but none found" );
-			view.remove_prefix( );
-			view = parser::impl::skip_ws( view );
-
-			while( ']' != view.front( ) ) {
-				auto item = from_json_string( view );
-				result.emplace_back( std::move( item.result ) );
-				view = item.view;
-				view = parser::impl::skip_ws( view );
-
-				if( ',' == view.front( ) ) {
-					view.remove_prefix( );
-					view = parser::impl::skip_ws( view );
-				}
-			}
-			return result;
-		}
-
-		template<typename Derived>
-		std::string daw_json_link<Derived>::to_json_string( Derived const &obj ) {
-			auto const &member_map = check_map( );
-			std::string result = "{";
-			using namespace std::string_literals;
-			bool is_first = true;
-			for( auto const &member_func : member_map ) {
-				if( !is_first ) {
-					result.push_back( ',' );
-				} else {
-					is_first = false;
-				}
-				result += "\""s + member_func.name + "\":"s + member_func.getter( obj );
-			}
-			result.push_back( '}' );
-			return result;
-		}
-
-		template<typename Derived>
-		std::string daw_json_link<Derived>::to_json_string( ) const {
-			return to_json_string( this_as_derived( ) );
-		}
-
-		template<typename Derived>
-		std::string to_json_string( daw_json_link<Derived> const &obj ) {
-			return obj.to_json_string( );
-		}
-
-		template<typename Container>
-		std::string to_json_string( Container const &container ) {
-			std::string result = "[";
-			using std::begin;
-			using std::end;
-			auto it = begin( container );
-			if( it != end( container ) ) {
-				result += it->to_json_string( );
-				for( ; it != end( container ); ++it ) {
-					result += ',' + it->to_json_string( );
-				}
-			}
-			result += ']';
-			return result;
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_integer_fn(
-		  daw::string_view member_name, Setter setter, Getter getter ) {
-			using member_t =
-			  std::decay_t<decltype( getter( std::declval<Derived>( ) ) )>;
-			add_json_link_function(
-			  member_name,
-			  [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				  auto result = daw::json::parser::parse_json_integer( view );
-				  daw::exception::dbg_throw_on_false(
-				    daw::can_fit<member_t>( result.result ),
-				    "Invalid json string.  String was empty" );
-				  setter( obj, static_cast<member_t>( result.result ) );
-				  view = result.view;
-				  return view;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  using std::to_string;
-				  return to_string( getter( obj ) );
-			  } );
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_integer_optional_fn(
-		  daw::string_view member_name, Setter setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				  auto result = daw::json::parser::parse_json_integer_optional( view );
-				  setter( obj, result.result );
-				  return result.view;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  using namespace std::string_literals;
-				  auto value = getter( obj );
-				  if( value ) {
-					  using std::to_string;
-					  return to_string( *value );
-				  }
-				  return "null";
-			  },
-			  true );
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void
-		daw_json_link<Derived>::link_json_real_fn( daw::string_view member_name,
-		                                           Setter setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				  auto result = daw::json::parser::parse_json_real( view );
-				  setter( obj, result.result );
-				  view = result.view;
-				  return view;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  using std::to_string;
-				  return to_string( getter( obj ) );
-			  } );
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_real_optional_fn(
-		  daw::string_view member_name, Setter setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				  auto result = daw::json::parser::parse_json_real_optional( view );
-				  setter( obj, result.result );
-				  return result.view;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  using namespace std::string_literals;
-				  auto value = getter( obj );
-				  if( value ) {
-					  using std::to_string;
-					  return to_string( *value );
-				  }
-				  return "null";
-			  },
-			  true );
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_boolean_fn(
-		  daw::string_view member_name, Setter setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				  auto result = daw::json::parser::parse_json_boolean( view );
-				  setter( obj, result.result );
-				  view = result.view;
-				  return view;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  using std::to_string;
-				  return getter( obj ) ? "true" : "false";
-			  } );
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_boolean_optional_fn(
-		  daw::string_view member_name, Setter setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				  auto result = daw::json::parser::parse_json_boolean_optional( view );
-				  setter( obj, result.result );
-				  return result.view;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  using namespace std::string_literals;
-				  auto value = getter( obj );
-				  if( value ) {
-					  using std::to_string;
-					  return to_string( *value );
-				  }
-				  return "null";
-			  },
-			  true );
-		}
-
-		template<typename CharT, typename TraitT>
-		auto unescape_string( daw::basic_string_view<CharT, TraitT> src ) {
-			using result_t = std::basic_string<CharT, TraitT>;
-			if( src.empty( ) ) {
-				return result_t{};
-			}
-			result_t result;
-			result.reserve( src.size( ) );
-			for( size_t n = 0; n < src.size( ); ++n ) {
-				if( src[n] == '\\' ) {
-					++n;
-					switch( src[n] ) {
-					case 'b':
-						result += '\b';
-						break;
-					case 'f':
-						result += '\f';
-						break;
-					case 'n':
-						result += '\n';
-						break;
-					case 'r':
-						result += '\r';
-						break;
-					case 't':
-						result += '\t';
-						break;
-					case '\'':
-						result += '\'';
-						break;
-					case '\\':
-						result += '\\';
-						break;
-					case '/':
-						result += '/';
-						break;
-					// TODO /u for unicode escaping
-					default:
-						result += src[n];
-					}
-				} else {
-					result += src[n];
-				}
-			}
-			result.shrink_to_fit( );
-			return result;
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_string_fn(
-		  daw::string_view member_name, Setter setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				  auto result = daw::json::parser::parse_json_string( view );
-				  setter( obj, result.result );
-				  view = result.view;
-				  return view;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  using namespace std::string_literals;
-				  return "\""s + getter( obj ) + "\""s;
-			  } );
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_string_optional_fn(
-		  daw::string_view member_name, Setter setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				  auto result = daw::json::parser::parse_json_string_optional( view );
-				  setter( obj, result.result );
-				  return result.view;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  using namespace std::string_literals;
-				  auto value = getter( obj );
-				  if( value ) {
-					  return "\""s + *value + "\""s;
-				  }
-				  return "null";
-			  },
-			  true );
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_object_fn(
-		  daw::string_view member_name, Setter setter, Getter getter ) {
-			using member_t =
-			  std::decay_t<decltype( getter( std::declval<Derived>( ) ) )>;
-			add_json_link_function(
-			  member_name,
-			  [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				  auto result = member_t::from_json_string( view );
-				  setter( obj, std::move( result.result ) );
-				  view = result.view;
-				  return view;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  return getter( obj ).to_json_string( );
-			  } );
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_object_optional_fn(
-		  daw::string_view member_name, Setter setter, Getter getter ) {
-			using member_t =
-			  std::decay_t<decltype( *getter( std::declval<Derived>( ) ) )>;
-			add_json_link_function(
-			  member_name,
-			  [setter]( Derived &obj, daw::string_view view ) -> daw::string_view {
-				  auto result =
-				    daw::json::parser::parse_json_object_optional<member_t>( view );
-				  setter( obj, std::move( result.result ) );
-				  return result.view;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  using namespace std::string_literals;
-				  auto const &value = getter( obj );
-				  if( value ) {
-					  return value->to_json_string( );
-				  }
-				  return "null";
-			  },
-			  true );
-		}
+		template<typename T>
+		constexpr T from_json( daw::string_view sv );
 
 		namespace impl {
-			template<typename CharT, typename Traits>
-			auto to_string( std::basic_string<CharT, Traits> s ) {
-				return "\"" + s + "\"";
-			}
+			namespace {
+				template<typename T>
+				struct nullable_type {
+					using type = T;
+				};
 
-			template<typename Boolean,
-			         typename = std::enable_if_t<std::is_same<bool, Boolean>::value>>
-			std::string to_string( Boolean b ) noexcept {
-				using namespace std::string_literals;
-				return b ? "true"s : "false"s;
-			}
+				template<template<class> class C, class... Args>
+				struct nullable_type<C<Args...>> {
+					using type = daw::traits::first_type<Args...>;
+				};
 
-			template<typename Container>
-			std::string container_to_string( Container const &c ) {
-				using daw::json::impl::to_string;
-				using std::begin;
-				using std::end;
-				using std::to_string;
-				std::string result = "[";
-				auto it = begin( c );
-				if( it != end( c ) ) {
-					result += to_string( *it );
-					std::advance( it, 1 );
-					for( ; it != end( c ); ++it ) {
-						result += "," + to_string( *it );
+				template<typename T>
+				struct nullable_type<T const *const> {
+					using type = T;
+				};
+
+				template<typename T>
+				using nullable_type_t = typename nullable_type<T>::type;
+
+				constexpr char to_lower( char c ) noexcept {
+					return c | ' ';
+				}
+
+				enum class JsonParseTypes : uint_fast8_t {
+					Number,
+					Bool,
+					String,
+					Date,
+					Class,
+					Array
+				};
+
+				template<typename T>
+				using json_parser_description_t =
+				  decltype( describe_json_class( std::declval<T &>( ) ) );
+
+				template<typename T>
+				inline constexpr bool has_json_parser_description_v =
+				  is_detected_v<json_parser_description_t, T>;
+
+				template<JsonParseTypes v>
+				using ParseTag = std::integral_constant<JsonParseTypes, v>;
+
+				template<typename string_t>
+				struct kv_t {
+					string_t name;
+					JsonParseTypes expected_type;
+					bool nullable;
+					size_t pos;
+
+					constexpr kv_t( string_t Name, JsonParseTypes Expected, bool Nullable,
+					                size_t Pos )
+					  : name( std::move( Name ) )
+					  , expected_type( Expected )
+					  , nullable( Nullable )
+					  , pos( Pos ) {}
+				};
+
+				struct value_pos {
+					bool is_nullable;
+					string_view value_str{};
+
+					explicit constexpr value_pos( bool Nullable ) noexcept
+					  : is_nullable( Nullable ) {}
+
+					constexpr value_pos( bool Nullable, daw::string_view sv ) noexcept
+					  : is_nullable( Nullable )
+					  , value_str( sv ) {}
+
+					explicit constexpr operator bool( ) const noexcept {
+						return is_nullable or !value_str.empty( );
+					}
+				};
+
+				template<typename string_t>
+				kv_t( string_t )->kv_t<string_t>;
+
+				template<typename JsonType>
+				using json_parse_to = typename JsonType::parse_to_t;
+
+				template<typename JsonType>
+				inline constexpr bool is_json_nullable_v = JsonType::nullable;
+
+				constexpr daw::string_view parse_name( daw::string_view &sv ) {
+					if( sv.front( ) != '"' ) {
+						sv = parser::trim_left( sv );
+					}
+					struct member_name_parse_error {};
+					daw::exception::precondition_check( sv.front( ) == '"' );
+					sv.remove_prefix( );
+					auto name = sv.pop_front( "\"" );
+					sv = parser::trim_left( sv );
+					sv.pop_front( ":" );
+					sv = parser::trim_left( sv );
+					return name;
+				}
+
+				constexpr daw::string_view skip_string( daw::string_view &sv ) {
+					size_t pos = 0;
+					bool found = false;
+					auto result = daw::string_view{};
+					while( pos != daw::string_view::npos and !found ) {
+						++pos;
+						pos = sv.find_first_of( "\"", pos );
+						if( pos != daw::string_view::npos and sv[pos - 1] != '\\' ) {
+							result = sv.pop_front( pos );
+							found = true;
+							continue;
+						}
+					}
+					exception::precondition_check( pos != daw::string_view::npos,
+					                               "Invalid class" );
+					pos = sv.find_first_of( ",}]\n" );
+					exception::precondition_check( pos != daw::string_view::npos,
+					                               "Invalid class" );
+					sv.remove_prefix( pos + 1 );
+					sv = parser::trim_left( sv );
+					return result;
+				}
+
+				constexpr daw::string_view skip_other( daw::string_view &sv ) {
+					auto pos = sv.find_first_of( ",}]\n" );
+					exception::precondition_check( pos != sv.npos, "Invalid class" );
+					auto result = sv.pop_front( pos );
+					sv.remove_prefix( );
+					sv = parser::trim_left( sv );
+					return result;
+				}
+
+				template<char Left, char Right>
+				constexpr daw::string_view skip_bracketed_item( daw::string_view &sv ) {
+
+					size_t bracket_count = 1;
+					bool is_escaped = false;
+					bool in_quotes = false;
+					auto tmp_sv = sv;
+					sv.remove_prefix( );
+					while( !sv.empty( ) and bracket_count > 0 ) {
+						switch( sv.front( ) ) {
+						case '\\':
+							if( !in_quotes and !is_escaped ) {
+								is_escaped = true;
+								sv.remove_prefix( );
+								continue;
+							}
+							break;
+						case '"':
+							if( !is_escaped ) {
+								in_quotes = !in_quotes;
+								sv.remove_prefix( );
+								continue;
+							}
+							break;
+						case Left:
+							if( !in_quotes and !is_escaped ) {
+								++bracket_count;
+							}
+							break;
+						case Right:
+							if( !in_quotes and !is_escaped ) {
+								--bracket_count;
+							}
+						}
+						is_escaped = false;
+						sv.remove_prefix( );
+					}
+					tmp_sv = tmp_sv.pop_front( tmp_sv.size( ) - sv.size( ) );
+					auto pos = sv.find_first_of( ",}]\n" );
+					struct bracketed_item_parse_exception {};
+					exception::precondition_check<bracketed_item_parse_exception>(
+					  pos != sv.npos );
+					sv.remove_prefix( );
+					sv = parser::trim_left( sv );
+					return tmp_sv;
+				}
+
+				constexpr daw::string_view skip_class( daw::string_view &sv ) {
+					return skip_bracketed_item<'{', '}'>( sv );
+				}
+
+				constexpr daw::string_view skip_array( daw::string_view &sv ) {
+					return skip_bracketed_item<'[', ']'>( sv );
+				}
+
+				constexpr daw::string_view skip_value( daw::string_view &sv ) {
+					sv = parser::trim_left( sv );
+					daw::exception::precondition_check( !sv.empty( ) );
+					switch( sv.front( ) ) {
+					case '"':
+						return skip_string( sv );
+					case '[':
+						return skip_array( sv );
+					case '{':
+						return skip_class( sv );
+					default:
+						return skip_other( sv );
 					}
 				}
-				result += "]";
+
+				struct missing_nonnullable_value_expection {};
+
+				template<typename ParseInfo>
+				constexpr auto parse_value( ParseTag<JsonParseTypes::Number>,
+				                            value_pos pos ) {
+					using constructor_t = typename ParseInfo::constructor_t;
+					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
+
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
+					if constexpr( is_floating_point_v<element_t> ) {
+						return constructor_t{}( static_cast<element_t>(
+						  std::strtod( pos.value_str.data( ), nullptr ) ) );
+					} else {
+						return constructor_t{}( static_cast<element_t>(
+						  parser::parse_int<int64_t>( pos.value_str ) ) );
+					}
+				}
+
+				template<typename ParseInfo>
+				constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
+				                            value_pos pos ) {
+					using constructor_t = typename ParseInfo::constructor_t;
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
+					return constructor_t{}( to_lower( pos.value_str.front( ) ) == 't' );
+				}
+
+				template<typename ParseInfo>
+				constexpr auto parse_value( ParseTag<JsonParseTypes::String>,
+				                            value_pos pos ) {
+
+					using constructor_t = typename ParseInfo::constructor_t;
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
+					return constructor_t{}( pos.value_str.data( ),
+					                        pos.value_str.size( ) );
+				}
+
+				template<typename ParseInfo>
+				constexpr auto parse_value( ParseTag<JsonParseTypes::Date>,
+				                            value_pos pos ) {
+
+					using constructor_t = typename ParseInfo::constructor_t;
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
+					return constructor_t{}( pos.value_str.data( ),
+					                        pos.value_str.size( ) );
+				}
+
+				template<typename ParseInfo>
+				constexpr auto parse_value( ParseTag<JsonParseTypes::Class>,
+				                            value_pos pos ) {
+
+					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
+					using constructor_t = typename ParseInfo::constructor_t;
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
+					return from_json<element_t>( pos.value_str );
+				}
+
+				struct invalid_array {};
+				template<typename ParseInfo>
+				constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
+				                            value_pos pos ) {
+					using constructor_t = typename ParseInfo::constructor_t;
+					if( pos.value_str.empty( ) or
+					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+						daw::exception::precondition_check<
+						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						return constructor_t{}( );
+					}
+					daw::exception::precondition_check<invalid_array>(
+					  pos.value_str.front( ) == '[' );
+					pos.value_str.remove_prefix( );
+					pos.value_str = daw::parser::trim_left( pos.value_str );
+					using element_t = typename ParseInfo::json_element_t;
+
+					auto result = typename ParseInfo::constructor_t{}( );
+					auto add_value = typename ParseInfo::appender_t( result );
+					while( !pos.value_str.empty( ) and pos.value_str.front( ) != ']' ) {
+						auto val_str = skip_value( pos.value_str );
+						add_value( parse_value<element_t>(
+						  ParseTag<element_t::expected_type>{},
+						  value_pos( element_t::nullable, val_str ) ) );
+
+						pos.value_str = daw::parser::trim_left( pos.value_str );
+					}
+					return result;
+				}
+
+				template<typename Container>
+				struct basic_appender {
+					daw::back_inserter_iterator<Container> appender;
+
+					constexpr basic_appender( Container &container ) noexcept
+					  : appender( container ) {}
+
+					template<typename T>
+					constexpr void operator( )( T &&value ) {
+						*appender = std::forward<T>( value );
+					}
+				};
+			} // namespace
+		}   // namespace impl
+
+		template<typename... JsonMembers>
+		class json_parser_t {
+			static constexpr size_t find_string_capacity( ) noexcept {
+				return ( JsonMembers::name.extent + ... );
+			}
+			using string_t = basic_bounded_string<char, find_string_capacity( )>;
+
+			template<size_t N>
+			static constexpr impl::kv_t<string_t> get_item( ) noexcept {
+				using type_t = traits::nth_type<N, JsonMembers...>;
+				return {type_t::name, type_t::expected_type, type_t::nullable, N};
+			}
+
+			template<size_t... Is>
+			static constexpr auto make_map( std::index_sequence<Is...> ) noexcept {
+
+				return std::array{get_item<Is>( )...};
+			}
+
+			static constexpr auto name_map =
+			  make_map( std::index_sequence_for<JsonMembers...>{} );
+
+			static constexpr bool has_name( daw::string_view key ) noexcept {
+				auto result = algorithm::find_if(
+				  begin( name_map ), end( name_map ),
+				  [key]( auto const &kv ) { return kv.name == key; } );
+				return result != std::end( name_map );
+			}
+
+			static constexpr size_t find_name( daw::string_view key ) noexcept {
+				auto result = algorithm::find_if(
+				  begin( name_map ), end( name_map ),
+				  [key]( auto const &kv ) { return kv.name == key; } );
+				if( result == std::end( name_map ) ) {
+					std::terminate( );
+				}
+				return static_cast<size_t>(
+				  std::distance( begin( name_map ), result ) );
+			}
+
+			template<size_t N>
+			static constexpr decltype( auto ) parse_item(
+			  std::array<impl::value_pos, sizeof...( JsonMembers )> const &locations,
+			  daw::string_view sv ) {
+				using type_t = traits::nth_type<N, JsonMembers...>;
+				return impl::parse_value<type_t>(
+				  impl::ParseTag<type_t::expected_type>{}, locations[N] );
+			}
+
+			static constexpr auto get_locations( daw::string_view &sv ) {
+				std::array result = {
+				  impl::value_pos( impl::is_json_nullable_v<JsonMembers> )...};
+
+				while( !sv.empty( ) and sv.front( ) != '}' ) {
+					auto name = impl::parse_name( sv );
+					if( !has_name( name ) ) {
+						impl::skip_value( sv );
+						continue;
+					}
+					size_t const pos = find_name( name );
+					result[pos].value_str = impl::skip_value( sv );
+					sv = parser::trim_left( sv );
+				}
 				return result;
 			}
 
-			template<typename Container>
-			std::string object_container_to_string( Container const &c ) {
-				using std::begin;
-				using std::end;
-				std::string result = "[";
-				auto it = begin( c );
-				if( it != end( c ) ) {
-					result += it->to_json_string( );
-					std::advance( it, 1 );
-					for( ; it != end( c ); ++it ) {
-						result += "," + it->to_json_string( );
-					}
-				}
-				result += "]";
-				return result;
+			template<typename Result, size_t... Is>
+			static constexpr Result parse_json_class( daw::string_view sv,
+			                                          std::index_sequence<Is...> ) {
+				static_assert(
+				  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
+				  "Supplied types cannot be used for construction of this type" );
+
+				auto sv_orig = sv;
+
+				sv = parser::trim_left( sv );
+				exception::precondition_check( !sv.empty( ) and sv.front( ) == '{' );
+				sv.remove_prefix( );
+				sv = parser::trim_left( sv );
+
+				auto const locations = get_locations( sv );
+
+				// Ensure locations of all parts there
+				exception::precondition_check( algorithm::all_of(
+				  begin( locations ), end( locations ), []( auto const &loc ) -> bool {
+					  return static_cast<bool>( loc );
+				  } ) );
+
+				return construct_a<Result>{}( parse_item<Is>( locations, sv_orig )... );
 			}
 
-		} // namespace impl
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_integer_array_fn(
-		  daw::string_view member_name, Setter item_setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [item_setter]( Derived &obj,
-			                 daw::string_view view ) -> daw::string_view {
-				  auto const setter = [&obj, &item_setter]( int64_t value ) {
-					  item_setter( obj, value );
-				  };
-				  auto result =
-				    daw::json::parser::parse_json_integer_array( view, setter );
-				  return result;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  auto const &container = getter( obj );
-				  return impl::container_to_string( container );
-			  } );
+		public:
+			template<typename Result>
+			static constexpr decltype( auto ) parse( daw::string_view sv ) {
+				return parse_json_class<Result>(
+				  sv, std::index_sequence_for<JsonMembers...>{} );
+			}
+		};
+
+		template<basic_bounded_string Name, typename T = double,
+		         bool Nullable = false, typename Constructor = daw::construct_a<T>>
+		struct json_number {
+			static_assert( std::is_arithmetic_v<T> or Nullable,
+			               "Number must be an arithmentic type" );
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Number;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = T;
+			using constructor_t = Constructor;
+		};
+
+		template<basic_bounded_string Name, typename T = bool,
+		         bool Nullable = false, typename Constructor = daw::construct_a<T>>
+		struct json_bool {
+			static_assert( std::is_convertible_v<bool, T>,
+			               "Supplied result type must be convertable from bool" );
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Bool;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = T;
+			using constructor_t = Constructor;
+		};
+
+		template<basic_bounded_string Name, typename T = std::string,
+		         bool Nullable = false, typename Constructor = daw::construct_a<T>>
+		struct json_string {
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::String;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = T;
+			using constructor_t = Constructor;
+		};
+
+		template<basic_bounded_string Name,
+		         typename T = std::chrono::system_clock::time_point,
+		         bool Nullable = false, typename Constructor = daw::construct_a<T>>
+		struct json_date {
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Date;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = T;
+			using constructor_t = Constructor;
+		};
+
+		template<basic_bounded_string Name, typename T, bool Nullable = false,
+		         typename Constructor = daw::construct_a<T>>
+		struct json_class {
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Class;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = T;
+			using constructor_t = Constructor;
+		};
+
+		template<basic_bounded_string Name, typename Container,
+		         typename JsonElement, bool Nullable = false,
+		         typename Constructor = daw::construct_a<Container>,
+		         typename Appender = impl::basic_appender<Container>>
+		struct json_array {
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Array;
+			static constexpr bool nullable = Nullable;
+			using parse_to_t = Container;
+			using constructor_t = Constructor;
+			using appender_t = Appender;
+			using json_element_t = JsonElement;
+		};
+
+		template<typename T>
+		constexpr T from_json( daw::string_view json_data ) {
+			static_assert(
+			  impl::has_json_parser_description_v<T>,
+			  "A function call describe_json_class must exist for type." );
+
+			return impl::json_parser_description_t<T>::template parse<T>( json_data );
 		}
 
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_real_array_fn(
-		  daw::string_view member_name, Setter item_setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [item_setter]( Derived &obj,
-			                 daw::string_view view ) -> daw::string_view {
-				  auto const setter = [&obj, &item_setter]( double value ) {
-					  item_setter( obj, value );
-				  };
-				  auto result =
-				    daw::json::parser::parse_json_real_array( view, setter );
-				  return result;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  auto const &container = getter( obj );
-				  return impl::container_to_string( container );
-			  } );
+		template<typename JsonElement>
+		class json_array_iterator {
+			daw::string_view m_state{};
+			daw::string_view m_cur_value{};
+
+		public:
+			using value_type = typename JsonElement::parse_to_t;
+			using reference = value_type;
+			using pointer = value_type;
+			using difference_type = ptrdiff_t;
+			// Can do forward iteration and be stored
+			using iterator_category = std::input_iterator_tag;
+
+			constexpr json_array_iterator( ) noexcept = default;
+
+			constexpr json_array_iterator( daw::string_view json_data )
+			  : m_state( json_data ) {
+				daw::exception::precondition_check<impl::invalid_array>(
+				  m_state.front( ) == '[' );
+
+				m_state.remove_prefix( );
+				m_state = daw::parser::trim_left( m_state );
+
+				if( m_state.empty( ) ) {
+					return;
+				}
+				m_cur_value = impl::skip_value( m_state );
+				m_state = daw::parser::trim_left( m_state );
+			}
+
+			constexpr value_type operator*( ) const {
+				daw::exception::precondition_check<impl::invalid_array>(
+				  !m_cur_value.empty( ) );
+
+				return impl::parse_value<JsonElement>(
+				  impl::ParseTag<JsonElement::expected_type>{},
+				  impl::value_pos( false, m_cur_value ) );
+			}
+
+			constexpr json_array_iterator &operator++( ) {
+				if( m_state.empty( ) or m_state.front( ) == ']' ) {
+					m_cur_value = daw::string_view{};
+					return *this;
+				}
+				m_cur_value = impl::skip_value( m_state );
+				m_state = daw::parser::trim_left( m_state );
+				return *this;
+			}
+
+			constexpr json_array_iterator &operator++( int ) {
+				auto tmp = *this;
+				++( *this );
+				return tmp;
+			}
+
+			explicit constexpr operator bool( ) const noexcept {
+				return !m_cur_value.empty( );
+			}
+
+			constexpr bool operator==( json_array_iterator const &rhs ) const
+			  noexcept {
+				return ( m_cur_value.empty( ) and !rhs ) or
+				       ( m_state == rhs.m_state and m_cur_value == rhs.m_cur_value );
+			}
+
+			constexpr bool operator!=( json_array_iterator const &rhs ) const
+			  noexcept {
+				return !( *this == rhs );
+			}
+		};
+
+		template<typename JsonElement,
+		         typename Container = std::vector<typename JsonElement::parse_to_t>,
+		         typename Constructor = daw::construct_a<Container>,
+		         typename Appender = impl::basic_appender<Container>>
+		constexpr auto from_json_array( daw::string_view json_data ) {
+			using parser_t =
+			  json_array<"", Container, JsonElement, false, Constructor, Appender>;
+			std::declval<int>( );
+			return impl::parse_value<parser_t>(
+			  impl::ParseTag<impl::JsonParseTypes::Array>{},
+			  impl::value_pos( false, json_data ) );
 		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_boolean_array_fn(
-		  daw::string_view member_name, Setter item_setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [item_setter]( Derived &obj,
-			                 daw::string_view view ) -> daw::string_view {
-				  auto const setter = [&obj, &item_setter]( bool value ) {
-					  item_setter( obj, value );
-				  };
-				  auto result =
-				    daw::json::parser::parse_json_boolean_array( view, setter );
-				  return result;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  auto const &container = getter( obj );
-				  return impl::container_to_string( container );
-			  } );
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_string_array_fn(
-		  daw::string_view member_name, Setter item_setter, Getter getter ) {
-			add_json_link_function(
-			  member_name,
-			  [item_setter]( Derived &obj,
-			                 daw::string_view view ) -> daw::string_view {
-				  auto const setter = [&obj, &item_setter]( daw::string_view value ) {
-					  item_setter( obj, value );
-				  };
-				  auto result =
-				    daw::json::parser::parse_json_string_array( view, setter );
-				  return result;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  auto const &container = getter( obj );
-				  return impl::container_to_string( container );
-			  } );
-		}
-
-		template<typename Derived>
-		template<typename Setter, typename Getter>
-		void daw_json_link<Derived>::link_json_object_array_fn(
-		  daw::string_view member_name, Setter item_setter, Getter getter ) {
-			using member_t = std::decay_t<decltype(
-			  *std::begin( getter( std::declval<Derived>( ) ) ) )>;
-			add_json_link_function(
-			  member_name,
-			  [item_setter]( Derived &obj,
-			                 daw::string_view view ) -> daw::string_view {
-				  auto const setter = [&obj, &item_setter]( auto value ) {
-					  item_setter( obj, std::move( value ) );
-				  };
-				  auto result = daw::json::parser::parse_json_object_array<member_t>(
-				    view, setter );
-				  return result;
-			  },
-			  [getter]( Derived const &obj ) -> std::string {
-				  auto const &container = getter( obj );
-				  return impl::object_container_to_string( container );
-			  } );
-		}
-
-#define link_json_integer( json_name, member_name )                            \
-	link_json_integer_fn(                                                        \
-	  json_name,                                                                 \
-	  []( auto &obj, int64_t value ) -> void {                                   \
-		  obj.member_name =                                                        \
-		    static_cast<std::decay_t<decltype( obj.member_name )>>( value );       \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_integer_optional( json_name, member_name, default_value )    \
-	link_json_integer_optional_fn(                                               \
-	  json_name,                                                                 \
-	  []( auto &obj, boost::optional<int64_t> value ) -> void {                  \
-		  if( value ) {                                                            \
-			  obj.member_name = *value;                                              \
-		  } else {                                                                 \
-			  obj.member_name = default_value;                                       \
-		  }                                                                        \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_real( json_name, member_name )                               \
-	link_json_real_fn(                                                           \
-	  json_name,                                                                 \
-	  []( auto &obj, double value ) -> void {                                    \
-		  obj.member_name =                                                        \
-		    static_cast<std::decay_t<decltype( obj.member_name )>>( value );       \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_real_optional( json_name, member_name, default_value )       \
-	link_json_real_optional_fn(                                                  \
-	  json_name,                                                                 \
-	  []( auto &obj, boost::optional<double> value ) -> void {                   \
-		  if( value ) {                                                            \
-			  obj.member_name = *value;                                              \
-		  } else {                                                                 \
-			  obj.member_name = default_value;                                       \
-		  }                                                                        \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_boolean( json_name, member_name )                            \
-	link_json_boolean_fn(                                                        \
-	  json_name,                                                                 \
-	  []( auto &obj, bool value ) -> void { obj.member_name = value; },          \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_boolean_optional( json_name, member_name, default_value )    \
-	link_json_boolean_optional_fn(                                               \
-	  json_name,                                                                 \
-	  []( auto &obj, boost::optional<bool> value ) -> void {                     \
-		  if( value ) {                                                            \
-			  obj.member_name = *value;                                              \
-		  } else {                                                                 \
-			  obj.member_name = default_value;                                       \
-		  }                                                                        \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_string( json_name, member_name )                             \
-	link_json_string_fn(                                                         \
-	  json_name,                                                                 \
-	  []( auto &obj, daw::string_view value ) -> void {                          \
-		  obj.member_name = daw::json::unescape_string( value );                   \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_streamable( json_name, member_name )                         \
-	link_json_string_fn(                                                         \
-	  json_name,                                                                 \
-	  []( auto &obj, daw::string_view value ) -> void {                          \
-		  std::stringstream ss{daw::json::unescape_string( value )};               \
-		  ss >> obj.member_name;                                                   \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::string {                                     \
-		  return boost::lexical_cast<std::string>( obj.member_name );              \
-	  } );
-
-#define link_json_streamable_optional( json_name, member_name, default_value ) \
-	link_json_string_optional_fn(                                                \
-	  json_name,                                                                 \
-	  []( auto &obj, boost::optional<daw::string_view> value ) -> void {         \
-		  if( value ) {                                                            \
-			  std::stringstream ss{daw::json::unescape_string( *value )};            \
-			  ss >> *obj.member_name;                                                \
-		  } else {                                                                 \
-			  obj.member_name = default_value;                                       \
-		  }                                                                        \
-	  },                                                                         \
-	  []( auto const &obj ) -> boost::optional<std::string> {                    \
-		  if( obj.member_name ) {                                                  \
-			  return boost::lexical_cast<std::string>( *obj.member_name );           \
-		  } else {                                                                 \
-			  return boost::optional<std::string>{};                                 \
-		  }                                                                        \
-	  } );
-
-#define link_json_string_optional( json_name, member_name, default_value )     \
-	link_json_string_optional_fn(                                                \
-	  json_name,                                                                 \
-	  []( auto &obj, boost::optional<daw::string_view> value ) -> void {         \
-		  if( value ) {                                                            \
-			  obj.member_name = daw::json::unescape_string( *value );                \
-		  } else {                                                                 \
-			  obj.member_name = default_value;                                       \
-		  }                                                                        \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_object( json_name, member_name )                             \
-	link_json_object_fn(                                                         \
-	  json_name,                                                                 \
-	  []( auto &obj, std::decay_t<decltype( member_name )> value ) -> void {     \
-		  obj.member_name = std::move( value );                                    \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_object_optional( json_name, member_name, default_value )     \
-	link_json_object_optional_fn(                                                \
-	  json_name,                                                                 \
-	  []( auto &obj,                                                             \
-	      boost::optional<std::decay_t<decltype( *obj.member_name )>> value )    \
-	    -> void {                                                                \
-		  if( value ) {                                                            \
-			  obj.member_name = std::move( *value );                                 \
-		  } else {                                                                 \
-			  obj.member_name = default_value;                                       \
-		  }                                                                        \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_integer_array( json_name, member_name )                      \
-	link_json_integer_array_fn(                                                  \
-	  json_name,                                                                 \
-	  []( auto &obj, int64_t value ) -> void {                                   \
-		  obj.member_name.insert( std::end( obj.member_name ),                     \
-		                          std::move( value ) );                            \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_real_array( json_name, member_name )                         \
-	link_json_real_array_fn(                                                     \
-	  json_name,                                                                 \
-	  []( auto &obj, double value ) -> void {                                    \
-		  obj.member_name.insert( std::end( obj.member_name ),                     \
-		                          std::move( value ) );                            \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_boolean_array( json_name, member_name )                      \
-	link_json_boolean_array_fn(                                                  \
-	  json_name,                                                                 \
-	  []( auto &obj, bool value ) -> void {                                      \
-		  obj.member_name.insert( std::end( obj.member_name ),                     \
-		                          std::move( value ) );                            \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_string_array( json_name, member_name )                       \
-	link_json_string_array_fn(                                                   \
-	  json_name,                                                                 \
-	  []( auto &obj, daw::string_view value ) -> void {                          \
-		  obj.member_name.insert( std::end( obj.member_name ),                     \
-		                          daw::json::unescape_string( value ) );           \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
-
-#define link_json_object_array( json_name, member_name )                       \
-	link_json_object_array_fn(                                                   \
-	  json_name,                                                                 \
-	  []( auto &obj, auto value ) -> void {                                      \
-		  obj.member_name.insert( std::end( obj.member_name ),                     \
-		                          std::move( value ) );                            \
-	  },                                                                         \
-	  []( auto const &obj ) -> std::decay_t<decltype( member_name )> const & {   \
-		  return obj.member_name;                                                  \
-	  } );
 
 	} // namespace json
 } // namespace daw
