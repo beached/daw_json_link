@@ -1,6 +1,6 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
-// Copyright (c) 2017-2018 Darrell Wright
+// Copyright (c) 2018-2019 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -20,237 +20,78 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <boost/optional.hpp>
-#include <cstdint>
-#include <cstdlib>
-#include <fstream>
+#include <cassert>
+#include <chrono>
 #include <iostream>
-#include <sstream>
-
-#include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
-#include <daw/daw_string_view.h>
+#include <optional>
+#include <vector>
 
 #include "daw/json/daw_json_link.h"
-#include "daw/json/daw_json_link_datetime.h"
-#include "daw/json/daw_json_link_file.h"
-#include "daw/json/daw_json_link_fixes.h"
-#include "daw/json/daw_json_link_streams.h"
 
-#include <codecvt>
+struct test_001_t {
+	int i = 0;
+	double d = 0.0;
+	bool b = false;
+	daw::string_view s{};
+	std::vector<int> y{};
+	std::optional<int> o{};
+	std::optional<int> o2{};
 
-struct A : public daw::json::daw_json_link<A> {
-	double b;
-	boost::optional<std::string> e;
-	std::string d;
-	int a;
-	bool c;
-
-	A( )
-	  : b{1.2345}
-	  , e{boost::none}
-	  , d{"sixseveneightnine"}
-	  , a{0}
-	  , c{true} {}
-	~A( ) = default;
-	A( A const & ) = default;
-	A( A && ) noexcept = default;
-	A &operator=( A const & ) = default;
-	A &operator=( A && ) noexcept = default;
-
-	static void json_link_map( ) {
-		link_json_integer_fn( "aaaaaa", []( A &obj, int value ) { obj.a = value; },
-		                      []( A const &obj ) { return obj.a; } );
-		link_json_real_fn( "bbbbbb", []( A &obj, double value ) { obj.b = value; },
-		                   []( A const &obj ) { return obj.b; } );
-		link_json_boolean_fn( "cccccc", []( A &obj, bool value ) { obj.c = value; },
-		                      []( A const &obj ) { return obj.c; } );
-		link_json_string_fn(
-		  "dddddd",
-		  []( A &obj, daw::string_view value ) { obj.d = value.to_string( ); },
-		  []( A const &obj ) { return obj.d; } );
-		link_json_string_optional_fn(
-		  "e",
-		  []( A &obj, boost::optional<daw::string_view> value ) {
-			  obj.e = value ? boost::optional<std::string>{value->to_string( )}
-			                : boost::optional<std::string>{boost::none};
-		  },
-		  []( A const &obj ) { return obj.e; } );
-	}
+	test_001_t( int Int, double Double, bool Bool, daw::string_view S,
+	            std::vector<int> Y, std::optional<int> O,
+	            std::optional<int> O2 ) noexcept
+	  : i( Int )
+	  , d( Double )
+	  , b( Bool )
+	  , s( S )
+	  , y( Y )
+	  , o( O )
+	  , o2( O2 ) {}
 };
 
-struct A2 {
-	double b;
-	boost::optional<std::string> e;
-	std::string d;
-	int a;
-	bool c;
-
-	A2( )
-	  : b{1.2345}
-	  , e{boost::none}
-	  , d{"sixseveneightnine"}
-	  , a{0}
-	  , c{true} {}
-	~A2( ) = default;
-	A2( A2 const & ) = default;
-	A2( A2 && ) noexcept = default;
-	A2 &operator=( A2 const & ) = default;
-	A2 &operator=( A2 && ) noexcept = default;
-};
-
-struct B : public daw::json::daw_json_link<B> {
-	A a;
-	std::vector<int64_t> b;
-	std::vector<double> c;
-	std::vector<bool> d;
-	std::vector<std::string> e;
-	std::vector<A> f;
-
-	B( ) = default;
-	~B( ) = default;
-	B( B const & ) = default;
-	B( B && ) noexcept = default;
-	B &operator=( B const & ) = default;
-	B &operator=( B && ) noexcept = default;
-
-	static void json_link_map( ) {
-		link_json_object_fn( "aaaaaa",
-		                     []( B &obj, A value ) { obj.a = std::move( value ); },
-		                     []( B const &obj ) { return obj.a; } );
-		link_json_integer_array_fn(
-		  "b", []( B &obj, auto value ) { obj.b.push_back( std::move( value ) ); },
-		  []( B const &obj ) { return obj.b; } );
-		link_json_real_array_fn(
-		  "c", []( B &obj, auto value ) { obj.c.push_back( std::move( value ) ); },
-		  []( B const &obj ) { return obj.c; } );
-		link_json_boolean_array_fn(
-		  "d", []( B &obj, auto value ) { obj.d.push_back( std::move( value ) ); },
-		  []( B const &obj ) { return obj.d; } );
-		link_json_string_array_fn(
-		  "e", []( B &obj, auto value ) { obj.e.push_back( value.to_string( ) ); },
-		  []( B const &obj ) { return obj.e; } );
-		link_json_object_array_fn(
-		  "f", []( B &obj, auto value ) { obj.f.push_back( std::move( value ) ); },
-		  []( B const &obj ) { return obj.f; } );
-	}
-};
-
-struct C : public daw::json::daw_json_link<C> {
-	A a;
-	std::vector<int64_t> b;
-	std::vector<double> c;
-	std::vector<bool> d;
-	std::vector<std::string> e;
-	std::vector<A> f;
-	boost::optional<std::string> g;
-
-	static void json_link_map( ) {
-		link_json_object( "aaaaaa", a );
-		link_json_integer_array( "b", b );
-		link_json_real_array( "c", c );
-		link_json_boolean_array( "d", d );
-		link_json_string_array( "e", e );
-		link_json_object_array( "f", f );
-		link_json_string_optional( "g", g, boost::none );
-	}
-};
-
-auto make_path_str( std::string s ) {
-#ifdef WIN32
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	return converter.from_bytes( s );
-}
-#else
-	return s;
-}
-#endif
-
-std::string to_si_bytes( double d ) {
-	using std::to_string;
-	if( d < 1024.0 ) {
-		return to_string( d ) + " bytes";
-	}
-	d /= 1024.0;
-	if( d < 1024.0 ) {
-		return to_string( d ) + " KB";
-	}
-	d /= 1024.0;
-	if( d < 1024.0 ) {
-		return to_string( d ) + " MB";
-	}
-	d /= 1024.0;
-	if( d < 1024.0 ) {
-		return to_string( d ) + " GB";
-	}
-	d /= 1024.0;
-	return to_string( d ) + " TB";
+auto describe_json_class( test_001_t ) noexcept {
+	using namespace daw::json;
+	return json_parser_t<json_number<"i", int>, json_number<"d">, json_bool<"b">,
+	                     json_string<"s", daw::string_view>,
+	                     json_array<"y", std::vector<int>, json_number<"", int>>,
+	                     json_number<"o", std::optional<int>, true>,
+	                     json_number<"o2", std::optional<int>, true>>{};
 }
 
-std::string to_si_bytes( size_t sz ) {
-	return to_si_bytes( static_cast<double>( sz ) );
-}
+constexpr auto const json_data =
+  R"({
+	    "i": 55,
+	    "d": 2.2,
+			"b": true,
+			"x": { "b": false, "c": [1,2,3] },
+			"y": [1,2,3,4],
+			"z": { "a": 1 },
+	    "tp": "2018-06-22T15:05:37Z",
+			"s": "yo yo yo",
+			"o": 1344
+	  })";
 
-int main( int argc, char **argv ) {
-	using namespace std::string_literals;
-	B b;
-	std::cout << "Size of linked class->" << sizeof( A )
-	          << " vs size of unlinked->" << sizeof( A2 ) << '\n';
-	auto const str = b.to_json_string( );
-	std::string const str_array = "[" + str + "," + str + "]";
-	auto a = B::from_json_string( str ).result;
-	std::cout << a.to_json_string( ) << '\n';
-
-	std::cout << "Attemping json array '" << str_array << "'\n";
-	auto c = B::from_json_array_string( str_array );
-
-	{
-		B b_test;
-		std::stringstream ss{str};
-		ss >> b_test;
+int main( ) {
+	auto data = daw::json::from_json<test_001_t>( json_data );
+	std::clog << "result: i->" << data.i << '\n';
+	std::clog << "result: d->" << data.d << '\n';
+	std::clog << "result: b->" << data.b << '\n';
+	std::clog << "result: s->" << data.s << '\n';
+	std::clog << "result: y->[ ";
+	for( auto const &v : data.y ) {
+		std::clog << v << ", ";
 	}
-	std::cout << to_json_string( c ) << std::endl;
-	{
-		constexpr auto const SZ = 6'500'000;
-		auto str_array2 = "["s + str;
-		str_array2.reserve( ( str.size( ) + 1 ) * SZ + 2 );
-		for( size_t n = 0; n < SZ; ++n ) {
-			str_array2 += ","s + str;
-		}
-		str_array2 += "]"s;
-		std::cout << "Using an string of size " << to_si_bytes( str_array2.size( ) )
-		          << '\n';
-		auto lapsed_time2 = daw::benchmark(
-		  [&str_array2]( ) { B::from_json_array_string( str_array2 ); } );
-		std::cout << "To process " << to_si_bytes( str_array2.size( ) )
-		          << " bytes, it took " << lapsed_time2 << " seconds. "
-		          << to_si_bytes( str_array2.size( ) / lapsed_time2 )
-		          << "/second\n";
+	std::clog << "]\n";
+	std::clog << "result o->";
+	if( !data.o ) {
+		std::clog << "empty\n";
+	} else {
+		std::clog << *data.o << '\n';
 	}
-	/*
-	if( boost::filesystem::exists( make_path_str( "test.json" ).data( ) ) ) {
-	    daw::filesystem::memory_mapped_file_t<char> json_file{make_path_str(
-	"test.json" ).data( )}; daw::exception::daw_throw_on_false( json_file, "Failed
-	to open test file 'test.json'" ); std::cout << "Test file is of size " <<
-	to_si_bytes( json_file.size( ) ) << '\n'; auto lapsed_time = daw::benchmark(
-	[]( ) -> void { auto const result = daw::json::array_from_file<B>( "test.json"
-	); } ); std::cout << "To process " << to_si_bytes( json_file.size( ) ) << "
-	bytes, it took " << lapsed_time
-	              << " seconds. " << to_si_bytes( json_file.size( ) / lapsed_time
-	) << "/second\n";
+	std::clog << "result o2->";
+	if( !data.o2 ) {
+		std::clog << "empty\n";
+	} else {
+		std::clog << *data.o2 << '\n';
 	}
-	*/
-	/*
-	   // Create sample json file
-	    std::fstream s{"test.json", std::ios::binary | std::ios::out};
-	    s << '[';
-	    std::string const str = b.to_json_string( );
-	    auto const count = (1024ull*1024ull*1024ull*15ull)/str.size( );
-	    s << str;
-	    for( size_t n=0; n<count; ++n ) {
-	        s << ',' << str;
-	    }
-	    s << ']';
-	    */
-	return EXIT_SUCCESS;
 }
