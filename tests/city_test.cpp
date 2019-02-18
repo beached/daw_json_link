@@ -59,8 +59,9 @@ int main( int argc, char **argv ) {
 	in_file.close( );
 	auto json_sv = daw::string_view( json_data );
 
+
 	auto count = *daw::bench_n_test<4>(
-	  "cities parsing",
+	  "cities parsing 1",
 	  []( auto &&sv ) {
 		  auto const data = daw::json::from_json_array<json_class<"", City>>( sv );
 		  return data.size( );
@@ -72,8 +73,9 @@ int main( int argc, char **argv ) {
 	using iterator_t = daw::json::json_array_iterator<json_class<"", City>>;
 
 	auto data = std::vector<City>( );
+
 	auto count2 = *daw::bench_n_test<4>(
-	  "cities parsing",
+	  "cities parsing 2",
 	  [&]( auto &&sv ) {
 	  	data.clear( );
 		  std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );

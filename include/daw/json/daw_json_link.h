@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright (c) 2018-2019 Darrell Wright
 //
@@ -45,6 +45,107 @@ namespace daw {
 
 		namespace impl {
 			namespace {
+				constexpr char to_lower( char c ) noexcept {
+					return c | ' ';
+				}
+
+				template<typename Result = uint8_t>
+				constexpr Result to_digit( char c ) noexcept {
+					return static_cast<Result>( c - '0' );
+				}
+
+				template<typename Result>
+				constexpr Result pow10( size_t count ) noexcept {
+					uintmax_t result = 1;
+					while( count-- > 0 ) {
+						result *= 10ULL;
+					}
+					return static_cast<Result>( result );
+				}
+
+				template<size_t N>
+				constexpr uintmax_t parse_known_number( std::string_view sv ) noexcept {
+					// sv.size( ) == N
+					uintmax_t results[N]{};
+					uintmax_t result = 0;
+					daw::algorithm::do_n_arg<N>( [&]( size_t pos ) {
+						results[pos] =
+						  to_digit<uintmax_t>( sv[pos] ) * pow10<uintmax_t>( N - pos - 1 );
+					} );
+					daw::algorithm::do_n_arg<N>(
+					  [&]( size_t pos ) { result += results[pos]; } );
+					return result;
+				}
+
+				template<size_t... Sizes>
+				constexpr uintmax_t parse_number_impl( std::string_view sv,
+				                                       std::index_sequence<Sizes...> ) {
+					uintmax_t result = 0;
+					auto const size = sv.size( );
+					bool const found =
+					  ( ( ( size == Sizes ) and
+					      ( ( result = parse_known_number<Sizes>( sv ) ), true ) ) or
+					    ... );
+					if( !found ) {
+						std::terminate( );
+					}
+					return result;
+				}
+
+				template<typename Result = uintmax_t>
+				constexpr Result parse_number( daw::string_view sv ) noexcept {
+					static_assert( std::is_arithmetic_v<Result> );
+					return static_cast<Result>( parse_number_impl(
+					  sv, std::make_index_sequence<
+					        std::numeric_limits<Result>::digits10>{} ) );
+				}
+
+				template<typename Result = intmax_t>
+				constexpr Result parse_signed( daw::string_view sv ) noexcept {
+					if( sv.empty( ) ) {
+						return static_cast<Result>( 0 );
+					}
+					if( sv.front( ) == '-' ) {
+						sv.remove_prefix( );
+						return -parse_number<Result>( sv );
+					}
+					return parse_number<Result>( sv );
+				}
+
+				template<typename Result>
+				constexpr Result parse_real( daw::string_view sv ) noexcept {
+					double const neg = sv.front( ) == '-' ? -1.0 : 1.0;
+					if( neg > 0.0 ) {
+						sv.remove_prefix( );
+					}
+					auto const int_part =
+					  parse_number<double>( sv.pop_front( sv.find_first_of( ".eE" ) ) );
+					sv.remove_prefix( );
+					auto const fract_str = sv.pop_front( sv.find_first_of( "eE" ) );
+					auto const fract_part = parse_number<double>( fract_str );
+					bool const exp_neg = !sv.empty( ) and to_lower( sv.front( ) ) == '-';
+					if( exp_neg ) {
+						sv.remove_prefix( );
+					}
+					auto const exp_part = parse_number( sv );
+					if( exp_neg ) {
+						return static_cast<Result>(
+						  neg * ( ( int_part / pow10<double>( exp_part ) ) +
+						          ( fract_part /
+						            pow10<double>( exp_part + fract_str.size( ) ) ) ) );
+					}
+					auto const exp_total = static_cast<intmax_t>( exp_part ) -
+					                       static_cast<intmax_t>( fract_str.size( ) );
+					if( exp_total >= 0 ) {
+						return static_cast<Result>(
+						  neg * ( ( int_part * pow10<double>( exp_part ) ) +
+						          ( fract_part * pow10<double>( exp_total ) ) ) );
+					}
+					return static_cast<Result>(
+					  neg * ( ( int_part * pow10<double>( exp_part ) ) +
+					          ( fract_part / pow10<double>( -exp_total ) ) ) );
+				}
+
 				template<typename T>
 				struct nullable_type {
 					using type = T;
@@ -63,17 +164,14 @@ namespace daw {
 				template<typename T>
 				using nullable_type_t = typename nullable_type<T>::type;
 
-				constexpr char to_lower( char c ) noexcept {
-					return c | ' ';
-				}
-
 				enum class JsonParseTypes : uint_fast8_t {
 					Number,
 					Bool,
 					String,
 					Date,
 					Class,
-					Array
+					Array,
+					Null
 				};
 
 				template<typename T>
@@ -142,17 +240,24 @@ namespace daw {
 				}
 
 				constexpr daw::string_view skip_string( daw::string_view &sv ) {
-					size_t pos = 0;
-					bool found = false;
 					auto result = daw::string_view{};
-					while( pos != daw::string_view::npos and !found ) {
+					if( sv.empty( ) ) {
+						return {};
+					}
+					if( sv.front( ) == '"' ) {
+						sv.remove_prefix( );
+					}
+					auto pos = sv.find_first_of( "\"" );
+					exception::precondition_check( pos != daw::string_view::npos,
+					                               "Invalid class" );
+					while( pos != daw::string_view::npos ) {
+						if( pos == 0 or
+						    ( pos != daw::string_view::npos and sv[pos - 1] != '\\' ) ) {
+							result = sv.pop_front( pos );
+							break;
+						}
 						++pos;
 						pos = sv.find_first_of( "\"", pos );
-						if( pos != daw::string_view::npos and sv[pos - 1] != '\\' ) {
-							result = sv.pop_front( pos );
-							found = true;
-							continue;
-						}
 					}
 					exception::precondition_check( pos != daw::string_view::npos,
 					                               "Invalid class" );
@@ -228,7 +333,19 @@ namespace daw {
 					return skip_bracketed_item<'[', ']'>( sv );
 				}
 
-				constexpr daw::string_view skip_value( daw::string_view &sv ) {
+				struct skip_value_result_t {
+					daw::string_view sv;
+					bool is_null = false;
+
+					constexpr skip_value_result_t( daw::string_view s ) noexcept
+					  : sv( s ) {}
+
+					constexpr skip_value_result_t( daw::string_view s, bool n ) noexcept
+					  : sv( s )
+					  , is_null( n ) {}
+				};
+
+				constexpr skip_value_result_t skip_value( daw::string_view &sv ) {
 					sv = parser::trim_left( sv );
 					daw::exception::precondition_check( !sv.empty( ) );
 					switch( sv.front( ) ) {
@@ -239,10 +356,11 @@ namespace daw {
 					case '{':
 						return skip_class( sv );
 					default:
-						return skip_other( sv );
+						return {skip_other( sv ), to_lower( sv.front( ) ) == 'n'};
 					}
 				}
 
+				template<JsonParseTypes>
 				struct missing_nonnullable_value_expection {};
 
 				template<typename ParseInfo>
@@ -251,18 +369,23 @@ namespace daw {
 					using constructor_t = typename ParseInfo::constructor_t;
 					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
 
-					if( pos.value_str.empty( ) or
-					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+					if( pos.value_str.empty( )) {
 						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						  missing_nonnullable_value_expection<JsonParseTypes::Number>>(
+						  ParseInfo::nullable );
 						return constructor_t{}( );
 					}
+					if( pos.value_str.front( ) == '"' ) {
+						// Number as string
+						pos.value_str.remove_prefix( );
+						if( !pos.value_str.empty( ) and pos.value_str.back( ) == '"' ) {
+							pos.value_str.remove_suffix( );
+						}
+					}
 					if constexpr( is_floating_point_v<element_t> ) {
-						return constructor_t{}( static_cast<element_t>(
-						  std::strtod( pos.value_str.data( ), nullptr ) ) );
+						return constructor_t{}( parse_real<element_t>( pos.value_str ) );
 					} else {
-						return constructor_t{}( static_cast<element_t>(
-						  parser::parse_int<int64_t>( pos.value_str ) ) );
+						return constructor_t{}( parse_signed<element_t>( pos.value_str ) );
 					}
 				}
 
@@ -270,10 +393,10 @@ namespace daw {
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 				                            value_pos pos ) {
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) or
-					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+					if( pos.value_str.empty( ) ) {
 						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						  missing_nonnullable_value_expection<JsonParseTypes::Bool>>(
+						  ParseInfo::nullable );
 						return constructor_t{}( );
 					}
 					return constructor_t{}( to_lower( pos.value_str.front( ) ) == 't' );
@@ -284,12 +407,6 @@ namespace daw {
 				                            value_pos pos ) {
 
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) or
-					    to_lower( pos.value_str.front( ) ) == 'n' ) {
-						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection>( ParseInfo::nullable );
-						return constructor_t{}( );
-					}
 					return constructor_t{}( pos.value_str.data( ),
 					                        pos.value_str.size( ) );
 				}
@@ -299,10 +416,10 @@ namespace daw {
 				                            value_pos pos ) {
 
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) or
-					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+					if( pos.value_str.empty( ) ) {
 						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						  missing_nonnullable_value_expection<JsonParseTypes::Date>>(
+						  ParseInfo::nullable );
 						return constructor_t{}( );
 					}
 					return constructor_t{}( pos.value_str.data( ),
@@ -315,10 +432,10 @@ namespace daw {
 
 					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) or
-					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+					if( pos.value_str.empty( ) ) {
 						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						  missing_nonnullable_value_expection<JsonParseTypes::Class>>(
+						  ParseInfo::nullable );
 						return constructor_t{}( );
 					}
 					return from_json<element_t>( pos.value_str );
@@ -329,10 +446,10 @@ namespace daw {
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
 				                            value_pos pos ) {
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) or
-					    to_lower( pos.value_str.front( ) ) == 'n' ) {
+					if( pos.value_str.empty( ) ) {
 						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection>( ParseInfo::nullable );
+						  missing_nonnullable_value_expection<JsonParseTypes::Array>>(
+						  ParseInfo::nullable );
 						return constructor_t{}( );
 					}
 					daw::exception::precondition_check<invalid_array>(
@@ -344,7 +461,7 @@ namespace daw {
 					auto result = typename ParseInfo::constructor_t{}( );
 					auto add_value = typename ParseInfo::appender_t( result );
 					while( !pos.value_str.empty( ) and pos.value_str.front( ) != ']' ) {
-						auto val_str = skip_value( pos.value_str );
+						auto val_str = skip_value( pos.value_str ).sv;
 						add_value( parse_value<element_t>(
 						  ParseTag<element_t::expected_type>{},
 						  value_pos( element_t::nullable, val_str ) ) );
@@ -429,7 +546,13 @@ namespace daw {
 						continue;
 					}
 					size_t const pos = find_name( name );
-					result[pos].value_str = impl::skip_value( sv );
+					auto v = impl::skip_value( sv );
+					daw::exception::precondition_check<
+					  impl::missing_nonnullable_value_expection<
+					    impl::JsonParseTypes::Null>>(
+					  static_cast<bool>( result[pos].is_nullable or !v.is_null ) );
+
+					result[pos].value_str = v.sv;
 					sv = parser::trim_left( sv );
 				}
 				return result;
@@ -578,7 +701,7 @@ namespace daw {
 				if( m_state.empty( ) ) {
 					return;
 				}
-				m_cur_value = impl::skip_value( m_state );
+				m_cur_value = impl::skip_value( m_state ).sv;
 				m_state = daw::parser::trim_left( m_state );
 			}
 
@@ -596,7 +719,7 @@ namespace daw {
 					m_cur_value = daw::string_view{};
 					return *this;
 				}
-				m_cur_value = impl::skip_value( m_state );
+				m_cur_value = impl::skip_value( m_state ).sv;
 				m_state = daw::parser::trim_left( m_state );
 				return *this;
 			}
@@ -630,7 +753,6 @@ namespace daw {
 		constexpr auto from_json_array( daw::string_view json_data ) {
 			using parser_t =
 			  json_array<"", Container, JsonElement, false, Constructor, Appender>;
-			std::declval<int>( );
 			return impl::parse_value<parser_t>(
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
 			  impl::value_pos( false, json_data ) );

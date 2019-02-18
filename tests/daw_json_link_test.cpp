@@ -26,20 +26,30 @@
 #include <optional>
 #include <vector>
 
+#include <daw/daw_bounded_vector.h>
+
 #include "daw/json/daw_json_link.h"
+
+/*
+static_assert( daw::json::impl::parse_real( "5" ) == 5.0 );
+static_assert( daw::json::impl::parse_real( "5.5" ) == 5.5 );
+static_assert( daw::json::impl::parse_real( "5.5e2" ) == 550.0 );
+*/
 
 struct test_001_t {
 	int i = 0;
 	double d = 0.0;
 	bool b = false;
 	daw::string_view s{};
-	std::vector<int> y{};
+	daw::bounded_vector_t<int, 10> y{};
 	std::optional<int> o{};
 	std::optional<int> o2{};
 
-	test_001_t( int Int, double Double, bool Bool, daw::string_view S,
-	            std::vector<int> Y, std::optional<int> O,
-	            std::optional<int> O2 ) noexcept
+	constexpr test_001_t( ) noexcept = default;
+
+	constexpr test_001_t( int Int, double Double, bool Bool, daw::string_view S,
+	                      daw::bounded_vector_t<int, 10> Y, std::optional<int> O,
+	                      std::optional<int> O2 ) noexcept
 	  : i( Int )
 	  , d( Double )
 	  , b( Bool )
@@ -49,13 +59,14 @@ struct test_001_t {
 	  , o2( O2 ) {}
 };
 
-auto describe_json_class( test_001_t ) noexcept {
+constexpr auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
-	return json_parser_t<json_number<"i", int>, json_number<"d">, json_bool<"b">,
-	                     json_string<"s", daw::string_view>,
-	                     json_array<"y", std::vector<int>, json_number<"", int>>,
-	                     json_number<"o", std::optional<int>, true>,
-	                     json_number<"o2", std::optional<int>, true>>{};
+	return json_parser_t<
+	  json_number<"i", int>, json_number<"d">, json_bool<"b">,
+	  json_string<"s", daw::string_view>,
+	  json_array<"y", daw::bounded_vector_t<int, 10>, json_number<"", int>>,
+	  json_number<"o", std::optional<int>, true>,
+	  json_number<"o2", std::optional<int>, true>>{};
 }
 
 constexpr auto const json_data =
@@ -71,8 +82,62 @@ constexpr auto const json_data =
 			"o": 1344
 	  })";
 
+constexpr auto const json_data_array =
+  R"([
+			{
+	    "i": 55,
+	    "d": 2.2,
+			"b": true,
+			"x": { "b": false, "c": [1,2,3] },
+			"y": [1,2,3,4],
+			"z": { "a": 1 },
+	    "tp": "2018-06-22T15:05:37Z",
+			"s": "yo yo yo",
+			"o": 1344
+	  },
+	  {
+	    "i": 55,
+	    "d": 2.2,
+			"b": true,
+			"x": { "b": false, "c": [1,2,3] },
+			"y": [1,2,3,4],
+			"z": { "a": 1 },
+	    "tp": "2018-06-22T15:05:37Z",
+			"s": "yo yo yo",
+			"o": 1344
+	  },{
+	    "i": 55,
+	    "d": 2.2,
+			"b": true,
+			"x": { "b": false, "c": [1,2,3] },
+			"y": [1,2,3,4],
+			"z": { "a": 1 },
+	    "tp": "2018-06-22T15:05:37Z",
+			"s": "yo yo yo",
+			"o": 1344
+	  },{
+	    "i": 55,
+	    "d": 2.2,
+			"b": true,
+			"x": { "b": false, "c": [1,2,3] },
+			"y": [1,2,3,4],
+			"z": { "a": 1 },
+	    "tp": "2018-06-22T15:05:37Z",
+			"s": "yo yo yo",
+			"o": 1344
+	  },{
+	    "i": 55,
+	    "d": 2.2,
+			"b": true,
+			"x": { "b": false, "c": [1,2,3] },
+			"y": [1,2,3,4],
+			"z": { "a": 1 },
+	    "tp": "2018-06-22T15:05:37Z",
+			"s": "yo yo yo",
+			"o": 1344
+	  }])";
 int main( ) {
-	auto data = daw::json::from_json<test_001_t>( json_data );
+	constexpr auto data = daw::json::from_json<test_001_t>( json_data );
 	std::clog << "result: i->" << data.i << '\n';
 	std::clog << "result: d->" << data.d << '\n';
 	std::clog << "result: b->" << data.b << '\n';
@@ -94,4 +159,10 @@ int main( ) {
 	} else {
 		std::clog << *data.o2 << '\n';
 	}
+
+	constexpr auto ary =
+	  daw::json::from_json_array<daw::json::json_class<"", test_001_t>,
+	                             daw::bounded_vector_t<test_001_t, 10>>(
+	    json_data_array );
+	std::cout << "read in " << ary.size( ) << " items\n";
 }
