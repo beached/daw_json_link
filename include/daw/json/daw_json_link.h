@@ -62,6 +62,15 @@ namespace daw {
 #endif
 		namespace impl {
 			namespace {
+				template<typename Container, typename OutputIterator>
+				constexpr OutputIterator copy_to_iterator( Container &&c,
+				                                           OutputIterator it ) {
+					for( auto const &value : c ) {
+						*it++ = value;
+					}
+					return it;
+				}
+
 				constexpr char to_lower( char c ) noexcept {
 					return c | ' ';
 				}
@@ -516,38 +525,39 @@ namespace daw {
 				return construct_a<Result>{}( parse_item<Is>( locations )... );
 			}
 
-			template<typename JsonMember, size_t pos, typename Result,
+			template<typename JsonMember, size_t pos, typename OutputIterator,
 			         typename... Args>
-			static constexpr void make_json_string( Result &result,
+			static constexpr void make_json_string( OutputIterator it,
 			                                        std::tuple<Args...> &args ) {
 
-				JsonMember::to_string( result, std::get<pos>( args ) );
+				JsonMember::to_string( it, std::get<pos>( args ) );
 				if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
-					result += ',';
+					*it++ = ',';
 				}
 			}
 
-			template<typename Result, size_t... Is, typename... Args>
-			static constexpr Result
-			serialize_json_class( std::index_sequence<Is...>,
+			template<typename OutputIterator, size_t... Is, typename... Args>
+			static constexpr OutputIterator
+			serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
 			                      std::tuple<Args...> &&args ) {
-				auto result = Result{};
-				result += '{';
+
+				*it++ = '{';
 				(void)( ( make_json_string<daw::traits::nth_element<Is, JsonMembers...>,
-				                           Is>( result, args ),
+				                           Is>( it, args ),
 				          0 ) +
 				        ... );
-				result += '}';
-				return result;
+				*it++ = '}';
+				return it;
 			}
 
 		public:
-			template<typename Result = std::string, typename... Args>
-			static constexpr Result serialize( std::tuple<Args...> &&args ) {
+			template<typename OutputIterator, typename... Args>
+			static constexpr OutputIterator serialize( OutputIterator it,
+			                                           std::tuple<Args...> &&args ) {
 				static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 				               "Argument count is incorrect" );
-				return serialize_json_class<Result>(
-				  std::index_sequence_for<JsonMembers...>{}, std::move( args ) );
+				return serialize_json_class(
+				  it, std::index_sequence_for<JsonMembers...>{}, std::move( args ) );
 			}
 
 			template<typename Result>
@@ -574,11 +584,11 @@ namespace daw {
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = true;
 
-			template<typename Result>
-			static constexpr void to_string( Result &result,
-			                                 parse_to_t const &value ) {
+			template<typename OutputIterator>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           parse_to_t const &value ) {
 				using std::to_string;
-				result += to_string( value );
+				return impl::copy_to_iterator( to_string( value ), it );
 			}
 		};
 
@@ -596,14 +606,13 @@ namespace daw {
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = true;
 
-			template<typename Result>
-			static constexpr void to_string( Result &result,
-			                                 parse_to_t const &value ) {
+			template<typename OutputIterator>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           parse_to_t const &value ) {
 				if( value ) {
-					result += "true";
-				} else {
-					result += "false";
+					return impl::copy_to_iterator( daw::string_view( "true" ), it );
 				}
+				return impl::copy_to_iterator( daw::string_view( "false" ), it );
 			}
 		};
 
@@ -619,12 +628,13 @@ namespace daw {
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = false;
 
-			template<typename Result>
-			static constexpr void to_string( Result &result,
-			                                 parse_to_t const &value ) {
-				result += "\"";
-				result += value;
-				result += "\"";
+			template<typename OutputIterator>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           parse_to_t const &value ) {
+				*it++ = '"';
+				it = impl::copy_to_iterator( value, it );
+				*it++ = '"';
+				return it;
 			}
 		};
 
@@ -641,13 +651,14 @@ namespace daw {
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = true;
 
-			template<typename Result>
-			static constexpr void to_string( Result &result,
-			                                 parse_to_t const &value ) {
+			template<typename OutputIterator>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           parse_to_t const &value ) {
+				*it++ = ',';
 				using std::to_string;
-				result += "\"";
-				result += to_string( value );
-				result += "\"";
+				it = impl::copy_to_iterator( to_string( value ), it );
+				*it++ = ',';
+				return it;	
 			}
 		};
 
@@ -663,11 +674,12 @@ namespace daw {
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = true;
 
-			template<typename Result>
-			static constexpr void to_string( Result &result,
-			                                 parse_to_t const &value ) {
+			template<typename OutputIterator>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           parse_to_t const &value ) {
 
-				result += to_json( value );
+				return impl::json_parser_description_t<parse_to_t>::template serialize(
+				  it, to_json_data( std::forward<parse_to_t>( value ) ) );
 			}
 		};
 
@@ -685,6 +697,25 @@ namespace daw {
 			using appender_t = Appender;
 			using json_element_t = JsonElement;
 			static constexpr bool empty_is_null = true;
+
+			template<typename OutputIterator>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           parse_to_t const &container ) {
+				*it++ = '[';
+				using std::empty;
+				using std::size;
+				if( !empty( container ) ) {
+					auto count = size( container ) - 1;
+					for( auto const &v : container ) {
+						it = JsonElement::to_string( it, v );
+						if( count-- > 0 ) {
+							*it++ = ',';
+						}
+					}
+				}
+				*it++ = ']';
+				return it;
+			}
 		};
 
 		template<typename T>
@@ -702,8 +733,11 @@ namespace daw {
 			  impl::has_json_parser_description_v<T>,
 			  "A function call describe_json_class must exist for type." );
 
-			return impl::json_parser_description_t<T>::template serialize(
+			Result result{};
+			impl::json_parser_description_t<T>::template serialize(
+			  daw::back_inserter( result ),
 			  to_json_data( std::forward<T>( value ) ) );
+			return result;
 		}
 
 		template<typename JsonElement>
@@ -794,9 +828,9 @@ namespace daw {
 		}
 
 		template<typename Result = std::string, typename Container>
-		constexpr Result to_json_array( Container && c ) {
+		constexpr Result to_json_array( Container &&c ) {
 			Result result = "[";
-			for( auto const & v: c ) {
+			for( auto const &v : c ) {
 				result += to_json( v );
 				result += ',';
 			}
