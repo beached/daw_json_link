@@ -65,8 +65,8 @@ constexpr auto describe_json_class( test_001_t ) noexcept {
 	  json_number<"i", int>, json_number<"d">, json_bool<"b">,
 	  json_string<"s", daw::string_view>,
 	  json_array<"y", daw::bounded_vector_t<int, 10>, json_number<"", int>>,
-	  json_number<"o", std::optional<int>, true>,
-	  json_number<"o2", std::optional<int>, true>>{};
+	  json_number<"o", std::optional<int>, NullValueOpt::allowed>,
+	  json_number<"o2", std::optional<int>, NullValueOpt::allowed>>{};
 }
 
 constexpr auto const json_data =
@@ -136,6 +136,7 @@ constexpr auto const json_data_array =
 			"s": "yo yo yo",
 			"o": 1344
 	  }])";
+
 int main( ) {
 	constexpr auto data = daw::json::from_json<test_001_t>( json_data );
 	std::clog << "result: i->" << data.i << '\n';
