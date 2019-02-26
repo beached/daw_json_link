@@ -191,5 +191,6 @@ int main( ) {
 	std::cout << to_json_array( ary ) << "\n\n";
 
 	test_002_t t2{ data };
+	t2.a.o2 = std::nullopt;
 	std::cout  << to_json( t2 ) << '\n';
 }
