@@ -36,13 +36,13 @@ struct Number {
 #ifdef USECPP20
 auto describe_json_class( Number ) noexcept {
 	using namespace daw::json;
-	return json_parser_t<json_number<"a", intmax_t>>{};
+	return class_description_t<json_number<"a", intmax_t>>{};
 }
 #else
 auto describe_json_class( Number ) noexcept {
 	using namespace daw::json;
 	static constexpr char const a[] = "a";
-	return json_parser_t<json_number<a, intmax_t>>{};
+	return class_description_t<json_number<a, intmax_t>>{};
 }
 #endif
 

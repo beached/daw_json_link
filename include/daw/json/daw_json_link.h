@@ -418,7 +418,7 @@ namespace daw {
 		}   // namespace impl
 
 		template<typename... JsonMembers>
-		class json_parser_t {
+		class class_description_t {
 			static constexpr size_t find_string_capacity( ) noexcept {
 				return ( json_name_len( JsonMembers::name ) + ... );
 			}
@@ -516,7 +516,40 @@ namespace daw {
 				return construct_a<Result>{}( parse_item<Is>( locations )... );
 			}
 
+			template<typename JsonMember, size_t pos, typename Result,
+			         typename... Args>
+			static constexpr void make_json_string( Result &result,
+			                                        std::tuple<Args...> &args ) {
+
+				JsonMember::to_string( result, std::get<pos>( args ) );
+				if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
+					result += ',';
+				}
+			}
+
+			template<typename Result, size_t... Is, typename... Args>
+			static constexpr Result
+			serialize_json_class( std::index_sequence<Is...>,
+			                      std::tuple<Args...> &&args ) {
+				auto result = Result{};
+				result += '{';
+				(void)( ( make_json_string<daw::traits::nth_element<Is, JsonMembers...>,
+				                           Is>( result, args ),
+				          0 ) +
+				        ... );
+				result += '}';
+				return result;
+			}
+
 		public:
+			template<typename Result = std::string, typename... Args>
+			static constexpr Result serialize( std::tuple<Args...> &&args ) {
+				static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
+				               "Argument count is incorrect" );
+				return serialize_json_class<Result>(
+				  std::index_sequence_for<JsonMembers...>{}, std::move( args ) );
+			}
+
 			template<typename Result>
 			static constexpr decltype( auto ) parse( daw::string_view sv ) {
 				return parse_json_class<Result>(
@@ -540,6 +573,13 @@ namespace daw {
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = true;
+
+			template<typename Result>
+			static constexpr void to_string( Result &result,
+			                                 parse_to_t const &value ) {
+				using std::to_string;
+				result += to_string( value );
+			}
 		};
 
 		template<JSONNAMETYPE Name, typename T = bool,
@@ -555,6 +595,16 @@ namespace daw {
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = true;
+
+			template<typename Result>
+			static constexpr void to_string( Result &result,
+			                                 parse_to_t const &value ) {
+				if( value ) {
+					result += "true";
+				} else {
+					result += "false";
+				}
+			}
 		};
 
 		template<JSONNAMETYPE Name, typename T = std::string,
@@ -568,6 +618,14 @@ namespace daw {
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = false;
+
+			template<typename Result>
+			static constexpr void to_string( Result &result,
+			                                 parse_to_t const &value ) {
+				result += "\"";
+				result += value;
+				result += "\"";
+			}
 		};
 
 		template<JSONNAMETYPE Name,
@@ -582,6 +640,15 @@ namespace daw {
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = true;
+
+			template<typename Result>
+			static constexpr void to_string( Result &result,
+			                                 parse_to_t const &value ) {
+				using std::to_string;
+				result += "\"";
+				result += to_string( value );
+				result += "\"";
+			}
 		};
 
 		template<JSONNAMETYPE Name, typename T,
@@ -595,6 +662,13 @@ namespace daw {
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = true;
+
+			template<typename Result>
+			static constexpr void to_string( Result &result,
+			                                 parse_to_t const &value ) {
+
+				result += to_json( value );
+			}
 		};
 
 		template<JSONNAMETYPE Name, typename Container, typename JsonElement,
@@ -620,6 +694,16 @@ namespace daw {
 			  "A function call describe_json_class must exist for type." );
 
 			return impl::json_parser_description_t<T>::template parse<T>( json_data );
+		}
+
+		template<typename Result = std::string, typename T>
+		constexpr Result to_json( T &&value ) {
+			static_assert(
+			  impl::has_json_parser_description_v<T>,
+			  "A function call describe_json_class must exist for type." );
+
+			return impl::json_parser_description_t<T>::template serialize(
+			  to_json_data( std::forward<T>( value ) ) );
 		}
 
 		template<typename JsonElement>
@@ -708,5 +792,8 @@ namespace daw {
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
 			  impl::value_pos( false, false, json_data ) );
 		}
+
+		// Serialization
+
 	} // namespace json
 } // namespace daw

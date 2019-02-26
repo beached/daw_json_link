@@ -31,7 +31,7 @@ struct TestClass {
 
 auto describe_json_class( TestClass ) {
 	using namespace daw::json;
-	return json_parser_t<
+	return class_description_t<
 		json_number<"i", int>,
 		json_number<"d">,
 		json_bool<"b">,
@@ -57,7 +57,7 @@ struct AggClass {
 };
 auto describe_json_class( AggClass ) {
 	using namespace daw::json;
-	return json_parser_t<
+	return class_description_t<
 		json_number<"a", int>,
 		json_number<"b">
 	>{};
@@ -76,7 +76,7 @@ struct AggClass {
 };
 auto describe_json_class( AggClass ) {
 	using namespace daw::json;
-	return json_parser_t<
+	return class_description_t<
 		json_number<"a", int>,
 		json_number<"b">
 	>{};
