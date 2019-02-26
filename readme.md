@@ -117,6 +117,10 @@ auto to_json_data( AggClass const & ) {
 }
 //...
 AggData value = //...;
-auto json_data = to_json<Aggdata>( value );
+auto json_data = to_json( value );
+
+// or
+std::vector<AggData> values = //...;
+auto json_array_data = to_json_array( values );
 ```
 	
