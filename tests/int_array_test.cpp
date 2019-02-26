@@ -39,24 +39,13 @@ auto describe_json_class( Number ) noexcept {
 	return json_parser_t<json_number<"a", intmax_t>>{};
 }
 
-struct Numbers {
-	std::vector<Number> a{};
-};
-/*
-auto describe_json_class( Numbers ) noexcept {
-  using namespace daw::json;
-  return json_parser_t<
-    json_array<"a", std::vector<Number>, json_class<"", Number>>>{};
-}
- */
-
 int main( ) {
 	using namespace daw::json;
 	constexpr size_t const NUMVALUES = 1'000'000;
 	std::string const json_data = [] {
-		std::string result = "{\"a\":[";
+		std::string result = "[";
 
-		result.reserve( NUMVALUES*( 23 ) + 8 );
+		result.reserve( NUMVALUES * ( 23 ) + 8 );
 		daw::algorithm::do_n( NUMVALUES, [&result] {
 			result += "{\"a\":" +
 			          std::to_string( daw::randint<intmax_t>(
@@ -65,27 +54,21 @@ int main( ) {
 			          "},";
 		} );
 		result.back( ) = ']';
-		result += "}";
 		return result;
 	}( );
 	auto json_sv = daw::string_view( json_data );
-	/*
-	  auto const count =
-	    *daw::bench_n_test<4>( "int parsing 1", []( auto &&sv ) noexcept {
-	      auto const data = from_json_array<json_class<"", Numbers>>( sv );
-	      return data.size( );
-	    },
-	                           json_sv );
+	auto const count =
+	  *daw::bench_n_test<4>( "int parsing 1", []( auto &&sv ) noexcept {
+		  auto const data = from_json_array<json_class<"", Number>>( sv );
+		  return data.size( );
+	  },
+	                         json_sv );
 
-	  std::cout << "element count: " << count << '\n';
-	 */
+	std::cout << "element count: " << count << '\n';
 
 	using iterator_t = daw::json::json_array_iterator<json_class<"", Number>>;
 
 	auto data = std::vector<Number>( );
-
-	json_sv.remove_prefix( 5ULL );
-	json_sv.remove_suffix( );
 
 	auto const count2 = *daw::bench_n_test<4>(
 	  "int parsing 2",
