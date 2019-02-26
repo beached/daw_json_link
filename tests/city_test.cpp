@@ -35,44 +35,10 @@ struct City {
 	float lng;
 };
 
-std::string to_json_string( daw::string_view v ) {
-	std::string result = "\"" + v.to_string( ) + "\"";
-	return result;
-}
-
-std::string to_json_string( double d ) {
-	return std::to_string( d );
-}
-
-std::string to_json_string( float f ) {
-	return std::to_string( f );
-}
-
-template<typename T>
-std::string to_json_value_string( daw::string_view name, T &&v,
-                                  bool last = false ) {
-	std::string result =
-	  "\"" + name.to_string( ) + "\": " + to_json_string( std::forward<T>( v ) );
-	if( !last ) {
-		result += ',';
-	}
-	return result;
-}
-
-std::string to_string( City const &c ) {
-	std::string result = "{";
-	result += to_json_value_string( "country", c.country );
-	result += to_json_value_string( "name", c.name );
-	result += to_json_value_string( "latitude", c.lat );
-	result += to_json_value_string( "longitude", c.lng, true );
-	result += "}";
-	return result;
-}
-
 auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 #ifdef USECPP20
-	return json_parser_t<json_string<"country", daw::string_view>,
+	return class_description_t<json_string<"country", daw::string_view>,
 	                     json_string<"name", daw::string_view>,
 	                     json_number<"lat", float, NullValueOpt::never>,
 	                     json_number<"lng", float, NullValueOpt::never>>{};
@@ -81,12 +47,17 @@ auto describe_json_class( City ) noexcept {
 	static constexpr char names1[] = "name";
 	static constexpr char names2[] = "lat";
 	static constexpr char names3[] = "lng";
-	return json_parser_t<json_string<names0, daw::string_view>,
+	return class_description_t<json_string<names0, daw::string_view>,
 	                     json_string<names1, daw::string_view>,
 	                     json_number<names2, float, NullValueOpt::never>,
 	                     json_number<names3, float, NullValueOpt::never>>{};
 #endif
 }
+// Order of values must match order specified in class_description
+auto to_json_data( City const & c ) {
+	return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
+}
+
 int main( int argc, char **argv ) {
 	using namespace daw::json;
 	if( argc < 2 ) {
@@ -105,7 +76,7 @@ int main( int argc, char **argv ) {
 	auto json_sv = daw::string_view( json_data );
 	std::cout << "File size(B): " << json_data.size( ) << " "
 	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
-
+/*
 	auto count = *daw::bench_n_test<4>(
 	  "cities parsing 1",
 	  []( auto &&sv ) {
@@ -116,9 +87,9 @@ int main( int argc, char **argv ) {
 	  json_sv );
 
 	std::cout << "element count: " << count << '\n';
-
+*/
 	using iterator_t = daw::json::json_array_iterator<json_class<no_name, City>>;
-
+/*
 	auto data = std::vector<City>( );
 
 	auto count2 = *daw::bench_n_test<4>(
@@ -140,6 +111,7 @@ int main( int argc, char **argv ) {
 	                         json_sv );
 
 	std::cout << "element count 3: " << count3 << '\n';
+*/
 	auto has_toronto = *daw::bench_n_test<4>(
 	  "Find Toronto",
 	  []( auto &&sv ) -> std::optional<City> {
@@ -152,9 +124,8 @@ int main( int argc, char **argv ) {
 		  return std::nullopt;
 	  },
 	  json_sv );
-
-	std::cout << "Chitungwiza was " << ( has_toronto ? "" : "not" )
-	          << " found at " << to_string( *has_toronto ) << '\n';
+	std::cout << "Toronto was " << ( has_toronto ? "" : "not" )
+	          << " found at " << to_json( *has_toronto ) << '\n';
 	auto has_chitungwiza = *daw::bench_n_test<4>(
 	  "Find Chitungwiza(last item)",
 	  []( auto &&sv ) -> std::optional<City> {
@@ -170,5 +141,5 @@ int main( int argc, char **argv ) {
 	  json_sv );
 
 	std::cout << "Chitungwiza was " << ( has_chitungwiza ? "" : "not" )
-	          << " found at " << to_string( *has_chitungwiza ) << '\n';
+	          << " found at " << to_json( *has_chitungwiza ) << '\n';
 }

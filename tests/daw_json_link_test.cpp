@@ -88,7 +88,7 @@ std::string to_string( test_001_t const &data ) {
 #ifdef USECPP20
 auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
-	return json_parser_t<
+	return class_description_t<
 	  json_number<"i", int>, json_number<"d">, json_bool<"b">,
 	  json_string<"s", daw::string_view>,
 	  json_array<"y", daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
@@ -105,7 +105,7 @@ auto describe_json_class( test_001_t ) noexcept {
 	constexpr static char const y[] = "y";
 	constexpr static char const o[] = "o";
 	constexpr static char const o2[] = "o2";
-	return json_parser_t<
+	return class_description_t<
 	  json_number<i, int>, json_number<d>, json_bool<b>,
 	  json_string<s, daw::string_view>,
 	  json_array<y, daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
