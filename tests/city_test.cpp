@@ -72,6 +72,7 @@ int main( int argc, char **argv ) {
 	                              std::istream_iterator<char>( ) );
 	in_file.close( );
 	auto json_sv = daw::string_view( json_data );
+	std::cout << "File size(B): " << json_data.size( ) << " " << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
 
 	auto count = *daw::bench_n_test<4>(
 	  "cities parsing 1",
@@ -92,6 +93,15 @@ int main( int argc, char **argv ) {
 	  [&]( auto &&sv ) {
 		  data.clear( );
 		  std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
+			std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
+			std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
+			std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
+			std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
+			std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
+			std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
+			std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
+			std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
+			std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
 		  return data.size( );
 	  },
 	  json_sv );

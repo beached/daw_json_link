@@ -64,6 +64,7 @@ int main( ) {
 		return result;
 	}( );
 	auto json_sv = daw::string_view( json_data );
+	std::cout << "Processing " << json_sv.size( ) << " bytes " << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 	auto const count =
 	  *daw::bench_n_test<4>( "int parsing 1", []( auto &&sv ) noexcept {
 		  auto const data = from_json_array<json_class<no_name, Number>>( sv );
