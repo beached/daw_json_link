@@ -1,4 +1,4 @@
-#set( CMAKE_CXX_STANDARD 20 CACHE STRING "The C++ standard whose features are requested.")
+set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL 'MSVC' )
 	add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 )

@@ -33,11 +33,18 @@
 struct Number {
 	intmax_t a{};
 };
-
+#ifdef USECPP20
 auto describe_json_class( Number ) noexcept {
 	using namespace daw::json;
 	return json_parser_t<json_number<"a", intmax_t>>{};
 }
+#else
+auto describe_json_class( Number ) noexcept {
+	using namespace daw::json;
+	static constexpr char const a[] = "a";
+	return json_parser_t<json_number<a, intmax_t>>{};
+}
+#endif
 
 int main( ) {
 	using namespace daw::json;
@@ -59,14 +66,14 @@ int main( ) {
 	auto json_sv = daw::string_view( json_data );
 	auto const count =
 	  *daw::bench_n_test<4>( "int parsing 1", []( auto &&sv ) noexcept {
-		  auto const data = from_json_array<json_class<"", Number>>( sv );
+		  auto const data = from_json_array<json_class<no_name, Number>>( sv );
 		  return data.size( );
 	  },
 	                         json_sv );
 
 	std::cout << "element count: " << count << '\n';
 
-	using iterator_t = daw::json::json_array_iterator<json_class<"", Number>>;
+	using iterator_t = daw::json::json_array_iterator<json_class<no_name, Number>>;
 
 	auto data = std::vector<Number>( );
 

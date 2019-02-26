@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <array>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
@@ -30,6 +31,7 @@
 #include <string>
 
 #include <daw/daw_algorithm.h>
+#include <daw/daw_array.h>
 #include <daw/daw_bounded_string.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_exception.h>
@@ -42,12 +44,21 @@
 namespace daw {
 	namespace json {
 		enum class NullValueOpt : bool { never, allowed };
-
 		template<typename T>
 		constexpr T from_json( daw::string_view sv );
 
 		namespace impl {
 			namespace {
+#ifdef USECPP20
+				template<typename T>
+				constexpr size_t json_name_len( T &&str ) {
+					return str.extent;
+				}
+#else
+				constexpr size_t json_name_len( char const *str ) {
+					return daw::string_view( str ).size( );
+				}
+#endif
 				constexpr char to_lower( char c ) noexcept {
 					return c | ' ';
 				}
@@ -76,17 +87,17 @@ namespace daw {
 					if( !sv.empty( ) and sv.front( ) == '.' ) {
 						sv.remove_prefix( );
 						auto fract_str = sv.pop_front( sv.find_first_of( "eE" ) );
-						auto const fract_exp = static_cast<intmax_t>( fract_str.size( ) );
+						auto const fract_exp = static_cast<int32_t>( fract_str.size( ) );
 						fract_part = static_cast<double>(
 						  daw::parser::parse_unsigned_int<uint64_t>( fract_str ) );
 						fract_part *= daw::cxmath::dpow10( -fract_exp );
 						fract_part = daw::cxmath::copy_sign( fract_part, whole_part );
 					}
 
-					intmax_t exp_part = 0;
+					int32_t exp_part = 0;
 					if( !sv.empty( ) ) {
 						sv.remove_prefix( );
-						exp_part = daw::parser::parse_int<intmax_t>( sv );
+						exp_part = daw::parser::parse_int<int32_t>( sv );
 					}
 					return ( whole_part + fract_part ) * daw::cxmath::dpow10( exp_part );
 				} // namespace
@@ -410,7 +421,7 @@ namespace daw {
 		template<typename... JsonMembers>
 		class json_parser_t {
 			static constexpr size_t find_string_capacity( ) noexcept {
-				return ( JsonMembers::name.extent + ... );
+				return ( impl::json_name_len( JsonMembers::name ) + ... );
 			}
 			using string_t = basic_bounded_string<char, find_string_capacity( )>;
 
@@ -422,8 +433,7 @@ namespace daw {
 
 			template<size_t... Is>
 			static constexpr auto make_map( std::index_sequence<Is...> ) noexcept {
-
-				return std::array{get_item<Is>( )...};
+				return daw::make_array( get_item<Is>( )... );
 			}
 
 			static constexpr auto name_map =
@@ -460,9 +470,9 @@ namespace daw {
 			}
 
 			static constexpr auto get_locations( daw::string_view &sv ) {
-				std::array result = {
+				auto result = daw::make_array(
 				  impl::value_pos( impl::is_json_nullable_v<JsonMembers>,
-				                   impl::is_json_empty_null_v<JsonMembers> )...};
+				                   impl::is_json_empty_null_v<JsonMembers> )... );
 
 				while( !sv.empty( ) and sv.front( ) != '}' ) {
 					auto name = impl::parse_name( sv );
@@ -515,6 +525,8 @@ namespace daw {
 				  sv, std::index_sequence_for<JsonMembers...>{} );
 			}
 		}; // namespace json
+
+#ifdef USECPP20
 
 		template<basic_bounded_string Name, typename T = double,
 		         NullValueOpt Nullable = NullValueOpt::never,
@@ -604,7 +616,97 @@ namespace daw {
 			using json_element_t = JsonElement;
 			static constexpr bool empty_is_null = true;
 		};
+#else
 
+		template<char const *Name, typename T = double,
+		         NullValueOpt Nullable = NullValueOpt::never,
+		         typename Constructor = daw::construct_a<T>>
+		struct json_number {
+			// TODO maybe convertable or constructible is better
+			static_assert( std::is_arithmetic_v<T> or
+			                 Nullable == NullValueOpt::allowed,
+			               "Number must be an arithmentic type" );
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Number;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
+			// Sometimes numbers are wrapped in strings
+			using parse_to_t = T;
+			using constructor_t = Constructor;
+			static constexpr bool empty_is_null = true;
+		};
+
+		template<char const *Name, typename T = bool,
+		         NullValueOpt Nullable = NullValueOpt::never,
+		         typename Constructor = daw::construct_a<T>>
+		struct json_bool {
+			static_assert( std::is_convertible_v<bool, T>,
+			               "Supplied result type must be convertable from bool" );
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Bool;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
+			using parse_to_t = T;
+			using constructor_t = Constructor;
+			static constexpr bool empty_is_null = true;
+		};
+
+		template<char const *Name, typename T = std::string,
+		         NullValueOpt Nullable = NullValueOpt::never,
+		         typename Constructor = daw::construct_a<T>>
+		struct json_string {
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::String;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
+			using parse_to_t = T;
+			using constructor_t = Constructor;
+			static constexpr bool empty_is_null = false;
+		};
+
+		template<char const *Name,
+		         typename T = std::chrono::system_clock::time_point,
+		         NullValueOpt Nullable = NullValueOpt::never,
+		         typename Constructor = daw::construct_a<T>>
+		struct json_date {
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Date;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
+			using parse_to_t = T;
+			using constructor_t = Constructor;
+			static constexpr bool empty_is_null = true;
+		};
+
+		template<char const *Name, typename T,
+		         NullValueOpt Nullable = NullValueOpt::never,
+		         typename Constructor = daw::construct_a<T>>
+		struct json_class {
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Class;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
+			using parse_to_t = T;
+			using constructor_t = Constructor;
+			static constexpr bool empty_is_null = true;
+		};
+
+		template<char const *Name, typename Container, typename JsonElement,
+		         NullValueOpt Nullable = NullValueOpt::never,
+		         typename Constructor = daw::construct_a<Container>,
+		         typename Appender = impl::basic_appender<Container>>
+		struct json_array {
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Array;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
+			using parse_to_t = Container;
+			using constructor_t = Constructor;
+			using appender_t = Appender;
+			using json_element_t = JsonElement;
+			static constexpr bool empty_is_null = true;
+		};
+#endif
 		template<typename T>
 		constexpr T from_json( daw::string_view json_data ) {
 			static_assert(
@@ -687,12 +789,14 @@ namespace daw {
 			}
 		};
 
+		static inline constexpr char const no_name[] = "";
 		template<typename JsonElement,
 		         typename Container = std::vector<typename JsonElement::parse_to_t>,
 		         typename Constructor = daw::construct_a<Container>,
 		         typename Appender = impl::basic_appender<Container>>
 		constexpr auto from_json_array( daw::string_view json_data ) {
-			using parser_t = json_array<"", Container, JsonElement,
+
+			using parser_t = json_array<no_name, Container, JsonElement,
 			                            NullValueOpt::never, Constructor, Appender>;
 			return impl::parse_value<parser_t>(
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
