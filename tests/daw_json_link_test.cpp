@@ -170,4 +170,7 @@ int main( ) {
 	for( auto const &v : ary ) {
 		std::clog << to_json( v ) << "\n\n";
 	}
+	std::cout << "as array\n";
+
+	std::cout << to_json_array( ary ) << '\n';
 }
