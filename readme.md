@@ -3,7 +3,7 @@
 ## Note: this requires C++20 which isn't released yet and is still early testing.
 ## Note2: Just backported to allow C++17.  Names must be static constexpr string literals with names, instead of bare string literals  e.g.
 ```cpp
-static constexpr name_a = "name_a";
+static constexpr char const name_a[] = "name_a";
 
 ...json_number<name_a>
 ```
