@@ -48,6 +48,7 @@ namespace daw {
 		constexpr T from_json( daw::string_view sv );
 
 #if __cplusplus > 201703L
+		// C++ 20 Non-Type Class Template Arguments
 #define JSONNAMETYPE basic_bounded_string
 		template<typename T>
 		constexpr size_t json_name_len( T &&str ) {
