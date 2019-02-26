@@ -31,6 +31,7 @@
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_bounded_string.h>
+#include <daw/daw_cxmath.h>
 #include <daw/daw_exception.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_string_view.h>
@@ -40,6 +41,8 @@
 
 namespace daw {
 	namespace json {
+		enum class NullValueOpt : bool { never, allowed };
+
 		template<typename T>
 		constexpr T from_json( daw::string_view sv );
 
@@ -66,7 +69,7 @@ namespace daw {
 				template<size_t N>
 				constexpr uintmax_t parse_known_number( std::string_view sv ) noexcept {
 					// sv.size( ) == N
-					uintmax_t results[N]{};
+					std::array<uintmax_t, N> results{};
 					uintmax_t result = 0;
 					daw::algorithm::do_n_arg<N>( [&]( size_t pos ) {
 						results[pos] =
@@ -129,21 +132,24 @@ namespace daw {
 					}
 					auto const exp_part = parse_number( sv );
 					if( exp_neg ) {
-						return static_cast<Result>(
-						  neg * ( ( int_part / pow10<double>( exp_part ) ) +
-						          ( fract_part /
-						            pow10<double>( exp_part + fract_str.size( ) ) ) ) );
+						auto result = static_cast<Result>(
+						  neg * ( ( int_part / daw::cxmath::dpow10( exp_part ) ) +
+						          ( fract_part / daw::cxmath::dpow10(
+						                           exp_part + fract_str.size( ) ) ) ) );
+						return result;
 					}
 					auto const exp_total = static_cast<intmax_t>( exp_part ) -
 					                       static_cast<intmax_t>( fract_str.size( ) );
 					if( exp_total >= 0 ) {
-						return static_cast<Result>(
-						  neg * ( ( int_part * pow10<double>( exp_part ) ) +
-						          ( fract_part * pow10<double>( exp_total ) ) ) );
+						auto result = static_cast<Result>(
+						  neg * ( ( int_part * daw::cxmath::dpow10( exp_part ) ) +
+						          ( fract_part * daw::cxmath::dpow10( exp_total ) ) ) );
+						return result;
 					}
-					return static_cast<Result>(
-					  neg * ( ( int_part * pow10<double>( exp_part ) ) +
-					          ( fract_part / pow10<double>( -exp_total ) ) ) );
+					auto result = static_cast<Result>(
+					  neg * ( ( int_part * daw::cxmath::dpow10( exp_part ) ) +
+					          ( fract_part / daw::cxmath::dpow10( -exp_total ) ) ) );
+					return result;
 				}
 
 				template<typename T>
@@ -202,17 +208,24 @@ namespace daw {
 
 				struct value_pos {
 					bool is_nullable;
+					bool empty_is_null;
 					string_view value_str{};
 
-					explicit constexpr value_pos( bool Nullable ) noexcept
-					  : is_nullable( Nullable ) {}
-
-					constexpr value_pos( bool Nullable, daw::string_view sv ) noexcept
+					explicit constexpr value_pos( bool Nullable,
+					                              bool empty_null ) noexcept
 					  : is_nullable( Nullable )
+					  , empty_is_null( empty_null ) {}
+
+					constexpr value_pos( bool Nullable, bool empty_null,
+					                     daw::string_view sv ) noexcept
+					  : is_nullable( Nullable )
+					  , empty_is_null( empty_null )
 					  , value_str( sv ) {}
 
 					explicit constexpr operator bool( ) const noexcept {
-						return is_nullable or !value_str.empty( );
+						return static_cast<int>( is_nullable ) or
+						       static_cast<int>( !value_str.empty( ) ) or
+						       static_cast<int>( empty_is_null );
 					}
 				};
 
@@ -224,6 +237,9 @@ namespace daw {
 
 				template<typename JsonType>
 				inline constexpr bool is_json_nullable_v = JsonType::nullable;
+
+				template<typename JsonType>
+				inline constexpr bool is_json_empty_null_v = JsonType::empty_is_null;
 
 				constexpr daw::string_view parse_name( daw::string_view &sv ) {
 					if( sv.front( ) != '"' ) {
@@ -366,22 +382,10 @@ namespace daw {
 				template<typename ParseInfo>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Number>,
 				                            value_pos pos ) {
+					// assert !pos.value_str.empty( );
 					using constructor_t = typename ParseInfo::constructor_t;
 					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
 
-					if( pos.value_str.empty( )) {
-						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection<JsonParseTypes::Number>>(
-						  ParseInfo::nullable );
-						return constructor_t{}( );
-					}
-					if( pos.value_str.front( ) == '"' ) {
-						// Number as string
-						pos.value_str.remove_prefix( );
-						if( !pos.value_str.empty( ) and pos.value_str.back( ) == '"' ) {
-							pos.value_str.remove_suffix( );
-						}
-					}
 					if constexpr( is_floating_point_v<element_t> ) {
 						return constructor_t{}( parse_real<element_t>( pos.value_str ) );
 					} else {
@@ -392,13 +396,8 @@ namespace daw {
 				template<typename ParseInfo>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 				                            value_pos pos ) {
+					// assert !pos.value_str.empty( );
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) ) {
-						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection<JsonParseTypes::Bool>>(
-						  ParseInfo::nullable );
-						return constructor_t{}( );
-					}
 					return constructor_t{}( to_lower( pos.value_str.front( ) ) == 't' );
 				}
 
@@ -416,12 +415,6 @@ namespace daw {
 				                            value_pos pos ) {
 
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) ) {
-						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection<JsonParseTypes::Date>>(
-						  ParseInfo::nullable );
-						return constructor_t{}( );
-					}
 					return constructor_t{}( pos.value_str.data( ),
 					                        pos.value_str.size( ) );
 				}
@@ -432,12 +425,6 @@ namespace daw {
 
 					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) ) {
-						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection<JsonParseTypes::Class>>(
-						  ParseInfo::nullable );
-						return constructor_t{}( );
-					}
 					return from_json<element_t>( pos.value_str );
 				}
 
@@ -446,12 +433,6 @@ namespace daw {
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
 				                            value_pos pos ) {
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.value_str.empty( ) ) {
-						daw::exception::precondition_check<
-						  missing_nonnullable_value_expection<JsonParseTypes::Array>>(
-						  ParseInfo::nullable );
-						return constructor_t{}( );
-					}
 					daw::exception::precondition_check<invalid_array>(
 					  pos.value_str.front( ) == '[' );
 					pos.value_str.remove_prefix( );
@@ -464,7 +445,8 @@ namespace daw {
 						auto val_str = skip_value( pos.value_str ).sv;
 						add_value( parse_value<element_t>(
 						  ParseTag<element_t::expected_type>{},
-						  value_pos( element_t::nullable, val_str ) ) );
+						  value_pos( element_t::nullable, element_t::empty_is_null,
+						             val_str ) ) );
 
 						pos.value_str = daw::parser::trim_left( pos.value_str );
 					}
@@ -527,17 +509,21 @@ namespace daw {
 			}
 
 			template<size_t N>
-			static constexpr decltype( auto ) parse_item(
-			  std::array<impl::value_pos, sizeof...( JsonMembers )> const &locations,
-			  daw::string_view sv ) {
+			static constexpr decltype( auto )
+			parse_item( std::array<impl::value_pos, sizeof...( JsonMembers )> const
+			              &locations ) {
+
 				using type_t = traits::nth_type<N, JsonMembers...>;
+				using constructor_t = typename type_t::constructor_t;
+
 				return impl::parse_value<type_t>(
 				  impl::ParseTag<type_t::expected_type>{}, locations[N] );
 			}
 
 			static constexpr auto get_locations( daw::string_view &sv ) {
 				std::array result = {
-				  impl::value_pos( impl::is_json_nullable_v<JsonMembers> )...};
+				  impl::value_pos( impl::is_json_nullable_v<JsonMembers>,
+				                   impl::is_json_empty_null_v<JsonMembers> )...};
 
 				while( !sv.empty( ) and sv.front( ) != '}' ) {
 					auto name = impl::parse_name( sv );
@@ -547,14 +533,21 @@ namespace daw {
 					}
 					size_t const pos = find_name( name );
 					auto v = impl::skip_value( sv );
-					daw::exception::precondition_check<
-					  impl::missing_nonnullable_value_expection<
-					    impl::JsonParseTypes::Null>>(
-					  static_cast<bool>( result[pos].is_nullable or !v.is_null ) );
+					if( v.is_null or ( v.sv.empty( ) and !result[pos].empty_is_null ) ) {
+						throw impl::missing_nonnullable_value_expection<
+						  impl::JsonParseTypes::Null>{};
+					}
 
 					result[pos].value_str = v.sv;
 					sv = parser::trim_left( sv );
 				}
+
+				daw::exception::precondition_check(
+				  ::daw::algorithm::all_of( begin( result ), end( result ),
+				                            []( auto const &loc ) -> bool {
+					                            return static_cast<bool>( loc );
+				                            } ),
+				  "Missing mandatory field" );
 				return result;
 			}
 
@@ -565,22 +558,15 @@ namespace daw {
 				  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
 				  "Supplied types cannot be used for construction of this type" );
 
-				auto sv_orig = sv;
-
 				sv = parser::trim_left( sv );
 				exception::precondition_check( !sv.empty( ) and sv.front( ) == '{' );
 				sv.remove_prefix( );
 				sv = parser::trim_left( sv );
-
 				auto const locations = get_locations( sv );
 
 				// Ensure locations of all parts there
-				exception::precondition_check( algorithm::all_of(
-				  begin( locations ), end( locations ), []( auto const &loc ) -> bool {
-					  return static_cast<bool>( loc );
-				  } ) );
 
-				return construct_a<Result>{}( parse_item<Is>( locations, sv_orig )... );
+				return construct_a<Result>{}( parse_item<Is>( locations )... );
 			}
 
 		public:
@@ -589,81 +575,94 @@ namespace daw {
 				return parse_json_class<Result>(
 				  sv, std::index_sequence_for<JsonMembers...>{} );
 			}
-		};
+		}; // namespace json
 
 		template<basic_bounded_string Name, typename T = double,
-		         bool Nullable = false, typename Constructor = daw::construct_a<T>>
+		         NullValueOpt Nullable = NullValueOpt::never,
+		         typename Constructor = daw::construct_a<T>>
 		struct json_number {
-			static_assert( std::is_arithmetic_v<T> or Nullable,
+			static_assert( std::is_arithmetic_v<T> or
+			                 Nullable == NullValueOpt::allowed,
 			               "Number must be an arithmentic type" );
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Number;
-			static constexpr bool nullable = Nullable;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
+			// Sometimes numbers are wrapped in strings
 			using parse_to_t = T;
 			using constructor_t = Constructor;
+			static constexpr bool empty_is_null = true;
 		};
 
 		template<basic_bounded_string Name, typename T = bool,
-		         bool Nullable = false, typename Constructor = daw::construct_a<T>>
+		         NullValueOpt Nullable = NullValueOpt::never,
+		         typename Constructor = daw::construct_a<T>>
 		struct json_bool {
 			static_assert( std::is_convertible_v<bool, T>,
 			               "Supplied result type must be convertable from bool" );
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Bool;
-			static constexpr bool nullable = Nullable;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
+			static constexpr bool empty_is_null = true;
 		};
 
 		template<basic_bounded_string Name, typename T = std::string,
-		         bool Nullable = false, typename Constructor = daw::construct_a<T>>
+		         NullValueOpt Nullable = NullValueOpt::never,
+		         typename Constructor = daw::construct_a<T>>
 		struct json_string {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::String;
-			static constexpr bool nullable = Nullable;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
+			static constexpr bool empty_is_null = false;
 		};
 
 		template<basic_bounded_string Name,
 		         typename T = std::chrono::system_clock::time_point,
-		         bool Nullable = false, typename Constructor = daw::construct_a<T>>
+		         NullValueOpt Nullable = NullValueOpt::never,
+		         typename Constructor = daw::construct_a<T>>
 		struct json_date {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Date;
-			static constexpr bool nullable = Nullable;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
+			static constexpr bool empty_is_null = true;
 		};
 
-		template<basic_bounded_string Name, typename T, bool Nullable = false,
+		template<basic_bounded_string Name, typename T,
+		         NullValueOpt Nullable = NullValueOpt::never,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_class {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Class;
-			static constexpr bool nullable = Nullable;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
+			static constexpr bool empty_is_null = true;
 		};
 
 		template<basic_bounded_string Name, typename Container,
-		         typename JsonElement, bool Nullable = false,
+		         typename JsonElement, NullValueOpt Nullable = NullValueOpt::never,
 		         typename Constructor = daw::construct_a<Container>,
 		         typename Appender = impl::basic_appender<Container>>
 		struct json_array {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Array;
-			static constexpr bool nullable = Nullable;
+			static constexpr bool nullable = Nullable == NullValueOpt::allowed;
 			using parse_to_t = Container;
 			using constructor_t = Constructor;
 			using appender_t = Appender;
 			using json_element_t = JsonElement;
+			static constexpr bool empty_is_null = true;
 		};
 
 		template<typename T>
@@ -711,7 +710,8 @@ namespace daw {
 
 				return impl::parse_value<JsonElement>(
 				  impl::ParseTag<JsonElement::expected_type>{},
-				  impl::value_pos( false, m_cur_value ) );
+				  impl::value_pos( false, impl::is_json_empty_null_v<JsonElement>,
+				                   m_cur_value ) );
 			}
 
 			constexpr json_array_iterator &operator++( ) {
@@ -726,7 +726,7 @@ namespace daw {
 
 			constexpr json_array_iterator &operator++( int ) {
 				auto tmp = *this;
-				++( *this );
+				operator++( );
 				return tmp;
 			}
 
@@ -751,11 +751,11 @@ namespace daw {
 		         typename Constructor = daw::construct_a<Container>,
 		         typename Appender = impl::basic_appender<Container>>
 		constexpr auto from_json_array( daw::string_view json_data ) {
-			using parser_t =
-			  json_array<"", Container, JsonElement, false, Constructor, Appender>;
+			using parser_t = json_array<"", Container, JsonElement,
+			                            NullValueOpt::never, Constructor, Appender>;
 			return impl::parse_value<parser_t>(
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
-			  impl::value_pos( false, json_data ) );
+			  impl::value_pos( false, false, json_data ) );
 		}
 
 	} // namespace json
