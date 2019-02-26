@@ -57,23 +57,14 @@ namespace daw {
 					return static_cast<Result>( c - '0' );
 				}
 
-				template<typename Result>
-				constexpr Result pow10( size_t count ) noexcept {
-					uintmax_t result = 1;
-					while( count-- > 0 ) {
-						result *= 10ULL;
-					}
-					return static_cast<Result>( result );
-				}
-
 				template<size_t N>
 				constexpr uintmax_t parse_known_number( std::string_view sv ) noexcept {
 					// sv.size( ) == N
 					std::array<uintmax_t, N> results{};
 					uintmax_t result = 0;
 					daw::algorithm::do_n_arg<N>( [&]( size_t pos ) {
-						results[pos] =
-						  to_digit<uintmax_t>( sv[pos] ) * pow10<uintmax_t>( N - pos - 1 );
+						results[pos] = to_digit<uintmax_t>( sv[pos] ) *
+						               daw::cxmath::pow10( N - pos - 1 );
 					} );
 					daw::algorithm::do_n_arg<N>(
 					  [&]( size_t pos ) { result += results[pos]; } );
