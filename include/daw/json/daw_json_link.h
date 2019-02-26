@@ -101,7 +101,8 @@ namespace daw {
 						sv.remove_prefix( );
 						exp_part = daw::parser::parse_int<int32_t>( sv );
 					}
-					return ( whole_part + fract_part ) * daw::cxmath::dpow10( exp_part );
+					return static_cast<Result>( ( whole_part + fract_part ) *
+					                            daw::cxmath::dpow10( exp_part ) );
 				} // namespace
 
 				template<typename T>
@@ -180,9 +181,6 @@ namespace daw {
 						       static_cast<int>( empty_is_null );
 					}
 				};
-
-				template<typename string_t>
-				kv_t( string_t )->kv_t<string_t>;
 
 				template<typename JsonType>
 				using json_parse_to = typename JsonType::parse_to_t;
@@ -376,7 +374,6 @@ namespace daw {
 				                            value_pos pos ) {
 
 					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
-					using constructor_t = typename ParseInfo::constructor_t;
 					return from_json<element_t>( pos.value_str );
 				}
 
@@ -384,7 +381,6 @@ namespace daw {
 				template<typename ParseInfo>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
 				                            value_pos pos ) {
-					using constructor_t = typename ParseInfo::constructor_t;
 					daw::exception::precondition_check<invalid_array>(
 					  pos.value_str.front( ) == '[' );
 					pos.value_str.remove_prefix( );
@@ -465,7 +461,6 @@ namespace daw {
 			              &locations ) {
 
 				using type_t = traits::nth_type<N, JsonMembers...>;
-				using constructor_t = typename type_t::constructor_t;
 
 				return impl::parse_value<type_t>(
 				  impl::ParseTag<type_t::expected_type>{}, locations[N] );
