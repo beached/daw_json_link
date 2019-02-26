@@ -31,17 +31,16 @@
 struct City {
 	daw::string_view country;
 	daw::string_view name;
-	double lat;
-	double lng;
+	float lat;
+	float lng;
 };
 
 constexpr auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
-	return json_parser_t<
-	  json_string<"country", daw::string_view>,
-	  json_string<"name", daw::string_view>,
-	  json_number<"lat", double, NullValueOpt::never>,
-	  json_number<"lng", double, NullValueOpt::never>>{};
+	return json_parser_t<json_string<"country", daw::string_view>,
+	                     json_string<"name", daw::string_view>,
+	                     json_number<"lat", float, NullValueOpt::never>,
+	                     json_number<"lng", float, NullValueOpt::never>>{};
 }
 
 int main( int argc, char **argv ) {
@@ -85,4 +84,13 @@ int main( int argc, char **argv ) {
 	  json_sv );
 
 	std::cout << "element count 2: " << count2 << '\n';
+	auto count3 =
+	  *daw::bench_n_test<4>( "cities parsing 3",
+	                         []( auto &&sv ) {
+		                         return static_cast<size_t>( std::distance(
+		                           iterator_t( sv ), iterator_t( ) ) );
+	                         },
+	                         json_sv );
+
+	std::cout << "element count 3: " << count3 << '\n';
 }
