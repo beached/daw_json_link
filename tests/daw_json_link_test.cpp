@@ -69,7 +69,6 @@ auto describe_json_class( test_001_t ) noexcept {
 	  json_array<"y", daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
 	  json_number<"o", std::optional<int>, NullValueOpt::allowed>,
 	  json_number<"o2", std::optional<int>, NullValueOpt::allowed>>{};
-}
 #else
 	constexpr static char const i[] = "i";
 	constexpr static char const d[] = "d";
@@ -86,8 +85,26 @@ auto describe_json_class( test_001_t ) noexcept {
 	  json_number<o2, std::optional<int>, NullValueOpt::allowed>>{};
 #endif
 }
+
 auto to_json_data( test_001_t const &v ) {
 	return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.y, v.o, v.o2 );
+}
+
+struct test_002_t {
+	test_001_t a{};
+};
+auto describe_json_class( test_002_t ) noexcept {
+	using namespace daw::json;
+#ifdef USECPP20
+	return class_description_t<json_class<"a", test_001_t>>{};
+#else
+	constexpr static char const a[] = "a";
+	return class_description_t<json_class<a, test_001_t>>{};
+#endif
+}
+
+auto to_json_data( test_002_t const &v ) {
+	return std::forward_as_tuple( v.a );
 }
 
 constexpr auto const json_data =
@@ -171,6 +188,8 @@ int main( ) {
 		std::clog << to_json( v ) << "\n\n";
 	}
 	std::cout << "as array\n";
+	std::cout << to_json_array( ary ) << "\n\n";
 
-	std::cout << to_json_array( ary ) << '\n';
+	test_002_t t2{ data };
+	std::cout  << to_json( t2 ) << '\n';
 }

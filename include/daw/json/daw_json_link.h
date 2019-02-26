@@ -48,13 +48,14 @@ namespace daw {
 				using std::to_string;
 			}
 			template<typename T>
-			auto to_string( std::optional<T> const & v ) -> decltype( to_string( *v ) ) {
+			auto to_string( std::optional<T> const &v )
+			  -> decltype( to_string( *v ) ) {
 				if( !v ) {
 					return {"null"};
 				}
 				return to_string( *v );
 			}
-		}
+		} // namespace to_strings
 		enum class NullValueOpt : bool { never, allowed };
 		template<typename T>
 		constexpr T from_json( daw::string_view sv );
@@ -75,7 +76,7 @@ namespace daw {
 		namespace impl {
 			namespace {
 				template<typename Container, typename OutputIterator>
-				constexpr OutputIterator copy_to_iterator( Container &&c,
+				constexpr OutputIterator copy_to_iterator( Container const &c,
 				                                           OutputIterator it ) {
 					for( auto const &value : c ) {
 						*it++ = value;
@@ -542,6 +543,9 @@ namespace daw {
 			static constexpr void make_json_string( OutputIterator it,
 			                                        std::tuple<Args...> &args ) {
 
+				*it++ = '"';
+				it = impl::copy_to_iterator( daw::string_view( JsonMember::name ), it );
+				it = impl::copy_to_iterator( "\":", it );
 				JsonMember::to_string( it, std::get<pos>( args ) );
 				if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
 					*it++ = ',';
@@ -599,8 +603,8 @@ namespace daw {
 			template<typename OutputIterator>
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           parse_to_t const &value ) {
-				using std::to_string;
 				using ::daw::json::to_strings::to_string;
+				using std::to_string;
 				return impl::copy_to_iterator( to_string( value ), it );
 			}
 		};
@@ -692,7 +696,7 @@ namespace daw {
 			                                           parse_to_t const &value ) {
 
 				return impl::json_parser_description_t<parse_to_t>::template serialize(
-				  it, to_json_data( std::forward<parse_to_t>( value ) ) );
+				  it, to_json_data( value ) );
 			}
 		};
 
