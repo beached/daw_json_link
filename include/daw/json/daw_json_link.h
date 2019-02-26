@@ -80,7 +80,7 @@ namespace daw {
 
 				template<typename Result>
 				constexpr Result parse_real( daw::string_view sv ) noexcept {
-					// [-]W[.F][(e|E)X]
+					// [-]WHOLE[.FRACTION][(e|E)EXPONENT]
 
 					double const whole_part =
 					  static_cast<double>( daw::parser::parse_int<int64_t>(
