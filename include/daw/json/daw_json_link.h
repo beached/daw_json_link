@@ -748,6 +748,5 @@ namespace daw {
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
 			  impl::value_pos( false, false, json_data ) );
 		}
-
 	} // namespace json
 } // namespace daw
