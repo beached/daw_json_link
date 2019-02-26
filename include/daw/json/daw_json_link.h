@@ -56,6 +56,17 @@ namespace daw {
 				return to_string( *v );
 			}
 		} // namespace to_strings
+
+		template<typename T>
+		bool is_null( std::optional<T> const &v ) {
+			return !static_cast<bool>( v );
+		}
+
+		template<typename T>
+		bool is_null( T const & ) {
+			return false;
+		}
+
 		enum class NullValueOpt : bool { never, allowed };
 		template<typename T>
 		constexpr T from_json( daw::string_view sv );
@@ -672,8 +683,13 @@ namespace daw {
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           parse_to_t const &value ) {
 				*it++ = ',';
-				using std::to_string;
-				it = impl::copy_to_iterator( to_string( value ), it );
+				using ::daw::json::is_null;
+				if( is_null( value ) ) {
+					it = impl::copy_to_iterator( daw::string_view( "null" ), it );
+				} else {
+					using std::to_string;
+					it = impl::copy_to_iterator( to_string( value ), it );
+				}
 				*it++ = ',';
 				return it;
 			}
