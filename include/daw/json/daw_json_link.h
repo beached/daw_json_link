@@ -67,30 +67,29 @@ namespace daw {
 				template<typename Result>
 				constexpr Result parse_real( daw::string_view sv ) noexcept {
 					// [-]W[.F][(e|E)X]
-					auto const whole_part =
-					  static_cast<double>( daw::parser::parse_int<intmax_t>(
-					    sv.pop_front( sv.find_first_of( ".eE" ) ) ) );
-					sv.try_pop_front( "." );
-					auto fract_str = sv.pop_front( sv.find_first_of( "eE" ) );
-					auto const fract_sz = fract_str.size( );
-					if( fract_str.size( ) > std::numeric_limits<uintmax_t>::digits10 ) {
-						fract_str.remove_suffix( fract_str.size( ) -
-						                         std::numeric_limits<uintmax_t>::digits10 );
-					}
-					auto const fract_part =
-					  daw::parser::parse_unsigned_int<uintmax_t>( fract_str );
 
-					intmax_t exp = 0;
+					double const whole_part =
+					  static_cast<double>( daw::parser::parse_int<int64_t>(
+					    sv.pop_front( sv.find_first_of( ".eE" ) ) ) );
+
+					double fract_part = 0;
+					if( !sv.empty( ) and sv.front( ) == '.' ) {
+						sv.remove_prefix( );
+						auto fract_str = sv.pop_front( sv.find_first_of( "eE" ) );
+						auto const fract_exp = static_cast<intmax_t>( fract_str.size( ) );
+						fract_part = static_cast<double>(
+						  daw::parser::parse_unsigned_int<uint64_t>( fract_str ) );
+						fract_part *= daw::cxmath::dpow10( -fract_exp );
+						fract_part = daw::cxmath::copy_sign( fract_part, whole_part );
+					}
+
+					intmax_t exp_part = 0;
 					if( !sv.empty( ) ) {
 						sv.remove_prefix( );
-						exp = daw::parser::parse_int<intmax_t>( sv );
+						exp_part = daw::parser::parse_int<intmax_t>( sv );
 					}
-					auto f2 = daw::cxmath::copy_sign(
-					  fract_part *
-					    daw::cxmath::dpow10( -static_cast<int>( fract_str.size( ) ) ),
-					  whole_part );
-					return ( whole_part + f2 ) * daw::cxmath::dpow10( exp );
-				}
+					return ( whole_part + fract_part ) * daw::cxmath::dpow10( exp_part );
+				} // namespace
 
 				template<typename T>
 				struct nullable_type {
