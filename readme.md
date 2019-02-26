@@ -1,6 +1,12 @@
 # JSON Link v3
 
 ## Note: this requires C++20 which isn't released yet and is still early testing.
+## Note2: Just backported to allow C++17.  Names must be static constexpr string literals with names, instead of bare string literals  e.g.
+```cpp
+static constexpr name_a = "name_a";
+
+...json_number<name_a>
+```
 
 For now v3 is focussed on deserialization.  This can be accomplished by writing a function called describe_json_class with a single arugment that is your type.  The library is only concerned with it's return value. For example:
 
