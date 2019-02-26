@@ -43,6 +43,18 @@
 
 namespace daw {
 	namespace json {
+		namespace to_strings {
+			namespace {
+				using std::to_string;
+			}
+			template<typename T>
+			auto to_string( std::optional<T> const & v ) -> decltype( to_string( *v ) ) {
+				if( !v ) {
+					return {"null"};
+				}
+				return to_string( *v );
+			}
+		}
 		enum class NullValueOpt : bool { never, allowed };
 		template<typename T>
 		constexpr T from_json( daw::string_view sv );
@@ -588,6 +600,7 @@ namespace daw {
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           parse_to_t const &value ) {
 				using std::to_string;
+				using ::daw::json::to_strings::to_string;
 				return impl::copy_to_iterator( to_string( value ), it );
 			}
 		};
@@ -658,7 +671,7 @@ namespace daw {
 				using std::to_string;
 				it = impl::copy_to_iterator( to_string( value ), it );
 				*it++ = ',';
-				return it;	
+				return it;
 			}
 		};
 
@@ -702,10 +715,8 @@ namespace daw {
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           parse_to_t const &container ) {
 				*it++ = '[';
-				using std::empty;
-				using std::size;
-				if( !empty( container ) ) {
-					auto count = size( container ) - 1;
+				if( !std::empty( container ) ) {
+					auto count = std::size( container ) - 1;
 					for( auto const &v : container ) {
 						it = JsonElement::to_string( it, v );
 						if( count-- > 0 ) {
