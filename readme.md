@@ -94,4 +94,29 @@ int main( ) {
 }
 ```
 
+## Serialization
+To enable serialization on must create an additional free function called ```to_json_data( T );``` It will provide a mapping from your type to the arguments provided in the class description.  To serialize to a json string, one calls ```to_json( value );``` where value is a registered type. Using the exmaple above lets add that
+
+```cpp
+#include <daw/json/daw_json_link_v3.h>
+#include <tuple>
+
+struct AggClass {
+	int a{};
+	double b{};
+};
+auto describe_json_class( AggClass ) {
+	using namespace daw::json;
+	return class_description_t<
+		json_number<"a", int>,
+		json_number<"b">
+	>{};
+}
+auto to_json_data( AggClass const & ) {
+    return std::forward_as_tuple( c.a, c.b );
+}
+//...
+AggData value = //...;
+auto json_data = to_json<Aggdata>( value );
+```
 	
