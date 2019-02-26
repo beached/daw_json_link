@@ -60,34 +60,9 @@ struct test_001_t {
 	  , o2( O2 ) {}
 };
 
-std::string to_string( test_001_t const &data ) {
-	std::stringstream ss{};
-	ss << "{i->" << data.i << '\n';
-	ss << "d->" << data.d << '\n';
-	ss << "b->" << data.b << '\n';
-	ss << "s->" << data.s << '\n';
-	ss << "y->[ ";
-	for( auto const &v : data.y ) {
-		ss << v << ", ";
-	}
-	ss << "]\n";
-	ss << "o->";
-	if( !data.o ) {
-		ss << "empty\n";
-	} else {
-		ss << *data.o << '\n';
-	}
-	ss << "o2->";
-	if( !data.o2 ) {
-		ss << "empty\n";
-	} else {
-		ss << *data.o2 << '}';
-	}
-	return ss.str( );
-}
-#ifdef USECPP20
 auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
+#ifdef USECPP20
 	return class_description_t<
 	  json_number<"i", int>, json_number<"d">, json_bool<"b">,
 	  json_string<"s", daw::string_view>,
@@ -96,8 +71,6 @@ auto describe_json_class( test_001_t ) noexcept {
 	  json_number<"o2", std::optional<int>, NullValueOpt::allowed>>{};
 }
 #else
-auto describe_json_class( test_001_t ) noexcept {
-	using namespace daw::json;
 	constexpr static char const i[] = "i";
 	constexpr static char const d[] = "d";
 	constexpr static char const b[] = "b";
@@ -111,8 +84,11 @@ auto describe_json_class( test_001_t ) noexcept {
 	  json_array<y, daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
 	  json_number<o, std::optional<int>, NullValueOpt::allowed>,
 	  json_number<o2, std::optional<int>, NullValueOpt::allowed>>{};
-}
 #endif
+}
+auto to_json_data( test_001_t const &v ) {
+	return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.y, v.o, v.o2 );
+}
 
 constexpr auto const json_data =
   R"({
@@ -183,14 +159,15 @@ constexpr auto const json_data_array =
 	  }])";
 
 int main( ) {
+	using namespace daw::json;
 	constexpr auto data = daw::json::from_json<test_001_t>( json_data );
-	std::clog << to_string( data ) << '\n';
+	std::clog << to_json( data ) << '\n';
 
-	constexpr auto ary = daw::json::from_json_array<
-	  daw::json::json_class<daw::json::no_name, test_001_t>,
-	  daw::bounded_vector_t<test_001_t, 10>>( json_data_array );
+	constexpr auto ary =
+	  from_json_array<json_class<no_name, test_001_t>,
+	                  daw::bounded_vector_t<test_001_t, 10>>( json_data_array );
 	std::cout << "read in " << ary.size( ) << " items\n";
 	for( auto const &v : ary ) {
-		std::clog << to_string( v ) << "\n\n";
+		std::clog << to_json( v ) << "\n\n";
 	}
 }
