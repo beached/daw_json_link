@@ -66,44 +66,30 @@ namespace daw {
 
 				template<typename Result>
 				constexpr Result parse_real( daw::string_view sv ) noexcept {
-					double const neg = sv.front( ) == '-' ? -1.0 : 1.0;
-					if( neg ) {
-						sv.remove_prefix( );
-					}
-					auto const int_part =
-					  static_cast<double>( daw::parser::parse_unsigned_int<uintmax_t>(
+					// [-]W[.F][(e|E)X]
+					auto const whole_part =
+					  static_cast<double>( daw::parser::parse_int<intmax_t>(
 					    sv.pop_front( sv.find_first_of( ".eE" ) ) ) );
-					sv.remove_prefix( );
+					sv.try_pop_front( "." );
 					auto fract_str = sv.pop_front( sv.find_first_of( "eE" ) );
 					auto const fract_sz = fract_str.size( );
 					if( fract_str.size( ) > std::numeric_limits<uintmax_t>::digits10 ) {
-						fract_str.remove_suffix( fract_str.size( ) - std::numeric_limits<uintmax_t>::digits10 );
+						fract_str.remove_suffix( fract_str.size( ) -
+						                         std::numeric_limits<uintmax_t>::digits10 );
 					}
-					auto const fract_part = static_cast<double>( daw::parser::parse_unsigned_int<uintmax_t>( fract_str ) );
-					bool const exp_neg = !sv.empty( ) and sv.front( ) == '-';
-					if( exp_neg ) {
+					auto const fract_part =
+					  daw::parser::parse_unsigned_int<uintmax_t>( fract_str );
+
+					intmax_t exp = 0;
+					if( !sv.empty( ) ) {
 						sv.remove_prefix( );
+						exp = daw::parser::parse_int<intmax_t>( sv );
 					}
-					auto const exp_part = daw::parser::parse_unsigned_int<uint16_t>( sv );
-					if( exp_neg ) {
-						auto result = static_cast<Result>(
-						  neg * ( ( int_part / daw::cxmath::dpow10( exp_part ) ) +
-						          ( fract_part / daw::cxmath::dpow10(
-						                           exp_part + fract_str.size( ) ) ) ) );
-						return result;
-					}
-					auto const exp_total = static_cast<intmax_t>( exp_part ) -
-					                       static_cast<intmax_t>( fract_sz );
-					if( exp_total >= 0 ) {
-						auto result = static_cast<Result>(
-						  neg * ( ( int_part * daw::cxmath::dpow10( exp_part ) ) +
-						          ( fract_part * daw::cxmath::dpow10( exp_total ) ) ) );
-						return result;
-					}
-					auto result = static_cast<Result>(
-					  neg * ( ( int_part * daw::cxmath::dpow10( exp_part ) ) +
-					          ( fract_part / daw::cxmath::dpow10( -exp_total ) ) ) );
-					return result;
+					auto f2 = daw::cxmath::copy_sign(
+					  fract_part *
+					    daw::cxmath::dpow10( -static_cast<int>( fract_str.size( ) ) ),
+					  whole_part );
+					return ( whole_part + f2 ) * daw::cxmath::dpow10( exp );
 				}
 
 				template<typename T>
