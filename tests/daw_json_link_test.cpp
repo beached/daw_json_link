@@ -32,11 +32,10 @@
 
 #include "daw/json/daw_json_link.h"
 
-/*
-static_assert( daw::json::impl::parse_real( "5" ) == 5.0 );
-static_assert( daw::json::impl::parse_real( "5.5" ) == 5.5 );
-static_assert( daw::json::impl::parse_real( "5.5e2" ) == 550.0 );
-*/
+static_assert( daw::json::impl::parse_real<double>( "5" ) == 5.0 );
+static_assert( daw::json::impl::parse_real<double>( "5.5" ) == 5.5 );
+static_assert( daw::json::impl::parse_real<double>( "5.5e2" ) == 550.0 );
+static_assert( daw::json::impl::parse_real<double>( "5e2" ) == 500.0 );
 
 struct test_001_t {
 	int i = 0;
@@ -169,11 +168,12 @@ int main( ) {
 	constexpr auto data = daw::json::from_json<test_001_t>( json_data );
 	std::clog << to_string( data ) << '\n';
 
-	constexpr auto ary = daw::json::from_json_array<daw::json::json_class<"", test_001_t>,
-	                                      daw::bounded_vector_t<test_001_t, 10>>(
-	  json_data_array );
+	constexpr auto ary =
+	  daw::json::from_json_array<daw::json::json_class<"", test_001_t>,
+	                             daw::bounded_vector_t<test_001_t, 10>>(
+	    json_data_array );
 	std::cout << "read in " << ary.size( ) << " items\n";
-	for( auto const &v: ary ) {
+	for( auto const &v : ary ) {
 		std::clog << to_string( v ) << "\n\n";
 	}
 }
