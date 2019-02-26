@@ -70,13 +70,13 @@ int main( int argc, char **argv ) {
 		std::cerr << "Could not open input file\n";
 		exit( 1 );
 	}
-	auto json_data = std::string( std::istream_iterator<char>( in_file ),
-	                              std::istream_iterator<char>( ) );
+	auto json_data = std::string( std::istreambuf_iterator<char>( in_file ),
+	                              std::istreambuf_iterator<char>( ) );
 	in_file.close( );
 	auto json_sv = daw::string_view( json_data );
 	std::cout << "File size(B): " << json_data.size( ) << " "
 	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
-/*
+
 	auto count = *daw::bench_n_test<4>(
 	  "cities parsing 1",
 	  []( auto &&sv ) {
@@ -87,9 +87,9 @@ int main( int argc, char **argv ) {
 	  json_sv );
 
 	std::cout << "element count: " << count << '\n';
-*/
+
 	using iterator_t = daw::json::json_array_iterator<json_class<no_name, City>>;
-/*
+
 	auto data = std::vector<City>( );
 
 	auto count2 = *daw::bench_n_test<4>(
@@ -111,7 +111,7 @@ int main( int argc, char **argv ) {
 	                         json_sv );
 
 	std::cout << "element count 3: " << count3 << '\n';
-*/
+
 	auto has_toronto = *daw::bench_n_test<4>(
 	  "Find Toronto",
 	  []( auto &&sv ) -> std::optional<City> {
@@ -142,4 +142,14 @@ int main( int argc, char **argv ) {
 
 	std::cout << "Chitungwiza was " << ( has_chitungwiza ? "" : "not" )
 	          << " found at " << to_json( *has_chitungwiza ) << '\n';
+
+
+	std::cout << (*iterator_t( json_sv )).name << '\n';
+
+	auto const city_ary =
+			daw::json::from_json_array<json_class<no_name, City>>( json_sv );
+
+	auto const city_ary_str = to_json_array( city_ary );
+	auto sv = daw::string_view( city_ary_str );
+	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 ) << '\n';
 }

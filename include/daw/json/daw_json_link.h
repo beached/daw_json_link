@@ -793,7 +793,15 @@ namespace daw {
 			  impl::value_pos( false, false, json_data ) );
 		}
 
-		// Serialization
-
+		template<typename Result = std::string, typename Container>
+		constexpr Result to_json_array( Container && c ) {
+			Result result = "[";
+			for( auto const & v: c ) {
+				result += to_json( v );
+				result += ',';
+			}
+			result.back( ) = ']';
+			return result;
+		}
 	} // namespace json
 } // namespace daw
