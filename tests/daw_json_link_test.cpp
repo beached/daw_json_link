@@ -24,6 +24,8 @@
 #include <chrono>
 #include <iostream>
 #include <optional>
+#include <sstream>
+#include <string>
 #include <vector>
 
 #include <daw/daw_bounded_vector.h>
@@ -58,6 +60,32 @@ struct test_001_t {
 	  , o( O )
 	  , o2( O2 ) {}
 };
+
+std::string to_string( test_001_t const &data ) {
+	std::stringstream ss{};
+	ss << "{i->" << data.i << '\n';
+	ss << "d->" << data.d << '\n';
+	ss << "b->" << data.b << '\n';
+	ss << "s->" << data.s << '\n';
+	ss << "y->[ ";
+	for( auto const &v : data.y ) {
+		ss << v << ", ";
+	}
+	ss << "]\n";
+	ss << "o->";
+	if( !data.o ) {
+		ss << "empty\n";
+	} else {
+		ss << *data.o << '\n';
+	}
+	ss << "o2->";
+	if( !data.o2 ) {
+		ss << "empty\n";
+	} else {
+		ss << *data.o2 << '}';
+	}
+	return ss.str( );
+}
 
 constexpr auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
@@ -97,7 +125,7 @@ constexpr auto const json_data_array =
 	  },
 	  {
 	    "i": 55,
-	    "d": 2.2,
+	    "d": -2.2,
 			"b": true,
 			"x": { "b": false, "c": [1,2,3] },
 			"y": [1,2,3,4],
@@ -107,7 +135,7 @@ constexpr auto const json_data_array =
 			"o": 1344
 	  },{
 	    "i": 55,
-	    "d": 2.2,
+	    "d": -2.2e4,
 			"b": true,
 			"x": { "b": false, "c": [1,2,3] },
 			"y": [1,2,3,4],
@@ -117,7 +145,7 @@ constexpr auto const json_data_array =
 			"o": 1344
 	  },{
 	    "i": 55,
-	    "d": 2.2,
+	    "d": 2.2e-5,
 			"b": true,
 			"x": { "b": false, "c": [1,2,3] },
 			"y": [1,2,3,4],
@@ -139,31 +167,13 @@ constexpr auto const json_data_array =
 
 int main( ) {
 	constexpr auto data = daw::json::from_json<test_001_t>( json_data );
-	std::clog << "result: i->" << data.i << '\n';
-	std::clog << "result: d->" << data.d << '\n';
-	std::clog << "result: b->" << data.b << '\n';
-	std::clog << "result: s->" << data.s << '\n';
-	std::clog << "result: y->[ ";
-	for( auto const &v : data.y ) {
-		std::clog << v << ", ";
-	}
-	std::clog << "]\n";
-	std::clog << "result o->";
-	if( !data.o ) {
-		std::clog << "empty\n";
-	} else {
-		std::clog << *data.o << '\n';
-	}
-	std::clog << "result o2->";
-	if( !data.o2 ) {
-		std::clog << "empty\n";
-	} else {
-		std::clog << *data.o2 << '\n';
-	}
+	std::clog << to_string( data ) << '\n';
 
-	constexpr auto ary =
-	  daw::json::from_json_array<daw::json::json_class<"", test_001_t>,
-	                             daw::bounded_vector_t<test_001_t, 10>>(
-	    json_data_array );
+	constexpr auto ary = daw::json::from_json_array<daw::json::json_class<"", test_001_t>,
+	                                      daw::bounded_vector_t<test_001_t, 10>>(
+	  json_data_array );
 	std::cout << "read in " << ary.size( ) << " items\n";
+	for( auto const &v: ary ) {
+		std::clog << to_string( v ) << "\n\n";
+	}
 }
