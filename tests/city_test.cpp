@@ -35,14 +35,27 @@ struct City {
 	float lng;
 };
 
-constexpr auto describe_json_class( City ) noexcept {
+#ifdef USECPP20
+auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 	return json_parser_t<json_string<"country", daw::string_view>,
 	                     json_string<"name", daw::string_view>,
 	                     json_number<"lat", float, NullValueOpt::never>,
 	                     json_number<"lng", float, NullValueOpt::never>>{};
 }
-
+#else
+auto describe_json_class( City ) noexcept {
+	static constexpr char names0[] = "country";
+	static constexpr char names1[] = "name";
+	static constexpr char names2[] = "lat";
+	static constexpr char names3[] = "lng";
+	using namespace daw::json;
+	return json_parser_t<json_string<names0, daw::string_view>,
+	                     json_string<names1, daw::string_view>,
+	                     json_number<names2, float, NullValueOpt::never>,
+	                     json_number<names3, float, NullValueOpt::never>>{};
+}
+#endif
 int main( int argc, char **argv ) {
 	using namespace daw::json;
 	if( argc < 2 ) {
@@ -63,14 +76,14 @@ int main( int argc, char **argv ) {
 	auto count = *daw::bench_n_test<4>(
 	  "cities parsing 1",
 	  []( auto &&sv ) {
-		  auto const data = daw::json::from_json_array<json_class<"", City>>( sv );
+		  auto const data = daw::json::from_json_array<json_class<no_name, City>>( sv );
 		  return data.size( );
 	  },
 	  json_sv );
 
 	std::cout << "element count: " << count << '\n';
 
-	using iterator_t = daw::json::json_array_iterator<json_class<"", City>>;
+	using iterator_t = daw::json::json_array_iterator<json_class<no_name, City>>;
 
 	auto data = std::vector<City>( );
 

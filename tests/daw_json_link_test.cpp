@@ -85,16 +85,34 @@ std::string to_string( test_001_t const &data ) {
 	}
 	return ss.str( );
 }
-
-constexpr auto describe_json_class( test_001_t ) noexcept {
+#ifdef USECPP20
+auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
 	return json_parser_t<
 	  json_number<"i", int>, json_number<"d">, json_bool<"b">,
 	  json_string<"s", daw::string_view>,
-	  json_array<"y", daw::bounded_vector_t<int, 10>, json_number<"", int>>,
+	  json_array<"y", daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
 	  json_number<"o", std::optional<int>, NullValueOpt::allowed>,
 	  json_number<"o2", std::optional<int>, NullValueOpt::allowed>>{};
 }
+#else
+auto describe_json_class( test_001_t ) noexcept {
+	using namespace daw::json;
+	constexpr static char const i[] = "i";
+	constexpr static char const d[] = "d";
+	constexpr static char const b[] = "b";
+	constexpr static char const s[] = "s";
+	constexpr static char const y[] = "y";
+	constexpr static char const o[] = "o";
+	constexpr static char const o2[] = "o2";
+	return json_parser_t<
+	  json_number<i, int>, json_number<d>, json_bool<b>,
+	  json_string<s, daw::string_view>,
+	  json_array<y, daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
+	  json_number<o, std::optional<int>, NullValueOpt::allowed>,
+	  json_number<o2, std::optional<int>, NullValueOpt::allowed>>{};
+}
+#endif
 
 constexpr auto const json_data =
   R"({
@@ -168,10 +186,9 @@ int main( ) {
 	constexpr auto data = daw::json::from_json<test_001_t>( json_data );
 	std::clog << to_string( data ) << '\n';
 
-	constexpr auto ary =
-	  daw::json::from_json_array<daw::json::json_class<"", test_001_t>,
-	                             daw::bounded_vector_t<test_001_t, 10>>(
-	    json_data_array );
+	constexpr auto ary = daw::json::from_json_array<
+	  daw::json::json_class<daw::json::no_name, test_001_t>,
+	  daw::bounded_vector_t<test_001_t, 10>>( json_data_array );
 	std::cout << "read in " << ary.size( ) << " items\n";
 	for( auto const &v : ary ) {
 		std::clog << to_string( v ) << "\n\n";
