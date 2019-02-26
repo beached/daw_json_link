@@ -57,5 +57,10 @@ add_dependencies( city_test_bin dependency_stub )
 add_test( city_test city_test_bin )
 add_dependencies( check city_test_bin )
 
+add_executable( int_array_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/int_array_test.cpp )
+add_dependencies( int_array_test_bin dependency_stub )
+add_test( int_array_test int_array_test_bin )
+add_dependencies( check int_array_test_bin )
+
 install( DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/ )
 

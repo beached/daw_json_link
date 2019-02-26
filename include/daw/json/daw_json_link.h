@@ -52,76 +52,39 @@ namespace daw {
 					return c | ' ';
 				}
 
-				template<typename Result = uint8_t>
-				constexpr Result to_digit( char c ) noexcept {
-					return static_cast<Result>( c - '0' );
-				}
-
-				template<size_t N>
-				constexpr uintmax_t parse_known_number( std::string_view sv ) noexcept {
-					// sv.size( ) == N
-					std::array<uintmax_t, N> results{};
-					uintmax_t result = 0;
-					daw::algorithm::do_n_arg<N>( [&]( size_t pos ) {
-						results[pos] = to_digit<uintmax_t>( sv[pos] ) *
-						               daw::cxmath::pow10( N - pos - 1 );
-					} );
-					daw::algorithm::do_n_arg<N>(
-					  [&]( size_t pos ) { result += results[pos]; } );
-					return result;
-				}
-
-				template<size_t... Sizes>
-				constexpr uintmax_t parse_number_impl( std::string_view sv,
-				                                       std::index_sequence<Sizes...> ) {
-					uintmax_t result = 0;
-					auto const size = sv.size( );
-					bool const found =
-					  ( ( ( size == Sizes ) and
-					      ( ( result = parse_known_number<Sizes>( sv ) ), true ) ) or
-					    ... );
-					if( !found ) {
-						std::terminate( );
-					}
-					return result;
-				}
-
-				template<typename Result = uintmax_t>
-				constexpr Result parse_number( daw::string_view sv ) noexcept {
-					static_assert( std::is_arithmetic_v<Result> );
-					return static_cast<Result>( parse_number_impl(
-					  sv, std::make_index_sequence<
-					        std::numeric_limits<Result>::digits10>{} ) );
-				}
-
-				template<typename Result = intmax_t>
+				template<typename Result>
 				constexpr Result parse_signed( daw::string_view sv ) noexcept {
 					if( sv.empty( ) ) {
 						return static_cast<Result>( 0 );
 					}
-					if( sv.front( ) == '-' ) {
-						sv.remove_prefix( );
-						return -parse_number<Result>( sv );
+					if constexpr( std::is_signed_v<Result> ) {
+						return daw::parser::parse_int<Result>( sv );
+					} else {
+						return daw::parser::parse_unsigned_int<Result>( sv );
 					}
-					return parse_number<Result>( sv );
 				}
 
 				template<typename Result>
 				constexpr Result parse_real( daw::string_view sv ) noexcept {
 					double const neg = sv.front( ) == '-' ? -1.0 : 1.0;
-					if( neg > 0.0 ) {
+					if( neg ) {
 						sv.remove_prefix( );
 					}
 					auto const int_part =
-					  parse_number<double>( sv.pop_front( sv.find_first_of( ".eE" ) ) );
+					  static_cast<double>( daw::parser::parse_unsigned_int<uintmax_t>(
+					    sv.pop_front( sv.find_first_of( ".eE" ) ) ) );
 					sv.remove_prefix( );
-					auto const fract_str = sv.pop_front( sv.find_first_of( "eE" ) );
-					auto const fract_part = parse_number<double>( fract_str );
-					bool const exp_neg = !sv.empty( ) and to_lower( sv.front( ) ) == '-';
+					auto fract_str = sv.pop_front( sv.find_first_of( "eE" ) );
+					auto const fract_sz = fract_str.size( );
+					if( fract_str.size( ) > std::numeric_limits<uintmax_t>::digits10 ) {
+						fract_str.remove_suffix( fract_str.size( ) - std::numeric_limits<uintmax_t>::digits10 );
+					}
+					auto const fract_part = static_cast<double>( daw::parser::parse_unsigned_int<uintmax_t>( fract_str ) );
+					bool const exp_neg = !sv.empty( ) and sv.front( ) == '-';
 					if( exp_neg ) {
 						sv.remove_prefix( );
 					}
-					auto const exp_part = parse_number( sv );
+					auto const exp_part = daw::parser::parse_unsigned_int<uint16_t>( sv );
 					if( exp_neg ) {
 						auto result = static_cast<Result>(
 						  neg * ( ( int_part / daw::cxmath::dpow10( exp_part ) ) +
@@ -130,7 +93,7 @@ namespace daw {
 						return result;
 					}
 					auto const exp_total = static_cast<intmax_t>( exp_part ) -
-					                       static_cast<intmax_t>( fract_str.size( ) );
+					                       static_cast<intmax_t>( fract_sz );
 					if( exp_total >= 0 ) {
 						auto result = static_cast<Result>(
 						  neg * ( ( int_part * daw::cxmath::dpow10( exp_part ) ) +
@@ -572,6 +535,7 @@ namespace daw {
 		         NullValueOpt Nullable = NullValueOpt::never,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_number {
+			// TODO maybe convertable or constructible is better
 			static_assert( std::is_arithmetic_v<T> or
 			                 Nullable == NullValueOpt::allowed,
 			               "Number must be an arithmentic type" );
@@ -682,6 +646,7 @@ namespace daw {
 
 			constexpr json_array_iterator( daw::string_view json_data )
 			  : m_state( json_data ) {
+
 				daw::exception::precondition_check<impl::invalid_array>(
 				  m_state.front( ) == '[' );
 
@@ -695,7 +660,7 @@ namespace daw {
 				m_state = daw::parser::trim_left( m_state );
 			}
 
-			constexpr value_type operator*( ) const {
+			constexpr value_type operator*( ) const noexcept {
 				daw::exception::precondition_check<impl::invalid_array>(
 				  !m_cur_value.empty( ) );
 
