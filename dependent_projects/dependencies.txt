@@ -30,4 +30,4 @@ externalproject_add(
 include_directories( SYSTEM "${CMAKE_BINARY_DIR}/install/include" )
 link_directories( "${CMAKE_BINARY_DIR}/install/lib" )
 
-set( DEP_PROJECT_DEPS header_libraries_prj date_prj )
+set( DEP_PROJECT_DEPS header_libraries_prj date_prj iso8601_parsing_prj )
