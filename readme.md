@@ -145,7 +145,7 @@ std::string json_array_data = to_json_array( values );
 ## Json Data Types
 The json types match those of the underlying JSON data types from the standard.
 
-###json_number
+### json_number
 ```cpp
 template<JSONNAMETYPE Name, 
     typename T = double, 
@@ -157,7 +157,7 @@ The defaults for json_number will construct a ```double``` with the supplied nam
 ```NullValueOpt``` controls is nulls are allowed(this includes missing values)
 ```Constructor``` the default is almost always correct here but this will constuct your type.
 
-###json_bool
+### json_bool
 ```cpp
 template<JSONNAMETYPE Name, 
     typename T = bool, 
@@ -169,7 +169,7 @@ The defaults for json_bool will construct a ```bool``` with the supplied name.  
 ```NullValueOpt``` controls is nulls are allowed(this includes missing values)
 ```Constructor``` the default is almost always correct here but this will constuct your type.
 
-###json_string
+### json_string
 ```cpp
 template<JSONNAMETYPE Name, 
     typename T = std::string, 
@@ -181,7 +181,7 @@ The defaults for json_string will construct a ```std::string``` with the supplie
 ```NullValueOpt``` controls is nulls are allowed(this includes missing values)
 ```Constructor``` the default is almost always correct here but this will constuct your type.
 
-###json_date
+### json_date
 ```cpp
 template<JSONNAMETYPE Name, 
     typename T = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>, 
@@ -194,7 +194,7 @@ The defaults for json_date will construct a ```std::chrono::time_point<std::chro
 ```NullValueOpt``` controls is nulls are allowed(this includes missing values)
 ```Constructor``` the default parses javascript timestamps.  Supplying a functor that takes the ptr, size combo will allow other result types and date formats.
 
-###json_class
+### json_class
 ```cpp
 template<JSONNAMETYPE Name, 
     typename T,
@@ -206,7 +206,7 @@ struct json_date
 ```NullValueOpt``` controls is nulls are allowed(this includes missing values)
 ```Constructor``` the default is almost always correct here but this will constuct your type.
 
-###json_array
+### json_array
 ```cpp
 template<JSONNAMETYPE Name, 
     typename Container, 
