@@ -67,17 +67,31 @@ auto describe_json_class( TestClass ) {
  	>{};
 }
 
-std::string json_data = R"({
-    "i":5,
-    "d":2.2e4,
-    "b":false,
-    "s":"hello world",
-    "y":[1,2,3,4] 
-    })";
-std::string json_array_data = ...;
+int main( ) {
+    std::string json_data = R"({
+        "i":5,
+        "d":2.2e4,
+        "b":false,
+        "s":"hello world",
+        "y":[1,2,3,4] 
+        })";
+    std::string json_array_data = R"([{
+        "i":5,
+        "d":2.2e4,
+        "b":false,
+        "s":"hello world",
+        "y":[1,2,3,4] 
+        },{
+        "i":4,
+        "d":122e4,
+        "b":true,
+        "s":"goodbye world",
+        "y":[4,3,1,4] 
+        }])";
 
-TestClass test_class = daw::json::from_json<TestClass>( json_data );
-std::vector<TestClass> arry_of_test_class = daw::json::from_json_array<json_class<"", TestClass>>( json_data );
+    TestClass test_class = daw::json::from_json<TestClass>( json_data );
+    std::vector<TestClass> arry_of_test_class = daw::json::from_json_array<json_class<"", TestClass>>( json_data );
+}
 ```
 Both aggregate and normal construction is supported.  The description provides the values needed to construct your type and the order.  The order specified is the order they are placed into the constructor.  There are customization points to provide a way of constructing your type too(TODO discuss customization points)  A class like:
 
