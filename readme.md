@@ -147,7 +147,7 @@ auto describe_json_class( AggClass ) {
 	>{};
 
 int main( ) {
-	std::string json_array_data = ...;
+	std::string json_array_data = R"([{"a":5,"b":2.2},{"a":5,"b":3.14},{"a":5,"b":0.122e44},{"a":5334,"b":34342.2}])";
 	using iterator_t = daw::json::json_array_iterator<JsonElement<"", AggClass>>;
 	auto pos = std::find_if( iterator_t( json_array_data ), iterator_t( ),
 	    []( AggData const & element ) { return element.b > 1000.0; } );
