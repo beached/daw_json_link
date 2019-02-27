@@ -67,7 +67,13 @@ auto describe_json_class( TestClass ) {
  	>{};
 }
 
-std::string json_data = ...;
+std::string json_data = R"({
+    "i":5,
+    "d":2.2e4,
+    "b":false,
+    "s":"hello world",
+    "y":[1,2,3,4] 
+    })";
 std::string json_array_data = ...;
 
 TestClass test_class = daw::json::from_json<TestClass>( json_data );
