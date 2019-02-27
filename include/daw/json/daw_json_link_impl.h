@@ -88,6 +88,10 @@ namespace daw {
 #endif
 		namespace impl {
 			namespace {
+				namespace {
+					using std::to_string;
+				}
+
 				template<typename Container, typename OutputIterator>
 				constexpr OutputIterator copy_to_iterator( Container const &c,
 				                                           OutputIterator it ) {
