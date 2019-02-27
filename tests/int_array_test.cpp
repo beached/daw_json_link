@@ -88,4 +88,14 @@ int main( ) {
 	  json_sv );
 
 	std::cout << "element count 2: " << count2 << '\n';
+
+
+
+	using iterator2_t = daw::json::json_array_iterator<json_number<no_name, int>>;
+	std::string json_data2 = "[1,2,3,4]";
+	auto values = std::vector<int>( iterator2_t( json_data2 ), iterator2_t( ) );
+	for( auto i: values ) {
+		std::cout << i << ",\n";
+	}
+
 }
