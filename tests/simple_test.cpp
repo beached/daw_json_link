@@ -34,12 +34,8 @@ struct City {
 	float lat;
 	float lng;
 };
-static constexpr char const names0[] = "country";
-static constexpr char const names1[] = "name";
-static constexpr char const names2[] = "lat";
-static constexpr char const names3[] = "lng";
 
-constexpr auto describe_json_class( City ) noexcept {
+auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 #ifdef USECPP20
 	return class_description_t<json_string<"country", daw::string_view>,
@@ -47,6 +43,10 @@ constexpr auto describe_json_class( City ) noexcept {
 	                           json_number<"lat", float, NullValueOpt::never>,
 	                           json_number<"lng", float, NullValueOpt::never>>{};
 #else
+	static constexpr char const names0[] = "country";
+	static constexpr char const names1[] = "name";
+	static constexpr char const names2[] = "lat";
+	static constexpr char const names3[] = "lng";
 	return class_description_t<json_string<names0, daw::string_view>,
 	                           json_string<names1, daw::string_view>,
 	                           json_number<names2, float, NullValueOpt::never>,
