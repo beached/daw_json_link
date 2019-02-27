@@ -141,4 +141,84 @@ std::string json_data = to_json( value );
 std::vector<AggData> values = //...;
 std::string json_array_data = to_json_array( values );
 ```
-	
+
+## Json Data Types
+The json types match those of the underlying JSON data types from the standard.
+
+###json_number
+```cpp
+template<JSONNAMETYPE Name, 
+    typename T = double, 
+    NullValueOpt Nullable = NullValueOpt::never,
+    typename Constructor = daw::construct_a<T>>
+struct json_number
+``` 
+The defaults for json_number will construct a ```double``` with the supplied name.  However, there are some optimization with using an exact match arithmetic type like a float or int.  Integer parsing is faster than floating point if you know you will always get whole numbers.
+```NullValueOpt``` controls is nulls are allowed(this includes missing values)
+```Constructor``` the default is almost always correct here but this will constuct your type.
+
+###json_bool
+```cpp
+template<JSONNAMETYPE Name, 
+    typename T = bool, 
+    NullValueOpt Nullable = NullValueOpt::never,
+    typename Constructor = daw::construct_a<T>>
+struct json_bool
+``` 
+The defaults for json_bool will construct a ```bool``` with the supplied name.  The resulting type T must be constructable from a bool.
+```NullValueOpt``` controls is nulls are allowed(this includes missing values)
+```Constructor``` the default is almost always correct here but this will constuct your type.
+
+###json_string
+```cpp
+template<JSONNAMETYPE Name, 
+    typename T = std::string, 
+    NullValueOpt Nullable = NullValueOpt::never,
+    typename Constructor = daw::construct_a<T>>
+struct json_string
+``` 
+The defaults for json_string will construct a ```std::string``` with the supplied name.  The resulting type T must be constructable from two arguments(a ```char const *``` and a ```size_t```).
+```NullValueOpt``` controls is nulls are allowed(this includes missing values)
+```Constructor``` the default is almost always correct here but this will constuct your type.
+
+###json_date
+```cpp
+template<JSONNAMETYPE Name, 
+    typename T = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>, 
+    NullValueOpt Nullable = NullValueOpt::never,
+    typename Constructor = daw::construct_a<T>>
+struct json_date
+``` 
+json_date is a special class for when a json string fields is known to have timestamp data.
+The defaults for json_date will construct a ```std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>``` with the supplied name.  The resulting type T must be constructable from two arguments(a ```char const *``` and a ```size_t```).
+```NullValueOpt``` controls is nulls are allowed(this includes missing values)
+```Constructor``` the default parses javascript timestamps.  Supplying a functor that takes the ptr, size combo will allow other result types and date formats.
+
+###json_class
+```cpp
+template<JSONNAMETYPE Name, 
+    typename T,
+    NullValueOpt Nullable = NullValueOpt::never,
+    typename Constructor = daw::construct_a<T>>
+struct json_date
+``` 
+```json_class``` requires a type argument T that is a type that has an overload of the ```describe_json_class( T )```.
+```NullValueOpt``` controls is nulls are allowed(this includes missing values)
+```Constructor``` the default is almost always correct here but this will constuct your type.
+
+###json_array
+```cpp
+template<JSONNAMETYPE Name, 
+    typename Container, 
+    typename JsonElement,
+    NullValueOpt Nullable = NullValueOpt::never,
+    typename Constructor = daw::construct_a<Container>,
+    typename Appender = impl::basic_appender<Container>>
+struct json_array 
+```
+```json_array```'s are unique in the types because they have more info that is needed.
+```Container``` is the type of container the ```JsonElement```'s are placed into, such as ```std::vector```
+```JsonElement``` one of the above json types with daw::json::no_name or "" as it's name(actually does not matter as it is ignored).  This is the item type in the sequence
+```NullValueOpt``` controls is nulls are allowed(this includes missing values)
+```Constructor``` the default is almost always correct here but this will constuct your type.
+
