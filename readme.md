@@ -2,6 +2,31 @@
 
 ## Note: this requires C++20 which isn't released yet and is still early testing.
 ## Note2: Just backported to allow C++17.  Names must be static constexpr string literals with names, instead of bare string literals  e.g.
+
+### Installing and Requirements
+## Requirements
+* C++ 17 compiler, C++ 20 for enhanced names
+* git
+* cmake
+* Probably gcc/clang.  Have not yet tested on MSVC
+
+## Installing(Linux/Mac commandline)
+
+The following will build the tests
+```
+git clone https://github.com/beached/daw_json_link
+cd ./daw_json_link
+mkdir build
+cd ./build
+cmake ..
+make full 
+```
+After the build there the examples can be tested.  ```city_test_bin``` requires the path to the cities json file.
+```
+./city_test_bin ../tests/cities.json
+```
+
+## Code Examples
 ```cpp
 static constexpr char const name_a[] = "name_a";
 
@@ -222,26 +247,4 @@ struct json_array
 ```NullValueOpt``` controls is nulls are allowed(this includes missing values)
 ```Constructor``` the default is almost always correct here but this will constuct your type.
 
-### Installing and Requirements
 
-## Requirements
-* C++ 17 compiler, C++ 20 for enhanced names
-* git
-* cmake
-* Probably gcc/clang.  Have not yet tested on MSVC
-
-## Installing(Linux/Mac commandline)
-
-The following will build the tests
-```
-git clone https://github.com/beached/daw_json_link
-cd ./daw_json_link
-mkdir build
-cd ./build
-cmake ..
-make full 
-```
-After the build there the examples can be tested.  ```city_test_bin``` requires the path to the cities json file.
-```
-./city_test_bin ../tests/cities.json
-```
