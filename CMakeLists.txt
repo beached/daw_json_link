@@ -43,6 +43,7 @@ include_directories( ${HEADER_FOLDER} )
 
 set( HEADER_FILES
 	${HEADER_FOLDER}/daw/json/daw_json_link.h
+	${HEADER_FOLDER}/daw/json/daw_json_link_impl.h
 )
 
 add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
