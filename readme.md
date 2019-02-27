@@ -9,6 +9,7 @@
 * git
 * cmake
 * GCC(8/9)/Clang(7) have been tested.  Have not yet tested on MSVC
+# Curl for date library
 
 ## Installing(Linux/Mac commandline)
 
