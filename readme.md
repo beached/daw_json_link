@@ -43,8 +43,8 @@ auto describe_json_class( TestClass ) {
 std::string json_data = ...;
 std::string json_array_data = ...;
 
-auto test_class = daw::json::from_json<TestClass>( json_data );
-auto arry_of_test_class = daw::json::from_json_array<json_class<"", TestClass>>( json_data );
+TestClass test_class = daw::json::from_json<TestClass>( json_data );
+std::vector<TestClass> arry_of_test_class = daw::json::from_json_array<json_class<"", TestClass>>( json_data );
 ```
 Both aggregate and normal construction is supported.  The description provides the values needed to construct your type and the order.  The order specified is the order they are placed into the constructor.  There are customization points to provide a way of constructing your type too(TODO discuss customization points)  A class like:
 
@@ -82,7 +82,7 @@ auto describe_json_class( AggClass ) {
 	>{};
 
 int main( ) {
-	auto json_array_data = ...;
+	std::string json_array_data = ...;
 	using iterator_t = daw::json::json_array_iterator<JsonElement<"", AggClass>>;
 	auto pos = std::find_if( iterator_t( json_array_data ), iterator_t( ),
 	    []( AggData const & element ) { return element.b > 1000.0; } );
@@ -117,10 +117,10 @@ auto to_json_data( AggClass const & ) {
 }
 //...
 AggData value = //...;
-auto json_data = to_json( value );
+std::string json_data = to_json( value );
 
 // or
 std::vector<AggData> values = //...;
-auto json_array_data = to_json_array( values );
+std::string json_array_data = to_json_array( values );
 ```
 	
