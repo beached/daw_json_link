@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2018-2019 Darrell Wright
+// Copyright (c) 2019 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -98,7 +98,8 @@ namespace daw {
 				}
 
 				constexpr char to_lower( char c ) noexcept {
-					return c | ' ';
+					return static_cast<char>( static_cast<unsigned>( c ) |
+					                          static_cast<unsigned>( ' ' ) );
 				}
 
 				template<typename Result>
@@ -117,7 +118,7 @@ namespace daw {
 				constexpr Result parse_real( daw::string_view sv ) noexcept {
 					// [-]WHOLE[.FRACTION][(e|E)EXPONENT]
 
-					double const whole_part =
+					auto const whole_part =
 					  static_cast<double>( daw::parser::parse_int<int64_t>(
 					    sv.pop_front( sv.find_first_of( ".eE" ) ) ) );
 
@@ -273,7 +274,7 @@ namespace daw {
 
 				constexpr daw::string_view skip_other( daw::string_view &sv ) {
 					auto pos = sv.find_first_of( ",}]\n" );
-					exception::precondition_check( pos != sv.npos, "Invalid class" );
+					exception::precondition_check( pos != daw::string_view::npos, "Invalid class" );
 					auto result = sv.pop_front( pos );
 					sv.remove_prefix( );
 					sv = parser::trim_left( sv );

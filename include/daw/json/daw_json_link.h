@@ -434,7 +434,7 @@ namespace daw {
 				return *this;
 			}
 
-			constexpr json_array_iterator &operator++( int ) {
+			constexpr json_array_iterator operator++( int ) {
 				auto tmp = *this;
 				operator++( );
 				return tmp;
