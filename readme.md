@@ -14,7 +14,7 @@ static constexpr char const name_a[] = "name_a";
 * git
 * cmake
 * GCC(8/9)/Clang(7) have been tested.  Have not yet tested on MSVC
-# Curl for date library
+* Curl for date library
 
 ## Installing(Linux/Mac commandline)
 
