@@ -39,6 +39,8 @@
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
+#include <daw/iso8601/daw_date_formatting.h>
+#include <daw/iso8601/daw_date_parsing.h>
 #include <daw/iterator/daw_back_inserter.h>
 
 namespace daw {
@@ -556,7 +558,7 @@ namespace daw {
 
 				*it++ = '"';
 				it = impl::copy_to_iterator( daw::string_view( JsonMember::name ), it );
-				it = impl::copy_to_iterator( "\":", it );
+				it = impl::copy_to_iterator( daw::string_view( "\":" ), it );
 				JsonMember::to_string( it, std::get<pos>( args ) );
 				if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
 					*it++ = ',';
@@ -584,7 +586,7 @@ namespace daw {
 				static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 				               "Argument count is incorrect" );
 				return serialize_json_class(
-				  it, std::index_sequence_for<JsonMembers...>{}, std::move( args ) );
+				  it, std::index_sequence_for<Args...>{}, std::move( args ) );
 			}
 
 			template<typename Result>
@@ -666,10 +668,20 @@ namespace daw {
 			}
 		};
 
+		struct parse_js_date {
+			constexpr std::chrono::time_point<std::chrono::system_clock,
+			                                  std::chrono::milliseconds>
+			operator( )( char const *ptr, size_t sz ) const {
+				return daw::date_parsing::parse_javascript_timestamp(
+				  daw::string_view( ptr, sz ) );
+			}
+		};
+
 		template<JSONNAMETYPE Name,
-		         typename T = std::chrono::system_clock::time_point,
+		         typename T = std::chrono::time_point<std::chrono::system_clock,
+		                                              std::chrono::milliseconds>,
 		         NullValueOpt Nullable = NullValueOpt::never,
-		         typename Constructor = daw::construct_a<T>>
+		         typename Constructor = parse_js_date>
 		struct json_date {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
@@ -682,15 +694,19 @@ namespace daw {
 			template<typename OutputIterator>
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           parse_to_t const &value ) {
-				*it++ = ',';
 				using ::daw::json::is_null;
 				if( is_null( value ) ) {
 					it = impl::copy_to_iterator( daw::string_view( "null" ), it );
 				} else {
-					using std::to_string;
-					it = impl::copy_to_iterator( to_string( value ), it );
+					*it++ = '"';
+					using namespace ::daw::date_formatting::formats;
+					it =
+					  impl::copy_to_iterator( ::daw::date_formatting::fmt_string(
+					                            "{0}T{1}:{2}:{3}Z", value, YearMonthDay{},
+					                            Hour{}, Minute{}, Second{} ),
+					                          it );
+					*it++ = '"';
 				}
-				*it++ = ',';
 				return it;
 			}
 		};

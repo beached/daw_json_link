@@ -10,6 +10,15 @@ externalproject_add(
 )
 
 externalproject_add(
+    iso8601_parsing_prj
+    GIT_REPOSITORY "https://github.com/beached/iso8601_parsing.git"
+    SOURCE_DIR "${CMAKE_BINARY_DIR}/dependencies/iso8601_parsing"
+    GIT_TAG "master"
+    INSTALL_DIR "${CMAKE_BINARY_DIR}/install"
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
+)
+
+externalproject_add(
 	date_prj
 	GIT_REPOSITORY "https://github.com/howardhinnant/date.git"
 	SOURCE_DIR "${CMAKE_BINARY_DIR}/dependencies/date"

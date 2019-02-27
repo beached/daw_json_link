@@ -45,19 +45,25 @@ struct test_001_t {
 	daw::bounded_vector_t<int, 10> y{};
 	std::optional<int> o{};
 	std::optional<int> o2{};
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>
+	  dte{};
 
-	constexpr test_001_t( ) noexcept = default;
+	constexpr test_001_t( ) = default;
 
 	constexpr test_001_t( int Int, double Double, bool Bool, daw::string_view S,
 	                      daw::bounded_vector_t<int, 10> Y, std::optional<int> O,
-	                      std::optional<int> O2 ) noexcept
+	                      std::optional<int> O2,
+	                      std::chrono::time_point<std::chrono::system_clock,
+	                                              std::chrono::milliseconds>
+	                        D ) noexcept
 	  : i( Int )
 	  , d( Double )
 	  , b( Bool )
 	  , s( S )
 	  , y( Y )
 	  , o( O )
-	  , o2( O2 ) {}
+	  , o2( O2 )
+	  , dte( D ) {}
 };
 
 auto describe_json_class( test_001_t ) noexcept {
@@ -68,7 +74,8 @@ auto describe_json_class( test_001_t ) noexcept {
 	  json_string<"s", daw::string_view>,
 	  json_array<"y", daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
 	  json_number<"o", std::optional<int>, NullValueOpt::allowed>,
-	  json_number<"o2", std::optional<int>, NullValueOpt::allowed>>{};
+	  json_number<"o2", std::optional<int>, NullValueOpt::allowed>,
+	  json_date<"dte">>{};
 #else
 	constexpr static char const i[] = "i";
 	constexpr static char const d[] = "d";
@@ -77,17 +84,19 @@ auto describe_json_class( test_001_t ) noexcept {
 	constexpr static char const y[] = "y";
 	constexpr static char const o[] = "o";
 	constexpr static char const o2[] = "o2";
+	constexpr static char const dte[] = "dte";
 	return class_description_t<
 	  json_number<i, int>, json_number<d>, json_bool<b>,
 	  json_string<s, daw::string_view>,
 	  json_array<y, daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
 	  json_number<o, std::optional<int>, NullValueOpt::allowed>,
-	  json_number<o2, std::optional<int>, NullValueOpt::allowed>>{};
+	  json_number<o2, std::optional<int>, NullValueOpt::allowed>,
+	  json_date<dte>>{};
 #endif
 }
 
 auto to_json_data( test_001_t const &v ) {
-	return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.y, v.o, v.o2 );
+	return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.y, v.o, v.o2, v.dte );
 }
 
 struct test_002_t {
@@ -117,7 +126,8 @@ constexpr auto const json_data =
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
-			"o": 1344
+			"o": 1344,
+			"dte": "2016-12-31T01:02:03.343Z"
 	  })";
 
 constexpr auto const json_data_array =
@@ -131,7 +141,8 @@ constexpr auto const json_data_array =
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
-			"o": 1344
+			"o": 1344,
+			"dte": "2016-12-31T01:02:03.343Z"
 	  },
 	  {
 	    "i": 55,
@@ -142,7 +153,8 @@ constexpr auto const json_data_array =
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
-			"o": 1344
+			"o": 1344,
+			"dte": "2017-12-31T01:02:03.343Z"
 	  },{
 	    "i": 55,
 	    "d": -2.2e4,
@@ -152,7 +164,8 @@ constexpr auto const json_data_array =
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
-			"o": 1344
+			"o": 1344,
+			"dte": "2018-12-31T01:02:03.343Z"
 	  },{
 	    "i": 55,
 	    "d": 2.2e-5,
@@ -162,7 +175,8 @@ constexpr auto const json_data_array =
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
-			"o": 1344
+			"o": 1344,
+			"dte": "2019-11-31T01:02:03.343Z"
 	  },{
 	    "i": 55,
 	    "d": 2.2,
@@ -172,7 +186,8 @@ constexpr auto const json_data_array =
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
-			"o": 1344
+			"o": 1322,
+			"dte": "2010-06-31T01:02:03.343Z"
 	  }])";
 
 int main( ) {
@@ -190,7 +205,7 @@ int main( ) {
 	std::cout << "as array\n";
 	std::cout << to_json_array( ary ) << "\n\n";
 
-	test_002_t t2{ data };
+	test_002_t t2{data};
 	t2.a.o2 = std::nullopt;
-	std::cout  << to_json( t2 ) << '\n';
+	std::cout << to_json( t2 ) << '\n';
 }
