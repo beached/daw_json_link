@@ -787,6 +787,7 @@ namespace daw {
 			return result;
 		}
 
+		/// allow iteration over an array of json 
 		template<typename JsonElement>
 		class json_array_iterator {
 			daw::string_view m_state{};
