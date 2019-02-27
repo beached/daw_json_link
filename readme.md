@@ -8,7 +8,7 @@
 * C++ 17 compiler, C++ 20 for enhanced names
 * git
 * cmake
-* Probably gcc/clang.  Have not yet tested on MSVC
+* GCC(8/9)/Clang(7) have been tested.  Have not yet tested on MSVC
 
 ## Installing(Linux/Mac commandline)
 
