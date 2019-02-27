@@ -46,21 +46,25 @@ set( HEADER_FILES
 )
 
 add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
+add_custom_target( full )
 
 add_executable( daw_json_link_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_link_test.cpp )
 add_dependencies( daw_json_link_test_bin dependency_stub )
 add_test( daw_json_link_test daw_json_link_test_bin )
 add_dependencies( check daw_json_link_test_bin )
+add_dependencies( full daw_json_link_test_bin )
 
 add_executable( city_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/city_test.cpp )
 add_dependencies( city_test_bin dependency_stub )
 add_test( city_test city_test_bin )
 add_dependencies( check city_test_bin )
+add_dependencies( full city_test_bin )
 
 add_executable( int_array_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/int_array_test.cpp )
 add_dependencies( int_array_test_bin dependency_stub )
 add_test( int_array_test int_array_test_bin )
 add_dependencies( check int_array_test_bin )
+add_dependencies( full int_array_test_bin )
 
 install( DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/ )
 
