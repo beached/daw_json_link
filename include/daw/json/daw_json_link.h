@@ -155,7 +155,7 @@ namespace daw {
 				*it++ = '"';
 				it = impl::copy_to_iterator( daw::string_view( JsonMember::name ), it );
 				it = impl::copy_to_iterator( daw::string_view( "\":" ), it );
-				JsonMember::to_string( it, std::get<pos>( args ) );
+				it = JsonMember::to_string( it, std::get<pos>( args ) );
 				if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
 					*it++ = ',';
 				}
