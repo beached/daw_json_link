@@ -361,9 +361,11 @@ namespace daw {
 			}
 		};
 
-		template<JSONNAMETYPE Name, typename Enum, typename EnumBase = int,
+		template<JSONNAMETYPE Name, typename Enum,
 		         typename Converter = enum_converter_t<Enum>>
 		struct json_enum {
+			static_assert( std::is_enum_v<Enum>,
+			               "Enum is requried to be an enum or enum class" );
 			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
@@ -379,7 +381,7 @@ namespace daw {
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           parse_to_t const &value ) {
 				using ::daw::json::to_strings::to_string;
-				return impl::copy_to_iterator( Converter::to( value ), it );
+				return impl::copy_to_iterator( Converter{}.to( value ), it );
 			}
 		};
 
