@@ -102,6 +102,30 @@ namespace daw {
 					}
 					return it;
 				}
+				
+				template<typename JsonMember, typename OutputIterator, typename T>
+				constexpr OutputIterator member_to_string( OutputIterator &&it,
+				                                           T &&value ) {
+					it = JsonMember::to_string( std::forward<OutputIterator>( it ),
+					                            std::forward<T>( value ) );
+					return std::move( it );
+				}
+
+				template<typename JsonMember, size_t pos, typename OutputIterator,
+				         typename... Args>
+				void make_json_string( OutputIterator it, std::tuple<Args...> &args ) {
+
+					static_assert( is_a_json_type_v<JsonMember>,
+					               "Unsupported data type" );
+					*it++ = '"';
+					it = copy_to_iterator( daw::string_view( JsonMember::name ), it );
+					it = copy_to_iterator( daw::string_view( "\":" ), it );
+					it = member_to_string<JsonMember>( std::move( it ),
+					                                   std::get<pos>( args ) );
+					if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
+						*it++ = ',';
+					}
+				}
 
 				constexpr char to_lower( char c ) noexcept {
 					return static_cast<char>( static_cast<unsigned>( c ) |

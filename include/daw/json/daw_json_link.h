@@ -146,28 +146,13 @@ namespace daw {
 				return construct_a<Result>{}( parse_item<Is>( locations )... );
 			}
 
-			template<typename JsonMember, size_t pos, typename OutputIterator,
-			         typename... Args>
-			static constexpr void make_json_string( OutputIterator it,
-			                                        std::tuple<Args...> &args ) {
-
-				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
-				*it++ = '"';
-				it = impl::copy_to_iterator( daw::string_view( JsonMember::name ), it );
-				it = impl::copy_to_iterator( daw::string_view( "\":" ), it );
-				it = JsonMember::to_string( it, std::get<pos>( args ) );
-				if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
-					*it++ = ',';
-				}
-			}
-
 			template<typename OutputIterator, size_t... Is, typename... Args>
 			static constexpr OutputIterator
 			serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
 			                      std::tuple<Args...> &&args ) {
 
 				*it++ = '{';
-				(void)( ( make_json_string<daw::traits::nth_element<Is, JsonMembers...>,
+				(void)( ( impl::make_json_string<daw::traits::nth_element<Is, JsonMembers...>,
 				                           Is>( it, args ),
 				          0 ) +
 				        ... );
