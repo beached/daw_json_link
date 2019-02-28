@@ -73,9 +73,8 @@ auto describe_json_class( test_001_t ) noexcept {
 	  json_number<"i", int>, json_number<"d">, json_bool<"b">,
 	  json_string<"s", daw::string_view>,
 	  json_array<"y", daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
-	  json_number<"o", std::optional<int>, NullValueOpt::allowed>,
-	  json_number<"o2", std::optional<int>, NullValueOpt::allowed>,
-	  json_date<"dte">>{};
+	  json_nullable<json_number<"o", std::optional<int>>>,
+	  json_nullable<json_number<"o2", std::optional<int>>>, json_date<"dte">>{};
 #else
 	constexpr static char const i[] = "i";
 	constexpr static char const d[] = "d";
@@ -89,9 +88,8 @@ auto describe_json_class( test_001_t ) noexcept {
 	  json_number<i, int>, json_number<d>, json_bool<b>,
 	  json_string<s, daw::string_view>,
 	  json_array<y, daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
-	  json_number<o, std::optional<int>, NullValueOpt::allowed>,
-	  json_number<o2, std::optional<int>, NullValueOpt::allowed>,
-	  json_date<dte>>{};
+	  json_nullable<json_number<o, std::optional<int>>>,
+	  json_nullable<json_number<o2, std::optional<int>>>, json_date<dte>>{};
 #endif
 }
 
@@ -116,17 +114,17 @@ auto to_json_data( test_002_t const &v ) {
 	return std::forward_as_tuple( v.a );
 }
 
-
 struct test_003_t {
 	std::optional<test_001_t> a;
 };
 auto describe_json_class( test_003_t ) noexcept {
 	using namespace daw::json;
 #ifdef USECPP20
-	return class_description_t<json_class<"a", test_001_t, NullValueOpt::allowed>>{};
+	return class_description_t<
+	  json_nullable<json_class<"a", test_001_t>>>{};
 #else
 	constexpr static char const a[] = "a";
-	return class_description_t<json_class<a, test_001_t, NullValueOpt::allowed>>{};
+	return class_description_t<json_nullable<json_class<a, test_001_t>>>{};
 #endif
 }
 
