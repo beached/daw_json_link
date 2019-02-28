@@ -373,7 +373,9 @@ namespace daw {
 		constexpr Result to_json( T &&value ) {
 			static_assert(
 			  impl::has_json_parser_description_v<T>,
-			  "A function call describe_json_class must exist for type." );
+			  "A function called describe_json_class must exist for type." );
+			static_assert( impl::has_json_to_json_data_v<T>,
+			               "A function called to_json_data must exist for type." );
 
 			Result result{};
 			impl::json_parser_description_t<T>::template serialize(
