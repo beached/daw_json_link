@@ -180,7 +180,15 @@ namespace daw {
 
 				template<typename T>
 				inline constexpr bool has_json_parser_description_v =
-				  is_detected_v<json_parser_description_t, T>;
+				  daw::is_detected_v<json_parser_description_t, T>;
+
+				template<typename T>
+				using json_parser_to_json_data_t =
+				  decltype( to_json_data( std::declval<T &>( ) ) );
+
+				template<typename T>
+				inline constexpr bool has_json_to_json_data_v =
+				  daw::is_detected_v<json_parser_to_json_data_t, T>;
 
 				template<JsonParseTypes v>
 				using ParseTag = std::integral_constant<JsonParseTypes, v>;
@@ -278,7 +286,8 @@ namespace daw {
 
 				constexpr daw::string_view skip_other( daw::string_view &sv ) {
 					auto pos = sv.find_first_of( ",}]\n" );
-					exception::precondition_check( pos != daw::string_view::npos, "Invalid class" );
+					exception::precondition_check( pos != daw::string_view::npos,
+					                               "Invalid class" );
 					auto result = sv.pop_front( pos );
 					sv.remove_prefix( );
 					sv = parser::trim_left( sv );
