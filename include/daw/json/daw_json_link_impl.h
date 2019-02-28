@@ -441,7 +441,7 @@ namespace daw {
 					using constructor_t = typename ParseInfo::constructor_t;
 					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
 
-					return ParseInfo::converter_t::from( pos.value_str );
+					return typename ParseInfo::converter_t{}.from( pos.value_str );
 				}
 
 				template<typename ParseInfo>
