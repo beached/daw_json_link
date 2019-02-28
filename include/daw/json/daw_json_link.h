@@ -272,6 +272,10 @@ namespace daw {
 		         NullValueOpt Nullable = NullValueOpt::never,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_string {
+			static_assert(
+			  std::is_invocable_v<Constructor, char const *, size_t>,
+			  "Constructor must be callable with a char const * and a size_t" );
+
 			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
