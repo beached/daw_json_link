@@ -197,6 +197,10 @@ namespace daw {
 		         typename Constructor = daw::construct_a<T>>
 		struct json_number {
 			// TODO maybe convertable or constructible is better
+			static_assert(
+			  std::is_invocable_v<Constructor, T>,
+			  "Constructor must be callable with T" );
+
 			static_assert( std::is_arithmetic_v<T> or
 			                 Nullable == NullValueOpt::allowed,
 			               "Number must be an arithmentic type" );
@@ -235,6 +239,10 @@ namespace daw {
 		         NullValueOpt Nullable = NullValueOpt::never,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_bool {
+			static_assert(
+			  std::is_invocable_v<Constructor, T>,
+			  "Constructor must be callable with T" );
+
 			static_assert( std::is_convertible_v<bool, T>,
 			               "Supplied result type must be convertable from bool" );
 			using i_am_a_json_type = void;
@@ -322,6 +330,10 @@ namespace daw {
 		         NullValueOpt Nullable = NullValueOpt::never,
 		         typename Constructor = parse_js_date>
 		struct json_date {
+			static_assert(
+			  std::is_invocable_v<Constructor, char const *, size_t>,
+			  "Constructor must be callable with a char const * and a size_t" );
+
 			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
