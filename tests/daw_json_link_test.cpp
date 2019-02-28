@@ -156,8 +156,9 @@ constexpr blah_t from_string( daw::tag_t<blah_t>, daw::string_view sv ) noexcept
 		return blah_t::b;
 	case 'c':
 		return blah_t::c;
+	default:
+		std::terminate( );
 	}
-	std::terminate( );
 }
 
 struct e_test_001_t {
