@@ -113,14 +113,19 @@ namespace daw {
 					                          static_cast<unsigned>( ' ' ) );
 				}
 
-				template<typename Optional>
-				using deref_t =
-				  decltype( *std::declval<daw::remove_cvref_t<Optional> &>( ) );
+				template<typename T>
+				constexpr auto deref_detect( T &&value ) noexcept
+				  -> decltype( *value ) {
+					return *value;
+				}
 
-				template<typename Optional, typename Expected>
+				template<typename Optional>
+				using deref_t = decltype(
+				  deref_detect( std::declval<daw::remove_cvref_t<Optional> &>( ) ) );
+
+				template<typename Optional>
 				inline constexpr bool is_valid_optional_v =
-				  daw::is_detected_v<deref_t<Optional>> and
-				    std::is_same_v<Expected, daw::remove_cvref_t<deref_t<Optional>>>;
+				  daw::is_detected_v<deref_t, Optional>;
 
 				template<typename Result>
 				constexpr Result parse_signed( daw::string_view sv ) noexcept {

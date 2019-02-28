@@ -217,16 +217,14 @@ namespace daw {
 				using std::to_string;
 				return impl::copy_to_iterator( to_string( value ), it );
 			}
+
 			template<typename OutputIterator, typename Optional,
-			         daw::enable_if_t<
-			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			         daw::enable_if_t<nullable, impl::is_valid_optional_v<Optional>> =
+			           nullptr>
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           Optional const &value ) {
-				static_assert(
-				  nullable,
-				  "Attempt to use a non-nullable json value with a nullable type" );
 				if( !value ) {
-					it = impl::copy_to_iterator( it, "null" );
+					it = impl::copy_to_iterator( daw::string_view( "null" ), it );
 					return it;
 				}
 				return to_string( it, *value );
@@ -256,16 +254,14 @@ namespace daw {
 				}
 				return impl::copy_to_iterator( daw::string_view( "false" ), it );
 			}
+
 			template<typename OutputIterator, typename Optional,
-			         daw::enable_if_t<
-			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			         daw::enable_if_t<nullable, impl::is_valid_optional_v<Optional>> =
+			           nullptr>
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           Optional const &value ) {
-				static_assert(
-				  nullable,
-				  "Attempt to use a non-nullable json value with a nullable type" );
 				if( !value ) {
-					it = impl::copy_to_iterator( it, "null" );
+					it = impl::copy_to_iterator( daw::string_view( "null" ), it );
 					return it;
 				}
 				return to_string( it, *value );
@@ -293,16 +289,14 @@ namespace daw {
 				*it++ = '"';
 				return it;
 			}
+
 			template<typename OutputIterator, typename Optional,
-			         daw::enable_if_t<
-			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			         daw::enable_if_t<nullable, impl::is_valid_optional_v<Optional>> =
+			           nullptr>
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           Optional const &value ) {
-				static_assert(
-				  nullable,
-				  "Attempt to use a non-nullable json value with a nullable type" );
 				if( !value ) {
-					it = impl::copy_to_iterator( it, "null" );
+					it = impl::copy_to_iterator( daw::string_view( "null" ), it );
 					return it;
 				}
 				return to_string( it, *value );
@@ -351,16 +345,14 @@ namespace daw {
 				}
 				return it;
 			}
+
 			template<typename OutputIterator, typename Optional,
-			         daw::enable_if_t<
-			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			         daw::enable_if_t<nullable, impl::is_valid_optional_v<Optional>> =
+			           nullptr>
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           Optional const &value ) {
-				static_assert(
-				  nullable,
-				  "Attempt to use a non-nullable json value with a nullable type" );
 				if( !value ) {
-					it = impl::copy_to_iterator( it, "null" );
+					it = impl::copy_to_iterator( daw::string_view( "null" ), it );
 					return it;
 				}
 				return to_string( it, *value );
@@ -389,15 +381,12 @@ namespace daw {
 			}
 
 			template<typename OutputIterator, typename Optional,
-			         daw::enable_if_t<
-			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			         daw::enable_if_t<nullable, impl::is_valid_optional_v<Optional>> =
+			           nullptr>
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           Optional const &value ) {
-				static_assert(
-				  nullable,
-				  "Attempt to use a non-nullable json value with a nullable type" );
 				if( !value ) {
-					it = impl::copy_to_iterator( it, "null" );
+					it = impl::copy_to_iterator( daw::string_view( "null" ), it );
 					return it;
 				}
 				return to_string( it, *value );
@@ -436,16 +425,14 @@ namespace daw {
 				*it++ = ']';
 				return it;
 			}
+
 			template<typename OutputIterator, typename Optional,
-			         daw::enable_if_t<
-			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			         daw::enable_if_t<nullable, impl::is_valid_optional_v<Optional>> =
+			           nullptr>
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           Optional const &value ) {
-				static_assert(
-				  nullable,
-				  "Attempt to use a non-nullable json value with a nullable type" );
 				if( !value ) {
-					it = impl::copy_to_iterator( it, "null" );
+					it = impl::copy_to_iterator( daw::string_view( "null" ), it );
 					return it;
 				}
 				return to_string( it, *value );
