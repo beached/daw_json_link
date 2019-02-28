@@ -217,6 +217,20 @@ namespace daw {
 				using std::to_string;
 				return impl::copy_to_iterator( to_string( value ), it );
 			}
+			template<typename OutputIterator, typename Optional,
+			         daw::enable_if_t<
+			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           Optional const &value ) {
+				static_assert(
+				  nullable,
+				  "Attempt to use a non-nullable json value with a nullable type" );
+				if( !value ) {
+					it = impl::copy_to_iterator( it, "null" );
+					return it;
+				}
+				return to_string( it, *value );
+			}
 		};
 
 		template<JSONNAMETYPE Name, typename T = bool,
@@ -242,6 +256,20 @@ namespace daw {
 				}
 				return impl::copy_to_iterator( daw::string_view( "false" ), it );
 			}
+			template<typename OutputIterator, typename Optional,
+			         daw::enable_if_t<
+			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           Optional const &value ) {
+				static_assert(
+				  nullable,
+				  "Attempt to use a non-nullable json value with a nullable type" );
+				if( !value ) {
+					it = impl::copy_to_iterator( it, "null" );
+					return it;
+				}
+				return to_string( it, *value );
+			}
 		};
 
 		template<JSONNAMETYPE Name, typename T = std::string,
@@ -264,6 +292,20 @@ namespace daw {
 				it = impl::copy_to_iterator( value, it );
 				*it++ = '"';
 				return it;
+			}
+			template<typename OutputIterator, typename Optional,
+			         daw::enable_if_t<
+			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           Optional const &value ) {
+				static_assert(
+				  nullable,
+				  "Attempt to use a non-nullable json value with a nullable type" );
+				if( !value ) {
+					it = impl::copy_to_iterator( it, "null" );
+					return it;
+				}
+				return to_string( it, *value );
 			}
 		};
 
@@ -309,6 +351,20 @@ namespace daw {
 				}
 				return it;
 			}
+			template<typename OutputIterator, typename Optional,
+			         daw::enable_if_t<
+			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           Optional const &value ) {
+				static_assert(
+				  nullable,
+				  "Attempt to use a non-nullable json value with a nullable type" );
+				if( !value ) {
+					it = impl::copy_to_iterator( it, "null" );
+					return it;
+				}
+				return to_string( it, *value );
+			}
 		};
 
 		template<JSONNAMETYPE Name, typename T,
@@ -330,6 +386,21 @@ namespace daw {
 
 				return impl::json_parser_description_t<parse_to_t>::template serialize(
 				  it, to_json_data( value ) );
+			}
+
+			template<typename OutputIterator, typename Optional,
+			         daw::enable_if_t<
+			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           Optional const &value ) {
+				static_assert(
+				  nullable,
+				  "Attempt to use a non-nullable json value with a nullable type" );
+				if( !value ) {
+					it = impl::copy_to_iterator( it, "null" );
+					return it;
+				}
+				return to_string( it, *value );
 			}
 		};
 
@@ -364,6 +435,20 @@ namespace daw {
 				}
 				*it++ = ']';
 				return it;
+			}
+			template<typename OutputIterator, typename Optional,
+			         daw::enable_if_t<
+			           impl::is_valid_optional_v<Optional, parse_to_t>> = nullptr>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           Optional const &value ) {
+				static_assert(
+				  nullable,
+				  "Attempt to use a non-nullable json value with a nullable type" );
+				if( !value ) {
+					it = impl::copy_to_iterator( it, "null" );
+					return it;
+				}
+				return to_string( it, *value );
 			}
 		};
 

@@ -63,7 +63,8 @@ namespace daw {
 		using is_a_json_type_detect = typename T::i_am_a_json_type;
 
 		template<typename T>
-		inline constexpr bool is_a_json_type_v = daw::is_detected_v<is_a_json_type_detect, T>;	
+		inline constexpr bool is_a_json_type_v =
+		  daw::is_detected_v<is_a_json_type_detect, T>;
 
 		template<typename T>
 		bool is_null( std::optional<T> const &v ) {
@@ -111,6 +112,15 @@ namespace daw {
 					return static_cast<char>( static_cast<unsigned>( c ) |
 					                          static_cast<unsigned>( ' ' ) );
 				}
+
+				template<typename Optional>
+				using deref_t =
+				  decltype( *std::declval<daw::remove_cvref_t<Optional> &>( ) );
+
+				template<typename Optional, typename Expected>
+				inline constexpr bool is_valid_optional_v =
+				  daw::is_detected_v<deref_t<Optional>> and
+				    std::is_same_v<Expected, daw::remove_cvref_t<deref_t<Optional>>>;
 
 				template<typename Result>
 				constexpr Result parse_signed( daw::string_view sv ) noexcept {

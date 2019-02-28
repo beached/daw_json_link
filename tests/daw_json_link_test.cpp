@@ -116,6 +116,23 @@ auto to_json_data( test_002_t const &v ) {
 	return std::forward_as_tuple( v.a );
 }
 
+
+struct test_003_t {
+	std::optional<test_001_t> a;
+};
+auto describe_json_class( test_003_t ) noexcept {
+	using namespace daw::json;
+#ifdef USECPP20
+	return class_description_t<json_class<"a", test_001_t, NullValueOpt::allowed>>{};
+#else
+	constexpr static char const a[] = "a";
+	return class_description_t<json_class<a, test_001_t, NullValueOpt::allowed>>{};
+#endif
+}
+
+auto to_json_data( test_003_t const &v ) {
+	return std::forward_as_tuple( v.a );
+}
 constexpr auto const json_data =
   R"({
 	    "i": 55,
@@ -208,4 +225,7 @@ int main( ) {
 	test_002_t t2{data};
 	t2.a.o2 = std::nullopt;
 	std::cout << to_json( t2 ) << '\n';
+
+	test_003_t t3{data};
+	std::cout << to_json( t3 ) << '\n';
 }
