@@ -39,22 +39,22 @@ auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 #ifdef USECPP20
 	return class_description_t<json_string<"country", daw::string_view>,
-	                     json_string<"name", daw::string_view>,
-	                     json_number<"lat", float, NullValueOpt::never>,
-	                     json_number<"lng", float, NullValueOpt::never>>{};
+	                           json_string<"name", daw::string_view>,
+	                           json_number<"lat", float>,
+	                           json_number<"lng", float>>{};
 #else
 	static constexpr char names0[] = "country";
 	static constexpr char names1[] = "name";
 	static constexpr char names2[] = "lat";
 	static constexpr char names3[] = "lng";
 	return class_description_t<json_string<names0, daw::string_view>,
-	                     json_string<names1, daw::string_view>,
-	                     json_number<names2, float, NullValueOpt::never>,
-	                     json_number<names3, float, NullValueOpt::never>>{};
+	                           json_string<names1, daw::string_view>,
+	                           json_number<names2, float>,
+	                           json_number<names3, float>>{};
 #endif
 }
 // Order of values must match order specified in class_description
-auto to_json_data( City const & c ) {
+auto to_json_data( City const &c ) {
 	return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
 }
 
@@ -124,8 +124,8 @@ int main( int argc, char **argv ) {
 		  return std::nullopt;
 	  },
 	  json_sv );
-	std::cout << "Toronto was " << ( has_toronto ? "" : "not" )
-	          << " found at " << to_json( *has_toronto ) << '\n';
+	std::cout << "Toronto was " << ( has_toronto ? "" : "not" ) << " found at "
+	          << to_json( *has_toronto ) << '\n';
 	auto has_chitungwiza = *daw::bench_n_test<4>(
 	  "Find Chitungwiza(last item)",
 	  []( auto &&sv ) -> std::optional<City> {
@@ -143,13 +143,13 @@ int main( int argc, char **argv ) {
 	std::cout << "Chitungwiza was " << ( has_chitungwiza ? "" : "not" )
 	          << " found at " << to_json( *has_chitungwiza ) << '\n';
 
-
-	std::cout << (*iterator_t( json_sv )).name << '\n';
+	std::cout << ( *iterator_t( json_sv ) ).name << '\n';
 
 	auto const city_ary =
-			daw::json::from_json_array<json_class<no_name, City>>( json_sv );
+	  daw::json::from_json_array<json_class<no_name, City>>( json_sv );
 
 	auto const city_ary_str = to_json_array( city_ary );
 	auto sv = daw::string_view( city_ary_str );
-	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 ) << '\n';
+	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 )
+	          << '\n';
 }

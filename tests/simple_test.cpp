@@ -40,8 +40,8 @@ auto describe_json_class( City ) noexcept {
 #ifdef USECPP20
 	return class_description_t<json_string<"country", daw::string_view>,
 	                           json_string<"name", daw::string_view>,
-	                           json_number<"lat", float, NullValueOpt::never>,
-	                           json_number<"lng", float, NullValueOpt::never>>{};
+	                           json_number<"lat", float>,
+	                           json_number<"lng", float>>{};
 #else
 	static constexpr char const names0[] = "country";
 	static constexpr char const names1[] = "name";
@@ -49,8 +49,8 @@ auto describe_json_class( City ) noexcept {
 	static constexpr char const names3[] = "lng";
 	return class_description_t<json_string<names0, daw::string_view>,
 	                           json_string<names1, daw::string_view>,
-	                           json_number<names2, float, NullValueOpt::never>,
-	                           json_number<names3, float, NullValueOpt::never>>{};
+	                           json_number<names2, float>,
+	                           json_number<names3, float>>{};
 #endif
 }
 
@@ -78,9 +78,9 @@ int main( int argc, char **argv ) {
 	auto const json_data = get_json_data( argv[1] );
 	using iterator_t = daw::json::json_array_iterator<json_class<no_name, City>>;
 
-	auto const pos = std::find_if( iterator_t( json_data ), iterator_t( ), []( City &&city ) {
-		return city.name == "Chitungwiza";
-	} );
+	auto const pos =
+	  std::find_if( iterator_t( json_data ), iterator_t( ),
+	                []( City &&city ) { return city.name == "Chitungwiza"; } );
 	if( pos == iterator_t( ) ) {
 		std::cout << "Not found\n";
 		return 0;
@@ -88,4 +88,3 @@ int main( int argc, char **argv ) {
 
 	std::cout << "Chitungwiza was found.\n" << to_json( *pos ) << '\n';
 }
-

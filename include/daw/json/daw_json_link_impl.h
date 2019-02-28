@@ -76,7 +76,6 @@ namespace daw {
 			return false;
 		}
 
-		enum class NullValueOpt : bool { never, allowed };
 		template<typename T>
 		constexpr T from_json( daw::string_view sv );
 
@@ -95,10 +94,6 @@ namespace daw {
 #endif
 		namespace impl {
 			namespace {
-				namespace {
-					using std::to_string;
-				}
-
 				template<typename Container, typename OutputIterator>
 				constexpr OutputIterator copy_to_iterator( Container const &c,
 				                                           OutputIterator it ) {
