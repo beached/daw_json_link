@@ -102,7 +102,7 @@ namespace daw {
 					}
 					return it;
 				}
-				
+
 				template<typename JsonMember, typename OutputIterator, typename T>
 				constexpr OutputIterator member_to_string( OutputIterator &&it,
 				                                           T &&value ) {
@@ -211,7 +211,8 @@ namespace daw {
 					Date,
 					Class,
 					Array,
-					Null
+					Null,
+					Enum
 				};
 
 				template<typename T>
@@ -431,6 +432,16 @@ namespace daw {
 					} else {
 						return constructor_t{}( parse_signed<element_t>( pos.value_str ) );
 					}
+				}
+
+				template<typename ParseInfo>
+				constexpr auto parse_value( ParseTag<JsonParseTypes::Enum>,
+				                            value_pos pos ) {
+					// assert !pos.value_str.empty( );
+					using constructor_t = typename ParseInfo::constructor_t;
+					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
+
+					return ParseInfo::converter_t::from( pos.value_str );
 				}
 
 				template<typename ParseInfo>

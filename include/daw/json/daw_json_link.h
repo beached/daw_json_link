@@ -152,8 +152,9 @@ namespace daw {
 			                      std::tuple<Args...> &&args ) {
 
 				*it++ = '{';
-				(void)( ( impl::make_json_string<daw::traits::nth_element<Is, JsonMembers...>,
-				                           Is>( it, args ),
+				(void)( ( impl::make_json_string<
+				            daw::traits::nth_element<Is, JsonMembers...>, Is>( it,
+				                                                               args ),
 				          0 ) +
 				        ... );
 				*it++ = '}';
@@ -346,6 +347,39 @@ namespace daw {
 
 				return impl::json_parser_description_t<parse_to_t>::template serialize(
 				  it, to_json_data( value ) );
+			}
+		};
+
+		template<typename Enum>
+		struct enum_converter_t {
+			static constexpr decltype( auto ) to( Enum e ) {
+				return to_string( e );
+			}
+
+			static constexpr Enum from( daw::string_view sv ) {
+				return from_string( daw::tag<Enum>, sv );
+			}
+		};
+
+		template<JSONNAMETYPE Name, typename Enum, typename EnumBase = int,
+		         typename Converter = enum_converter_t<Enum>>
+		struct json_enum {
+			using i_am_a_json_type = void;
+			static constexpr auto const name = Name;
+			static constexpr impl::JsonParseTypes expected_type =
+			  impl::JsonParseTypes::Enum;
+			static constexpr bool nullable = false;
+			// Sometimes numbers are wrapped in strings
+			using parse_to_t = Enum;
+			using constructor_t = void;
+			using converter_t = Converter;
+			static constexpr bool empty_is_null = true;
+
+			template<typename OutputIterator>
+			static constexpr OutputIterator to_string( OutputIterator it,
+			                                           parse_to_t const &value ) {
+				using ::daw::json::to_strings::to_string;
+				return impl::copy_to_iterator( Converter::to( value ), it );
 			}
 		};
 
