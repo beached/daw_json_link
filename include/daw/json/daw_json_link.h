@@ -151,6 +151,7 @@ namespace daw {
 			static constexpr void make_json_string( OutputIterator it,
 			                                        std::tuple<Args...> &args ) {
 
+				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
 				*it++ = '"';
 				it = impl::copy_to_iterator( daw::string_view( JsonMember::name ), it );
 				it = impl::copy_to_iterator( daw::string_view( "\":" ), it );
@@ -199,6 +200,7 @@ namespace daw {
 			static_assert( std::is_arithmetic_v<T> or
 			                 Nullable == NullValueOpt::allowed,
 			               "Number must be an arithmentic type" );
+			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Number;
@@ -223,6 +225,7 @@ namespace daw {
 		struct json_bool {
 			static_assert( std::is_convertible_v<bool, T>,
 			               "Supplied result type must be convertable from bool" );
+			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Bool;
@@ -245,6 +248,7 @@ namespace daw {
 		         NullValueOpt Nullable = NullValueOpt::never,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_string {
+			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::String;
@@ -278,6 +282,7 @@ namespace daw {
 		         NullValueOpt Nullable = NullValueOpt::never,
 		         typename Constructor = parse_js_date>
 		struct json_date {
+			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Date;
@@ -310,6 +315,7 @@ namespace daw {
 		         NullValueOpt Nullable = NullValueOpt::never,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_class {
+			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Class;
@@ -332,6 +338,7 @@ namespace daw {
 		         typename Constructor = daw::construct_a<Container>,
 		         typename Appender = impl::basic_appender<Container>>
 		struct json_array {
+			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Array;
