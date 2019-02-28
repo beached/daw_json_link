@@ -60,6 +60,12 @@ namespace daw {
 		} // namespace to_strings
 
 		template<typename T>
+		using is_a_json_type_detect = typename T::i_am_a_json_type;
+
+		template<typename T>
+		inline constexpr bool is_a_json_type_v = daw::is_detected_v<is_a_json_type_detect, T>;	
+
+		template<typename T>
 		bool is_null( std::optional<T> const &v ) {
 			return !static_cast<bool>( v );
 		}
