@@ -258,7 +258,7 @@ template<JSONNAMETYPE Name,
 	typename ToConverter = custom_to_converter_t<T>>
 struct json_custom
 ``` 
-```json_enum``` allows to map a C++ enum to a json_string(soon json_number too)
+```json_enum``` allows one to map unusual types.  The FromConverter is fed the raw value that is in the json and returns a T.  The ToConverter outputs a string from the T value.
 ```FromConverter``` A class who's operator( ) take a string_view and returns a T;  The default calls from_string( daw::tag_t<T>, T ).
 ```ToConverter``` A class who's operator( ) is takes a T value and returns a string like type.  The default uses to_string( T ).
 
