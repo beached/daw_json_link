@@ -145,7 +145,8 @@ std::string to_string( blah_t e ) noexcept {
 	std::terminate( );
 }
 
-constexpr blah_t from_string( daw::tag_t<blah_t>, daw::string_view sv ) noexcept {
+constexpr blah_t from_string( daw::tag_t<blah_t>,
+                              daw::string_view sv ) noexcept {
 	if( sv.empty( ) ) {
 		std::terminate( );
 	}
@@ -168,10 +169,10 @@ struct e_test_001_t {
 auto describe_json_class( e_test_001_t ) noexcept {
 	using namespace daw::json;
 #ifdef USECPP20
-	return class_description_t<json_enum<"a", blah_t>>{};
+	return class_description_t<json_custom<"a", blah_t>>{};
 #else
 	constexpr static char const a[] = "a";
-	return class_description_t<json_enum<a, blah_t>>{};
+	return class_description_t<json_custom<a, blah_t>>{};
 #endif
 }
 
@@ -275,8 +276,7 @@ int main( ) {
 	test_003_t t3{data};
 	std::cout << to_json( t3 ) << '\n';
 
-
-	e_test_001_t t4{ };
+	e_test_001_t t4{};
 	auto e_test_001_str = to_json( t4 );
 	std::cout << e_test_001_str << '\n';
 	auto e_test_001_back = from_json<e_test_001_t>( e_test_001_str );
