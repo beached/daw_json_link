@@ -350,38 +350,45 @@ namespace daw {
 			}
 		};
 
-		template<typename Enum>
-		struct enum_converter_t {
-			static constexpr decltype( auto ) to( Enum e ) {
-				return to_string( e );
+		template<typename T>
+		struct custom_to_converter_t {
+			constexpr decltype( auto ) operator( )( T &&value ) const {
+				using std::to_string;
+				return to_string( std::move( value ) );
 			}
-
-			static constexpr Enum from( daw::string_view sv ) {
-				return from_string( daw::tag<Enum>, sv );
+			constexpr decltype( auto ) operator( )( T const &value ) const {
+				using std::to_string;
+				return to_string( value );
 			}
 		};
 
-		template<JSONNAMETYPE Name, typename Enum,
-		         typename Converter = enum_converter_t<Enum>>
-		struct json_enum {
-			static_assert( std::is_enum_v<Enum>,
-			               "Enum is requried to be an enum or enum class" );
+		template<typename T>
+		struct custom_from_converter_t {
+			constexpr decltype( auto ) operator( )( daw::string_view sv ) {
+				return from_string( daw::tag<T>, sv );
+			}
+		};
+
+		template<JSONNAMETYPE Name, typename T,
+		         typename FromConverter = custom_from_converter_t<T>,
+		         typename ToConverter = custom_to_converter_t<T>>
+		struct json_custom {
 			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
-			  impl::JsonParseTypes::Enum;
+			  impl::JsonParseTypes::Custom;
 			static constexpr bool nullable = false;
 			// Sometimes numbers are wrapped in strings
-			using parse_to_t = Enum;
-			using constructor_t = void;
-			using converter_t = Converter;
-			static constexpr bool empty_is_null = true;
+			using parse_to_t = T;
+			using to_converter_t = ToConverter;
+			using from_converter_t = FromConverter;
+			static constexpr bool empty_is_null = false;
 
 			template<typename OutputIterator>
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           parse_to_t const &value ) {
 				using ::daw::json::to_strings::to_string;
-				return impl::copy_to_iterator( Converter{}.to( value ), it );
+				return impl::copy_to_iterator( to_converter_t{}( value ), it );
 			}
 		};
 

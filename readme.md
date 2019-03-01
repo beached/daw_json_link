@@ -250,15 +250,17 @@ json_date is a special class for when a json string fields is known to have time
 The defaults for json_date will construct a ```std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>``` with the supplied name.  The resulting type T must be constructable from two arguments(a ```char const *``` and a ```size_t```).
 ```Constructor``` the default parses javascript timestamps.  Supplying a functor that takes the ptr, size combo will allow other result types and date formats.
 
-### json_enum
+### json_custom
 ```cpp
 template<JSONNAMETYPE Name, 
-    typename Enum,
-    typename Converter = enum_converter_t<Enum>>
-struct json_enum
+    typename T,
+    typename FromConverter = custom_from_converter_t<T>,
+	typename ToConverter = custom_to_converter_t<T>>
+struct json_custom
 ``` 
 ```json_enum``` allows to map a C++ enum to a json_string(soon json_number too)
-```Converter``` A class with a to method that converts a string_view to Enum and from method that converts an Enum to a string.
+```FromConverter``` A class who's operator( ) take a string_view and returns a T;  The default calls from_string( daw::tag_t<T>, T ).
+```ToConverter``` A class who's operator( ) is takes a T value and returns a string like type.  The default uses to_string( T ).
 
 
 ### json_class

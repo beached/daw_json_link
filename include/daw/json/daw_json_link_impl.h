@@ -212,7 +212,7 @@ namespace daw {
 					Class,
 					Array,
 					Null,
-					Enum
+					Custom
 				};
 
 				template<typename T>
@@ -435,13 +435,9 @@ namespace daw {
 				}
 
 				template<typename ParseInfo>
-				constexpr auto parse_value( ParseTag<JsonParseTypes::Enum>,
+				constexpr auto parse_value( ParseTag<JsonParseTypes::Custom>,
 				                            value_pos pos ) {
-					// assert !pos.value_str.empty( );
-					using constructor_t = typename ParseInfo::constructor_t;
-					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
-
-					return typename ParseInfo::converter_t{}.from( pos.value_str );
+					return typename ParseInfo::from_converter_t{}( pos.value_str );
 				}
 
 				template<typename ParseInfo>
