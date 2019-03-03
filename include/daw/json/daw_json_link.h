@@ -47,6 +47,12 @@
 
 namespace daw {
 	namespace json {
+		template<size_t N, typename string_t, typename... JsonMembers>
+		static constexpr impl::kv_t<string_t> get_item( ) noexcept {
+			using type_t = traits::nth_type<N, JsonMembers...>;
+			return {type_t::name, type_t::expected_type, type_t::nullable, N};
+		}
+
 		template<typename... JsonMembers>
 		class class_description_t {
 			static constexpr size_t find_string_capacity( ) noexcept {
@@ -54,21 +60,17 @@ namespace daw {
 			}
 			using string_t = basic_bounded_string<char, find_string_capacity( )>;
 
-			template<size_t N>
-			static constexpr impl::kv_t<string_t> get_item( ) noexcept {
-				using type_t = traits::nth_type<N, JsonMembers...>;
-				return {type_t::name, type_t::expected_type, type_t::nullable, N};
-			}
-
 			template<size_t... Is>
 			static constexpr auto make_map( std::index_sequence<Is...> ) noexcept {
-				return daw::make_array( get_item<Is>( )... );
+				return daw::make_array( get_item<Is, string_t, JsonMembers...>( )... );
 			}
 
 			static constexpr auto name_map =
 			  make_map( std::index_sequence_for<JsonMembers...>{} );
 
 			static constexpr bool has_name( daw::string_view key ) noexcept {
+				using std::begin;
+				using std::end;
 				auto result = algorithm::find_if(
 				  begin( name_map ), end( name_map ),
 				  [key]( auto const &kv ) { return kv.name == key; } );
@@ -76,6 +78,8 @@ namespace daw {
 			}
 
 			static constexpr size_t find_name( daw::string_view key ) noexcept {
+				using std::begin;
+				using std::end;
 				auto result = algorithm::find_if(
 				  begin( name_map ), end( name_map ),
 				  [key]( auto const &kv ) { return kv.name == key; } );
@@ -116,7 +120,7 @@ namespace daw {
 					}
 
 					result[pos].value_str = v.sv;
-					result[pos].parsed_sv = v.parsed_sv;
+					result[pos].parsed_sv = std::move( v.parsed_sv );
 					sv = parser::trim_left( sv );
 				}
 
@@ -516,7 +520,8 @@ namespace daw {
 			constexpr bool operator==( json_array_iterator const &rhs ) const
 			  noexcept {
 				return ( m_cur_value.sv.empty( ) and !rhs ) or
-				       ( m_state == rhs.m_state and m_cur_value.sv == rhs.m_cur_value.sv );
+				       ( m_state == rhs.m_state and
+				         m_cur_value.sv == rhs.m_cur_value.sv );
 			}
 
 			constexpr bool operator!=( json_array_iterator const &rhs ) const

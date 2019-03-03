@@ -477,10 +477,10 @@ namespace daw {
 						} else if( to_lower( sv.front( ) ) == 'n' ) {
 							return {skip_other( sv ), true};
 						} else {
-							if( sv.find_first_of( ".eE" ) != daw::string_view::npos ) {
+							if( tmp.find_first_of( ".eE" ) != daw::string_view::npos ) {
 								return {numeric_value{}, tmp, parse_real<double>( tmp )};
 							}
-							if( sv.front( ) == '-' ) {
+							if( tmp.front( ) == '-' ) {
 								return {numeric_value{}, tmp, parse_signed<int64_t>( tmp )};
 							}
 							return {numeric_value{}, tmp,
