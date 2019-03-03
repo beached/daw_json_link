@@ -22,6 +22,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <string_view>
 #include <vector>
 
 #include <daw/daw_benchmark.h>
@@ -29,8 +30,8 @@
 #include "daw/json/daw_json_link.h"
 
 struct City {
-	daw::string_view country;
-	daw::string_view name;
+	std::string country;
+	std::string name;
 	float lat;
 	float lng;
 };
@@ -38,8 +39,8 @@ struct City {
 auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 #ifdef USECPP20
-	return class_description_t<json_string<"country", daw::string_view>,
-	                           json_string<"name", daw::string_view>,
+	return class_description_t<json_string<"country", std::string>,
+	                           json_string<"name", std::string>,
 	                           json_number<"lat", float>,
 	                           json_number<"lng", float>>{};
 #else
@@ -47,8 +48,8 @@ auto describe_json_class( City ) noexcept {
 	static constexpr char names1[] = "name";
 	static constexpr char names2[] = "lat";
 	static constexpr char names3[] = "lng";
-	return class_description_t<json_string<names0, daw::string_view>,
-	                           json_string<names1, daw::string_view>,
+	return class_description_t<json_string<names0, std::string>,
+	                           json_string<names1, std::string>,
 	                           json_number<names2, float>,
 	                           json_number<names3, float>>{};
 #endif
@@ -73,7 +74,7 @@ int main( int argc, char **argv ) {
 	auto json_data = std::string( std::istreambuf_iterator<char>( in_file ),
 	                              std::istreambuf_iterator<char>( ) );
 	in_file.close( );
-	auto json_sv = daw::string_view( json_data );
+	auto json_sv = std::string_view( json_data );
 	std::cout << "File size(B): " << json_data.size( ) << " "
 	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
 
@@ -149,7 +150,7 @@ int main( int argc, char **argv ) {
 	  daw::json::from_json_array<json_class<no_name, City>>( json_sv );
 
 	auto const city_ary_str = to_json_array( city_ary );
-	auto sv = daw::string_view( city_ary_str );
+	auto sv = std::string_view( city_ary_str );
 	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 )
 	          << '\n';
 }

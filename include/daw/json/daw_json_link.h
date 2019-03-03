@@ -29,6 +29,7 @@
 #include <iterator>
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_array.h>
@@ -59,11 +60,11 @@ namespace daw {
 			}
 
 			template<typename Result>
-			static constexpr decltype( auto ) parse( daw::string_view sv ) {
+			static constexpr decltype( auto ) parse( std::string_view sv ) {
 				return impl::parse_json_class<Result, JsonMembers...>(
 				  sv, std::index_sequence_for<JsonMembers...>{} );
 			}
-		}; // namespace impl
+		};
 
 		// Member types
 		template<typename JsonMember>
@@ -250,7 +251,7 @@ namespace daw {
 
 		template<typename T>
 		struct custom_from_converter_t {
-			constexpr decltype( auto ) operator( )( daw::string_view sv ) {
+			constexpr decltype( auto ) operator( )( std::string_view sv ) {
 				return from_string( daw::tag<T>, sv );
 			}
 		};
@@ -312,12 +313,13 @@ namespace daw {
 		};
 
 		template<typename T>
-		constexpr T from_json( daw::string_view json_data ) {
+		constexpr T from_json( std::string_view json_data ) {
 			static_assert(
 			  impl::has_json_parser_description_v<T>,
 			  "A function call describe_json_class must exist for type." );
 
-			return impl::json_parser_description_t<T>::template parse<T>( json_data );
+			return impl::json_parser_description_t<T>::template parse<T>(
+			  daw::string_view( json_data.data( ), json_data.size( ) ) );
 		}
 
 		template<typename Result = std::string, typename T>
@@ -352,8 +354,15 @@ namespace daw {
 
 			constexpr json_array_iterator( ) noexcept = default;
 
-			constexpr json_array_iterator( daw::string_view json_data )
-			  : m_state( json_data ) {
+			template<typename String,
+			         daw::enable_if_t<!std::is_same_v<
+			           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
+			constexpr json_array_iterator( String &&json_data )
+			  : m_state( daw::string_view( std::data( json_data ),
+			                               std::size( json_data ) ) ) {
+
+				static_assert(
+				  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
 
 				daw::exception::precondition_check<impl::invalid_array>(
 				  m_state.front( ) == '[' );
@@ -411,14 +420,19 @@ namespace daw {
 		template<typename JsonElement,
 		         typename Container = std::vector<typename JsonElement::parse_to_t>,
 		         typename Constructor = daw::construct_a<Container>,
-		         typename Appender = impl::basic_appender<Container>>
-		constexpr auto from_json_array( daw::string_view json_data ) {
-
+		         typename Appender = impl::basic_appender<Container>,
+		         typename String>
+		constexpr auto from_json_array( String &&json_data ) {
+			static_assert(
+			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
 			using parser_t =
 			  json_array<no_name, Container, JsonElement, Constructor, Appender>;
+
 			return impl::parse_value<parser_t>(
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
-			  impl::value_pos( false, false, json_data ) );
+			  impl::value_pos( false, false,
+			                   daw::string_view( std::data( json_data ),
+			                                     std::size( json_data ) ) ) );
 		}
 
 		template<typename Result = std::string, typename Container>

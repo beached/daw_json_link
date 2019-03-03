@@ -22,12 +22,13 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 
 #include "daw/json/daw_json_link.h"
 
 struct City {
-	daw::string_view country;
-	daw::string_view name;
+	std::string country;
+	std::string name;
 	float lat;
 	float lng;
 };
@@ -35,19 +36,17 @@ struct City {
 auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 #ifdef USECPP20
-	return class_description_t<json_string<"country", daw::string_view>,
-	                           json_string<"name", daw::string_view>,
-	                           json_number<"lat", float>,
-	                           json_number<"lng", float>>{};
+	return class_description_t<
+	  json_string<"country", std::string>, json_string<"name", std::string>,
+	  json_number<"lat", float>, json_number<"lng", float>>{};
 #else
 	static constexpr char const names0[] = "country";
 	static constexpr char const names1[] = "name";
 	static constexpr char const names2[] = "lat";
 	static constexpr char const names3[] = "lng";
-	return class_description_t<json_string<names0, daw::string_view>,
-	                           json_string<names1, daw::string_view>,
-	                           json_number<names2, float>,
-	                           json_number<names3, float>>{};
+	return class_description_t<
+	  json_string<names0, std::string>, json_string<names1, std::string>,
+	  json_number<names2, float>, json_number<names3, float>>{};
 #endif
 }
 
@@ -56,8 +55,8 @@ constexpr auto to_json_data( City const &c ) {
 	return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
 }
 
-std::string get_json_data( daw::string_view file_name ) {
-	auto in_file = std::ifstream( file_name.data( ) );
+std::string get_json_data( std::string file_name ) {
+	auto in_file = std::ifstream( std::data( file_name ) );
 	if( !in_file ) {
 		std::cerr << "Could not open input file\n";
 		exit( 1 );
