@@ -48,10 +48,13 @@ auto describe_json_class( Number ) noexcept {
 
 int main( ) {
 	using namespace daw::json;
-	constexpr size_t const NUMVALUES = 1'000'000;
+	constexpr size_t const NUMVALUES = 1'000'000ULL;
 	std::string const json_data = [] {
 		std::string result = "[";
 
+		// 23 is what I calculated as the string size of the serialized class.
+		// It may be incorrect but that is ok, it is close and should reduce
+		// allocations
 		result.reserve( NUMVALUES * ( 23 ) + 8 );
 		daw::algorithm::do_n( NUMVALUES, [&result] {
 			result += "{\"a\":" +
@@ -64,9 +67,10 @@ int main( ) {
 		return result;
 	}( );
 	auto json_sv = daw::string_view( json_data );
-	std::cout << "Processing " << json_sv.size( ) << " bytes " << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
+	std::cout << "Processing " << json_sv.size( ) << " bytes "
+	          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 	auto const count =
-	  *daw::bench_n_test<4>( "int parsing 1", []( auto &&sv ) noexcept {
+	  *daw::bench_n_test<10>( "int parsing 1", []( auto &&sv ) noexcept {
 		  auto const data = from_json_array<json_class<no_name, Number>>( sv );
 		  return data.size( );
 	  },
@@ -74,11 +78,12 @@ int main( ) {
 
 	std::cout << "element count: " << count << '\n';
 
-	using iterator_t = daw::json::json_array_iterator<json_class<no_name, Number>>;
+	using iterator_t =
+	  daw::json::json_array_iterator<json_class<no_name, Number>>;
 
 	auto data = std::vector<Number>( );
 
-	auto const count2 = *daw::bench_n_test<4>(
+	auto const count2 = *daw::bench_n_test<10>(
 	  "int parsing 2",
 	  [&]( auto &&sv ) noexcept {
 		  data.clear( );
@@ -89,13 +94,10 @@ int main( ) {
 
 	std::cout << "element count 2: " << count2 << '\n';
 
-
-
 	using iterator2_t = daw::json::json_array_iterator<json_number<no_name, int>>;
 	std::string json_data2 = "[1,2,3,4]";
 	auto values = std::vector<int>( iterator2_t( json_data2 ), iterator2_t( ) );
-	for( auto i: values ) {
+	for( auto i : values ) {
 		std::cout << i << ",\n";
 	}
-
 }
