@@ -486,7 +486,8 @@ namespace daw {
 				template<typename JsonMember>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Custom>,
 				                            value_pos pos ) {
-					return typename JsonMember::from_converter_t{}( pos.value_str );
+					return typename JsonMember::from_converter_t{}(
+					  std::string_view( pos.value_str.data( ), pos.value_str.size( ) ) );
 				}
 
 				template<typename JsonMember>

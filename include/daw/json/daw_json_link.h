@@ -62,7 +62,8 @@ namespace daw {
 			template<typename Result>
 			static constexpr decltype( auto ) parse( std::string_view sv ) {
 				return impl::parse_json_class<Result, JsonMembers...>(
-				  sv, std::index_sequence_for<JsonMembers...>{} );
+				  daw::string_view( sv.data( ), sv.size( ) ),
+				  std::index_sequence_for<JsonMembers...>{} );
 			}
 		};
 
@@ -318,8 +319,9 @@ namespace daw {
 			  impl::has_json_parser_description_v<T>,
 			  "A function call describe_json_class must exist for type." );
 
-			return impl::json_parser_description_t<T>::template parse<T>(
-			  daw::string_view( json_data.data( ), json_data.size( ) ) );
+			using desc_t = impl::json_parser_description_t<T>;
+
+			return desc_t::template parse<T>( json_data );
 		}
 
 		template<typename Result = std::string, typename T>
