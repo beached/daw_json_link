@@ -175,9 +175,10 @@ namespace daw {
 				}
 
 				template<typename Result>
-				constexpr Result parse_real( daw::string_view sv ) noexcept {
+				constexpr Result parse_real( daw::string_view str ) noexcept {
 					// [-]WHOLE[.FRACTION][(e|E)EXPONENT]
 
+					auto sv = daw::string_view( str.data( ), str.size( ) );
 					auto const whole_part =
 					  static_cast<double>( daw::parser::parse_int<int64_t>(
 					    sv.pop_front( sv.find_first_of( ".eE" ) ) ) );
@@ -268,7 +269,7 @@ namespace daw {
 				struct value_pos {
 					bool is_nullable;
 					bool empty_is_null;
-					string_view value_str{};
+					daw::string_view value_str{};
 
 					explicit constexpr value_pos( bool Nullable,
 					                              bool empty_null ) noexcept
@@ -298,7 +299,13 @@ namespace daw {
 					}
 
 					constexpr void trim_left( ) noexcept {
-						value_str = daw::parser::trim_left( value_str );
+						auto tmp = daw::parser::trim_left(
+						  daw::string_view( value_str.data( ), value_str.size( ) ) );
+						value_str = daw::string_view( tmp.data( ), tmp.size( ) );
+					}
+
+					constexpr void remove_prefix( size_t count = 1 ) noexcept {
+						value_str.remove_prefix( count );
 					}
 				};
 
@@ -362,8 +369,8 @@ namespace daw {
 				}
 
 				template<char Left, char Right>
-				constexpr daw::string_view skip_bracketed_item( daw::string_view &sv ) {
-
+				constexpr daw::string_view
+				skip_bracketed_item( daw::string_view &sv ) {
 					size_t bracket_count = 1;
 					bool is_escaped = false;
 					bool in_quotes = false;
@@ -503,7 +510,7 @@ namespace daw {
 					daw::exception::precondition_check<invalid_array>(
 					  pos.at_start_of_array( ) );
 
-					pos.value_str.remove_prefix( );
+					pos.remove_prefix( );
 					pos.trim_left( );
 
 					auto array_container = typename JsonMember::constructor_t{}( );
@@ -674,7 +681,7 @@ namespace daw {
 
 				template<typename Result, typename... JsonMembers, size_t... Is>
 				constexpr Result parse_json_class( daw::string_view sv,
-				                                          std::index_sequence<Is...> ) {
+				                                   std::index_sequence<Is...> ) {
 					static_assert(
 					  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
 					  "Supplied types cannot be used for construction of this type" );

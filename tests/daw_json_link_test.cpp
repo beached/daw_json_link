@@ -26,6 +26,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <daw/daw_bounded_vector.h>
@@ -41,7 +42,7 @@ struct test_001_t {
 	int i = 0;
 	double d = 0.0;
 	bool b = false;
-	daw::string_view s{};
+	std::string_view s{};
 	daw::bounded_vector_t<int, 10> y{};
 	std::optional<int> o{};
 	std::optional<int> o2{};
@@ -50,7 +51,7 @@ struct test_001_t {
 
 	constexpr test_001_t( ) = default;
 
-	constexpr test_001_t( int Int, double Double, bool Bool, daw::string_view S,
+	constexpr test_001_t( int Int, double Double, bool Bool, std::string_view S,
 	                      daw::bounded_vector_t<int, 10> Y, std::optional<int> O,
 	                      std::optional<int> O2,
 	                      std::chrono::time_point<std::chrono::system_clock,
@@ -71,7 +72,7 @@ auto describe_json_class( test_001_t ) noexcept {
 #ifdef USECPP20
 	return class_description_t<
 	  json_number<"i", int>, json_number<"d">, json_bool<"b">,
-	  json_string<"s", daw::string_view>,
+	  json_string<"s", std::string_view>,
 	  json_array<"y", daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
 	  json_nullable<json_number<"o", std::optional<int>>>,
 	  json_nullable<json_number<"o2", std::optional<int>>>, json_date<"dte">>{};
@@ -86,7 +87,7 @@ auto describe_json_class( test_001_t ) noexcept {
 	constexpr static char const dte[] = "dte";
 	return class_description_t<
 	  json_number<i, int>, json_number<d>, json_bool<b>,
-	  json_string<s, daw::string_view>,
+	  json_string<s, std::string_view>,
 	  json_array<y, daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
 	  json_nullable<json_number<o, std::optional<int>>>,
 	  json_nullable<json_number<o2, std::optional<int>>>, json_date<dte>>{};
@@ -146,7 +147,7 @@ std::string to_string( blah_t e ) noexcept {
 }
 
 constexpr blah_t from_string( daw::tag_t<blah_t>,
-                              daw::string_view sv ) noexcept {
+                              std::string_view sv ) noexcept {
 	if( sv.empty( ) ) {
 		std::terminate( );
 	}

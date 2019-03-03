@@ -22,6 +22,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <string_view>
 #include <vector>
 
 #include <daw/daw_benchmark.h>
@@ -66,7 +67,7 @@ int main( ) {
 		result.back( ) = ']';
 		return result;
 	}( );
-	auto json_sv = daw::string_view( json_data );
+	auto json_sv = std::string_view( json_data );
 	std::cout << "Processing " << json_sv.size( ) << " bytes "
 	          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 	auto const count =
