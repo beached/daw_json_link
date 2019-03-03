@@ -90,18 +90,18 @@ namespace daw {
 				  std::distance( begin( name_map ), result ) );
 			}
 
-			template<size_t N>
+			template<size_t JsonMemberPosition>
 			static constexpr decltype( auto )
 			parse_item( std::array<impl::value_pos, sizeof...( JsonMembers )> const
 			              &locations ) {
 
-				using type_t = traits::nth_type<N, JsonMembers...>;
+				using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
 
-				return impl::parse_value<type_t>(
-				  impl::ParseTag<type_t::expected_type>{}, locations[N] );
+				return impl::parse_value<JsonMember>(
+				  impl::ParseTag<JsonMember::expected_type>{},
+				  locations[JsonMemberPosition] );
 			}
 
-		private:
 			struct location_info_t {
 				JSONNAMETYPE name;
 				std::optional<daw::string_view> location{};
@@ -147,24 +147,24 @@ namespace daw {
 				}
 			}
 
-			template<size_t pos>
-			static constexpr decltype( auto ) parse_item2(
+			template<size_t JsonMemberPosition>
+			static constexpr decltype( auto ) parse_item(
 			  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
 			  daw::string_view &sv ) {
 
-				find_location<pos>( locations, sv );
+				find_location<JsonMemberPosition>( locations, sv );
 
-				using type_t = traits::nth_type<pos, JsonMembers...>;
+				using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
 
-				impl::value_pos vp( type_t::nullable, type_t::empty_is_null );
-				if( locations[pos].location ) {
-					vp.value_str = *locations[pos].location;
+				auto vp =
+				  impl::value_pos( JsonMember::nullable, JsonMember::empty_is_null );
+				if( locations[JsonMemberPosition].location ) {
+					vp.value_str = *locations[JsonMemberPosition].location;
 				}
-				return impl::parse_value<type_t>(
-				  impl::ParseTag<type_t::expected_type>{}, vp );
+				return impl::parse_value<JsonMember>(
+				  impl::ParseTag<JsonMember::expected_type>{}, vp );
 			}
 
-		public:
 			template<typename OutputIterator, size_t... Is, typename... Args>
 			static constexpr OutputIterator
 			serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
@@ -196,7 +196,7 @@ namespace daw {
 				sv = parser::trim_left( sv );
 
 				return construct_a<Result>{}(
-				  parse_item2<Is>( known_locations, sv )... );
+				  parse_item<Is>( known_locations, sv )... );
 			}
 
 		public:
@@ -244,7 +244,6 @@ namespace daw {
 		template<JSONNAMETYPE Name, typename T = double,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_number {
-			// TODO maybe convertable or constructible is better
 			static_assert( std::is_invocable_v<Constructor, T>,
 			               "Constructor must be callable with T" );
 

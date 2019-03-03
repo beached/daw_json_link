@@ -420,12 +420,12 @@ namespace daw {
 				template<JsonParseTypes>
 				struct missing_nonnullable_value_expection {};
 
-				template<typename ParseInfo>
+				template<typename JsonMember>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Number>,
 				                            value_pos pos ) {
 					// assert !pos.value_str.empty( );
-					using constructor_t = typename ParseInfo::constructor_t;
-					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
+					using constructor_t = typename JsonMember::constructor_t;
+					using element_t = nullable_type_t<typename JsonMember::parse_to_t>;
 
 					if constexpr( std::is_floating_point_v<element_t> ) {
 						return constructor_t{}( parse_real<element_t>( pos.value_str ) );
@@ -433,58 +433,58 @@ namespace daw {
 					return constructor_t{}( parse_integer<element_t>( pos.value_str ) );
 				}
 
-				template<typename ParseInfo>
+				template<typename JsonMember>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Custom>,
 				                            value_pos pos ) {
-					return typename ParseInfo::from_converter_t{}( pos.value_str );
+					return typename JsonMember::from_converter_t{}( pos.value_str );
 				}
 
-				template<typename ParseInfo>
+				template<typename JsonMember>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 				                            value_pos pos ) {
 					// assert !pos.value_str.empty( );
-					using constructor_t = typename ParseInfo::constructor_t;
+					using constructor_t = typename JsonMember::constructor_t;
 					return constructor_t{}( to_lower( pos.value_str.front( ) ) == 't' );
 				}
 
-				template<typename ParseInfo>
+				template<typename JsonMember>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::String>,
 				                            value_pos pos ) {
 
-					using constructor_t = typename ParseInfo::constructor_t;
+					using constructor_t = typename JsonMember::constructor_t;
 					return constructor_t{}( pos.value_str.data( ),
 					                        pos.value_str.size( ) );
 				}
 
-				template<typename ParseInfo>
+				template<typename JsonMember>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Date>,
 				                            value_pos pos ) {
 
-					using constructor_t = typename ParseInfo::constructor_t;
+					using constructor_t = typename JsonMember::constructor_t;
 					return constructor_t{}( pos.value_str.data( ),
 					                        pos.value_str.size( ) );
 				}
 
-				template<typename ParseInfo>
+				template<typename JsonMember>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Class>,
 				                            value_pos pos ) {
 
-					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
+					using element_t = nullable_type_t<typename JsonMember::parse_to_t>;
 					return from_json<element_t>( pos.value_str );
 				}
 
 				struct invalid_array {};
-				template<typename ParseInfo>
+				template<typename JsonMember>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
 				                            value_pos pos ) {
 					daw::exception::precondition_check<invalid_array>(
 					  pos.value_str.front( ) == '[' );
 					pos.value_str.remove_prefix( );
 					pos.value_str = daw::parser::trim_left( pos.value_str );
-					using element_t = typename ParseInfo::json_element_t;
+					using element_t = typename JsonMember::json_element_t;
 
-					auto result = typename ParseInfo::constructor_t{}( );
-					auto add_value = typename ParseInfo::appender_t( result );
+					auto result = typename JsonMember::constructor_t{}( );
+					auto add_value = typename JsonMember::appender_t( result );
 					while( !pos.value_str.empty( ) and pos.value_str.front( ) != ']' ) {
 						auto tmp = skip_value( pos.value_str );
 						auto vp = value_pos( element_t::nullable, element_t::empty_is_null,
