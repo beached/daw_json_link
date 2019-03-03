@@ -424,15 +424,22 @@ namespace daw {
 		         typename String>
 		constexpr auto from_json_array( String &&json_data ) {
 			static_assert(
-			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
+			  impl::data_size::has_data_size_v<daw::remove_cvref_t<String>> );
+
 			using parser_t =
 			  json_array<no_name, Container, JsonElement, Constructor, Appender>;
 
+			using impl::data_size::data;
+			using impl::data_size::size;
+			using std::data;
+			using std::size;
+
 			return impl::parse_value<parser_t>(
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
-			  impl::value_pos( false, false,
-			                   daw::string_view( std::data( json_data ),
-			                                     std::size( json_data ) ) ) );
+
+			  impl::value_pos(
+			    false, false,
+			    daw::string_view( data( json_data ), size( json_data ) ) ) );
 		}
 
 		template<typename Result = std::string, typename Container>

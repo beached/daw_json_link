@@ -28,7 +28,7 @@
 #include <cstdlib>
 #include <iterator>
 #include <limits>
-#include <string>
+#include <string_view>
 #include <variant>
 
 #include <daw/daw_algorithm.h>
@@ -78,7 +78,7 @@ namespace daw {
 		}
 
 		template<typename T>
-		constexpr T from_json( daw::string_view sv );
+		constexpr T from_json( std::string_view sv );
 
 #if __cplusplus > 201703L
 		// C++ 20 Non-Type Class Template Arguments
@@ -110,6 +110,29 @@ namespace daw {
 
 		namespace impl {
 			namespace {
+				namespace data_size {
+					constexpr char const *data( char const *ptr ) noexcept {
+						return ptr;
+					}
+
+					constexpr size_t size( char const *ptr ) noexcept {
+						return daw::string_view( ptr ).size( );
+					}
+
+					using std::data;
+					template<typename T>
+					using data_detect = decltype( data( std::declval<T &>( ) ) );
+
+					using std::size;
+					template<typename T>
+					using size_detect = decltype( size( std::declval<T &>( ) ) );
+
+					template<typename T>
+					inline constexpr bool has_data_size_v =
+					  daw::is_detected_v<data_detect, T>
+					    and daw::is_detected_v<size_detect, T>;
+				} // namespace data_size
+
 				template<typename Container, typename OutputIterator>
 				constexpr OutputIterator copy_to_iterator( Container const &c,
 				                                           OutputIterator it ) {
@@ -369,8 +392,7 @@ namespace daw {
 				}
 
 				template<char Left, char Right>
-				constexpr daw::string_view
-				skip_bracketed_item( daw::string_view &sv ) {
+				constexpr daw::string_view skip_bracketed_item( daw::string_view &sv ) {
 					size_t bracket_count = 1;
 					bool is_escaped = false;
 					bool in_quotes = false;
@@ -498,7 +520,8 @@ namespace daw {
 				                            value_pos pos ) {
 
 					using element_t = nullable_type_t<typename JsonMember::parse_to_t>;
-					return from_json<element_t>( pos.value_str );
+					return from_json<element_t>(
+					  std::string_view( pos.value_str.data( ), pos.value_str.size( ) ) );
 				}
 
 				struct invalid_array {};
