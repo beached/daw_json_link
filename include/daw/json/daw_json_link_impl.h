@@ -83,14 +83,23 @@ namespace daw {
 #if __cplusplus > 201703L
 		// C++ 20 Non-Type Class Template Arguments
 #define JSONNAMETYPE basic_bounded_string
-		template<typename T>
-		constexpr size_t json_name_len( T &&str ) {
-			return str.extent;
+
+		constexpr size_t json_name_len( basic_bounded_string const &str ) {
+			return str.size( );
+		}
+
+		constexpr bool json_name_eq( basic_bounded_string const &lhs,
+		                             basic_bounded_string const &rhs ) noexcept {
+			return lhs == rhs;
 		}
 #else
 #define JSONNAMETYPE char const *
-		constexpr size_t json_name_len( char const *str ) {
+		constexpr size_t json_name_len( char const *str ) noexcept {
 			return daw::string_view( str ).size( );
+		}
+
+		constexpr bool json_name_eq( char const *lhs, char const *rhs ) noexcept {
+			return daw::string_view( lhs ) == daw::string_view( rhs );
 		}
 #endif
 		namespace impl {
@@ -148,7 +157,7 @@ namespace daw {
 				  daw::is_detected_v<deref_t, Optional>;
 
 				template<typename Result>
-				constexpr Result parse_signed( daw::string_view sv ) noexcept {
+				constexpr Result parse_integer( daw::string_view sv ) noexcept {
 					if( sv.empty( ) ) {
 						return static_cast<Result>( 0 );
 					}
@@ -254,8 +263,6 @@ namespace daw {
 					bool is_nullable;
 					bool empty_is_null;
 					string_view value_str{};
-					std::variant<std::monostate, double, uint64_t, int64_t, bool>
-					  parsed_sv{};
 
 					explicit constexpr value_pos( bool Nullable,
 					                              bool empty_null ) noexcept
@@ -267,32 +274,6 @@ namespace daw {
 					  : is_nullable( Nullable )
 					  , empty_is_null( empty_null )
 					  , value_str( sv ) {}
-
-					explicit constexpr operator bool( ) const noexcept {
-						return static_cast<int>( is_nullable ) or
-						       static_cast<int>( !value_str.empty( ) ) or
-						       static_cast<int>( empty_is_null );
-					}
-
-					constexpr bool is_parsed( ) const noexcept {
-						return parsed_sv.index( ) != 0;
-					}
-
-					template<typename T>
-					constexpr T parsed_as( ) const {
-						switch( parsed_sv.index( ) ) {
-						case 1:
-							return static_cast<T>( std::get<1>( parsed_sv ) );
-						case 2:
-							return static_cast<T>( std::get<2>( parsed_sv ) );
-						case 3:
-							return static_cast<T>( std::get<3>( parsed_sv ) );
-						case 4:
-							return static_cast<T>( std::get<4>( parsed_sv ) );
-						default:
-							std::terminate( );
-						}
-					}
 				};
 
 				template<typename JsonType>
@@ -413,49 +394,13 @@ namespace daw {
 					return skip_bracketed_item<'[', ']'>( sv );
 				}
 
-				struct numeric_value {};
-
 				struct skip_value_result_t {
 					daw::string_view sv{};
-					std::variant<std::monostate, double, uint64_t, int64_t, bool>
-					  parsed_sv{};
 
 					bool is_null = false;
 
-					constexpr skip_value_result_t( ) noexcept = default;
-
 					constexpr skip_value_result_t( daw::string_view s ) noexcept
 					  : sv( s ) {}
-
-					constexpr skip_value_result_t( daw::string_view s, bool n ) noexcept
-					  : sv( s )
-					  , is_null( n ) {}
-
-					template<typename T>
-					constexpr skip_value_result_t( numeric_value, daw::string_view s,
-					                               T value ) noexcept
-					  : sv( s )
-					  , parsed_sv( value ) {}
-
-					constexpr bool is_parsed( ) const noexcept {
-						return parsed_sv.index( ) != 0;
-					}
-
-					template<typename T>
-					constexpr T parsed_as( ) const {
-						switch( parsed_sv.index( ) ) {
-						case 1:
-							return static_cast<T>( std::get<1>( parsed_sv ) );
-						case 2:
-							return static_cast<T>( std::get<2>( parsed_sv ) );
-						case 3:
-							return static_cast<T>( std::get<3>( parsed_sv ) );
-						case 4:
-							return static_cast<T>( std::get<4>( parsed_sv ) );
-						default:
-							std::terminate( );
-						}
-					}
 				};
 
 				constexpr skip_value_result_t skip_value( daw::string_view &sv ) {
@@ -468,25 +413,7 @@ namespace daw {
 						return skip_array( sv );
 					case '{':
 						return skip_class( sv );
-					default: {
-						auto tmp = skip_other( sv );
-						if( to_lower( tmp.front( ) ) == 't' ) {
-							return {numeric_value{}, tmp, true};
-						} else if( to_lower( tmp.front( ) ) == 'f' ) {
-							return {numeric_value{}, tmp, false};
-						} else if( to_lower( sv.front( ) ) == 'n' ) {
-							return {skip_other( sv ), true};
-						} else {
-							if( tmp.find_first_of( ".eE" ) != daw::string_view::npos ) {
-								return {numeric_value{}, tmp, parse_real<double>( tmp )};
-							}
-							if( tmp.front( ) == '-' ) {
-								return {numeric_value{}, tmp, parse_signed<int64_t>( tmp )};
-							}
-							return {numeric_value{}, tmp,
-							        daw::parser::parse_unsigned_int<uint64_t>( tmp )};
-						}
-					}
+					default: { return skip_other( sv ); }
 					}
 				}
 
@@ -500,13 +427,10 @@ namespace daw {
 					using constructor_t = typename ParseInfo::constructor_t;
 					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
 
-					if( pos.is_parsed( ) ) {
-						return constructor_t{}( pos.template parsed_as<element_t>( ) );
-					}
-					if constexpr( is_floating_point_v<element_t> ) {
+					if constexpr( std::is_floating_point_v<element_t> ) {
 						return constructor_t{}( parse_real<element_t>( pos.value_str ) );
 					}
-					return constructor_t{}( parse_signed<element_t>( pos.value_str ) );
+					return constructor_t{}( parse_integer<element_t>( pos.value_str ) );
 				}
 
 				template<typename ParseInfo>
@@ -520,9 +444,6 @@ namespace daw {
 				                            value_pos pos ) {
 					// assert !pos.value_str.empty( );
 					using constructor_t = typename ParseInfo::constructor_t;
-					if( pos.is_parsed( ) ) {
-						return constructor_t{}( pos.template parsed_as<bool>( ) );
-					}
 					return constructor_t{}( to_lower( pos.value_str.front( ) ) == 't' );
 				}
 
@@ -568,7 +489,6 @@ namespace daw {
 						auto tmp = skip_value( pos.value_str );
 						auto vp = value_pos( element_t::nullable, element_t::empty_is_null,
 						                     tmp.sv );
-						vp.parsed_sv = tmp.parsed_sv;
 						add_value( parse_value<element_t>(
 						  ParseTag<element_t::expected_type>{}, vp ) );
 
