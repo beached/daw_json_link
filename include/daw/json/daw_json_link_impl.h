@@ -274,6 +274,26 @@ namespace daw {
 					  : is_nullable( Nullable )
 					  , empty_is_null( empty_null )
 					  , value_str( sv ) {}
+
+					constexpr bool empty( ) const noexcept {
+						return value_str.empty( );
+					}
+
+					constexpr decltype( auto ) front( ) const noexcept {
+						return value_str.front( );
+					}
+
+					constexpr bool at_start_of_array( ) const noexcept {
+						return !empty( ) and front( ) == '[';
+					}
+
+					constexpr bool at_end_of_array( ) const noexcept {
+						return empty( ) or front( ) == ']';
+					}
+
+					constexpr void trim_left( ) noexcept {
+						value_str = daw::parser::trim_left( value_str );
+					}
 				};
 
 				template<typename JsonType>
@@ -285,15 +305,11 @@ namespace daw {
 				template<typename JsonType>
 				inline constexpr bool is_json_empty_null_v = JsonType::empty_is_null;
 
+				struct member_name_parse_error {};
 				constexpr daw::string_view parse_name( daw::string_view &sv ) {
-					if( sv.front( ) != '"' ) {
-						sv = parser::trim_left( sv );
-					}
-					struct member_name_parse_error {};
 					daw::exception::precondition_check( sv.front( ) == '"' );
 					sv.remove_prefix( );
 					auto name = sv.pop_front( "\"" );
-					sv = parser::trim_left( sv );
 					sv.pop_front( ":" );
 					sv = parser::trim_left( sv );
 					return name;
@@ -404,7 +420,6 @@ namespace daw {
 				};
 
 				constexpr skip_value_result_t skip_value( daw::string_view &sv ) {
-					sv = parser::trim_left( sv );
 					daw::exception::precondition_check( !sv.empty( ) );
 					switch( sv.front( ) ) {
 					case '"':
@@ -442,9 +457,9 @@ namespace daw {
 				template<typename JsonMember>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 				                            value_pos pos ) {
-					// assert !pos.value_str.empty( );
 					using constructor_t = typename JsonMember::constructor_t;
-					return constructor_t{}( to_lower( pos.value_str.front( ) ) == 't' );
+					return constructor_t{}( !pos.empty( ) and
+					                        to_lower( pos.front( ) ) == 't' );
 				}
 
 				template<typename JsonMember>
@@ -477,24 +492,26 @@ namespace daw {
 				template<typename JsonMember>
 				constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
 				                            value_pos pos ) {
-					daw::exception::precondition_check<invalid_array>(
-					  pos.value_str.front( ) == '[' );
-					pos.value_str.remove_prefix( );
-					pos.value_str = daw::parser::trim_left( pos.value_str );
+
 					using element_t = typename JsonMember::json_element_t;
+					daw::exception::precondition_check<invalid_array>(
+					  pos.at_start_of_array( ) );
 
-					auto result = typename JsonMember::constructor_t{}( );
-					auto add_value = typename JsonMember::appender_t( result );
-					while( !pos.value_str.empty( ) and pos.value_str.front( ) != ']' ) {
-						auto tmp = skip_value( pos.value_str );
+					pos.value_str.remove_prefix( );
+					pos.trim_left( );
+
+					auto array_container = typename JsonMember::constructor_t{}( );
+					auto container_appender =
+					  typename JsonMember::appender_t( array_container );
+
+					while( !pos.at_end_of_array( ) ) {
 						auto vp = value_pos( element_t::nullable, element_t::empty_is_null,
-						                     tmp.sv );
-						add_value( parse_value<element_t>(
-						  ParseTag<element_t::expected_type>{}, vp ) );
-
-						pos.value_str = daw::parser::trim_left( pos.value_str );
+						                     skip_value( pos.value_str ).sv );
+						container_appender( parse_value<element_t>(
+						  ParseTag<element_t::expected_type>{}, std::move( vp ) ) );
 					}
-					return result;
+					pos.trim_left( );
+					return array_container;
 				}
 
 				template<typename Container>
@@ -504,9 +521,9 @@ namespace daw {
 					constexpr basic_appender( Container &container ) noexcept
 					  : appender( container ) {}
 
-					template<typename T>
-					constexpr void operator( )( T &&value ) {
-						*appender = std::forward<T>( value );
+					template<typename Value>
+					constexpr void operator( )( Value &&value ) {
+						*appender = std::forward<Value>( value );
 					}
 				};
 			} // namespace
