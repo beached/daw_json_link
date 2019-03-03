@@ -116,6 +116,7 @@ namespace daw {
 					}
 
 					result[pos].value_str = v.sv;
+					result[pos].parsed_sv = v.parsed_sv;
 					sv = parser::trim_left( sv );
 				}
 
@@ -453,7 +454,7 @@ namespace daw {
 		template<typename JsonElement>
 		class json_array_iterator {
 			daw::string_view m_state{};
-			daw::string_view m_cur_value{};
+			impl::skip_value_result_t m_cur_value{};
 
 		public:
 			using value_type = typename JsonElement::parse_to_t;
@@ -477,18 +478,19 @@ namespace daw {
 				if( m_state.empty( ) ) {
 					return;
 				}
-				m_cur_value = impl::skip_value( m_state ).sv;
+				m_cur_value = impl::skip_value( m_state );
 				m_state = daw::parser::trim_left( m_state );
 			}
 
 			constexpr value_type operator*( ) const noexcept {
 				daw::exception::precondition_check<impl::invalid_array>(
-				  !m_cur_value.empty( ) );
+				  !m_cur_value.sv.empty( ) );
 
+				auto vp = impl::value_pos(
+				  false, impl::is_json_empty_null_v<JsonElement>, m_cur_value.sv );
+				vp.parsed_sv = m_cur_value.parsed_sv;
 				return impl::parse_value<JsonElement>(
-				  impl::ParseTag<JsonElement::expected_type>{},
-				  impl::value_pos( false, impl::is_json_empty_null_v<JsonElement>,
-				                   m_cur_value ) );
+				  impl::ParseTag<JsonElement::expected_type>{}, vp );
 			}
 
 			constexpr json_array_iterator &operator++( ) {
@@ -508,13 +510,13 @@ namespace daw {
 			}
 
 			explicit constexpr operator bool( ) const noexcept {
-				return !m_cur_value.empty( );
+				return !m_cur_value.sv.empty( );
 			}
 
 			constexpr bool operator==( json_array_iterator const &rhs ) const
 			  noexcept {
-				return ( m_cur_value.empty( ) and !rhs ) or
-				       ( m_state == rhs.m_state and m_cur_value == rhs.m_cur_value );
+				return ( m_cur_value.sv.empty( ) and !rhs ) or
+				       ( m_state == rhs.m_state and m_cur_value.sv == rhs.m_cur_value.sv );
 			}
 
 			constexpr bool operator!=( json_array_iterator const &rhs ) const

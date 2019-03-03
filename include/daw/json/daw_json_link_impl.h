@@ -29,6 +29,7 @@
 #include <iterator>
 #include <limits>
 #include <string>
+#include <variant>
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_array.h>
@@ -253,6 +254,8 @@ namespace daw {
 					bool is_nullable;
 					bool empty_is_null;
 					string_view value_str{};
+					std::variant<std::monostate, double, uint64_t, int64_t, bool>
+					  parsed_sv{};
 
 					explicit constexpr value_pos( bool Nullable,
 					                              bool empty_null ) noexcept
@@ -269,6 +272,26 @@ namespace daw {
 						return static_cast<int>( is_nullable ) or
 						       static_cast<int>( !value_str.empty( ) ) or
 						       static_cast<int>( empty_is_null );
+					}
+
+					constexpr bool is_parsed( ) const noexcept {
+						return parsed_sv.index( ) != 0;
+					}
+
+					template<typename T>
+					constexpr T parsed_as( ) const {
+						switch( parsed_sv.index( ) ) {
+						case 1:
+							return static_cast<T>( std::get<1>( parsed_sv ) );
+						case 2:
+							return static_cast<T>( std::get<2>( parsed_sv ) );
+						case 3:
+							return static_cast<T>( std::get<3>( parsed_sv ) );
+						case 4:
+							return static_cast<T>( std::get<4>( parsed_sv ) );
+						default:
+							std::terminate( );
+						}
 					}
 				};
 
@@ -390,9 +413,16 @@ namespace daw {
 					return skip_bracketed_item<'[', ']'>( sv );
 				}
 
+				struct numeric_value {};
+
 				struct skip_value_result_t {
-					daw::string_view sv;
+					daw::string_view sv{};
+					std::variant<std::monostate, double, uint64_t, int64_t, bool>
+					  parsed_sv{};
+
 					bool is_null = false;
+
+					constexpr skip_value_result_t( ) noexcept = default;
 
 					constexpr skip_value_result_t( daw::string_view s ) noexcept
 					  : sv( s ) {}
@@ -400,6 +430,32 @@ namespace daw {
 					constexpr skip_value_result_t( daw::string_view s, bool n ) noexcept
 					  : sv( s )
 					  , is_null( n ) {}
+
+					template<typename T>
+					constexpr skip_value_result_t( numeric_value, daw::string_view s,
+					                               T value ) noexcept
+					  : sv( s )
+					  , parsed_sv( value ) {}
+
+					constexpr bool is_parsed( ) const noexcept {
+						return parsed_sv.index( ) != 0;
+					}
+
+					template<typename T>
+					constexpr T parsed_as( ) const {
+						switch( parsed_sv.index( ) ) {
+						case 1:
+							return static_cast<T>( std::get<1>( parsed_sv ) );
+						case 2:
+							return static_cast<T>( std::get<2>( parsed_sv ) );
+						case 3:
+							return static_cast<T>( std::get<3>( parsed_sv ) );
+						case 4:
+							return static_cast<T>( std::get<4>( parsed_sv ) );
+						default:
+							std::terminate( );
+						}
+					}
 				};
 
 				constexpr skip_value_result_t skip_value( daw::string_view &sv ) {
@@ -412,8 +468,25 @@ namespace daw {
 						return skip_array( sv );
 					case '{':
 						return skip_class( sv );
-					default:
-						return {skip_other( sv ), to_lower( sv.front( ) ) == 'n'};
+					default: {
+						auto tmp = skip_other( sv );
+						if( to_lower( tmp.front( ) ) == 't' ) {
+							return {numeric_value{}, tmp, true};
+						} else if( to_lower( tmp.front( ) ) == 'f' ) {
+							return {numeric_value{}, tmp, false};
+						} else if( to_lower( sv.front( ) ) == 'n' ) {
+							return {skip_other( sv ), true};
+						} else {
+							if( sv.find_first_of( ".eE" ) != daw::string_view::npos ) {
+								return {numeric_value{}, tmp, parse_real<double>( tmp )};
+							}
+							if( sv.front( ) == '-' ) {
+								return {numeric_value{}, tmp, parse_signed<int64_t>( tmp )};
+							}
+							return {numeric_value{}, tmp,
+							        daw::parser::parse_unsigned_int<uint64_t>( tmp )};
+						}
+					}
 					}
 				}
 
@@ -427,11 +500,13 @@ namespace daw {
 					using constructor_t = typename ParseInfo::constructor_t;
 					using element_t = nullable_type_t<typename ParseInfo::parse_to_t>;
 
+					if( pos.is_parsed( ) ) {
+						return constructor_t{}( pos.template parsed_as<element_t>( ) );
+					}
 					if constexpr( is_floating_point_v<element_t> ) {
 						return constructor_t{}( parse_real<element_t>( pos.value_str ) );
-					} else {
-						return constructor_t{}( parse_signed<element_t>( pos.value_str ) );
 					}
+					return constructor_t{}( parse_signed<element_t>( pos.value_str ) );
 				}
 
 				template<typename ParseInfo>
@@ -445,6 +520,9 @@ namespace daw {
 				                            value_pos pos ) {
 					// assert !pos.value_str.empty( );
 					using constructor_t = typename ParseInfo::constructor_t;
+					if( pos.is_parsed( ) ) {
+						return constructor_t{}( pos.template parsed_as<bool>( ) );
+					}
 					return constructor_t{}( to_lower( pos.value_str.front( ) ) == 't' );
 				}
 
@@ -487,11 +565,12 @@ namespace daw {
 					auto result = typename ParseInfo::constructor_t{}( );
 					auto add_value = typename ParseInfo::appender_t( result );
 					while( !pos.value_str.empty( ) and pos.value_str.front( ) != ']' ) {
-						auto val_str = skip_value( pos.value_str ).sv;
+						auto tmp = skip_value( pos.value_str );
+						auto vp = value_pos( element_t::nullable, element_t::empty_is_null,
+						                     tmp.sv );
+						vp.parsed_sv = tmp.parsed_sv;
 						add_value( parse_value<element_t>(
-						  ParseTag<element_t::expected_type>{},
-						  value_pos( element_t::nullable, element_t::empty_is_null,
-						             val_str ) ) );
+						  ParseTag<element_t::expected_type>{}, vp ) );
 
 						pos.value_str = daw::parser::trim_left( pos.value_str );
 					}
