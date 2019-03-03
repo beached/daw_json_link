@@ -101,56 +101,70 @@ namespace daw {
 				  impl::ParseTag<type_t::expected_type>{}, locations[N] );
 			}
 
-			static constexpr auto get_locations( daw::string_view &sv ) {
-				auto result = daw::make_array(
-				  impl::value_pos( impl::is_json_nullable_v<JsonMembers>,
-				                   impl::is_json_empty_null_v<JsonMembers> )... );
+		private:
+			struct location_info_t {
+				JSONNAMETYPE name;
+				std::optional<daw::string_view> location{};
 
-				while( !sv.empty( ) and sv.front( ) != '}' ) {
+				constexpr bool missing( ) const {
+					return !static_cast<bool>( location );
+				}
+			};
+
+			static constexpr bool
+			at_end_of_class( daw::string_view const sv ) noexcept {
+				return sv.empty( ) or sv.front( ) == '}';
+			}
+
+			template<size_t pos>
+			static constexpr void find_location(
+			  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
+			  daw::string_view &sv ) {
+
+				using type_t = traits::nth_type<pos, JsonMembers...>;
+				size_t idx = pos;
+				daw::exception::precondition_check(
+				  !locations[idx].missing( ) or
+				  ( !sv.empty( ) and sv.front( ) != '}' ) );
+
+				while( locations[idx].missing( ) ) {
+					sv = parser::trim_left( sv );
+					if( at_end_of_class( sv ) ) {
+						break;
+					}
 					auto name = impl::parse_name( sv );
+					auto v = impl::skip_value( sv );
+					sv = parser::trim_left( sv );
 					if( !has_name( name ) ) {
-						impl::skip_value( sv );
 						continue;
 					}
-					size_t const pos = find_name( name );
-					auto v = impl::skip_value( sv );
-					if( v.is_null or ( v.sv.empty( ) and !result[pos].empty_is_null ) ) {
+					auto const name_pos = find_name( name );
+					if( v.is_null or ( v.sv.empty( ) and !type_t::empty_is_null ) ) {
 						throw impl::missing_nonnullable_value_expection<
 						  impl::JsonParseTypes::Null>{};
 					}
-
-					result[pos].value_str = v.sv;
-					result[pos].parsed_sv = std::move( v.parsed_sv );
-					sv = parser::trim_left( sv );
+					locations[name_pos].location = {v.sv};
 				}
-
-				daw::exception::precondition_check(
-				  ::daw::algorithm::all_of( begin( result ), end( result ),
-				                            []( auto const &loc ) -> bool {
-					                            return static_cast<bool>( loc );
-				                            } ),
-				  "Missing mandatory field" );
-				return result;
 			}
 
-			template<typename Result, size_t... Is>
-			static constexpr Result parse_json_class( daw::string_view sv,
-			                                          std::index_sequence<Is...> ) {
-				static_assert(
-				  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
-				  "Supplied types cannot be used for construction of this type" );
+			template<size_t pos>
+			static constexpr decltype( auto ) parse_item2(
+			  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
+			  daw::string_view &sv ) {
 
-				sv = parser::trim_left( sv );
-				exception::precondition_check( !sv.empty( ) and sv.front( ) == '{' );
-				sv.remove_prefix( );
-				sv = parser::trim_left( sv );
-				auto const locations = get_locations( sv );
+				find_location<pos>( locations, sv );
 
-				// Ensure locations of all parts there
+				using type_t = traits::nth_type<pos, JsonMembers...>;
 
-				return construct_a<Result>{}( parse_item<Is>( locations )... );
+				impl::value_pos vp( type_t::nullable, type_t::empty_is_null );
+				if( locations[pos].location ) {
+					vp.value_str = *locations[pos].location;
+				}
+				return impl::parse_value<type_t>(
+				  impl::ParseTag<type_t::expected_type>{}, vp );
 			}
 
+		public:
 			template<typename OutputIterator, size_t... Is, typename... Args>
 			static constexpr OutputIterator
 			serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
@@ -164,6 +178,25 @@ namespace daw {
 				        ... );
 				*it++ = '}';
 				return it;
+			}
+
+			template<typename Result, size_t... Is>
+			static constexpr Result parse_json_class( daw::string_view sv,
+			                                          std::index_sequence<Is...> ) {
+				static_assert(
+				  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
+				  "Supplied types cannot be used for construction of this type" );
+
+				auto known_locations =
+				  daw::make_array( location_info_t{JsonMembers::name}... );
+
+				sv = parser::trim_left( sv );
+				exception::precondition_check( !sv.empty( ) and sv.front( ) == '{' );
+				sv.remove_prefix( );
+				sv = parser::trim_left( sv );
+
+				return construct_a<Result>{}(
+				  parse_item2<Is>( known_locations, sv )... );
 			}
 
 		public:
@@ -458,7 +491,7 @@ namespace daw {
 		template<typename JsonElement>
 		class json_array_iterator {
 			daw::string_view m_state{};
-			impl::skip_value_result_t m_cur_value{};
+			daw::string_view m_cur_value{};
 
 		public:
 			using value_type = typename JsonElement::parse_to_t;
@@ -482,17 +515,16 @@ namespace daw {
 				if( m_state.empty( ) ) {
 					return;
 				}
-				m_cur_value = impl::skip_value( m_state );
+				m_cur_value = impl::skip_value( m_state ).sv;
 				m_state = daw::parser::trim_left( m_state );
 			}
 
 			constexpr value_type operator*( ) const noexcept {
 				daw::exception::precondition_check<impl::invalid_array>(
-				  !m_cur_value.sv.empty( ) );
+				  !m_cur_value.empty( ) );
 
 				auto vp = impl::value_pos(
-				  false, impl::is_json_empty_null_v<JsonElement>, m_cur_value.sv );
-				vp.parsed_sv = m_cur_value.parsed_sv;
+				  false, impl::is_json_empty_null_v<JsonElement>, m_cur_value );
 				return impl::parse_value<JsonElement>(
 				  impl::ParseTag<JsonElement::expected_type>{}, vp );
 			}
@@ -514,14 +546,13 @@ namespace daw {
 			}
 
 			explicit constexpr operator bool( ) const noexcept {
-				return !m_cur_value.sv.empty( );
+				return !m_cur_value.empty( );
 			}
 
 			constexpr bool operator==( json_array_iterator const &rhs ) const
 			  noexcept {
-				return ( m_cur_value.sv.empty( ) and !rhs ) or
-				       ( m_state == rhs.m_state and
-				         m_cur_value.sv == rhs.m_cur_value.sv );
+				return ( m_cur_value.empty( ) and !rhs ) or
+				       ( m_state == rhs.m_state and m_cur_value == rhs.m_cur_value );
 			}
 
 			constexpr bool operator!=( json_array_iterator const &rhs ) const
