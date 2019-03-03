@@ -47,174 +47,23 @@
 
 namespace daw {
 	namespace json {
-		template<size_t N, typename string_t, typename... JsonMembers>
-		static constexpr impl::kv_t<string_t> get_item( ) noexcept {
-			using type_t = traits::nth_type<N, JsonMembers...>;
-			return {type_t::name, type_t::expected_type, type_t::nullable, N};
-		}
-
 		template<typename... JsonMembers>
-		class class_description_t {
-			static constexpr size_t find_string_capacity( ) noexcept {
-				return ( json_name_len( JsonMembers::name ) + ... );
-			}
-			using string_t = basic_bounded_string<char, find_string_capacity( )>;
-
-			template<size_t... Is>
-			static constexpr auto make_map( std::index_sequence<Is...> ) noexcept {
-				return daw::make_array( get_item<Is, string_t, JsonMembers...>( )... );
-			}
-
-			static constexpr auto name_map =
-			  make_map( std::index_sequence_for<JsonMembers...>{} );
-
-			static constexpr bool has_name( daw::string_view key ) noexcept {
-				using std::begin;
-				using std::end;
-				auto result = algorithm::find_if(
-				  begin( name_map ), end( name_map ),
-				  [key]( auto const &kv ) { return kv.name == key; } );
-				return result != std::end( name_map );
-			}
-
-			static constexpr size_t find_name( daw::string_view key ) noexcept {
-				using std::begin;
-				using std::end;
-				auto result = algorithm::find_if(
-				  begin( name_map ), end( name_map ),
-				  [key]( auto const &kv ) { return kv.name == key; } );
-				if( result == std::end( name_map ) ) {
-					std::terminate( );
-				}
-				return static_cast<size_t>(
-				  std::distance( begin( name_map ), result ) );
-			}
-
-			template<size_t JsonMemberPosition>
-			static constexpr decltype( auto )
-			parse_item( std::array<impl::value_pos, sizeof...( JsonMembers )> const
-			              &locations ) {
-
-				using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
-
-				return impl::parse_value<JsonMember>(
-				  impl::ParseTag<JsonMember::expected_type>{},
-				  locations[JsonMemberPosition] );
-			}
-
-			struct location_info_t {
-				JSONNAMETYPE name;
-				std::optional<daw::string_view> location{};
-
-				constexpr bool missing( ) const {
-					return !static_cast<bool>( location );
-				}
-			};
-
-			static constexpr bool
-			at_end_of_class( daw::string_view const sv ) noexcept {
-				return sv.empty( ) or sv.front( ) == '}';
-			}
-
-			template<size_t pos>
-			static constexpr void find_location(
-			  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
-			  daw::string_view &sv ) {
-
-				using type_t = traits::nth_type<pos, JsonMembers...>;
-				size_t idx = pos;
-				daw::exception::precondition_check(
-				  !locations[idx].missing( ) or
-				  ( !sv.empty( ) and sv.front( ) != '}' ) );
-
-				while( locations[idx].missing( ) ) {
-					sv = parser::trim_left( sv );
-					if( at_end_of_class( sv ) ) {
-						break;
-					}
-					auto name = impl::parse_name( sv );
-					auto v = impl::skip_value( sv );
-					sv = parser::trim_left( sv );
-					if( !has_name( name ) ) {
-						continue;
-					}
-					auto const name_pos = find_name( name );
-					if( v.is_null or ( v.sv.empty( ) and !type_t::empty_is_null ) ) {
-						throw impl::missing_nonnullable_value_expection<
-						  impl::JsonParseTypes::Null>{};
-					}
-					locations[name_pos].location = {v.sv};
-				}
-			}
-
-			template<size_t JsonMemberPosition>
-			static constexpr decltype( auto ) parse_item(
-			  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
-			  daw::string_view &sv ) {
-
-				find_location<JsonMemberPosition>( locations, sv );
-
-				using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
-
-				auto vp =
-				  impl::value_pos( JsonMember::nullable, JsonMember::empty_is_null );
-				if( locations[JsonMemberPosition].location ) {
-					vp.value_str = *locations[JsonMemberPosition].location;
-				}
-				return impl::parse_value<JsonMember>(
-				  impl::ParseTag<JsonMember::expected_type>{}, vp );
-			}
-
-			template<typename OutputIterator, size_t... Is, typename... Args>
-			static constexpr OutputIterator
-			serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
-			                      std::tuple<Args...> &&args ) {
-
-				*it++ = '{';
-				(void)( ( impl::make_json_string<
-				            daw::traits::nth_element<Is, JsonMembers...>, Is>( it,
-				                                                               args ),
-				          0 ) +
-				        ... );
-				*it++ = '}';
-				return it;
-			}
-
-			template<typename Result, size_t... Is>
-			static constexpr Result parse_json_class( daw::string_view sv,
-			                                          std::index_sequence<Is...> ) {
-				static_assert(
-				  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
-				  "Supplied types cannot be used for construction of this type" );
-
-				auto known_locations =
-				  daw::make_array( location_info_t{JsonMembers::name}... );
-
-				sv = parser::trim_left( sv );
-				exception::precondition_check( !sv.empty( ) and sv.front( ) == '{' );
-				sv.remove_prefix( );
-				sv = parser::trim_left( sv );
-
-				return construct_a<Result>{}(
-				  parse_item<Is>( known_locations, sv )... );
-			}
-
-		public:
+		struct class_description_t {
 			template<typename OutputIterator, typename... Args>
 			static constexpr OutputIterator serialize( OutputIterator it,
 			                                           std::tuple<Args...> &&args ) {
 				static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 				               "Argument count is incorrect" );
-				return serialize_json_class( it, std::index_sequence_for<Args...>{},
-				                             std::move( args ) );
+				return impl::serialize_json_class<JsonMembers...>(
+				  it, std::index_sequence_for<Args...>{}, std::move( args ) );
 			}
 
 			template<typename Result>
 			static constexpr decltype( auto ) parse( daw::string_view sv ) {
-				return parse_json_class<Result>(
+				return impl::parse_json_class<Result, JsonMembers...>(
 				  sv, std::index_sequence_for<JsonMembers...>{} );
 			}
-		}; // namespace json
+		}; // namespace impl
 
 		// Member types
 		template<typename JsonMember>
@@ -559,7 +408,6 @@ namespace daw {
 			}
 		};
 
-		static inline constexpr char const no_name[] = "";
 		template<typename JsonElement,
 		         typename Container = std::vector<typename JsonElement::parse_to_t>,
 		         typename Constructor = daw::construct_a<Container>,
