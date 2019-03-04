@@ -430,7 +430,7 @@ namespace daw {
 			  impl::data_size::has_data_size_v<daw::remove_cvref_t<String>> );
 
 			using parser_t =
-			  json_array<"", Container, JsonElement, Constructor, Appender>;
+			  json_array<no_name, Container, JsonElement, Constructor, Appender>;
 
 			using impl::data_size::data;
 			using impl::data_size::size;
