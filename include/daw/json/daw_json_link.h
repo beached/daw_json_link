@@ -71,9 +71,8 @@ namespace daw {
 		template<typename JsonMember>
 		struct json_nullable {
 			using i_am_a_json_type = typename JsonMember::i_am_a_json_type;
-			static constexpr auto const name = JsonMember::name;
-			static constexpr impl::JsonParseTypes expected_type =
-			  impl::JsonParseTypes::Null;
+			static constexpr auto name = JsonMember::name;
+			static constexpr auto expected_type = impl::JsonParseTypes::Null;
 			using parse_to_t = typename JsonMember::parse_to_t;
 			using constructor_t = typename JsonMember::constructor_t;
 			using sub_type = JsonMember;
@@ -86,9 +85,8 @@ namespace daw {
 			               "Constructor must be callable with T" );
 
 			using i_am_a_json_type = void;
-			static constexpr auto const name = Name;
-			static constexpr impl::JsonParseTypes expected_type =
-			  impl::JsonParseTypes::Number;
+			static constexpr auto name = Name;
+			static constexpr auto expected_type = impl::JsonParseTypes::Number;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 		};
@@ -102,9 +100,8 @@ namespace daw {
 			static_assert( std::is_convertible_v<bool, T>,
 			               "Supplied result type must be convertable from bool" );
 			using i_am_a_json_type = void;
-			static constexpr auto const name = Name;
-			static constexpr impl::JsonParseTypes expected_type =
-			  impl::JsonParseTypes::Bool;
+			static constexpr auto name = Name;
+			static constexpr auto expected_type = impl::JsonParseTypes::Bool;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 		};
@@ -118,9 +115,8 @@ namespace daw {
 			  "Constructor must be callable with a char const * and a size_t" );
 
 			using i_am_a_json_type = void;
-			static constexpr auto const name = Name;
-			static constexpr impl::JsonParseTypes expected_type =
-			  impl::JsonParseTypes::String;
+			static constexpr auto name = Name;
+			static constexpr auto expected_type = impl::JsonParseTypes::String;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 			static constexpr bool empty_is_null = EmptyStringNull;
@@ -136,9 +132,8 @@ namespace daw {
 			  "Constructor must be callable with a char const * and a size_t" );
 
 			using i_am_a_json_type = void;
-			static constexpr auto const name = Name;
-			static constexpr impl::JsonParseTypes expected_type =
-			  impl::JsonParseTypes::Date;
+			static constexpr auto name = Name;
+			static constexpr auto expected_type = impl::JsonParseTypes::Date;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 		};
@@ -147,9 +142,8 @@ namespace daw {
 		         typename Constructor = daw::construct_a<T>>
 		struct json_class {
 			using i_am_a_json_type = void;
-			static constexpr auto const name = Name;
-			static constexpr impl::JsonParseTypes expected_type =
-			  impl::JsonParseTypes::Class;
+			static constexpr auto name = Name;
+			static constexpr auto expected_type = impl::JsonParseTypes::Class;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 		};
@@ -160,8 +154,7 @@ namespace daw {
 		struct json_custom {
 			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
-			static constexpr impl::JsonParseTypes expected_type =
-			  impl::JsonParseTypes::Custom;
+			static constexpr auto expected_type = impl::JsonParseTypes::Custom;
 			using parse_to_t = T;
 			using to_converter_t = ToConverter;
 			using from_converter_t = FromConverter;
@@ -172,9 +165,8 @@ namespace daw {
 		         typename Appender = impl::basic_appender<Container>>
 		struct json_array {
 			using i_am_a_json_type = void;
-			static constexpr auto const name = Name;
-			static constexpr impl::JsonParseTypes expected_type =
-			  impl::JsonParseTypes::Array;
+			static constexpr auto name = Name;
+			static constexpr auto expected_type = impl::JsonParseTypes::Array;
 			using parse_to_t = Container;
 			using constructor_t = Constructor;
 			using appender_t = Appender;
