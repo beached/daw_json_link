@@ -34,7 +34,7 @@
 struct Number {
 	intmax_t a{};
 };
-#ifdef USECPP20
+#if __cplusplus > 201703L
 auto describe_json_class( Number ) noexcept {
 	using namespace daw::json;
 	return class_description_t<json_number<"a", intmax_t>>{};

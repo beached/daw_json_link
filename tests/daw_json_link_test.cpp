@@ -69,7 +69,7 @@ struct test_001_t {
 
 auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
-#ifdef USECPP20
+#if __cplusplus > 201703L
 	return class_description_t<
 	  json_number<"i", int>, json_number<"d">, json_bool<"b">,
 	  json_string<"s", std::string_view>,
@@ -103,7 +103,7 @@ struct test_002_t {
 };
 auto describe_json_class( test_002_t ) noexcept {
 	using namespace daw::json;
-#ifdef USECPP20
+#if __cplusplus > 201703L
 	return class_description_t<json_class<"a", test_001_t>>{};
 #else
 	constexpr static char const a[] = "a";
@@ -120,7 +120,7 @@ struct test_003_t {
 };
 auto describe_json_class( test_003_t ) noexcept {
 	using namespace daw::json;
-#ifdef USECPP20
+#if __cplusplus > 201703L
 	return class_description_t<json_nullable<json_class<"a", test_001_t>>>{};
 #else
 	constexpr static char const a[] = "a";
@@ -169,7 +169,7 @@ struct e_test_001_t {
 
 auto describe_json_class( e_test_001_t ) noexcept {
 	using namespace daw::json;
-#ifdef USECPP20
+#if __cplusplus > 201703L
 	return class_description_t<json_custom<"a", blah_t>>{};
 #else
 	constexpr static char const a[] = "a";
