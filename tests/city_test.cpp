@@ -78,8 +78,8 @@ int main( int argc, char **argv ) {
 	std::cout << "File size(B): " << json_data.size( ) << " "
 	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
 
-	auto count = *daw::bench_n_test<4>(
-	  "cities parsing 1",
+	auto count = *daw::bench_n_test_mbs<10>(
+	  "cities parsing 1", json_sv.size( ),
 	  []( auto &&sv ) {
 		  auto const data =
 		    daw::json::from_json_array<json_class<no_name, City>>( sv );
@@ -93,8 +93,8 @@ int main( int argc, char **argv ) {
 
 	auto data = std::vector<City>( );
 
-	auto count2 = *daw::bench_n_test<4>(
-	  "cities parsing 2",
+	auto count2 = *daw::bench_n_test_mbs<10>(
+	  "cities parsing 2", json_sv.size( ),
 	  [&]( auto &&sv ) {
 		  data.clear( );
 		  std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
@@ -104,7 +104,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << "element count 2: " << count2 << '\n';
 	auto count3 =
-	  *daw::bench_n_test<4>( "cities parsing 3",
+	  *daw::bench_n_test_mbs<10>( "cities parsing 3", json_sv.size( ),
 	                         []( auto &&sv ) {
 		                         return static_cast<size_t>( std::distance(
 		                           iterator_t( sv ), iterator_t( ) ) );
@@ -113,8 +113,8 @@ int main( int argc, char **argv ) {
 
 	std::cout << "element count 3: " << count3 << '\n';
 
-	auto has_toronto = *daw::bench_n_test<4>(
-	  "Find Toronto",
+	auto has_toronto = *daw::bench_n_test_mbs<10>(
+	  "Find Toronto", json_sv.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
 		    std::find_if( iterator_t( sv ), iterator_t( ),
@@ -127,8 +127,8 @@ int main( int argc, char **argv ) {
 	  json_sv );
 	std::cout << "Toronto was " << ( has_toronto ? "" : "not" ) << " found at "
 	          << to_json( *has_toronto ) << '\n';
-	auto has_chitungwiza = *daw::bench_n_test<4>(
-	  "Find Chitungwiza(last item)",
+	auto has_chitungwiza = *daw::bench_n_test_mbs<10>(
+	  "Find Chitungwiza(last item)", json_sv.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
 		    std::find_if( iterator_t( sv ), iterator_t( ), []( City &&city ) {
