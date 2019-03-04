@@ -71,7 +71,7 @@ int main( ) {
 	std::cout << "Processing " << json_sv.size( ) << " bytes "
 	          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 	auto const count =
-	  *daw::bench_n_test<10>( "int parsing 1", []( auto &&sv ) noexcept {
+	  *daw::bench_n_test_mbs<10>( "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
 		  auto const data = from_json_array<json_class<no_name, Number>>( sv );
 		  return data.size( );
 	  },
@@ -84,8 +84,8 @@ int main( ) {
 
 	auto data = std::vector<Number>( );
 
-	auto const count2 = *daw::bench_n_test<10>(
-	  "int parsing 2",
+	auto const count2 = *daw::bench_n_test_mbs<10>(
+	  "int parsing 2", json_sv.size( ),
 	  [&]( auto &&sv ) noexcept {
 		  data.clear( );
 		  std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
