@@ -302,6 +302,10 @@ namespace daw {
 
 		template<typename Result = std::string, typename Container>
 		constexpr Result to_json_array( Container &&c ) {
+			static_assert(
+			  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
+			  "Supplied container must support begin( )/end( )" );
+
 			Result result = "[";
 			for( auto const &v : c ) {
 				result += to_json( v );
