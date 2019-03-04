@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+﻿// The MIT License( MIT )
 //
 // Copyright (c) 2019 Darrell Wright
 //
@@ -90,18 +90,19 @@ namespace daw {
 		}
 
 		template<typename Lhs, typename Rhs>
-		constexpr bool json_name_eq( Lhs const & lhs, Rhs const &rhs ) noexcept {
+		constexpr bool json_name_eq( Lhs const &lhs, Rhs const &rhs ) noexcept {
 			return lhs == rhs;
 		}
 		// Convienience for array members
 		static inline constexpr JSONNAMETYPE const no_name = "";
 #else
 #define JSONNAMETYPE char const *
-		constexpr size_t json_name_len( char const *str ) noexcept {
+		constexpr size_t json_name_len( char const *const str ) noexcept {
 			return daw::string_view( str ).size( );
 		}
 
-		constexpr bool json_name_eq( char const *lhs, char const *rhs ) noexcept {
+		constexpr bool json_name_eq( char const *const lhs,
+		                             char const *const rhs ) noexcept {
 			return daw::string_view( lhs ) == daw::string_view( rhs );
 		}
 
@@ -109,7 +110,43 @@ namespace daw {
 		static inline constexpr char const no_name[] = "";
 #endif
 
+		struct parse_js_date {
+			constexpr std::chrono::time_point<std::chrono::system_clock,
+			                                  std::chrono::milliseconds>
+			operator( )( char const *ptr, size_t sz ) const {
+				return daw::date_parsing::parse_javascript_timestamp(
+				  daw::string_view( ptr, sz ) );
+			}
+		};
+
+		template<typename T>
+		struct custom_to_converter_t {
+			constexpr decltype( auto ) operator( )( T &&value ) const {
+				using std::to_string;
+				return to_string( std::move( value ) );
+			}
+			constexpr decltype( auto ) operator( )( T const &value ) const {
+				using std::to_string;
+				return to_string( value );
+			}
+		};
+
+		template<typename T>
+		struct custom_from_converter_t {
+			constexpr decltype( auto ) operator( )( std::string_view sv ) {
+				return from_string( daw::tag<T>, sv );
+			}
+		};
+
 		namespace impl {
+			constexpr daw::string_view to_dsv( std::string_view const sv ) noexcept {
+				return {sv.data( ), sv.size( )};
+			}
+
+			constexpr std::string_view to_ssv( daw::string_view const sv ) noexcept {
+				return {sv.data( ), sv.size( )};
+			}
+
 			namespace data_size {
 				constexpr char const *data( char const *ptr ) noexcept {
 					return ptr;
@@ -133,7 +170,9 @@ namespace daw {
 				    and daw::is_detected_v<size_detect, T>;
 			} // namespace data_size
 
-			template<typename Container, typename OutputIterator>
+			template<typename Container, typename OutputIterator,
+			         daw::enable_if_t<daw::traits::is_container_like_v<
+			           daw::remove_cvref_t<Container>>> = nullptr>
 			constexpr OutputIterator copy_to_iterator( Container const &c,
 			                                           OutputIterator it ) {
 				for( auto const &value : c ) {
@@ -142,42 +181,23 @@ namespace daw {
 				return it;
 			}
 
-			template<typename OutputIterator, size_t N>
-			constexpr OutputIterator copy_to_iterator( char const ( &ptr )[N],
+			template<typename OutputIterator>
+			constexpr OutputIterator copy_to_iterator( char const *ptr,
 			                                           OutputIterator it ) {
-				for( size_t n = 0; n < N; ++n ) {
-					*it++ = ptr[n];
+				if( ptr == nullptr ) {
+					return it;
+				}
+				while( *ptr != '\0' ) {
+					*it = *ptr;
+					++it;
+					++ptr;
 				}
 				return it;
 			}
 
-			template<typename JsonMember, typename OutputIterator, typename T>
-			constexpr OutputIterator member_to_string( OutputIterator &&it,
-			                                           T &&value ) {
-				it = JsonMember::to_string( std::forward<OutputIterator>( it ),
-				                            std::forward<T>( value ) );
-				return std::move( it );
-			}
-
-			template<typename JsonMember, size_t pos, typename OutputIterator,
-			         typename... Args>
-			void to_json_str( OutputIterator it, std::tuple<Args...> &&args ) {
-
-				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
-				*it++ = '"';
-				it = copy_to_iterator( daw::string_view( JsonMember::name ), it );
-				it = copy_to_iterator( daw::string_view( "\":" ), it );
-				it = member_to_string<JsonMember>( std::move( it ),
-				                                   std::get<pos>( std::move( args ) ) );
-				if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
-					*it++ = ',';
-				}
-			}
-
-			constexpr char to_lower( char c ) noexcept {
-				return static_cast<char>( static_cast<unsigned>( c ) |
-				                          static_cast<unsigned>( ' ' ) );
-			}
+			template<typename T>
+			using json_parser_description_t =
+			  decltype( describe_json_class( std::declval<T &>( ) ) );
 
 			template<typename T>
 			constexpr auto deref_detect( T &&value ) noexcept -> decltype( *value ) {
@@ -192,6 +212,177 @@ namespace daw {
 			inline constexpr bool is_valid_optional_v =
 			  daw::is_detected_v<deref_t, Optional>;
 
+			enum class JsonParseTypes : uint_fast8_t {
+				Number,
+				Bool,
+				String,
+				Date,
+				Class,
+				Array,
+				Null,
+				Custom
+			};
+
+			template<JsonParseTypes v>
+			using ParseTag = std::integral_constant<JsonParseTypes, v>;
+
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			static constexpr OutputIterator to_string( ParseTag<JsonParseTypes::Bool>,
+			                                           OutputIterator it,
+			                                           parse_to_t const &value ) {
+				static_assert(
+				  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+				if( value ) {
+					return copy_to_iterator( "true", it );
+				}
+				return copy_to_iterator( "false", it );
+			}
+
+			template<typename JsonMember, typename OutputIterator, typename Optional>
+			static constexpr OutputIterator to_string( ParseTag<JsonParseTypes::Null>,
+			                                           OutputIterator it,
+			                                           Optional const &value ) {
+				static_assert( is_valid_optional_v<Optional> );
+				if( !value ) {
+					it = copy_to_iterator( "null", it );
+					return it;
+				}
+				return to_string<typename JsonMember::sub_type>(
+				  ParseTag<JsonMember::sub_type::expected_type>{}, it, *value );
+			}
+
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			static constexpr OutputIterator
+			to_string( ParseTag<JsonParseTypes::Number>, OutputIterator it,
+			           parse_to_t const &value ) {
+
+				static_assert(
+				  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+
+				using ::daw::json::to_strings::to_string;
+				using std::to_string;
+				return copy_to_iterator( to_string( value ), it );
+			}
+
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			static constexpr OutputIterator
+			to_string( ParseTag<JsonParseTypes::String>, OutputIterator it,
+			           parse_to_t const &value ) {
+
+				static_assert(
+				  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+
+				*it++ = '"';
+				it = copy_to_iterator( value, it );
+				*it++ = '"';
+				return it;
+			}
+
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			static constexpr OutputIterator to_string( ParseTag<JsonParseTypes::Date>,
+			                                           OutputIterator it,
+			                                           parse_to_t const &value ) {
+				static_assert(
+				  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+
+				using ::daw::json::is_null;
+				if( is_null( value ) ) {
+					it = copy_to_iterator( "null", it );
+				} else {
+					*it++ = '"';
+					using namespace ::daw::date_formatting::formats;
+					it = copy_to_iterator( ::daw::date_formatting::fmt_string(
+					                         "{0}T{1}:{2}:{3}Z", value, YearMonthDay{},
+					                         Hour{}, Minute{}, Second{} ),
+					                       it );
+					*it++ = '"';
+				}
+				return it;
+			}
+
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			static constexpr OutputIterator
+			to_string( ParseTag<JsonParseTypes::Class>, OutputIterator it,
+			           parse_to_t const &value ) {
+
+				static_assert(
+				  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+
+				return json_parser_description_t<parse_to_t>::template serialize(
+				  it, to_json_data( value ) );
+			}
+
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			static constexpr OutputIterator
+			to_string( ParseTag<JsonParseTypes::Custom>, OutputIterator it,
+			           parse_to_t const &value ) {
+
+				static_assert(
+				  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+
+				return copy_to_iterator( typename JsonMember::to_converter_t{}( value ),
+				                         it );
+			}
+
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			static constexpr OutputIterator
+			to_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,
+			           parse_to_t const &container ) {
+
+				static_assert(
+				  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+
+				*it++ = '[';
+				if( !std::empty( container ) ) {
+					auto count = std::size( container ) - 1;
+					for( auto const &v : container ) {
+						it = to_string<typename JsonMember::json_element_t>(
+						  ParseTag<JsonMember::json_element_t::expected_type>{}, it, v );
+						if( count-- > 0 ) {
+							*it++ = ',';
+						}
+					}
+				}
+				*it++ = ']';
+				return it;
+			}
+
+			template<typename JsonMember, typename OutputIterator, typename T>
+			constexpr OutputIterator member_to_string( OutputIterator &&it,
+			                                           T &&value ) {
+				it = impl::to_string<JsonMember>(
+				  impl::ParseTag<JsonMember::expected_type>{},
+				  std::forward<OutputIterator>( it ), std::forward<T>( value ) );
+				return std::move( it );
+			}
+
+			template<typename JsonMember, size_t pos, typename OutputIterator,
+			         typename... Args>
+			void to_json_str( OutputIterator it, std::tuple<Args...> &&args ) {
+
+				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
+				*it++ = '"';
+				it = copy_to_iterator( JsonMember::name, it );
+				it = copy_to_iterator( "\":", it );
+				it = member_to_string<JsonMember>( std::move( it ),
+				                                   std::get<pos>( std::move( args ) ) );
+				if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
+					*it++ = ',';
+				}
+			}
+
+			constexpr char to_lower( char c ) noexcept {
+				return static_cast<char>( static_cast<unsigned>( c ) |
+				                          static_cast<unsigned>( ' ' ) );
+			}
+
 			template<typename Result>
 			constexpr Result parse_integer( daw::string_view sv ) noexcept {
 				if( sv.empty( ) ) {
@@ -205,10 +396,9 @@ namespace daw {
 			}
 
 			template<typename Result>
-			constexpr Result parse_real( daw::string_view str ) noexcept {
+			constexpr Result parse_real( daw::string_view sv ) noexcept {
 				// [-]WHOLE[.FRACTION][(e|E)EXPONENT]
 
-				auto sv = daw::string_view( str.data( ), str.size( ) );
 				auto const whole_part =
 				  static_cast<double>( daw::parser::parse_int<int64_t>(
 				    sv.pop_front( sv.find_first_of( ".eE" ) ) ) );
@@ -234,39 +424,6 @@ namespace daw {
 			} // namespace
 
 			template<typename T>
-			struct nullable_type {
-				using type = T;
-			};
-
-			template<template<class> class C, class... Args>
-			struct nullable_type<C<Args...>> {
-				using type = daw::traits::first_type<Args...>;
-			};
-
-			template<typename T>
-			struct nullable_type<T const *const> {
-				using type = T;
-			};
-
-			template<typename T>
-			using nullable_type_t = typename nullable_type<T>::type;
-
-			enum class JsonParseTypes : uint_fast8_t {
-				Number,
-				Bool,
-				String,
-				Date,
-				Class,
-				Array,
-				Null,
-				Custom
-			};
-
-			template<typename T>
-			using json_parser_description_t =
-			  decltype( describe_json_class( std::declval<T &>( ) ) );
-
-			template<typename T>
 			inline constexpr bool has_json_parser_description_v =
 			  daw::is_detected_v<json_parser_description_t, T>;
 
@@ -278,39 +435,28 @@ namespace daw {
 			inline constexpr bool has_json_to_json_data_v =
 			  daw::is_detected_v<json_parser_to_json_data_t, T>;
 
-			template<JsonParseTypes v>
-			using ParseTag = std::integral_constant<JsonParseTypes, v>;
-
 			template<typename string_t>
 			struct kv_t {
 				string_t name;
 				JsonParseTypes expected_type;
-				bool nullable;
+				// bool nullable;
 				size_t pos;
 
-				constexpr kv_t( string_t Name, JsonParseTypes Expected, bool Nullable,
+				constexpr kv_t( string_t Name,
+				                JsonParseTypes Expected, /*bool Nullable,*/
 				                size_t Pos )
 				  : name( std::move( Name ) )
 				  , expected_type( Expected )
-				  , nullable( Nullable )
+				  //				  , nullable( Nullable )
 				  , pos( Pos ) {}
 			};
 
 			struct value_pos {
-				bool is_nullable;
-				bool empty_is_null;
 				daw::string_view value_str{};
 
-				explicit constexpr value_pos( bool Nullable, bool empty_null ) noexcept
-				  : is_nullable( Nullable )
-				  , empty_is_null( empty_null ) {}
-
-				constexpr value_pos( bool Nullable, bool empty_null,
-				                     daw::string_view sv ) noexcept
-				  : is_nullable( Nullable )
-				  , empty_is_null( empty_null )
-				  , value_str( sv ) {}
-
+				constexpr value_pos( ) noexcept = default;
+				explicit constexpr value_pos( daw::string_view sv ) noexcept
+				  : value_str( sv ) {}
 				constexpr bool empty( ) const noexcept {
 					return value_str.empty( );
 				}
@@ -328,9 +474,7 @@ namespace daw {
 				}
 
 				constexpr void trim_left( ) noexcept {
-					auto tmp = daw::parser::trim_left(
-					  daw::string_view( value_str.data( ), value_str.size( ) ) );
-					value_str = daw::string_view( tmp.data( ), tmp.size( ) );
+					value_str = daw::parser::trim_left( value_str );
 				}
 
 				constexpr void remove_prefix( size_t count = 1 ) noexcept {
@@ -481,7 +625,7 @@ namespace daw {
 			                            value_pos pos ) {
 				// assert !pos.value_str.empty( );
 				using constructor_t = typename JsonMember::constructor_t;
-				using element_t = nullable_type_t<typename JsonMember::parse_to_t>;
+				using element_t = typename JsonMember::parse_to_t;
 
 				if constexpr( std::is_floating_point_v<element_t> ) {
 					return constructor_t{}( parse_real<element_t>( pos.value_str ) );
@@ -490,10 +634,24 @@ namespace daw {
 			}
 
 			template<typename JsonMember>
+			constexpr auto parse_value( ParseTag<JsonParseTypes::Null>,
+			                            value_pos pos ) {
+				// assert !pos.value_str.empty( );
+				using constructor_t = typename JsonMember::constructor_t;
+				using element_t = typename JsonMember::sub_type;
+
+				if( pos.empty( ) or pos.front( ) == 'n' ) {
+					return constructor_t{}( );
+				}
+				return parse_value<element_t>( ParseTag<element_t::expected_type>{},
+				                               std::move( pos ) );
+			}
+
+			template<typename JsonMember>
 			constexpr auto parse_value( ParseTag<JsonParseTypes::Custom>,
 			                            value_pos pos ) {
-				return typename JsonMember::from_converter_t{}(
-				  std::string_view( pos.value_str.data( ), pos.value_str.size( ) ) );
+				return
+				  typename JsonMember::from_converter_t{}( to_ssv( pos.value_str ) );
 			}
 
 			template<typename JsonMember>
@@ -509,6 +667,10 @@ namespace daw {
 			                            value_pos pos ) {
 
 				using constructor_t = typename JsonMember::constructor_t;
+
+				if( JsonMember::empty_is_null and pos.empty( ) ) {
+					return constructor_t{}( );
+				}
 				return constructor_t{}( pos.value_str.data( ), pos.value_str.size( ) );
 			}
 
@@ -524,9 +686,8 @@ namespace daw {
 			constexpr auto parse_value( ParseTag<JsonParseTypes::Class>,
 			                            value_pos pos ) {
 
-				using element_t = nullable_type_t<typename JsonMember::parse_to_t>;
-				return from_json<element_t>(
-				  std::string_view( pos.value_str.data( ), pos.value_str.size( ) ) );
+				using element_t = typename JsonMember::parse_to_t;
+				return from_json<element_t>( to_ssv( pos.value_str ) );
 			}
 
 			struct invalid_array {};
@@ -546,8 +707,7 @@ namespace daw {
 				  typename JsonMember::appender_t( array_container );
 
 				while( !pos.at_end_of_array( ) ) {
-					auto vp = value_pos( element_t::nullable, element_t::empty_is_null,
-					                     skip_value( pos.value_str ).sv );
+					auto vp = value_pos( skip_value( pos.value_str ).sv );
 					container_appender( parse_value<element_t>(
 					  ParseTag<element_t::expected_type>{}, std::move( vp ) ) );
 				}
@@ -571,7 +731,7 @@ namespace daw {
 			template<size_t N, typename string_t, typename... JsonMembers>
 			static constexpr impl::kv_t<string_t> get_item( ) noexcept {
 				using type_t = traits::nth_type<N, JsonMembers...>;
-				return {type_t::name, type_t::expected_type, type_t::nullable, N};
+				return {type_t::name, type_t::expected_type, /*type_t::nullable,*/ N};
 			}
 
 			template<typename... JsonMembers>
@@ -662,7 +822,10 @@ namespace daw {
 						continue;
 					}
 					auto const name_pos = name_map_t<JsonMembers...>::find_name( name );
-					if( v.is_null or ( v.sv.empty( ) and !type_t::empty_is_null ) ) {
+					if( v.is_null ) {
+						if( type_t::expected_type == JsonParseTypes::Null ) {
+							return;
+						}
 						throw impl::missing_nonnullable_value_expection<
 						  impl::JsonParseTypes::Null>{};
 					}
@@ -679,8 +842,7 @@ namespace daw {
 
 				using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
 
-				auto vp =
-				  impl::value_pos( JsonMember::nullable, JsonMember::empty_is_null );
+				auto vp = value_pos{};
 				if( locations[JsonMemberPosition].location ) {
 					vp.value_str = *locations[JsonMemberPosition].location;
 				}

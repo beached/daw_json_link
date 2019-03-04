@@ -63,8 +63,7 @@ namespace daw {
 			template<typename Result>
 			static constexpr decltype( auto ) parse( std::string_view sv ) {
 				return impl::parse_json_class<Result, JsonMembers...>(
-				  daw::string_view( sv.data( ), sv.size( ) ),
-				  std::index_sequence_for<JsonMembers...>{} );
+				  impl::to_dsv( sv ), std::index_sequence_for<JsonMembers...>{} );
 			}
 		};
 
@@ -74,23 +73,10 @@ namespace daw {
 			using i_am_a_json_type = typename JsonMember::i_am_a_json_type;
 			static constexpr auto const name = JsonMember::name;
 			static constexpr impl::JsonParseTypes expected_type =
-			  JsonMember::expected_type;
-			static constexpr bool nullable = true;
+			  impl::JsonParseTypes::Null;
 			using parse_to_t = typename JsonMember::parse_to_t;
 			using constructor_t = typename JsonMember::constructor_t;
-			static constexpr bool empty_is_null = JsonMember::empty_is_null;
-
-			template<typename OutputIterator, typename Optional,
-			         daw::enable_if_t<nullable, impl::is_valid_optional_v<Optional>> =
-			           nullptr>
-			static constexpr OutputIterator to_string( OutputIterator it,
-			                                           Optional const &value ) {
-				if( !value ) {
-					it = impl::copy_to_iterator( "null", it );
-					return it;
-				}
-				return JsonMember::to_string( it, *value );
-			}
+			using sub_type = JsonMember;
 		};
 
 		template<JSONNAMETYPE Name, typename T = double,
@@ -103,19 +89,8 @@ namespace daw {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Number;
-			static constexpr bool nullable = false;
-			// Sometimes numbers are wrapped in strings
 			using parse_to_t = T;
 			using constructor_t = Constructor;
-			static constexpr bool empty_is_null = true;
-
-			template<typename OutputIterator>
-			static constexpr OutputIterator to_string( OutputIterator it,
-			                                           parse_to_t const &value ) {
-				using ::daw::json::to_strings::to_string;
-				using std::to_string;
-				return impl::copy_to_iterator( to_string( value ), it );
-			}
 		};
 
 		template<JSONNAMETYPE Name, typename T = bool,
@@ -130,23 +105,13 @@ namespace daw {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Bool;
-			static constexpr bool nullable = false;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
-			static constexpr bool empty_is_null = true;
-
-			template<typename OutputIterator>
-			static constexpr OutputIterator to_string( OutputIterator it,
-			                                           parse_to_t const &value ) {
-				if( value ) {
-					return impl::copy_to_iterator( "true", it );
-				}
-				return impl::copy_to_iterator( "false", it );
-			}
 		};
 
 		template<JSONNAMETYPE Name, typename T = std::string,
-		         typename Constructor = daw::construct_a<T>>
+		         typename Constructor = daw::construct_a<T>,
+		         bool EmptyStringNull = false>
 		struct json_string {
 			static_assert(
 			  std::is_invocable_v<Constructor, char const *, size_t>,
@@ -156,28 +121,9 @@ namespace daw {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::String;
-			static constexpr bool nullable = false;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
-			static constexpr bool empty_is_null = false;
-
-			template<typename OutputIterator>
-			static constexpr OutputIterator to_string( OutputIterator it,
-			                                           parse_to_t const &value ) {
-				*it++ = '"';
-				it = impl::copy_to_iterator( value, it );
-				*it++ = '"';
-				return it;
-			}
-		};
-
-		struct parse_js_date {
-			constexpr std::chrono::time_point<std::chrono::system_clock,
-			                                  std::chrono::milliseconds>
-			operator( )( char const *ptr, size_t sz ) const {
-				return daw::date_parsing::parse_javascript_timestamp(
-				  daw::string_view( ptr, sz ) );
-			}
+			static constexpr bool empty_is_null = EmptyStringNull;
 		};
 
 		template<JSONNAMETYPE Name,
@@ -193,29 +139,8 @@ namespace daw {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Date;
-			static constexpr bool nullable = false;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
-			static constexpr bool empty_is_null = true;
-
-			template<typename OutputIterator>
-			static constexpr OutputIterator to_string( OutputIterator it,
-			                                           parse_to_t const &value ) {
-				using ::daw::json::is_null;
-				if( is_null( value ) ) {
-					it = impl::copy_to_iterator( "null", it );
-				} else {
-					*it++ = '"';
-					using namespace ::daw::date_formatting::formats;
-					it =
-					  impl::copy_to_iterator( ::daw::date_formatting::fmt_string(
-					                            "{0}T{1}:{2}:{3}Z", value, YearMonthDay{},
-					                            Hour{}, Minute{}, Second{} ),
-					                          it );
-					*it++ = '"';
-				}
-				return it;
-			}
 		};
 
 		template<JSONNAMETYPE Name, typename T,
@@ -225,37 +150,8 @@ namespace daw {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Class;
-			static constexpr bool nullable = false;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
-			static constexpr bool empty_is_null = true;
-
-			template<typename OutputIterator>
-			static constexpr OutputIterator to_string( OutputIterator it,
-			                                           parse_to_t const &value ) {
-
-				return impl::json_parser_description_t<parse_to_t>::template serialize(
-				  it, to_json_data( value ) );
-			}
-		};
-
-		template<typename T>
-		struct custom_to_converter_t {
-			constexpr decltype( auto ) operator( )( T &&value ) const {
-				using std::to_string;
-				return to_string( std::move( value ) );
-			}
-			constexpr decltype( auto ) operator( )( T const &value ) const {
-				using std::to_string;
-				return to_string( value );
-			}
-		};
-
-		template<typename T>
-		struct custom_from_converter_t {
-			constexpr decltype( auto ) operator( )( std::string_view sv ) {
-				return from_string( daw::tag<T>, sv );
-			}
 		};
 
 		template<JSONNAMETYPE Name, typename T,
@@ -266,19 +162,10 @@ namespace daw {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Custom;
-			static constexpr bool nullable = false;
 			// Sometimes numbers are wrapped in strings
 			using parse_to_t = T;
 			using to_converter_t = ToConverter;
 			using from_converter_t = FromConverter;
-			static constexpr bool empty_is_null = false;
-
-			template<typename OutputIterator>
-			static constexpr OutputIterator to_string( OutputIterator it,
-			                                           parse_to_t const &value ) {
-				using ::daw::json::to_strings::to_string;
-				return impl::copy_to_iterator( to_converter_t{}( value ), it );
-			}
 		};
 
 		template<JSONNAMETYPE Name, typename Container, typename JsonElement,
@@ -289,29 +176,10 @@ namespace daw {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Array;
-			static constexpr bool nullable = false;
 			using parse_to_t = Container;
 			using constructor_t = Constructor;
 			using appender_t = Appender;
 			using json_element_t = JsonElement;
-			static constexpr bool empty_is_null = true;
-
-			template<typename OutputIterator>
-			static constexpr OutputIterator to_string( OutputIterator it,
-			                                           parse_to_t const &container ) {
-				*it++ = '[';
-				if( !std::empty( container ) ) {
-					auto count = std::size( container ) - 1;
-					for( auto const &v : container ) {
-						it = JsonElement::to_string( it, v );
-						if( count-- > 0 ) {
-							*it++ = ',';
-						}
-					}
-				}
-				*it++ = ']';
-				return it;
-			}
 		};
 
 		template<typename T>
@@ -344,8 +212,7 @@ namespace daw {
 		template<typename JsonElement>
 		class json_array_iterator {
 			daw::string_view m_state{};
-			impl::value_pos m_cur_value{false,
-			                            impl::is_json_empty_null_v<JsonElement>};
+			impl::value_pos m_cur_value{};
 
 		public:
 			using value_type = typename JsonElement::parse_to_t;
@@ -439,10 +306,7 @@ namespace daw {
 
 			return impl::parse_value<parser_t>(
 			  impl::ParseTag<impl::JsonParseTypes::Array>{},
-
-			  impl::value_pos(
-			    false, false,
-			    daw::string_view( data( json_data ), size( json_data ) ) ) );
+			  impl::value_pos{{data( json_data ), size( json_data )}} );
 		}
 
 		template<typename Result = std::string, typename Container>

@@ -29,6 +29,7 @@
 #include <string_view>
 #include <vector>
 
+#include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_vector.h>
 
 #include "daw/json/daw_json_link.h"
@@ -69,13 +70,13 @@ struct test_001_t {
 
 auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
-#if __cplusplus > 201703L or (defined( __GNUC__ ) and __GNUC__ >= 9)
+#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
 	return class_description_t<
 	  json_number<"i", int>, json_number<"d">, json_bool<"b">,
 	  json_string<"s", std::string_view>,
 	  json_array<"y", daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
-	  json_nullable<json_number<"o", std::optional<int>>>,
-	  json_nullable<json_number<"o2", std::optional<int>>>, json_date<"dte">>{};
+	  json_nullable<json_number<"o", int>>, json_nullable<json_number<"o2", int>>,
+	  json_date<"dte">>{};
 #else
 	constexpr static char const i[] = "i";
 	constexpr static char const d[] = "d";
@@ -89,8 +90,8 @@ auto describe_json_class( test_001_t ) noexcept {
 	  json_number<i, int>, json_number<d>, json_bool<b>,
 	  json_string<s, std::string_view>,
 	  json_array<y, daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
-	  json_nullable<json_number<o, std::optional<int>>>,
-	  json_nullable<json_number<o2, std::optional<int>>>, json_date<dte>>{};
+	  json_nullable<json_number<o, int>>, json_nullable<json_number<o2, int>>,
+	  json_date<dte>>{};
 #endif
 }
 
@@ -103,7 +104,7 @@ struct test_002_t {
 };
 auto describe_json_class( test_002_t ) noexcept {
 	using namespace daw::json;
-#if __cplusplus > 201703L or (defined( __GNUC__ ) and __GNUC__ >= 9)
+#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
 	return class_description_t<json_class<"a", test_001_t>>{};
 #else
 	constexpr static char const a[] = "a";
@@ -120,7 +121,7 @@ struct test_003_t {
 };
 auto describe_json_class( test_003_t ) noexcept {
 	using namespace daw::json;
-#if __cplusplus > 201703L or (defined( __GNUC__ ) and __GNUC__ >= 9)
+#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
 	return class_description_t<json_nullable<json_class<"a", test_001_t>>>{};
 #else
 	constexpr static char const a[] = "a";
@@ -169,7 +170,7 @@ struct e_test_001_t {
 
 auto describe_json_class( e_test_001_t ) noexcept {
 	using namespace daw::json;
-#if __cplusplus > 201703L or (defined( __GNUC__ ) and __GNUC__ >= 9)
+#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
 	return class_description_t<json_custom<"a", blah_t>>{};
 #else
 	constexpr static char const a[] = "a";
@@ -281,4 +282,5 @@ int main( ) {
 	auto e_test_001_str = to_json( t4 );
 	std::cout << e_test_001_str << '\n';
 	auto e_test_001_back = from_json<e_test_001_t>( e_test_001_str );
+	daw::do_not_optimize( e_test_001_back );
 }
