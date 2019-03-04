@@ -233,11 +233,13 @@ The defaults for json_bool will construct a ```bool``` with the supplied name.  
 ```cpp
 template<JSONNAMETYPE Name, 
     typename T = std::string, 
-    typename Constructor = daw::construct_a<T>>
+    typename Constructor = daw::construct_a<T>,
+    bool EmptyStringNull = false>
 struct json_string
 ``` 
 The defaults for json_string will construct a ```std::string``` with the supplied name.  The resulting type T must be constructable from two arguments(a ```char const *``` and a ```size_t```).
 ```Constructor``` the default is almost always correct here but this will constuct your type.
+```EmptyStringNull``` treat an empty JSON value ```""``` as a null value.
 
 ### json_date
 ```cpp
