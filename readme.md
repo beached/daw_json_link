@@ -1,4 +1,4 @@
-# JSON Link v3
+# JSON Link
 I wrote this library to allow me to describe the mappings between a JSON class and that of C++ with the least amount of effort or intrusion.  The end result is easy serialization and deserialization with C++ and JSON.  One just needs to describe the mapping of JSON class member names to the types needed to construct a C++ class.
 
 
