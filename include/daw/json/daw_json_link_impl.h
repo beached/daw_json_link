@@ -80,20 +80,21 @@ namespace daw {
 		template<typename T>
 		constexpr T from_json( std::string_view sv );
 
-#if __cplusplus > 201703L
+#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
 		// C++ 20 Non-Type Class Template Arguments
-#define JSONNAMETYPE basic_bounded_string
+#define JSONNAMETYPE daw::bounded_string
 
-		constexpr size_t json_name_len( basic_bounded_string const &str ) {
+		template<typename String>
+		constexpr size_t json_name_len( String const &str ) noexcept {
 			return str.size( );
 		}
 
-		constexpr bool json_name_eq( basic_bounded_string const &lhs,
-		                             basic_bounded_string const &rhs ) noexcept {
+		template<typename Lhs, typename Rhs>
+		constexpr bool json_name_eq( Lhs const & lhs, Rhs const &rhs ) noexcept {
 			return lhs == rhs;
 		}
 		// Convienience for array members
-		static inline constexpr basic_bounded_string const no_name = "";
+		static inline constexpr JSONNAMETYPE const no_name = "";
 #else
 #define JSONNAMETYPE char const *
 		constexpr size_t json_name_len( char const *str ) noexcept {

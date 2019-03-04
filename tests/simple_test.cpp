@@ -35,7 +35,7 @@ struct City {
 
 auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
-#if __cplusplus > 201703L
+#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
 	return class_description_t<json_string<"country", std::string_view>,
 	                           json_string<"name", std::string_view>,
 	                           json_number<"lat", float>,
