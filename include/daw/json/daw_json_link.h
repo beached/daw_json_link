@@ -55,6 +55,7 @@ namespace daw {
 			                                           std::tuple<Args...> &&args ) {
 				static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 				               "Argument count is incorrect" );
+
 				return impl::serialize_json_class<JsonMembers...>(
 				  it, std::index_sequence_for<Args...>{}, std::move( args ) );
 			}
@@ -85,7 +86,7 @@ namespace daw {
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           Optional const &value ) {
 				if( !value ) {
-					it = impl::copy_to_iterator( daw::string_view( "null" ), it );
+					it = impl::copy_to_iterator( "null", it );
 					return it;
 				}
 				return JsonMember::to_string( it, *value );
@@ -138,9 +139,9 @@ namespace daw {
 			static constexpr OutputIterator to_string( OutputIterator it,
 			                                           parse_to_t const &value ) {
 				if( value ) {
-					return impl::copy_to_iterator( daw::string_view( "true" ), it );
+					return impl::copy_to_iterator( "true", it );
 				}
-				return impl::copy_to_iterator( daw::string_view( "false" ), it );
+				return impl::copy_to_iterator( "false", it );
 			}
 		};
 
@@ -202,7 +203,7 @@ namespace daw {
 			                                           parse_to_t const &value ) {
 				using ::daw::json::is_null;
 				if( is_null( value ) ) {
-					it = impl::copy_to_iterator( daw::string_view( "null" ), it );
+					it = impl::copy_to_iterator( "null", it );
 				} else {
 					*it++ = '"';
 					using namespace ::daw::date_formatting::formats;
