@@ -162,7 +162,6 @@ namespace daw {
 			static constexpr auto const name = Name;
 			static constexpr impl::JsonParseTypes expected_type =
 			  impl::JsonParseTypes::Custom;
-			// Sometimes numbers are wrapped in strings
 			using parse_to_t = T;
 			using to_converter_t = ToConverter;
 			using from_converter_t = FromConverter;
