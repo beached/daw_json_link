@@ -10,7 +10,7 @@ else( )
 	elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 		add_compile_options( -march=native -Wall -ffast-math -Wextra -pedantic -Wno-deprecated-declarations -Wduplicated-cond -Wlogical-op -Wnull-dereference -Wold-style-cast -Wshadow)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -fsanitize=undefined -DDEBUG")
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 	endif( )
 endif( )
 

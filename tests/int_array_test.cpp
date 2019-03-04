@@ -34,7 +34,7 @@
 struct Number {
 	intmax_t a{};
 };
-#if __cplusplus > 201703L
+#if __cplusplus > 201703L or (defined( __GNUC__ ) and __GNUC__ >= 9)
 auto describe_json_class( Number ) noexcept {
 	using namespace daw::json;
 	return class_description_t<json_number<"a", intmax_t>>{};
