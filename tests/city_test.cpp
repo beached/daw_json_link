@@ -30,17 +30,17 @@
 #include "daw/json/daw_json_link.h"
 
 struct City {
-	std::string country;
-	std::string name;
+	std::string_view country;
+	std::string_view name;
 	float lat;
 	float lng;
 };
 
 auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
-#ifdef USECPP20
-	return class_description_t<json_string<"country", std::string>,
-	                           json_string<"name", std::string>,
+#if __cplusplus > 201703L
+	return class_description_t<json_string<"country", std::string_view>,
+	                           json_string<"name", std::string_view>,
 	                           json_number<"lat", float>,
 	                           json_number<"lng", float>>{};
 #else
@@ -48,8 +48,8 @@ auto describe_json_class( City ) noexcept {
 	static constexpr char names1[] = "name";
 	static constexpr char names2[] = "lat";
 	static constexpr char names3[] = "lng";
-	return class_description_t<json_string<names0, std::string>,
-	                           json_string<names1, std::string>,
+	return class_description_t<json_string<names0, std::string_view>,
+	                           json_string<names1, std::string_view>,
 	                           json_number<names2, float>,
 	                           json_number<names3, float>>{};
 #endif
