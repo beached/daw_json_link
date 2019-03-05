@@ -38,7 +38,7 @@ struct City {
 
 auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
-#if __cplusplus > 201703L or (defined( __GNUC__ ) and __GNUC__ >= 9)
+#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
 	return class_description_t<json_string<"country", std::string_view>,
 	                           json_string<"name", std::string_view>,
 	                           json_number<"lat", float>,
@@ -105,11 +105,11 @@ int main( int argc, char **argv ) {
 	std::cout << "element count 2: " << count2 << '\n';
 	auto count3 =
 	  *daw::bench_n_test_mbs<10>( "cities parsing 3", json_sv.size( ),
-	                         []( auto &&sv ) {
-		                         return static_cast<size_t>( std::distance(
-		                           iterator_t( sv ), iterator_t( ) ) );
-	                         },
-	                         json_sv );
+	                              []( auto &&sv ) {
+		                              return static_cast<size_t>( std::distance(
+		                                iterator_t( sv ), iterator_t( ) ) );
+	                              },
+	                              json_sv );
 
 	std::cout << "element count 3: " << count3 << '\n';
 
