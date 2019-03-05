@@ -73,7 +73,11 @@ add_test( simple_test simple_test_bin )
 add_dependencies( check simple_test_bin )
 add_dependencies( full simple_test_bin )
 
-
+add_executable( coords_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/coords_test.cpp )
+add_dependencies( coords_test_bin dependency_stub )
+add_test( coords_test coords_test_bin )
+add_dependencies( check coords_test_bin )
+add_dependencies( full coords_test_bin )
 
 install( DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/ )
 
