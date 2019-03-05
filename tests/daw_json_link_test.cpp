@@ -34,9 +34,14 @@
 
 #include "daw/json/daw_json_link.h"
 
+static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ).value == 12345 );
+static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ).count == 5 );
+static_assert( daw::json::impl::parse_integer<uintmax_t>( "12345" ) == 12345 );
+static_assert( daw::json::impl::parse_integer<intmax_t>( "-12345" ) == -12345 );
 static_assert( daw::json::impl::parse_real<double>( "5" ) == 5.0 );
 static_assert( daw::json::impl::parse_real<double>( "5.5" ) == 5.5 );
 static_assert( daw::json::impl::parse_real<double>( "5.5e2" ) == 550.0 );
+static_assert( daw::json::impl::parse_real<double>( "5.5e+2" ) == 550.0 );
 static_assert( daw::json::impl::parse_real<double>( "5e2" ) == 500.0 );
 
 struct test_001_t {
@@ -185,7 +190,7 @@ auto to_json_data( e_test_001_t const &v ) {
 constexpr auto const json_data =
   R"({
 	    "i": 55,
-	    "d": 2.2,
+	    "d": -1.234e+3,
 			"b": true,
 			"x": { "b": false, "c": [1,2,3] },
 			"y": [1,2,3,4],
@@ -196,7 +201,7 @@ constexpr auto const json_data =
 			"dte": "2016-12-31T01:02:03.343Z"
 	  })";
 
-constexpr auto const json_data_array =
+constexpr char const json_data_array[] =
   R"([
 			{
 	    "i": 55,
@@ -258,10 +263,10 @@ constexpr auto const json_data_array =
 
 int main( ) {
 	using namespace daw::json;
-	constexpr auto data = daw::json::from_json<test_001_t>( json_data );
+	auto data = daw::json::from_json<test_001_t>( json_data );
 	std::clog << to_json( data ) << '\n';
 
-	constexpr auto ary =
+	auto ary =
 	  from_json_array<json_class<no_name, test_001_t>,
 	                  daw::bounded_vector_t<test_001_t, 10>>( json_data_array );
 	std::cout << "read in " << ary.size( ) << " items\n";
