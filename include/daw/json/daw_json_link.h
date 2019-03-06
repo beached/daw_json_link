@@ -277,15 +277,12 @@ namespace daw {
 					m_state.trim_left( );
 				}
 				if( !m_state.empty( ) and m_state.front( ) == ']' ) {
-					m_state.remove_prefix( );
-					m_state.trim_left( );
+					m_state.first = m_state.last;
 				}
 				if( m_state.empty( ) ) {
 					return *this;
 				}
-				auto sv = daw::make_string_view_it( m_state.begin( ), m_state.end( ) );
-				auto tmp = impl::skip_value( sv );
-				m_state.first = tmp.sv.begin( );
+				impl::skip_value( m_state );
 				m_state.trim_left( );
 				return *this;
 			}
