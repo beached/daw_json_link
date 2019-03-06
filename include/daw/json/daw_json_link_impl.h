@@ -194,8 +194,16 @@ namespace daw {
 				}
 
 				constexpr void trim_left( ) {
-					while( !empty( ) and daw::parser::is_unicode_whitespace( *first ) ) {
-						remove_prefix( );
+					while( first != last ) {
+						switch( *first ) {
+						case 0x20: // space
+						case 0x09: // tab
+						case 0x0A: // new line
+						case 0x0D: // carriage return
+							++first;
+							continue;
+						}
+						return;
 					}
 				}
 
@@ -225,12 +233,35 @@ namespace daw {
 					return {p, sz};
 				}
 
+				constexpr IteratorRange
+				move_to_first_of( daw::string_view const chars ) noexcept {
+					auto result = *this;
+					while( !empty( ) and
+					       chars.find( front( ) ) == daw::string_view::npos ) {
+						remove_prefix( );
+					}
+					result.last = first;
+					return result;
+				}
+
 				constexpr daw::string_view munch( char c ) noexcept {
 					auto result = move_to_next_of( c );
 					if( !empty( ) and front( ) == c ) {
 						remove_prefix( );
 					}
 					return result;
+				}
+
+				constexpr void move_to_next_item( ) noexcept {
+					while( first != last ) {
+						switch( *first ) {
+						case ',':
+						case ']':
+						case '}':
+							return;
+						}
+						++first;
+					}
 				}
 			};
 
@@ -529,6 +560,7 @@ namespace daw {
 					result.value += static_cast<Result>( rng.pop_front( ) - '0' );
 					++result.count;
 				}
+				rng.trim_left( );
 				return result;
 			}
 
@@ -556,7 +588,9 @@ namespace daw {
 					rng.remove_prefix( );
 				}
 				// Assumes there are digits
-				return sign * parse_unsigned_integer<Result>( rng ).value;
+				auto result = sign * parse_unsigned_integer<Result>( rng ).value;
+				rng.trim_left( );
+				return result;
 			}
 
 			template<typename Result>
@@ -588,6 +622,7 @@ namespace daw {
 				}
 				auto result = static_cast<Result>( ( whole_part + fract_part ) *
 				                                   daw::cxmath::dpow10( exp_part ) );
+				rng.trim_left( );
 				return result;
 			}
 
@@ -638,7 +673,9 @@ namespace daw {
 
 			template<typename First, typename Last>
 			constexpr daw::string_view parse_name( IteratorRange<First, Last> &rng ) {
-				daw::exception::precondition_check( rng.pop_front( ) == '"' );
+				rng.trim_left( );
+				daw::exception::precondition_check( !rng.empty( ) and
+				                                    rng.pop_front( ) == '"' );
 
 				auto name = rng.munch( '"' );
 				rng.munch( ':' );
@@ -646,66 +683,71 @@ namespace daw {
 				return name;
 			}
 
-			constexpr daw::string_view skip_string( daw::string_view &sv ) {
-				auto result = daw::string_view{};
-				if( sv.empty( ) ) {
+			template<typename First, typename Last>
+			constexpr IteratorRange<First, Last>
+			skip_string( IteratorRange<First, Last> &rng ) {
+				if( rng.empty( ) ) {
 					return {};
 				}
-				if( sv.front( ) == '"' ) {
-					sv.remove_prefix( );
+				if( rng.front( ) == '"' ) {
+					rng.remove_prefix( );
 				}
-				auto pos = sv.find_first_of( "\"" );
-				exception::precondition_check( pos != daw::string_view::npos,
-				                               "Invalid class" );
-				while( pos != daw::string_view::npos ) {
-					if( pos == 0 or
-					    ( pos != daw::string_view::npos and sv[pos - 1] != '\\' ) ) {
-						result = sv.pop_front( pos );
-						break;
-					}
-					++pos;
-					pos = sv.find_first_of( "\"", pos );
-				}
-				exception::precondition_check( pos != daw::string_view::npos,
-				                               "Invalid class" );
-				pos = sv.find_first_of( ",}]\n" );
-				exception::precondition_check( pos != daw::string_view::npos,
-				                               "Invalid class" );
-				sv.remove_prefix( pos + 1 );
-				sv = parser::trim_left( sv );
+				auto pos = daw::algorithm::find_if(
+				  rng.begin( ), rng.end( ), [in_slash = false]( char c ) mutable {
+					  if( c == '\\' ) {
+						  if( in_slash ) {
+							  in_slash = false;
+						  } else {
+							  in_slash = true;
+						  }
+						  return false;
+					  }
+					  if( c == '"' ) {
+						  if( in_slash ) {
+							  in_slash = false;
+							  return false;
+						  }
+						  return true;
+					  }
+					  return false;
+				  } );
+				exception::precondition_check( pos != rng.end( ), "Invalid string" );
+				auto result = IteratorRange( rng.begin( ), pos );
+				rng.first = std::next( pos );
 				return result;
 			}
 
-			constexpr daw::string_view skip_other( daw::string_view &sv ) {
-				auto pos = sv.find_first_of( ",}]\n" );
-				exception::precondition_check( pos != daw::string_view::npos,
-				                               "Invalid class" );
-				auto result = sv.pop_front( pos );
-				sv.remove_prefix( );
-				sv = parser::trim_left( sv );
+			template<typename First, typename Last>
+			constexpr IteratorRange<First, Last>
+			skip_other( IteratorRange<First, Last> &rng ) {
+				auto result = rng.move_to_first_of( ",}]\n" );
+				exception::precondition_check( !rng.empty( ), "Invalid class" );
 				return result;
 			}
 
-			template<char Left, char Right>
-			constexpr daw::string_view skip_bracketed_item( daw::string_view &sv ) {
+			struct bracketed_item_parse_exception {};
+
+			template<char Left, char Right, typename First, typename Last>
+			constexpr IteratorRange<First, Last>
+			skip_bracketed_item( IteratorRange<First, Last> &rng ) {
 				size_t bracket_count = 1;
 				bool is_escaped = false;
 				bool in_quotes = false;
-				auto tmp_sv = sv;
-				sv.remove_prefix( );
-				while( !sv.empty( ) and bracket_count > 0 ) {
-					switch( sv.front( ) ) {
+				auto result = rng;
+				rng.remove_prefix( );
+				while( !rng.empty( ) and bracket_count > 0 ) {
+					switch( rng.front( ) ) {
 					case '\\':
 						if( !in_quotes and !is_escaped ) {
 							is_escaped = true;
-							sv.remove_prefix( );
+							rng.remove_prefix( );
 							continue;
 						}
 						break;
 					case '"':
 						if( !is_escaped ) {
 							in_quotes = !in_quotes;
-							sv.remove_prefix( );
+							rng.remove_prefix( );
 							continue;
 						}
 						break;
@@ -720,45 +762,42 @@ namespace daw {
 						}
 					}
 					is_escaped = false;
-					sv.remove_prefix( );
+					rng.remove_prefix( );
 				}
-				tmp_sv = tmp_sv.pop_front( tmp_sv.size( ) - sv.size( ) );
-				auto pos = sv.find_first_of( ",}]\n" );
-				struct bracketed_item_parse_exception {};
+				result.last = rng.begin( );
+				rng.move_to_first_of( ",}]\n" );
+
 				exception::precondition_check<bracketed_item_parse_exception>(
-				  pos != sv.npos );
-				sv.remove_prefix( );
-				sv = parser::trim_left( sv );
-				return tmp_sv;
+				  !rng.empty( ) );
+				rng.remove_prefix( );
+				return result;
 			}
 
-			constexpr daw::string_view skip_class( daw::string_view &sv ) {
-				return skip_bracketed_item<'{', '}'>( sv );
+			template<typename First, typename Last>
+			constexpr IteratorRange<First, Last>
+			skip_class( IteratorRange<First, Last> &rng ) {
+				return skip_bracketed_item<'{', '}'>( rng );
 			}
 
-			constexpr daw::string_view skip_array( daw::string_view &sv ) {
-				return skip_bracketed_item<'[', ']'>( sv );
+			template<typename First, typename Last>
+			constexpr IteratorRange<First, Last>
+			skip_array( IteratorRange<First, Last> &rng ) {
+				return skip_bracketed_item<'[', ']'>( rng );
 			}
 
-			struct skip_value_result_t {
-				daw::string_view sv{};
-
-				bool is_null = false;
-
-				constexpr skip_value_result_t( daw::string_view s ) noexcept
-				  : sv( s ) {}
-			};
-
-			constexpr skip_value_result_t skip_value( daw::string_view &sv ) {
-				daw::exception::precondition_check( !sv.empty( ) );
-				switch( sv.front( ) ) {
+			template<typename First, typename Last>
+			constexpr IteratorRange<First, Last>
+			skip_value( IteratorRange<First, Last> &rng ) {
+				daw::exception::precondition_check( !rng.empty( ) );
+				switch( rng.front( ) ) {
 				case '"':
-					return skip_string( sv );
+					return skip_string( rng );
 				case '[':
-					return skip_array( sv );
+					return skip_array( rng );
 				case '{':
-					return skip_class( sv );
-				default: { return skip_other( sv ); }
+					return skip_class( rng );
+				default:
+					return skip_other( rng );
 				}
 			}
 
@@ -825,6 +864,7 @@ namespace daw {
 					result += rng.pop_front( ) - 'u';
 					result += rng.pop_front( ) - 'e';
 					daw::exception::precondition_check( result == 0, "Invalid boolean" );
+					rng.trim_left( );
 					return constructor_t{}( true );
 				}
 				int result = rng.pop_front( ) - 'a';
@@ -997,33 +1037,25 @@ namespace daw {
 			  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
 			  IteratorRange<First, Last> &rng ) {
 
-				using type_t = traits::nth_type<pos, JsonMembers...>;
-				size_t idx = pos;
 				daw::exception::precondition_check(
-				  !locations[idx].missing( ) or
+				  !locations[pos].missing( ) or
 				  ( !rng.empty( ) and rng.front( ) != '}' ) );
 
-				while( locations[idx].missing( ) ) {
+				while( !rng.empty( ) and locations[pos].missing( ) ) {
 					rng.trim_left( );
 					if( at_end_of_class( rng ) ) {
 						break;
 					}
 					auto name = parse_name( rng );
-					auto sv = daw::make_string_view_it( rng.begin( ), rng.end( ) );
-					auto v = skip_value( sv );
-					rng = {sv.begin( ), sv.end( )};
 					if( !name_map_t<JsonMembers...>::has_name( name ) ) {
+						skip_value( rng );
+						rng.move_to_next_item( );
+						rng.remove_prefix( );
+						rng.trim_left( );
 						continue;
 					}
 					auto const name_pos = name_map_t<JsonMembers...>::find_name( name );
-					if( v.is_null ) {
-						if( type_t::expected_type == JsonParseTypes::Null ) {
-							return;
-						}
-						throw missing_nonnullable_value_expection<JsonParseTypes::Null>{};
-					}
-					locations[name_pos].location =
-					  IteratorRange{v.sv.begin( ), v.sv.end( )};
+					locations[name_pos].location = rng;
 				}
 			}
 
@@ -1033,16 +1065,32 @@ namespace daw {
 			  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
 			  IteratorRange<First, Last> &rng ) {
 
-				find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
+				daw::exception::precondition_check( !rng.empty( ) );
 
+				find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
 				using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
 
-				auto vp = IteratorRange<char const *, char const *>{};
-				if( !locations[JsonMemberPosition].location.empty( ) ) {
-					vp = locations[JsonMemberPosition].location;
+				auto loc = locations[JsonMemberPosition].location;
+				daw::exception::precondition_check<
+				  missing_nonnullable_value_expection<JsonParseTypes::Null>>(
+				  !(loc.empty( ) and JsonMember::expected_type != JsonParseTypes::Null) );
+
+				if( rng.begin( ) > loc.begin( ) ) {
+					// We have previously seen the value and skipped it
+					auto result = parse_value<JsonMember>(
+					  ParseTag<JsonMember::expected_type>{}, loc );
+					rng.move_to_next_item( );
+					rng.remove_prefix( );
+					rng.trim_left( );
+					return result;
 				}
-				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
-				                                vp );
+				// Parsing at head of range
+				auto result =
+				  parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{}, rng );
+				rng.move_to_next_item( );
+				rng.remove_prefix( );
+				rng.trim_left( );
+				return result;
 			}
 
 			template<size_t N, typename... JsonMembers>
