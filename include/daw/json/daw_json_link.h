@@ -271,23 +271,7 @@ namespace daw {
 					m_state.first = std::next( m_state.first, m_can_skip );
 					m_can_skip = -1;
 				} else {
-					if constexpr( JsonElement::expected_type == JsonParseTypes::Date or
-					              JsonElement::expected_type == JsonParseTypes::String or
-					              JsonElement::expected_type == JsonParseTypes::Custom ) {
-						impl::skip_string( m_state );
-					} else if constexpr( JsonElement::expected_type ==
-					                       JsonParseTypes::Number or
-					                     JsonElement::expected_type ==
-					                       JsonParseTypes::Null or
-					                     JsonElement::expected_type ==
-					                       JsonParseTypes::Bool ) {
-						impl::skip_literal( m_state );
-					} else if constexpr( JsonElement::expected_type ==
-					                     JsonParseTypes::Array ) {
-						impl::skip_array( m_state );
-					} else {
-						impl::skip_class( m_state );
-					}
+					impl::skip_known_value<JsonElement>( m_state );
 				}
 				m_state.trim_left( );
 				if( m_state.in( ',' ) ) {

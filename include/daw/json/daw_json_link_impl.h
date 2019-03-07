@@ -832,6 +832,35 @@ namespace daw {
 			}
 
 			template<typename JsonMember, typename First, typename Last>
+			constexpr IteratorRange<First, Last>
+			skip_known_value( IteratorRange<First, Last> &rng ) {
+				if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
+				              JsonMember::expected_type == JsonParseTypes::String or
+				              JsonMember::expected_type == JsonParseTypes::Custom ) {
+					assert( rng.front( '"' ) );
+					return impl::skip_string( rng );
+				} else if constexpr( JsonMember::expected_type ==
+				                       JsonParseTypes::Number or
+				                     JsonMember::expected_type ==
+				                       JsonParseTypes::Null or
+				                     JsonMember::expected_type ==
+				                       JsonParseTypes::Bool ) {
+					return impl::skip_literal( rng );
+				} else if constexpr( JsonMember::expected_type ==
+				                     JsonParseTypes::Array ) {
+					assert( rng.front( '[' ) );
+					return impl::skip_array( rng );
+				} else if constexpr( JsonMember::expected_type ==
+				                     JsonParseTypes::Class ) {
+					assert( rng.front( '{' ) );
+					return impl::skip_class( rng );
+				} else {
+					// Woah there
+					std::terminate( );
+				}
+			}
+
+			template<typename JsonMember, typename First, typename Last>
 			constexpr void skip_quotes( IteratorRange<First, Last> &rng ) noexcept {
 				if constexpr( JsonMember::literal_as_string ==
 				              LiteralAsStringOpt::always ) {
