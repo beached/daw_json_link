@@ -32,6 +32,7 @@
 #include <string_view>
 #include <variant>
 
+#include "daw_json_link.h"
 #include <daw/daw_algorithm.h>
 #include <daw/daw_array.h>
 #include <daw/daw_bounded_string.h>
@@ -72,6 +73,8 @@ namespace daw {
 
 		template<typename T, typename First, typename Last>
 		constexpr T from_json( impl::IteratorRange<First, Last> &rng );
+
+		enum class LiteralAsStringOpt : uint8_t { never, maybe, always };
 
 		namespace impl {
 			template<typename T>
@@ -828,8 +831,19 @@ namespace daw {
 				}
 			}
 
-			template<JsonParseTypes>
-			struct missing_nonnullable_value_expection {};
+			template<typename JsonMember, typename First, typename Last>
+			constexpr void skip_quotes( IteratorRange<First, Last> &rng ) noexcept {
+				if constexpr( JsonMember::literal_as_string ==
+				              LiteralAsStringOpt::always ) {
+					assert( rng.front( '"' ) );
+					rng.remove_prefix( );
+				} else if constexpr( JsonMember::literal_as_string ==
+				                     LiteralAsStringOpt::maybe ) {
+					if( rng.in( '"' ) ) {
+						rng.remove_prefix( );
+					}
+				}
+			}
 
 			template<typename JsonMember, typename First, typename Last>
 			constexpr auto parse_value( ParseTag<JsonParseTypes::Number>,
@@ -837,35 +851,23 @@ namespace daw {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::parse_to_t;
 
-				if constexpr( JsonMember::stored_as_string ) {
-					assert( rng.front( '"' ) );
-					rng.remove_prefix( );
-				}
+				skip_quotes<JsonMember>( rng );
 				assert( rng.is_real_number_part( ) );
 
 				if constexpr( std::is_floating_point_v<element_t> ) {
 					auto result = constructor_t{}( parse_real<element_t>( rng ) );
-					if constexpr( JsonMember::stored_as_string ) {
-						assert( rng.front( '"' ) );
-						rng.remove_prefix( );
-					}
+					skip_quotes<JsonMember>( rng );
 					assert( rng.at_end_of_item( ) );
 					return result;
 				} else if constexpr( std::is_signed_v<element_t> ) {
 					auto result = constructor_t{}( parse_integer<element_t>( rng ) );
-					if constexpr( JsonMember::stored_as_string ) {
-						assert( rng.front( '"' ) );
-						rng.remove_prefix( );
-					}
+					skip_quotes<JsonMember>( rng );
 					assert( rng.at_end_of_item( ) );
 					return result;
 				} else {
 					auto result =
 					  constructor_t{}( parse_unsigned_integer<element_t>( rng ).value );
-					if constexpr( JsonMember::stored_as_string ) {
-						assert( rng.front( '"' ) );
-						rng.remove_prefix( );
-					}
+					skip_quotes<JsonMember>( rng );
 					assert( rng.at_end_of_item( ) );
 					return result;
 				}
@@ -1083,8 +1085,7 @@ namespace daw {
 			  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
 			  IteratorRange<First, Last> &rng ) {
 
-				assert( !locations[pos].missing( ) or
-				                        !rng.front( '}' ) );
+				assert( !locations[pos].missing( ) or !rng.front( '}' ) );
 
 				rng.trim_left( );
 				while( locations[pos].missing( ) and !rng.empty( ) and
@@ -1144,8 +1145,8 @@ namespace daw {
 					  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
 
 					// Only allow missing members for Null-able type
-					assert( !loc.empty( ) or JsonMember::expected_type ==
-					                                           JsonParseTypes::Null );
+					assert( !loc.empty( ) or
+					        JsonMember::expected_type == JsonParseTypes::Null );
 
 					auto cur_rng = &rng;
 					if( loc.is_null( ) or
