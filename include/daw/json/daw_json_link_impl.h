@@ -179,16 +179,20 @@ namespace daw {
 				  : first( f )
 				  , last( l ) {}
 
-				constexpr bool empty( ) const {
+				constexpr bool empty( ) const noexcept {
 					return first == last;
 				}
 
-				constexpr decltype( auto ) front( ) const {
+				constexpr decltype( auto ) front( ) const noexcept {
 					return *first;
 				}
 
-				constexpr bool front( char c ) const {
+				constexpr bool front( char c ) const noexcept {
 					return !empty( ) and in( c );
+				}
+
+				constexpr size_t size( ) const noexcept {
+					return static_cast<size_t>( std::distance( first, last ) );
 				}
 
 				template<size_t N>
@@ -206,13 +210,11 @@ namespace daw {
 					return first == nullptr;
 				}
 
-				constexpr void remove_prefix( ) {
-					if( !empty( ) ) {
-						++first;
-					}
+				constexpr void remove_prefix( size_t n = 1 ) {
+					first = std::next( first, static_cast<intmax_t>( n ) );
 				}
 
-				constexpr void trim_left( ) {
+				constexpr void trim_left( ) noexcept {
 					while( first != last ) {
 						switch( *first ) {
 						case 0x20: // space
@@ -226,15 +228,15 @@ namespace daw {
 					}
 				}
 
-				constexpr decltype( auto ) begin( ) const {
+				constexpr decltype( auto ) begin( ) const noexcept {
 					return first;
 				}
 
-				constexpr decltype( auto ) end( ) const {
+				constexpr decltype( auto ) end( ) const noexcept {
 					return last;
 				}
 
-				explicit constexpr operator bool( ) const {
+				explicit constexpr operator bool( ) const noexcept {
 					return !empty( );
 				}
 
@@ -726,19 +728,14 @@ namespace daw {
 			constexpr IteratorRange<First, Last>
 			skip_string( IteratorRange<First, Last> &rng ) {
 				assert( rng.front( '"' ) );
-				bool in_escape = false;
 				auto result = rng;
 				rng.remove_prefix( );
 				while( !rng.empty( ) ) {
 					if( rng.in( '\\' ) ) {
-						in_escape = !in_escape;
 						rng.remove_prefix( );
-						continue;
-					}
-					if( !in_escape and rng.in( '"' ) ) {
+					} else if( rng.in( '"' ) ) {
 						break;
 					}
-					in_escape = false;
 					rng.remove_prefix( );
 				}
 				assert( rng.front( '"' ) );
@@ -761,7 +758,6 @@ namespace daw {
 			constexpr IteratorRange<First, Last>
 			skip_bracketed_item( IteratorRange<First, Last> &rng ) {
 				size_t bracket_count = 1;
-				bool is_escaped = false;
 				bool in_quotes = false;
 				auto result = rng;
 				while( !rng.empty( ) and bracket_count > 0 ) {
@@ -769,29 +765,22 @@ namespace daw {
 					rng.trim_left( );
 					switch( rng.front( ) ) {
 					case '\\':
-						if( !in_quotes and !is_escaped ) {
-							is_escaped = true;
-							continue;
-						}
-						break;
+						rng.remove_prefix( 1 );
+						continue;
 					case '"':
-						if( !is_escaped ) {
-							in_quotes = !in_quotes;
-							continue;
-						}
-						break;
+						in_quotes = !in_quotes;
+						continue;
 					case Left:
-						if( !in_quotes and !is_escaped ) {
+						if( !in_quotes ) {
 							++bracket_count;
 						}
 						break;
 					case Right:
-						if( !in_quotes and !is_escaped ) {
+						if( !in_quotes ) {
 							--bracket_count;
 						}
 						break;
 					}
-					is_escaped = false;
 				}
 				assert( rng.front( Right ) );
 
@@ -911,12 +900,8 @@ namespace daw {
 				if( rng.empty( ) or rng.is_null( ) ) {
 					return constructor_t{}( );
 				}
-				if( rng.front( 'n' ) ) {
-					rng.remove_prefix( );
-					int result = rng.pop_front( ) - 'u';
-					result += rng.pop_front( ) - 'l';
-					result += rng.pop_front( ) - 'l';
-					assert( result == 0 );
+				if( rng.front( 'n' ) and rng.size( ) > 4 ) {
+					rng.remove_prefix( 4 );
 					rng.trim_left( );
 					return constructor_t{}( );
 				}
@@ -925,39 +910,19 @@ namespace daw {
 			}
 
 			template<typename JsonMember, typename First, typename Last>
-			constexpr auto parse_value( ParseTag<JsonParseTypes::Custom>,
-			                            IteratorRange<First, Last> &rng ) {
-
-				auto tmp = skip_string( rng );
-				auto json_data = std::string_view(
-				  tmp.begin( ),
-				  static_cast<size_t>( std::distance( tmp.begin( ), tmp.end( ) ) ) );
-				json_data.remove_prefix( 1 );
-				json_data.remove_suffix( 1 );
-				return typename JsonMember::from_converter_t{}( json_data );
-			}
-
-			template<typename JsonMember, typename First, typename Last>
 			constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 			                            IteratorRange<First, Last> &rng ) {
-				assert( !rng.empty( ) );
+				assert( !rng.empty( ) and rng.size( ) > 4 );
 
 				using constructor_t = typename JsonMember::constructor_t;
 
-				if( to_lower( rng.pop_front( ) ) == 't' ) {
-					int result = rng.pop_front( ) - 'r';
-					result += rng.pop_front( ) - 'u';
-					result += rng.pop_front( ) - 'e';
+				if( rng.in( 't' ) and rng.size( ) > 4 ) {
+					rng.remove_prefix( 4 );
 					rng.trim_left( );
-					assert( result == 0 );
 					return constructor_t{}( true );
 				}
-				int result = rng.pop_front( ) - 'a';
-				result += rng.pop_front( ) - 'l';
-				result += rng.pop_front( ) - 's';
-				result += rng.pop_front( ) - 'e';
+				rng.remove_prefix( 5 );
 				rng.trim_left( );
-				assert( result == 0 );
 				return constructor_t{}( false );
 			}
 
@@ -967,12 +932,8 @@ namespace daw {
 
 				auto str = skip_string( rng );
 				assert( str.front( '"' ) );
-				str.remove_prefix( );
-				assert( !str.empty( ) );
 				using constructor_t = typename JsonMember::constructor_t;
-				return constructor_t{}(
-				  str.begin( ), static_cast<size_t>(
-				                  std::distance( str.begin( ), str.end( ) ) - 1U ) );
+				return constructor_t{}( std::next( str.begin( ) ), str.size( ) - 2U );
 			}
 
 			template<typename JsonMember, typename First, typename Last>
@@ -981,12 +942,20 @@ namespace daw {
 
 				auto str = skip_string( rng );
 				assert( str.front( '"' ) );
-				str.remove_prefix( );
-				assert( !str.empty( ) );
 				using constructor_t = typename JsonMember::constructor_t;
+				return constructor_t{}( std::next( str.begin( ) ), str.size( ) - 2U );
+			}
+
+			template<typename JsonMember, typename First, typename Last>
+			constexpr auto parse_value( ParseTag<JsonParseTypes::Custom>,
+			                            IteratorRange<First, Last> &rng ) {
+
+				auto str = skip_string( rng );
+				assert( str.front( '"' ) );
+				// TODO make custom require a ptr/sz pair
+				using constructor_t = typename JsonMember::from_converter_t;
 				return constructor_t{}(
-				  str.begin( ), static_cast<size_t>(
-				                  std::distance( str.begin( ), str.end( ) ) - 1U ) );
+				  std::string_view( std::next( str.begin( ) ), str.size( ) - 2U ) );
 			}
 
 			template<typename JsonMember, typename First, typename Last>
