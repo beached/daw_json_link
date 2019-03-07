@@ -158,4 +158,36 @@ int main( int argc, char **argv ) {
 	auto sv = std::string_view( city_ary_str );
 	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 )
 	          << '\n';
+
+	auto mid_lat =
+	  *daw::bench_n_test_mbs<10>( "Calculate Middle Latitude", json_sv.size( ),
+	                              []( auto const &jstr ) -> float {
+		                              uint32_t tot = 0;
+		                              auto result = daw::algorithm::accumulate(
+		                                iterator_t( jstr ), iterator_t( ), 0.0f,
+		                                [&tot]( float cur, City &&city ) {
+			                                ++tot;
+			                                return cur + city.lat;
+		                                } );
+		                              return result / static_cast<float>( tot );
+	                              },
+	                              json_sv );
+
+	std::cout << "mid_lat of all is: " << mid_lat << '\n';
+
+	auto mid_lat2 = *daw::bench_n_test_mbs<10>(
+	  "Calculate Middle Latitude2", json_sv.size( ),
+	  []( auto const &jstr ) -> float {
+		  std::vector<float> lats{};
+		  daw::algorithm::transform( iterator_t( jstr ), iterator_t( ),
+		             daw::back_inserter_iterator( lats ),
+		             []( auto &&l ) { return l.lat; } );
+
+		  auto result = daw::algorithm::accumulate( std::cbegin( lats ),
+		                                            std::cend( lats ), 0.0f );
+		  return result / static_cast<float>( lats.size( ) );
+	  },
+	  json_sv );
+
+	std::cout << "mid_lat2 of all is: " << mid_lat2 << '\n';
 }

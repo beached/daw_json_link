@@ -591,7 +591,7 @@ namespace daw {
 				assert( rng.front( "0123456789" ) );
 				struct {
 					Result value = 0;
-					uint8_t count = 0;
+					uint_fast8_t count = 0;
 				} result{};
 				while( rng.is_digit( ) ) {
 					result.value *= static_cast<Result>( 10 );
@@ -643,25 +643,31 @@ namespace daw {
 					sign = -1;
 					rng.remove_prefix( );
 				}
-				auto const whole_part = sign * parse_unsigned_integer<int64_t>( rng ).value;
+				auto const whole_part = static_cast<Result>(
+				  sign * parse_unsigned_integer<int64_t>( rng ).value );
 
-				double fract_part = 0.0;
+				Result fract_part = 0.0;
 				if( rng.front( '.' ) ) {
 					rng.remove_prefix( );
 					auto fract_tmp = parse_unsigned_integer<uint64_t>( rng );
-					fract_part = static_cast<double>( fract_tmp.value );
+					fract_part = static_cast<Result>( fract_tmp.value );
 					fract_part *=
 					  daw::cxmath::dpow10( -static_cast<int32_t>( fract_tmp.count ) );
 					fract_part = daw::cxmath::copy_sign( fract_part, whole_part );
 				}
 
-				int32_t exp_part = 0;
+				int_fast16_t exp_part = 0;
 				if( rng.in( "eE" ) ) {
 					rng.remove_prefix( );
-					exp_part = parse_integer<int32_t>( rng );
+					exp_part = parse_integer<int_fast16_t>( rng );
 				}
-				return static_cast<Result>( ( whole_part + fract_part ) *
-				                            daw::cxmath::dpow10( exp_part ) );
+				if constexpr( std::is_same_v<Result, float> ) {
+					return ( whole_part + fract_part ) * daw::cxmath::fpow10( exp_part );
+
+				} else {
+					return ( whole_part + fract_part ) *
+					       static_cast<Result>( daw::cxmath::dpow10( exp_part ) );
+				}
 			}
 
 			template<typename Result>
