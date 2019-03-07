@@ -638,7 +638,12 @@ namespace daw {
 				// [-]WHOLE[.FRACTION][(e|E)EXPONENT]
 
 				assert( rng.is_real_number_part( ) );
-				auto const whole_part = parse_integer<int64_t>( rng );
+				int_fast8_t sign = 1;
+				if( rng.in( '-' ) ) {
+					sign = -1;
+					rng.remove_prefix( );
+				}
+				auto const whole_part = sign * parse_unsigned_integer<int64_t>( rng ).value;
 
 				double fract_part = 0.0;
 				if( rng.front( '.' ) ) {
@@ -727,11 +732,21 @@ namespace daw {
 				assert( rng.front( '"' ) );
 				auto result = rng;
 				rng.remove_prefix( );
+				// TODO: this may not be wise to assume we won't
+				// run out of buffer.  Find way to make it optional
+				/*
 				while( !rng.empty( ) ) {
+				  if( rng.in( '\\' ) ) {
+				    rng.remove_prefix( );
+				  } else if( rng.in( '"' ) ) {
+				    break;
+				  }
+				  rng.remove_prefix( );
+				}
+				 */
+				while( !rng.in( '"' ) ) {
 					if( rng.in( '\\' ) ) {
 						rng.remove_prefix( );
-					} else if( rng.in( '"' ) ) {
-						break;
 					}
 					rng.remove_prefix( );
 				}
@@ -749,7 +764,14 @@ namespace daw {
 				rng.remove_prefix( );
 				auto result = rng;
 				rng.remove_prefix( );
+				// TODO: this may not be wise to assume we won't
+				// run out of buffer.  Find way to make it optional
+				/*
 				while( !rng.front( '"' ) ) {
+				  rng.remove_prefix( );
+				}
+				 */
+				while( !rng.in( '"' ) ) {
 					rng.remove_prefix( );
 				}
 				assert( rng.front( '"' ) );
