@@ -738,7 +738,8 @@ namespace daw {
 					in_escape = false;
 					rng.remove_prefix( );
 				}
-				exception::dbg_postcondition_check( rng.front( '"' ), "Invalid string" );
+				exception::dbg_postcondition_check( rng.front( '"' ),
+				                                    "Invalid string" );
 				result.last = std::next( rng.begin( ) );
 				rng.remove_prefix( );
 				return result;
@@ -748,7 +749,8 @@ namespace daw {
 			constexpr IteratorRange<First, Last>
 			skip_literal( IteratorRange<First, Last> &rng ) {
 				auto result = rng.move_to_first_of( ",}]" );
-				exception::dbg_postcondition_check( rng.front( ",}]" ), "Invalid literal" );
+				exception::dbg_postcondition_check( rng.front( ",}]" ),
+				                                    "Invalid literal" );
 				return result;
 			}
 
@@ -790,12 +792,10 @@ namespace daw {
 					}
 					is_escaped = false;
 				}
-				daw::exception::dbg_postcondition_check<bracketed_item_parse_exception>(
-				  rng.front( Right ) );
+				daw::exception::dbg_postcondition_check( rng.front( Right ) );
 
 				rng.remove_prefix( );
-				daw::exception::dbg_postcondition_check<bracketed_item_parse_exception>(
-				  !rng.empty( ) );
+				daw::exception::dbg_postcondition_check( !rng.empty( ) );
 
 				result.last = rng.begin( );
 				return result;
@@ -887,7 +887,8 @@ namespace daw {
 					int result = rng.pop_front( ) - 'u';
 					result += rng.pop_front( ) - 'l';
 					result += rng.pop_front( ) - 'l';
-					daw::exception::dbg_postcondition_check( result == 0, "Invalid null" );
+					daw::exception::dbg_postcondition_check( result == 0,
+					                                         "Invalid null" );
 					rng.trim_left( );
 					return constructor_t{}( );
 				}
@@ -920,7 +921,8 @@ namespace daw {
 					result += rng.pop_front( ) - 'u';
 					result += rng.pop_front( ) - 'e';
 					rng.trim_left( );
-					daw::exception::dbg_postcondition_check( result == 0, "Invalid boolean" );
+					daw::exception::dbg_postcondition_check( result == 0,
+					                                         "Invalid boolean" );
 					return constructor_t{}( true );
 				}
 				int result = rng.pop_front( ) - 'a';
@@ -928,7 +930,8 @@ namespace daw {
 				result += rng.pop_front( ) - 's';
 				result += rng.pop_front( ) - 'e';
 				rng.trim_left( );
-				daw::exception::dbg_postcondition_check( result == 0, "Invalid boolean" );
+				daw::exception::dbg_postcondition_check( result == 0,
+				                                         "Invalid boolean" );
 				return constructor_t{}( false );
 			}
 
@@ -975,7 +978,7 @@ namespace daw {
 			                            IteratorRange<First, Last> &rng ) {
 
 				using element_t = typename JsonMember::json_element_t;
-				daw::exception::dbg_precondition_check<invalid_array>( rng.front( '[' ) );
+				daw::exception::dbg_precondition_check( rng.front( '[' ) );
 
 				rng.remove_prefix( );
 				rng.trim_left( );
@@ -1086,7 +1089,7 @@ namespace daw {
 			  IteratorRange<First, Last> &rng ) {
 
 				daw::exception::dbg_precondition_check( !locations[pos].missing( ) or
-				                                    !rng.front( '}' ) );
+				                                        !rng.front( '}' ) );
 
 				rng.trim_left( );
 				while( locations[pos].missing( ) and !rng.empty( ) and
@@ -1146,10 +1149,9 @@ namespace daw {
 					  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
 
 					// Only allow missing members for Null-able type
-					daw::exception::dbg_precondition_check<
-					  missing_nonnullable_value_expection<JsonParseTypes::Null>>(
-					  !loc.empty( ) or
-					  JsonMember::expected_type == JsonParseTypes::Null );
+					daw::exception::dbg_precondition_check( !loc.empty( ) or
+					                                        JsonMember::expected_type ==
+					                                          JsonParseTypes::Null );
 
 					auto cur_rng = &rng;
 					if( loc.is_null( ) or

@@ -250,7 +250,7 @@ namespace daw {
 				static_assert(
 				  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
 
-				daw::exception::dbg_precondition_check<impl::invalid_array>(
+				daw::exception::dbg_precondition_check(
 				  m_state.front( ) == '[' );
 
 				m_state.remove_prefix( );
@@ -258,7 +258,7 @@ namespace daw {
 			}
 
 			constexpr value_type operator*( ) const noexcept {
-				daw::exception::dbg_precondition_check<impl::invalid_array>(
+				daw::exception::dbg_precondition_check(
 				  !m_state.empty( ) and !m_state.in( ']' ) );
 
 				auto tmp = m_state;
