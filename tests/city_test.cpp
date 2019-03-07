@@ -41,8 +41,8 @@ auto describe_json_class( City ) noexcept {
 #if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
 	return class_description_t<json_string<"country", std::string_view>,
 	                           json_string<"name", std::string_view>,
-	                           json_number<"lat", float>,
-	                           json_number<"lng", float>>{};
+	                           json_number<"lat", float, true>,
+	                           json_number<"lng", float, true>>{};
 #else
 	static constexpr char names0[] = "country";
 	static constexpr char names1[] = "name";
@@ -50,8 +50,8 @@ auto describe_json_class( City ) noexcept {
 	static constexpr char names3[] = "lng";
 	return class_description_t<json_string<names0, std::string_view>,
 	                           json_string<names1, std::string_view>,
-	                           json_number<names2, float>,
-	                           json_number<names3, float>>{};
+	                           json_number<names2, float, true>,
+	                           json_number<names3, float, true>>{};
 #endif
 }
 // Order of values must match order specified in class_description

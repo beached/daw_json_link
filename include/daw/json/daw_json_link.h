@@ -87,6 +87,7 @@ namespace daw {
 		};
 
 		template<JSONNAMETYPE Name, typename T = double,
+		         bool StoredAsString = false,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_number {
 			static_assert( std::is_invocable_v<Constructor, T>,
@@ -95,6 +96,7 @@ namespace daw {
 			using i_am_a_json_type = void;
 			static constexpr auto name = Name;
 			static constexpr auto expected_type = JsonParseTypes::Number;
+			static constexpr auto stored_as_string = StoredAsString;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 		};
@@ -158,7 +160,8 @@ namespace daw {
 
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromConverter = custom_from_converter_t<T>,
-		         typename ToConverter = custom_to_converter_t<T>>
+		         typename ToConverter = custom_to_converter_t<T>,
+		         bool IsString = true>
 		struct json_custom {
 			using i_am_a_json_type = void;
 			static constexpr auto const name = Name;
@@ -166,6 +169,7 @@ namespace daw {
 			using parse_to_t = T;
 			using to_converter_t = ToConverter;
 			using from_converter_t = FromConverter;
+			static constexpr auto const is_string = IsString;
 		};
 
 		template<JSONNAMETYPE Name, typename Container, typename JsonElement,
@@ -202,10 +206,6 @@ namespace daw {
 
 			auto result = desc_t::template parse<T>( rng );
 			rng.trim_left( );
-			if( !rng.empty( ) and rng.front( ) == '}' ) {
-				rng.remove_prefix( );
-				rng.trim_left( );
-			}
 			return result;
 		}
 
@@ -244,7 +244,8 @@ namespace daw {
 			         daw::enable_if_t<!std::is_same_v<
 			           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 			constexpr json_array_iterator( String &&json_data )
-			  : m_state( std::data( json_data ), std::data( json_data ) + std::size( json_data ) ) {
+			  : m_state( std::data( json_data ),
+			             std::data( json_data ) + std::size( json_data ) ) {
 
 				static_assert(
 				  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
@@ -260,10 +261,12 @@ namespace daw {
 				daw::exception::precondition_check<impl::invalid_array>(
 				  !m_state.empty( ) );
 				m_state.trim_left( );
+
 				auto result = impl::parse_value<JsonElement>(
 				  ParseTag<JsonElement::expected_type>{}, m_state );
 				m_state.trim_left( );
-				if( m_state.front( ) == ',' ) {
+
+				while( m_state.front( ",]}" ) ) {
 					m_state.remove_prefix( );
 					m_state.trim_left( );
 				}
@@ -272,18 +275,18 @@ namespace daw {
 
 			constexpr json_array_iterator &operator++( ) {
 				m_state.trim_left( );
-				if( !m_state.empty( ) and m_state.front( ) == ',' ) {
+				while( m_state.front( ",]}" ) ) {
 					m_state.remove_prefix( );
 					m_state.trim_left( );
-				}
-				if( !m_state.empty( ) and m_state.front( ) == ']' ) {
-					m_state.first = m_state.last;
 				}
 				if( m_state.empty( ) ) {
 					return *this;
 				}
 				impl::skip_value( m_state );
-				m_state.trim_left( );
+				while( m_state.front( ",]}" ) ) {
+					m_state.remove_prefix( );
+					m_state.trim_left( );
+				}
 				return *this;
 			}
 
@@ -323,6 +326,10 @@ namespace daw {
 			using impl::data_size::size;
 
 			auto rng = impl::IteratorRange{json_data.begin( ), json_data.end( )};
+
+			rng.trim_left( );
+			daw::exception::precondition_check( rng.front( '[' ) );
+
 			return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
 			                                    rng );
 		}
