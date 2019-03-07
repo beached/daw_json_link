@@ -49,7 +49,7 @@ int main( int argc, char **argv ) {
 	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
 
 	auto count = *daw::bench_n_test_mbs<10>(
-	  "cities parsing 1", json_sv.size( ),
+	  "coords parsing 1", json_sv.size( ),
 	  []( auto &&sv ) {
 		  auto const data = daw::json::from_json_array<json_number<no_name>>( sv );
 		  return data.size( );
@@ -63,7 +63,7 @@ int main( int argc, char **argv ) {
 	auto data = std::vector<double>( );
 
 	auto count2 = *daw::bench_n_test_mbs<10>(
-	  "cities parsing 2", json_sv.size( ),
+	  "coords parsing 2", json_sv.size( ),
 	  [&]( auto &&sv ) {
 		  data.clear( );
 		  std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
@@ -73,7 +73,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << "element count 2: " << count2 << '\n';
 	auto count3 =
-	  *daw::bench_n_test_mbs<10>( "cities parsing 3", json_sv.size( ),
+	  *daw::bench_n_test_mbs<10>( "coords parsing 3", json_sv.size( ),
 	                              []( auto &&sv ) {
 		                              return static_cast<size_t>( std::distance(
 		                                iterator_t( sv ), iterator_t( ) ) );
