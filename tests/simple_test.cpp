@@ -36,19 +36,21 @@ struct City {
 auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 #if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
-	return class_description_t<json_string<"country", std::string_view>,
-	                           json_string<"name", std::string_view>,
-	                           json_number<"lat", float, true>,
-	                           json_number<"lng", float, true>>{};
+	return class_description_t<
+	  json_string<"country", std::string_view>,
+	  json_string<"name", std::string_view>,
+	  json_number<"lat", float, LiteralAsStringOpt::always>,
+	  json_number<"lng", float, LiteralAsStringOpt::always>>{};
 #else
 	static constexpr char const names0[] = "country";
 	static constexpr char const names1[] = "name";
 	static constexpr char const names2[] = "lat";
 	static constexpr char const names3[] = "lng";
-	return class_description_t<json_string<names0, std::string_view>,
-	                           json_string<names1, std::string_view>,
-	                           json_number<names2, float, true>,
-	                           json_number<names3, float, true>>{};
+	return class_description_t<
+	  json_string<names0, std::string_view>,
+	  json_string<names1, std::string_view>,
+	  json_number<names2, float, LiteralAsStringOpt::always>,
+	  json_number<names3, float, LiteralAsStringOpt::always>>{};
 #endif
 }
 

@@ -87,7 +87,7 @@ namespace daw {
 		};
 
 		template<JSONNAMETYPE Name, typename T = double,
-		         bool StoredAsString = false,
+		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_number {
 			static_assert( std::is_invocable_v<Constructor, T>,
@@ -96,7 +96,7 @@ namespace daw {
 			using i_am_a_json_type = void;
 			static constexpr auto name = Name;
 			static constexpr auto expected_type = JsonParseTypes::Number;
-			static constexpr auto stored_as_string = StoredAsString;
+			static constexpr auto literal_as_string = LiteralAsString;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 		};
