@@ -266,7 +266,7 @@ constexpr char const json_data_array[] =
 int main( ) {
 	using namespace daw::json;
 
-	auto data = daw::json::from_json<test_001_t>( json_data );
+	constexpr auto data = daw::json::from_json<test_001_t>( json_data );
 	std::clog << to_json( data ) << '\n';
 
 	constexpr auto ary =
