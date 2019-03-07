@@ -73,6 +73,7 @@ int main( ) {
 	auto const count =
 	  *daw::bench_n_test_mbs<10>( "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
 		  auto const data = from_json_array<json_class<no_name, Number>>( sv );
+		  daw::do_not_optimize( data );
 		  return data.size( );
 	  },
 	                         json_sv );
@@ -89,6 +90,7 @@ int main( ) {
 	  [&]( auto &&sv ) noexcept {
 		  data.clear( );
 		  std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
+			daw::do_not_optimize( data );
 		  return data.size( );
 	  },
 	  json_sv );

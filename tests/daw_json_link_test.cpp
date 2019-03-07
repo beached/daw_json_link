@@ -38,6 +38,7 @@ static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ).val
 static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ).count == 5 );
 static_assert( daw::json::impl::parse_integer<uintmax_t>( "12345" ) == 12345 );
 static_assert( daw::json::impl::parse_integer<intmax_t>( "-12345" ) == -12345 );
+
 static_assert( daw::json::impl::parse_real<double>( "5" ) == 5.0 );
 static_assert( daw::json::impl::parse_real<double>( "5.5" ) == 5.5 );
 static_assert( daw::json::impl::parse_real<double>( "5.5e2" ) == 550.0 );
@@ -189,8 +190,8 @@ auto to_json_data( e_test_001_t const &v ) {
 
 constexpr auto const json_data =
   R"({
-	    "i": 55,
 	    "d": -1.234e+3,
+	    "i": 55,
 			"b": true,
 			"x": { "b": false, "c": [1,2,3] },
 			"y": [1,2,3,4],
@@ -225,6 +226,7 @@ constexpr char const json_data_array[] =
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
 			"o": 1344,
+			"o2": 80085,
 			"dte": "2017-12-31T01:02:03.343Z"
 	  },{
 	    "i": 55,
@@ -263,10 +265,11 @@ constexpr char const json_data_array[] =
 
 int main( ) {
 	using namespace daw::json;
+
 	auto data = daw::json::from_json<test_001_t>( json_data );
 	std::clog << to_json( data ) << '\n';
 
-	auto ary =
+	constexpr auto ary =
 	  from_json_array<json_class<no_name, test_001_t>,
 	                  daw::bounded_vector_t<test_001_t, 10>>( json_data_array );
 	std::cout << "read in " << ary.size( ) << " items\n";
