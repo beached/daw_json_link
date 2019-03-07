@@ -125,8 +125,11 @@ int main( int argc, char **argv ) {
 		  return std::nullopt;
 	  },
 	  json_sv );
-	std::cout << "Toronto was " << ( has_toronto ? "" : "not" ) << " found at "
-	          << to_json( *has_toronto ) << '\n';
+	std::cout << "Toronto was " << ( has_toronto ? "" : "not" );
+	if( has_toronto ) {
+		std::cout << " found at " << to_json( *has_toronto );
+	}
+	std::cout << '\n';
 	auto has_chitungwiza = *daw::bench_n_test_mbs<10>(
 	  "Find Chitungwiza(last item)", json_sv.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
