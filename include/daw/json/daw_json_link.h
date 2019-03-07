@@ -227,8 +227,7 @@ namespace daw {
 		/// allow iteration over an array of json
 		template<typename JsonElement>
 		class json_array_iterator {
-			impl::IteratorRange<char const *, char const *> m_state{nullptr,
-			                                                                nullptr};
+			impl::IteratorRange<char const *, char const *> m_state{nullptr, nullptr};
 
 		public:
 			using value_type = typename JsonElement::parse_to_t;
@@ -250,16 +249,14 @@ namespace daw {
 				static_assert(
 				  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
 
-				assert(
-				  m_state.front( ) == '[' );
+				assert( m_state.front( ) == '[' );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
 			}
 
 			constexpr value_type operator*( ) const noexcept {
-				assert(
-				  !m_state.empty( ) and !m_state.in( ']' ) );
+				assert( !m_state.empty( ) and !m_state.in( ']' ) );
 
 				auto tmp = m_state;
 				auto result = impl::parse_value<JsonElement>(
@@ -269,17 +266,9 @@ namespace daw {
 			}
 
 			constexpr json_array_iterator &operator++( ) {
-				m_state.trim_left( );
-				if( m_state.front( ',' ) ) {
-					m_state.remove_prefix( );
-					m_state.trim_left( );
-				}
-				if( m_state.empty( ) or m_state.in( ']' ) ) {
-					return *this;
-				}
 				impl::skip_value( m_state );
 				m_state.trim_left( );
-				if( m_state.front( ',' ) ) {
+				if( m_state.in( ',' ) ) {
 					m_state.remove_prefix( );
 					m_state.trim_left( );
 				}
@@ -293,15 +282,13 @@ namespace daw {
 			}
 
 			explicit constexpr operator bool( ) const noexcept {
-				return !m_state.empty( ) and !m_state.in( ']' );
+				return !m_state.is_null( ) and !m_state.front( ']' );
 			}
 
 			constexpr bool operator==( json_array_iterator const &rhs ) const
 			  noexcept {
 				return ( !( *this ) and !rhs ) or
-				       std::forward_as_tuple( m_state.begin( ), m_state.end( ) ) ==
-				         std::forward_as_tuple( rhs.m_state.begin( ),
-				                                rhs.m_state.end( ) );
+				       m_state.begin( ) == rhs.m_state.begin( );
 			}
 
 			constexpr bool operator!=( json_array_iterator const &rhs ) const
@@ -324,7 +311,6 @@ namespace daw {
 			auto rng = impl::IteratorRange{json_data.begin( ), json_data.end( )};
 
 			rng.trim_left( );
-			assert( rng.front( '[' ) );
 
 			return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
 			                                    rng );
