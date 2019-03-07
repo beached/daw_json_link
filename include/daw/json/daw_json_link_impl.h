@@ -582,7 +582,7 @@ namespace daw {
 			template<typename Result, typename First, typename Last>
 			constexpr auto
 			parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
-				daw::exception::dbg_precondition_check( rng.front( "0123456789" ) );
+				dbg_precondition_check( rng.front( "0123456789" ) );
 				struct {
 					Result value = 0;
 					uint8_t count = 0;
@@ -605,7 +605,7 @@ namespace daw {
 			template<typename Result, typename First, typename Last>
 			constexpr Result
 			parse_integer( IteratorRange<First, Last> &rng ) noexcept {
-				daw::exception::dbg_precondition_check( rng.front( "+-0123456789" ) );
+				dbg_precondition_check( rng.front( "+-0123456789" ) );
 				Result sign = 1;
 				// This gets rid of warnings when parse_integer is called on unsigned
 				// types
@@ -631,7 +631,7 @@ namespace daw {
 			constexpr Result parse_real( IteratorRange<First, Last> &rng ) noexcept {
 				// [-]WHOLE[.FRACTION][(e|E)EXPONENT]
 
-				daw::exception::dbg_precondition_check( rng.is_real_number_part( ) );
+				dbg_precondition_check( rng.is_real_number_part( ) );
 				auto const whole_part = parse_integer<int64_t>( rng );
 
 				double fract_part = 0.0;
@@ -714,7 +714,7 @@ namespace daw {
 				rng.munch( ':' );
 				rng.trim_left( );
 
-				daw::exception::dbg_postcondition_check( !name.empty( ) and
+				dbg_postcondition_check( !name.empty( ) and
 				                                         !rng.empty( ) );
 				return name;
 			}
@@ -722,7 +722,7 @@ namespace daw {
 			template<typename First, typename Last>
 			constexpr IteratorRange<First, Last>
 			skip_string( IteratorRange<First, Last> &rng ) {
-				daw::exception::dbg_precondition_check( rng.front( '"' ) );
+				dbg_precondition_check( rng.front( '"' ) );
 				bool in_escape = false;
 				auto result = rng;
 				rng.remove_prefix( );
@@ -792,10 +792,10 @@ namespace daw {
 					}
 					is_escaped = false;
 				}
-				daw::exception::dbg_postcondition_check( rng.front( Right ) );
+				dbg_postcondition_check( rng.front( Right ) );
 
 				rng.remove_prefix( );
-				daw::exception::dbg_postcondition_check( !rng.empty( ) );
+				dbg_postcondition_check( !rng.empty( ) );
 
 				result.last = rng.begin( );
 				return result;
@@ -816,7 +816,7 @@ namespace daw {
 			template<typename First, typename Last>
 			constexpr IteratorRange<First, Last>
 			skip_value( IteratorRange<First, Last> &rng ) {
-				daw::exception::dbg_precondition_check( !rng.empty( ) );
+				dbg_precondition_check( !rng.empty( ) );
 
 				switch( rng.front( ) ) {
 				case '"':
@@ -840,35 +840,35 @@ namespace daw {
 				using element_t = typename JsonMember::parse_to_t;
 
 				if constexpr( JsonMember::stored_as_string ) {
-					daw::exception::dbg_precondition_check( rng.front( '"' ) );
+					dbg_precondition_check( rng.front( '"' ) );
 					rng.remove_prefix( );
 				}
-				daw::exception::dbg_precondition_check( rng.is_real_number_part( ) );
+				dbg_precondition_check( rng.is_real_number_part( ) );
 
 				if constexpr( std::is_floating_point_v<element_t> ) {
 					auto result = constructor_t{}( parse_real<element_t>( rng ) );
 					if constexpr( JsonMember::stored_as_string ) {
-						daw::exception::dbg_precondition_check( rng.front( '"' ) );
+						dbg_precondition_check( rng.front( '"' ) );
 						rng.remove_prefix( );
 					}
-					daw::exception::dbg_postcondition_check( rng.at_end_of_item( ) );
+					dbg_postcondition_check( rng.at_end_of_item( ) );
 					return result;
 				} else if constexpr( std::is_signed_v<element_t> ) {
 					auto result = constructor_t{}( parse_integer<element_t>( rng ) );
 					if constexpr( JsonMember::stored_as_string ) {
-						daw::exception::dbg_precondition_check( rng.front( '"' ) );
+						dbg_precondition_check( rng.front( '"' ) );
 						rng.remove_prefix( );
 					}
-					daw::exception::dbg_postcondition_check( rng.at_end_of_item( ) );
+					dbg_postcondition_check( rng.at_end_of_item( ) );
 					return result;
 				} else {
 					auto result =
 					  constructor_t{}( parse_unsigned_integer<element_t>( rng ).value );
 					if constexpr( JsonMember::stored_as_string ) {
-						daw::exception::dbg_precondition_check( rng.front( '"' ) );
+						dbg_precondition_check( rng.front( '"' ) );
 						rng.remove_prefix( );
 					}
-					daw::exception::dbg_postcondition_check( rng.at_end_of_item( ) );
+					dbg_postcondition_check( rng.at_end_of_item( ) );
 					return result;
 				}
 			}
@@ -887,7 +887,7 @@ namespace daw {
 					int result = rng.pop_front( ) - 'u';
 					result += rng.pop_front( ) - 'l';
 					result += rng.pop_front( ) - 'l';
-					daw::exception::dbg_postcondition_check( result == 0,
+					dbg_postcondition_check( result == 0,
 					                                         "Invalid null" );
 					rng.trim_left( );
 					return constructor_t{}( );
@@ -912,7 +912,7 @@ namespace daw {
 			template<typename JsonMember, typename First, typename Last>
 			constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 			                            IteratorRange<First, Last> &rng ) {
-				daw::exception::dbg_precondition_check( !rng.empty( ) );
+				dbg_precondition_check( !rng.empty( ) );
 
 				using constructor_t = typename JsonMember::constructor_t;
 
@@ -921,7 +921,7 @@ namespace daw {
 					result += rng.pop_front( ) - 'u';
 					result += rng.pop_front( ) - 'e';
 					rng.trim_left( );
-					daw::exception::dbg_postcondition_check( result == 0,
+					dbg_postcondition_check( result == 0,
 					                                         "Invalid boolean" );
 					return constructor_t{}( true );
 				}
@@ -930,7 +930,7 @@ namespace daw {
 				result += rng.pop_front( ) - 's';
 				result += rng.pop_front( ) - 'e';
 				rng.trim_left( );
-				daw::exception::dbg_postcondition_check( result == 0,
+				dbg_postcondition_check( result == 0,
 				                                         "Invalid boolean" );
 				return constructor_t{}( false );
 			}
@@ -940,9 +940,9 @@ namespace daw {
 			                            IteratorRange<First, Last> &rng ) {
 
 				auto str = skip_string( rng );
-				daw::exception::dbg_precondition_check( str.front( '"' ) );
+				dbg_precondition_check( str.front( '"' ) );
 				str.remove_prefix( );
-				daw::exception::dbg_precondition_check( !str.empty( ) );
+				dbg_precondition_check( !str.empty( ) );
 				using constructor_t = typename JsonMember::constructor_t;
 				return constructor_t{}(
 				  str.begin( ), static_cast<size_t>(
@@ -954,9 +954,9 @@ namespace daw {
 			                            IteratorRange<First, Last> &rng ) {
 
 				auto str = skip_string( rng );
-				daw::exception::dbg_precondition_check( str.front( '"' ) );
+				dbg_precondition_check( str.front( '"' ) );
 				str.remove_prefix( );
-				daw::exception::dbg_precondition_check( !str.empty( ) );
+				dbg_precondition_check( !str.empty( ) );
 				using constructor_t = typename JsonMember::constructor_t;
 				return constructor_t{}(
 				  str.begin( ), static_cast<size_t>(
@@ -978,7 +978,7 @@ namespace daw {
 			                            IteratorRange<First, Last> &rng ) {
 
 				using element_t = typename JsonMember::json_element_t;
-				daw::exception::dbg_precondition_check( rng.front( '[' ) );
+				dbg_precondition_check( rng.front( '[' ) );
 
 				rng.remove_prefix( );
 				rng.trim_left( );
@@ -996,7 +996,7 @@ namespace daw {
 						rng.trim_left( );
 					}
 				}
-				daw::exception::dbg_postcondition_check( rng.front( ']' ) );
+				dbg_postcondition_check( rng.front( ']' ) );
 				rng.remove_prefix( );
 				rng.trim_left( );
 				return array_container;
@@ -1088,7 +1088,7 @@ namespace daw {
 			  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
 			  IteratorRange<First, Last> &rng ) {
 
-				daw::exception::dbg_precondition_check( !locations[pos].missing( ) or
+				dbg_precondition_check( !locations[pos].missing( ) or
 				                                        !rng.front( '}' ) );
 
 				rng.trim_left( );
@@ -1149,7 +1149,7 @@ namespace daw {
 					  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
 
 					// Only allow missing members for Null-able type
-					daw::exception::dbg_precondition_check( !loc.empty( ) or
+					dbg_precondition_check( !loc.empty( ) or
 					                                        JsonMember::expected_type ==
 					                                          JsonParseTypes::Null );
 
@@ -1199,7 +1199,7 @@ namespace daw {
 				  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
 				  "Supplied types cannot be used for construction of this type" );
 
-				daw::exception::dbg_precondition_check( rng.front( '{' ) );
+				dbg_precondition_check( rng.front( '{' ) );
 				rng.remove_prefix( );
 				rng.trim_left( );
 				auto known_locations =
@@ -1208,7 +1208,7 @@ namespace daw {
 				auto result = construct_a<Result>{}(
 				  parse_item<Is, JsonMembers...>( known_locations, rng )... );
 				rng.trim_left( );
-				daw::exception::dbg_postcondition_check( rng.front( '}' ) );
+				dbg_postcondition_check( rng.front( '}' ) );
 				rng.remove_prefix( );
 				rng.trim_left( );
 				return result;
