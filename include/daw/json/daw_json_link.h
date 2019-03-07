@@ -228,6 +228,7 @@ namespace daw {
 		template<typename JsonElement>
 		class json_array_iterator {
 			impl::IteratorRange<char const *, char const *> m_state{nullptr, nullptr};
+			mutable intmax_t m_can_skip = -1;
 
 		public:
 			using value_type = typename JsonElement::parse_to_t;
@@ -261,12 +262,33 @@ namespace daw {
 				auto tmp = m_state;
 				auto result = impl::parse_value<JsonElement>(
 				  ParseTag<JsonElement::expected_type>{}, tmp );
-
+				m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
 				return result;
 			}
 
 			constexpr json_array_iterator &operator++( ) {
-				impl::skip_value( m_state );
+				if( m_can_skip >= 0 ) {
+					m_state.first = std::next( m_state.first, m_can_skip );
+					m_can_skip = -1;
+				} else {
+					if constexpr( JsonElement::expected_type == JsonParseTypes::Date or
+					              JsonElement::expected_type == JsonParseTypes::String or
+					              JsonElement::expected_type == JsonParseTypes::Custom ) {
+						impl::skip_string( m_state );
+					} else if constexpr( JsonElement::expected_type ==
+					                       JsonParseTypes::Number or
+					                     JsonElement::expected_type ==
+					                       JsonParseTypes::Null or
+					                     JsonElement::expected_type ==
+					                       JsonParseTypes::Bool ) {
+						impl::skip_literal( m_state );
+					} else if constexpr( JsonElement::expected_type ==
+					                     JsonParseTypes::Array ) {
+						impl::skip_array( m_state );
+					} else {
+						impl::skip_class( m_state );
+					}
+				}
 				m_state.trim_left( );
 				if( m_state.in( ',' ) ) {
 					m_state.remove_prefix( );
