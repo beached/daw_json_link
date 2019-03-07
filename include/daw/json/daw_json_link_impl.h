@@ -95,7 +95,7 @@ namespace daw {
 			}
 		} // namespace impl
 #if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
-		  // C++ 20 Non-Type Class Template Arguments
+		// C++ 20 Non-Type Class Template Arguments
 #define JSONNAMETYPE daw::bounded_string
 
 		template<typename String>
@@ -153,6 +153,7 @@ namespace daw {
 				return from_string( daw::tag<T>, sv );
 			}
 		};
+
 		enum class JsonParseTypes : uint_fast8_t {
 			Number,
 			Bool,
@@ -251,7 +252,7 @@ namespace daw {
 				constexpr daw::string_view move_to_next_of( char c ) noexcept {
 					auto p = begin( );
 					size_t sz = 0;
-					while( !empty( ) and front( ) != c ) {
+					while( !in( c ) ) {
 						remove_prefix( );
 						++sz;
 					}
@@ -261,8 +262,7 @@ namespace daw {
 				constexpr IteratorRange
 				move_to_first_of( daw::string_view const chars ) noexcept {
 					auto result = *this;
-					while( !empty( ) and
-					       chars.find( front( ) ) == daw::string_view::npos ) {
+					while( chars.find( front( ) ) == daw::string_view::npos ) {
 						remove_prefix( );
 					}
 					result.last = first;
@@ -282,16 +282,16 @@ namespace daw {
 				}
 
 				constexpr bool is_digit( ) const noexcept {
-					return front( "0123456789" );
+					return in( "0123456789" );
 				}
 
 				constexpr bool is_real_number_part( ) const noexcept {
-					return front( "0123456789eE+-" );
+					return in( "0123456789eE+-" );
 				}
 
 				constexpr daw::string_view munch( char c ) noexcept {
 					auto result = move_to_next_of( c );
-					if( front( c ) ) {
+					if( in( c ) ) {
 						remove_prefix( );
 					}
 					return result;
@@ -643,7 +643,7 @@ namespace daw {
 				  sign * parse_unsigned_integer<int64_t>( rng ).value );
 
 				Result fract_part = 0.0;
-				if( rng.front( '.' ) ) {
+				if( rng.in( '.' ) ) {
 					rng.remove_prefix( );
 					auto fract_tmp = parse_unsigned_integer<uint64_t>( rng );
 					fract_part = static_cast<Result>( fract_tmp.value );
@@ -938,11 +938,12 @@ namespace daw {
 				if( rng.empty( ) or rng.is_null( ) ) {
 					return constructor_t{}( );
 				}
-				if( rng.front( 'n' ) and rng.size( ) > 4 ) {
+				if( rng.size( ) > 4 and rng.in( 'n' ) ) {
 					rng.remove_prefix( 4 );
 					rng.trim_left( );
 					return constructor_t{}( );
 				}
+
 				return parse_value<element_t>( ParseTag<element_t::expected_type>{},
 				                               rng );
 			}
@@ -1024,7 +1025,7 @@ namespace daw {
 					container_appender( parse_value<element_t>(
 					  ParseTag<element_t::expected_type>{}, rng ) );
 					rng.trim_left( );
-					if( rng.front( ',' ) ) {
+					if( rng.in( ',' ) ) {
 						rng.remove_prefix( );
 						rng.trim_left( );
 					}
@@ -1124,7 +1125,7 @@ namespace daw {
 				assert( !locations[pos].missing( ) or !rng.front( '}' ) );
 
 				rng.trim_left( );
-				while( locations[pos].missing( ) and rng.not_front( '}' ) ) {
+				while( locations[pos].missing( ) and !rng.in( '}' ) ) {
 					auto name = parse_name( rng );
 
 					if( !name_map_t<JsonMembers...>::has_name( name ) ) {
@@ -1193,7 +1194,7 @@ namespace daw {
 					  ParseTag<JsonMember::expected_type>{}, *cur_rng );
 
 					rng.trim_left( );
-					if( rng.front( ',' ) ) {
+					if( rng.in( ',' ) ) {
 						rng.remove_prefix( );
 						rng.trim_left( );
 					}
