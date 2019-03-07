@@ -250,7 +250,7 @@ namespace daw {
 				static_assert(
 				  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
 
-				daw::exception::precondition_check<impl::invalid_array>(
+				daw::exception::dbg_precondition_check<impl::invalid_array>(
 				  m_state.front( ) == '[' );
 
 				m_state.remove_prefix( );
@@ -324,7 +324,7 @@ namespace daw {
 			auto rng = impl::IteratorRange{json_data.begin( ), json_data.end( )};
 
 			rng.trim_left( );
-			daw::exception::precondition_check( rng.front( '[' ) );
+			daw::exception::dbg_precondition_check( rng.front( '[' ) );
 
 			return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
 			                                    rng );
