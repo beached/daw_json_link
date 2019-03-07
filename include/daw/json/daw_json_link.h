@@ -293,7 +293,7 @@ namespace daw {
 			}
 
 			explicit constexpr operator bool( ) const noexcept {
-				return !m_state.empty( ) and m_state.in( ']' );
+				return !m_state.empty( ) and !m_state.in( ']' );
 			}
 
 			constexpr bool operator==( json_array_iterator const &rhs ) const
