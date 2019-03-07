@@ -710,11 +710,8 @@ namespace daw {
 			// value(e.g after the colon(:) and trimmed)
 			template<typename First, typename Last>
 			constexpr daw::string_view parse_name( IteratorRange<First, Last> &rng ) {
-				auto tmp = skip_string( rng );
-				auto name = daw::string_view(
-				  std::next( tmp.begin( ) ),
-				  static_cast<size_t>( std::distance( tmp.begin( ), tmp.end( ) ) ) -
-				    2U );
+				auto tmp = skip_name( rng );
+				auto name = daw::string_view( tmp.begin( ), tmp.size( ) );
 
 				// All names are followed by a semi-colon
 				rng.munch( ':' );
@@ -740,6 +737,23 @@ namespace daw {
 				}
 				assert( rng.front( '"' ) );
 				result.last = std::next( rng.begin( ) );
+				rng.remove_prefix( );
+				return result;
+			}
+
+			template<typename First, typename Last>
+			constexpr IteratorRange<First, Last>
+			skip_name( IteratorRange<First, Last> &rng ) {
+				// Assuming no escaped double-quotes
+				assert( rng.front( '"' ) );
+				rng.remove_prefix( );
+				auto result = rng;
+				rng.remove_prefix( );
+				while( !rng.front( '"' ) ) {
+					rng.remove_prefix( );
+				}
+				assert( rng.front( '"' ) );
+				result.last = rng.begin( );
 				rng.remove_prefix( );
 				return result;
 			}
