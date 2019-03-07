@@ -213,10 +213,12 @@ Marks a json member(see below) as nullable.  This includes being missing or havi
 ```cpp
 template<JSONNAMETYPE Name, 
     typename T = double, 
+	LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
     typename Constructor = daw::construct_a<T>>
 struct json_number
 ``` 
 The defaults for json_number will construct a ```double``` with the supplied name.  However, there are some optimization with using an exact match arithmetic type like a float or int.  Integer parsing is faster than floating point if you know you will always get whole numbers.
+```LiteralAsString``` allow specifying if the number is stored as a string.  Values are ```LiteralAsStringOpt::never```, ```LiteralAsStringOpt::maybe```, and ```LiteralAsStringOpt::always```.
 ```Constructor``` the default is almost always correct here but this will constuct your type.
 
 ### json_bool
