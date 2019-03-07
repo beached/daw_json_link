@@ -267,6 +267,7 @@ namespace daw {
 			}
 
 			constexpr json_array_iterator &operator++( ) {
+				assert( !m_state.empty( ) and !m_state.in( ']' ) );
 				if( m_can_skip >= 0 ) {
 					m_state.first = std::next( m_state.first, m_can_skip );
 					m_can_skip = -1;
@@ -293,8 +294,8 @@ namespace daw {
 
 			constexpr bool operator==( json_array_iterator const &rhs ) const
 			  noexcept {
-				return ( !( *this ) and !rhs ) or
-				       m_state.begin( ) == rhs.m_state.begin( );
+				return ( m_state.begin( ) == rhs.m_state.begin( ) ) or
+				       ( !( *this ) and !rhs );
 			}
 
 			constexpr bool operator!=( json_array_iterator const &rhs ) const
