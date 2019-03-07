@@ -78,7 +78,7 @@ int main( int argc, char **argv ) {
 	auto json_data = get_json_data( argv[1] );
 	auto sz = json_data.size( );
 	json_data.append( 60ULL, ' ' ); // Account for max digits in float if in bad form
-	json_data += ",]\"}";        // catch any thing looking for these values
+	json_data += ",]\"}tfn";        // catch any thing looking for these values
 	auto json_sv = std::string_view( json_data.data( ), sz );
 
 	using iterator_t = daw::json::json_array_iterator<json_class<no_name, City>>;

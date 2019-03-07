@@ -46,7 +46,7 @@ int main( int argc, char **argv ) {
 	in_file.close( );
 	auto sz = json_data.size( );
 	json_data.append( 60ULL, ' ' ); // Account for max digits in float if in bad form
-	json_data += ",]\"}";        // catch any thing looking for these values
+	json_data += ",]\"}tfn";        // catch any thing looking for these values
 	auto json_sv = std::string_view( json_data.data( ), sz );
 
 	std::cout << "File size(B): " << json_data.size( ) << " "
