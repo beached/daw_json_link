@@ -38,7 +38,6 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_exception.h>
 #include <daw/daw_parser_helper_sv.h>
-#include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 #include <daw/iso8601/daw_date_formatting.h>
@@ -64,7 +63,7 @@ namespace daw {
 			template<typename Result>
 			static constexpr decltype( auto ) parse( std::string_view sv ) {
 				return impl::parse_json_class<Result, JsonMembers...>(
-				  impl::to_dsv( sv ), std::index_sequence_for<JsonMembers...>{} );
+				  sv, std::index_sequence_for<JsonMembers...>{} );
 			}
 
 			template<typename Result, typename First, typename Last>
@@ -228,6 +227,7 @@ namespace daw {
 		template<typename JsonElement>
 		class json_array_iterator {
 			impl::IteratorRange<char const *, char const *> m_state{nullptr, nullptr};
+			// This lets us fastpath and just skip n characters
 			mutable intmax_t m_can_skip = -1;
 
 		public:
@@ -266,7 +266,7 @@ namespace daw {
 				return result;
 			}
 
-			constexpr json_array_iterator &operator++( ) {
+			constexpr json_array_iterator &operator++( ) noexcept {
 				assert( !m_state.empty( ) and !m_state.in( ']' ) );
 				if( m_can_skip >= 0 ) {
 					m_state.first = std::next( m_state.first, m_can_skip );
@@ -282,7 +282,7 @@ namespace daw {
 				return *this;
 			}
 
-			constexpr json_array_iterator operator++( int ) {
+			constexpr json_array_iterator operator++( int ) noexcept {
 				auto tmp = *this;
 				operator++( );
 				return tmp;

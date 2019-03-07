@@ -113,12 +113,12 @@ namespace daw {
 #define JSONNAMETYPE char const *
 
 		constexpr size_t json_name_len( char const *const str ) noexcept {
-			return daw::string_view( str ).size( );
+			return std::string_view( str ).size( );
 		}
 
 		constexpr bool json_name_eq( char const *const lhs,
 		                             char const *const rhs ) noexcept {
-			return daw::string_view( lhs ) == daw::string_view( rhs );
+			return std::string_view( lhs ) == std::string_view( rhs );
 		}
 
 		// Convienience for array members
@@ -189,6 +189,10 @@ namespace daw {
 
 				constexpr bool front( char c ) const noexcept {
 					return !empty( ) and in( c );
+				}
+
+				constexpr bool not_front( char c ) const noexcept {
+					return !empty( ) and !in( c );
 				}
 
 				constexpr size_t size( ) const noexcept {
@@ -298,21 +302,13 @@ namespace daw {
 				}
 			};
 
-			constexpr daw::string_view to_dsv( std::string_view const sv ) noexcept {
-				return {sv.data( ), sv.size( )};
-			}
-
-			constexpr std::string_view to_ssv( daw::string_view const sv ) noexcept {
-				return {sv.data( ), sv.size( )};
-			}
-
 			namespace data_size {
 				constexpr char const *data( char const *ptr ) noexcept {
 					return ptr;
 				}
 
 				constexpr size_t size( char const *ptr ) noexcept {
-					return daw::string_view( ptr ).size( );
+					return std::string_view( ptr ).size( );
 				}
 
 				using std::data;
@@ -1128,15 +1124,14 @@ namespace daw {
 				assert( !locations[pos].missing( ) or !rng.front( '}' ) );
 
 				rng.trim_left( );
-				while( locations[pos].missing( ) and !rng.empty( ) and
-				       !rng.in( '}' ) ) {
+				while( locations[pos].missing( ) and rng.not_front( '}' ) ) {
 					auto name = parse_name( rng );
 
 					if( !name_map_t<JsonMembers...>::has_name( name ) ) {
 						// This is not a member we are concerned with
 						skip_value( rng );
 						rng.trim_left( );
-						if( rng.front( ',' ) ) {
+						if( rng.in( ',' ) ) {
 							rng.remove_prefix( );
 							rng.trim_left( );
 						}
@@ -1151,7 +1146,7 @@ namespace daw {
 						//				reparse them after
 						locations[name_pos].location = skip_value( rng );
 						rng.trim_left( );
-						if( rng.front( ',' ) ) {
+						if( rng.in( ',' ) ) {
 							rng.remove_prefix( );
 							rng.trim_left( );
 						}
@@ -1175,7 +1170,7 @@ namespace daw {
 					auto result = parse_value<JsonMember>(
 					  ParseTag<JsonMember::expected_type>{}, rng );
 					rng.trim_left( );
-					if( rng.front( ',' ) ) {
+					if( rng.in( ',' ) ) {
 						rng.remove_prefix( );
 						rng.trim_left( );
 					}
@@ -1250,7 +1245,7 @@ namespace daw {
 			}
 
 			template<typename Result, typename... JsonMembers, size_t... Is>
-			constexpr Result parse_json_class( daw::string_view sv,
+			constexpr Result parse_json_class( std::string_view sv,
 			                                   std::index_sequence<Is...> is ) {
 
 				auto rng = IteratorRange( sv.begin( ), sv.end( ) );
