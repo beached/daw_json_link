@@ -76,7 +76,12 @@ int main( int argc, char **argv ) {
 	auto json_data = std::string( std::istreambuf_iterator<char>( in_file ),
 	                              std::istreambuf_iterator<char>( ) );
 	in_file.close( );
-	auto json_sv = std::string_view( json_data );
+	auto sz = json_data.size( );
+	json_data.append( 60ULL,
+	                  ' ' ); // Account for max digits in float if in bad form
+	json_data += ",]\"}";    // catch any thing looking for these values
+	auto json_sv = std::string_view( json_data.data( ), sz );
+
 	std::cout << "File size(B): " << json_data.size( ) << " "
 	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
 
@@ -180,8 +185,8 @@ int main( int argc, char **argv ) {
 	  []( auto const &jstr ) -> float {
 		  std::vector<float> lats{};
 		  daw::algorithm::transform( iterator_t( jstr ), iterator_t( ),
-		             daw::back_inserter_iterator( lats ),
-		             []( auto &&l ) { return l.lat; } );
+		                             daw::back_inserter_iterator( lats ),
+		                             []( auto &&l ) { return l.lat; } );
 
 		  auto result = daw::algorithm::accumulate( std::cbegin( lats ),
 		                                            std::cend( lats ), 0.0f );
