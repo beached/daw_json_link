@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <fstream>
 #include <iostream>
 #include <string_view>
 #include <vector>
@@ -74,33 +73,26 @@ auto describe_json_class( coordinates_t ) noexcept {
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;
+	/*
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filename to open\n";
 		exit( 1 );
 	}
-	auto json_data = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
+	*/
+	auto const json_data = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
 	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
-	std::cout << "File size(B): " << json_data.size( ) << " "
-	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
 
-	auto [x, y, z, sz] = *daw::bench_n_test_mbs<100>(
-	  "finding sum of x,y, and z's", json_sv.size( ),
-	  [&]( auto &&sv ) {
-		  auto cls = daw::json::from_json<coordinates_t>( sv );
-		  auto result =
-		    std::accumulate( cls.coordinates.cbegin( ), cls.coordinates.cend( ),
-		                     std::make_tuple( 0.0, 0.0, 0.0, 0ULL ),
-		                     []( auto &&r, coordinate_t const &c ) {
-			                     std::get<0>( r ) += c.x;
-			                     std::get<1>( r ) += c.y;
-			                     std::get<2>( r ) += c.z;
-			                     return r;
-		                     } );
-		  std::get<3>( result ) = cls.coordinates.size( );
-		  return result;
-	  },
-	  json_sv );
+	auto const cls = daw::json::from_json<coordinates_t>( json_sv );
+	double x = 0.0;
+	double y = 0.0;
+	double z = 0.0;
+	for( auto const & c: cls.coordinates ) {
+		x += c.x;
+		y += c.y;
+		z += c.z;
+	}
 
+	auto const sz = cls.coordinates.size( );
 	std::cout << x / sz << '\n';
 	std::cout << y / sz << '\n';
 	std::cout << z / sz << '\n';
