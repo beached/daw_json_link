@@ -668,8 +668,8 @@ namespace daw {
 					sign = -1;
 					rng.remove_prefix( );
 				}
-				auto const whole_part = static_cast<Result>(
-				  sign * parse_unsigned_integer<int64_t>( rng ) );
+				auto const whole_part =
+				  static_cast<Result>( sign * parse_unsigned_integer<int64_t>( rng ) );
 
 				Result fract_part = 0.0;
 				if( rng.in( '.' ) ) {
@@ -1278,6 +1278,7 @@ namespace daw {
 						rng.trim_left( );
 					}
 				}
+
 				assert( rng.front( '}' ) );
 				rng.remove_prefix( );
 				rng.trim_left( );

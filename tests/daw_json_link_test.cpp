@@ -34,8 +34,8 @@
 
 #include "daw/json/daw_json_link.h"
 
-static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" )
-                  == 12345 );
+static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ) ==
+               12345 );
 static_assert(
   daw::json::impl::parse_unsigned_integer2<uintmax_t>( "12345" ).count == 5 );
 static_assert( daw::json::impl::parse_integer<uintmax_t>( "12345" ) == 12345 );
@@ -300,8 +300,7 @@ int main( ) {
 		"b": {
 			"c": [1,2,3] }}})";
 
-	using iterator2_t =
-	daw::json::json_array_iterator<json_number<no_name, int>>;
+	using iterator2_t = daw::json::json_array_iterator<json_number<no_name, int>>;
 
 	auto first = iterator2_t( json_data2, "a/b/c" );
 	auto sum = 0;
