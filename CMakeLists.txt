@@ -2,7 +2,7 @@ cmake_minimum_required( VERSION 2.8.12 )
 
 project( daw_json_link_prj )
 #set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
-find_package( Boost 1.58.0 COMPONENTS system iostreams filesystem regex unit_test_framework REQUIRED )
+find_package( Boost 1.60.0 COMPONENTS system iostreams filesystem regex unit_test_framework REQUIRED )
 enable_testing( )
 add_definitions( -DBOOST_TEST_DYN_LINK )
 
@@ -76,6 +76,7 @@ add_dependencies( full simple_test_bin )
 
 add_executable( coords_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/coords_test.cpp )
 add_dependencies( coords_test_bin dependency_stub )
+target_link_libraries( coords_test_bin ${Boost_LIBRARIES} ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
 add_test( coords_test coords_test_bin )
 add_dependencies( check coords_test_bin )
 add_dependencies( full coords_test_bin )

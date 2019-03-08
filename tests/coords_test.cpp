@@ -26,8 +26,51 @@
 #include <vector>
 
 #include <daw/daw_benchmark.h>
+#include <daw/daw_memory_mapped_file.h>
 
 #include "daw/json/daw_json_link.h"
+
+struct coordinate_t {
+	double x;
+	double y;
+	double z;
+	std::string name;
+};
+
+auto describe_json_class( coordinate_t ) noexcept {
+	using namespace daw::json;
+#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
+	return class_description_t<json_number<"x">, json_number<"y">,
+	                           json_number<"z">, json_string<"name">>{};
+#else
+	constexpr static char const x[] = "x";
+	constexpr static char const y[] = "y";
+	constexpr static char const z[] = "z";
+	constexpr static char const name[] = "name";
+	return class_description_t<json_number<x>, json_number<y>, json_number<z>,
+	                           json_string<name>>{};
+#endif
+}
+
+struct coordinates_t {
+	std::vector<coordinate_t> coordinates;
+	std::string info;
+};
+auto describe_json_class( coordinates_t ) noexcept {
+	using namespace daw::json;
+#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
+	return class_description_t<
+	  json_array<"coordinates", std::vector<coordinate_t>,
+	             json_class<no_name, coordinate_t>>,
+	  json_string<"info">>{};
+#else
+	constexpr static char const coordinates[] = "coordinates";
+	constexpr static char const info[] = "info";
+	return class_description_t<json_array<coordinates, std::vector<coordinate_t>,
+	                                      json_class<no_name, coordinate_t>>,
+	                           json_string<info>>{};
+#endif
+}
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;
@@ -35,54 +78,30 @@ int main( int argc, char **argv ) {
 		std::cerr << "Must supply a filename to open\n";
 		exit( 1 );
 	}
-	std::cout << "Opening file: '" << argv[1] << "'\n";
-	auto in_file = std::ifstream( argv[1] );
-	if( !in_file ) {
-		std::cerr << "Could not open input file\n";
-		exit( 1 );
-	}
-	auto json_data = std::string( std::istreambuf_iterator<char>( in_file ),
-	                              std::istreambuf_iterator<char>( ) );
-	in_file.close( );
-	auto sz = json_data.size( );
-	json_data.append( 60ULL, ' ' ); // Account for max digits in float if in bad form
-	json_data += ",]\"}tfn";        // catch any thing looking for these values
-	auto json_sv = std::string_view( json_data.data( ), sz );
-
+	auto json_data = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
+	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 	std::cout << "File size(B): " << json_data.size( ) << " "
 	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
 
-	auto count = *daw::bench_n_test_mbs<10>(
-	  "coords parsing 1(from_json_array copy to vector)", json_sv.size( ),
-	  []( auto &&sv ) {
-		  auto const data = daw::json::from_json_array<json_number<no_name>>( sv );
-		  return data.size( );
-	  },
-	  json_sv );
-
-	std::cout << "element count: " << count << '\n';
-
-	using iterator_t = daw::json::json_array_iterator<json_number<no_name>>;
-
-	auto data = std::vector<double>( );
-
-	auto count2 = *daw::bench_n_test_mbs<10>(
-	  "coords parsing 2(copy to vector with iterator)", json_sv.size( ),
+	auto [x, y, z, sz] = *daw::bench_n_test_mbs<100>(
+	  "finding sum of x,y, and z's", json_sv.size( ),
 	  [&]( auto &&sv ) {
-		  data.clear( );
-		  std::copy( iterator_t( sv ), iterator_t( ), std::back_inserter( data ) );
-		  return data.size( );
+		  auto cls = daw::json::from_json<coordinates_t>( sv );
+		  auto result =
+		    std::accumulate( cls.coordinates.cbegin( ), cls.coordinates.cend( ),
+		                     std::make_tuple( 0.0, 0.0, 0.0, 0ULL ),
+		                     []( auto &&r, coordinate_t const &c ) {
+			                     std::get<0>( r ) += c.x;
+			                     std::get<1>( r ) += c.y;
+			                     std::get<2>( r ) += c.z;
+			                     return r;
+		                     } );
+		  std::get<3>( result ) = cls.coordinates.size( );
+		  return result;
 	  },
 	  json_sv );
 
-	std::cout << "element count 2: " << count2 << '\n';
-	auto count3 =
-	  *daw::bench_n_test_mbs<10>( "coords parsing 3(std::distance, skip all)", json_sv.size( ),
-	                              []( auto &&sv ) {
-		                              return static_cast<size_t>( std::distance(
-		                                iterator_t( sv ), iterator_t( ) ) );
-	                              },
-	                              json_sv );
-
-	std::cout << "element count 3: " << count3 << '\n';
+	std::cout << x / sz << '\n';
+	std::cout << y / sz << '\n';
+	std::cout << z / sz << '\n';
 }
