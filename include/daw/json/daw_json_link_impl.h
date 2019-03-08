@@ -583,16 +583,38 @@ namespace daw {
 
 			template<typename Result, typename First, typename Last>
 			constexpr auto
-			parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
+			parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
 				assert( rng.front( "0123456789" ) );
 				struct {
 					Result value = 0;
 					uint_fast8_t count = 0;
 				} result{};
-				while( rng.is_digit( ) ) {
-					result.value *= static_cast<Result>( 10 );
-					result.value += static_cast<Result>( rng.pop_front( ) - '0' );
+				uint32_t dig =
+				  static_cast<uint32_t>( rng.front( ) ) - static_cast<uint32_t>( '0' );
+				while( dig < 10U ) {
+					rng.remove_prefix( );
 					++result.count;
+					result.value *= static_cast<Result>( 10 );
+					result.value += static_cast<Result>( dig );
+					dig = static_cast<uint32_t>( rng.front( ) ) -
+					      static_cast<uint32_t>( '0' );
+				}
+				return result;
+			}
+			template<typename Result, typename First, typename Last>
+			constexpr Result
+			parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
+				assert( rng.front( "0123456789" ) );
+
+				Result result = 0;
+				uint32_t dig =
+				  static_cast<uint32_t>( rng.front( ) ) - static_cast<uint32_t>( '0' );
+				while( dig < 10U ) {
+					rng.remove_prefix( );
+					result *= static_cast<Result>( 10 );
+					result += static_cast<Result>( dig );
+					dig = static_cast<uint32_t>( rng.front( ) ) -
+					      static_cast<uint32_t>( '0' );
 				}
 				return result;
 			}
@@ -602,6 +624,13 @@ namespace daw {
 			parse_unsigned_integer( daw::string_view const &sv ) noexcept {
 				IteratorRange rng = {sv.data( ), sv.data( ) + sv.size( )};
 				return parse_unsigned_integer<Result>( rng );
+			}
+
+			template<typename Result>
+			constexpr auto
+			parse_unsigned_integer2( daw::string_view const &sv ) noexcept {
+				IteratorRange rng = {sv.data( ), sv.data( ) + sv.size( )};
+				return parse_unsigned_integer2<Result>( rng );
 			}
 
 			template<typename Result, typename First, typename Last>
@@ -620,7 +649,7 @@ namespace daw {
 					}
 				}
 				// Assumes there are digits
-				return sign * parse_unsigned_integer<Result>( rng ).value;
+				return sign * parse_unsigned_integer<Result>( rng );
 			}
 
 			template<typename Result>
@@ -640,12 +669,12 @@ namespace daw {
 					rng.remove_prefix( );
 				}
 				auto const whole_part = static_cast<Result>(
-				  sign * parse_unsigned_integer<int64_t>( rng ).value );
+				  sign * parse_unsigned_integer<int64_t>( rng ) );
 
 				Result fract_part = 0.0;
 				if( rng.in( '.' ) ) {
 					rng.remove_prefix( );
-					auto fract_tmp = parse_unsigned_integer<uint64_t>( rng );
+					auto fract_tmp = parse_unsigned_integer2<uint64_t>( rng );
 					fract_part = static_cast<Result>( fract_tmp.value );
 					fract_part *=
 					  daw::cxmath::dpow10( -static_cast<int32_t>( fract_tmp.count ) );
