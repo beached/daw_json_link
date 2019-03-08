@@ -40,14 +40,12 @@ auto describe_json_class( coordinate_t ) noexcept {
 	using namespace daw::json;
 #if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
 	return class_description_t<json_number<"x">, json_number<"y">,
-	                           json_number<"z">, json_string<"name">>{};
+	                           json_number<"z">>{};
 #else
 	constexpr static char const x[] = "x";
 	constexpr static char const y[] = "y";
 	constexpr static char const z[] = "z";
-	constexpr static char const name[] = "name";
-	return class_description_t<json_number<x>, json_number<y>, json_number<z>,
-	                           json_string<name>>{};
+	return class_description_t<json_number<x>, json_number<y>, json_number<z>>{};
 #endif
 }
 
@@ -60,14 +58,11 @@ auto describe_json_class( coordinates_t ) noexcept {
 #if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
 	return class_description_t<
 	  json_array<"coordinates", std::vector<coordinate_t>,
-	             json_class<no_name, coordinate_t>>,
-	  json_string<"info">>{};
+	             json_class<no_name, coordinate_t>>>{};
 #else
 	constexpr static char const coordinates[] = "coordinates";
-	constexpr static char const info[] = "info";
 	return class_description_t<json_array<coordinates, std::vector<coordinate_t>,
-	                                      json_class<no_name, coordinate_t>>,
-	                           json_string<info>>{};
+	                                      json_class<no_name, coordinate_t>>>{};
 #endif
 }
 
@@ -75,24 +70,33 @@ int main( int argc, char **argv ) {
 	using namespace daw::json;
 	/*
 	if( argc < 2 ) {
-		std::cerr << "Must supply a filename to open\n";
-		exit( 1 );
+	  std::cerr << "Must supply a filename to open\n";
+	  exit( 1 );
 	}
 	*/
 	auto const json_data = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
 	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
-	auto const cls = daw::json::from_json<coordinates_t>( json_sv );
+	using iterator_t =
+	  daw::json::json_array_iterator<json_class<no_name, coordinate_t>>;
+
+	auto first = iterator_t( json_sv, "coordinates" );
+	auto last = iterator_t( );
+
 	double x = 0.0;
 	double y = 0.0;
 	double z = 0.0;
-	for( auto const & c: cls.coordinates ) {
+	size_t sz = 0U;
+	while( first != last ) {
+		auto c = *first;
+		++sz;
 		x += c.x;
 		y += c.y;
 		z += c.z;
+		++first;
 	}
 
-	auto const sz = cls.coordinates.size( );
+//	auto const sz = cls.coordinates.size( );
 	std::cout << x / sz << '\n';
 	std::cout << y / sz << '\n';
 	std::cout << z / sz << '\n';

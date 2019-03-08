@@ -243,9 +243,9 @@ namespace daw {
 			template<typename String,
 			         daw::enable_if_t<!std::is_same_v<
 			           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
-			constexpr json_array_iterator( String &&json_data )
-			  : m_state( std::data( json_data ),
-			             std::data( json_data ) + std::size( json_data ) ) {
+			constexpr json_array_iterator( String &&json_data,
+			                               std::string_view start_path = "" )
+			  : m_state( impl::find_range( json_data, start_path ) ) {
 
 				static_assert(
 				  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );

@@ -34,8 +34,10 @@
 
 #include "daw/json/daw_json_link.h"
 
-static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ).value == 12345 );
-static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ).count == 5 );
+static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" )
+                 .value == 12345 );
+static_assert(
+  daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ).count == 5 );
 static_assert( daw::json::impl::parse_integer<uintmax_t>( "12345" ) == 12345 );
 static_assert( daw::json::impl::parse_integer<intmax_t>( "-12345" ) == -12345 );
 
@@ -291,4 +293,21 @@ int main( ) {
 	std::cout << e_test_001_str << '\n';
 	auto e_test_001_back = from_json<e_test_001_t>( e_test_001_str );
 	daw::do_not_optimize( e_test_001_back );
+
+	constexpr std::string_view const json_data2 =
+	  R"({
+	"a": {
+		"b": {
+			"c": [1,2,3] }}})";
+
+	using iterator2_t =
+	daw::json::json_array_iterator<json_number<no_name, int>>;
+
+	auto first = iterator2_t( json_data2, "a/b/c" );
+	auto sum = 0;
+	while( first ) {
+		sum += *first;
+		++first;
+	}
+	std::cout << "sum: " << sum << '\n';
 }

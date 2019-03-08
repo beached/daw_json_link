@@ -1262,6 +1262,43 @@ namespace daw {
 				auto rng = IteratorRange( sv.begin( ), sv.end( ) );
 				return parse_json_class<Result, JsonMembers...>( rng, is );
 			}
+
+			template<typename First, typename Last>
+			constexpr void find_range2( IteratorRange<First, Last> &rng,
+			                            daw::string_view path ) {
+				assert( rng.front( '{' ) and !path.empty( ) );
+				rng.remove_prefix( );
+				rng.trim_left( );
+				auto current = path.pop_front( "/" );
+				auto name = parse_name( rng );
+				while( name != current ) {
+					skip_value( rng );
+					rng.trim_left( );
+					if( rng.in( ',' ) ) {
+						rng.remove_prefix( );
+						rng.trim_left( );
+					}
+					name = parse_name( rng );
+				}
+				if( path.empty( ) ) {
+					return;
+				}
+				find_range2( rng, path );
+			}
+
+			template<typename String>
+			constexpr auto find_range( String &&str, std::string_view start_path ) {
+
+				auto rng = IteratorRange( std::data( str ),
+				                          std::data( str ) + std::size( str ) );
+				if( start_path.size( ) == 0 ) {
+					return rng;
+				}
+				find_range2( rng, {start_path.data( ), start_path.size( )} );
+
+				return rng;
+			}
+
 		} // namespace impl
 	}   // namespace json
 } // namespace daw
