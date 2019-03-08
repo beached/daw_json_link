@@ -40,10 +40,18 @@ enum json_types : uint16_t {
 };
 
 struct json_property_t {
-	size_t id;
-	std::string name;
 	std::bitset<6> types_seen;
-	std::vector<size_t> children;
+
+	constexpr json_property_t( json_types t_seen ): types_seen( static_cast<uint16_t>( t_seen ) << 1U ) {}
+
+	void add_type( json_types t_seen ) noexcept {
+		types_seen[t_seen] = true;
+	}
+};
+
+struct json_class_t {
+	size_t parent;
+	std::map<std::string, json_property_t>;
 };
 
 int main( int argc, char **argv ) {

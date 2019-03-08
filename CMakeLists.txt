@@ -38,6 +38,7 @@ link_directories( ${Boost_LIBRARY_DIRS} )
 
 set( HEADER_FOLDER "include" )
 set( TEST_FOLDER "tests" )
+set( SOURCE_FOLDER "src" )
 
 include_directories( ${HEADER_FOLDER} )
 
@@ -78,6 +79,11 @@ add_dependencies( coords_test_bin dependency_stub )
 add_test( coords_test coords_test_bin )
 add_dependencies( check coords_test_bin )
 add_dependencies( full coords_test_bin )
+
+add_executable( code_gen_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${SOURCE_FOLDER}/code_gen.cpp )
+add_dependencies( code_gen_bin dependency_stub )
+add_dependencies( full code_gen_bin )
+
 
 install( DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/ )
 
