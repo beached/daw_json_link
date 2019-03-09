@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2018-2019 Darrell Wright
+// Copyright (c) 2019 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -44,7 +44,7 @@
 #include <daw/iso8601/daw_date_parsing.h>
 #include <daw/iterator/daw_back_inserter.h>
 
-#include "daw_json_link_impl.h"
+#include "impl/daw_json_link_impl.h"
 
 namespace daw {
 	namespace json {
@@ -222,87 +222,6 @@ namespace daw {
 			  to_json_data( std::forward<T>( value ) ) );
 			return result;
 		}
-
-		/// allow iteration over an array of json
-		template<typename JsonElement>
-		class json_array_iterator {
-			impl::IteratorRange<char const *, char const *> m_state{nullptr, nullptr};
-			// This lets us fastpath and just skip n characters
-			mutable intmax_t m_can_skip = -1;
-
-		public:
-			using value_type = typename JsonElement::parse_to_t;
-			using reference = value_type;
-			using pointer = value_type;
-			using difference_type = ptrdiff_t;
-			// Can do forward iteration and be stored
-			using iterator_category = std::input_iterator_tag;
-
-			constexpr json_array_iterator( ) noexcept = default;
-
-			template<typename String,
-			         daw::enable_if_t<!std::is_same_v<
-			           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
-			constexpr json_array_iterator( String &&json_data,
-			                               std::string_view start_path = "" )
-			  : m_state( impl::find_range( json_data, start_path ) ) {
-
-				static_assert(
-				  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
-
-				assert( m_state.front( ) == '[' );
-
-				m_state.remove_prefix( );
-				m_state.trim_left( );
-			}
-
-			constexpr value_type operator*( ) const noexcept {
-				assert( !m_state.empty( ) and !m_state.in( ']' ) );
-
-				auto tmp = m_state;
-				auto result = impl::parse_value<JsonElement>(
-				  ParseTag<JsonElement::expected_type>{}, tmp );
-				m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
-				return result;
-			}
-
-			constexpr json_array_iterator &operator++( ) noexcept {
-				assert( !m_state.empty( ) and !m_state.in( ']' ) );
-				if( m_can_skip >= 0 ) {
-					m_state.first = std::next( m_state.first, m_can_skip );
-					m_can_skip = -1;
-				} else {
-					impl::skip_known_value<JsonElement>( m_state );
-				}
-				m_state.trim_left( );
-				if( m_state.in( ',' ) ) {
-					m_state.remove_prefix( );
-					m_state.trim_left( );
-				}
-				return *this;
-			}
-
-			constexpr json_array_iterator operator++( int ) noexcept {
-				auto tmp = *this;
-				operator++( );
-				return tmp;
-			}
-
-			explicit constexpr operator bool( ) const noexcept {
-				return !m_state.is_null( ) and !m_state.front( ']' );
-			}
-
-			constexpr bool operator==( json_array_iterator const &rhs ) const
-			  noexcept {
-				return ( m_state.begin( ) == rhs.m_state.begin( ) ) or
-				       ( !( *this ) and !rhs );
-			}
-
-			constexpr bool operator!=( json_array_iterator const &rhs ) const
-			  noexcept {
-				return !( *this == rhs );
-			}
-		};
 
 		template<typename JsonElement,
 		         typename Container = std::vector<typename JsonElement::parse_to_t>,

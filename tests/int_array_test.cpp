@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2018-2019 Darrell Wright
+// Copyright (c) 2019 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -29,12 +29,13 @@
 #include <daw/daw_do_n.h>
 #include <daw/daw_random.h>
 
+#include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
 struct Number {
 	intmax_t a{};
 };
-#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
+#ifdef __cpp_nontype_template_parameter_class
 auto describe_json_class( Number ) noexcept {
 	using namespace daw::json;
 	return class_description_t<json_number<"a", intmax_t>>{};

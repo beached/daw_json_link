@@ -44,7 +44,9 @@ include_directories( ${HEADER_FOLDER} )
 
 set( HEADER_FILES
 	${HEADER_FOLDER}/daw/json/daw_json_link.h
-	${HEADER_FOLDER}/daw/json/daw_json_link_impl.h
+	${HEADER_FOLDER}/daw/json/daw_json_iterator.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_link_impl.h
+	${HEADER_FOLDER}/daw/json/impl/daw_iterator_range.h
 )
 
 add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
@@ -80,6 +82,14 @@ target_link_libraries( coords_test_bin ${Boost_LIBRARIES} ${COMPILER_SPECIFIC_LI
 add_test( coords_test coords_test_bin )
 add_dependencies( check coords_test_bin )
 add_dependencies( full coords_test_bin )
+
+add_executable( coords_test2_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/coords_test2.cpp )
+add_dependencies( coords_test2_bin dependency_stub )
+target_link_libraries( coords_test2_bin ${Boost_LIBRARIES} ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
+add_test( coords_test2 coords_test2_bin )
+add_dependencies( check coords_test2_bin )
+add_dependencies( full coords_test2_bin )
+
 
 add_executable( code_gen_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${SOURCE_FOLDER}/code_gen.cpp )
 add_dependencies( code_gen_bin dependency_stub )

@@ -29,30 +29,62 @@
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
+#include <daw/json/impl/daw_json_link_impl.h>
 
-enum json_types : uint16_t {
-	json_null,
-	json_number,
-	json_string,
-	json_bool,
-	json_class,
-	json_array
-};
+namespace daw {
+	namespace json {
+		enum class json_types : uint16_t {
+			json_null,
+			json_number,
+			json_string,
+			json_bool,
+			json_class,
+			json_array
+		};
 
-struct json_property_t {
-	std::bitset<6> types_seen;
+		struct json_property_t {
+			std::bitset<6> types_seen;
 
-	constexpr json_property_t( json_types t_seen ): types_seen( static_cast<uint16_t>( t_seen ) << 1U ) {}
+			constexpr json_property_t( json_types t_seen )
+			  : types_seen( static_cast<uint16_t>( t_seen ) << 1U ) {}
 
-	void add_type( json_types t_seen ) noexcept {
-		types_seen[t_seen] = true;
-	}
-};
+			void add_type( json_types t_seen ) noexcept {
+				types_seen[t_seen] = true;
+			}
+		};
 
-struct json_class_t {
-	size_t parent;
-	std::map<std::string, json_property_t>;
-};
+		template<typename First, typename Last>
+		constexpr json_types get_type( impl::IteratorRange<First, Last> &rng ) {
+			rng.trim_left( );
+			switch( rng.front( ) ) {
+			case '"':
+				rng.remove_prefix( );
+				return json_types::json_string;
+			case '{':
+				rng.remove_prefix( );
+				return json_types::json_class;
+			case '[':
+				rng.remove_prefix( );
+				return json_types::json_array;
+			case 't':
+			case 'f':
+				rng.remove_prefix( );
+				return json_types::json_bool;
+			case 'n':
+				rng.remove_prefix( );
+				return json_types::json_null;
+			default:
+				rng.remove_prefix( );
+				return json_types::json_number;
+			}
+		}
+
+		struct json_class_t {
+			size_t parent;
+			std::map<std::string, json_property_t>;
+		};
+	} // namespace json
+} // namespace daw
 
 int main( int argc, char **argv ) {
 	if( argc < 2 ) {
@@ -61,7 +93,7 @@ int main( int argc, char **argv ) {
 	}
 	auto const json_str = daw::read_file( argv[1] );
 	auto json_sv = daw::string_view( json_str );
-	auto properties = std::vector<json_property_t>{};
+	auto properties = std::vector<daw::json::json_property_t>{};
 
 	while( !json_sv.empty( ) ) {
 		daw::parser::trim_left( json_sv );
@@ -70,7 +102,7 @@ int main( int argc, char **argv ) {
 		}
 		/*
 		switch( json_sv.front( ) ) {
-			case '[':
+		  case '[':
 		}
 		 */
 	}

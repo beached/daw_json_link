@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2018-2019 Darrell Wright
+// Copyright (c) 2019 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -32,6 +32,7 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_vector.h>
 
+#include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
 static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ) ==
@@ -78,7 +79,7 @@ struct test_001_t {
 
 auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
-#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
+#ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<
 	  json_number<"i", int>, json_number<"d">, json_bool<"b">,
 	  json_string<"s", std::string_view>,
@@ -112,7 +113,7 @@ struct test_002_t {
 };
 auto describe_json_class( test_002_t ) noexcept {
 	using namespace daw::json;
-#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
+#ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_class<"a", test_001_t>>{};
 #else
 	constexpr static char const a[] = "a";
@@ -129,7 +130,7 @@ struct test_003_t {
 };
 auto describe_json_class( test_003_t ) noexcept {
 	using namespace daw::json;
-#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
+#ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_nullable<json_class<"a", test_001_t>>>{};
 #else
 	constexpr static char const a[] = "a";
@@ -178,7 +179,7 @@ struct e_test_001_t {
 
 auto describe_json_class( e_test_001_t ) noexcept {
 	using namespace daw::json;
-#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
+#ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_custom<"a", blah_t>>{};
 #else
 	constexpr static char const a[] = "a";
