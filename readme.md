@@ -25,6 +25,9 @@ After the build there the examples can be tested.  ```city_test_bin``` requires 
 ```
 ./city_test_bin ../tests/cities.json
 ```
+## Generating classes automatically
+Currently I have a another project https://github.com/beached/json_to_cpp that can output the data structures used in json data.  Soon it will also output the interop code for json link.
+
 ## Differences between C++17 and C++20
 # C++ 17 Naming of members
 ```cpp

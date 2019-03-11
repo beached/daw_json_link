@@ -90,7 +90,7 @@ namespace daw {
 				return false;
 			}
 		} // namespace impl
-#if __cplusplus > 201703L or ( defined( __GNUC__ ) and __GNUC__ >= 9 )
+#ifdef __cpp_nontype_template_parameter_class
 		// C++ 20 Non-Type Class Template Arguments
 #define JSONNAMETYPE daw::bounded_string
 

@@ -90,11 +90,5 @@ add_test( coords_test2 coords_test2_bin )
 add_dependencies( check coords_test2_bin )
 add_dependencies( full coords_test2_bin )
 
-
-add_executable( code_gen_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${SOURCE_FOLDER}/code_gen.cpp )
-add_dependencies( code_gen_bin dependency_stub )
-add_dependencies( full code_gen_bin )
-
-
 install( DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/ )
 
