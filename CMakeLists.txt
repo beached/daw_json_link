@@ -90,5 +90,12 @@ add_test( coords_test2 coords_test2_bin )
 add_dependencies( check coords_test2_bin )
 add_dependencies( full coords_test2_bin )
 
+add_executable( twitter_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test.h ${TEST_FOLDER}/twitter_test.cpp )
+add_dependencies( twitter_test_bin dependency_stub )
+target_link_libraries( twitter_test_bin ${Boost_LIBRARIES} ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
+add_test( twitter_test twitter_test_bin )
+add_dependencies( check twitter_test_bin )
+add_dependencies( full twitter_test_bin )
+
 install( DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/ )
 

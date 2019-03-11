@@ -795,7 +795,7 @@ namespace daw {
 					return result;
 				} else {
 					auto result =
-					  constructor_t{}( parse_unsigned_integer<element_t>( rng ).value );
+					  constructor_t{}( parse_unsigned_integer<element_t>( rng ) );
 					skip_quotes<JsonMember>( rng );
 					assert( rng.at_end_of_item( ) );
 					return result;
@@ -1053,6 +1053,8 @@ namespace daw {
 					auto loc =
 					  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
 
+					auto name = JsonMember::name;
+					::Unused( name );
 					// Only allow missing members for Null-able type
 					assert( !loc.empty( ) or
 					        JsonMember::expected_type == JsonParseTypes::Null );
