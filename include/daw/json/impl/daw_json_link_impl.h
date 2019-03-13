@@ -27,10 +27,15 @@
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
+#include <exception>
 #include <iterator>
 #include <limits>
+#include <optional>
+#include <string>
 #include <string_view>
-#include <variant>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_array.h>
