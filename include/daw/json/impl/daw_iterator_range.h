@@ -29,8 +29,11 @@ namespace daw {
 		namespace impl {
 			template<typename First, typename Last>
 			struct IteratorRange {
-				First first;
-				Last last;
+				First first{};
+				Last last{};
+#ifndef NDEBUG
+				size_t pos = 0;
+#endif
 
 				constexpr IteratorRange( ) noexcept = default;
 
@@ -65,7 +68,7 @@ namespace daw {
 					}
 					bool result = false;
 					daw::algorithm::do_n_arg<N - 1>(
-					  [&]( size_t pos ) { result |= in( set[pos] ); } );
+					  [&]( size_t p ) { result |= in( set[p] ); } );
 					return result;
 				}
 
@@ -75,6 +78,9 @@ namespace daw {
 
 				constexpr void remove_prefix( size_t n = 1 ) {
 					first = std::next( first, static_cast<intmax_t>( n ) );
+#ifndef NDEBUG
+					pos += n;
+#endif
 				}
 
 				constexpr void trim_left( ) noexcept {
@@ -85,6 +91,9 @@ namespace daw {
 						case 0x0A: // new line
 						case 0x0D: // carriage return
 							++first;
+#ifndef NDEBUG
+							++pos;
+#endif
 							continue;
 						}
 						return;
@@ -135,7 +144,7 @@ namespace daw {
 				constexpr bool in( char const ( &set )[N] ) const noexcept {
 					bool result = false;
 					daw::algorithm::do_n_arg<N - 1>(
-					  [&]( size_t pos ) { result |= ( set[pos] == *first ); } );
+					  [&]( size_t p ) { result |= ( set[p] == *first ); } );
 					return result;
 				}
 

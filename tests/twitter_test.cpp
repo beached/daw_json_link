@@ -40,9 +40,10 @@ int main( int argc, char **argv ) {
 
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 
+#ifndef NDEBUG
 	auto t = daw::json::from_json<root_object_t>( json_sv );
 	daw::do_not_optimize( t );
-	/*
+#else
 	auto const s =
 	  *daw::bench_n_test_mbs<10>( "twitter status", json_sv.size( ),
 	                              [&]( auto sv ) noexcept {
@@ -52,5 +53,5 @@ int main( int argc, char **argv ) {
 	                              },
 	                              json_sv );
 	daw::do_not_optimize( s );
-	 */
+#endif
 }

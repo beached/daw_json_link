@@ -539,15 +539,15 @@ namespace daw {
 					rng.remove_prefix( );
 					auto fract_tmp = parse_unsigned_integer2<uint64_t>( rng );
 					fract_part = static_cast<Result>( fract_tmp.value );
-					fract_part *=
-					  daw::cxmath::dpow10( -static_cast<int32_t>( fract_tmp.count ) );
+					fract_part *= static_cast<Result>(
+					  daw::cxmath::dpow10( -static_cast<int32_t>( fract_tmp.count ) ) );
 					fract_part = daw::cxmath::copy_sign( fract_part, whole_part );
 				}
 
-				int_fast16_t exp_part = 0;
+				int32_t exp_part = 0;
 				if( rng.in( "eE" ) ) {
 					rng.remove_prefix( );
-					exp_part = parse_integer<int_fast16_t>( rng );
+					exp_part = parse_integer<int32_t>( rng );
 				}
 				if constexpr( std::is_same_v<Result, float> ) {
 					return ( whole_part + fract_part ) * daw::cxmath::fpow10( exp_part );
@@ -596,7 +596,8 @@ namespace daw {
 			using json_parse_to = typename JsonType::parse_to_t;
 
 			template<typename JsonType>
-			inline constexpr bool is_json_nullable_v = JsonType::nullable;
+			inline constexpr bool is_json_nullable_v =
+			  JsonType::expected_type == JsonParseTypes::Null;
 
 			template<typename JsonType>
 			inline constexpr bool is_json_empty_null_v = JsonType::empty_is_null;
@@ -811,7 +812,7 @@ namespace daw {
 				if( rng.empty( ) or rng.is_null( ) ) {
 					return constructor_t{}( );
 				}
-				if( rng.size( ) > 4 and rng.in( 'n' ) ) {
+				if( rng.size( ) >= 4 and rng.in( 'n' ) ) {
 					rng.remove_prefix( 4 );
 					rng.trim_left( );
 					return constructor_t{}( );
@@ -824,7 +825,7 @@ namespace daw {
 			template<typename JsonMember, typename First, typename Last>
 			constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 			                            IteratorRange<First, Last> &rng ) {
-				assert( !rng.empty( ) and rng.size( ) > 4 );
+				assert( !rng.empty( ) and rng.size( ) >= 4 );
 
 				using constructor_t = typename JsonMember::constructor_t;
 
@@ -991,7 +992,11 @@ namespace daw {
 			  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
 			  IteratorRange<First, Last> &rng ) {
 
-				assert( !locations[pos].missing( ) or !rng.front( '}' ) );
+#ifndef NDEBUG
+				bool can_null =
+				  is_json_nullable_v<daw::traits::nth_element<pos, JsonMembers...>>;
+				assert( can_null or !locations[pos].missing( ) or !rng.front( '}' ) );
+#endif
 
 				rng.trim_left( );
 				while( locations[pos].missing( ) and !rng.in( '}' ) ) {
@@ -1055,6 +1060,7 @@ namespace daw {
 					rng.clean_tail( );
 					return result;
 				}
+				std::terminate( );
 			}
 
 			template<size_t N, typename... JsonMembers>
