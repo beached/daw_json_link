@@ -85,19 +85,19 @@ int main( int argc, char **argv ) {
 	auto const [x,y,z,sz] =
 	  *daw::bench_n_test_mbs<10>( "coords bench", json_sv.size( ),
 	                              [&]( iterator_t f, iterator_t l ) noexcept {
-		                              double x = 0.0;
-		                              double y = 0.0;
-		                              double z = 0.0;
-		                              size_t sz = 0U;
+		                              double x1 = 0.0;
+		                              double y1 = 0.0;
+		                              double z1 = 0.0;
+		                              size_t sz1 = 0U;
 		                              while( f != l ) {
 			                              auto c = *f;
-			                              ++sz;
-			                              x += c.x;
-			                              y += c.y;
-			                              z += c.z;
+			                              ++sz1;
+			                              x1 += c.x;
+			                              y1 += c.y;
+			                              z1 += c.z;
 			                              ++f;
 		                              }
-		                              return std::make_tuple( x, y, z, sz );
+		                              return std::make_tuple( x1, y1, z1, sz1 );
 	                              },
 	                              first, last );
 
