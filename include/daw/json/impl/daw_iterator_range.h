@@ -158,6 +158,14 @@ namespace daw {
 				constexpr bool at_end_of_item( ) const noexcept {
 					return in( ",}]" ) or daw::parser::is_unicode_whitespace( front( ) );
 				}
+
+				constexpr void clean_tail( ) noexcept {
+					trim_left( );
+					if( in( ',' ) ) {
+						remove_prefix( );
+						trim_left( );
+					}
+				}
 			};
 		} // namespace impl
 	}   // namespace json

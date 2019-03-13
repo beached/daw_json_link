@@ -897,11 +897,7 @@ namespace daw {
 				while( !rng.empty( ) and !rng.in( "]" ) ) {
 					container_appender( parse_value<element_t>(
 					  ParseTag<element_t::expected_type>{}, rng ) );
-					rng.trim_left( );
-					if( rng.in( ',' ) ) {
-						rng.remove_prefix( );
-						rng.trim_left( );
-					}
+					rng.clean_tail( );
 				}
 				assert( rng.front( ']' ) );
 				rng.remove_prefix( );
@@ -1004,11 +1000,7 @@ namespace daw {
 					if( !name_map_t<JsonMembers...>::has_name( name ) ) {
 						// This is not a member we are concerned with
 						skip_value( rng );
-						rng.trim_left( );
-						if( rng.in( ',' ) ) {
-							rng.remove_prefix( );
-							rng.trim_left( );
-						}
+						rng.clean_tail( );
 						continue;
 					}
 					auto const name_pos = name_map_t<JsonMembers...>::find_name( name );
@@ -1019,11 +1011,7 @@ namespace daw {
 						// 				member positions so that we don't have to
 						//				reparse them after
 						locations[name_pos].location = skip_value( rng );
-						rng.trim_left( );
-						if( rng.in( ',' ) ) {
-							rng.remove_prefix( );
-							rng.trim_left( );
-						}
+						rng.clean_tail( );
 						continue;
 					}
 					locations[pos].location = rng;
@@ -1043,17 +1031,13 @@ namespace daw {
 				if constexpr( json_name_eq( JsonMember::name, no_name ) ) {
 					auto result = parse_value<JsonMember>(
 					  ParseTag<JsonMember::expected_type>{}, rng );
-					rng.trim_left( );
-					if( rng.in( ',' ) ) {
-						rng.remove_prefix( );
-						rng.trim_left( );
-					}
+					rng.clean_tail( );
 					return result;
 				} else {
 					auto loc =
 					  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
 
-					auto name = JsonMember::name;
+					auto const name = JsonMember::name;
 					::Unused( name );
 					// Only allow missing members for Null-able type
 					assert( !loc.empty( ) or
@@ -1068,11 +1052,7 @@ namespace daw {
 					auto result = parse_value<JsonMember>(
 					  ParseTag<JsonMember::expected_type>{}, *cur_rng );
 
-					rng.trim_left( );
-					if( rng.in( ',' ) ) {
-						rng.remove_prefix( );
-						rng.trim_left( );
-					}
+					rng.clean_tail( );
 					return result;
 				}
 			}
@@ -1118,11 +1098,7 @@ namespace daw {
 				while( !rng.in( '}' ) ) {
 					parse_name( rng );
 					skip_value( rng );
-					rng.trim_left( );
-					if( rng.in( ',' ) ) {
-						rng.remove_prefix( );
-						rng.trim_left( );
-					}
+					rng.clean_tail( );
 				}
 
 				assert( rng.front( '}' ) );
@@ -1149,11 +1125,7 @@ namespace daw {
 				auto name = parse_name( rng );
 				while( name != current ) {
 					skip_value( rng );
-					rng.trim_left( );
-					if( rng.in( ',' ) ) {
-						rng.remove_prefix( );
-						rng.trim_left( );
-					}
+					rng.clean_tail( );
 					name = parse_name( rng );
 				}
 				if( path.empty( ) ) {

@@ -39,6 +39,10 @@ int main( int argc, char **argv ) {
 	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
+
+	auto t = daw::json::from_json<root_object_t>( json_sv );
+	daw::do_not_optimize( t );
+	/*
 	auto const s =
 	  *daw::bench_n_test_mbs<10>( "twitter status", json_sv.size( ),
 	                              [&]( auto sv ) noexcept {
@@ -48,4 +52,5 @@ int main( int argc, char **argv ) {
 	                              },
 	                              json_sv );
 	daw::do_not_optimize( s );
+	 */
 }
