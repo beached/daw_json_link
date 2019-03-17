@@ -26,7 +26,10 @@ After the build there the examples can be tested.  ```city_test_bin``` requires 
 ./city_test_bin ../tests/cities.json
 ```
 ## Generating classes automatically
-Currently I have a another project https://github.com/beached/json_to_cpp that can output the data structures used in json data.  Soon it will also output the interop code for json link.
+Currently I have a another project https://github.com/beached/json_to_cpp that can output the data structures used in json data along with the code to use this library.
+
+## Performance considerations
+The order of the data in the data structures should generally match that of the json data.  The parser is much faster if it doesn't have to back track for values.  Optional values where they are missing in the json data can slow down the parsing too.  If possible have them sent as null.
 
 ## Differences between C++17 and C++20
 # C++ 17 Naming of members
