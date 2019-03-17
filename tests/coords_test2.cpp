@@ -70,8 +70,8 @@ auto describe_json_class( coordinates_t ) noexcept {
 int main( int argc, char **argv ) {
 	using namespace daw::json;
 	if( argc < 2 ) {
-	  std::cerr << "Must supply a filename to open\n";
-	  exit( 1 );
+		std::cerr << "Must supply a filename to open\n";
+		exit( 1 );
 	}
 	auto const json_data = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
 	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
@@ -82,7 +82,7 @@ int main( int argc, char **argv ) {
 	auto first = iterator_t( json_sv, "coordinates" );
 	auto last = iterator_t( );
 
-	auto const [x,y,z,sz] =
+	auto const [x, y, z, sz] =
 	  *daw::bench_n_test_mbs<10>( "coords bench", json_sv.size( ),
 	                              [&]( iterator_t f, iterator_t l ) noexcept {
 		                              double x1 = 0.0;

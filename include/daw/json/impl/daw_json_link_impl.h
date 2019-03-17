@@ -528,7 +528,7 @@ namespace daw {
 
 			template<typename Result, typename First, typename Last>
 			constexpr Result parse_real( IteratorRange<First, Last> &rng ) noexcept {
-				// [-]WHOLE[.FRACTION][(e|E)EXPONENT]
+				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 
 				assert( rng.is_real_number_part( ) );
 				int_fast8_t sign = 1;
