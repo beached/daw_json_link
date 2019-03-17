@@ -1,5 +1,3 @@
-// Code auto generated from json file '/Users/dwright/Downloads/twitter.json'
-
 #include <tuple>
 #include <optional>
 #include <cstdint>
