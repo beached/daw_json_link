@@ -44,13 +44,14 @@
 #include <daw/iso8601/daw_date_parsing.h>
 #include <daw/iterator/daw_back_inserter.h>
 
-#include "impl/daw_json_link_impl.h"
 #include "daw_json_link.h"
+#include "impl/daw_json_link_impl.h"
 
 namespace daw {
 	namespace json {
 		/// allow iteration over an array of json
-		template<typename JsonElement>
+		template<typename JsonElement, char separator = ',',
+		         bool verify_bracket = true>
 		class json_array_iterator {
 			impl::IteratorRange<char const *, char const *> m_state{nullptr, nullptr};
 			// This lets us fastpath and just skip n characters
@@ -76,14 +77,15 @@ namespace daw {
 				static_assert(
 				  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
 
-				assert( m_state.front( ) == '[' );
+				assert( verify_bracket and m_state.front( ) == '[' );
 
 				m_state.remove_prefix( );
 				m_state.trim_left( );
 			}
 
 			constexpr value_type operator*( ) const noexcept {
-				assert( !m_state.empty( ) and !m_state.in( ']' ) );
+				assert( !m_state.empty( ) and
+				        !( verify_bracket and m_state.in( ']' ) ) );
 
 				auto tmp = m_state;
 				auto result = impl::parse_value<JsonElement>(
@@ -93,7 +95,8 @@ namespace daw {
 			}
 
 			constexpr json_array_iterator &operator++( ) noexcept {
-				assert( !m_state.empty( ) and !m_state.in( ']' ) );
+				assert( !m_state.empty( ) and
+				        !( verify_bracket and m_state.in( ']' ) ) );
 				if( m_can_skip >= 0 ) {
 					m_state.first = std::next( m_state.first, m_can_skip );
 					m_can_skip = -1;
@@ -101,7 +104,7 @@ namespace daw {
 					impl::skip_known_value<JsonElement>( m_state );
 				}
 				m_state.trim_left( );
-				if( m_state.in( ',' ) ) {
+				if( m_state.in( separator ) ) {
 					m_state.remove_prefix( );
 					m_state.trim_left( );
 				}
@@ -115,7 +118,8 @@ namespace daw {
 			}
 
 			explicit constexpr operator bool( ) const noexcept {
-				return !m_state.is_null( ) and !m_state.front( ']' );
+				return !m_state.is_null( ) and
+				       !( verify_bracket and m_state.front( ']' ) );
 			}
 
 			constexpr bool operator==( json_array_iterator const &rhs ) const
