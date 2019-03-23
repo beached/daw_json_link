@@ -49,6 +49,7 @@
 #include <daw/iso8601/daw_date_formatting.h>
 #include <daw/iso8601/daw_date_parsing.h>
 #include <daw/iterator/daw_back_inserter.h>
+#include <daw/iterator/daw_inserter.h>
 
 #include "daw_iterator_range.h"
 
@@ -163,6 +164,7 @@ namespace daw {
 			Class,
 			Array,
 			Null,
+			KeyValue,
 			Custom
 		};
 
@@ -449,63 +451,82 @@ namespace daw {
 				                          static_cast<unsigned>( ' ' ) );
 			}
 
-			template<typename Result, typename First, typename Last>
+			template<typename Result, bool RangeCheck = false, typename First,
+			         typename Last>
 			constexpr auto
 			parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
 				assert( rng.front( "0123456789" ) );
-				struct {
-					Result value = 0;
-					uint_fast8_t count = 0;
-				} result{};
+
+				uintmax_t v = 0;
+				uint_fast8_t c = 0;
+
 				uint32_t dig =
 				  static_cast<uint32_t>( rng.front( ) ) - static_cast<uint32_t>( '0' );
 				while( dig < 10U ) {
 					rng.remove_prefix( );
-					++result.count;
-					result.value *= static_cast<Result>( 10 );
-					result.value += static_cast<Result>( dig );
+					++c;
+					v *= 10U;
+					v += dig;
 					dig = static_cast<uint32_t>( rng.front( ) ) -
 					      static_cast<uint32_t>( '0' );
 				}
-				return result;
+				struct result_t {
+					Result value;
+					uint_fast8_t count;
+				};
+
+				if constexpr( RangeCheck ) {
+					return result_t{ daw::narrow_cast<Result>( v ), c };
+				} else {
+					return result_t{ static_cast<Result>( v ), c };
+				}
 			}
-			template<typename Result, typename First, typename Last>
+
+			template<typename Result, bool RangeCheck = false, typename First,
+			         typename Last>
 			constexpr Result
 			parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
 				assert( rng.front( "0123456789" ) );
 
-				Result result = 0;
-				uint32_t dig =
-				  static_cast<uint32_t>( rng.front( ) ) - static_cast<uint32_t>( '0' );
+				uintmax_t result = 0;
+				uintmax_t dig = static_cast<uintmax_t>( rng.front( ) ) -
+				                static_cast<uintmax_t>( '0' );
 				while( dig < 10U ) {
 					rng.remove_prefix( );
-					result *= static_cast<Result>( 10 );
-					result += static_cast<Result>( dig );
-					dig = static_cast<uint32_t>( rng.front( ) ) -
-					      static_cast<uint32_t>( '0' );
+					result *= 10U;
+					result += dig;
+					dig = static_cast<uintmax_t>( rng.front( ) ) -
+					      static_cast<uintmax_t>( '0' );
 				}
-				return result;
+				if constexpr( RangeCheck ) {
+					return daw::narrow_cast<Result>( result );
+				} else {
+					return static_cast<Result>( result );
+				}
 			}
 
+			// For testing
 			template<typename Result>
 			constexpr auto
 			parse_unsigned_integer( daw::string_view const &sv ) noexcept {
 				IteratorRange rng = {sv.data( ), sv.data( ) + sv.size( )};
-				return parse_unsigned_integer<Result>( rng );
+				return parse_unsigned_integer<Result, true>( rng );
 			}
 
+			// For testing
 			template<typename Result>
 			constexpr auto
 			parse_unsigned_integer2( daw::string_view const &sv ) noexcept {
 				IteratorRange rng = {sv.data( ), sv.data( ) + sv.size( )};
-				return parse_unsigned_integer2<Result>( rng );
+				return parse_unsigned_integer2<Result, true>( rng );
 			}
 
-			template<typename Result, typename First, typename Last>
+			template<typename Result, bool RangeCheck = false, typename First,
+			         typename Last>
 			constexpr Result
 			parse_integer( IteratorRange<First, Last> &rng ) noexcept {
 				assert( rng.front( "+-0123456789" ) );
-				Result sign = 1;
+				int sign = 1;
 				// This gets rid of warnings when parse_integer is called on unsigned
 				// types
 				if constexpr( std::is_signed_v<Result> ) {
@@ -517,13 +538,19 @@ namespace daw {
 					}
 				}
 				// Assumes there are digits
-				return sign * parse_unsigned_integer<Result>( rng );
+				if constexpr( RangeCheck ) {
+					return daw::narrow_cast<Result>(
+					  sign * parse_unsigned_integer<intmax_t, false>( rng ) );
+				} else {
+					return sign * parse_unsigned_integer<Result, RangeCheck>( rng );
+				}
 			}
 
+			// For testing
 			template<typename Result>
 			constexpr Result parse_integer( daw::string_view const &sv ) noexcept {
 				IteratorRange rng = {sv.data( ), sv.data( ) + sv.size( )};
-				return parse_integer<Result>( rng );
+				return parse_integer<Result, true>( rng );
 			}
 
 			template<typename Result, typename First, typename Last>
@@ -795,13 +822,13 @@ namespace daw {
 					assert( rng.at_end_of_item( ) );
 					return result;
 				} else if constexpr( std::is_signed_v<element_t> ) {
-					auto result = constructor_t{}( parse_integer<element_t>( rng ) );
+					auto result = constructor_t{}( parse_integer<element_t, JsonMember::range_check>( rng ) );
 					skip_quotes<JsonMember>( rng );
 					assert( rng.at_end_of_item( ) );
 					return result;
 				} else {
 					auto result =
-					  constructor_t{}( parse_unsigned_integer<element_t>( rng ) );
+					  constructor_t{}( parse_unsigned_integer<element_t, JsonMember::range_check>( rng ) );
 					skip_quotes<JsonMember>( rng );
 					assert( rng.at_end_of_item( ) );
 					return result;
@@ -916,6 +943,19 @@ namespace daw {
 				daw::back_inserter_iterator<Container> appender;
 
 				constexpr basic_appender( Container &container ) noexcept
+				  : appender( container ) {}
+
+				template<typename Value>
+				constexpr void operator( )( Value &&value ) {
+					*appender = std::forward<Value>( value );
+				}
+			};
+
+			template<typename Container>
+			struct basic_kv_appender {
+				daw::inserter_iterator<Container> appender;
+
+				constexpr basic_kv_appender( Container &container ) noexcept
 				  : appender( container ) {}
 
 				template<typename Value>
@@ -1099,23 +1139,30 @@ namespace daw {
 				assert( rng.front( '{' ) );
 				rng.remove_prefix( );
 				rng.trim_left( );
-				auto known_locations =
-				  daw::make_array( location_info_t{JsonMembers::name}... );
+				if constexpr( sizeof...( JsonMembers ) == 0 ) {
+					return construct_a<Result>{}( );
+					assert( rng.front( '}' ) );
+					rng.remove_prefix( );
+					rng.trim_left( );
+				} else {
+					auto known_locations =
+					  daw::make_array( location_info_t{JsonMembers::name}... );
 
-				auto result = construct_a<Result>{}(
-				  parse_item<Is, JsonMembers...>( known_locations, rng )... );
-				rng.trim_left( );
-				// If we fullfill the contract before all values are found
-				while( !rng.in( '}' ) ) {
-					parse_name( rng );
-					skip_value( rng );
-					rng.clean_tail( );
+					auto result = construct_a<Result>{}(
+					  parse_item<Is, JsonMembers...>( known_locations, rng )... );
+					rng.trim_left( );
+					// If we fullfill the contract before all values are found
+					while( !rng.in( '}' ) ) {
+						parse_name( rng );
+						skip_value( rng );
+						rng.clean_tail( );
+					}
+
+					assert( rng.front( '}' ) );
+					rng.remove_prefix( );
+					rng.trim_left( );
+					return result;
 				}
-
-				assert( rng.front( '}' ) );
-				rng.remove_prefix( );
-				rng.trim_left( );
-				return result;
 			}
 
 			template<typename Result, typename... JsonMembers, size_t... Is>
@@ -1145,15 +1192,17 @@ namespace daw {
 				find_range2( rng, path );
 			}
 
-			template<typename String>
-			constexpr auto find_range( String &&str, std::string_view start_path ) {
+			template<typename String, typename StringArray>
+			constexpr auto find_range( String &&str, StringArray start_path ) {
 
 				auto rng = IteratorRange( std::data( str ),
 				                          std::data( str ) + std::size( str ) );
-				if( start_path.size( ) == 0 ) {
+				using std::size;
+				if( size( start_path ) == 0U ) {
 					return rng;
 				}
-				find_range2( rng, {start_path.data( ), start_path.size( )} );
+				find_range2(
+				  rng, daw::string_view( start_path.data( ), start_path.size( ) ) );
 
 				return rng;
 			}

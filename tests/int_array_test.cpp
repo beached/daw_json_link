@@ -82,6 +82,7 @@ int main( ) {
 		return result;
 	}( );
 
+	std::cout << "Unchecked\n";
 	{ // Class of ints
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
@@ -129,6 +130,73 @@ int main( ) {
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
 		  daw::json::json_array_iterator<json_number<no_name, intmax_t>>;
+
+		auto data = std::vector<intmax_t>( );
+		data.reserve( NUMVALUES );
+
+		auto const count2 =
+		  *daw::bench_n_test_mbs<10>( "p2. int parsing 2", json_sv.size( ),
+		                              [&]( auto &&sv ) noexcept {
+			                              data.clear( );
+			                              std::copy( iterator_t( sv ), iterator_t( ),
+			                                         std::back_inserter( data ) );
+			                              daw::do_not_optimize( data );
+			                              return data.size( );
+		                              },
+		                              json_sv );
+
+		std::cout << "element count 2: " << count2 << '\n';
+	}
+
+
+		std::cout << "Checked\n";
+	{ // Class of ints
+		auto json_sv = std::string_view( json_data );
+		std::cout << "Processing " << json_sv.size( ) << " bytes "
+		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
+		auto const count = *daw::bench_n_test_mbs<10>(
+		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
+			  auto const data = from_json_array<json_class<no_name, Number>>( sv );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
+
+		std::cout << "element count: " << count << '\n';
+		using iterator_t =
+		  daw::json::json_array_iterator<json_class<no_name, Number>>;
+
+		auto data = std::vector<Number>( );
+		data.reserve( NUMVALUES );
+
+		auto const count2 =
+		  *daw::bench_n_test_mbs<10>( "int parsing 2", json_sv.size( ),
+		                              [&]( auto &&sv ) noexcept {
+			                              data.clear( );
+			                              std::copy( iterator_t( sv ), iterator_t( ),
+			                                         std::back_inserter( data ) );
+			                              daw::do_not_optimize( data );
+			                              return data.size( );
+		                              },
+		                              json_sv );
+
+		std::cout << "element count 2: " << count2 << '\n';
+	}
+	{ // just ints
+		auto json_sv = std::string_view( json_data2 );
+		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
+		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
+		auto const count = *daw::bench_n_test_mbs<10>(
+		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
+			  auto const data = from_json_array<json_checked_number<no_name, intmax_t>>( sv );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
+
+		std::cout << "element count: " << count << '\n';
+		using iterator_t =
+		  daw::json::json_array_iterator<json_checked_number<no_name, intmax_t>>;
 
 		auto data = std::vector<intmax_t>( );
 		data.reserve( NUMVALUES );

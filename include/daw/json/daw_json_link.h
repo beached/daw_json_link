@@ -56,6 +56,8 @@ namespace daw {
 				static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 				               "Argument count is incorrect" );
 
+				static_assert( ( impl::is_a_json_type_v<JsonMembers> and ... ),
+				               "Only value json types can be used" );
 				return impl::serialize_json_class<JsonMembers...>(
 				  it, std::index_sequence_for<Args...>{}, std::move( args ) );
 			}
@@ -83,11 +85,14 @@ namespace daw {
 			using parse_to_t = typename JsonMember::parse_to_t;
 			using constructor_t = typename JsonMember::constructor_t;
 			using sub_type = JsonMember;
+			static_assert(
+			  std::is_invocable_v<constructor_t>,
+			  "Specified constructor must be callable without arguments" );
 		};
 
 		template<JSONNAMETYPE Name, typename T = double,
 		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
-		         typename Constructor = daw::construct_a<T>>
+		         typename Constructor = daw::construct_a<T>, bool RangeCheck = false>
 		struct json_number {
 			static_assert( std::is_invocable_v<Constructor, T>,
 			               "Constructor must be callable with T" );
@@ -96,13 +101,21 @@ namespace daw {
 			static constexpr auto name = Name;
 			static constexpr auto expected_type = JsonParseTypes::Number;
 			static constexpr auto literal_as_string = LiteralAsString;
+			static constexpr auto range_check = RangeCheck;
 			using parse_to_t = T;
 			using constructor_t = Constructor;
 		};
 
+		template<JSONNAMETYPE Name, typename T = double,
+		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
+		         typename Constructor = daw::construct_a<T>>
+		using json_checked_number = json_number<Name, T, LiteralAsString, Constructor, true>;
+
 		template<JSONNAMETYPE Name, typename T = bool,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_bool {
+			static_assert( std::is_constructible_v<T, bool>,
+			               "Supplied type but be constructable from a bool" );
 			static_assert( std::is_invocable_v<Constructor, T>,
 			               "Constructor must be callable with T" );
 
@@ -178,6 +191,19 @@ namespace daw {
 			using i_am_a_json_type = void;
 			static constexpr auto name = Name;
 			static constexpr auto expected_type = JsonParseTypes::Array;
+			using parse_to_t = Container;
+			using constructor_t = Constructor;
+			using appender_t = Appender;
+			using json_element_t = JsonElement;
+		};
+
+		template<JSONNAMETYPE Name, typename Container, typename JsonElement,
+		         typename Constructor = daw::construct_a<Container>,
+		         typename Appender = impl::basic_kv_appender<Container>>
+		struct json_key_value {
+			using i_am_a_json_type = void;
+			static constexpr auto name = Name;
+			static constexpr auto expected_type = JsonParseTypes::KeyValue;
 			using parse_to_t = Container;
 			using constructor_t = Constructor;
 			using appender_t = Appender;

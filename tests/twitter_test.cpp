@@ -27,31 +27,40 @@
 #include <daw/daw_string_view.h>
 #include <daw/json/daw_json_link.h>
 
+#include "canada_test.h"
+//#include "citm_test.h"
 #include "twitter_test.h"
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;
-	if( argc < 2 ) {
-		std::cerr << "Must supply a filename to open\n";
+	if( argc < 4 ) {
+		std::cerr << "Must supply a filenames to open\n";
 		exit( 1 );
 	}
-	auto const json_data = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
-	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
-	std::cout << "Processing: " << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
+	auto const json_data1 =
+	  daw::filesystem::memory_mapped_file_t<char>( argv[1] );
+	auto json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
+	auto const json_data2 =
+	  daw::filesystem::memory_mapped_file_t<char>( argv[2] );
+	auto json_sv2 = std::string_view( json_data2.data( ), json_data2.size( ) );
+	auto const json_data3 =
+	  daw::filesystem::memory_mapped_file_t<char>( argv[3] );
+	auto json_sv3 = std::string_view( json_data3.data( ), json_data3.size( ) );
 
-#ifndef NDEBUG
-	auto t = daw::json::from_json<root_object_t>( json_sv );
-	daw::do_not_optimize( t );
-#else
-	auto const s =
-	  *daw::bench_n_test_mbs<10>( "twitter status", json_sv.size( ),
-	                              [&]( auto sv ) noexcept {
-																	auto t = daw::json::from_json<root_object_t>( sv );
-																	daw::do_not_optimize( t );
-																	return t;
-	                              },
-	                              json_sv );
-	daw::do_not_optimize( s );
-#endif
+	auto const sz = json_sv1.size( ) /*+ json_sv2.size( )*/ + json_sv3.size( );
+	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
+	          << '\n';
+
+	daw::bench_n_test_mbs<10>(
+	  "nativejson bench", sz,
+	  []( auto f1, auto f2, auto f3 ) {
+		  auto j1 = daw::json::from_json<twitter_object_t>( f1 );
+		  daw::do_not_optimize( j1 );
+		  /*auto j2 = daw::json::from_json<citm_object_t>( f2 );
+		  daw::do_not_optimize( j2 );*/
+		  auto j3 = daw::json::from_json<canada_object_t>( f3 );
+		  daw::do_not_optimize( j3 );
+	  },
+	  json_sv1, json_sv2, json_sv3 );
 }
