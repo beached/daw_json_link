@@ -72,7 +72,7 @@ namespace daw {
 			           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 			constexpr json_array_iterator( String &&json_data,
 			                               std::string_view start_path = "" )
-			  : m_state( impl::find_range( json_data, start_path ) ) {
+			  : m_state( impl::find_range( json_data, {start_path.data( ), start_path.size( )} ) ) {
 
 				static_assert(
 				  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );

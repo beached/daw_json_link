@@ -172,6 +172,23 @@ namespace daw {
 		using ParseTag = std::integral_constant<JsonParseTypes, v>;
 
 		namespace impl {
+			// Paths are specified with dot separators, if the name has a dot in it,
+			// it must be escaped
+			// memberA.memberB.member\.C has 3 parts['memberA', 'memberB', 'member.C']
+			constexpr daw::string_view pop_json_path( daw::string_view &path ) {
+				return path.pop_front( [in_escape = false]( char c ) mutable {
+					if( in_escape ) {
+						in_escape = false;
+						return false;
+					}
+					if( c == '\\' ) {
+						in_escape = true;
+						return false;
+					}
+					return ( c == '.' );
+				} );
+			}
+
 			namespace data_size {
 				constexpr char const *data( char const *ptr ) noexcept {
 					return ptr;
@@ -476,9 +493,9 @@ namespace daw {
 				};
 
 				if constexpr( RangeCheck ) {
-					return result_t{ daw::narrow_cast<Result>( v ), c };
+					return result_t{daw::narrow_cast<Result>( v ), c};
 				} else {
-					return result_t{ static_cast<Result>( v ), c };
+					return result_t{static_cast<Result>( v ), c};
 				}
 			}
 
@@ -675,14 +692,20 @@ namespace daw {
 			constexpr IteratorRange<First, Last>
 			skip_name( IteratorRange<First, Last> &rng ) {
 				// Assuming no escaped double-quotes
-				assert( rng.front( '"' ) );
+				assert( rng.front( '"' ) and "Invalid name, strings start with \"" );
 				rng.remove_prefix( );
 				auto result = rng;
+				bool is_escaped = rng.in( '\\' );
 				rng.remove_prefix( );
-				while( !rng.in( '"' ) ) {
+				while( is_escaped or !rng.in( '"' ) ) {
+					if( is_escaped ) {
+						is_escaped = false;
+					} else {
+						is_escaped = rng.in( '\\' );
+					}
 					rng.remove_prefix( );
 				}
-				assert( rng.front( '"' ) );
+				assert( rng.front( '"' ) and "Invalid name, strings end with \"" );
 				result.last = rng.begin( );
 				rng.remove_prefix( );
 				return result;
@@ -822,13 +845,14 @@ namespace daw {
 					assert( rng.at_end_of_item( ) );
 					return result;
 				} else if constexpr( std::is_signed_v<element_t> ) {
-					auto result = constructor_t{}( parse_integer<element_t, JsonMember::range_check>( rng ) );
+					auto result = constructor_t{}(
+					  parse_integer<element_t, JsonMember::range_check>( rng ) );
 					skip_quotes<JsonMember>( rng );
 					assert( rng.at_end_of_item( ) );
 					return result;
 				} else {
-					auto result =
-					  constructor_t{}( parse_unsigned_integer<element_t, JsonMember::range_check>( rng ) );
+					auto result = constructor_t{}(
+					  parse_unsigned_integer<element_t, JsonMember::range_check>( rng ) );
 					skip_quotes<JsonMember>( rng );
 					assert( rng.at_end_of_item( ) );
 					return result;
@@ -1173,37 +1197,51 @@ namespace daw {
 				return parse_json_class<Result, JsonMembers...>( rng, is );
 			}
 
+			constexpr bool
+			json_path_compare( daw::string_view json_path_item,
+			                   daw::string_view member_name ) noexcept {
+				if( json_path_item.front( ) == '\\' ) {
+					json_path_item.remove_prefix( );
+				}
+				while( !json_path_item.empty( ) and !member_name.empty( ) ) {
+					if( json_path_item.front( ) != member_name.front( ) ) {
+						return false;
+					}
+					json_path_item.remove_prefix( );
+					if( !json_path_item.empty( ) and json_path_item.front( ) == '\\' ) {
+						json_path_item.remove_prefix( );
+					}
+					member_name.remove_prefix( );
+				}
+				return json_path_item.size( ) == member_name.size( );
+			}
+
 			template<typename First, typename Last>
 			constexpr void find_range2( IteratorRange<First, Last> &rng,
 			                            daw::string_view path ) {
-				assert( rng.front( '{' ) and !path.empty( ) );
-				rng.remove_prefix( );
-				rng.trim_left( );
-				auto current = path.pop_front( "/" );
-				auto name = parse_name( rng );
-				while( name != current ) {
-					skip_value( rng );
-					rng.clean_tail( );
-					name = parse_name( rng );
+				auto current = impl::pop_json_path( path );
+				while( !current.empty( ) ) {
+					assert( rng.front( '{' ) and "Invalid Path Entry" );
+					rng.remove_prefix( );
+					rng.trim_left( );
+					auto name = parse_name( rng );
+					while( !json_path_compare( current, name ) ) {
+						skip_value( rng );
+						rng.clean_tail( );
+						name = parse_name( rng );
+					}
+					current = impl::pop_json_path( path );
 				}
-				if( path.empty( ) ) {
-					return;
-				}
-				find_range2( rng, path );
 			}
 
-			template<typename String, typename StringArray>
-			constexpr auto find_range( String &&str, StringArray start_path ) {
+			template<typename String>
+			constexpr auto find_range( String &&str, daw::string_view start_path ) {
 
 				auto rng = IteratorRange( std::data( str ),
 				                          std::data( str ) + std::size( str ) );
-				using std::size;
-				if( size( start_path ) == 0U ) {
-					return rng;
+				if( !start_path.empty( ) ) {
+					find_range2( rng, start_path );
 				}
-				find_range2(
-				  rng, daw::string_view( start_path.data( ), start_path.size( ) ) );
-
 				return rng;
 			}
 		} // namespace impl

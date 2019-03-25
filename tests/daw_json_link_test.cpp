@@ -295,13 +295,13 @@ int main( ) {
 	constexpr std::string_view const json_data2 =
 	  R"({
 	"a": {
-		"b": {
+		"b.hi": {
 			"c": [1,2,3] }}})";
 
 	using iterator2_t = daw::json::json_array_iterator<json_number<no_name, int>>;
 	using namespace std::string_literals;
 
-	auto first = iterator2_t( json_data2, "a/b/c" );
+	auto first = iterator2_t( json_data2, "a.b\\.hi.c" );
 	auto sum = 0;
 	while( first ) {
 		sum += *first;
