@@ -25,6 +25,9 @@
 #include <string>
 
 #include <daw/daw_benchmark.h>
+#include <daw/daw_bounded_hash_map.h>
+#include <daw/daw_fnv1a_hash.h>
+#include <daw/daw_string_view.h>
 
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
@@ -45,6 +48,24 @@ auto describe_json_class( kv_t ) noexcept {
 #endif
 }
 
+struct kv2_t {
+	daw::bounded_hash_map<daw::string_view, int, 100> kv{};
+};
+
+auto describe_json_class( kv2_t ) noexcept {
+	using namespace daw::json;
+#ifdef __cpp_nontype_template_parameter_class
+	return class_description_t<json_key_value<
+	  "kv", daw::bounded_hash_map<daw::string_view, int, 100>,
+	  json_number<no_name, int>, json_string<no_name, daw::string_view>>>{};
+#else
+	constexpr static char const kv[] = "kv";
+	return class_description_t<json_key_value<
+	  kv, daw::bounded_hash_map<daw::string_view, int, 100>,
+	  json_number<no_name, int>, json_string<no_name, daw::string_view>>>{};
+#endif
+}
+
 int main( int argc, char **argv ) {
 	using namespace daw::json;
 	constexpr std::string_view const json_data3 =
@@ -56,4 +77,7 @@ int main( int argc, char **argv ) {
 
 	auto kv_test = from_json<kv_t>( json_data3 );
 	daw::do_not_optimize( kv_test );
+
+	constexpr auto kv2_test = from_json<kv2_t>( json_data3 );
+	daw::do_not_optimize( kv2_test );
 }
