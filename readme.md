@@ -292,9 +292,13 @@ template<JSONNAMETYPE Name,
 struct json_array 
 ```
 ```json_array```'s are unique in the types because they have more info that is needed.
+
 ```Container``` is the type of container the ```JsonElement```'s are placed into, such as ```std::vector```
+
 ```JsonElement``` one of the above json types with daw::json::no_name or "" as it's name(the name will not be used).  This is the item type in the sequence
+
 ```Constructor``` the default is almost always correct here but this will constuct your type.
+
 ```Appender``` the default is almost always correct here but this will append via insert( Value ) on the container
 
 ### json_key_value
@@ -308,10 +312,15 @@ template<JSONNAMETYPE Name,
 struct json_key_value
 ``` 
 ```json_key_value``` Is like both an array and a class. All the keys/member names are json strings.
+
 ```Container``` The result type to place all the KV pairs into.  By default must behave like a Map.
+
 ```JsonValueType``` One of the above json types with daw::json::no_name or "" as it's name(the name will not be used).  This is the value type in the KV pairs 
+
 ```JsonKeyType``` This must be json_string with daw::json::no_name or "" as it's name(the name will not be used).  This is the key type in the KV pairs 
+
 ```Constructor``` the default is almost always correct here but this will constuct your Continer.
+
 ```Appender``` the default is almost always correct here but this will append via insert( std::pair<Key, Value> ) on the container
 
 
