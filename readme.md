@@ -317,7 +317,7 @@ struct json_key_value
 
 ```JsonValueType``` One of the above json types with daw::json::no_name or "" as it's name(the name will not be used).  This is the value type in the KV pairs 
 
-```JsonKeyType``` This must be json_string with daw::json::no_name or "" as it's name(the name will not be used).  This is the key type in the KV pairs 
+```JsonKeyType``` The underlying json value is string, so the json_ type must account for that in parsing, with daw::json::no_name or "" as it's name(the name will not be used).  This is the key type in the KV pairs 
 
 ```Constructor``` the default is almost always correct here but this will constuct your Continer.
 
