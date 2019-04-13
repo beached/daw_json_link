@@ -92,7 +92,8 @@ namespace daw {
 
 		template<JSONNAMETYPE Name, typename T = double,
 		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
-		         typename Constructor = daw::construct_a<T>, bool RangeCheck = false>
+		         typename Constructor = daw::construct_a<T>,
+		         bool RangeCheck = false>
 		struct json_number {
 			static_assert( std::is_invocable_v<Constructor, T>,
 			               "Constructor must be callable with T" );
@@ -109,7 +110,8 @@ namespace daw {
 		template<JSONNAMETYPE Name, typename T = double,
 		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
 		         typename Constructor = daw::construct_a<T>>
-		using json_checked_number = json_number<Name, T, LiteralAsString, Constructor, true>;
+		using json_checked_number =
+		  json_number<Name, T, LiteralAsString, Constructor, true>;
 
 		template<JSONNAMETYPE Name, typename T = bool,
 		         typename Constructor = daw::construct_a<T>>
@@ -144,6 +146,11 @@ namespace daw {
 			static constexpr bool empty_is_null = EmptyStringNull;
 		};
 
+		/// Link to a JSON string representing a date
+		/// \tparam Name name of JSON member to link to
+		/// \tparam T C++ type to consruct, by default is a time_point
+		/// \tparam Constructor A Callable used to construct a T.
+		/// Must accept a char pointer and size as argument to the date/time string.
 		template<JSONNAMETYPE Name,
 		         typename T = std::chrono::time_point<std::chrono::system_clock,
 		                                              std::chrono::milliseconds>,
@@ -160,6 +167,12 @@ namespace daw {
 			using constructor_t = Constructor;
 		};
 
+		///
+		/// \tparam Name name of JSON member to link to
+		/// \tparam T C++ type being parsed to.  Must have a describe_json_class
+		/// overload
+		/// \tparam Constructor A callable used to construct T.  The
+		/// default supports normal and aggregate construction
 		template<JSONNAMETYPE Name, typename T,
 		         typename Constructor = daw::construct_a<T>>
 		struct json_class {
@@ -184,6 +197,17 @@ namespace daw {
 			static constexpr auto const is_string = IsString;
 		};
 
+		/// Link to a JSON array
+		/// \tparam Name name of JSON member to link to
+		/// \tparam Container type of C++ container being constructed(e.g.
+		/// vector<int>)
+		/// \tparam JsonElement Json type being parsed e.g. json_number,
+		/// json_string...
+		/// \tparam Constructor A callable used to make Container,
+		/// default will use the Containers constructor.  Both normal and aggregate
+		/// are supported \tparam Appender Callable used to add items to the
+		/// container.  The parsed type from JsonElement
+		///	passed to it
 		template<JSONNAMETYPE Name, typename Container, typename JsonElement,
 		         typename Constructor = daw::construct_a<Container>,
 		         typename Appender = impl::basic_appender<Container>>
@@ -195,9 +219,23 @@ namespace daw {
 			using constructor_t = Constructor;
 			using appender_t = Appender;
 			using json_element_t = JsonElement;
+
+			static_assert( impl::is_a_json_type_v<JsonElement> );
 		};
 
-		template<JSONNAMETYPE Name, typename Container, typename JsonElement,
+		/// Map a KV type json class { "Key String": ValueType, ... }
+		/// to a c++ class.  Keys are always string like and the destination
+		/// needs to be constructable with a pointer, size
+		/// \tparam Name name of JSON member to link to
+		/// \tparam Container type to put values in
+		/// \tparam JsonValueType Json type of value in kv pair( e.g. json_number, json_string, ... )
+		/// \tparam JsonKeyType type of key in kv pair
+		/// \tparam Constructor A callable used to make Container,
+		/// default will use the Containers constructor.  Both normal and aggregate
+		/// are supported
+		/// \tparam Appender A callable used to add elements to container.
+		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
+		         typename JsonKeyType = json_string<no_name>,
 		         typename Constructor = daw::construct_a<Container>,
 		         typename Appender = impl::basic_kv_appender<Container>>
 		struct json_key_value {
@@ -207,7 +245,11 @@ namespace daw {
 			using parse_to_t = Container;
 			using constructor_t = Constructor;
 			using appender_t = Appender;
-			using json_element_t = JsonElement;
+			using json_element_t = JsonValueType;
+			using json_key_t = JsonKeyType;
+
+			static_assert( impl::is_a_json_type_v<JsonValueType> );
+			static_assert( impl::is_a_json_type_v<JsonKeyType> );
 		};
 
 		template<typename T>
@@ -227,9 +269,8 @@ namespace daw {
 			  impl::has_json_parser_description_v<T>,
 			  "A function call describe_json_class must exist for type." );
 
-			using desc_t = impl::json_parser_description_t<T>;
-
-			auto result = desc_t::template parse<T>( rng );
+			auto result =
+			  impl::json_parser_description_t<T>::template parse<T>( rng );
 			rng.trim_left( );
 			return result;
 		}
@@ -260,7 +301,7 @@ namespace daw {
 			using impl::data_size::data;
 			using impl::data_size::size;
 
-			auto rng = impl::IteratorRange{json_data.begin( ), json_data.end( )};
+			auto rng = impl::IteratorRange( json_data.begin( ), json_data.end( ) );
 
 			rng.trim_left( );
 

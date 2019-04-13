@@ -864,12 +864,12 @@ namespace daw {
 			                            IteratorRange<First, Last> &rng ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::sub_type;
-
+				size_t const null_size = 4;
 				if( rng.empty( ) or rng.is_null( ) ) {
 					return constructor_t{}( );
 				}
-				if( rng.size( ) >= 4 and rng.in( 'n' ) ) {
-					rng.remove_prefix( 4 );
+				if( rng.size( ) >= null_size and rng.in( 'n' ) ) {
+					rng.remove_prefix( null_size );
 					rng.trim_left( );
 					return constructor_t{}( );
 				}
@@ -935,7 +935,35 @@ namespace daw {
 				return from_json<element_t>( rng );
 			}
 
-			struct invalid_array {};
+			template<typename JsonMember, typename First, typename Last>
+			constexpr auto parse_value( ParseTag<JsonParseTypes::KeyValue>,
+			                            IteratorRange<First, Last> &rng ) {
+
+				assert( rng.front( '{' ) );
+
+				rng.remove_prefix( );
+				rng.trim_left( );
+
+				auto array_container = typename JsonMember::constructor_t{}( );
+				auto container_appender =
+				  typename JsonMember::appender_t( array_container );
+
+				using key_t = typename JsonMember::json_key_t;
+				using value_t = typename JsonMember::json_element_t;
+				while( !rng.in( "}" ) ) {
+					auto key = parse_name( rng );
+					rng.trim_left( );
+					container_appender(
+					  typename key_t::constructor_t{}( key.data( ), key.size( ) ),
+					  parse_value<value_t>( ParseTag<value_t::expected_type>{}, rng ) );
+
+					rng.clean_tail( );
+				}
+				assert( rng.front( '}' ) );
+				rng.remove_prefix( );
+				rng.trim_left( );
+				return array_container;
+			}
 
 			template<typename JsonMember, typename First, typename Last>
 			constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
@@ -982,9 +1010,9 @@ namespace daw {
 				constexpr basic_kv_appender( Container &container ) noexcept
 				  : appender( container ) {}
 
-				template<typename Value>
-				constexpr void operator( )( Value &&value ) {
-					*appender = std::forward<Value>( value );
+				template<typename Key, typename Value>
+				constexpr void operator( )( Key && key, Value &&value ) {
+					*appender = std::make_pair( std::forward<Key>( key ), std::forward<Value>( value ) );
 				}
 			};
 
@@ -1160,6 +1188,7 @@ namespace daw {
 				  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
 				  "Supplied types cannot be used for construction of this type" );
 
+				rng.trim_left( );
 				assert( rng.front( '{' ) );
 				rng.remove_prefix( );
 				rng.trim_left( );

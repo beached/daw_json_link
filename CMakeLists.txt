@@ -97,5 +97,11 @@ add_test( twitter_test twitter_test_bin )
 add_dependencies( check twitter_test_bin )
 add_dependencies( full twitter_test_bin )
 
+add_executable( kv_map_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/kv_map_test.cpp )
+add_dependencies( kv_map_test_bin dependency_stub )
+add_test( kv_map_test kv_map_test_bin )
+add_dependencies( check kv_map_test_bin )
+add_dependencies( full kv_map_test_bin )
+
 install( DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/ )
 
