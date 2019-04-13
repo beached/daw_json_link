@@ -936,6 +936,10 @@ namespace daw {
 			}
 
 			template<typename JsonMember, typename First, typename Last>
+			constexpr auto parse_value( ParseTag<JsonParseTypes::Array>,
+			                            IteratorRange<First, Last> & );
+
+			template<typename JsonMember, typename First, typename Last>
 			constexpr auto parse_value( ParseTag<JsonParseTypes::KeyValue>,
 			                            IteratorRange<First, Last> &rng ) {
 
@@ -1011,8 +1015,9 @@ namespace daw {
 				  : appender( container ) {}
 
 				template<typename Key, typename Value>
-				constexpr void operator( )( Key && key, Value &&value ) {
-					*appender = std::make_pair( std::forward<Key>( key ), std::forward<Value>( value ) );
+				constexpr void operator( )( Key &&key, Value &&value ) {
+					*appender = std::make_pair( std::forward<Key>( key ),
+					                            std::forward<Value>( value ) );
 				}
 			};
 

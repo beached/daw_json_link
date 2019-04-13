@@ -234,7 +234,9 @@ namespace daw {
 		/// default will use the Containers constructor.  Both normal and aggregate
 		/// are supported
 		/// \tparam Appender A callable used to add elements to container.
-		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
+		template<JSONNAMETYPE Name,
+				     typename Container,
+				     typename JsonValueType,
 		         typename JsonKeyType = json_string<no_name>,
 		         typename Constructor = daw::construct_a<Container>,
 		         typename Appender = impl::basic_kv_appender<Container>>

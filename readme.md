@@ -277,7 +277,7 @@ struct json_custom
 template<JSONNAMETYPE Name, 
     typename T,
     typename Constructor = daw::construct_a<T>>
-struct json_date
+struct json_class
 ``` 
 ```json_class``` requires a type argument T that is a type that has an overload of the ```describe_json_class( T )```.
 ```Constructor``` the default is almost always correct here but this will constuct your type.
@@ -293,7 +293,25 @@ struct json_array
 ```
 ```json_array```'s are unique in the types because they have more info that is needed.
 ```Container``` is the type of container the ```JsonElement```'s are placed into, such as ```std::vector```
-```JsonElement``` one of the above json types with daw::json::no_name or "" as it's name(actually does not matter as it is ignored).  This is the item type in the sequence
+```JsonElement``` one of the above json types with daw::json::no_name or "" as it's name(the name will not be used).  This is the item type in the sequence
 ```Constructor``` the default is almost always correct here but this will constuct your type.
+```Appender``` the default is almost always correct here but this will append via insert( Value ) on the container
+
+### json_key_value
+```cpp
+template<JSONNAMETYPE Name, 
+    typename Container, 
+    typename JsonValueType,
+    typename JsonKeyType = json_string<no_name>,
+    typename Constructor = daw::construct_a<Container>,
+    typename Appender = impl::basic_kv_appender<Container>>
+struct json_key_value
+``` 
+```json_key_value``` Is like both an array and a class. All the keys/member names are json strings.
+```Container``` The result type to place all the KV pairs into.  By default must behave like a Map.
+```JsonValueType``` One of the above json types with daw::json::no_name or "" as it's name(the name will not be used).  This is the value type in the KV pairs 
+```JsonKeyType``` This must be json_string with daw::json::no_name or "" as it's name(the name will not be used).  This is the key type in the KV pairs 
+```Constructor``` the default is almost always correct here but this will constuct your Continer.
+```Appender``` the default is almost always correct here but this will append via insert( std::pair<Key, Value> ) on the container
 
 
