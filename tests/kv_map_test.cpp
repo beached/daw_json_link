@@ -38,7 +38,7 @@ struct kv_t {
 
 auto describe_json_class( kv_t ) noexcept {
 	using namespace daw::json;
-#ifdef __cpp_nontype_template_parameter/_class
+#ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_key_value<
 	  "kv", std::unordered_map<std::string, int>, json_number<no_name, int>>>{};
 #else
@@ -78,6 +78,9 @@ int main( int argc, char **argv ) {
 	auto kv_test = from_json<kv_t>( json_data3 );
 	daw::do_not_optimize( kv_test );
 
-	constexpr auto kv2_test = from_json<kv2_t>( json_data3 );
-	daw::do_not_optimize( kv2_test );
+	constexpr auto const kv2_test = from_json<kv2_t>( json_data3 );
+	static_assert( kv2_test.kv.size( ) == 3 );
+	static_assert( kv2_test.kv["key0"] == 0 );
+	static_assert( kv2_test.kv["key1"] == 1 );
+	static_assert( kv2_test.kv["key2"] == 2 );
 }
