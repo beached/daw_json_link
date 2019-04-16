@@ -9,70 +9,6 @@
 #include <vector>
 #include <daw/json/daw_json_link.h>
 
-struct areaNames_t {
-	std::string_view _json205705993;
-	std::string_view _json205705994;
-	std::string_view _json205705995;
-	std::string_view _json205705996;
-	std::string_view _json205705998;
-	std::string_view _json205705999;
-	std::string_view _json205706000;
-	std::string_view _json205706001;
-	std::string_view _json205706002;
-	std::string_view _json205706003;
-	std::string_view _json205706004;
-	std::string_view _json205706005;
-	std::string_view _json205706006;
-	std::string_view _json205706007;
-	std::string_view _json205706008;
-	std::string_view _json205706009;
-	std::string_view _json342752287;
-};	// areaNames_t
-
-inline auto describe_json_class( areaNames_t ) {
-	using namespace daw::json;
-	static constexpr char const _json205705993[] = "205705993";
-	static constexpr char const _json205705994[] = "205705994";
-	static constexpr char const _json205705995[] = "205705995";
-	static constexpr char const _json205705996[] = "205705996";
-	static constexpr char const _json205705998[] = "205705998";
-	static constexpr char const _json205705999[] = "205705999";
-	static constexpr char const _json205706000[] = "205706000";
-	static constexpr char const _json205706001[] = "205706001";
-	static constexpr char const _json205706002[] = "205706002";
-	static constexpr char const _json205706003[] = "205706003";
-	static constexpr char const _json205706004[] = "205706004";
-	static constexpr char const _json205706005[] = "205706005";
-	static constexpr char const _json205706006[] = "205706006";
-	static constexpr char const _json205706007[] = "205706007";
-	static constexpr char const _json205706008[] = "205706008";
-	static constexpr char const _json205706009[] = "205706009";
-	static constexpr char const _json342752287[] = "342752287";
-	return daw::json::class_description_t<
-		json_string<_json205705993, std::string_view>
-		,json_string<_json205705994, std::string_view>
-		,json_string<_json205705995, std::string_view>
-		,json_string<_json205705996, std::string_view>
-		,json_string<_json205705998, std::string_view>
-		,json_string<_json205705999, std::string_view>
-		,json_string<_json205706000, std::string_view>
-		,json_string<_json205706001, std::string_view>
-		,json_string<_json205706002, std::string_view>
-		,json_string<_json205706003, std::string_view>
-		,json_string<_json205706004, std::string_view>
-		,json_string<_json205706005, std::string_view>
-		,json_string<_json205706006, std::string_view>
-		,json_string<_json205706007, std::string_view>
-		,json_string<_json205706008, std::string_view>
-		,json_string<_json205706009, std::string_view>
-		,json_string<_json342752287, std::string_view>
->{};
-}
-
-inline auto to_json_data( areaNames_t const & value ) {
-	return std::forward_as_tuple( value._json205705993, value._json205705994, value._json205705995, value._json205705996, value._json205705998, value._json205705999, value._json205706000, value._json205706001, value._json205706002, value._json205706003, value._json205706004, value._json205706005, value._json205706006, value._json205706007, value._json205706008, value._json205706009, value._json342752287 );
-}
-
 struct audienceSubCategoryNames_t {
 	std::string_view _json337100890;
 };	// audienceSubCategoryNames_t
@@ -5610,281 +5546,6 @@ inline auto to_json_data( performances_element_t const & value ) {
 	return std::forward_as_tuple( value.eventId, value.id, value.logo, value.prices, value.seatCategories, value.start, value.venueCode );
 }
 
-struct seatCategoryNames_t {
-	std::string_view _json338937235;
-	std::string_view _json338937236;
-	std::string_view _json338937238;
-	std::string_view _json338937239;
-	std::string_view _json338937240;
-	std::string_view _json338937241;
-	std::string_view _json338937242;
-	std::string_view _json338937244;
-	std::string_view _json338937245;
-	std::string_view _json338937246;
-	std::string_view _json338937271;
-	std::string_view _json338937272;
-	std::string_view _json338937274;
-	std::string_view _json338937275;
-	std::string_view _json338937277;
-	std::string_view _json338937278;
-	std::string_view _json338937280;
-	std::string_view _json338937281;
-	std::string_view _json338937282;
-	std::string_view _json338937283;
-	std::string_view _json338937284;
-	std::string_view _json338937285;
-	std::string_view _json338937287;
-	std::string_view _json338937288;
-	std::string_view _json338937289;
-	std::string_view _json338937290;
-	std::string_view _json338937292;
-	std::string_view _json338937293;
-	std::string_view _json338937294;
-	std::string_view _json338937295;
-	std::string_view _json338937296;
-	std::string_view _json338937307;
-	std::string_view _json338937308;
-	std::string_view _json338937310;
-	std::string_view _json338937311;
-	std::string_view _json338937312;
-	std::string_view _json338937314;
-	std::string_view _json339086196;
-	std::string_view _json339086197;
-	std::string_view _json339086210;
-	std::string_view _json339086211;
-	std::string_view _json339086213;
-	std::string_view _json339086214;
-	std::string_view _json339086215;
-	std::string_view _json340826015;
-	std::string_view _json340826016;
-	std::string_view _json340826017;
-	std::string_view _json340826018;
-	std::string_view _json340826019;
-	std::string_view _json341179212;
-	std::string_view _json341179213;
-	std::string_view _json341179214;
-	std::string_view _json341179215;
-	std::string_view _json341179216;
-	std::string_view _json341264860;
-	std::string_view _json341264861;
-	std::string_view _json341264863;
-	std::string_view _json341264864;
-	std::string_view _json341264866;
-	std::string_view _json341264867;
-	std::string_view _json341264869;
-	std::string_view _json341264870;
-	std::string_view _json341264872;
-	std::string_view _json342752792;
-};	// seatCategoryNames_t
-
-inline auto describe_json_class( seatCategoryNames_t ) {
-	using namespace daw::json;
-	static constexpr char const _json338937235[] = "338937235";
-	static constexpr char const _json338937236[] = "338937236";
-	static constexpr char const _json338937238[] = "338937238";
-	static constexpr char const _json338937239[] = "338937239";
-	static constexpr char const _json338937240[] = "338937240";
-	static constexpr char const _json338937241[] = "338937241";
-	static constexpr char const _json338937242[] = "338937242";
-	static constexpr char const _json338937244[] = "338937244";
-	static constexpr char const _json338937245[] = "338937245";
-	static constexpr char const _json338937246[] = "338937246";
-	static constexpr char const _json338937271[] = "338937271";
-	static constexpr char const _json338937272[] = "338937272";
-	static constexpr char const _json338937274[] = "338937274";
-	static constexpr char const _json338937275[] = "338937275";
-	static constexpr char const _json338937277[] = "338937277";
-	static constexpr char const _json338937278[] = "338937278";
-	static constexpr char const _json338937280[] = "338937280";
-	static constexpr char const _json338937281[] = "338937281";
-	static constexpr char const _json338937282[] = "338937282";
-	static constexpr char const _json338937283[] = "338937283";
-	static constexpr char const _json338937284[] = "338937284";
-	static constexpr char const _json338937285[] = "338937285";
-	static constexpr char const _json338937287[] = "338937287";
-	static constexpr char const _json338937288[] = "338937288";
-	static constexpr char const _json338937289[] = "338937289";
-	static constexpr char const _json338937290[] = "338937290";
-	static constexpr char const _json338937292[] = "338937292";
-	static constexpr char const _json338937293[] = "338937293";
-	static constexpr char const _json338937294[] = "338937294";
-	static constexpr char const _json338937295[] = "338937295";
-	static constexpr char const _json338937296[] = "338937296";
-	static constexpr char const _json338937307[] = "338937307";
-	static constexpr char const _json338937308[] = "338937308";
-	static constexpr char const _json338937310[] = "338937310";
-	static constexpr char const _json338937311[] = "338937311";
-	static constexpr char const _json338937312[] = "338937312";
-	static constexpr char const _json338937314[] = "338937314";
-	static constexpr char const _json339086196[] = "339086196";
-	static constexpr char const _json339086197[] = "339086197";
-	static constexpr char const _json339086210[] = "339086210";
-	static constexpr char const _json339086211[] = "339086211";
-	static constexpr char const _json339086213[] = "339086213";
-	static constexpr char const _json339086214[] = "339086214";
-	static constexpr char const _json339086215[] = "339086215";
-	static constexpr char const _json340826015[] = "340826015";
-	static constexpr char const _json340826016[] = "340826016";
-	static constexpr char const _json340826017[] = "340826017";
-	static constexpr char const _json340826018[] = "340826018";
-	static constexpr char const _json340826019[] = "340826019";
-	static constexpr char const _json341179212[] = "341179212";
-	static constexpr char const _json341179213[] = "341179213";
-	static constexpr char const _json341179214[] = "341179214";
-	static constexpr char const _json341179215[] = "341179215";
-	static constexpr char const _json341179216[] = "341179216";
-	static constexpr char const _json341264860[] = "341264860";
-	static constexpr char const _json341264861[] = "341264861";
-	static constexpr char const _json341264863[] = "341264863";
-	static constexpr char const _json341264864[] = "341264864";
-	static constexpr char const _json341264866[] = "341264866";
-	static constexpr char const _json341264867[] = "341264867";
-	static constexpr char const _json341264869[] = "341264869";
-	static constexpr char const _json341264870[] = "341264870";
-	static constexpr char const _json341264872[] = "341264872";
-	static constexpr char const _json342752792[] = "342752792";
-	return daw::json::class_description_t<
-		json_string<_json338937235, std::string_view>
-		,json_string<_json338937236, std::string_view>
-		,json_string<_json338937238, std::string_view>
-		,json_string<_json338937239, std::string_view>
-		,json_string<_json338937240, std::string_view>
-		,json_string<_json338937241, std::string_view>
-		,json_string<_json338937242, std::string_view>
-		,json_string<_json338937244, std::string_view>
-		,json_string<_json338937245, std::string_view>
-		,json_string<_json338937246, std::string_view>
-		,json_string<_json338937271, std::string_view>
-		,json_string<_json338937272, std::string_view>
-		,json_string<_json338937274, std::string_view>
-		,json_string<_json338937275, std::string_view>
-		,json_string<_json338937277, std::string_view>
-		,json_string<_json338937278, std::string_view>
-		,json_string<_json338937280, std::string_view>
-		,json_string<_json338937281, std::string_view>
-		,json_string<_json338937282, std::string_view>
-		,json_string<_json338937283, std::string_view>
-		,json_string<_json338937284, std::string_view>
-		,json_string<_json338937285, std::string_view>
-		,json_string<_json338937287, std::string_view>
-		,json_string<_json338937288, std::string_view>
-		,json_string<_json338937289, std::string_view>
-		,json_string<_json338937290, std::string_view>
-		,json_string<_json338937292, std::string_view>
-		,json_string<_json338937293, std::string_view>
-		,json_string<_json338937294, std::string_view>
-		,json_string<_json338937295, std::string_view>
-		,json_string<_json338937296, std::string_view>
-		,json_string<_json338937307, std::string_view>
-		,json_string<_json338937308, std::string_view>
-		,json_string<_json338937310, std::string_view>
-		,json_string<_json338937311, std::string_view>
-		,json_string<_json338937312, std::string_view>
-		,json_string<_json338937314, std::string_view>
-		,json_string<_json339086196, std::string_view>
-		,json_string<_json339086197, std::string_view>
-		,json_string<_json339086210, std::string_view>
-		,json_string<_json339086211, std::string_view>
-		,json_string<_json339086213, std::string_view>
-		,json_string<_json339086214, std::string_view>
-		,json_string<_json339086215, std::string_view>
-		,json_string<_json340826015, std::string_view>
-		,json_string<_json340826016, std::string_view>
-		,json_string<_json340826017, std::string_view>
-		,json_string<_json340826018, std::string_view>
-		,json_string<_json340826019, std::string_view>
-		,json_string<_json341179212, std::string_view>
-		,json_string<_json341179213, std::string_view>
-		,json_string<_json341179214, std::string_view>
-		,json_string<_json341179215, std::string_view>
-		,json_string<_json341179216, std::string_view>
-		,json_string<_json341264860, std::string_view>
-		,json_string<_json341264861, std::string_view>
-		,json_string<_json341264863, std::string_view>
-		,json_string<_json341264864, std::string_view>
-		,json_string<_json341264866, std::string_view>
-		,json_string<_json341264867, std::string_view>
-		,json_string<_json341264869, std::string_view>
-		,json_string<_json341264870, std::string_view>
-		,json_string<_json341264872, std::string_view>
-		,json_string<_json342752792, std::string_view>
->{};
-}
-
-inline auto to_json_data( seatCategoryNames_t const & value ) {
-	return std::forward_as_tuple( value._json338937235, value._json338937236, value._json338937238, value._json338937239, value._json338937240, value._json338937241, value._json338937242, value._json338937244, value._json338937245, value._json338937246, value._json338937271, value._json338937272, value._json338937274, value._json338937275, value._json338937277, value._json338937278, value._json338937280, value._json338937281, value._json338937282, value._json338937283, value._json338937284, value._json338937285, value._json338937287, value._json338937288, value._json338937289, value._json338937290, value._json338937292, value._json338937293, value._json338937294, value._json338937295, value._json338937296, value._json338937307, value._json338937308, value._json338937310, value._json338937311, value._json338937312, value._json338937314, value._json339086196, value._json339086197, value._json339086210, value._json339086211, value._json339086213, value._json339086214, value._json339086215, value._json340826015, value._json340826016, value._json340826017, value._json340826018, value._json340826019, value._json341179212, value._json341179213, value._json341179214, value._json341179215, value._json341179216, value._json341264860, value._json341264861, value._json341264863, value._json341264864, value._json341264866, value._json341264867, value._json341264869, value._json341264870, value._json341264872, value._json342752792 );
-}
-
-struct subTopicNames_t {
-	std::string_view _json337184262;
-	std::string_view _json337184263;
-	std::string_view _json337184267;
-	std::string_view _json337184268;
-	std::string_view _json337184269;
-	std::string_view _json337184273;
-	std::string_view _json337184275;
-	std::string_view _json337184279;
-	std::string_view _json337184280;
-	std::string_view _json337184281;
-	std::string_view _json337184282;
-	std::string_view _json337184283;
-	std::string_view _json337184284;
-	std::string_view _json337184288;
-	std::string_view _json337184292;
-	std::string_view _json337184296;
-	std::string_view _json337184297;
-	std::string_view _json337184298;
-	std::string_view _json337184299;
-};	// subTopicNames_t
-
-inline auto describe_json_class( subTopicNames_t ) {
-	using namespace daw::json;
-	static constexpr char const _json337184262[] = "337184262";
-	static constexpr char const _json337184263[] = "337184263";
-	static constexpr char const _json337184267[] = "337184267";
-	static constexpr char const _json337184268[] = "337184268";
-	static constexpr char const _json337184269[] = "337184269";
-	static constexpr char const _json337184273[] = "337184273";
-	static constexpr char const _json337184275[] = "337184275";
-	static constexpr char const _json337184279[] = "337184279";
-	static constexpr char const _json337184280[] = "337184280";
-	static constexpr char const _json337184281[] = "337184281";
-	static constexpr char const _json337184282[] = "337184282";
-	static constexpr char const _json337184283[] = "337184283";
-	static constexpr char const _json337184284[] = "337184284";
-	static constexpr char const _json337184288[] = "337184288";
-	static constexpr char const _json337184292[] = "337184292";
-	static constexpr char const _json337184296[] = "337184296";
-	static constexpr char const _json337184297[] = "337184297";
-	static constexpr char const _json337184298[] = "337184298";
-	static constexpr char const _json337184299[] = "337184299";
-	return daw::json::class_description_t<
-		json_string<_json337184262, std::string_view>
-		,json_string<_json337184263, std::string_view>
-		,json_string<_json337184267, std::string_view>
-		,json_string<_json337184268, std::string_view>
-		,json_string<_json337184269, std::string_view>
-		,json_string<_json337184273, std::string_view>
-		,json_string<_json337184275, std::string_view>
-		,json_string<_json337184279, std::string_view>
-		,json_string<_json337184280, std::string_view>
-		,json_string<_json337184281, std::string_view>
-		,json_string<_json337184282, std::string_view>
-		,json_string<_json337184283, std::string_view>
-		,json_string<_json337184284, std::string_view>
-		,json_string<_json337184288, std::string_view>
-		,json_string<_json337184292, std::string_view>
-		,json_string<_json337184296, std::string_view>
-		,json_string<_json337184297, std::string_view>
-		,json_string<_json337184298, std::string_view>
-		,json_string<_json337184299, std::string_view>
->{};
-}
-
-inline auto to_json_data( subTopicNames_t const & value ) {
-	return std::forward_as_tuple( value._json337184262, value._json337184263, value._json337184267, value._json337184268, value._json337184269, value._json337184273, value._json337184275, value._json337184279, value._json337184280, value._json337184281, value._json337184282, value._json337184283, value._json337184284, value._json337184288, value._json337184292, value._json337184296, value._json337184297, value._json337184298, value._json337184299 );
-}
-
 struct subjectNames_t {
 };	// subjectNames_t
 
@@ -5896,56 +5557,6 @@ inline auto describe_json_class( subjectNames_t ) {
 
 inline auto to_json_data( subjectNames_t const & value ) {
 	return std::forward_as_tuple(  );
-}
-
-struct topicNames_t {
-	std::string_view _json107888604;
-	std::string_view _json324846098;
-	std::string_view _json324846099;
-	std::string_view _json324846100;
-};	// topicNames_t
-
-inline auto describe_json_class( topicNames_t ) {
-	using namespace daw::json;
-	static constexpr char const _json107888604[] = "107888604";
-	static constexpr char const _json324846098[] = "324846098";
-	static constexpr char const _json324846099[] = "324846099";
-	static constexpr char const _json324846100[] = "324846100";
-	return daw::json::class_description_t<
-		json_string<_json107888604, std::string_view>
-		,json_string<_json324846098, std::string_view>
-		,json_string<_json324846099, std::string_view>
-		,json_string<_json324846100, std::string_view>
->{};
-}
-
-inline auto to_json_data( topicNames_t const & value ) {
-	return std::forward_as_tuple( value._json107888604, value._json324846098, value._json324846099, value._json324846100 );
-}
-
-struct topicSubTopics_t {
-	std::vector<int64_t> _json107888604;
-	std::vector<int64_t> _json324846098;
-	std::vector<int64_t> _json324846099;
-	std::vector<int64_t> _json324846100;
-};	// topicSubTopics_t
-
-inline auto describe_json_class( topicSubTopics_t ) {
-	using namespace daw::json;
-	static constexpr char const _json107888604[] = "107888604";
-	static constexpr char const _json324846098[] = "324846098";
-	static constexpr char const _json324846099[] = "324846099";
-	static constexpr char const _json324846100[] = "324846100";
-	return daw::json::class_description_t<
-		json_array<_json107888604, std::vector<int64_t>, json_number<no_name, int64_t>>
-		,json_array<_json324846098, std::vector<int64_t>, json_number<no_name, int64_t>>
-		,json_array<_json324846099, std::vector<int64_t>, json_number<no_name, int64_t>>
-		,json_array<_json324846100, std::vector<int64_t>, json_number<no_name, int64_t>>
->{};
-}
-
-inline auto to_json_data( topicSubTopics_t const & value ) {
-	return std::forward_as_tuple( value._json107888604, value._json324846098, value._json324846099, value._json324846100 );
 }
 
 struct venueNames_t {
@@ -5965,16 +5576,16 @@ inline auto to_json_data( venueNames_t const & value ) {
 }
 
 struct citm_object_t {
-	areaNames_t areaNames;
+	std::unordered_map<std::string_view, std::string_view> areaNames;
 	audienceSubCategoryNames_t audienceSubCategoryNames;
 	blockNames_t blockNames;
 	events_t events;
 	std::vector<performances_element_t> performances;
-	seatCategoryNames_t seatCategoryNames;
-	subTopicNames_t subTopicNames;
+	std::map<std::string, std::string> seatCategoryNames;
+	std::map<std::string, std::string> subTopicNames;
 	subjectNames_t subjectNames;
-	topicNames_t topicNames;
-	topicSubTopics_t topicSubTopics;
+	std::map<std::string, std::string> topicNames;
+	std::map<std::string, std::vector<int64_t>> topicSubTopics;
 	venueNames_t venueNames;
 };	// root_object_t
 
@@ -5992,16 +5603,16 @@ inline auto describe_json_class( citm_object_t ) {
 	static constexpr char const topicSubTopics[] = "topicSubTopics";
 	static constexpr char const venueNames[] = "venueNames";
 	return daw::json::class_description_t<
-		json_class<areaNames, areaNames_t>
+		json_key_value<areaNames, >
 		,json_class<audienceSubCategoryNames, audienceSubCategoryNames_t>
 		,json_class<blockNames, blockNames_t>
 		,json_class<events, events_t>
 		,json_array<performances, std::vector<performances_element_t>, json_class<no_name, performances_element_t>>
-		,json_class<seatCategoryNames, seatCategoryNames_t>
-		,json_class<subTopicNames, subTopicNames_t>
+		,json_class<seatCategoryNames, std::map<std::string, std::string>, json_string<no_name>>
+		,json_key_value<subTopicNames, std::map<std::string, std::string>, json_string<no_name>>
 		,json_class<subjectNames, subjectNames_t>
-		,json_class<topicNames, topicNames_t>
-		,json_class<topicSubTopics, topicSubTopics_t>
+		,json_key_value<topicNames, std::map<std::string, std::string>, json_string<no_name>>
+		,json_key_value<topicSubTopics, std::map<std::string, std::vector<int64_t>>, json_array<no_name, int64_t>>
 		,json_class<venueNames, venueNames_t>
 >{};
 }

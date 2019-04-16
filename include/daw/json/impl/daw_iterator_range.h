@@ -24,158 +24,154 @@
 
 #include <daw/daw_algorithm.h>
 
-namespace daw {
-	namespace json {
-		namespace impl {
-			template<typename First, typename Last>
-			struct IteratorRange {
-				First first{};
-				Last last{};
+namespace daw::json::impl {
+	template<typename First, typename Last>
+	struct IteratorRange {
+		First first{};
+		Last last{};
 #ifndef NDEBUG
-				size_t pos = 0;
+		size_t pos = 0;
 #endif
 
-				constexpr IteratorRange( ) noexcept = default;
+		constexpr IteratorRange( ) noexcept = default;
 
-				constexpr IteratorRange( First f, Last l ) noexcept
-				  : first( f )
-				  , last( l ) {}
+		constexpr IteratorRange( First f, Last l ) noexcept
+		  : first( f )
+		  , last( l ) {}
 
-				constexpr bool empty( ) const noexcept {
-					return first == last;
-				}
+		constexpr bool empty( ) const noexcept {
+			return first == last;
+		}
 
-				constexpr decltype( auto ) front( ) const noexcept {
-					return *first;
-				}
+		constexpr decltype( auto ) front( ) const noexcept {
+			return *first;
+		}
 
-				constexpr bool front( char c ) const noexcept {
-					return !empty( ) and in( c );
-				}
+		constexpr bool front( char c ) const noexcept {
+			return !empty( ) and in( c );
+		}
 
-				constexpr bool not_front( char c ) const noexcept {
-					return !empty( ) and !in( c );
-				}
+		constexpr bool not_front( char c ) const noexcept {
+			return !empty( ) and !in( c );
+		}
 
-				constexpr size_t size( ) const noexcept {
-					return static_cast<size_t>( std::distance( first, last ) );
-				}
+		constexpr size_t size( ) const noexcept {
+			return static_cast<size_t>( std::distance( first, last ) );
+		}
 
-				template<size_t N>
-				constexpr bool front( char const ( &set )[N] ) const noexcept {
-					if( empty( ) ) {
-						return false;
-					}
-					bool result = false;
-					daw::algorithm::do_n_arg<N - 1>(
-					  [&]( size_t p ) { result |= in( set[p] ); } );
-					return result;
-				}
+		template<size_t N>
+		constexpr bool front( char const ( &set )[N] ) const noexcept {
+			if( empty( ) ) {
+				return false;
+			}
+			bool result = false;
+			daw::algorithm::do_n_arg<N - 1>(
+			  [&]( size_t p ) { result |= in( set[p] ); } );
+			return result;
+		}
 
-				constexpr bool is_null( ) const noexcept {
-					return first == nullptr;
-				}
+		constexpr bool is_null( ) const noexcept {
+			return first == nullptr;
+		}
 
-				constexpr void remove_prefix( size_t n = 1 ) {
-					first = std::next( first, static_cast<intmax_t>( n ) );
+		constexpr void remove_prefix( size_t n = 1 ) {
+			first = std::next( first, static_cast<intmax_t>( n ) );
 #ifndef NDEBUG
-					pos += n;
+			pos += n;
 #endif
-				}
+		}
 
-				constexpr void trim_left( ) noexcept {
-					while( first != last ) {
-						switch( *first ) {
-						case 0x20: // space
-						case 0x09: // tab
-						case 0x0A: // new line
-						case 0x0D: // carriage return
-							++first;
+		constexpr void trim_left( ) noexcept {
+			while( first != last ) {
+				switch( *first ) {
+				case 0x20: // space
+				case 0x09: // tab
+				case 0x0A: // new line
+				case 0x0D: // carriage return
+					++first;
 #ifndef NDEBUG
-							++pos;
+					++pos;
 #endif
-							continue;
-						}
-						return;
-					}
+					continue;
 				}
+				return;
+			}
+		}
 
-				constexpr decltype( auto ) begin( ) const noexcept {
-					return first;
-				}
+		constexpr decltype( auto ) begin( ) const noexcept {
+			return first;
+		}
 
-				constexpr decltype( auto ) end( ) const noexcept {
-					return last;
-				}
+		constexpr decltype( auto ) end( ) const noexcept {
+			return last;
+		}
 
-				explicit constexpr operator bool( ) const noexcept {
-					return !empty( );
-				}
+		explicit constexpr operator bool( ) const noexcept {
+			return !empty( );
+		}
 
-				constexpr auto pop_front( ) {
-					return *first++;
-				}
+		constexpr auto pop_front( ) {
+			return *first++;
+		}
 
-				constexpr daw::string_view move_to_next_of( char c ) noexcept {
-					auto p = begin( );
-					size_t sz = 0;
-					while( !in( c ) ) {
-						remove_prefix( );
-						++sz;
-					}
-					return {p, sz};
-				}
+		constexpr daw::string_view move_to_next_of( char c ) noexcept {
+			auto p = begin( );
+			size_t sz = 0;
+			while( !in( c ) ) {
+				remove_prefix( );
+				++sz;
+			}
+			return {p, sz};
+		}
 
-				constexpr IteratorRange
-				move_to_first_of( daw::string_view const chars ) noexcept {
-					auto result = *this;
-					while( chars.find( front( ) ) == daw::string_view::npos ) {
-						remove_prefix( );
-					}
-					result.last = first;
-					return result;
-				}
+		constexpr IteratorRange
+		move_to_first_of( daw::string_view const chars ) noexcept {
+			auto result = *this;
+			while( chars.find( front( ) ) == daw::string_view::npos ) {
+				remove_prefix( );
+			}
+			result.last = first;
+			return result;
+		}
 
-				constexpr bool in( char c ) const noexcept {
-					return *first == c;
-				}
+		constexpr bool in( char c ) const noexcept {
+			return *first == c;
+		}
 
-				template<size_t N>
-				constexpr bool in( char const ( &set )[N] ) const noexcept {
-					bool result = false;
-					daw::algorithm::do_n_arg<N - 1>(
-					  [&]( size_t p ) { result |= ( set[p] == *first ); } );
-					return result;
-				}
+		template<size_t N>
+		constexpr bool in( char const ( &set )[N] ) const noexcept {
+			bool result = false;
+			daw::algorithm::do_n_arg<N - 1>(
+			  [&]( size_t p ) { result |= ( set[p] == *first ); } );
+			return result;
+		}
 
-				constexpr bool is_digit( ) const noexcept {
-					return in( "0123456789" );
-				}
+		constexpr bool is_digit( ) const noexcept {
+			return in( "0123456789" );
+		}
 
-				constexpr bool is_real_number_part( ) const noexcept {
-					return in( "0123456789eE+-" );
-				}
+		constexpr bool is_real_number_part( ) const noexcept {
+			return in( "0123456789eE+-" );
+		}
 
-				constexpr daw::string_view munch( char c ) noexcept {
-					auto result = move_to_next_of( c );
-					if( in( c ) ) {
-						remove_prefix( );
-					}
-					return result;
-				}
+		constexpr daw::string_view munch( char c ) noexcept {
+			auto result = move_to_next_of( c );
+			if( in( c ) ) {
+				remove_prefix( );
+			}
+			return result;
+		}
 
-				constexpr bool at_end_of_item( ) const noexcept {
-					return in( ",}]" ) or daw::parser::is_unicode_whitespace( front( ) );
-				}
+		constexpr bool at_end_of_item( ) const noexcept {
+			return in( ",}]" ) or daw::parser::is_unicode_whitespace( front( ) );
+		}
 
-				constexpr void clean_tail( ) noexcept {
-					trim_left( );
-					if( in( ',' ) ) {
-						remove_prefix( );
-						trim_left( );
-					}
-				}
-			};
-		} // namespace impl
-	}   // namespace json
-} // namespace daw
+		constexpr void clean_tail( ) noexcept {
+			trim_left( );
+			if( in( ',' ) ) {
+				remove_prefix( );
+				trim_left( );
+			}
+		}
+	};
+} // namespace daw::json::impl
