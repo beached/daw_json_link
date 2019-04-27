@@ -6,6 +6,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <unordered_map>
 
 struct events_value_t {
 	int64_t id;
@@ -15,7 +16,7 @@ struct events_value_t {
 	std::vector<int64_t> topicIds;
 }; // events_value_t
 
-inline auto describe_json_class( events_value_t ) {
+auto describe_json_class( events_value_t ) {
 	using namespace daw::json;
 	static constexpr char const id[] = "id";
 	static constexpr char const logo[] = "logo";
@@ -31,7 +32,7 @@ inline auto describe_json_class( events_value_t ) {
 	             json_number<no_name, int64_t>>>{};
 }
 
-inline auto to_json_data( events_value_t const &value ) {
+auto to_json_data( events_value_t const &value ) {
 	return std::forward_as_tuple( value.id, value.logo, value.name,
 	                              value.subTopicIds, value.topicIds );
 }
@@ -42,7 +43,7 @@ struct prices_element_t {
 	int64_t seatCategoryId;
 }; // prices_element_t
 
-inline auto describe_json_class( prices_element_t ) {
+auto describe_json_class( prices_element_t ) {
 	using namespace daw::json;
 	static constexpr char const amount[] = "amount";
 	static constexpr char const audienceSubCategoryId[] = "audienceSubCategoryId";
@@ -52,7 +53,7 @@ inline auto describe_json_class( prices_element_t ) {
 	  json_number<seatCategoryId, intmax_t>>{};
 }
 
-inline auto to_json_data( prices_element_t const &value ) {
+auto to_json_data( prices_element_t const &value ) {
 	return std::forward_as_tuple( value.amount, value.audienceSubCategoryId,
 	                              value.seatCategoryId );
 }
@@ -61,13 +62,13 @@ struct areas_element_t {
 	int64_t areaId;
 }; // areas_element_t
 
-inline auto describe_json_class( areas_element_t ) {
+auto describe_json_class( areas_element_t ) {
 	using namespace daw::json;
 	static constexpr char const areaId[] = "areaId";
 	return daw::json::class_description_t<json_number<areaId, intmax_t>>{};
 }
 
-inline auto to_json_data( areas_element_t const &value ) {
+auto to_json_data( areas_element_t const &value ) {
 	return std::forward_as_tuple( value.areaId );
 }
 
@@ -76,7 +77,7 @@ struct seatCategories_element_t {
 	int64_t seatCategoryId;
 }; // seatCategories_element_t
 
-inline auto describe_json_class( seatCategories_element_t ) {
+auto describe_json_class( seatCategories_element_t ) {
 	using namespace daw::json;
 	static constexpr char const areas[] = "areas";
 	static constexpr char const seatCategoryId[] = "seatCategoryId";
@@ -86,7 +87,7 @@ inline auto describe_json_class( seatCategories_element_t ) {
 	  json_number<seatCategoryId, intmax_t>>{};
 }
 
-inline auto to_json_data( seatCategories_element_t const &value ) {
+auto to_json_data( seatCategories_element_t const &value ) {
 	return std::forward_as_tuple( value.areas, value.seatCategoryId );
 }
 
@@ -100,7 +101,7 @@ struct performances_element_t {
 	std::string venueCode;
 }; // performances_element_t
 
-inline auto describe_json_class( performances_element_t ) {
+auto describe_json_class( performances_element_t ) {
 	using namespace daw::json;
 	static constexpr char const eventId[] = "eventId";
 	static constexpr char const id[] = "id";
@@ -119,34 +120,23 @@ inline auto describe_json_class( performances_element_t ) {
 	  json_number<start, intmax_t>, json_string<venueCode>>{};
 }
 
-inline auto to_json_data( performances_element_t const &value ) {
+auto to_json_data( performances_element_t const &value ) {
 	return std::forward_as_tuple( value.eventId, value.id, value.logo,
 	                              value.prices, value.seatCategories, value.start,
 	                              value.venueCode );
-}
-
-struct subjectNames_t {}; // subjectNames_t
-
-inline auto describe_json_class( subjectNames_t ) {
-	using namespace daw::json;
-	return daw::json::class_description_t<>{};
-}
-
-inline auto to_json_data( subjectNames_t const &value ) {
-	return std::forward_as_tuple( );
 }
 
 struct venueNames_t {
 	std::string PLEYEL_PLEYEL;
 }; // venueNames_t
 
-inline auto describe_json_class( venueNames_t ) {
+auto describe_json_class( venueNames_t ) {
 	using namespace daw::json;
 	static constexpr char const PLEYEL_PLEYEL[] = "PLEYEL_PLEYEL";
 	return daw::json::class_description_t<json_string<PLEYEL_PLEYEL>>{};
 }
 
-inline auto to_json_data( venueNames_t const &value ) {
+auto to_json_data( venueNames_t const &value ) {
 	return std::forward_as_tuple( value.PLEYEL_PLEYEL );
 }
 
@@ -157,14 +147,13 @@ struct citm_object_t {
 	std::vector<performances_element_t> performances;
 	std::unordered_map<std::string, std::string> seatCategoryNames;
 	std::unordered_map<std::string, std::string> subTopicNames;
-	subjectNames_t subjectNames;
 	std::optional<std::unordered_map<std::string, std::string>> topicNames;
 	std::optional<std::unordered_map<std::string, std::vector<int64_t>>>
 	  topicSubTopics;
 	std::optional<venueNames_t> venueNames;
 }; // citm_object_t
 
-inline auto describe_json_class( citm_object_t ) {
+auto describe_json_class( citm_object_t ) {
 	using namespace daw::json;
 	static constexpr char const areaNames[] = "areaNames";
 	static constexpr char const audienceSubCategoryNames[] =
@@ -173,7 +162,6 @@ inline auto describe_json_class( citm_object_t ) {
 	static constexpr char const performances[] = "performances";
 	static constexpr char const seatCategoryNames[] = "seatCategoryNames";
 	static constexpr char const subTopicNames[] = "subTopicNames";
-	static constexpr char const subjectNames[] = "subjectNames";
 	static constexpr char const topicNames[] = "topicNames";
 	static constexpr char const topicSubTopics[] = "topicSubTopics";
 	static constexpr char const venueNames[] = "venueNames";
@@ -192,7 +180,6 @@ inline auto describe_json_class( citm_object_t ) {
 	                 json_string<no_name>>,
 	  json_key_value<subTopicNames, std::unordered_map<std::string, std::string>,
 	                 json_string<no_name>>,
-	  json_class<subjectNames, subjectNames_t>,
 	  json_nullable<
 	    json_key_value<topicNames, std::unordered_map<std::string, std::string>,
 	                   json_string<no_name>>>,
@@ -203,10 +190,9 @@ inline auto describe_json_class( citm_object_t ) {
 	  json_nullable<json_class<venueNames, venueNames_t>>>{};
 }
 
-inline auto to_json_data( citm_object_t const &value ) {
-	return std::forward_as_tuple( value.areaNames, value.audienceSubCategoryNames,
-	                              value.events, value.performances,
-	                              value.seatCategoryNames, value.subTopicNames,
-	                              value.subjectNames, value.topicNames,
-	                              value.topicSubTopics, value.venueNames );
+auto to_json_data( citm_object_t const &value ) {
+	return std::forward_as_tuple(
+	  value.areaNames, value.audienceSubCategoryNames, value.events,
+	  value.performances, value.seatCategoryNames, value.subTopicNames,
+	  value.topicNames, value.topicSubTopics, value.venueNames );
 }

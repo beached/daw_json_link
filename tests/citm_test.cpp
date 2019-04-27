@@ -38,17 +38,18 @@ int main( int argc, char **argv ) {
 
 	auto const json_data1 =
 	  daw::filesystem::memory_mapped_file_t<char>( argv[1] );
-	auto json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
+	auto const json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
 
 	auto const sz = json_sv1.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
 	daw::bench_n_test_mbs<10>(
-	  "nativejson bench", sz,
+	  "citm_catalog bench", sz,
 	  []( auto f1 ) {
 		  auto j1 = daw::json::from_json<citm_object_t>( f1 );
 		  daw::do_not_optimize( j1 );
 	  },
 	  json_sv1 );
 }
+

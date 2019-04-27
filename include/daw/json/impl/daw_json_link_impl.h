@@ -113,12 +113,12 @@ namespace daw::json {
 #define JSONNAMETYPE char const *
 
 	constexpr size_t json_name_len( char const *const str ) noexcept {
-		return std::string_view( str ).size( );
+		return daw::string_view( str ).size( );
 	}
 
 	constexpr bool json_name_eq( char const *const lhs,
 	                             char const *const rhs ) noexcept {
-		return std::string_view( lhs ) == std::string_view( rhs );
+		return daw::string_view( lhs ) == daw::string_view( rhs );
 	}
 
 	// Convienience for array members
