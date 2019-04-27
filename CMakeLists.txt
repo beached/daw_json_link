@@ -97,6 +97,13 @@ add_test( twitter_test twitter_test_bin )
 add_dependencies( check twitter_test_bin )
 add_dependencies( full twitter_test_bin )
 
+add_executable( citm_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/citm_test.cpp )
+add_dependencies( citm_test_bin dependency_stub )
+target_link_libraries( citm_test_bin ${Boost_LIBRARIES} ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
+add_test( citm_test citm_test_bin )
+add_dependencies( check citm_test_bin )
+add_dependencies( full citm_test_bin )
+
 add_executable( kv_map_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/kv_map_test.cpp )
 add_dependencies( kv_map_test_bin dependency_stub )
 add_test( kv_map_test kv_map_test_bin )
