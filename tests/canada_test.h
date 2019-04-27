@@ -12,7 +12,7 @@ struct properties_t {
 	std::string_view name;
 };	// properties_t
 
-inline auto describe_json_class( properties_t ) {
+auto describe_json_class( properties_t ) {
 	using namespace daw::json;
 	static constexpr char const name[] = "name";
 	return daw::json::class_description_t<
@@ -20,7 +20,7 @@ inline auto describe_json_class( properties_t ) {
 >{};
 }
 
-inline auto to_json_data( properties_t const & value ) {
+auto to_json_data( properties_t const & value ) {
 	return std::forward_as_tuple( value.name );
 }
 
@@ -29,7 +29,7 @@ struct geometry_t {
 	std::vector<std::vector<std::vector<double>>> coordinates;
 };	// geometry_t
 
-inline auto describe_json_class( geometry_t ) {
+auto describe_json_class( geometry_t ) {
 	using namespace daw::json;
 	static constexpr char const type[] = "type";
 	static constexpr char const coordinates[] = "coordinates";
@@ -39,7 +39,7 @@ inline auto describe_json_class( geometry_t ) {
 >{};
 }
 
-inline auto to_json_data( geometry_t const & value ) {
+auto to_json_data( geometry_t const & value ) {
 	return std::forward_as_tuple( value.type, value.coordinates );
 }
 
@@ -49,7 +49,7 @@ struct features_element_t {
 	geometry_t geometry;
 };	// features_element_t
 
-inline auto describe_json_class( features_element_t ) {
+auto describe_json_class( features_element_t ) {
 	using namespace daw::json;
 	static constexpr char const type[] = "type";
 	static constexpr char const properties[] = "properties";
@@ -61,7 +61,7 @@ inline auto describe_json_class( features_element_t ) {
 >{};
 }
 
-inline auto to_json_data( features_element_t const & value ) {
+auto to_json_data( features_element_t const & value ) {
 	return std::forward_as_tuple( value.type, value.properties, value.geometry );
 }
 
@@ -70,7 +70,7 @@ struct canada_object_t {
 	std::vector<features_element_t> features;
 };	// root_object_t
 
-inline auto describe_json_class( canada_object_t ) {
+auto describe_json_class( canada_object_t ) {
 	using namespace daw::json;
 	static constexpr char const type[] = "type";
 	static constexpr char const features[] = "features";
@@ -80,7 +80,7 @@ inline auto describe_json_class( canada_object_t ) {
 >{};
 }
 
-inline auto to_json_data( canada_object_t const & value ) {
+auto to_json_data( canada_object_t const & value ) {
 	return std::forward_as_tuple( value.type, value.features );
 }
 
