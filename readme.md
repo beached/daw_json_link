@@ -42,6 +42,24 @@ static constexpr char const name_a[] = "name_a";
 ```
 
 ## Code Examples
+# Using data types
+Once a data type has been described, you can easily construct an object from a string or string_view.
+
+```C++
+auto my_class = from_json<MyClass>( json_string );
+```
+Or one can create a collection of your object from a JSON array
+
+```C++
+auto my_data = from_json_array<json_class<no_name, MyClass>( json_string );
+```
+
+If you want to work from JSON array data you can get an iterator and use the std algorithms too
+
+```C++
+using iterator_t = daw::json::json_array_iterator<json_class<no_name, MyClass>>;
+auto pos = std::find( iterator_t( json_string ), iterator_t( ), MyClass( ... ) );
+```
 
 # Deserializing/Parsing
 This can be accomplished by writing a function called describe_json_class with a single arugment that is your type.  The library is only concerned with it's return value. For example:
