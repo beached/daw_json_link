@@ -51,7 +51,7 @@ auto my_class = from_json<MyClass>( json_string );
 Or one can create a collection of your object from a JSON array
 
 ```C++
-auto my_data = from_json_array<json_class<no_name, MyClass>( json_string );
+auto my_data = from_json_array<json_class<no_name, MyClass>>( json_string );
 ```
 
 If you want to work from JSON array data you can get an iterator and use the std algorithms too
