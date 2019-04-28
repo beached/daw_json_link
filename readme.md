@@ -61,6 +61,12 @@ using iterator_t = daw::json::json_array_iterator<json_class<no_name, MyClass>>;
 auto pos = std::find( iterator_t( json_string ), iterator_t( ), MyClass( ... ) );
 ```
 
+If you want to serialize to JSON 
+
+```C++
+std::string my_json_data = to_json( MyClass{} );
+```
+
 # Deserializing/Parsing
 This can be accomplished by writing a function called describe_json_class with a single arugment that is your type.  The library is only concerned with it's return value. For example:
 
