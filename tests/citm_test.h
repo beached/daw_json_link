@@ -46,7 +46,7 @@ auto describe_json_class( events_value_t ) {
 	static constexpr char const subTopicIds[] = "subTopicIds";
 	static constexpr char const topicIds[] = "topicIds";
 	return daw::json::class_description_t<
-	  json_number<id, intmax_t>,
+	  json_number<id, int64_t>,
 	  json_nullable<json_string<logo, std::string_view>>,
 	  json_string<name, std::string_view>,
 	  json_array<subTopicIds, std::vector<int64_t>,
@@ -72,8 +72,8 @@ auto describe_json_class( prices_element_t ) {
 	static constexpr char const audienceSubCategoryId[] = "audienceSubCategoryId";
 	static constexpr char const seatCategoryId[] = "seatCategoryId";
 	return daw::json::class_description_t<
-	  json_number<amount, intmax_t>, json_number<audienceSubCategoryId, intmax_t>,
-	  json_number<seatCategoryId, intmax_t>>{};
+	  json_number<amount, int64_t>, json_number<audienceSubCategoryId, int64_t>,
+	  json_number<seatCategoryId, int64_t>>{};
 }
 
 auto to_json_data( prices_element_t const &value ) {
@@ -88,7 +88,7 @@ struct areas_element_t {
 auto describe_json_class( areas_element_t ) {
 	using namespace daw::json;
 	static constexpr char const areaId[] = "areaId";
-	return daw::json::class_description_t<json_number<areaId, intmax_t>>{};
+	return daw::json::class_description_t<json_number<areaId, int64_t>>{};
 }
 
 auto to_json_data( areas_element_t const &value ) {
@@ -107,7 +107,7 @@ auto describe_json_class( seatCategories_element_t ) {
 	return daw::json::class_description_t<
 	  json_array<areas, std::vector<areas_element_t>,
 	             json_class<no_name, areas_element_t>>,
-	  json_number<seatCategoryId, intmax_t>>{};
+	  json_number<seatCategoryId, int64_t>>{};
 }
 
 auto to_json_data( seatCategories_element_t const &value ) {
@@ -134,13 +134,13 @@ auto describe_json_class( performances_element_t ) {
 	static constexpr char const start[] = "start";
 	static constexpr char const venueCode[] = "venueCode";
 	return daw::json::class_description_t<
-	  json_number<eventId, intmax_t>, json_number<id, intmax_t>,
+	  json_number<eventId, int64_t>, json_number<id, int64_t>,
 	  json_nullable<json_string<logo, std::string_view>>,
 	  json_array<prices, std::vector<prices_element_t>,
 	             json_class<no_name, prices_element_t>>,
 	  json_array<seatCategories, std::vector<seatCategories_element_t>,
 	             json_class<no_name, seatCategories_element_t>>,
-	  json_number<start, intmax_t>, json_string<venueCode, std::string_view>>{};
+	  json_number<start, int64_t>, json_string<venueCode, std::string_view>>{};
 }
 
 auto to_json_data( performances_element_t const &value ) {
