@@ -1,13 +1,12 @@
 # JSON Link
-I wrote this library to allow me to describe the mappings between a JSON class and that of C++ with the least amount of effort or intrusion.  The end result is easy serialization and deserialization with C++ and JSON.  One just needs to describe the mapping of JSON class member names to the types needed to construct a C++ class.
-
+This library is different.  It assumes we know that data structures we will be recieving and uses that knowledge to provide a clean interface for parsing.  Describing the mappings between JSON and C++, one needs only one method to parse and an additional one for serialization.
 
 ### Installing and Requirements
 ## Requirements
 * C++ 17 compiler, C++ 20 for enhanced names
 * git
 * cmake
-* GCC(8/9)/Clang(7) have been tested.  Have not yet tested on MSVC
+* GCC(8/9)/Clang(7/8) have been tested.  Have not yet tested on MSVC
 
 ## Installing(Linux/Mac commandline)
 
