@@ -150,7 +150,7 @@ auto to_json_data( performances_element_t const &value ) {
 }
 
 struct venueNames_t {
-	std::string_view PLEYEL_PLEYEL;
+	std::string_view pleyel_pleyel;
 }; // venueNames_t
 
 auto describe_json_class( venueNames_t ) {
@@ -161,7 +161,7 @@ auto describe_json_class( venueNames_t ) {
 }
 
 auto to_json_data( venueNames_t const &value ) {
-	return std::forward_as_tuple( value.PLEYEL_PLEYEL );
+	return std::forward_as_tuple( value.pleyel_pleyel );
 }
 
 struct citm_object_t {
