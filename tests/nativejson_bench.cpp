@@ -85,7 +85,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << std::flush;
 
-		daw::bench_n_test_mbs<10>(
+		daw::bench_n_test_mbs<100>(
 	  "nativejson bench", sz,
 	  []( auto f1, auto f2, auto f3 ) {
 		  auto j1 = daw::json::from_json<twitter_object_t>( f1 );
