@@ -128,7 +128,7 @@ struct AggClass {
 	int a{};
 	double b{};
 };
-inline auto describe_json_class( AggClass ) {
+auto describe_json_class( AggClass ) {
 	using namespace daw::json;
 	static constexpr char const a[] = "a";
 	static constexpr char const b[] = "b";
@@ -184,14 +184,14 @@ struct AggClass {
 	int a{};
 	double b{};
 };
-inline auto describe_json_class( AggClass ) {
+auto describe_json_class( AggClass ) {
 	using namespace daw::json;
 	return class_description_t<
 		json_number<"a", int>,
 		json_number<"b">
 	>{};
 }
-inline auto to_json_data( AggClass const & ) {
+auto to_json_data( AggClass const & ) {
     return std::forward_as_tuple( c.a, c.b );
 }
 //...
