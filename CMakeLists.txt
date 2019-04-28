@@ -92,7 +92,7 @@ add_dependencies( full coords_test2_bin )
 
 add_executable( nativejson_bench_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test.h  ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/canada_test.h ${TEST_FOLDER}/nativejson_bench.cpp )
 add_dependencies( nativejson_bench_bin dependency_stub )
-target_link_libraries( nativejson_bench_bin ${Boost_LIBRARIES} ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
+target_link_libraries( nativejson_bench_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
 add_test( nativejson_bench nativejson_bench_bin )
 add_dependencies( check nativejson_bench_bin )
 add_dependencies( full nativejson_bench_bin )
