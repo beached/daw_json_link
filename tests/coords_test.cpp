@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <daw/daw_benchmark.h>
+#include <fstream>
 #include <iostream>
+#include <streambuf>
 #include <string_view>
 #include <vector>
-
-#include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
 
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
@@ -67,6 +67,14 @@ auto describe_json_class( coordinates_t ) noexcept {
 #endif
 }
 
+namespace {
+	std::string load_json_data( daw::string_view file_path ) {
+		auto file = std::ifstream( file_path.data( ) );
+		assert( file );
+		return std::string( std::istreambuf_iterator<char>( file ), std::istreambuf_iterator<char>( ) );
+	}
+}
+
 int main( int argc, char **argv ) {
 	using namespace daw::json;
 
@@ -75,7 +83,7 @@ int main( int argc, char **argv ) {
 	  exit( 1 );
 	}
 
-	auto const json_data = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
+	auto const json_data = load_json_data( argv[1] );
 	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using iterator_t =

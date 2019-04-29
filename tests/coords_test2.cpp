@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <fstream>
 #include <iostream>
+#include <streambuf>
 #include <string_view>
 #include <vector>
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
 
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
@@ -67,13 +68,22 @@ auto describe_json_class( coordinates_t ) noexcept {
 #endif
 }
 
+namespace {
+	std::string load_json_data( daw::string_view file_path ) {
+		auto file = std::ifstream( file_path.data( ) );
+		assert( file );
+		return std::string( std::istreambuf_iterator<char>( file ),
+		                    std::istreambuf_iterator<char>( ) );
+	}
+} // namespace
+
 int main( int argc, char **argv ) {
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filename to open\n";
 		exit( 1 );
 	}
-	auto const json_data = daw::filesystem::memory_mapped_file_t<char>( argv[1] );
+	auto const json_data = load_json_data( argv[1] );
 	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using iterator_t =
@@ -82,24 +92,24 @@ int main( int argc, char **argv ) {
 	auto first = iterator_t( json_sv, "coordinates" );
 	auto last = iterator_t( );
 
-	auto const [x, y, z, sz] =
-	  *daw::bench_n_test_mbs<10>( "coords bench", json_sv.size( ),
-	                              [&]( iterator_t f, iterator_t l ) noexcept {
-		                              double x1 = 0.0;
-		                              double y1 = 0.0;
-		                              double z1 = 0.0;
-		                              size_t sz1 = 0U;
-		                              while( f != l ) {
-			                              auto c = *f;
-			                              ++sz1;
-			                              x1 += c.x;
-			                              y1 += c.y;
-			                              z1 += c.z;
-			                              ++f;
-		                              }
-		                              return std::make_tuple( x1, y1, z1, sz1 );
-	                              },
-	                              first, last );
+	auto const [x, y, z, sz] = *daw::bench_n_test_mbs<10>(
+	  "coords bench", json_sv.size( ),
+	  [&]( iterator_t f, iterator_t l ) noexcept {
+		  double x1 = 0.0;
+		  double y1 = 0.0;
+		  double z1 = 0.0;
+		  size_t sz1 = 0U;
+		  while( f != l ) {
+			  auto c = *f;
+			  ++sz1;
+			  x1 += c.x;
+			  y1 += c.y;
+			  z1 += c.z;
+			  ++f;
+		  }
+		  return std::make_tuple( x1, y1, z1, sz1 );
+	  },
+	  first, last );
 
 	//	auto const sz = cls.coordinates.size( );
 	std::cout << x / sz << '\n';
