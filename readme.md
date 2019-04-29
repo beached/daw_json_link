@@ -67,6 +67,12 @@ If you want to serialize to JSON
 std::string my_json_data = to_json( MyClass{} );
 ```
 
+Or serial a collection of things
+```C++
+std::vector<MyClass> arry = ...;
+std::string my_json_data = to_json_array( arry );
+```
+
 # Deserializing/Parsing
 This can be accomplished by writing a function called describe_json_class with a single arugment that is your type.  The library is only concerned with it's return value. For example:
 
