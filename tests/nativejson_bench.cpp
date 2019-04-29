@@ -35,6 +35,7 @@
 namespace {
 	std::string load_json_data( daw::string_view file_path ) {
 		auto file = std::ifstream( file_path.data( ) );
+		assert( file );
 		return std::string( std::istreambuf_iterator<char>( file ), std::istreambuf_iterator<char>( ) );
 	}
 }
