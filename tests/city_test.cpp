@@ -23,6 +23,7 @@
 #include <fstream>
 #include <iostream>
 #include <string_view>
+#include <streambuf>
 #include <vector>
 
 #include <daw/daw_benchmark.h>
