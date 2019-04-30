@@ -2,9 +2,7 @@ cmake_minimum_required( VERSION 2.8.12 )
 
 project( daw_json_link_prj )
 #set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
-find_package( Boost 1.60.0 COMPONENTS system iostreams filesystem regex unit_test_framework REQUIRED )
 enable_testing( )
-add_definitions( -DBOOST_TEST_DYN_LINK )
 
 include( "${CMAKE_SOURCE_DIR}/dependent_projects/CMakeListsCompiler.txt" )
 
@@ -32,9 +30,6 @@ else( )
 	add_library( dependency_stub STATIC "${CMAKE_SOURCE_DIR}/dependent_projects/stub.cpp" )
 	add_dependencies( dependency_stub ${DEP_PROJECT_DEPS} )
 endif( )
-
-include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
-link_directories( ${Boost_LIBRARY_DIRS} )
 
 set( HEADER_FOLDER "include" )
 set( TEST_FOLDER "tests" )
@@ -99,7 +94,7 @@ add_dependencies( full nativejson_bench_bin )
 
 add_executable( citm_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/citm_test.cpp )
 add_dependencies( citm_test_bin dependency_stub )
-target_link_libraries( citm_test_bin ${Boost_LIBRARIES} ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
+target_link_libraries( citm_test_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
 add_test( citm_test citm_test_bin )
 add_dependencies( check citm_test_bin )
 add_dependencies( full citm_test_bin )

@@ -29,6 +29,7 @@
 
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
+#include "daw/json/impl/daw_memory_mapped.h"
 
 struct coordinate_t {
 	double x;
@@ -67,23 +68,15 @@ auto describe_json_class( coordinates_t ) noexcept {
 #endif
 }
 
-namespace {
-	std::string load_json_data( daw::string_view file_path ) {
-		auto file = std::ifstream( file_path.data( ) );
-		assert( file );
-		return std::string( std::istreambuf_iterator<char>( file ), std::istreambuf_iterator<char>( ) );
-	}
-}
-
 int main( int argc, char **argv ) {
 	using namespace daw::json;
 
 	if( argc < 2 ) {
-	  std::cerr << "Must supply a filename to open\n";
-	  exit( 1 );
+		std::cerr << "Must supply a filename to open\n";
+		exit( 1 );
 	}
 
-	auto const json_data = load_json_data( argv[1] );
+	auto const json_data = daw::memory_mapped_file( argv[1] );
 	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using iterator_t =
