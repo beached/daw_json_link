@@ -22,7 +22,7 @@ externalproject_add(
 	date_prj
 	GIT_REPOSITORY "https://github.com/howardhinnant/date.git"
 	SOURCE_DIR "${CMAKE_BINARY_DIR}/dependencies/date"
-	GIT_TAG "master"
+	GIT_TAG "ed0368fc75427ef05cefdf19a39b60d7bed2f039"
 	INSTALL_DIR "${CMAKE_BINARY_DIR}/install"
 	CMAKE_ARGS -DTZ_CXX_STANDARD=17 -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
 )
