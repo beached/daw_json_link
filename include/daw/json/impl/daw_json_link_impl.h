@@ -1175,7 +1175,7 @@ namespace daw::json {
 			rng.remove_prefix( );
 			rng.trim_left( );
 			if constexpr( sizeof...( JsonMembers ) == 0 ) {
-				return construct_a<Result>{}( );
+				return construct_a<Result>( );
 				assert( rng.front( '}' ) );
 				rng.remove_prefix( );
 				rng.trim_left( );
@@ -1183,7 +1183,7 @@ namespace daw::json {
 				auto known_locations =
 				  daw::make_array( location_info_t{JsonMembers::name}... );
 
-				auto result = construct_a<Result>{}(
+				auto result = construct_a<Result>(
 				  parse_item<Is, JsonMembers...>( known_locations, rng )... );
 				rng.trim_left( );
 				// If we fullfill the contract before all values are found
