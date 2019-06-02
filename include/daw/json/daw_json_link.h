@@ -90,7 +90,7 @@ namespace daw::json {
 
 	template<JSONNAMETYPE Name, typename T = double,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
-	         typename Constructor = daw::construct_a<T>, bool RangeCheck = false>
+	         typename Constructor = daw::construct_a_t<T>, bool RangeCheck = false>
 	struct json_number {
 		static_assert( std::is_invocable_v<Constructor, T>,
 		               "Constructor must be callable with T" );
@@ -106,12 +106,12 @@ namespace daw::json {
 
 	template<JSONNAMETYPE Name, typename T = double,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
-	         typename Constructor = daw::construct_a<T>>
+	         typename Constructor = daw::construct_a_t<T>>
 	using json_checked_number =
 	  json_number<Name, T, LiteralAsString, Constructor, true>;
 
 	template<JSONNAMETYPE Name, typename T = bool,
-	         typename Constructor = daw::construct_a<T>>
+	         typename Constructor = daw::construct_a_t<T>>
 	struct json_bool {
 		static_assert( std::is_constructible_v<T, bool>,
 		               "Supplied type but be constructable from a bool" );
@@ -128,7 +128,7 @@ namespace daw::json {
 	};
 
 	template<JSONNAMETYPE Name, typename T = std::string,
-	         typename Constructor = daw::construct_a<T>,
+	         typename Constructor = daw::construct_a_t<T>,
 	         bool EmptyStringNull = false>
 	struct json_string {
 		static_assert(
@@ -171,7 +171,7 @@ namespace daw::json {
 	/// \tparam Constructor A callable used to construct T.  The
 	/// default supports normal and aggregate construction
 	template<JSONNAMETYPE Name, typename T,
-	         typename Constructor = daw::construct_a<T>>
+	         typename Constructor = daw::construct_a_t<T>>
 	struct json_class {
 		using i_am_a_json_type = void;
 		static constexpr auto name = Name;
@@ -206,7 +206,7 @@ namespace daw::json {
 	/// container.  The parsed type from JsonElement
 	///	passed to it
 	template<JSONNAMETYPE Name, typename Container, typename JsonElement,
-	         typename Constructor = daw::construct_a<Container>,
+	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	struct json_array {
 		using i_am_a_json_type = void;
@@ -232,7 +232,7 @@ namespace daw::json {
 	/// Appender A callable used to add elements to container.
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType = json_string<no_name>,
-	         typename Constructor = daw::construct_a<Container>,
+	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_kv_appender<Container>>
 	struct json_key_value {
 		using i_am_a_json_type = void;
@@ -284,7 +284,7 @@ namespace daw::json {
 
 	template<typename JsonElement,
 	         typename Container = std::vector<typename JsonElement::parse_to_t>,
-	         typename Constructor = daw::construct_a<Container>,
+	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	constexpr auto from_json_array( std::string_view json_data ) {
 		using parser_t =
