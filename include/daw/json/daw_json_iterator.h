@@ -129,4 +129,55 @@ namespace daw::json {
 			return !( *this == rhs );
 		}
 	};
+
+	template<typename JsonElement, char separator = ',',
+	         bool verify_bracket = true>
+	struct json_array_range {
+		using value_type =
+		  json_array_iterator<JsonElement, separator, verify_bracket>;
+		using reference = value_type &;
+		using const_reference = value_type const &;
+
+	private:
+		value_type m_first{};
+		value_type m_last{};
+
+	public:
+		constexpr json_array_range( ) noexcept = default;
+
+		template<typename String,
+		         daw::enable_if_t<!std::is_same_v<
+		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
+		constexpr json_array_range( String &&json_data,
+		                            std::string_view start_path = "" )
+		  : m_first( std::forward<String>( json_data ), start_path ) {}
+
+		constexpr reference begin( ) noexcept {
+			return m_first;
+		}
+
+		constexpr const_reference begin( ) const noexcept {
+			return m_first;
+		}
+
+		constexpr const_reference cbegin( ) const noexcept {
+			return m_first;
+		}
+
+		constexpr reference end( ) noexcept {
+			return m_last;
+		}
+
+		constexpr const_reference end( ) const noexcept {
+			return m_last;
+		}
+
+		constexpr const_reference cend( ) const noexcept {
+			return m_last;
+		}
+
+		constexpr bool empty( ) const {
+			return m_first == m_last;
+		}
+	};
 } // namespace daw::json
