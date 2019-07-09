@@ -7,7 +7,7 @@ This library is different.  It assumes we know what data structures we will be r
 * git
 * cmake
 * GCC(8/9)/Clang(7/8) have been tested.  Have not yet tested on MSVC
-* MSVC 19.21 has been tested. Builds most tests.  Must copy the glean.cmake.renamewin to glean.cmake prior to running cmake.  Only tested with cmake tool, not MSVC's built in
+* MSVC 19.21 has been tested. Must copy `glean.cmake.renamewin` to `glean.cmake` prior to running cmake.  
 
 ## Installing(Linux/Mac commandline)
 
