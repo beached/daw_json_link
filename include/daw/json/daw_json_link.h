@@ -317,3 +317,5 @@ namespace daw::json {
 		return result;
 	}
 } // namespace daw::json
+
+#define DAWJSONLINK_SENTINAL ",]\"}tfn"

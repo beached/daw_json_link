@@ -212,7 +212,7 @@ constexpr auto const json_data =
 			"s": "yo yo yo",
 			"o": 1344,
 			"dte": "2016-12-31T01:02:03.343Z"
-	  })";
+	  })" DAWJSONLINK_SENTINAL;
 
 constexpr char const json_data_array[] =
   R"([
@@ -273,7 +273,7 @@ constexpr char const json_data_array[] =
 			"s": "yo yo yo",
 			"o": 1322,
 			"dte": "2010-06-31T01:02:03.343Z"
-	  }])";
+	  }])" DAWJSONLINK_SENTINAL;
 
 int main( ) {
 	using namespace daw::json;
