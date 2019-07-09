@@ -2,7 +2,8 @@ set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are req
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL 'MSVC' )
 	message( "MSVC detected" )
-	add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 /permissive- )
+	add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 )
+	add_compile_options( /permissive- )
 else( )
 	message( "Clang detected" )
 	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
