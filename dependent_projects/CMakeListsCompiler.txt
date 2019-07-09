@@ -1,6 +1,6 @@
 set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 
-if( ${CMAKE_CXX_COMPILER_ID} STREQUAL 'MSVC' )
+if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" )
 	message( "MSVC detected" )
 	add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 )
 	add_compile_options( "/permissive-" )
