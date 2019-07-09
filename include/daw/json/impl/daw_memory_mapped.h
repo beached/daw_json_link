@@ -179,7 +179,7 @@ namespace daw {
 		bool open( std::string_view file,
 		           open_mode mode = open_mode::read ) noexcept {
 
-			std::ifsteam in_file( file.data( ) );
+			std::ifstream in_file( file.data( ) );
 			if( !in_file ) {
 				return false;
 			}
