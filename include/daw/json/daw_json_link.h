@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2019 Darrell Wright
 //
@@ -44,6 +44,7 @@
 #include <daw/iso8601/daw_date_parsing.h>
 #include <daw/iterator/daw_back_inserter.h>
 
+#include "impl/daw_iterator_range.h"
 #include "impl/daw_json_link_impl.h"
 
 namespace daw::json {
@@ -293,8 +294,8 @@ namespace daw::json {
 		using impl::data_size::data;
 		using impl::data_size::size;
 
-		auto rng = impl::IteratorRange( json_data.begin( ), json_data.end( ) );
-
+		auto rng = 
+		  daw::json::impl::IteratorRange( std::data( json_data ), std::data( json_data ) + std::size( json_data ) );
 		rng.trim_left( );
 
 		return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},

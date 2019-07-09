@@ -42,17 +42,20 @@ auto describe_json_class( Number ) noexcept {
 	return class_description_t<json_number<"a", intmax_t>>{};
 }
 #else
+namespace symbols_Number {
+	static constexpr char const a[] = "a";
+}
+
 auto describe_json_class( Number ) noexcept {
 	using namespace daw::json;
-	static constexpr char const a[] = "a";
-	return class_description_t<json_number<a, intmax_t>>{};
+	return class_description_t<json_number<symbols_Number::a, intmax_t>>{};
 }
 #endif
 
 int main( ) {
 	using namespace daw::json;
 	constexpr size_t const NUMVALUES = 1'000'000ULL;
-	std::string const json_data = [] {
+	std::string const json_data = [&NUMVALUES] {
 		std::string result = "[";
 
 		// 23 is what I calculated as the string size of the serialized class.
@@ -70,7 +73,7 @@ int main( ) {
 		return result;
 	}( );
 
-	std::string json_data2 = [] {
+	std::string json_data2 = [&NUMVALUES] {
 		std::string result = "[";
 		result.reserve( NUMVALUES * 23 + 8 );
 		daw::algorithm::do_n( NUMVALUES, [&result] {

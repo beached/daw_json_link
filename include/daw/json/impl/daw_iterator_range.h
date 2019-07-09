@@ -1,4 +1,4 @@
-﻿// The MIT License( MIT )
+// The MIT License( MIT )
 //
 // Copyright (c) 2019 Darrell Wright
 //
@@ -71,7 +71,11 @@ namespace daw::json::impl {
 		}
 
 		constexpr bool is_null( ) const noexcept {
-			return first == nullptr;
+			if constexpr( std::is_pointer_v<First> ) {
+				return first == nullptr;
+			} else {
+				return false;
+			}
 		}
 
 		constexpr void remove_prefix( size_t n = 1 ) {

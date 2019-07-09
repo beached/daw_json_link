@@ -1,4 +1,4 @@
-﻿// The MIT License( MIT )
+// The MIT License( MIT )
 //
 // Copyright (c) 2019 Darrell Wright
 //
@@ -118,11 +118,11 @@ namespace daw::json {
 
 	constexpr bool json_name_eq( char const *const lhs,
 	                             char const *const rhs ) noexcept {
-		return daw::string_view( lhs ) == daw::string_view( rhs );
+		return std::string_view( lhs ) == std::string_view( rhs );
 	}
 
 	// Convienience for array members
-	static inline constexpr char const no_name[] = "";
+	static constexpr char const no_name[] = "";
 #endif
 
 	struct parse_js_date {
@@ -508,7 +508,8 @@ namespace daw::json {
 		template<typename Result>
 		constexpr auto
 		parse_unsigned_integer( daw::string_view const &sv ) noexcept {
-			IteratorRange rng = {sv.data( ), sv.data( ) + sv.size( )};
+			auto rng =
+			  IteratorRange( std::data( sv ), std::data( sv ) + std::size( sv ) );
 			return parse_unsigned_integer<Result, true>( rng );
 		}
 
@@ -516,7 +517,8 @@ namespace daw::json {
 		template<typename Result>
 		constexpr auto
 		parse_unsigned_integer2( daw::string_view const &sv ) noexcept {
-			IteratorRange rng = {sv.data( ), sv.data( ) + sv.size( )};
+			auto rng =
+			  IteratorRange( std::data( sv ), std::data( sv ) + std::size( sv ) );
 			return parse_unsigned_integer2<Result, true>( rng );
 		}
 
@@ -547,7 +549,8 @@ namespace daw::json {
 		// For testing
 		template<typename Result>
 		constexpr Result parse_integer( daw::string_view const &sv ) noexcept {
-			IteratorRange rng = {sv.data( ), sv.data( ) + sv.size( )};
+			auto rng =
+			  IteratorRange( std::data( sv ), std::data( sv ) + std::size( sv ) );
 			return parse_integer<Result, true>( rng );
 		}
 
@@ -590,7 +593,8 @@ namespace daw::json {
 
 		template<typename Result>
 		constexpr Result parse_real( daw::string_view const &sv ) noexcept {
-			IteratorRange rng = {sv.data( ), sv.data( ) + sv.size( )};
+			auto rng =
+			  IteratorRange( std::data( sv ), std::data( sv ) + std::size( sv ) );
 			return parse_real<Result>( rng );
 		}
 
@@ -1204,7 +1208,8 @@ namespace daw::json {
 		constexpr Result parse_json_class( std::string_view sv,
 		                                   std::index_sequence<Is...> is ) {
 
-			auto rng = IteratorRange( sv.begin( ), sv.end( ) );
+			auto rng =
+			  IteratorRange( std::data( sv ), std::data( sv ) + std::size( sv ) );
 			return parse_json_class<Result, JsonMembers...>( rng, is );
 		}
 
