@@ -73,7 +73,16 @@ struct test_001_t {
 	  , o2( O2 )
 	  , dte( D ) {}
 };
-
+namespace symbols_test_001_t {
+	constexpr static char const i[] = "i";
+	constexpr static char const d[] = "d";
+	constexpr static char const b[] = "b";
+	constexpr static char const s[] = "s";
+	constexpr static char const y[] = "y";
+	constexpr static char const o[] = "o";
+	constexpr static char const o2[] = "o2";
+	constexpr static char const dte[] = "dte";
+}
 auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
@@ -84,20 +93,14 @@ auto describe_json_class( test_001_t ) noexcept {
 	  json_nullable<json_number<"o", int>>, json_nullable<json_number<"o2", int>>,
 	  json_date<"dte">>{};
 #else
-	constexpr static char const i[] = "i";
-	constexpr static char const d[] = "d";
-	constexpr static char const b[] = "b";
-	constexpr static char const s[] = "s";
-	constexpr static char const y[] = "y";
-	constexpr static char const o[] = "o";
-	constexpr static char const o2[] = "o2";
-	constexpr static char const dte[] = "dte";
 	return class_description_t<
-	  json_number<i, int>, json_number<d>, json_bool<b>,
-	  json_string<s, std::string_view>,
-	  json_array<y, daw::bounded_vector_t<int, 10>, json_number<no_name, int>>,
-	  json_nullable<json_number<o, int>>, json_nullable<json_number<o2, int>>,
-	  json_date<dte>>{};
+	  json_number<symbols_test_001_t::i, int>, json_number<symbols_test_001_t::d>,
+	  json_bool<symbols_test_001_t::b>,
+	  json_string<symbols_test_001_t::s, std::string_view>,
+	  json_array<symbols_test_001_t::y, daw::bounded_vector_t<int, 10>,
+	             json_number<no_name, int>>,
+	  json_nullable<json_number<symbols_test_001_t::o, int>>,
+	  json_nullable<json_number<symbols_test_001_t::o2, int>>, json_date<symbols_test_001_t::dte>>{};
 #endif
 }
 
@@ -108,13 +111,16 @@ auto to_json_data( test_001_t const &v ) {
 struct test_002_t {
 	test_001_t a{};
 };
+
+namespace symbols_test_002_t {
+	constexpr static char const a[] = "a";
+}
 auto describe_json_class( test_002_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_class<"a", test_001_t>>{};
 #else
-	constexpr static char const a[] = "a";
-	return class_description_t<json_class<a, test_001_t>>{};
+	return class_description_t<json_class<symbols_test_002_t::a, test_001_t>>{};
 #endif
 }
 
@@ -125,13 +131,17 @@ auto to_json_data( test_002_t const &v ) {
 struct test_003_t {
 	std::optional<test_001_t> a;
 };
+
+namespace symbols_test_003_t {
+	constexpr static char const a[] = "a";
+}
 auto describe_json_class( test_003_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_nullable<json_class<"a", test_001_t>>>{};
 #else
 	constexpr static char const a[] = "a";
-	return class_description_t<json_nullable<json_class<a, test_001_t>>>{};
+	return class_description_t<json_nullable<json_class<symbols_test_003_t::a, test_001_t>>>{};
 #endif
 }
 
@@ -174,13 +184,15 @@ struct e_test_001_t {
 	blah_t a = blah_t::a;
 };
 
+namespace symbols_e_test_001_t {
+	constexpr static char const a[] = "a";
+}
 auto describe_json_class( e_test_001_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_custom<"a", blah_t>>{};
 #else
-	constexpr static char const a[] = "a";
-	return class_description_t<json_custom<a, blah_t>>{};
+	return class_description_t<json_custom<symbols_e_test_001_t::a, blah_t>>{};
 #endif
 }
 

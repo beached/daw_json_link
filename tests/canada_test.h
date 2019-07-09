@@ -78,7 +78,7 @@ auto describe_json_class( geometry_t ) {
 	             json_array<no_name, std::vector<std::array<double, 2>>,
 	                        json_array<no_name, std::array<double, 2>,
 	                                   json_number<no_name>,
-	                                   daw::construct_a<std::array<double, 2>>,
+	                                   daw::construct_a_t<std::array<double, 2>>,
 	                                   array_appender<double>>>>>{};
 }
 
@@ -112,7 +112,7 @@ auto to_json_data( features_element_t const &value ) {
 struct canada_object_t {
 	std::string_view type;
 	std::vector<features_element_t> features;
-}; // root_object_t
+}; // canada_object_t
 
 namespace symbols_canada_object_t {
 	static constexpr char const type[] = "type";
@@ -130,3 +130,4 @@ auto describe_json_class( canada_object_t ) {
 auto to_json_data( canada_object_t const &value ) {
 	return std::forward_as_tuple( value.type, value.features );
 }
+

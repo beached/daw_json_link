@@ -1,49 +1,32 @@
-// The MIT License (MIT)
-//
-// Copyright (c) 2019 Darrell Wright
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files( the "Software" ), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and / or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// Code auto generated from json file 'twitter.json'
 
 #pragma once
 
-#include <cstdint>
-#include <daw/json/daw_json_link.h>
-#include <optional>
-#include <string_view>
 #include <tuple>
+#include <optional>
+#include <cstdint>
+#include <string_view>
 #include <vector>
+#include <daw/json/daw_json_link.h>
 
 struct metadata_t {
 	std::string_view result_type;
 	std::string_view iso_language_code;
-}; // metadata_t
+};	// metadata_t
 
-auto describe_json_class( metadata_t ) {
-	using namespace daw::json;
+namespace symbols_metadata_t {
 	static constexpr char const result_type[] = "result_type";
 	static constexpr char const iso_language_code[] = "iso_language_code";
+}
+auto describe_json_class( metadata_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<result_type, std::string_view>,
-	  json_string<iso_language_code, std::string_view>>{};
+		json_string<symbols_metadata_t::result_type, std::string_view>
+		,json_string<symbols_metadata_t::iso_language_code, std::string_view>
+	>{};
 }
 
-auto to_json_data( metadata_t const &value ) {
+auto to_json_data( metadata_t const & value ) {
 	return std::forward_as_tuple( value.result_type, value.iso_language_code );
 }
 
@@ -52,71 +35,82 @@ struct urls_element_t {
 	std::string_view expanded_url;
 	std::string_view display_url;
 	std::vector<int64_t> indices;
-}; // urls_element_t
+};	// urls_element_t
 
-auto describe_json_class( urls_element_t ) {
-	using namespace daw::json;
+namespace symbols_urls_element_t {
 	static constexpr char const url[] = "url";
 	static constexpr char const expanded_url[] = "expanded_url";
 	static constexpr char const display_url[] = "display_url";
 	static constexpr char const indices[] = "indices";
+}
+auto describe_json_class( urls_element_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<url, std::string_view>,
-	  json_string<expanded_url, std::string_view>,
-	  json_string<display_url, std::string_view>,
-	  json_array<indices, std::vector<int64_t>, json_number<no_name, int64_t>>>{};
+		json_string<symbols_urls_element_t::url, std::string_view>
+		,json_string<symbols_urls_element_t::expanded_url, std::string_view>
+		,json_string<symbols_urls_element_t::display_url, std::string_view>
+		,json_array<symbols_urls_element_t::indices, std::vector<int64_t>, json_number<no_name, int64_t>>
+	>{};
 }
 
-auto to_json_data( urls_element_t const &value ) {
-	return std::forward_as_tuple( value.url, value.expanded_url,
-	                              value.display_url, value.indices );
+auto to_json_data( urls_element_t const & value ) {
+	return std::forward_as_tuple( value.url, value.expanded_url, value.display_url, value.indices );
 }
 
 struct url_t {
 	std::vector<urls_element_t> urls;
-}; // url_t
+};	// url_t
 
+namespace symbols_url_t {
+	static constexpr char const urls[] = "urls";
+}
 auto describe_json_class( url_t ) {
 	using namespace daw::json;
-	static constexpr char const urls[] = "urls";
-	return daw::json::class_description_t<json_array<
-	  urls, std::vector<urls_element_t>, json_class<no_name, urls_element_t>>>{};
+	return daw::json::class_description_t<
+		json_array<symbols_url_t::urls, std::vector<urls_element_t>, json_class<no_name, urls_element_t>>
+	>{};
 }
 
-auto to_json_data( url_t const &value ) {
+auto to_json_data( url_t const & value ) {
 	return std::forward_as_tuple( value.urls );
 }
 
 struct description_t {
-	std::optional<std::vector<urls_element_t>> urls;
-}; // description_t
+	std::vector<urls_element_t> urls;
+};	// description_t
 
+namespace symbols_description_t {
+	static constexpr char const urls[] = "urls";
+}
 auto describe_json_class( description_t ) {
 	using namespace daw::json;
-	static constexpr char const urls[] = "urls";
-	return daw::json::class_description_t<json_nullable<json_array<
-	  urls, std::vector<urls_element_t>, json_class<no_name, urls_element_t>>>>{};
+	return daw::json::class_description_t<
+		json_array<symbols_description_t::urls, std::vector<urls_element_t>, json_class<no_name, urls_element_t>>
+	>{};
 }
 
-auto to_json_data( description_t const &value ) {
+auto to_json_data( description_t const & value ) {
 	return std::forward_as_tuple( value.urls );
 }
 
 struct entities_t {
 	std::optional<url_t> url;
 	std::optional<description_t> description;
-}; // entities_t
+};	// entities_t
 
-auto describe_json_class( entities_t ) {
-	using namespace daw::json;
+namespace symbols_entities_t {
 	static constexpr char const url[] = "url";
 	static constexpr char const description[] = "description";
+}
+auto describe_json_class( entities_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_nullable<json_class<url, url_t>>,
-	  json_nullable<json_class<description, description_t>>>{};
+		json_nullable<json_class<symbols_entities_t::url, url_t>>
+		,json_nullable<json_class<symbols_entities_t::description, description_t>>
+	>{};
 }
 
-auto to_json_data( entities_t const &value ) {
+auto to_json_data( entities_t const & value ) {
 	return std::forward_as_tuple( value.url, value.description );
 }
 
@@ -161,10 +155,9 @@ struct user_t {
 	bool following;
 	bool follow_request_sent;
 	bool notifications;
-}; // user_t
+};	// user_t
 
-auto describe_json_class( user_t ) {
-	using namespace daw::json;
+namespace symbols_user_t {
 	static constexpr char const id[] = "id";
 	static constexpr char const id_str[] = "id_str";
 	static constexpr char const name[] = "name";
@@ -187,101 +180,93 @@ auto describe_json_class( user_t ) {
 	static constexpr char const lang[] = "lang";
 	static constexpr char const contributors_enabled[] = "contributors_enabled";
 	static constexpr char const is_translator[] = "is_translator";
-	static constexpr char const is_translation_enabled[] =
-	  "is_translation_enabled";
-	static constexpr char const profile_background_color[] =
-	  "profile_background_color";
-	static constexpr char const profile_background_image_url[] =
-	  "profile_background_image_url";
-	static constexpr char const profile_background_image_url_https[] =
-	  "profile_background_image_url_https";
-	static constexpr char const profile_background_tile[] =
-	  "profile_background_tile";
+	static constexpr char const is_translation_enabled[] = "is_translation_enabled";
+	static constexpr char const profile_background_color[] = "profile_background_color";
+	static constexpr char const profile_background_image_url[] = "profile_background_image_url";
+	static constexpr char const profile_background_image_url_https[] = "profile_background_image_url_https";
+	static constexpr char const profile_background_tile[] = "profile_background_tile";
 	static constexpr char const profile_image_url[] = "profile_image_url";
-	static constexpr char const profile_image_url_https[] =
-	  "profile_image_url_https";
+	static constexpr char const profile_image_url_https[] = "profile_image_url_https";
 	static constexpr char const profile_banner_url[] = "profile_banner_url";
 	static constexpr char const profile_link_color[] = "profile_link_color";
-	static constexpr char const profile_sidebar_border_color[] =
-	  "profile_sidebar_border_color";
-	static constexpr char const profile_sidebar_fill_color[] =
-	  "profile_sidebar_fill_color";
+	static constexpr char const profile_sidebar_border_color[] = "profile_sidebar_border_color";
+	static constexpr char const profile_sidebar_fill_color[] = "profile_sidebar_fill_color";
 	static constexpr char const profile_text_color[] = "profile_text_color";
-	static constexpr char const profile_use_background_image[] =
-	  "profile_use_background_image";
+	static constexpr char const profile_use_background_image[] = "profile_use_background_image";
 	static constexpr char const default_profile[] = "default_profile";
 	static constexpr char const default_profile_image[] = "default_profile_image";
 	static constexpr char const following[] = "following";
 	static constexpr char const follow_request_sent[] = "follow_request_sent";
 	static constexpr char const notifications[] = "notifications";
+}
+auto describe_json_class( user_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_number<id, intmax_t>, json_string<id_str, std::string_view>,
-	  json_string<name, std::string_view>,
-	  json_string<screen_name, std::string_view>,
-	  json_string<location, std::string_view>,
-	  json_string<description, std::string_view>,
-	  json_nullable<json_string<url, std::string_view>>,
-	  json_class<entities, entities_t>, json_bool<_jsonprotected>,
-	  json_number<followers_count, intmax_t>,
-	  json_number<friends_count, intmax_t>, json_number<listed_count, intmax_t>,
-	  json_string<created_at, std::string_view>,
-	  json_number<favourites_count, intmax_t>,
-	  json_nullable<json_number<utc_offset, intmax_t>>,
-	  json_nullable<json_string<time_zone, std::string_view>>,
-	  json_bool<geo_enabled>, json_bool<verified>,
-	  json_number<statuses_count, intmax_t>, json_string<lang, std::string_view>,
-	  json_bool<contributors_enabled>, json_bool<is_translator>,
-	  json_bool<is_translation_enabled>,
-	  json_string<profile_background_color, std::string_view>,
-	  json_string<profile_background_image_url, std::string_view>,
-	  json_string<profile_background_image_url_https, std::string_view>,
-	  json_bool<profile_background_tile>,
-	  json_string<profile_image_url, std::string_view>,
-	  json_string<profile_image_url_https, std::string_view>,
-	  json_nullable<json_string<profile_banner_url, std::string_view>>,
-	  json_string<profile_link_color, std::string_view>,
-	  json_string<profile_sidebar_border_color, std::string_view>,
-	  json_string<profile_sidebar_fill_color, std::string_view>,
-	  json_string<profile_text_color, std::string_view>,
-	  json_bool<profile_use_background_image>, json_bool<default_profile>,
-	  json_bool<default_profile_image>, json_bool<following>,
-	  json_bool<follow_request_sent>, json_bool<notifications>>{};
+		json_number<symbols_user_t::id, int64_t>
+		,json_string<symbols_user_t::id_str, std::string_view>
+		,json_string<symbols_user_t::name, std::string_view>
+		,json_string<symbols_user_t::screen_name, std::string_view>
+		,json_string<symbols_user_t::location, std::string_view>
+		,json_string<symbols_user_t::description, std::string_view>
+		,json_nullable<json_string<symbols_user_t::url, std::string_view>>
+		,json_class<symbols_user_t::entities, entities_t>
+		,json_bool<symbols_user_t::_jsonprotected>
+		,json_number<symbols_user_t::followers_count, int64_t>
+		,json_number<symbols_user_t::friends_count, int64_t>
+		,json_number<symbols_user_t::listed_count, int64_t>
+		,json_string<symbols_user_t::created_at, std::string_view>
+		,json_number<symbols_user_t::favourites_count, int64_t>
+		,json_nullable<json_number<symbols_user_t::utc_offset, int64_t>>
+		,json_nullable<json_string<symbols_user_t::time_zone, std::string_view>>
+		,json_bool<symbols_user_t::geo_enabled>
+		,json_bool<symbols_user_t::verified>
+		,json_number<symbols_user_t::statuses_count, int64_t>
+		,json_string<symbols_user_t::lang, std::string_view>
+		,json_bool<symbols_user_t::contributors_enabled>
+		,json_bool<symbols_user_t::is_translator>
+		,json_bool<symbols_user_t::is_translation_enabled>
+		,json_string<symbols_user_t::profile_background_color, std::string_view>
+		,json_string<symbols_user_t::profile_background_image_url, std::string_view>
+		,json_string<symbols_user_t::profile_background_image_url_https, std::string_view>
+		,json_bool<symbols_user_t::profile_background_tile>
+		,json_string<symbols_user_t::profile_image_url, std::string_view>
+		,json_string<symbols_user_t::profile_image_url_https, std::string_view>
+		,json_nullable<json_string<symbols_user_t::profile_banner_url, std::string_view>>
+		,json_string<symbols_user_t::profile_link_color, std::string_view>
+		,json_string<symbols_user_t::profile_sidebar_border_color, std::string_view>
+		,json_string<symbols_user_t::profile_sidebar_fill_color, std::string_view>
+		,json_string<symbols_user_t::profile_text_color, std::string_view>
+		,json_bool<symbols_user_t::profile_use_background_image>
+		,json_bool<symbols_user_t::default_profile>
+		,json_bool<symbols_user_t::default_profile_image>
+		,json_bool<symbols_user_t::following>
+		,json_bool<symbols_user_t::follow_request_sent>
+		,json_bool<symbols_user_t::notifications>
+	>{};
 }
 
-auto to_json_data( user_t const &value ) {
-	return std::forward_as_tuple(
-	  value.id, value.id_str, value.name, value.screen_name, value.location,
-	  value.description, value.url, value.entities, value._jsonprotected,
-	  value.followers_count, value.friends_count, value.listed_count,
-	  value.created_at, value.favourites_count, value.utc_offset, value.time_zone,
-	  value.geo_enabled, value.verified, value.statuses_count, value.lang,
-	  value.contributors_enabled, value.is_translator,
-	  value.is_translation_enabled, value.profile_background_color,
-	  value.profile_background_image_url,
-	  value.profile_background_image_url_https, value.profile_background_tile,
-	  value.profile_image_url, value.profile_image_url_https,
-	  value.profile_banner_url, value.profile_link_color,
-	  value.profile_sidebar_border_color, value.profile_sidebar_fill_color,
-	  value.profile_text_color, value.profile_use_background_image,
-	  value.default_profile, value.default_profile_image, value.following,
-	  value.follow_request_sent, value.notifications );
+auto to_json_data( user_t const & value ) {
+	return std::forward_as_tuple( value.id, value.id_str, value.name, value.screen_name, value.location, value.description, value.url, value.entities, value._jsonprotected, value.followers_count, value.friends_count, value.listed_count, value.created_at, value.favourites_count, value.utc_offset, value.time_zone, value.geo_enabled, value.verified, value.statuses_count, value.lang, value.contributors_enabled, value.is_translator, value.is_translation_enabled, value.profile_background_color, value.profile_background_image_url, value.profile_background_image_url_https, value.profile_background_tile, value.profile_image_url, value.profile_image_url_https, value.profile_banner_url, value.profile_link_color, value.profile_sidebar_border_color, value.profile_sidebar_fill_color, value.profile_text_color, value.profile_use_background_image, value.default_profile, value.default_profile_image, value.following, value.follow_request_sent, value.notifications );
 }
 
 struct hashtags_element_t {
 	std::string_view text;
 	std::vector<int64_t> indices;
-}; // hashtags_element_t
+};	// hashtags_element_t
 
-auto describe_json_class( hashtags_element_t ) {
-	using namespace daw::json;
+namespace symbols_hashtags_element_t {
 	static constexpr char const text[] = "text";
 	static constexpr char const indices[] = "indices";
+}
+auto describe_json_class( hashtags_element_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<text, std::string_view>,
-	  json_array<indices, std::vector<int64_t>, json_number<no_name, int64_t>>>{};
+		json_string<symbols_hashtags_element_t::text, std::string_view>
+		,json_array<symbols_hashtags_element_t::indices, std::vector<int64_t>, json_number<no_name, int64_t>>
+	>{};
 }
 
-auto to_json_data( hashtags_element_t const &value ) {
+auto to_json_data( hashtags_element_t const & value ) {
 	return std::forward_as_tuple( value.text, value.indices );
 }
 
@@ -306,10 +291,9 @@ struct statuses_element_t {
 	bool retweeted;
 	std::optional<bool> possibly_sensitive;
 	std::string_view lang;
-}; // statuses_element_t
+};	// statuses_element_t
 
-auto describe_json_class( statuses_element_t ) {
-	using namespace daw::json;
+namespace symbols_statuses_element_t {
 	static constexpr char const metadata[] = "metadata";
 	static constexpr char const created_at[] = "created_at";
 	static constexpr char const id[] = "id";
@@ -318,13 +302,10 @@ auto describe_json_class( statuses_element_t ) {
 	static constexpr char const source[] = "source";
 	static constexpr char const truncated[] = "truncated";
 	static constexpr char const in_reply_to_status_id[] = "in_reply_to_status_id";
-	static constexpr char const in_reply_to_status_id_str[] =
-	  "in_reply_to_status_id_str";
+	static constexpr char const in_reply_to_status_id_str[] = "in_reply_to_status_id_str";
 	static constexpr char const in_reply_to_user_id[] = "in_reply_to_user_id";
-	static constexpr char const in_reply_to_user_id_str[] =
-	  "in_reply_to_user_id_str";
-	static constexpr char const in_reply_to_screen_name[] =
-	  "in_reply_to_screen_name";
+	static constexpr char const in_reply_to_user_id_str[] = "in_reply_to_user_id_str";
+	static constexpr char const in_reply_to_screen_name[] = "in_reply_to_screen_name";
 	static constexpr char const user[] = "user";
 	static constexpr char const retweet_count[] = "retweet_count";
 	static constexpr char const favorite_count[] = "favorite_count";
@@ -333,31 +314,35 @@ auto describe_json_class( statuses_element_t ) {
 	static constexpr char const retweeted[] = "retweeted";
 	static constexpr char const possibly_sensitive[] = "possibly_sensitive";
 	static constexpr char const lang[] = "lang";
+}
+auto describe_json_class( statuses_element_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_class<metadata, metadata_t>, json_string<created_at, std::string_view>,
-	  json_number<id, intmax_t>, json_string<id_str, std::string_view>,
-	  json_string<text, std::string_view>, json_string<source, std::string_view>,
-	  json_bool<truncated>,
-	  json_nullable<json_number<in_reply_to_status_id, intmax_t>>,
-	  json_nullable<json_string<in_reply_to_status_id_str, std::string_view>>,
-	  json_nullable<json_number<in_reply_to_user_id, intmax_t>>,
-	  json_nullable<json_string<in_reply_to_user_id_str, std::string_view>>,
-	  json_nullable<json_string<in_reply_to_screen_name, std::string_view>>,
-	  json_class<user, user_t>, json_number<retweet_count, intmax_t>,
-	  json_number<favorite_count, intmax_t>, json_class<entities, entities_t>,
-	  json_bool<favorited>, json_bool<retweeted>,
-	  json_nullable<json_bool<possibly_sensitive>>,
-	  json_string<lang, std::string_view>>{};
+		json_class<symbols_statuses_element_t::metadata, metadata_t>
+		,json_string<symbols_statuses_element_t::created_at, std::string_view>
+		,json_number<symbols_statuses_element_t::id, int64_t>
+		,json_string<symbols_statuses_element_t::id_str, std::string_view>
+		,json_string<symbols_statuses_element_t::text, std::string_view>
+		,json_string<symbols_statuses_element_t::source, std::string_view>
+		,json_bool<symbols_statuses_element_t::truncated>
+		,json_nullable<json_number<symbols_statuses_element_t::in_reply_to_status_id, int64_t>>
+		,json_nullable<json_string<symbols_statuses_element_t::in_reply_to_status_id_str, std::string_view>>
+		,json_nullable<json_number<symbols_statuses_element_t::in_reply_to_user_id, int64_t>>
+		,json_nullable<json_string<symbols_statuses_element_t::in_reply_to_user_id_str, std::string_view>>
+		,json_nullable<json_string<symbols_statuses_element_t::in_reply_to_screen_name, std::string_view>>
+		,json_class<symbols_statuses_element_t::user, user_t>
+		,json_number<symbols_statuses_element_t::retweet_count, int64_t>
+		,json_number<symbols_statuses_element_t::favorite_count, int64_t>
+		,json_class<symbols_statuses_element_t::entities, entities_t>
+		,json_bool<symbols_statuses_element_t::favorited>
+		,json_bool<symbols_statuses_element_t::retweeted>
+		,json_nullable<json_bool<symbols_statuses_element_t::possibly_sensitive>>
+		,json_string<symbols_statuses_element_t::lang, std::string_view>
+	>{};
 }
 
-auto to_json_data( statuses_element_t const &value ) {
-	return std::forward_as_tuple(
-	  value.metadata, value.created_at, value.id, value.id_str, value.text,
-	  value.source, value.truncated, value.in_reply_to_status_id,
-	  value.in_reply_to_status_id_str, value.in_reply_to_user_id,
-	  value.in_reply_to_user_id_str, value.in_reply_to_screen_name, value.user,
-	  value.retweet_count, value.favorite_count, value.entities, value.favorited,
-	  value.retweeted, value.possibly_sensitive, value.lang );
+auto to_json_data( statuses_element_t const & value ) {
+	return std::forward_as_tuple( value.metadata, value.created_at, value.id, value.id_str, value.text, value.source, value.truncated, value.in_reply_to_status_id, value.in_reply_to_status_id_str, value.in_reply_to_user_id, value.in_reply_to_user_id_str, value.in_reply_to_screen_name, value.user, value.retweet_count, value.favorite_count, value.entities, value.favorited, value.retweeted, value.possibly_sensitive, value.lang );
 }
 
 struct user_mentions_element_t {
@@ -366,44 +351,51 @@ struct user_mentions_element_t {
 	int64_t id;
 	std::string_view id_str;
 	std::vector<int64_t> indices;
-}; // user_mentions_element_t
+};	// user_mentions_element_t
 
-auto describe_json_class( user_mentions_element_t ) {
-	using namespace daw::json;
+namespace symbols_user_mentions_element_t {
 	static constexpr char const screen_name[] = "screen_name";
 	static constexpr char const name[] = "name";
 	static constexpr char const id[] = "id";
 	static constexpr char const id_str[] = "id_str";
 	static constexpr char const indices[] = "indices";
+}
+auto describe_json_class( user_mentions_element_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<screen_name, std::string_view>,
-	  json_string<name, std::string_view>, json_number<id, intmax_t>,
-	  json_string<id_str, std::string_view>,
-	  json_array<indices, std::vector<int64_t>, json_number<no_name, int64_t>>>{};
+		json_string<symbols_user_mentions_element_t::screen_name, std::string_view>
+		,json_string<symbols_user_mentions_element_t::name, std::string_view>
+		,json_number<symbols_user_mentions_element_t::id, int64_t>
+		,json_string<symbols_user_mentions_element_t::id_str, std::string_view>
+		,json_array<symbols_user_mentions_element_t::indices, std::vector<int64_t>, json_number<no_name, int64_t>>
+	>{};
 }
 
-auto to_json_data( user_mentions_element_t const &value ) {
-	return std::forward_as_tuple( value.screen_name, value.name, value.id,
-	                              value.id_str, value.indices );
+auto to_json_data( user_mentions_element_t const & value ) {
+	return std::forward_as_tuple( value.screen_name, value.name, value.id, value.id_str, value.indices );
 }
 
 struct medium_t {
 	int64_t w;
 	int64_t h;
 	std::string_view resize;
-}; // medium_t
+};	// medium_t
 
-auto describe_json_class( medium_t ) {
-	using namespace daw::json;
+namespace symbols_medium_t {
 	static constexpr char const w[] = "w";
 	static constexpr char const h[] = "h";
 	static constexpr char const resize[] = "resize";
+}
+auto describe_json_class( medium_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_number<w, intmax_t>, json_number<h, intmax_t>,
-	  json_string<resize, std::string_view>>{};
+		json_number<symbols_medium_t::w, int64_t>
+		,json_number<symbols_medium_t::h, int64_t>
+		,json_string<symbols_medium_t::resize, std::string_view>
+	>{};
 }
 
-auto to_json_data( medium_t const &value ) {
+auto to_json_data( medium_t const & value ) {
 	return std::forward_as_tuple( value.w, value.h, value.resize );
 }
 
@@ -411,19 +403,23 @@ struct small_t {
 	int64_t w;
 	int64_t h;
 	std::string_view resize;
-}; // small_t
+};	// small_t
 
-auto describe_json_class( small_t ) {
-	using namespace daw::json;
+namespace symbols_small_t {
 	static constexpr char const w[] = "w";
 	static constexpr char const h[] = "h";
 	static constexpr char const resize[] = "resize";
+}
+auto describe_json_class( small_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_number<w, intmax_t>, json_number<h, intmax_t>,
-	  json_string<resize, std::string_view>>{};
+		json_number<symbols_small_t::w, int64_t>
+		,json_number<symbols_small_t::h, int64_t>
+		,json_string<symbols_small_t::resize, std::string_view>
+	>{};
 }
 
-auto to_json_data( small_t const &value ) {
+auto to_json_data( small_t const & value ) {
 	return std::forward_as_tuple( value.w, value.h, value.resize );
 }
 
@@ -431,19 +427,23 @@ struct thumb_t {
 	int64_t w;
 	int64_t h;
 	std::string_view resize;
-}; // thumb_t
+};	// thumb_t
 
-auto describe_json_class( thumb_t ) {
-	using namespace daw::json;
+namespace symbols_thumb_t {
 	static constexpr char const w[] = "w";
 	static constexpr char const h[] = "h";
 	static constexpr char const resize[] = "resize";
+}
+auto describe_json_class( thumb_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_number<w, intmax_t>, json_number<h, intmax_t>,
-	  json_string<resize, std::string_view>>{};
+		json_number<symbols_thumb_t::w, int64_t>
+		,json_number<symbols_thumb_t::h, int64_t>
+		,json_string<symbols_thumb_t::resize, std::string_view>
+	>{};
 }
 
-auto to_json_data( thumb_t const &value ) {
+auto to_json_data( thumb_t const & value ) {
 	return std::forward_as_tuple( value.w, value.h, value.resize );
 }
 
@@ -451,19 +451,23 @@ struct large_t {
 	int64_t w;
 	int64_t h;
 	std::string_view resize;
-}; // large_t
+};	// large_t
 
-auto describe_json_class( large_t ) {
-	using namespace daw::json;
+namespace symbols_large_t {
 	static constexpr char const w[] = "w";
 	static constexpr char const h[] = "h";
 	static constexpr char const resize[] = "resize";
+}
+auto describe_json_class( large_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_number<w, intmax_t>, json_number<h, intmax_t>,
-	  json_string<resize, std::string_view>>{};
+		json_number<symbols_large_t::w, int64_t>
+		,json_number<symbols_large_t::h, int64_t>
+		,json_string<symbols_large_t::resize, std::string_view>
+	>{};
 }
 
-auto to_json_data( large_t const &value ) {
+auto to_json_data( large_t const & value ) {
 	return std::forward_as_tuple( value.w, value.h, value.resize );
 }
 
@@ -472,22 +476,26 @@ struct sizes_t {
 	small_t small;
 	thumb_t thumb;
 	large_t large;
-}; // sizes_t
+};	// sizes_t
 
-auto describe_json_class( sizes_t ) {
-	using namespace daw::json;
+namespace symbols_sizes_t {
 	static constexpr char const medium[] = "medium";
 	static constexpr char const small[] = "small";
 	static constexpr char const thumb[] = "thumb";
 	static constexpr char const large[] = "large";
+}
+auto describe_json_class( sizes_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_class<medium, medium_t>, json_class<small, small_t>,
-	  json_class<thumb, thumb_t>, json_class<large, large_t>>{};
+		json_class<symbols_sizes_t::medium, medium_t>
+		,json_class<symbols_sizes_t::small, small_t>
+		,json_class<symbols_sizes_t::thumb, thumb_t>
+		,json_class<symbols_sizes_t::large, large_t>
+	>{};
 }
 
-auto to_json_data( sizes_t const &value ) {
-	return std::forward_as_tuple( value.medium, value.small, value.thumb,
-	                              value.large );
+auto to_json_data( sizes_t const & value ) {
+	return std::forward_as_tuple( value.medium, value.small, value.thumb, value.large );
 }
 
 struct media_element_t {
@@ -501,10 +509,9 @@ struct media_element_t {
 	std::string_view expanded_url;
 	std::string_view type;
 	sizes_t sizes;
-}; // media_element_t
+};	// media_element_t
 
-auto describe_json_class( media_element_t ) {
-	using namespace daw::json;
+namespace symbols_media_element_t {
 	static constexpr char const id[] = "id";
 	static constexpr char const id_str[] = "id_str";
 	static constexpr char const indices[] = "indices";
@@ -515,22 +522,25 @@ auto describe_json_class( media_element_t ) {
 	static constexpr char const expanded_url[] = "expanded_url";
 	static constexpr char const type[] = "type";
 	static constexpr char const sizes[] = "sizes";
+}
+auto describe_json_class( media_element_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_number<id, intmax_t>, json_string<id_str, std::string_view>,
-	  json_array<indices, std::vector<int64_t>, json_number<no_name, int64_t>>,
-	  json_string<media_url, std::string_view>,
-	  json_string<media_url_https, std::string_view>,
-	  json_string<url, std::string_view>,
-	  json_string<display_url, std::string_view>,
-	  json_string<expanded_url, std::string_view>,
-	  json_string<type, std::string_view>, json_class<sizes, sizes_t>>{};
+		json_number<symbols_media_element_t::id, int64_t>
+		,json_string<symbols_media_element_t::id_str, std::string_view>
+		,json_array<symbols_media_element_t::indices, std::vector<int64_t>, json_number<no_name, int64_t>>
+		,json_string<symbols_media_element_t::media_url, std::string_view>
+		,json_string<symbols_media_element_t::media_url_https, std::string_view>
+		,json_string<symbols_media_element_t::url, std::string_view>
+		,json_string<symbols_media_element_t::display_url, std::string_view>
+		,json_string<symbols_media_element_t::expanded_url, std::string_view>
+		,json_string<symbols_media_element_t::type, std::string_view>
+		,json_class<symbols_media_element_t::sizes, sizes_t>
+	>{};
 }
 
-auto to_json_data( media_element_t const &value ) {
-	return std::forward_as_tuple( value.id, value.id_str, value.indices,
-	                              value.media_url, value.media_url_https,
-	                              value.url, value.display_url,
-	                              value.expanded_url, value.type, value.sizes );
+auto to_json_data( media_element_t const & value ) {
+	return std::forward_as_tuple( value.id, value.id_str, value.indices, value.media_url, value.media_url_https, value.url, value.display_url, value.expanded_url, value.type, value.sizes );
 }
 
 struct retweeted_status_t {
@@ -554,10 +564,9 @@ struct retweeted_status_t {
 	bool retweeted;
 	std::optional<bool> possibly_sensitive;
 	std::string_view lang;
-}; // retweeted_status_t
+};	// retweeted_status_t
 
-auto describe_json_class( retweeted_status_t ) {
-	using namespace daw::json;
+namespace symbols_retweeted_status_t {
 	static constexpr char const metadata[] = "metadata";
 	static constexpr char const created_at[] = "created_at";
 	static constexpr char const id[] = "id";
@@ -566,13 +575,10 @@ auto describe_json_class( retweeted_status_t ) {
 	static constexpr char const source[] = "source";
 	static constexpr char const truncated[] = "truncated";
 	static constexpr char const in_reply_to_status_id[] = "in_reply_to_status_id";
-	static constexpr char const in_reply_to_status_id_str[] =
-	  "in_reply_to_status_id_str";
+	static constexpr char const in_reply_to_status_id_str[] = "in_reply_to_status_id_str";
 	static constexpr char const in_reply_to_user_id[] = "in_reply_to_user_id";
-	static constexpr char const in_reply_to_user_id_str[] =
-	  "in_reply_to_user_id_str";
-	static constexpr char const in_reply_to_screen_name[] =
-	  "in_reply_to_screen_name";
+	static constexpr char const in_reply_to_user_id_str[] = "in_reply_to_user_id_str";
+	static constexpr char const in_reply_to_screen_name[] = "in_reply_to_screen_name";
 	static constexpr char const user[] = "user";
 	static constexpr char const retweet_count[] = "retweet_count";
 	static constexpr char const favorite_count[] = "favorite_count";
@@ -581,31 +587,35 @@ auto describe_json_class( retweeted_status_t ) {
 	static constexpr char const retweeted[] = "retweeted";
 	static constexpr char const possibly_sensitive[] = "possibly_sensitive";
 	static constexpr char const lang[] = "lang";
+}
+auto describe_json_class( retweeted_status_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_class<metadata, metadata_t>, json_string<created_at, std::string_view>,
-	  json_number<id, intmax_t>, json_string<id_str, std::string_view>,
-	  json_string<text, std::string_view>, json_string<source, std::string_view>,
-	  json_bool<truncated>,
-	  json_nullable<json_number<in_reply_to_status_id, intmax_t>>,
-	  json_nullable<json_string<in_reply_to_status_id_str, std::string_view>>,
-	  json_nullable<json_number<in_reply_to_user_id, intmax_t>>,
-	  json_nullable<json_string<in_reply_to_user_id_str, std::string_view>>,
-	  json_nullable<json_string<in_reply_to_screen_name, std::string_view>>,
-	  json_class<user, user_t>, json_number<retweet_count, intmax_t>,
-	  json_number<favorite_count, intmax_t>, json_class<entities, entities_t>,
-	  json_bool<favorited>, json_bool<retweeted>,
-	  json_nullable<json_bool<possibly_sensitive>>,
-	  json_string<lang, std::string_view>>{};
+		json_class<symbols_retweeted_status_t::metadata, metadata_t>
+		,json_string<symbols_retweeted_status_t::created_at, std::string_view>
+		,json_number<symbols_retweeted_status_t::id, int64_t>
+		,json_string<symbols_retweeted_status_t::id_str, std::string_view>
+		,json_string<symbols_retweeted_status_t::text, std::string_view>
+		,json_string<symbols_retweeted_status_t::source, std::string_view>
+		,json_bool<symbols_retweeted_status_t::truncated>
+		,json_nullable<json_number<symbols_retweeted_status_t::in_reply_to_status_id, int64_t>>
+		,json_nullable<json_string<symbols_retweeted_status_t::in_reply_to_status_id_str, std::string_view>>
+		,json_nullable<json_number<symbols_retweeted_status_t::in_reply_to_user_id, int64_t>>
+		,json_nullable<json_string<symbols_retweeted_status_t::in_reply_to_user_id_str, std::string_view>>
+		,json_nullable<json_string<symbols_retweeted_status_t::in_reply_to_screen_name, std::string_view>>
+		,json_class<symbols_retweeted_status_t::user, user_t>
+		,json_number<symbols_retweeted_status_t::retweet_count, int64_t>
+		,json_number<symbols_retweeted_status_t::favorite_count, int64_t>
+		,json_class<symbols_retweeted_status_t::entities, entities_t>
+		,json_bool<symbols_retweeted_status_t::favorited>
+		,json_bool<symbols_retweeted_status_t::retweeted>
+		,json_nullable<json_bool<symbols_retweeted_status_t::possibly_sensitive>>
+		,json_string<symbols_retweeted_status_t::lang, std::string_view>
+	>{};
 }
 
-auto to_json_data( retweeted_status_t const &value ) {
-	return std::forward_as_tuple(
-	  value.metadata, value.created_at, value.id, value.id_str, value.text,
-	  value.source, value.truncated, value.in_reply_to_status_id,
-	  value.in_reply_to_status_id_str, value.in_reply_to_user_id,
-	  value.in_reply_to_user_id_str, value.in_reply_to_screen_name, value.user,
-	  value.retweet_count, value.favorite_count, value.entities, value.favorited,
-	  value.retweeted, value.possibly_sensitive, value.lang );
+auto to_json_data( retweeted_status_t const & value ) {
+	return std::forward_as_tuple( value.metadata, value.created_at, value.id, value.id_str, value.text, value.source, value.truncated, value.in_reply_to_status_id, value.in_reply_to_status_id_str, value.in_reply_to_user_id, value.in_reply_to_user_id_str, value.in_reply_to_screen_name, value.user, value.retweet_count, value.favorite_count, value.entities, value.favorited, value.retweeted, value.possibly_sensitive, value.lang );
 }
 
 struct search_metadata_t {
@@ -618,10 +628,9 @@ struct search_metadata_t {
 	int64_t count;
 	int64_t since_id;
 	std::string_view since_id_str;
-}; // search_metadata_t
+};	// search_metadata_t
 
-auto describe_json_class( search_metadata_t ) {
-	using namespace daw::json;
+namespace symbols_search_metadata_t {
 	static constexpr char const completed_in[] = "completed_in";
 	static constexpr char const max_id[] = "max_id";
 	static constexpr char const max_id_str[] = "max_id_str";
@@ -631,38 +640,44 @@ auto describe_json_class( search_metadata_t ) {
 	static constexpr char const count[] = "count";
 	static constexpr char const since_id[] = "since_id";
 	static constexpr char const since_id_str[] = "since_id_str";
+}
+auto describe_json_class( search_metadata_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_number<completed_in>, json_number<max_id, intmax_t>,
-	  json_string<max_id_str, std::string_view>,
-	  json_string<next_results, std::string_view>,
-	  json_string<query, std::string_view>,
-	  json_string<refresh_url, std::string_view>, json_number<count, intmax_t>,
-	  json_number<since_id, intmax_t>,
-	  json_string<since_id_str, std::string_view>>{};
+		json_number<symbols_search_metadata_t::completed_in>
+		,json_number<symbols_search_metadata_t::max_id, int64_t>
+		,json_string<symbols_search_metadata_t::max_id_str, std::string_view>
+		,json_string<symbols_search_metadata_t::next_results, std::string_view>
+		,json_string<symbols_search_metadata_t::query, std::string_view>
+		,json_string<symbols_search_metadata_t::refresh_url, std::string_view>
+		,json_number<symbols_search_metadata_t::count, int64_t>
+		,json_number<symbols_search_metadata_t::since_id, int64_t>
+		,json_string<symbols_search_metadata_t::since_id_str, std::string_view>
+	>{};
 }
 
-auto to_json_data( search_metadata_t const &value ) {
-	return std::forward_as_tuple( value.completed_in, value.max_id,
-	                              value.max_id_str, value.next_results,
-	                              value.query, value.refresh_url, value.count,
-	                              value.since_id, value.since_id_str );
+auto to_json_data( search_metadata_t const & value ) {
+	return std::forward_as_tuple( value.completed_in, value.max_id, value.max_id_str, value.next_results, value.query, value.refresh_url, value.count, value.since_id, value.since_id_str );
 }
 
 struct twitter_object_t {
 	std::vector<statuses_element_t> statuses;
 	search_metadata_t search_metadata;
-}; // root_object_t
+};	// twitter_object_t
 
-auto describe_json_class( twitter_object_t ) {
-	using namespace daw::json;
+namespace symbols_twitter_object_t {
 	static constexpr char const statuses[] = "statuses";
 	static constexpr char const search_metadata[] = "search_metadata";
+}
+auto describe_json_class( twitter_object_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_array<statuses, std::vector<statuses_element_t>,
-	             json_class<no_name, statuses_element_t>>,
-	  json_class<search_metadata, search_metadata_t>>{};
+		json_array<symbols_twitter_object_t::statuses, std::vector<statuses_element_t>, json_class<no_name, statuses_element_t>>
+		,json_class<symbols_twitter_object_t::search_metadata, search_metadata_t>
+	>{};
 }
 
-auto to_json_data( twitter_object_t const &value ) {
+auto to_json_data( twitter_object_t const & value ) {
 	return std::forward_as_tuple( value.statuses, value.search_metadata );
 }
+

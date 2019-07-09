@@ -36,15 +36,17 @@ struct kv_t {
 	std::unordered_map<std::string, int> kv{};
 };
 
+namespace symbols_kv_t {
+	constexpr static char const kv[] = "kv";
+}
 auto describe_json_class( kv_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_key_value<
 	  "kv", std::unordered_map<std::string, int>, json_number<no_name, int>>>{};
 #else
-	constexpr static char const kv[] = "kv";
 	return class_description_t<json_key_value<
-	  kv, std::unordered_map<std::string, int>, json_number<no_name, int>>>{};
+	  symbols_kv_t::kv, std::unordered_map<std::string, int>, json_number<no_name, int>>>{};
 #endif
 }
 
@@ -52,6 +54,9 @@ struct kv2_t {
 	daw::bounded_hash_map<daw::string_view, int, 5> kv{};
 };
 
+namespace symbols_kv2_t {
+	constexpr static char const kv[] = "kv";
+}
 auto describe_json_class( kv2_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
@@ -59,9 +64,8 @@ auto describe_json_class( kv2_t ) noexcept {
 	  "kv", daw::bounded_hash_map<daw::string_view, int, 5>,
 	  json_number<no_name, int>, json_string<no_name, daw::string_view>>>{};
 #else
-	constexpr static char const kv[] = "kv";
 	return class_description_t<json_key_value<
-	  kv, daw::bounded_hash_map<daw::string_view, int, 5>,
+	  symbols_kv2_t::kv, daw::bounded_hash_map<daw::string_view, int, 5>,
 	  json_number<no_name, int>, json_string<no_name, daw::string_view>>>{};
 #endif
 }
