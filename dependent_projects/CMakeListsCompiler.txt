@@ -1,7 +1,7 @@
 set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL 'MSVC' )
-	add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 )
+	add_definitions( -DNOMINMAX -DD_WIN32_WINNT=0x0601 -permissive- )
 else( )
 	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" )
 		add_compile_options( -ftemplate-backtrace-limit=0 -Wall	-Wextra -pedantic -Weverything -Wno-c++98-compat -Wno-covered-switch-default -Wnull-dereference -Wno-padded -Wno-exit-time-destructors -Wno-c++98-compat-pedantic -Wno-unused-parameter -Wno-missing-noreturn -Wno-missing-prototypes -Wno-disabled-macro-expansion -Wno-missing-braces)
