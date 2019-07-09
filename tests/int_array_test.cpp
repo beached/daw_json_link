@@ -52,10 +52,10 @@ auto describe_json_class( Number ) noexcept {
 }
 #endif
 
+static constexpr size_t const NUMVALUES = 1'000'000ULL;
 int main( ) {
 	using namespace daw::json;
-	constexpr size_t const NUMVALUES = 1'000'000ULL;
-	std::string const json_data = [&NUMVALUES] {
+	std::string const json_data = [] {
 		std::string result = "[";
 
 		// 23 is what I calculated as the string size of the serialized class.
@@ -73,7 +73,7 @@ int main( ) {
 		return result;
 	}( );
 
-	std::string json_data2 = [&NUMVALUES] {
+	std::string json_data2 = [] {
 		std::string result = "[";
 		result.reserve( NUMVALUES * 23 + 8 );
 		daw::algorithm::do_n( NUMVALUES, [&result] {
@@ -152,8 +152,7 @@ int main( ) {
 		std::cout << "element count 2: " << count2 << '\n';
 	}
 
-
-		std::cout << "Checked\n";
+	std::cout << "Checked\n";
 	{ // Class of ints
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
@@ -192,7 +191,8 @@ int main( ) {
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<10>(
 		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
-			  auto const data = from_json_array<json_checked_number<no_name, intmax_t>>( sv );
+			  auto const data =
+			    from_json_array<json_checked_number<no_name, intmax_t>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },

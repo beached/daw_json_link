@@ -32,10 +32,13 @@ struct properties_t {
 	std::string_view name;
 }; // properties_t
 
+namespace symbols_properties_t {
+	static constexpr char const name[] = "name";
+}
 auto describe_json_class( properties_t ) {
 	using namespace daw::json;
-	static constexpr char const name[] = "name";
-	return daw::json::class_description_t<json_string<name, std::string_view>>{};
+	return daw::json::class_description_t<
+	  json_string<symbols_properties_t::name, std::string_view>>{};
 }
 
 auto to_json_data( properties_t const &value ) {
@@ -61,13 +64,17 @@ struct array_appender {
 	}
 };
 
-auto describe_json_class( geometry_t ) {
-	using namespace daw::json;
+namespace symbols_geometry_t {
 	static constexpr char const type[] = "type";
 	static constexpr char const coordinates[] = "coordinates";
+} // namespace symbols_geometry_t
+auto describe_json_class( geometry_t ) {
+	using namespace daw::json;
+
 	return daw::json::class_description_t<
-	  json_string<type, std::string_view>,
-	  json_array<coordinates, std::vector<std::vector<std::array<double, 2>>>,
+	  json_string<symbols_geometry_t::type, std::string_view>,
+	  json_array<symbols_geometry_t::coordinates,
+	             std::vector<std::vector<std::array<double, 2>>>,
 	             json_array<no_name, std::vector<std::array<double, 2>>,
 	                        json_array<no_name, std::array<double, 2>,
 	                                   json_number<no_name>,
@@ -85,14 +92,17 @@ struct features_element_t {
 	geometry_t geometry;
 }; // features_element_t
 
-auto describe_json_class( features_element_t ) {
-	using namespace daw::json;
+namespace symbols_features_element_t {
 	static constexpr char const type[] = "type";
 	static constexpr char const properties[] = "properties";
 	static constexpr char const geometry[] = "geometry";
-	return daw::json::class_description_t<json_string<type, std::string_view>,
-	                                      json_class<properties, properties_t>,
-	                                      json_class<geometry, geometry_t>>{};
+} // namespace symbols_features_element_t
+auto describe_json_class( features_element_t ) {
+	using namespace daw::json;
+	return daw::json::class_description_t<
+	  json_string<symbols_features_element_t::type, std::string_view>,
+	  json_class<symbols_features_element_t::properties, properties_t>,
+	  json_class<symbols_features_element_t::geometry, geometry_t>>{};
 }
 
 auto to_json_data( features_element_t const &value ) {
@@ -104,13 +114,16 @@ struct canada_object_t {
 	std::vector<features_element_t> features;
 }; // root_object_t
 
-auto describe_json_class( canada_object_t ) {
-	using namespace daw::json;
+namespace symbols_canada_object_t {
 	static constexpr char const type[] = "type";
 	static constexpr char const features[] = "features";
+} // namespace symbols_canada_object_t
+auto describe_json_class( canada_object_t ) {
+	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<type, std::string_view>,
-	  json_array<features, std::vector<features_element_t>,
+	  json_string<symbols_canada_object_t::type, std::string_view>,
+	  json_array<symbols_canada_object_t::features,
+	             std::vector<features_element_t>,
 	             json_class<no_name, features_element_t>>>{};
 }
 

@@ -1187,7 +1187,7 @@ namespace daw::json {
 				auto known_locations =
 				  daw::make_array( location_info_t{JsonMembers::name}... );
 
-				auto result = construct_a<Result>(
+				auto result = daw::construct_a<Result>(
 				  parse_item<Is, JsonMembers...>( known_locations, rng )... );
 				rng.trim_left( );
 				// If we fullfill the contract before all values are found
