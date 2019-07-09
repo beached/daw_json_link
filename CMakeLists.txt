@@ -17,8 +17,9 @@ elseif( "${CMAKE_BUILD_TYPE}" STREQUAL "" )
 	set( DEP_ROOT_DIR "${DEP_ROOT_DIR_BASE}/release" )
 endif( )
 
+option( GLEAN_INSTALL_ROOT "" )
 message( "Building for: ${CMAKE_BUILD_TYPE}" )
-if( GLEAN_INSTALL_ROOT ) 
+if( EXISTS "${GLEAN_INSTALL_ROOT}" ) 
 	message( "using glean dependencies" )
 	message( "installing to ${GLEAN_INSTALL_ROOT}" )
 
