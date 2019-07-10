@@ -142,7 +142,6 @@ auto describe_json_class( test_003_t ) noexcept {
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_nullable<json_class<"a", test_001_t>>>{};
 #else
-	constexpr static char const a[] = "a";
 	return class_description_t<
 	  json_nullable<json_class<symbols_test_003_t::a, test_001_t>>>{};
 #endif
@@ -284,7 +283,7 @@ int main( ) {
 #ifndef _MSC_VER
 #define CX constexpr
 #else
-#define CX
+#define CX constexpr
 #endif
 	CX auto data = daw::json::from_json<test_001_t>( json_data );
 

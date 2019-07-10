@@ -193,3 +193,5 @@ nbproject/*
 a.out
 cmake-build-*/*
 CMakeSettings.json
+.vs/
+glean.cmake
