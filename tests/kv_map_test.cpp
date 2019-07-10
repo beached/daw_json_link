@@ -70,14 +70,14 @@ auto describe_json_class( kv2_t ) noexcept {
 #endif
 }
 
-int main( int argc, char **argv ) {
+int main( int, char ** ) {
 	using namespace daw::json;
 	constexpr std::string_view const json_data3 =
 	  R"( {"kv": {
 				"key0": 0,
 				"key1": 1,
 				"key2": 2
-	}})";
+	}})" DAWJSONLINK_SENTINAL;
 
 	auto kv_test = from_json<kv_t>( json_data3 );
 	daw::do_not_optimize( kv_test );
