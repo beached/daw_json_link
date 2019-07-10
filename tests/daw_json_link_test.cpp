@@ -30,6 +30,7 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_vector.h>
 
+#include "daw/json/daw_json_link.h"
 #include "daw/json/daw_json_iterator.h"
 
 static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ) ==
