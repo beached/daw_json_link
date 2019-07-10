@@ -30,8 +30,8 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_vector.h>
 
-#include "daw/json/daw_json_link.h"
 #include "daw/json/daw_json_iterator.h"
+#include "daw/json/daw_json_link.h"
 
 static_assert( daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ) ==
                12345 );
@@ -83,7 +83,7 @@ namespace symbols_test_001_t {
 	constexpr static char const o[] = "o";
 	constexpr static char const o2[] = "o2";
 	constexpr static char const dte[] = "dte";
-}
+} // namespace symbols_test_001_t
 auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
@@ -101,7 +101,8 @@ auto describe_json_class( test_001_t ) noexcept {
 	  json_array<symbols_test_001_t::y, daw::bounded_vector_t<int, 10>,
 	             json_number<no_name, int>>,
 	  json_nullable<json_number<symbols_test_001_t::o, int>>,
-	  json_nullable<json_number<symbols_test_001_t::o2, int>>, json_date<symbols_test_001_t::dte>>{};
+	  json_nullable<json_number<symbols_test_001_t::o2, int>>,
+	  json_date<symbols_test_001_t::dte>>{};
 #endif
 }
 
@@ -142,7 +143,8 @@ auto describe_json_class( test_003_t ) noexcept {
 	return class_description_t<json_nullable<json_class<"a", test_001_t>>>{};
 #else
 	constexpr static char const a[] = "a";
-	return class_description_t<json_nullable<json_class<symbols_test_003_t::a, test_001_t>>>{};
+	return class_description_t<
+	  json_nullable<json_class<symbols_test_003_t::a, test_001_t>>>{};
 #endif
 }
 
@@ -279,12 +281,13 @@ constexpr char const json_data_array[] =
 int main( ) {
 	using namespace daw::json;
 
-	#ifndef _MSC_VER
-	#define CX constexpr
-	#else
-	#define CX
-	#endif
+#ifndef _MSC_VER
+#define CX constexpr
+#else
+#define CX
+#endif
 	CX auto data = daw::json::from_json<test_001_t>( json_data );
+
 
 	std::clog << to_json( data ) << '\n';
 

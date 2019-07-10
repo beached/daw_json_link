@@ -82,17 +82,9 @@ int main( int, char ** ) {
 	auto kv_test = from_json<kv_t>( json_data3 );
 	daw::do_not_optimize( kv_test );
 
-#ifndef _MSC_VER
 	constexpr auto const kv2_test = from_json<kv2_t>( json_data3 );
 	static_assert( kv2_test.kv.size( ) == 3 );
 	static_assert( kv2_test.kv["key0"] == 0 );
 	static_assert( kv2_test.kv["key1"] == 1 );
 	static_assert( kv2_test.kv["key2"] == 2 );
-#else
-	auto const kv2_test = from_json<kv2_t>( json_data3 );
-	assert( kv2_test.kv.size( ) == 3 );
-	assert( kv2_test.kv["key0"] == 0 );
-	assert( kv2_test.kv["key1"] == 1 );
-	assert( kv2_test.kv["key2"] == 2 );
-#endif
 }
