@@ -279,10 +279,16 @@ constexpr char const json_data_array[] =
 int main( ) {
 	using namespace daw::json;
 
-	constexpr auto data = daw::json::from_json<test_001_t>( json_data );
+	#ifndef _MSC_VER
+	#define CX constexpr
+	#else
+	#define CX
+	#endif
+	CX auto data = daw::json::from_json<test_001_t>( json_data );
+
 	std::clog << to_json( data ) << '\n';
 
-	constexpr auto ary =
+	CX auto ary =
 	  from_json_array<json_class<no_name, test_001_t>,
 	                  daw::bounded_vector_t<test_001_t, 10>>( json_data_array );
 	std::cout << "read in " << ary.size( ) << " items\n";
