@@ -22,11 +22,14 @@
 
 #pragma once
 
+#include <array>
 #include <cstdint>
-#include <daw/json/daw_json_link.h>
 #include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
+
+#include <daw/json/daw_json_link.h>
 
 struct properties_t {
 	std::string_view name;
@@ -130,4 +133,3 @@ auto describe_json_class( canada_object_t ) {
 auto to_json_data( canada_object_t const &value ) {
 	return std::forward_as_tuple( value.type, value.features );
 }
-
