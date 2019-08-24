@@ -31,9 +31,11 @@
 #include <unistd.h>
 #else
 #include <fstream>
-#include <string>
 #include <streambuf>
+#include <string>
 #endif
+#include <utility>
+
 namespace daw {
 	enum class open_mode : bool { read, read_write };
 
