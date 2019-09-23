@@ -121,7 +121,7 @@ namespace daw::json::impl {
 		constexpr daw::string_view move_to_next_of( char c ) noexcept {
 			auto p = begin( );
 			size_t sz = 0;
-			while( !in( c ) ) {
+			while( not in( c ) ) {
 				remove_prefix( );
 				++sz;
 			}

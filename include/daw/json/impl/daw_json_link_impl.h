@@ -660,12 +660,22 @@ namespace daw::json {
 			assert( rng.front( '"' ) );
 			auto result = rng;
 			rng.remove_prefix( );
-			while( !rng.in( '"' ) ) {
-				if( rng.in( '\\' ) ) {
-					rng.remove_prefix( );
-				}
-				rng.remove_prefix( );
+			if( rng.in( '"' ) ) {
+				result.last = result.first;
+				return result;
 			}
+			auto p = rng.begin( );
+			while( *p != '\0' ) {
+				if( *p == '\\' ) {
+					++p;
+					continue;
+				}
+				if( *p == '"' ) {
+					break;
+				}
+				++p;
+			}
+			rng.first = p;
 			assert( rng.front( '"' ) );
 			result.last = std::next( rng.begin( ) );
 			rng.remove_prefix( );
@@ -681,7 +691,7 @@ namespace daw::json {
 			auto result = rng;
 			bool is_escaped = rng.in( '\\' );
 			rng.remove_prefix( );
-			while( is_escaped or !rng.in( '"' ) ) {
+			while( is_escaped or not rng.in( '"' ) ) {
 				if( is_escaped ) {
 					is_escaped = false;
 				} else {
