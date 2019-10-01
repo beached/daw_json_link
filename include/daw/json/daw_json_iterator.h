@@ -67,7 +67,7 @@ namespace daw::json {
 		constexpr json_array_iterator( ) noexcept = default;
 
 		template<typename String,
-		         daw::enable_if_t<!std::is_same_v<
+		         daw::enable_when_t<!std::is_same_v<
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr json_array_iterator( String &&json_data,
 		                               std::string_view start_path = "" )
@@ -146,7 +146,7 @@ namespace daw::json {
 		constexpr json_array_range( ) noexcept = default;
 
 		template<typename String,
-		         daw::enable_if_t<!std::is_same_v<
+		         daw::enable_when_t<!std::is_same_v<
 		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr json_array_range( String &&json_data,
 		                            std::string_view start_path = "" )
