@@ -1262,8 +1262,9 @@ namespace daw::json {
 		template<typename String>
 		constexpr auto find_range( String &&str, daw::string_view start_path ) {
 
-			auto rng =
-			  IteratorRange( std::data( str ), std::data( str ) + std::size( str ) );
+			using std::data;
+			using std::size;
+			auto rng = IteratorRange( data( str ), data( str ) + size( str ) );
 			if( !start_path.empty( ) ) {
 				find_range2( rng, start_path );
 			}
