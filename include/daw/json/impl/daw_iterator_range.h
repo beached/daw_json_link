@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #include <daw/daw_algorithm.h>
 
 namespace daw::json::impl {
@@ -139,6 +141,7 @@ namespace daw::json::impl {
 		}
 
 		constexpr bool in( char c ) const noexcept {
+			assert( first != nullptr );
 			return *first == c;
 		}
 

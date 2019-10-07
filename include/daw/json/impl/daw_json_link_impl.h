@@ -661,7 +661,9 @@ namespace daw::json {
 			auto result = rng;
 			rng.remove_prefix( );
 			if( rng.in( '"' ) ) {
-				result.last = result.first;
+			// DAW
+				//result.last = result.first;
+				result.last = rng.first;
 				return result;
 			}
 			auto p = rng.begin( );

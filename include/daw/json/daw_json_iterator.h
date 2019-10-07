@@ -69,10 +69,10 @@ namespace daw::json {
 		template<typename String,
 		         daw::enable_when_t<!std::is_same_v<
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
-		constexpr json_array_iterator( String &&json_data,
+		constexpr json_array_iterator( String &&jd,
 		                               std::string_view start_path = "" )
 		  : m_state(
-		      impl::find_range( std::forward<String>( json_data ),
+		      impl::find_range( std::forward<String>( jd ),
 		                        {start_path.data( ), start_path.size( )} ) ) {
 
 			static_assert(
@@ -149,9 +149,9 @@ namespace daw::json {
 		template<typename String,
 		         daw::enable_when_t<!std::is_same_v<
 		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
-		constexpr json_array_range( String &&json_data,
+		constexpr json_array_range( String &&jd,
 		                            std::string_view start_path = "" )
-		  : m_first( std::forward<String>( json_data ), start_path ) {}
+		  : m_first( std::forward<String>( jd ), start_path ) {}
 
 		constexpr reference begin( ) noexcept {
 			return m_first;
