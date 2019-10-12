@@ -8,6 +8,16 @@ include( "${CMAKE_SOURCE_DIR}/dependent_projects/CMakeListsCompiler.txt" )
 
 include_directories( "./include" )
 
+set( DAW_JSON_USE_EXCEPTIONS ON CACHE STRING "Allow exceptions when json errors occur" )
+if( DAW_JSON_USE_EXCEPTIONS )
+	add_compile_definitions( DAW_JSON_USE_EXCEPTIONS="${DAW_JSON_USE_EXCEPTIONS}" )
+endif( )
+
+set( DAW_JSON_CHECK_ALWAYS ON CACHE STRING "Allow exceptions when json errors occur" )
+if( DAW_JSON_USE_CHECK_ALWAYS )
+	add_compile_definitions( DAW_JSON_CHECK_ALWAYS="${DAW_JSON_CHECK_ALWAYS}" )
+endif( )
+
 set( DEP_ROOT_DIR_BASE "${CMAKE_SOURCE_DIR}/dependent_projects/build" )
 if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 	set( DEP_ROOT_DIR "${DEP_ROOT_DIR_BASE}/debug" )

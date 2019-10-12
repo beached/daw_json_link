@@ -52,6 +52,7 @@
 #include <daw/iterator/daw_inserter.h>
 
 #include "daw_iterator_range.h"
+#include "daw_json_assert.h"
 
 namespace daw::json {
 	namespace to_strings {
@@ -235,8 +236,8 @@ namespace daw::json {
 		}
 
 		template<typename T>
-		using json_parser_description_t =
-		  decltype( describe_json_class( std::declval<T &>( ) ) );
+		using json_parser_description_t = daw::remove_cvref_t<decltype(
+		  describe_json_class( std::declval<T &>( ) ) )>;
 
 		template<typename T>
 		constexpr auto deref_detect( T &&value ) noexcept -> decltype( *value ) {
@@ -454,7 +455,7 @@ namespace daw::json {
 		         typename Last>
 		constexpr auto
 		parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
-			assert( rng.front( "0123456789" ) );
+			json_assert( rng.front( "0123456789" ) );
 
 			uintmax_t v = 0;
 			uint_fast8_t c = 0;
@@ -485,7 +486,7 @@ namespace daw::json {
 		         typename Last>
 		constexpr Result
 		parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
-			assert( rng.front( "0123456789" ) );
+			json_assert( rng.front( "0123456789" ) );
 
 			uintmax_t result = 0;
 			uintmax_t dig =
@@ -525,7 +526,7 @@ namespace daw::json {
 		template<typename Result, bool RangeCheck = false, typename First,
 		         typename Last>
 		constexpr Result parse_integer( IteratorRange<First, Last> &rng ) noexcept {
-			assert( rng.front( "+-0123456789" ) );
+			json_assert( rng.front( "+-0123456789" ) );
 			int sign = 1;
 			// This gets rid of warnings when parse_integer is called on unsigned
 			// types
@@ -558,7 +559,7 @@ namespace daw::json {
 		constexpr Result parse_real( IteratorRange<First, Last> &rng ) noexcept {
 			// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 
-			assert( rng.is_real_number_part( ) );
+			json_assert( rng.is_real_number_part( ) );
 			int_fast8_t sign = 1;
 			if( rng.in( '-' ) ) {
 				sign = -1;
@@ -650,19 +651,19 @@ namespace daw::json {
 			rng.munch( ':' );
 			rng.trim_left( );
 
-			assert( !name.empty( ) and !rng.empty( ) );
+			json_assert( not name.empty( ) and not rng.empty( ) );
 			return name;
 		}
 
 		template<typename First, typename Last>
 		constexpr IteratorRange<First, Last>
 		skip_string( IteratorRange<First, Last> &rng ) {
-			assert( rng.front( '"' ) );
+			json_assert( rng.front( '"' ) );
 			auto result = rng;
 			rng.remove_prefix( );
 			if( rng.in( '"' ) ) {
-			// DAW
-				//result.last = result.first;
+				// DAW
+				// result.last = result.first;
 				result.last = rng.first;
 				return result;
 			}
@@ -678,7 +679,7 @@ namespace daw::json {
 				++p;
 			}
 			rng.first = p;
-			assert( rng.front( '"' ) );
+			json_assert( rng.front( '"' ) );
 			result.last = std::next( rng.begin( ) );
 			rng.remove_prefix( );
 			return result;
@@ -688,7 +689,7 @@ namespace daw::json {
 		constexpr IteratorRange<First, Last>
 		skip_name( IteratorRange<First, Last> &rng ) {
 			// Assuming no escaped double-quotes
-			assert( rng.front( '"' ) and "Invalid name, strings start with \"" );
+			json_assert( rng.front( '"' ), "Invalid name, strings start with \"" );
 			rng.remove_prefix( );
 			auto result = rng;
 			bool is_escaped = rng.in( '\\' );
@@ -701,7 +702,7 @@ namespace daw::json {
 				}
 				rng.remove_prefix( );
 			}
-			assert( rng.front( '"' ) and "Invalid name, strings end with \"" );
+			json_assert( rng.front( '"' ), "Invalid name, strings end with \"" );
 			result.last = rng.begin( );
 			rng.remove_prefix( );
 			return result;
@@ -711,7 +712,7 @@ namespace daw::json {
 		constexpr IteratorRange<First, Last>
 		skip_literal( IteratorRange<First, Last> &rng ) {
 			auto result = rng.move_to_first_of( ",}]" );
-			assert( rng.front( ",}]" ) );
+			json_assert( rng.front( ",}]" ) );
 			return result;
 		}
 
@@ -745,10 +746,10 @@ namespace daw::json {
 					break;
 				}
 			}
-			assert( rng.front( Right ) );
+			json_assert( rng.front( Right ) );
 
 			rng.remove_prefix( );
-			assert( !rng.empty( ) );
+			json_assert( !rng.empty( ) );
 
 			result.last = rng.begin( );
 			return result;
@@ -769,7 +770,7 @@ namespace daw::json {
 		template<typename First, typename Last>
 		constexpr IteratorRange<First, Last>
 		skip_value( IteratorRange<First, Last> &rng ) {
-			assert( !rng.empty( ) );
+			json_assert( !rng.empty( ) );
 
 			switch( rng.front( ) ) {
 			case '"':
@@ -789,7 +790,7 @@ namespace daw::json {
 			if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 			              JsonMember::expected_type == JsonParseTypes::String or
 			              JsonMember::expected_type == JsonParseTypes::Custom ) {
-				assert( rng.front( '"' ) );
+				json_assert( rng.front( '"' ) );
 				return impl::skip_string( rng );
 			} else if constexpr( JsonMember::expected_type ==
 			                       JsonParseTypes::Number or
@@ -798,11 +799,11 @@ namespace daw::json {
 				return impl::skip_literal( rng );
 			} else if constexpr( JsonMember::expected_type ==
 			                     JsonParseTypes::Array ) {
-				assert( rng.front( '[' ) );
+				json_assert( rng.front( '[' ) );
 				return impl::skip_array( rng );
 			} else if constexpr( JsonMember::expected_type ==
 			                     JsonParseTypes::Class ) {
-				assert( rng.front( '{' ) );
+				json_assert( rng.front( '{' ) );
 				return impl::skip_class( rng );
 			} else {
 				// Woah there
@@ -814,7 +815,7 @@ namespace daw::json {
 		constexpr void skip_quotes( IteratorRange<First, Last> &rng ) noexcept {
 			if constexpr( JsonMember::literal_as_string ==
 			              LiteralAsStringOpt::always ) {
-				assert( rng.front( '"' ) );
+				json_assert( rng.front( '"' ) );
 				rng.remove_prefix( );
 			} else if constexpr( JsonMember::literal_as_string ==
 			                     LiteralAsStringOpt::maybe ) {
@@ -831,24 +832,24 @@ namespace daw::json {
 			using element_t = typename JsonMember::parse_to_t;
 
 			skip_quotes<JsonMember>( rng );
-			assert( rng.is_real_number_part( ) );
+			json_assert( rng.is_real_number_part( ) );
 
 			if constexpr( std::is_floating_point_v<element_t> ) {
 				auto result = constructor_t{}( parse_real<element_t>( rng ) );
 				skip_quotes<JsonMember>( rng );
-				assert( rng.at_end_of_item( ) );
+				json_assert( rng.at_end_of_item( ) );
 				return result;
 			} else if constexpr( std::is_signed_v<element_t> ) {
 				auto result = constructor_t{}(
 				  parse_integer<element_t, JsonMember::range_check>( rng ) );
 				skip_quotes<JsonMember>( rng );
-				assert( rng.at_end_of_item( ) );
+				json_assert( rng.at_end_of_item( ) );
 				return result;
 			} else {
 				auto result = constructor_t{}(
 				  parse_unsigned_integer<element_t, JsonMember::range_check>( rng ) );
 				skip_quotes<JsonMember>( rng );
-				assert( rng.at_end_of_item( ) );
+				json_assert( rng.at_end_of_item( ) );
 				return result;
 			}
 		}
@@ -875,7 +876,7 @@ namespace daw::json {
 		template<typename JsonMember, typename First, typename Last>
 		constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 		                            IteratorRange<First, Last> &rng ) {
-			assert( !rng.empty( ) and rng.size( ) >= 4 );
+			json_assert( not rng.empty( ) and rng.size( ) >= 4 );
 
 			using constructor_t = typename JsonMember::constructor_t;
 
@@ -894,7 +895,7 @@ namespace daw::json {
 		                            IteratorRange<First, Last> &rng ) {
 
 			auto str = skip_string( rng );
-			assert( str.front( '"' ) );
+			json_assert( str.front( '"' ) );
 			using constructor_t = typename JsonMember::constructor_t;
 			return constructor_t{}( std::next( str.begin( ) ), str.size( ) - 2U );
 		}
@@ -904,7 +905,7 @@ namespace daw::json {
 		                            IteratorRange<First, Last> &rng ) {
 
 			auto str = skip_string( rng );
-			assert( str.front( '"' ) );
+			json_assert( str.front( '"' ) );
 			using constructor_t = typename JsonMember::constructor_t;
 			return constructor_t{}( std::next( str.begin( ) ), str.size( ) - 2U );
 		}
@@ -914,7 +915,7 @@ namespace daw::json {
 		                            IteratorRange<First, Last> &rng ) {
 
 			auto str = skip_string( rng );
-			assert( str.front( '"' ) );
+			json_assert( str.front( '"' ) );
 			// TODO make custom require a ptr/sz pair
 			using constructor_t = typename JsonMember::from_converter_t;
 			return constructor_t{}(
@@ -937,7 +938,7 @@ namespace daw::json {
 		constexpr auto parse_value( ParseTag<JsonParseTypes::KeyValue>,
 		                            IteratorRange<First, Last> &rng ) {
 
-			assert( rng.front( '{' ) );
+			json_assert( rng.front( '{' ) );
 
 			rng.remove_prefix( );
 			rng.trim_left( );
@@ -957,7 +958,7 @@ namespace daw::json {
 
 				rng.clean_tail( );
 			}
-			assert( rng.front( '}' ) );
+			json_assert( rng.front( '}' ) );
 			rng.remove_prefix( );
 			rng.trim_left( );
 			return array_container;
@@ -968,7 +969,7 @@ namespace daw::json {
 		                            IteratorRange<First, Last> &rng ) {
 
 			using element_t = typename JsonMember::json_element_t;
-			assert( rng.front( '[' ) );
+			json_assert( rng.front( '[' ) );
 
 			rng.remove_prefix( );
 			rng.trim_left( );
@@ -982,7 +983,7 @@ namespace daw::json {
 				  parse_value<element_t>( ParseTag<element_t::expected_type>{}, rng ) );
 				rng.clean_tail( );
 			}
-			assert( rng.front( ']' ) );
+			json_assert( rng.front( ']' ) );
 			rng.remove_prefix( );
 			rng.trim_left( );
 			return array_container;
@@ -1090,7 +1091,8 @@ namespace daw::json {
 #ifndef NDEBUG
 			bool can_null =
 			  is_json_nullable_v<daw::traits::nth_element<pos, JsonMembers...>>;
-			assert( can_null or !locations[pos].missing( ) or !rng.front( '}' ) );
+			json_assert( can_null or !locations[pos].missing( ) or
+			             !rng.front( '}' ) );
 #endif
 
 			rng.trim_left( );
@@ -1140,8 +1142,8 @@ namespace daw::json {
 				auto const name = JsonMember::name;
 				::Unused( name );
 				// Only allow missing members for Null-able type
-				assert( !loc.empty( ) or
-				        JsonMember::expected_type == JsonParseTypes::Null );
+				json_assert( !loc.empty( ) or
+				             JsonMember::expected_type == JsonParseTypes::Null );
 
 				auto cur_rng = &rng;
 				if( loc.is_null( ) or
@@ -1187,12 +1189,12 @@ namespace daw::json {
 			  "Supplied types cannot be used for construction of this type" );
 
 			rng.trim_left( );
-			assert( rng.front( '{' ) );
+			json_assert( rng.front( '{' ) );
 			rng.remove_prefix( );
 			rng.trim_left( );
 			if constexpr( sizeof...( JsonMembers ) == 0 ) {
 				return construct_a<Result>( );
-				assert( rng.front( '}' ) );
+				json_assert( rng.front( '}' ) );
 				rng.remove_prefix( );
 				rng.trim_left( );
 			} else {
@@ -1209,7 +1211,7 @@ namespace daw::json {
 					rng.clean_tail( );
 				}
 
-				assert( rng.front( '}' ) );
+				json_assert( rng.front( '}' ) );
 				rng.remove_prefix( );
 				rng.trim_left( );
 				return result;
@@ -1248,7 +1250,7 @@ namespace daw::json {
 		                            daw::string_view path ) {
 			auto current = impl::pop_json_path( path );
 			while( !current.empty( ) ) {
-				assert( rng.front( '{' ) and "Invalid Path Entry" );
+				json_assert( rng.front( '{' ), "Invalid Path Entry" );
 				rng.remove_prefix( );
 				rng.trim_left( );
 				auto name = parse_name( rng );

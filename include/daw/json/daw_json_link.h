@@ -85,13 +85,15 @@ namespace daw::json {
 		using parse_to_t = typename JsonMember::parse_to_t;
 		using constructor_t = typename JsonMember::constructor_t;
 		using sub_type = JsonMember;
+
 		static_assert( std::is_invocable_v<constructor_t>,
 		               "Specified constructor must be callable without arguments" );
 	};
 
 	template<JSONNAMETYPE Name, typename T = double,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
-	         typename Constructor = daw::construct_a_t<T>, bool RangeCheck = false>
+	         typename Constructor = daw::construct_a_t<T>,
+	         bool RangeCheck = false>
 	struct json_number {
 		static_assert( std::is_invocable_v<Constructor, T>,
 		               "Constructor must be callable with T" );
@@ -294,8 +296,8 @@ namespace daw::json {
 		using impl::data_size::data;
 		using impl::data_size::size;
 
-		auto rng = 
-		  daw::json::impl::IteratorRange( std::data( json_data ), std::data( json_data ) + std::size( json_data ) );
+		auto rng = daw::json::impl::IteratorRange(
+		  std::data( json_data ), std::data( json_data ) + std::size( json_data ) );
 		rng.trim_left( );
 
 		return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
@@ -318,4 +320,8 @@ namespace daw::json {
 	}
 } // namespace daw::json
 
-#define DAWJSONLINK_SENTINAL "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0                             ,]\"}tfn"
+#define DAWJSONLINK_SENTINAL                                                   \
+	"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" \
+	"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" \
+	"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0            " \
+	"                 ,]\"}tfn"
