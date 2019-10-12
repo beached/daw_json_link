@@ -63,8 +63,9 @@ namespace daw::json {
 		               "Argument must be convertable to a bool" );
 		if( not static_cast<bool>( b ) ) {
 			if constexpr( use_json_exceptions_v ) {
-				throw json_exception( );
+				throw json_exception( reason );
 			} else {
+				Unused( reason );
 				std::abort( );
 			}
 		}
@@ -92,8 +93,9 @@ namespace daw::json {
 		               "Argument must be convertable to a bool" );
 		if( not static_cast<bool>( b ) ) {
 			if constexpr( use_json_exceptions_v ) {
-				throw json_exception( );
+				throw json_exception( reason );
 			} else {
+				Unused( reason );
 				std::abort( );
 			}
 		}
