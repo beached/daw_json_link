@@ -78,6 +78,7 @@ set( SOURCE_FOLDER "src" )
 include_directories( ${HEADER_FOLDER} )
 
 set( HEADER_FILES
+	${HEADER_FOLDER}/daw/json/daw_json_assert.h
 	${HEADER_FOLDER}/daw/json/daw_json_link.h
 	${HEADER_FOLDER}/daw/json/daw_json_iterator.h
 	${HEADER_FOLDER}/daw/json/impl/daw_json_link_impl.h
