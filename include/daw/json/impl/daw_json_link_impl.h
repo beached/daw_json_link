@@ -455,7 +455,8 @@ namespace daw::json {
 		         typename Last>
 		constexpr auto
 		parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
-			json_assert( rng.front( "0123456789" ) );
+			json_assert( rng.front( "0123456789" ),
+			             "Expecting a digit as first item" );
 
 			uintmax_t v = 0;
 			uint_fast8_t c = 0;
@@ -651,14 +652,15 @@ namespace daw::json {
 			rng.munch( ':' );
 			rng.trim_left( );
 
-			json_assert( not name.empty( ) and not rng.empty( ) );
+			json_assert( not name.empty( ) and not rng.empty( ),
+			             "Expected a non empty name and data after name" );
 			return name;
 		}
 
 		template<typename First, typename Last>
 		constexpr IteratorRange<First, Last>
 		skip_string( IteratorRange<First, Last> &rng ) {
-			json_assert( rng.front( '"' ) );
+			json_assert( rng.front( '"' ), "Expected \" at the start of a string" );
 			auto result = rng;
 			rng.remove_prefix( );
 			if( rng.in( '"' ) ) {
@@ -679,7 +681,8 @@ namespace daw::json {
 				++p;
 			}
 			rng.first = p;
-			json_assert( rng.front( '"' ) );
+			json_assert( rng.front( '"' ),
+			             "Expected trailing \" at the end of string" );
 			result.last = std::next( rng.begin( ) );
 			rng.remove_prefix( );
 			return result;
@@ -712,7 +715,8 @@ namespace daw::json {
 		constexpr IteratorRange<First, Last>
 		skip_literal( IteratorRange<First, Last> &rng ) {
 			auto result = rng.move_to_first_of( ",}]" );
-			json_assert( rng.front( ",}]" ) );
+			json_assert( rng.front( ",}]" ),
+			             "Expected a ',', '}', ']' to trail literal" );
 			return result;
 		}
 
@@ -724,7 +728,7 @@ namespace daw::json {
 			size_t bracket_count = 1;
 			bool in_quotes = false;
 			auto result = rng;
-			while( !rng.empty( ) and bracket_count > 0 ) {
+			while( not rng.empty( ) and bracket_count > 0 ) {
 				rng.remove_prefix( );
 				rng.trim_left( );
 				switch( rng.front( ) ) {
@@ -746,10 +750,10 @@ namespace daw::json {
 					break;
 				}
 			}
-			json_assert( rng.front( Right ) );
+			json_assert( rng.front( Right ), "Expected closing bracket/brace" );
 
 			rng.remove_prefix( );
-			json_assert( !rng.empty( ) );
+			json_assert( not rng.empty( ), "Unexpected empty range" );
 
 			result.last = rng.begin( );
 			return result;
@@ -770,7 +774,7 @@ namespace daw::json {
 		template<typename First, typename Last>
 		constexpr IteratorRange<First, Last>
 		skip_value( IteratorRange<First, Last> &rng ) {
-			json_assert( !rng.empty( ) );
+			json_assert( not rng.empty( ), "Expected value, not empty range" );
 
 			switch( rng.front( ) ) {
 			case '"':
@@ -790,7 +794,8 @@ namespace daw::json {
 			if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 			              JsonMember::expected_type == JsonParseTypes::String or
 			              JsonMember::expected_type == JsonParseTypes::Custom ) {
-				json_assert( rng.front( '"' ) );
+				json_assert( rng.front( '"' ),
+				             "Expected start of value to begin with '\"'" );
 				return impl::skip_string( rng );
 			} else if constexpr( JsonMember::expected_type ==
 			                       JsonParseTypes::Number or
@@ -799,11 +804,11 @@ namespace daw::json {
 				return impl::skip_literal( rng );
 			} else if constexpr( JsonMember::expected_type ==
 			                     JsonParseTypes::Array ) {
-				json_assert( rng.front( '[' ) );
+				json_assert( rng.front( '[' ), "Expected start of array with '['" );
 				return impl::skip_array( rng );
 			} else if constexpr( JsonMember::expected_type ==
 			                     JsonParseTypes::Class ) {
-				json_assert( rng.front( '{' ) );
+				json_assert( rng.front( '{' ), "Expected start of class with '{'" );
 				return impl::skip_class( rng );
 			} else {
 				// Woah there
@@ -815,7 +820,8 @@ namespace daw::json {
 		constexpr void skip_quotes( IteratorRange<First, Last> &rng ) noexcept {
 			if constexpr( JsonMember::literal_as_string ==
 			              LiteralAsStringOpt::always ) {
-				json_assert( rng.front( '"' ) );
+				json_assert( rng.front( '"' ),
+				             "Expected start of quoted item with \"" );
 				rng.remove_prefix( );
 			} else if constexpr( JsonMember::literal_as_string ==
 			                     LiteralAsStringOpt::maybe ) {
@@ -832,24 +838,28 @@ namespace daw::json {
 			using element_t = typename JsonMember::parse_to_t;
 
 			skip_quotes<JsonMember>( rng );
-			json_assert( rng.is_real_number_part( ) );
+			json_assert( rng.is_real_number_part( ),
+			             "Expected number to start with on of \"0123456789eE+-\"" );
 
 			if constexpr( std::is_floating_point_v<element_t> ) {
 				auto result = constructor_t{}( parse_real<element_t>( rng ) );
 				skip_quotes<JsonMember>( rng );
-				json_assert( rng.at_end_of_item( ) );
+				json_assert( rng.at_end_of_item( ),
+				             "Expected whitespace or one of \",}]\" at end of number" );
 				return result;
 			} else if constexpr( std::is_signed_v<element_t> ) {
 				auto result = constructor_t{}(
 				  parse_integer<element_t, JsonMember::range_check>( rng ) );
 				skip_quotes<JsonMember>( rng );
-				json_assert( rng.at_end_of_item( ) );
+				json_assert( rng.at_end_of_item( ),
+				             "Expected whitespace or one of \",}]\" at end of number" );
 				return result;
 			} else {
 				auto result = constructor_t{}(
 				  parse_unsigned_integer<element_t, JsonMember::range_check>( rng ) );
 				skip_quotes<JsonMember>( rng );
-				json_assert( rng.at_end_of_item( ) );
+				json_assert( rng.at_end_of_item( ),
+				             "Expected whitespace or one of \",}]\" at end of number" );
 				return result;
 			}
 		}
@@ -876,7 +886,8 @@ namespace daw::json {
 		template<typename JsonMember, typename First, typename Last>
 		constexpr auto parse_value( ParseTag<JsonParseTypes::Bool>,
 		                            IteratorRange<First, Last> &rng ) {
-			json_assert( not rng.empty( ) and rng.size( ) >= 4 );
+			json_assert( not rng.empty( ) and rng.size( ) >= 4,
+			             "Range to small to be a bool" );
 
 			using constructor_t = typename JsonMember::constructor_t;
 
@@ -895,7 +906,7 @@ namespace daw::json {
 		                            IteratorRange<First, Last> &rng ) {
 
 			auto str = skip_string( rng );
-			json_assert( str.front( '"' ) );
+			json_assert( str.front( '"' ), "Expected a quote to start string" );
 			using constructor_t = typename JsonMember::constructor_t;
 			return constructor_t{}( std::next( str.begin( ) ), str.size( ) - 2U );
 		}
@@ -905,7 +916,7 @@ namespace daw::json {
 		                            IteratorRange<First, Last> &rng ) {
 
 			auto str = skip_string( rng );
-			json_assert( str.front( '"' ) );
+			json_assert( str.front( '"' ), "Expected quote at end of string" );
 			using constructor_t = typename JsonMember::constructor_t;
 			return constructor_t{}( std::next( str.begin( ) ), str.size( ) - 2U );
 		}
@@ -914,8 +925,11 @@ namespace daw::json {
 		constexpr auto parse_value( ParseTag<JsonParseTypes::Custom>,
 		                            IteratorRange<First, Last> &rng ) {
 
+			json_assert( rng.front( '"' ),
+			             "Custom types requite a string at the beginning" );
 			auto str = skip_string( rng );
-			json_assert( str.front( '"' ) );
+			json_assert( str.front( '"' ),
+			             "Custom types requite a string at the end" );
 			// TODO make custom require a ptr/sz pair
 			using constructor_t = typename JsonMember::from_converter_t;
 			return constructor_t{}(
@@ -938,7 +952,9 @@ namespace daw::json {
 		constexpr auto parse_value( ParseTag<JsonParseTypes::KeyValue>,
 		                            IteratorRange<First, Last> &rng ) {
 
-			json_assert( rng.front( '{' ) );
+			json_assert(
+			  rng.front( '{' ),
+			  "Expected keyvalue type to be of class type and beging with '{'" );
 
 			rng.remove_prefix( );
 			rng.trim_left( );
@@ -949,7 +965,7 @@ namespace daw::json {
 
 			using key_t = typename JsonMember::json_key_t;
 			using value_t = typename JsonMember::json_element_t;
-			while( !rng.in( "}" ) ) {
+			while( not rng.in( "}" ) ) {
 				auto key = parse_name( rng );
 				rng.trim_left( );
 				container_appender(
@@ -958,7 +974,8 @@ namespace daw::json {
 
 				rng.clean_tail( );
 			}
-			json_assert( rng.front( '}' ) );
+			json_assert( rng.front( '}' ),
+			             "Expected keyvalue type to end with a '}'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 			return array_container;
@@ -969,7 +986,7 @@ namespace daw::json {
 		                            IteratorRange<First, Last> &rng ) {
 
 			using element_t = typename JsonMember::json_element_t;
-			json_assert( rng.front( '[' ) );
+			json_assert( rng.front( '[' ), "Expected array to start with a '['" );
 
 			rng.remove_prefix( );
 			rng.trim_left( );
@@ -978,12 +995,12 @@ namespace daw::json {
 			auto container_appender =
 			  typename JsonMember::appender_t( array_container );
 
-			while( !rng.empty( ) and !rng.in( "]" ) ) {
+			while( not rng.empty( ) and not rng.in( "]" ) ) {
 				container_appender(
 				  parse_value<element_t>( ParseTag<element_t::expected_type>{}, rng ) );
 				rng.clean_tail( );
 			}
-			json_assert( rng.front( ']' ) );
+			json_assert( rng.front( ']' ), "Expected array to end with a ']'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 			return array_container;
@@ -1088,15 +1105,13 @@ namespace daw::json {
 		  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
 		  IteratorRange<First, Last> &rng ) {
 
-#ifndef NDEBUG
-			bool can_null =
-			  is_json_nullable_v<daw::traits::nth_element<pos, JsonMembers...>>;
-			json_assert( can_null or !locations[pos].missing( ) or
-			             !rng.front( '}' ) );
-#endif
+			json_assert(
+			  is_json_nullable_v<daw::traits::nth_element<pos, JsonMembers...>> or
+			    not locations[pos].missing( ) or not rng.front( '}' ),
+			  "Unexpected end of class.  Non-nullable members still not found" );
 
 			rng.trim_left( );
-			while( locations[pos].missing( ) and !rng.in( '}' ) ) {
+			while( locations[pos].missing( ) and not rng.in( '}' ) ) {
 				auto name = parse_name( rng );
 
 				if( !name_map_t<JsonMembers...>::has_name( name ) ) {
@@ -1142,12 +1157,13 @@ namespace daw::json {
 				auto const name = JsonMember::name;
 				::Unused( name );
 				// Only allow missing members for Null-able type
-				json_assert( !loc.empty( ) or
-				             JsonMember::expected_type == JsonParseTypes::Null );
+				json_assert( not loc.empty( ) or
+				               JsonMember::expected_type == JsonParseTypes::Null,
+				             "Could not find required class member" );
 
 				auto cur_rng = &rng;
 				if( loc.is_null( ) or
-				    ( !rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
+				    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 					// The current member was seen previously
 					cur_rng = &loc;
 				}
@@ -1189,12 +1205,12 @@ namespace daw::json {
 			  "Supplied types cannot be used for construction of this type" );
 
 			rng.trim_left( );
-			json_assert( rng.front( '{' ) );
+			json_assert( rng.front( '{' ), "Expected class to begin with '{'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 			if constexpr( sizeof...( JsonMembers ) == 0 ) {
 				return construct_a<Result>( );
-				json_assert( rng.front( '}' ) );
+				json_assert( rng.front( '}' ), "Expected class to end with '}'" );
 				rng.remove_prefix( );
 				rng.trim_left( );
 			} else {
@@ -1205,13 +1221,13 @@ namespace daw::json {
 				  parse_item<Is, JsonMembers...>( known_locations, rng )... );
 				rng.trim_left( );
 				// If we fullfill the contract before all values are found
-				while( !rng.in( '}' ) ) {
+				while( not rng.in( '}' ) ) {
 					parse_name( rng );
 					skip_value( rng );
 					rng.clean_tail( );
 				}
 
-				json_assert( rng.front( '}' ) );
+				json_assert( rng.front( '}' ), "Expected class to end with '}'" );
 				rng.remove_prefix( );
 				rng.trim_left( );
 				return result;

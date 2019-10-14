@@ -46,12 +46,14 @@ int main( int argc, char **argv ) {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
+	twitter_object_t j1;
 	daw::bench_n_test_mbs<10>(
 	  "twitter_catalog bench", sz,
-	  []( auto f1 ) {
-		  auto j1 = daw::json::from_json<twitter_object_t>( f1 );
+	  [&j1]( auto f1 ) {
+		  j1 = daw::json::from_json<twitter_object_t>( f1 );
 		  daw::do_not_optimize( j1 );
 	  },
 	  json_sv1 );
+	daw::do_not_optimize( j1 );
 }
 

@@ -44,7 +44,7 @@ namespace daw::json {
 #ifdef DAW_JSON_CHECK_ALWAYS
 	template<typename Bool>
 	inline constexpr void
-	json_assert( Bool &&b ) noexcept( use_json_exceptions_v ) {
+	json_assert( Bool &&b ) noexcept( not use_json_exceptions_v ) {
 		static_assert( std::is_convertible_v<Bool, bool>,
 		               "Argument must be convertable to a bool" );
 		if( not static_cast<bool>( b ) ) {
@@ -58,7 +58,7 @@ namespace daw::json {
 	template<typename Bool>
 	inline constexpr void
 	json_assert( Bool &&b,
-	             std::string_view reason ) noexcept( use_json_exceptions_v ) {
+	             std::string_view reason ) noexcept( not use_json_exceptions_v ) {
 		static_assert( std::is_convertible_v<Bool, bool>,
 		               "Argument must be convertable to a bool" );
 		if( not static_cast<bool>( b ) ) {
@@ -74,7 +74,7 @@ namespace daw::json {
 #ifndef NDEBUG
 	template<typename Bool>
 	inline constexpr void
-	json_assert( Bool &&b ) noexcept( use_json_exceptions_v ) {
+	json_assert( Bool &&b ) noexcept( not use_json_exceptions_v ) {
 		static_assert( std::is_convertible_v<Bool, bool>,
 		               "Argument must be convertable to a bool" );
 		if( not static_cast<bool>( b ) ) {
@@ -88,7 +88,7 @@ namespace daw::json {
 	template<typename Bool>
 	inline constexpr void
 	json_assert( Bool &&b,
-	             std::string_view reason ) noexcept( use_json_exceptions_v ) {
+	             std::string_view reason ) noexcept( not use_json_exceptions_v ) {
 		static_assert( std::is_convertible_v<Bool, bool>,
 		               "Argument must be convertable to a bool" );
 		if( not static_cast<bool>( b ) ) {

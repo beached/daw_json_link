@@ -149,8 +149,7 @@ namespace daw::json {
 		template<typename String,
 		         daw::enable_when_t<!std::is_same_v<
 		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
-		constexpr json_array_range( String &&jd,
-		                            std::string_view start_path = "" )
+		constexpr json_array_range( String &&jd, std::string_view start_path = "" )
 		  : m_first( std::forward<String>( jd ), start_path ) {}
 
 		constexpr reference begin( ) noexcept {

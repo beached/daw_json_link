@@ -8,13 +8,19 @@ include( "${CMAKE_SOURCE_DIR}/dependent_projects/CMakeListsCompiler.txt" )
 
 include_directories( "./include" )
 
-set( DAW_JSON_USE_EXCEPTIONS ON CACHE STRING "Allow exceptions when json errors occur" )
-if( DAW_JSON_USE_EXCEPTIONS )
+set( DAW_JSON_DONT_USE_EXCEPTIONS OFF CACHE STRING "Don't throw exceptions when json errors occur" )
+if( DAW_JSON_DONT_USE_EXCEPTIONS=OFF )
+	message ( "Errors abort program" )
+else( )
+	message( "Errors throw json_exception" )
 	add_compile_definitions( DAW_JSON_USE_EXCEPTIONS="${DAW_JSON_USE_EXCEPTIONS}" )
 endif( )
 
-set( DAW_JSON_CHECK_ALWAYS ON CACHE STRING "Allow exceptions when json errors occur" )
-if( DAW_JSON_USE_CHECK_ALWAYS )
+set( DAW_JSON_CHECK_DEBUG_ONLY OFF CACHE STRING "Only check for json errors in debug" )
+if( DAW_JSON_CHECK_DEBUG_ONLY=OFF )
+	message( "Only checking for valid json in debug" )
+else( )
+	message( "Always checking for valid json" )
 	add_compile_definitions( DAW_JSON_CHECK_ALWAYS="${DAW_JSON_CHECK_ALWAYS}" )
 endif( )
 
