@@ -62,7 +62,7 @@ namespace daw::json {
 
 		template<typename T>
 		auto to_string( std::optional<T> const &v ) -> decltype( to_string( *v ) ) {
-			if( !v ) {
+			if( not v ) {
 				return {"null"};
 			}
 			return to_string( *v );
@@ -87,7 +87,7 @@ namespace daw::json {
 
 		template<typename T>
 		bool is_null( std::optional<T> const &v ) {
-			return !static_cast<bool>( v );
+			return not static_cast<bool>( v );
 		}
 
 		template<typename T>
@@ -309,7 +309,7 @@ namespace daw::json {
 		                                    OutputIterator it,
 		                                    Optional const &value ) {
 			static_assert( is_valid_optional_v<Optional> );
-			if( !value ) {
+			if( not value ) {
 				it = copy_to_iterator( "null", it );
 				return it;
 			}
@@ -408,7 +408,7 @@ namespace daw::json {
 			  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
 
 			*it++ = '[';
-			if( !std::empty( container ) ) {
+			if( not std::empty( container ) ) {
 				auto count = std::size( container ) - 1;
 				for( auto const &v : container ) {
 					it = to_string<typename JsonMember::json_element_t>(
@@ -673,6 +673,8 @@ namespace daw::json {
 			while( *p != '\0' ) {
 				if( *p == '\\' ) {
 					++p;
+					json_assert( p != '\0', "Unexpected end of stream" );
+					++p;
 					continue;
 				}
 				if( *p == '"' ) {
@@ -735,15 +737,15 @@ namespace daw::json {
 					rng.remove_prefix( 1 );
 					continue;
 				case '"':
-					in_quotes = !in_quotes;
+					in_quotes = not in_quotes;
 					continue;
 				case Left:
-					if( !in_quotes ) {
+					if( not in_quotes ) {
 						++bracket_count;
 					}
 					break;
 				case Right:
-					if( !in_quotes ) {
+					if( not in_quotes ) {
 						--bracket_count;
 					}
 					break;
@@ -1113,7 +1115,7 @@ namespace daw::json {
 			while( locations[pos].missing( ) and not rng.in( '}' ) ) {
 				auto name = parse_name( rng );
 
-				if( !name_map_t<JsonMembers...>::has_name( name ) ) {
+				if( not name_map_t<JsonMembers...>::has_name( name ) ) {
 					// This is not a member we are concerned with
 					skip_value( rng );
 					rng.clean_tail( );
@@ -1247,12 +1249,12 @@ namespace daw::json {
 			if( json_path_item.front( ) == '\\' ) {
 				json_path_item.remove_prefix( );
 			}
-			while( !json_path_item.empty( ) and !member_name.empty( ) ) {
+			while( not json_path_item.empty( ) and not member_name.empty( ) ) {
 				if( json_path_item.front( ) != member_name.front( ) ) {
 					return false;
 				}
 				json_path_item.remove_prefix( );
-				if( !json_path_item.empty( ) and json_path_item.front( ) == '\\' ) {
+				if( not json_path_item.empty( ) and json_path_item.front( ) == '\\' ) {
 					json_path_item.remove_prefix( );
 				}
 				member_name.remove_prefix( );
@@ -1264,12 +1266,12 @@ namespace daw::json {
 		constexpr void find_range2( IteratorRange<First, Last> &rng,
 		                            daw::string_view path ) {
 			auto current = impl::pop_json_path( path );
-			while( !current.empty( ) ) {
+			while( not current.empty( ) ) {
 				json_assert( rng.front( '{' ), "Invalid Path Entry" );
 				rng.remove_prefix( );
 				rng.trim_left( );
 				auto name = parse_name( rng );
-				while( !json_path_compare( current, name ) ) {
+				while( not json_path_compare( current, name ) ) {
 					skip_value( rng );
 					rng.clean_tail( );
 					name = parse_name( rng );
@@ -1284,7 +1286,7 @@ namespace daw::json {
 			using std::data;
 			using std::size;
 			auto rng = IteratorRange( data( str ), data( str ) + size( str ) );
-			if( !start_path.empty( ) ) {
+			if( not start_path.empty( ) ) {
 				find_range2( rng, start_path );
 			}
 			return rng;

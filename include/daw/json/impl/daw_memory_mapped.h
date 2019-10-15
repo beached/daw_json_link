@@ -182,12 +182,12 @@ namespace daw {
 		           open_mode mode = open_mode::read ) noexcept {
 
 			std::ifstream in_file( file.data( ) );
-			if( !in_file ) {
+			if( not in_file ) {
 				return false;
 			}
 			m_value = std::string( std::istreambuf_iterator<char>( in_file ),
 			                       std::istreambuf_iterator<char>( ) );
-			return !m_value.empty( );
+			return not m_value.empty( );
 		}
 
 		reference operator[]( size_type pos ) noexcept {
@@ -211,7 +211,7 @@ namespace daw {
 		}
 
 		constexpr explicit operator bool( ) const noexcept {
-			return !m_value.empty( );
+			return not m_value.empty( );
 		}
 
 		memory_mapped_file( memory_mapped_file const & ) = delete;

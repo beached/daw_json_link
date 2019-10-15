@@ -50,11 +50,11 @@ namespace daw::json::impl {
 		}
 
 		constexpr bool front( char c ) const noexcept {
-			return !empty( ) and in( c );
+			return not empty( ) and in( c );
 		}
 
 		constexpr bool not_front( char c ) const noexcept {
-			return !empty( ) and !in( c );
+			return not empty( ) and not in( c );
 		}
 
 		constexpr size_t size( ) const noexcept {
@@ -113,7 +113,7 @@ namespace daw::json::impl {
 		}
 
 		explicit constexpr operator bool( ) const noexcept {
-			return !empty( );
+			return not empty( );
 		}
 
 		constexpr auto pop_front( ) {
