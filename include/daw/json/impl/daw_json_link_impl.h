@@ -673,7 +673,7 @@ namespace daw::json {
 			while( *p != '\0' ) {
 				if( *p == '\\' ) {
 					++p;
-					json_assert( p != '\0', "Unexpected end of stream" );
+					json_assert( *p != '\0', "Unexpected end of stream" );
 					++p;
 					continue;
 				}
