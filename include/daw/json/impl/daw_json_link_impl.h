@@ -720,11 +720,10 @@ namespace daw::json {
 			return result;
 		}
 
-		struct bracketed_item_parse_exception {};
-
 		template<char Left, char Right, typename First, typename Last>
 		constexpr IteratorRange<First, Last>
 		skip_bracketed_item( IteratorRange<First, Last> &rng ) {
+			json_assert( rng.front( Left ), "Expected start bracket/brace" );
 			size_t bracket_count = 1;
 			bool in_quotes = false;
 			auto result = rng;
