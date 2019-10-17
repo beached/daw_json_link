@@ -87,6 +87,10 @@ namespace daw::json::impl {
 #endif
 		}
 
+		constexpr void remove_suffix( size_t n = 1 ) {
+			last = std::prev( last, static_cast<intmax_t>( n ) );
+		}
+
 		constexpr void trim_left( ) noexcept {
 			while( first != last ) {
 				switch( *first ) {

@@ -645,7 +645,7 @@ namespace daw::json {
 		// value(e.g after the colon(:) and trimmed)
 		template<typename First, typename Last>
 		constexpr daw::string_view parse_name( IteratorRange<First, Last> &rng ) {
-			auto tmp = skip_name( rng );
+			auto tmp = skip_string( rng );
 			auto name = daw::string_view( tmp.begin( ), tmp.size( ) );
 
 			// All names are followed by a semi-colon
@@ -661,8 +661,8 @@ namespace daw::json {
 		constexpr IteratorRange<First, Last>
 		skip_string( IteratorRange<First, Last> &rng ) {
 			json_assert( rng.front( '"' ), "Expected \" at the start of a string" );
-			auto result = rng;
 			rng.remove_prefix( );
+			auto result = rng;
 			if( rng.in( '"' ) ) {
 				// DAW
 				// result.last = result.first;
@@ -685,7 +685,7 @@ namespace daw::json {
 			rng.first = p;
 			json_assert( rng.front( '"' ),
 			             "Expected trailing \" at the end of string" );
-			result.last = std::next( rng.begin( ) );
+			result.last = p;
 			rng.remove_prefix( );
 			return result;
 		}
@@ -693,23 +693,7 @@ namespace daw::json {
 		template<typename First, typename Last>
 		constexpr IteratorRange<First, Last>
 		skip_name( IteratorRange<First, Last> &rng ) {
-			// Assuming no escaped double-quotes
-			json_assert( rng.front( '"' ), "Invalid name, strings start with \"" );
-			rng.remove_prefix( );
-			auto result = rng;
-			bool is_escaped = rng.in( '\\' );
-			rng.remove_prefix( );
-			while( is_escaped or not rng.in( '"' ) ) {
-				if( is_escaped ) {
-					is_escaped = false;
-				} else {
-					is_escaped = rng.in( '\\' );
-				}
-				rng.remove_prefix( );
-			}
-			json_assert( rng.front( '"' ), "Invalid name, strings end with \"" );
-			result.last = rng.begin( );
-			rng.remove_prefix( );
+			auto result = skip_string( rng );
 			return result;
 		}
 
@@ -907,9 +891,8 @@ namespace daw::json {
 		                            IteratorRange<First, Last> &rng ) {
 
 			auto str = skip_string( rng );
-			json_assert( str.front( '"' ), "Expected a quote to start string" );
 			using constructor_t = typename JsonMember::constructor_t;
-			return constructor_t{}( std::next( str.begin( ) ), str.size( ) - 2U );
+			return constructor_t{}( str.begin( ), str.size( ) );
 		}
 
 		template<typename JsonMember, typename First, typename Last>
@@ -917,9 +900,8 @@ namespace daw::json {
 		                            IteratorRange<First, Last> &rng ) {
 
 			auto str = skip_string( rng );
-			json_assert( str.front( '"' ), "Expected quote at end of string" );
 			using constructor_t = typename JsonMember::constructor_t;
-			return constructor_t{}( std::next( str.begin( ) ), str.size( ) - 2U );
+			return constructor_t{}( str.begin( ), str.size( ) );
 		}
 
 		template<typename JsonMember, typename First, typename Last>
@@ -933,8 +915,7 @@ namespace daw::json {
 			             "Custom types requite a string at the end" );
 			// TODO make custom require a ptr/sz pair
 			using constructor_t = typename JsonMember::from_converter_t;
-			return constructor_t{}(
-			  std::string_view( std::next( str.begin( ) ), str.size( ) - 2U ) );
+			return constructor_t{}( std::string_view( str.begin( ), str.size( ) ) );
 		}
 
 		template<typename JsonMember, typename First, typename Last>
@@ -1162,19 +1143,21 @@ namespace daw::json {
 				               JsonMember::expected_type == JsonParseTypes::Null,
 				             "Could not find required class member" );
 
-				auto cur_rng = &rng;
-				if( loc.is_null( ) or
-				    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
-					// The current member was seen previously
-					cur_rng = &loc;
-				}
+				auto cur_rng = [&] {
+					if( loc.is_null( ) or
+					    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
+						// The current member was seen previously
+						return &loc;
+					}
+					return &rng;
+				}( );
 				auto result = parse_value<JsonMember>(
 				  ParseTag<JsonMember::expected_type>{}, *cur_rng );
 
 				rng.clean_tail( );
 				return result;
 			}
-			std::terminate( );
+			std::abort( );
 		}
 
 		template<size_t N, typename... JsonMembers>
