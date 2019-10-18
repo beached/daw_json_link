@@ -51,8 +51,8 @@ namespace daw::json {
 	template<typename... JsonMembers>
 	struct class_description_t {
 		template<typename OutputIterator, typename... Args>
-		[[maybe_unused]] static constexpr OutputIterator serialize( OutputIterator it,
-		                                           std::tuple<Args...> &&args ) {
+		[[maybe_unused]] static constexpr OutputIterator
+		serialize( OutputIterator it, std::tuple<Args...> &&args ) {
 			static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 			               "Argument count is incorrect" );
 
@@ -63,7 +63,8 @@ namespace daw::json {
 		}
 
 		template<typename Result>
-		[[maybe_unused]] static constexpr decltype( auto ) parse( std::string_view sv ) {
+		[[maybe_unused]] static constexpr decltype( auto )
+		parse( std::string_view sv ) {
 			return impl::parse_json_class<Result, JsonMembers...>(
 			  sv, std::index_sequence_for<JsonMembers...>{} );
 		}
@@ -262,7 +263,8 @@ namespace daw::json {
 	}
 
 	template<typename T, typename First, typename Last>
-	[[maybe_unused]] constexpr T from_json( impl::IteratorRange<First, Last> &rng ) {
+	[[maybe_unused]] static constexpr T
+	from_json( daw::json::impl::IteratorRange<First, Last> &rng ) {
 		static_assert( impl::has_json_parser_description_v<T>,
 		               "A function call describe_json_class must exist for type." );
 
@@ -289,7 +291,8 @@ namespace daw::json {
 	         typename Container = std::vector<typename JsonElement::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
-	[[maybe_unused]] constexpr auto from_json_array( std::string_view json_data ) {
+	[[maybe_unused]] constexpr auto
+	from_json_array( std::string_view json_data ) {
 		using parser_t =
 		  json_array<no_name, Container, JsonElement, Constructor, Appender>;
 

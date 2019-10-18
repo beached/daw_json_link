@@ -32,6 +32,10 @@
 #include "twitter_test.h"
 
 int main( int argc, char **argv ) {
+	if( argc < 2 ) {
+		std::cerr << "Must supply a file name\n";
+		exit( 1 );
+	}	
 	using namespace daw::json;
 	auto const json_data1 = daw::memory_mapped_file( argv[1] );
 	auto const json_sv1 =
