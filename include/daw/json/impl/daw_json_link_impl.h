@@ -660,8 +660,11 @@ namespace daw::json {
 		template<typename First, typename Last>
 		constexpr IteratorRange<First, Last>
 		skip_string( IteratorRange<First, Last> &rng ) {
-			json_assert( rng.front( '"' ), "Expected \" at the start of a string" );
-			rng.remove_prefix( );
+			// Not always starting with string json_assert( rng.front( '"' ),
+			// "Expected \" at the start of a string" );
+			if( rng.front( '"' ) ) {
+				rng.remove_prefix( );
+			}
 			auto result = rng;
 			if( rng.in( '"' ) ) {
 				// DAW
@@ -683,7 +686,7 @@ namespace daw::json {
 				++p;
 			}
 			rng.first = p;
-			json_assert( rng.front( '"' ),
+			json_assert( rng.front( ) == '"',
 			             "Expected trailing \" at the end of string" );
 			result.last = p;
 			rng.remove_prefix( );
@@ -1136,28 +1139,25 @@ namespace daw::json {
 				auto loc =
 				  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
 
-				auto const name = JsonMember::name;
+				constexpr auto const name = JsonMember::name;
 				::Unused( name );
 				// Only allow missing members for Null-able type
-				json_assert( not loc.empty( ) or
-				               JsonMember::expected_type == JsonParseTypes::Null,
+				json_assert( JsonMember::expected_type == JsonParseTypes::Null or
+				               not loc.empty( ),
 				             "Could not find required class member" );
 
-				auto cur_rng = [&] {
-					if( loc.is_null( ) or
-					    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
-						// The current member was seen previously
-						return &loc;
-					}
-					return &rng;
-				}( );
-				auto result = parse_value<JsonMember>(
-				  ParseTag<JsonMember::expected_type>{}, *cur_rng );
+				if( loc.is_null( ) or
+				    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 
-				rng.clean_tail( );
-				return result;
+					return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+					                                loc );
+				} else {
+					auto result = parse_value<JsonMember>(
+					  ParseTag<JsonMember::expected_type>{}, rng );
+					rng.clean_tail( );
+					return result;
+				}
 			}
-			std::abort( );
 		}
 
 		template<size_t N, typename... JsonMembers>
@@ -1198,8 +1198,9 @@ namespace daw::json {
 				rng.remove_prefix( );
 				rng.trim_left( );
 			} else {
-				auto known_locations =
+				constexpr auto cknown_locations =
 				  daw::make_array( location_info_t{JsonMembers::name}... );
+				auto known_locations = cknown_locations;
 
 				auto result = daw::construct_a<Result>(
 				  parse_item<Is, JsonMembers...>( known_locations, rng )... );
