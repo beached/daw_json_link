@@ -47,7 +47,7 @@ int main( int argc, char **argv ) {
 	          << '\n';
 
 	twitter_object_t j1;
-	daw::bench_n_test_mbs<10>(
+	daw::bench_n_test_mbs<100>(
 	  "twitter_catalog bench", sz,
 	  [&j1]( auto f1 ) {
 		  j1 = daw::json::from_json<twitter_object_t>( f1 );
