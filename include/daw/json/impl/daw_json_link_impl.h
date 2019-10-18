@@ -492,9 +492,9 @@ namespace daw::json::impl {
 		uintmax_t dig =
 		  static_cast<uintmax_t>( *p ) - static_cast<uintmax_t>( '0' );
 		while( dig < 10U ) {
-			++p;
 			result *= 10U;
 			result += dig;
+			++p;
 			dig = static_cast<uintmax_t>( *p ) - static_cast<uintmax_t>( '0' );
 		}
 		rng.first = p;
@@ -546,7 +546,6 @@ namespace daw::json::impl {
 		}
 	}
 
-	// For testing
 	template<typename Result>
 	constexpr Result parse_integer( daw::string_view const &sv ) noexcept {
 		auto rng =
@@ -557,13 +556,14 @@ namespace daw::json::impl {
 	template<typename Result, typename First, typename Last>
 	constexpr Result parse_real( IteratorRange<First, Last> &rng ) noexcept {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
-
 		json_assert( rng.is_real_number_part( ) );
-		int_fast8_t sign = 1;
-		if( rng.in( '-' ) ) {
-			sign = -1;
-			rng.remove_prefix( );
-		}
+		auto const sign = [&rng] {
+			if( rng.in( '-' ) ) {
+				rng.remove_prefix( );
+				return -1;
+			}
+			return 1;
+		}( );
 		auto const whole_part =
 		  static_cast<Result>( sign * parse_unsigned_integer<int64_t>( rng ) );
 
