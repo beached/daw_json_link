@@ -15,10 +15,11 @@ struct metadata_t {
 };	// metadata_t
 
 namespace symbols_metadata_t {
-	static constexpr char const result_type[] = "result_type";
-	static constexpr char const iso_language_code[] = "iso_language_code";
+	static inline constexpr char const result_type[] = "result_type";
+	static inline constexpr char const iso_language_code[] = "iso_language_code";
 }
-auto describe_json_class( metadata_t ) {
+
+static inline auto describe_json_class( metadata_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_string<symbols_metadata_t::result_type, std::string_view>
@@ -26,7 +27,7 @@ auto describe_json_class( metadata_t ) {
 	>{};
 }
 
-auto to_json_data( metadata_t const & value ) {
+static inline auto to_json_data( metadata_t const & value ) {
 	return std::forward_as_tuple( value.result_type, value.iso_language_code );
 }
 
@@ -38,12 +39,12 @@ struct urls_element_t {
 };	// urls_element_t
 
 namespace symbols_urls_element_t {
-	static constexpr char const url[] = "url";
-	static constexpr char const expanded_url[] = "expanded_url";
-	static constexpr char const display_url[] = "display_url";
-	static constexpr char const indices[] = "indices";
+	static inline constexpr char const url[] = "url";
+	static inline constexpr char const expanded_url[] = "expanded_url";
+	static inline constexpr char const display_url[] = "display_url";
+	static inline constexpr char const indices[] = "indices";
 }
-auto describe_json_class( urls_element_t ) {
+static inline auto describe_json_class( urls_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_string<symbols_urls_element_t::url, std::string_view>
@@ -53,7 +54,7 @@ auto describe_json_class( urls_element_t ) {
 	>{};
 }
 
-auto to_json_data( urls_element_t const & value ) {
+static inline auto to_json_data( urls_element_t const & value ) {
 	return std::forward_as_tuple( value.url, value.expanded_url, value.display_url, value.indices );
 }
 
@@ -62,16 +63,16 @@ struct url_t {
 };	// url_t
 
 namespace symbols_url_t {
-	static constexpr char const urls[] = "urls";
+	static inline constexpr char const urls[] = "urls";
 }
-auto describe_json_class( url_t ) {
+static inline auto describe_json_class( url_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_array<symbols_url_t::urls, std::vector<urls_element_t>, json_class<no_name, urls_element_t>>
 	>{};
 }
 
-auto to_json_data( url_t const & value ) {
+static inline auto to_json_data( url_t const & value ) {
 	return std::forward_as_tuple( value.urls );
 }
 
@@ -80,16 +81,16 @@ struct description_t {
 };	// description_t
 
 namespace symbols_description_t {
-	static constexpr char const urls[] = "urls";
+	static inline constexpr char const urls[] = "urls";
 }
-auto describe_json_class( description_t ) {
+static inline auto describe_json_class( description_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_array<symbols_description_t::urls, std::vector<urls_element_t>, json_class<no_name, urls_element_t>>
 	>{};
 }
 
-auto to_json_data( description_t const & value ) {
+static inline auto to_json_data( description_t const & value ) {
 	return std::forward_as_tuple( value.urls );
 }
 
@@ -99,10 +100,10 @@ struct entities_t {
 };	// entities_t
 
 namespace symbols_entities_t {
-	static constexpr char const url[] = "url";
-	static constexpr char const description[] = "description";
+	static inline constexpr char const url[] = "url";
+	static inline constexpr char const description[] = "description";
 }
-auto describe_json_class( entities_t ) {
+static inline auto describe_json_class( entities_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_nullable<json_class<symbols_entities_t::url, url_t>>
@@ -110,7 +111,7 @@ auto describe_json_class( entities_t ) {
 	>{};
 }
 
-auto to_json_data( entities_t const & value ) {
+static inline auto to_json_data( entities_t const & value ) {
 	return std::forward_as_tuple( value.url, value.description );
 }
 
@@ -158,48 +159,48 @@ struct user_t {
 };	// user_t
 
 namespace symbols_user_t {
-	static constexpr char const id[] = "id";
-	static constexpr char const id_str[] = "id_str";
-	static constexpr char const name[] = "name";
-	static constexpr char const screen_name[] = "screen_name";
-	static constexpr char const location[] = "location";
-	static constexpr char const description[] = "description";
-	static constexpr char const url[] = "url";
-	static constexpr char const entities[] = "entities";
-	static constexpr char const _jsonprotected[] = "protected";
-	static constexpr char const followers_count[] = "followers_count";
-	static constexpr char const friends_count[] = "friends_count";
-	static constexpr char const listed_count[] = "listed_count";
-	static constexpr char const created_at[] = "created_at";
-	static constexpr char const favourites_count[] = "favourites_count";
-	static constexpr char const utc_offset[] = "utc_offset";
-	static constexpr char const time_zone[] = "time_zone";
-	static constexpr char const geo_enabled[] = "geo_enabled";
-	static constexpr char const verified[] = "verified";
-	static constexpr char const statuses_count[] = "statuses_count";
-	static constexpr char const lang[] = "lang";
-	static constexpr char const contributors_enabled[] = "contributors_enabled";
-	static constexpr char const is_translator[] = "is_translator";
-	static constexpr char const is_translation_enabled[] = "is_translation_enabled";
-	static constexpr char const profile_background_color[] = "profile_background_color";
-	static constexpr char const profile_background_image_url[] = "profile_background_image_url";
-	static constexpr char const profile_background_image_url_https[] = "profile_background_image_url_https";
-	static constexpr char const profile_background_tile[] = "profile_background_tile";
-	static constexpr char const profile_image_url[] = "profile_image_url";
-	static constexpr char const profile_image_url_https[] = "profile_image_url_https";
-	static constexpr char const profile_banner_url[] = "profile_banner_url";
-	static constexpr char const profile_link_color[] = "profile_link_color";
-	static constexpr char const profile_sidebar_border_color[] = "profile_sidebar_border_color";
-	static constexpr char const profile_sidebar_fill_color[] = "profile_sidebar_fill_color";
-	static constexpr char const profile_text_color[] = "profile_text_color";
-	static constexpr char const profile_use_background_image[] = "profile_use_background_image";
-	static constexpr char const default_profile[] = "default_profile";
-	static constexpr char const default_profile_image[] = "default_profile_image";
-	static constexpr char const following[] = "following";
-	static constexpr char const follow_request_sent[] = "follow_request_sent";
-	static constexpr char const notifications[] = "notifications";
+	static inline constexpr char const id[] = "id";
+	static inline constexpr char const id_str[] = "id_str";
+	static inline constexpr char const name[] = "name";
+	static inline constexpr char const screen_name[] = "screen_name";
+	static inline constexpr char const location[] = "location";
+	static inline constexpr char const description[] = "description";
+	static inline constexpr char const url[] = "url";
+	static inline constexpr char const entities[] = "entities";
+	static inline constexpr char const _jsonprotected[] = "protected";
+	static inline constexpr char const followers_count[] = "followers_count";
+	static inline constexpr char const friends_count[] = "friends_count";
+	static inline constexpr char const listed_count[] = "listed_count";
+	static inline constexpr char const created_at[] = "created_at";
+	static inline constexpr char const favourites_count[] = "favourites_count";
+	static inline constexpr char const utc_offset[] = "utc_offset";
+	static inline constexpr char const time_zone[] = "time_zone";
+	static inline constexpr char const geo_enabled[] = "geo_enabled";
+	static inline constexpr char const verified[] = "verified";
+	static inline constexpr char const statuses_count[] = "statuses_count";
+	static inline constexpr char const lang[] = "lang";
+	static inline constexpr char const contributors_enabled[] = "contributors_enabled";
+	static inline constexpr char const is_translator[] = "is_translator";
+	static inline constexpr char const is_translation_enabled[] = "is_translation_enabled";
+	static inline constexpr char const profile_background_color[] = "profile_background_color";
+	static inline constexpr char const profile_background_image_url[] = "profile_background_image_url";
+	static inline constexpr char const profile_background_image_url_https[] = "profile_background_image_url_https";
+	static inline constexpr char const profile_background_tile[] = "profile_background_tile";
+	static inline constexpr char const profile_image_url[] = "profile_image_url";
+	static inline constexpr char const profile_image_url_https[] = "profile_image_url_https";
+	static inline constexpr char const profile_banner_url[] = "profile_banner_url";
+	static inline constexpr char const profile_link_color[] = "profile_link_color";
+	static inline constexpr char const profile_sidebar_border_color[] = "profile_sidebar_border_color";
+	static inline constexpr char const profile_sidebar_fill_color[] = "profile_sidebar_fill_color";
+	static inline constexpr char const profile_text_color[] = "profile_text_color";
+	static inline constexpr char const profile_use_background_image[] = "profile_use_background_image";
+	static inline constexpr char const default_profile[] = "default_profile";
+	static inline constexpr char const default_profile_image[] = "default_profile_image";
+	static inline constexpr char const following[] = "following";
+	static inline constexpr char const follow_request_sent[] = "follow_request_sent";
+	static inline constexpr char const notifications[] = "notifications";
 }
-auto describe_json_class( user_t ) {
+static inline auto describe_json_class( user_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_number<symbols_user_t::id, int64_t>
@@ -245,7 +246,7 @@ auto describe_json_class( user_t ) {
 	>{};
 }
 
-auto to_json_data( user_t const & value ) {
+static inline auto to_json_data( user_t const & value ) {
 	return std::forward_as_tuple( value.id, value.id_str, value.name, value.screen_name, value.location, value.description, value.url, value.entities, value._jsonprotected, value.followers_count, value.friends_count, value.listed_count, value.created_at, value.favourites_count, value.utc_offset, value.time_zone, value.geo_enabled, value.verified, value.statuses_count, value.lang, value.contributors_enabled, value.is_translator, value.is_translation_enabled, value.profile_background_color, value.profile_background_image_url, value.profile_background_image_url_https, value.profile_background_tile, value.profile_image_url, value.profile_image_url_https, value.profile_banner_url, value.profile_link_color, value.profile_sidebar_border_color, value.profile_sidebar_fill_color, value.profile_text_color, value.profile_use_background_image, value.default_profile, value.default_profile_image, value.following, value.follow_request_sent, value.notifications );
 }
 
@@ -255,10 +256,10 @@ struct hashtags_element_t {
 };	// hashtags_element_t
 
 namespace symbols_hashtags_element_t {
-	static constexpr char const text[] = "text";
-	static constexpr char const indices[] = "indices";
+	static inline constexpr char const text[] = "text";
+	static inline constexpr char const indices[] = "indices";
 }
-auto describe_json_class( hashtags_element_t ) {
+static inline auto describe_json_class( hashtags_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_string<symbols_hashtags_element_t::text, std::string_view>
@@ -266,7 +267,7 @@ auto describe_json_class( hashtags_element_t ) {
 	>{};
 }
 
-auto to_json_data( hashtags_element_t const & value ) {
+static inline auto to_json_data( hashtags_element_t const & value ) {
 	return std::forward_as_tuple( value.text, value.indices );
 }
 
@@ -294,28 +295,28 @@ struct statuses_element_t {
 };	// statuses_element_t
 
 namespace symbols_statuses_element_t {
-	static constexpr char const metadata[] = "metadata";
-	static constexpr char const created_at[] = "created_at";
-	static constexpr char const id[] = "id";
-	static constexpr char const id_str[] = "id_str";
-	static constexpr char const text[] = "text";
-	static constexpr char const source[] = "source";
-	static constexpr char const truncated[] = "truncated";
-	static constexpr char const in_reply_to_status_id[] = "in_reply_to_status_id";
-	static constexpr char const in_reply_to_status_id_str[] = "in_reply_to_status_id_str";
-	static constexpr char const in_reply_to_user_id[] = "in_reply_to_user_id";
-	static constexpr char const in_reply_to_user_id_str[] = "in_reply_to_user_id_str";
-	static constexpr char const in_reply_to_screen_name[] = "in_reply_to_screen_name";
-	static constexpr char const user[] = "user";
-	static constexpr char const retweet_count[] = "retweet_count";
-	static constexpr char const favorite_count[] = "favorite_count";
-	static constexpr char const entities[] = "entities";
-	static constexpr char const favorited[] = "favorited";
-	static constexpr char const retweeted[] = "retweeted";
-	static constexpr char const possibly_sensitive[] = "possibly_sensitive";
-	static constexpr char const lang[] = "lang";
+	static inline constexpr char const metadata[] = "metadata";
+	static inline constexpr char const created_at[] = "created_at";
+	static inline constexpr char const id[] = "id";
+	static inline constexpr char const id_str[] = "id_str";
+	static inline constexpr char const text[] = "text";
+	static inline constexpr char const source[] = "source";
+	static inline constexpr char const truncated[] = "truncated";
+	static inline constexpr char const in_reply_to_status_id[] = "in_reply_to_status_id";
+	static inline constexpr char const in_reply_to_status_id_str[] = "in_reply_to_status_id_str";
+	static inline constexpr char const in_reply_to_user_id[] = "in_reply_to_user_id";
+	static inline constexpr char const in_reply_to_user_id_str[] = "in_reply_to_user_id_str";
+	static inline constexpr char const in_reply_to_screen_name[] = "in_reply_to_screen_name";
+	static inline constexpr char const user[] = "user";
+	static inline constexpr char const retweet_count[] = "retweet_count";
+	static inline constexpr char const favorite_count[] = "favorite_count";
+	static inline constexpr char const entities[] = "entities";
+	static inline constexpr char const favorited[] = "favorited";
+	static inline constexpr char const retweeted[] = "retweeted";
+	static inline constexpr char const possibly_sensitive[] = "possibly_sensitive";
+	static inline constexpr char const lang[] = "lang";
 }
-auto describe_json_class( statuses_element_t ) {
+static inline auto describe_json_class( statuses_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_class<symbols_statuses_element_t::metadata, metadata_t>
@@ -341,7 +342,7 @@ auto describe_json_class( statuses_element_t ) {
 	>{};
 }
 
-auto to_json_data( statuses_element_t const & value ) {
+static inline auto to_json_data( statuses_element_t const & value ) {
 	return std::forward_as_tuple( value.metadata, value.created_at, value.id, value.id_str, value.text, value.source, value.truncated, value.in_reply_to_status_id, value.in_reply_to_status_id_str, value.in_reply_to_user_id, value.in_reply_to_user_id_str, value.in_reply_to_screen_name, value.user, value.retweet_count, value.favorite_count, value.entities, value.favorited, value.retweeted, value.possibly_sensitive, value.lang );
 }
 
@@ -354,13 +355,13 @@ struct user_mentions_element_t {
 };	// user_mentions_element_t
 
 namespace symbols_user_mentions_element_t {
-	static constexpr char const screen_name[] = "screen_name";
-	static constexpr char const name[] = "name";
-	static constexpr char const id[] = "id";
-	static constexpr char const id_str[] = "id_str";
-	static constexpr char const indices[] = "indices";
+	static inline constexpr char const screen_name[] = "screen_name";
+	static inline constexpr char const name[] = "name";
+	static inline constexpr char const id[] = "id";
+	static inline constexpr char const id_str[] = "id_str";
+	static inline constexpr char const indices[] = "indices";
 }
-auto describe_json_class( user_mentions_element_t ) {
+static inline auto describe_json_class( user_mentions_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_string<symbols_user_mentions_element_t::screen_name, std::string_view>
@@ -371,7 +372,7 @@ auto describe_json_class( user_mentions_element_t ) {
 	>{};
 }
 
-auto to_json_data( user_mentions_element_t const & value ) {
+static inline auto to_json_data( user_mentions_element_t const & value ) {
 	return std::forward_as_tuple( value.screen_name, value.name, value.id, value.id_str, value.indices );
 }
 
@@ -382,11 +383,11 @@ struct medium_t {
 };	// medium_t
 
 namespace symbols_medium_t {
-	static constexpr char const w[] = "w";
-	static constexpr char const h[] = "h";
-	static constexpr char const resize[] = "resize";
+	static inline constexpr char const w[] = "w";
+	static inline constexpr char const h[] = "h";
+	static inline constexpr char const resize[] = "resize";
 }
-auto describe_json_class( medium_t ) {
+static inline auto describe_json_class( medium_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_number<symbols_medium_t::w, int64_t>
@@ -395,7 +396,7 @@ auto describe_json_class( medium_t ) {
 	>{};
 }
 
-auto to_json_data( medium_t const & value ) {
+static inline auto to_json_data( medium_t const & value ) {
 	return std::forward_as_tuple( value.w, value.h, value.resize );
 }
 
@@ -406,11 +407,11 @@ struct small_t {
 };	// small_t
 
 namespace symbols_small_t {
-	static constexpr char const w[] = "w";
-	static constexpr char const h[] = "h";
-	static constexpr char const resize[] = "resize";
+	static inline constexpr char const w[] = "w";
+	static inline constexpr char const h[] = "h";
+	static inline constexpr char const resize[] = "resize";
 }
-auto describe_json_class( small_t ) {
+static inline auto describe_json_class( small_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_number<symbols_small_t::w, int64_t>
@@ -419,7 +420,7 @@ auto describe_json_class( small_t ) {
 	>{};
 }
 
-auto to_json_data( small_t const & value ) {
+static inline auto to_json_data( small_t const & value ) {
 	return std::forward_as_tuple( value.w, value.h, value.resize );
 }
 
@@ -430,11 +431,11 @@ struct thumb_t {
 };	// thumb_t
 
 namespace symbols_thumb_t {
-	static constexpr char const w[] = "w";
-	static constexpr char const h[] = "h";
-	static constexpr char const resize[] = "resize";
+	static inline constexpr char const w[] = "w";
+	static inline constexpr char const h[] = "h";
+	static inline constexpr char const resize[] = "resize";
 }
-auto describe_json_class( thumb_t ) {
+static inline auto describe_json_class( thumb_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_number<symbols_thumb_t::w, int64_t>
@@ -443,7 +444,7 @@ auto describe_json_class( thumb_t ) {
 	>{};
 }
 
-auto to_json_data( thumb_t const & value ) {
+static inline auto to_json_data( thumb_t const & value ) {
 	return std::forward_as_tuple( value.w, value.h, value.resize );
 }
 
@@ -454,11 +455,11 @@ struct large_t {
 };	// large_t
 
 namespace symbols_large_t {
-	static constexpr char const w[] = "w";
-	static constexpr char const h[] = "h";
-	static constexpr char const resize[] = "resize";
+	static inline constexpr char const w[] = "w";
+	static inline constexpr char const h[] = "h";
+	static inline constexpr char const resize[] = "resize";
 }
-auto describe_json_class( large_t ) {
+static inline auto describe_json_class( large_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_number<symbols_large_t::w, int64_t>
@@ -467,7 +468,7 @@ auto describe_json_class( large_t ) {
 	>{};
 }
 
-auto to_json_data( large_t const & value ) {
+static inline auto to_json_data( large_t const & value ) {
 	return std::forward_as_tuple( value.w, value.h, value.resize );
 }
 
@@ -479,12 +480,12 @@ struct sizes_t {
 };	// sizes_t
 
 namespace symbols_sizes_t {
-	static constexpr char const medium[] = "medium";
-	static constexpr char const small[] = "small";
-	static constexpr char const thumb[] = "thumb";
-	static constexpr char const large[] = "large";
+	static inline constexpr char const medium[] = "medium";
+	static inline constexpr char const small[] = "small";
+	static inline constexpr char const thumb[] = "thumb";
+	static inline constexpr char const large[] = "large";
 }
-auto describe_json_class( sizes_t ) {
+static inline auto describe_json_class( sizes_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_class<symbols_sizes_t::medium, medium_t>
@@ -494,7 +495,7 @@ auto describe_json_class( sizes_t ) {
 	>{};
 }
 
-auto to_json_data( sizes_t const & value ) {
+static inline auto to_json_data( sizes_t const & value ) {
 	return std::forward_as_tuple( value.medium, value.small, value.thumb, value.large );
 }
 
@@ -512,18 +513,18 @@ struct media_element_t {
 };	// media_element_t
 
 namespace symbols_media_element_t {
-	static constexpr char const id[] = "id";
-	static constexpr char const id_str[] = "id_str";
-	static constexpr char const indices[] = "indices";
-	static constexpr char const media_url[] = "media_url";
-	static constexpr char const media_url_https[] = "media_url_https";
-	static constexpr char const url[] = "url";
-	static constexpr char const display_url[] = "display_url";
-	static constexpr char const expanded_url[] = "expanded_url";
-	static constexpr char const type[] = "type";
-	static constexpr char const sizes[] = "sizes";
+	static inline constexpr char const id[] = "id";
+	static inline constexpr char const id_str[] = "id_str";
+	static inline constexpr char const indices[] = "indices";
+	static inline constexpr char const media_url[] = "media_url";
+	static inline constexpr char const media_url_https[] = "media_url_https";
+	static inline constexpr char const url[] = "url";
+	static inline constexpr char const display_url[] = "display_url";
+	static inline constexpr char const expanded_url[] = "expanded_url";
+	static inline constexpr char const type[] = "type";
+	static inline constexpr char const sizes[] = "sizes";
 }
-auto describe_json_class( media_element_t ) {
+static inline auto describe_json_class( media_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_number<symbols_media_element_t::id, int64_t>
@@ -539,7 +540,7 @@ auto describe_json_class( media_element_t ) {
 	>{};
 }
 
-auto to_json_data( media_element_t const & value ) {
+static inline auto to_json_data( media_element_t const & value ) {
 	return std::forward_as_tuple( value.id, value.id_str, value.indices, value.media_url, value.media_url_https, value.url, value.display_url, value.expanded_url, value.type, value.sizes );
 }
 
@@ -567,28 +568,28 @@ struct retweeted_status_t {
 };	// retweeted_status_t
 
 namespace symbols_retweeted_status_t {
-	static constexpr char const metadata[] = "metadata";
-	static constexpr char const created_at[] = "created_at";
-	static constexpr char const id[] = "id";
-	static constexpr char const id_str[] = "id_str";
-	static constexpr char const text[] = "text";
-	static constexpr char const source[] = "source";
-	static constexpr char const truncated[] = "truncated";
-	static constexpr char const in_reply_to_status_id[] = "in_reply_to_status_id";
-	static constexpr char const in_reply_to_status_id_str[] = "in_reply_to_status_id_str";
-	static constexpr char const in_reply_to_user_id[] = "in_reply_to_user_id";
-	static constexpr char const in_reply_to_user_id_str[] = "in_reply_to_user_id_str";
-	static constexpr char const in_reply_to_screen_name[] = "in_reply_to_screen_name";
-	static constexpr char const user[] = "user";
-	static constexpr char const retweet_count[] = "retweet_count";
-	static constexpr char const favorite_count[] = "favorite_count";
-	static constexpr char const entities[] = "entities";
-	static constexpr char const favorited[] = "favorited";
-	static constexpr char const retweeted[] = "retweeted";
-	static constexpr char const possibly_sensitive[] = "possibly_sensitive";
-	static constexpr char const lang[] = "lang";
+	static inline constexpr char const metadata[] = "metadata";
+	static inline constexpr char const created_at[] = "created_at";
+	static inline constexpr char const id[] = "id";
+	static inline constexpr char const id_str[] = "id_str";
+	static inline constexpr char const text[] = "text";
+	static inline constexpr char const source[] = "source";
+	static inline constexpr char const truncated[] = "truncated";
+	static inline constexpr char const in_reply_to_status_id[] = "in_reply_to_status_id";
+	static inline constexpr char const in_reply_to_status_id_str[] = "in_reply_to_status_id_str";
+	static inline constexpr char const in_reply_to_user_id[] = "in_reply_to_user_id";
+	static inline constexpr char const in_reply_to_user_id_str[] = "in_reply_to_user_id_str";
+	static inline constexpr char const in_reply_to_screen_name[] = "in_reply_to_screen_name";
+	static inline constexpr char const user[] = "user";
+	static inline constexpr char const retweet_count[] = "retweet_count";
+	static inline constexpr char const favorite_count[] = "favorite_count";
+	static inline constexpr char const entities[] = "entities";
+	static inline constexpr char const favorited[] = "favorited";
+	static inline constexpr char const retweeted[] = "retweeted";
+	static inline constexpr char const possibly_sensitive[] = "possibly_sensitive";
+	static inline constexpr char const lang[] = "lang";
 }
-auto describe_json_class( retweeted_status_t ) {
+static inline auto describe_json_class( retweeted_status_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_class<symbols_retweeted_status_t::metadata, metadata_t>
@@ -614,7 +615,7 @@ auto describe_json_class( retweeted_status_t ) {
 	>{};
 }
 
-auto to_json_data( retweeted_status_t const & value ) {
+static inline auto to_json_data( retweeted_status_t const & value ) {
 	return std::forward_as_tuple( value.metadata, value.created_at, value.id, value.id_str, value.text, value.source, value.truncated, value.in_reply_to_status_id, value.in_reply_to_status_id_str, value.in_reply_to_user_id, value.in_reply_to_user_id_str, value.in_reply_to_screen_name, value.user, value.retweet_count, value.favorite_count, value.entities, value.favorited, value.retweeted, value.possibly_sensitive, value.lang );
 }
 
@@ -631,17 +632,17 @@ struct search_metadata_t {
 };	// search_metadata_t
 
 namespace symbols_search_metadata_t {
-	static constexpr char const completed_in[] = "completed_in";
-	static constexpr char const max_id[] = "max_id";
-	static constexpr char const max_id_str[] = "max_id_str";
-	static constexpr char const next_results[] = "next_results";
-	static constexpr char const query[] = "query";
-	static constexpr char const refresh_url[] = "refresh_url";
-	static constexpr char const count[] = "count";
-	static constexpr char const since_id[] = "since_id";
-	static constexpr char const since_id_str[] = "since_id_str";
+	static inline constexpr char const completed_in[] = "completed_in";
+	static inline constexpr char const max_id[] = "max_id";
+	static inline constexpr char const max_id_str[] = "max_id_str";
+	static inline constexpr char const next_results[] = "next_results";
+	static inline constexpr char const query[] = "query";
+	static inline constexpr char const refresh_url[] = "refresh_url";
+	static inline constexpr char const count[] = "count";
+	static inline constexpr char const since_id[] = "since_id";
+	static inline constexpr char const since_id_str[] = "since_id_str";
 }
-auto describe_json_class( search_metadata_t ) {
+static inline auto describe_json_class( search_metadata_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_number<symbols_search_metadata_t::completed_in>
@@ -656,7 +657,7 @@ auto describe_json_class( search_metadata_t ) {
 	>{};
 }
 
-auto to_json_data( search_metadata_t const & value ) {
+static inline auto to_json_data( search_metadata_t const & value ) {
 	return std::forward_as_tuple( value.completed_in, value.max_id, value.max_id_str, value.next_results, value.query, value.refresh_url, value.count, value.since_id, value.since_id_str );
 }
 
@@ -666,10 +667,10 @@ struct twitter_object_t {
 };	// twitter_object_t
 
 namespace symbols_twitter_object_t {
-	static constexpr char const statuses[] = "statuses";
-	static constexpr char const search_metadata[] = "search_metadata";
+	static inline constexpr char const statuses[] = "statuses";
+	static inline constexpr char const search_metadata[] = "search_metadata";
 }
-auto describe_json_class( twitter_object_t ) {
+static inline auto describe_json_class( twitter_object_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 		json_array<symbols_twitter_object_t::statuses, std::vector<statuses_element_t>, json_class<no_name, statuses_element_t>>
@@ -677,7 +678,7 @@ auto describe_json_class( twitter_object_t ) {
 	>{};
 }
 
-auto to_json_data( twitter_object_t const & value ) {
+static inline auto to_json_data( twitter_object_t const & value ) {
 	return std::forward_as_tuple( value.statuses, value.search_metadata );
 }
 

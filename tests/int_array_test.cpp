@@ -37,16 +37,16 @@ struct Number {
 	intmax_t a{};
 };
 #ifdef __cpp_nontype_template_parameter_class
-auto describe_json_class( Number ) noexcept {
+[[maybe_unused]] static constexpr auto describe_json_class( Number ) noexcept {
 	using namespace daw::json;
 	return class_description_t<json_number<"a", intmax_t>>{};
 }
 #else
 namespace symbols_Number {
-	static constexpr char const a[] = "a";
+	static inline constexpr char const a[] = "a";
 }
 
-auto describe_json_class( Number ) noexcept {
+[[maybe_unused]] static constexpr auto describe_json_class( Number ) noexcept {
 	using namespace daw::json;
 	return class_description_t<json_number<symbols_Number::a, intmax_t>>{};
 }
@@ -98,7 +98,7 @@ int main( ) {
 			  return data.size( );
 		  },
 		  json_sv );
-
+		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
 		  daw::json::json_array_iterator<json_class<no_name, Number>>;
