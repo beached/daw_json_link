@@ -488,15 +488,16 @@ namespace daw::json::impl {
 		json_assert( rng.front( "0123456789" ) );
 
 		uintmax_t result = 0;
+		auto p = rng.begin( );
 		uintmax_t dig =
-		  static_cast<uintmax_t>( rng.front( ) ) - static_cast<uintmax_t>( '0' );
+		  static_cast<uintmax_t>( *p ) - static_cast<uintmax_t>( '0' );
 		while( dig < 10U ) {
-			rng.remove_prefix( );
+			++p;
 			result *= 10U;
 			result += dig;
-			dig =
-			  static_cast<uintmax_t>( rng.front( ) ) - static_cast<uintmax_t>( '0' );
+			dig = static_cast<uintmax_t>( *p ) - static_cast<uintmax_t>( '0' );
 		}
+		rng.first = p;
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
 		} else {
@@ -654,6 +655,25 @@ namespace daw::json::impl {
 		return name;
 	}
 
+	namespace {
+		constexpr char const *str_find( char const *p, char c ) {
+			while( *p != c ) {
+				++p;
+			}
+			return p;
+		}
+
+		constexpr char const *find_quote( char const *p ) {
+			while( true ) {
+				p = str_find( p, '"' );
+				if( *( p - 1 ) != '\\' ) {
+					return p;
+				}
+				++p;
+			}
+		}
+	} // namespace
+
 	template<typename First, typename Last>
 	constexpr IteratorRange<First, Last>
 	skip_string( IteratorRange<First, Last> &rng ) {
@@ -670,35 +690,10 @@ namespace daw::json::impl {
 			rng.remove_prefix( );
 			return result;
 		}
-		auto p = rng.begin( );
-		/*
-		while( *p != '\0' ) {
-		  if( *p == '\\' ) {
-		    ++p;
-		    json_assert( *p != '\0', "Unexpected end of stream" );
-		    ++p;
-		    continue;
-		  }
-		  if( *p == '"' ) {
-		    break;
-		  }
-		  ++p;
-		}
-		 */
-		while( true ) {
-			while( *p != '"' ) {
-				++p;
-			}
-			if( *( p - 1 ) != '\\' ) {
-				break;
-			}
-			++p;
-		}
-
-		rng.first = p;
+		rng.first = find_quote( rng.begin( ) );
 		json_assert( rng.front( ) == '"',
 		             "Expected trailing \" at the end of string" );
-		result.last = p;
+		result.last = rng.first;
 		rng.remove_prefix( );
 		return result;
 	}
