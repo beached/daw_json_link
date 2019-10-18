@@ -670,6 +670,7 @@ namespace daw::json {
 				// DAW
 				// result.last = result.first;
 				result.last = rng.first;
+				rng.remove_prefix( );
 				return result;
 			}
 			auto p = rng.begin( );
