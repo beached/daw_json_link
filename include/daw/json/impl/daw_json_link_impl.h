@@ -461,7 +461,6 @@ namespace daw::json::impl {
 	static constexpr auto
 	parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
-
 		uintmax_t v = 0;
 		uint_fast8_t c = 0;
 
@@ -492,7 +491,6 @@ namespace daw::json::impl {
 	static constexpr Result
 	parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "0123456789" ) );
-
 		uintmax_t result = 0;
 		auto p = rng.begin( );
 		uintmax_t dig =
@@ -504,6 +502,7 @@ namespace daw::json::impl {
 			dig = static_cast<uintmax_t>( *p ) - static_cast<uintmax_t>( '0' );
 		}
 		rng.first = p;
+
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
 		} else {
@@ -579,6 +578,7 @@ namespace daw::json::impl {
 		Result fract_part = 0.0;
 		if( rng.in( '.' ) ) {
 			rng.remove_prefix( );
+
 			auto fract_tmp = parse_unsigned_integer2<uint64_t>( rng );
 			fract_part = static_cast<Result>( fract_tmp.value );
 			fract_part *= static_cast<Result>(
