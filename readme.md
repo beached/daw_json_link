@@ -4,10 +4,11 @@ This library is different.  It assumes we know what data structures we will be r
 ### Installing and Requirements
 ## Requirements
 * C++ 17 compiler, C++ 20 for enhanced names
-* git
-* cmake
 * GCC(8/9)/Clang(7/8) have been tested.  Have not yet tested on MSVC
 * MSVC 19.21 has been tested. Must copy `glean.cmake.renamewin` to `glean.cmake` prior to running cmake.  
+# For building tests
+* git
+* cmake
 
 ## Installing(Linux/Mac commandline)
 
