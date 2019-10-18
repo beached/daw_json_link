@@ -32,6 +32,7 @@
 #include "citm_test.h"
 
 int main( int argc, char **argv ) {
+	assert( argc > 1 );
 	using namespace daw::json;
 	auto const json_data1 = daw::memory_mapped_file( argv[1] );
 	auto const json_sv1 =

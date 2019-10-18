@@ -22,6 +22,12 @@
 
 #pragma once
 
+#if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
+         defined( _CPPUNWIND ) )
+// account for no exceptions -fno-exceptions
+#undef DAW_JSON_USE_EXCEPTIONS
+#endif
+
 namespace daw::json {
 	class json_exception {
 		std::string_view m_reason{};
@@ -103,7 +109,7 @@ namespace daw::json {
 #else // NDEBUG set
 #define json_assert( ... )                                                     \
 	do {                                                                         \
-	} while( false );
+	} while( false )
 #endif
 #endif
 

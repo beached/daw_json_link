@@ -74,6 +74,7 @@ struct test_001_t {
 	  , o2( O2 )
 	  , dte( D ) {}
 };
+#ifndef __cpp_nontype_template_parameter_class
 namespace symbols_test_001_t {
 	constexpr static char const i[] = "i";
 	constexpr static char const d[] = "d";
@@ -84,6 +85,7 @@ namespace symbols_test_001_t {
 	constexpr static char const o2[] = "o2";
 	constexpr static char const dte[] = "dte";
 } // namespace symbols_test_001_t
+#endif
 auto describe_json_class( test_001_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
@@ -114,9 +116,11 @@ struct test_002_t {
 	test_001_t a{};
 };
 
+#ifndef __cpp_nontype_template_parameter_class
 namespace symbols_test_002_t {
 	constexpr static char const a[] = "a";
 }
+#endif
 auto describe_json_class( test_002_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
@@ -134,9 +138,11 @@ struct test_003_t {
 	std::optional<test_001_t> a;
 };
 
+#ifndef __cpp_nontype_template_parameter_class
 namespace symbols_test_003_t {
 	constexpr static char const a[] = "a";
 }
+#endif
 auto describe_json_class( test_003_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
@@ -186,9 +192,11 @@ struct e_test_001_t {
 	blah_t a = blah_t::a;
 };
 
+#ifndef __cpp_nontype_template_parameter_class
 namespace symbols_e_test_001_t {
 	constexpr static char const a[] = "a";
 }
+#endif
 auto describe_json_class( e_test_001_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
