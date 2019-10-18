@@ -671,18 +671,30 @@ namespace daw::json::impl {
 			return result;
 		}
 		auto p = rng.begin( );
+		/*
 		while( *p != '\0' ) {
-			if( *p == '\\' ) {
+		  if( *p == '\\' ) {
+		    ++p;
+		    json_assert( *p != '\0', "Unexpected end of stream" );
+		    ++p;
+		    continue;
+		  }
+		  if( *p == '"' ) {
+		    break;
+		  }
+		  ++p;
+		}
+		 */
+		while( true ) {
+			while( *p != '"' ) {
 				++p;
-				json_assert( *p != '\0', "Unexpected end of stream" );
-				++p;
-				continue;
 			}
-			if( *p == '"' ) {
+			if( *( p - 1 ) != '\\' ) {
 				break;
 			}
 			++p;
 		}
+
 		rng.first = p;
 		json_assert( rng.front( ) == '"',
 		             "Expected trailing \" at the end of string" );
@@ -1056,7 +1068,7 @@ namespace daw::json::impl {
 				  std::distance( begin( name_map ), result ) );
 			}
 		};
-	}
+	} // namespace
 
 	struct location_info_t {
 		JSONNAMETYPE name;
