@@ -91,7 +91,7 @@ int main( ) {
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
-		auto const count = *daw::bench_n_test_mbs<10>(
+		auto const count = *daw::bench_n_test_mbs<100>(
 		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<json_class<no_name, Number>>( sv );
 			  daw::do_not_optimize( data );
@@ -107,7 +107,7 @@ int main( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 =
-		  *daw::bench_n_test_mbs<10>( "int parsing 2", json_sv.size( ),
+		  *daw::bench_n_test_mbs<100>( "int parsing 2", json_sv.size( ),
 		                              [&]( auto &&sv ) noexcept {
 			                              data.clear( );
 			                              std::copy( iterator_t( sv ), iterator_t( ),
@@ -123,7 +123,7 @@ int main( ) {
 		auto json_sv = std::string_view( json_data2 );
 		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
-		auto const count = *daw::bench_n_test_mbs<10>(
+		auto const count = *daw::bench_n_test_mbs<100>(
 		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<json_number<no_name, intmax_t>>( sv );
 			  daw::do_not_optimize( data );
@@ -139,7 +139,7 @@ int main( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 =
-		  *daw::bench_n_test_mbs<10>( "p2. int parsing 2", json_sv.size( ),
+		  *daw::bench_n_test_mbs<100>( "p2. int parsing 2", json_sv.size( ),
 		                              [&]( auto &&sv ) noexcept {
 			                              data.clear( );
 			                              std::copy( iterator_t( sv ), iterator_t( ),
@@ -157,7 +157,7 @@ int main( ) {
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
-		auto const count = *daw::bench_n_test_mbs<10>(
+		auto const count = *daw::bench_n_test_mbs<100>(
 		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<json_class<no_name, Number>>( sv );
 			  daw::do_not_optimize( data );
@@ -173,7 +173,7 @@ int main( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 =
-		  *daw::bench_n_test_mbs<10>( "int parsing 2", json_sv.size( ),
+		  *daw::bench_n_test_mbs<100>( "int parsing 2", json_sv.size( ),
 		                              [&]( auto &&sv ) noexcept {
 			                              data.clear( );
 			                              std::copy( iterator_t( sv ), iterator_t( ),
@@ -189,7 +189,7 @@ int main( ) {
 		auto json_sv = std::string_view( json_data2 );
 		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
-		auto const count = *daw::bench_n_test_mbs<10>(
+		auto const count = *daw::bench_n_test_mbs<100>(
 		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<json_checked_number<no_name, intmax_t>>( sv );
@@ -206,7 +206,7 @@ int main( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 =
-		  *daw::bench_n_test_mbs<10>( "p2. int parsing 2", json_sv.size( ),
+		  *daw::bench_n_test_mbs<100>( "p2. int parsing 2", json_sv.size( ),
 		                              [&]( auto &&sv ) noexcept {
 			                              data.clear( );
 			                              std::copy( iterator_t( sv ), iterator_t( ),
