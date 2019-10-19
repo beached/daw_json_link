@@ -89,37 +89,44 @@ namespace daw::json::impl {
 #endif
 		}
 
+		/*
 		constexpr void trim_left( ) noexcept {
-			constexpr auto space_tbl = [] {
-				std::array<bool, 256> result{};
-				result[0x20U] = true;
-				result[0x09U] = true;
-				result[0x0AU] = true;
-				result[0x0DU] = true;
-				return result;
-			}( );
-			while( first != last and space_tbl[static_cast<unsigned>( *first )] ) {
+		  while( first != last ) {
+		    switch( *first ) {
+		    case 0x20: // space
+		    case 0x09: // tab
+		    case 0x0A: // new line
+		    case 0x0D: // carriage return
+		      ++first;
+#ifndef NDEBUG
+		      ++pos;
+#endif
+		      continue;
+		    }
+		    return;
+		  }
+		}
+		 */
+
+		template<typename Char>
+		static bool constexpr is_space( Char c ) noexcept {
+			switch( c ) {
+			case 0x20: // space
+			case 0x09: // tab
+			case 0x0A: // new line
+			case 0x0D: // carriage return
+				return true;
+			}
+			return false;
+		}
+
+		constexpr void trim_left( ) noexcept {
+			while( first != last && is_space( *first ) ) {
 				++first;
 #ifndef NDEBUG
 				++pos;
 #endif
 			}
-			/*
-			while( first != last ) {
-			  switch( *first ) {
-			  case 0x20: // space
-			  case 0x09: // tab
-			  case 0x0A: // new line
-			  case 0x0D: // carriage return
-			    ++first;
-#ifndef NDEBUG
-			    ++pos;
-#endif
-			    continue;
-			  }
-			  return;
-			}
-			 */
 		}
 
 		[[nodiscard]] constexpr decltype( auto ) begin( ) const noexcept {
