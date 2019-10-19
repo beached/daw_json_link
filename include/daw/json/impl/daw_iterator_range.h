@@ -90,20 +90,36 @@ namespace daw::json::impl {
 		}
 
 		constexpr void trim_left( ) noexcept {
-			while( first != last ) {
-				switch( *first ) {
-				case 0x20: // space
-				case 0x09: // tab
-				case 0x0A: // new line
-				case 0x0D: // carriage return
-					++first;
+			constexpr auto space_tbl = [] {
+				std::array<bool, 256> result{};
+				result[0x20U] = true;
+				result[0x09U] = true;
+				result[0x0AU] = true;
+				result[0x0DU] = true;
+				return result;
+			}( );
+			while( first != last and space_tbl[static_cast<unsigned>( *first )] ) {
+				++first;
 #ifndef NDEBUG
-					++pos;
+				++pos;
 #endif
-					continue;
-				}
-				return;
 			}
+			/*
+			while( first != last ) {
+			  switch( *first ) {
+			  case 0x20: // space
+			  case 0x09: // tab
+			  case 0x0A: // new line
+			  case 0x0D: // carriage return
+			    ++first;
+#ifndef NDEBUG
+			    ++pos;
+#endif
+			    continue;
+			  }
+			  return;
+			}
+			 */
 		}
 
 		[[nodiscard]] constexpr decltype( auto ) begin( ) const noexcept {
