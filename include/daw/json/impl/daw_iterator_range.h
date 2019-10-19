@@ -89,25 +89,6 @@ namespace daw::json::impl {
 #endif
 		}
 
-		/*
-		constexpr void trim_left( ) noexcept {
-		  while( first != last ) {
-		    switch( *first ) {
-		    case 0x20: // space
-		    case 0x09: // tab
-		    case 0x0A: // new line
-		    case 0x0D: // carriage return
-		      ++first;
-#ifndef NDEBUG
-		      ++pos;
-#endif
-		      continue;
-		    }
-		    return;
-		  }
-		}
-		 */
-
 		template<typename Char>
 		static bool constexpr is_space( Char c ) noexcept {
 			switch( c ) {
@@ -123,6 +104,16 @@ namespace daw::json::impl {
 		constexpr void trim_left( ) noexcept {
 			while( first != last && is_space( *first ) ) {
 				++first;
+#ifndef NDEBUG
+				++pos;
+#endif
+			}
+		}
+
+		constexpr void trim_left_no_check( ) noexcept {
+			while( is_space( *first ) ) {
+				++first;
+				json_assert( first != last, "Unexpected end of stream" );
 #ifndef NDEBUG
 				++pos;
 #endif

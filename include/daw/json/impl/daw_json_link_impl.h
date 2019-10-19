@@ -665,7 +665,7 @@ namespace daw::json::impl {
 
 		// All names are followed by a semi-colon
 		(void)rng.munch( ':' );
-		rng.trim_left( );
+		rng.trim_left_no_check( );
 
 		json_assert( not name.empty( ) and not rng.empty( ),
 		             "Expected a non empty name and data after name" );
@@ -741,7 +741,7 @@ namespace daw::json::impl {
 		auto result = rng;
 		while( not rng.empty( ) and bracket_count > 0 ) {
 			rng.remove_prefix( );
-			rng.trim_left( );
+			rng.trim_left_no_check( );
 			switch( rng.front( ) ) {
 			case '\\':
 				rng.remove_prefix( 1 );
@@ -968,7 +968,7 @@ namespace daw::json::impl {
 		  "Expected keyvalue type to be of class type and beging with '{'" );
 
 		rng.remove_prefix( );
-		rng.trim_left( );
+		rng.trim_left_no_check( );
 
 		auto array_container = typename JsonMember::constructor_t{}( );
 		auto container_appender =
@@ -978,7 +978,7 @@ namespace daw::json::impl {
 		using value_t = typename JsonMember::json_element_t;
 		while( not rng.in( "}" ) ) {
 			auto key = parse_name( rng );
-			rng.trim_left( );
+			rng.trim_left_no_check( );
 			container_appender(
 			  typename key_t::constructor_t{}( key.data( ), key.size( ) ),
 			  parse_value<value_t>( ParseTag<value_t::expected_type>{}, rng ) );
@@ -1000,7 +1000,7 @@ namespace daw::json::impl {
 		json_assert( rng.front( '[' ), "Expected array to start with a '['" );
 
 		rng.remove_prefix( );
-		rng.trim_left( );
+		rng.trim_left_no_check( );
 
 		auto array_container = typename JsonMember::constructor_t{}( );
 		auto container_appender =
@@ -1126,7 +1126,7 @@ namespace daw::json::impl {
 		    not locations[pos].missing( ) or not rng.front( '}' ),
 		  "Unexpected end of class.  Non-nullable members still not found" );
 
-		rng.trim_left( );
+		rng.trim_left_no_check( );
 		while( locations[pos].missing( ) and not rng.in( '}' ) ) {
 			auto name = parse_name( rng );
 			using name_map = name_map_t<JsonMembers...>;
@@ -1219,10 +1219,10 @@ namespace daw::json::impl {
 		  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
 		  "Supplied types cannot be used for construction of this type" );
 
-		rng.trim_left( );
+		rng.trim_left_no_check( );
 		json_assert( rng.front( '{' ), "Expected class to begin with '{'" );
 		rng.remove_prefix( );
-		rng.trim_left( );
+		rng.trim_left_no_check( );
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
 			return construct_a<Result>( );
 			json_assert( rng.front( '}' ), "Expected class to end with '}'" );
@@ -1235,7 +1235,7 @@ namespace daw::json::impl {
 
 			auto result = daw::construct_a<Result>(
 			  parse_item<Is, JsonMembers...>( known_locations, rng )... );
-			rng.trim_left( );
+			rng.trim_left_no_check( );
 			// If we fullfill the contract before all values are found
 			while( not rng.in( '}' ) ) {
 				(void)parse_name( rng );
@@ -1285,7 +1285,7 @@ namespace daw::json::impl {
 		while( not current.empty( ) ) {
 			json_assert( rng.front( '{' ), "Invalid Path Entry" );
 			rng.remove_prefix( );
-			rng.trim_left( );
+			rng.trim_left_no_check( );
 			auto name = parse_name( rng );
 			while( not json_path_compare( current, name ) ) {
 				(void)skip_value( rng );
