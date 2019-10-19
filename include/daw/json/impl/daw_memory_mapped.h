@@ -175,7 +175,7 @@ namespace daw {
 		memory_mapped_file( std::string_view file,
 		                    open_mode mode = open_mode::read ) noexcept {
 
-			open( file, mode );
+			(void)open( file, mode );
 		}
 
 		[[nodiscard]] bool open( std::string_view file,
