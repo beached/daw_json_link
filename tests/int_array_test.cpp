@@ -232,6 +232,7 @@ int main( ) {
 		std::cout << "element count 3: " << count3 << '\n';
 		} catch( ... ) {
 			delete[] data2;
+			throw;
 		}
 	}
 }
