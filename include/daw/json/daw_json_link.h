@@ -51,7 +51,7 @@ namespace daw::json {
 	template<typename... JsonMembers>
 	struct class_description_t {
 		template<typename OutputIterator, typename... Args>
-		[[maybe_unused]] static constexpr OutputIterator
+		[[maybe_unused, nodiscard]] static constexpr OutputIterator
 		serialize( OutputIterator it, std::tuple<Args...> &&args ) {
 			static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 			               "Argument count is incorrect" );
@@ -63,14 +63,14 @@ namespace daw::json {
 		}
 
 		template<typename Result>
-		[[maybe_unused]] static constexpr decltype( auto )
+		[[maybe_unused, nodiscard]] static constexpr decltype( auto )
 		parse( std::string_view sv ) {
 			return impl::parse_json_class<Result, JsonMembers...>(
 			  sv, std::index_sequence_for<JsonMembers...>{} );
 		}
 
 		template<typename Result, typename First, typename Last>
-		[[maybe_unused]] static constexpr decltype( auto )
+		[[maybe_unused, nodiscard]] static constexpr decltype( auto )
 		parse( impl::IteratorRange<First, Last> &rng ) {
 			return impl::parse_json_class<Result, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
@@ -253,7 +253,8 @@ namespace daw::json {
 	};
 
 	template<typename T>
-	[[maybe_unused]] constexpr T from_json( std::string_view json_data ) {
+	[[maybe_unused, nodiscard]] constexpr T
+	from_json( std::string_view json_data ) {
 		static_assert( impl::has_json_parser_description_v<T>,
 		               "A function call describe_json_class must exist for type." );
 
@@ -263,7 +264,7 @@ namespace daw::json {
 	}
 
 	template<typename T, typename First, typename Last>
-	[[maybe_unused]] static constexpr T
+	[[maybe_unused, nodiscard]] static constexpr T
 	from_json( daw::json::impl::IteratorRange<First, Last> &rng ) {
 		static_assert( impl::has_json_parser_description_v<T>,
 		               "A function call describe_json_class must exist for type." );
@@ -274,7 +275,7 @@ namespace daw::json {
 	}
 
 	template<typename Result = std::string, typename T>
-	[[maybe_unused]] constexpr Result to_json( T &&value ) {
+	[[maybe_unused, nodiscard]] constexpr Result to_json( T &&value ) {
 		static_assert(
 		  impl::has_json_parser_description_v<T>,
 		  "A function called describe_json_class must exist for type." );
@@ -282,7 +283,7 @@ namespace daw::json {
 		               "A function called to_json_data must exist for type." );
 
 		Result result{};
-		impl::json_parser_description_t<T>::template serialize(
+		(void)impl::json_parser_description_t<T>::template serialize(
 		  daw::back_inserter( result ), to_json_data( std::forward<T>( value ) ) );
 		return result;
 	}
@@ -291,7 +292,7 @@ namespace daw::json {
 	         typename Container = std::vector<typename JsonElement::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
-	[[maybe_unused]] constexpr auto
+	[[maybe_unused, nodiscard]] constexpr auto
 	from_json_array( std::string_view json_data ) {
 		using parser_t =
 		  json_array<no_name, Container, JsonElement, Constructor, Appender>;
@@ -308,7 +309,7 @@ namespace daw::json {
 	}
 
 	template<typename Result = std::string, typename Container>
-	[[maybe_unused]] constexpr Result to_json_array( Container &&c ) {
+	[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c ) {
 		static_assert(
 		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 		  "Supplied container must support begin( )/end( )" );

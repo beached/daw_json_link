@@ -84,7 +84,7 @@ namespace daw::json {
 			m_state.trim_left( );
 		}
 
-		constexpr value_type operator*( ) const noexcept {
+		[[nodiscard]] constexpr value_type operator*( ) const noexcept {
 			assert( !m_state.empty( ) and !( verify_bracket and m_state.in( ']' ) ) );
 
 			auto tmp = m_state;
@@ -100,7 +100,7 @@ namespace daw::json {
 				m_state.first = std::next( m_state.first, m_can_skip );
 				m_can_skip = -1;
 			} else {
-				impl::skip_known_value<JsonElement>( m_state );
+				(void)impl::skip_known_value<JsonElement>( m_state );
 			}
 			m_state.trim_left( );
 			if( m_state.in( separator ) ) {
@@ -121,12 +121,12 @@ namespace daw::json {
 			       !( verify_bracket and m_state.front( ']' ) );
 		}
 
-		constexpr bool operator==( json_array_iterator const &rhs ) const noexcept {
+		[[nodiscard]] constexpr bool operator==( json_array_iterator const &rhs ) const noexcept {
 			return ( m_state.begin( ) == rhs.m_state.begin( ) ) or
 			       ( !( *this ) and !rhs );
 		}
 
-		constexpr bool operator!=( json_array_iterator const &rhs ) const noexcept {
+		[[nodiscard]] constexpr bool operator!=( json_array_iterator const &rhs ) const noexcept {
 			return !( *this == rhs );
 		}
 	};
@@ -152,31 +152,31 @@ namespace daw::json {
 		constexpr json_array_range( String &&jd, std::string_view start_path = "" )
 		  : m_first( std::forward<String>( jd ), start_path ) {}
 
-		constexpr reference begin( ) noexcept {
+		[[nodiscard]] constexpr reference begin( ) noexcept {
 			return m_first;
 		}
 
-		constexpr const_reference begin( ) const noexcept {
+		[[nodiscard]] constexpr const_reference begin( ) const noexcept {
 			return m_first;
 		}
 
-		constexpr const_reference cbegin( ) const noexcept {
+		[[nodiscard]] constexpr const_reference cbegin( ) const noexcept {
 			return m_first;
 		}
 
-		constexpr reference end( ) noexcept {
+		[[nodiscard]] constexpr reference end( ) noexcept {
 			return m_last;
 		}
 
-		constexpr const_reference end( ) const noexcept {
+		[[nodiscard]] constexpr const_reference end( ) const noexcept {
 			return m_last;
 		}
 
-		constexpr const_reference cend( ) const noexcept {
+		[[nodiscard]] constexpr const_reference cend( ) const noexcept {
 			return m_last;
 		}
 
-		constexpr bool empty( ) const {
+		[[nodiscard]] constexpr bool empty( ) const {
 			return m_first == m_last;
 		}
 	};

@@ -22,7 +22,11 @@
 
 #pragma once
 
-#include <daw/daw_algorithm.h>
+#include <iterator>
+#include <type_traits>
+
+#include <daw/daw_parser_helper_sv.h>
+#include <daw/daw_string_view.h>
 
 #include "daw_json_assert.h"
 
@@ -64,8 +68,9 @@ namespace daw::json::impl {
 				return false;
 			}
 			bool result = false;
-			daw::algorithm::do_n_arg<N - 1>(
-			  [&]( size_t p ) { result |= in( set[p] ); } );
+			for( size_t n = 0; n < ( N - 1 ); ++n ) {
+				result |= in( set[n] );
+			}
 			return result;
 		}
 
@@ -142,16 +147,11 @@ namespace daw::json::impl {
 		template<size_t N>
 		[[nodiscard]] constexpr bool in( char const ( &set )[N] ) const noexcept {
 			bool result = false;
-			daw::algorithm::do_n_arg<N - 1>(
-			  [&]( size_t p ) { result |= ( set[p] == *first ); } );
+			for( size_t n = 0; n < ( N - 1 ); ++n ) {
+				result |= ( set[n] == *first );
+			}
 			return result;
 		}
-
-		/*
-		[[nodiscard]] constexpr bool is_digit( ) const noexcept {
-		  return in( "0123456789" );
-		}
-		 */
 
 		[[nodiscard]] constexpr bool is_real_number_part( ) const noexcept {
 			return in( "0123456789eE+-" );
