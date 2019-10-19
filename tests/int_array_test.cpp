@@ -217,5 +217,21 @@ int main( ) {
 		                              json_sv );
 
 		std::cout << "element count 2: " << count2 << '\n';
+
+		auto data2 = new intmax_t[NUMVALUES];
+		try {
+		auto const count3 =
+		  *daw::bench_n_test_mbs<100>( "p3. int parsing 3", json_sv.size( ),
+		                              [&]( auto &&sv ) noexcept {
+			                              auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2 );
+			                              daw::do_not_optimize( data2 );
+			                              return ptr - data2;
+		                              },
+		                              json_sv );
+
+		std::cout << "element count 3: " << count3 << '\n';
+		} catch( ... ) {
+			delete[] data2;
+		}
 	}
 }

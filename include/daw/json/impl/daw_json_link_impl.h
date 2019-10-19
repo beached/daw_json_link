@@ -34,12 +34,10 @@
 #include <utility>
 
 #include <daw/daw_algorithm.h>
-#include <daw/daw_array.h>
 #ifdef __cpp_nontype_template_parameter_class
 #include <daw/daw_bounded_string.h>
 #endif
 #include <daw/daw_cxmath.h>
-#include <daw/daw_exception.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -123,7 +121,7 @@ namespace daw::json {
 		struct custom_to_converter_t {
 			[[nodiscard]] constexpr decltype( auto ) operator( )( T &&value ) const {
 				using std::to_string;
-				return to_string( std::move( value ) );
+				return to_string( daw::move( value ) );
 			}
 
 			[[nodiscard]] constexpr decltype( auto )
@@ -418,7 +416,7 @@ namespace daw::json::impl {
 
 		*it++ = '[';
 		if( not std::empty( container ) ) {
-			auto count = std::size( container ) - 1;
+			auto count = std::size( container ) - 1U;
 			for( auto const &v : container ) {
 				it = to_string<typename JsonMember::json_element_t>(
 				  ParseTag<JsonMember::json_element_t::expected_type>{}, it, v );
@@ -433,11 +431,10 @@ namespace daw::json::impl {
 
 	template<typename JsonMember, typename OutputIterator, typename T>
 	[[nodiscard]] static constexpr OutputIterator
-	member_to_string( OutputIterator &&it, T &&value ) {
+	member_to_string( OutputIterator it, T &&value ) {
 		it = to_string<JsonMember>( ParseTag<JsonMember::expected_type>{},
-		                            std::forward<OutputIterator>( it ),
-		                            std::forward<T>( value ) );
-		return std::move( it );
+		                            daw::move( it ), std::forward<T>( value ) );
+		return it;
 	}
 
 	template<typename JsonMember, size_t pos, typename OutputIterator,
@@ -449,8 +446,8 @@ namespace daw::json::impl {
 		*it++ = '"';
 		it = copy_to_iterator( JsonMember::name, it );
 		it = copy_to_iterator( "\":", it );
-		it = member_to_string<JsonMember>( std::move( it ),
-		                                   std::get<pos>( std::move( args ) ) );
+		it = member_to_string<JsonMember>( daw::move( it ),
+		                                   std::get<pos>( daw::move( args ) ) );
 		if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
 			*it++ = ',';
 		}
@@ -519,8 +516,7 @@ namespace daw::json::impl {
 	template<typename Result>
 	[[nodiscard]] static constexpr auto
 	parse_unsigned_integer( daw::string_view const &sv ) noexcept {
-		auto rng =
-		  IteratorRange( std::data( sv ), std::data( sv ) + std::size( sv ) );
+		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
 		return parse_unsigned_integer<Result, true>( rng );
 	}
 
@@ -528,8 +524,7 @@ namespace daw::json::impl {
 	template<typename Result>
 	[[nodiscard]] static constexpr auto
 	parse_unsigned_integer2( daw::string_view const &sv ) noexcept {
-		auto rng =
-		  IteratorRange( std::data( sv ), std::data( sv ) + std::size( sv ) );
+		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
 		return parse_unsigned_integer2<Result, true>( rng );
 	}
 
@@ -561,8 +556,7 @@ namespace daw::json::impl {
 	template<typename Result>
 	[[nodiscard]] static constexpr Result
 	parse_integer( daw::string_view const &sv ) noexcept {
-		auto rng =
-		  IteratorRange( std::data( sv ), std::data( sv ) + std::size( sv ) );
+		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
 		return parse_integer<Result, true>( rng );
 	}
 
@@ -609,8 +603,7 @@ namespace daw::json::impl {
 	template<typename Result>
 	[[nodiscard]] static constexpr Result
 	parse_real( daw::string_view const &sv ) noexcept {
-		auto rng =
-		  IteratorRange( std::data( sv ), std::data( sv ) + std::size( sv ) );
+		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
 		return parse_real<Result>( rng );
 	}
 
@@ -635,7 +628,7 @@ namespace daw::json::impl {
 
 		constexpr kv_t( string_t Name, JsonParseTypes Expected, /*bool Nullable,*/
 		                size_t Pos )
-		  : name( std::move( Name ) )
+		  : name( daw::move( Name ) )
 		  , expected_type( Expected )
 		  //				  , nullable( Nullable )
 		  , pos( Pos ) {}
@@ -1202,7 +1195,7 @@ namespace daw::json::impl {
 
 		*it++ = '{';
 
-		(void)( ( to_json_str<nth<Is, JsonMembers...>, Is>( it, std::move( args ) ),
+		(void)( ( to_json_str<nth<Is, JsonMembers...>, Is>( it, daw::move( args ) ),
 		          ... ),
 		        0 );
 
@@ -1254,8 +1247,7 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr Result
 	parse_json_class( std::string_view sv, std::index_sequence<Is...> is ) {
 
-		auto rng =
-		  IteratorRange( std::data( sv ), std::data( sv ) + std::size( sv ) );
+		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
 		return parse_json_class<Result, JsonMembers...>( rng, is );
 	}
 
