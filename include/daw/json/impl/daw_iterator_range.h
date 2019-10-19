@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include <cassert>
-
 #include <daw/daw_algorithm.h>
+
+#include "daw_json_assert.h"
 
 namespace daw::json::impl {
 	template<typename First, typename Last>
@@ -41,28 +41,25 @@ namespace daw::json::impl {
 		  : first( f )
 		  , last( l ) {}
 
-		constexpr bool empty( ) const noexcept {
+		[[nodiscard]] constexpr bool empty( ) const noexcept {
 			return first == last;
 		}
 
-		constexpr decltype( auto ) front( ) const noexcept {
+		[[nodiscard]] constexpr decltype( auto ) front( ) const noexcept {
 			return *first;
 		}
 
-		constexpr bool front( char c ) const noexcept {
+		[[nodiscard]] constexpr bool front( char c ) const noexcept {
 			return not empty( ) and in( c );
 		}
 
-		constexpr bool not_front( char c ) const noexcept {
-			return not empty( ) and not in( c );
-		}
-
-		constexpr size_t size( ) const noexcept {
+		[[nodiscard]] constexpr size_t size( ) const noexcept {
 			return static_cast<size_t>( std::distance( first, last ) );
 		}
 
 		template<size_t N>
-		constexpr bool front( char const ( &set )[N] ) const noexcept {
+		[[nodiscard]] constexpr bool front( char const ( &set )[N] ) const
+		  noexcept {
 			if( empty( ) ) {
 				return false;
 			}
@@ -72,7 +69,7 @@ namespace daw::json::impl {
 			return result;
 		}
 
-		constexpr bool is_null( ) const noexcept {
+		[[nodiscard]] constexpr bool is_null( ) const noexcept {
 			if constexpr( std::is_pointer_v<First> ) {
 				return first == nullptr;
 			} else {
@@ -85,10 +82,6 @@ namespace daw::json::impl {
 #ifndef NDEBUG
 			pos += n;
 #endif
-		}
-
-		constexpr void remove_suffix( size_t n = 1 ) {
-			last = std::prev( last, static_cast<intmax_t>( n ) );
 		}
 
 		constexpr void trim_left( ) noexcept {
@@ -108,23 +101,20 @@ namespace daw::json::impl {
 			}
 		}
 
-		constexpr decltype( auto ) begin( ) const noexcept {
+		[[nodiscard]] constexpr decltype( auto ) begin( ) const noexcept {
 			return first;
 		}
 
-		constexpr decltype( auto ) end( ) const noexcept {
+		[[nodiscard]] constexpr decltype( auto ) end( ) const noexcept {
 			return last;
 		}
 
-		explicit constexpr operator bool( ) const noexcept {
+		[[nodiscard]] explicit constexpr operator bool( ) const noexcept {
 			return not empty( );
 		}
 
-		constexpr auto pop_front( ) {
-			return *first++;
-		}
-
-		constexpr daw::string_view move_to_next_of( char c ) noexcept {
+		[[nodiscard]] constexpr daw::string_view
+		move_to_next_of( char c ) noexcept {
 			auto p = begin( );
 			size_t sz = 0;
 			while( not in( c ) ) {
@@ -134,7 +124,7 @@ namespace daw::json::impl {
 			return {p, sz};
 		}
 
-		constexpr IteratorRange
+		[[nodiscard]] constexpr IteratorRange
 		move_to_first_of( daw::string_view const chars ) noexcept {
 			auto result = *this;
 			while( chars.find( front( ) ) == daw::string_view::npos ) {
@@ -144,28 +134,30 @@ namespace daw::json::impl {
 			return result;
 		}
 
-		constexpr bool in( char c ) const noexcept {
-			assert( first != nullptr );
+		[[nodiscard]] constexpr bool in( char c ) const noexcept {
+			json_assert( first != nullptr, "Empty or null InteratorRange" );
 			return *first == c;
 		}
 
 		template<size_t N>
-		constexpr bool in( char const ( &set )[N] ) const noexcept {
+		[[nodiscard]] constexpr bool in( char const ( &set )[N] ) const noexcept {
 			bool result = false;
 			daw::algorithm::do_n_arg<N - 1>(
 			  [&]( size_t p ) { result |= ( set[p] == *first ); } );
 			return result;
 		}
 
-		constexpr bool is_digit( ) const noexcept {
-			return in( "0123456789" );
+		/*
+		[[nodiscard]] constexpr bool is_digit( ) const noexcept {
+		  return in( "0123456789" );
 		}
+		 */
 
-		constexpr bool is_real_number_part( ) const noexcept {
+		[[nodiscard]] constexpr bool is_real_number_part( ) const noexcept {
 			return in( "0123456789eE+-" );
 		}
 
-		constexpr daw::string_view munch( char c ) noexcept {
+		[[nodiscard]] constexpr daw::string_view munch( char c ) noexcept {
 			auto result = move_to_next_of( c );
 			if( in( c ) ) {
 				remove_prefix( );
@@ -173,7 +165,7 @@ namespace daw::json::impl {
 			return result;
 		}
 
-		constexpr bool at_end_of_item( ) const noexcept {
+		[[nodiscard]] constexpr bool at_end_of_item( ) const noexcept {
 			return in( ",}]" ) or daw::parser::is_unicode_whitespace( front( ) );
 		}
 

@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.8.12 )
+cmake_minimum_required( VERSION 3.10 )
 
 project( daw_json_link_prj )
 #set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
@@ -7,6 +7,7 @@ enable_testing( )
 include( "${CMAKE_SOURCE_DIR}/dependent_projects/CMakeListsCompiler.txt" )
 
 include_directories( "./include" )
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 set( DAW_JSON_DONT_USE_EXCEPTIONS OFF CACHE STRING "Don't throw exceptions when json errors occur" )
 if( DAW_JSON_DONT_USE_EXCEPTIONS )

@@ -70,13 +70,13 @@ namespace daw {
 	public:
 		constexpr memory_mapped_file( ) noexcept = default;
 
-		memory_mapped_file( std::string_view file,
+		explicit memory_mapped_file( std::string_view file,
 		                    open_mode mode = open_mode::read ) noexcept {
 
-			open( file, mode );
+			(void)open( file, mode );
 		}
 
-		bool open( std::string_view file,
+		[[nodiscard]] bool open( std::string_view file,
 		           open_mode mode = open_mode::read ) noexcept {
 
 			m_file =
@@ -106,23 +106,23 @@ namespace daw {
 			return true;
 		}
 
-		reference operator[]( size_type pos ) noexcept {
+		[[nodiscard]] reference operator[]( size_type pos ) noexcept {
 			return m_ptr[pos];
 		}
 
-		const_reference operator[]( size_t pos ) const noexcept {
+		[[nodiscard]] const_reference operator[]( size_t pos ) const noexcept {
 			return m_ptr[pos];
 		}
 
-		constexpr pointer data( ) noexcept {
+		[[nodiscard]] constexpr pointer data( ) noexcept {
 			return m_ptr;
 		}
 
-		constexpr const_pointer data( ) const noexcept {
+		[[nodiscard]] constexpr const_pointer data( ) const noexcept {
 			return m_ptr;
 		}
 
-		constexpr size_type size( ) const noexcept {
+		[[nodiscard]] constexpr size_type size( ) const noexcept {
 			return m_size;
 		}
 
@@ -178,7 +178,7 @@ namespace daw {
 			open( file, mode );
 		}
 
-		bool open( std::string_view file,
+		[[nodiscard]] bool open( std::string_view file,
 		           open_mode mode = open_mode::read ) noexcept {
 
 			std::ifstream in_file( file.data( ) );
@@ -190,23 +190,23 @@ namespace daw {
 			return not m_value.empty( );
 		}
 
-		reference operator[]( size_type pos ) noexcept {
+		[[nodiscard]] reference operator[]( size_type pos ) noexcept {
 			return m_value[pos];
 		}
 
-		const_reference operator[]( size_t pos ) const noexcept {
+		[[nodiscard]] const_reference operator[]( size_t pos ) const noexcept {
 			return m_value[pos];
 		}
 
-		constexpr pointer data( ) noexcept {
+		[[nodiscard]] constexpr pointer data( ) noexcept {
 			return m_value.data( );
 		}
 
-		constexpr const_pointer data( ) const noexcept {
+		[[nodiscard]] constexpr const_pointer data( ) const noexcept {
 			return m_value.data( );
 		}
 
-		constexpr size_type size( ) const noexcept {
+		[[nodiscard]] constexpr size_type size( ) const noexcept {
 			return m_value.size( );
 		}
 

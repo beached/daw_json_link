@@ -23,15 +23,11 @@
 #pragma once
 
 #include <array>
-#include <cassert>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
-#include <exception>
 #include <iterator>
-#include <limits>
 #include <optional>
-#include <string>
 #include <string_view>
 #include <tuple>
 #include <type_traits>
@@ -39,7 +35,9 @@
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_array.h>
+#ifdef __cpp_nontype_template_parameter_class
 #include <daw/daw_bounded_string.h>
+#endif
 #include <daw/daw_cxmath.h>
 #include <daw/daw_exception.h>
 #include <daw/daw_parser_helper_sv.h>
@@ -657,7 +655,7 @@ namespace daw::json::impl {
 		auto name = daw::string_view( tmp.begin( ), tmp.size( ) );
 
 		// All names are followed by a semi-colon
-		rng.munch( ':' );
+		(void)rng.munch( ':' );
 		rng.trim_left( );
 
 		json_assert( not name.empty( ) and not rng.empty( ),
@@ -1049,29 +1047,29 @@ namespace daw::json::impl {
 	namespace {
 		template<typename... JsonMembers>
 		struct name_map_t {
-			static constexpr auto name_map =
+			static inline constexpr auto name_map_data =
 			  make_map<JsonMembers...>( std::index_sequence_for<JsonMembers...>{} );
 
 			static constexpr bool has_name( daw::string_view key ) noexcept {
 				using std::begin;
 				using std::end;
 				auto result = algorithm::find_if(
-				  begin( name_map ), end( name_map ),
+				  begin( name_map_data ), end( name_map_data ),
 				  [key]( auto const &kv ) { return kv.name == key; } );
-				return result != std::end( name_map );
+				return result != std::end( name_map_data );
 			}
 
 			static constexpr size_t find_name( daw::string_view key ) noexcept {
 				using std::begin;
 				using std::end;
 				auto result = algorithm::find_if(
-				  begin( name_map ), end( name_map ),
+				  begin( name_map_data ), end( name_map_data ),
 				  [key]( auto const &kv ) { return kv.name == key; } );
-				if( result == std::end( name_map ) ) {
+				if( result == std::end( name_map_data ) ) {
 					std::terminate( );
 				}
 				return static_cast<size_t>(
-				  std::distance( begin( name_map ), result ) );
+				  std::distance( begin( name_map_data ), result ) );
 			}
 		};
 	} // namespace
@@ -1080,7 +1078,7 @@ namespace daw::json::impl {
 		JSONNAMETYPE name;
 		IteratorRange<char const *, char const *> location{};
 
-		constexpr bool missing( ) const {
+		[[maybe_unused]] constexpr bool missing( ) const {
 			return location.empty( ) or location.is_null( );
 		}
 	};
@@ -1109,14 +1107,14 @@ namespace daw::json::impl {
 		rng.trim_left( );
 		while( locations[pos].missing( ) and not rng.in( '}' ) ) {
 			auto name = parse_name( rng );
-
-			if( not name_map_t<JsonMembers...>::has_name( name ) ) {
+			using name_map = name_map_t<JsonMembers...>;
+			if( not name_map::has_name( name ) ) {
 				// This is not a member we are concerned with
 				skip_value( rng );
 				rng.clean_tail( );
 				continue;
 			}
-			auto const name_pos = name_map_t<JsonMembers...>::find_name( name );
+			auto const name_pos = name_map::find_name( name );
 			if( name_pos != pos ) {
 				// We are out of order, store position for later
 				// TODO:	use type knowledge to speed up skip
