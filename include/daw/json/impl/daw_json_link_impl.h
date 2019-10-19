@@ -467,18 +467,18 @@ namespace daw::json::impl {
 	parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 		uintmax_t v = 0;
-		uint_fast8_t c = 0;
 
-		uint32_t dig =
-		  static_cast<uint32_t>( rng.front( ) ) - static_cast<uint32_t>( '0' );
+		using uint_t = unsigned;
+		auto p = rng.begin( );
+		uint_t dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
 		while( dig < 10U ) {
-			rng.remove_prefix( );
-			++c;
+			++p;
 			v *= 10U;
 			v += dig;
-			dig =
-			  static_cast<uint32_t>( rng.front( ) ) - static_cast<uint32_t>( '0' );
+			dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
 		}
+		auto const c = static_cast<uint_fast8_t>( p - rng.begin( ) );
+		rng.first = p;
 		struct result_t {
 			Result value;
 			uint_fast8_t count;
@@ -497,14 +497,14 @@ namespace daw::json::impl {
 	parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "0123456789" ) );
 		uintmax_t result = 0;
+		using uint_t = unsigned;
 		auto p = rng.begin( );
-		uintmax_t dig =
-		  static_cast<uintmax_t>( *p ) - static_cast<uintmax_t>( '0' );
+		uintmax_t dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
 		while( dig < 10U ) {
 			result *= 10U;
 			result += dig;
 			++p;
-			dig = static_cast<uintmax_t>( *p ) - static_cast<uintmax_t>( '0' );
+			dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
 		}
 		rng.first = p;
 
