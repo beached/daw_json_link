@@ -109,54 +109,52 @@ namespace daw::json {
 	static constexpr char const no_name[] = "";
 #endif
 
-	namespace {
-		struct parse_js_date {
-			[[maybe_unused,
-			  nodiscard]] constexpr std::chrono::time_point<std::chrono::system_clock,
-			                                                std::chrono::milliseconds>
-			operator( )( char const *ptr, size_t sz ) const {
-				return daw::date_parsing::parse_javascript_timestamp(
-				  daw::string_view( ptr, sz ) );
-			}
-		};
+	struct parse_js_date {
+		[[maybe_unused,
+		  nodiscard]] constexpr std::chrono::time_point<std::chrono::system_clock,
+		                                                std::chrono::milliseconds>
+		operator( )( char const *ptr, size_t sz ) const {
+			return daw::date_parsing::parse_javascript_timestamp(
+			  daw::string_view( ptr, sz ) );
+		}
+	};
 
-		template<typename T>
-		struct custom_to_converter_t {
-			[[nodiscard]] constexpr decltype( auto ) operator( )( T &&value ) const {
-				using std::to_string;
-				return to_string( daw::move( value ) );
-			}
+	template<typename T>
+	struct custom_to_converter_t {
+		[[nodiscard]] constexpr decltype( auto ) operator( )( T &&value ) const {
+			using std::to_string;
+			return to_string( daw::move( value ) );
+		}
 
-			[[nodiscard]] constexpr decltype( auto )
-			operator( )( T const &value ) const {
-				using std::to_string;
-				return to_string( value );
-			}
-		};
+		[[nodiscard]] constexpr decltype( auto )
+		operator( )( T const &value ) const {
+			using std::to_string;
+			return to_string( value );
+		}
+	};
 
-		template<typename T>
-		struct custom_from_converter_t {
-			[[nodiscard]] constexpr decltype( auto )
-			operator( )( std::string_view sv ) {
-				return from_string( daw::tag<T>, sv );
-			}
-		};
+	template<typename T>
+	struct custom_from_converter_t {
+		[[nodiscard]] constexpr decltype( auto )
+		operator( )( std::string_view sv ) {
+			return from_string( daw::tag<T>, sv );
+		}
+	};
 
-		enum class JsonParseTypes : uint_fast8_t {
-			Number,
-			Bool,
-			String,
-			Date,
-			Class,
-			Array,
-			Null,
-			KeyValue,
-			Custom
-		};
+	enum class JsonParseTypes : uint_fast8_t {
+		Number,
+		Bool,
+		String,
+		Date,
+		Class,
+		Array,
+		Null,
+		KeyValue,
+		Custom
+	};
 
-		template<JsonParseTypes v>
-		using ParseTag = std::integral_constant<JsonParseTypes, v>;
-	} // namespace
+	template<JsonParseTypes v>
+	using ParseTag = std::integral_constant<JsonParseTypes, v>;
 } // namespace daw::json
 
 namespace daw::json::impl {
@@ -699,8 +697,8 @@ namespace daw::json::impl {
 			rng.remove_prefix( );
 		}
 		auto result = rng;
-		rng.first = daw::json::impl::quote::quote_parser( rng.begin( ) );
-		/*
+		//rng.first = daw::json::impl::quote::quote_parser::parse( rng.begin( ) );
+
 		  if( rng.in( '"' ) ) {
 		    // DAW
 		    // result.last = result.first;
@@ -709,7 +707,7 @@ namespace daw::json::impl {
 		    return result;
 		  }
 		  rng.first = find_quote( rng.begin( ) );
-		 */
+
 		json_assert( rng.front( ) == '"',
 		             "Expected trailing \" at the end of string" );
 		result.last = rng.first;

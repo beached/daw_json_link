@@ -33,9 +33,9 @@
 #include <daw/daw_function_table.h>
 
 namespace daw::json::impl::quote {
-	class quote_parser_t {
+	class quote_parser {
 		using pf_t =
-		  std::add_pointer_t<char const *( char const *, quote_parser_t const & )>;
+		  std::add_pointer_t<char const *( char const * )>;
 
 		using ftable_t = daw::function_table_t<
 		  char const *, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
@@ -61,31 +61,36 @@ namespace daw::json::impl::quote {
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t>;
 
-		static constexpr char const *ret( char const *c, quote_parser_t const & ) {
+		static constexpr char const *ret( char const *c ) {
 			return c;
 		}
 
-		static constexpr char const *escape( char const *c,
-		                                     quote_parser_t const &p ) {
+		static constexpr char const *escape( char const *c ) {
 			++c;
 			++c; // TODO: potentially unsafe
-			return p.ftable( static_cast<size_t>( *c ), c, p );
+			return quote_parser::ftable( static_cast<size_t>( *c ), c );
 		}
 
-		static constexpr char const *chr( char const *c, quote_parser_t const &p ) {
+		static constexpr char const *chr( char const *c ) {
 			++c;
-			return p.ftable( static_cast<size_t>( *c ), c, p );
+			return quote_parser::ftable( static_cast<size_t>( *c ), c );
 		}
 
-		ftable_t ftable{
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret,    ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret,    ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, chr, chr, ret, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, escape, chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		static constexpr ftable_t ftable{/*
+		    0,   2,   3,   4,	  5,   6,   7,   8,   9 */
+		  ret, ret, ret, 		ret, ret, ret, ret, ret, ret,
+		  ret, ret, ret, 		ret, ret, ret, ret, ret, ret,
+		  ret, ret, ret, 		ret, ret, ret, ret, ret, ret,
+		  ret, ret, ret, 		ret, ret, chr, ret, chr, chr,
+		  chr, chr, chr,	 	chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, 		chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, 		chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr,	 	chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr,    chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr,    chr, chr, chr, chr, chr, chr,
+		  chr, chr, escape, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, 	  chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr,
 		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
 		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
 		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
@@ -102,12 +107,8 @@ namespace daw::json::impl::quote {
 		static_assert( ftable_t::using_array_v );
 
 	public:
-		constexpr quote_parser_t( ) = default;
-
-		constexpr char const *operator( )( char const *ptr ) const {
-			return ftable( static_cast<size_t>( *ptr ), ptr, *this );
+		static constexpr char const *parse( char const *ptr ) {
+			return ftable( static_cast<size_t>( *ptr ), ptr );
 		}
 	};
-
-	inline constexpr auto quote_parser = quote_parser_t( );
 } // namespace daw::json::impl::quote

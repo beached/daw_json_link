@@ -35,8 +35,9 @@
 namespace daw::json::impl::signedint {
 	class signed_parser_t {
 		using pf_t = std::add_pointer_t<std::pair<intmax_t, char const *>(
-		  intmax_t, char const *, signed_parser_t const &, bool )>;
+		  intmax_t, char const *, bool )>;
 
+		/*
 		using ftable_t = daw::function_table_t<
 		  std::pair<intmax_t, char const *>, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
@@ -60,32 +61,36 @@ namespace daw::json::impl::signedint {
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t>;
+*/
+		static constexpr std::pair<intmax_t, char const *>
+		ret( intmax_t, char const *, bool ) {
+			json_assert( false, "Invalid number data" );
+			return {0, nullptr};
+		}
 
 		static constexpr std::pair<intmax_t, char const *>
-		ret( intmax_t n, char const *c, signed_parser_t const &, bool sign ) {
+		dig( intmax_t n, char const *c, bool sign ) {
+			auto dig = static_cast<uint_least32_t>( *c - '0' );
+			while( dig < 10 ) {
+				n = n * 10 + dig;
+				++c;
+				dig = static_cast<uint_least32_t>( *c - '0' );
+			}
 			return {sign ? n : -n, c};
 		}
 
 		static constexpr std::pair<intmax_t, char const *>
-		dig( intmax_t n, char const *c, signed_parser_t const &p, bool sign ) {
-			n *= 10;
-			n += static_cast<intmax_t>( *c - '0' );
+		neg( intmax_t, char const *c, bool ) {
 			++c;
-			return p.ftable( static_cast<size_t>( *c ), n, c, p, sign );
+			return dig( 0ULL, c, false );
 		}
 
 		static constexpr std::pair<intmax_t, char const *>
-		neg( intmax_t, char const *c, signed_parser_t const &p, bool ) {
-			++c;
-			return p.ftable( static_cast<size_t>( *c ), 0LL, c, p, false );
+		pos( intmax_t, char const *c, bool ) {
+			return dig( 0ULL, c, true );
 		}
 
-		static constexpr std::pair<intmax_t, char const *>
-		pos( intmax_t, char const *c, signed_parser_t const &p, bool ) {
-			return p.ftable( static_cast<size_t>( *c ), 0LL, c, p, true );
-		}
-
-		ftable_t ftable{
+		static constexpr std::array<pf_t, 256> ftable{
 		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
 		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
 		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, pos, ret,
@@ -105,15 +110,15 @@ namespace daw::json::impl::signedint {
 		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
 		  ret};
 
-		static_assert( ftable_t::size( ) == 256 );
-		static_assert( ftable_t::using_array_v );
+		static_assert( ftable.size( ) == 256 );
+//		static_assert( ftable_t::using_array_v );
 
 	public:
 		constexpr signed_parser_t( ) = default;
 
 		constexpr auto operator( )( size_t index, intmax_t val,
 		                            char const *ptr ) const {
-			return ftable( index, val, ptr, *this, true );
+			return ftable[index]( val, ptr, true );
 		}
 	};
 

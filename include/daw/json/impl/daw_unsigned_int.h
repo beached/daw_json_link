@@ -30,50 +30,29 @@
 #include <utility>
 #include <variant>
 
-#include <daw/daw_function_table.h>
-
 namespace daw::json::impl::unsignedint {
 	class unsigned_parser_t {
 		using pf_t = std::add_pointer_t<std::pair<uintmax_t, char const *>(
-		  uintmax_t, char const *, unsigned_parser_t const & )>;
+		  uintmax_t, char const * )>;
 
-		using ftable_t = daw::function_table_t<
-		  std::pair<uintmax_t, char const *>, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t>;
+		static constexpr std::pair<uintmax_t, char const *> ret( uintmax_t,
+		                                                         char const * ) {
+			json_assert( false, "Invalid number data" );
+			return {0, nullptr};
+		}
 
-		static constexpr std::pair<uintmax_t, char const *>
-		ret( uintmax_t n, char const *c, unsigned_parser_t const & ) {
+		static constexpr std::pair<uintmax_t, char const *> dig( uintmax_t n,
+		                                                         char const *c ) {
+			auto dig = static_cast<uint_least32_t>( *c - '0' );
+			while( dig < 10 ) {
+				n = n * 10 + dig;
+				++c;
+				dig = static_cast<uint_least32_t>( *c - '0' );
+			}
 			return {n, c};
 		}
 
-		static constexpr std::pair<uintmax_t, char const *>
-		dig( uintmax_t n, char const *c, unsigned_parser_t const &p ) {
-			n = n * 10 + static_cast<uintmax_t>( *c - '0' );
-			++c;
-			return p.ftable( static_cast<size_t>( *c ), n, c, p );
-		}
-
-		ftable_t ftable{
+		static constexpr std::array<pf_t, 256> ftable{
 		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
 		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
 		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
@@ -93,7 +72,7 @@ namespace daw::json::impl::unsignedint {
 		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
 		  ret};
 
-		static_assert( ftable_t::size( ) == 256 );
+		static_assert( ftable.size( ) == 256 );
 
 	public:
 		constexpr unsigned_parser_t( ) = default;
@@ -101,7 +80,7 @@ namespace daw::json::impl::unsignedint {
 		template<typename... Args>
 		constexpr auto operator( )( size_t index, uintmax_t val,
 		                            char const *ptr ) const {
-			return ftable( index, val, ptr, *this );
+			return ftable[index]( val, ptr );
 		}
 	};
 
