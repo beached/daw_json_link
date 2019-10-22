@@ -466,8 +466,8 @@ namespace daw::json::impl {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
-		auto [v, new_p] = unsigned_parser( static_cast<size_t>( rng.front( ) ),
-		                                   0ULL, rng.begin( ) );
+		auto [v, new_p] = unsigned_parser::parse(
+		  static_cast<size_t>( rng.front( ) ), rng.begin( ) );
 		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.begin( ) );
 		rng.first = new_p;
 
@@ -490,8 +490,8 @@ namespace daw::json::impl {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
-		auto [result, ptr] = unsigned_parser( static_cast<size_t>( rng.front( ) ),
-		                                      0ULL, rng.begin( ) );
+		auto [result, ptr] = unsigned_parser::parse(
+		  static_cast<size_t>( rng.front( ) ), rng.begin( ) );
 		rng.first = ptr;
 
 		if constexpr( RangeCheck ) {
@@ -547,7 +547,7 @@ namespace daw::json::impl {
 
 		using namespace daw::json::impl::signedint;
 		auto [result, ptr] =
-		  signed_parser( static_cast<size_t>( rng.front( ) ), 0LL, rng.begin( ) );
+		  signed_parser::parse( static_cast<size_t>( rng.front( ) ), rng.begin( ) );
 		rng.first = ptr;
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
@@ -697,16 +697,16 @@ namespace daw::json::impl {
 			rng.remove_prefix( );
 		}
 		auto result = rng;
-		//rng.first = daw::json::impl::quote::quote_parser::parse( rng.begin( ) );
+		// rng.first = daw::json::impl::quote::quote_parser::parse( rng.begin( ) );
 
-		  if( rng.in( '"' ) ) {
-		    // DAW
-		    // result.last = result.first;
-		    result.last = rng.first;
-		    rng.remove_prefix( );
-		    return result;
-		  }
-		  rng.first = find_quote( rng.begin( ) );
+		if( rng.in( '"' ) ) {
+			// DAW
+			// result.last = result.first;
+			result.last = rng.first;
+			rng.remove_prefix( );
+			return result;
+		}
+		rng.first = find_quote( rng.begin( ) );
 
 		json_assert( rng.front( ) == '"',
 		             "Expected trailing \" at the end of string" );

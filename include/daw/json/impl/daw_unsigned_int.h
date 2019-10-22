@@ -31,19 +31,18 @@
 #include <variant>
 
 namespace daw::json::impl::unsignedint {
-	class unsigned_parser_t {
-		using pf_t = std::add_pointer_t<std::pair<uintmax_t, char const *>(
-		  uintmax_t, char const * )>;
+	class unsigned_parser {
+		using pf_t =
+		  std::add_pointer_t<std::pair<uintmax_t, char const *>( char const * )>;
 
-		static constexpr std::pair<uintmax_t, char const *> ret( uintmax_t,
-		                                                         char const * ) {
+		static constexpr std::pair<uintmax_t, char const *> ret( char const * ) {
 			json_assert( false, "Invalid number data" );
 			return {0, nullptr};
 		}
 
-		static constexpr std::pair<uintmax_t, char const *> dig( uintmax_t n,
-		                                                         char const *c ) {
+		static constexpr std::pair<uintmax_t, char const *> dig( char const *c ) {
 			auto dig = static_cast<uint_least32_t>( *c - '0' );
+			uintmax_t n = 0;
 			while( dig < 10 ) {
 				n = n * 10 + dig;
 				++c;
@@ -52,39 +51,19 @@ namespace daw::json::impl::unsignedint {
 			return {n, c};
 		}
 
-		static constexpr std::array<pf_t, 256> ftable{
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, dig, dig, dig, dig, dig, dig, dig, dig, dig, dig, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret};
+		static constexpr auto ftable =
+		  daw::make_array<pf_t>( dig, dig, dig, dig, dig, dig, dig, dig, dig, dig,
+		                         ret, ret, ret, ret, ret, ret );
 
-		static_assert( ftable.size( ) == 256 );
+		static_assert( ftable.size( ) == 16 );
 
 	public:
-		constexpr unsigned_parser_t( ) = default;
-
-		template<typename... Args>
-		constexpr auto operator( )( size_t index, uintmax_t val,
-		                            char const *ptr ) const {
-			return ftable[index]( val, ptr );
+		static constexpr auto parse( size_t index, char const *ptr ) {
+			return ftable[( static_cast<unsigned>( index ) -
+			                static_cast<unsigned>( '0' ) ) &
+			              0b1111U]( ptr );
 		}
 	};
 
-	inline constexpr auto unsigned_parser = unsigned_parser_t{};
-
-	static_assert( unsigned_parser( '1', 0LL, "12345" ).first == 12345 );
+	static_assert( unsigned_parser::parse( '1', "12345" ).first == 12345 );
 } // namespace daw::json::impl::unsignedint
