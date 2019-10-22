@@ -33,365 +33,77 @@
 #include <daw/daw_function_table.h>
 
 namespace daw::json::impl::signedint {
-	using parser_func_t = std::add_pointer_t<std::pair<intmax_t, char const *>(
+	using pf_t = std::add_pointer_t<std::pair<intmax_t, char const *>(
 	  intmax_t, char const * )>;
+
+	using ftable_t = daw::function_table_t<
+	  std::pair<intmax_t, char const *>, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+	  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t>;
+
+	extern ftable_t ftable;
 
 	constexpr std::pair<intmax_t, char const *> ret( intmax_t n, char const *c ) {
 		return {n, c};
 	}
 
-	inline constexpr daw::function_table_t<
-	  std::pair<intmax_t, char const *>, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t, parser_func_t, parser_func_t,
-	  parser_func_t, parser_func_t, parser_func_t>
-	  ftable{ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         []( intmax_t n, char const *c ) {
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         ret,
-	         []( intmax_t n, char const *c ) {
-		         ++c;
-		         return ftable( *c, -n, c );
-	         },
-	         ret,
-	         ret,
-	         []( intmax_t n, char const *c ) {
-		         n = n * 10U + 0;
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         []( intmax_t n, char const *c ) {
-		         n = n * 10U + 1;
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         []( intmax_t n, char const *c ) {
-		         n = n * 10U + 2;
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         []( intmax_t n, char const *c ) {
-		         n = n * 10U + 3;
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         []( intmax_t n, char const *c ) {
-		         n = n * 10U + 4;
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         []( intmax_t n, char const *c ) {
-		         n = n * 10U + 5;
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         []( intmax_t n, char const *c ) {
-		         n = n * 10U + 6;
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         []( intmax_t n, char const *c ) {
-		         n = n * 10U + 7;
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         []( intmax_t n, char const *c ) {
-		         n = n * 10U + 8;
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         []( intmax_t n, char const *c ) {
-		         n = n * 10U + 9;
-		         ++c;
-		         return ftable( *c, n, c );
-	         },
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret,
-	         ret};
-} // namespace daw::json::impl::unsignedint
+	constexpr std::pair<intmax_t, char const *> dig( intmax_t n, char const *c ) {
+		n = n * 10 + static_cast<intmax_t>( *c );
+		++c;
+		return ftable( static_cast<size_t>( *c ), n, c );
+	}
+
+	constexpr std::pair<intmax_t, char const *> neg( intmax_t n, char const *c ) {
+		++c;
+		// TODO: Fix this risk
+		n = -static_cast<intmax_t>( *c );
+		++c;
+		return ftable( static_cast<size_t>( *c ), n, c );
+	}
+
+	constexpr std::pair<intmax_t, char const *> pos( intmax_t n, char const *c ) {
+		return ftable( static_cast<size_t>( *c ), n, c );
+	}
+
+	ftable_t ftable = decltype( ftable ){
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, pos, ret,
+	  neg, ret, ret, dig, dig, dig, dig, dig, dig, dig, dig, dig, dig, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+	  ret};
+
+	static_assert( ftable.size( ) == 256 );
+
+} // namespace daw::json::impl::signedint

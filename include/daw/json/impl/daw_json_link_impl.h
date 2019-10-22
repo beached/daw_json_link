@@ -466,10 +466,10 @@ namespace daw::json::impl {
 	parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 
-		auto p = rng.begin( );
-		auto [v, new_p] = daw::json::impl::unsignedint::ftable(
-		  static_cast<size_t>( *p ), 0ULL, p );
-		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - p );
+		using namespace daw::json::impl::unsignedint;
+		auto [v, new_p] =
+		  ftable( static_cast<size_t>( rng.begin( ) ), 0ULL, rng.front( ) );
+		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.begin( ) );
 		rng.first = new_p;
 
 		struct result_t {
@@ -490,23 +490,24 @@ namespace daw::json::impl {
 	parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 
+		/*
 		auto [result, ptr] = daw::json::impl::unsignedint::ftable(
 		  static_cast<size_t>( rng.front( ) ), 0ULL, rng.begin( ) );
 		rng.first = ptr;
+		*/
 
-		/*
 		uintmax_t result = 0;
 		using uint_t = unsigned;
 		auto p = rng.begin( );
 		uintmax_t dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
 		while( dig < 10U ) {
-		  result *= 10U;
-		  result += dig;
-		  ++p;
-		  dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
+			result *= 10U;
+			result += dig;
+			++p;
+			dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
 		}
 		rng.first = p;
-		*/
+
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
 		} else {
@@ -535,23 +536,37 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr Result
 	parse_integer( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "+-0123456789" ) );
-		int sign = 1;
+
+		//	int sign = 1;
 		// This gets rid of warnings when parse_integer is called on unsigned
 		// types
+		/*
 		if constexpr( std::is_signed_v<Result> ) {
-			if( rng.in( '-' ) ) {
-				sign = -1;
-				rng.remove_prefix( );
-			} else if( rng.in( '+' ) ) {
-				rng.remove_prefix( );
-			}
+		  if( rng.in( '-' ) ) {
+		    sign = -1;
+		    rng.remove_prefix( );
+		  } else if( rng.in( '+' ) ) {
+		    rng.remove_prefix( );
+		  }
 		}
+		 */
 		// Assumes there are digits
+		/*
 		if constexpr( RangeCheck ) {
-			return daw::narrow_cast<Result>(
-			  sign * parse_unsigned_integer<intmax_t, false>( rng ) );
+		  return daw::narrow_cast<Result>(
+		    sign * parse_unsigned_integer<intmax_t, false>( rng ) );
 		} else {
-			return sign * parse_unsigned_integer<Result, RangeCheck>( rng );
+		  return sign * parse_unsigned_integer<Result, RangeCheck>( rng );
+		}*/
+
+		using namespace daw::json::impl::signedint;
+		auto [result, ptr] =
+		  ftable( static_cast<size_t>( rng.front( ) ), 0LL, rng.begin( ) );
+		rng.first = ptr;
+		if constexpr( RangeCheck ) {
+			return daw::narrow_cast<Result>( result );
+		} else {
+			return static_cast<Result>( result );
 		}
 	}
 
@@ -934,7 +949,6 @@ namespace daw::json::impl {
 		json_assert( rng.front( '"' ),
 		             "Custom types requite a string at the beginning" );
 		auto str = skip_string( rng );
-		json_assert( str.front( '"' ), "Custom types requite a string at the end" );
 		// TODO make custom require a ptr/sz pair
 		using constructor_t = typename JsonMember::from_converter_t;
 		return constructor_t{}( std::string_view( str.begin( ), str.size( ) ) );
