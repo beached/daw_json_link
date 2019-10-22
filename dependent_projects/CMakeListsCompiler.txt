@@ -10,6 +10,8 @@ else( )
 		add_compile_options( -march=native -ffast-math -ftemplate-backtrace-limit=0 -Wall	-Wextra -pedantic -Weverything -Wno-c++98-compat -Wno-covered-switch-default -Wnull-dereference -Wno-padded -Wno-exit-time-destructors -Wno-c++98-compat-pedantic -Wno-unused-parameter -Wno-missing-noreturn -Wno-missing-prototypes -Wno-disabled-macro-expansion -Wno-missing-braces)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG" )
+
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=undefined")
 	elseif( ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
 		message( "Gcc detected" )
 		add_compile_options( -march=native -Wall -ffast-math -Wextra -pedantic -Wno-deprecated-declarations -Wduplicated-cond -Wlogical-op -Wnull-dereference -Wold-style-cast -Wshadow)

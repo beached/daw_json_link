@@ -99,6 +99,8 @@ set( HEADER_FILES
 	${HEADER_FOLDER}/daw/json/daw_json_iterator.h
 	${HEADER_FOLDER}/daw/json/impl/daw_json_link_impl.h
 	${HEADER_FOLDER}/daw/json/impl/daw_iterator_range.h
+	${HEADER_FOLDER}/daw/json/impl/daw_signed_int.h
+	${HEADER_FOLDER}/daw/json/impl/daw_unsigned_int.h
 )
 
 add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )

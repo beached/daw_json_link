@@ -49,6 +49,8 @@
 
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
+#include "daw_signed_int.h"
+#include "daw_unsigned_int.h"
 
 namespace daw::json {
 	namespace to_strings {
@@ -463,19 +465,13 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr auto
 	parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
-		uintmax_t v = 0;
 
-		using uint_t = unsigned;
 		auto p = rng.begin( );
-		uint_t dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
-		while( dig < 10U ) {
-			++p;
-			v *= 10U;
-			v += dig;
-			dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
-		}
-		auto const c = static_cast<uint_fast8_t>( p - rng.begin( ) );
-		rng.first = p;
+		auto [v, new_p] = daw::json::impl::unsignedint::ftable(
+		  static_cast<size_t>( *p ), 0ULL, p );
+		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - p );
+		rng.first = new_p;
+
 		struct result_t {
 			Result value;
 			uint_fast8_t count;
@@ -492,19 +488,25 @@ namespace daw::json::impl {
 	         typename Last>
 	[[nodiscard]] static constexpr Result
 	parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
-		json_assert( rng.front( "0123456789" ) );
+		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
+
+		auto [result, ptr] = daw::json::impl::unsignedint::ftable(
+		  static_cast<size_t>( rng.front( ) ), 0ULL, rng.begin( ) );
+		rng.first = ptr;
+
+		/*
 		uintmax_t result = 0;
 		using uint_t = unsigned;
 		auto p = rng.begin( );
 		uintmax_t dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
 		while( dig < 10U ) {
-			result *= 10U;
-			result += dig;
-			++p;
-			dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
+		  result *= 10U;
+		  result += dig;
+		  ++p;
+		  dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
 		}
 		rng.first = p;
-
+		*/
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
 		} else {
