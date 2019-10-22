@@ -32,13 +32,13 @@
 
 #include <daw/daw_function_table.h>
 
-namespace daw::json::impl::signedint {
-	class signed_parser_t {
-		using pf_t = std::add_pointer_t<std::pair<intmax_t, char const *>(
-		  intmax_t, char const *, signed_parser_t const &, bool )>;
+namespace daw::json::impl::quote {
+	class quote_parser_t {
+		using pf_t =
+		  std::add_pointer_t<char const *( char const *, quote_parser_t const & )>;
 
 		using ftable_t = daw::function_table_t<
-		  std::pair<intmax_t, char const *>, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
+		  char const *, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
@@ -59,65 +59,55 @@ namespace daw::json::impl::signedint {
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
 		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t>;
+		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t>;
 
-		static constexpr std::pair<intmax_t, char const *>
-		ret( intmax_t n, char const *c, signed_parser_t const &, bool sign ) {
-			return {sign ? n : -n, c};
+		static constexpr char const *ret( char const *c, quote_parser_t const & ) {
+			return c;
 		}
 
-		static constexpr std::pair<intmax_t, char const *>
-		dig( intmax_t n, char const *c, signed_parser_t const &p, bool sign ) {
-			n *= 10;
-			n += static_cast<intmax_t>( *c - '0' );
+		static constexpr char const *escape( char const *c,
+		                                     quote_parser_t const &p ) {
 			++c;
-			return p.ftable( static_cast<size_t>( *c ), n, c, p, sign );
+			++c; // TODO: potentially unsafe
+			return p.ftable( static_cast<size_t>( *c ), c, p );
 		}
 
-		static constexpr std::pair<intmax_t, char const *>
-		neg( intmax_t, char const *c, signed_parser_t const &p, bool ) {
+		static constexpr char const *chr( char const *c, quote_parser_t const &p ) {
 			++c;
-			return p.ftable( static_cast<size_t>( *c ), 0LL, c, p, false );
-		}
-
-		static constexpr std::pair<intmax_t, char const *>
-		pos( intmax_t, char const *c, signed_parser_t const &p, bool ) {
-			return p.ftable( static_cast<size_t>( *c ), 0LL, c, p, true );
+			return p.ftable( static_cast<size_t>( *c ), c, p );
 		}
 
 		ftable_t ftable{
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, pos, ret,
-		  neg, ret, ret, dig, dig, dig, dig, dig, dig, dig, dig, dig, dig, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
-		  ret};
+		  ret, ret, ret, ret, ret, ret, ret, ret, ret,    ret, ret, ret, ret, ret,
+		  ret, ret, ret, ret, ret, ret, ret, ret, ret,    ret, ret, ret, ret, ret,
+		  ret, ret, ret, ret, chr, chr, ret, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, escape, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr};
 
 		static_assert( ftable_t::size( ) == 256 );
 		static_assert( ftable_t::using_array_v );
 
 	public:
-		constexpr signed_parser_t( ) = default;
+		constexpr quote_parser_t( ) = default;
 
-		constexpr auto operator( )( size_t index, intmax_t val,
-		                            char const *ptr ) const {
-			return ftable( index, val, ptr, *this, true );
+		constexpr char const *operator( )( char const *ptr ) const {
+			return ftable( static_cast<size_t>( *ptr ), ptr, *this );
 		}
 	};
 
-	inline constexpr auto signed_parser = signed_parser_t( );
-
-	static_assert( signed_parser( '-', 0LL, "-12345" ).first == -12345 );
-} // namespace daw::json::impl::signedint
+	inline constexpr auto quote_parser = quote_parser_t( );
+} // namespace daw::json::impl::quote

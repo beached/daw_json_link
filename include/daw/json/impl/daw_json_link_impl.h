@@ -49,6 +49,7 @@
 
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
+#include "daw_quote_parse.h"
 #include "daw_signed_int.h"
 #include "daw_unsigned_int.h"
 
@@ -467,8 +468,8 @@ namespace daw::json::impl {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
-		auto [v, new_p] =
-		  ftable( static_cast<size_t>( rng.begin( ) ), 0ULL, rng.front( ) );
+		auto [v, new_p] = unsigned_parser( static_cast<size_t>( rng.front( ) ),
+		                                   0ULL, rng.begin( ) );
 		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.begin( ) );
 		rng.first = new_p;
 
@@ -490,23 +491,10 @@ namespace daw::json::impl {
 	parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 
-		/*
-		auto [result, ptr] = daw::json::impl::unsignedint::ftable(
-		  static_cast<size_t>( rng.front( ) ), 0ULL, rng.begin( ) );
+		using namespace daw::json::impl::unsignedint;
+		auto [result, ptr] = unsigned_parser( static_cast<size_t>( rng.front( ) ),
+		                                      0ULL, rng.begin( ) );
 		rng.first = ptr;
-		*/
-
-		uintmax_t result = 0;
-		using uint_t = unsigned;
-		auto p = rng.begin( );
-		uintmax_t dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
-		while( dig < 10U ) {
-			result *= 10U;
-			result += dig;
-			++p;
-			dig = static_cast<uint_t>( *p ) - static_cast<uint_t>( '0' );
-		}
-		rng.first = p;
 
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
@@ -561,7 +549,7 @@ namespace daw::json::impl {
 
 		using namespace daw::json::impl::signedint;
 		auto [result, ptr] =
-		  ftable( static_cast<size_t>( rng.front( ) ), 0LL, rng.begin( ) );
+		  signed_parser( static_cast<size_t>( rng.front( ) ), 0LL, rng.begin( ) );
 		rng.first = ptr;
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
@@ -711,14 +699,17 @@ namespace daw::json::impl {
 			rng.remove_prefix( );
 		}
 		auto result = rng;
-		if( rng.in( '"' ) ) {
-			// DAW
-			// result.last = result.first;
-			result.last = rng.first;
-			rng.remove_prefix( );
-			return result;
-		}
-		rng.first = find_quote( rng.begin( ) );
+		rng.first = daw::json::impl::quote::quote_parser( rng.begin( ) );
+		/*
+		  if( rng.in( '"' ) ) {
+		    // DAW
+		    // result.last = result.first;
+		    result.last = rng.first;
+		    rng.remove_prefix( );
+		    return result;
+		  }
+		  rng.first = find_quote( rng.begin( ) );
+		 */
 		json_assert( rng.front( ) == '"',
 		             "Expected trailing \" at the end of string" );
 		result.last = rng.first;
