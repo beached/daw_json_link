@@ -23,17 +23,17 @@
 #pragma once
 
 #include <cstddef>
-#include <cstdint>
 #include <utility>
 
 namespace daw::json::impl::unsignedint {
+	template<typename Unsigned>
 	struct unsigned_parser {
-		[[nodiscard]] static constexpr std::pair<uintmax_t, char const *>
+		[[nodiscard]] static constexpr std::pair<Unsigned, char const *>
 		parse( char const *ptr ) {
-			uintmax_t n = 0;
+			Unsigned n = 0;
 			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			while( dig < 10U ) {
-				n *= 10U;
+				n *= static_cast<Unsigned>( 10 );
 				n += dig;
 				++ptr;
 				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
@@ -42,5 +42,5 @@ namespace daw::json::impl::unsignedint {
 		}
 	};
 
-	static_assert( unsigned_parser::parse( "12345" ).first == 12345 );
+	static_assert( unsigned_parser<unsigned>::parse( "12345" ).first == 12345 );
 } // namespace daw::json::impl::unsignedint

@@ -468,7 +468,8 @@ namespace daw::json::impl {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
-		auto [v, new_p] = unsigned_parser::parse( rng.first );
+		using iresult_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
+		auto [v, new_p] = unsigned_parser<iresult_t>::parse( rng.first );
 		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.first );
 		rng.first = new_p;
 
@@ -480,7 +481,7 @@ namespace daw::json::impl {
 		if constexpr( RangeCheck ) {
 			return result_t{daw::narrow_cast<Result>( v ), c};
 		} else {
-			return result_t{static_cast<Result>( v ), c};
+			return result_t{v, c};
 		}
 	}
 
@@ -491,13 +492,14 @@ namespace daw::json::impl {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
-		auto [result, ptr] = unsigned_parser::parse( rng.first );
+		using result_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
+		auto [result, ptr] = unsigned_parser<result_t>::parse( rng.first );
 		rng.first = ptr;
 
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
 		} else {
-			return static_cast<Result>( result );
+			return result;
 		}
 	}
 
@@ -523,13 +525,14 @@ namespace daw::json::impl {
 	parse_integer( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "+-0123456789" ) );
 
+		using result_t = std::conditional_t<RangeCheck, intmax_t, Result>;
 		using namespace daw::json::impl::signedint;
-		auto [result, ptr] = signed_parser::parse( rng.first );
+		auto [result, ptr] = signed_parser<result_t>::parse( rng.first );
 		rng.first = ptr;
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
 		} else {
-			return static_cast<Result>( result );
+			return result;
 		}
 	}
 

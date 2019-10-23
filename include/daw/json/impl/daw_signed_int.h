@@ -23,15 +23,15 @@
 #pragma once
 
 #include <cstddef>
-#include <cstdint>
 #include <utility>
 
 namespace daw::json::impl::signedint {
+	template<typename Signed>
 	struct signed_parser {
 		static constexpr auto minus =
 		  static_cast<unsigned>( '-' ) - static_cast<unsigned>( '0' );
 
-		[[nodiscard]] static constexpr std::pair<intmax_t, char const *>
+		[[nodiscard]] static constexpr std::pair<Signed, char const *>
 		parse( char const *ptr ) {
 			bool sign = true;
 
@@ -43,9 +43,9 @@ namespace daw::json::impl::signedint {
 				++ptr;
 				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			}
-			intmax_t n = 0;
+			Signed n = 0;
 			while( dig < 10 ) {
-				n = n * 10 + dig;
+				n = n * 10 + static_cast<Signed>( dig );
 				++ptr;
 				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			}
@@ -53,5 +53,5 @@ namespace daw::json::impl::signedint {
 		}
 	};
 
-	static_assert( signed_parser::parse( "-12345" ).first == -12345 );
+	static_assert( signed_parser<int>::parse( "-12345" ).first == -12345 );
 } // namespace daw::json::impl::signedint
