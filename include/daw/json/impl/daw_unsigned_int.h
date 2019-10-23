@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace daw::json::impl::unsignedint {
 	struct unsigned_parser {
 		[[nodiscard]] static constexpr std::pair<uintmax_t, char const *>

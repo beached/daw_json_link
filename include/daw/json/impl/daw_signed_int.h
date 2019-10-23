@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace daw::json::impl::signedint {
 	struct signed_parser {
 		static constexpr auto minus =
