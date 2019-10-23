@@ -30,36 +30,11 @@
 #include <utility>
 #include <variant>
 
-#include <daw/daw_function_table.h>
+#include <daw/daw_bit.h>
 
 namespace daw::json::impl::quote {
 	class quote_parser {
-		using pf_t =
-		  std::add_pointer_t<char const *( char const * )>;
-
-		using ftable_t = daw::function_table_t<
-		  char const *, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t, pf_t,
-		  pf_t, pf_t, pf_t, pf_t, pf_t, pf_t>;
+		using pf_t = std::add_pointer_t<char const *( char const * )>;
 
 		static constexpr char const *ret( char const *c ) {
 			return c;
@@ -68,47 +43,39 @@ namespace daw::json::impl::quote {
 		static constexpr char const *escape( char const *c ) {
 			++c;
 			++c; // TODO: potentially unsafe
-			return quote_parser::ftable( static_cast<size_t>( *c ), c );
+			return quote_parser::ftable[static_cast<size_t>( *c )]( c );
 		}
 
 		static constexpr char const *chr( char const *c ) {
 			++c;
-			return quote_parser::ftable( static_cast<size_t>( *c ), c );
+			return quote_parser::ftable[static_cast<size_t>( *c )]( c );
 		}
 
-		static constexpr ftable_t ftable{/*
-		    0,   2,   3,   4,	  5,   6,   7,   8,   9 */
-		  ret, ret, ret, 		ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, 		ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, 		ret, ret, ret, ret, ret, ret,
-		  ret, ret, ret, 		ret, ret, chr, ret, chr, chr,
-		  chr, chr, chr,	 	chr, chr, chr, chr, chr, chr,
-		  chr, chr, chr, 		chr, chr, chr, chr, chr, chr,
-		  chr, chr, chr, 		chr, chr, chr, chr, chr, chr,
-		  chr, chr, chr,	 	chr, chr, chr, chr, chr, chr,
-		  chr, chr, chr,    chr, chr, chr, chr, chr, chr,
-		  chr, chr, chr,    chr, chr, chr, chr, chr, chr,
-		  chr, chr, escape, chr, chr, chr, chr, chr, chr,
-		  chr, chr, chr, 	  chr, chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr, chr, chr, chr, chr, chr,    chr, chr, chr, chr, chr,
-		  chr, chr, chr, chr};
+		static constexpr auto ftable = daw::make_array<pf_t>(
+		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+		  ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret, ret,
+		  ret, ret, chr, ret, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, escape, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr, chr,
+		  chr, chr );
 
-		static_assert( ftable_t::size( ) == 256 );
-		static_assert( ftable_t::using_array_v );
+		static_assert( ftable.size( ) == 256 );
 
 	public:
-		static constexpr char const *parse( char const *ptr ) {
-			return ftable( static_cast<size_t>( *ptr ), ptr );
+		[[nodiscard]] static constexpr char const *parse( char const *ptr ) {
+			return ftable[static_cast<size_t>( *ptr )]( ptr );
 		}
 	};
 } // namespace daw::json::impl::quote

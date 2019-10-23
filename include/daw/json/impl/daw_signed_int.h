@@ -63,6 +63,7 @@ namespace daw::json::impl::signedint {
 
 		static constexpr std::pair<intmax_t, char const *> pos( char const *c,
 		                                                        bool ) {
+			++c;
 			return dig( c, true );
 		}
 
@@ -73,7 +74,7 @@ namespace daw::json::impl::signedint {
 		static_assert( ftable.size( ) == 16 );
 
 	public:
-		static constexpr auto parse( size_t index, char const *ptr ) {
+		[[nodiscard]] static constexpr auto parse( size_t index, char const *ptr ) {
 			return ftable[( static_cast<unsigned>( index ) -
 			                static_cast<unsigned>( '+' ) ) &
 			              0b1111U]( ptr, true );

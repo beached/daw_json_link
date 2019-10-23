@@ -30,35 +30,53 @@
 #include <utility>
 #include <variant>
 
-namespace daw::json::impl::unsignedint {
-	class unsigned_parser {
-		using pf_t =
-		  std::add_pointer_t<std::pair<uintmax_t, char const *>( char const * )>;
+#include "daw_json_assert.h"
 
-		static constexpr std::pair<uintmax_t, char const *> ret( char const * ) {
-			json_assert( false, "Invalid number data" );
-			return {0, nullptr};
-		}
-
-		static constexpr std::pair<uintmax_t, char const *> dig( char const *c ) {
-			auto dig = static_cast<uint_least32_t>( *c - '0' );
-			uintmax_t n = 0;
-			while( dig < 10 ) {
-				n = n * 10 + dig;
-				++c;
-				dig = static_cast<uint_least32_t>( *c - '0' );
-			}
-			return {n, c};
-		}
-
-		static constexpr auto ftable = daw::make_array<pf_t>( dig, ret );
-
-	public:
-		[[nodiscard]] static constexpr auto parse( size_t index, char const *ptr ) {
-			size_t const pos = ( index - static_cast<size_t>( '0' ) ) < 10U ? 0 : 1;
-			return ftable[pos]( ptr );
-		}
+namespace daw::json::impl::name {
+	struct name_parser_result {
+		char const *end_of_name;
+		char const *end_of_whitespace;
 	};
 
-	static_assert( unsigned_parser::parse( '1', "12345" ).first == 12345 );
-} // namespace daw::json::impl::unsignedint
+	struct name_parser {
+		/*
+		 * end of string " -> name value separating : -> any white space
+		 * the string can be escaped too
+		 */
+
+		[[nodiscard]] static constexpr name_parser_result parse_nq( char const *ptr ) noexcept {
+			while( *ptr != '"' ) {
+				while( *ptr != '"' and *ptr != '\\' ) {
+					++ptr;
+				}
+				if( *ptr == '\\' ) {
+					++ptr;
+					++ptr;
+				}
+			}
+			json_assert( *ptr == '"', "Expected a '\"'" );
+			auto result = name_parser_result{ptr, nullptr};
+			++ptr;
+			// Assume no eos, replace with jump table
+			while( *ptr <= 0x20 ) {
+				json_assert( *ptr != '\0', "Unexpected end of stream" );
+				++ptr;
+			}
+			json_assert( *ptr == ':', "Expected a ':'" );
+			++ptr;
+			while( *ptr <= 0x20 ) {
+				json_assert( *ptr != '\0', "Unexpected end of stream" );
+				++ptr;
+			}
+			result.end_of_whitespace = ptr;
+			return result;
+		}
+
+		[[nodiscard]] static constexpr name_parser_result parse( char const *ptr ) noexcept {
+			if( *ptr == '"' ) {
+				++ptr;
+			}
+			return parse_nq( ptr );
+		}
+	};
+} // namespace daw::json::impl::name

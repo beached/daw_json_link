@@ -92,7 +92,8 @@ int main( ) {
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<100>(
-		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
+		  "int parsing 1", json_sv.size( ),
+		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<json_class<no_name, Number>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
@@ -106,16 +107,16 @@ int main( ) {
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
 
-		auto const count2 =
-		  *daw::bench_n_test_mbs<100>( "int parsing 2", json_sv.size( ),
-		                              [&]( auto &&sv ) noexcept {
-			                              data.clear( );
-			                              std::copy( iterator_t( sv ), iterator_t( ),
-			                                         std::back_inserter( data ) );
-			                              daw::do_not_optimize( data );
-			                              return data.size( );
-		                              },
-		                              json_sv );
+		auto const count2 = *daw::bench_n_test_mbs<100>(
+		  "int parsing 2", json_sv.size( ),
+		  [&]( auto &&sv ) noexcept {
+			  data.clear( );
+			  std::copy( iterator_t( sv ), iterator_t( ),
+			             std::back_inserter( data ) );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
 
 		std::cout << "element count 2: " << count2 << '\n';
 	}
@@ -124,7 +125,8 @@ int main( ) {
 		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<100>(
-		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
+		  "int parsing 1", json_sv.size( ),
+		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<json_number<no_name, intmax_t>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
@@ -138,16 +140,16 @@ int main( ) {
 		auto data = std::vector<intmax_t>( );
 		data.reserve( NUMVALUES );
 
-		auto const count2 =
-		  *daw::bench_n_test_mbs<100>( "p2. int parsing 2", json_sv.size( ),
-		                              [&]( auto &&sv ) noexcept {
-			                              data.clear( );
-			                              std::copy( iterator_t( sv ), iterator_t( ),
-			                                         std::back_inserter( data ) );
-			                              daw::do_not_optimize( data );
-			                              return data.size( );
-		                              },
-		                              json_sv );
+		auto const count2 = *daw::bench_n_test_mbs<100>(
+		  "p2. int parsing 2", json_sv.size( ),
+		  [&]( auto &&sv ) noexcept {
+			  data.clear( );
+			  std::copy( iterator_t( sv ), iterator_t( ),
+			             std::back_inserter( data ) );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
 
 		std::cout << "element count 2: " << count2 << '\n';
 	}
@@ -158,7 +160,8 @@ int main( ) {
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<100>(
-		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
+		  "int parsing 1", json_sv.size( ),
+		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<json_class<no_name, Number>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
@@ -172,16 +175,16 @@ int main( ) {
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
 
-		auto const count2 =
-		  *daw::bench_n_test_mbs<100>( "int parsing 2", json_sv.size( ),
-		                              [&]( auto &&sv ) noexcept {
-			                              data.clear( );
-			                              std::copy( iterator_t( sv ), iterator_t( ),
-			                                         std::back_inserter( data ) );
-			                              daw::do_not_optimize( data );
-			                              return data.size( );
-		                              },
-		                              json_sv );
+		auto const count2 = *daw::bench_n_test_mbs<100>(
+		  "int parsing 2", json_sv.size( ),
+		  [&]( auto &&sv ) noexcept {
+			  data.clear( );
+			  std::copy( iterator_t( sv ), iterator_t( ),
+			             std::back_inserter( data ) );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
 
 		std::cout << "element count 2: " << count2 << '\n';
 	}
@@ -190,7 +193,8 @@ int main( ) {
 		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<100>(
-		  "int parsing 1", json_sv.size( ), []( auto &&sv ) noexcept {
+		  "int parsing 1", json_sv.size( ),
+		  []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<json_checked_number<no_name, intmax_t>>( sv );
 			  daw::do_not_optimize( data );
@@ -205,31 +209,68 @@ int main( ) {
 		auto data = std::vector<intmax_t>( );
 		data.reserve( NUMVALUES );
 
-		auto const count2 =
-		  *daw::bench_n_test_mbs<100>( "p2. int parsing 2", json_sv.size( ),
-		                              [&]( auto &&sv ) noexcept {
-			                              data.clear( );
-			                              std::copy( iterator_t( sv ), iterator_t( ),
-			                                         std::back_inserter( data ) );
-			                              daw::do_not_optimize( data );
-			                              return data.size( );
-		                              },
-		                              json_sv );
+		auto const count2 = *daw::bench_n_test_mbs<100>(
+		  "p2. int parsing 2", json_sv.size( ),
+		  [&]( auto &&sv ) noexcept {
+			  data.clear( );
+			  std::copy( iterator_t( sv ), iterator_t( ),
+			             std::back_inserter( data ) );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
 
 		std::cout << "element count 2: " << count2 << '\n';
 
 		auto data2 = new intmax_t[NUMVALUES];
 		try {
-		auto const count3 =
-		  *daw::bench_n_test_mbs<100>( "p3. int parsing 3", json_sv.size( ),
-		                              [&]( auto &&sv ) noexcept {
-			                              auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2 );
-			                              daw::do_not_optimize( data2 );
-			                              return ptr - data2;
-		                              },
-		                              json_sv );
+			auto const count3 = *daw::bench_n_test_mbs<100>(
+			  "p3. int parsing 3", json_sv.size( ),
+			  [&]( auto &&sv ) noexcept {
+				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2 );
+				  daw::do_not_optimize( data2 );
+				  return ptr - data2;
+			  },
+			  json_sv );
 
-		std::cout << "element count 3: " << count3 << '\n';
+			std::cout << "element count 3: " << count3 << '\n';
+		} catch( ... ) {
+			delete[] data2;
+			throw;
+		}
+	}
+
+	{
+		// Unsigned
+		using iterator_t =
+		  daw::json::json_array_iterator<json_checked_number<no_name, uintmax_t>>;
+
+		std::string json_data3 = [] {
+			std::string result = "[";
+			result.reserve( NUMVALUES * 23 + 8 );
+			daw::algorithm::do_n( NUMVALUES, [&result] {
+				result += std::to_string( daw::randint<uintmax_t>(
+				            std::numeric_limits<uintmax_t>::min( ),
+				            std::numeric_limits<uintmax_t>::max( ) ) ) +
+				          ',';
+			} );
+			result.back( ) = ']';
+			return result;
+		}( );
+
+		daw::string_view json_sv{json_data3.data( ), json_data3.size( )};
+		auto data2 = new intmax_t[NUMVALUES];
+		try {
+			auto const count3 = *daw::bench_n_test_mbs<100>(
+			  "p4. parsing", json_sv.size( ),
+			  [&]( auto &&sv ) noexcept {
+				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2 );
+				  daw::do_not_optimize( data2 );
+				  return ptr - data2;
+			  },
+			  json_sv );
+
+			std::cout << "unsigned parse count: " << count3 << '\n';
 		} catch( ... ) {
 			delete[] data2;
 			throw;

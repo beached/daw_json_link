@@ -40,13 +40,12 @@ static_assert(
 static_assert( daw::json::impl::parse_integer<uintmax_t>( "12345" ) == 12345 );
 static_assert( daw::json::impl::parse_integer<intmax_t>( "-12345" ) == -12345 );
 
-/*
 static_assert( daw::json::impl::parse_real<double>( "5" ) == 5.0 );
 static_assert( daw::json::impl::parse_real<double>( "5.5" ) == 5.5 );
 static_assert( daw::json::impl::parse_real<double>( "5.5e2" ) == 550.0 );
 static_assert( daw::json::impl::parse_real<double>( "5.5e+2" ) == 550.0 );
 static_assert( daw::json::impl::parse_real<double>( "5e2" ) == 500.0 );
-*/
+
 struct test_001_t {
 	int i = 0;
 	double d = 0.0;
@@ -289,13 +288,13 @@ constexpr char const json_data_array[] =
 int main( ) {
 	using namespace daw::json;
 
+	daw::expecting( 550.0, daw::json::impl::parse_real<double>( "5.5e+2" ) );
 #ifndef _MSC_VER
-#define CX
+#define CX constexpr
 #else
 #define CX constexpr
 #endif
 	CX auto data = daw::json::from_json<test_001_t>( json_data );
-
 
 	std::clog << to_json( data ) << '\n';
 

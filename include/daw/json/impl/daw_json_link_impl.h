@@ -49,7 +49,7 @@
 
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
-#include "daw_quote_parse.h"
+#include "daw_name_parse.h"
 #include "daw_signed_int.h"
 #include "daw_unsigned_int.h"
 
@@ -523,28 +523,6 @@ namespace daw::json::impl {
 	parse_integer( IteratorRange<First, Last> &rng ) noexcept {
 		json_assert( rng.front( "+-0123456789" ) );
 
-		//	int sign = 1;
-		// This gets rid of warnings when parse_integer is called on unsigned
-		// types
-		/*
-		if constexpr( std::is_signed_v<Result> ) {
-		  if( rng.in( '-' ) ) {
-		    sign = -1;
-		    rng.remove_prefix( );
-		  } else if( rng.in( '+' ) ) {
-		    rng.remove_prefix( );
-		  }
-		}
-		 */
-		// Assumes there are digits
-		/*
-		if constexpr( RangeCheck ) {
-		  return daw::narrow_cast<Result>(
-		    sign * parse_unsigned_integer<intmax_t, false>( rng ) );
-		} else {
-		  return sign * parse_unsigned_integer<Result, RangeCheck>( rng );
-		}*/
-
 		using namespace daw::json::impl::signedint;
 		auto [result, ptr] =
 		  signed_parser::parse( static_cast<size_t>( rng.front( ) ), rng.begin( ) );
@@ -656,12 +634,12 @@ namespace daw::json::impl {
 	template<typename First, typename Last>
 	[[nodiscard]] static constexpr daw::string_view
 	parse_name( IteratorRange<First, Last> &rng ) {
-		auto tmp = skip_string( rng );
-		auto name = daw::string_view( tmp.begin( ), tmp.size( ) );
-
-		// All names are followed by a semi-colon
-		(void)rng.munch( ':' );
-		rng.trim_left_no_check( );
+		if( *rng.first == '"' ) {
+			++rng.first;
+		}
+		auto nr = daw::json::impl::name::name_parser::parse_nq( rng.first );
+		auto name = daw::string_view( rng.first, nr.end_of_name );
+		rng.first = nr.end_of_whitespace;
 
 		json_assert( not name.empty( ) and not rng.empty( ),
 		             "Expected a non empty name and data after name" );
@@ -1297,9 +1275,8 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr auto
 	find_range( String &&str, daw::string_view start_path ) {
 
-		using std::data;
-		using std::size;
-		auto rng = IteratorRange( data( str ), data( str ) + size( str ) );
+		auto rng =
+		  IteratorRange( std::data( str ), std::data( str ) + std::size( str ) );
 		if( not start_path.empty( ) ) {
 			find_range2( rng, start_path );
 		}
