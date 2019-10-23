@@ -22,31 +22,27 @@
 
 #pragma once
 
-namespace daw::json::impl::signedint {
-	struct signed_parser {
-		[[nodiscard]] static constexpr std::pair<intmax_t, char const *>
-		parse( size_t index, char const *ptr ) {
-			bool const sign = [&] {
-				switch( *ptr ) {
-				case '-':
-					++ptr;
-					return false;
-				case '+':
-					++ptr;
-					return true;
-				}
-				return true;
-			}( );
-			intmax_t n = 0;
-			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
-			while( dig < 10 ) {
-				n = n * 10 + dig;
+#include <daw/daw_algorithm.h>
+
+#include "daw_json_assert.h"
+#include "daw_truth.h"
+
+namespace daw::json::impl::literal_end {
+	class literal_end_parser {
+		static constexpr auto test_arry =
+		  daw::make_truth_table<256, true>( {'\0', ',', ']', '}'} );
+
+		static constexpr bool test( char c ) noexcept {
+			return test_arry[static_cast<size_t>( c )];
+		}
+
+	public:
+		[[nodiscard]] static constexpr char const *
+		parse( char const *ptr ) noexcept {
+			while( test( *ptr ) ) {
 				++ptr;
-				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			}
-			return {sign ? n : -n, ptr};
+			return ptr;
 		}
 	};
-
-	static_assert( signed_parser::parse( '-', "-12345" ).first == -12345 );
-} // namespace daw::json::impl::signedint
+} // namespace daw::json::impl::literal_end

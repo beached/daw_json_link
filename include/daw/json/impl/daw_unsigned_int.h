@@ -22,41 +22,19 @@
 
 #pragma once
 
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <variant>
-
 namespace daw::json::impl::unsignedint {
-	class unsigned_parser {
-		using pf_t =
-		  std::add_pointer_t<std::pair<uintmax_t, char const *>( char const * )>;
-
-		static constexpr std::pair<uintmax_t, char const *> ret( char const * ) {
-			json_assert( false, "Invalid number data" );
-			return {0, nullptr};
-		}
-
-		static constexpr std::pair<uintmax_t, char const *> dig( char const *c ) {
-			auto dig = static_cast<uint_least32_t>( *c - '0' );
+	struct unsigned_parser {
+		[[nodiscard]] static constexpr std::pair<uintmax_t, char const *>
+		parse( size_t index, char const *ptr ) {
 			uintmax_t n = 0;
-			while( dig < 10 ) {
-				n = n * 10 + dig;
-				++c;
-				dig = static_cast<uint_least32_t>( *c - '0' );
+			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+			while( dig < 10U ) {
+				n *= 10U;
+				n += dig;
+				++ptr;
+				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			}
-			return {n, c};
-		}
-
-		static constexpr auto ftable = daw::make_array<pf_t>( dig, ret );
-
-	public:
-		[[nodiscard]] static constexpr auto parse( size_t index, char const *ptr ) {
-			size_t const pos = ( index - static_cast<size_t>( '0' ) ) < 10U ? 0 : 1;
-			return ftable[pos]( ptr );
+			return {n, ptr};
 		}
 	};
 

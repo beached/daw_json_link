@@ -49,6 +49,7 @@
 
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
+#include "daw_literal_end_parse.h"
 #include "daw_name_parse.h"
 #include "daw_signed_int.h"
 #include "daw_string_quote_parse.h"
@@ -694,7 +695,10 @@ namespace daw::json::impl {
 	template<typename First, typename Last>
 	[[nodiscard]] static constexpr IteratorRange<First, Last>
 	skip_literal( IteratorRange<First, Last> &rng ) {
-		auto result = rng.move_to_first_of( ",}]" );
+		auto result = rng;
+		result.last =
+		  daw::json::impl::literal_end::literal_end_parser::parse( rng.first );
+		rng.first = result.last;
 		json_assert( rng.front( ",}]" ),
 		             "Expected a ',', '}', ']' to trail literal" );
 		return result;

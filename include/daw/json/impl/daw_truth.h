@@ -22,31 +22,21 @@
 
 #pragma once
 
-namespace daw::json::impl::signedint {
-	struct signed_parser {
-		[[nodiscard]] static constexpr std::pair<intmax_t, char const *>
-		parse( size_t index, char const *ptr ) {
-			bool const sign = [&] {
-				switch( *ptr ) {
-				case '-':
-					++ptr;
-					return false;
-				case '+':
-					++ptr;
-					return true;
-				}
-				return true;
-			}( );
-			intmax_t n = 0;
-			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
-			while( dig < 10 ) {
-				n = n * 10 + dig;
-				++ptr;
-				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
-			}
-			return {sign ? n : -n, ptr};
-		}
-	};
+#include <array>
+#include <initializer_list>
 
-	static_assert( signed_parser::parse( '-', "-12345" ).first == -12345 );
-} // namespace daw::json::impl::signedint
+namespace daw {
+	template<size_t Size, bool Default = false>
+	constexpr auto make_truth_table( std::initializer_list<size_t> set_indices ) {
+		auto result = std::array<bool, Size>{};
+		if constexpr( Default ) {
+			for( size_t n = 0; n < Size; ++n ) {
+				result[n] = Default;
+			}
+		}
+		for( auto const &i : set_indices ) {
+			result[i] = not Default;
+		}
+		return result;
+	}
+} // namespace daw
