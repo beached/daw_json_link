@@ -24,11 +24,12 @@
 
 namespace daw::json::impl::signedint {
 	struct signed_parser {
+		static constexpr auto minus =
+		  static_cast<unsigned>( '-' ) - static_cast<unsigned>( '0' );
+
 		[[nodiscard]] static constexpr std::pair<intmax_t, char const *>
 		parse( size_t index, char const *ptr ) {
 			bool sign = true;
-			constexpr auto minus =
-			  static_cast<unsigned>( '-' ) - static_cast<unsigned>( '0' );
 
 			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			if( dig >= 10 ) {
