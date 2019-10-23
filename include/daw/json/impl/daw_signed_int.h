@@ -26,19 +26,19 @@ namespace daw::json::impl::signedint {
 	struct signed_parser {
 		[[nodiscard]] static constexpr std::pair<intmax_t, char const *>
 		parse( size_t index, char const *ptr ) {
-			bool const sign = [&] {
-				switch( *ptr ) {
-				case '-':
-					++ptr;
-					return false;
-				case '+':
-					++ptr;
-					return true;
-				}
-				return true;
-			}( );
-			intmax_t n = 0;
+			bool sign = true;
+			constexpr auto minus =
+			  static_cast<unsigned>( '-' ) - static_cast<unsigned>( '0' );
+
 			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+			if( dig >= 10 ) {
+				if( dig == minus ) {
+					sign = false;
+				}
+				++ptr;
+				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+			}
+			intmax_t n = 0;
 			while( dig < 10 ) {
 				n = n * 10 + dig;
 				++ptr;
