@@ -191,4 +191,7 @@ namespace daw::json::impl {
 			}
 		}
 	};
+
+	template<typename First, typename Last>
+	IteratorRange( First, Last ) -> IteratorRange<First, Last>;
 } // namespace daw::json::impl

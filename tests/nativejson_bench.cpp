@@ -41,9 +41,9 @@ int main( int argc, char **argv ) {
 		exit( 1 );
 	}
 
-	auto const json_data1 = daw::memory_mapped_file( argv[1] );
-	auto const json_data2 = daw::memory_mapped_file( argv[2] );
-	auto const json_data3 = daw::memory_mapped_file( argv[3] );
+	auto const json_data1 = daw::memory_mapped_file<>( argv[1] );
+	auto const json_data2 = daw::memory_mapped_file<>( argv[2] );
+	auto const json_data3 = daw::memory_mapped_file<>( argv[3] );
 	auto json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
 	auto json_sv2 = std::string_view( json_data2.data( ), json_data2.size( ) );
 	auto json_sv3 = std::string_view( json_data3.data( ), json_data3.size( ) );
