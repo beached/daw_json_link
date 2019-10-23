@@ -29,7 +29,7 @@
 namespace daw::json::impl::unsignedint {
 	struct unsigned_parser {
 		[[nodiscard]] static constexpr std::pair<uintmax_t, char const *>
-		parse( size_t index, char const *ptr ) {
+		parse( char const *ptr ) {
 			uintmax_t n = 0;
 			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			while( dig < 10U ) {
@@ -42,5 +42,5 @@ namespace daw::json::impl::unsignedint {
 		}
 	};
 
-	static_assert( unsigned_parser::parse( '1', "12345" ).first == 12345 );
+	static_assert( unsigned_parser::parse( "12345" ).first == 12345 );
 } // namespace daw::json::impl::unsignedint

@@ -468,9 +468,8 @@ namespace daw::json::impl {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
-		auto [v, new_p] = unsigned_parser::parse(
-		  static_cast<size_t>( rng.front( ) ), rng.begin( ) );
-		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.begin( ) );
+		auto [v, new_p] = unsigned_parser::parse( rng.first );
+		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.first );
 		rng.first = new_p;
 
 		struct result_t {
@@ -492,8 +491,7 @@ namespace daw::json::impl {
 		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
-		auto [result, ptr] = unsigned_parser::parse(
-		  static_cast<size_t>( rng.front( ) ), rng.begin( ) );
+		auto [result, ptr] = unsigned_parser::parse( rng.first );
 		rng.first = ptr;
 
 		if constexpr( RangeCheck ) {
@@ -526,8 +524,7 @@ namespace daw::json::impl {
 		json_assert( rng.front( "+-0123456789" ) );
 
 		using namespace daw::json::impl::signedint;
-		auto [result, ptr] =
-		  signed_parser::parse( static_cast<size_t>( rng.front( ) ), rng.begin( ) );
+		auto [result, ptr] = signed_parser::parse( rng.first );
 		rng.first = ptr;
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );

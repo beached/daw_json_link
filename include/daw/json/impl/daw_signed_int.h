@@ -32,7 +32,7 @@ namespace daw::json::impl::signedint {
 		  static_cast<unsigned>( '-' ) - static_cast<unsigned>( '0' );
 
 		[[nodiscard]] static constexpr std::pair<intmax_t, char const *>
-		parse( size_t index, char const *ptr ) {
+		parse( char const *ptr ) {
 			bool sign = true;
 
 			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
@@ -53,5 +53,5 @@ namespace daw::json::impl::signedint {
 		}
 	};
 
-	static_assert( signed_parser::parse( '-', "-12345" ).first == -12345 );
+	static_assert( signed_parser::parse( "-12345" ).first == -12345 );
 } // namespace daw::json::impl::signedint
