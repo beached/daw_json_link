@@ -51,6 +51,7 @@
 #include "daw_json_assert.h"
 #include "daw_name_parse.h"
 #include "daw_signed_int.h"
+#include "daw_string_quote_parse.h"
 #include "daw_unsigned_int.h"
 
 namespace daw::json {
@@ -634,9 +635,9 @@ namespace daw::json::impl {
 	template<typename First, typename Last>
 	[[nodiscard]] static constexpr daw::string_view
 	parse_name( IteratorRange<First, Last> &rng ) {
-		if( *rng.first == '"' ) {
-			++rng.first;
-		}
+		// if( *rng.first == '"' ) {
+		++rng.first;
+		//}
 		auto nr = daw::json::impl::name::name_parser::parse_nq( rng.first );
 		auto name = daw::string_view( rng.first, nr.end_of_name );
 		rng.first = nr.end_of_whitespace;
@@ -668,29 +669,29 @@ namespace daw::json::impl {
 
 	template<typename First, typename Last>
 	[[nodiscard]] static constexpr IteratorRange<First, Last>
-	skip_string( IteratorRange<First, Last> &rng ) {
+	skip_string_nq( IteratorRange<First, Last> &rng ) {
 		// Not always starting with string json_assert( rng.front( '"' ),
 		// "Expected \" at the start of a string" );
-		if( rng.front( '"' ) ) {
-			rng.remove_prefix( );
-		}
 		auto result = rng;
-		// rng.first = daw::json::impl::quote::quote_parser::parse( rng.begin( ) );
-
-		if( rng.in( '"' ) ) {
-			// DAW
-			// result.last = result.first;
-			result.last = rng.first;
-			rng.remove_prefix( );
-			return result;
-		}
-		rng.first = find_quote( rng.begin( ) );
+		rng.first =
+		  daw::json::impl::string_quote::string_quote_parser::parse_nq( rng.first );
 
 		json_assert( rng.front( ) == '"',
 		             "Expected trailing \" at the end of string" );
 		result.last = rng.first;
 		rng.remove_prefix( );
 		return result;
+	}
+
+	template<typename First, typename Last>
+	[[nodiscard]] static constexpr IteratorRange<First, Last>
+	skip_string( IteratorRange<First, Last> &rng ) {
+		// Not always starting with string json_assert( rng.front( '"' ),
+		// "Expected \" at the start of a string" );
+		if( rng.front( '"' ) ) { // TODO
+			rng.remove_prefix( );
+		}
+		return skip_string_nq( rng );
 	}
 
 	template<typename First, typename Last>
@@ -784,7 +785,8 @@ namespace daw::json::impl {
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
 			json_assert( rng.front( '"' ),
 			             "Expected start of value to begin with '\"'" );
-			return impl::skip_string( rng );
+			rng.remove_prefix( );
+			return impl::skip_string_nq( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Number or
 		                     JsonMember::expected_type == JsonParseTypes::Null or
 		                     JsonMember::expected_type == JsonParseTypes::Bool ) {
@@ -915,7 +917,7 @@ namespace daw::json::impl {
 
 		json_assert( rng.front( '"' ),
 		             "Custom types requite a string at the beginning" );
-		auto str = skip_string( rng );
+		auto str = skip_string_nq( rng );
 		// TODO make custom require a ptr/sz pair
 		using constructor_t = typename JsonMember::from_converter_t;
 		return constructor_t{}( std::string_view( str.begin( ), str.size( ) ) );
