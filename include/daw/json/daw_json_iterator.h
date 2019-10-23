@@ -67,7 +67,7 @@ namespace daw::json {
 		constexpr json_array_iterator( ) noexcept = default;
 
 		template<typename String,
-		         daw::enable_when_t<!std::is_same_v<
+		         daw::enable_when_t<not std::is_same_v<
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr json_array_iterator( String &&jd,
 		                               std::string_view start_path = "" )
@@ -75,17 +75,18 @@ namespace daw::json {
 		      impl::find_range( std::forward<String>( jd ),
 		                        {start_path.data( ), start_path.size( )} ) ) {
 
-			static_assert(
+			json_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
 
-			assert( verify_bracket and m_state.front( ) == '[' );
+			json_assert( verify_bracket and m_state.front( ) == '[' );
 
 			m_state.remove_prefix( );
 			m_state.trim_left( );
 		}
 
 		[[nodiscard]] constexpr value_type operator*( ) const noexcept {
-			assert( !m_state.empty( ) and !( verify_bracket and m_state.in( ']' ) ) );
+			json_assert( not m_state.empty( ) and
+			             not( verify_bracket and m_state.in( ']' ) ) );
 
 			auto tmp = m_state;
 			auto result = impl::parse_value<JsonElement>(
@@ -95,7 +96,8 @@ namespace daw::json {
 		}
 
 		constexpr json_array_iterator &operator++( ) noexcept {
-			assert( !m_state.empty( ) and !( verify_bracket and m_state.in( ']' ) ) );
+			json_assert( not m_state.empty( ) and
+			             not( verify_bracket and m_state.in( ']' ) ) );
 			if( m_can_skip >= 0 ) {
 				m_state.first = std::next( m_state.first, m_can_skip );
 				m_can_skip = -1;
@@ -117,17 +119,19 @@ namespace daw::json {
 		}
 
 		explicit constexpr operator bool( ) const noexcept {
-			return !m_state.is_null( ) and
-			       !( verify_bracket and m_state.front( ']' ) );
+			return not m_state.is_null( ) and
+			       not( verify_bracket and m_state.front( ']' ) );
 		}
 
-		[[nodiscard]] constexpr bool operator==( json_array_iterator const &rhs ) const noexcept {
+		[[nodiscard]] constexpr bool
+		operator==( json_array_iterator const &rhs ) const noexcept {
 			return ( m_state.begin( ) == rhs.m_state.begin( ) ) or
-			       ( !( *this ) and !rhs );
+			       ( not( *this ) and not rhs );
 		}
 
-		[[nodiscard]] constexpr bool operator!=( json_array_iterator const &rhs ) const noexcept {
-			return !( *this == rhs );
+		[[nodiscard]] constexpr bool
+		operator!=( json_array_iterator const &rhs ) const noexcept {
+			return not( *this == rhs );
 		}
 	};
 
@@ -147,7 +151,7 @@ namespace daw::json {
 		constexpr json_array_range( ) noexcept = default;
 
 		template<typename String,
-		         daw::enable_when_t<!std::is_same_v<
+		         daw::enable_when_t<not std::is_same_v<
 		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr json_array_range( String &&jd, std::string_view start_path = "" )
 		  : m_first( std::forward<String>( jd ), start_path ) {}

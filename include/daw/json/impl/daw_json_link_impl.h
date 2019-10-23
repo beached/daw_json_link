@@ -655,16 +655,6 @@ namespace daw::json::impl {
 			}
 			return p;
 		}
-
-		[[nodiscard]] static constexpr char const *find_quote( char const *p ) {
-			while( true ) {
-				p = str_find( p, '"' );
-				if( *( p - 1 ) != '\\' ) {
-					return p;
-				}
-				++p;
-			}
-		}
 	} // namespace
 
 	template<typename First, typename Last>
