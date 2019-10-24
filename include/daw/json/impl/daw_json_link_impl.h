@@ -503,7 +503,7 @@ namespace daw::json::impl {
 		bool in_quotes = false;
 		auto result = rng;
 		// TODO remove empty check
-		while( not rng.empty( ) and bracket_count > 0 ) {
+		while( bracket_count > 0 and not rng.empty( ) ) {
 			rng.remove_prefix( );
 			rng.trim_left_no_check( );
 			switch( rng.front( ) ) {
@@ -848,7 +848,8 @@ namespace daw::json::impl {
 		  "Supplied types cannot be used for construction of this type" );
 
 		rng.trim_left_no_check( );
-		json_assert( rng.front( '{' ), "Expected class to begin with '{'" );
+		json_assert( not rng.empty( ) and rng.front( ) == '{',
+		             "Expected class to begin with '{'" );
 		rng.remove_prefix( );
 		rng.trim_left_no_check( );
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {

@@ -242,7 +242,7 @@ constexpr char const json_data_array[] =
 	    "i": 55,
 	    "d": -2.2,
 			"b": true,
-			"x": { "b": false, "c": [1,2,3] },
+			"x": { "b": false, "c": [] },
 			"y": [1,2,3,4],
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
