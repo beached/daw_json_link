@@ -47,20 +47,16 @@ namespace daw::json {
 	inline constexpr bool use_json_exceptions_v = false;
 #endif
 
-#ifdef DAW_JSON_CHECK_ALWAYS
-	template<typename Bool>
-	inline constexpr void
-	json_assert( Bool &&b ) noexcept( not use_json_exceptions_v ) {
-		static_assert( std::is_convertible_v<Bool, bool>,
-		               "Argument must be convertable to a bool" );
-		if( not static_cast<bool>( b ) ) {
-			if constexpr( use_json_exceptions_v ) {
-				throw json_exception( );
-			} else {
-				std::abort( );
-			}
+	[[noreturn]] void
+	json_error( std::string_view reason ) noexcept( not use_json_exceptions_v ) {
+		if constexpr( use_json_exceptions_v ) {
+			throw json_exception( reason );
+		} else {
+			std::abort( );
 		}
 	}
+
+#ifdef DAW_JSON_CHECK_ALWAYS
 	template<typename Bool>
 	inline constexpr void
 	json_assert( Bool &&b,
@@ -68,42 +64,19 @@ namespace daw::json {
 		static_assert( std::is_convertible_v<Bool, bool>,
 		               "Argument must be convertable to a bool" );
 		if( not static_cast<bool>( b ) ) {
-			if constexpr( use_json_exceptions_v ) {
-				throw json_exception( reason );
-			} else {
-				Unused( reason );
-				std::abort( );
-			}
+			json_error( reason );
 		}
 	}
 #else // undef DAW_JSON_CHECK_ALWAYS
 #ifndef NDEBUG
 	template<typename Bool>
 	inline constexpr void
-	json_assert( Bool &&b ) noexcept( not use_json_exceptions_v ) {
-		static_assert( std::is_convertible_v<Bool, bool>,
-		               "Argument must be convertable to a bool" );
-		if( not static_cast<bool>( b ) ) {
-			if constexpr( use_json_exceptions_v ) {
-				throw json_exception( );
-			} else {
-				std::abort( );
-			}
-		}
-	}
-	template<typename Bool>
-	inline constexpr void
 	json_assert( Bool &&b,
 	             std::string_view reason ) noexcept( not use_json_exceptions_v ) {
 		static_assert( std::is_convertible_v<Bool, bool>,
 		               "Argument must be convertable to a bool" );
 		if( not static_cast<bool>( b ) ) {
-			if constexpr( use_json_exceptions_v ) {
-				throw json_exception( reason );
-			} else {
-				Unused( reason );
-				std::abort( );
-			}
+			json_error( reason );
 		}
 	}
 #else // NDEBUG set

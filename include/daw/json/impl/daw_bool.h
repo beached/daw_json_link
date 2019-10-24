@@ -25,19 +25,33 @@
 #include <cstddef>
 #include <utility>
 
+#include "daw_json_assert.h"
+
 namespace daw::json::impl::parse_bool {
+	namespace impl {
+		template<size_t N>
+		constexpr bool cxstrcmp( char const *ptr, char const ( &str )[N] ) {
+			bool result = true;
+			for( size_t n = 0; n < ( N - 1 ); ++n ) {
+				result &= ( ptr[n] - str[n] ) == 0;
+			}
+			return result;
+		}
+	} // namespace impl
 	struct bool_parser {
 		[[nodiscard]] static constexpr std::pair<bool, char const *>
 		parse( char const *ptr ) {
-			if( *ptr == 't' or *ptr == 'T' ) {
-				return { true, ptr + 4 };
+			json_assert( impl::cxstrcmp( ptr, "true" ) or
+			               impl::cxstrcmp( ptr, "false" ),
+			             "Expected true or false" );
+
+			if( *ptr == 'f' ) {
+				return {false, ptr + 5};
 			}
-			return { false, ptr + 5};
+			return {true, ptr + 4};
 		}
 	};
 
 	static_assert( bool_parser::parse( "true" ).first == true );
-	static_assert( bool_parser::parse( "True" ).first == true );
 	static_assert( bool_parser::parse( "false" ).first == false );
-	static_assert( bool_parser::parse( "False" ).first == false );
-} // namespace daw::json::impl::unsignedint
+} // namespace daw::json::impl::parse_bool

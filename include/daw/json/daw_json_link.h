@@ -308,10 +308,9 @@ namespace daw::json {
 		  std::data( json_data ), std::data( json_data ) + std::size( json_data ) );
 		rng.trim_left( );
 		json_assert( rng.front( '[' ), "Expected array class" );
-		auto loc = impl::location_info_t{ JsonElement::name, JsonParseTypes::Array };
-		loc.data = typename impl::location_info_t::variant_t{ rng };
-		return impl::parse_value<parser_t, char const *, char const *>(
-		  ParseTag<JsonParseTypes::Array>{}, loc );
+
+		return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
+		                                    rng );
 	}
 
 	template<typename Result = std::string, typename Container>
