@@ -101,7 +101,11 @@ namespace daw::json {
 
 		using i_am_a_json_type = void;
 		static constexpr auto name = Name;
-		static constexpr auto expected_type = JsonParseTypes::Number;
+		static constexpr auto expected_type = std::is_floating_point_v<T>
+		                                        ? JsonParseTypes::Real
+		                                        : std::is_unsigned_v<T>
+		                                            ? JsonParseTypes::Unsigned
+		                                            : JsonParseTypes::Signed;
 		static constexpr auto literal_as_string = LiteralAsString;
 		static constexpr auto range_check = RangeCheck;
 		using parse_to_t = T;
@@ -304,8 +308,8 @@ namespace daw::json {
 		  std::data( json_data ), std::data( json_data ) + std::size( json_data ) );
 		rng.trim_left( );
 
-		return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
-		                                    rng );
+		return impl::parse_value<parser_t>(
+		  ParseTag<JsonParseTypes::Array>{}, rng );
 	}
 
 	template<typename Result = std::string, typename Container>
