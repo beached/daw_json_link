@@ -9,6 +9,18 @@
 #include <vector>
 #include <daw/json/daw_json_link.h>
 
+#ifndef DAW_LOCAL_NS 
+#	ifdef DAW_LOCAL_ONLY
+#		define DAW_LOCAL_NS_START namespace {
+#		define DAW_LOCAL_NS_END }
+#	else
+#		define DAW_LOCAL_NS_START
+#		define DAW_LOCAL_NS_END 
+#	endif
+#endif
+
+DAW_LOCAL_NS_START
+
 struct metadata_t {
 	std::string_view result_type;
 	std::string_view iso_language_code;
@@ -681,4 +693,6 @@ static inline auto describe_json_class( twitter_object_t ) {
 static inline auto to_json_data( twitter_object_t const & value ) {
 	return std::forward_as_tuple( value.statuses, value.search_metadata );
 }
+
+DAW_LOCAL_NS_END
 

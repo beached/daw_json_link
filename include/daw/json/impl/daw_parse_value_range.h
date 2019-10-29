@@ -60,7 +60,6 @@
 #include "daw_unsigned_int.h"
 
 namespace daw::json::impl {
-
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
 	parse_value( ParseTag<JsonParseTypes::Real>,
@@ -70,7 +69,9 @@ namespace daw::json::impl {
 
 		json_assert( not rng.empty( ), "Unexpected data" );
 
+		process_literal_as_string<JsonMember::literal_as_string>( rng );
 		auto result = constructor_t{}( parse_real<element_t>( rng ) );
+		process_literal_as_string<JsonMember::literal_as_string>( rng );
 		json_assert( rng.at_end_of_item( ),
 		             "Expected whitespace or one of \",}]\" at end of number" );
 		return result;
@@ -85,15 +86,19 @@ namespace daw::json::impl {
 
 		json_assert( not rng.empty( ), "Unexpected data" );
 
+		process_literal_as_string<JsonMember::literal_as_string>( rng );
 		if constexpr( JsonMember::range_check ) {
 			auto result = constructor_t{}( daw::narrow_cast<element_t>(
 			  parse_unsigned_integer<uintmax_t>( rng ) ) );
+			process_literal_as_string<JsonMember::literal_as_string>( rng );
 			json_assert( rng.at_end_of_item( ),
-			             "Expected whitespace or one of \",}]\" at end of number" );
+			             "Expected whitespace or one of "
+			             "\",}]\" at end of number" );
 			return result;
 		} else {
 			auto result = constructor_t{}(
 			  static_cast<element_t>( parse_unsigned_integer<uintmax_t>( rng ) ) );
+			process_literal_as_string<JsonMember::literal_as_string>( rng );
 			json_assert( rng.at_end_of_item( ),
 			             "Expected whitespace or one of \",}]\" at end of number" );
 			return result;
@@ -109,14 +114,17 @@ namespace daw::json::impl {
 
 		json_assert( not rng.empty( ), "Unexpected data" );
 
+		process_literal_as_string<JsonMember::literal_as_string>( rng );
 		if constexpr( JsonMember::range_check ) {
 			auto result = constructor_t{}(
 			  daw::narrow_cast<element_t>( parse_integer<intmax_t>( rng ) ) );
+			process_literal_as_string<JsonMember::literal_as_string>( rng );
 			json_assert( rng.at_end_of_item( ),
 			             "Expected whitespace or one of \",}]\" at end of number" );
 			return result;
 		} else {
 			auto result = constructor_t{}( parse_integer<element_t>( rng ) );
+			process_literal_as_string<JsonMember::literal_as_string>( rng );
 			json_assert( rng.at_end_of_item( ),
 			             "Expected whitespace or one of \",}]\" at end of number" );
 			return result;
@@ -130,9 +138,11 @@ namespace daw::json::impl {
 		using constructor_t = typename JsonMember::constructor_t;
 
 		json_assert( not rng.empty( ), "Unexpected empty range" );
+		process_literal_as_string<JsonMember::literal_as_string>( rng );
 		auto [v, ptr] =
 		  daw::json::impl::parse_bool::bool_parser::parse( rng.first );
 		rng.first = ptr;
+		process_literal_as_string<JsonMember::literal_as_string>( rng );
 		json_assert( rng.at_end_of_item( ),
 		             "Expected whitespace or one of \",}]\" at end of number" );
 		return constructor_t{}( v );
@@ -177,7 +187,11 @@ namespace daw::json::impl {
 	             IteratorRange<First, Last> &rng ) {
 
 		using element_t = typename JsonMember::parse_to_t;
-		return from_json<element_t>( rng );
+
+		auto result =
+		  json_parser_description_t<element_t>::template parse<element_t>( rng );
+		rng.trim_left( );
+		return result;
 	}
 
 	template<typename JsonMember, typename First, typename Last>
@@ -227,8 +241,8 @@ namespace daw::json::impl {
 		auto container_appender =
 		  typename JsonMember::appender_t( array_container );
 
-		while( ( static_cast<unsigned>( rng.front( ) ) -
-		         static_cast<unsigned>( ']' ) ) != 0 ) {
+		while( rng.front( ) != ']' ) {
+			json_assert( not rng.empty( ), "Unexpected end of range" );
 			auto item_loc =
 			  location_info_t{element_t::name, element_t::expected_type};
 			parse_location( item_loc, rng );
@@ -237,6 +251,7 @@ namespace daw::json::impl {
 			rng.clean_tail( );
 		}
 		json_assert( rng.front( ']' ), "Expected array to end with a ']'" );
+		rng.remove_prefix( );
 		return array_container;
 	}
 

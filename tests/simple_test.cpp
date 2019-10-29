@@ -74,6 +74,7 @@ std::string get_json_data( std::string file_name ) {
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;
+	// uses cities.json
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filename to open\n";
 		exit( 1 );

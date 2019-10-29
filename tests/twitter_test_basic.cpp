@@ -29,6 +29,7 @@
 #include <daw/json/daw_json_link.h>
 
 #include "daw/json/impl/daw_memory_mapped.h"
+#define DAW_LOCAL_ONLY 
 #include "twitter_test.h"
 
 int main( int argc, char **argv ) {

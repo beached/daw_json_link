@@ -111,12 +111,14 @@ namespace daw::json::impl {
 		}
 
 		constexpr void trim_left_no_check( ) noexcept {
+			json_assert( first != nullptr, "Unexpected nullptr" );
 			while( is_space( *first ) ) {
 				++first;
 				json_assert( first != last, "Unexpected end of stream" );
 #ifndef NDEBUG
 				++pos;
 #endif
+				json_assert( first != nullptr, "Unexpected nullptr" );
 			}
 		}
 

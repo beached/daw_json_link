@@ -132,34 +132,6 @@ namespace daw::json::impl {
 	parse_value( ParseTag<JsonParseTypes::Null>,
 	             IteratorRange<First, Last> &rng );
 
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::Array>, location_info_t loc ) {
-
-		using element_t = typename JsonMember::json_element_t;
-		json_assert( loc.rng( ).front( '[' ),
-		             "Expected array to start with a '['" );
-
-		loc.rng( ).remove_prefix( );
-		loc.rng( ).trim_left_no_check( );
-
-		auto array_container = typename JsonMember::constructor_t{}( );
-		auto container_appender =
-		  typename JsonMember::appender_t( array_container );
-		auto &rng = loc.rng( );
-		while( ( static_cast<unsigned>( rng.front( ) ) -
-		         static_cast<unsigned>( ']' ) ) != 0 ) {
-			auto item_loc =
-			  location_info_t{element_t::name, element_t::expected_type};
-			parse_location( item_loc, rng );
-			container_appender( parse_value<element_t, First, Last>(
-			  ParseTag<element_t::expected_type>{}, item_loc ) );
-			loc.rng( ).clean_tail( );
-		}
-		json_assert( loc.rng( ).front( ']' ), "Expected array to end with a ']'" );
-		return array_container;
-	}
-
 	template<typename Container>
 	struct basic_appender {
 		daw::back_inserter_iterator<Container> appender;

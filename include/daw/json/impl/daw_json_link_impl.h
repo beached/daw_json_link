@@ -144,10 +144,6 @@ namespace daw::json::impl {
 	}
 
 	template<typename T>
-	using json_parser_description_t = daw::remove_cvref_t<decltype(
-	  describe_json_class( std::declval<T &>( ) ) )>;
-
-	template<typename T>
 	[[nodiscard]] static constexpr auto deref_detect( T &&value ) noexcept
 	  -> decltype( *value ) {
 		return *value;
@@ -757,7 +753,8 @@ namespace daw::json::impl {
 		  "Unexpected end of class.  Non-nullable members still not found" );
 
 		rng.trim_left_no_check( );
-		while( locations[pos].empty( ) and not rng.in( '}' ) ) {
+		while( locations[pos].empty( ) and ( not rng.empty( ) ) and
+		       ( rng.front( ) != '}' ) ) {
 			auto name = parse_name( rng );
 			using name_map = name_map_t<JsonMembers...>;
 			if( not name_map::has_name( name ) ) {
@@ -774,7 +771,12 @@ namespace daw::json::impl {
 				// 				member positions so that we don't have to
 				//				reparse them after
 				parse_location( locations[name_pos], rng );
-				locations[name_pos].already_parsed = true;
+				locations[name_pos].parse_status =
+				  location_info_t::parse_statuses::preparsed;
+			} else {
+				// TODO maybe put assign range to locations
+				locations[pos].parse_status = location_info_t::parse_statuses::found;
+				json_assert( not rng.empty( ), "Unexpected empty range" );
 			}
 		}
 		return locations[pos];
@@ -798,8 +800,6 @@ namespace daw::json::impl {
 			auto loc =
 			  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
 
-			constexpr auto const name = JsonMember::name;
-			::Unused( name );
 			// Only allow missing members for Null-able type
 			if( loc.empty( ) ) {
 				if constexpr( JsonMember::expected_type == JsonParseTypes::Null ) {
@@ -808,7 +808,7 @@ namespace daw::json::impl {
 				}
 				json_error( "Could not find required class member" );
 			}
-			if( loc.already_parsed ) {
+			if( loc.parse_status == location_info_t::parse_statuses::preparsed ) {
 				return parse_value<JsonMember, First, Last>(
 				  ParseTag<JsonMember::expected_type>{}, loc );
 			}

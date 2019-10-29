@@ -38,6 +38,7 @@ int main( int argc, char **argv ) {
 	}
 
 	auto const json_data1 = daw::memory_mapped_file( argv[1] );
+	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 	auto const json_sv1 =
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 

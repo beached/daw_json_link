@@ -143,29 +143,63 @@ namespace daw::json {
 	using ParseTag = std::integral_constant<JsonParseTypes, v>;
 	namespace impl {
 		struct location_info_t {
-			JSONNAMETYPE name;
-			JsonParseTypes expected_type;
+
 			using range_t = IteratorRange<char const *, char const *>;
 			using variant_t = std::variant<std::monostate, uintmax_t, intmax_t,
-			                               double, daw::string_view, bool, range_t>;
+			                               double, bool, range_t>;
+			enum class parse_statuses : uint8_t { empty, found, preparsed };
 
+		public:
+			// Data Members
+			JSONNAMETYPE name;
+			JsonParseTypes expected_type;
 			variant_t data{};
-			bool already_parsed = false;
+			parse_statuses parse_status = parse_statuses::empty;
+			// **************
 
-			[[nodiscard]] constexpr bool has_range( ) const {
-				return std::holds_alternative<range_t>( data );
+			template<JsonParseTypes JPT>
+			constexpr decltype( auto ) as( ) {
+				json_assert( expected_type == JPT and not empty( ),
+				             "expected_type does not match requested" );
+				if constexpr( JPT == JsonParseTypes::Bool ) {
+					return std::get<bool>( data );
+				} else if constexpr( JPT == JsonParseTypes::Real ) {
+					return std::get<double>( data );
+				} else if constexpr( JPT == JsonParseTypes::Signed ) {
+					return std::get<intmax_t>( data );
+				} else if constexpr( JPT == JsonParseTypes::Unsigned ) {
+					return std::get<uintmax_t>( data );
+				} else {
+					return std::get<range_t>( data );
+				}
+			}
+
+			template<JsonParseTypes JPT>
+			constexpr decltype( auto ) as( ) const {
+				json_assert( expected_type == JPT and not empty( ),
+				             "expected_type does not match requested" );
+				if constexpr( JPT == JsonParseTypes::Bool ) {
+					return std::get<bool>( data );
+				} else if constexpr( JPT == JsonParseTypes::Real ) {
+					return std::get<double>( data );
+				} else if constexpr( JPT == JsonParseTypes::Signed ) {
+					return std::get<intmax_t>( data );
+				} else if constexpr( JPT == JsonParseTypes::Unsigned ) {
+					return std::get<uintmax_t>( data );
+				} else {
+					return std::get<range_t>( data );
+				}
 			}
 
 			[[nodiscard]] constexpr range_t const &rng( ) const {
-
 				json_assert( std::holds_alternative<range_t>( data ),
-				             "Unexpected type in variant" );
+				             "Expected a range value" );
 				return std::get<range_t>( data );
 			}
 
 			[[nodiscard]] constexpr range_t &rng( ) {
 				json_assert( std::holds_alternative<range_t>( data ),
-				             "Unexpected type in variant" );
+				             "Expected a range value" );
 				return std::get<range_t>( data );
 			}
 
@@ -173,31 +207,17 @@ namespace daw::json {
 				return expected_type == JsonParseTypes::Null;
 			}
 
-			[[nodiscard]] constexpr bool
-			contains_value_for( JsonParseTypes jpt ) const {
-				switch( jpt ) {
-				case JsonParseTypes::Real:
-					return std::holds_alternative<double>( data );
-				case JsonParseTypes::Unsigned:
-					return std::holds_alternative<uintmax_t>( data );
-				case JsonParseTypes::Signed:
-					return std::holds_alternative<intmax_t>( data );
-				case JsonParseTypes::Bool:
-					return std::holds_alternative<bool>( data );
-				case JsonParseTypes::String:
-				case JsonParseTypes::Date:
-				case JsonParseTypes::Class:
-				case JsonParseTypes::Array:
-				case JsonParseTypes::Null:
-				case JsonParseTypes::KeyValue:
-				case JsonParseTypes::Custom:
-				default:
-					return std::holds_alternative<range_t>( data );
+			template<JsonParseTypes JPT>
+			[[nodiscard]] constexpr bool contains( ) const {
+				if( empty( ) or parse_status == parse_statuses::found ) {
+					return false;
 				}
+				return expected_type == JPT;
 			}
 
 			[[nodiscard]] constexpr bool empty( ) const {
-				return data.index( ) == 0;
+				return not( parse_status != parse_statuses::empty or
+				            data.index( ) != 0 );
 			}
 		};
 
@@ -205,5 +225,36 @@ namespace daw::json {
 		using json_result_type_t = daw::remove_cvref_t<decltype(
 		  std::declval<typename JsonMember::constructor_t>( )(
 		    std::declval<Args>( )... ) )>;
+
+		template<typename T>
+		using json_parser_description_t = daw::remove_cvref_t<decltype(
+		  describe_json_class( std::declval<T &>( ) ) )>;
+
+		template<typename First, typename Last>
+		constexpr void process_literal_as_string_impl(
+		  std::integral_constant<LiteralAsStringOpt, LiteralAsStringOpt::never>,
+		  IteratorRange<First, Last> &rng ) {}
+
+		template<typename First, typename Last>
+		constexpr void process_literal_as_string_impl(
+		  std::integral_constant<LiteralAsStringOpt, LiteralAsStringOpt::always>,
+		  IteratorRange<First, Last> &rng ) {
+			rng.remove_prefix( );
+		}
+
+		template<typename First, typename Last>
+		constexpr void process_literal_as_string_impl(
+		  std::integral_constant<LiteralAsStringOpt, LiteralAsStringOpt::maybe>,
+		  IteratorRange<First, Last> &rng ) {
+			if( rng.front( ) == '"' ) {
+				rng.remove_prefix( );
+			}
+		}
+		template<LiteralAsStringOpt litasstr, typename First, typename Last>
+		constexpr void
+		process_literal_as_string( IteratorRange<First, Last> &rng ) {
+			process_literal_as_string_impl(
+			  std::integral_constant<LiteralAsStringOpt, litasstr>{}, rng );
+		}
 	} // namespace impl
 } // namespace daw::json
