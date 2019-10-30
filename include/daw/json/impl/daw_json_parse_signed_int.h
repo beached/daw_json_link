@@ -55,3 +55,29 @@ namespace daw::json::impl::signedint {
 
 	static_assert( signed_parser<int>::parse( "-12345" ).first == -12345 );
 } // namespace daw::json::impl::signedint
+
+namespace daw::json::impl {
+	template<typename Result, bool RangeCheck = false, typename First,
+	         typename Last>
+	[[nodiscard]] static constexpr Result
+	parse_integer( IteratorRange<First, Last> &rng ) noexcept {
+		json_assert( rng.front( "+-0123456789" ), "Expected +,-, or a digit" );
+
+		using result_t = std::conditional_t<RangeCheck, intmax_t, Result>;
+		using namespace daw::json::impl::signedint;
+		auto [result, ptr] = signed_parser<result_t>::parse( rng.first );
+		rng.first = ptr;
+		if constexpr( RangeCheck ) {
+			return daw::narrow_cast<Result>( result );
+		} else {
+			return result;
+		}
+	}
+
+	template<typename Result>
+	[[nodiscard]] static constexpr Result
+	parse_integer( daw::string_view const &sv ) noexcept {
+		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+		return parse_integer<Result, true>( rng );
+	}
+} // namespace daw::json::impl

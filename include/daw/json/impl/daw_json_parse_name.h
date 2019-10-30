@@ -22,15 +22,8 @@
 
 #pragma once
 
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <variant>
-
 #include "daw_json_assert.h"
+#include "daw_json_parse_string_quote.h"
 
 namespace daw::json::impl::name {
 	struct name_parser_result {
@@ -44,7 +37,8 @@ namespace daw::json::impl::name {
 		 * the string can be escaped too
 		 */
 
-		[[nodiscard]] static constexpr name_parser_result parse_nq( char const *ptr ) noexcept {
+		[[nodiscard]] static constexpr name_parser_result
+		parse_nq( char const *ptr ) noexcept {
 			while( *ptr != '"' ) {
 				while( *ptr != '"' and *ptr != '\\' ) {
 					++ptr;
@@ -72,7 +66,8 @@ namespace daw::json::impl::name {
 			return result;
 		}
 
-		[[nodiscard]] static constexpr name_parser_result parse( char const *ptr ) noexcept {
+		[[nodiscard]] static constexpr name_parser_result
+		parse( char const *ptr ) noexcept {
 			if( *ptr == '"' ) {
 				++ptr;
 			}
