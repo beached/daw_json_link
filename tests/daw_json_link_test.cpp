@@ -179,7 +179,7 @@ namespace {
 	constexpr blah_t from_string( daw::tag_t<blah_t>,
 	                              std::string_view sv ) noexcept {
 		if( sv.empty( ) ) {
-			std::terminate( );
+			daw::json::json_error( "Unexpected empty string_view" );
 		}
 		switch( sv.front( ) ) {
 		case 'a':
@@ -297,7 +297,7 @@ int main( ) {
 
 	daw::expecting( 550.0, daw::json::impl::parse_real<double>( "5.5e+2" ) );
 #ifndef _MSC_VER
-#define CX
+#define CX constexpr
 #else
 #define CX constexpr
 #endif

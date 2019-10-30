@@ -523,7 +523,7 @@ namespace daw::json::impl {
 	         typename Last>
 	[[nodiscard]] static constexpr Result
 	parse_integer( IteratorRange<First, Last> &rng ) noexcept {
-		json_assert( rng.front( "+-0123456789" ) );
+		json_assert( rng.front( "+-0123456789" ), "Expected +,-, or a digit" );
 
 		using result_t = std::conditional_t<RangeCheck, intmax_t, Result>;
 		using namespace daw::json::impl::signedint;
@@ -547,7 +547,7 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr Result
 	parse_real( IteratorRange<First, Last> &rng ) noexcept {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
-		json_assert( rng.is_real_number_part( ) );
+		json_assert( rng.is_real_number_part( ), "Expected a real number" );
 		auto const sign = [&rng] {
 			if( rng.in( '-' ) ) {
 				rng.remove_prefix( );
@@ -911,6 +911,7 @@ namespace daw::json::impl {
 
 		json_assert( rng.front( '"' ),
 		             "Custom types requite a string at the beginning" );
+		rng.remove_prefix( );
 		auto str = skip_string_nq( rng );
 		// TODO make custom require a ptr/sz pair
 		using constructor_t = typename JsonMember::from_converter_t;

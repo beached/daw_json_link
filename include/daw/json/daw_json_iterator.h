@@ -75,10 +75,11 @@ namespace daw::json {
 		      impl::find_range( std::forward<String>( jd ),
 		                        {start_path.data( ), start_path.size( )} ) ) {
 
-			json_assert(
+			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
 
-			json_assert( verify_bracket and m_state.front( ) == '[' );
+			json_assert( verify_bracket and m_state.front( ) == '[',
+			             "Arrays are expected to start with a [" );
 
 			m_state.remove_prefix( );
 			m_state.trim_left( );
@@ -86,7 +87,8 @@ namespace daw::json {
 
 		[[nodiscard]] constexpr value_type operator*( ) const noexcept {
 			json_assert( not m_state.empty( ) and
-			             not( verify_bracket and m_state.in( ']' ) ) );
+			               not( verify_bracket and m_state.in( ']' ) ),
+			             "Unexpected end of stream" );
 
 			auto tmp = m_state;
 			auto result = impl::parse_value<JsonElement>(
@@ -97,7 +99,8 @@ namespace daw::json {
 
 		constexpr json_array_iterator &operator++( ) noexcept {
 			json_assert( not m_state.empty( ) and
-			             not( verify_bracket and m_state.in( ']' ) ) );
+			               not( verify_bracket and m_state.in( ']' ) ),
+			             "Unexpected end of stream" );
 			if( m_can_skip >= 0 ) {
 				m_state.first = std::next( m_state.first, m_can_skip );
 				m_can_skip = -1;
