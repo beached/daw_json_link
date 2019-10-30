@@ -236,37 +236,35 @@ namespace daw::json::impl {
 		return daw::make_array( get_item<Is, string_t, JsonMembers...>( )... );
 	}
 
-	namespace {
-		template<typename... JsonMembers>
-		struct name_map_t {
-			static inline constexpr auto name_map_data =
-			  make_map<JsonMembers...>( std::index_sequence_for<JsonMembers...>{} );
+	template<typename... JsonMembers>
+	struct name_map_t {
+		static inline constexpr auto name_map_data =
+		  make_map<JsonMembers...>( std::index_sequence_for<JsonMembers...>{} );
 
-			[[nodiscard]] static constexpr bool
-			has_name( daw::string_view key ) noexcept {
-				using std::begin;
-				using std::end;
-				auto result = algorithm::find_if(
-				  begin( name_map_data ), end( name_map_data ),
-				  [key]( auto const &kv ) { return kv.name == key; } );
-				return result != std::end( name_map_data );
-			}
+		[[nodiscard]] static constexpr bool
+		has_name( daw::string_view key ) noexcept {
+			using std::begin;
+			using std::end;
+			auto result = algorithm::find_if(
+			  begin( name_map_data ), end( name_map_data ),
+			  [key]( auto const &kv ) { return kv.name == key; } );
+			return result != std::end( name_map_data );
+		}
 
-			[[nodiscard]] static constexpr size_t
-			find_name( daw::string_view key ) noexcept {
-				using std::begin;
-				using std::end;
-				auto result = algorithm::find_if(
-				  begin( name_map_data ), end( name_map_data ),
-				  [key]( auto const &kv ) { return kv.name == key; } );
-				if( result == std::end( name_map_data ) ) {
-					std::terminate( );
-				}
-				return static_cast<size_t>(
-				  std::distance( begin( name_map_data ), result ) );
+		[[nodiscard]] static constexpr size_t
+		find_name( daw::string_view key ) noexcept {
+			using std::begin;
+			using std::end;
+			auto result = algorithm::find_if(
+			  begin( name_map_data ), end( name_map_data ),
+			  [key]( auto const &kv ) { return kv.name == key; } );
+			if( result == std::end( name_map_data ) ) {
+				std::terminate( );
 			}
-		};
-	} // namespace
+			return static_cast<size_t>(
+			  std::distance( begin( name_map_data ), result ) );
+		}
+	};
 
 	struct location_info_t {
 		JSONNAMETYPE name;
