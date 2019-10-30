@@ -42,14 +42,16 @@ namespace symbols_coordinate_t {
 	constexpr static char const x[] = "x";
 	constexpr static char const y[] = "y";
 	constexpr static char const z[] = "z";
-}
+} // namespace symbols_coordinate_t
 auto describe_json_class( coordinate_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_number<"x">, json_number<"y">,
 	                           json_number<"z">>{};
 #else
-	return class_description_t<json_number<symbols_coordinate_t::x>, json_number<symbols_coordinate_t::y>, json_number<symbols_coordinate_t::z>>{};
+	return class_description_t<json_number<symbols_coordinate_t::x>,
+	                           json_number<symbols_coordinate_t::y>,
+	                           json_number<symbols_coordinate_t::z>>{};
 #endif
 }
 
@@ -69,8 +71,9 @@ auto describe_json_class( coordinates_t ) noexcept {
 	  json_array<"coordinates", std::vector<coordinate_t>,
 	             json_class<no_name, coordinate_t>>>{};
 #else
-	return class_description_t<json_array<symbols_coordinates_t::coordinates, std::vector<coordinate_t>,
-	                                      json_class<no_name, coordinate_t>>>{};
+	return class_description_t<
+	  json_array<symbols_coordinates_t::coordinates, std::vector<coordinate_t>,
+	             json_class<no_name, coordinate_t>>>{};
 #endif
 }
 
@@ -105,7 +108,8 @@ int main( int argc, char **argv ) {
 	}
 
 	//	auto const sz = cls.coordinates.size( );
-	std::cout << x / sz << '\n';
-	std::cout << y / sz << '\n';
-	std::cout << z / sz << '\n';
+	auto const dsz = static_cast<double>( sz );
+	std::cout << x / dsz << '\n';
+	std::cout << y / dsz << '\n';
+	std::cout << z / dsz << '\n';
 }
