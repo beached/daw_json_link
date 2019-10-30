@@ -65,7 +65,6 @@ namespace daw::json {
 		template<typename Result>
 		[[maybe_unused, nodiscard]] static constexpr decltype( auto )
 		parse( std::string_view sv ) {
-			json_assert( not sv.empty( ), "Cannot parse an empty string" );
 			return impl::parse_json_class<Result, JsonMembers...>(
 			  sv, std::index_sequence_for<JsonMembers...>{} );
 		}
@@ -73,7 +72,6 @@ namespace daw::json {
 		template<typename Result, typename First, typename Last>
 		[[maybe_unused, nodiscard]] static constexpr decltype( auto )
 		parse( impl::IteratorRange<First, Last> &rng ) {
-			json_assert( not rng.empty( ), "Cannot parse an empty string" );
 			return impl::parse_json_class<Result, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
 		}
@@ -103,13 +101,9 @@ namespace daw::json {
 
 		using i_am_a_json_type = void;
 		static constexpr auto name = Name;
-		static constexpr auto expected_type = std::is_floating_point_v<T>
-		                                        ? JsonParseTypes::Real
-		                                        : std::is_unsigned_v<T>
-		                                            ? JsonParseTypes::Unsigned
-		                                            : JsonParseTypes::Signed;
-		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
-		static constexpr bool range_check = RangeCheck;
+		static constexpr auto expected_type = JsonParseTypes::Number;
+		static constexpr auto literal_as_string = LiteralAsString;
+		static constexpr auto range_check = RangeCheck;
 		using parse_to_t = T;
 		using constructor_t = Constructor;
 	};
@@ -121,8 +115,7 @@ namespace daw::json {
 	  json_number<Name, T, LiteralAsString, Constructor, true>;
 
 	template<JSONNAMETYPE Name, typename T = bool,
-	         typename Constructor = daw::construct_a_t<T>,
-	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never>
+	         typename Constructor = daw::construct_a_t<T>>
 	struct json_bool {
 		static_assert( std::is_constructible_v<T, bool>,
 		               "Supplied type but be constructable from a bool" );
@@ -132,7 +125,6 @@ namespace daw::json {
 		static_assert( std::is_convertible_v<bool, T>,
 		               "Supplied result type must be convertable from bool" );
 		using i_am_a_json_type = void;
-		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
 		static constexpr auto name = Name;
 		static constexpr auto expected_type = JsonParseTypes::Bool;
 		using parse_to_t = T;
@@ -265,7 +257,7 @@ namespace daw::json {
 	from_json( std::string_view json_data ) {
 		static_assert( impl::has_json_parser_description_v<T>,
 		               "A function call describe_json_class must exist for type." );
-		json_assert( not json_data.empty( ), "Attempt to parse empty string" );
+
 		using desc_t = impl::json_parser_description_t<T>;
 
 		return desc_t::template parse<T>( json_data );
@@ -276,9 +268,10 @@ namespace daw::json {
 	from_json( daw::json::impl::IteratorRange<First, Last> &rng ) {
 		static_assert( impl::has_json_parser_description_v<T>,
 		               "A function call describe_json_class must exist for type." );
-		json_assert( not rng.empty( ), "Attempt to parse empty string" );
 
-		return impl::parse_value( ParseTag<JsonParseTypes::Class>{}, rng );
+		auto result = impl::json_parser_description_t<T>::template parse<T>( rng );
+		rng.trim_left( );
+		return result;
 	}
 
 	template<typename Result = std::string, typename T>
@@ -310,7 +303,6 @@ namespace daw::json {
 		auto rng = daw::json::impl::IteratorRange(
 		  std::data( json_data ), std::data( json_data ) + std::size( json_data ) );
 		rng.trim_left( );
-		json_assert( rng.front( '[' ), "Expected array class" );
 
 		return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
 		                                    rng );

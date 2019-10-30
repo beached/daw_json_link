@@ -45,10 +45,6 @@ namespace daw::json::impl {
 		  : first( f )
 		  , last( l ) {}
 
-		[[nodiscard]] constexpr bool has_data( ) const noexcept {
-			return first != last;
-		}
-
 		[[nodiscard]] constexpr bool empty( ) const noexcept {
 			return first == last;
 		}
@@ -106,7 +102,6 @@ namespace daw::json::impl {
 		}
 
 		constexpr void trim_left( ) noexcept {
-			json_assert( first != nullptr, "Unexpected null data" );
 			while( first != last && is_space( *first ) ) {
 				++first;
 #ifndef NDEBUG
@@ -116,14 +111,12 @@ namespace daw::json::impl {
 		}
 
 		constexpr void trim_left_no_check( ) noexcept {
-			json_assert( first != nullptr, "Unexpected nullptr" );
 			while( is_space( *first ) ) {
 				++first;
 				json_assert( first != last, "Unexpected end of stream" );
 #ifndef NDEBUG
 				++pos;
 #endif
-				json_assert( first != nullptr, "Unexpected nullptr" );
 			}
 		}
 
@@ -191,9 +184,6 @@ namespace daw::json::impl {
 		}
 
 		constexpr void clean_tail( ) noexcept {
-			json_assert( has_data( ), "Unexpected end of data" );
-			json_assert( std::less{}( first, last ) or first == last,
-			             "broken precondition, first < last" );
 			trim_left( );
 			if( in( ',' ) ) {
 				remove_prefix( );
@@ -203,5 +193,5 @@ namespace daw::json::impl {
 	};
 
 	template<typename First, typename Last>
-	IteratorRange( First, Last )->IteratorRange<First, Last>;
+	IteratorRange( First, Last ) -> IteratorRange<First, Last>;
 } // namespace daw::json::impl

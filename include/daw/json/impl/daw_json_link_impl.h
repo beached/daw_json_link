@@ -42,7 +42,6 @@
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
-#include <daw/daw_visit.h>
 #include <daw/iso8601/daw_date_formatting.h>
 #include <daw/iso8601/daw_date_parsing.h>
 #include <daw/iterator/daw_back_inserter.h>
@@ -50,12 +49,115 @@
 
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
-#include "daw_json_link_base.h"
 #include "daw_literal_end_parse.h"
 #include "daw_name_parse.h"
-#include "daw_parse_numbers.h"
-#include "daw_parse_value_range.h"
+#include "daw_signed_int.h"
 #include "daw_string_quote_parse.h"
+#include "daw_unsigned_int.h"
+
+namespace daw::json {
+	namespace to_strings {
+		namespace {
+			using std::to_string;
+		}
+
+		template<typename T>
+		[[nodiscard]] auto to_string( std::optional<T> const &v )
+		  -> decltype( to_string( *v ) ) {
+			if( not v ) {
+				return {"null"};
+			}
+			return to_string( *v );
+		}
+	} // namespace to_strings
+
+	template<typename T, typename First, typename Last>
+	[[nodiscard, maybe_unused]] static constexpr T
+	from_json( daw::json::impl::IteratorRange<First, Last> &rng );
+
+	enum class LiteralAsStringOpt : uint8_t { never, maybe, always };
+
+#ifdef __cpp_nontype_template_parameter_class
+	// C++ 20 Non-Type Class Template Arguments
+#define JSONNAMETYPE daw::bounded_string
+
+	template<typename String>
+	[[nodiscard]] static constexpr size_t
+	json_name_len( String const &str ) noexcept {
+		return str.size( );
+	}
+
+	template<typename Lhs, typename Rhs>
+	[[nodiscard]] static constexpr bool json_name_eq( Lhs const &lhs,
+	                                                  Rhs const &rhs ) noexcept {
+		return lhs == rhs;
+	}
+	// Convienience for array members
+	static inline constexpr JSONNAMETYPE const no_name = "";
+#else
+#define JSONNAMETYPE char const *
+
+	[[nodiscard]] static constexpr size_t
+	json_name_len( char const *const str ) noexcept {
+		return daw::string_view( str ).size( );
+	}
+
+	[[nodiscard]] static constexpr bool
+	json_name_eq( char const *const lhs, char const *const rhs ) noexcept {
+		return std::string_view( lhs ) == std::string_view( rhs );
+	}
+
+	// Convienience for array members
+	static constexpr char const no_name[] = "";
+#endif
+
+	struct parse_js_date {
+		[[maybe_unused,
+		  nodiscard]] constexpr std::chrono::time_point<std::chrono::system_clock,
+		                                                std::chrono::milliseconds>
+		operator( )( char const *ptr, size_t sz ) const {
+			return daw::date_parsing::parse_javascript_timestamp(
+			  daw::string_view( ptr, sz ) );
+		}
+	};
+
+	template<typename T>
+	struct custom_to_converter_t {
+		[[nodiscard]] constexpr decltype( auto ) operator( )( T &&value ) const {
+			using std::to_string;
+			return to_string( daw::move( value ) );
+		}
+
+		[[nodiscard]] constexpr decltype( auto )
+		operator( )( T const &value ) const {
+			using std::to_string;
+			return to_string( value );
+		}
+	};
+
+	template<typename T>
+	struct custom_from_converter_t {
+		[[nodiscard]] constexpr decltype( auto )
+		operator( )( std::string_view sv ) {
+			return from_string( daw::tag<T>, sv );
+		}
+	};
+
+	enum class JsonParseTypes : uint_fast8_t {
+		Number,
+		Bool,
+		String,
+		Date,
+		Class,
+		Array,
+		Null,
+		KeyValue,
+		Custom
+	};
+
+	template<JsonParseTypes v>
+	using ParseTag = std::integral_constant<JsonParseTypes, v>;
+} // namespace daw::json
 
 namespace daw::json::impl {
 	template<typename T>
@@ -143,6 +245,10 @@ namespace daw::json::impl {
 	}
 
 	template<typename T>
+	using json_parser_description_t = daw::remove_cvref_t<decltype(
+	  describe_json_class( std::declval<T &>( ) ) )>;
+
+	template<typename T>
 	[[nodiscard]] static constexpr auto deref_detect( T &&value ) noexcept
 	  -> decltype( *value ) {
 		return *value;
@@ -178,17 +284,7 @@ namespace daw::json::impl {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] static constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Real>, OutputIterator it,
-	           parse_to_t const &value );
-
-	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] static constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Unsigned>, OutputIterator it,
-	           parse_to_t const &value );
-
-	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] static constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Signed>, OutputIterator it,
+	to_string( ParseTag<JsonParseTypes::Number>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -234,33 +330,7 @@ namespace daw::json::impl {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] static constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Real>, OutputIterator it,
-	           parse_to_t const &value ) {
-
-		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
-
-		using ::daw::json::to_strings::to_string;
-		using std::to_string;
-		return copy_to_iterator( to_string( value ), it );
-	}
-
-	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] static constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Unsigned>, OutputIterator it,
-	           parse_to_t const &value ) {
-
-		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
-
-		using ::daw::json::to_strings::to_string;
-		using std::to_string;
-		return copy_to_iterator( to_string( value ), it );
-	}
-
-	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] static constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Signed>, OutputIterator it,
+	to_string( ParseTag<JsonParseTypes::Number>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		static_assert(
@@ -391,6 +461,135 @@ namespace daw::json::impl {
 		                          static_cast<unsigned>( ' ' ) );
 	}
 
+	template<typename Result, bool RangeCheck = false, typename First,
+	         typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
+		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
+
+		using namespace daw::json::impl::unsignedint;
+		using iresult_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
+		auto [v, new_p] = unsigned_parser<iresult_t>::parse( rng.first );
+		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.first );
+		rng.first = new_p;
+
+		struct result_t {
+			Result value;
+			uint_fast8_t count;
+		};
+
+		if constexpr( RangeCheck ) {
+			return result_t{daw::narrow_cast<Result>( v ), c};
+		} else {
+			return result_t{v, c};
+		}
+	}
+
+	template<typename Result, bool RangeCheck = false, typename First,
+	         typename Last>
+	[[nodiscard]] static constexpr Result
+	parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
+		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
+
+		using namespace daw::json::impl::unsignedint;
+		using result_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
+		auto [result, ptr] = unsigned_parser<result_t>::parse( rng.first );
+		rng.first = ptr;
+
+		if constexpr( RangeCheck ) {
+			return daw::narrow_cast<Result>( result );
+		} else {
+			return result;
+		}
+	}
+
+	// For testing
+	template<typename Result>
+	[[nodiscard]] static constexpr auto
+	parse_unsigned_integer( daw::string_view const &sv ) noexcept {
+		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+		return parse_unsigned_integer<Result, true>( rng );
+	}
+
+	// For testing
+	template<typename Result>
+	[[nodiscard]] static constexpr auto
+	parse_unsigned_integer2( daw::string_view const &sv ) noexcept {
+		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+		return parse_unsigned_integer2<Result, true>( rng );
+	}
+
+	template<typename Result, bool RangeCheck = false, typename First,
+	         typename Last>
+	[[nodiscard]] static constexpr Result
+	parse_integer( IteratorRange<First, Last> &rng ) noexcept {
+		json_assert( rng.front( "+-0123456789" ) );
+
+		using result_t = std::conditional_t<RangeCheck, intmax_t, Result>;
+		using namespace daw::json::impl::signedint;
+		auto [result, ptr] = signed_parser<result_t>::parse( rng.first );
+		rng.first = ptr;
+		if constexpr( RangeCheck ) {
+			return daw::narrow_cast<Result>( result );
+		} else {
+			return result;
+		}
+	}
+
+	template<typename Result>
+	[[nodiscard]] static constexpr Result
+	parse_integer( daw::string_view const &sv ) noexcept {
+		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+		return parse_integer<Result, true>( rng );
+	}
+
+	template<typename Result, typename First, typename Last>
+	[[nodiscard]] static constexpr Result
+	parse_real( IteratorRange<First, Last> &rng ) noexcept {
+		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
+		json_assert( rng.is_real_number_part( ) );
+		auto const sign = [&rng] {
+			if( rng.in( '-' ) ) {
+				rng.remove_prefix( );
+				return -1;
+			}
+			return 1;
+		}( );
+		auto const whole_part =
+		  static_cast<Result>( sign * parse_unsigned_integer<int64_t>( rng ) );
+
+		Result fract_part = 0.0;
+		if( rng.in( '.' ) ) {
+			rng.remove_prefix( );
+
+			auto fract_tmp = parse_unsigned_integer2<uint64_t>( rng );
+			fract_part = static_cast<Result>( fract_tmp.value );
+			fract_part *= static_cast<Result>(
+			  daw::cxmath::dpow10( -static_cast<int32_t>( fract_tmp.count ) ) );
+			fract_part = daw::cxmath::copy_sign( fract_part, whole_part );
+		}
+
+		int32_t exp_part = 0;
+		if( rng.in( "eE" ) ) {
+			rng.remove_prefix( );
+			exp_part = parse_integer<int32_t>( rng );
+		}
+		if constexpr( std::is_same_v<Result, float> ) {
+			return ( whole_part + fract_part ) * daw::cxmath::fpow10( exp_part );
+
+		} else {
+			return ( whole_part + fract_part ) *
+			       static_cast<Result>( daw::cxmath::dpow10( exp_part ) );
+		}
+	}
+
+	template<typename Result>
+	[[nodiscard]] static constexpr Result
+	parse_real( daw::string_view const &sv ) noexcept {
+		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+		return parse_real<Result>( rng );
+	}
+
 	template<typename T>
 	static inline constexpr bool has_json_parser_description_v =
 	  daw::is_detected_v<json_parser_description_t, T>;
@@ -402,6 +601,21 @@ namespace daw::json::impl {
 	template<typename T>
 	static inline constexpr bool has_json_to_json_data_v =
 	  daw::is_detected_v<json_parser_to_json_data_t, T>;
+
+	template<typename string_t>
+	struct kv_t {
+		string_t name;
+		JsonParseTypes expected_type;
+		// bool nullable;
+		size_t pos;
+
+		constexpr kv_t( string_t Name, JsonParseTypes Expected, /*bool Nullable,*/
+		                size_t Pos )
+		  : name( daw::move( Name ) )
+		  , expected_type( Expected )
+		  //				  , nullable( Nullable )
+		  , pos( Pos ) {}
+	};
 
 	template<typename JsonType>
 	using json_parse_to = typename JsonType::parse_to_t;
@@ -422,8 +636,9 @@ namespace daw::json::impl {
 	template<typename First, typename Last>
 	[[nodiscard]] static constexpr daw::string_view
 	parse_name( IteratorRange<First, Last> &rng ) {
-		json_assert( rng.front( '"' ), "Expected \" at beginning of name" );
+		// if( *rng.first == '"' ) {
 		++rng.first;
+		//}
 		auto nr = daw::json::impl::name::name_parser::parse_nq( rng.first );
 		auto name = daw::string_view( rng.first, nr.end_of_name );
 		rng.first = nr.end_of_whitespace;
@@ -489,16 +704,14 @@ namespace daw::json::impl {
 		return result;
 	}
 
-	template<char Left, char Right, typename First, typename Last,
-	         bool AllowEmptyEnd = false>
+	template<char Left, char Right, typename First, typename Last>
 	[[nodiscard]] static constexpr IteratorRange<First, Last>
 	skip_bracketed_item( IteratorRange<First, Last> &rng ) {
 		json_assert( rng.front( Left ), "Expected start bracket/brace" );
 		size_t bracket_count = 1;
 		bool in_quotes = false;
 		auto result = rng;
-		// TODO remove empty check
-		while( bracket_count > 0 and not rng.empty( ) ) {
+		while( not rng.empty( ) and bracket_count > 0 ) {
 			rng.remove_prefix( );
 			rng.trim_left_no_check( );
 			switch( rng.front( ) ) {
@@ -523,22 +736,22 @@ namespace daw::json::impl {
 		json_assert( rng.front( Right ), "Expected closing bracket/brace" );
 
 		rng.remove_prefix( );
-		json_assert( AllowEmptyEnd or not rng.empty( ), "Unexpected empty range" );
+		json_assert( not rng.empty( ), "Unexpected empty range" );
 
 		result.last = rng.begin( );
 		return result;
 	}
 
-	template<typename First, typename Last, bool AllowEmptyEnd = false>
+	template<typename First, typename Last>
 	[[nodiscard]] static constexpr IteratorRange<First, Last>
 	skip_class( IteratorRange<First, Last> &rng ) {
-		return skip_bracketed_item<'{', '}', First, Last, AllowEmptyEnd>( rng );
+		return skip_bracketed_item<'{', '}'>( rng );
 	}
 
-	template<typename First, typename Last, bool AllowEmptyEnd = false>
+	template<typename First, typename Last>
 	[[nodiscard]] static constexpr IteratorRange<First, Last>
 	skip_array( IteratorRange<First, Last> &rng ) {
-		return skip_bracketed_item<'[', ']', First, Last, AllowEmptyEnd>( rng );
+		return skip_bracketed_item<'[', ']'>( rng );
 	}
 
 	template<typename First, typename Last>
@@ -568,10 +781,7 @@ namespace daw::json::impl {
 			             "Expected start of value to begin with '\"'" );
 			rng.remove_prefix( );
 			return impl::skip_string_nq( rng );
-		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
-		                     JsonMember::expected_type ==
-		                       JsonParseTypes::Unsigned or
-		                     JsonMember::expected_type == JsonParseTypes::Signed or
+		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Number or
 		                     JsonMember::expected_type == JsonParseTypes::Null or
 		                     JsonMember::expected_type == JsonParseTypes::Bool ) {
 			return impl::skip_literal( rng );
@@ -602,6 +812,282 @@ namespace daw::json::impl {
 		}
 	}
 
+	template<typename JsonMember, typename First, typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_value( ParseTag<JsonParseTypes::Number>,
+	             IteratorRange<First, Last> &rng ) {
+		using constructor_t = typename JsonMember::constructor_t;
+		using element_t = typename JsonMember::parse_to_t;
+
+		skip_quotes<JsonMember>( rng );
+		json_assert( rng.is_real_number_part( ),
+		             "Expected number to start with on of \"0123456789eE+-\"" );
+
+		if constexpr( std::is_floating_point_v<element_t> ) {
+			auto result = constructor_t{}( parse_real<element_t>( rng ) );
+			skip_quotes<JsonMember>( rng );
+			json_assert( rng.at_end_of_item( ),
+			             "Expected whitespace or one of \",}]\" at end of number" );
+			return result;
+		} else if constexpr( std::is_signed_v<element_t> ) {
+			auto result = constructor_t{}(
+			  parse_integer<element_t, JsonMember::range_check>( rng ) );
+			skip_quotes<JsonMember>( rng );
+			json_assert( rng.at_end_of_item( ),
+			             "Expected whitespace or one of \",}]\" at end of number" );
+			return result;
+		} else {
+			auto result = constructor_t{}(
+			  parse_unsigned_integer<element_t, JsonMember::range_check>( rng ) );
+			skip_quotes<JsonMember>( rng );
+			json_assert( rng.at_end_of_item( ),
+			             "Expected whitespace or one of \",}]\" at end of number" );
+			return result;
+		}
+	}
+
+	template<typename JsonMember, typename First, typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_value( ParseTag<JsonParseTypes::Null>,
+	             IteratorRange<First, Last> &rng ) {
+		using constructor_t = typename JsonMember::constructor_t;
+		using element_t = typename JsonMember::sub_type;
+		size_t const null_size = 4;
+		if( rng.empty( ) or rng.is_null( ) ) {
+			return constructor_t{}( );
+		}
+		if( rng.size( ) >= null_size and rng.in( 'n' ) ) {
+			rng.remove_prefix( null_size );
+			rng.trim_left( );
+			return constructor_t{}( );
+		}
+
+		return parse_value<element_t>( ParseTag<element_t::expected_type>{}, rng );
+	}
+
+	template<typename JsonMember, typename First, typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_value( ParseTag<JsonParseTypes::Bool>,
+	             IteratorRange<First, Last> &rng ) {
+		json_assert( not rng.empty( ) and rng.size( ) >= 4,
+		             "Range to small to be a bool" );
+
+		using constructor_t = typename JsonMember::constructor_t;
+
+		if( rng.in( 't' ) and rng.size( ) > 4 ) {
+			rng.remove_prefix( 4 );
+			rng.trim_left( );
+			return constructor_t{}( true );
+		}
+		rng.remove_prefix( 5 );
+		rng.trim_left( );
+		return constructor_t{}( false );
+	}
+
+	template<typename JsonMember, typename First, typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_value( ParseTag<JsonParseTypes::String>,
+	             IteratorRange<First, Last> &rng ) {
+
+		auto str = skip_string( rng );
+		using constructor_t = typename JsonMember::constructor_t;
+		return constructor_t{}( str.begin( ), str.size( ) );
+	}
+
+	template<typename JsonMember, typename First, typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_value( ParseTag<JsonParseTypes::Date>,
+	             IteratorRange<First, Last> &rng ) {
+
+		auto str = skip_string( rng );
+		using constructor_t = typename JsonMember::constructor_t;
+		return constructor_t{}( str.begin( ), str.size( ) );
+	}
+
+	template<typename JsonMember, typename First, typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_value( ParseTag<JsonParseTypes::Custom>,
+	             IteratorRange<First, Last> &rng ) {
+
+		json_assert( rng.front( '"' ),
+		             "Custom types requite a string at the beginning" );
+		auto str = skip_string_nq( rng );
+		// TODO make custom require a ptr/sz pair
+		using constructor_t = typename JsonMember::from_converter_t;
+		return constructor_t{}( std::string_view( str.begin( ), str.size( ) ) );
+	}
+
+	template<typename JsonMember, typename First, typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_value( ParseTag<JsonParseTypes::Class>,
+	             IteratorRange<First, Last> &rng ) {
+
+		using element_t = typename JsonMember::parse_to_t;
+		return from_json<element_t>( rng );
+	}
+
+	template<typename JsonMember, typename First, typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_value( ParseTag<JsonParseTypes::Array>, IteratorRange<First, Last> & );
+
+	template<typename JsonMember, typename First, typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_value( ParseTag<JsonParseTypes::KeyValue>,
+	             IteratorRange<First, Last> &rng ) {
+
+		json_assert(
+		  rng.front( '{' ),
+		  "Expected keyvalue type to be of class type and beging with '{'" );
+
+		rng.remove_prefix( );
+		rng.trim_left_no_check( );
+
+		auto array_container = typename JsonMember::constructor_t{}( );
+		auto container_appender =
+		  typename JsonMember::appender_t( array_container );
+
+		using key_t = typename JsonMember::json_key_t;
+		using value_t = typename JsonMember::json_element_t;
+		while( not rng.in( "}" ) ) {
+			auto key = parse_name( rng );
+			rng.trim_left_no_check( );
+			container_appender(
+			  typename key_t::constructor_t{}( key.data( ), key.size( ) ),
+			  parse_value<value_t>( ParseTag<value_t::expected_type>{}, rng ) );
+
+			rng.clean_tail( );
+		}
+		json_assert( rng.front( '}' ), "Expected keyvalue type to end with a '}'" );
+		rng.remove_prefix( );
+		rng.trim_left( );
+		return array_container;
+	}
+
+	template<typename JsonMember, typename First, typename Last>
+	[[nodiscard]] static constexpr auto
+	parse_value( ParseTag<JsonParseTypes::Array>,
+	             IteratorRange<First, Last> &rng ) {
+
+		using element_t = typename JsonMember::json_element_t;
+		json_assert( rng.front( '[' ), "Expected array to start with a '['" );
+
+		rng.remove_prefix( );
+		rng.trim_left_no_check( );
+
+		auto array_container = typename JsonMember::constructor_t{}( );
+		auto container_appender =
+		  typename JsonMember::appender_t( array_container );
+
+		while( not rng.empty( ) and not rng.in( "]" ) ) {
+			container_appender(
+			  parse_value<element_t>( ParseTag<element_t::expected_type>{}, rng ) );
+			rng.clean_tail( );
+		}
+		json_assert( rng.front( ']' ), "Expected array to end with a ']'" );
+		rng.remove_prefix( );
+		rng.trim_left( );
+		return array_container;
+	}
+
+	template<typename Container>
+	struct basic_appender {
+		daw::back_inserter_iterator<Container> appender;
+
+		constexpr basic_appender( Container &container ) noexcept
+		  : appender( container ) {}
+
+		template<typename Value>
+		constexpr void operator( )( Value &&value ) {
+			*appender = std::forward<Value>( value );
+		}
+	};
+
+	template<typename Container>
+	struct basic_kv_appender {
+		daw::inserter_iterator<Container> appender;
+
+		constexpr basic_kv_appender( Container &container ) noexcept
+		  : appender( container ) {}
+
+		template<typename Key, typename Value>
+		constexpr void operator( )( Key &&key, Value &&value ) {
+			*appender = std::make_pair( std::forward<Key>( key ),
+			                            std::forward<Value>( value ) );
+		}
+	};
+
+	template<size_t N, typename string_t, typename... JsonMembers>
+	[[nodiscard]] static constexpr kv_t<string_t> get_item( ) noexcept {
+		using type_t = traits::nth_type<N, JsonMembers...>;
+		return {type_t::name, type_t::expected_type, /*type_t::nullable,*/ N};
+	}
+
+	template<typename... JsonMembers>
+	[[nodiscard]] static constexpr size_t find_string_capacity( ) noexcept {
+		return ( json_name_len( JsonMembers::name ) + ... );
+	}
+
+	template<typename... JsonMembers, size_t... Is>
+	[[nodiscard]] static constexpr auto
+	make_map( std::index_sequence<Is...> ) noexcept {
+		using string_t =
+		  basic_bounded_string<char, find_string_capacity<JsonMembers...>( )>;
+
+		return daw::make_array( get_item<Is, string_t, JsonMembers...>( )... );
+	}
+
+	namespace {
+		template<typename... JsonMembers>
+		struct name_map_t {
+			static inline constexpr auto name_map_data =
+			  make_map<JsonMembers...>( std::index_sequence_for<JsonMembers...>{} );
+
+			[[nodiscard]] static constexpr bool
+			has_name( daw::string_view key ) noexcept {
+				using std::begin;
+				using std::end;
+				auto result = algorithm::find_if(
+				  begin( name_map_data ), end( name_map_data ),
+				  [key]( auto const &kv ) { return kv.name == key; } );
+				return result != std::end( name_map_data );
+			}
+
+			[[nodiscard]] static constexpr size_t
+			find_name( daw::string_view key ) noexcept {
+				using std::begin;
+				using std::end;
+				auto result = algorithm::find_if(
+				  begin( name_map_data ), end( name_map_data ),
+				  [key]( auto const &kv ) { return kv.name == key; } );
+				if( result == std::end( name_map_data ) ) {
+					std::terminate( );
+				}
+				return static_cast<size_t>(
+				  std::distance( begin( name_map_data ), result ) );
+			}
+		};
+	} // namespace
+
+	struct location_info_t {
+		JSONNAMETYPE name;
+		IteratorRange<char const *, char const *> location{};
+
+		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
+			return location.empty( ) or location.is_null( );
+		}
+	};
+
+	template<size_t JsonMemberPosition, typename... JsonMembers, typename First,
+	         typename Last>
+	[[nodiscard]] static constexpr decltype( auto )
+	parse_item( std::array<IteratorRange<First, Last>,
+	                       sizeof...( JsonMembers )> const &locations ) {
+
+		using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
+		return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+		                                locations[JsonMemberPosition] );
+	}
+
 	template<size_t pos, typename... JsonMembers, typename First, typename Last>
 	[[nodiscard]] static constexpr IteratorRange<First, Last> find_location(
 	  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
@@ -609,12 +1095,11 @@ namespace daw::json::impl {
 
 		json_assert(
 		  is_json_nullable_v<daw::traits::nth_element<pos, JsonMembers...>> or
-		    not locations[pos].empty( ) or not rng.front( '}' ),
+		    not locations[pos].missing( ) or not rng.front( '}' ),
 		  "Unexpected end of class.  Non-nullable members still not found" );
 
 		rng.trim_left_no_check( );
-		while( locations[pos].empty( ) and rng.has_data( ) and
-		       rng.front( ) != '}' ) {
+		while( locations[pos].missing( ) and not rng.in( '}' ) ) {
 			auto name = parse_name( rng );
 			using name_map = name_map_t<JsonMembers...>;
 			if( not name_map::has_name( name ) ) {
@@ -623,14 +1108,20 @@ namespace daw::json::impl {
 				rng.clean_tail( );
 				continue;
 			}
-			if( auto const name_pos = name_map::find_name( name ); name_pos != pos ) {
-				locations[name_pos].rng = skip_value( rng );
+			auto const name_pos = name_map::find_name( name );
+			if( name_pos != pos ) {
+				// We are out of order, store position for later
+				// TODO:	use type knowledge to speed up skip
+				// TODO:	on skipped classes see if way to store
+				// 				member positions so that we don't have to
+				//				reparse them after
+				locations[name_pos].location = skip_value( rng );
 				rng.clean_tail( );
 				continue;
 			}
-			locations[pos].rng = rng;
+			locations[pos].location = rng;
 		}
-		return locations[pos].rng;
+		return locations[pos].location;
 	}
 
 	template<size_t JsonMemberPosition, typename... JsonMembers, typename First,
@@ -647,27 +1138,28 @@ namespace daw::json::impl {
 			  parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{}, rng );
 			rng.clean_tail( );
 			return result;
-		}
-		auto loc =
-		  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
-
-		// Only allow missing members for Null-able type
-		if( loc.empty( ) ) {
-			if constexpr( JsonMember::expected_type == JsonParseTypes::Null ) {
-				using constructor_t = typename JsonMember::constructor_t;
-				return constructor_t{}( );
-			} else {
-				json_error( "Could not find required class member" );
-			}
-		}
-		if( rng.begin( ) != loc.begin( ) ) {
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
-			                                loc );
 		} else {
-			auto result =
-			  parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{}, rng );
-			rng.clean_tail( );
-			return result;
+			auto loc =
+			  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
+
+			constexpr auto const name = JsonMember::name;
+			::Unused( name );
+			// Only allow missing members for Null-able type
+			json_assert( JsonMember::expected_type == JsonParseTypes::Null or
+			               not loc.empty( ),
+			             "Could not find required class member" );
+
+			if( loc.is_null( ) or
+			    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
+
+				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+				                                loc );
+			} else {
+				auto result =
+				  parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{}, rng );
+				rng.clean_tail( );
+				return result;
+			}
 		}
 	}
 
@@ -693,15 +1185,14 @@ namespace daw::json::impl {
 	template<typename Result, typename... JsonMembers, size_t... Is,
 	         typename First, typename Last>
 	[[nodiscard]] static constexpr Result
-	parse_json_class( IteratorRange<First, Last> rng,
+	parse_json_class( IteratorRange<First, Last> &rng,
 	                  std::index_sequence<Is...> ) {
 		static_assert(
 		  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
 		  "Supplied types cannot be used for construction of this type" );
 
 		rng.trim_left_no_check( );
-		json_assert( not rng.empty( ) and rng.front( ) == '{',
-		             "Expected class to begin with '{'" );
+		json_assert( rng.front( '{' ), "Expected class to begin with '{'" );
 		rng.remove_prefix( );
 		rng.trim_left_no_check( );
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
@@ -710,15 +1201,14 @@ namespace daw::json::impl {
 			rng.remove_prefix( );
 			rng.trim_left( );
 		} else {
-			constexpr auto cknown_locations = daw::make_array(
-			  location_info_t{JsonMembers::name, JsonMembers::expected_type}... );
+			constexpr auto cknown_locations =
+			  daw::make_array( location_info_t{JsonMembers::name}... );
 			auto known_locations = cknown_locations;
 
 			auto result = daw::construct_a<Result>(
 			  parse_item<Is, JsonMembers...>( known_locations, rng )... );
 			rng.trim_left_no_check( );
 			// If we fullfill the contract before all values are found
-			// TODO: make a find end of bracketed item
 			while( not rng.in( '}' ) ) {
 				(void)parse_name( rng );
 				(void)skip_value( rng );
@@ -727,7 +1217,7 @@ namespace daw::json::impl {
 
 			json_assert( rng.front( '}' ), "Expected class to end with '}'" );
 			rng.remove_prefix( );
-			rng.trim_left( ); // TODO: check if should be clean_tail
+			rng.trim_left( );
 			return result;
 		}
 	}
