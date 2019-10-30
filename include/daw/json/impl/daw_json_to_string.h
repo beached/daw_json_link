@@ -255,7 +255,7 @@ namespace daw::json::impl {
 			*it++ = '"';
 			using namespace ::daw::date_formatting::formats;
 			it = copy_to_iterator( ::daw::date_formatting::fmt_string(
-			                         "{0}T{1}:{2}:{3}Z", value, YearMonthDay{},
+			                         "{0}T{1}:{2}:{3}Z", value, YearMonthDay<>{},
 			                         Hour{}, Minute{}, Second{} ),
 			                       it );
 			*it++ = '"';
