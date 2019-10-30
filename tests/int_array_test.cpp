@@ -29,6 +29,7 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_do_n.h>
 #include <daw/daw_random.h>
+#include <daw/iterator/daw_back_inserter.h>
 
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
@@ -116,7 +117,7 @@ int main( ) {
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
 			  std::copy( iterator_t( sv ), iterator_t( ),
-			             std::back_inserter( data ) );
+			             daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -149,7 +150,7 @@ int main( ) {
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
 			  std::copy( iterator_t( sv ), iterator_t( ),
-			             std::back_inserter( data ) );
+			             daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -184,7 +185,7 @@ int main( ) {
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
 			  std::copy( iterator_t( sv ), iterator_t( ),
-			             std::back_inserter( data ) );
+			             daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -218,7 +219,7 @@ int main( ) {
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
 			  std::copy( iterator_t( sv ), iterator_t( ),
-			             std::back_inserter( data ) );
+			             daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
