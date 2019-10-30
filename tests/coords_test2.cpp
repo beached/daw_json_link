@@ -108,7 +108,8 @@ int main( int argc, char **argv ) {
 	  first, last );
 
 	//	auto const sz = cls.coordinates.size( );
-	std::cout << x / sz << '\n';
-	std::cout << y / sz << '\n';
-	std::cout << z / sz << '\n';
+	auto const dz = static_cast<double>( sz );
+	std::cout << x / dsz << '\n';
+	std::cout << y / dsz << '\n';
+	std::cout << z / dsz << '\n';
 }
