@@ -240,11 +240,13 @@ namespace daw::json::impl {
 		auto container_appender =
 		  typename JsonMember::appender_t( array_container );
 
-		while( not rng.empty( ) and not rng.in( "]" ) ) {
+		while( rng.front( ) != ']' ) {
 			container_appender(
 			  parse_value<element_t>( ParseTag<element_t::expected_type>{}, rng ) );
 			rng.clean_tail( );
+			json_assert( rng.has_more( ), "Unexpected end of data" );
 		}
+		json_assert( rng.has_more( ), "Unexpected end of data" );
 		json_assert( rng.front( ']' ), "Expected array to end with a ']'" );
 		rng.remove_prefix( );
 		rng.trim_left( );

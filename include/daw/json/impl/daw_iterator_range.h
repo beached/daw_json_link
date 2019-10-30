@@ -49,6 +49,10 @@ namespace daw::json::impl {
 			return first == last;
 		}
 
+		[[nodiscard]] constexpr bool has_more( ) const noexcept {
+			return first != last;
+		}
+
 		[[nodiscard]] constexpr decltype( auto ) front( ) const noexcept {
 			return *first;
 		}
