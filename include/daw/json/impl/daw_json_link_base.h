@@ -145,79 +145,20 @@ namespace daw::json {
 		struct location_info_t {
 
 			using range_t = IteratorRange<char const *, char const *>;
-			using variant_t = std::variant<std::monostate, uintmax_t, intmax_t,
-			                               double, bool, range_t>;
-			enum class parse_statuses : uint8_t { empty, found, preparsed };
 
 		public:
 			// Data Members
 			JSONNAMETYPE name;
 			JsonParseTypes expected_type;
-			variant_t data{};
-			parse_statuses parse_status = parse_statuses::empty;
+			range_t rng{};
 			// **************
-
-			template<JsonParseTypes JPT>
-			constexpr decltype( auto ) as( ) {
-				json_assert( expected_type == JPT and not empty( ),
-				             "expected_type does not match requested" );
-				if constexpr( JPT == JsonParseTypes::Bool ) {
-					return std::get<bool>( data );
-				} else if constexpr( JPT == JsonParseTypes::Real ) {
-					return std::get<double>( data );
-				} else if constexpr( JPT == JsonParseTypes::Signed ) {
-					return std::get<intmax_t>( data );
-				} else if constexpr( JPT == JsonParseTypes::Unsigned ) {
-					return std::get<uintmax_t>( data );
-				} else {
-					return std::get<range_t>( data );
-				}
-			}
-
-			template<JsonParseTypes JPT>
-			constexpr decltype( auto ) as( ) const {
-				json_assert( expected_type == JPT and not empty( ),
-				             "expected_type does not match requested" );
-				if constexpr( JPT == JsonParseTypes::Bool ) {
-					return std::get<bool>( data );
-				} else if constexpr( JPT == JsonParseTypes::Real ) {
-					return std::get<double>( data );
-				} else if constexpr( JPT == JsonParseTypes::Signed ) {
-					return std::get<intmax_t>( data );
-				} else if constexpr( JPT == JsonParseTypes::Unsigned ) {
-					return std::get<uintmax_t>( data );
-				} else {
-					return std::get<range_t>( data );
-				}
-			}
-
-			[[nodiscard]] constexpr range_t const &rng( ) const {
-				json_assert( std::holds_alternative<range_t>( data ),
-				             "Expected a range value" );
-				return std::get<range_t>( data );
-			}
-
-			[[nodiscard]] constexpr range_t &rng( ) {
-				json_assert( std::holds_alternative<range_t>( data ),
-				             "Expected a range value" );
-				return std::get<range_t>( data );
-			}
 
 			[[nodiscard]] constexpr bool can_be_null( ) const {
 				return expected_type == JsonParseTypes::Null;
 			}
 
-			template<JsonParseTypes JPT>
-			[[nodiscard]] constexpr bool contains( ) const {
-				if( empty( ) or parse_status == parse_statuses::found ) {
-					return false;
-				}
-				return expected_type == JPT;
-			}
-
 			[[nodiscard]] constexpr bool empty( ) const {
-				return not( parse_status != parse_statuses::empty or
-				            data.index( ) != 0 );
+				return rng.empty( );
 			}
 		};
 

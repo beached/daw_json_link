@@ -26,25 +26,10 @@
 #include "daw_json_link_base.h"
 
 namespace daw::json::impl {
-	template<typename First, typename Last>
-	static constexpr void parse_location( location_info_t &location,
-	                                      IteratorRange<First, Last> &rng );
-
-	template<typename First, typename Last>
-	static constexpr void parse_location( location_info_t &location );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::Real>, location_info_t &loc );
-
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
 	parse_value( ParseTag<JsonParseTypes::Real>,
 	             IteratorRange<First, Last> &rng );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::Unsigned>, location_info_t &loc );
 
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
@@ -53,16 +38,8 @@ namespace daw::json::impl {
 
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::Signed>, location_info_t const &loc );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
 	parse_value( ParseTag<JsonParseTypes::Signed>,
 	             IteratorRange<First, Last> &rng );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::Bool>, location_info_t const &loc );
 
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
@@ -71,16 +48,8 @@ namespace daw::json::impl {
 
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::String>, location_info_t const &loc );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
 	parse_value( ParseTag<JsonParseTypes::String>,
 	             IteratorRange<First, Last> &rng );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::Date>, location_info_t const &loc );
 
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
@@ -89,16 +58,8 @@ namespace daw::json::impl {
 
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::Custom>, location_info_t const &loc );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
 	parse_value( ParseTag<JsonParseTypes::Custom>,
 	             IteratorRange<First, Last> &rng );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::Class>, location_info_t loc );
 
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
@@ -107,25 +68,13 @@ namespace daw::json::impl {
 
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::KeyValue>, location_info_t loc );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
 	parse_value( ParseTag<JsonParseTypes::KeyValue>,
 	             IteratorRange<First, Last> &rng );
 
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::Array>, location_info_t loc );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
 	parse_value( ParseTag<JsonParseTypes::Array>,
 	             IteratorRange<First, Last> &rng );
-
-	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
-	parse_value( ParseTag<JsonParseTypes::Null>, location_info_t loc );
 
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto

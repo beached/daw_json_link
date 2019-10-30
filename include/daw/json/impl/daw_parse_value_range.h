@@ -244,11 +244,8 @@ namespace daw::json::impl {
 
 		while( rng.front( ) != ']' ) {
 			json_assert( not rng.empty( ), "Unexpected end of range" );
-			auto item_loc =
-			  location_info_t{element_t::name, element_t::expected_type};
-			parse_location( item_loc, rng );
 			container_appender( parse_value<element_t, First, Last>(
-			  ParseTag<element_t::expected_type>{}, item_loc ) );
+			  ParseTag<element_t::expected_type>{}, rng ) );
 			rng.clean_tail( );
 		}
 		json_assert( rng.front( ']' ), "Expected array to end with a ']'" );
