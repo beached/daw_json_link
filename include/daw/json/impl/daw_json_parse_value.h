@@ -37,19 +37,35 @@
 
 namespace daw::json::impl {
 	template<typename JsonMember, typename First, typename Last>
+	constexpr void
+	skip_quote_when_literal_as_string( IteratorRange<First, Last> &rng ) {
+		if constexpr( JsonMember::literal_as_string == LiteralAsStringOpt::never ) {
+			return;
+		} else if constexpr( JsonMember::literal_as_string ==
+		                     LiteralAsStringOpt::always ) {
+			rng.remove_prefix( );
+			return;
+		} else {
+			if( rng.front( ) == '"' ) {
+				rng.remove_prefix( );
+			}
+			return;
+		}
+	}
+
+	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr auto
 	parse_value( ParseTag<JsonParseTypes::Real>,
 	             IteratorRange<First, Last> &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::parse_to_t;
 
-		// TODO add quote parser for those that request it
-		skip_quotes<JsonMember>( rng );
+		skip_quote_when_literal_as_string<JsonMember>( rng );
 		json_assert( rng.is_real_number_part( ),
 		             "Expected number to start with on of \"0123456789eE+-\"" );
 
 		auto result = constructor_t{}( parse_real<element_t>( rng ) );
-		skip_quotes<JsonMember>( rng );
+		skip_quote_when_literal_as_string<JsonMember>( rng );
 		json_assert( rng.at_end_of_item( ),
 		             "Expected whitespace or one of \",}]\" at end of number" );
 		return result;
@@ -62,14 +78,13 @@ namespace daw::json::impl {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::parse_to_t;
 
-		// TODO add quote parser for those that request it
-		skip_quotes<JsonMember>( rng );
+		skip_quote_when_literal_as_string<JsonMember>( rng );
 		json_assert( rng.is_real_number_part( ),
 		             "Expected number to start with on of \"0123456789eE+-\"" );
 
 		auto result = constructor_t{}(
 		  parse_integer<element_t, JsonMember::range_check>( rng ) );
-		skip_quotes<JsonMember>( rng );
+		skip_quote_when_literal_as_string<JsonMember>( rng );
 		json_assert( rng.at_end_of_item( ),
 		             "Expected whitespace or one of \",}]\" at end of number" );
 		return result;
@@ -82,14 +97,13 @@ namespace daw::json::impl {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::parse_to_t;
 
-		// TODO add quote parser for those that request it
-		skip_quotes<JsonMember>( rng );
+		skip_quote_when_literal_as_string<JsonMember>( rng );
 		json_assert( rng.is_real_number_part( ),
 		             "Expected number to start with on of \"0123456789eE+-\"" );
 
 		auto result = constructor_t{}(
 		  parse_unsigned_integer<element_t, JsonMember::range_check>( rng ) );
-		skip_quotes<JsonMember>( rng );
+		skip_quote_when_literal_as_string<JsonMember>( rng );
 		json_assert( rng.at_end_of_item( ),
 		             "Expected whitespace or one of \",}]\" at end of number" );
 		return result;
@@ -123,13 +137,15 @@ namespace daw::json::impl {
 
 		using constructor_t = typename JsonMember::constructor_t;
 
+		skip_quote_when_literal_as_string<JsonMember>( rng );
+		bool result = false;
 		if( rng.in( 't' ) and rng.size( ) > 4 ) {
 			rng.remove_prefix( 4 );
-			rng.trim_left( );
-			return constructor_t{}( true );
+			result = true;
+		} else {
+			rng.remove_prefix( 5 );
 		}
-		rng.remove_prefix( 5 );
-		rng.trim_left( );
+		skip_quote_when_literal_as_string<JsonMember>( rng );
 		return constructor_t{}( false );
 	}
 

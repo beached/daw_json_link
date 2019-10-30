@@ -226,28 +226,25 @@ int main( ) {
 
 		std::cout << "element count 2: " << count2 << '\n';
 
-		auto data2 = new intmax_t[NUMVALUES];
-		try {
+		{
+			auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
 			auto const count3 = *daw::bench_n_test_mbs<100>(
 			  "p3. int parsing 3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2 );
+				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );
-				  return ptr - data2;
+				  return ptr - data2.get( );
 			  },
 			  json_sv );
 
 			std::cout << "element count 3: " << count3 << '\n';
-		} catch( ... ) {
-			delete[] data2;
-			throw;
 		}
 	}
 
 	{
 		// Unsigned
 		using iterator_t =
-		  daw::json::json_array_iterator<json_checked_number<no_name, uintmax_t>>;
+		  daw::json::json_array_iterator<json_number<no_name, uintmax_t>>;
 
 		std::string json_data3 = [] {
 			std::string result = "[";
@@ -263,21 +260,18 @@ int main( ) {
 		}( );
 
 		daw::string_view json_sv{json_data3.data( ), json_data3.size( )};
-		auto data2 = new intmax_t[NUMVALUES];
-		try {
+		auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
+		{
 			auto const count3 = *daw::bench_n_test_mbs<100>(
 			  "p4. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2 );
+				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );
-				  return ptr - data2;
+				  return ptr - data2.get( );
 			  },
 			  json_sv );
 
 			std::cout << "unsigned parse count: " << count3 << '\n';
-		} catch( ... ) {
-			delete[] data2;
-			throw;
 		}
 	}
 }

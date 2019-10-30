@@ -49,11 +49,11 @@ namespace daw::json {
 
 	[[noreturn]] void
 	json_error( std::string_view reason ) noexcept( not use_json_exceptions_v ) {
-		if constexpr( use_json_exceptions_v ) {
+#ifdef DAW_USE_JSON_EXCEPTIONS
 			throw json_exception( reason );
-		} else {
+#else
 			std::abort( );
-		}
+#endif
 	}
 
 #ifdef DAW_JSON_CHECK_ALWAYS
