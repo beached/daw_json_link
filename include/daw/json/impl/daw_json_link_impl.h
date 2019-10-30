@@ -40,6 +40,7 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_string_view.h>
+#include <daw/iterator/daw_back_inserter.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 #include <daw/iso8601/daw_date_formatting.h>
@@ -191,7 +192,7 @@ namespace daw::json::impl {
 
 	template<typename Container>
 	struct basic_appender {
-		daw::back_inserter_iterator<Container> appender;
+		daw::back_inserter<Container> appender;
 
 		constexpr basic_appender( Container &container ) noexcept
 		  : appender( container ) {}
