@@ -222,6 +222,7 @@ namespace daw::json::impl {
 			rng.clean_tail( );
 		}
 		json_assert( rng.front( '}' ), "Expected keyvalue type to end with a '}'" );
+		rng.remove_prefix( );
 		return array_container;
 	}
 
