@@ -247,4 +247,11 @@ namespace daw::json::impl {
 	template<typename T>
 	using json_parser_description_t = daw::remove_cvref_t<decltype(
 	  describe_json_class( std::declval<T &>( ) ) )>;
+	template<typename JsonMember>
+	using json_result = typename JsonMember::parse_to_t;
+
+	template<size_t I, typename... JsonMembers>
+	using json_result_n =
+	  json_result<daw::traits::nth_element<I, JsonMembers...>>;
+
 } // namespace daw::json::impl

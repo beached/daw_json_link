@@ -27,6 +27,7 @@
 
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
+#include "daw_json_link_impl.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_real.h"
@@ -54,7 +55,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Real>,
 	             IteratorRange<First, Last> &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
@@ -72,7 +73,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Signed>,
 	             IteratorRange<First, Last> &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
@@ -91,7 +92,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Unsigned>,
 	             IteratorRange<First, Last> &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
@@ -110,7 +111,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Null>,
 	             IteratorRange<First, Last> &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
@@ -129,7 +130,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Bool>,
 	             IteratorRange<First, Last> &rng ) {
 		json_assert( not rng.empty( ) and rng.size( ) >= 4,
@@ -150,7 +151,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::String>,
 	             IteratorRange<First, Last> &rng ) {
 
@@ -160,7 +161,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Date>,
 	             IteratorRange<First, Last> &rng ) {
 
@@ -170,7 +171,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Custom>,
 	             IteratorRange<First, Last> &rng ) {
 
@@ -184,7 +185,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Class>,
 	             IteratorRange<First, Last> &rng ) {
 
@@ -193,7 +194,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::KeyValue>,
 	             IteratorRange<First, Last> &rng ) {
 
@@ -226,7 +227,7 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Array>,
 	             IteratorRange<First, Last> &rng ) {
 

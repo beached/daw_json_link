@@ -63,7 +63,7 @@ namespace daw::json {
 		}
 
 		template<typename Result>
-		[[maybe_unused, nodiscard]] static constexpr decltype( auto )
+		[[maybe_unused, nodiscard]] static constexpr Result
 		parse( std::string_view sv ) {
 			json_assert( not sv.empty( ), "Cannot parse an empty string" );
 			return impl::parse_json_class<Result, JsonMembers...>(
@@ -71,7 +71,7 @@ namespace daw::json {
 		}
 
 		template<typename Result, typename First, typename Last>
-		[[maybe_unused, nodiscard]] static constexpr decltype( auto )
+		[[maybe_unused, nodiscard]] static constexpr Result
 		parse( impl::IteratorRange<First, Last> &rng ) {
 			json_assert( not rng.empty( ), "Cannot parse an empty string" );
 			return impl::parse_json_class<Result, JsonMembers...>(

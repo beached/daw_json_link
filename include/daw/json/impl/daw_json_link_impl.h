@@ -279,7 +279,8 @@ namespace daw::json::impl {
 
 	template<size_t JsonMemberPosition, typename... JsonMembers, typename First,
 	         typename Last>
-	[[nodiscard]] static constexpr decltype( auto )
+	[[nodiscard]] static constexpr json_result_n<JsonMemberPosition,
+	                                             JsonMembers...>
 	parse_item( std::array<IteratorRange<First, Last>,
 	                       sizeof...( JsonMembers )> const &locations ) {
 
@@ -326,7 +327,8 @@ namespace daw::json::impl {
 
 	template<size_t JsonMemberPosition, typename... JsonMembers, typename First,
 	         typename Last>
-	[[nodiscard]] static constexpr decltype( auto )
+	[[nodiscard]] static constexpr json_result_n<JsonMemberPosition,
+	                                             JsonMembers...>
 	parse_item( std::array<location_info_t, sizeof...( JsonMembers )> &locations,
 	            IteratorRange<First, Last> &rng ) {
 
