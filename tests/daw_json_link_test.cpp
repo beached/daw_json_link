@@ -296,11 +296,12 @@ int main( ) {
 	using namespace daw::json;
 
 	daw::expecting( 550.0, daw::json::impl::parse_real<double>( "5.5e+2" ) );
-#ifndef _MSC_VER
+#ifdef _MSC_VER
 #define CX constexpr
 #else
-#define CX constexpr
+#define CX
 #endif
+	daw::do_not_optimize( json_data );
 	CX auto data = daw::json::from_json<test_001_t>( json_data );
 
 	std::clog << to_json( data ) << '\n';

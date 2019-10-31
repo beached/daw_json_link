@@ -304,7 +304,7 @@ namespace daw::json {
 	         typename Container = std::vector<typename JsonElement::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
-	[[maybe_unused, nodiscard]] constexpr auto
+	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data ) {
 		using parser_t =
 		  json_array<no_name, Container, JsonElement, Constructor, Appender>;
