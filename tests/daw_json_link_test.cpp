@@ -299,7 +299,7 @@ int main( ) {
 #ifdef _MSC_VER
 #define CX constexpr
 #else
-#define CX
+#define CX constexpr
 #endif
 	daw::do_not_optimize( json_data );
 	CX auto data = daw::json::from_json<test_001_t>( json_data );

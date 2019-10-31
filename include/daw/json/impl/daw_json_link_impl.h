@@ -40,7 +40,6 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_string_view.h>
-#include <daw/iterator/daw_back_inserter.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 #include <daw/iso8601/daw_date_formatting.h>
@@ -343,8 +342,11 @@ namespace daw::json::impl {
 			auto loc =
 			  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
 
-			constexpr auto const name = JsonMember::name;
-			::Unused( name );
+#if not defined( NDEBUG ) or defined( debug )
+			// This is here for debugging to make it easy to know where we are
+			constexpr JSONNAMETYPE const name = JsonMember::name;
+			(void)name;
+#endif
 			// Only allow missing members for Null-able type
 			json_assert( JsonMember::expected_type == JsonParseTypes::Null or
 			               not loc.empty( ),

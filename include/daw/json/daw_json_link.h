@@ -83,11 +83,11 @@ namespace daw::json {
 	template<typename JsonMember>
 	struct json_nullable {
 		using i_am_a_json_type = typename JsonMember::i_am_a_json_type;
-		static constexpr auto name = JsonMember::name;
-		static constexpr auto expected_type = JsonParseTypes::Null;
 		using parse_to_t = typename JsonMember::parse_to_t;
 		using constructor_t = typename JsonMember::constructor_t;
 		using sub_type = JsonMember;
+		static constexpr JSONNAMETYPE name = JsonMember::name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::Null;
 
 		static_assert( std::is_invocable_v<constructor_t>,
 		               "Specified constructor must be callable without arguments" );
@@ -102,16 +102,16 @@ namespace daw::json {
 		               "Constructor must be callable with T" );
 
 		using i_am_a_json_type = void;
-		static constexpr auto name = Name;
-		static constexpr auto expected_type = std::is_floating_point_v<T>
-		                                        ? JsonParseTypes::Real
-		                                        : std::is_unsigned_v<T>
-		                                            ? JsonParseTypes::Unsigned
-		                                            : JsonParseTypes::Signed;
-		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
-		static constexpr bool range_check = RangeCheck;
 		using parse_to_t = T;
 		using constructor_t = Constructor;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
+		  std::is_floating_point_v<T>
+		    ? JsonParseTypes::Real
+		    : std::is_unsigned_v<T> ? JsonParseTypes::Unsigned
+		                            : JsonParseTypes::Signed;
+		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
+		static constexpr bool range_check = RangeCheck;
 	};
 
 	template<JSONNAMETYPE Name, typename T = double,
@@ -132,11 +132,11 @@ namespace daw::json {
 		static_assert( std::is_convertible_v<bool, T>,
 		               "Supplied result type must be convertable from bool" );
 		using i_am_a_json_type = void;
-		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
-		static constexpr auto name = Name;
-		static constexpr auto expected_type = JsonParseTypes::Bool;
 		using parse_to_t = T;
 		using constructor_t = Constructor;
+		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
 	};
 
 	template<JSONNAMETYPE Name, typename T = std::string,
@@ -148,10 +148,10 @@ namespace daw::json {
 		  "Constructor must be callable with a char const * and a size_t" );
 
 		using i_am_a_json_type = void;
-		static constexpr auto name = Name;
-		static constexpr auto expected_type = JsonParseTypes::String;
 		using parse_to_t = T;
 		using constructor_t = Constructor;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::String;
 		static constexpr bool empty_is_null = EmptyStringNull;
 	};
 
@@ -170,10 +170,10 @@ namespace daw::json {
 		  "Constructor must be callable with a char const * and a size_t" );
 
 		using i_am_a_json_type = void;
-		static constexpr auto name = Name;
-		static constexpr auto expected_type = JsonParseTypes::Date;
 		using parse_to_t = T;
 		using constructor_t = Constructor;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
 	};
 
 	///
@@ -186,10 +186,10 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<T>>
 	struct json_class {
 		using i_am_a_json_type = void;
-		static constexpr auto name = Name;
-		static constexpr auto expected_type = JsonParseTypes::Class;
 		using parse_to_t = T;
 		using constructor_t = Constructor;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
 	};
 
 	template<JSONNAMETYPE Name, typename T,
@@ -198,12 +198,12 @@ namespace daw::json {
 	         bool IsString = true>
 	struct json_custom {
 		using i_am_a_json_type = void;
-		static constexpr auto const name = Name;
-		static constexpr auto expected_type = JsonParseTypes::Custom;
 		using parse_to_t = T;
 		using to_converter_t = ToConverter;
 		using from_converter_t = FromConverter;
-		static constexpr auto const is_string = IsString;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::Custom;
+		static constexpr bool const is_string = IsString;
 	};
 
 	/// Link to a JSON array
@@ -221,15 +221,14 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	struct json_array {
+		static_assert( impl::is_a_json_type_v<JsonElement> );
 		using i_am_a_json_type = void;
-		static constexpr auto name = Name;
-		static constexpr auto expected_type = JsonParseTypes::Array;
 		using parse_to_t = Container;
 		using constructor_t = Constructor;
 		using appender_t = Appender;
 		using json_element_t = JsonElement;
-
-		static_assert( impl::is_a_json_type_v<JsonElement> );
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
 	};
 
 	/// Map a KV type json class { "Key String": ValueType, ... }
@@ -247,17 +246,16 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_kv_appender<Container>>
 	struct json_key_value {
+		static_assert( impl::is_a_json_type_v<JsonValueType> );
+		static_assert( impl::is_a_json_type_v<JsonKeyType> );
 		using i_am_a_json_type = void;
-		static constexpr auto name = Name;
-		static constexpr auto expected_type = JsonParseTypes::KeyValue;
 		using parse_to_t = Container;
 		using constructor_t = Constructor;
 		using appender_t = Appender;
 		using json_element_t = JsonValueType;
 		using json_key_t = JsonKeyType;
-
-		static_assert( impl::is_a_json_type_v<JsonValueType> );
-		static_assert( impl::is_a_json_type_v<JsonKeyType> );
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::KeyValue;
 	};
 
 	template<typename T>
@@ -281,7 +279,7 @@ namespace daw::json {
 		/*
 		return impl::parse_value( ParseTag<JsonParseTypes::Class>{}, rng );
 		 */
-		auto result = impl::json_parser_description_t<T>::template parse<T>( rng );
+		T result = impl::json_parser_description_t<T>::template parse<T>( rng );
 		rng.trim_left( );
 		return result;
 	}
