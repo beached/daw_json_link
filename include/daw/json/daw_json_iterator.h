@@ -76,7 +76,7 @@ namespace daw::json {
 		                        {start_path.data( ), start_path.size( )} ) ) {
 
 			static_assert(
-			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>> );
+			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>, "String must be like a string_view" );
 
 			json_assert( verify_bracket and m_state.front( ) == '[',
 			             "Arrays are expected to start with a [" );

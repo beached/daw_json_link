@@ -43,10 +43,8 @@ static constexpr size_t const NUMVALUES = 1'000'000ULL;
 int main( ) {
 	using namespace daw::json;
 	using int_type = uintmax_t;
-	using iterator_t =
-	  daw::json::json_array_iterator<json_number<no_name, int_type>>;
 
-	std::string json_data3 = [] {
+	std::string const json_data = [] {
 		std::string result = "[";
 		result.reserve( NUMVALUES * 23 + 8 );
 		daw::algorithm::do_n( NUMVALUES, [&result] {
@@ -59,18 +57,14 @@ int main( ) {
 		return result;
 	}( );
 
-	daw::string_view json_sv{json_data3.data( ), json_data3.size( )};
-	auto data2 = std::unique_ptr<int_type[]>( new int_type[NUMVALUES] );
+	auto const json_sv = daw::string_view( json_data.data( ), json_data.size( ) );
 
-	daw::do_not_optimize( data2 );
-	auto const count3 = *daw::bench_n_test_mbs<100>(
-	  "uint parsing", json_sv.size( ),
-	  [&]( auto &&sv ) noexcept {
-		  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
-		  daw::do_not_optimize( data2 );
-		  return ptr - data2.get( );
-	  },
-	  json_sv );
-
-	std::cout << "unsigned parse count: " << count3 << '\n';
+	for( size_t n = 0; n < 1000; ++n ) {
+		daw::do_not_optimize( json_sv );
+		auto result =
+		  daw::json::from_json_array<json_number<no_name, int_type>,
+		                             daw::bounded_vector_t<int_type, NUMVALUES>>(
+		    json_sv );
+		daw::do_not_optimize( result );
+	}
 }

@@ -275,4 +275,39 @@ int main( ) {
 			std::cout << "unsigned parse count: " << count3 << '\n';
 		}
 	}
+	{
+		// Unsigned
+		using int_type = uint32_t;
+		std::string const json_data5 = [] {
+			std::string result = "[";
+			result.reserve( NUMVALUES * 23 + 8 );
+			daw::algorithm::do_n( NUMVALUES, [&result] {
+				result += std::to_string( daw::randint<int_type>(
+				            std::numeric_limits<int_type>::min( ),
+				            std::numeric_limits<int_type>::max( ) ) ) +
+				          ',';
+			} );
+			result.back( ) = ']';
+			return result;
+		}( );
+
+		auto const json_sv =
+		  std::string_view( json_data5.data( ), json_data5.size( ) );
+
+		{
+			auto const count4 = *daw::bench_n_test_mbs<100>(
+			  "p5. parsing", json_sv.size( ),
+			  [&]( auto &&sv ) noexcept {
+				  auto result = daw::json::from_json_array<
+				    json_number<no_name, int_type>,
+				    daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
+
+				  daw::do_not_optimize( result );
+				  return result.size( );
+			  },
+			  json_sv );
+
+			std::cout << "unsigned parse count: " << count4 << '\n';
+		}
+	}
 }
