@@ -135,6 +135,12 @@ add_test(int_array_test int_array_test_bin)
 add_dependencies(check int_array_test_bin)
 add_dependencies(full int_array_test_bin)
 
+add_executable(int_array_basic_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/int_array_basic_test.cpp)
+add_dependencies(int_array_basic_test_bin dependency_stub)
+add_test(int_array_basic_test int_array_basic_test_bin)
+add_dependencies(check int_array_basic_test_bin)
+add_dependencies(full int_array_basic_test_bin)
+
 add_executable(float_array_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/float_array_test.cpp)
 add_dependencies(float_array_test_bin dependency_stub)
 add_test(float_array_test float_array_test_bin)
