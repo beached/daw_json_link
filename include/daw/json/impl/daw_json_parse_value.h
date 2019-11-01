@@ -147,7 +147,7 @@ namespace daw::json::impl {
 			rng.remove_prefix( 5 );
 		}
 		skip_quote_when_literal_as_string<JsonMember>( rng );
-		return constructor_t{}( false );
+		return constructor_t{}( result );
 	}
 
 	template<typename JsonMember, typename First, typename Last>
