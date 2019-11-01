@@ -25,9 +25,9 @@
 #include <daw/daw_cxmath.h>
 
 #include "daw_iterator_range.h"
-#include "daw_json_parse_unsigned_int.h"
-#include "daw_json_parse_signed_int.h"
 #include "daw_json_assert.h"
+#include "daw_json_parse_signed_int.h"
+#include "daw_json_parse_unsigned_int.h"
 
 namespace daw::json::impl {
 	template<typename Result, typename First, typename Last>
@@ -35,8 +35,8 @@ namespace daw::json::impl {
 	parse_real( IteratorRange<First, Last> &rng ) noexcept {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		json_assert( rng.is_real_number_part( ), "Expected a real number" );
-		auto const sign = [&rng] {
-			if( rng.in( '-' ) ) {
+		auto const sign = [&] {
+			if( rng.front( ) == '-' ) {
 				rng.remove_prefix( );
 				return -1;
 			}
@@ -46,7 +46,7 @@ namespace daw::json::impl {
 		  static_cast<Result>( sign * parse_unsigned_integer<int64_t>( rng ) );
 
 		Result fract_part = 0.0;
-		if( rng.in( '.' ) ) {
+		if( rng.front( ) == '.' ) {
 			rng.remove_prefix( );
 
 			auto fract_tmp = parse_unsigned_integer2<uint64_t>( rng );
@@ -57,7 +57,7 @@ namespace daw::json::impl {
 		}
 
 		int32_t exp_part = 0;
-		if( rng.in( "eE" ) ) {
+		if( auto const frnt = rng.front( ); frnt == 'e' or frnt == 'E' ) {
 			rng.remove_prefix( );
 			exp_part = parse_integer<int32_t>( rng );
 		}
