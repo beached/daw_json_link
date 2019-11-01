@@ -58,6 +58,21 @@ static constexpr size_t const NUMVALUES = 1'000ULL;
 #else
 static constexpr size_t const NUMVALUES = 1'000'000ULL;
 #endif
+
+template<typename Float>
+Float rand_float( ) {
+	auto f0 = daw::randint<intmax_t>( std::numeric_limits<intmax_t>::min( ),
+	                                  std::numeric_limits<intmax_t>::max( ) );
+	if( f0 == 0 ) {
+		f0 = 1.0;
+	}
+	auto const f1 =
+	  daw::randint<intmax_t>( std::numeric_limits<intmax_t>::min( ),
+	                          std::numeric_limits<intmax_t>::max( ) );
+
+	return static_cast<Float>( f1 ) / static_cast<Float>( f0 );
+}
+
 int main( ) {
 	using namespace daw::json;
 	std::string const json_data = [] {
@@ -68,11 +83,7 @@ int main( ) {
 		// allocations
 		result.reserve( NUMVALUES * 23 + 8 );
 		daw::algorithm::do_n( NUMVALUES, [&result] {
-			result += "{\"a\":" +
-			          std::to_string( daw::randint<float>(
-			            std::numeric_limits<float>::min( ),
-			            std::numeric_limits<float>::max( ) ) ) +
-			          "},";
+			result += "{\"a\":" + std::to_string( rand_float<float>( ) ) + "},";
 		} );
 		result.back( ) = ']';
 		return result;
@@ -82,10 +93,7 @@ int main( ) {
 		std::string result = "[";
 		result.reserve( NUMVALUES * 23 + 8 );
 		daw::algorithm::do_n( NUMVALUES, [&result] {
-			result += std::to_string( daw::randint<float>(
-			            std::numeric_limits<float>::min( ),
-			            std::numeric_limits<float>::max( ) ) ) +
-			          ',';
+			result += std::to_string( rand_float<float>( ) ) + ',';
 		} );
 		result.back( ) = ']';
 		return result;
@@ -250,10 +258,7 @@ int main( ) {
 			std::string result = "[";
 			result.reserve( NUMVALUES * 23 + 8 );
 			daw::algorithm::do_n( NUMVALUES, [&result] {
-				result += std::to_string( daw::randint<double>(
-				            std::numeric_limits<double>::min( ),
-				            std::numeric_limits<double>::max( ) ) ) +
-				          ',';
+				result += std::to_string( rand_float<double>( ) ) + ',';
 			} );
 			result.back( ) = ']';
 			return result;
