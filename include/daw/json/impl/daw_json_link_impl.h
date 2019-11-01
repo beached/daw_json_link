@@ -299,7 +299,7 @@ namespace daw::json::impl {
 		  "Unexpected end of class.  Non-nullable members still not found" );
 
 		rng.trim_left_no_check( );
-		while( locations[pos].missing( ) and not rng.in( '}' ) ) {
+		while( locations[pos].missing( ) and rng.front( ) != '}' ) {
 			auto name = parse_name( rng );
 			using name_map = name_map_t<JsonMembers...>;
 			if( not name_map::has_name( name ) ) {
@@ -413,13 +413,13 @@ namespace daw::json::impl {
 			  parse_item<Is, JsonMembers...>( known_locations, rng )... );
 			rng.trim_left_no_check( );
 			// If we fullfill the contract before all values are found
-			while( not rng.in( '}' ) ) {
+			while( rng.front( ) != '}' ) {
 				(void)parse_name( rng );
 				(void)skip_value( rng );
 				rng.clean_tail( );
 			}
 
-			json_assert( rng.front( '}' ), "Expected class to end with '}'" );
+			json_assert( rng.front( ) == '}', "Expected class to end with '}'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 			return result;

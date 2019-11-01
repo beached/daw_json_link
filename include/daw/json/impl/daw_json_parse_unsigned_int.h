@@ -97,10 +97,10 @@ namespace daw::json::impl {
 	}
 
 	// For testing
-	template<typename Result>
+	/*template<typename Result>
 	[[nodiscard]] static constexpr auto
 	parse_unsigned_integer2( daw::string_view const &sv ) noexcept {
 		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
 		return parse_unsigned_integer2<Result, true>( rng );
-	}
+	}*/
 } // namespace daw::json::impl

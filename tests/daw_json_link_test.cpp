@@ -34,20 +34,25 @@
 #include "daw/json/daw_json_link.h"
 
 namespace {
+	template<typename Real, size_t N>
+	constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
+		auto tmp = daw::json::impl::IteratorRange<char const *, char const *>(
+		  str, str + N );
+		return daw::json::impl::parse_real<double>( tmp ) == expected;
+	}
+
 	static_assert(
 	  daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ) == 12345 );
-	static_assert(
-	  daw::json::impl::parse_unsigned_integer2<uintmax_t>( "12345" ).count == 5 );
-	static_assert( daw::json::impl::parse_integer<intmax_t>( "12345" ) ==
-	               12345 );
+
+	static_assert( daw::json::impl::parse_integer<intmax_t>( "12345" ) == 12345 );
 	static_assert( daw::json::impl::parse_integer<intmax_t>( "-12345" ) ==
 	               -12345 );
 
-	static_assert( daw::json::impl::parse_real<double>( "5" ) == 5.0 );
-	static_assert( daw::json::impl::parse_real<double>( "5.5" ) == 5.5 );
-	static_assert( daw::json::impl::parse_real<double>( "5.5e2" ) == 550.0 );
-	static_assert( daw::json::impl::parse_real<double>( "5.5e+2" ) == 550.0 );
-	static_assert( daw::json::impl::parse_real<double>( "5e2" ) == 500.0 );
+	static_assert( parse_real_test<double>( "5", 5.0 ) );
+	static_assert( parse_real_test<double>( "5.5", 5.5 ) );
+	static_assert( parse_real_test<double>( "5.5e2", 550.0 ) );
+	static_assert( parse_real_test<double>( "5.5e+2", 550.0 ) );
+	static_assert( parse_real_test<double>( "5e2", 500.0 ) );
 
 	struct test_001_t {
 		int i = 0;
@@ -295,7 +300,8 @@ namespace {
 int main( ) {
 	using namespace daw::json;
 
-	daw::expecting( 550.0, daw::json::impl::parse_real<double>( "5.5e+2" ) );
+	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
+
 #ifdef _MSC_VER
 #define CX constexpr
 #else

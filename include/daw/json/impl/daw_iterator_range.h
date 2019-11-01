@@ -165,14 +165,17 @@ namespace daw::json::impl {
 		template<size_t N>
 		[[nodiscard]] constexpr bool in( char const ( &set )[N] ) const noexcept {
 			bool result = false;
-			for( size_t n = 0; n < ( N - 1 ); ++n ) {
-				result |= ( set[n] == *first );
-			}
+			daw::algorithm::do_n_arg<N>( [&]( size_t n ) { result |= ( set[n] == *first ); } );
 			return result;
 		}
 
 		[[nodiscard]] constexpr bool is_real_number_part( ) const noexcept {
-			return in( "0123456789eE+-" );
+			auto const c = *first;
+			bool b0 =
+			  ( static_cast<unsigned>( c ) - static_cast<unsigned>( '0' ) ) < 10U;
+			bool b1 = c == 'e' or c == 'E';
+			bool b2 = c == '+' or c == '-';
+			return b0 or b1 or b2;
 		}
 
 		[[nodiscard]] constexpr daw::string_view munch( char c ) noexcept {
@@ -197,5 +200,5 @@ namespace daw::json::impl {
 	};
 
 	template<typename First, typename Last>
-	IteratorRange( First, Last ) -> IteratorRange<First, Last>;
+	IteratorRange( First, Last )->IteratorRange<First, Last>;
 } // namespace daw::json::impl
