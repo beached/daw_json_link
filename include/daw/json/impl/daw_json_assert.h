@@ -50,9 +50,10 @@ namespace daw::json {
 	[[noreturn]] void
 	json_error( std::string_view reason ) noexcept( not use_json_exceptions_v ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
-			throw json_exception( reason );
+		throw json_exception( reason );
 #else
-			std::abort( );
+		(void)reason;
+		std::abort( );
 #endif
 	}
 
