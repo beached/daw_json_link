@@ -34,10 +34,8 @@
 #include <utility>
 
 #include <daw/daw_algorithm.h>
-#ifdef __cpp_nontype_template_parameter_class
-#include <daw/daw_bounded_string.h>
-#endif
 #include <daw/daw_cxmath.h>
+#include <daw/daw_fnv1a_hash.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -136,6 +134,7 @@ namespace daw::json::impl {
 	template<typename string_t>
 	struct kv_t {
 		string_t name;
+		size_t hash;
 		JsonParseTypes expected_type;
 		// bool nullable;
 		size_t pos;
@@ -143,6 +142,7 @@ namespace daw::json::impl {
 		constexpr kv_t( string_t Name, JsonParseTypes Expected, /*bool Nullable,*/
 		                size_t Pos )
 		  : name( daw::move( Name ) )
+		  , hash( daw::fnv1a_hash( Name ) )
 		  , expected_type( Expected )
 		  //				  , nullable( Nullable )
 		  , pos( Pos ) {}
@@ -255,9 +255,10 @@ namespace daw::json::impl {
 		find_name( daw::string_view key ) noexcept {
 			using std::begin;
 			using std::end;
+			auto const hash = daw::fnv1a_hash( key );
 			auto result = algorithm::find_if(
 			  begin( name_map_data ), end( name_map_data ),
-			  [key]( auto const &kv ) { return kv.name == key; } );
+			  [hash]( auto const &kv ) { return kv.hash == hash; } );
 			if( result == std::end( name_map_data ) ) {
 				std::terminate( );
 			}
