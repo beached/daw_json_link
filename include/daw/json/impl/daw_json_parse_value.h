@@ -226,8 +226,6 @@ namespace daw::json::impl {
 		rng.trim_left( );
 		return array_container;
 	}
-	//  JsonMember::parse_to_t = Container
-	//  JsonMember::appender_t = basic_appender<Container>
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Array>,

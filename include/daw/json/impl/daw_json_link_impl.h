@@ -189,7 +189,6 @@ namespace daw::json::impl {
 		}
 	} // namespace
 
-
 	template<typename Container>
 	struct basic_kv_appender {
 		daw::inserter_iterator<Container> appender;
@@ -233,7 +232,7 @@ namespace daw::json::impl {
 		has_name( daw::string_view key ) noexcept {
 			using std::begin;
 			using std::end;
-			auto result = algorithm::find_if(
+			auto const result = algorithm::find_if(
 			  begin( name_map_data ), end( name_map_data ),
 			  [key]( auto const &kv ) { return kv.name == key; } );
 			return result != std::end( name_map_data );
@@ -264,20 +263,8 @@ namespace daw::json::impl {
 		}
 	};
 
-	template<size_t JsonMemberPosition, typename... JsonMembers, typename First,
-	         typename Last>
-	[[nodiscard]] static constexpr json_result_n<JsonMemberPosition,
-	                                             JsonMembers...>
-	parse_item( std::array<IteratorRange<First, Last>,
-	                       sizeof...( JsonMembers )> const &locations ) {
-
-		using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
-		return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
-		                                locations[JsonMemberPosition] );
-	}
-
 	template<size_t pos, typename... JsonMembers, typename First, typename Last>
-	[[nodiscard]] static constexpr IteratorRange<First, Last> find_location(
+	[[nodiscard]] static constexpr IteratorRange<First, Last> find_class_member(
 	  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
 	  IteratorRange<First, Last> &rng ) {
 
@@ -303,6 +290,8 @@ namespace daw::json::impl {
 				// TODO:	on skipped classes see if way to store
 				// 				member positions so that we don't have to
 				//				reparse them after
+				// RESULT: storing preparsed is slower, don't try 3 times
+				// it also limits the type of things we can parse potentially
 				locations[name_pos].location = skip_value( rng );
 				rng.clean_tail( );
 				continue;
@@ -316,20 +305,20 @@ namespace daw::json::impl {
 	         typename Last>
 	[[nodiscard]] static constexpr json_result_n<JsonMemberPosition,
 	                                             JsonMembers...>
-	parse_item( std::array<location_info_t, sizeof...( JsonMembers )> &locations,
-	            IteratorRange<First, Last> &rng ) {
+	parse_class_member(
+	  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
+	  IteratorRange<First, Last> &rng ) {
 
+		rng.clean_tail( );
 		using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
 
 		// If we are an array element
 		if constexpr( json_name_eq( JsonMember::name, no_name ) ) {
-			auto result =
-			  parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{}, rng );
-			rng.clean_tail( );
-			return result;
+			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+			                                rng );
 		} else {
 			auto loc =
-			  find_location<JsonMemberPosition, JsonMembers...>( locations, rng );
+			  find_class_member<JsonMemberPosition, JsonMembers...>( locations, rng );
 
 #if not defined( NDEBUG ) or defined( debug )
 			// This is here for debugging to make it easy to know where we are
@@ -347,10 +336,8 @@ namespace daw::json::impl {
 				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
 				                                loc );
 			} else {
-				auto result =
-				  parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{}, rng );
-				rng.clean_tail( );
-				return result;
+				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+				                                rng );
 			}
 		}
 	}
@@ -398,8 +385,8 @@ namespace daw::json::impl {
 			auto known_locations = cknown_locations;
 
 			auto result = daw::construct_a<Result>(
-			  parse_item<Is, JsonMembers...>( known_locations, rng )... );
-			rng.trim_left_no_check( );
+			  parse_class_member<Is, JsonMembers...>( known_locations, rng )... );
+			rng.clean_tail( );
 			// If we fullfill the contract before all values are found
 			while( rng.front( ) != '}' ) {
 				(void)parse_name( rng );

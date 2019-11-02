@@ -91,7 +91,8 @@ namespace daw::json {
 	enum class LiteralAsStringOpt : uint8_t { never, maybe, always };
 
 	template<typename T>
-	inline constexpr bool is_range_constructable_v = not std::is_trivially_constructible_v<T>;
+	inline constexpr bool is_range_constructable_v =
+	  not std::is_trivially_constructible_v<T>;
 } // namespace daw::json
 
 namespace daw::json::impl {
