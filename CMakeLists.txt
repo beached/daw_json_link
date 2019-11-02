@@ -180,6 +180,13 @@ add_test(nativejson_bench nativejson_bench_bin)
 add_dependencies(check nativejson_bench_bin)
 add_dependencies(full nativejson_bench_bin)
 
+add_executable(nativejson_bench_basic_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test.h ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/canada_test.h ${TEST_FOLDER}/nativejson_bench_basic.cpp)
+add_dependencies(nativejson_bench_basic_bin dependency_stub)
+target_link_libraries(nativejson_bench_basic_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+add_test(nativejson_bench_basic nativejson_bench_basic_bin)
+add_dependencies(check nativejson_bench_basic_bin)
+add_dependencies(full nativejson_bench_basic_bin)
+
 add_executable(citm_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/citm_test.cpp)
 add_dependencies(citm_test_bin dependency_stub)
 target_link_libraries(citm_test_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
