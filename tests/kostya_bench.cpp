@@ -79,6 +79,7 @@ auto describe_json_class( coordinates_t ) noexcept {
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;
+	std::ios_base::sync_with_stdio( false );
 
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filename to open\n";
@@ -86,28 +87,26 @@ int main( int argc, char **argv ) {
 	}
 
 	auto const json_data = daw::memory_mapped_file<>( argv[1] );
-	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
+	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using iterator_t =
 	  daw::json::json_array_iterator<json_class<no_name, coordinate_t>>;
 
-	auto first = iterator_t( json_sv, "coordinates" );
-	auto last = iterator_t( );
-	
 	double x = 0.0;
 	double y = 0.0;
 	double z = 0.0;
 	size_t sz = 0U;
-	while( first != last ) {
-		auto c = *first;
+
+	// first will be json_array_sterator to the array coordinates in root object
+	for( auto first = iterator_t( json_sv, "coordnates" ); first != iterator_t( );
+	     ++first ) {
+		auto const c = *first;
 		++sz;
 		x += c.x;
 		y += c.y;
 		z += c.z;
-		++first;
 	}
 
-	//	auto const sz = cls.coordinates.size( );
 	auto const dsz = static_cast<double>( sz );
 	std::cout << x / dsz << '\n';
 	std::cout << y / dsz << '\n';
