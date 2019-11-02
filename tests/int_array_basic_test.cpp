@@ -29,6 +29,7 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_random.h>
 
+#include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
 #ifndef NDEBUG
@@ -54,18 +55,43 @@ static std::string make_int_array_data( ) {
 	}( );
 }
 
-int main( ) {
+template<typename T>
+static void test_from_json_array( std::string_view json_sv ) {
 	using namespace daw::json;
-	using int_type = uintmax_t;
 
-	auto const json_str = make_int_array_data<NUMVALUES, int_type>( );
-	auto const json_sv = std::string_view( json_str.data( ), json_str.size( ) );
 	for( size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_sv );
-		auto result =
-		  daw::json::from_json_array<json_number<no_name, int_type>,
-		                             daw::bounded_vector_t<int_type, NUMVALUES>>(
-		    json_sv );
+		auto result = daw::json::from_json_array<
+		  json_number<no_name, T>, daw::bounded_vector_t<T, NUMVALUES>>( json_sv );
 		daw::do_not_optimize( result );
 	}
+}
+
+using int_type = uintmax_t;
+int_type arry[NUMVALUES];
+
+template<typename T>
+static void test_json_array_iterator( std::string_view json_sv ) {
+	using namespace daw::json;
+	using iterator_t = json_array_iterator<json_number<no_name, T>>;
+	daw::do_not_optimize( arry );
+	for( size_t n = 0; n < 1000; ++n ) {
+		daw::do_not_optimize( json_sv );
+		auto first = iterator_t( json_sv );
+		auto first_out = arry;
+		auto const last = iterator_t( );
+		while( first != last ) {
+			*first_out = *first;
+			++first_out;
+			++first;
+		}
+		daw::do_not_optimize( arry );
+	}
+}
+
+int main( ) {
+	auto const json_str = make_int_array_data<NUMVALUES, int_type>( );
+	auto const json_sv = std::string_view( json_str.data( ), json_str.size( ) );
+	test_from_json_array<int_type>( json_sv );
+	test_json_array_iterator<int_type>( json_sv );
 }
