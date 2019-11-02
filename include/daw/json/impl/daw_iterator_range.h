@@ -165,7 +165,8 @@ namespace daw::json::impl {
 		template<size_t N>
 		[[nodiscard]] constexpr bool in( char const ( &set )[N] ) const noexcept {
 			bool result = false;
-			daw::algorithm::do_n_arg<N>( [&]( size_t n ) { result |= ( set[n] == *first ); } );
+			daw::algorithm::do_n_arg<N>(
+			  [&]( size_t n ) { result |= ( set[n] == *first ); } );
 			return result;
 		}
 
@@ -187,14 +188,15 @@ namespace daw::json::impl {
 		}
 
 		[[nodiscard]] constexpr bool at_end_of_item( ) const noexcept {
-			return in( ",}]" ) or daw::parser::is_unicode_whitespace( front( ) );
+			auto const c = front( );
+			return c == ',' or c == '}' or c == ']' or is_space( c );
 		}
 
 		constexpr void clean_tail( ) noexcept {
 			trim_left( );
 			if( in( ',' ) ) {
 				remove_prefix( );
-				trim_left( );
+				trim_left_no_check( );
 			}
 		}
 	};
