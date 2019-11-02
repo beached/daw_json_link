@@ -68,8 +68,8 @@ int main( int argc, char **argv ) {
 		daw::do_not_optimize( json_sv2 );
 		daw::do_not_optimize( json_sv3 );
 		daw::do_not_optimize( daw::json::from_json<twitter_object_t>( json_sv1 ) );
-		/*daw::do_not_optimize( daw::json::from_json<citm_object_t>( json_sv2 ) );
-		daw::do_not_optimize( daw::json::from_json<canada_object_t>( json_sv3 ) );*/
+		daw::do_not_optimize( daw::json::from_json<citm_object_t>( json_sv2 ) );
+		daw::do_not_optimize( daw::json::from_json<canada_object_t>( json_sv3 ) );
 	}
 #endif
 }
