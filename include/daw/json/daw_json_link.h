@@ -312,7 +312,7 @@ namespace daw::json {
 
 		auto rng = daw::json::impl::IteratorRange(
 		  std::data( json_data ), std::data( json_data ) + std::size( json_data ) );
-		rng.trim_left( );
+		rng.trim_left_no_check( );
 		json_assert( rng.front( '[' ), "Expected array class" );
 
 		return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},

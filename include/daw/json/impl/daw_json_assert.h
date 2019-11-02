@@ -58,26 +58,26 @@ namespace daw::json {
 	}
 
 #ifdef DAW_JSON_CHECK_ALWAYS
-	template<typename Bool>
-	inline constexpr void
-	json_assert( Bool &&b,
-	             std::string_view reason ) noexcept( not use_json_exceptions_v ) {
+	template<typename Bool, size_t N>
+	inline constexpr void json_assert(
+	  Bool &&b,
+	  char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
 		static_assert( std::is_convertible_v<Bool, bool>,
 		               "Argument must be convertable to a bool" );
 		if( not static_cast<bool>( b ) ) {
-			json_error( reason );
+			json_error( std::string_view( reason ) );
 		}
 	}
 #else // undef DAW_JSON_CHECK_ALWAYS
 #ifndef NDEBUG
 	template<typename Bool>
-	inline constexpr void
-	json_assert( Bool &&b,
-	             std::string_view reason ) noexcept( not use_json_exceptions_v ) {
+	inline constexpr void json_assert(
+	  Bool &&b,
+	  char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
 		static_assert( std::is_convertible_v<Bool, bool>,
 		               "Argument must be convertable to a bool" );
 		if( not static_cast<bool>( b ) ) {
-			json_error( reason );
+			json_error( std::string_view( reason ) );
 		}
 	}
 #else // NDEBUG set

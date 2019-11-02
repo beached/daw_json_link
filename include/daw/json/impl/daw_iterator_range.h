@@ -35,9 +35,6 @@ namespace daw::json::impl {
 	struct IteratorRange {
 		First first{};
 		Last last{};
-#ifndef NDEBUG
-		size_t pos = 0;
-#endif
 
 		constexpr IteratorRange( ) noexcept = default;
 
@@ -65,6 +62,11 @@ namespace daw::json::impl {
 			return static_cast<size_t>( std::distance( first, last ) );
 		}
 
+		[[nodiscard]] constexpr bool is_number( ) const {
+			return static_cast<unsigned>( front( ) ) - static_cast<unsigned>( '0' ) <
+			       10U;
+		}
+
 		template<size_t N>
 		[[nodiscard]] constexpr bool front( char const ( &set )[N] ) const
 		  noexcept {
@@ -88,9 +90,6 @@ namespace daw::json::impl {
 
 		constexpr void remove_prefix( size_t n = 1 ) {
 			first = std::next( first, static_cast<intmax_t>( n ) );
-#ifndef NDEBUG
-			pos += n;
-#endif
 		}
 
 		template<typename Char>
@@ -108,9 +107,6 @@ namespace daw::json::impl {
 		constexpr void trim_left( ) noexcept {
 			while( first != last && is_space( *first ) ) {
 				++first;
-#ifndef NDEBUG
-				++pos;
-#endif
 			}
 		}
 
@@ -118,17 +114,14 @@ namespace daw::json::impl {
 			while( is_space( *first ) ) {
 				++first;
 				json_assert( first != last, "Unexpected end of stream" );
-#ifndef NDEBUG
-				++pos;
-#endif
 			}
 		}
 
-		[[nodiscard]] constexpr decltype( auto ) begin( ) const noexcept {
+		[[nodiscard]] constexpr First begin( ) const noexcept {
 			return first;
 		}
 
-		[[nodiscard]] constexpr decltype( auto ) end( ) const noexcept {
+		[[nodiscard]] constexpr Last end( ) const noexcept {
 			return last;
 		}
 
@@ -193,10 +186,17 @@ namespace daw::json::impl {
 		}
 
 		constexpr void clean_tail( ) noexcept {
-			trim_left( );
-			if( in( ',' ) ) {
-				remove_prefix( );
-				trim_left_no_check( );
+			// trim_left
+			while( first != last && is_space( *first ) ) {
+				++first;
+			}
+			if( *first == ',' ) {
+				// remove_prefix
+				++first;
+				// trim_left_no_check
+				while( is_space( *first ) ) {
+					++first;
+				}
 			}
 		}
 	};

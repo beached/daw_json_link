@@ -38,15 +38,27 @@ namespace {
 	constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
 		auto tmp = daw::json::impl::IteratorRange<char const *, char const *>(
 		  str, str + N );
-		return daw::json::impl::parse_real<double>( tmp ) == expected;
+		return daw::json::impl::parse_real<Real>( tmp ) == expected;
 	}
 
-	static_assert(
-	  daw::json::impl::parse_unsigned_integer<uintmax_t>( "12345" ) == 12345 );
+	template<typename Unsigned, size_t N>
+	constexpr bool parse_unsigned_test( char const ( &str )[N],
+	                                    Unsigned expected ) {
+		auto tmp = daw::json::impl::IteratorRange<char const *, char const *>(
+		  str, str + N );
+		return daw::json::impl::parse_unsigned_integer<Unsigned>( tmp ) == expected;
+	}
 
-	static_assert( daw::json::impl::parse_integer<intmax_t>( "12345" ) == 12345 );
-	static_assert( daw::json::impl::parse_integer<intmax_t>( "-12345" ) ==
-	               -12345 );
+	template<typename Signed, size_t N>
+	constexpr bool parse_signed_test( char const ( &str )[N], Signed expected ) {
+		auto tmp = daw::json::impl::IteratorRange<char const *, char const *>(
+		  str, str + N );
+		return daw::json::impl::parse_integer<Signed>( tmp ) == expected;
+	}
+
+	static_assert( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
+	static_assert( parse_signed_test<intmax_t>( "12345", 12345 ) );
+	static_assert( parse_signed_test<intmax_t>( "-12345", -12345 ) );
 
 	static_assert( parse_real_test<double>( "5", 5.0 ) );
 	static_assert( parse_real_test<double>( "5.5", 5.5 ) );
@@ -178,7 +190,7 @@ namespace {
 		case blah_t::c:
 			return "c";
 		}
-		std::terminate( );
+		std::abort( );
 	}
 
 	constexpr blah_t from_string( daw::tag_t<blah_t>,
@@ -194,7 +206,7 @@ namespace {
 		case 'c':
 			return blah_t::c;
 		default:
-			std::terminate( );
+			std::abort( );
 		}
 	}
 
