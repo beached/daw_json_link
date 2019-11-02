@@ -89,6 +89,9 @@ namespace daw::json {
 	using ParseTag = std::integral_constant<JsonParseTypes, v>;
 
 	enum class LiteralAsStringOpt : uint8_t { never, maybe, always };
+
+	template<typename T>
+	inline constexpr bool is_range_constructable_v = not std::is_trivially_constructible_v<T>;
 } // namespace daw::json
 
 namespace daw::json::impl {
@@ -256,5 +259,18 @@ namespace daw::json::impl {
 	template<size_t I, typename... JsonMembers>
 	using json_result_n =
 	  json_result<daw::traits::nth_element<I, JsonMembers...>>;
+
+	template<typename Container>
+	struct basic_appender {
+		daw::back_inserter<Container> appender;
+
+		constexpr basic_appender( Container &container ) noexcept
+		  : appender( container ) {}
+
+		template<typename Value>
+		constexpr void operator( )( Value &&value ) {
+			*appender = std::forward<Value>( value );
+		}
+	};
 
 } // namespace daw::json::impl

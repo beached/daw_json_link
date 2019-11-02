@@ -28,6 +28,7 @@
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
 #include "daw_json_link_impl.h"
+#include "daw_json_parse_array_iterator.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_real.h"
@@ -225,7 +226,8 @@ namespace daw::json::impl {
 		rng.trim_left( );
 		return array_container;
 	}
-
+	//  JsonMember::parse_to_t = Container
+	//  JsonMember::appender_t = basic_appender<Container>
 	template<typename JsonMember, typename First, typename Last>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Array>,
@@ -236,21 +238,30 @@ namespace daw::json::impl {
 
 		rng.remove_prefix( );
 		rng.trim_left_no_check( );
+		using container_t = typename JsonMember::parse_to_t;
+		if constexpr( std::is_same_v<container_t, basic_appender<container_t>> and
+		              std::is_same_v<typename JsonMember::constructor_t,
+		                             daw::construct_a_t<container_t>> and
+		              is_range_constructable_v<container_t> ) {
+			// We are using the default constructor and appender.  This should allow
+			// for
+			using iterator_t =
+			  json_parse_value_array_iterator<JsonMember, First, Last>;
+			return container_t( iterator_t( rng ), iterator_t( ) );
+		} else {
+			auto array_container = typename JsonMember::constructor_t{}( );
+			auto container_appender =
+			  typename JsonMember::appender_t( array_container );
 
-		auto array_container = typename JsonMember::constructor_t{}( );
-		auto container_appender =
-		  typename JsonMember::appender_t( array_container );
-
-		while( rng.front( ) != ']' ) {
-			container_appender(
-			  parse_value<element_t>( ParseTag<element_t::expected_type>{}, rng ) );
-			rng.clean_tail( );
-			json_assert( rng.has_more( ), "Unexpected end of data" );
+			while( rng.front( ) != ']' ) {
+				container_appender(
+				  parse_value<element_t>( ParseTag<element_t::expected_type>{}, rng ) );
+				rng.clean_tail( );
+				json_assert( rng.has_more( ), "Unexpected end of data" );
+			}
+			rng.remove_prefix( );
+			rng.trim_left( );
+			return array_container;
 		}
-		json_assert( rng.has_more( ), "Unexpected end of data" );
-		json_assert( rng.front( ']' ), "Expected array to end with a ']'" );
-		rng.remove_prefix( );
-		rng.trim_left( );
-		return array_container;
 	}
 } // namespace daw::json::impl

@@ -189,18 +189,6 @@ namespace daw::json::impl {
 		}
 	} // namespace
 
-	template<typename Container>
-	struct basic_appender {
-		daw::back_inserter<Container> appender;
-
-		constexpr basic_appender( Container &container ) noexcept
-		  : appender( container ) {}
-
-		template<typename Value>
-		constexpr void operator( )( Value &&value ) {
-			*appender = std::forward<Value>( value );
-		}
-	};
 
 	template<typename Container>
 	struct basic_kv_appender {

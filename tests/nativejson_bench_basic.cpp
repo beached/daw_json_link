@@ -51,8 +51,9 @@ int main( int argc, char **argv ) {
 	auto const json_sv3 =
 	  std::string_view( json_data3.data( ), json_data3.size( ) );
 
+#ifdef NDEBUG
+	std::cout << "non-debug run\n";
 	auto const sz = json_sv1.size( ) + json_sv2.size( ) + json_sv3.size( );
-
 	daw::bench_n_test_mbs<250>(
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
@@ -61,4 +62,14 @@ int main( int argc, char **argv ) {
 		  daw::do_not_optimize( daw::json::from_json<canada_object_t>( f3 ) );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
+#else
+	for( size_t n = 0; n < 25; ++n ) {
+		daw::do_not_optimize( json_sv1 );
+		daw::do_not_optimize( json_sv2 );
+		daw::do_not_optimize( json_sv3 );
+		daw::do_not_optimize( daw::json::from_json<twitter_object_t>( json_sv1 ) );
+		/*daw::do_not_optimize( daw::json::from_json<citm_object_t>( json_sv2 ) );
+		daw::do_not_optimize( daw::json::from_json<canada_object_t>( json_sv3 ) );*/
+	}
+#endif
 }
