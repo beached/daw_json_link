@@ -27,11 +27,8 @@
 #include <vector>
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_do_n.h>
 #include <daw/daw_random.h>
-#include <daw/iterator/daw_back_inserter.h>
 
-#include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
 #ifndef NDEBUG
@@ -40,25 +37,29 @@ static constexpr size_t const NUMVALUES = 1'000ULL;
 static constexpr size_t const NUMVALUES = 1'000'000ULL;
 #endif
 
+template<size_t N, typename T>
+static std::string_view make_int_array_data( ) {
+	static std::string const json_data = [] {
+		std::string result = "[";
+		result.reserve( N * 23 + 8 );
+		for( size_t n = 0; n < N; ++n ) {
+			result +=
+			  std::to_string( daw::randint<T>( std::numeric_limits<T>::min( ),
+			                                   std::numeric_limits<T>::max( ) ) ) +
+			  ',';
+		}
+		result.back( ) = ']';
+		result.shrink_to_fit( );
+		return result;
+	}( );
+	return {json_data.data( ), json_data.size( )};
+}
+
 int main( ) {
 	using namespace daw::json;
 	using int_type = uintmax_t;
 
-	std::string const json_data = [] {
-		std::string result = "[";
-		result.reserve( NUMVALUES * 23 + 8 );
-		daw::algorithm::do_n( NUMVALUES, [&result] {
-			result += std::to_string( daw::randint<int_type>(
-			            std::numeric_limits<int_type>::min( ),
-			            std::numeric_limits<int_type>::max( ) ) ) +
-			          ',';
-		} );
-		result.back( ) = ']';
-		return result;
-	}( );
-
-	auto const json_sv = daw::string_view( json_data.data( ), json_data.size( ) );
-
+	auto const json_sv = make_int_array_data<NUMVALUES, int_type>( );
 	for( size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_sv );
 		auto result =
