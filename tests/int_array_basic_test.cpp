@@ -38,7 +38,7 @@ static constexpr size_t const NUMVALUES = 1'000'000ULL;
 #endif
 
 template<size_t N, typename T>
-static std::string_view make_int_array_data( ) {
+static std::string make_int_array_data( ) {
 	static std::string const json_data = [] {
 		std::string result = "[";
 		result.reserve( N * 23 + 8 );
@@ -52,14 +52,15 @@ static std::string_view make_int_array_data( ) {
 		result.shrink_to_fit( );
 		return result;
 	}( );
-	return {json_data.data( ), json_data.size( )};
+	return json_data;
 }
 
 int main( ) {
 	using namespace daw::json;
 	using int_type = uintmax_t;
 
-	auto const json_sv = make_int_array_data<NUMVALUES, int_type>( );
+	auto const json_str = make_int_array_data<NUMVALUES, int_type>( );
+	auto const json_sv = std::string_view( json_str.data( ), json_str.size( ) );
 	for( size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_sv );
 		auto result =
