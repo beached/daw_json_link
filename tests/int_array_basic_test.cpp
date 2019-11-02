@@ -39,7 +39,7 @@ static constexpr size_t const NUMVALUES = 1'000'000ULL;
 
 template<size_t N, typename T>
 static std::string make_int_array_data( ) {
-	static std::string const json_data = [] {
+	return [] {
 		std::string result = "[";
 		result.reserve( N * 23 + 8 );
 		for( size_t n = 0; n < N; ++n ) {
@@ -52,7 +52,6 @@ static std::string make_int_array_data( ) {
 		result.shrink_to_fit( );
 		return result;
 	}( );
-	return json_data;
 }
 
 int main( ) {
