@@ -76,7 +76,8 @@ namespace daw::json {
 		                        {start_path.data( ), start_path.size( )} ) ) {
 
 			static_assert(
-			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>, "String must be like a string_view" );
+			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
+			  "String must be like a string_view" );
 
 			json_assert( verify_bracket and m_state.front( ) == '[',
 			             "Arrays are expected to start with a [" );
@@ -91,10 +92,9 @@ namespace daw::json {
 			             "Unexpected end of stream" );
 
 			auto tmp = m_state;
-			auto result = impl::parse_value<JsonElement>(
+			return impl::parse_value<JsonElement>(
 			  ParseTag<JsonElement::expected_type>{}, tmp );
 			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
-			return result;
 		}
 
 		constexpr json_array_iterator &operator++( ) noexcept {
@@ -117,11 +117,11 @@ namespace daw::json {
 
 		constexpr json_array_iterator operator++( int ) noexcept {
 			auto tmp = *this;
-			operator++( );
+			(void)operator++( );
 			return tmp;
 		}
 
-		explicit constexpr operator bool( ) const noexcept {
+		[[nodiscard]] explicit constexpr operator bool( ) const noexcept {
 			return not m_state.is_null( ) and
 			       not( verify_bracket and m_state.front( ']' ) );
 		}
