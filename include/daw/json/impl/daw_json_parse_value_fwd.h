@@ -26,57 +26,69 @@
 #include "daw_json_parse_common.h"
 
 namespace daw::json::impl {
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Real>,
-	             IteratorRange<First, Last> &rng );
+	             IteratorRange<First, Last, TrustedInput> &rng );
 
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Signed>,
-	             IteratorRange<First, Last> &rng );
+	             IteratorRange<First, Last, TrustedInput> &rng );
 
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Unsigned>,
-	             IteratorRange<First, Last> &rng );
+	             IteratorRange<First, Last, TrustedInput> &rng );
 
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Null>,
-	             IteratorRange<First, Last> &rng );
+	             IteratorRange<First, Last, TrustedInput> &rng );
 
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Bool>,
-	             IteratorRange<First, Last> &rng );
+	             IteratorRange<First, Last, TrustedInput> &rng );
 
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::String>,
-	             IteratorRange<First, Last> &rng );
+	             IteratorRange<First, Last, TrustedInput> &rng );
 
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Date>,
-	             IteratorRange<First, Last> &rng );
+	             IteratorRange<First, Last, TrustedInput> &rng );
 
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Custom>,
-	             IteratorRange<First, Last> &rng );
+	             IteratorRange<First, Last, TrustedInput> &rng );
 
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Class>,
-	             IteratorRange<First, Last> &rng );
+	             IteratorRange<First, Last, TrustedInput> &rng );
 
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Array>, IteratorRange<First, Last> & );
+	parse_value( ParseTag<JsonParseTypes::Array>,
+	             IteratorRange<First, Last, TrustedInput> & );
 
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::KeyValue>,
-	             IteratorRange<First, Last> &rng );
+	             IteratorRange<First, Last, TrustedInput> &rng );
 } // namespace daw::json::impl

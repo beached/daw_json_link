@@ -62,18 +62,25 @@ namespace daw::json {
 			  it, std::index_sequence_for<Args...>{}, std::move( args ) );
 		}
 
-		template<typename Result>
+		template<typename Result, bool TrustedInput>
 		[[maybe_unused, nodiscard]] static constexpr Result
 		parse( std::string_view sv ) {
-			json_assert( not sv.empty( ), "Cannot parse an empty string" );
+			if constexpr( not TrustedInput ) {
+				json_assert( not sv.empty( ), "Cannot parse an empty string" );
+			}
+
+			auto rng = impl::IteratorRange<char const *, char const *, TrustedInput>(
+			  sv.data( ), sv.data( ) + sv.size( ) );
 			return impl::parse_json_class<Result, JsonMembers...>(
-			  sv, std::index_sequence_for<JsonMembers...>{} );
+			  rng, std::index_sequence_for<JsonMembers...>{} );
 		}
 
-		template<typename Result, typename First, typename Last>
+		template<typename Result, typename First, typename Last, bool TrustedInput>
 		[[maybe_unused, nodiscard]] static constexpr Result
-		parse( impl::IteratorRange<First, Last> &rng ) {
-			json_assert( not rng.empty( ), "Cannot parse an empty string" );
+		parse( impl::IteratorRange<First, Last, TrustedInput> &rng ) {
+			if constexpr( not TrustedInput ) {
+				json_assert( not rng.empty( ), "Cannot parse an empty string" );
+			}
 			return impl::parse_json_class<Result, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
 		}
@@ -258,30 +265,29 @@ namespace daw::json {
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::KeyValue;
 	};
 
+	template<typename T, bool TrustedInput>
+	[[maybe_unused, nodiscard]] constexpr T
+	from_json_impl( std::string_view json_data ) {
+		static_assert( impl::has_json_parser_description_v<T>,
+		               "A function call describe_json_class must exist for type." );
+		if constexpr( not TrustedInput ) {
+			json_assert( not json_data.empty( ), "Attempt to parse empty string" );
+		}
+		using desc_t = impl::json_parser_description_t<T>;
+
+		return desc_t::template parse<T, TrustedInput>( json_data );
+	}
+
 	template<typename T>
 	[[maybe_unused, nodiscard]] constexpr T
 	from_json( std::string_view json_data ) {
-		static_assert( impl::has_json_parser_description_v<T>,
-		               "A function call describe_json_class must exist for type." );
-		json_assert( not json_data.empty( ), "Attempt to parse empty string" );
-		using desc_t = impl::json_parser_description_t<T>;
-
-		return desc_t::template parse<T>( json_data );
+		return from_json_impl<T, false>( json_data );
 	}
 
-	template<typename T, typename First, typename Last>
-	[[maybe_unused, nodiscard]] static constexpr T
-	from_json( daw::json::impl::IteratorRange<First, Last> &rng ) {
-		static_assert( impl::has_json_parser_description_v<T>,
-		               "A function call describe_json_class must exist for type." );
-		json_assert( not rng.empty( ), "Attempt to parse empty string" );
-
-		/*
-		return impl::parse_value( ParseTag<JsonParseTypes::Class>{}, rng );
-		 */
-		T result = impl::json_parser_description_t<T>::template parse<T>( rng );
-		rng.trim_left( );
-		return result;
+	template<typename T>
+	[[maybe_unused, nodiscard]] constexpr T
+	from_json_trusted( std::string_view json_data ) {
+		return from_json_impl<T, true>( json_data );
 	}
 
 	template<typename Result = std::string, typename T>
@@ -298,25 +304,47 @@ namespace daw::json {
 		return result;
 	}
 
-	template<typename JsonElement,
+	template<bool TrustedInput, typename JsonElement,
 	         typename Container = std::vector<typename JsonElement::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
-	from_json_array( std::string_view json_data ) {
+	from_json_array_impl( std::string_view json_data ) {
 		using parser_t =
 		  json_array<no_name, Container, JsonElement, Constructor, Appender>;
 
 		using impl::data_size::data;
 		using impl::data_size::size;
 
-		auto rng = daw::json::impl::IteratorRange(
-		  std::data( json_data ), std::data( json_data ) + std::size( json_data ) );
+		auto rng =
+		  daw::json::impl::IteratorRange<char const *, char const *, false>(
+		    std::data( json_data ),
+		    std::data( json_data ) + std::size( json_data ) );
 		rng.trim_left_no_check( );
 		json_assert( rng.front( '[' ), "Expected array class" );
 
 		return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
 		                                    rng );
+	}
+
+	template<typename JsonElement,
+	         typename Container = std::vector<typename JsonElement::parse_to_t>,
+	         typename Constructor = daw::construct_a_t<Container>,
+	         typename Appender = impl::basic_appender<Container>>
+	[[maybe_unused, nodiscard]] constexpr Container
+	from_json_array( std::string_view json_data ) {
+		return from_json_array_impl<false, JsonElement, Container, Constructor,
+		                            Appender>( json_data );
+	}
+
+	template<typename JsonElement,
+	         typename Container = std::vector<typename JsonElement::parse_to_t>,
+	         typename Constructor = daw::construct_a_t<Container>,
+	         typename Appender = impl::basic_appender<Container>>
+	[[maybe_unused, nodiscard]] constexpr Container
+	from_json_array_trusted( std::string_view json_data ) {
+		return from_json_array_impl<true, JsonElement, Container, Constructor,
+		                            Appender>( json_data );
 	}
 
 	template<typename Result = std::string, typename Container>

@@ -31,10 +31,11 @@
 #include "daw_json_assert.h"
 
 namespace daw::json::impl {
-	template<typename First, typename Last>
+	template<typename First, typename Last, bool TrustedInput>
 	struct IteratorRange {
 		First first{};
 		Last last{};
+		static constexpr bool is_trusted_input = TrustedInput;
 
 		constexpr IteratorRange( ) noexcept = default;
 
@@ -70,14 +71,14 @@ namespace daw::json::impl {
 		template<size_t N>
 		[[nodiscard]] constexpr bool front( char const ( &set )[N] ) const
 		  noexcept {
-		  if( empty( ) ) {
-		    return false;
-		  }
-		  bool result = false;
-		  for( size_t n = 0; n < ( N - 1 ); ++n ) {
-		    result |= in( set[n] );
-		  }
-		  return result;
+			if( empty( ) ) {
+				return false;
+			}
+			bool result = false;
+			for( size_t n = 0; n < ( N - 1 ); ++n ) {
+				result |= in( set[n] );
+			}
+			return result;
 		}
 
 		[[nodiscard]] constexpr bool is_null( ) const noexcept {
@@ -113,7 +114,9 @@ namespace daw::json::impl {
 		constexpr void trim_left_no_check( ) noexcept {
 			while( is_space( *first ) ) {
 				++first;
-				json_assert( first != last, "Unexpected end of stream" );
+				if constexpr( not TrustedInput ) {
+					json_assert( first != last, "Unexpected end of stream" );
+				}
 			}
 		}
 
@@ -151,7 +154,9 @@ namespace daw::json::impl {
 		}
 
 		[[nodiscard]] constexpr bool in( char c ) const noexcept {
-			json_assert( first != nullptr, "Empty or null InteratorRange" );
+			if constexpr( not TrustedInput ) {
+				json_assert( first != nullptr, "Empty or null InteratorRange" );
+			}
 			return *first == c;
 		}
 
@@ -200,7 +205,4 @@ namespace daw::json::impl {
 			}
 		}
 	};
-
-	template<typename First, typename Last>
-	IteratorRange( First, Last )->IteratorRange<First, Last>;
 } // namespace daw::json::impl

@@ -119,18 +119,6 @@ namespace daw::json::impl {
 		                          static_cast<unsigned>( ' ' ) );
 	}
 
-	template<typename T>
-	static inline constexpr bool has_json_parser_description_v =
-	  daw::is_detected_v<json_parser_description_t, T>;
-
-	template<typename T>
-	using json_parser_to_json_data_t =
-	  decltype( to_json_data( std::declval<T &>( ) ) );
-
-	template<typename T>
-	static inline constexpr bool has_json_to_json_data_v =
-	  daw::is_detected_v<json_parser_to_json_data_t, T>;
-
 	template<typename string_t>
 	struct kv_t {
 		string_t name;
@@ -164,9 +152,9 @@ namespace daw::json::impl {
 	// Assumes that the current item in stream is a double quote
 	// Ensures that the stream is left at the position of the associated
 	// value(e.g after the colon(:) and trimmed)
-	template<typename First, typename Last>
+	template<typename First, typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr daw::string_view
-	parse_name( IteratorRange<First, Last> &rng ) {
+	parse_name( IteratorRange<First, Last, TrustedInput> &rng ) {
 		// if( *rng.first == '"' ) {
 		++rng.first;
 		//}
@@ -174,8 +162,10 @@ namespace daw::json::impl {
 		auto name = daw::string_view( rng.first, nr.end_of_name );
 		rng.first = nr.end_of_whitespace;
 
-		json_assert( not name.empty( ) and not rng.empty( ),
-		             "Expected a non empty name and data after name" );
+		if constexpr( not TrustedInput ) {
+			json_assert( not name.empty( ) and not rng.empty( ),
+			             "Expected a non empty name and data after name" );
+		}
 		return name;
 	}
 
@@ -254,24 +244,29 @@ namespace daw::json::impl {
 		}
 	};
 
+	template<typename First, typename Last, bool TrustedInput>
 	struct location_info_t {
 		JSONNAMETYPE name;
-		IteratorRange<char const *, char const *> location{};
+		IteratorRange<First, Last, TrustedInput> location{};
 
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
 			return location.empty( ) or location.is_null( );
 		}
 	};
 
-	template<size_t pos, typename... JsonMembers, typename First, typename Last>
-	[[nodiscard]] static constexpr IteratorRange<First, Last> find_class_member(
-	  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
-	  IteratorRange<First, Last> &rng ) {
+	template<size_t pos, typename... JsonMembers, typename First, typename Last,
+	         bool TrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
+	find_class_member( std::array<location_info_t<First, Last, TrustedInput>,
+	                              sizeof...( JsonMembers )> &locations,
+	                   IteratorRange<First, Last, TrustedInput> &rng ) {
 
-		json_assert(
-		  is_json_nullable_v<daw::traits::nth_element<pos, JsonMembers...>> or
-		    not locations[pos].missing( ) or not rng.front( '}' ),
-		  "Unexpected end of class.  Non-nullable members still not found" );
+		if constexpr( not TrustedInput ) {
+			json_assert(
+			  is_json_nullable_v<daw::traits::nth_element<pos, JsonMembers...>> or
+			    not locations[pos].missing( ) or not rng.front( '}' ),
+			  "Unexpected end of class.  Non-nullable members still not found" );
+		}
 
 		rng.trim_left_no_check( );
 		while( locations[pos].missing( ) and rng.front( ) != '}' ) {
@@ -302,12 +297,12 @@ namespace daw::json::impl {
 	}
 
 	template<size_t JsonMemberPosition, typename... JsonMembers, typename First,
-	         typename Last>
+	         typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr json_result_n<JsonMemberPosition,
 	                                             JsonMembers...>
-	parse_class_member(
-	  std::array<location_info_t, sizeof...( JsonMembers )> &locations,
-	  IteratorRange<First, Last> &rng ) {
+	parse_class_member( std::array<location_info_t<First, Last, TrustedInput>,
+	                               sizeof...( JsonMembers )> &locations,
+	                    IteratorRange<First, Last, TrustedInput> &rng ) {
 
 		rng.clean_tail( );
 		using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
@@ -326,10 +321,11 @@ namespace daw::json::impl {
 			(void)name;
 #endif
 			// Only allow missing members for Null-able type
-			json_assert( JsonMember::expected_type == JsonParseTypes::Null or
-			               not loc.empty( ),
-			             "Could not find required class member" );
-
+			if constexpr( not TrustedInput ) {
+				json_assert( JsonMember::expected_type == JsonParseTypes::Null or
+				               not loc.empty( ),
+				             "Could not find required class member" );
+			}
 			if( loc.is_null( ) or
 			    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 
@@ -362,26 +358,30 @@ namespace daw::json::impl {
 	}
 
 	template<typename Result, typename... JsonMembers, size_t... Is,
-	         typename First, typename Last>
+	         typename First, typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr Result
-	parse_json_class( IteratorRange<First, Last> &rng,
+	parse_json_class( IteratorRange<First, Last, TrustedInput> &rng,
 	                  std::index_sequence<Is...> ) {
 		static_assert(
 		  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
 		  "Supplied types cannot be used for construction of this type" );
 
 		rng.trim_left_no_check( );
-		json_assert( rng.front( '{' ), "Expected class to begin with '{'" );
+		if constexpr( not TrustedInput ) {
+			json_assert( rng.front( '{' ), "Expected class to begin with '{'" );
+		}
 		rng.remove_prefix( );
 		rng.trim_left_no_check( );
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
 			return construct_a<Result>( );
-			json_assert( rng.front( '}' ), "Expected class to end with '}'" );
+			if constexpr( not TrustedInput ) {
+				json_assert( rng.front( '}' ), "Expected class to end with '}'" );
+			}
 			rng.remove_prefix( );
 			rng.trim_left( );
 		} else {
-			constexpr auto cknown_locations =
-			  daw::make_array( location_info_t{JsonMembers::name}... );
+			constexpr auto cknown_locations = daw::make_array(
+			  location_info_t<First, Last, TrustedInput>{JsonMembers::name}... );
 			auto known_locations = cknown_locations;
 
 			auto result = daw::construct_a<Result>(
@@ -394,20 +394,23 @@ namespace daw::json::impl {
 				rng.clean_tail( );
 			}
 
-			json_assert( rng.front( ) == '}', "Expected class to end with '}'" );
+			if constexpr( not TrustedInput ) {
+				json_assert( rng.front( ) == '}', "Expected class to end with '}'" );
+			}
 			rng.remove_prefix( );
 			rng.trim_left( );
 			return result;
 		}
 	}
 
+	/*
 	template<typename Result, typename... JsonMembers, size_t... Is>
 	[[nodiscard]] static constexpr Result
 	parse_json_class( std::string_view sv, std::index_sequence<Is...> is ) {
 
-		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
-		return parse_json_class<Result, JsonMembers...>( rng, is );
-	}
+	  auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	  return parse_json_class<Result, JsonMembers...>( rng, is );
+	}*/
 
 	[[nodiscard]] static constexpr bool
 	json_path_compare( daw::string_view json_path_item,
@@ -428,12 +431,15 @@ namespace daw::json::impl {
 		return json_path_item.size( ) == member_name.size( );
 	}
 
-	template<typename First, typename Last>
-	static constexpr void find_range2( IteratorRange<First, Last> &rng,
-	                                   daw::string_view path ) {
+	template<typename First, typename Last, bool TrustedInput>
+	static constexpr void
+	find_range2( IteratorRange<First, Last, TrustedInput> &rng,
+	             daw::string_view path ) {
 		auto current = impl::pop_json_path( path );
 		while( not current.empty( ) ) {
-			json_assert( rng.front( '{' ), "Invalid Path Entry" );
+			if constexpr( not TrustedInput ) {
+				json_assert( rng.front( '{' ), "Invalid Path Entry" );
+			}
 			rng.remove_prefix( );
 			rng.trim_left_no_check( );
 			auto name = parse_name( rng );
@@ -446,12 +452,12 @@ namespace daw::json::impl {
 		}
 	}
 
-	template<typename String>
+	template<bool TrustedInput, typename String>
 	[[nodiscard]] static constexpr auto
 	find_range( String &&str, daw::string_view start_path ) {
 
-		auto rng =
-		  IteratorRange( std::data( str ), std::data( str ) + std::size( str ) );
+		auto rng = IteratorRange<char const *, char const *, TrustedInput>(
+		  std::data( str ), std::data( str ) + std::size( str ) );
 		if( not start_path.empty( ) ) {
 			find_range2( rng, start_path );
 		}

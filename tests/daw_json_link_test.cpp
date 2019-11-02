@@ -36,22 +36,23 @@
 namespace {
 	template<typename Real, size_t N>
 	constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
-		auto tmp = daw::json::impl::IteratorRange<char const *, char const *>(
-		  str, str + N );
+		auto tmp =
+		  daw::json::impl::IteratorRange<char const *, char const *, false>(
+		    str, str + N );
 		return daw::json::impl::parse_real<Real>( tmp ) == expected;
 	}
 
 	template<typename Unsigned, size_t N>
 	constexpr bool parse_unsigned_test( char const ( &str )[N],
 	                                    Unsigned expected ) {
-		auto tmp = daw::json::impl::IteratorRange<char const *, char const *>(
+		auto tmp = daw::json::impl::IteratorRange<char const *, char const *, false>(
 		  str, str + N );
 		return daw::json::impl::parse_unsigned_integer<Unsigned>( tmp ) == expected;
 	}
 
 	template<typename Signed, size_t N>
 	constexpr bool parse_signed_test( char const ( &str )[N], Signed expected ) {
-		auto tmp = daw::json::impl::IteratorRange<char const *, char const *>(
+		auto tmp = daw::json::impl::IteratorRange<char const *, char const *, false>(
 		  str, str + N );
 		return daw::json::impl::parse_integer<Signed>( tmp ) == expected;
 	}

@@ -27,18 +27,20 @@
 #include "daw_json_parse_value_fwd.h"
 
 namespace daw::json::impl {
-	template<typename JsonMember, typename First, typename Last>
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
 	struct json_parse_value_array_iterator {
 		using iterator_category = std::input_iterator_tag;
 		using element_t = typename JsonMember::json_element_t;
 		using value_type = element_t;
 		using reference = void;
 
-		IteratorRange<First, Last> *rng = nullptr;
+		IteratorRange<First, Last, TrustedInput> *rng = nullptr;
 
 		constexpr json_parse_value_array_iterator( ) noexcept = default;
 
-		constexpr json_parse_value_array_iterator( IteratorRange<First, Last> &r )
+		constexpr json_parse_value_array_iterator(
+		  IteratorRange<First, Last, TrustedInput> &r )
 		  : rng( &rng ) {}
 
 		constexpr value_type operator*( ) {
@@ -48,7 +50,9 @@ namespace daw::json::impl {
 
 		constexpr json_parse_value_array_iterator &operator++( ) {
 			rng->clean_tail( );
-			json_assert( rng->has_more( ), "Unexpected end of data" );
+			if constexpr( not TrustedInput ) {
+				json_assert( rng->has_more( ), "Unexpected end of data" );
+			}
 			if( rng->front( ) == ']' ) {
 				// Cleanup at end of value
 				rng->remove_prefix( );

@@ -49,10 +49,11 @@
 
 namespace daw::json {
 	/// allow iteration over an array of json
-	template<typename JsonElement, char separator = ',',
-	         bool verify_bracket = true>
+	template<typename JsonElement, bool TrustedInput = false,
+	         char separator = ','>
 	class json_array_iterator {
-		impl::IteratorRange<char const *, char const *> m_state{nullptr, nullptr};
+		impl::IteratorRange<char const *, char const *, TrustedInput> m_state{
+		  nullptr, nullptr};
 		// This lets us fastpath and just skip n characters
 		mutable intmax_t m_can_skip = -1;
 
@@ -72,24 +73,27 @@ namespace daw::json {
 		constexpr json_array_iterator( String &&jd,
 		                               std::string_view start_path = "" )
 		  : m_state(
-		      impl::find_range( std::forward<String>( jd ),
+		      impl::find_range<TrustedInput>( std::forward<String>( jd ),
 		                        {start_path.data( ), start_path.size( )} ) ) {
 
 			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
 			  "String must be like a string_view" );
 
-			json_assert( verify_bracket and m_state.front( ) == '[',
-			             "Arrays are expected to start with a [" );
+			if constexpr( not TrustedInput ) {
+				json_assert( m_state.front( ) == '[',
+				             "Arrays are expected to start with a [" );
+			}
 
 			m_state.remove_prefix( );
 			m_state.trim_left( );
 		}
 
 		[[nodiscard]] constexpr value_type operator*( ) const noexcept {
-			json_assert( not m_state.empty( ) and
-			               not( verify_bracket and m_state.in( ']' ) ),
-			             "Unexpected end of stream" );
+			if constexpr( not TrustedInput ) {
+				json_assert( not m_state.empty( ) and not m_state.in( ']' ),
+				             "Unexpected end of stream" );
+			}
 
 			auto tmp = m_state;
 			return impl::parse_value<JsonElement>(
@@ -98,9 +102,10 @@ namespace daw::json {
 		}
 
 		constexpr json_array_iterator &operator++( ) noexcept {
-			json_assert( not m_state.empty( ) and
-			               not( verify_bracket and m_state.in( ']' ) ),
-			             "Unexpected end of stream" );
+			if constexpr( not TrustedInput ) {
+				json_assert( m_state.empty( ) and not m_state.in( ']' ),
+				             "Unexpected end of stream" );
+			}
 			if( m_can_skip >= 0 ) {
 				m_state.first = std::next( m_state.first, m_can_skip );
 				m_can_skip = -1;
@@ -122,8 +127,7 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] explicit constexpr operator bool( ) const noexcept {
-			return not m_state.is_null( ) and
-			       not( verify_bracket and m_state.front( ']' ) );
+			return not m_state.is_null( ) and not m_state.front( ']' );
 		}
 
 		[[nodiscard]] constexpr bool
@@ -138,11 +142,11 @@ namespace daw::json {
 		}
 	};
 
-	template<typename JsonElement, char separator = ',',
-	         bool verify_bracket = true>
+	template<typename JsonElement, bool TrustedInput = false,
+	         char separator = ','>
 	struct json_array_range {
 		using value_type =
-		  json_array_iterator<JsonElement, separator, verify_bracket>;
+		  json_array_iterator<JsonElement, TrustedInput, separator>;
 		using reference = value_type &;
 		using const_reference = value_type const &;
 

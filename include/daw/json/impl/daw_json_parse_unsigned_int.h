@@ -47,10 +47,12 @@ namespace daw::json::impl::unsignedint {
 
 namespace daw::json::impl {
 	template<typename Result, bool RangeCheck = false, typename First,
-	         typename Last>
-	[[nodiscard]] static constexpr auto
-	parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
-		json_assert( rng.is_number( ), "Expecting a digit as first item" );
+	         typename Last, bool TrustedInput>
+	[[nodiscard]] static constexpr auto parse_unsigned_integer2(
+	  IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
+		if constexpr( not TrustedInput ) {
+			json_assert( rng.is_number( ), "Expecting a digit as first item" );
+		}
 
 		using namespace daw::json::impl::unsignedint;
 		using iresult_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
@@ -71,10 +73,12 @@ namespace daw::json::impl {
 	}
 
 	template<typename Result, bool RangeCheck = false, typename First,
-	         typename Last>
-	[[nodiscard]] static constexpr Result
-	parse_unsigned_integer( IteratorRange<First, Last> &rng ) noexcept {
-		json_assert( rng.is_number( ), "Expecting a digit as first item" );
+	         typename Last, bool TrustedInput>
+	[[nodiscard]] static constexpr Result parse_unsigned_integer(
+	  IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
+		if constexpr( not TrustedInput ) {
+			json_assert( rng.is_number( ), "Expecting a digit as first item" );
+		}
 
 		using namespace daw::json::impl::unsignedint;
 		using result_t = std::conditional_t<RangeCheck, uintmax_t, Result>;

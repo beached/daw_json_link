@@ -30,11 +30,13 @@
 #include "daw_json_parse_unsigned_int.h"
 
 namespace daw::json::impl {
-	template<typename Result, typename First, typename Last>
+	template<typename Result, typename First, typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr Result
-	parse_real( IteratorRange<First, Last> &rng ) noexcept {
+	parse_real( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
-		json_assert( rng.is_real_number_part( ), "Expected a real number" );
+		if constexpr( not TrustedInput ) {
+			json_assert( rng.is_real_number_part( ), "Expected a real number" );
+		}
 		auto const sign = [&] {
 			if( rng.front( ) == '-' ) {
 				rng.remove_prefix( );
@@ -69,11 +71,4 @@ namespace daw::json::impl {
 			       static_cast<Result>( daw::cxmath::dpow10( exp_part ) );
 		}
 	}
-
-/*	template<typename Result>
-	[[nodiscard]] static constexpr Result
-	parse_real( daw::string_view const &sv ) noexcept {
-		auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
-		return parse_real<Result>( rng );
-	}*/
 } // namespace daw::json::impl
