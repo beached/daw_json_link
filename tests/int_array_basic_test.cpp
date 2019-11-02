@@ -67,29 +67,25 @@ static void test_from_json_array( std::string_view json_sv ) {
 	}
 }
 
-using int_type = uintmax_t;
-int_type arry[NUMVALUES];
-
 template<typename T>
 static void test_json_array_iterator( std::string_view json_sv ) {
 	using namespace daw::json;
 	using iterator_t = json_array_iterator<json_number<no_name, T>>;
-	daw::do_not_optimize( arry );
 	for( size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_sv );
 		auto first = iterator_t( json_sv );
-		auto first_out = arry;
 		auto const last = iterator_t( );
+		T sum = 0;
+		daw::do_not_optimize( sum );
 		while( first != last ) {
-			*first_out = *first;
-			++first_out;
-			++first;
+			sum += *first++;
 		}
-		daw::do_not_optimize( arry );
+		daw::do_not_optimize( sum );
 	}
 }
 
 int main( ) {
+	using int_type = uintmax_t;
 	auto const json_str = make_int_array_data<NUMVALUES, int_type>( );
 	auto const json_sv = std::string_view( json_str.data( ), json_str.size( ) );
 	test_from_json_array<int_type>( json_sv );
