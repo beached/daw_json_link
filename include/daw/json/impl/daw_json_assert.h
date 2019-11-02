@@ -70,7 +70,7 @@ namespace daw::json {
 	}
 #else // undef DAW_JSON_CHECK_ALWAYS
 #ifndef NDEBUG
-	template<typename Bool>
+	template<typename Bool, size_t N>
 	inline constexpr void json_assert(
 	  Bool &&b,
 	  char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
