@@ -166,6 +166,13 @@ add_test(coords_test coords_test_bin)
 add_dependencies(check coords_test_bin)
 add_dependencies(full coords_test_bin)
 
+add_executable(kostya_bench_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/kostya_bench.cpp)
+add_dependencies(kostya_bench_bin dependency_stub)
+target_link_libraries(kostya_bench_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+add_test(kostya_bench kostya_bench_bin)
+add_dependencies(check kostya_bench_bin)
+add_dependencies(full kostya_bench_bin)
+
 add_executable(coords_test2_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/coords_test2.cpp)
 add_dependencies(coords_test2_bin dependency_stub)
 target_link_libraries(coords_test2_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
