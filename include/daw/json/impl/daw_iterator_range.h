@@ -55,7 +55,7 @@ namespace daw::json::impl {
 		}
 
 		[[nodiscard]] constexpr bool front( char c ) const noexcept {
-			return not empty( ) and in( c );
+			return first != last and *first == c;
 		}
 
 		[[nodiscard]] constexpr size_t size( ) const noexcept {
@@ -70,14 +70,14 @@ namespace daw::json::impl {
 		template<size_t N>
 		[[nodiscard]] constexpr bool front( char const ( &set )[N] ) const
 		  noexcept {
-			if( empty( ) ) {
-				return false;
-			}
-			bool result = false;
-			for( size_t n = 0; n < ( N - 1 ); ++n ) {
-				result |= in( set[n] );
-			}
-			return result;
+		  if( empty( ) ) {
+		    return false;
+		  }
+		  bool result = false;
+		  for( size_t n = 0; n < ( N - 1 ); ++n ) {
+		    result |= in( set[n] );
+		  }
+		  return result;
 		}
 
 		[[nodiscard]] constexpr bool is_null( ) const noexcept {

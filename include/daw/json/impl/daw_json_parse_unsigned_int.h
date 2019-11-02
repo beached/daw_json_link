@@ -50,7 +50,7 @@ namespace daw::json::impl {
 	         typename Last>
 	[[nodiscard]] static constexpr auto
 	parse_unsigned_integer2( IteratorRange<First, Last> &rng ) noexcept {
-		json_assert( rng.front( "0123456789" ), "Expecting a digit as first item" );
+		json_assert( rng.is_number( ), "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
 		using iresult_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
