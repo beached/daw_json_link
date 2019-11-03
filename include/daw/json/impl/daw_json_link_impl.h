@@ -366,12 +366,14 @@ namespace daw::json::impl {
 		  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
 		  "Supplied types cannot be used for construction of this type" );
 
-		rng.trim_left_no_check( );
+		rng.move_to_next_of( '{' );
+		/*rng.trim_left_no_check( );
 		if constexpr( not TrustedInput ) {
-			json_assert( rng.front( '{' ), "Expected class to begin with '{'" );
-		}
+		  json_assert( rng.front( '{' ), "Expected class to begin with '{'" );
+		}*/
 		rng.remove_prefix( );
-		rng.trim_left_no_check( );
+		// rng.trim_left_no_check( );
+		rng.move_to_next_of( "\"}" );
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
 			return construct_a<Result>( );
 			if constexpr( not TrustedInput ) {

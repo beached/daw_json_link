@@ -234,7 +234,7 @@ namespace daw::json::impl {
 
 		rng.remove_prefix( );
 		// We are inside a KV map, we can expected a quoted name next
-		(void)rng.move_to_next_of( '"' );
+		rng.move_to_next_of( '"' );
 
 		auto array_container = typename JsonMember::constructor_t{}( );
 		auto container_appender =

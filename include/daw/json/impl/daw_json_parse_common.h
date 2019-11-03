@@ -112,9 +112,6 @@ namespace daw::json {
 		               "A function call describe_json_class must exist for type." );
 		json_assert( not rng.empty( ), "Attempt to parse empty string" );
 
-		/*
-		return impl::parse_value( ParseTag<JsonParseTypes::Class>{}, rng );
-		 */
 		T result = impl::json_parser_description_t<T>::template parse<T>( rng );
 		rng.trim_left( );
 		return result;

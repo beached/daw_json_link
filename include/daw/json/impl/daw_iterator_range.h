@@ -136,16 +136,23 @@ namespace daw::json::impl {
 			return not empty( );
 		}
 
-		[[nodiscard]] constexpr daw::string_view
-		move_to_next_of( char c ) noexcept {
-			auto p = begin( );
+		constexpr void move_to_next_of( char c ) noexcept {
 			while( front( ) != c ) {
 				if constexpr( not TrustedInput ) {
 					json_assert( has_more( ), "Unexpected end of data" );
 				}
 				remove_prefix( );
 			}
-			return {p, static_cast<size_t>( begin( ) - p )};
+		}
+
+		template<size_t N>
+		constexpr void move_to_next_of( char const ( &str )[N] ) noexcept {
+			while( not in( str ) ) {
+				if constexpr( not TrustedInput ) {
+					json_assert( has_more( ), "Unexpected end of data" );
+				}
+				remove_prefix( );
+			}
 		}
 
 		[[nodiscard]] constexpr IteratorRange
@@ -180,14 +187,6 @@ namespace daw::json::impl {
 			bool b1 = c == 'e' or c == 'E';
 			bool b2 = c == '+' or c == '-';
 			return b0 or b1 or b2;
-		}
-
-		[[nodiscard]] constexpr daw::string_view munch( char c ) noexcept {
-			auto result = move_to_next_of( c );
-			if( in( c ) ) {
-				remove_prefix( );
-			}
-			return result;
 		}
 
 		[[nodiscard]] constexpr bool at_end_of_item( ) const noexcept {
