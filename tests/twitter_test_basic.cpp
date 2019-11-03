@@ -35,12 +35,15 @@ int main( int argc, char **argv ) {
 	if( argc < 2 ) {
 		std::cerr << "Must supply a file name\n";
 		exit( 1 );
-	}	
+	}
 	using namespace daw::json;
 	auto const json_data1 = daw::memory_mapped_file<>( argv[1] );
 	auto const json_sv1 =
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 
-	::daw::do_not_optimize( daw::json::from_json<twitter_object_t>( json_sv1 ) );
+	auto const twitter_result = daw::json::from_json<twitter_object_t>( json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	json_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
+	json_assert( twitter_result.statuses.front( ).user.id == 1186275104,
+	             "Missing value" );
 }
-

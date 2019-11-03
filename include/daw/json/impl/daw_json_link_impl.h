@@ -181,15 +181,15 @@ namespace daw::json::impl {
 
 	template<typename Container>
 	struct basic_kv_appender {
-		daw::inserter_iterator<Container> appender;
+		Container *m_container;
 
 		constexpr basic_kv_appender( Container &container ) noexcept
-		  : appender( container ) {}
+		  : m_container( &container ) {}
 
 		template<typename Key, typename Value>
 		constexpr void operator( )( Key &&key, Value &&value ) {
-			*appender = std::make_pair( std::forward<Key>( key ),
-			                            std::forward<Value>( value ) );
+			m_container->emplace( std::forward<Key>( key ),
+			                      std::forward<Value>( value ) );
 		}
 	};
 
@@ -313,7 +313,8 @@ namespace daw::json::impl {
 			                                rng );
 		} else {
 			if constexpr( not TrustedInput ) {
-				json_assert( rng.front( "\"}" ), "Expected end of class or start of member" );
+				json_assert( rng.front( "\"}" ),
+				             "Expected end of class or start of member" );
 			}
 			auto loc =
 			  find_class_member<JsonMemberPosition, JsonMembers...>( locations, rng );

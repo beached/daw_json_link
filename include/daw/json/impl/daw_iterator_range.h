@@ -191,7 +191,7 @@ namespace daw::json::impl {
 
 		[[nodiscard]] constexpr bool at_end_of_item( ) const noexcept {
 			auto const c = front( );
-			return c == ',' or c == '}' or c == ']' or is_space( c );
+			return c == ',' or c == '}' or c == ']' or c == ':' or is_space( c );
 		}
 
 		constexpr void clean_tail( ) noexcept {

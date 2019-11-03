@@ -128,8 +128,8 @@ namespace daw::json {
 	  json_number<Name, T, LiteralAsString, Constructor, true>;
 
 	template<JSONNAMETYPE Name, typename T = bool,
-	         typename Constructor = daw::construct_a_t<T>,
-	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never>
+	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
+	         typename Constructor = daw::construct_a_t<T>>
 	struct json_bool {
 		static_assert( std::is_constructible_v<T, bool>,
 		               "Supplied type but be constructable from a bool" );

@@ -24,9 +24,9 @@
 #include <iostream>
 #include <streambuf>
 
+#include "daw/json/impl/daw_memory_mapped.h"
 #include <daw/daw_benchmark.h>
 #include <daw/json/daw_json_link.h>
-#include "daw/json/impl/daw_memory_mapped.h"
 
 #include "twitter_test.h"
 
@@ -46,14 +46,17 @@ int main( int argc, char **argv ) {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	twitter_object_t j1;
+	twitter_object_t twitter_result;
 	daw::bench_n_test_mbs<100>(
 	  "twitter_catalog bench", sz,
-	  [&j1]( auto f1 ) {
-		  j1 = daw::json::from_json<twitter_object_t>( f1 );
-		  daw::do_not_optimize( j1 );
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result = daw::json::from_json<twitter_object_t>( f1 );
+		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_sv1 );
-	daw::do_not_optimize( j1 );
+	daw::do_not_optimize( twitter_result );
+	json_assert( twitter_result, "Missing value" );
+	json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	             "Missing value" );
 }
-

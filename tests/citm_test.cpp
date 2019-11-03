@@ -24,12 +24,18 @@
 #include <iostream>
 #include <streambuf>
 
+#include "daw/json/impl/daw_memory_mapped.h"
 #include <daw/daw_benchmark.h>
 #include <daw/daw_string_view.h>
 #include <daw/json/daw_json_link.h>
-#include "daw/json/impl/daw_memory_mapped.h"
 
 #include "citm_test.h"
+
+#if defined( NDEBUG ) and not defined( DEBUG )
+#define NUMRUNS 250
+#else
+#define NUMRUNS 10
+#endif
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;
@@ -46,12 +52,15 @@ int main( int argc, char **argv ) {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	daw::bench_n_test_mbs<10>(
+	auto citm_result = daw::bench_n_test_mbs<NUMRUNS>(
 	  "citm_catalog bench", sz,
-	  []( auto f1 ) {
-		  auto j1 = daw::json::from_json<citm_object_t>( f1 );
-		  daw::do_not_optimize( j1 );
-	  },
+	  []( auto f1 ) { return daw::json::from_json<citm_object_t>( f1 ); },
 	  json_sv1 );
+	daw::do_not_optimize( citm_result );
+	json_assert( citm_result, "Missing value" );
+	json_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	json_assert( citm_result->areaNames.count( 205706005 ) == 1,
+	             "Expected value" );
+	json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+	             "Incorrect value" );
 }
-

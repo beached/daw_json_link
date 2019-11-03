@@ -243,10 +243,15 @@ namespace daw::json::impl {
 		using key_t = typename JsonMember::json_key_t;
 		using value_t = typename JsonMember::json_element_t;
 		while( rng.front( ) != '}' ) {
-			auto key = parse_name( rng );
+			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{}, rng );
+			rng.move_to_next_of( ':' );
+			if constexpr( not TrustedInput ) {
+				json_assert( rng.front( ':' ), "Expected a ':' after key" );
+			}
+			rng.remove_prefix( );
 			rng.trim_left_no_check( );
 			container_appender(
-			  typename key_t::constructor_t{}( key.data( ), key.size( ) ),
+			  std::move( key ),
 			  parse_value<value_t>( ParseTag<value_t::expected_type>{}, rng ) );
 
 			rng.clean_tail( );

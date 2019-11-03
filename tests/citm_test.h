@@ -44,7 +44,7 @@ namespace symbols_events_value_t {
 	static constexpr char const name[] = "name";
 	static constexpr char const subTopicIds[] = "subTopicIds";
 	static constexpr char const topicIds[] = "topicIds";
-}
+} // namespace symbols_events_value_t
 auto describe_json_class( events_value_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
@@ -72,7 +72,7 @@ namespace symbols_prices_element_t {
 	static constexpr char const amount[] = "amount";
 	static constexpr char const audienceSubCategoryId[] = "audienceSubCategoryId";
 	static constexpr char const seatCategoryId[] = "seatCategoryId";
-}
+} // namespace symbols_prices_element_t
 auto describe_json_class( prices_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
@@ -95,7 +95,8 @@ namespace symbols_areas_element_t {
 }
 auto describe_json_class( areas_element_t ) {
 	using namespace daw::json;
-	return daw::json::class_description_t<json_number<symbols_areas_element_t::areaId, int64_t>>{};
+	return daw::json::class_description_t<
+	  json_number<symbols_areas_element_t::areaId, int64_t>>{};
 }
 
 auto to_json_data( areas_element_t const &value ) {
@@ -110,7 +111,7 @@ struct seatCategories_element_t {
 namespace symbols_seatCategories_element_t {
 	static constexpr char const areas[] = "areas";
 	static constexpr char const seatCategoryId[] = "seatCategoryId";
-}
+} // namespace symbols_seatCategories_element_t
 auto describe_json_class( seatCategories_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
@@ -142,7 +143,7 @@ namespace symbols_performances_element_t {
 	static constexpr char const seatCategories[] = "seatCategories";
 	static constexpr char const start[] = "start";
 	static constexpr char const venueCode[] = "venueCode";
-}
+} // namespace symbols_performances_element_t
 auto describe_json_class( performances_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
@@ -184,10 +185,9 @@ auto to_json_data( venueNames_t const &value ) {
 }
 
 struct citm_object_t {
-	std::unordered_map<std::string_view, std::string_view> areaNames;
-	std::unordered_map<std::string_view, std::string_view>
-	  audienceSubCategoryNames;
-	std::unordered_map<std::string_view, events_value_t> events;
+	std::unordered_map<intmax_t, std::string_view> areaNames;
+	std::unordered_map<intmax_t, std::string_view> audienceSubCategoryNames;
+	std::unordered_map<intmax_t, events_value_t> events;
 	std::vector<performances_element_t> performances;
 	std::unordered_map<std::string_view, std::string_view> seatCategoryNames;
 	std::unordered_map<std::string_view, std::string_view> subTopicNames;
@@ -212,14 +212,17 @@ auto describe_json_class( citm_object_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_key_value<symbols_citm_object_t::areaNames,
-	                 std::unordered_map<std::string_view, std::string_view>,
-	                 json_string<no_name, std::string_view>>,
+	                 std::unordered_map<intmax_t, std::string_view>,
+	                 json_string<no_name, std::string_view>,
+	                 json_number<no_name, intmax_t, LiteralAsStringOpt::always>>,
 	  json_key_value<symbols_citm_object_t::audienceSubCategoryNames,
-	                 std::unordered_map<std::string_view, std::string_view>,
-	                 json_string<no_name, std::string_view>>,
+	                 std::unordered_map<intmax_t, std::string_view>,
+	                 json_string<no_name, std::string_view>,
+	                 json_number<no_name, intmax_t, LiteralAsStringOpt::always>>,
 	  json_key_value<symbols_citm_object_t::events,
-	                 std::unordered_map<std::string_view, events_value_t>,
-	                 json_class<no_name, events_value_t>>,
+	                 std::unordered_map<intmax_t, events_value_t>,
+	                 json_class<no_name, events_value_t>,
+	                 json_number<no_name, intmax_t, LiteralAsStringOpt::always>>,
 	  json_array<symbols_citm_object_t::performances,
 	             std::vector<performances_element_t>,
 	             json_class<no_name, performances_element_t>>,
@@ -246,4 +249,3 @@ auto to_json_data( citm_object_t const &value ) {
 	  value.performances, value.seatCategoryNames, value.subTopicNames,
 	  value.topicNames, value.topicSubTopics, value.venueNames );
 }
-
