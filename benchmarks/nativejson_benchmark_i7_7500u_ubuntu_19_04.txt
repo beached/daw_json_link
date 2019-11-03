@@ -1,0 +1,49 @@
+Processing: 4.4MB
+nativejson_twitter bench
+	runs: 100
+	total: 119.57ms
+	avg: 1.19ms -> 506.39MB/s
+	min: 1.13ms -> 531.63MB/s
+	max: 1.82ms -> 330.08MB/s
+nativejson_twitter bench trusted
+	runs: 100
+	total: 114.30ms
+	avg: 1.14ms -> 527.41MB/s
+	min: 1.13ms -> 534.19MB/s
+	max: 1.25ms -> 481.85MB/s
+nativejson_citm bench
+	runs: 100
+	total: 170.99ms
+	avg: 1.71ms -> 963.96MB/s
+	min: 1.68ms -> 978.85MB/s
+	max: 1.82ms -> 905.09MB/s
+nativejson_citm bench trusted
+	runs: 100
+	total: 165.30ms
+	avg: 1.65ms -> 996.75MB/s
+	min: 1.63ms -> 1010.21MB/s
+	max: 1.70ms -> 969.26MB/s
+nativejson_canada bench
+	runs: 100
+	total: 240.37ms
+	avg: 2.40ms -> 895.49MB/s
+	min: 2.35ms -> 914.27MB/s
+	max: 3.04ms -> 707.26MB/s
+nativejson_canada bench trusted
+	runs: 100
+	total: 219.60ms
+	avg: 2.19ms -> 979.13MB/s
+	min: 2.15ms -> 1000.63MB/s
+	max: 2.53ms -> 847.16MB/s
+nativejson bench
+	runs: 100
+	total: 535.68ms
+	avg: 5.35ms -> 821.18MB/s
+	min: 5.30ms -> 829.07MB/s
+	max: 5.68ms -> 773.93MB/s
+nativejson bench trusted
+	runs: 100
+	total: 508.27ms
+	avg: 5.08ms -> 865.18MB/s
+	min: 5.02ms -> 875.42MB/s
+	max: 5.22ms -> 842.21MB/s
