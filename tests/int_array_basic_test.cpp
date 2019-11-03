@@ -35,7 +35,7 @@
 #ifndef NDEBUG
 static constexpr size_t const NUMVALUES = 1'000ULL;
 #else
-static constexpr size_t const NUMVALUES = 1'000'000ULL;
+static constexpr size_t const NUMVALUES = 100'000ULL;
 #endif
 
 template<size_t N, typename T>
@@ -61,7 +61,7 @@ static void test_from_json_array( std::string_view json_sv ) {
 
 	for( size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_sv );
-		auto result = daw::json::from_json_array<
+		auto result = daw::json::from_json_array_trusted<
 		  json_number<no_name, T>, daw::bounded_vector_t<T, NUMVALUES>>( json_sv );
 		daw::do_not_optimize( result );
 	}
@@ -70,7 +70,7 @@ static void test_from_json_array( std::string_view json_sv ) {
 template<typename T>
 static void test_json_array_iterator( std::string_view json_sv ) {
 	using namespace daw::json;
-	using iterator_t = json_array_iterator<json_number<no_name, T>>;
+	using iterator_t = json_array_iterator_trusted<json_number<no_name, T>>;
 	for( size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_sv );
 		auto first = iterator_t( json_sv );
