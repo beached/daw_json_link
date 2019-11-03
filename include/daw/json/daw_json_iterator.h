@@ -103,7 +103,7 @@ namespace daw::json {
 
 		constexpr json_array_iterator &operator++( ) noexcept {
 			if constexpr( not TrustedInput ) {
-				json_assert( m_state.empty( ) and not m_state.in( ']' ),
+				json_assert( m_state.has_more( ) and m_state.front( ) != ']',
 				             "Unexpected end of stream" );
 			}
 			if( m_can_skip >= 0 ) {

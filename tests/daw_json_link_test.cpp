@@ -45,15 +45,17 @@ namespace {
 	template<typename Unsigned, size_t N>
 	constexpr bool parse_unsigned_test( char const ( &str )[N],
 	                                    Unsigned expected ) {
-		auto tmp = daw::json::impl::IteratorRange<char const *, char const *, false>(
-		  str, str + N );
+		auto tmp =
+		  daw::json::impl::IteratorRange<char const *, char const *, false>(
+		    str, str + N );
 		return daw::json::impl::parse_unsigned_integer<Unsigned>( tmp ) == expected;
 	}
 
 	template<typename Signed, size_t N>
 	constexpr bool parse_signed_test( char const ( &str )[N], Signed expected ) {
-		auto tmp = daw::json::impl::IteratorRange<char const *, char const *, false>(
-		  str, str + N );
+		auto tmp =
+		  daw::json::impl::IteratorRange<char const *, char const *, false>(
+		    str, str + N );
 		return daw::json::impl::parse_integer<Signed>( tmp ) == expected;
 	}
 
@@ -72,6 +74,7 @@ namespace {
 		double d = 0.0;
 		bool b = false;
 		std::string_view s{};
+		std::string_view s2{};
 		daw::bounded_vector_t<int, 10> y{};
 		std::optional<int> o{};
 		std::optional<int> o2{};
@@ -82,7 +85,7 @@ namespace {
 		constexpr test_001_t( ) = default;
 
 		constexpr test_001_t( int Int, double Double, bool Bool, std::string_view S,
-		                      daw::bounded_vector_t<int, 10> Y,
+		                      std::string_view S2, daw::bounded_vector_t<int, 10> Y,
 		                      std::optional<int> O, std::optional<int> O2,
 		                      std::chrono::time_point<std::chrono::system_clock,
 		                                              std::chrono::milliseconds>
@@ -91,6 +94,7 @@ namespace {
 		  , d( Double )
 		  , b( Bool )
 		  , s( S )
+		  , s2( S2 )
 		  , y( Y )
 		  , o( O )
 		  , o2( O2 )
@@ -102,6 +106,7 @@ namespace {
 		constexpr static char const d[] = "d";
 		constexpr static char const b[] = "b";
 		constexpr static char const s[] = "s";
+		constexpr static char const s2[] = "s2";
 		constexpr static char const y[] = "y";
 		constexpr static char const o[] = "o";
 		constexpr static char const o2[] = "o2";
@@ -113,7 +118,7 @@ namespace {
 #ifdef __cpp_nontype_template_parameter_class
 		return class_description_t<
 		  json_number<"i", int>, json_number<"d">, json_bool<"b">,
-		  json_string<"s", std::string_view>,
+		  json_string<"s", std::string_view>, json_string<"s2", std::string_view>,
 		  json_array<"y", daw::bounded_vector_t<int, 10>,
 		             json_number<no_name, int>>,
 		  json_nullable<json_number<"o", int>>,
@@ -123,6 +128,7 @@ namespace {
 		  json_number<symbols_test_001_t::i, int>,
 		  json_number<symbols_test_001_t::d>, json_bool<symbols_test_001_t::b>,
 		  json_string<symbols_test_001_t::s, std::string_view>,
+		  json_string<symbols_test_001_t::s2, std::string_view>,
 		  json_array<symbols_test_001_t::y, daw::bounded_vector_t<int, 10>,
 		             json_number<no_name, int>>,
 		  json_nullable<json_number<symbols_test_001_t::o, int>>,
@@ -132,7 +138,8 @@ namespace {
 	}
 
 	auto to_json_data( test_001_t const &v ) {
-		return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.y, v.o, v.o2, v.dte );
+		return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.s2, v.y, v.o, v.o2,
+		                              v.dte );
 	}
 
 	struct test_002_t {
@@ -243,6 +250,7 @@ namespace {
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
+			"s2": "ho ho ho",
 			"o": 1344,
 			"dte": "2016-12-31T01:02:03.343Z"
 	  })" DAWJSONLINK_SENTINAL;
@@ -258,6 +266,7 @@ namespace {
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
+			"s2": "ho ho ho",
 			"o": 1344,
 			"dte": "2016-12-31T01:02:03.343Z"
 	  },
@@ -270,6 +279,7 @@ namespace {
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "",
+			"s2": "ho ho ho",
 			"o": 1344,
 			"o2": 80085,
 			"dte": "2017-12-31T01:02:03.343Z"
@@ -282,6 +292,7 @@ namespace {
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
+			"s2": "ho ho ho",
 			"o": 1344,
 			"dte": "2018-12-31T01:02:03.343Z"
 	  },{
@@ -293,6 +304,7 @@ namespace {
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
+			"s2": "ho ho ho",
 			"o": 1344,
 			"dte": "2019-11-31T01:02:03.343Z"
 	  },{
@@ -304,6 +316,7 @@ namespace {
 			"z": { "a": 1 },
 	    "tp": "2018-06-22T15:05:37Z",
 			"s": "yo yo yo",
+			"s2": "ho ho ho",
 			"o": 1322,
 			"dte": "2010-06-31T01:02:03.343Z"
 	  }])" DAWJSONLINK_SENTINAL;
