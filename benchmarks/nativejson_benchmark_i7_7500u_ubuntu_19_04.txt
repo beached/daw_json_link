@@ -47,3 +47,26 @@ nativejson bench trusted
 	avg: 5.08ms -> 865.18MB/s
 	min: 5.02ms -> 875.42MB/s
 	max: 5.22ms -> 842.21MB/s
+
+
+M                  STRUCT
+======= serde_json ======= parse|stringify ===== parse|stringify ====
+data/canada.json         220 MB/s   450 MB/s   560 MB/s   350 MB/s
+data/citm_catalog.json   350 MB/s   520 MB/s   880 MB/s   780 MB/s
+data/twitter.json        250 MB/s   810 MB/s   570 MB/s   790 MB/s
+
+======= json-rust ======== parse|stringify ===== parse|stringify ====
+data/canada.json         360 MB/s   890 MB/s
+data/citm_catalog.json   500 MB/s   750 MB/s
+data/twitter.json        430 MB/s   920 MB/s
+
+==== rustc_serialize ===== parse|stringify ===== parse|stringify ====
+data/canada.json         140 MB/s    58 MB/s   110 MB/s    44 MB/s
+data/citm_catalog.json   150 MB/s   180 MB/s   110 MB/s   210 MB/s
+data/twitter.json         90 MB/s   350 MB/s    70 MB/s   370 MB/s
+
+======= simd-json ======== parse|stringify ===== parse|stringify ====
+data/canada.json         360 MB/s   460 MB/s   600 MB/s
+data/citm_catalog.json   900 MB/s   670 MB/s  1350 MB/s
+data/twitter.json        720 MB/s   800 MB/s   940 MB/s
+
