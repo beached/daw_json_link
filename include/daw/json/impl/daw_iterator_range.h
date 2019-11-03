@@ -99,14 +99,18 @@ namespace daw::json::impl {
 
 		template<typename Char>
 		static bool constexpr is_space( Char c ) noexcept {
-			switch( c ) {
-			case 0x20: // space
-			case 0x09: // tab
-			case 0x0A: // new line
-			case 0x0D: // carriage return
-				return true;
+			if constexpr( not TrustedInput ) {
+				switch( c ) {
+				case 0x20: // space
+				case 0x09: // tab
+				case 0x0A: // new line
+				case 0x0D: // carriage return
+					return true;
+				}
+				return false;
+			} else {
+				return c <= 0x20;
 			}
-			return false;
 		}
 
 		constexpr void trim_left( ) noexcept {
