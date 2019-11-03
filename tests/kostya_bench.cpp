@@ -97,7 +97,7 @@ int main( int argc, char **argv ) {
 	double z = 0.0;
 	size_t sz = 0U;
 
-	// first will be json_array_sterator to the array coordinates in root object
+	// first will be json_array_iterator to the array coordinates in root object
 	for( auto first = iterator_t( json_sv, "coordnates" ); first != iterator_t( );
 	     ++first ) {
 		auto const c = *first;

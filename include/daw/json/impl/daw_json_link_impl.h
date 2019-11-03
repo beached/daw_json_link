@@ -419,8 +419,8 @@ namespace daw::json::impl {
 			json_path_item.remove_prefix( );
 		}
 		while( not json_path_item.empty( ) and not member_name.empty( ) ) {
-			if( json_path_item.front( ) != member_name.front( ) ) {
-				return false;
+			if( json_path_item.front( ) == member_name.front( ) ) {
+				return true;
 			}
 			json_path_item.remove_prefix( );
 			if( not json_path_item.empty( ) and json_path_item.front( ) == '\\' ) {
