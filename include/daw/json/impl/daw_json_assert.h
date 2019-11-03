@@ -57,6 +57,12 @@ namespace daw::json {
 #endif
 	}
 
+#if __has_cpp_attribute( unlikely )
+#define DAW_UNLIKELY [[unlikely]]
+#else
+#define DAW_UNLIKELY
+#endif
+
 #ifdef DAW_JSON_CHECK_ALWAYS
 	template<typename Bool, size_t N>
 	inline constexpr void json_assert(
@@ -64,7 +70,7 @@ namespace daw::json {
 	  char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
 		static_assert( std::is_convertible_v<Bool, bool>,
 		               "Argument must be convertable to a bool" );
-		if( not static_cast<bool>( b ) ) {
+		DAW_UNLIKELY if( not static_cast<bool>( b ) ) {
 			json_error( std::string_view( reason ) );
 		}
 	}
@@ -76,7 +82,7 @@ namespace daw::json {
 	  char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
 		static_assert( std::is_convertible_v<Bool, bool>,
 		               "Argument must be convertable to a bool" );
-		if( not static_cast<bool>( b ) ) {
+		DAW_UNLIKELY if( not static_cast<bool>( b ) ) {
 			json_error( std::string_view( reason ) );
 		}
 	}
@@ -86,5 +92,5 @@ namespace daw::json {
 	} while( false )
 #endif
 #endif
-
+#undef DAW_UNLIKELY
 } // namespace daw::json
