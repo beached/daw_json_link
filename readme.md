@@ -50,16 +50,30 @@ Once a data type has been described, you can easily construct an object from a s
 ```C++
 auto my_class = from_json<MyClass>( json_string );
 ```
+Alternatively, if the input is trusted you can called the less checked version
+```C++
+auto my_class = from_json_trusted<MyClass>( json_string );
+```
+
 Or one can create a collection of your object from a JSON array
 
 ```C++
 auto my_data = from_json_array<json_class<no_name, MyClass>>( json_string );
+```
+Alternatively, if the input is trusted you can called the less checked version
+```C++
+auto my_data = from_json_array_trusted<json_class<no_name, MyClass>>( json_string );
 ```
 
 If you want to work from JSON array data you can get an iterator and use the std algorithms too
 
 ```C++
 using iterator_t = daw::json::json_array_iterator<json_class<no_name, MyClass>>;
+auto pos = std::find( iterator_t( json_string ), iterator_t( ), MyClass( ... ) );
+```
+Alternatively, if the input is trusted you can called the less checked version
+```C++
+using iterator_t = daw::json::json_array_iterator_trusted<json_class<no_name, MyClass>>;
 auto pos = std::find( iterator_t( json_string ), iterator_t( ), MyClass( ... ) );
 ```
 

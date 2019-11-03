@@ -72,9 +72,9 @@ namespace daw::json {
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr json_array_iterator( String &&jd,
 		                               std::string_view start_path = "" )
-		  : m_state(
-		      impl::find_range<TrustedInput>( std::forward<String>( jd ),
-		                        {start_path.data( ), start_path.size( )} ) ) {
+		  : m_state( impl::find_range<TrustedInput>(
+		      std::forward<String>( jd ),
+		      {start_path.data( ), start_path.size( )} ) ) {
 
 			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
@@ -191,4 +191,8 @@ namespace daw::json {
 			return m_first == m_last;
 		}
 	};
+
+	template<typename JsonElement, char separator = ','>
+	using json_array_iterator_trusted =
+	  json_array_iterator<JsonElement, true, separator>;
 } // namespace daw::json
