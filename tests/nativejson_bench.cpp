@@ -33,8 +33,19 @@
 #include "daw/json/impl/daw_memory_mapped.h"
 #include "twitter_test.h"
 
+#if defined( NDEBUG ) and not defined( DEBUG )
+#define NUMRUNS 250
+#else
+#define NUMRUNS 50
+#endif
+
 int main( int argc, char **argv ) {
 	using namespace daw::json;
+#if defined( NDEBUG ) and not defined( DEBUG )
+	std::cout << "release run\n";
+#else
+	std::cout << "debug run\n";
+#endif
 	if( argc < 4 ) {
 		std::cerr << "Must supply a filenames to open\n";
 		std::cerr << "twitter citm canada\n";
@@ -57,7 +68,7 @@ int main( int argc, char **argv ) {
 	std::optional<twitter_object_t> j1{};
 	std::optional<citm_object_t> j2{};
 	std::optional<canada_object_t> j3{};
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_twitter bench", json_sv1.size( ),
 	  [&j1]( auto f1 ) { j1 = daw::json::from_json<twitter_object_t>( f1 ); },
 	  json_sv1 );
@@ -65,7 +76,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_twitter bench trusted", json_sv1.size( ),
 	  [&j1]( auto f1 ) {
 		  j1 = daw::json::from_json_trusted<twitter_object_t>( f1 );
@@ -75,7 +86,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_citm bench", json_sv2.size( ),
 	  [&j2]( auto f2 ) { j2 = daw::json::from_json<citm_object_t>( f2 ); },
 	  json_sv2 );
@@ -83,7 +94,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_citm bench trusted", json_sv2.size( ),
 	  [&j2]( auto f2 ) {
 		  j2 = daw::json::from_json_trusted<citm_object_t>( f2 );
@@ -93,7 +104,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_canada bench", json_sv3.size( ),
 	  [&j3]( auto f3 ) { j3 = daw::json::from_json<canada_object_t>( f3 ); },
 	  json_sv3 );
@@ -101,7 +112,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_canada bench trusted", json_sv3.size( ),
 	  [&j3]( auto f3 ) {
 		  j3 = daw::json::from_json_trusted<canada_object_t>( f3 );
@@ -111,7 +122,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << std::flush;
 
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  j1 = daw::json::from_json<twitter_object_t>( f1 );
@@ -126,7 +137,7 @@ int main( int argc, char **argv ) {
 	daw::do_not_optimize( j2 );
 	daw::do_not_optimize( j3 );
 
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson bench trusted", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  j1 = daw::json::from_json_trusted<twitter_object_t>( f1 );
