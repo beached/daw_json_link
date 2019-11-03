@@ -90,7 +90,7 @@ int main( int argc, char **argv ) {
 	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using iterator_t =
-	  daw::json::json_array_iterator<json_class<no_name, coordinate_t>>;
+	  daw::json::json_array_iterator<json_class<no_name, coordinate_t>, true>;
 
 	double x = 0.0;
 	double y = 0.0;
