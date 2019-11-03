@@ -304,23 +304,20 @@ namespace daw::json::impl {
 	                               sizeof...( JsonMembers )> &locations,
 	                    IteratorRange<First, Last, TrustedInput> &rng ) {
 
-		rng.clean_tail( );
 		using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
 
-		// If we are an array element
+		rng.clean_tail( );
 		if constexpr( json_name_eq( JsonMember::name, no_name ) ) {
+			// If we are an array element
 			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
 			                                rng );
 		} else {
+			if constexpr( not TrustedInput ) {
+				json_assert( rng.front( "\"}" ), "Expected end of class or start of member" );
+			}
 			auto loc =
 			  find_class_member<JsonMemberPosition, JsonMembers...>( locations, rng );
 
-#if not defined( NDEBUG ) or defined( debug )
-			// This is here for debugging to make it easy to know where we are
-			constexpr JSONNAMETYPE const name = JsonMember::name;
-			(void)name;
-#endif
-			// Only allow missing members for Null-able type
 			if constexpr( not TrustedInput ) {
 				json_assert( JsonMember::expected_type == JsonParseTypes::Null or
 				               not loc.empty( ),
@@ -367,12 +364,7 @@ namespace daw::json::impl {
 		  "Supplied types cannot be used for construction of this type" );
 
 		rng.move_to_next_of( '{' );
-		/*rng.trim_left_no_check( );
-		if constexpr( not TrustedInput ) {
-		  json_assert( rng.front( '{' ), "Expected class to begin with '{'" );
-		}*/
 		rng.remove_prefix( );
-		// rng.trim_left_no_check( );
 		rng.move_to_next_of( "\"}" );
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
 			return construct_a<Result>( );
@@ -389,7 +381,7 @@ namespace daw::json::impl {
 			auto result = daw::construct_a<Result>(
 			  parse_class_member<Is, JsonMembers...>( known_locations, rng )... );
 			rng.clean_tail( );
-			// If we fullfill the contract before all values are found
+			// If we fullfill the contract before all values are parses
 			while( rng.front( ) != '}' ) {
 				(void)parse_name( rng );
 				(void)skip_value( rng );
