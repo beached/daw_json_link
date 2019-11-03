@@ -73,6 +73,9 @@ int main( int argc, char **argv ) {
 	  [&j1]( auto f1 ) { j1 = daw::json::from_json<twitter_object_t>( f1 ); },
 	  json_sv1 );
 	daw::do_not_optimize( j1 );
+	if( not j1 ) {
+		json_error( "Missing value" );
+	}
 
 	std::cout << std::flush;
 
@@ -83,6 +86,9 @@ int main( int argc, char **argv ) {
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( j1 );
+	if( not j1 ) {
+		json_error( "Missing value" );
+	}
 
 	std::cout << std::flush;
 
@@ -91,6 +97,9 @@ int main( int argc, char **argv ) {
 	  [&j2]( auto f2 ) { j2 = daw::json::from_json<citm_object_t>( f2 ); },
 	  json_sv2 );
 	daw::do_not_optimize( j2 );
+	if( not j2 ) {
+		json_error( "Missing value" );
+	}
 
 	std::cout << std::flush;
 
@@ -101,6 +110,9 @@ int main( int argc, char **argv ) {
 	  },
 	  json_sv2 );
 	daw::do_not_optimize( j2 );
+	if( not j2 ) {
+		json_error( "Missing value" );
+	}
 
 	std::cout << std::flush;
 
@@ -109,6 +121,9 @@ int main( int argc, char **argv ) {
 	  [&j3]( auto f3 ) { j3 = daw::json::from_json<canada_object_t>( f3 ); },
 	  json_sv3 );
 	daw::do_not_optimize( j3 );
+	if( not j3 ) {
+		json_error( "Missing value" );
+	}
 
 	std::cout << std::flush;
 
@@ -119,6 +134,9 @@ int main( int argc, char **argv ) {
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( j3 );
+	if( not j3 ) {
+		json_error( "Missing value" );
+	}
 
 	std::cout << std::flush;
 
@@ -151,4 +169,14 @@ int main( int argc, char **argv ) {
 	daw::do_not_optimize( j1 );
 	daw::do_not_optimize( j2 );
 	daw::do_not_optimize( j3 );
+
+	if( not j1 ) {
+		json_error( "Missing value" );
+	}
+	if( not j2 ) {
+		json_error( "Missing value" );
+	}
+	if( not j3 ) {
+		json_error( "Missing value" );
+	}
 }
