@@ -233,7 +233,8 @@ namespace daw::json::impl {
 		}
 
 		rng.remove_prefix( );
-		rng.trim_left_no_check( );
+		// We are inside a KV map, we can expected a quoted name next
+		(void)rng.move_to_next_of( '"' );
 
 		auto array_container = typename JsonMember::constructor_t{}( );
 		auto container_appender =
@@ -241,7 +242,7 @@ namespace daw::json::impl {
 
 		using key_t = typename JsonMember::json_key_t;
 		using value_t = typename JsonMember::json_element_t;
-		while( not rng.in( "}" ) ) {
+		while( rng.front( ) != '}' ) {
 			auto key = parse_name( rng );
 			rng.trim_left_no_check( );
 			container_appender(
@@ -249,6 +250,9 @@ namespace daw::json::impl {
 			  parse_value<value_t>( ParseTag<value_t::expected_type>{}, rng ) );
 
 			rng.clean_tail( );
+			if constexpr( not TrustedInput ) {
+				json_assert( rng.has_more( ), "Unexpected end of data" );
+			}
 		}
 		if constexpr( not TrustedInput ) {
 			json_assert( rng.front( '}' ),

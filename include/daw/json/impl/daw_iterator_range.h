@@ -89,8 +89,12 @@ namespace daw::json::impl {
 			}
 		}
 
-		constexpr void remove_prefix( size_t n = 1 ) {
-			first = std::next( first, static_cast<intmax_t>( n ) );
+		constexpr void remove_prefix( ) {
+			++first;
+		}
+
+		constexpr void remove_prefix( size_t n ) {
+			first += static_cast<intmax_t>( n );
 		}
 
 		template<typename Char>
@@ -135,12 +139,13 @@ namespace daw::json::impl {
 		[[nodiscard]] constexpr daw::string_view
 		move_to_next_of( char c ) noexcept {
 			auto p = begin( );
-			size_t sz = 0;
-			while( not in( c ) ) {
+			while( front( ) != c ) {
+				if constexpr( not TrustedInput ) {
+					json_assert( has_more( ), "Unexpected end of data" );
+				}
 				remove_prefix( );
-				++sz;
 			}
-			return {p, sz};
+			return {p, static_cast<size_t>( begin( ) - p )};
 		}
 
 		[[nodiscard]] constexpr IteratorRange

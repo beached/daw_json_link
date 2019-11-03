@@ -36,10 +36,11 @@
 namespace {
 	template<typename Real, size_t N>
 	constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
-		auto tmp =
+		auto rng =
 		  daw::json::impl::IteratorRange<char const *, char const *, false>(
 		    str, str + N );
-		return daw::json::impl::parse_real<Real>( tmp ) == expected;
+		auto res = daw::json::impl::parse_real<Real>( rng );
+		return not( res < expected or res > expected );
 	}
 
 	template<typename Unsigned, size_t N>
