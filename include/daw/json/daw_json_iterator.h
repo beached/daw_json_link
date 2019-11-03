@@ -96,9 +96,11 @@ namespace daw::json {
 			}
 
 			auto tmp = m_state;
-			return impl::parse_value<JsonElement>(
+			auto result = impl::parse_value<JsonElement>(
 			  ParseTag<JsonElement::expected_type>{}, tmp );
+
 			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
+			return result;
 		}
 
 		constexpr json_array_iterator &operator++( ) noexcept {
