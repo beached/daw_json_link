@@ -1,53 +1,52 @@
 Processing: 4.4MB
 nativejson_twitter bench
 	runs: 100
-	total: 119.57ms
-	avg: 1.19ms -> 506.39MB/s
-	min: 1.13ms -> 531.63MB/s
-	max: 1.82ms -> 330.08MB/s
+	total: 157.15ms
+	avg: 1.44ms -> 419.56MB/s
+	min: 1.12ms -> 536.22MB/s
+	max: 15.04ms -> 40.05MB/s
 nativejson_twitter bench trusted
 	runs: 100
-	total: 114.30ms
-	avg: 1.14ms -> 527.41MB/s
-	min: 1.13ms -> 534.19MB/s
-	max: 1.25ms -> 481.85MB/s
+	total: 117.60ms
+	avg: 1.14ms -> 529.34MB/s
+	min: 1.13ms -> 535.12MB/s
+	max: 4.96ms -> 121.49MB/s
 nativejson_citm bench
 	runs: 100
-	total: 170.99ms
-	avg: 1.71ms -> 963.96MB/s
-	min: 1.68ms -> 978.85MB/s
-	max: 1.82ms -> 905.09MB/s
+	total: 175.49ms
+	avg: 1.70ms -> 969.85MB/s
+	min: 1.67ms -> 983.75MB/s
+	max: 7.35ms -> 224.11MB/s
 nativejson_citm bench trusted
 	runs: 100
-	total: 165.30ms
-	avg: 1.65ms -> 996.75MB/s
-	min: 1.63ms -> 1010.21MB/s
-	max: 1.70ms -> 969.26MB/s
+	total: 164.44ms
+	avg: 1.64ms -> 1001.84MB/s
+	min: 1.63ms -> 1011.97MB/s
+	max: 1.66ms -> 989.53MB/s
 nativejson_canada bench
 	runs: 100
-	total: 240.37ms
-	avg: 2.40ms -> 895.49MB/s
-	min: 2.35ms -> 914.27MB/s
-	max: 3.04ms -> 707.26MB/s
+	total: 244.48ms
+	avg: 2.38ms -> 900.16MB/s
+	min: 2.34ms -> 916.81MB/s
+	max: 8.37ms -> 256.34MB/s
 nativejson_canada bench trusted
 	runs: 100
-	total: 219.60ms
-	avg: 2.19ms -> 979.13MB/s
-	min: 2.15ms -> 1000.63MB/s
-	max: 2.53ms -> 847.16MB/s
+	total: 216.99ms
+	avg: 2.17ms -> 989.69MB/s
+	min: 2.13ms -> 1009.29MB/s
+	max: 2.24ms -> 957.42MB/s
 nativejson bench
 	runs: 100
-	total: 535.68ms
-	avg: 5.35ms -> 821.18MB/s
-	min: 5.30ms -> 829.07MB/s
-	max: 5.68ms -> 773.93MB/s
+	total: 533.14ms
+	avg: 5.31ms -> 827.28MB/s
+	min: 5.28ms -> 832.06MB/s
+	max: 7.05ms -> 623.55MB/s
 nativejson bench trusted
 	runs: 100
-	total: 508.27ms
-	avg: 5.08ms -> 865.18MB/s
-	min: 5.02ms -> 875.42MB/s
-	max: 5.22ms -> 842.21MB/s
-
+	total: 504.94ms
+	avg: 5.05ms -> 870.81MB/s
+	min: 5.01ms -> 878.08MB/s
+	max: 5.15ms -> 854.29MB/s
 
 M                  STRUCT
 ======= serde_json ======= parse|stringify ===== parse|stringify ====
@@ -70,3 +69,7 @@ data/canada.json         360 MB/s   460 MB/s   600 MB/s
 data/citm_catalog.json   900 MB/s   670 MB/s  1350 MB/s
 data/twitter.json        720 MB/s   800 MB/s   940 MB/s
 
+==== daw-jsonlink ========= parse ===================================
+data/canada.json         1009.29 MB/s
+data/citm_catalog.json   1011.97 MB/s
+data/twitter.json        535.12 MB/s
