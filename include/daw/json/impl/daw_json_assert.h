@@ -25,7 +25,7 @@
 #if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
          defined( _CPPUNWIND ) )
 // account for no exceptions -fno-exceptions
-#undef DAW_JSON_USE_EXCEPTIONS
+#undef DAW_USE_JSON_EXCEPTIONS
 #endif
 
 namespace daw::json {
@@ -41,7 +41,7 @@ namespace daw::json {
 			return m_reason;
 		}
 	};
-#ifdef DAW_JSON_USE_EXCEPTIONS
+#ifdef DAW_USE_JSON_EXCEPTIONS
 	inline constexpr bool use_json_exceptions_v = true;
 #else
 	inline constexpr bool use_json_exceptions_v = false;

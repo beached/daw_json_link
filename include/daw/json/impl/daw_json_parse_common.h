@@ -71,7 +71,7 @@ namespace daw::json::impl {
 } // namespace daw::json::impl
 
 namespace daw::json {
-#ifdef __cpp_nontype_template_parameter_class
+#if defined(__cpp_nontype_template_parameter_class )
 // C++ 20 Non-Type Class Template Arguments
 #define JSONNAMETYPE daw::bounded_string
 
