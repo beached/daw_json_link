@@ -37,41 +37,35 @@ namespace daw::json::impl::name {
 		 * the string can be escaped too
 		 */
 
-		[[nodiscard]] static constexpr name_parser_result
-		parse_nq( char const *ptr ) noexcept {
-			while( *ptr != '"' ) {
-				while( *ptr != '"' and *ptr != '\\' ) {
-					++ptr;
+		template<typename First, typename Last, bool TrustedInput>
+		[[nodiscard]] static constexpr daw::string_view
+		parse_nq( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
+			auto ptr = rng.begin( );
+			while( rng.front( ) != '"' ) {
+				while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
+					rng.remove_prefix( );
 				}
-				if( *ptr == '\\' ) {
-					++ptr;
-					++ptr;
+				if( rng.front( ) == '\\' ) {
+					rng.remove_prefix( 2 );
 				}
 			}
-			json_assert( *ptr == '"', "Expected a '\"'" );
-			auto result = name_parser_result{ptr, nullptr};
-			++ptr;
-			// Assume no eos, replace with jump table
-			while( *ptr <= 0x20 ) {
-				json_assert( *ptr != '\0', "Unexpected end of stream" );
-				++ptr;
+			if constexpr( not TrustedInput ) {
+				json_assert( rng.front( ) == '"', "Expected a '\"'" );
 			}
-			json_assert( *ptr == ':', "Expected a ':'" );
-			++ptr;
-			while( *ptr <= 0x20 ) {
-				json_assert( *ptr != '\0', "Unexpected end of stream" );
-				++ptr;
+			auto result =
+				daw::string_view( ptr, static_cast<size_t>( rng.begin( ) - ptr ) );
+			rng.remove_prefix( );
+			while( rng.is_space( ) ) {
+				rng.remove_prefix( );
 			}
-			result.end_of_whitespace = ptr;
+			if constexpr( not TrustedInput ) {
+				json_assert( rng.front( ) == ':', "Expected a ':'" );
+			}
+			rng.remove_prefix( );
+			while( rng.is_space( ) ) {
+				rng.remove_prefix( );
+			}
 			return result;
-		}
-
-		[[nodiscard]] static constexpr name_parser_result
-		parse( char const *ptr ) noexcept {
-			if( *ptr == '"' ) {
-				++ptr;
-			}
-			return parse_nq( ptr );
 		}
 	};
 } // namespace daw::json::impl::name

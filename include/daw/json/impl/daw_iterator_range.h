@@ -97,10 +97,12 @@ namespace daw::json::impl {
 			first += static_cast<intmax_t>( n );
 		}
 
-		template<typename Char>
-		static bool constexpr is_space( Char c ) noexcept {
+		constexpr bool is_space( ) const noexcept {
 			if constexpr( not TrustedInput ) {
-				switch( c ) {
+				json_assert( has_more( ), "Unexpected end of stream" );
+			}
+			if constexpr( not TrustedInput ) {
+				switch( *first ) {
 				case 0x20: // space
 				case 0x09: // tab
 				case 0x0A: // new line
@@ -109,19 +111,19 @@ namespace daw::json::impl {
 				}
 				return false;
 			} else {
-				return c <= 0x20;
+				return *first <= 0x20;
 			}
 		}
 
 		constexpr void trim_left( ) noexcept {
-			while( first != last && is_space( *first ) ) {
-				++first;
+			while( has_more( ) and is_space( ) ) {
+				remove_prefix( );
 			}
 		}
 
 		constexpr void trim_left_no_check( ) noexcept {
-			while( is_space( *first ) ) {
-				++first;
+			while( is_space( ) ) {
+				remove_prefix( );
 				if constexpr( not TrustedInput ) {
 					json_assert( first != last, "Unexpected end of stream" );
 				}
@@ -195,22 +197,18 @@ namespace daw::json::impl {
 
 		[[nodiscard]] constexpr bool at_end_of_item( ) const noexcept {
 			auto const c = front( );
-			return c == ',' or c == '}' or c == ']' or c == ':' or is_space( c );
+			return c == ',' or c == '}' or c == ']' or c == ':' or c <= 0x20;
 		}
 
 		constexpr void clean_tail( ) noexcept {
 			// trim_left
-			while( first != last && is_space( *first ) ) {
-				++first;
+			while( has_more( ) and is_space( ) ) {
+				remove_prefix( );
 			}
-			if( *first == ',' ) {
-				// remove_prefix
-				++first;
-				// trim_left_no_check
-				while( is_space( *first ) ) {
-					++first;
-				}
+			if( front( ) == ',' ) {
+				remove_prefix( );
+				trim_left_no_check( );
 			}
 		}
-	};
+	}; // namespace daw::json::impl
 } // namespace daw::json::impl

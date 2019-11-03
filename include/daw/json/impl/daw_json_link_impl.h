@@ -155,18 +155,11 @@ namespace daw::json::impl {
 	template<typename First, typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr daw::string_view
 	parse_name( IteratorRange<First, Last, TrustedInput> &rng ) {
-		// if( *rng.first == '"' ) {
-		++rng.first;
-		//}
-		auto nr = daw::json::impl::name::name_parser::parse_nq( rng.first );
-		auto name = daw::string_view( rng.first, nr.end_of_name );
-		rng.first = nr.end_of_whitespace;
-
 		if constexpr( not TrustedInput ) {
-			json_assert( not name.empty( ) and not rng.empty( ),
-			             "Expected a non empty name and data after name" );
+			json_assert( rng.front( '"' ), "Expected name to start with a quote" );
 		}
-		return name;
+		rng.remove_prefix( );
+		return daw::json::impl::name::name_parser::parse_nq( rng );
 	}
 
 	namespace {
