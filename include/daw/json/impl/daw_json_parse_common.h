@@ -71,7 +71,7 @@ namespace daw::json::impl {
 } // namespace daw::json::impl
 
 namespace daw::json {
-#if defined(__cpp_nontype_template_parameter_class )
+#if defined( __cpp_nontype_template_parameter_class )
 // C++ 20 Non-Type Class Template Arguments
 #define JSONNAMETYPE daw::bounded_string
 
@@ -110,7 +110,7 @@ namespace daw::json {
 	from_json( daw::json::impl::IteratorRange<First, Last, TrustedInput> &rng ) {
 		static_assert( impl::has_json_parser_description_v<T>,
 		               "A function call describe_json_class must exist for type." );
-		json_assert( not rng.empty( ), "Attempt to parse empty string" );
+		json_assert_untrusted( rng.has_more( ), "Attempt to parse empty string" );
 
 		T result = impl::json_parser_description_t<T>::template parse<T>( rng );
 		rng.trim_left( );
@@ -145,15 +145,11 @@ namespace daw::json::impl {
 	template<typename First, typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
 	skip_string_nq( IteratorRange<First, Last, TrustedInput> &rng ) {
-		// Not always starting with string json_assert( rng.front( '"' ),
-		// "Expected \" at the start of a string" );
 		auto result = rng;
 		rng.first = string_quote::string_quote_parser::parse_nq( rng.first );
 
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.front( ) == '"',
-			             "Expected trailing \" at the end of string" );
-		}
+		json_assert_untrusted( rng.front( ) == '"',
+		                       "Expected trailing \" at the end of string" );
 		result.last = rng.first;
 		rng.remove_prefix( );
 		return result;
@@ -162,9 +158,7 @@ namespace daw::json::impl {
 	template<typename First, typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
 	skip_string( IteratorRange<First, Last, TrustedInput> &rng ) {
-		// Not always starting with string json_assert( rng.front( '"' ),
-		// "Expected \" at the start of a string" );
-		if( rng.front( '"' ) ) { // TODO
+		if( rng.front( '"' ) ) {
 			rng.remove_prefix( );
 		}
 		return skip_string_nq( rng );
@@ -183,10 +177,8 @@ namespace daw::json::impl {
 		auto result = rng;
 		result.last = literal_end::literal_end_parser::parse( rng.first );
 		rng.first = result.last;
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.front( ",}]" ),
-			             "Expected a ',', '}', ']' to trail literal" );
-		}
+		json_assert_untrusted( rng.front( ",}]" ),
+		                       "Expected a ',', '}', ']' to trail literal" );
 		return result;
 	}
 
@@ -194,9 +186,7 @@ namespace daw::json::impl {
 	         bool TrustedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
 	skip_bracketed_item( IteratorRange<First, Last, TrustedInput> &rng ) {
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.front( Left ), "Expected start bracket/brace" );
-		}
+		json_assert_untrusted( rng.front( Left ), "Expected start bracket/brace" );
 		size_t bracket_count = 1;
 		bool in_quotes = false;
 		auto result = rng;
@@ -222,14 +212,11 @@ namespace daw::json::impl {
 				break;
 			}
 		}
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.front( Right ), "Expected closing bracket/brace" );
-		}
+		json_assert_untrusted( rng.front( Right ),
+		                       "Expected closing bracket/brace" );
 
 		rng.remove_prefix( );
-		if constexpr( not TrustedInput ) {
-			json_assert( not rng.empty( ), "Unexpected empty range" );
-		}
+		json_assert_untrusted( rng.has_more( ), "Unexpected empty range" );
 
 		result.last = rng.begin( );
 		return result;
@@ -250,9 +237,7 @@ namespace daw::json::impl {
 	template<typename First, typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
 	skip_value( IteratorRange<First, Last, TrustedInput> &rng ) {
-		if constexpr( not TrustedInput ) {
-			json_assert( not rng.empty( ), "Expected value, not empty range" );
-		}
+		json_assert_untrusted( rng.has_more( ), "Expected value, not empty range" );
 
 		switch( rng.front( ) ) {
 		case '"':
@@ -273,10 +258,8 @@ namespace daw::json::impl {
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 		              JsonMember::expected_type == JsonParseTypes::String or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
-			if constexpr( not TrustedInput ) {
-				json_assert( rng.front( '"' ),
-				             "Expected start of value to begin with '\"'" );
-			}
+			json_assert_untrusted( rng.front( '"' ),
+			                       "Expected start of value to begin with '\"'" );
 			rng.remove_prefix( );
 			return impl::skip_string_nq( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
@@ -287,14 +270,12 @@ namespace daw::json::impl {
 		                     JsonMember::expected_type == JsonParseTypes::Bool ) {
 			return impl::skip_literal( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
-			if constexpr( not TrustedInput ) {
-				json_assert( rng.front( '[' ), "Expected start of array with '['" );
-			}
+			json_assert_untrusted( rng.front( '[' ),
+			                       "Expected start of array with '['" );
 			return impl::skip_array( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Class ) {
-			if constexpr( not TrustedInput ) {
-				json_assert( rng.front( '{' ), "Expected start of class with '{'" );
-			}
+			json_assert_untrusted( rng.front( '{' ),
+			                       "Expected start of class with '{'" );
 			return impl::skip_class( rng );
 		} else {
 			// Woah there
@@ -308,10 +289,8 @@ namespace daw::json::impl {
 	skip_quotes( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
 		if constexpr( JsonMember::literal_as_string ==
 		              LiteralAsStringOpt::always ) {
-			if constexpr( not TrustedInput ) {
-				json_assert( rng.front( '"' ),
-				             "Expected start of quoted item with \"" );
-			}
+			json_assert_untrusted( rng.front( '"' ),
+			                       "Expected start of quoted item with \"" );
 			rng.remove_prefix( );
 		} else if constexpr( JsonMember::literal_as_string ==
 		                     LiteralAsStringOpt::maybe ) {

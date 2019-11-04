@@ -50,9 +50,7 @@ namespace daw::json::impl {
 
 		constexpr json_parse_value_array_iterator &operator++( ) {
 			rng->clean_tail( );
-			if constexpr( not TrustedInput ) {
-				json_assert( rng->has_more( ), "Unexpected end of data" );
-			}
+			json_assert_untrusted( rng->has_more( ), "Unexpected end of data" );
 			if( rng->front( ) == ']' ) {
 				// Cleanup at end of value
 				rng->remove_prefix( );

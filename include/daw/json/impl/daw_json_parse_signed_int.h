@@ -61,9 +61,8 @@ namespace daw::json::impl {
 	         typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr Result
 	parse_integer( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.front( "+-0123456789" ), "Expected +,-, or a digit" );
-		}
+		json_assert_untrusted( rng.front( "+-0123456789" ),
+		                       "Expected +,-, or a digit" );
 
 		using result_t = std::conditional_t<RangeCheck, intmax_t, Result>;
 		using namespace daw::json::impl::signedint;

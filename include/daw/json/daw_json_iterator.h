@@ -80,20 +80,16 @@ namespace daw::json {
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
 			  "String must be like a string_view" );
 
-			if constexpr( not TrustedInput ) {
-				json_assert( m_state.front( ) == '[',
-				             "Arrays are expected to start with a [" );
-			}
+			json_assert_untrusted( m_state.front( ) == '[',
+			                       "Arrays are expected to start with a [" );
 
 			m_state.remove_prefix( );
 			m_state.trim_left( );
 		}
 
 		[[nodiscard]] constexpr value_type operator*( ) const noexcept {
-			if constexpr( not TrustedInput ) {
-				json_assert( not m_state.empty( ) and not m_state.in( ']' ),
-				             "Unexpected end of stream" );
-			}
+			json_assert_untrusted( m_state.has_more( ) and not m_state.in( ']' ),
+			                       "Unexpected end of stream" );
 
 			auto tmp = m_state;
 			auto result = impl::parse_value<JsonElement>(
@@ -104,10 +100,8 @@ namespace daw::json {
 		}
 
 		constexpr json_array_iterator &operator++( ) noexcept {
-			if constexpr( not TrustedInput ) {
-				json_assert( m_state.has_more( ) and m_state.front( ) != ']',
-				             "Unexpected end of stream" );
-			}
+			json_assert_untrusted( m_state.has_more( ) and m_state.front( ) != ']',
+			                       "Unexpected end of stream" );
 			if( m_can_skip >= 0 ) {
 				m_state.first = std::next( m_state.first, m_can_skip );
 				m_can_skip = -1;

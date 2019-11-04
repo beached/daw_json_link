@@ -36,6 +36,18 @@ namespace daw::json::impl::name {
 		 * end of string " -> name value separating : -> any white space
 		 * the string can be escaped too
 		 */
+		template<typename First, typename Last, bool TrustedInput>
+		static constexpr void
+		trim_end_of_name( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
+			while( rng.is_space( ) ) {
+				rng.remove_prefix( );
+			}
+			json_assert_untrusted( rng.front( ) == ':', "Expected a ':'" );
+			rng.remove_prefix( );
+			while( rng.is_space( ) ) {
+				rng.remove_prefix( );
+			}
+		}
 
 		template<typename First, typename Last, bool TrustedInput>
 		[[nodiscard]] static constexpr daw::string_view
@@ -49,22 +61,11 @@ namespace daw::json::impl::name {
 					rng.remove_prefix( 2 );
 				}
 			}
-			if constexpr( not TrustedInput ) {
-				json_assert( rng.front( ) == '"', "Expected a '\"'" );
-			}
+			json_assert_untrusted( rng.front( ) == '"', "Expected a '\"'" );
 			auto result =
-				daw::string_view( ptr, static_cast<size_t>( rng.begin( ) - ptr ) );
+			  daw::string_view( ptr, static_cast<size_t>( rng.begin( ) - ptr ) );
 			rng.remove_prefix( );
-			while( rng.is_space( ) ) {
-				rng.remove_prefix( );
-			}
-			if constexpr( not TrustedInput ) {
-				json_assert( rng.front( ) == ':', "Expected a ':'" );
-			}
-			rng.remove_prefix( );
-			while( rng.is_space( ) ) {
-				rng.remove_prefix( );
-			}
+			trim_end_of_name( rng );
 			return result;
 		}
 	};

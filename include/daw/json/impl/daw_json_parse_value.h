@@ -65,17 +65,15 @@ namespace daw::json::impl {
 		using element_t = typename JsonMember::parse_to_t;
 
 		skip_quote_when_literal_as_string<JsonMember>( rng );
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.is_real_number_part( ),
-			             "Expected number to start with on of \"0123456789eE+-\"" );
-		}
+		json_assert_untrusted(
+		  rng.is_real_number_part( ),
+		  "Expected number to start with on of \"0123456789eE+-\"" );
 
 		auto result = constructor_t{}( parse_real<element_t>( rng ) );
 		skip_quote_when_literal_as_string<JsonMember>( rng );
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.at_end_of_item( ),
-			             "Expected whitespace or one of \",}]\" at end of number" );
-		}
+		json_assert_untrusted(
+		  rng.at_end_of_item( ),
+		  "Expected whitespace or one of \",}]\" at end of number" );
 		return result;
 	}
 
@@ -88,18 +86,16 @@ namespace daw::json::impl {
 		using element_t = typename JsonMember::parse_to_t;
 
 		skip_quote_when_literal_as_string<JsonMember>( rng );
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.is_real_number_part( ),
-			             "Expected number to start with on of \"0123456789eE+-\"" );
-		}
+		json_assert_untrusted(
+		  rng.is_real_number_part( ),
+		  "Expected number to start with on of \"0123456789eE+-\"" );
 
 		auto result = constructor_t{}(
 		  parse_integer<element_t, JsonMember::range_check>( rng ) );
 		skip_quote_when_literal_as_string<JsonMember>( rng );
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.at_end_of_item( ),
-			             "Expected whitespace or one of \",}]\" at end of number" );
-		}
+		json_assert_untrusted(
+		  rng.at_end_of_item( ),
+		  "Expected whitespace or one of \",}]\" at end of number" );
 		return result;
 	}
 
@@ -112,17 +108,15 @@ namespace daw::json::impl {
 		using element_t = typename JsonMember::parse_to_t;
 
 		skip_quote_when_literal_as_string<JsonMember>( rng );
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.is_real_number_part( ),
-			             "Expected number to start with on of \"0123456789eE+-\"" );
-		}
+		json_assert_untrusted(
+		  rng.is_real_number_part( ),
+		  "Expected number to start with on of \"0123456789eE+-\"" );
 		auto result = constructor_t{}(
 		  parse_unsigned_integer<element_t, JsonMember::range_check>( rng ) );
 		skip_quote_when_literal_as_string<JsonMember>( rng );
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.at_end_of_item( ),
-			             "Expected whitespace or one of \",}]\" at end of number" );
-		}
+		json_assert_untrusted(
+		  rng.at_end_of_item( ),
+		  "Expected whitespace or one of \",}]\" at end of number" );
 		return result;
 	}
 
@@ -152,10 +146,7 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Bool>,
 	             IteratorRange<First, Last, TrustedInput> &rng ) {
-		if constexpr( not TrustedInput ) {
-			json_assert( not rng.empty( ) and rng.size( ) >= 4,
-			             "Range to small to be a bool" );
-		}
+		json_assert_untrusted( rng.size( ) >= 4, "Range to small to be a bool" );
 
 		using constructor_t = typename JsonMember::constructor_t;
 
@@ -199,10 +190,8 @@ namespace daw::json::impl {
 	parse_value( ParseTag<JsonParseTypes::Custom>,
 	             IteratorRange<First, Last, TrustedInput> &rng ) {
 
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.front( '"' ),
-			             "Custom types requite a string at the beginning" );
-		}
+		json_assert_untrusted( rng.front( '"' ),
+		                       "Custom types requite a string at the beginning" );
 		rng.remove_prefix( );
 		auto str = skip_string_nq( rng );
 		// TODO make custom require a ptr/sz pair
@@ -226,11 +215,9 @@ namespace daw::json::impl {
 	parse_value( ParseTag<JsonParseTypes::KeyValue>,
 	             IteratorRange<First, Last, TrustedInput> &rng ) {
 
-		if constexpr( not TrustedInput ) {
-			json_assert(
-			  rng.front( '{' ),
-			  "Expected keyvalue type to be of class type and beging with '{'" );
-		}
+		json_assert_untrusted(
+		  rng.front( '{' ),
+		  "Expected keyvalue type to be of class type and beging with '{'" );
 
 		rng.remove_prefix( );
 		// We are inside a KV map, we can expected a quoted name next
@@ -244,25 +231,16 @@ namespace daw::json::impl {
 		using value_t = typename JsonMember::json_element_t;
 		while( rng.front( ) != '}' ) {
 			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{}, rng );
-			rng.move_to_next_of( ':' );
-			if constexpr( not TrustedInput ) {
-				json_assert( rng.front( ':' ), "Expected a ':' after key" );
-			}
-			rng.remove_prefix( );
-			rng.trim_left_no_check( );
+			name::name_parser::trim_end_of_name( rng );
 			container_appender(
 			  std::move( key ),
 			  parse_value<value_t>( ParseTag<value_t::expected_type>{}, rng ) );
 
 			rng.clean_tail( );
-			if constexpr( not TrustedInput ) {
-				json_assert( rng.has_more( ), "Unexpected end of data" );
-			}
+			json_assert_untrusted( rng.has_more( ), "Unexpected end of data" );
 		}
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.front( '}' ),
-			             "Expected keyvalue type to end with a '}'" );
-		}
+		json_assert_untrusted( rng.front( '}' ),
+		                       "Expected keyvalue type to end with a '}'" );
 		rng.remove_prefix( );
 		rng.trim_left( );
 		return array_container;
@@ -275,9 +253,8 @@ namespace daw::json::impl {
 	             IteratorRange<First, Last, TrustedInput> &rng ) {
 
 		using element_t = typename JsonMember::json_element_t;
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.front( '[' ), "Expected array to start with a '['" );
-		}
+		json_assert_untrusted( rng.front( '[' ),
+		                       "Expected array to start with a '['" );
 
 		rng.remove_prefix( );
 		rng.trim_left_no_check( );
@@ -300,9 +277,7 @@ namespace daw::json::impl {
 				container_appender(
 				  parse_value<element_t>( ParseTag<element_t::expected_type>{}, rng ) );
 				rng.clean_tail( );
-				if constexpr( not TrustedInput ) {
-					json_assert( rng.has_more( ), "Unexpected end of data" );
-				}
+				json_assert_untrusted( rng.has_more( ), "Unexpected end of data" );
 			}
 			rng.remove_prefix( );
 			rng.trim_left( );

@@ -32,6 +32,7 @@
 
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
+#include "daw/json/impl/daw_json_assert.h"
 
 namespace {
 	template<typename Real, size_t N>
@@ -205,7 +206,7 @@ namespace {
 	constexpr blah_t from_string( daw::tag_t<blah_t>,
 	                              std::string_view sv ) noexcept {
 		if( sv.empty( ) ) {
-			daw::json::json_error( "Unexpected empty string_view" );
+			json_error( "Unexpected empty string_view" );
 		}
 		switch( sv.front( ) ) {
 		case 'a':
@@ -332,7 +333,7 @@ int main( ) {
 #ifdef _MSC_VER
 #define CX constexpr
 #else
-#define CX constexpr
+#define CX
 #endif
 	daw::do_not_optimize( json_data );
 	CX auto data = daw::json::from_json<test_001_t>( json_data );

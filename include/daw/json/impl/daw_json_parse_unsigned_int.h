@@ -25,6 +25,9 @@
 #include <cstddef>
 #include <utility>
 
+#include "daw_iterator_range.h"
+#include "daw_json_assert.h"
+
 namespace daw::json::impl::unsignedint {
 	template<typename Unsigned>
 	struct unsigned_parser {
@@ -50,9 +53,8 @@ namespace daw::json::impl {
 	         typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr auto parse_unsigned_integer2(
 	  IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.is_number( ), "Expecting a digit as first item" );
-		}
+		json_assert_untrusted( rng.is_number( ),
+		                       "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
 		using iresult_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
@@ -76,9 +78,8 @@ namespace daw::json::impl {
 	         typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr Result parse_unsigned_integer(
 	  IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
-		if constexpr( not TrustedInput ) {
-			json_assert( rng.is_number( ), "Expecting a digit as first item" );
-		}
+		json_assert_untrusted( rng.is_number( ),
+		                       "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
 		using result_t = std::conditional_t<RangeCheck, uintmax_t, Result>;

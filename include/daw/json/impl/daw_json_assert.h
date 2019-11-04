@@ -41,21 +41,22 @@ namespace daw::json {
 			return m_reason;
 		}
 	};
+} // namespace daw::json
 #ifdef DAW_USE_JSON_EXCEPTIONS
-	inline constexpr bool use_json_exceptions_v = true;
+inline constexpr bool use_json_exceptions_v = true;
 #else
-	inline constexpr bool use_json_exceptions_v = false;
+inline constexpr bool use_json_exceptions_v = false;
 #endif
 
-	[[noreturn]] void
-	json_error( std::string_view reason ) noexcept( not use_json_exceptions_v ) {
+[[noreturn]] void
+json_error( std::string_view reason ) noexcept( not use_json_exceptions_v ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
-		throw json_exception( reason );
+	throw daw::json::json_exception( reason );
 #else
-		(void)reason;
-		std::abort( );
+	(void)reason;
+	std::abort( );
 #endif
-	}
+}
 
 #if __has_cpp_attribute( unlikely )
 #define DAW_UNLIKELY [[unlikely]]
@@ -64,33 +65,41 @@ namespace daw::json {
 #endif
 
 #ifdef DAW_JSON_CHECK_ALWAYS
-	template<typename Bool, size_t N>
-	inline constexpr void json_assert(
-	  Bool &&b,
-	  char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
-		static_assert( std::is_constructible_v<bool, Bool>,
-		               "A bool must be constructible from argument" );
-		DAW_UNLIKELY if( not static_cast<bool>( b ) ) {
-			json_error( std::string_view( reason ) );
-		}
+template<typename Bool, size_t N>
+constexpr void
+json_assert( Bool &&b,
+             char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
+	DAW_UNLIKELY if( not static_cast<bool>( b ) ) {
+		json_error( std::string_view( reason ) );
 	}
+}
+
+#define json_assert_untrusted( ... )                                           \
+	if constexpr( not TrustedInput )                                             \
+	json_assert( __VA_ARGS__ )
 #else // undef DAW_JSON_CHECK_ALWAYS
 #ifndef NDEBUG
-	template<typename Bool, size_t N>
-	inline constexpr void json_assert(
-	  Bool &&b,
-	  char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
-		static_assert( std::is_constructible_v<bool, Bool>,
-		               "A bool must be constructible from argument" );
-		DAW_UNLIKELY if( not static_cast<bool>( b ) ) {
-			json_error( std::string_view( reason ) );
-		}
+template<typename Bool, size_t N>
+constexpr void
+json_assert( Bool &&b,
+             char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
+	DAW_UNLIKELY if( not static_cast<bool>( b ) ) {
+		json_error( std::string_view( reason ) );
 	}
+}
+
+#define json_assert_untrusted( ... )                                           \
+	if constexpr( not TrustedInput )                                             \
+	json_assert( __VA_ARGS__ )
 #else // NDEBUG set
 #define json_assert( ... )                                                     \
 	do {                                                                         \
 	} while( false )
+
+#define json_assert_untrusted( ... )                                           \
+	do {                                                                         \
+	} while( false )
+
 #endif
 #endif
 #undef DAW_UNLIKELY
-} // namespace daw::json

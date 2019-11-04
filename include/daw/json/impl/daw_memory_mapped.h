@@ -71,13 +71,13 @@ namespace daw {
 		constexpr memory_mapped_file( ) noexcept = default;
 
 		explicit memory_mapped_file( std::string_view file,
-		                    open_mode mode = open_mode::read ) noexcept {
+		                             open_mode mode = open_mode::read ) noexcept {
 
 			(void)open( file, mode );
 		}
 
 		[[nodiscard]] bool open( std::string_view file,
-		           open_mode mode = open_mode::read ) noexcept {
+		                         open_mode mode = open_mode::read ) noexcept {
 
 			m_file =
 			  ::open( file.data( ), mode == open_mode::read ? O_RDONLY : O_RDWR );
@@ -179,7 +179,7 @@ namespace daw {
 		}
 
 		[[nodiscard]] bool open( std::string_view file,
-		           open_mode mode = open_mode::read ) noexcept {
+		                         open_mode mode = open_mode::read ) noexcept {
 
 			std::ifstream in_file( file.data( ) );
 			if( not in_file ) {

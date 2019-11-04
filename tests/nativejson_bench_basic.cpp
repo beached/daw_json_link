@@ -72,9 +72,9 @@ int main( int argc, char **argv ) {
 	  sv_twitter, sv_citm, sv_canada );
 #else
 	for( size_t n = 0; n < 25; ++n ) {
-		j1 = daw::json::from_json_trusted<twitter_object_t>( f1 );
-		j2 = daw::json::from_json_trusted<citm_object_t>( f2 );
-		j3 = daw::json::from_json_trusted<canada_object_t>( f3 );
+		j1 = daw::json::from_json_trusted<twitter_object_t>( sv_twitter );
+		j2 = daw::json::from_json_trusted<citm_object_t>( sv_citm );
+		j3 = daw::json::from_json_trusted<canada_object_t>( sv_canada );
 		daw::do_not_optimize( sv_twitter );
 		daw::do_not_optimize( sv_citm );
 		daw::do_not_optimize( sv_canada );
