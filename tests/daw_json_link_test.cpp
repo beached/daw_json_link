@@ -35,41 +35,31 @@
 #include "daw/json/impl/daw_json_assert.h"
 
 namespace {
-	template<typename Real, size_t N>
+	template<typename Real, bool Trusted = false, size_t N>
 	constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
 		auto rng =
-		  daw::json::impl::IteratorRange<char const *, char const *, false>(
+		  daw::json::impl::IteratorRange<char const *, char const *, Trusted>(
 		    str, str + N );
 		auto res = daw::json::impl::parse_real<Real>( rng );
 		return not( res < expected or res > expected );
 	}
 
-	template<typename Unsigned, size_t N>
+	template<typename Unsigned, bool Trusted = false, size_t N>
 	constexpr bool parse_unsigned_test( char const ( &str )[N],
 	                                    Unsigned expected ) {
 		auto tmp =
-		  daw::json::impl::IteratorRange<char const *, char const *, false>(
+		  daw::json::impl::IteratorRange<char const *, char const *, Trusted>(
 		    str, str + N );
 		return daw::json::impl::parse_unsigned_integer<Unsigned>( tmp ) == expected;
 	}
 
-	template<typename Signed, size_t N>
+	template<typename Signed, bool TrustedInput = false, size_t N>
 	constexpr bool parse_signed_test( char const ( &str )[N], Signed expected ) {
 		auto tmp =
-		  daw::json::impl::IteratorRange<char const *, char const *, false>(
+		  daw::json::impl::IteratorRange<char const *, char const *, TrustedInput>(
 		    str, str + N );
 		return daw::json::impl::parse_integer<Signed>( tmp ) == expected;
 	}
-
-	static_assert( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
-	static_assert( parse_signed_test<intmax_t>( "12345", 12345 ) );
-	static_assert( parse_signed_test<intmax_t>( "-12345", -12345 ) );
-
-	static_assert( parse_real_test<double>( "5", 5.0 ) );
-	static_assert( parse_real_test<double>( "5.5", 5.5 ) );
-	static_assert( parse_real_test<double>( "5.5e2", 550.0 ) );
-	static_assert( parse_real_test<double>( "5.5e+2", 550.0 ) );
-	static_assert( parse_real_test<double>( "5e2", 500.0 ) );
 
 	struct test_001_t {
 		int i = 0;
@@ -327,6 +317,25 @@ namespace {
 
 int main( ) {
 	using namespace daw::json;
+	constexpr bool as_trust = false;
+	constexpr auto tu0 =
+	  parse_unsigned_test<uintmax_t, as_trust>( "12345", 12345 );
+	static_assert( tu0 );
+	constexpr auto ts1 = parse_signed_test<intmax_t, as_trust>( "12345", 12345 );
+	static_assert( ts1 );
+	constexpr auto ts2 =
+	  parse_signed_test<intmax_t, as_trust>( "-12345", -12345 );
+	static_assert( ts2 );
+	constexpr auto tr3 = parse_real_test<double, as_trust>( "5", 5.0 );
+	static_assert( tr3 );
+	constexpr auto tr4 = parse_real_test<double, as_trust>( "5.5", 5.5 );
+	static_assert( tr4 );
+	constexpr auto tr5 = parse_real_test<double, as_trust>( "5.5e2", 550.0 );
+	static_assert( tr5 );
+	constexpr auto tr6 = parse_real_test<double, as_trust>( "5.5e+2", 550.0 );
+	static_assert( tr6 );
+	constexpr auto tr7 = parse_real_test<double, as_trust>( "5e2", 500.0 );
+	static_assert( tr7 );
 
 	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
 

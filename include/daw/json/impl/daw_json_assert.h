@@ -58,39 +58,35 @@ json_error( std::string_view reason ) noexcept( not use_json_exceptions_v ) {
 #endif
 }
 
-#if __has_cpp_attribute( unlikely )
-#define DAW_UNLIKELY [[unlikely]]
-#else
-#define DAW_UNLIKELY
-#endif
-
 #ifdef DAW_JSON_CHECK_ALWAYS
 template<typename Bool, size_t N>
 constexpr void
 json_assert( Bool &&b,
              char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
-	DAW_UNLIKELY if( not static_cast<bool>( b ) ) {
+	if( not static_cast<bool>( b ) ) {
 		json_error( std::string_view( reason ) );
 	}
 }
 
 #define json_assert_untrusted( ... )                                           \
-	if constexpr( not TrustedInput )                                             \
-	json_assert( __VA_ARGS__ )
+	if constexpr( not TrustedInput ) {                                           \
+		json_assert( __VA_ARGS__ );                                                \
+	}
 #else // undef DAW_JSON_CHECK_ALWAYS
 #ifndef NDEBUG
 template<typename Bool, size_t N>
 constexpr void
 json_assert( Bool &&b,
              char const ( &reason )[N] ) noexcept( not use_json_exceptions_v ) {
-	DAW_UNLIKELY if( not static_cast<bool>( b ) ) {
+	if( not static_cast<bool>( b ) ) {
 		json_error( std::string_view( reason ) );
 	}
 }
 
 #define json_assert_untrusted( ... )                                           \
-	if constexpr( not TrustedInput )                                             \
-	json_assert( __VA_ARGS__ )
+	if constexpr( not TrustedInput ) {                                           \
+		json_assert( __VA_ARGS__ );                                                \
+	}
 #else // NDEBUG set
 #define json_assert( ... )                                                     \
 	do {                                                                         \

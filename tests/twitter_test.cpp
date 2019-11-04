@@ -46,7 +46,7 @@ int main( int argc, char **argv ) {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	twitter_object_t twitter_result;
+	std::optional<twitter_object_t> twitter_result;
 	daw::bench_n_test_mbs<100>(
 	  "twitter_catalog bench", sz,
 	  [&twitter_result]( auto f1 ) {

@@ -23,4 +23,3 @@ else ()
         message("Unknown compiler id ${CMAKE_CXX_COMPILER_ID}")
     endif ()
 endif ()
-
