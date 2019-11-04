@@ -180,8 +180,8 @@ namespace daw::json::impl {
 
 		template<typename Key, typename Value>
 		constexpr void operator( )( Key &&key, Value &&value ) {
-			m_container->emplace( std::forward<Key>( key ),
-			                      std::forward<Value>( value ) );
+			m_container->insert( std::make_pair( std::forward<Key>( key ),
+			                      std::forward<Value>( value ) ) );
 		}
 	};
 
