@@ -317,32 +317,21 @@ namespace {
 
 int main( ) {
 	using namespace daw::json;
-	constexpr bool as_trust = false;
-	constexpr auto tu0 =
-	  parse_unsigned_test<uintmax_t, as_trust>( "12345", 12345 );
-	static_assert( tu0 );
-	constexpr auto ts1 = parse_signed_test<intmax_t, as_trust>( "12345", 12345 );
-	static_assert( ts1 );
-	constexpr auto ts2 =
-	  parse_signed_test<intmax_t, as_trust>( "-12345", -12345 );
-	static_assert( ts2 );
-	constexpr auto tr3 = parse_real_test<double, as_trust>( "5", 5.0 );
-	static_assert( tr3 );
-	constexpr auto tr4 = parse_real_test<double, as_trust>( "5.5", 5.5 );
-	static_assert( tr4 );
-	constexpr auto tr5 = parse_real_test<double, as_trust>( "5.5e2", 550.0 );
-	static_assert( tr5 );
-	constexpr auto tr6 = parse_real_test<double, as_trust>( "5.5e+2", 550.0 );
-	static_assert( tr6 );
-	constexpr auto tr7 = parse_real_test<double, as_trust>( "5e2", 500.0 );
-	static_assert( tr7 );
+	static_assert( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
+	static_assert( parse_signed_test<intmax_t>( "12345", 12345 ) );
+	static_assert( parse_signed_test<intmax_t>( "-12345", -12345 ) );
+	static_assert( parse_real_test<double>( "5", 5.0 ) );
+	static_assert( parse_real_test<double>( "5.5", 5.5 ) );
+	static_assert( parse_real_test<double>( "5.5e2", 550.0 ) );
+	static_assert( parse_real_test<double>( "5.5e+2", 550.0 ) );
+	static_assert( parse_real_test<double>( "5e2", 500.0 ) );
 
 	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
 
 #ifdef _MSC_VER
 #define CX constexpr
 #else
-#define CX
+#define CX constexpr
 #endif
 	daw::do_not_optimize( json_data );
 	CX auto data = daw::json::from_json<test_001_t>( json_data );
