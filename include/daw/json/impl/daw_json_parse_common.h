@@ -72,8 +72,66 @@ namespace daw::json::impl {
 
 namespace daw::json {
 #if defined( __cpp_nontype_template_parameter_class )
-// C++ 20 Non-Type Class Template Arguments
-#define JSONNAMETYPE daw::bounded_string
+	// C++ 20 Non-Type Class Template Arguments
+	namespace json_name_impl {
+		constexpr size_t strlen( char const *p ) noexcept {
+			auto const first = p;
+			while( *p != '\0' ) {
+				++p;
+			}
+			return static_cast<size_t>( p - first );
+		}
+
+		constexpr bool is_same( size_t n, char const *l, char const *r ) noexcept {
+			while( n > 0 ) {
+				if( *l != *r ) {
+					return false;
+				}
+				++l;
+				++r;
+				--n;
+			}
+			return true;
+		}
+	} // namespace json_name_impl
+	struct json_name_type {
+		char const *m_data = nullptr;
+		size_t m_len = 0;
+
+		template<size_t N>
+		constexpr json_name_type( const char ( &str )[N] ) noexcept
+		  : m_data( str )
+		  , m_len( N - 1 ) {}
+
+		constexpr json_name_type( char const *ptr ) noexcept
+		  : m_data( ptr )
+		  , m_len( json_name_impl::strlen( ptr ) ) {}
+
+		template<size_t N>
+		constexpr json_name_type &operator=( const char ( &str )[N] ) noexcept {
+			m_data = str;
+			m_len = N - 1;
+			return *this;
+		}
+
+		constexpr json_name_type &operator=( char const *ptr ) noexcept {
+			m_data = ptr;
+			m_len = json_name_impl::strlen( ptr );
+			return *this;
+		}
+
+		template<size_t M>
+		constexpr bool operator==( char const ( &rhs )[M + 1] ) const noexcept {
+			return m_len == M and json_name_impl::is_same( m_len, m_data, rhs );
+		}
+		constexpr bool operator==( json_name_type const &rhs ) const noexcept {
+			return m_len == rhs.m_len and
+			       json_name_impl::is_same( m_len, m_data, rhs.m_data );
+		}
+	};
+
+#define JSONNAMETYPE daw::json::json_name_type
+	//	daw::bounded_string
 
 	template<typename String>
 	[[nodiscard]] static constexpr size_t
@@ -87,7 +145,7 @@ namespace daw::json {
 		return lhs == rhs;
 	}
 	// Convienience for array members
-	static inline constexpr JSONNAMETYPE const no_name = "";
+	inline constexpr JSONNAMETYPE const no_name = "";
 #else
 #define JSONNAMETYPE char const *
 
