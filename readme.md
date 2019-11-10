@@ -38,11 +38,6 @@ static constexpr char const name_a[] = "name_a";
 
 ...json_number<name_a>
 ```
-# C++ 20 Enhanced member naming
-```cpp
-...json_number<"member_name">
-```
-
 ## Code Examples
 # Using data types
 Once a data type has been described, you can easily construct an object from a string or string_view.
@@ -115,14 +110,21 @@ struct TestClass {
 	  , y( Y ) {}
 };
 
+namespace symbols_TestClass {
+	static inline constexpr char const i[] = "i";	
+	static inline constexpr char const d[] = "d";	
+	static inline constexpr char const b[] = "b";	
+	static inline constexpr char const s[] = "s";	
+	static inline constexpr char const y[] = "y";	
+}
 auto describe_json_class( TestClass ) {
 	using namespace daw::json;
 	return class_description_t<
-		json_number<"i", int>,
-		json_number<"d">,
-		json_bool<"b">,
-		json_string<"s", daw::string_view>,
-		json_array<"y", std::vector<int>, json_number<no_name, int>>
+		json_number<symbols_TestClass::i, int>,
+		json_number<symbols_TestClass::d>,
+		json_bool<symbols_TestClass::b>,
+		json_string<symbols_TestClass::s, daw::string_view>,
+		json_array<symbols_TestClass::y, std::vector<int>, json_number<no_name, int>>
  	>{};
 }
 
@@ -161,49 +163,42 @@ struct AggClass {
 	int a{};
 	double b{};
 };
+namespace symbols_AggClass {
+	static inline constexpr char const a[] = "a";	
+	static inline constexpr char const b[] = "b";	
+}
 auto describe_json_class( AggClass ) {
 	using namespace daw::json;
 	return class_description_t<
-		json_number<"a", int>,
-		json_number<"b">
+		json_number<symbols_AggClass::a, int>,
+		json_number<symbols_AggClass::b>
 	>{};
 }
 ```
 Works too.
-Same but C++17
-```cpp
-#include <daw/json/daw_json_link.h>
-
-struct AggClass {
-	int a{};
-	double b{};
-};
-auto describe_json_class( AggClass ) {
-	using namespace daw::json;
-	static constexpr char const a[] = "a";
-	static constexpr char const b[] = "b";
-	return class_description_t<
-		json_number<a, int>,
-		json_number<b>
-	>{};
-}
-```
 
 Iterating over JSON arrays.  The input iterator ```daw::json::json_array_iterator<JsonElement>``` allows one to iterator over the array of JSON elements.  It is technically an input iterator but can be stored and reused like a forward iterator.  It does not return a reference but a value.
 ```cpp
 
 #include <daw/json/daw_json_link.h>
+#include <daw/json/daw_json_iterator.h>
 
 struct AggClass {
 	int a{};
 	double b{};
 };
+
+namespace symbols_AggClass {
+	static inline constexpr char const a[] = "a";	
+	static inline constexpr char const b[] = "b";	
+}
 auto describe_json_class( AggClass ) {
 	using namespace daw::json;
 	return class_description_t<
-		json_number<"a", int>,
-		json_number<"b">
+		json_number<symbols_AggClass::a, int>,
+		json_number<symbols_AggClass::b>
 	>{};
+}
 
 int main( ) {
 	std::string json_array_data = R"([
@@ -234,13 +229,19 @@ struct AggClass {
 	int a{};
 	double b{};
 };
+
+namespace symbols_AggClass {
+	static inline constexpr char const a[] = "a";	
+	static inline constexpr char const b[] = "b";	
+}
 auto describe_json_class( AggClass ) {
 	using namespace daw::json;
 	return class_description_t<
-		json_number<"a", int>,
-		json_number<"b">
+		json_number<symbols_AggClass::a, int>,
+		json_number<symbols_AggClass::b>
 	>{};
 }
+
 auto to_json_data( AggClass const & ) {
     return std::forward_as_tuple( c.a, c.b );
 }
