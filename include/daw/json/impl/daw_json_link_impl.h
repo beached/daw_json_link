@@ -181,7 +181,7 @@ namespace daw::json::impl {
 		template<typename Key, typename Value>
 		constexpr void operator( )( Key &&key, Value &&value ) {
 			m_container->insert( std::make_pair( std::forward<Key>( key ),
-			                      std::forward<Value>( value ) ) );
+			                                     std::forward<Value>( value ) ) );
 		}
 	};
 
@@ -238,7 +238,7 @@ namespace daw::json::impl {
 
 	template<typename First, typename Last, bool TrustedInput>
 	struct location_info_t {
-		JSONNAMETYPE name;
+		daw::string_view name;
 		IteratorRange<First, Last, TrustedInput> location{};
 
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
@@ -315,10 +315,9 @@ namespace daw::json::impl {
 
 				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
 				                                loc );
-			} else {
-				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
-				                                rng );
 			}
+			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+			                                rng );
 		}
 	}
 

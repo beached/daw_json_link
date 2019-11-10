@@ -43,15 +43,12 @@ namespace symbols_coordinate_t {
 	constexpr static char const x[] = "x";
 	constexpr static char const y[] = "y";
 	constexpr static char const z[] = "z";
-}
+} // namespace symbols_coordinate_t
 auto describe_json_class( coordinate_t ) noexcept {
 	using namespace daw::json;
-#ifdef __cpp_nontype_template_parameter_class
-	return class_description_t<json_number<"x">, json_number<"y">,
-	                           json_number<"z">>{};
-#else
-	return class_description_t<json_number<symbols_coordinate_t::x>, json_number<symbols_coordinate_t::y>, json_number<symbols_coordinate_t::z>>{};
-#endif
+	return class_description_t<json_number<symbols_coordinate_t::x>,
+	                           json_number<symbols_coordinate_t::y>,
+	                           json_number<symbols_coordinate_t::z>>{};
 }
 
 namespace symbols_coordinates_t {
@@ -63,14 +60,9 @@ struct coordinates_t {
 };
 auto describe_json_class( coordinates_t ) noexcept {
 	using namespace daw::json;
-#ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<
-	  json_array<"coordinates", std::vector<coordinate_t>,
+	  json_array<symbols_coordinates_t::coordinates, std::vector<coordinate_t>,
 	             json_class<no_name, coordinate_t>>>{};
-#else
-	return class_description_t<json_array<symbols_coordinates_t::coordinates, std::vector<coordinate_t>,
-	                                      json_class<no_name, coordinate_t>>>{};
-#endif
 }
 
 int main( int argc, char **argv ) {

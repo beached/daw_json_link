@@ -35,13 +35,23 @@ namespace daw::json::impl {
 	struct IteratorRange {
 		First first{};
 		Last last{};
+#if defined( DEBUG ) or not defined( NDEBUG )
+		inline static First first2 = nullptr;
+
+		constexpr size_t dist_in( ) const noexcept {
+			return static_cast<size_t>( first - first2 );
+		}
+#endif
 		static constexpr bool is_trusted_input = TrustedInput;
 
 		constexpr IteratorRange( ) noexcept = default;
 
 		constexpr IteratorRange( First f, Last l ) noexcept
 		  : first( f )
-		  , last( l ) {}
+		  , last( l ) {
+
+			if( first2 == nullptr ) { first2 = f; }
+		}
 
 		[[nodiscard]] constexpr bool empty( ) const noexcept {
 			return first == last;
