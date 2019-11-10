@@ -23,6 +23,9 @@
 #pragma once
 
 #include <cstddef>
+#ifdef __cpp_nontype_template_parameter_class
+#include <daw/daw_bounded_string.h>
+#endif
 
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
@@ -68,6 +71,24 @@ namespace daw::json::impl {
 } // namespace daw::json::impl
 
 namespace daw::json {
+#if defined( __cpp_nontype_template_parameter_class )
+// C++ 20 Non-Type Class Template Arguments
+#define JSONNAMETYPE daw::bounded_string
+
+	template<typename String>
+	[[nodiscard]] static constexpr size_t
+	json_name_len( String const &str ) noexcept {
+		return str.size( );
+	}
+
+	template<typename Lhs, typename Rhs>
+	[[nodiscard]] static constexpr bool json_name_eq( Lhs const &lhs,
+	                                                  Rhs const &rhs ) noexcept {
+		return lhs == rhs;
+	}
+	// Convienience for array members
+	static inline constexpr JSONNAMETYPE const no_name = "";
+#else
 #define JSONNAMETYPE char const *
 
 	[[nodiscard]] static constexpr size_t
@@ -82,6 +103,7 @@ namespace daw::json {
 
 	// Convienience for array members
 	static constexpr char const no_name[] = "";
+#endif
 
 	template<typename T, typename First, typename Last, bool TrustedInput>
 	[[maybe_unused, nodiscard]] static constexpr T

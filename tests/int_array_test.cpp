@@ -37,6 +37,12 @@
 struct Number {
 	intmax_t a{};
 };
+#ifdef __cpp_nontype_template_parameter_class
+[[maybe_unused]] static constexpr auto describe_json_class( Number ) noexcept {
+	using namespace daw::json;
+	return class_description_t<json_number<"a", intmax_t>>{};
+}
+#else
 namespace symbols_Number {
 	static inline constexpr char const a[] = "a";
 }
@@ -45,6 +51,7 @@ namespace symbols_Number {
 	using namespace daw::json;
 	return class_description_t<json_number<symbols_Number::a, intmax_t>>{};
 }
+#endif
 
 #ifndef NDEBUG
 static constexpr size_t const NUMVALUES = 1'000ULL;

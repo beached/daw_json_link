@@ -37,6 +37,12 @@
 struct Number {
 	float a{};
 };
+#ifdef __cpp_nontype_template_parameter_class
+[[maybe_unused]] static constexpr auto describe_json_class( Number ) noexcept {
+	using namespace daw::json;
+	return class_description_t<json_number<"a", float>>{};
+}
+#else
 namespace symbols_Number {
 	static inline constexpr char const a[] = "a";
 }
@@ -45,11 +51,12 @@ namespace symbols_Number {
 	using namespace daw::json;
 	return class_description_t<json_number<symbols_Number::a, float>>{};
 }
+#endif
 
 #ifndef NDEBUG
 static constexpr size_t const NUMVALUES = 10'000ULL;
 #else
-// static constexpr size_t const NUMVALUES = 1'000'000ULL;
+//static constexpr size_t const NUMVALUES = 1'000'000ULL;
 static constexpr size_t const NUMVALUES = 10'000ULL;
 #endif
 

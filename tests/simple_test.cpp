@@ -39,14 +39,22 @@ namespace symbols_City {
 	static constexpr char const names1[] = "name";
 	static constexpr char const names2[] = "lat";
 	static constexpr char const names3[] = "lng";
-} // namespace symbols_City
+}
 auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
+#ifdef __cpp_nontype_template_parameter_class
+	return class_description_t<
+	  json_string<"country", std::string_view>,
+	  json_string<"name", std::string_view>,
+	  json_number<"lat", float, LiteralAsStringOpt::always>,
+	  json_number<"lng", float, LiteralAsStringOpt::always>>{};
+#else
 	return class_description_t<
 	  json_string<symbols_City::names0, std::string_view>,
 	  json_string<symbols_City::names1, std::string_view>,
 	  json_number<symbols_City::names2, float, LiteralAsStringOpt::always>,
 	  json_number<symbols_City::names3, float, LiteralAsStringOpt::always>>{};
+#endif
 }
 
 // Order of values must match order specified in class_description
@@ -73,9 +81,8 @@ int main( int argc, char **argv ) {
 	}
 	auto json_data = get_json_data( argv[1] );
 	auto sz = json_data.size( );
-	json_data.append( 60ULL,
-	                  ' ' ); // Account for max digits in float if in bad form
-	json_data += ",]\"}tfn"; // catch any thing looking for these values
+	json_data.append( 60ULL, ' ' ); // Account for max digits in float if in bad form
+	json_data += ",]\"}tfn";        // catch any thing looking for these values
 	auto json_sv = std::string_view( json_data.data( ), sz );
 
 	using iterator_t = daw::json::json_array_iterator<json_class<no_name, City>>;
@@ -90,3 +97,4 @@ int main( int argc, char **argv ) {
 
 	std::cout << "Chitungwiza was found.\n" << to_json( *pos ) << '\n';
 }
+
