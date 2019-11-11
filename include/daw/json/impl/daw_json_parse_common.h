@@ -86,6 +86,16 @@ namespace daw::json {
 			return {m_data, N - 1};
 		}
 
+		// Needed for copy_to_iterator
+		[[nodiscard]] constexpr char const *begin( ) const {
+			return m_data;
+		}
+
+		// Needed for copy_to_iterator
+		[[nodiscard]] constexpr char const *end( ) const {
+			return m_data + static_cast<ptrdiff_t>( size( ) );
+		}
+
 		[[nodiscard]] constexpr size_t size( ) const noexcept {
 			return N - 1;
 		}
@@ -109,7 +119,7 @@ namespace daw::json {
 	};
 
 	template<typename... Chars>
-	json_name( Chars... ) -> json_name<sizeof...( Chars )>;
+	json_name( Chars... )->json_name<sizeof...( Chars )>;
 
 #define JSONNAMETYPE daw::json::json_name
 

@@ -232,7 +232,7 @@ namespace {
 		return std::forward_as_tuple( v.a );
 	}
 
-	constexpr auto const json_data =
+	constexpr auto const test_001_t_json_data =
 	  R"({
 	    "d": -1.234e+3,
 	    "i": 55,
@@ -333,8 +333,8 @@ int main( ) {
 #else
 #define CX constexpr
 #endif
-	daw::do_not_optimize( json_data );
-	CX auto data = daw::json::from_json<test_001_t>( json_data );
+	daw::do_not_optimize( test_001_t_json_data );
+	CX auto data = daw::json::from_json<test_001_t>( test_001_t_json_data );
 
 	std::clog << to_json( data ) << '\n';
 

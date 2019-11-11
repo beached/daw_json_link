@@ -220,6 +220,9 @@ namespace daw::json::impl {
 		daw::string_view name;
 		IteratorRange<First, Last, TrustedInput> location{};
 
+		explicit constexpr location_info_t( daw::string_view Name ) noexcept
+		  : name( Name ) {}
+
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
 			return location.is_null( );
 		}
@@ -321,7 +324,7 @@ namespace daw::json::impl {
 	template<typename First, typename Last, bool TrustedInput,
 	         typename... JsonMembers>
 	inline constexpr auto known_locations_v = daw::make_array(
-	  location_info_t<First, Last, TrustedInput>{JsonMembers::name}... );
+	  location_info_t<First, Last, TrustedInput>( JsonMembers::name )... );
 
 	template<typename Result, typename... JsonMembers, size_t... Is,
 	         typename First, typename Last, bool TrustedInput>
@@ -363,15 +366,6 @@ namespace daw::json::impl {
 			return result;
 		}
 	}
-
-	/*
-	template<typename Result, typename... JsonMembers, size_t... Is>
-	[[nodiscard]] static constexpr Result
-	parse_json_class( std::string_view sv, std::index_sequence<Is...> is ) {
-
-	  auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
-	  return parse_json_class<Result, JsonMembers...>( rng, is );
-	}*/
 
 	[[nodiscard]] static constexpr bool
 	json_path_compare( daw::string_view json_path_item,
