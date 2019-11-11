@@ -108,7 +108,8 @@ namespace daw::json {
 		}
 	};
 
-	json_name( auto... cs ) -> json_name<sizeof...( cs )>;
+	template<typename... Chars>
+	json_name( Chars... ) -> json_name<sizeof...( Chars )>;
 
 #define JSONNAMETYPE daw::json::json_name
 
