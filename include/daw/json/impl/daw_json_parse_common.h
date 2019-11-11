@@ -45,7 +45,7 @@ namespace daw::json::impl {
 	struct basic_appender {
 		daw::back_inserter<Container> appender;
 
-		constexpr basic_appender( Container &container ) noexcept
+		explicit constexpr basic_appender( Container &container ) noexcept
 		  : appender( container ) {}
 
 		template<typename Value>
@@ -76,18 +76,6 @@ namespace daw::json {
 		static_assert( N > 0 );
 		char m_data[N]{};
 
-		constexpr char const *data( ) const {
-			return m_data;
-		}
-
-		constexpr char const *begin( ) const {
-			return m_data;
-		}
-
-		constexpr char const *end( ) const {
-			return m_data + size( );
-		}
-
 		constexpr json_name( char const ( &ptr )[N] ) noexcept {
 			for( size_t n = 0; n < N; ++n ) {
 				m_data[n] = ptr[n];
@@ -98,7 +86,7 @@ namespace daw::json {
 			return {m_data, N - 1};
 		}
 
-		constexpr size_t size( ) const noexcept {
+		[[nodiscard]] constexpr size_t size( ) const noexcept {
 			return N - 1;
 		}
 
@@ -196,13 +184,6 @@ namespace daw::json::impl {
 			rng.remove_prefix( );
 		}
 		return skip_string_nq( rng );
-	}
-
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_name( IteratorRange<First, Last, TrustedInput> &rng ) {
-		auto result = skip_string( rng );
-		return result;
 	}
 
 	template<typename First, typename Last, bool TrustedInput>
@@ -316,22 +297,4 @@ namespace daw::json::impl {
 			std::terminate( );
 		}
 	}
-
-	template<typename JsonMember, typename First, typename Last,
-	         bool TrustedInput>
-	static constexpr void
-	skip_quotes( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
-		if constexpr( JsonMember::literal_as_string ==
-		              LiteralAsStringOpt::always ) {
-			json_assert_untrusted( rng.front( '"' ),
-			                       "Expected start of quoted item with \"" );
-			rng.remove_prefix( );
-		} else if constexpr( JsonMember::literal_as_string ==
-		                     LiteralAsStringOpt::maybe ) {
-			if( rng.in( '"' ) ) {
-				rng.remove_prefix( );
-			}
-		}
-	}
-
 } // namespace daw::json::impl
