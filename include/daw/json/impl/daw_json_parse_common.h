@@ -102,15 +102,15 @@ namespace daw::json {
 
 		template<size_t M>
 		constexpr bool operator==( json_name<M> const &rhs ) const noexcept {
-			if( N == M ) {
-				for( size_t n = 0; n < N; ++n ) {
-					if( m_data[n] != rhs.m_data[n] ) {
-						return false;
-					}
-				}
-				return true;
+			if( N != M ) {
+				return false;
 			}
-			return false;
+			for( size_t n = 0; n < N; ++n ) {
+				if( m_data[n] != rhs.m_data[n] ) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		constexpr bool operator==( daw::string_view sv ) const noexcept {
