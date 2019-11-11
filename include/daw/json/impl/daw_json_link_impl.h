@@ -182,8 +182,7 @@ namespace daw::json::impl {
 	template<size_t N, typename string_t, typename... JsonMembers>
 	[[nodiscard]] static constexpr kv_t<string_t> get_item( ) noexcept {
 		using type_t = traits::nth_type<N, JsonMembers...>;
-		return kv_t<string_t>( type_t::name, type_t::expected_type,
-		                       /*type_t::nullable,*/ N );
+		return kv_t<string_t>( type_t::name, type_t::expected_type, N );
 	}
 
 	template<typename... JsonMembers>
@@ -195,24 +194,17 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr auto
 	make_map( std::index_sequence<Is...> ) noexcept {
 		using string_t = daw::string_view;
-		// basic_bounded_string<char, find_string_capacity<JsonMembers...>( )>;
 
 		return daw::make_array( get_item<Is, string_t, JsonMembers...>( )... );
 	}
 
 	template<typename... JsonMembers>
 	struct name_map_t {
-		static inline constexpr auto name_map_data =
+		static constexpr auto name_map_data =
 		  make_map<JsonMembers...>( std::index_sequence_for<JsonMembers...>{} );
 
-		[[nodiscard]] static constexpr bool
-		has_name( daw::string_view key ) noexcept {
-			using std::begin;
-			using std::end;
-			auto const result = algorithm::find_if(
-			  begin( name_map_data ), end( name_map_data ),
-			  [key]( auto const &kv ) { return kv.name == key; } );
-			return result != std::end( name_map_data );
+		[[nodiscard]] static constexpr size_t size( ) noexcept {
+			return sizeof...( JsonMembers );
 		}
 
 		[[nodiscard]] static constexpr size_t
@@ -222,9 +214,7 @@ namespace daw::json::impl {
 			auto result = algorithm::find_if(
 			  begin( name_map_data ), end( name_map_data ),
 			  [key]( auto const &kv ) { return kv.name == key; } );
-			if( result == std::end( name_map_data ) ) {
-				std::terminate( );
-			}
+
 			return static_cast<size_t>(
 			  std::distance( begin( name_map_data ), result ) );
 		}
@@ -256,14 +246,13 @@ namespace daw::json::impl {
 		while( locations[pos].missing( ) and rng.front( ) != '}' ) {
 			auto name = parse_name( rng );
 			using name_map = name_map_t<JsonMembers...>;
-			if( not name_map::has_name( name ) ) {
+			auto const name_pos = name_map::find_name( name );
+			if( name_pos >= name_map::size( ) ) {
 				// This is not a member we are concerned with
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				continue;
 			}
-			// TODO: stop repeating check
-			auto const name_pos = name_map::find_name( name );
 			if( name_pos != pos ) {
 				// We are out of order, store position for later
 				// TODO:	use type knowledge to speed up skip
