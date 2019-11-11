@@ -216,7 +216,7 @@ static inline auto describe_json_class( user_t ) {
 	  json_string<"location", std::string_view>,
 	  json_string<"description", std::string_view>,
 	  json_nullable<json_string<"url", std::string_view>>,
-	  json_class<"entities", entities_t>, json_bool<"_jsonprotected">,
+	  json_class<"entities", entities_t>, json_bool<"protected">,
 	  json_number<"followers_count", int64_t>,
 	  json_number<"friends_count", int64_t>, json_number<"listed_count", int64_t>,
 	  json_string<"created_at", std::string_view>,

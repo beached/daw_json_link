@@ -94,10 +94,6 @@ namespace daw::json {
 			}
 		}
 
-		constexpr bool operator==( daw::string_view sv ) const noexcept {
-			return daw::string_view( m_data, N - 1 ) == sv;
-		}
-
 		constexpr operator daw::string_view( ) const noexcept {
 			return {m_data, N - 1};
 		}
@@ -118,40 +114,29 @@ namespace daw::json {
 			}
 			return false;
 		}
+
+		constexpr bool operator==( daw::string_view sv ) const noexcept {
+			return daw::string_view( m_data, N - 1 ) == sv;
+		}
 	};
 
 	json_name( auto... cs ) -> json_name<sizeof...( cs )>;
 
 #define JSONNAMETYPE daw::json::json_name
 
-	template<typename String>
-	[[nodiscard]] static constexpr size_t
-	json_name_len( String const &str ) noexcept {
-		return str.size( );
-	}
+	// Convienience for array members that are required to be unnamed
+	inline constexpr JSONNAMETYPE no_name{""};
 
-	template<typename Lhs, typename Rhs>
-	[[nodiscard]] static constexpr bool json_name_eq( Lhs const &lhs,
-	                                                  Rhs const &rhs ) noexcept {
-		return lhs == rhs;
-	}
-	// Convienience for array members
-	constexpr JSONNAMETYPE const no_name{""};
+	template<JSONNAMETYPE n>
+	inline constexpr bool is_no_name = ( n == no_name );
 #else
 #define JSONNAMETYPE char const *
+	// Convienience for array members that are required to be unnamed
+	inline constexpr char const no_name[] = "";
 
-	[[nodiscard]] static constexpr size_t
-	json_name_len( char const *const str ) noexcept {
-		return daw::string_view( str ).size( );
-	}
-
-	[[nodiscard]] static constexpr bool
-	json_name_eq( char const *const lhs, char const *const rhs ) noexcept {
-		return std::string_view( lhs ) == std::string_view( rhs );
-	}
-
-	// Convienience for array members
-	static constexpr char const no_name[] = "";
+	template<JSONNAMETYPE n>
+	inline constexpr bool
+	  is_no_name = daw::string_view( n ) == daw::string_view( "" );
 #endif
 
 	template<typename T, typename First, typename Last, bool TrustedInput>

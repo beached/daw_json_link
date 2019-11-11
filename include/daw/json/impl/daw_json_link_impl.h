@@ -185,11 +185,6 @@ namespace daw::json::impl {
 		return kv_t<string_t>( type_t::name, type_t::expected_type, N );
 	}
 
-	template<typename... JsonMembers>
-	[[nodiscard]] static constexpr size_t find_string_capacity( ) noexcept {
-		return ( json_name_len( JsonMembers::name ) + ... );
-	}
-
 	template<typename... JsonMembers, size_t... Is>
 	[[nodiscard]] static constexpr auto
 	make_map( std::index_sequence<Is...> ) noexcept {
@@ -226,7 +221,7 @@ namespace daw::json::impl {
 		IteratorRange<First, Last, TrustedInput> location{};
 
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
-			return location.empty( ) or location.is_null( );
+			return location.is_null( );
 		}
 	};
 
@@ -244,8 +239,8 @@ namespace daw::json::impl {
 
 		rng.trim_left_no_check( );
 		while( locations[pos].missing( ) and rng.front( ) != '}' ) {
-			auto name = parse_name( rng );
 			using name_map = name_map_t<JsonMembers...>;
+			auto const name = parse_name( rng );
 			auto const name_pos = name_map::find_name( name );
 			if( name_pos >= name_map::size( ) ) {
 				// This is not a member we are concerned with
@@ -281,7 +276,7 @@ namespace daw::json::impl {
 		using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
 
 		rng.clean_tail( );
-		if constexpr( json_name_eq( JsonMember::name, no_name ) ) {
+		if constexpr( is_no_name<JsonMember::name> ) {
 			// If we are an array element
 			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
 			                                rng );
@@ -292,7 +287,7 @@ namespace daw::json::impl {
 			  find_class_member<JsonMemberPosition, JsonMembers...>( locations, rng );
 
 			json_assert_untrusted(
-			  JsonMember::expected_type == JsonParseTypes::Null or not loc.empty( ),
+			  JsonMember::expected_type == JsonParseTypes::Null or not loc.is_null( ),
 			  "Could not find required class member" );
 			if( loc.is_null( ) or
 			    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
@@ -323,6 +318,10 @@ namespace daw::json::impl {
 		*it++ = '}';
 		return it;
 	}
+	template<typename First, typename Last, bool TrustedInput,
+	         typename... JsonMembers>
+	inline constexpr auto known_locations_v = daw::make_array(
+	  location_info_t<First, Last, TrustedInput>{JsonMembers::name}... );
 
 	template<typename Result, typename... JsonMembers, size_t... Is,
 	         typename First, typename Last, bool TrustedInput>
@@ -337,17 +336,17 @@ namespace daw::json::impl {
 		rng.remove_prefix( );
 		rng.move_to_next_of( "\"}" );
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
-			return construct_a<Result>( );
+			// We are an empty class
 			json_assert_untrusted( rng.front( '}' ),
 			                       "Expected class to end with '}'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
+			return construct_a<Result>( );
 		} else {
-			constexpr auto cknown_locations = daw::make_array(
-			  location_info_t<First, Last, TrustedInput>{JsonMembers::name}... );
-			auto known_locations = cknown_locations;
+			auto known_locations =
+			  known_locations_v<First, Last, TrustedInput, JsonMembers...>;
 
-			auto result = daw::construct_a<Result>(
+			Result result = daw::construct_a<Result>(
 			  parse_class_member<Is, JsonMembers...>( known_locations, rng )... );
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
