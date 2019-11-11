@@ -35,7 +35,6 @@
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_cxmath.h>
-#include <daw/daw_fnv1a_hash.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -122,17 +121,12 @@ namespace daw::json::impl {
 	template<typename string_t>
 	struct kv_t {
 		string_t name;
-		size_t hash;
 		JsonParseTypes expected_type;
-		// bool nullable;
 		size_t pos;
 
-		constexpr kv_t( string_t Name, JsonParseTypes Expected, /*bool Nullable,*/
-		                size_t Pos )
+		constexpr kv_t( string_t Name, JsonParseTypes Expected, size_t Pos )
 		  : name( daw::move( Name ) )
-		  , hash( daw::fnv1a_hash( Name ) )
 		  , expected_type( Expected )
-		  //				  , nullable( Nullable )
 		  , pos( Pos ) {}
 	};
 
@@ -188,7 +182,8 @@ namespace daw::json::impl {
 	template<size_t N, typename string_t, typename... JsonMembers>
 	[[nodiscard]] static constexpr kv_t<string_t> get_item( ) noexcept {
 		using type_t = traits::nth_type<N, JsonMembers...>;
-		return {type_t::name, type_t::expected_type, /*type_t::nullable,*/ N};
+		return kv_t<string_t>( type_t::name, type_t::expected_type,
+		                       /*type_t::nullable,*/ N );
 	}
 
 	template<typename... JsonMembers>
@@ -199,8 +194,8 @@ namespace daw::json::impl {
 	template<typename... JsonMembers, size_t... Is>
 	[[nodiscard]] static constexpr auto
 	make_map( std::index_sequence<Is...> ) noexcept {
-		using string_t =
-		  basic_bounded_string<char, find_string_capacity<JsonMembers...>( )>;
+		using string_t = daw::string_view;
+		// basic_bounded_string<char, find_string_capacity<JsonMembers...>( )>;
 
 		return daw::make_array( get_item<Is, string_t, JsonMembers...>( )... );
 	}
@@ -224,10 +219,9 @@ namespace daw::json::impl {
 		find_name( daw::string_view key ) noexcept {
 			using std::begin;
 			using std::end;
-			auto const hash = daw::fnv1a_hash( key );
 			auto result = algorithm::find_if(
 			  begin( name_map_data ), end( name_map_data ),
-			  [hash]( auto const &kv ) { return kv.hash == hash; } );
+			  [key]( auto const &kv ) { return kv.name == key; } );
 			if( result == std::end( name_map_data ) ) {
 				std::terminate( );
 			}
@@ -268,6 +262,7 @@ namespace daw::json::impl {
 				rng.clean_tail( );
 				continue;
 			}
+			// TODO: stop repeating check
 			auto const name_pos = name_map::find_name( name );
 			if( name_pos != pos ) {
 				// We are out of order, store position for later

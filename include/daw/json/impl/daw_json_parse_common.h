@@ -70,65 +70,59 @@ namespace daw::json::impl {
 namespace daw::json {
 #if defined( __cpp_nontype_template_parameter_class )
 	// C++ 20 Non-Type Class Template Arguments
-	namespace json_name_impl {
-		constexpr size_t strlen( char const *p ) noexcept {
-			auto const first = p;
-			while( *p != '\0' ) {
-				++p;
+
+	template<size_t N>
+	struct json_name {
+		static_assert( N > 0 );
+		char m_data[N]{};
+
+		constexpr char const *data( ) const {
+			return m_data;
+		}
+
+		constexpr char const *begin( ) const {
+			return m_data;
+		}
+
+		constexpr char const *end( ) const {
+			return m_data + size( );
+		}
+
+		constexpr json_name( char const ( &ptr )[N] ) noexcept {
+			for( size_t n = 0; n < N; ++n ) {
+				m_data[n] = ptr[n];
 			}
-			return static_cast<size_t>( p - first );
 		}
 
-		constexpr bool is_same( size_t n, char const *l, char const *r ) noexcept {
-			while( n > 0 ) {
-				if( *l != *r ) {
-					return false;
-				}
-				++l;
-				++r;
-				--n;
-			}
-			return true;
-		}
-	} // namespace json_name_impl
-	struct json_name_type {
-		char const *m_data = nullptr;
-		size_t m_len = 0;
-
-		template<size_t N>
-		constexpr json_name_type( const char ( &str )[N] ) noexcept
-		  : m_data( str )
-		  , m_len( N - 1 ) {}
-
-		constexpr json_name_type( char const *ptr ) noexcept
-		  : m_data( ptr )
-		  , m_len( json_name_impl::strlen( ptr ) ) {}
-
-		template<size_t N>
-		constexpr json_name_type &operator=( const char ( &str )[N] ) noexcept {
-			m_data = str;
-			m_len = N - 1;
-			return *this;
+		constexpr bool operator==( daw::string_view sv ) const noexcept {
+			return daw::string_view( m_data, N - 1 ) == sv;
 		}
 
-		constexpr json_name_type &operator=( char const *ptr ) noexcept {
-			m_data = ptr;
-			m_len = json_name_impl::strlen( ptr );
-			return *this;
+		constexpr operator daw::string_view( ) const noexcept {
+			return {m_data, N - 1};
+		}
+
+		constexpr size_t size( ) const noexcept {
+			return N - 1;
 		}
 
 		template<size_t M>
-		constexpr bool operator==( char const ( &rhs )[M + 1] ) const noexcept {
-			return m_len == M and json_name_impl::is_same( m_len, m_data, rhs );
-		}
-		constexpr bool operator==( json_name_type const &rhs ) const noexcept {
-			return m_len == rhs.m_len and
-			       json_name_impl::is_same( m_len, m_data, rhs.m_data );
+		constexpr bool operator==( json_name<M> const &rhs ) const noexcept {
+			if( N == M ) {
+				for( size_t n = 0; n < N; ++n ) {
+					if( m_data[n] != rhs.m_data[n] ) {
+						return false;
+					}
+				}
+				return true;
+			}
+			return false;
 		}
 	};
 
-#define JSONNAMETYPE daw::json::json_name_type
-	//	daw::bounded_string
+	json_name( auto... cs ) -> json_name<sizeof...( cs )>;
+
+#define JSONNAMETYPE daw::json::json_name
 
 	template<typename String>
 	[[nodiscard]] static constexpr size_t
@@ -142,7 +136,7 @@ namespace daw::json {
 		return lhs == rhs;
 	}
 	// Convienience for array members
-	inline constexpr JSONNAMETYPE const no_name = "";
+	constexpr JSONNAMETYPE const no_name{""};
 #else
 #define JSONNAMETYPE char const *
 
