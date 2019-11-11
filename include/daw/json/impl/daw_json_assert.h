@@ -69,9 +69,12 @@ json_assert( Bool &&b,
 }
 
 #define json_assert_untrusted( ... )                                           \
-	if constexpr( not TrustedInput ) {                                           \
-		json_assert( __VA_ARGS__ );                                                \
-	}
+	do {                                                                         \
+		if constexpr( not TrustedInput ) {                                         \
+			json_assert( __VA_ARGS__ );                                              \
+		}                                                                          \
+	} while( false )
+
 #else // undef DAW_JSON_CHECK_ALWAYS
 #ifndef NDEBUG
 template<typename Bool, size_t N>

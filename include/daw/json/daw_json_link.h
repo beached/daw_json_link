@@ -232,6 +232,9 @@ namespace daw::json {
 		using json_element_t = JsonElement;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
+
+		static_assert( json_element_t::name == no_name,
+		               "All elements of json_array must be have no_name" );
 	};
 
 	/// Map a KV type json class { "Key String": ValueType, ... }

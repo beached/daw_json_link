@@ -23,9 +23,6 @@
 #pragma once
 
 #include <cstddef>
-#ifdef __cpp_nontype_template_parameter_class
-#include <daw/daw_bounded_string.h>
-#endif
 
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
