@@ -5,28 +5,27 @@ on: [push]
 jobs:
   build:
 
-  runs-on: ubuntu-latest
-  
-  steps:
-  - uses: actions/checkout@v1
-  - name: Download & Build Dependencies
-    run: |
-      sudo apt update
-      sudo apt install libboost-all-dev libcurl4-openssl-dev 
-  - name: Download Current CMake
-    working-directory: cmake_download
-    run: |
-      sudo apt purge cmake
-      wget https://github.com/Kitware/CMake/releases/download/v3.15.5/cmake-3.15.5-Linux-x86_64.sh
-      sudo ./cmake-3.15.5-Linux-x86_64.sh --prefix=/usr/local --skip-license 
-  - name: Run make_deps
-    run: ./make_deps.sh
-  - name: Configure
-    working-directory: build
-    run: cmake -DCMAKE_BUILD_TYPE=Debug ..
-  - name: Build project
-    working-directory: build    
-    run: cmake --build . --config Debug -j 2
-  - name: Test
-    working-directory: build    
-    run: ctest
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download & Build Dependencies
+      run: |
+        sudo apt update
+        sudo apt install libboost-all-dev libcurl4-openssl-dev 
+    - name: Download Current CMake
+      run: |
+        sudo apt purge cmake
+        wget https://github.com/Kitware/CMake/releases/download/v3.15.5/cmake-3.15.5-Linux-x86_64.sh
+        sudo ./cmake-3.15.5-Linux-x86_64.sh --prefix=/usr/local --skip-license    
+    - name: Run make_deps
+      run: ./make_deps.sh
+    - name: Configure
+      working-directory: build
+      run: cmake -DCMAKE_BUILD_TYPE=Debug ..
+    - name: Build project
+      working-directory: build      
+      run: cmake --build . --config Debug -j 2
+    - name: Test
+      working-directory: build      
+      run: ctest
