@@ -6,11 +6,13 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v1
     - name: Download & Build Dependencies
-      run: ./make_deps.sh
+      run: |
+        apt install libboost-all-dev
+        ./make_deps.sh
     - name: Configure
       working-directory: build
       run: cmake -DCMAKE_BUILD_TYPE=Debug ..
