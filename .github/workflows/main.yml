@@ -11,6 +11,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Download & Build Dependencies
       run: |
+        sudo apt update
         sudo apt install libboost-all-dev
         ./make_deps.sh
     - name: Configure
