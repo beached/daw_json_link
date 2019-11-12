@@ -11,10 +11,12 @@ jobs:
     - uses: actions/checkout@v1
     - name: Download & Build Dependencies
       run: ./make_deps.sh
-    - name: Create Build folder
-      run: |
-        mkdir build,
-        cd build
-        cmake ..
+    - name: Configure
+      working-directory: build
+      run: cmake -DCMAKE_BUILD_TYPE=Debug ..
     - name: Build project
-      run: make -j2     
+      working-directory: build      
+      run: cmake --build . --config Debug -j 2
+    - name: Test
+      working-directory: build      
+      run: ctest
