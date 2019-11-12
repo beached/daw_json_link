@@ -13,14 +13,15 @@ jobs:
       run: |
         sudo apt update
         sudo apt install libboost-all-dev libcurl4-openssl-dev 
-    - name: Get Current CMake
-      working-directory: build-cmake
+    - name: Download Current CMake
       run: |
         sudo apt purge cmake
         wget https://github.com/Kitware/CMake/releases/download/v3.14.7/cmake-3.14.7.tar.gz
         tar xzf cmake-3.14.7.tar.gz
         rm cmake-3.14.7.tar.gz
-        cd cmake-3.14.7 
+    - name: Build Current CMake
+      working-directory: cmake-3.14.7
+      run: |
         ./bootstrap
         make
         sudo make install      
