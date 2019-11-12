@@ -170,6 +170,11 @@ namespace daw::json::impl {
 
 		auto str = skip_string( rng );
 		using constructor_t = typename JsonMember::constructor_t;
+		if constexpr( JsonMember::empty_is_null ) {
+			if( str.empty( ) ) {
+				return constructor_t{}( );
+			}
+		}
 		return constructor_t{}( str.begin( ), str.size( ) );
 	}
 

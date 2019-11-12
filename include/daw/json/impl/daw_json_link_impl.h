@@ -137,9 +137,6 @@ namespace daw::json::impl {
 	static inline constexpr bool is_json_nullable_v =
 	  JsonType::expected_type == JsonParseTypes::Null;
 
-	template<typename JsonType>
-	static inline constexpr bool is_json_empty_null_v = JsonType::empty_is_null;
-
 	struct member_name_parse_error {};
 
 	// Get the next member name
@@ -416,4 +413,18 @@ namespace daw::json::impl {
 		}
 		return rng;
 	}
+
+	template<typename T, bool TrustedInput>
+	[[maybe_unused, nodiscard]] constexpr T
+	from_json_impl( std::string_view json_data ) {
+		static_assert( impl::has_json_parser_description_v<T>,
+		               "A function call describe_json_class must exist for type." );
+		json_assert_untrusted( not json_data.empty( ),
+		                       "Attempt to parse empty string" );
+		using desc_t = impl::json_parser_description_t<T>;
+
+		return desc_t::template parse<T, TrustedInput>( json_data );
+	}
+
+
 } // namespace daw::json::impl

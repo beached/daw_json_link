@@ -167,6 +167,12 @@ namespace daw::json {
 	template<JsonParseTypes v>
 	using ParseTag = std::integral_constant<JsonParseTypes, v>;
 
+	/**
+	 * Allows having literals parse that are encoded as strings. It allows
+	 * one to have it be never true, maybe true or always true.  This controls
+	 * whether the parser will never remove quotes, check if quotes exist, or
+	 * always remove quotes around the literal
+	 */
 	enum class LiteralAsStringOpt : uint8_t { never, maybe, always };
 
 	template<typename T>

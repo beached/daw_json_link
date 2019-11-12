@@ -83,6 +83,12 @@ namespace daw::json {
 	};
 
 	// Member types
+
+	/**
+	 * Mark the member as nullable, optional.  The resulting type
+	 * must be default constructible
+	 * @tparam JsonMember the member being marked.
+	 */
 	template<typename JsonMember>
 	struct json_nullable {
 		using i_am_a_json_type = typename JsonMember::i_am_a_json_type;
@@ -96,6 +102,15 @@ namespace daw::json {
 		               "Specified constructor must be callable without arguments" );
 	};
 
+	/**
+	 * The member is a number
+	 * @tparam Name name of json member
+	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+	 * Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 * @tparam RangeCheck Check if the value will fit in the result
+	 */
 	template<JSONNAMETYPE Name, typename T = double,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
 	         typename Constructor = daw::construct_a_t<T>,
@@ -117,12 +132,27 @@ namespace daw::json {
 		static constexpr bool range_check = RangeCheck;
 	};
 
+	/**
+	 * The member is a range checked number
+	 * @tparam Name name of json member
+	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+	 * Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 */
 	template<JSONNAMETYPE Name, typename T = double,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
 	         typename Constructor = daw::construct_a_t<T>>
 	using json_checked_number =
 	  json_number<Name, T, LiteralAsString, Constructor, true>;
 
+	/**
+	 * The membrer is a boolean
+	 * @tparam Name name of json member
+	 * @tparam T result type to pass to Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 */
 	template<JSONNAMETYPE Name, typename T = bool,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
 	         typename Constructor = daw::construct_a_t<T>>
@@ -142,6 +172,14 @@ namespace daw::json {
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
 	};
 
+	/**
+	 *
+	 * @tparam Name of json member
+	 * @tparam T result type constructed by Constructor
+	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
+	 * @tparam EmptyStringNull if string is empty, call Constructor with no
+	 * arguments
+	 */
 	template<JSONNAMETYPE Name, typename T = std::string,
 	         typename Constructor = daw::construct_a_t<T>,
 	         bool EmptyStringNull = false>
@@ -158,11 +196,12 @@ namespace daw::json {
 		static constexpr bool empty_is_null = EmptyStringNull;
 	};
 
-	/// Link to a JSON string representing a date
-	/// \tparam Name name of JSON member to link to
-	/// \tparam T C++ type to consruct, by default is a time_point
-	/// \tparam Constructor A Callable used to construct a T.
-	/// Must accept a char pointer and size as argument to the date/time string.
+	/** Link to a JSON string representing a date
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T C++ type to consruct, by default is a time_point
+	 * @tparam Constructor A Callable used to construct a T.
+	 * Must accept a char pointer and size as argument to the date/time string.
+	 */
 	template<JSONNAMETYPE Name,
 	         typename T = std::chrono::time_point<std::chrono::system_clock,
 	                                              std::chrono::milliseconds>,
@@ -179,12 +218,13 @@ namespace daw::json {
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
 	};
 
-	///
-	/// \tparam Name name of JSON member to link to
-	/// \tparam T C++ type being parsed to.  Must have a describe_json_class
-	/// overload
-	/// \tparam Constructor A callable used to construct T.  The
-	/// default supports normal and aggregate construction
+	/**
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T C++ type being parsed to.  Must have a describe_json_class
+	 * overload
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 */
 	template<JSONNAMETYPE Name, typename T,
 	         typename Constructor = daw::construct_a_t<T>>
 	struct json_class {
@@ -209,17 +249,18 @@ namespace daw::json {
 		static constexpr bool const is_string = IsString;
 	};
 
-	/// Link to a JSON array
-	/// \tparam Name name of JSON member to link to
-	/// \tparam Container type of C++ container being constructed(e.g.
-	/// vector<int>)
-	/// \tparam JsonElement Json type being parsed e.g. json_number,
-	/// json_string...
-	/// \tparam Constructor A callable used to make Container,
-	/// default will use the Containers constructor.  Both normal and aggregate
-	/// are supported \tparam Appender Callable used to add items to the
-	/// container.  The parsed type from JsonElement
-	///	passed to it
+	/** Link to a JSON array
+	 * @tparam Name name of JSON member to link to
+	 * @tparam Container type of C++ container being constructed(e.g.
+	 * vector<int>)
+	 * @tparam JsonElement Json type being parsed e.g. json_number,
+	 * json_string...
+	 * @tparam Constructor A callable used to make Container,
+	 * default will use the Containers constructor.  Both normal and aggregate
+	 * are supported @tparam Appender Callable used to add items to the
+	 * container.  The parsed type from JsonElement
+	 * passed to it
+	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonElement,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
@@ -237,16 +278,17 @@ namespace daw::json {
 		               "All elements of json_array must be have no_name" );
 	};
 
-	/// Map a KV type json class { "Key String": ValueType, ... }
-	/// to a c++ class.  Keys are always string like and the destination
-	/// needs to be constructable with a pointer, size
-	/// \tparam Name name of JSON member to link to
-	/// \tparam Container type to put values in
-	/// \tparam JsonValueType Json type of value in kv pair( e.g. json_number,
-	/// json_string, ... ) \tparam JsonKeyType type of key in kv pair \tparam
-	/// Constructor A callable used to make Container, default will use the
-	/// Containers constructor.  Both normal and aggregate are supported \tparam
-	/// Appender A callable used to add elements to container.
+	/** Map a KV type json class { "Key String": ValueType, ... }
+	 *  to a c++ class.  Keys are always string like and the destination
+	 *  needs to be constructable with a pointer, size
+	 *  @tparam Name name of JSON member to link to
+	 *  @tparam Container type to put values in
+	 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
+	 *  json_string, ... ) @tparam JsonKeyType type of key in kv pair @tparam
+	 *  Constructor A callable used to make Container, default will use the
+	 *  Containers constructor.  Both normal and aggregate are supported @tparam
+	 *  Appender A callable used to add elements to container.
+	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType = json_string<no_name>,
 	         typename Constructor = daw::construct_a_t<Container>,
@@ -264,28 +306,30 @@ namespace daw::json {
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::KeyValue;
 	};
 
-	template<typename T, bool TrustedInput>
-	[[maybe_unused, nodiscard]] constexpr T
-	from_json_impl( std::string_view json_data ) {
-		static_assert( impl::has_json_parser_description_v<T>,
-		               "A function call describe_json_class must exist for type." );
-		json_assert_untrusted( not json_data.empty( ),
-		                       "Attempt to parse empty string" );
-		using desc_t = impl::json_parser_description_t<T>;
-
-		return desc_t::template parse<T, TrustedInput>( json_data );
-	}
-
+	/**
+	 * Parse json and construct a T as the result.  This method
+	 * provides checked json
+	 * @tparam T type that has a describe_json_class overload
+	 * @param json_data Json string data
+	 * @return A reified T constructed from json data
+	 */
 	template<typename T>
 	[[maybe_unused, nodiscard]] constexpr T
 	from_json( std::string_view json_data ) {
-		return from_json_impl<T, false>( json_data );
+		return impl::from_json_impl<T, false>( json_data );
 	}
 
+	/**
+	 * Parse json and construct a T as the result.  This method
+	 * does not perform most checks on validity of data
+	 * @tparam T type that has a describe_json_class overload
+	 * @param json_data Json string data
+	 * @return A reified T constructed from json data
+	 */
 	template<typename T>
 	[[maybe_unused, nodiscard]] constexpr T
 	from_json_trusted( std::string_view json_data ) {
-		return from_json_impl<T, true>( json_data );
+		return impl::from_json_impl<T, true>( json_data );
 	}
 
 	template<typename Result = std::string, typename T>
@@ -302,28 +346,28 @@ namespace daw::json {
 		return result;
 	}
 
-	template<bool TrustedInput, typename JsonElement,
-	         typename Container = std::vector<typename JsonElement::parse_to_t>,
-	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_appender<Container>>
-	[[maybe_unused, nodiscard]] constexpr Container
-	from_json_array_impl( std::string_view json_data ) {
-		using parser_t =
-		  json_array<no_name, Container, JsonElement, Constructor, Appender>;
+	namespace impl {
+		template<bool TrustedInput, typename JsonElement,
+		         typename Container = std::vector<typename JsonElement::parse_to_t>,
+		         typename Constructor = daw::construct_a_t<Container>,
+		         typename Appender = impl::basic_appender<Container>>
+		[[maybe_unused, nodiscard]] constexpr Container
+		from_json_array_impl( std::string_view json_data ) {
+			using parser_t =
+			  json_array<no_name, Container, JsonElement, Constructor, Appender>;
 
-		using impl::data_size::data;
-		using impl::data_size::size;
+			auto rng =
+			  daw::json::impl::IteratorRange<char const *, char const *, false>(
+			    json_data.data( ),
+			    json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
 
-		auto rng =
-		  daw::json::impl::IteratorRange<char const *, char const *, false>(
-		    std::data( json_data ),
-		    std::data( json_data ) + std::size( json_data ) );
-		rng.trim_left_no_check( );
-		json_assert_untrusted( rng.front( '[' ), "Expected array class" );
+			rng.trim_left_no_check( );
+			json_assert_untrusted( rng.front( '[' ), "Expected array class" );
 
-		return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
-		                                    rng );
-	}
+			return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
+			                                    rng );
+		}
+	} // namespace impl
 
 	template<typename JsonElement,
 	         typename Container = std::vector<typename JsonElement::parse_to_t>,
@@ -331,8 +375,8 @@ namespace daw::json {
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data ) {
-		return from_json_array_impl<false, JsonElement, Container, Constructor,
-		                            Appender>( json_data );
+		return impl::from_json_array_impl<false, JsonElement, Container,
+		                                  Constructor, Appender>( json_data );
 	}
 
 	template<typename JsonElement,
@@ -341,8 +385,8 @@ namespace daw::json {
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array_trusted( std::string_view json_data ) {
-		return from_json_array_impl<true, JsonElement, Container, Constructor,
-		                            Appender>( json_data );
+		return impl::from_json_array_impl<true, JsonElement, Container, Constructor,
+		                                  Appender>( json_data );
 	}
 
 	template<typename Result = std::string, typename Container>
