@@ -12,7 +12,7 @@ jobs:
     - name: Download & Build Dependencies
       run: |
         sudo apt update
-        sudo apt install libboost-all-dev libcurl4-dev
+        sudo apt install libboost-all-dev libcurl4-openssl-dev 
     - name: Run make_deps
       run: ./make_deps.sh
     - name: Configure
