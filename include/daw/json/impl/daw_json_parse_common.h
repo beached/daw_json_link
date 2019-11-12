@@ -74,13 +74,17 @@ namespace daw::json {
 	template<size_t N>
 	struct json_name {
 		static_assert( N > 0 );
-		char m_data[N]{};
+		char const m_data[N]{};
 
-		constexpr json_name( char const ( &ptr )[N] ) noexcept {
-			for( size_t n = 0; n < N; ++n ) {
-				m_data[n] = ptr[n];
-			}
-		}
+	private:
+		template<size_t... Is>
+		constexpr json_name( char const ( &ptr )[N],
+		                     std::index_sequence<Is...> ) noexcept
+		  : m_data{ptr[Is]...} {}
+
+	public:
+		constexpr json_name( char const ( &ptr )[N] ) noexcept
+		  : json_name( ptr, std::make_index_sequence<N>{} ) {}
 
 		constexpr operator daw::string_view( ) const noexcept {
 			return {m_data, N - 1};
