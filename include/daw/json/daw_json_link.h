@@ -332,6 +332,14 @@ namespace daw::json {
 		return impl::from_json_impl<T, true>( json_data );
 	}
 
+	/**
+	 *
+	 * @tparam Result std::string like type to put result into
+	 * @tparam T Type that has json_parser_desription and to_json_data function
+	 * overloads
+	 * @param value  value to serialize
+	 * @return  json string data
+	 */
 	template<typename Result = std::string, typename T>
 	[[maybe_unused, nodiscard]] constexpr Result to_json( T &&value ) {
 		static_assert(
@@ -369,6 +377,16 @@ namespace daw::json {
 		}
 	} // namespace impl
 
+	/**
+	 * Parse json data where the root item is an array
+	 * @tparam JsonElement The type of each element in array.  Must be one of the
+	 * above json_XXX classes.  This version is checked
+	 * @tparam Container Container to store values in
+	 * @tparam Constructor Callable to construct Container with no arguments
+	 * @tparam Appender Callable to call with JsonElement
+	 * @param json_data Json string data containing array
+	 * @return A Container containing parsed data from json string
+	 */
 	template<typename JsonElement,
 	         typename Container = std::vector<typename JsonElement::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
@@ -379,6 +397,16 @@ namespace daw::json {
 		                                  Constructor, Appender>( json_data );
 	}
 
+	/**
+	 * Parse json data where the root item is an array
+	 * @tparam JsonElement The type of each element in array.  Must be one of the
+	 * above json_XXX classes.  This version isn't checked
+	 * @tparam Container Container to store values in
+	 * @tparam Constructor Callable to construct Container with no arguments
+	 * @tparam Appender Callable to call with JsonElement
+	 * @param json_data Json string data containing array
+	 * @return A Container containing parsed data from json string
+	 */
 	template<typename JsonElement,
 	         typename Container = std::vector<typename JsonElement::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
@@ -389,6 +417,13 @@ namespace daw::json {
 		                                  Appender>( json_data );
 	}
 
+	/**
+	 * Serialize Container to a json array string
+	 * @tparam Result std::string like type to serialize to
+	 * @tparam Container Type of Container to serialize
+	 * @param c Data to serialize
+	 * @return A string containing the serialized elements of c
+	 */
 	template<typename Result = std::string, typename Container>
 	[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c ) {
 		static_assert(
