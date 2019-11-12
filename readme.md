@@ -34,9 +34,9 @@ The order of the data in the data structures should generally match that of the 
 ## Differences between C++17 and C++20
 # C++ 17 Naming of members
 ```cpp
-static constexpr char const name_a[] = "name_a";
+static constexpr char const member_nane[] = "member_name";
 
-...json_number<name_a>
+...json_number<member_name>
 ```
 # C++ 20 Enhanced member naming
 ```cpp
@@ -83,7 +83,7 @@ If you want to serialize to JSON
 std::string my_json_data = to_json( MyClass{} );
 ```
 
-Or serial a collection of things
+Or serialize a collection of things
 ```C++
 std::vector<MyClass> arry = ...;
 std::string my_json_data = to_json_array( arry );
@@ -188,6 +188,22 @@ auto describe_json_class( AggClass ) {
 	>{};
 }
 ```
+The class descriptions are recursive with their submembers.  Using the previous `AggClass` one can include it as a member of another class
+```cpp
+// See above for AggClass
+struct MyClass {
+    AggClass other;
+    std::string_view some_name;
+};
+auto describe_json_class( MyClass ) {
+    using namespace daw::json;
+    return class_description_t<
+        json_class<"other", AggClass>,
+        json_string<"id", std::string_view>
+    >{};
+}
+```
+The above maps a class MyClass that has another class that is described AggClass.  Also, you can see that the member names of the C++ class do not have to match that of the mapped json names and that strings can use `std::string_view` as the result type.  This is an important performance enhancement if you can guarantee the buffer containing the json file will exist as long as the class does.
 
 Iterating over JSON arrays.  The input iterator ```daw::json::json_array_iterator<JsonElement>``` allows one to iterator over the array of JSON elements.  It is technically an input iterator but can be stored and reused like a forward iterator.  It does not return a reference but a value.
 ```cpp
