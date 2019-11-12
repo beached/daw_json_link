@@ -23,7 +23,7 @@ make full
 ```
 After the build there the examples can be tested.  ```city_test_bin``` requires the path to the cities json file.
 ```
-./city_test_bin ../tests/cities.json
+./city_test_bin ../test_data/cities.json
 ```
 ## Generating classes automatically
 Currently I have a another project https://github.com/beached/json_to_cpp that can output the data structures used in json data along with the code to use this library.
