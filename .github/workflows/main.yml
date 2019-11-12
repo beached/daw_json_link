@@ -1,0 +1,20 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download & Build Dependencies
+      run: ./make_deps.sh
+    - name: Create Build folder
+      run: |
+        mkdir build,
+        cd build
+        cmake ..
+    - name: Build project
+      run: make -j2     
