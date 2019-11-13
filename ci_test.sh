@@ -2,7 +2,7 @@
 
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Debug ..
+CC=clang-9 CXX=clang++-9 CXXFLAGS=-stdlib=libc++ cmake -DCMAKE_BUILD_TYPE=Debug ..
 cmake --build . --config Debug --target full -j2
 ctest
 
