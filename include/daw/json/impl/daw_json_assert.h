@@ -38,7 +38,7 @@ namespace daw::json {
 			constexpr json_exception( std::string_view reason ) noexcept
 			  : m_reason( reason ) {}
 
-			[[nodiscard]] constexpr std::string_view reason( ) const noexcept {
+			[[nodiscard, maybe_unused]] constexpr std::string_view reason( ) const noexcept {
 				return m_reason;
 			}
 		};
