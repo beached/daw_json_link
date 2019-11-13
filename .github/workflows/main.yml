@@ -18,7 +18,7 @@ jobs:
         sudo apt purge cmake
         wget https://github.com/Kitware/CMake/releases/download/v3.15.5/cmake-3.15.5-Linux-x86_64.sh
         sudo sh ./cmake-3.15.5-Linux-x86_64.sh --prefix=/usr/local --skip-license
-        ls /usr/local/bin    
+        /bin/ls /usr/local/bin    
     - name: Run make_deps
       run: ./make_deps.sh
     - name: Configure
