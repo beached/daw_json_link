@@ -1,4 +1,4 @@
-name: CI_for_daw_json_link
+name: CI_Testing
 
 on:
   push:
