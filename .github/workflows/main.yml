@@ -1,6 +1,10 @@
 name: CI_for_daw_json_link
 
-on: [push]
+on:
+  push:
+    branches-ignore: dev
+  pull_request:
+    
 
 jobs:
   build:
