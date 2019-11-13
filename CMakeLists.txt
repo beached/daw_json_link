@@ -231,7 +231,7 @@ add_dependencies(full kv_map_test_bin)
 
 add_executable(cookbook_kv2_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_kv2_test.cpp)
 add_dependencies(cookbook_kv2_test_bin dependency_stub)
-add_test(NAME cookbook_kv2_test COMMAND cookbook_kv2_test_bin)
+add_test(NAME cookbook_kv2_test COMMAND cookbook_kv2_test_bin ./cookbook_kv2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
 add_dependencies(check cookbook_kv2_test_bin)
 add_dependencies(full cookbook_kv2_test_bin)
 
