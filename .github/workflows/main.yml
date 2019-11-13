@@ -9,7 +9,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Download & Build Dependencies
+    - name: Download & Build Apt Dependencies
       run: |
         sudo apt update
         sudo apt install libboost-all-dev libcurl4-openssl-dev 
@@ -17,7 +17,8 @@ jobs:
       run: |
         sudo apt purge cmake
         wget https://github.com/Kitware/CMake/releases/download/v3.15.5/cmake-3.15.5-Linux-x86_64.sh
-        sudo sh ./cmake-3.15.5-Linux-x86_64.sh --prefix=/usr/local --skip-license    
+        sudo sh ./cmake-3.15.5-Linux-x86_64.sh --prefix=/usr/local --skip-license
+        ls /usr/local/bin    
     - name: Run make_deps
       run: ./make_deps.sh
     - name: Configure
