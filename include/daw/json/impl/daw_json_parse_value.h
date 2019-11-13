@@ -214,12 +214,24 @@ namespace daw::json::impl {
 		return from_json<element_t>( rng );
 	}
 
+	/**
+	 * Parse a key_value pair encoded as a json object where the keys are the
+	 * member names
+	 * @tparam JsonMember json_key_value type
+	 * @tparam First Type of Iterator for beginning of stream range
+	 * @tparam Last Type of Iterator for end of stream range
+	 * @tparam TrustedInput Are we parsing a trusted stream
+	 * @param rng Range of input to parse
+	 * @return Constructed key_value container
+	 */
 	template<typename JsonMember, typename First, typename Last,
 	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::KeyValue>,
 	             IteratorRange<First, Last, TrustedInput> &rng ) {
 
+		static_assert( JsonMember::expected_type == JsonParseTypes::KeyValue,
+		               "Expected a json_key_value" );
 		json_assert_untrusted(
 		  rng.front( '{' ),
 		  "Expected keyvalue type to be of class type and beging with '{'" );

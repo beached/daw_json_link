@@ -24,12 +24,31 @@
 
 #include <cstddef>
 
+#include <daw/daw_traits.h>
+#include <iterator>
+
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_literal_end.h"
 #include "daw_json_parse_string_quote.h"
 
 namespace daw::json::impl {
+	template<typename Container, typename Value>
+	using detect_push_back = decltype(
+	  std::declval<Container &>( ).push_back( std::declval<Value>( ) ) );
+
+	template<typename Container, typename Value>
+	using detect_insert_end = decltype( std::declval<Container &>( ).insert(
+	  std::end( std::declval<Container &>( ) ), std::declval<Value>( ) ) );
+
+	template<typename Container, typename Value>
+	inline constexpr bool has_push_back_v =
+	  daw::is_detected_v<detect_push_back, Container, Value>;
+
+	template<typename Container, typename Value>
+	inline constexpr bool has_insert_end_v =
+	  daw::is_detected_v<detect_insert_end, Container, Value>;
+
 	template<typename T>
 	using json_parser_description_t = daw::remove_cvref_t<decltype(
 	  describe_json_class( std::declval<T &>( ) ) )>;
@@ -43,14 +62,26 @@ namespace daw::json::impl {
 
 	template<typename Container>
 	struct basic_appender {
-		daw::back_inserter<Container> appender;
+		Container *m_container;
 
 		explicit constexpr basic_appender( Container &container ) noexcept
-		  : appender( container ) {}
+		  : m_container( &container ) {}
 
 		template<typename Value>
 		constexpr void operator( )( Value &&value ) {
-			*appender = std::forward<Value>( value );
+			if constexpr( has_push_back_v<Container, daw::remove_cvref_t<Value>> ) {
+				m_container->push_back( std::forward<Value>( value ) );
+			} else if constexpr( has_insert_end_v<Container,
+			                                      daw::remove_cvref_t<Value>> ) {
+				m_container->insert( std::end( *m_container ),
+				                     std::forward<Value>( value ) );
+			} else {
+				static_assert(
+				  has_push_back_v<Container, daw::remove_cvref_t<Value>> or
+				    has_insert_end_v<Container, daw::remove_cvref_t<Value>>,
+				  "basic_appender requires a Container that either has push_back or "
+				  "insert with the end iterator as first argument" );
+			}
 		}
 	};
 
@@ -71,6 +102,10 @@ namespace daw::json {
 #if defined( __cpp_nontype_template_parameter_class )
 	// C++ 20 Non-Type Class Template Arguments
 
+	/**
+	 * A fixed string used for member names in json descriptions
+	 * @tparam N size of string plus 1.  Do not set explicitly.  Use CTAD
+	 */
 	template<size_t N>
 	struct json_name {
 		static_assert( N > 0 );
@@ -168,6 +203,9 @@ namespace daw::json {
 		Custom
 	};
 
+	/**
+	 * Tag lookup for parsing overload selection
+	 */
 	template<JsonParseTypes v>
 	using ParseTag = std::integral_constant<JsonParseTypes, v>;
 
