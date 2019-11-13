@@ -21,5 +21,4 @@ jobs:
     - name: Run make_deps
       run: ./make_deps.sh
     - name: Build and Test
-      working-directory: build
-      run: ../ci_test.sh
+      run: ./ci_test.sh
