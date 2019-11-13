@@ -17,13 +17,7 @@ jobs:
       run: |
         sudo apt purge cmake
         wget https://github.com/Kitware/CMake/releases/download/v3.15.5/cmake-3.15.5-Linux-x86_64.sh
-        sudo ./cmake-3.15.5-Linux-x86_64.sh --prefix=/usr/local --skip-license 
-    - name: Build Current CMake
-      working-directory: cmake-3.14.7
-      run: |
-        ./bootstrap
-        make
-        sudo make install      
+        sudo sh ./cmake-3.15.5-Linux-x86_64.sh --prefix=/usr/local --skip-license 
     - name: Run make_deps
       run: ./make_deps.sh
     - name: Build and Test
