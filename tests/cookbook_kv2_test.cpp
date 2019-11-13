@@ -20,7 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <cassert>
+#include <cstdio>
+#include <cstdlib>
 
 #include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_memory_mapped.h>
@@ -85,13 +86,16 @@ auto to_json_data( MyKeyValue2 const &value ) {
 }
 
 int main( int argc, char **argv ) {
-	assert( argc > 1 );
+	if( argc <= 1 ) {
+		puts( "Must supply path to cookbook_kv2.json file\n" );
+		exit( EXIT_FAILURE );
+	}
 	auto data = daw::memory_mapped_file<>( argv[1] );
 
 	auto kv = daw::json::from_json<MyKeyValue2>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	assert( kv.kv.size( ) == 2 );
-	assert( kv.kv[0] == "test_001" );
-	assert( kv.kv[1] == "test_002" );
+	daw::json::json_assert( kv.kv.size( ) == 2, "Expected data to have 2 items" );
+	daw::json::json_assert( kv.kv[0] == "test_001", "Unexpected value" );
+	daw::json::json_assert( kv.kv[1] == "test_002", "Unexpected value" );
 }
