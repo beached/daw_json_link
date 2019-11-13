@@ -22,10 +22,10 @@ jobs:
       run: ./make_deps.sh
     - name: Configure
       working-directory: build
-      run: cmake -DCMAKE_BUILD_TYPE=Debug ..
+      run: /usr/local/bin/cmake -DCMAKE_BUILD_TYPE=Debug ..
     - name: Build project
       working-directory: build      
-      run: cmake --build . --config Debug -j 2
+      run: /usr/local/bin/cmake --build . --config Debug -j 2
     - name: Test
       working-directory: build      
-      run: ctest
+      run: /usr/local/bin/ctest
