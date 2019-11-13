@@ -71,6 +71,10 @@ namespace daw::json {
 #if defined( __cpp_nontype_template_parameter_class )
 	// C++ 20 Non-Type Class Template Arguments
 
+	/**
+	 * A fixed string used for member names in json descriptions
+	 * @tparam N size of string plus 1.  Do not set explicitly.  Use CTAD
+	 */
 	template<size_t N>
 	struct json_name {
 		static_assert( N > 0 );
@@ -168,6 +172,9 @@ namespace daw::json {
 		Custom
 	};
 
+	/**
+	 * Tag lookup for parsing overload selection
+	 */
 	template<JsonParseTypes v>
 	using ParseTag = std::integral_constant<JsonParseTypes, v>;
 
