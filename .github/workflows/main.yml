@@ -1,4 +1,4 @@
-name: CI
+name: CI_for_daw_json_link
 
 on: [push]
 
