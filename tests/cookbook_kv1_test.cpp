@@ -29,7 +29,7 @@
 #include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_memory_mapped.h>
 
-namespace daw::cookbook_kv2 {
+namespace daw::cookbook_kv1 {
 	struct MyKeyValue1 {
 		std::unordered_map<std::string, int> kv;
 	};
@@ -54,16 +54,16 @@ namespace daw::cookbook_kv2 {
 	auto to_json_data( MyKeyValue1 const &value ) {
 		return std::forward_as_tuple( value.kv );
 	}
-} // namespace daw::cookbook_kv2
+} // namespace daw::cookbook_kv1
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {
-		puts( "Must supply path to cookbook_kv2.json file\n" );
+		puts( "Must supply path to cookbook_kv1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 	auto data = daw::memory_mapped_file<>( argv[1] );
 
-	auto kv = daw::json::from_json<daw::cookbook_kv2::MyKeyValue1>(
+	auto kv = daw::json::from_json<daw::cookbook_kv1::MyKeyValue1>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
 	daw::json::json_assert( kv.kv.size( ) == 2, "Expected data to have 2 items" );
