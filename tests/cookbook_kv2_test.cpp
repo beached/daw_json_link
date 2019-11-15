@@ -20,8 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <string>
+#include <unordered_map>
 
 #include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_memory_mapped.h>
@@ -46,12 +49,12 @@ namespace daw::cookbook_kv2 {
 	} // namespace symbols_MyKeyValue2
 	auto describe_json_class( MyKeyValue2 ) {
 		using namespace daw::json;
-		return class_description_t < json_array <
-		       return class_description_t<json_key_value_array<
-		         symbols_MyKeyValue2::kv, std::unordered_map<intmax_t, std::string>,
-		         json_string<symbols_MyKeyValue2::value_name>,
-		         json_number<symbols_MyKeyValue2::key_name, intmax_t>>>{};
+		return class_description_t<json_key_value_array<
+		  symbols_MyKeyValue2::kv, std::unordered_map<intmax_t, std::string>,
+		  json_string<symbols_MyKeyValue2::value_name>,
+		  json_number<symbols_MyKeyValue2::key_name, intmax_t>>>{};
 	}
+
 #endif
 	auto to_json_data( MyKeyValue2 const &value ) {
 		return std::forward_as_tuple( value.kv );
