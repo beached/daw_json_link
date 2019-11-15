@@ -33,7 +33,7 @@ auto to_json_data( MyKeyValue const & value ) {
 
 
 ## As Array
-Too see a working example using this code, look at the cookbook_kv2_test.cpp test in tests
+Too see a working example using this code, look at the [cookbook_kv2.cpp](../tests/cookbook_kv2_test.cpp) test in tests
 ```json
 {
 	"kv": [
