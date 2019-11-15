@@ -253,6 +253,11 @@ add_test(NAME cookbook_class2_test COMMAND cookbook_class2_test_bin ./cookbook_c
 add_dependencies(check cookbook_class2_test_bin)
 add_dependencies(full cookbook_class2_test_bin)
 
+add_executable(cookbook_class3_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_class3_test.cpp)
+add_dependencies(cookbook_class3_test_bin dependency_stub)
+add_test(NAME cookbook_class3_test COMMAND cookbook_class3_test_bin ./cookbook_class3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies(check cookbook_class3_test_bin)
+add_dependencies(full cookbook_class3_test_bin)
 
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
