@@ -80,6 +80,11 @@ namespace daw::json::impl {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] static constexpr OutputIterator
+	to_string( ParseTag<JsonParseTypes::KeyValue>, OutputIterator it,
+	           parse_to_t const &value );
+
+	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
+	[[nodiscard]] static constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Custom>, OutputIterator it,
 	           parse_to_t const &value );
 
@@ -374,6 +379,35 @@ namespace daw::json::impl {
 			}
 		}
 		*it++ = ']';
+		return it;
+	}
+
+	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
+	[[nodiscard]] static constexpr OutputIterator
+	to_string( ParseTag<JsonParseTypes::KeyValue>, OutputIterator it,
+	           parse_to_t const &container ) {
+
+		static_assert(
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
+
+		*it++ = '{';
+		if( not std::empty( container ) ) {
+			auto count = std::size( container ) - 1U;
+			for( auto const &v : container ) {
+				it = to_string<typename JsonMember::json_key_t>(
+				  ParseTag<JsonMember::json_key_t::expected_type>{}, it,
+				  json_get_key( v ) );
+				*it++ = ':';
+				it = to_string<typename JsonMember::json_element_t>(
+				  ParseTag<JsonMember::json_element_t::expected_type>{}, it,
+				  json_get_value( v ) );
+				if( count-- > 0 ) {
+					*it++ = ',';
+				}
+			}
+		}
+		*it++ = '}';
 		return it;
 	}
 
