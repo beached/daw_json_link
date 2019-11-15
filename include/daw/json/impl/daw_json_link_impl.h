@@ -307,13 +307,11 @@ namespace daw::json::impl {
 	         typename... Args>
 	[[nodiscard]] static constexpr OutputIterator
 	serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
-	                      std::tuple<Args...> &&args ) {
+	                      std::tuple<Args...> const &args ) {
 
 		*it++ = '{';
 
-		(void)( ( to_json_str<nth<Is, JsonMembers...>, Is>( it, daw::move( args ) ),
-		          ... ),
-		        0 );
+		(void)( ( to_json_str<nth<Is, JsonMembers...>, Is>( it, args ), ... ), 0 );
 
 		*it++ = '}';
 		return it;
@@ -425,6 +423,5 @@ namespace daw::json::impl {
 
 		return desc_t::template parse<T, TrustedInput>( json_data );
 	}
-
 
 } // namespace daw::json::impl

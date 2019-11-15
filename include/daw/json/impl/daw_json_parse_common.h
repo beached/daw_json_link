@@ -200,6 +200,7 @@ namespace daw::json {
 		Array,
 		Null,
 		KeyValue,
+		KeyValueArray,
 		Custom
 	};
 

@@ -163,10 +163,10 @@ namespace daw {
 		using size_type = size_t;
 
 	private:
-		std::string m_value{};
+		std::string value{};
 
 		void cleanup( ) noexcept {
-			m_value.clear( );
+			value.clear( );
 		}
 
 	public:
@@ -185,33 +185,33 @@ namespace daw {
 			if( not in_file ) {
 				return false;
 			}
-			m_value = std::string( std::istreambuf_iterator<char>( in_file ),
-			                       std::istreambuf_iterator<char>( ) );
-			return not m_value.empty( );
+			value = std::string( std::istreambuf_iterator<char>( in_file ),
+			                     std::istreambuf_iterator<char>( ) );
+			return not value.empty( );
 		}
 
 		[[nodiscard]] reference operator[]( size_type pos ) noexcept {
-			return m_value[pos];
+			return value[pos];
 		}
 
 		[[nodiscard]] const_reference operator[]( size_t pos ) const noexcept {
-			return m_value[pos];
+			return value[pos];
 		}
 
 		[[nodiscard]] constexpr pointer data( ) noexcept {
-			return m_value.data( );
+			return value.data( );
 		}
 
 		[[nodiscard]] constexpr const_pointer data( ) const noexcept {
-			return m_value.data( );
+			return value.data( );
 		}
 
 		[[nodiscard]] constexpr size_type size( ) const noexcept {
-			return m_value.size( );
+			return value.size( );
 		}
 
 		constexpr explicit operator bool( ) const noexcept {
-			return not m_value.empty( );
+			return not value.empty( );
 		}
 
 		memory_mapped_file( memory_mapped_file const & ) = delete;

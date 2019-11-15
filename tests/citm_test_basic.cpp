@@ -45,8 +45,7 @@ int main( int argc, char **argv ) {
 	daw::do_not_optimize( citm_result );
 	json_assert( citm_result.areaNames.size( ) > 0, "Expected values" );
 	json_assert( citm_result.areaNames.count( 205706005 ) == 1,
-							 "Expected value" );
+	             "Expected value" );
 	json_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
-							 "Incorrect value" );
+	             "Incorrect value" );
 }
-

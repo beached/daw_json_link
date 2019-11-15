@@ -91,4 +91,10 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::KeyValue>,
 	             IteratorRange<First, Last, TrustedInput> &rng );
+
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::KeyValueArray>,
+	             IteratorRange<First, Last, TrustedInput> &rng );
 } // namespace daw::json::impl

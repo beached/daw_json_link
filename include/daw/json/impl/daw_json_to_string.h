@@ -75,6 +75,11 @@ namespace daw::json::impl {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] static constexpr OutputIterator
+	to_string( ParseTag<JsonParseTypes::KeyValueArray>, OutputIterator it,
+	           parse_to_t const &value );
+
+	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
+	[[nodiscard]] static constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Custom>, OutputIterator it,
 	           parse_to_t const &value );
 
@@ -143,8 +148,11 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
 	           parse_to_t const &value ) {
+
 		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
+
 		if( value ) {
 			return copy_to_iterator( "true", it );
 		}
@@ -185,7 +193,8 @@ namespace daw::json::impl {
 	           parse_to_t const &value ) {
 
 		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
 
 		using ::daw::json::to_strings::to_string;
 		using std::to_string;
@@ -197,7 +206,8 @@ namespace daw::json::impl {
 	           parse_to_t const &value ) {
 
 		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
 
 		using ::daw::json::to_strings::to_string;
 		using std::to_string;
@@ -210,7 +220,8 @@ namespace daw::json::impl {
 	           parse_to_t const &value ) {
 
 		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
 
 		using ::daw::json::to_strings::to_string;
 		using std::to_string;
@@ -223,7 +234,8 @@ namespace daw::json::impl {
 	           parse_to_t const &value ) {
 
 		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
 
 		*it++ = '"';
 		it = copy_to_iterator( value, it );
@@ -245,8 +257,10 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Date>, OutputIterator it,
 	           parse_to_t const &value ) {
+
 		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
 
 		using ::daw::json::impl::is_null;
 		if( is_null( value ) ) {
@@ -269,10 +283,12 @@ namespace daw::json::impl {
 	           parse_to_t const &value ) {
 
 		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
 
-		return json_parser_description_t<parse_to_t>::template serialize(
-		  it, to_json_data( value ) );
+		auto tmp = to_json_data( value );
+		return json_parser_description_t<
+		  typename JsonMember::parse_to_t>::serialize( it, std::move( tmp ) );
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -281,7 +297,8 @@ namespace daw::json::impl {
 	           parse_to_t const &value ) {
 
 		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
 
 		if constexpr( JsonMember::is_string ) {
 			*it++ = '"';
@@ -301,7 +318,8 @@ namespace daw::json::impl {
 	           parse_to_t const &container ) {
 
 		static_assert(
-		  std::is_same_v<typename JsonMember::parse_to_t, parse_to_t> );
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
 
 		*it++ = '[';
 		if( not std::empty( container ) ) {
@@ -318,11 +336,52 @@ namespace daw::json::impl {
 		return it;
 	}
 
+	template<typename Key, typename Value>
+	auto const &json_get_key( std::pair<Key, Value> const &kv ) {
+		return kv.first;
+	}
+
+	template<typename Key, typename Value>
+	auto const &json_get_value( std::pair<Key, Value> const &kv ) {
+		return kv.second;
+	}
+
+	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
+	[[nodiscard]] static constexpr OutputIterator
+	to_string( ParseTag<JsonParseTypes::KeyValueArray>, OutputIterator it,
+	           parse_to_t const &container ) {
+
+		static_assert(
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
+
+		*it++ = '[';
+		if( not std::empty( container ) ) {
+			auto count = std::size( container ) - 1U;
+			for( auto const &v : container ) {
+				*it++ = '{';
+				it = to_string<typename JsonMember::json_key_t>(
+				  ParseTag<JsonMember::json_key_t::expected_type>{}, it,
+				  json_get_key( v ) );
+				*it++ = ',';
+				it = to_string<typename JsonMember::json_value_t>(
+				  ParseTag<JsonMember::json_value_t::expected_type>{}, it,
+				  json_get_value( v ) );
+				*it++ = '}';
+				if( count-- > 0 ) {
+					*it++ = ',';
+				}
+			}
+		}
+		*it++ = ']';
+		return it;
+	}
+
 	template<typename JsonMember, typename OutputIterator, typename T>
 	[[nodiscard]] static constexpr OutputIterator
-	member_to_string( OutputIterator it, T &&value ) {
+	member_to_string( OutputIterator it, T const &value ) {
 		it = to_string<JsonMember>( ParseTag<JsonMember::expected_type>{},
-		                            daw::move( it ), std::forward<T>( value ) );
+		                            daw::move( it ), value );
 		return it;
 	}
 
@@ -336,14 +395,13 @@ namespace daw::json::impl {
 	template<typename JsonMember, size_t pos, typename OutputIterator,
 	         typename... Args>
 	static constexpr void to_json_str( OutputIterator it,
-	                                   std::tuple<Args...> &&args ) {
+	                                   std::tuple<Args...> const &args ) {
 
 		static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
 		*it++ = '"';
 		it = copy_to_iterator( JsonMember::name, it );
 		it = copy_to_iterator( "\":", it );
-		it = member_to_string<JsonMember>( daw::move( it ),
-		                                   std::get<pos>( daw::move( args ) ) );
+		it = member_to_string<JsonMember>( daw::move( it ), std::get<pos>( args ) );
 		if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
 			*it++ = ',';
 		}

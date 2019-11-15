@@ -213,7 +213,6 @@ namespace daw::json::impl {
 		using element_t = typename JsonMember::parse_to_t;
 		return from_json<element_t>( rng );
 	}
-
 	/**
 	 * Parse a key_value pair encoded as a json object where the keys are the
 	 * member names
@@ -257,6 +256,70 @@ namespace daw::json::impl {
 			json_assert_untrusted( rng.has_more( ), "Unexpected end of data" );
 		}
 		json_assert_untrusted( rng.front( '}' ),
+		                       "Expected keyvalue type to end with a '}'" );
+		rng.remove_prefix( );
+		rng.trim_left( );
+		return array_container;
+	}
+
+	/**
+	 * Parse a key_value pair encoded as a json object where the keys are the
+	 * member names
+	 * @tparam JsonMember json_key_value type
+	 * @tparam First Type of Iterator for beginning of stream range
+	 * @tparam Last Type of Iterator for end of stream range
+	 * @tparam TrustedInput Are we parsing a trusted stream
+	 * @param rng Range of input to parse
+	 * @return Constructed key_value container
+	 */
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::KeyValueArray>,
+	             IteratorRange<First, Last, TrustedInput> &rng ) {
+
+		static_assert( JsonMember::expected_type == JsonParseTypes::KeyValueArray,
+		               "Expected a json_key_value" );
+		json_assert_untrusted(
+		  rng.front( '[' ),
+		  "Expected keyvalue type to be of class type and beging with '{'" );
+
+		rng.remove_prefix( );
+
+		auto array_container = typename JsonMember::constructor_t{}( );
+		auto container_appender =
+		  typename JsonMember::appender_t( array_container );
+
+		using key_t = typename JsonMember::json_key_t;
+		using value_t = typename JsonMember::json_value_t;
+		while( rng.front( ) != ']' ) {
+			// We are in an object find {
+			rng.move_to_next_of( '{' );
+			rng.remove_prefix( );
+			rng.move_to_next_of( "\"}" );
+			json_assert( rng.front( ) == '"', "Expected name of key member" );
+			rng.remove_prefix( );
+			auto const key_name = daw::json::impl::name::name_parser::parse_nq( rng );
+			json_assert( key_t::name == key_name, "Expected value name to match" );
+			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{}, rng );
+			rng.move_to_next_of( '"' ); // Next
+			json_assert( rng.front( ) == '"', "Expected name of value member" );
+			rng.remove_prefix( );
+			auto const value_name =
+			  daw::json::impl::name::name_parser::parse_nq( rng );
+			json_assert( value_t::name == value_name,
+			             "Expected value name to match" );
+			container_appender(
+			  std::move( key ),
+			  parse_value<value_t>( ParseTag<value_t::expected_type>{}, rng ) );
+
+			rng.move_to_next_of( '}' );
+			rng.remove_prefix( );
+			rng.trim_left( );
+			json_assert_untrusted( rng.has_more( ), "Unexpected end of data" );
+			// End of object }
+		}
+		json_assert_untrusted( rng.front( ']' ),
 		                       "Expected keyvalue type to end with a '}'" );
 		rng.remove_prefix( );
 		rng.trim_left( );
