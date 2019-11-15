@@ -44,6 +44,8 @@ static constexpr char const member_nane[] = "member_name";
 ```
 
 ## Code Examples
+There are examples of json pattersn and the code to map them to C++ in the [Cookbook](cookbook/) section
+
 # Using data types
 Once a data type has been described, you can easily construct an object from a string or string_view.
 
