@@ -390,4 +390,26 @@ struct json_key_value
 
 ```Appender``` the default is almost always correct here but this will append via insert( std::pair<Key, Value> ) on the container
 
+### json_key_value
+```cpp
+template<JSONNAMETYPE Name, 
+    typename Container, 
+    typename JsonValueType,
+    typename JsonKeyType,
+    typename Constructor = daw::construct_a<Container>,
+    typename Appender = impl::basic_kv_appender<Container>>
+struct json_key_value_array
+``` 
+```json_key_value``` Is like both an array and a class. All the keys/member names are json strings.
+
+```Container``` The result type to place all the KV pairs into.  By default must behave like a Map.
+
+```JsonValueType``` One of the above json types with a specified name that matches the value member name as it's name.  This is the value type in the KV pairs 
+
+```JsonKeyType``` One of the above json types with a specified name that matches the key member name as it's name.  This is the key type in the KV pairs 
+
+```Constructor``` the default is almost always correct here but this will constuct your Continer.
+
+```Appender``` the default is almost always correct here but this will append via insert( std::pair<Key, Value> ) on the container
+
 

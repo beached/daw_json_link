@@ -318,7 +318,7 @@ namespace daw::json {
 	 *  Appender A callable used to add elements to container.
 	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
-	         typename JsonKeyType = std::string,
+	         typename JsonKeyType,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_kv_appender<Container>>
 	struct json_key_value_array {
