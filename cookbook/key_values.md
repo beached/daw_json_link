@@ -46,40 +46,19 @@ The above JSON describes a class with a member that stores key valus as objects 
 
 The C++ to contain and parse this could look like
 ```cpp
-template<typename Key, typename Value>
-struct KVPair : std::pair<Key, Value> {
-	using std::pair<Key, Value>::pair;
-
-	constexpr operator std::pair<Key, Value>( ) const {
-		return { this->first, this->last };
-	}
-};
-
-template<typename Key, typename Value>
-auto describe_json_class( KVPair<Key, Value> ) {
-	using namespace daw::json;
-	return class_description_t<json_number<"key", Key>,
-	                           json_string<"value", Value>>{};
-}
-
-template<typename Key, typename Value>
-auto to_json_data( KVPair<Key, Value> const &value ) {
-	return std::forward_as_tuple( value.first, value.second );
-}
-
 struct MyKeyValue2 {
 	std::unordered_map<intmax_t, std::string> kv;
 };
 
-auto describe_json_class( MyKeyValue2 ) {
+auto describe_json_class( MyKeyValue2 const & ) {
 	using namespace daw::json;
-	return class_description_t<
-	  json_array<"kv", std::unordered_map<intmax_t, std::string>,
-	             json_class<no_name, KVPair<intmax_t, std::string>>>>{};
+	return class_description_t<json_key_value_array<
+		"kv", std::unordered_map<intmax_t, std::string>, json_string<"value">,
+		json_number<"key", intmax_t>>>{};
 }
 
 auto to_json_data( MyKeyValue2 const &value ) {
 	return std::forward_as_tuple( value.kv );
 }
 ```
-There is currently no built in type to describe this.  So the pair that is constructed is passed to the appender that will insert into the container
+
