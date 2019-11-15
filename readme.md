@@ -1,6 +1,9 @@
 # JSON Link ![](https://github.com/beached/daw_json_link/workflows/CI_Testing/badge.svg)
 This library is different.  It assumes we know what data structures we will be recieving and uses that knowledge to provide a clean interface for parsing.  Describing the mappings between JSON and C++, one needs only one method to parse and an additional one for serialization.
 
+## Code Examples
+There are examples of json patterns and the code to map them to C++ in the [Cookbook](cookbook/) section. Also, the [tests](tests/) provide another source of working code samples. In addition, there are some small samples below
+
 ### Installing and Requirements
 ## Requirements
 * C++ 17 compiler, C++ 20 for enhanced names
@@ -34,17 +37,14 @@ The order of the data in the data structures should generally match that of the 
 ## Differences between C++17 and C++20
 # C++ 17 Naming of members
 ```cpp
-static constexpr char const member_nane[] = "member_name";
+static constexpr char const member_name[] = "memberName";
 
 ...json_number<member_name>
 ```
 # C++ 20 Enhanced member naming
 ```cpp
-...json_number<"member_name">
+...json_number<"memberName">
 ```
-
-## Code Examples
-There are examples of json pattersn and the code to map them to C++ in the [Cookbook](cookbook/) section
 
 # Using data types
 Once a data type has been described, you can easily construct an object from a string or string_view.
