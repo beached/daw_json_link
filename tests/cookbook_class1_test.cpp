@@ -1,0 +1,81 @@
+// The MIT License (MIT)
+//
+// Copyright (c) 2019 Darrell Wright
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files( the "Software" ), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and / or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
+#include <unordered_map>
+
+#include <daw/json/daw_json_link.h>
+#include <daw/json/impl/daw_memory_mapped.h>
+
+namespace daw::cookbook_class1 {
+	struct MyClass1 {
+		std::string member_0;
+		int member_1;
+		bool member_2;
+	};
+
+#if defined( __cpp_nontype_template_parameter_class )
+	auto describe_json_class( MyClass1 const & ) {
+		using namespace daw::json;
+		return class_description_t<json_string<"member0">,
+		                           json_number<"member1", int>,
+		                           json_bool<"member2">>{};
+	}
+#else
+	namespace symbols_MyClass1 {
+		static constexpr char const member0[] = "member0";
+		static constexpr char const member1[] = "member1";
+		static constexpr char const member2[] = "member2";
+	} // namespace symbols_MyClass1
+	auto describe_json_class( MyClass1 const & ) {
+		using namespace daw::json;
+		return class_description_t<json_string<symbols_MyClass1::member0>,
+		                           json_number<symbols_MyClass1::member1, int>,
+		                           json_bool<symbols_MyClass1::member2>>{};
+	}
+#endif
+	auto to_json_data( MyClass1 const &value ) {
+		return std::forward_as_tuple( value.member_0, value.member_1,
+		                              value.member_2 );
+	}
+} // namespace daw::cookbook_class1
+
+int main( int argc, char **argv ) {
+	if( argc <= 1 ) {
+		puts( "Must supply path to cookbook_class1.json file\n" );
+		exit( EXIT_FAILURE );
+	}
+	auto data = daw::memory_mapped_file<>( argv[1] );
+
+	auto cls = daw::json::from_json<daw::cookbook_class1::MyClass1>(
+	  std::string_view( data.data( ), data.size( ) ) );
+
+	daw::json::json_assert( cls.member_0 == "this is a test",
+	                        "Unexpected value" );
+	daw::json::json_assert( cls.member_1 == 314159, "Unexpected value" );
+	daw::json::json_assert( cls.member_2 == true, "Unexpected value" );
+	auto str = daw::json::to_json( cls );
+	puts( str.c_str( ) );
+}

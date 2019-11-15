@@ -14,7 +14,7 @@ Stored in JSON objects and string/value pairs
 The above JSON describes a class with a key value member that represents a map with a string key and a numeric value
 
 The C++ to contain and parse this could look like
-Too see a working example using this code, look at the [cookbook_kv1.cpp](../tests/cookbook_kv1_test.cpp) test in tests
+Too see a working example using this code, look at the [cookbook_kv1_test.cpp](../tests/cookbook_kv1_test.cpp) test in tests
 ```cpp
 struct MyKeyValue {
 	std::map<std::string, int> kv;
@@ -33,7 +33,7 @@ auto to_json_data( MyKeyValue const & value ) {
 
 
 ## As Array
-Too see a working example using this code, look at the [cookbook_kv2.cpp](../tests/cookbook_kv2_test.cpp) test in tests
+Too see a working example using this code, look at the [cookbook_kv2_test.cpp](../tests/cookbook_kv2_test.cpp) test in tests
 ```json
 {
 	"kv": [

@@ -229,17 +229,23 @@ add_test(NAME kv_map_test COMMAND kv_map_test_bin)
 add_dependencies(check kv_map_test_bin)
 add_dependencies(full kv_map_test_bin)
 
+add_executable(cookbook_kv1_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_kv1_test.cpp)
+add_dependencies(cookbook_kv1_test_bin dependency_stub)
+add_test(NAME cookbook_kv1_test COMMAND cookbook_kv1_test_bin ./cookbook_kv1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies(check cookbook_kv1_test_bin)
+add_dependencies(full cookbook_kv1_test_bin)
+
 add_executable(cookbook_kv2_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_kv2_test.cpp)
 add_dependencies(cookbook_kv2_test_bin dependency_stub)
 add_test(NAME cookbook_kv2_test COMMAND cookbook_kv2_test_bin ./cookbook_kv2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
 add_dependencies(check cookbook_kv2_test_bin)
 add_dependencies(full cookbook_kv2_test_bin)
 
-add_executable(cookbook_kv1_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_kv1_test.cpp)
-add_dependencies(cookbook_kv1_test_bin dependency_stub)
-add_test(NAME cookbook_kv1_test COMMAND cookbook_kv1_test_bin ./cookbook_kv1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
-add_dependencies(check cookbook_kv1_test_bin)
-add_dependencies(full cookbook_kv1_test_bin)
+add_executable(cookbook_class1_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_class1_test.cpp)
+add_dependencies(cookbook_class1_test_bin dependency_stub)
+add_test(NAME cookbook_class1_test COMMAND cookbook_class1_test_bin ./cookbook_class1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies(check cookbook_class1_test_bin)
+add_dependencies(full cookbook_class1_test_bin)
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
