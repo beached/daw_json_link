@@ -52,14 +52,14 @@ namespace daw::json {
 	struct class_description_t {
 		template<typename OutputIterator, typename... Args>
 		[[maybe_unused, nodiscard]] static constexpr OutputIterator
-		serialize( OutputIterator it, std::tuple<Args...> &&args ) {
+		serialize( OutputIterator it, std::tuple<Args...> const &args ) {
 			static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 			               "Argument count is incorrect" );
 
 			static_assert( ( impl::is_a_json_type_v<JsonMembers> and ... ),
 			               "Only value json types can be used" );
 			return impl::serialize_json_class<JsonMembers...>(
-			  it, std::index_sequence_for<Args...>{}, std::move( args ) );
+			  it, std::index_sequence_for<Args...>{}, args );
 		}
 
 		template<typename Result, bool TrustedInput>
@@ -306,6 +306,35 @@ namespace daw::json {
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::KeyValue;
 	};
 
+	/** Map a KV type json array [ {"key": ValueOfKeyType, "value":
+	 * ValueOfValueType},... ] to a c++ class. needs to be constructable with a
+	 * pointer, size
+	 *  @tparam Name name of JSON member to link to
+	 *  @tparam Container type to put values in
+	 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
+	 *  json_string, ... ) @tparam JsonKeyType type of key in kv pair @tparam
+	 *  Constructor A callable used to make Container, default will use the
+	 *  Containers constructor.  Both normal and aggregate are supported @tparam
+	 *  Appender A callable used to add elements to container.
+	 */
+	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
+	         typename JsonKeyType = std::string,
+	         typename Constructor = daw::construct_a_t<Container>,
+	         typename Appender = impl::basic_kv_appender<Container>>
+	struct json_key_value_array {
+		static_assert( impl::is_a_json_type_v<JsonKeyType> );
+		static_assert( impl::is_a_json_type_v<JsonValueType> );
+		using i_am_a_json_type = void;
+		using parse_to_t = Container;
+		using constructor_t = Constructor;
+		using appender_t = Appender;
+		using json_key_t = JsonKeyType;
+		using json_value_t = JsonValueType;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
+		  JsonParseTypes::KeyValueArray;
+	};
+
 	/**
 	 * Parse json and construct a T as the result.  This method
 	 * provides checked json
@@ -341,7 +370,7 @@ namespace daw::json {
 	 * @return  json string data
 	 */
 	template<typename Result = std::string, typename T>
-	[[maybe_unused, nodiscard]] constexpr Result to_json( T &&value ) {
+	[[maybe_unused, nodiscard]] constexpr Result to_json( T const &value ) {
 		static_assert(
 		  impl::has_json_parser_description_v<T>,
 		  "A function called describe_json_class must exist for type." );
@@ -350,7 +379,7 @@ namespace daw::json {
 
 		Result result{};
 		(void)impl::json_parser_description_t<T>::template serialize(
-		  daw::back_inserter( result ), to_json_data( std::forward<T>( value ) ) );
+		  daw::back_inserter( result ), to_json_data( value ) );
 		return result;
 	}
 

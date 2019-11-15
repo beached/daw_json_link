@@ -56,7 +56,7 @@ namespace symbols_Number {
 #ifndef NDEBUG
 static constexpr size_t const NUMVALUES = 10'000ULL;
 #else
-//static constexpr size_t const NUMVALUES = 1'000'000ULL;
+// static constexpr size_t const NUMVALUES = 1'000'000ULL;
 static constexpr size_t const NUMVALUES = 10'000ULL;
 #endif
 

@@ -33,8 +33,8 @@
 namespace daw::json::impl {
 	template<typename First, typename Last, bool TrustedInput>
 	struct IteratorRange {
-		First first{ };
-		Last last{ };
+		First first{};
+		Last last{};
 		static constexpr bool is_trusted_input = TrustedInput;
 
 		constexpr IteratorRange( ) noexcept = default;
@@ -69,8 +69,8 @@ namespace daw::json::impl {
 		}
 
 		template<size_t N>
-		[[nodiscard]] constexpr bool
-		front( char const ( &set )[N] ) const noexcept {
+		[[nodiscard]] constexpr bool front( char const ( &set )[N] ) const
+		  noexcept {
 			if( empty( ) ) {
 				return false;
 			}

@@ -45,8 +45,9 @@ auto describe_json_class( kv_t ) noexcept {
 	return class_description_t<json_key_value<
 	  "kv", std::unordered_map<std::string, int>, json_number<no_name, int>>>{};
 #else
-	return class_description_t<json_key_value<
-	  symbols_kv_t::kv, std::unordered_map<std::string, int>, json_number<no_name, int>>>{};
+	return class_description_t<
+	  json_key_value<symbols_kv_t::kv, std::unordered_map<std::string, int>,
+	                 json_number<no_name, int>>>{};
 #endif
 }
 

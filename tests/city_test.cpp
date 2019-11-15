@@ -22,8 +22,8 @@
 
 #include <fstream>
 #include <iostream>
-#include <string_view>
 #include <streambuf>
+#include <string_view>
 #include <vector>
 
 #include <daw/daw_benchmark.h>
@@ -44,7 +44,7 @@ namespace symbols_City {
 	static constexpr char names1[] = "name";
 	static constexpr char names2[] = "lat";
 	static constexpr char names3[] = "lng";
-}
+} // namespace symbols_City
 auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
@@ -84,7 +84,7 @@ int main( int argc, char **argv ) {
 	auto sz = json_data.size( );
 	json_data.append( 60ULL,
 	                  ' ' ); // Account for max digits in float if in bad form
-	json_data += ",]\"}tfn";        // catch any thing looking for these values
+	json_data += ",]\"}tfn"; // catch any thing looking for these values
 	auto json_sv = std::string_view( json_data.data( ), sz );
 
 	std::cout << "File size(B): " << json_data.size( ) << " "
@@ -115,13 +115,13 @@ int main( int argc, char **argv ) {
 	  json_sv );
 
 	std::cout << "element count 2: " << count2 << '\n';
-	auto count3 =
-	  *daw::bench_n_test_mbs<10>( "cities parsing 3", json_sv.size( ),
-	                              []( auto &&sv ) {
-		                              return static_cast<size_t>( std::distance(
-		                                iterator_t( sv ), iterator_t( ) ) );
-	                              },
-	                              json_sv );
+	auto count3 = *daw::bench_n_test_mbs<10>(
+	  "cities parsing 3", json_sv.size( ),
+	  []( auto &&sv ) {
+		  return static_cast<size_t>(
+		    std::distance( iterator_t( sv ), iterator_t( ) ) );
+	  },
+	  json_sv );
 
 	std::cout << "element count 3: " << count3 << '\n';
 
@@ -169,19 +169,19 @@ int main( int argc, char **argv ) {
 	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 )
 	          << '\n';
 
-	auto mid_lat =
-	  *daw::bench_n_test_mbs<10>( "Calculate Middle Latitude", json_sv.size( ),
-	                              []( auto const &jstr ) -> float {
-		                              uint32_t tot = 0;
-		                              auto result = daw::algorithm::accumulate(
-		                                iterator_t( jstr ), iterator_t( ), 0.0f,
+	auto mid_lat = *daw::bench_n_test_mbs<10>(
+	  "Calculate Middle Latitude", json_sv.size( ),
+	  []( auto const &jstr ) -> float {
+		  uint32_t tot = 0;
+		  auto result =
+		    daw::algorithm::accumulate( iterator_t( jstr ), iterator_t( ), 0.0f,
 		                                [&tot]( float cur, City &&city ) {
 			                                ++tot;
 			                                return cur + city.lat;
 		                                } );
-		                              return result / static_cast<float>( tot );
-	                              },
-	                              json_sv );
+		  return result / static_cast<float>( tot );
+	  },
+	  json_sv );
 
 	std::cout << "mid_lat of all is: " << mid_lat << '\n';
 

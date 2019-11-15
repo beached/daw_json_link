@@ -50,9 +50,9 @@ int main( int argc, char **argv ) {
 	auto const sv_canada =
 	  std::string_view( mm_canada.data( ), mm_canada.size( ) );
 
-	std::optional<twitter_object_t> j1{ };
-	std::optional<citm_object_t> j2{ };
-	std::optional<canada_object_t> j3{ };
+	std::optional<twitter_object_t> j1{};
+	std::optional<citm_object_t> j2{};
+	std::optional<canada_object_t> j3{};
 #ifdef NDEBUG
 	std::cout << "non-debug run\n";
 	auto const sz = sv_twitter.size( ) + sv_citm.size( ) + sv_canada.size( );
@@ -93,4 +93,3 @@ int main( int argc, char **argv ) {
 		json_error( "Missing value" );
 	}
 }
-
