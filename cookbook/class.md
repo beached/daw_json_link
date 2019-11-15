@@ -61,7 +61,7 @@ auto describe_json_class( MyClass2 const & ) {
     using namespace daw::json;
     return class_description_t<
 			json_class<"a", MyClass1>, 
-			json_number<"b", unsigned>>>{};
+			json_number<"b", unsigned>>{};
 }
 
 auto to_json_data( MyClass2 const & value ) {
@@ -70,3 +70,39 @@ auto to_json_data( MyClass2 const & value ) {
 ```
 
 As you can see, we only had to say that member `"a"` is of type MyClass1
+
+## Selective mapping
+
+One does not need to map all the members in the JSON class to use it, this is often useful as we only need a subset of the members in our C++ code.  Starting from the previous `MyClass2` example, lets remove the `b` member
+To see a working example using this code, look at the [cookbook_class3_test.cpp](../tests/cookbook_class3_test.cpp) test in tests
+```json
+{
+  "a": {
+    "member0": "this is a test",
+    "member1": 314159,
+    "member2": true
+  },
+  "b": 1234
+}
+```
+
+```cpp
+// Code from previous MyClass1 example
+
+struct MyClass2 {
+    MyClass1 a;
+};
+
+auto describe_json_class( MyClass2 const & ) {
+    using namespace daw::json;
+    return class_description_t<
+			json_class<"a", MyClass1>>{};
+}
+
+auto to_json_data( MyClass2 const & value ) {
+	return std::forward_as_tuple( value.a );
+}
+```
+
+
+
