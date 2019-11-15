@@ -59,6 +59,10 @@ namespace daw::cookbook_kv2 {
 	auto to_json_data( MyKeyValue2 const &value ) {
 		return std::forward_as_tuple( value.kv );
 	}
+
+	bool operator==( MyKeyValue2 const &lhs, MyKeyValue2 const &rhs ) {
+		return lhs.kv == rhs.kv;
+	}
 } // namespace daw::cookbook_kv2
 
 int main( int argc, char **argv ) {
@@ -74,6 +78,10 @@ int main( int argc, char **argv ) {
 	daw::json::json_assert( kv.kv.size( ) == 2, "Expected data to have 2 items" );
 	daw::json::json_assert( kv.kv[0] == "test_001", "Unexpected value" );
 	daw::json::json_assert( kv.kv[1] == "test_002", "Unexpected value" );
-	auto str = daw::json::to_json( kv );
+	auto const str = daw::json::to_json( kv );
 	puts( str.c_str( ) );
+
+	auto const kv2 = daw::json::from_json<daw::cookbook_kv2::MyKeyValue2>(
+	  std::string_view( str.data( ), str.size( ) ) );
+	daw::json::json_assert( kv == kv2, "Unexpected round trip error" );
 }
