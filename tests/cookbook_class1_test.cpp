@@ -60,6 +60,10 @@ namespace daw::cookbook_class1 {
 		return std::forward_as_tuple( value.member_0, value.member_1,
 		                              value.member_2 );
 	}
+
+	bool operator==( MyClass1 const &lhs, MyClass1 const &rhs ) {
+		return to_json_data( lhs ) == to_json_data( rhs );
+	}
 } // namespace daw::cookbook_class1
 
 int main( int argc, char **argv ) {
@@ -69,13 +73,18 @@ int main( int argc, char **argv ) {
 	}
 	auto data = daw::memory_mapped_file<>( argv[1] );
 
-	auto cls = daw::json::from_json<daw::cookbook_class1::MyClass1>(
+	auto const cls = daw::json::from_json<daw::cookbook_class1::MyClass1>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
 	daw::json::json_assert( cls.member_0 == "this is a test",
 	                        "Unexpected value" );
 	daw::json::json_assert( cls.member_1 == 314159, "Unexpected value" );
 	daw::json::json_assert( cls.member_2 == true, "Unexpected value" );
-	auto str = daw::json::to_json( cls );
+	auto const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
+
+	auto const cls2 = daw::json::from_json<daw::cookbook_class1::MyClass1>(
+	  std::string_view( str.data( ), str.size( ) ) );
+
+	daw::json::json_assert( cls == cls2, "Unexpected round trip error" );
 }

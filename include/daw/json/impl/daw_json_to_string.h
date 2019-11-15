@@ -291,9 +291,8 @@ namespace daw::json::impl {
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
-		auto tmp = to_json_data( value );
 		return json_parser_description_t<
-		  typename JsonMember::parse_to_t>::serialize( it, std::move( tmp ) );
+		  typename JsonMember::parse_to_t>::serialize( it, to_json_data( value ) );
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -359,19 +358,32 @@ namespace daw::json::impl {
 		static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
-
+		using key_t = typename JsonMember::json_key_t;
+		using value_t = typename JsonMember::json_value_t;
 		*it++ = '[';
 		if( not std::empty( container ) ) {
 			auto count = std::size( container ) - 1U;
 			for( auto const &v : container ) {
 				*it++ = '{';
-				it = to_string<typename JsonMember::json_key_t>(
-				  ParseTag<JsonMember::json_key_t::expected_type>{}, it,
-				  json_get_key( v ) );
+				// Append Key Name
+				*it++ = '"';
+				it = copy_to_iterator( key_t::name, it );
+				*it++ = '"';
+				*it++ = ':';
+				// Append Key Value
+				it = to_string<key_t>( ParseTag<key_t::expected_type>{}, it,
+				                       json_get_key( v ) );
+
 				*it++ = ',';
-				it = to_string<typename JsonMember::json_value_t>(
-				  ParseTag<JsonMember::json_value_t::expected_type>{}, it,
-				  json_get_value( v ) );
+				// Append Value Name
+				*it++ = '"';
+				it = copy_to_iterator( value_t::name, it );
+				*it++ = '"';
+				*it++ = ':';
+				// Append Value Value
+				it = to_string<value_t>( ParseTag<value_t::expected_type>{}, it,
+				                         json_get_value( v ) );
+
 				*it++ = '}';
 				if( count-- > 0 ) {
 					*it++ = ',';
