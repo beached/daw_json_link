@@ -65,7 +65,7 @@ Float rand_float( ) {
 	auto f0 = daw::randint<intmax_t>( std::numeric_limits<intmax_t>::min( ),
 	                                  std::numeric_limits<intmax_t>::max( ) );
 	if( f0 == 0 ) {
-		f0 = 1.0;
+		f0 = 1;
 	}
 	auto const f1 =
 	  daw::randint<intmax_t>( std::numeric_limits<intmax_t>::min( ),
