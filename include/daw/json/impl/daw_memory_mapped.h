@@ -30,9 +30,11 @@
 #include <type_traits>
 #include <unistd.h>
 #else
-#include <fstream>
-#include <streambuf>
+#include <algorithm>
+#include <cstdio>
 #include <string>
+#include <tchar.h>
+#include <windows.h>
 #endif
 #include <utility>
 
@@ -152,6 +154,29 @@ namespace daw {
 		}
 	};
 #else
+	namespace mapfile_impl {
+		static constexpr long CreateFileMode( open_mode m ) {
+			if( m == open_mode::read ) {
+				return GENERIC_READ;
+			}
+			return GENERIC_READ | GENERIC_WRITE;
+		}
+
+		static constexpr long PageMode( open_mode m ) {
+			if( m == open_mode::read ) {
+				return PAGE_READONLY;
+			}
+			return PAGE_READWRITE;
+		}
+
+		static constexpr long MapMode( open_mode m ) {
+			if( m == open_mode::read ) {
+				return FILE_MAP_READ;
+			}
+			return FILE_MAP_WRITE;
+		}
+	} // namespace mapfile_impl
+
 	template<typename T = char>
 	struct memory_mapped_file {
 		using value_type = T;
@@ -163,10 +188,18 @@ namespace daw {
 		using size_type = size_t;
 
 	private:
-		std::string value{};
+		HANDLE m_handle = nullptr;
+		size_t m_size = 0;
+		pointer m_ptr = nullptr;
 
 		void cleanup( ) noexcept {
-			value.clear( );
+			m_size = 0;
+			if( auto tmp = std::exchange( m_ptr, nullptr ); tmp ) {
+				UnmapViewOfFile( static_cast<LPVOID>( tmp ) );
+			}
+			if( auto tmp = std::exchange( m_handle, nullptr ); tmp ) {
+				CloseHandle( m_handle );
+			}
 		}
 
 	public:
@@ -175,51 +208,85 @@ namespace daw {
 		memory_mapped_file( std::string_view file,
 		                    open_mode mode = open_mode::read ) noexcept {
 
-			(void)open( file, mode );
+            (void)open( file, mode );
 		}
 
 		[[nodiscard]] bool open( std::string_view file,
 		                         open_mode mode = open_mode::read ) noexcept {
 
-			std::ifstream in_file( file.data( ) );
-			if( not in_file ) {
+			{
+				HANDLE file_handle =
+				  CreateFile( file.data( ), mapfile_impl::CreateFileMode( mode ), 0, nullptr,
+				              OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr );
+				if( file_handle == INVALID_HANDLE_VALUE ) {
+					return false;
+				}
+				LARGE_INTEGER fsz;
+				if( not GetFileSizeEx( file_handle, &fsz ) or fsz.QuadPart <= 0 ) {
+					cleanup( );
+					return false;
+				}
+				m_size = static_cast<size_t>( fsz.QuadPart );
+				m_handle = CreateFileMapping( file_handle, nullptr, mapfile_impl::PageMode( mode ),
+				                              fsz.u.HighPart, fsz.u.LowPart, nullptr );
+				if( m_handle == NULL ) {
+					cleanup( );
+					return false;
+				}
+				CloseHandle( file_handle );
+			}
+			auto ptr = MapViewOfFile( m_handle, mapfile_impl::MapMode( mode ), 0, 0, 0 );
+			if( ptr == nullptr ) {
+				cleanup( );
 				return false;
 			}
-			value = std::string( std::istreambuf_iterator<char>( in_file ),
-			                     std::istreambuf_iterator<char>( ) );
-			return not value.empty( );
+			m_ptr = static_cast<pointer>( ptr );
+			return true;
 		}
 
 		[[nodiscard]] reference operator[]( size_type pos ) noexcept {
-			return value[pos];
+			return m_ptr[pos];
 		}
 
 		[[nodiscard]] const_reference operator[]( size_t pos ) const noexcept {
-			return value[pos];
+			return m_ptr[pos];
 		}
 
 		[[nodiscard]] constexpr pointer data( ) noexcept {
-			return value.data( );
+			return m_ptr;
 		}
 
 		[[nodiscard]] constexpr const_pointer data( ) const noexcept {
-			return value.data( );
+			return m_ptr;
 		}
 
 		[[nodiscard]] constexpr size_type size( ) const noexcept {
-			return value.size( );
+			return m_size;
 		}
 
 		constexpr explicit operator bool( ) const noexcept {
-			return not value.empty( );
+			return m_size == 0 or m_ptr == nullptr or m_handle == nullptr;
 		}
 
 		memory_mapped_file( memory_mapped_file const & ) = delete;
 		memory_mapped_file &operator=( memory_mapped_file const & ) = delete;
 
-		memory_mapped_file( memory_mapped_file && ) noexcept = default;
-		memory_mapped_file &operator=( memory_mapped_file && ) noexcept = default;
-		~memory_mapped_file( ) noexcept = default;
+		memory_mapped_file( memory_mapped_file &&other ) noexcept
+		  : m_handle( std::exchange( other.m_handle, nullptr ) )
+		  , m_size( std::exchange( other.m_size, 0 ) )
+		  , m_ptr( std::exchange( other.m_ptr, nullptr ) ) {}
+
+		memory_mapped_file &operator=( memory_mapped_file &&rhs ) noexcept {
+			if( this != &rhs ) {
+				m_handle = std::exchange( rhs.m_handle, nullptr );
+				m_size = std::exchange( rhs.m_size, 0 );
+				m_ptr = std::exchange( rhs.m_ptr, nullptr );
+			}
+			return *this;
+		}
+		~memory_mapped_file( ) noexcept {
+			cleanup( );
+		}
 	};
 #endif
 } // namespace daw

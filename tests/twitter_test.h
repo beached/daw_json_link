@@ -689,7 +689,7 @@ static inline auto to_json_data( large_t const &value ) {
 
 struct sizes_t {
 	medium_t medium;
-	small_t small;
+	small_t small_;
 	thumb_t thumb;
 	large_t large;
 }; // sizes_t
@@ -704,7 +704,7 @@ static inline auto describe_json_class( sizes_t ) {
 #else
 namespace symbols_sizes_t {
 	static inline constexpr char const medium[] = "medium";
-	static inline constexpr char const small[] = "small";
+	static inline constexpr char const small_[] = "small";
 	static inline constexpr char const thumb[] = "thumb";
 	static inline constexpr char const large[] = "large";
 } // namespace symbols_sizes_t
@@ -713,14 +713,14 @@ static inline auto describe_json_class( sizes_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_class<symbols_sizes_t::medium, medium_t>,
-	  json_class<symbols_sizes_t::small, small_t>,
+	  json_class<symbols_sizes_t::small_, small_t>,
 	  json_class<symbols_sizes_t::thumb, thumb_t>,
 	  json_class<symbols_sizes_t::large, large_t>>{};
 }
 #endif
 
 static inline auto to_json_data( sizes_t const &value ) {
-	return std::forward_as_tuple( value.medium, value.small, value.thumb,
+	return std::forward_as_tuple( value.medium, value.small_, value.thumb,
 	                              value.large );
 }
 
