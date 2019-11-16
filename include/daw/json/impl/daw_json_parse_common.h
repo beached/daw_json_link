@@ -50,9 +50,8 @@ namespace daw::json::impl {
 	  daw::is_detected_v<detect_insert_end, Container, Value>;
 
 	template<typename T>
-	using json_parser_description_t =
-	  daw::remove_cvref_t<decltype( describe_json_class(
-	    std::declval<std::add_lvalue_reference_t<std::add_const_t<T>>>( ) ) )>;
+	using json_parser_description_t = daw::remove_cvref_t<decltype(
+	  describe_json_class( std::declval<std::add_lvalue_reference_t<T>>( ) ) )>;
 
 	template<typename JsonMember>
 	using json_result = typename JsonMember::parse_to_t;
