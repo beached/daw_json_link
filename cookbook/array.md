@@ -60,7 +60,7 @@ auto to_json_data( MyClass4 const & value ) {
 	return std::forward_as_tuple( value.a, value.b, value.c, value.d );
 }
 
-std::vector<MyClass4> v = from_array<MyClass4, std::vector<MyClass4>>( str );
+std::vector<MyClass4> v = from_json_array<MyClass4, std::vector<MyClass4>>( str );
 ```
 
 
