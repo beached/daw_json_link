@@ -26,15 +26,16 @@
 #include <string>
 #include <vector>
 
-#include <daw/json/daw_json_link.h>
-#include <daw/json/impl/daw_memory_mapped.h>
+#include <daw/daw_memory_mapped_file.h>
+
+#include "daw/json/daw_json_link.h"
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_array1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto const data = daw::memory_mapped_file<>( argv[1] );
+	auto const data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
 	using namespace daw::json;
 

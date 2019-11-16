@@ -26,8 +26,9 @@
 #include <string>
 #include <unordered_map>
 
-#include <daw/json/daw_json_link.h>
-#include <daw/json/impl/daw_memory_mapped.h>
+#include <daw/daw_memory_mapped_file.h>
+
+#include "daw/json/daw_json_link.h"
 
 namespace daw::cookbook_kv1 {
 	struct MyKeyValue1 {
@@ -55,7 +56,7 @@ namespace daw::cookbook_kv1 {
 		return std::forward_as_tuple( value.kv );
 	}
 
-	bool operator==( MyKeyValue1 const & lhs, MyKeyValue1 const & rhs ) {
+	bool operator==( MyKeyValue1 const &lhs, MyKeyValue1 const &rhs ) {
 		return lhs.kv == rhs.kv;
 	}
 } // namespace daw::cookbook_kv1
@@ -65,7 +66,7 @@ int main( int argc, char **argv ) {
 		puts( "Must supply path to cookbook_kv1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::memory_mapped_file<>( argv[1] );
+	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
 	auto kv = daw::json::from_json<daw::cookbook_kv1::MyKeyValue1>(
 	  std::string_view( data.data( ), data.size( ) ) );

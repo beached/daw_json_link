@@ -27,9 +27,10 @@
 #include <string_view>
 #include <vector>
 
+#include <daw/daw_memory_mapped_file.h>
+
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
-#include "daw/json/impl/daw_memory_mapped.h"
 
 struct coordinate_t {
 	double x;
@@ -86,7 +87,7 @@ int main( int argc, char **argv ) {
 		exit( 1 );
 	}
 
-	auto const json_data = daw::memory_mapped_file<>( argv[1] );
+	auto const json_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using iterator_t =
