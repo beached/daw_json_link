@@ -111,7 +111,6 @@ set(HEADER_FILES
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value_fwd.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_to_string.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_memory_mapped.h
         ${HEADER_FOLDER}/daw/json/impl/daw_truth.h
         )
 

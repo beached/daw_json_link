@@ -26,11 +26,11 @@
 #include <string_view>
 
 #include <daw/daw_benchmark.h>
+#include <daw/daw_memory_mapped_file.h>
 
 #include "canada_test.h"
 #include "citm_test.h"
 #include "daw/json/daw_json_link.h"
-#include "daw/json/impl/daw_memory_mapped.h"
 #include "twitter_test.h"
 
 int main( int argc, char **argv ) {
@@ -41,9 +41,9 @@ int main( int argc, char **argv ) {
 		exit( 1 );
 	}
 
-	auto const mm_twitter = daw::memory_mapped_file<>( argv[1] );
-	auto const mm_citm = daw::memory_mapped_file<>( argv[2] );
-	auto const mm_canada = daw::memory_mapped_file<>( argv[3] );
+	auto const mm_twitter = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const mm_citm = daw::filesystem::memory_mapped_file_t<>( argv[2] );
+	auto const mm_canada = daw::filesystem::memory_mapped_file_t<>( argv[3] );
 	auto const sv_twitter =
 	  std::string_view( mm_twitter.data( ), mm_twitter.size( ) );
 	auto const sv_citm = std::string_view( mm_citm.data( ), mm_citm.size( ) );
