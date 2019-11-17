@@ -24,7 +24,7 @@ externalproject_add(
 	SOURCE_DIR "${CMAKE_BINARY_DIR}/dependencies/date"
 	GIT_TAG "master"
 	INSTALL_DIR "${CMAKE_BINARY_DIR}/install"
-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install -DUSE_SYSTEM_TZ_DB=true
+	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install -DUSE_SYSTEM_TZ_DB=ON -DENABLE_DATE_TESTING=OFF
 )
 
 include_directories( SYSTEM "${CMAKE_BINARY_DIR}/install/include" )
