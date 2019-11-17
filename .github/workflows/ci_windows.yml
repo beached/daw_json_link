@@ -12,9 +12,12 @@ jobs:
     runs-on: [windows-latest]
     steps:
       - uses: actions/checkout@v1
-      - name: Build and Test
+      - name: Run CMake
         working-directory: build
-        run: |
-          cmake ..  
-          cmake --build . --target full
-          ctest -C Debug
+        run: cmake ..
+      - name: Build
+        working-directory: build
+        run: cmake --build . --config Debug --target full -j 2
+      - name: Test
+        working-directory: build
+        run: ctest -C Debug
