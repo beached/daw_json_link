@@ -19,12 +19,13 @@ jobs:
     - name: Download & Build Dependencies
       run: |        
         sudo apt update
-        sudo apt install libboost-all-dev libcurl4-openssl-dev clang-9 lldb-9 lld-9 libc++-9-dev libc++abi-9-dev
-    - name: Download Current CMake
-      run: |
-        sudo apt purge cmake
-        wget https://github.com/Kitware/CMake/releases/download/v3.15.5/cmake-3.15.5-Linux-x86_64.sh
-        sudo sh ./cmake-3.15.5-Linux-x86_64.sh --prefix=/usr/local --skip-license 
+        #sudo apt install libboost-all-dev libcurl4-openssl-dev clang-9 lldb-9 lld-9 libc++-9-dev libc++abi-9-dev
+        sudo apt install clang-9 lldb-9 lld-9 libc++-9-dev libc++abi-9-dev
+    #- name: Download Current CMake
+    #  run: |
+    #    sudo apt purge cmake
+    #    wget https://github.com/Kitware/CMake/releases/download/v3.15.5/cmake-3.15.5-Linux-x86_64.sh
+    #    sudo sh ./cmake-3.15.5-Linux-x86_64.sh --prefix=/usr/local --skip-license 
     - name: Run make_deps
       run: ./make_deps.sh
     - name: Build and Test
