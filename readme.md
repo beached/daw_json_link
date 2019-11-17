@@ -17,14 +17,15 @@ There are examples of json patterns and the code to map them to C++ in the [Cook
 
 ## Installing(Linux/Mac commandline)
 
-The following will build the tests
+The following will build and run the tests
 ```
 git clone https://github.com/beached/daw_json_link
-cd ./daw_json_link
+cd daw_json_link
 mkdir build
-cd ./build
+cd build
 cmake ..
-make full 
+cmake --build . --target full -j 2
+ctest -C Debug
 ```
 After the build there the examples can be tested.  ```city_test_bin``` requires the path to the cities json file.
 ```
