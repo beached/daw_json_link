@@ -16,7 +16,7 @@ jobs:
         working-directory: build
         run: cmake 
       - name: Build
-        working-directory: build ${{ GITHUB_WORKSPACE }}/daw_json_link
+        working-directory: build $GITHUB_WORKSPACE/daw_json_link
         run: cmake --build . --config Debug --target full -j 2
       - name: Test
         working-directory: build
