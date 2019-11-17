@@ -1,0 +1,17 @@
+name: Windows
+
+on:
+  push:
+    branches-ignore: dev
+  pull_request:
+    branches-ignore: dev
+    
+
+jobs:
+  build:
+    runs-on: [windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build and Test
+        run: .\ci_test.cmd
+
