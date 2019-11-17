@@ -10,11 +10,11 @@ externalproject_add(
 
 externalproject_add(
   date_prj
-  GIT_REPOSITORY "https://github.com/howardhinnant/date.git"
+  GIT_REPOSITORY "https://github.com/beached/date.git"
   SOURCE_DIR "${CMAKE_BINARY_DIR}/dependencies/date"
   GIT_TAG "master"
   INSTALL_DIR "${CMAKE_BINARY_DIR}/install"
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install -DGLEAN_INSTALL_ROOT=${CMAKE_BINARY_DIR}/install -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE} -DUSE_SYSTEM_TZ_DB=true
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install -DGLEAN_INSTALL_ROOT=${CMAKE_BINARY_DIR}/install -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE} -DUSE_SYSTEM_TZ_DB=true -DENABLE_DATE_TESTING=OFF
 )
 
 externalproject_add(
