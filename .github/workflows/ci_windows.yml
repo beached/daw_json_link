@@ -14,9 +14,9 @@ jobs:
       - uses: actions/checkout@v1
       - name: Run CMake
         working-directory: build
-        run: cmake 
+        run: cmake $GITHUB_WORKSPACE/daw_json_link
       - name: Build
-        working-directory: build $GITHUB_WORKSPACE/daw_json_link
+        working-directory: build 
         run: cmake --build . --config Debug --target full -j 2
       - name: Test
         working-directory: build
