@@ -14,13 +14,10 @@ jobs:
       - uses: actions/checkout@v1
       - name: Run CMake
         working-directory: build
-        run: cmake ..
-        shell: cmd
+        run: cmake.exe ..
       - name: Build
         working-directory: build 
-        run: cmake --build . --config Debug --target full -j 2
-        shell: cmd
+        run: cmake.exe --build . --config Debug --target full -j 2
       - name: Test
         working-directory: build
-        run: ctest -C Debug
-        shell: cmd
+        run: ctest.exe -C Debug
