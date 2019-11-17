@@ -1,4 +1,5 @@
-# JSON Link ![](https://github.com/beached/daw_json_link/workflows/CI_Testing/badge.svg)
+# JSON Link ![](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg) ![](https://github.com/beached/daw_json_link/workflows/Ubunu/badge.svg)
+
 This library is different.  It assumes we know what data structures we will be recieving and uses that knowledge to provide a clean interface for parsing.  Describing the mappings between JSON and C++, one needs only one method to parse and an additional one for serialization.
 
 ## Code Examples

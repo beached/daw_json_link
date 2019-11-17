@@ -1,4 +1,4 @@
-name: CI_Testing
+name: Ubuntu
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
     
 
 jobs:
-  build-ubuntu:
+  build:
     runs-on: [ubuntu-latest]
     steps:
     - uses: actions/checkout@v1
@@ -22,12 +22,4 @@ jobs:
       run: ./make_deps.sh
     - name: Build and Test
       run: ./ci_test.sh
-  build-osx:
-    runs-on: [macOS-latest]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Run make_deps
-        run: ./make_deps.sh
-      - name: Build and Test
-        run: ./ci_test.sh  
-        
+       
