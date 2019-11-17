@@ -1,0 +1,19 @@
+name: MacOS
+
+on:
+  push:
+    branches-ignore: dev
+  pull_request:
+    branches-ignore: dev
+    
+
+jobs:
+  build:
+    runs-on: [macOS-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Run make_deps
+        run: ./make_deps.sh
+      - name: Build and Test
+        run: ./ci_test.sh  
+        
