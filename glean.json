@@ -19,7 +19,7 @@
 			"download_type": "git",
 			"build_type": "cmake",
 			"uri": "https://github.com/beached/date.git",
-			"cmake_args": [ "-DUSE_SYSTEM_TZ_DB=true" ]
+			"cmake_args": [ "-DUSE_SYSTEM_TZ_DB=ON" ]
 		}
 	]
 }
