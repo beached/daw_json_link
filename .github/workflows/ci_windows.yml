@@ -15,9 +15,12 @@ jobs:
       - name: Run CMake
         working-directory: build
         run: cmake.exe ..
+        shell: cmd
       - name: Build
         working-directory: build 
         run: cmake.exe --build . --config Debug --target full -j 2
+        shell: cmd
       - name: Test
         working-directory: build
         run: ctest.exe -C Debug
+        shell: cmd
