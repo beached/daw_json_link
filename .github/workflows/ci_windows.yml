@@ -14,10 +14,13 @@ jobs:
       - uses: actions/checkout@v1
       - name: Run CMake
         working-directory: build
-        run: cmake %GITHUB_WORKSPACE%/daw_json_link
+        run: cmake ..
+        shell: cmd
       - name: Build
         working-directory: build 
         run: cmake --build . --config Debug --target full -j 2
+        shell: cmd
       - name: Test
         working-directory: build
         run: ctest -C Debug
+        shell: cmd
