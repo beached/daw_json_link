@@ -37,6 +37,9 @@ Currently I have a another project https://github.com/beached/json_to_cpp that c
 ## Performance considerations
 The order of the data in the data structures should generally match that of the json data.  The parser is much faster if it doesn't have to back track for values.  Optional values where they are missing in the json data can slow down the parsing too.  If possible have them sent as null.
 
+## Escaping/Unescaping of member names
+The library will not escape or unescape the member names.  This is a design desision as the current architecture would make it difficult.  Post C++20 this may be doable as one can construct the string as a NTTP and encode it there.  In addition, one can put the escaped name as the name manually.
+
 ## Differences between C++17 and C++20
 # C++ 17 Naming of members
 ```cpp
