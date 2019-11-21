@@ -110,7 +110,8 @@ namespace {
 #ifdef __cpp_nontype_template_parameter_class
 		return class_description_t<
 		  json_number<"i", int>, json_number<"d">, json_bool<"b">,
-		  json_string_raw<"s", std::string_view>, json_string_raw<"s2", std::string_view>,
+		  json_string_raw<"s", std::string_view>,
+		  json_string_raw<"s2", std::string_view>,
 		  json_array<"y", daw::bounded_vector_t<int, 10>,
 		             json_number<no_name, int>>,
 		  json_nullable<json_number<"o", int>>,

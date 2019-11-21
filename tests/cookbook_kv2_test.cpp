@@ -39,7 +39,7 @@ namespace daw::cookbook_kv2 {
 	auto describe_json_class( MyKeyValue2 const & ) {
 		using namespace daw::json;
 		return class_description_t<json_key_value_array<
-		  "kv", std::unordered_map<intmax_t, std::string>, json_string_raw<"value">,
+		  "kv", std::unordered_map<intmax_t, std::string>, json_string<"value">,
 		  json_number<"key", intmax_t>>>{};
 	}
 #else
@@ -52,7 +52,7 @@ namespace daw::cookbook_kv2 {
 		using namespace daw::json;
 		return class_description_t<json_key_value_array<
 		  symbols_MyKeyValue2::kv, std::unordered_map<intmax_t, std::string>,
-		  json_string_raw<symbols_MyKeyValue2::value_name>,
+		  json_string<symbols_MyKeyValue2::value_name>,
 		  json_number<symbols_MyKeyValue2::key_name, intmax_t>>>{};
 	}
 

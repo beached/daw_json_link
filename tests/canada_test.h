@@ -122,9 +122,10 @@ struct features_element_t {
 #ifdef __cpp_nontype_template_parameter_class
 auto describe_json_class( features_element_t ) {
 	using namespace daw::json;
-	return daw::json::class_description_t<json_string_raw<"type", std::string_view>,
-	                                      json_class<"properties", properties_t>,
-	                                      json_class<"geometry", geometry_t>>{};
+	return daw::json::class_description_t<
+	  json_string_raw<"type", std::string_view>,
+	  json_class<"properties", properties_t>,
+	  json_class<"geometry", geometry_t>>{};
 }
 #else
 namespace symbols_features_element_t {

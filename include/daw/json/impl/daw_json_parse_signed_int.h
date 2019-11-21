@@ -33,6 +33,7 @@ namespace daw::json::impl::signedint {
 
 		[[nodiscard]] static constexpr std::pair<Signed, char const *>
 		parse( char const *ptr ) {
+			json_assert( ptr != nullptr, "Unexpected nullptr" );
 			bool sign = true;
 
 			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );

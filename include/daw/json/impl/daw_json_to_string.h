@@ -236,7 +236,9 @@ namespace daw::json::impl {
 			}
 		} else {
 			for( auto c : container ) {
-				json_assert( ( c >= 0x20 and c <= 0x7F ) or c == '"',
+				json_assert( ( static_cast<unsigned>( c ) >= 0x20U and
+				               static_cast<unsigned>( c ) <= 0x7FU ) or
+				               c == '"',
 				             "Use json_string" );
 				*it++ = c;
 			}

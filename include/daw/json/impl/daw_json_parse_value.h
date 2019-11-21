@@ -317,8 +317,12 @@ namespace daw::json::impl {
 					app( rng.front( ) );
 					rng.remove_prefix( );
 					break;
+				case '"':
+					app( rng.front( ) );
+					rng.remove_prefix( );
+					break;
 				default:
-					json_assert_untrusted( false, "Unexpected escape sequence" );
+					// TODO add ability to filter lower 7bitsjson_assert_untrusted( false, "Unexpected escape sequence" );
 					app( rng.front( ) );
 					rng.remove_prefix( );
 				}

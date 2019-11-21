@@ -40,7 +40,7 @@ namespace daw::cookbook_class1 {
 #if defined( __cpp_nontype_template_parameter_class )
 	auto describe_json_class( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_string_raw<"member0">,
+		return class_description_t<json_string<"member0">,
 		                           json_number<"member1", int>,
 		                           json_bool<"member2">>{};
 	}
@@ -52,7 +52,7 @@ namespace daw::cookbook_class1 {
 	} // namespace symbols_MyClass1
 	auto describe_json_class( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_string_raw<symbols_MyClass1::member0>,
+		return class_description_t<json_string<symbols_MyClass1::member0>,
 		                           json_number<symbols_MyClass1::member1, int>,
 		                           json_bool<symbols_MyClass1::member2>>{};
 	}

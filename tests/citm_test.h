@@ -219,7 +219,8 @@ auto describe_json_class( performances_element_t ) {
 	             std::vector<seatCategories_element_t>,
 	             json_class<no_name, seatCategories_element_t>>,
 	  json_number<symbols_performances_element_t::start, int64_t>,
-	  json_string_raw<symbols_performances_element_t::venueCode, std::string_view>>{};
+	  json_string_raw<symbols_performances_element_t::venueCode,
+	                  std::string_view>>{};
 }
 #endif
 
