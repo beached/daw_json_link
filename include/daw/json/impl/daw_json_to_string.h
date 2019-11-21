@@ -27,6 +27,7 @@
 #include <type_traits>
 
 #include <daw/daw_traits.h>
+#include <utf8/unchecked.h>
 
 #include "daw_json_parse_common.h"
 
@@ -115,6 +116,11 @@ namespace daw::json::impl {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] static constexpr OutputIterator
+	to_string( ParseTag<JsonParseTypes::StringEscaped>, OutputIterator it,
+	           parse_to_t const &value );
+
+	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
+	[[nodiscard]] static constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Date>, OutputIterator it,
 	           parse_to_t const &value );
 
@@ -124,27 +130,180 @@ namespace daw::json::impl {
 	           parse_to_t const &value );
 
 	//************************************************
-	template<typename Container, typename OutputIterator,
+	template<typename Char>
+	constexpr char to_nibble_char( Char c ) noexcept {
+		json_assert( c < 16, "Unexpected hex nibble" );
+		if( c < 10 ) {
+			return static_cast<char>( c + '0' );
+		} else {
+			return static_cast<char>( ( c - 10U ) + 'A' );
+		}
+	}
+
+	template<typename OutputIterator>
+	constexpr OutputIterator output_hex( uint16_t c, OutputIterator it ) {
+		char const n0 = to_nibble_char( ( c >> 12U ) & 0xFU );
+		char const n1 = to_nibble_char( ( c >> 8U ) & 0xFU );
+		char const n2 = to_nibble_char( ( c >> 4U ) & 0xFU );
+		char const n3 = to_nibble_char( c & 0xFU );
+
+		*it++ = '\\';
+		*it++ = 'u';
+		*it++ = n0;
+		*it++ = n1;
+		*it++ = n2;
+		*it++ = n3;
+		return it;
+	}
+
+	template<typename IteratorF, typename IteratorL>
+	struct rng_t {
+		IteratorF first;
+		IteratorL last;
+
+		constexpr decltype( auto ) begin( ) const {
+			return first;
+		}
+
+		constexpr decltype( auto ) begin( ) {
+			return first;
+		}
+
+		constexpr decltype( auto ) end( ) const {
+			return last;
+		}
+
+		constexpr decltype( auto ) end( ) {
+			return last;
+		}
+	};
+	template<typename IteratorF, typename IteratorL>
+	rng_t( IteratorF, IteratorL )->rng_t<IteratorF, IteratorL>;
+
+	template<bool do_escape = false, typename Container, typename OutputIterator,
 	         daw::enable_when_t<daw::traits::is_container_like_v<
 	           daw::remove_cvref_t<Container>>> = nullptr>
 	[[nodiscard]] static constexpr OutputIterator
-	copy_to_iterator( Container const &c, OutputIterator it ) {
-		for( auto const &value : c ) {
-			*it++ = value;
+	copy_to_iterator( Container const &container, OutputIterator it ) {
+		if constexpr( do_escape ) {
+			using iter = daw::remove_cvref_t<decltype( std::begin( container ) )>;
+			auto rng =
+			  rng_t{utf8::unchecked::iterator<iter>( std::begin( container ) ),
+			        utf8::unchecked::iterator<iter>( std::end( container ) )};
+			for( auto cp : rng ) {
+				switch( cp ) {
+				case '"':
+					*it++ = '\\';
+					*it++ = '"';
+					break;
+				case '\\':
+					*it++ = '\\';
+					*it++ = '\\';
+					break;
+				case '/':
+					*it++ = '\\';
+					*it++ = '/';
+					break;
+				case '\b':
+					*it++ = '\\';
+					*it++ = 'b';
+					break;
+				case '\f':
+					*it++ = '\\';
+					*it++ = 'f';
+					break;
+				case '\n':
+					*it++ = '\\';
+					*it++ = 'r';
+					break;
+				case '\t':
+					*it++ = '\\';
+					*it++ = 't';
+					break;
+				default:
+					if( cp < 0x20U or ( cp >= 0x7FU and cp <= 0xFFFFU ) ) {
+						it = output_hex( static_cast<uint16_t>( cp ), it );
+					} else if( cp > 0xFFFFU ) {
+						it = output_hex( static_cast<uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
+						                 it );
+						it = output_hex( static_cast<uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ),
+						                 it );
+					} else {
+						*it++ = static_cast<char>( cp );
+					}
+					break;
+				}
+			}
+		} else {
+			for( auto c : container ) {
+				json_assert( ( static_cast<unsigned>( c ) >= 0x20U and
+				               static_cast<unsigned>( c ) <= 0x7FU ) or
+				               c == '"',
+				             "Use json_string" );
+				*it++ = c;
+			}
 		}
 		return it;
 	}
 
-	template<typename OutputIterator>
+	template<bool do_escape = false, typename OutputIterator>
 	[[nodiscard]] static constexpr OutputIterator
 	copy_to_iterator( char const *ptr, OutputIterator it ) {
 		if( ptr == nullptr ) {
 			return it;
 		}
-		while( *ptr != '\0' ) {
-			*it = *ptr;
-			++it;
-			++ptr;
+		if constexpr( do_escape ) {
+			auto chr_it = utf8::unchecked::iterator<char const *>( ptr );
+			while( *chr_it.base( ) != '\0' ) {
+				auto const cp = *chr_it++;
+				switch( cp ) {
+				case '"':
+					*it++ = '\\';
+					*it++ = '"';
+					break;
+				case '\\':
+					*it++ = '\\';
+					*it++ = '\\';
+					break;
+				case '/':
+					*it++ = '\\';
+					*it++ = '/';
+					break;
+				case '\b':
+					*it++ = '\\';
+					*it++ = 'b';
+					break;
+				case '\f':
+					*it++ = '\\';
+					*it++ = 'f';
+					break;
+				case '\n':
+					*it++ = '\\';
+					*it++ = 'r';
+					break;
+				case '\t':
+					*it++ = '\\';
+					*it++ = 't';
+					break;
+				default:
+					if( cp < 0x20U or ( cp >= 0x7FU and cp <= 0xFFFFU ) ) {
+						it = output_hex( static_cast<uint16_t>( cp ), it );
+					} else if( cp > 0xFFFFU ) {
+						it = output_hex( static_cast<uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
+						                 it );
+						it = output_hex( static_cast<uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ),
+						                 it );
+					} else {
+						*it++ = static_cast<char>( cp );
+					}
+				}
+			}
+		} else {
+			while( *ptr != '\0' ) {
+				json_assert( ( *ptr >= 0x20 and *ptr <= 0x7F ) or *ptr == '"',
+				             "Use json_string" );
+				*it++ = *ptr++;
+			}
 		}
 		return it;
 	}
@@ -244,6 +403,21 @@ namespace daw::json::impl {
 
 		*it++ = '"';
 		it = copy_to_iterator( value, it );
+		*it++ = '"';
+		return it;
+	}
+
+	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
+	[[nodiscard]] static constexpr OutputIterator
+	to_string( ParseTag<JsonParseTypes::StringEscaped>, OutputIterator it,
+	           parse_to_t const &value ) {
+
+		static_assert(
+		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+		  "value must be convertible to specified type in class contract" );
+
+		*it++ = '"';
+		it = copy_to_iterator<true>( value, it );
 		*it++ = '"';
 		return it;
 	}

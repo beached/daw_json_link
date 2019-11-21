@@ -173,26 +173,55 @@ namespace daw::json {
 	};
 
 	/**
-	 *
+	 * The member is a raw string.  Use json_string_escaped if escaping/unescaping
+	 * is needed
 	 * @tparam Name of json member
-	 * @tparam T result type constructed by Constructor
+	 * @tparam String result type constructed by Constructor
 	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
 	 */
-	template<JSONNAMETYPE Name, typename T = std::string,
-	         typename Constructor = daw::construct_a_t<T>,
+	template<JSONNAMETYPE Name, typename String = std::string,
+	         typename Constructor = daw::construct_a_t<String>,
 	         bool EmptyStringNull = false>
-	struct json_string {
+	struct json_string_raw {
 		static_assert(
 		  std::is_invocable_v<Constructor, char const *, size_t>,
 		  "Constructor must be callable with a char const * and a size_t" );
 
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
+		using parse_to_t = String;
 		using constructor_t = Constructor;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::String;
+		static constexpr bool empty_is_null = EmptyStringNull;
+	};
+
+	/**
+	 * Member is an escaped string and requires unescaping and escaping of string
+	 * data
+	 * @tparam Name of json member
+	 * @tparam String result type constructed by Constructor
+	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
+	 * @tparam Appender Allows appending characters to the output object
+	 * @tparam EmptyStringNull if string is empty, call Constructor with no
+	 * arguments
+	 */
+	template<JSONNAMETYPE Name, typename String = std::string,
+	         typename Constructor = daw::construct_a_t<String>,
+	         typename Appender = impl::basic_appender<String>,
+	         bool EmptyStringNull = false>
+	struct json_string {
+		static_assert( std::is_invocable_v<Constructor>,
+		               "Constructor must be default constructable" );
+
+		using i_am_a_json_type = void;
+		using parse_to_t = String;
+		using constructor_t = Constructor;
+		using appender_t = Appender;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
+		  JsonParseTypes::StringEscaped;
 		static constexpr bool empty_is_null = EmptyStringNull;
 	};
 
@@ -290,7 +319,7 @@ namespace daw::json {
 	 *  Appender A callable used to add elements to container.
 	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
-	         typename JsonKeyType = json_string<no_name>,
+	         typename JsonKeyType = json_string_raw<no_name>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_kv_appender<Container>>
 	struct json_key_value {

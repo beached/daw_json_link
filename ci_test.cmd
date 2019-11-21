@@ -1,4 +1,5 @@
 
+rename glean.cmake.renamewin glean.cmake
 md build
 cd build
 pwd

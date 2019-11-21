@@ -6,7 +6,7 @@ if (MSVC)
 else ()
     message("Clang detected")
     if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
-        add_compile_options(-march=native -ffast-math -ftemplate-backtrace-limit=0 -Wall -Wextra -pedantic -Weverything -Wno-c++98-compat -Wno-covered-switch-default -Wnull-dereference -Wno-padded -Wno-exit-time-destructors -Wno-c++98-compat-pedantic -Wno-unused-parameter -Wno-missing-noreturn -Wno-missing-prototypes -Wno-disabled-macro-expansion -Wno-missing-braces -Wno-unneeded-internal-declaration -Wunreachable-code)
+        add_compile_options(-march=native -ffast-math -ftemplate-backtrace-limit=0 -Wall -Wextra -pedantic -Weverything -Wno-c++98-compat -Wno-covered-switch-default -Wnull-dereference -Wno-padded -Wno-exit-time-destructors -Wno-c++98-compat-pedantic -Wno-unused-parameter -Wno-missing-noreturn -Wno-missing-prototypes -Wno-disabled-macro-expansion -Wno-missing-braces -Wno-unneeded-internal-declaration -Wunreachable-code -Wno-tautological-type-limit-compare)
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG")
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG")
 

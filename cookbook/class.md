@@ -22,7 +22,7 @@ struct MyClass1 {
 auto describe_json_class( MyClass1 const & ) {
     using namespace daw::json;
     return class_description_t<
-			json_string<"member0">, 
+			json_string_raw<"member0">, 
 			json_number<"member1", int>,
 			json_bool<"member2">>{};
 }

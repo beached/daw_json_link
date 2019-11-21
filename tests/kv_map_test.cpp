@@ -52,7 +52,7 @@ auto describe_json_class( kv_t ) noexcept {
 }
 
 struct kv2_t {
-	daw::bounded_hash_map<daw::string_view, int, 5> kv{};
+	daw::bounded_hash_map<std::string, int, 5> kv{};
 };
 
 namespace symbols_kv2_t {
@@ -61,13 +61,13 @@ namespace symbols_kv2_t {
 auto describe_json_class( kv2_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-	return class_description_t<json_key_value<
-	  "kv", daw::bounded_hash_map<daw::string_view, int, 5>,
-	  json_number<no_name, int>, json_string<no_name, daw::string_view>>>{};
+	return class_description_t<
+	  json_key_value<"kv", daw::bounded_hash_map<std::string, int, 5>,
+	                 json_number<no_name, int>, json_string<no_name>>>{};
 #else
 	return class_description_t<json_key_value<
-	  symbols_kv2_t::kv, daw::bounded_hash_map<daw::string_view, int, 5>,
-	  json_number<no_name, int>, json_string<no_name, daw::string_view>>>{};
+	  symbols_kv2_t::kv, daw::bounded_hash_map<std::string, int, 5>,
+	  json_number<no_name, int>, json_string<no_name>>>{};
 #endif
 }
 
@@ -83,9 +83,9 @@ int main( int, char ** ) {
 	auto kv_test = from_json<kv_t>( json_data3 );
 	daw::do_not_optimize( kv_test );
 
-	constexpr auto const kv2_test = from_json<kv2_t>( json_data3 );
-	static_assert( kv2_test.kv.size( ) == 3 );
-	static_assert( kv2_test.kv["key0"] == 0 );
-	static_assert( kv2_test.kv["key1"] == 1 );
-	static_assert( kv2_test.kv["key2"] == 2 );
+	auto const kv2_test = from_json<kv2_t>( json_data3 );
+	daw::json::json_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
+	daw::json::json_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
+	daw::json::json_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
+	daw::json::json_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
 }
