@@ -235,7 +235,11 @@ namespace daw::json::impl {
 				}
 			}
 		} else {
-			std::copy( std::begin( container ), std::end( container ), it );
+			for( auto c : container ) {
+				json_assert( ( c >= 0x20U and c <= 0x7FU ) or c == '"',
+				             "Use json_string_escaped" );
+				*it++ = c;
+			}
 		}
 		return it;
 	}
@@ -294,6 +298,8 @@ namespace daw::json::impl {
 			}
 		} else {
 			while( *ptr != '\0' ) {
+				json_assert( ( *ptr >= 0x20 and *ptr <= 0x7F ) or *ptr == '"',
+				             "Use json_string_escaped" );
 				*it++ = *ptr++;
 			}
 		}

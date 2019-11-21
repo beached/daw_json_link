@@ -178,6 +178,160 @@ namespace daw::json::impl {
 		return constructor_t{}( str.begin( ), str.size( ) );
 	}
 
+	template<bool TrustedInput>
+	constexpr unsigned to_nibble( unsigned chr ) {
+		if( auto tmp = chr - static_cast<unsigned>( '0' ); tmp < 10U ) {
+			return tmp;
+		}
+		if( auto tmp = chr - static_cast<unsigned>( 'a' ); tmp < 6U ) {
+			return tmp + 10U;
+		}
+		auto tmp = chr - static_cast<unsigned>( 'A' );
+		json_assert_untrusted( tmp < 6U, "Expected nibble" );
+		return tmp + 10U;
+	}
+
+	template<typename First, typename Last, bool TrustedInput>
+	constexpr uint16_t
+	byte_from_nibbles( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
+		auto n0 = to_nibble<TrustedInput>( static_cast<unsigned>( rng.front( ) ) );
+		rng.remove_prefix( );
+		auto n1 = to_nibble<TrustedInput>( static_cast<unsigned>( rng.front( ) ) );
+		rng.remove_prefix( );
+		return static_cast<uint16_t>( ( n0 << 4U ) | n1 );
+	}
+
+	template<typename First, typename Last, bool TrustedInput, typename Appender>
+	constexpr void decode_utf16( IteratorRange<First, Last, TrustedInput> &rng,
+	                             Appender &app ) {
+		json_assert_untrusted( rng.front( ) == 'u',
+		                       "Expected rng to start with a u" );
+		rng.remove_prefix( );
+		uint32_t cp = static_cast<uint32_t>( byte_from_nibbles( rng ) ) << 8U;
+		cp |= static_cast<uint32_t>( byte_from_nibbles( rng ) );
+		if( cp <= 0x7FU ) {
+			app( static_cast<char>( cp ) );
+			return;
+		}
+		if( cp >= 0xD800U ) {
+			cp = static_cast<uint32_t>( ( cp - 0xD800U ) * 0x400U );
+			json_assert_untrusted( rng.front( ) == '\\',
+			                       "Expected rng to start with a \\u" );
+			rng.remove_prefix( );
+			json_assert_untrusted( rng.front( ) == 'u',
+			                       "Expected rng to start with a \\u" );
+			rng.remove_prefix( );
+			auto trailing = static_cast<uint32_t>( byte_from_nibbles( rng ) ) << 8U;
+			trailing |= static_cast<uint32_t>( byte_from_nibbles( rng ) );
+			trailing = static_cast<uint32_t>( trailing - 0xDC00U );
+			cp += trailing;
+			cp += 0x10000;
+		}
+		// UTF32-> UTF8
+		if( cp >= 0x10000U ) {
+			// 4 bytes
+			char const enc3 =
+			  static_cast<char>( ( cp & 0b0011'1111U ) | 0b1000'0000U );
+			char const enc2 =
+			  static_cast<char>( ( ( cp >> 6U ) & 0b0011'1111U ) | 0b1000'0000U );
+			char const enc1 =
+			  static_cast<char>( ( ( cp >> 12U ) & 0b0011'1111U ) | 0b1000'0000U );
+			char const enc0 = static_cast<char>( ( cp >> 18U ) | 0b1111'0000U );
+			app( enc0 );
+			app( enc1 );
+			app( enc2 );
+			app( enc3 );
+			return;
+		}
+		if( cp >= 0x800U ) {
+			// 3 bytes
+			char const enc2 =
+			  static_cast<char>( ( cp & 0b0011'1111U ) | 0b1000'0000U );
+			char const enc1 =
+			  static_cast<char>( ( ( cp >> 6U ) & 0b0011'1111U ) | 0b1000'0000U );
+			char const enc0 = static_cast<char>( ( cp >> 12U ) | 0b1110'0000U );
+			app( enc0 );
+			app( enc1 );
+			app( enc2 );
+			return;
+		}
+		// cp >= 0x80U
+		// 2 bytes
+		char const enc1 = static_cast<char>( ( cp & 0b0011'1111U ) | 0b1000'0000U );
+		char const enc0 = static_cast<char>( ( cp >> 6U ) | 0b1100'0000U );
+		app( enc0 );
+		app( enc1 );
+	}
+
+	template<typename JsonMember, typename First, typename Last,
+	         bool TrustedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::StringEscaped>,
+	             IteratorRange<First, Last, TrustedInput> &rng ) {
+
+		// TODO: make escape aware skip_string
+		using constructor_t = typename JsonMember::constructor_t;
+		using appender_t = typename JsonMember::appender_t;
+
+		auto result = constructor_t{}( );
+		auto app = appender_t{result};
+		if( rng.front( '"' ) ) {
+			rng.remove_prefix( );
+		}
+		while( rng.front( ) != '"' ) {
+			while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
+				app( rng.front( ) );
+				rng.remove_prefix( );
+			}
+			if( rng.front( ) == '\\' ) {
+				rng.remove_prefix( );
+				switch( rng.front( ) ) {
+				case 'b':
+					app( '\b' );
+					rng.remove_prefix( );
+					break;
+				case 'f':
+					app( '\f' );
+					rng.remove_prefix( );
+					break;
+				case 'n':
+					app( '\n' );
+					rng.remove_prefix( );
+					break;
+				case 'r':
+					app( '\r' );
+					rng.remove_prefix( );
+					break;
+				case 't':
+					app( '\t' );
+					rng.remove_prefix( );
+					break;
+				case 'u':
+					decode_utf16( rng, app );
+					break;
+				case '\\':
+					app( rng.front( ) );
+					rng.remove_prefix( );
+					break;
+				case '/':
+					app( rng.front( ) );
+					rng.remove_prefix( );
+					break;
+				default:
+					json_assert_untrusted( false, "Unexpected escape sequence" );
+					app( rng.front( ) );
+					rng.remove_prefix( );
+				}
+			} else {
+				json_assert_untrusted( rng.front( ) == '"',
+				                       "Unexpected end of string" );
+			}
+		}
+		json_assert_untrusted( rng.front( ) == '"', "Unexpected state, no \"" );
+		rng.remove_prefix( );
+		return result;
+	}
+
 	template<typename JsonMember, typename First, typename Last,
 	         bool TrustedInput>
 	[[nodiscard]] static constexpr json_result<JsonMember>

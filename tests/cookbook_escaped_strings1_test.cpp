@@ -68,29 +68,23 @@ int main( int argc, char **argv ) {
 		puts( "Must supply path to cookbook_escaped_strings1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto wd = daw::cookbook_escaped_strings1::WebData{
+	auto const expected_wd = daw::cookbook_escaped_strings1::WebData{
 	  {"example.com", "Bücher.ch", "happy.cn", "happy快乐.cn", "快乐.cn",
 	   "happy.中国", "快乐.中国", "www.ハンドボールサムズ.com", "🦄.com"}};
 
-	auto wd_str = daw::json::to_json( wd );
-	puts( wd_str.c_str( ) );
-	/*
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
 	auto const cls =
 	  daw::json::from_json<daw::cookbook_escaped_strings1::WebData>(
 	    std::string_view( data.data( ), data.size( ) ) );
 
-	daw::json::json_assert( cls.member_0 == "this is a test",
-	                        "Unexpected value" );
-	daw::json::json_assert( cls.member_1 == 314159, "Unexpected value" );
-	daw::json::json_assert( cls.member_2 == true, "Unexpected value" );
+	daw::json::json_assert( cls == expected_wd, "Unexpected value" );
 	auto const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
-	auto const cls2 = daw::json::from_json<daw::cookbook_class1::MyClass1>(
-	  std::string_view( str.data( ), str.size( ) ) );
+	auto const cls2 =
+	  daw::json::from_json<daw::cookbook_escaped_strings1::WebData>(
+	    std::string_view( str.data( ), str.size( ) ) );
 
 	daw::json::json_assert( cls == cls2, "Unexpected round trip error" );
-	 */
 }

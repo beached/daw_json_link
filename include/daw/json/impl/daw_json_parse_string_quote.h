@@ -29,6 +29,8 @@ namespace daw::json::impl::string_quote {
 		[[nodiscard]] static constexpr char const *
 		parse_nq( char const *ptr ) noexcept {
 			while( *ptr != '"' ) {
+				json_assert( *ptr >= 0x20 and *ptr <= 0x7F,
+				             "Use json_string_escaped" );
 				while( *ptr != '"' and *ptr != '\\' ) {
 					++ptr;
 				}
