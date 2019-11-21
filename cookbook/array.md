@@ -50,7 +50,7 @@ struct MyClass4 {
 auto describe_json_class( MyClass4 const & ) {
     using namespace daw::json;
     return class_description_t<
-			json_string<"a">,
+			json_string_raw<"a">,
             json_number<"b", unsigned>,
             json_number<"c", float>,
             json_bool<"d">>{};

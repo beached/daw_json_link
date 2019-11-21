@@ -41,7 +41,7 @@ struct WebData {
 auto describe_json_class( WebData const & ) {
     using namespace daw::json;
     return class_description_t<
-			json_array<"uris", json_string_escaped<no_name>>>{};
+			json_array<"uris", json_string<no_name>>>{};
 }
 
 auto to_json_data( WebData const & value ) {

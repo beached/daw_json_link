@@ -18,8 +18,8 @@ struct metadata_t {
 static inline auto describe_json_class( metadata_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<"result_type", std::string_view>,
-	  json_string<"iso_language_code", std::string_view>>{};
+	  json_string_raw<"result_type", std::string_view>,
+	  json_string_raw<"iso_language_code", std::string_view>>{};
 }
 #else
 namespace symbols_metadata_t {
@@ -30,8 +30,8 @@ namespace symbols_metadata_t {
 static inline auto describe_json_class( metadata_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<symbols_metadata_t::result_type, std::string_view>,
-	  json_string<symbols_metadata_t::iso_language_code, std::string_view>>{};
+	  json_string_raw<symbols_metadata_t::result_type, std::string_view>,
+	  json_string_raw<symbols_metadata_t::iso_language_code, std::string_view>>{};
 }
 #endif
 
@@ -50,9 +50,9 @@ struct urls_element_t {
 static inline auto describe_json_class( urls_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<"url", std::string_view>,
-	  json_string<"expanded_url", std::string_view>,
-	  json_string<"display_url", std::string_view>,
+	  json_string_raw<"url", std::string_view>,
+	  json_string_raw<"expanded_url", std::string_view>,
+	  json_string_raw<"display_url", std::string_view>,
 	  json_array<"indices", std::vector<int64_t>,
 	             json_number<no_name, int64_t>>>{};
 }
@@ -66,9 +66,9 @@ namespace symbols_urls_element_t {
 static inline auto describe_json_class( urls_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<symbols_urls_element_t::url, std::string_view>,
-	  json_string<symbols_urls_element_t::expanded_url, std::string_view>,
-	  json_string<symbols_urls_element_t::display_url, std::string_view>,
+	  json_string_raw<symbols_urls_element_t::url, std::string_view>,
+	  json_string_raw<symbols_urls_element_t::expanded_url, std::string_view>,
+	  json_string_raw<symbols_urls_element_t::display_url, std::string_view>,
 	  json_array<symbols_urls_element_t::indices, std::vector<int64_t>,
 	             json_number<no_name, int64_t>>>{};
 }
@@ -210,34 +210,34 @@ struct user_t {
 static inline auto describe_json_class( user_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_number<"id", int64_t>, json_string<"id_str", std::string_view>,
-	  json_string<"name", std::string_view>,
-	  json_string<"screen_name", std::string_view>,
-	  json_string<"location", std::string_view>,
-	  json_string<"description", std::string_view>,
-	  json_nullable<json_string<"url", std::string_view>>,
+	  json_number<"id", int64_t>, json_string_raw<"id_str", std::string_view>,
+	  json_string_raw<"name", std::string_view>,
+	  json_string_raw<"screen_name", std::string_view>,
+	  json_string_raw<"location", std::string_view>,
+	  json_string_raw<"description", std::string_view>,
+	  json_nullable<json_string_raw<"url", std::string_view>>,
 	  json_class<"entities", entities_t>, json_bool<"protected">,
 	  json_number<"followers_count", int64_t>,
 	  json_number<"friends_count", int64_t>, json_number<"listed_count", int64_t>,
-	  json_string<"created_at", std::string_view>,
+	  json_string_raw<"created_at", std::string_view>,
 	  json_number<"favourites_count", int64_t>,
 	  json_nullable<json_number<"utc_offset", int64_t>>,
-	  json_nullable<json_string<"time_zone", std::string_view>>,
+	  json_nullable<json_string_raw<"time_zone", std::string_view>>,
 	  json_bool<"geo_enabled">, json_bool<"verified">,
 	  json_number<"statuses_count", int64_t>,
-	  json_string<"lang", std::string_view>, json_bool<"contributors_enabled">,
+	  json_string_raw<"lang", std::string_view>, json_bool<"contributors_enabled">,
 	  json_bool<"is_translator">, json_bool<"is_translation_enabled">,
-	  json_string<"profile_background_color", std::string_view>,
-	  json_string<"profile_background_image_url", std::string_view>,
-	  json_string<"profile_background_image_url_https", std::string_view>,
+	  json_string_raw<"profile_background_color", std::string_view>,
+	  json_string_raw<"profile_background_image_url", std::string_view>,
+	  json_string_raw<"profile_background_image_url_https", std::string_view>,
 	  json_bool<"profile_background_tile">,
-	  json_string<"profile_image_url", std::string_view>,
-	  json_string<"profile_image_url_https", std::string_view>,
-	  json_nullable<json_string<"profile_banner_url", std::string_view>>,
-	  json_string<"profile_link_color", std::string_view>,
-	  json_string<"profile_sidebar_border_color", std::string_view>,
-	  json_string<"profile_sidebar_fill_color", std::string_view>,
-	  json_string<"profile_text_color", std::string_view>,
+	  json_string_raw<"profile_image_url", std::string_view>,
+	  json_string_raw<"profile_image_url_https", std::string_view>,
+	  json_nullable<json_string_raw<"profile_banner_url", std::string_view>>,
+	  json_string_raw<"profile_link_color", std::string_view>,
+	  json_string_raw<"profile_sidebar_border_color", std::string_view>,
+	  json_string_raw<"profile_sidebar_fill_color", std::string_view>,
+	  json_string_raw<"profile_text_color", std::string_view>,
 	  json_bool<"profile_use_background_image">, json_bool<"default_profile">,
 	  json_bool<"default_profile_image">, json_bool<"following">,
 	  json_bool<"follow_request_sent">, json_bool<"notifications">>{};
@@ -305,40 +305,40 @@ static inline auto describe_json_class( user_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_number<symbols_user_t::id, int64_t>,
-	  json_string<symbols_user_t::id_str, std::string_view>,
-	  json_string<symbols_user_t::name, std::string_view>,
-	  json_string<symbols_user_t::screen_name, std::string_view>,
-	  json_string<symbols_user_t::location, std::string_view>,
-	  json_string<symbols_user_t::description, std::string_view>,
-	  json_nullable<json_string<symbols_user_t::url, std::string_view>>,
+	  json_string_raw<symbols_user_t::id_str, std::string_view>,
+	  json_string_raw<symbols_user_t::name, std::string_view>,
+	  json_string_raw<symbols_user_t::screen_name, std::string_view>,
+	  json_string_raw<symbols_user_t::location, std::string_view>,
+	  json_string_raw<symbols_user_t::description, std::string_view>,
+	  json_nullable<json_string_raw<symbols_user_t::url, std::string_view>>,
 	  json_class<symbols_user_t::entities, entities_t>,
 	  json_bool<symbols_user_t::_jsonprotected>,
 	  json_number<symbols_user_t::followers_count, int64_t>,
 	  json_number<symbols_user_t::friends_count, int64_t>,
 	  json_number<symbols_user_t::listed_count, int64_t>,
-	  json_string<symbols_user_t::created_at, std::string_view>,
+	  json_string_raw<symbols_user_t::created_at, std::string_view>,
 	  json_number<symbols_user_t::favourites_count, int64_t>,
 	  json_nullable<json_number<symbols_user_t::utc_offset, int64_t>>,
-	  json_nullable<json_string<symbols_user_t::time_zone, std::string_view>>,
+	  json_nullable<json_string_raw<symbols_user_t::time_zone, std::string_view>>,
 	  json_bool<symbols_user_t::geo_enabled>, json_bool<symbols_user_t::verified>,
 	  json_number<symbols_user_t::statuses_count, int64_t>,
-	  json_string<symbols_user_t::lang, std::string_view>,
+	  json_string_raw<symbols_user_t::lang, std::string_view>,
 	  json_bool<symbols_user_t::contributors_enabled>,
 	  json_bool<symbols_user_t::is_translator>,
 	  json_bool<symbols_user_t::is_translation_enabled>,
-	  json_string<symbols_user_t::profile_background_color, std::string_view>,
-	  json_string<symbols_user_t::profile_background_image_url, std::string_view>,
-	  json_string<symbols_user_t::profile_background_image_url_https,
+	  json_string_raw<symbols_user_t::profile_background_color, std::string_view>,
+	  json_string_raw<symbols_user_t::profile_background_image_url, std::string_view>,
+	  json_string_raw<symbols_user_t::profile_background_image_url_https,
 	              std::string_view>,
 	  json_bool<symbols_user_t::profile_background_tile>,
-	  json_string<symbols_user_t::profile_image_url, std::string_view>,
-	  json_string<symbols_user_t::profile_image_url_https, std::string_view>,
+	  json_string_raw<symbols_user_t::profile_image_url, std::string_view>,
+	  json_string_raw<symbols_user_t::profile_image_url_https, std::string_view>,
 	  json_nullable<
-	    json_string<symbols_user_t::profile_banner_url, std::string_view>>,
-	  json_string<symbols_user_t::profile_link_color, std::string_view>,
-	  json_string<symbols_user_t::profile_sidebar_border_color, std::string_view>,
-	  json_string<symbols_user_t::profile_sidebar_fill_color, std::string_view>,
-	  json_string<symbols_user_t::profile_text_color, std::string_view>,
+	    json_string_raw<symbols_user_t::profile_banner_url, std::string_view>>,
+	  json_string_raw<symbols_user_t::profile_link_color, std::string_view>,
+	  json_string_raw<symbols_user_t::profile_sidebar_border_color, std::string_view>,
+	  json_string_raw<symbols_user_t::profile_sidebar_fill_color, std::string_view>,
+	  json_string_raw<symbols_user_t::profile_text_color, std::string_view>,
 	  json_bool<symbols_user_t::profile_use_background_image>,
 	  json_bool<symbols_user_t::default_profile>,
 	  json_bool<symbols_user_t::default_profile_image>,
@@ -376,7 +376,7 @@ struct hashtags_element_t {
 static inline auto describe_json_class( hashtags_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<"text", std::string_view>,
+	  json_string_raw<"text", std::string_view>,
 	  json_array<"indices", std::vector<int64_t>,
 	             json_number<no_name, int64_t>>>{};
 }
@@ -389,7 +389,7 @@ namespace symbols_hashtags_element_t {
 static inline auto describe_json_class( hashtags_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<symbols_hashtags_element_t::text, std::string_view>,
+	  json_string_raw<symbols_hashtags_element_t::text, std::string_view>,
 	  json_array<symbols_hashtags_element_t::indices, std::vector<int64_t>,
 	             json_number<no_name, int64_t>>>{};
 }
@@ -426,20 +426,20 @@ static inline auto describe_json_class( statuses_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_class<"metadata", metadata_t>,
-	  json_string<"created_at", std::string_view>, json_number<"id", int64_t>,
-	  json_string<"id_str", std::string_view>,
-	  json_string<"text", std::string_view>,
-	  json_string<"source", std::string_view>, json_bool<"truncated">,
+	  json_string_raw<"created_at", std::string_view>, json_number<"id", int64_t>,
+	  json_string_raw<"id_str", std::string_view>,
+	  json_string_raw<"text", std::string_view>,
+	  json_string_raw<"source", std::string_view>, json_bool<"truncated">,
 	  json_nullable<json_number<"in_reply_to_status_id", int64_t>>,
-	  json_nullable<json_string<"in_reply_to_status_id_str", std::string_view>>,
+	  json_nullable<json_string_raw<"in_reply_to_status_id_str", std::string_view>>,
 	  json_nullable<json_number<"in_reply_to_user_id", int64_t>>,
-	  json_nullable<json_string<"in_reply_to_user_id_str", std::string_view>>,
-	  json_nullable<json_string<"in_reply_to_screen_name", std::string_view>>,
+	  json_nullable<json_string_raw<"in_reply_to_user_id_str", std::string_view>>,
+	  json_nullable<json_string_raw<"in_reply_to_screen_name", std::string_view>>,
 	  json_class<"user", user_t>, json_number<"retweet_count", int64_t>,
 	  json_number<"favorite_count", int64_t>, json_class<"entities", entities_t>,
 	  json_bool<"favorited">, json_bool<"retweeted">,
 	  json_nullable<json_bool<"possibly_sensitive">>,
-	  json_string<"lang", std::string_view>>{};
+	  json_string_raw<"lang", std::string_view>>{};
 }
 #else
 namespace symbols_statuses_element_t {
@@ -475,21 +475,21 @@ static inline auto describe_json_class( statuses_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_class<symbols_statuses_element_t::metadata, metadata_t>,
-	  json_string<symbols_statuses_element_t::created_at, std::string_view>,
+	  json_string_raw<symbols_statuses_element_t::created_at, std::string_view>,
 	  json_number<symbols_statuses_element_t::id, int64_t>,
-	  json_string<symbols_statuses_element_t::id_str, std::string_view>,
-	  json_string<symbols_statuses_element_t::text, std::string_view>,
-	  json_string<symbols_statuses_element_t::source, std::string_view>,
+	  json_string_raw<symbols_statuses_element_t::id_str, std::string_view>,
+	  json_string_raw<symbols_statuses_element_t::text, std::string_view>,
+	  json_string_raw<symbols_statuses_element_t::source, std::string_view>,
 	  json_bool<symbols_statuses_element_t::truncated>,
 	  json_nullable<
 	    json_number<symbols_statuses_element_t::in_reply_to_status_id, int64_t>>,
-	  json_nullable<json_string<
+	  json_nullable<json_string_raw<
 	    symbols_statuses_element_t::in_reply_to_status_id_str, std::string_view>>,
 	  json_nullable<
 	    json_number<symbols_statuses_element_t::in_reply_to_user_id, int64_t>>,
-	  json_nullable<json_string<
+	  json_nullable<json_string_raw<
 	    symbols_statuses_element_t::in_reply_to_user_id_str, std::string_view>>,
-	  json_nullable<json_string<
+	  json_nullable<json_string_raw<
 	    symbols_statuses_element_t::in_reply_to_screen_name, std::string_view>>,
 	  json_class<symbols_statuses_element_t::user, user_t>,
 	  json_number<symbols_statuses_element_t::retweet_count, int64_t>,
@@ -498,7 +498,7 @@ static inline auto describe_json_class( statuses_element_t ) {
 	  json_bool<symbols_statuses_element_t::favorited>,
 	  json_bool<symbols_statuses_element_t::retweeted>,
 	  json_nullable<json_bool<symbols_statuses_element_t::possibly_sensitive>>,
-	  json_string<symbols_statuses_element_t::lang, std::string_view>>{};
+	  json_string_raw<symbols_statuses_element_t::lang, std::string_view>>{};
 }
 #endif
 static inline auto to_json_data( statuses_element_t const &value ) {
@@ -523,9 +523,9 @@ struct user_mentions_element_t {
 static inline auto describe_json_class( user_mentions_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<"screen_name", std::string_view>,
-	  json_string<"name", std::string_view>, json_number<"id", int64_t>,
-	  json_string<"id_str", std::string_view>,
+	  json_string_raw<"screen_name", std::string_view>,
+	  json_string_raw<"name", std::string_view>, json_number<"id", int64_t>,
+	  json_string_raw<"id_str", std::string_view>,
 	  json_array<"indices", std::vector<int64_t>,
 	             json_number<no_name, int64_t>>>{};
 }
@@ -541,10 +541,10 @@ namespace symbols_user_mentions_element_t {
 static inline auto describe_json_class( user_mentions_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<symbols_user_mentions_element_t::screen_name, std::string_view>,
-	  json_string<symbols_user_mentions_element_t::name, std::string_view>,
+	  json_string_raw<symbols_user_mentions_element_t::screen_name, std::string_view>,
+	  json_string_raw<symbols_user_mentions_element_t::name, std::string_view>,
 	  json_number<symbols_user_mentions_element_t::id, int64_t>,
-	  json_string<symbols_user_mentions_element_t::id_str, std::string_view>,
+	  json_string_raw<symbols_user_mentions_element_t::id_str, std::string_view>,
 	  json_array<symbols_user_mentions_element_t::indices, std::vector<int64_t>,
 	             json_number<no_name, int64_t>>>{};
 }
@@ -566,7 +566,7 @@ static inline auto describe_json_class( medium_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_number<"w", int64_t>, json_number<"h", int64_t>,
-	  json_string<"resize", std::string_view>>{};
+	  json_string_raw<"resize", std::string_view>>{};
 }
 #else
 namespace symbols_medium_t {
@@ -580,7 +580,7 @@ static inline auto describe_json_class( medium_t ) {
 	return daw::json::class_description_t<
 	  json_number<symbols_medium_t::w, int64_t>,
 	  json_number<symbols_medium_t::h, int64_t>,
-	  json_string<symbols_medium_t::resize, std::string_view>>{};
+	  json_string_raw<symbols_medium_t::resize, std::string_view>>{};
 }
 #endif
 
@@ -599,7 +599,7 @@ static inline auto describe_json_class( small_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_number<"w", int64_t>, json_number<"h", int64_t>,
-	  json_string<"resize", std::string_view>>{};
+	  json_string_raw<"resize", std::string_view>>{};
 }
 #else
 namespace symbols_small_t {
@@ -613,7 +613,7 @@ static inline auto describe_json_class( small_t ) {
 	return daw::json::class_description_t<
 	  json_number<symbols_small_t::w, int64_t>,
 	  json_number<symbols_small_t::h, int64_t>,
-	  json_string<symbols_small_t::resize, std::string_view>>{};
+	  json_string_raw<symbols_small_t::resize, std::string_view>>{};
 }
 #endif
 
@@ -632,7 +632,7 @@ static inline auto describe_json_class( thumb_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_number<"w", int64_t>, json_number<"h", int64_t>,
-	  json_string<"resize", std::string_view>>{};
+	  json_string_raw<"resize", std::string_view>>{};
 }
 #else
 namespace symbols_thumb_t {
@@ -646,7 +646,7 @@ static inline auto describe_json_class( thumb_t ) {
 	return daw::json::class_description_t<
 	  json_number<symbols_thumb_t::w, int64_t>,
 	  json_number<symbols_thumb_t::h, int64_t>,
-	  json_string<symbols_thumb_t::resize, std::string_view>>{};
+	  json_string_raw<symbols_thumb_t::resize, std::string_view>>{};
 }
 #endif
 
@@ -665,7 +665,7 @@ static inline auto describe_json_class( large_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_number<"w", int64_t>, json_number<"h", int64_t>,
-	  json_string<"resize", std::string_view>>{};
+	  json_string_raw<"resize", std::string_view>>{};
 }
 #else
 namespace symbols_large_t {
@@ -679,7 +679,7 @@ static inline auto describe_json_class( large_t ) {
 	return daw::json::class_description_t<
 	  json_number<symbols_large_t::w, int64_t>,
 	  json_number<symbols_large_t::h, int64_t>,
-	  json_string<symbols_large_t::resize, std::string_view>>{};
+	  json_string_raw<symbols_large_t::resize, std::string_view>>{};
 }
 #endif
 
@@ -741,14 +741,14 @@ struct media_element_t {
 static inline auto describe_json_class( media_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_number<"id", int64_t>, json_string<"id_str", std::string_view>,
+	  json_number<"id", int64_t>, json_string_raw<"id_str", std::string_view>,
 	  json_array<"indices", std::vector<int64_t>, json_number<no_name, int64_t>>,
-	  json_string<"media_url", std::string_view>,
-	  json_string<"media_url_https", std::string_view>,
-	  json_string<"url", std::string_view>,
-	  json_string<"display_url", std::string_view>,
-	  json_string<"expanded_url", std::string_view>,
-	  json_string<"type", std::string_view>, json_class<"sizes", sizes_t>>{};
+	  json_string_raw<"media_url", std::string_view>,
+	  json_string_raw<"media_url_https", std::string_view>,
+	  json_string_raw<"url", std::string_view>,
+	  json_string_raw<"display_url", std::string_view>,
+	  json_string_raw<"expanded_url", std::string_view>,
+	  json_string_raw<"type", std::string_view>, json_class<"sizes", sizes_t>>{};
 }
 #else
 namespace symbols_media_element_t {
@@ -768,15 +768,15 @@ static inline auto describe_json_class( media_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_number<symbols_media_element_t::id, int64_t>,
-	  json_string<symbols_media_element_t::id_str, std::string_view>,
+	  json_string_raw<symbols_media_element_t::id_str, std::string_view>,
 	  json_array<symbols_media_element_t::indices, std::vector<int64_t>,
 	             json_number<no_name, int64_t>>,
-	  json_string<symbols_media_element_t::media_url, std::string_view>,
-	  json_string<symbols_media_element_t::media_url_https, std::string_view>,
-	  json_string<symbols_media_element_t::url, std::string_view>,
-	  json_string<symbols_media_element_t::display_url, std::string_view>,
-	  json_string<symbols_media_element_t::expanded_url, std::string_view>,
-	  json_string<symbols_media_element_t::type, std::string_view>,
+	  json_string_raw<symbols_media_element_t::media_url, std::string_view>,
+	  json_string_raw<symbols_media_element_t::media_url_https, std::string_view>,
+	  json_string_raw<symbols_media_element_t::url, std::string_view>,
+	  json_string_raw<symbols_media_element_t::display_url, std::string_view>,
+	  json_string_raw<symbols_media_element_t::expanded_url, std::string_view>,
+	  json_string_raw<symbols_media_element_t::type, std::string_view>,
 	  json_class<symbols_media_element_t::sizes, sizes_t>>{};
 }
 #endif
@@ -816,20 +816,20 @@ static inline auto describe_json_class( retweeted_status_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_class<"metadata", metadata_t>,
-	  json_string<"created_at", std::string_view>, json_number<"id", int64_t>,
-	  json_string<"id_str", std::string_view>,
-	  json_string<"text", std::string_view>,
-	  json_string<"source", std::string_view>, json_bool<"truncated">,
+	  json_string_raw<"created_at", std::string_view>, json_number<"id", int64_t>,
+	  json_string_raw<"id_str", std::string_view>,
+	  json_string_raw<"text", std::string_view>,
+	  json_string_raw<"source", std::string_view>, json_bool<"truncated">,
 	  json_nullable<json_number<"in_reply_to_status_id", int64_t>>,
-	  json_nullable<json_string<"in_reply_to_status_id_str", std::string_view>>,
+	  json_nullable<json_string_raw<"in_reply_to_status_id_str", std::string_view>>,
 	  json_nullable<json_number<"in_reply_to_user_id", int64_t>>,
-	  json_nullable<json_string<"in_reply_to_user_id_str", std::string_view>>,
-	  json_nullable<json_string<"in_reply_to_screen_name", std::string_view>>,
+	  json_nullable<json_string_raw<"in_reply_to_user_id_str", std::string_view>>,
+	  json_nullable<json_string_raw<"in_reply_to_screen_name", std::string_view>>,
 	  json_class<"user", user_t>, json_number<"retweet_count", int64_t>,
 	  json_number<"favorite_count", int64_t>, json_class<"entities", entities_t>,
 	  json_bool<"favorited">, json_bool<"retweeted">,
 	  json_nullable<json_bool<"possibly_sensitive">>,
-	  json_string<"lang", std::string_view>>{};
+	  json_string_raw<"lang", std::string_view>>{};
 }
 #else
 namespace symbols_retweeted_status_t {
@@ -865,21 +865,21 @@ static inline auto describe_json_class( retweeted_status_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_class<symbols_retweeted_status_t::metadata, metadata_t>,
-	  json_string<symbols_retweeted_status_t::created_at, std::string_view>,
+	  json_string_raw<symbols_retweeted_status_t::created_at, std::string_view>,
 	  json_number<symbols_retweeted_status_t::id, int64_t>,
-	  json_string<symbols_retweeted_status_t::id_str, std::string_view>,
-	  json_string<symbols_retweeted_status_t::text, std::string_view>,
-	  json_string<symbols_retweeted_status_t::source, std::string_view>,
+	  json_string_raw<symbols_retweeted_status_t::id_str, std::string_view>,
+	  json_string_raw<symbols_retweeted_status_t::text, std::string_view>,
+	  json_string_raw<symbols_retweeted_status_t::source, std::string_view>,
 	  json_bool<symbols_retweeted_status_t::truncated>,
 	  json_nullable<
 	    json_number<symbols_retweeted_status_t::in_reply_to_status_id, int64_t>>,
-	  json_nullable<json_string<
+	  json_nullable<json_string_raw<
 	    symbols_retweeted_status_t::in_reply_to_status_id_str, std::string_view>>,
 	  json_nullable<
 	    json_number<symbols_retweeted_status_t::in_reply_to_user_id, int64_t>>,
-	  json_nullable<json_string<
+	  json_nullable<json_string_raw<
 	    symbols_retweeted_status_t::in_reply_to_user_id_str, std::string_view>>,
-	  json_nullable<json_string<
+	  json_nullable<json_string_raw<
 	    symbols_retweeted_status_t::in_reply_to_screen_name, std::string_view>>,
 	  json_class<symbols_retweeted_status_t::user, user_t>,
 	  json_number<symbols_retweeted_status_t::retweet_count, int64_t>,
@@ -888,7 +888,7 @@ static inline auto describe_json_class( retweeted_status_t ) {
 	  json_bool<symbols_retweeted_status_t::favorited>,
 	  json_bool<symbols_retweeted_status_t::retweeted>,
 	  json_nullable<json_bool<symbols_retweeted_status_t::possibly_sensitive>>,
-	  json_string<symbols_retweeted_status_t::lang, std::string_view>>{};
+	  json_string_raw<symbols_retweeted_status_t::lang, std::string_view>>{};
 }
 #endif
 
@@ -919,12 +919,12 @@ static inline auto describe_json_class( search_metadata_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_number<"completed_in">, json_number<"max_id", int64_t>,
-	  json_string<"max_id_str", std::string_view>,
-	  json_string<"next_results", std::string_view>,
-	  json_string<"query", std::string_view>,
-	  json_string<"refresh_url", std::string_view>, json_number<"count", int64_t>,
+	  json_string_raw<"max_id_str", std::string_view>,
+	  json_string_raw<"next_results", std::string_view>,
+	  json_string_raw<"query", std::string_view>,
+	  json_string_raw<"refresh_url", std::string_view>, json_number<"count", int64_t>,
 	  json_number<"since_id", int64_t>,
-	  json_string<"since_id_str", std::string_view>>{};
+	  json_string_raw<"since_id_str", std::string_view>>{};
 }
 #else
 namespace symbols_search_metadata_t {
@@ -944,13 +944,13 @@ static inline auto describe_json_class( search_metadata_t ) {
 	return daw::json::class_description_t<
 	  json_number<symbols_search_metadata_t::completed_in>,
 	  json_number<symbols_search_metadata_t::max_id, int64_t>,
-	  json_string<symbols_search_metadata_t::max_id_str, std::string_view>,
-	  json_string<symbols_search_metadata_t::next_results, std::string_view>,
-	  json_string<symbols_search_metadata_t::query, std::string_view>,
-	  json_string<symbols_search_metadata_t::refresh_url, std::string_view>,
+	  json_string_raw<symbols_search_metadata_t::max_id_str, std::string_view>,
+	  json_string_raw<symbols_search_metadata_t::next_results, std::string_view>,
+	  json_string_raw<symbols_search_metadata_t::query, std::string_view>,
+	  json_string_raw<symbols_search_metadata_t::refresh_url, std::string_view>,
 	  json_number<symbols_search_metadata_t::count, int64_t>,
 	  json_number<symbols_search_metadata_t::since_id, int64_t>,
-	  json_string<symbols_search_metadata_t::since_id_str, std::string_view>>{};
+	  json_string_raw<symbols_search_metadata_t::since_id_str, std::string_view>>{};
 }
 #endif
 

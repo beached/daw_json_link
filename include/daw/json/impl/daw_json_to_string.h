@@ -236,8 +236,8 @@ namespace daw::json::impl {
 			}
 		} else {
 			for( auto c : container ) {
-				json_assert( ( c >= 0x20U and c <= 0x7FU ) or c == '"',
-				             "Use json_string_escaped" );
+				json_assert( ( c >= 0x20 and c <= 0x7F ) or c == '"',
+				             "Use json_string" );
 				*it++ = c;
 			}
 		}
@@ -299,7 +299,7 @@ namespace daw::json::impl {
 		} else {
 			while( *ptr != '\0' ) {
 				json_assert( ( *ptr >= 0x20 and *ptr <= 0x7F ) or *ptr == '"',
-				             "Use json_string_escaped" );
+				             "Use json_string" );
 				*it++ = *ptr++;
 			}
 		}

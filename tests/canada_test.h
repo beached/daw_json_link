@@ -39,7 +39,7 @@ struct properties_t {
 auto describe_json_class( properties_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<"name", std::string_view>>{};
+	  json_string_raw<"name", std::string_view>>{};
 }
 #else
 namespace symbols_properties_t {
@@ -49,7 +49,7 @@ namespace symbols_properties_t {
 auto describe_json_class( properties_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<symbols_properties_t::name, std::string_view>>{};
+	  json_string_raw<symbols_properties_t::name, std::string_view>>{};
 }
 #endif
 
@@ -80,7 +80,7 @@ struct array_appender {
 auto describe_json_class( geometry_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<"type", std::string_view>,
+	  json_string_raw<"type", std::string_view>,
 	  json_array<"coordinates", std::vector<std::vector<std::array<double, 2>>>,
 	             json_array<no_name, std::vector<std::array<double, 2>>,
 	                        json_array<no_name, std::array<double, 2>,
@@ -98,7 +98,7 @@ auto describe_json_class( geometry_t ) {
 	using namespace daw::json;
 
 	return daw::json::class_description_t<
-	  json_string<symbols_geometry_t::type, std::string_view>,
+	  json_string_raw<symbols_geometry_t::type, std::string_view>,
 	  json_array<symbols_geometry_t::coordinates,
 	             std::vector<std::vector<std::array<double, 2>>>,
 	             json_array<no_name, std::vector<std::array<double, 2>>,
@@ -122,7 +122,7 @@ struct features_element_t {
 #ifdef __cpp_nontype_template_parameter_class
 auto describe_json_class( features_element_t ) {
 	using namespace daw::json;
-	return daw::json::class_description_t<json_string<"type", std::string_view>,
+	return daw::json::class_description_t<json_string_raw<"type", std::string_view>,
 	                                      json_class<"properties", properties_t>,
 	                                      json_class<"geometry", geometry_t>>{};
 }
@@ -136,7 +136,7 @@ namespace symbols_features_element_t {
 auto describe_json_class( features_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<symbols_features_element_t::type, std::string_view>,
+	  json_string_raw<symbols_features_element_t::type, std::string_view>,
 	  json_class<symbols_features_element_t::properties, properties_t>,
 	  json_class<symbols_features_element_t::geometry, geometry_t>>{};
 }
@@ -155,7 +155,7 @@ struct canada_object_t {
 auto describe_json_class( canada_object_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<"type", std::string_view>,
+	  json_string_raw<"type", std::string_view>,
 	  json_array<"features", std::vector<features_element_t>,
 	             json_class<no_name, features_element_t>>>{};
 }
@@ -168,7 +168,7 @@ namespace symbols_canada_object_t {
 auto describe_json_class( canada_object_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_string<symbols_canada_object_t::type, std::string_view>,
+	  json_string_raw<symbols_canada_object_t::type, std::string_view>,
 	  json_array<symbols_canada_object_t::features,
 	             std::vector<features_element_t>,
 	             json_class<no_name, features_element_t>>>{};

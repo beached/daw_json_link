@@ -44,14 +44,14 @@ auto describe_json_class( City ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<
-	  json_string<"country", std::string_view>,
-	  json_string<"name", std::string_view>,
+	  json_string_raw<"country", std::string_view>,
+	  json_string_raw<"name", std::string_view>,
 	  json_number<"lat", float, LiteralAsStringOpt::always>,
 	  json_number<"lng", float, LiteralAsStringOpt::always>>{};
 #else
 	return class_description_t<
-	  json_string<symbols_City::names0, std::string_view>,
-	  json_string<symbols_City::names1, std::string_view>,
+	  json_string_raw<symbols_City::names0, std::string_view>,
+	  json_string_raw<symbols_City::names1, std::string_view>,
 	  json_number<symbols_City::names2, float, LiteralAsStringOpt::always>,
 	  json_number<symbols_City::names3, float, LiteralAsStringOpt::always>>{};
 #endif

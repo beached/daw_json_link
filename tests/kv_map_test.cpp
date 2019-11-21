@@ -63,11 +63,11 @@ auto describe_json_class( kv2_t ) noexcept {
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<json_key_value<
 	  "kv", daw::bounded_hash_map<daw::string_view, int, 5>,
-	  json_number<no_name, int>, json_string<no_name, daw::string_view>>>{};
+	  json_number<no_name, int>, json_string_raw<no_name, daw::string_view>>>{};
 #else
 	return class_description_t<json_key_value<
 	  symbols_kv2_t::kv, daw::bounded_hash_map<daw::string_view, int, 5>,
-	  json_number<no_name, int>, json_string<no_name, daw::string_view>>>{};
+	  json_number<no_name, int>, json_string_raw<no_name, daw::string_view>>>{};
 #endif
 }
 
