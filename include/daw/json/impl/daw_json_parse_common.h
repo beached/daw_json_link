@@ -195,6 +195,7 @@ namespace daw::json {
 		Unsigned,
 		Bool,
 		String,
+		StringEscaped,
 		Date,
 		Class,
 		Array,

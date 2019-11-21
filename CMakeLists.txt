@@ -270,6 +270,12 @@ add_test(NAME cookbook_array2_test COMMAND cookbook_array2_test_bin ./cookbook_a
 add_dependencies(check cookbook_array2_test_bin)
 add_dependencies(full cookbook_array2_test_bin)
 
+add_executable(cookbook_escaped_strings1_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_escaped_strings1_test.cpp)
+add_dependencies(cookbook_escaped_strings1_test_bin dependency_stub)
+add_test(NAME cookbook_escaped_strings1_test COMMAND cookbook_escaped_strings1_test_bin ./cookbook_escaped_strings1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies(check cookbook_escaped_strings1_test_bin)
+add_dependencies(full cookbook_escaped_strings1_test_bin)
+
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
