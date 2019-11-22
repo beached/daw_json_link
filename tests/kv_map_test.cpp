@@ -84,8 +84,8 @@ int main( int, char ** ) {
 	daw::do_not_optimize( kv_test );
 
 	auto const kv2_test = from_json<kv2_t>( json_data3 );
-	daw::json::json_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
-	daw::json::json_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
-	daw::json::json_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
-	daw::json::json_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
+	daw_json_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
+	daw_json_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
+	daw_json_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
+	daw_json_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
 }

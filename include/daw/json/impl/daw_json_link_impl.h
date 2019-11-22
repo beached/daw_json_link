@@ -146,8 +146,8 @@ namespace daw::json::impl {
 	template<typename First, typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr daw::string_view
 	parse_name( IteratorRange<First, Last, TrustedInput> &rng ) {
-		json_assert_untrusted( rng.front( '"' ),
-		                       "Expected name to start with a quote" );
+		daw_json_assert_untrusted( rng.front( '"' ),
+		                           "Expected name to start with a quote" );
 		rng.remove_prefix( );
 		return daw::json::impl::name::name_parser::parse_nq( rng );
 	}
@@ -232,7 +232,7 @@ namespace daw::json::impl {
 	                              sizeof...( JsonMembers )> &locations,
 	                   IteratorRange<First, Last, TrustedInput> &rng ) {
 
-		json_assert_untrusted(
+		daw_json_assert_untrusted(
 		  is_json_nullable_v<daw::traits::nth_element<pos, JsonMembers...>> or
 		    not locations[pos].missing( ) or not rng.front( '}' ),
 		  "Unexpected end of class.  Non-nullable members still not found" );
@@ -281,12 +281,12 @@ namespace daw::json::impl {
 			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
 			                                rng );
 		} else {
-			json_assert_untrusted( rng.front( "\"}" ),
-			                       "Expected end of class or start of member" );
+			daw_json_assert_untrusted( rng.front( "\"}" ),
+			                           "Expected end of class or start of member" );
 			auto loc =
 			  find_class_member<JsonMemberPosition, JsonMembers...>( locations, rng );
 
-			json_assert_untrusted(
+			daw_json_assert_untrusted(
 			  JsonMember::expected_type == JsonParseTypes::Null or not loc.is_null( ),
 			  "Could not find required class member" );
 			if( loc.is_null( ) or
@@ -335,8 +335,8 @@ namespace daw::json::impl {
 		rng.move_to_next_of( "\"}" );
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
 			// We are an empty class
-			json_assert_untrusted( rng.front( '}' ),
-			                       "Expected class to end with '}'" );
+			daw_json_assert_untrusted( rng.front( '}' ),
+			                           "Expected class to end with '}'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 			return construct_a<Result>( );
@@ -354,8 +354,8 @@ namespace daw::json::impl {
 				rng.clean_tail( );
 			}
 
-			json_assert_untrusted( rng.front( ) == '}',
-			                       "Expected class to end with '}'" );
+			daw_json_assert_untrusted( rng.front( ) == '}',
+			                           "Expected class to end with '}'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 			return result;
@@ -387,7 +387,7 @@ namespace daw::json::impl {
 	             daw::string_view path ) {
 		auto current = impl::pop_json_path( path );
 		while( not current.empty( ) ) {
-			json_assert_untrusted( rng.front( '{' ), "Invalid Path Entry" );
+			daw_json_assert_untrusted( rng.front( '{' ), "Invalid Path Entry" );
 			rng.remove_prefix( );
 			rng.trim_left_no_check( );
 			auto name = parse_name( rng );
@@ -417,8 +417,8 @@ namespace daw::json::impl {
 	from_json_impl( std::string_view json_data ) {
 		static_assert( impl::has_json_parser_description_v<T>,
 		               "A function call describe_json_class must exist for type." );
-		json_assert_untrusted( not json_data.empty( ),
-		                       "Attempt to parse empty string" );
+		daw_json_assert_untrusted( not json_data.empty( ),
+		                           "Attempt to parse empty string" );
 		using desc_t = impl::json_parser_description_t<T>;
 
 		return desc_t::template parse<T, TrustedInput>( json_data );

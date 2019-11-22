@@ -33,7 +33,7 @@ namespace daw::json::impl::signedint {
 
 		[[nodiscard]] static constexpr std::pair<Signed, char const *>
 		parse( char const *ptr ) {
-			json_assert( ptr != nullptr, "Unexpected nullptr" );
+			daw_json_assert( ptr != nullptr, "Unexpected nullptr" );
 			bool sign = true;
 
 			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
@@ -62,8 +62,8 @@ namespace daw::json::impl {
 	         typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr Result
 	parse_integer( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
-		json_assert_untrusted( rng.front( "+-0123456789" ),
-		                       "Expected +,-, or a digit" );
+		daw_json_assert_untrusted( rng.front( "+-0123456789" ),
+		                           "Expected +,-, or a digit" );
 
 		using result_t = std::conditional_t<RangeCheck, intmax_t, Result>;
 		using namespace daw::json::impl::signedint;

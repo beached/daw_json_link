@@ -197,7 +197,7 @@ namespace {
 	constexpr blah_t from_string( daw::tag_t<blah_t>,
 	                              std::string_view sv ) noexcept {
 		if( sv.empty( ) ) {
-			daw::json::json_error( "Unexpected empty string_view" );
+			daw_json_error( "Unexpected empty string_view" );
 		}
 		switch( sv.front( ) ) {
 		case 'a':

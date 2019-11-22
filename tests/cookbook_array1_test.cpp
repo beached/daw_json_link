@@ -43,7 +43,9 @@ int main( int argc, char **argv ) {
 	  from_json_array<json_number<no_name, int>>( {data.data( ), data.size( )} );
 
 	int count = 1;
+	(void)count;
 	for( auto val : ve ) {
-		json_assert( count++ == val, "Unexpected value" );
+		(void)val;
+		daw_json_assert( count++ == val, "Unexpected value" );
 	}
 }

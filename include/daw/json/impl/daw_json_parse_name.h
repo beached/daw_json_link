@@ -42,7 +42,7 @@ namespace daw::json::impl::name {
 			while( rng.is_space( ) ) {
 				rng.remove_prefix( );
 			}
-			json_assert_untrusted( rng.front( ) == ':', "Expected a ':'" );
+			daw_json_assert_untrusted( rng.front( ) == ':', "Expected a ':'" );
 			rng.remove_prefix( );
 			while( rng.is_space( ) ) {
 				rng.remove_prefix( );
@@ -61,7 +61,7 @@ namespace daw::json::impl::name {
 					rng.remove_prefix( 2 );
 				}
 			}
-			json_assert_untrusted( rng.front( ) == '"', "Expected a '\"'" );
+			daw_json_assert_untrusted( rng.front( ) == '"', "Expected a '\"'" );
 			auto result =
 			  daw::string_view( ptr, static_cast<size_t>( rng.begin( ) - ptr ) );
 			rng.remove_prefix( );

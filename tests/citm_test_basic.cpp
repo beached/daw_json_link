@@ -43,9 +43,9 @@ int main( int argc, char **argv ) {
 
 	auto citm_result = daw::json::from_json<citm_object_t>( json_sv1 );
 	daw::do_not_optimize( citm_result );
-	json_assert( citm_result.areaNames.size( ) > 0, "Expected values" );
-	json_assert( citm_result.areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	json_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
+	daw_json_assert( citm_result.areaNames.size( ) > 0, "Expected values" );
+	daw_json_assert( citm_result.areaNames.count( 205706005 ) == 1,
+	                 "Expected value" );
+	daw_json_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
+	                 "Incorrect value" );
 }
