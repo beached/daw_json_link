@@ -246,7 +246,7 @@ namespace {
 			"s2": "ho ho ho",
 			"o": 1344,
 			"dte": "2016-12-31T01:02:03.343Z"
-	  })" DAWJSONLINK_SENTINAL;
+	  })";
 
 	constexpr char const json_data_array[] =
 	  R"([
@@ -312,7 +312,7 @@ namespace {
 			"s2": "ho ho ho",
 			"o": 1322,
 			"dte": "2010-06-31T01:02:03.343Z"
-	  }])" DAWJSONLINK_SENTINAL;
+	  }])";
 
 } // namespace
 
