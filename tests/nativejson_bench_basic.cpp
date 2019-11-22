@@ -84,12 +84,12 @@ int main( int argc, char **argv ) {
 	}
 #endif
 	if( not j1 ) {
-		json_error( "Missing value" );
+		daw_json_error( "Missing value" );
 	}
 	if( not j2 ) {
-		json_error( "Missing value" );
+		daw_json_error( "Missing value" );
 	}
 	if( not j3 ) {
-		json_error( "Missing value" );
+		daw_json_error( "Missing value" );
 	}
 }

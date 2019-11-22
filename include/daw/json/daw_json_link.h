@@ -65,7 +65,8 @@ namespace daw::json {
 		template<typename Result, bool TrustedInput>
 		[[maybe_unused, nodiscard]] static constexpr Result
 		parse( std::string_view sv ) {
-			json_assert_untrusted( not sv.empty( ), "Cannot parse an empty string" );
+			daw_json_assert_untrusted( not sv.empty( ),
+			                           "Cannot parse an empty string" );
 
 			auto rng = impl::IteratorRange<char const *, char const *, TrustedInput>(
 			  sv.data( ), sv.data( ) + sv.size( ) );
@@ -76,7 +77,8 @@ namespace daw::json {
 		template<typename Result, typename First, typename Last, bool TrustedInput>
 		[[maybe_unused, nodiscard]] static constexpr Result
 		parse( impl::IteratorRange<First, Last, TrustedInput> &rng ) {
-			json_assert_untrusted( rng.has_more( ), "Cannot parse an empty string" );
+			daw_json_assert_untrusted( rng.has_more( ),
+			                           "Cannot parse an empty string" );
 			return impl::parse_json_class<Result, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
 		}
@@ -428,7 +430,7 @@ namespace daw::json {
 			    json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
 
 			rng.trim_left_no_check( );
-			json_assert_untrusted( rng.front( '[' ), "Expected array class" );
+			daw_json_assert_untrusted( rng.front( '[' ), "Expected array class" );
 
 			return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
 			                                    rng );

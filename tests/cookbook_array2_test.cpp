@@ -82,12 +82,12 @@ int main( int argc, char **argv ) {
 	  from_json_array<json_class<no_name, daw::cookbook_array2::MyClass4>>(
 	    {data.data( ), data.size( )} );
 
-	json_assert( ve.size( ) == 2, "Expected 2 items" );
+	daw_json_assert( ve.size( ) == 2, "Expected 2 items" );
 	auto const str = to_json_array( ve );
 	puts( str.c_str( ) );
 	auto const ve2 =
 	  from_json_array<json_class<no_name, daw::cookbook_array2::MyClass4>>(
 	    {str.data( ), str.size( )} );
 
-	json_assert( ve == ve2, "Expected 2 items" );
+	daw_json_assert( ve == ve2, "Expected 2 items" );
 }

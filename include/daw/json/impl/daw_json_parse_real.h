@@ -34,8 +34,8 @@ namespace daw::json::impl {
 	[[nodiscard]] static constexpr Result
 	parse_real( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
-		json_assert_untrusted( rng.is_real_number_part( ),
-		                       "Expected a real number" );
+		daw_json_assert_untrusted( rng.is_real_number_part( ),
+		                           "Expected a real number" );
 		auto const sign = [&] {
 			if( rng.front( ) == '-' ) {
 				rng.remove_prefix( );

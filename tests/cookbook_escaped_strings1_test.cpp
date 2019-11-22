@@ -77,7 +77,7 @@ int main( int argc, char **argv ) {
 	  daw::json::from_json<daw::cookbook_escaped_strings1::WebData>(
 	    std::string_view( data.data( ), data.size( ) ) );
 
-	daw::json::json_assert( cls == expected_wd, "Unexpected value" );
+	daw_json_assert( cls == expected_wd, "Unexpected value" );
 	auto const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
@@ -85,5 +85,5 @@ int main( int argc, char **argv ) {
 	  daw::json::from_json<daw::cookbook_escaped_strings1::WebData>(
 	    std::string_view( str.data( ), str.size( ) ) );
 
-	daw::json::json_assert( cls == cls2, "Unexpected round trip error" );
+	daw_json_assert( cls == cls2, "Unexpected round trip error" );
 }

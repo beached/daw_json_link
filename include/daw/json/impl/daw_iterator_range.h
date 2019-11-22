@@ -99,7 +99,7 @@ namespace daw::json::impl {
 
 		constexpr bool is_space( ) const noexcept {
 			if constexpr( not TrustedInput ) {
-				json_assert( has_more( ), "Unexpected end of stream" );
+				daw_json_assert( has_more( ), "Unexpected end of stream" );
 				switch( *first ) {
 				case 0x20: // space
 				case 0x09: // tab
@@ -122,7 +122,7 @@ namespace daw::json::impl {
 		constexpr void trim_left_no_check( ) noexcept {
 			while( is_space( ) ) {
 				remove_prefix( );
-				json_assert_untrusted( first != last, "Unexpected end of stream" );
+				daw_json_assert_untrusted( first != last, "Unexpected end of stream" );
 			}
 		}
 
@@ -140,7 +140,7 @@ namespace daw::json::impl {
 
 		constexpr void move_to_next_of( char c ) noexcept {
 			while( front( ) != c ) {
-				json_assert_untrusted( has_more( ), "Unexpected end of data" );
+				daw_json_assert_untrusted( has_more( ), "Unexpected end of data" );
 				remove_prefix( );
 			}
 		}
@@ -148,7 +148,7 @@ namespace daw::json::impl {
 		template<size_t N>
 		constexpr void move_to_next_of( char const ( &str )[N] ) noexcept {
 			while( not in( str ) ) {
-				json_assert_untrusted( has_more( ), "Unexpected end of data" );
+				daw_json_assert_untrusted( has_more( ), "Unexpected end of data" );
 				remove_prefix( );
 			}
 		}
@@ -164,7 +164,8 @@ namespace daw::json::impl {
 		}
 
 		[[nodiscard]] constexpr bool in( char c ) const noexcept {
-			json_assert_untrusted( first != nullptr, "Empty or null InteratorRange" );
+			daw_json_assert_untrusted( first != nullptr,
+			                           "Empty or null InteratorRange" );
 			return *first == c;
 		}
 

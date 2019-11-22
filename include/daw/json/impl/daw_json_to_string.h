@@ -132,7 +132,7 @@ namespace daw::json::impl {
 	//************************************************
 	template<typename Char>
 	constexpr char to_nibble_char( Char c ) noexcept {
-		json_assert( c < 16, "Unexpected hex nibble" );
+		daw_json_assert( c < 16, "Unexpected hex nibble" );
 		if( c < 10 ) {
 			return static_cast<char>( c + '0' );
 		} else {
@@ -236,10 +236,10 @@ namespace daw::json::impl {
 			}
 		} else {
 			for( auto c : container ) {
-				json_assert( ( static_cast<unsigned>( c ) >= 0x20U and
-				               static_cast<unsigned>( c ) <= 0x7FU ) or
-				               c == '"',
-				             "Use json_string" );
+				daw_json_assert( ( static_cast<unsigned>( c ) >= 0x20U and
+				                   static_cast<unsigned>( c ) <= 0x7FU ) or
+				                   c == '"',
+				                 "Use json_string" );
 				*it++ = c;
 			}
 		}
@@ -300,8 +300,8 @@ namespace daw::json::impl {
 			}
 		} else {
 			while( *ptr != '\0' ) {
-				json_assert( ( *ptr >= 0x20 and *ptr <= 0x7F ) or *ptr == '"',
-				             "Use json_string" );
+				daw_json_assert( ( *ptr >= 0x20 and *ptr <= 0x7F ) or *ptr == '"',
+				                 "Use json_string" );
 				*it++ = *ptr++;
 			}
 		}

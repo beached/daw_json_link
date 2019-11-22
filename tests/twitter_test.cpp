@@ -55,8 +55,8 @@ int main( int argc, char **argv ) {
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
-	json_assert( twitter_result, "Missing value" );
-	json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-	json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
 }

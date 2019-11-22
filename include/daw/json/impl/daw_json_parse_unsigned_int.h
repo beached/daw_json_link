@@ -53,8 +53,8 @@ namespace daw::json::impl {
 	         typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr auto parse_unsigned_integer2(
 	  IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
-		json_assert_untrusted( rng.is_number( ),
-		                       "Expecting a digit as first item" );
+		daw_json_assert_untrusted( rng.is_number( ),
+		                           "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
 		using iresult_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
@@ -78,8 +78,8 @@ namespace daw::json::impl {
 	         typename Last, bool TrustedInput>
 	[[nodiscard]] static constexpr Result parse_unsigned_integer(
 	  IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
-		json_assert_untrusted( rng.is_number( ),
-		                       "Expecting a digit as first item" );
+		daw_json_assert_untrusted( rng.is_number( ),
+		                           "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
 		using result_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
