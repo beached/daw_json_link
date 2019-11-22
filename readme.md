@@ -56,33 +56,33 @@ static constexpr char const member_name[] = "memberName";
 Once a data type has been described, you can easily construct an object from a string or string_view.
 
 ```C++
-auto my_class = from_json<MyClass>( json_string_raw );
+auto my_class = from_json<MyClass>( json_str );
 ```
 Alternatively, if the input is trusted you can called the less checked version
 ```C++
-auto my_class = from_json_trusted<MyClass>( json_string_raw );
+auto my_class = from_json_trusted<MyClass>( json_str );
 ```
 
 Or one can create a collection of your object from a JSON array
 
 ```C++
-auto my_data = from_json_array<json_class<no_name, MyClass>>( json_string_raw );
+auto my_data = from_json_array<json_class<no_name, MyClass>>( json_str );
 ```
 Alternatively, if the input is trusted you can called the less checked version
 ```C++
-auto my_data = from_json_array_trusted<json_class<no_name, MyClass>>( json_string_raw );
+auto my_data = from_json_array_trusted<json_class<no_name, MyClass>>( json_str );
 ```
 
 If you want to work from JSON array data you can get an iterator and use the std algorithms too
 
 ```C++
 using iterator_t = daw::json::json_array_iterator<json_class<no_name, MyClass>>;
-auto pos = std::find( iterator_t( json_string_raw ), iterator_t( ), MyClass( ... ) );
+auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
 Alternatively, if the input is trusted you can called the less checked version
 ```C++
 using iterator_t = daw::json::json_array_iterator_trusted<json_class<no_name, MyClass>>;
-auto pos = std::find( iterator_t( json_string_raw ), iterator_t( ), MyClass( ... ) );
+auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
 
 If you want to serialize to JSON 
@@ -129,7 +129,7 @@ auto describe_json_class( TestClass ) {
 		json_number<"i", int>,
 		json_number<"d">,
 		json_bool<"b">,
-		json_string_raw<"s", daw::string_view>,
+		json_string<"s", daw::string_view>,
 		json_array<"y", std::vector<int>, json_number<no_name, int>>
  	>{};
 }
@@ -207,7 +207,7 @@ auto describe_json_class( MyClass ) {
     using namespace daw::json;
     return class_description_t<
         json_class<"other", AggClass>,
-        json_string_raw<"id", std::string_view>
+        json_string<"id", std::string_view>
     >{};
 }
 ```
@@ -309,6 +309,21 @@ struct json_bool
 The defaults for json_bool will construct a ```bool``` with the supplied name.  The resulting type T must be constructable from a bool.
 ```Constructor``` the default is almost always correct here but this will constuct your type.
 
+### json_string
+```cpp
+template<JSONNAMETYPE Name, 
+				 typename String = std::string,
+	       typename Constructor = daw::construct_a_t<String>,
+	       typename Appender = impl::basic_appender<String>,
+	       bool EmptyStringNull = false>
+struct json_string
+``` 
+json_string is fully processed and unescaped or escaped.
+The defaults for json_string will construct a ```std::string``` with the supplied name.  The resulting type String must be default constructable.
+```Constructor``` the default is almost always correct here but this will constuct your type.  Appender will append each character to the string as
+they are processed via push_back or insert( end, ... ), depending on which method is available.
+```EmptyStringNull``` treat an empty JSON value ```""``` as a null value.
+
 ### json_string_raw
 ```cpp
 template<JSONNAMETYPE Name, 
@@ -317,6 +332,7 @@ template<JSONNAMETYPE Name,
     bool EmptyStringNull = false>
 struct json_string_raw
 ``` 
+json_string_raw is whatever bytes are between the quotes in the string passed from json
 The defaults for json_string_raw will construct a ```std::string``` with the supplied name.  The resulting type T must be constructable from two arguments(a ```char const *``` and a ```size_t```).
 ```Constructor``` the default is almost always correct here but this will constuct your type.
 ```EmptyStringNull``` treat an empty JSON value ```""``` as a null value.
