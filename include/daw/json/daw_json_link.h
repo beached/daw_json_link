@@ -185,7 +185,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename String = std::string,
 	         typename Constructor = daw::construct_a_t<String>,
-	         bool EmptyStringNull = false>
+	         bool EmptyStringNull = false, bool DisallowHighEightBit = false>
 	struct json_string_raw {
 		static_assert(
 		  std::is_invocable_v<Constructor, char const *, size_t>,
@@ -197,6 +197,7 @@ namespace daw::json {
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::String;
 		static constexpr bool empty_is_null = EmptyStringNull;
+		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
 	};
 
 	/**
@@ -212,7 +213,7 @@ namespace daw::json {
 	template<JSONNAMETYPE Name, typename String = std::string,
 	         typename Constructor = daw::construct_a_t<String>,
 	         typename Appender = impl::basic_appender<String>,
-	         bool EmptyStringNull = false>
+	         bool EmptyStringNull = false, bool DisallowHighEightBit = false>
 	struct json_string {
 		static_assert( std::is_invocable_v<Constructor>,
 		               "Constructor must be default constructable" );
@@ -225,6 +226,7 @@ namespace daw::json {
 		static constexpr JsonParseTypes expected_type =
 		  JsonParseTypes::StringEscaped;
 		static constexpr bool empty_is_null = EmptyStringNull;
+		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
 	};
 
 	/** Link to a JSON string representing a date

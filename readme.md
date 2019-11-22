@@ -315,7 +315,8 @@ template<JSONNAMETYPE Name,
 				 typename String = std::string,
 	       typename Constructor = daw::construct_a_t<String>,
 	       typename Appender = impl::basic_appender<String>,
-	       bool EmptyStringNull = false>
+	       bool EmptyStringNull = false,
+	       bool DisallowHighEightBit = false>
 struct json_string
 ``` 
 json_string is fully processed and unescaped or escaped.
@@ -323,19 +324,22 @@ The defaults for json_string will construct a ```std::string``` with the supplie
 ```Constructor``` the default is almost always correct here but this will constuct your type.  Appender will append each character to the string as
 they are processed via push_back or insert( end, ... ), depending on which method is available.
 ```EmptyStringNull``` treat an empty JSON value ```""``` as a null value.
+```DisallowHighEightBit``` error if deserializing a json string and there are values > 0x7F or < 0x20 
 
 ### json_string_raw
 ```cpp
 template<JSONNAMETYPE Name, 
     typename T = std::string, 
     typename Constructor = daw::construct_a<T>,
-    bool EmptyStringNull = false>
+    bool EmptyStringNull = false,
+	  bool DisallowHighEightBit = false>
 struct json_string_raw
 ``` 
 json_string_raw is whatever bytes are between the quotes in the string passed from json
 The defaults for json_string_raw will construct a ```std::string``` with the supplied name.  The resulting type T must be constructable from two arguments(a ```char const *``` and a ```size_t```).
 ```Constructor``` the default is almost always correct here but this will constuct your type.
 ```EmptyStringNull``` treat an empty JSON value ```""``` as a null value.
+```DisallowHighEightBit``` error if deserializing/serializing a json string and there are values > 0x7F or < 0x20
 
 ### json_date
 ```cpp

@@ -273,6 +273,7 @@ namespace daw::json::impl {
 		// TODO: make escape aware skip_string
 		using constructor_t = typename JsonMember::constructor_t;
 		using appender_t = typename JsonMember::appender_t;
+		constexpr bool disallow_high8 = JsonMember::disallow_high_eight_bit;
 
 		auto result = constructor_t{}( );
 		auto app = appender_t{result};
@@ -323,8 +324,13 @@ namespace daw::json::impl {
 					rng.remove_prefix( );
 					break;
 				default:
-					// TODO add ability to filter lower 7bitsdaw_json_assert_untrusted(
-					// false, "Unexpected escape sequence" );
+					if constexpr( disallow_high8 ) {
+						daw_json_assert(
+						  static_cast<unsigned>( rng.front( ) ) >= 0x20U and
+						    static_cast<unsigned>( rng.front( ) ) <= 0x7FU,
+						  "string support limited to 0x20 < chr <= 0x7F when "
+						  "DisallowHighEightBit is true" );
+					}
 					app( rng.front( ) );
 					rng.remove_prefix( );
 				}
