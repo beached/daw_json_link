@@ -180,7 +180,8 @@ namespace daw::json::impl {
 	template<typename IteratorF, typename IteratorL>
 	rng_t( IteratorF, IteratorL )->rng_t<IteratorF, IteratorL>;
 
-	template<bool do_escape = false, typename Container, typename OutputIterator,
+	template<bool do_escape = false, bool disallow_high8 = false,
+	         typename Container, typename OutputIterator,
 	         daw::enable_when_t<daw::traits::is_container_like_v<
 	           daw::remove_cvref_t<Container>>> = nullptr>
 	[[nodiscard]] static constexpr OutputIterator
@@ -236,17 +237,20 @@ namespace daw::json::impl {
 			}
 		} else {
 			for( auto c : container ) {
-				daw_json_assert( ( static_cast<unsigned>( c ) >= 0x20U and
-				                   static_cast<unsigned>( c ) <= 0x7FU ) or
-				                   c == '"',
-				                 "Use json_string" );
+				if constexpr( disallow_high8 ) {
+					daw_json_assert( static_cast<unsigned>( c ) >= 0x20U and
+					                   static_cast<unsigned>( c ) <= 0x7FU,
+					                 "string support limited to 0x20 < chr <= 0x7F when "
+					                 "DisallowHighEightBit is true" );
+				}
 				*it++ = c;
 			}
 		}
 		return it;
 	}
 
-	template<bool do_escape = false, typename OutputIterator>
+	template<bool do_escape = false, bool disallow_high8 = false,
+	         typename OutputIterator>
 	[[nodiscard]] static constexpr OutputIterator
 	copy_to_iterator( char const *ptr, OutputIterator it ) {
 		if( ptr == nullptr ) {
@@ -300,8 +304,12 @@ namespace daw::json::impl {
 			}
 		} else {
 			while( *ptr != '\0' ) {
-				daw_json_assert( ( *ptr >= 0x20 and *ptr <= 0x7F ) or *ptr == '"',
-				                 "Use json_string" );
+				if constexpr( disallow_high8 ) {
+					daw_json_assert( static_cast<unsigned>( *ptr ) >= 0x20U and
+					                   static_cast<unsigned>( *ptr ) <= 0x7FU,
+					                 "string support limited to 0x20 < chr <= 0x7F when "
+					                 "DisallowHighEightBit is true" );
+				}
 				*it++ = *ptr++;
 			}
 		}
@@ -401,8 +409,9 @@ namespace daw::json::impl {
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
+		constexpr bool disallow_high8 = JsonMember::disallow_high_eight_bit;
 		*it++ = '"';
-		it = copy_to_iterator( value, it );
+		it = copy_to_iterator<false, disallow_high8>( value, it );
 		*it++ = '"';
 		return it;
 	}
@@ -416,8 +425,9 @@ namespace daw::json::impl {
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
+		constexpr bool disallow_high8 = JsonMember::disallow_high_eight_bit;
 		*it++ = '"';
-		it = copy_to_iterator<true>( value, it );
+		it = copy_to_iterator<true, disallow_high8>( value, it );
 		*it++ = '"';
 		return it;
 	}
@@ -619,8 +629,8 @@ namespace daw::json::impl {
 
 		static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
 		*it++ = '"';
-		it = copy_to_iterator( JsonMember::name, it );
-		it = copy_to_iterator( "\":", it );
+		it = copy_to_iterator<false, false>( JsonMember::name, it );
+		it = copy_to_iterator<false, false>( "\":", it );
 		it = member_to_string<JsonMember>( daw::move( it ), std::get<pos>( args ) );
 		if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
 			*it++ = ',';
