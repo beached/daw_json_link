@@ -276,6 +276,12 @@ add_test(NAME cookbook_escaped_strings1_test COMMAND cookbook_escaped_strings1_t
 add_dependencies(check cookbook_escaped_strings1_test_bin)
 add_dependencies(full cookbook_escaped_strings1_test_bin)
 
+add_executable(full_unicode_roundtrip_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/full_unicode_roundtrip_test.cpp)
+add_dependencies(full_unicode_roundtrip_test_bin dependency_stub)
+add_test(NAME full_unicode_roundtrip_test COMMAND full_unicode_roundtrip_test_bin ./full_unicode.json ./full_unicode_escaped.json  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies(check full_unicode_roundtrip_test_bin)
+add_dependencies(full full_unicode_roundtrip_test_bin)
+
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 

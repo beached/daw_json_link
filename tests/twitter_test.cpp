@@ -24,11 +24,29 @@
 #include <iostream>
 #include <streambuf>
 
+#include <daw/cpp_17.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_traits.h>
 
 #include "daw/json/daw_json_link.h"
 #include "twitter_test.h"
+
+template<typename T>
+using is_to_json_data_able = decltype( to_json_data( std::declval<T>( ) ) );
+
+template<typename T>
+inline bool constexpr is_to_json_data_able_v =
+  daw::is_detected_v<is_to_json_data_able, T>;
+
+template<typename T,
+         std::enable_if_t<is_to_json_data_able_v<T>, std::nullptr_t> = nullptr>
+constexpr bool operator==( T const &lhs, T const &rhs ) {
+	if( to_json_data( lhs ) == to_json_data( rhs ) ) {
+		return true;
+	}
+	daw_json_error( "Expected that values would be equal" );
+}
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;
@@ -70,4 +88,11 @@ int main( int argc, char **argv ) {
 	  twitter_result );
 	daw_json_assert( str, "Expected a string value" );
 	daw::do_not_optimize( *str );
+	auto const twitter_result2 = daw::json::from_json<twitter_object_t>( *str );
+	daw::do_not_optimize( twitter_result2 );
+	// Removing for now as it will do a float compare and fail
+	/*
+	daw_json_assert( twitter_result == twitter_result2,
+	                 "Expected round trip to produce same result" );
+	                 */
 }

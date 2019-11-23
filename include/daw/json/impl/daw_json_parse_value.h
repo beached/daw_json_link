@@ -205,7 +205,7 @@ namespace daw::json::impl {
 	template<typename First, typename Last, bool TrustedInput, typename Appender>
 	constexpr void decode_utf16( IteratorRange<First, Last, TrustedInput> &rng,
 	                             Appender &app ) {
-		daw_json_assert_untrusted( rng.front( ) == 'u',
+		daw_json_assert_untrusted( rng.front( ) == 'u' or rng.front( ) == 'U',
 		                           "Expected rng to start with a u" );
 		rng.remove_prefix( );
 		uint32_t cp = static_cast<uint32_t>( byte_from_nibbles( rng ) ) << 8U;
@@ -214,12 +214,10 @@ namespace daw::json::impl {
 			app( static_cast<char>( cp ) );
 			return;
 		}
-		if( cp >= 0xD800U ) {
-			cp = static_cast<uint32_t>( ( cp - 0xD800U ) * 0x400U );
-			daw_json_assert_untrusted( rng.front( ) == '\\',
-			                           "Expected rng to start with a \\u" );
+		if( cp >= 0xD800U and cp <= 0xDBFFU ) {
+			cp = ( cp - 0xD800U ) * 0x400U;
 			rng.remove_prefix( );
-			daw_json_assert_untrusted( rng.front( ) == 'u',
+			daw_json_assert_untrusted( rng.front( ) == 'u' or rng.front( ) == 'U',
 			                           "Expected rng to start with a \\u" );
 			rng.remove_prefix( );
 			auto trailing = static_cast<uint32_t>( byte_from_nibbles( rng ) ) << 8U;
@@ -308,17 +306,12 @@ namespace daw::json::impl {
 					app( '\t' );
 					rng.remove_prefix( );
 					break;
+				case 'U': // Sometimes people put crap
 				case 'u':
 					decode_utf16( rng, app );
 					break;
 				case '\\':
-					app( rng.front( ) );
-					rng.remove_prefix( );
-					break;
 				case '/':
-					app( rng.front( ) );
-					rng.remove_prefix( );
-					break;
 				case '"':
 					app( rng.front( ) );
 					rng.remove_prefix( );

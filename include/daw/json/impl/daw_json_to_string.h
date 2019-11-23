@@ -215,6 +215,10 @@ namespace daw::json::impl {
 					break;
 				case '\n':
 					*it++ = '\\';
+					*it++ = 'n';
+					break;
+				case '\r':
+					*it++ = '\\';
 					*it++ = 'r';
 					break;
 				case '\t':
@@ -282,6 +286,10 @@ namespace daw::json::impl {
 					*it++ = 'f';
 					break;
 				case '\n':
+					*it++ = '\\';
+					*it++ = 'n';
+					break;
+				case '\r':
 					*it++ = '\\';
 					*it++ = 'r';
 					break;
