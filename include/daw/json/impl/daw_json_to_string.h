@@ -188,9 +188,10 @@ namespace daw::json::impl {
 	copy_to_iterator( Container const &container, OutputIterator it ) {
 		if constexpr( do_escape ) {
 			using iter = daw::remove_cvref_t<decltype( std::begin( container ) )>;
+			using it_t = std::conditional_t<disallow_high8,
+			                                utf8::unchecked::iterator<iter>, iter>;
 			auto rng =
-			  rng_t{utf8::unchecked::iterator<iter>( std::begin( container ) ),
-			        utf8::unchecked::iterator<iter>( std::end( container ) )};
+			  rng_t{it_t( std::begin( container ) ), it_t( std::end( container ) )};
 			for( auto cp : rng ) {
 				switch( cp ) {
 				case '"':
@@ -226,16 +227,24 @@ namespace daw::json::impl {
 					*it++ = 't';
 					break;
 				default:
-					if( cp < 0x20U or ( cp >= 0x7FU and cp <= 0xFFFFU ) ) {
-						it = output_hex( static_cast<uint16_t>( cp ), it );
-					} else if( cp > 0xFFFFU ) {
-						it = output_hex( static_cast<uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
-						                 it );
-						it = output_hex( static_cast<uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ),
-						                 it );
-					} else {
-						*it++ = static_cast<char>( cp );
+					if constexpr( disallow_high8 ) {
+						if( cp < 0x20U ) {
+							it = output_hex( static_cast<uint16_t>( cp ), it );
+							break;
+						}
+						if( cp >= 0x7FU and cp <= 0xFFFFU ) {
+							it = output_hex( static_cast<uint16_t>( cp ), it );
+							break;
+						}
+						if( cp > 0xFFFFU ) {
+							it = output_hex( static_cast<uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
+							                 it );
+							it = output_hex(
+							  static_cast<uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
+							break;
+						}
 					}
+					*it++ = static_cast<char>( cp );
 					break;
 				}
 			}
@@ -261,7 +270,10 @@ namespace daw::json::impl {
 			return it;
 		}
 		if constexpr( do_escape ) {
-			auto chr_it = utf8::unchecked::iterator<char const *>( ptr );
+			using it_t = std::conditional_t<
+			  disallow_high8, utf8::unchecked::iterator<char const *>, char const *>;
+
+			auto chr_it = it_t( ptr );
 			while( *chr_it.base( ) != '\0' ) {
 				auto const cp = *chr_it++;
 				switch( cp ) {
@@ -298,16 +310,25 @@ namespace daw::json::impl {
 					*it++ = 't';
 					break;
 				default:
-					if( cp < 0x20U or ( cp >= 0x7FU and cp <= 0xFFFFU ) ) {
-						it = output_hex( static_cast<uint16_t>( cp ), it );
-					} else if( cp > 0xFFFFU ) {
-						it = output_hex( static_cast<uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
-						                 it );
-						it = output_hex( static_cast<uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ),
-						                 it );
-					} else {
-						*it++ = static_cast<char>( cp );
+					if constexpr( disallow_high8 ) {
+						if( cp < 0x20U ) {
+							it = output_hex( static_cast<uint16_t>( cp ), it );
+							break;
+						}
+						if( cp >= 0x7FU and cp <= 0xFFFFU ) {
+							it = output_hex( static_cast<uint16_t>( cp ), it );
+							break;
+						}
+						if( cp > 0xFFFFU ) {
+							it = output_hex( static_cast<uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
+							                 it );
+							it = output_hex(
+							  static_cast<uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
+							break;
+						}
 					}
+					*it++ = static_cast<char>( cp );
+					break;
 				}
 			}
 		} else {
