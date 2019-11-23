@@ -59,4 +59,15 @@ int main( int argc, char **argv ) {
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
+
+	std::optional<std::string> str{};
+	daw::bench_n_test_mbs<100>(
+	  "twitter_catalog bench(to_json_string)", sz,
+	  [&str]( auto const &tr ) {
+		  str = daw::json::to_json( *tr );
+		  daw::do_not_optimize( str );
+	  },
+	  twitter_result );
+	daw_json_assert( str, "Expected a string value" );
+	daw::do_not_optimize( *str );
 }
