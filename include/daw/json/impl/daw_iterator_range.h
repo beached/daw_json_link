@@ -119,6 +119,21 @@ namespace daw::json::impl {
 			}
 		}
 
+		constexpr void trim_left_escaped_no_check( ) noexcept {
+			while( is_space( ) or front( ) == '\\' ) {
+				if( front( ) == '\\' ) {
+					auto ptr = first + 1;
+					if( *ptr == 'b' or *ptr == 'f' or *ptr == 'n' or *ptr == 'r' or
+					    *ptr == 't' ) {
+						remove_prefix( );
+					} else {
+						break;
+					}
+				}
+				remove_prefix( );
+			}
+		}
+
 		constexpr void trim_left_no_check( ) noexcept {
 			while( is_space( ) ) {
 				remove_prefix( );
