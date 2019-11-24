@@ -50,6 +50,7 @@
 namespace daw::json {
 	template<typename... JsonMembers>
 	struct class_description_t {
+
 		template<typename OutputIterator, typename... Args>
 		[[maybe_unused, nodiscard]] static constexpr OutputIterator
 		serialize( OutputIterator it, std::tuple<Args...> const &args ) {
@@ -376,6 +377,9 @@ namespace daw::json {
 	template<typename T>
 	[[maybe_unused, nodiscard]] constexpr T
 	from_json( std::string_view json_data ) {
+		static_assert(
+		  impl::has_json_parser_description_v<T>,
+		  "Expected a typed that has been mapped via describe_json_class" );
 		return impl::from_json_impl<T, false>( json_data );
 	}
 
@@ -389,6 +393,10 @@ namespace daw::json {
 	template<typename T>
 	[[maybe_unused, nodiscard]] constexpr T
 	from_json_trusted( std::string_view json_data ) {
+		static_assert(
+		  impl::has_json_parser_description_v<T>,
+		  "Expected a typed that has been mapped via describe_json_class" );
+
 		return impl::from_json_impl<T, true>( json_data );
 	}
 
@@ -453,6 +461,8 @@ namespace daw::json {
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data ) {
+		static_assert( impl::is_a_json_type_v<JsonElement>,
+		               "Expected a json type to parse in array" );
 		return impl::from_json_array_impl<false, JsonElement, Container,
 		                                  Constructor, Appender>( json_data );
 	}
@@ -473,6 +483,9 @@ namespace daw::json {
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array_trusted( std::string_view json_data ) {
+		static_assert( impl::is_a_json_type_v<JsonElement>,
+		               "Expected a json type to parse in array" );
+
 		return impl::from_json_array_impl<true, JsonElement, Container, Constructor,
 		                                  Appender>( json_data );
 	}
@@ -495,6 +508,7 @@ namespace daw::json {
 			result += to_json( v );
 			result += ',';
 		}
+		// The last character will be a ',' prior to this
 		result.back( ) = ']';
 		return result;
 	}

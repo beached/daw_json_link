@@ -53,6 +53,10 @@ namespace daw::json::impl {
 	using json_parser_description_t = daw::remove_cvref_t<decltype(
 	  describe_json_class( std::declval<std::add_lvalue_reference_t<T>>( ) ) )>;
 
+	template<typename T>
+	static inline constexpr bool has_json_parser_description_v =
+	  daw::is_detected_v<json_parser_description_t, T>;
+
 	template<typename JsonMember>
 	using json_result = typename JsonMember::parse_to_t;
 
@@ -84,10 +88,6 @@ namespace daw::json::impl {
 			}
 		}
 	};
-
-	template<typename T>
-	static inline constexpr bool has_json_parser_description_v =
-	  daw::is_detected_v<json_parser_description_t, T>;
 
 	template<typename T>
 	using json_parser_to_json_data_t =
