@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <cstdio>
+
 #pragma once
 
 #if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
@@ -56,6 +58,7 @@ template<bool ShouldThrow = use_daw_json_exceptions_v>
 [[maybe_unused, noreturn]] void daw_json_error(
   std::string_view reason ) noexcept( not use_daw_json_exceptions_v ) {
 	if constexpr( ShouldThrow ) {
+		puts( reason.data( ) );
 		throw daw::json::json_exception( reason );
 	} else {
 		(void)reason;
@@ -85,7 +88,7 @@ template<typename Bool, size_t N>
 constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) noexcept(
   not use_daw_json_exceptions_v ) {
 	if( not static_cast<bool>( b ) ) {
-		json_error( std::string_view( reason ) );
+		daw_json_error( std::string_view( reason ) );
 	}
 }
 

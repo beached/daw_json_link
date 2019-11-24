@@ -44,11 +44,12 @@ namespace daw::json::impl {
 	  IteratorRange<First, Last, TrustedInput> &rng ) {
 		if constexpr( JsonMember::literal_as_string == LiteralAsStringOpt::never ) {
 			return;
-		} else if constexpr( JsonMember::literal_as_string ==
+			// Temporary fix as right now we are only sometimes having strings to skip
+	/*	else if constexpr( JsonMember::literal_as_string ==
 		                     LiteralAsStringOpt::always ) {
 			rng.remove_prefix( );
 			return;
-		} else {
+	*/	} else {
 			if( rng.front( ) == '"' ) {
 				rng.remove_prefix( );
 			}

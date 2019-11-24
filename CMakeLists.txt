@@ -298,6 +298,11 @@ add_test(NAME cookbook_enums2_test COMMAND cookbook_enums2_test_bin ./cookbook_e
 add_dependencies(check cookbook_enums2_test_bin)
 add_dependencies(full cookbook_enums2_test_bin)
 
+add_executable(cookbook_graphs1_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_graphs1_test.cpp)
+add_dependencies(cookbook_graphs1_test_bin dependency_stub)
+add_test(NAME cookbook_graphs1_test COMMAND cookbook_graphs1_test_bin ./cookbook_graphs1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies(check cookbook_graphs1_test_bin)
+add_dependencies(full cookbook_graphs1_test_bin)
 
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
