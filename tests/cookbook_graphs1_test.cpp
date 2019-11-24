@@ -124,7 +124,7 @@ struct Node {
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {
-		puts( "Must supply path to cookbook_enums2.json file\n" );
+		puts( "Must supply path to cookbook_graphs1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
