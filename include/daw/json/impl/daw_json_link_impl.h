@@ -406,7 +406,8 @@ namespace daw::json::impl {
 
 		auto rng = IteratorRange<char const *, char const *, TrustedInput>(
 		  std::data( str ), std::data( str ) + std::size( str ) );
-		if( not start_path.empty( ) ) {
+		rng.trim_left( );
+		if( rng.has_more( ) and not start_path.empty( ) ) {
 			find_range2( rng, start_path );
 		}
 		daw_json_assert( rng.front( ) == '[', "Expected start of json array" );

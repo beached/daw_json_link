@@ -263,18 +263,17 @@ int main( ) {
 			result.back( ) = ']';
 			return result;
 		}( );
-
-		daw::string_view json_sv{json_data3.data( ), json_data3.size( )};
+		auto json_sv3 = daw::string_view( json_data3.data( ), json_data3.size( ) );
 		auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<100>(
-			  "p4. parsing", json_sv.size( ),
+			  "p4. parsing", json_sv3.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );
 				  return ptr - data2.get( );
 			  },
-			  json_sv );
+			  json_sv3 );
 
 			std::cout << "double parse count: " << count3 << '\n';
 		}
