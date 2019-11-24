@@ -282,6 +282,9 @@ add_test(NAME full_unicode_roundtrip_test COMMAND full_unicode_roundtrip_test_bi
 add_dependencies(check full_unicode_roundtrip_test_bin)
 add_dependencies(full full_unicode_roundtrip_test_bin)
 
+add_executable(make_full24_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/make_full24.cpp)
+add_dependencies(make_full24_bin dependency_stub)
+add_dependencies(full make_full24_bin)
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
