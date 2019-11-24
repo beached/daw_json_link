@@ -437,7 +437,13 @@ namespace daw::json::impl {
 
 		using ::daw::json::to_strings::to_string;
 		using std::to_string;
-		return copy_to_iterator( to_string( value ), it );
+		if constexpr( std::is_enum_v<parse_to_t> ) {
+			return copy_to_iterator(
+			  to_string( static_cast<std::underlying_type_t<parse_to_t>>( value ) ),
+			  it );
+		} else {
+			return copy_to_iterator( to_string( value ), it );
+		}
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -451,7 +457,13 @@ namespace daw::json::impl {
 
 		using ::daw::json::to_strings::to_string;
 		using std::to_string;
-		return copy_to_iterator( to_string( value ), it );
+		if constexpr( std::is_enum_v<parse_to_t> ) {
+			return copy_to_iterator(
+			  to_string( static_cast<std::underlying_type_t<parse_to_t>>( value ) ),
+			  it );
+		} else {
+			return copy_to_iterator( to_string( value ), it );
+		}
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>

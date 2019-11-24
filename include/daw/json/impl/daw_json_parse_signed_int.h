@@ -65,14 +65,15 @@ namespace daw::json::impl {
 		daw_json_assert_untrusted( rng.front( "+-0123456789" ),
 		                           "Expected +,-, or a digit" );
 
-		using result_t = std::conditional_t<RangeCheck, intmax_t, Result>;
+		using result_t = std::conditional_t<RangeCheck or std::is_enum_v<Result>,
+		                                    intmax_t, Result>;
 		using namespace daw::json::impl::signedint;
 		auto [result, ptr] = signed_parser<result_t>::parse( rng.first );
 		rng.first = ptr;
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
 		} else {
-			return result;
+			return static_cast<Result>( result );
 		}
 	}
 } // namespace daw::json::impl
