@@ -369,8 +369,8 @@ namespace daw::json::impl {
 			json_path_item.remove_prefix( );
 		}
 		while( not json_path_item.empty( ) and not member_name.empty( ) ) {
-			if( json_path_item.front( ) == member_name.front( ) ) {
-				return true;
+			if( json_path_item.front( ) != member_name.front( ) ) {
+				return false;
 			}
 			json_path_item.remove_prefix( );
 			if( not json_path_item.empty( ) and json_path_item.front( ) == '\\' ) {
@@ -409,6 +409,7 @@ namespace daw::json::impl {
 		if( not start_path.empty( ) ) {
 			find_range2( rng, start_path );
 		}
+		daw_json_assert( rng.front( ) == '[', "Expected start of json array" );
 		return rng;
 	}
 

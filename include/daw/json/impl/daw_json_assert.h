@@ -85,7 +85,7 @@ template<typename Bool, size_t N>
 constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) noexcept(
   not use_daw_json_exceptions_v ) {
 	if( not static_cast<bool>( b ) ) {
-		json_error( std::string_view( reason ) );
+		daw_json_error( std::string_view( reason ) );
 	}
 }
 
