@@ -126,10 +126,8 @@ namespace daw::json {
 		using constructor_t = Constructor;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type =
-		  std::is_floating_point_v<T>
-		    ? JsonParseTypes::Real
-		    : std::is_unsigned_v<T> ? JsonParseTypes::Unsigned
-		                            : JsonParseTypes::Signed;
+		  std::is_floating_point_v<T> ? JsonParseTypes::Real
+		                              : impl::number_parse_type_v<T>;
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
 		static constexpr bool range_check = RangeCheck;
 	};
@@ -501,4 +499,3 @@ namespace daw::json {
 		return result;
 	}
 } // namespace daw::json
-

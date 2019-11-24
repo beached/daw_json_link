@@ -286,6 +286,20 @@ add_executable(make_full24_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/m
 add_dependencies(make_full24_bin dependency_stub)
 add_dependencies(full make_full24_bin)
 
+add_executable(cookbook_enums1_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_enums1_test.cpp)
+add_dependencies(cookbook_enums1_test_bin dependency_stub)
+add_test(NAME cookbook_enums1_test COMMAND cookbook_enums1_test_bin ./cookbook_enums1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies(check cookbook_enums1_test_bin)
+add_dependencies(full cookbook_enums1_test_bin)
+
+add_executable(cookbook_enums2_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_enums2_test.cpp)
+add_dependencies(cookbook_enums2_test_bin dependency_stub)
+add_test(NAME cookbook_enums2_test COMMAND cookbook_enums2_test_bin ./cookbook_enums2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/" )
+add_dependencies(check cookbook_enums2_test_bin)
+add_dependencies(full cookbook_enums2_test_bin)
+
+
+
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")

@@ -82,14 +82,15 @@ namespace daw::json::impl {
 		                           "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
-		using result_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
+		using result_t = std::conditional_t<RangeCheck or std::is_enum_v<Result>,
+		                                    uintmax_t, Result>;
 		auto [result, ptr] = unsigned_parser<result_t>::parse( rng.first );
 		rng.first = ptr;
 
 		if constexpr( RangeCheck ) {
 			return daw::narrow_cast<Result>( result );
 		} else {
-			return result;
+			return static_cast<Result>( result );
 		}
 	}
 } // namespace daw::json::impl

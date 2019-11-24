@@ -290,9 +290,10 @@ Marks a json member(see below) as nullable.  This includes being missing or havi
 ### json_number
 ```cpp
 template<JSONNAMETYPE Name, 
-    typename T = double, 
-	LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
-    typename Constructor = daw::construct_a<T>>
+  typename T = double, 
+  LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
+  typename Constructor = daw::construct_a<T>
+>
 struct json_number
 ``` 
 The defaults for json_number will construct a ```double``` with the supplied name.  However, there are some optimization with using an exact match arithmetic type like a float or int.  Integer parsing is faster than floating point if you know you will always get whole numbers.
@@ -360,10 +361,9 @@ template<JSONNAMETYPE Name,
 	typename ToConverter = custom_to_converter_t<T>>
 struct json_custom
 ``` 
-```json_enum``` allows one to map unusual types.  The FromConverter is fed the raw value that is in the json and returns a T.  The ToConverter outputs a string from the T value.
+```json_custom``` allows one to map unusual types.  The FromConverter is fed the raw value that is in the json and returns a T.  The ToConverter outputs a string from the T value.
 ```FromConverter``` A class who's operator( ) take a string_view and returns a T;  The default calls from_string( daw::tag_t<T>, T ).
 ```ToConverter``` A class who's operator( ) is takes a T value and returns a string like type.  The default uses to_string( T ).
-
 
 ### json_class
 ```cpp

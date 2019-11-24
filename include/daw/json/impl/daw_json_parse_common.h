@@ -206,6 +206,28 @@ namespace daw::json {
 		Custom
 	};
 
+	namespace impl {
+		template<typename T>
+		inline constexpr JsonParseTypes number_parse_type_impl_v =
+		  std::is_signed_v<T> ? JsonParseTypes::Signed : JsonParseTypes::Unsigned;
+
+		template<typename T>
+		constexpr auto number_parse_type_test( )
+		  -> std::enable_if_t<std::is_enum_v<T>, JsonParseTypes> {
+
+			return number_parse_type_impl_v<std::underlying_type_t<T>>;
+		}
+		template<typename T>
+		constexpr auto number_parse_type_test( )
+		  -> std::enable_if_t<not std::is_enum_v<T>, JsonParseTypes> {
+
+			return number_parse_type_impl_v<T>;
+		}
+		template<typename T>
+		inline constexpr JsonParseTypes
+		  number_parse_type_v = number_parse_type_test<T>( );
+	} // namespace impl
+
 	/**
 	 * Tag lookup for parsing overload selection
 	 */
