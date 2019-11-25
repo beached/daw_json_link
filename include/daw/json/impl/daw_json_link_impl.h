@@ -49,6 +49,7 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_value.h"
 #include "daw_json_to_string.h"
+#include "daw_json_type_base.h"
 
 namespace daw::json {
 	struct parse_js_date {
@@ -281,9 +282,9 @@ namespace daw::json::impl {
 		return locations[pos].location;
 	}
 
-	template<typename Result, typename JsonMember, size_t N, typename First,
-	         typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr Result
+	template<typename JsonMember, size_t N, typename First, typename Last,
+	         bool TrustedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_class_member( size_t member_position,
 	                    locations_info_t<N, First, Last, TrustedInput> &locations,
 	                    IteratorRange<First, Last, TrustedInput> &rng ) {
@@ -291,7 +292,7 @@ namespace daw::json::impl {
 		rng.clean_tail( );
 		if constexpr( is_no_name<JsonMember::name> ) {
 			// If we are an array element
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+			return parse_value<typename JsonMember::base>( ParseTag<JsonMember::expected_type>{},
 			                                rng );
 		} else {
 			daw_json_assert_untrusted( rng.front( "\"}" ),
@@ -305,10 +306,10 @@ namespace daw::json::impl {
 			if( loc.is_null( ) or
 			    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 
-				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+				return parse_value<typename JsonMember::base>( ParseTag<JsonMember::expected_type>{},
 				                                loc );
 			}
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+			return parse_value<typename JsonMember::base>( ParseTag<JsonMember::expected_type>{},
 			                                rng );
 		}
 	}
@@ -360,8 +361,7 @@ namespace daw::json::impl {
 			  known_locations_v<First, Last, TrustedInput, JsonMembers...>;
 
 			Result result = daw::construct_a<Result>(
-			  parse_class_member<json_result_n<Is, JsonMembers...>,
-			                     traits::nth_type<Is, JsonMembers...>>(
+			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng )... );
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
