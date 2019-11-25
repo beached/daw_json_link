@@ -55,15 +55,19 @@ inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
 template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] void daw_json_error(
-  std::string_view reason ) noexcept( not use_daw_json_exceptions_v ) {
+[[maybe_unused, noreturn]] void
+daw_json_error( std::string_view reason ) noexcept( not ShouldThrow ) {
+#ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
-		puts( reason.data( ) );
 		throw daw::json::json_exception( reason );
 	} else {
+#endif
+		(void)ShouldThrow;
 		(void)reason;
 		std::abort( );
+#ifdef DAW_USE_JSON_EXCEPTIONS
 	}
+#endif
 }
 
 #ifdef DAW_JSON_CHECK_ALWAYS
