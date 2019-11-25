@@ -50,6 +50,7 @@
 namespace daw::json {
 	template<typename... JsonMembers>
 	struct class_description_t {
+
 		template<typename OutputIterator, typename... Args>
 		[[maybe_unused, nodiscard]] static constexpr OutputIterator
 		serialize( OutputIterator it, std::tuple<Args...> const &args ) {
@@ -99,7 +100,7 @@ namespace daw::json {
 		using sub_type = JsonMember;
 		static constexpr JSONNAMETYPE name = JsonMember::name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Null;
-
+		using base = json_nullable;
 		static_assert( std::is_invocable_v<constructor_t>,
 		               "Specified constructor must be callable without arguments" );
 	};
@@ -130,6 +131,8 @@ namespace daw::json {
 		                              : impl::number_parse_type_v<T>;
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
 		static constexpr bool range_check = RangeCheck;
+		using base = impl::json_number_base<T, LiteralAsString, Constructor,
+		                                    expected_type, RangeCheck>;
 	};
 
 	/**
@@ -170,6 +173,7 @@ namespace daw::json {
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
+		using base = impl::json_bool_base<T, LiteralAsString, Constructor>;
 	};
 
 	/**
@@ -196,6 +200,9 @@ namespace daw::json {
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::String;
 		static constexpr bool empty_is_null = EmptyStringNull;
 		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
+		using base =
+		  impl::json_string_raw_base<String, Constructor, EmptyStringNull,
+		                             DisallowHighEightBit>;
 	};
 
 	/**
@@ -225,6 +232,8 @@ namespace daw::json {
 		  JsonParseTypes::StringEscaped;
 		static constexpr bool empty_is_null = EmptyStringNull;
 		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
+		using base = impl::json_string_base<String, Constructor, Appender,
+		                                    EmptyStringNull, DisallowHighEightBit>;
 	};
 
 	/** Link to a JSON string representing a date
@@ -247,6 +256,7 @@ namespace daw::json {
 		using constructor_t = Constructor;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
+		using base = impl::json_date_base<T, Constructor>;
 	};
 
 	/**
@@ -264,6 +274,7 @@ namespace daw::json {
 		using constructor_t = Constructor;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
+		using base = impl::json_class_base<T, Constructor>;
 	};
 
 	template<JSONNAMETYPE Name, typename T,
@@ -278,6 +289,8 @@ namespace daw::json {
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Custom;
 		static constexpr bool const is_string = IsString;
+		using base =
+		  impl::json_custom_base<T, FromConverter, ToConverter, IsString>;
 	};
 
 	/** Link to a JSON array
@@ -304,6 +317,7 @@ namespace daw::json {
 		using json_element_t = JsonElement;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
+		using base = impl::json_array_base<Container, JsonElement, Constructor, Appender>;
 
 		static_assert( json_element_t::name == no_name,
 		               "All elements of json_array must be have no_name" );
@@ -335,6 +349,8 @@ namespace daw::json {
 		using json_key_t = JsonKeyType;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::KeyValue;
+		using base = impl::json_key_value_base<Container, JsonValueType,
+		                                       JsonKeyType, Constructor, Appender>;
 	};
 
 	/** Map a KV type json array [ {"key": ValueOfKeyType, "value":
@@ -364,6 +380,9 @@ namespace daw::json {
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  JsonParseTypes::KeyValueArray;
+		using base =
+		  impl::json_key_value_array_base<Container, JsonValueType, JsonKeyType,
+		                                  Constructor, Appender>;
 	};
 
 	/**
@@ -376,6 +395,9 @@ namespace daw::json {
 	template<typename T>
 	[[maybe_unused, nodiscard]] constexpr T
 	from_json( std::string_view json_data ) {
+		static_assert(
+		  impl::has_json_parser_description_v<T>,
+		  "Expected a typed that has been mapped via describe_json_class" );
 		return impl::from_json_impl<T, false>( json_data );
 	}
 
@@ -389,6 +411,10 @@ namespace daw::json {
 	template<typename T>
 	[[maybe_unused, nodiscard]] constexpr T
 	from_json_trusted( std::string_view json_data ) {
+		static_assert(
+		  impl::has_json_parser_description_v<T>,
+		  "Expected a typed that has been mapped via describe_json_class" );
+
 		return impl::from_json_impl<T, true>( json_data );
 	}
 
@@ -453,6 +479,8 @@ namespace daw::json {
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data ) {
+		static_assert( impl::is_a_json_type_v<JsonElement>,
+		               "Expected a json type to parse in array" );
 		return impl::from_json_array_impl<false, JsonElement, Container,
 		                                  Constructor, Appender>( json_data );
 	}
@@ -473,6 +501,9 @@ namespace daw::json {
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array_trusted( std::string_view json_data ) {
+		static_assert( impl::is_a_json_type_v<JsonElement>,
+		               "Expected a json type to parse in array" );
+
 		return impl::from_json_array_impl<true, JsonElement, Container, Constructor,
 		                                  Appender>( json_data );
 	}
@@ -495,6 +526,7 @@ namespace daw::json {
 			result += to_json( v );
 			result += ',';
 		}
+		// The last character will be a ',' prior to this
 		result.back( ) = ']';
 		return result;
 	}

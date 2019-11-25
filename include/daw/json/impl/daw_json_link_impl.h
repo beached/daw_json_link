@@ -49,6 +49,7 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_value.h"
 #include "daw_json_to_string.h"
+#include "daw_json_type_base.h"
 
 namespace daw::json {
 	struct parse_js_date {
@@ -182,36 +183,6 @@ namespace daw::json::impl {
 		return kv_t<string_t>( type_t::name, type_t::expected_type, N );
 	}
 
-	template<typename... JsonMembers, size_t... Is>
-	[[nodiscard]] static constexpr auto
-	make_map( std::index_sequence<Is...> ) noexcept {
-		using string_t = daw::string_view;
-
-		return daw::make_array( get_item<Is, string_t, JsonMembers...>( )... );
-	}
-
-	template<typename... JsonMembers>
-	struct name_map_t {
-		static constexpr auto name_map_data =
-		  make_map<JsonMembers...>( std::index_sequence_for<JsonMembers...>{} );
-
-		[[nodiscard]] static constexpr size_t size( ) noexcept {
-			return sizeof...( JsonMembers );
-		}
-
-		[[nodiscard]] static constexpr size_t
-		find_name( daw::string_view key ) noexcept {
-			using std::begin;
-			using std::end;
-			auto result = algorithm::find_if(
-			  begin( name_map_data ), end( name_map_data ),
-			  [key]( auto const &kv ) { return kv.name == key; } );
-
-			return static_cast<size_t>(
-			  std::distance( begin( name_map_data ), result ) );
-		}
-	};
-
 	template<typename First, typename Last, bool TrustedInput>
 	struct location_info_t {
 		daw::string_view name;
@@ -225,24 +196,70 @@ namespace daw::json::impl {
 		}
 	};
 
-	template<size_t pos, typename... JsonMembers, typename First, typename Last,
+	template<size_t N, typename First, typename Last, bool TrustedInput>
+	struct locations_info_t {
+		using value_type = location_info_t<First, Last, TrustedInput>;
+		std::array<value_type, N> names;
+
+		constexpr decltype( auto ) begin( ) const {
+			return names.begin( );
+		}
+
+		constexpr decltype( auto ) begin( ) {
+			return names.begin( );
+		}
+
+		constexpr decltype( auto ) end( ) const {
+			return names.end( );
+		}
+
+		constexpr decltype( auto ) end( ) {
+			return names.end( );
+		}
+
+		constexpr location_info_t<First, Last, TrustedInput> const &
+		operator[]( size_t idx ) const {
+			return names[idx];
+		}
+
+		constexpr location_info_t<First, Last, TrustedInput> &
+		operator[]( size_t idx ) {
+			return names[idx];
+		}
+
+		static constexpr size_t size( ) noexcept {
+			return N;
+		}
+
+		[[nodiscard]] constexpr size_t find_name( daw::string_view key ) const
+		  noexcept {
+
+			auto result =
+			  algorithm::find_if( begin( ), end( ), [key]( auto const &loc ) {
+				  return loc.name == key;
+			  } );
+
+			return static_cast<size_t>( std::distance( begin( ), result ) );
+		}
+	};
+
+	template<typename JsonMember, size_t N, typename First, typename Last,
 	         bool TrustedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	find_class_member( std::array<location_info_t<First, Last, TrustedInput>,
-	                              sizeof...( JsonMembers )> &locations,
+	find_class_member( size_t pos,
+	                   locations_info_t<N, First, Last, TrustedInput> &locations,
 	                   IteratorRange<First, Last, TrustedInput> &rng ) {
 
 		daw_json_assert_untrusted(
-		  is_json_nullable_v<daw::traits::nth_element<pos, JsonMembers...>> or
-		    not locations[pos].missing( ) or not rng.front( '}' ),
+		  is_json_nullable_v<JsonMember> or not locations[pos].missing( ) or
+		    not rng.front( '}' ),
 		  "Unexpected end of class.  Non-nullable members still not found" );
 
 		rng.trim_left_no_check( );
 		while( locations[pos].missing( ) and rng.front( ) != '}' ) {
-			using name_map = name_map_t<JsonMembers...>;
 			auto const name = parse_name( rng );
-			auto const name_pos = name_map::find_name( name );
-			if( name_pos >= name_map::size( ) ) {
+			auto const name_pos = locations.find_name( name );
+			if( name_pos >= locations.size( ) ) {
 				// This is not a member we are concerned with
 				(void)skip_value( rng );
 				rng.clean_tail( );
@@ -265,26 +282,23 @@ namespace daw::json::impl {
 		return locations[pos].location;
 	}
 
-	template<size_t JsonMemberPosition, typename... JsonMembers, typename First,
-	         typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr json_result_n<JsonMemberPosition,
-	                                             JsonMembers...>
-	parse_class_member( std::array<location_info_t<First, Last, TrustedInput>,
-	                               sizeof...( JsonMembers )> &locations,
+	template<typename JsonMember, size_t N, typename First, typename Last,
+	         bool TrustedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_class_member( size_t member_position,
+	                    locations_info_t<N, First, Last, TrustedInput> &locations,
 	                    IteratorRange<First, Last, TrustedInput> &rng ) {
-
-		using JsonMember = traits::nth_type<JsonMemberPosition, JsonMembers...>;
 
 		rng.clean_tail( );
 		if constexpr( is_no_name<JsonMember::name> ) {
 			// If we are an array element
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
-			                                rng );
+			return parse_value<typename JsonMember::base>(
+			  ParseTag<JsonMember::expected_type>{}, rng );
 		} else {
 			daw_json_assert_untrusted( rng.front( "\"}" ),
 			                           "Expected end of class or start of member" );
 			auto loc =
-			  find_class_member<JsonMemberPosition, JsonMembers...>( locations, rng );
+			  find_class_member<JsonMember>( member_position, locations, rng );
 
 			daw_json_assert_untrusted(
 			  JsonMember::expected_type == JsonParseTypes::Null or not loc.is_null( ),
@@ -292,11 +306,11 @@ namespace daw::json::impl {
 			if( loc.is_null( ) or
 			    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 
-				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
-				                                loc );
+				return parse_value<typename JsonMember::base>(
+				  ParseTag<JsonMember::expected_type>{}, loc );
 			}
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
-			                                rng );
+			return parse_value<typename JsonMember::base>(
+			  ParseTag<JsonMember::expected_type>{}, rng );
 		}
 	}
 
@@ -316,10 +330,12 @@ namespace daw::json::impl {
 		*it++ = '}';
 		return it;
 	}
+
 	template<typename First, typename Last, bool TrustedInput,
 	         typename... JsonMembers>
-	inline constexpr auto known_locations_v = daw::make_array(
-	  location_info_t<First, Last, TrustedInput>( JsonMembers::name )... );
+	inline constexpr auto known_locations_v =
+	  locations_info_t<sizeof...( JsonMembers ), First, Last, TrustedInput>{
+	    location_info_t<First, Last, TrustedInput>( JsonMembers::name )...};
 
 	template<typename Result, typename... JsonMembers, size_t... Is,
 	         typename First, typename Last, bool TrustedInput>
@@ -345,7 +361,8 @@ namespace daw::json::impl {
 			  known_locations_v<First, Last, TrustedInput, JsonMembers...>;
 
 			Result result = daw::construct_a<Result>(
-			  parse_class_member<Is, JsonMembers...>( known_locations, rng )... );
+			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... );
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
 			while( rng.front( ) != '}' ) {
