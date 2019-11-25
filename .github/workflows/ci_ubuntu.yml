@@ -17,9 +17,7 @@ jobs:
     - name: Download & Build Dependencies
       run: |        
         sudo apt update
-        sudo apt install clang-9
-    - name: Run make_deps
-      run: ./make_deps.sh
+        sudo apt install clang-9 libc++-9-dev libc++abi-9-dev
     - name: Build and Test
-      run: ./ci_test.sh
+      run: ./ci_test_ubuntu.sh
        
