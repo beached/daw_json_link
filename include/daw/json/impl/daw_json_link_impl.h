@@ -360,9 +360,15 @@ namespace daw::json::impl {
 			auto known_locations =
 			  known_locations_v<First, Last, TrustedInput, JsonMembers...>;
 
+			Result result = std::apply(
+			  daw::construct_a<Result>,
+			  std::tuple{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )...} );
+			/*
 			Result result = daw::construct_a<Result>(
 			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng )... );
+			    */
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
 			while( rng.front( ) != '}' ) {
