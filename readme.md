@@ -4,7 +4,9 @@
 This library is different.  It assumes we know what data structures we will be recieving and uses that knowledge to provide a clean interface for parsing.  Describing the mappings between JSON and C++, one needs only one method to parse and an additional one for serialization.
 
 ## Code Examples
-There are examples of json patterns and the code to map them to C++ in the [Cookbook](cookbook/) section. Also, the [tests](tests/) provide another source of working code samples. In addition, there are some small samples below
+* The  [Cookbook](cookbook/) section has precanned tasks and working code examples
+* [Tests](tests/) provide another source of working code samples. 
+* Small samples below
 
 ### Installing and Requirements
 ## Requirements
