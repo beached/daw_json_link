@@ -302,8 +302,8 @@ std::string json_array_data = to_json_array( values );
 ### Installing and Requirements
 ## Requirements
 * C++ 17 compiler, C++ 20 for enhanced names
-* GCC(8/9)/Clang(7/8) have been tested.  
-* MSVC 19.21 has been tested. Must copy `glean.cmake.renamewin` to `glean.cmake` prior to running cmake.  
+* GCC(8/9)/Clang(7/8/9) have been tested.  
+* MSVC 19.21 has been tested. 
 # For building tests
 * git
 * cmake
