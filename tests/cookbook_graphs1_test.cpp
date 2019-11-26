@@ -132,13 +132,9 @@ int main( int argc, char **argv ) {
 
 	daw::graph_t<Node> g{};
 	using namespace daw::json;
-	using node_iterator_t = daw::json::json_array_iterator<
-	  json_class<no_name, daw::cookbook_graphs1::GraphNode>>;
 
-	auto const last_node = node_iterator_t( );
-	for( auto it = node_iterator_t( json_sv, "nodes" ); it != last_node; ++it ) {
-		// json_array_iterator is an input iterator and only has operator*
-		auto node = *it;
+	using node_range_t = json_array_range<daw::cookbook_graphs1::GraphNode>;
+	for( auto node : node_range_t( json_sv, "nodes" ) ) {
 		g.add_node( node.id, node.metadata.member0, node.metadata.member1,
 		            node.metadata.member2 );
 	}
@@ -157,12 +153,9 @@ int main( int argc, char **argv ) {
 		daw_json_assert( result, "Expected a result" );
 		return g.get_node( *result );
 	};
-	using edge_iterator_t =
-	  json_array_iterator<json_class<no_name, daw::cookbook_graphs1::GraphEdge>>;
-	auto const last_edge = edge_iterator_t( );
 
-	for( auto it = edge_iterator_t( json_sv, "edges" ); it != last_edge; ++it ) {
-		auto edge = *it;
+	using edge_range_t = json_array_range<daw::cookbook_graphs1::GraphEdge>;
+	for( auto edge : edge_range_t( json_sv, "edges" ) ) {
 		auto source_id = *find_node_id( edge.source );
 		auto target_id = *find_node_id( edge.target );
 

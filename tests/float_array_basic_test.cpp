@@ -77,7 +77,7 @@ Float rand_float( ) {
 int main( ) {
 	using namespace daw::json;
 	using iterator_t =
-	  daw::json::json_array_iterator<json_number<no_name, float>>;
+	  daw::json::json_array_iterator<float>;
 
 	std::string json_data3 = [] {
 		std::string result = "[";

@@ -90,8 +90,7 @@ int main( int argc, char **argv ) {
 	auto const json_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
-	using iterator_t =
-	  daw::json::json_array_iterator<json_class<no_name, coordinate_t>, true>;
+	using range_t = daw::json::json_array_range<coordinate_t, true>;
 
 	double x = 0.0;
 	double y = 0.0;
@@ -99,9 +98,7 @@ int main( int argc, char **argv ) {
 	size_t sz = 0U;
 
 	// first will be json_array_iterator to the array coordinates in root object
-	for( auto first = iterator_t( json_sv, "coordnates" ); first != iterator_t( );
-	     ++first ) {
-		auto const c = *first;
+	for( auto c : range_t( json_sv, "coordnates" ) ) {
 		++sz;
 		x += c.x;
 		y += c.y;

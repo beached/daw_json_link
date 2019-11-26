@@ -69,7 +69,7 @@ static void test_from_json_array( std::string_view json_sv ) {
 template<typename T>
 static void test_json_array_iterator( std::string_view json_sv ) {
 	using namespace daw::json;
-	using iterator_t = json_array_iterator_trusted<json_number<no_name, T>>;
+	using iterator_t = json_array_iterator_trusted<T>;
 	for( size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_sv );
 		auto first = iterator_t( json_sv );

@@ -86,7 +86,7 @@ int main( int argc, char **argv ) {
 	json_data += ",]\"}tfn"; // catch any thing looking for these values
 	auto json_sv = std::string_view( json_data.data( ), sz );
 
-	using iterator_t = daw::json::json_array_iterator<json_class<no_name, City>>;
+	using iterator_t = daw::json::json_array_iterator<City>;
 
 	auto const pos =
 	  std::find_if( iterator_t( json_sv ), iterator_t( ),

@@ -252,7 +252,7 @@ int main( ) {
 	{
 		// Unsigned
 		using iterator_t =
-		  daw::json::json_array_iterator<json_number<no_name, double>>;
+		  daw::json::json_array_iterator<double>;
 
 		std::string json_data3 = [] {
 			std::string result = "[";

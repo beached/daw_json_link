@@ -117,7 +117,7 @@ int main( ) {
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator_trusted<json_class<no_name, Number>>;
+		  daw::json::json_array_iterator_trusted<Number>;
 
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
@@ -149,7 +149,7 @@ int main( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator_trusted<json_number<no_name, intmax_t>>;
+		  daw::json::json_array_iterator_trusted<intmax_t>;
 
 		auto data = std::vector<intmax_t>( );
 		data.resize( NUMVALUES );
@@ -183,7 +183,7 @@ int main( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<json_class<no_name, Number>>;
+		  daw::json::json_array_iterator<Number>;
 
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
@@ -253,7 +253,7 @@ int main( ) {
 	{
 		// Unsigned
 		using iterator_t =
-		  daw::json::json_array_iterator_trusted<json_number<no_name, uintmax_t>>;
+		  daw::json::json_array_iterator_trusted<uintmax_t>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -295,7 +295,7 @@ int main( ) {
 	{
 		// Unsigned
 		using iterator_t =
-		  daw::json::json_array_iterator<json_number<no_name, uintmax_t>>;
+		  daw::json::json_array_iterator<uintmax_t>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
