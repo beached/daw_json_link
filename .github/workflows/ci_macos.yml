@@ -12,6 +12,8 @@ jobs:
     runs-on: [macOS-latest]
     steps:
       - uses: actions/checkout@v1
+      - name: Build Dependencies
+        run: ./ci_scripts/ci_macos_deps.sh  
       - name: Build
         run: ./ci_scripts/ci_macos_build.sh  
       - name: Test
