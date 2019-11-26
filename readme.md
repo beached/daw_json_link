@@ -7,7 +7,10 @@ The library is [MIT](LICENCE) licensed so its free to use, just have to give cre
 By using the know data structures in the JSON data we will be able to parse json as simply as 
 ```cpp
 MyThing thing = from_json<MyThing>( data );
-std::vector<MyThing> things = from_json_array<json_class<no_name, MyThing>>( data );
+```
+or
+```cpp
+std::vector<MyThing> things = from_json_array<json_class<no_name, MyThing>>( data2 );
 ```
 ## Code Examples
 * The  [Cookbook](cookbook/) section has precanned tasks and working code examples
