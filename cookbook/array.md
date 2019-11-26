@@ -9,7 +9,7 @@ The above JSON describes an array of integers
 The C++ to contain and parse this could look like
 To see a working example using this code, look at the [cookbook_array1_test.cpp](../tests/cookbook_array1_test.cpp) test in tests
 ```cpp
-auto vec = from_json_array<json_number<no_name, int>>( json_str );
+auto vec = from_json_array<int>( json_str );
 ```
 
 This is a simple example, had the element type of the array been more complicated, like a class we would have to describe that.
@@ -60,7 +60,7 @@ auto to_json_data( MyClass4 const & value ) {
 	return std::forward_as_tuple( value.a, value.b, value.c, value.d );
 }
 
-std::vector<MyClass4> v = from_json_array<MyClass4, std::vector<MyClass4>>( str );
+std::vector<MyClass4> v = from_json_array<MyClass4>( str );
 ```
 
 

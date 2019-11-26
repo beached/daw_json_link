@@ -40,7 +40,7 @@ int main( int argc, char **argv ) {
 	using namespace daw::json;
 
 	std::vector<int> const ve =
-	  from_json_array<json_number<no_name, int>>( {data.data( ), data.size( )} );
+	  from_json_array<int>( {data.data( ), data.size( )} );
 
 	int count = 1;
 	(void)count;

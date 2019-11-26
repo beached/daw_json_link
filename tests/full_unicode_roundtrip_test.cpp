@@ -77,12 +77,10 @@ int main( int argc, char **argv ) {
 	auto const json_str_escaped =
 	  daw::filesystem::memory_mapped_file_t<>( argv[2] );
 
-	auto unicode_test = from_json_array<json_class<no_name, unicode_data>,
-	                                    std::vector<unicode_data>>(
+	auto unicode_test = from_json_array<unicode_data>(
 	  std::string_view( json_str.data( ), json_str.size( ) ) );
 	auto unicode_test_from_escaped =
-	  from_json_array<json_class<no_name, unicode_data>,
-	                  std::vector<unicode_data>>(
+	  from_json_array<unicode_data>(
 	    std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
 
 	auto mismatch_pos = std::mismatch( unicode_test.begin( ), unicode_test.end( ),
@@ -91,8 +89,7 @@ int main( int argc, char **argv ) {
 	                 "Should be the same after parsing" );
 
 	auto const json_str2 = to_json_array( unicode_test );
-	auto unicode_test2 = from_json_array<json_class<no_name, unicode_data>,
-	                                     std::vector<unicode_data>>(
+	auto unicode_test2 = from_json_array<unicode_data>(
 	  std::string_view( json_str2.data( ), json_str2.size( ) ) );
 
 	auto mismatch_pos2 = std::mismatch(

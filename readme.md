@@ -1,8 +1,17 @@
 # JSON Link ![](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg) ![](https://github.com/beached/daw_json_link/workflows/Ubuntu/badge.svg) ![](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)
 
+This library provides serialization/deserialization of JSON documents with a known structure into a C++ typed structure.
 
-This library is different.  It assumes we know what data structures we will be recieving and uses that knowledge to provide a clean interface for parsing.  Describing the mappings between JSON and C++, one needs only one method to parse and an additional one for serialization.
+The library is [MIT](LICENCE) licensed so its free to use, just have to give credit.
 
+By using the know data structures in the JSON data we will be able to parse json as simply as 
+```cpp
+MyThing thing = from_json<MyThing>( data );
+```
+or
+```cpp
+std::vector<MyThing> things = from_json_array<MyThing>( data2 );
+```
 ## Code Examples
 * The  [Cookbook](cookbook/) section has precanned tasks and working code examples
 * [Tests](tests/) provide another source of working code samples. 
@@ -11,18 +20,28 @@ This library is different.  It assumes we know what data structures we will be r
 ## Api and Data Structures
 See the [api.md](api.md) document
 
-### Installing and Requirements
-## Requirements
-* C++ 17 compiler, C++ 20 for enhanced names
-* GCC(8/9)/Clang(7/8) have been tested.  Have not yet tested on MSVC
-* MSVC 19.21 has been tested. Must copy `glean.cmake.renamewin` to `glean.cmake` prior to running cmake.  
-# For building tests
-* git
-* cmake
+* [api.md](API)
+* [Cookbook](cookbook/)
+* [Installing](#installing)
+* [Performance considerations](#performance-considerations)
+* [Escaping/Unescaping of member names](#escaping/unescaping-of-member-names)
+* [Differences between C++17 and C++20](#differences-between-c++17-and-c++20)
+* [C++ 17 Naming of members](#c++-17-naming-of-members)
+* [C++ 20 Enhanced member naming](#c++-20-enhanced-member-naming)
+* [Using data types](#using-data-types)
+* [Error Handling](#error-handling)
+  * [Parsing call](#parsing-call)
+  * [Global](#global)
+* [Deserializing/Parsing](#deserializing/parsing)
+  * [Serialization](#serialization)
+    * [Installing and Requirements](#installing-and-requirements)
+  * [Requirements](#requirements)
+* [For building tests](#for-building-tests)
 
-## Installing(Linux/Mac commandline)
 
-The following will build and run the tests
+## Installing
+
+The following will build and run the tests.  Windows is close but uses `md` instead of `mkdir` to make the build folder
 ```
 git clone https://github.com/beached/daw_json_link
 cd daw_json_link
@@ -36,8 +55,6 @@ After the build there the examples can be tested.  ```city_test_bin``` requires 
 ```
 ./city_test_bin ../test_data/cities.json
 ```
-## Generating classes automatically
-Currently I have a another project https://github.com/beached/json_to_cpp that can output the data structures used in json data along with the code to use this library.
 
 ## Performance considerations
 The order of the data in the data structures should generally match that of the json data.  The parser is much faster if it doesn't have to back track for values.  Optional values where they are missing in the json data can slow down the parsing too.  If possible have them sent as null.
@@ -71,11 +88,11 @@ auto my_class = from_json_trusted<MyClass>( json_str );
 Or one can create a collection of your object from a JSON array
 
 ```C++
-auto my_data = from_json_array<json_class<no_name, MyClass>>( json_str );
+auto my_data = from_json_array<MyClass>( json_str );
 ```
 Alternatively, if the input is trusted you can called the less checked version
 ```C++
-auto my_data = from_json_array_trusted<json_class<no_name, MyClass>>( json_str );
+auto my_data = from_json_array_trusted<MyClass>( json_str );
 ```
 
 If you want to work from JSON array data you can get an iterator and use the std algorithms too
@@ -162,7 +179,7 @@ int main( ) {
         }])";
 
     TestClass test_class = daw::json::from_json<TestClass>( test_001_t_json_data );
-    std::vector<TestClass> arry_of_test_class = daw::json::from_json_array<json_class<no_name, TestClass>>( test_001_t_json_data );
+    std::vector<TestClass> arry_of_test_class = daw::json::from_json_array<TestClass>( test_001_t_json_data );
 }
 ```
 Both aggregate and normal construction is supported.  The description provides the values needed to construct your type and the order.  The order specified is the order they are placed into the constructor.  There are customization points to provide a way of constructing your type too(TODO discuss customization points)  A class like:
@@ -281,3 +298,16 @@ std::string test_001_t_json_data = to_json( value );
 std::vector<AggData> values = //...;
 std::string json_array_data = to_json_array( values );
 ```
+
+### Installing and Requirements
+## Requirements
+* C++ 17 compiler, C++ 20 for enhanced names
+* GCC(8/9)/Clang(7/8) have been tested.  
+* MSVC 19.21 has been tested. Must copy `glean.cmake.renamewin` to `glean.cmake` prior to running cmake.  
+# For building tests
+* git
+* cmake
+
+Darrell Wright
+
+json_link@dawdevel.ca

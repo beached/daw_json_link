@@ -106,7 +106,7 @@ int main( ) {
 		auto const count = *daw::bench_n_test_mbs<100>(
 		  "float parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data = from_json_array<json_class<no_name, Number>>( sv );
+			  auto const data = from_json_array<Number>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -139,7 +139,7 @@ int main( ) {
 		auto const count = *daw::bench_n_test_mbs<100>(
 		  "float parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data = from_json_array<json_number<no_name, float>>( sv );
+			  auto const data = from_json_array<float>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -174,7 +174,7 @@ int main( ) {
 		auto const count = *daw::bench_n_test_mbs<100>(
 		  "float parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data = from_json_array<json_class<no_name, Number>>( sv );
+			  auto const data = from_json_array<Number>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },

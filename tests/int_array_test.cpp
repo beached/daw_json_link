@@ -109,7 +109,7 @@ int main( ) {
 		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array_trusted<json_class<no_name, Number>>( sv );
+			    from_json_array_trusted<Number>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -141,7 +141,7 @@ int main( ) {
 		  "array of intmax_t: from_json_array", json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array_trusted<json_number<no_name, intmax_t>>( sv );
+			    from_json_array_trusted<intmax_t>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -175,7 +175,7 @@ int main( ) {
 		auto const count = *daw::bench_n_test_mbs<100>(
 		  "int parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data = from_json_array<json_class<no_name, Number>>( sv );
+			  auto const data = from_json_array<Number>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -280,8 +280,7 @@ int main( ) {
 			auto const count4 = *daw::bench_n_test_mbs<100>(
 			  "p5. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto result = daw::json::from_json_array_trusted<
-				    json_number<no_name, int_type>,
+				  auto result = daw::json::from_json_array_trusted<int_type,
 				    daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
 
 				  daw::do_not_optimize( result );
@@ -323,8 +322,7 @@ int main( ) {
 			auto const count4 = *daw::bench_n_test_mbs<100>(
 			  "p5. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto result = daw::json::from_json_array<
-				    json_number<no_name, int_type>,
+				  auto result = daw::json::from_json_array<int_type,
 				    daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
 
 				  daw::do_not_optimize( result );
