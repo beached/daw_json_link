@@ -12,6 +12,8 @@ jobs:
     runs-on: [macOS-latest]
     steps:
       - uses: actions/checkout@v1
-      - name: Build and Test
-        run: ./ci_test_macos.sh  
+      - name: Build
+        run: ./ci_macos_build.sh  
+      - name: Test
+        run: ./ci_macos_test.sh  
         

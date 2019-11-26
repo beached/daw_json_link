@@ -8,4 +8,3 @@ echo "Starting dep build"
 cmake --build . --config Debug --target -j 2
 echo "Starting full build"
 cmake --build . --config Debug --target full -j 2
-ctest -C Debug

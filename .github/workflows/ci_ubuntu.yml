@@ -18,6 +18,8 @@ jobs:
       run: |        
         sudo apt update
         sudo apt install clang-9 libc++-9-dev libc++abi-9-dev
-    - name: Build and Test
-      run: ./ci_test_ubuntu.sh
+    - name: Build
+      run: ./ci_ubuntu_build.sh
+    - name: Test
+      run: ./ci_ubuntu_test.sh
        
