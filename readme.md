@@ -10,7 +10,7 @@ MyThing thing = from_json<MyThing>( data );
 ```
 or
 ```cpp
-std::vector<MyThing> things = from_json_array<json_class<no_name, MyThing>>( data2 );
+std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 ```
 ## Code Examples
 * The  [Cookbook](cookbook/) section has precanned tasks and working code examples
@@ -88,11 +88,11 @@ auto my_class = from_json_trusted<MyClass>( json_str );
 Or one can create a collection of your object from a JSON array
 
 ```C++
-auto my_data = from_json_array<json_class<no_name, MyClass>>( json_str );
+auto my_data = from_json_array<MyClass>( json_str );
 ```
 Alternatively, if the input is trusted you can called the less checked version
 ```C++
-auto my_data = from_json_array_trusted<json_class<no_name, MyClass>>( json_str );
+auto my_data = from_json_array_trusted<MyClass>( json_str );
 ```
 
 If you want to work from JSON array data you can get an iterator and use the std algorithms too
@@ -179,7 +179,7 @@ int main( ) {
         }])";
 
     TestClass test_class = daw::json::from_json<TestClass>( test_001_t_json_data );
-    std::vector<TestClass> arry_of_test_class = daw::json::from_json_array<json_class<no_name, TestClass>>( test_001_t_json_data );
+    std::vector<TestClass> arry_of_test_class = daw::json::from_json_array<TestClass>( test_001_t_json_data );
 }
 ```
 Both aggregate and normal construction is supported.  The description provides the values needed to construct your type and the order.  The order specified is the order they are placed into the constructor.  There are customization points to provide a way of constructing your type too(TODO discuss customization points)  A class like:

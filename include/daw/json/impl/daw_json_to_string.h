@@ -687,6 +687,8 @@ namespace daw::json::impl {
 	template<typename T>
 	inline constexpr bool is_a_json_type_v = daw::is_detected_v<json_type_t, T>;
 
+
+
 	template<typename JsonMember, size_t pos, typename OutputIterator,
 	         typename... Args>
 	static constexpr void to_json_str( OutputIterator it,

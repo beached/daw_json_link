@@ -317,7 +317,8 @@ namespace daw::json {
 		using json_element_t = JsonElement;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
-		using base = impl::json_array_base<Container, JsonElement, Constructor, Appender>;
+		using base =
+		  impl::json_array_base<Container, JsonElement, Constructor, Appender>;
 
 		static_assert( json_element_t::name == no_name,
 		               "All elements of json_array must be have no_name" );
@@ -461,6 +462,17 @@ namespace daw::json {
 			return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
 			                                    rng );
 		}
+		template<typename T>
+		using ary_val_t = std::conditional_t<
+		  is_a_json_type_v<T>, T,
+		  std::conditional_t<
+		    has_json_parser_description_v<T>, json_class<no_name, T>,
+		    std::conditional_t<
+		      std::is_same_v<T, bool>, json_bool<no_name, T>,
+		      std::conditional_t<
+		        std::is_arithmetic_v<T>, json_number<no_name, T>,
+		        std::conditional_t<daw::traits::is_string_v<T>,
+		                           json_string<no_name, T>, void>>>>>;
 	} // namespace impl
 
 	/**
@@ -474,21 +486,24 @@ namespace daw::json {
 	 * @return A Container containing parsed data from json string
 	 */
 	template<typename JsonElement,
-	         typename Container = std::vector<typename JsonElement::parse_to_t>,
+	         typename Container =
+	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data ) {
-		static_assert( impl::is_a_json_type_v<JsonElement>,
-		               "Expected a json type to parse in array" );
-		return impl::from_json_array_impl<false, JsonElement, Container,
+		using element_type = impl::ary_val_t<JsonElement>;
+		static_assert( not std::is_same_v<element_type, void>,
+		               "Unknown JsonElement type." );
+
+		return impl::from_json_array_impl<false, element_type, Container,
 		                                  Constructor, Appender>( json_data );
 	}
 
 	/**
 	 * Parse json data where the root item is an array
-	 * @tparam JsonElement The type of each element in array.  Must be one of the
-	 * above json_XXX classes.  This version isn't checked
+	 * @tparam JsonElement The type of each element in array.  Must be one of
+	 * the above json_XXX classes.  This version isn't checked
 	 * @tparam Container Container to store values in
 	 * @tparam Constructor Callable to construct Container with no arguments
 	 * @tparam Appender Callable to call with JsonElement
@@ -496,16 +511,18 @@ namespace daw::json {
 	 * @return A Container containing parsed data from json string
 	 */
 	template<typename JsonElement,
-	         typename Container = std::vector<typename JsonElement::parse_to_t>,
+	         typename Container =
+	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array_trusted( std::string_view json_data ) {
-		static_assert( impl::is_a_json_type_v<JsonElement>,
-		               "Expected a json type to parse in array" );
+		using element_type = impl::ary_val_t<JsonElement>;
+		static_assert( not std::is_same_v<element_type, void>,
+		               "Unknown JsonElement type." );
 
-		return impl::from_json_array_impl<true, JsonElement, Container, Constructor,
-		                                  Appender>( json_data );
+		return impl::from_json_array_impl<true, element_type, Container,
+		                                  Constructor, Appender>( json_data );
 	}
 
 	/**

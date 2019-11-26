@@ -340,7 +340,7 @@ int main( ) {
 	std::clog << to_json( data ) << '\n';
 
 	CX auto ary =
-	  from_json_array<json_class<no_name, test_001_t>,
+	  from_json_array<test_001_t,
 	                  daw::bounded_vector_t<test_001_t, 10>>( json_data_array );
 	std::cout << "read in " << ary.size( ) << " items\n";
 	for( auto const &v : ary ) {
