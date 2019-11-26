@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build
-        run: ./ci_macos_build.sh  
+        run: ./ci_scripts/ci_macos_build.sh  
       - name: Test
-        run: ./ci_macos_test.sh  
+        run: ./ci_scripts/ci_macos_test.sh  
         

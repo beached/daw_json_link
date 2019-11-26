@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build
-        run: .\ci_windows_build.cmd
+        run: .\ci_scripts\ci_windows_build.cmd
       - name: Test
-        run: .\ci_windows_test.cmd
+        run: .\ci_scripts\ci_windows_test.cmd
 
