@@ -17,7 +17,7 @@ jobs:
     - name: Download & Build Dependencies
       run: |        
         sudo apt update
-        sudo apt install clang-9 libc++-9-dev libc++abi-9-dev
+        sudo apt install ninja clang-9 libc++-9-dev libc++abi-9-dev
     - name: Build
       run: ./ci_ubuntu_build.sh
     - name: Test
