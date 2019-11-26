@@ -30,62 +30,61 @@
 
 #include "daw/json/daw_json_link.h"
 
-namespace daw::cookbook_array2 {
-	struct MyClass4 {
-		std::string a;
-		unsigned b;
-		float c;
-		bool d;
+namespace daw::cookbook_array3 {
+	struct MyArrayClass1 {
+		int member0;
+		std::vector<int> member1;
+		std::vector<std::string> member2;
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyClass4 const & ) {
+	auto describe_json_class( MyArrayClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_string<"a">, json_number<"b", unsigned>,
-		                           json_number<"c", float>, json_bool<"d">>{};
+		return class_description_t<json_number<"member0", int>,
+		                           json_array<"member1", int>,
+		                           json_array<"member2", std::string>>{};
 	}
 #else
-	namespace symbols_MyClass4 {
-		static constexpr char const a[] = "a";
-		static constexpr char const b[] = "b";
-		static constexpr char const c[] = "c";
-		static constexpr char const d[] = "d";
-	} // namespace symbols_MyClass4
-	auto describe_json_class( MyClass4 const & ) {
+	namespace symbols_MyArrayClass1 {
+		static constexpr char const member0[] = "member0";
+		static constexpr char const member1[] = "member1";
+		static constexpr char const member2[] = "member2";
+	} // namespace symbols_MyArrayClass1
+	auto describe_json_class( MyArrayClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_string<symbols_MyClass4::a>,
-		                           json_number<symbols_MyClass4::b, unsigned>,
-		                           json_number<symbols_MyClass4::c, float>,
-		                           json_bool<symbols_MyClass4::d>>{};
+		return class_description_t<
+		  json_number<symbols_MyArrayClass1::member0, int>,
+		  json_array<symbols_MyArrayClass1::member1, int>,
+		  json_array<symbols_MyArrayClass1::member2, std::string>>{};
 	}
 #endif
-	auto to_json_data( MyClass4 const &value ) {
-		return std::forward_as_tuple( value.a, value.b, value.c, value.d );
+	auto to_json_data( MyArrayClass1 const &value ) {
+		return std::forward_as_tuple( value.member0, value.member1, value.member2 );
 	}
 
-	bool operator==( MyClass4 const &lhs, MyClass4 const &rhs ) {
+	bool operator==( MyArrayClass1 const &lhs, MyArrayClass1 const &rhs ) {
 		return to_json_data( lhs ) == to_json_data( rhs );
 	}
-
-} // namespace daw::cookbook_array2
+} // namespace daw::cookbook_array3
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {
-		puts( "Must supply path to cookbook_array2.json file\n" );
+		puts( "Must supply path to cookbook_array3.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 	auto const data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
 	using namespace daw::json;
 
-	auto const ve = from_json_array<daw::cookbook_array2::MyClass4>(
+	auto const my_array_class = from_json<daw::cookbook_array3::MyArrayClass1>(
 	  {data.data( ), data.size( )} );
 
-	daw_json_assert( ve.size( ) == 2, "Expected 2 items" );
-	auto const str = to_json_array( ve );
+	daw_json_assert( my_array_class.member1.size( ) == 5, "Expected 5 items" );
+	daw_json_assert( my_array_class.member2.size( ) == 2, "Expected 2 items" );
+	auto const str = to_json( my_array_class );
 	puts( str.c_str( ) );
-	auto const ve2 = from_json_array<daw::cookbook_array2::MyClass4>(
+	auto const my_array_class2 = from_json<daw::cookbook_array3::MyArrayClass1>(
 	  {str.data( ), str.size( )} );
 
-	daw_json_assert( ve == ve2, "Roundtrip failed" );
+	daw_json_assert( my_array_class == my_array_class2, "Round trip failed" );
 }

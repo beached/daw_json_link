@@ -1,6 +1,6 @@
 # Array's
 
-## Simple Array
+## Simple Array of int
 ```json
 [1,2,3,4,5]
 ```
@@ -15,7 +15,7 @@ auto vec = from_json_array<int>( json_str );
 This is a simple example, had the element type of the array been more complicated, like a class we would have to describe that.
 
 
-## Class Elements in Array
+## Array of a class
 
 ```json
 [
@@ -63,4 +63,43 @@ auto to_json_data( MyClass4 const & value ) {
 std::vector<MyClass4> v = from_json_array<MyClass4>( str );
 ```
 
+## Array's as members
+The `json_array` member type allows you to easily map a member variable to a vector of T. If the container is different, you can specify it too.
+
+To see a working example using this code, look at the [cookbook_array3_test.cpp](../tests/cookbook_array3_test.cpp) test in tests
+Take the following json
+
+```json
+{
+  "member0": 5,
+  "member1": [ 1,2,3,4,5 ],
+  "member2": [ "hello", "world" ]
+}
+```
+
+Here the JSON class has an int member, an array of int member, and an array of string member
+
+In C++ it could be represented like
+
+```cpp
+struct MyArrayClass1 {
+    int member0;
+    std::vector<int> member1;
+    std::vector<std::string> member2;
+};
+```
+With the following functions defined to allow mapping of JSON
+```cpp
+auto describe_json_class( MyArrayClass1 const & ) {
+    using namespace daw::json;
+    return class_description_t<
+            json_number<"member0", int>,
+            json_array<"member1", int>,
+            json_array<"member2", std::string>>{};
+}
+
+auto to_json_data( MyArrayClass1 const & value ) {
+	return std::forward_as_tuple( value.member0, value.member1, value.member2 );
+}
+```
 

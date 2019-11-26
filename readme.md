@@ -158,7 +158,7 @@ auto describe_json_class( TestClass ) {
 		json_number<"d">,
 		json_bool<"b">,
 		json_string<"s", daw::string_view>,
-		json_array<"y", std::vector<int>, int>
+		json_array<"y", int>
  	>{};
 }
 

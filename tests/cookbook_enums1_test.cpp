@@ -70,8 +70,8 @@ namespace daw::cookbook_enums1 {
 #ifdef __cpp_nontype_template_parameter_class
 	auto describe_json_class( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_array<"member0", std::vector<Colours>,
-		                                      json_custom<no_name, Colours>>>{};
+		return class_description_t<
+		  json_array<"member0", json_custom<no_name, Colours>>>{};
 	}
 #else
 	namespace symbols_MyClass1 {
@@ -80,8 +80,7 @@ namespace daw::cookbook_enums1 {
 	auto describe_json_class( MyClass1 const & ) {
 		using namespace daw::json;
 		return class_description_t<
-		  json_array<symbols_MyClass1::member0, std::vector<Colours>,
-		             json_custom<no_name, Colours>>>{};
+		  json_array<symbols_MyClass1::member0, json_custom<no_name, Colours>>>{};
 	}
 #endif
 

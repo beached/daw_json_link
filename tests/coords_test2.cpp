@@ -66,12 +66,10 @@ struct coordinates_t {
 auto describe_json_class( coordinates_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-	return class_description_t<
-	  json_array<"coordinates", std::vector<coordinate_t>, coordinate_t>>{};
+	return class_description_t<json_array<"coordinates", coordinate_t>>{};
 #else
 	return class_description_t<
-	  json_array<symbols_coordinates_t::coordinates, std::vector<coordinate_t>,
-	             coordinate_t>>{};
+	  json_array<symbols_coordinates_t::coordinates, coordinate_t>>{};
 #endif
 }
 

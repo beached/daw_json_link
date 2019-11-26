@@ -81,10 +81,9 @@ auto describe_json_class( geometry_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_string_raw<"type", std::string_view>,
-	  json_array<"coordinates", std::vector<std::vector<std::array<double, 2>>>,
-	             json_array<no_name, std::vector<std::array<double, 2>>,
-	                        json_array<no_name, std::array<double, 2>,
-	                                   json_number<no_name>,
+	  json_array<
+	    "coordinates",
+	    json_array<no_name, json_array<no_name, double, std::array<double, 2>,
 	                                   daw::construct_a_t<std::array<double, 2>>,
 	                                   array_appender<double>>>>>{};
 }
@@ -99,11 +98,9 @@ auto describe_json_class( geometry_t ) {
 
 	return daw::json::class_description_t<
 	  json_string_raw<symbols_geometry_t::type, std::string_view>,
-	  json_array<symbols_geometry_t::coordinates,
-	             std::vector<std::vector<std::array<double, 2>>>,
-	             json_array<no_name, std::vector<std::array<double, 2>>,
-	                        json_array<no_name, std::array<double, 2>,
-	                                   json_number<no_name>,
+	  json_array<
+	    symbols_geometry_t::coordinates,
+	    json_array<no_name, json_array<no_name, double, std::array<double, 2>,
 	                                   daw::construct_a_t<std::array<double, 2>>,
 	                                   array_appender<double>>>>>{};
 }
@@ -157,8 +154,7 @@ auto describe_json_class( canada_object_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_string_raw<"type", std::string_view>,
-	  json_array<"features", std::vector<features_element_t>,
-	             json_class<no_name, features_element_t>>>{};
+	  json_array<"features", features_element_t>>{};
 }
 #else
 namespace symbols_canada_object_t {
@@ -170,9 +166,7 @@ auto describe_json_class( canada_object_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_string_raw<symbols_canada_object_t::type, std::string_view>,
-	  json_array<symbols_canada_object_t::features,
-	             std::vector<features_element_t>,
-	             json_class<no_name, features_element_t>>>{};
+	  json_array<symbols_canada_object_t::features, features_element_t>>{};
 }
 #endif
 
