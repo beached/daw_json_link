@@ -20,6 +20,23 @@ std::vector<MyThing> things = from_json_array<json_class<no_name, MyThing>>( dat
 ## Api and Data Structures
 See the [api.md](api.md) document
 
+* [Installing](#installing)
+* [Performance considerations](#performance-considerations)
+* [Escaping/Unescaping of member names](#escaping/unescaping-of-member-names)
+* [Differences between C++17 and C++20](#differences-between-c++17-and-c++20)
+* [C++ 17 Naming of members](#c++-17-naming-of-members)
+* [C++ 20 Enhanced member naming](#c++-20-enhanced-member-naming)
+* [Using data types](#using-data-types)
+* [Error Handling](#error-handling)
+  * [Parsing call](#parsing-call)
+  * [Global](#global)
+* [Deserializing/Parsing](#deserializing/parsing)
+  * [Serialization](#serialization)
+    * [Installing and Requirements](#installing-and-requirements)
+  * [Requirements](#requirements)
+* [For building tests](#for-building-tests)
+
+
 ## Installing
 
 The following will build and run the tests.  Windows is close but uses `md` instead of `mkdir` to make the build folder
