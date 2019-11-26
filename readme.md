@@ -8,6 +8,9 @@ This library is different.  It assumes we know what data structures we will be r
 * [Tests](tests/) provide another source of working code samples. 
 * Small samples below
 
+## Api and Data Structures
+See the [api.md](api.md) document
+
 ### Installing and Requirements
 ## Requirements
 * C++ 17 compiler, C++ 20 for enhanced names
