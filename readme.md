@@ -98,12 +98,12 @@ auto my_data = from_json_array_trusted<MyClass>( json_str );
 If you want to work from JSON array data you can get an iterator and use the std algorithms too
 
 ```C++
-using iterator_t = daw::json::json_array_iterator<json_class<no_name, MyClass>>;
+using iterator_t = json_array_iterator<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
 Alternatively, if the input is trusted you can called the less checked version
 ```C++
-using iterator_t = daw::json::json_array_iterator_trusted<json_class<no_name, MyClass>>;
+using iterator_t = daw::json::json_array_iterator_trusted<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
 
@@ -258,7 +258,7 @@ int main( ) {
 	        {"a":5,"b":0.122e44},
 	        {"a":5334,"b":34342.2}
 	       ])";
-	using iterator_t = daw::json::json_array_iterator<JsonElement<no_name, AggClass>>;
+	using iterator_t = daw::json::json_array_iterator<AggClass>;
 	auto pos = std::find_if( iterator_t( json_array_data ), iterator_t( ),
 	    []( AggData const & element ) { return element.b > 1000.0; } );
 	if( pos == iterator_t( ) ) {
