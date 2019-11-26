@@ -99,7 +99,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << "element count: " << count << '\n';
 
-	using iterator_t = daw::json::json_array_iterator<json_class<no_name, City>>;
+	using iterator_t = daw::json::json_array_iterator<City>;
 
 	auto data = std::vector<City>( );
 

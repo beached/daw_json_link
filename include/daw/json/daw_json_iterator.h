@@ -58,7 +58,10 @@ namespace daw::json {
 		mutable intmax_t m_can_skip = -1;
 
 	public:
-		using value_type = typename JsonElement::parse_to_t;
+		using element_type = impl::ary_val_t<JsonElement>;
+		static_assert( not std::is_same_v<element_type, void>,
+		               "Unknown JsonElement type." );
+		using value_type = typename element_type::parse_to_t;
 		using reference = value_type;
 		using pointer = value_type;
 		using difference_type = ptrdiff_t;
@@ -92,8 +95,8 @@ namespace daw::json {
 			                           "Unexpected end of stream" );
 
 			auto tmp = m_state;
-			auto result = impl::parse_value<JsonElement>(
-			  ParseTag<JsonElement::expected_type>{}, tmp );
+			auto result = impl::parse_value<element_type>(
+			  ParseTag<element_type::expected_type>{}, tmp );
 
 			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
 			return result;
@@ -107,7 +110,7 @@ namespace daw::json {
 				m_state.first = std::next( m_state.first, m_can_skip );
 				m_can_skip = -1;
 			} else {
-				(void)impl::skip_known_value<JsonElement>( m_state );
+				(void)impl::skip_known_value<element_type>( m_state );
 			}
 			m_state.trim_left( );
 			if( m_state.in( separator ) ) {
@@ -142,14 +145,12 @@ namespace daw::json {
 	template<typename JsonElement, bool TrustedInput = false,
 	         char separator = ','>
 	struct json_array_range {
-		using value_type =
+		using iterator =
 		  json_array_iterator<JsonElement, TrustedInput, separator>;
-		using reference = value_type &;
-		using const_reference = value_type const &;
 
 	private:
-		value_type m_first{};
-		value_type m_last{};
+		iterator m_first{};
+		iterator m_last{};
 
 	public:
 		constexpr json_array_range( ) noexcept = default;
@@ -160,27 +161,11 @@ namespace daw::json {
 		constexpr json_array_range( String &&jd, std::string_view start_path = "" )
 		  : m_first( std::forward<String>( jd ), start_path ) {}
 
-		[[nodiscard]] constexpr reference begin( ) noexcept {
+		[[nodiscard]] constexpr iterator begin( ) noexcept {
 			return m_first;
 		}
 
-		[[nodiscard]] constexpr const_reference begin( ) const noexcept {
-			return m_first;
-		}
-
-		[[nodiscard]] constexpr const_reference cbegin( ) const noexcept {
-			return m_first;
-		}
-
-		[[nodiscard]] constexpr reference end( ) noexcept {
-			return m_last;
-		}
-
-		[[nodiscard]] constexpr const_reference end( ) const noexcept {
-			return m_last;
-		}
-
-		[[nodiscard]] constexpr const_reference cend( ) const noexcept {
+		[[nodiscard]] constexpr iterator end( ) noexcept {
 			return m_last;
 		}
 

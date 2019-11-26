@@ -368,7 +368,7 @@ int main( ) {
 		"b.hi": {
 			"c": [1,2,3] }}})";
 
-	using iterator2_t = daw::json::json_array_iterator<json_number<no_name, int>>;
+	using iterator2_t = daw::json::json_array_iterator<int>;
 	using namespace std::string_literals;
 
 	auto first = iterator2_t( json_data2, "a.b\\.hi.c" );
