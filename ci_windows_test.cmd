@@ -1,2 +1,2 @@
 cd build
-ctest -C Debug
+ctest -C Debug -VV
