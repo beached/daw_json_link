@@ -34,9 +34,9 @@ See the [api.md](api.md) document
   * [Global](#global)
 * [Deserializing/Parsing](#deserializing/parsing)
   * [Serialization](#serialization)
-  * [Installing and Requirements](#installing-and-requirements)
-  * [Requirements](#requirements)
-* [For building tests](#for-building-tests)
+* [Installing and Requirements](#installing-and-requirements)
+* [Requirements](#requirements)
+  * [For building tests](#for-building-tests)
 
 
 ## Installing
