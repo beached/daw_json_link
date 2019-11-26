@@ -79,9 +79,8 @@ int main( int argc, char **argv ) {
 
 	auto unicode_test = from_json_array<unicode_data>(
 	  std::string_view( json_str.data( ), json_str.size( ) ) );
-	auto unicode_test_from_escaped =
-	  from_json_array<unicode_data>(
-	    std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
+	auto unicode_test_from_escaped = from_json_array<unicode_data>(
+	  std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
 
 	auto mismatch_pos = std::mismatch( unicode_test.begin( ), unicode_test.end( ),
 	                                   unicode_test_from_escaped.begin( ) );

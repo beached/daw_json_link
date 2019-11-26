@@ -95,5 +95,4 @@ int main( int argc, char **argv ) {
 	daw_json_assert( twitter_result == twitter_result2,
 	                 "Expected round trip to produce same result" );
 	                 */
-
 }

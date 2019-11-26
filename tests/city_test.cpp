@@ -91,8 +91,7 @@ int main( int argc, char **argv ) {
 	auto count = *daw::bench_n_test_mbs<10>(
 	  "cities parsing 1", json_sv.size( ),
 	  []( auto &&sv ) {
-		  auto const data =
-		    daw::json::from_json_array<City>( sv );
+		  auto const data = daw::json::from_json_array<City>( sv );
 		  return data.size( );
 	  },
 	  json_sv );
@@ -159,8 +158,7 @@ int main( int argc, char **argv ) {
 
 	std::cout << ( *iterator_t( json_sv ) ).name << '\n';
 
-	auto const city_ary =
-	  daw::json::from_json_array<City>( json_sv );
+	auto const city_ary = daw::json::from_json_array<City>( json_sv );
 
 	auto const city_ary_str = to_json_array( city_ary );
 	auto sv = std::string_view( city_ary_str );

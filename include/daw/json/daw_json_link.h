@@ -289,17 +289,17 @@ namespace daw::json {
 		  impl::json_custom_base<T, FromConverter, ToConverter, IsString>;
 	};
 	namespace impl {
-		template<typename T>
+		template<typename T, JSONNAMETYPE Name = no_name>
 		using ary_val_t = std::conditional_t<
 		  is_a_json_type_v<T>, T,
 		  std::conditional_t<
-		    has_json_parser_description_v<T>, json_class<no_name, T>,
+		    has_json_parser_description_v<T>, json_class<Name, T>,
 		    std::conditional_t<
-		      std::is_same_v<T, bool>, json_bool<no_name, T>,
-		      std::conditional_t<
-		        std::is_arithmetic_v<T>, json_number<no_name, T>,
-		        std::conditional_t<daw::traits::is_string_v<T>,
-		                           json_string<no_name, T>, void>>>>>;
+		      std::is_same_v<T, bool>, json_bool<Name, T>,
+		      std::conditional_t<std::is_arithmetic_v<T> or std::is_enum_v<T>,
+		                         json_number<Name, T>,
+		                         std::conditional_t<daw::traits::is_string_v<T>,
+		                                            json_string<Name, T>, void>>>>>;
 	}
 	/** Link to a JSON array
 	 * @tparam Name name of JSON member to link to
@@ -317,19 +317,17 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	struct json_array {
-		static_assert( impl::is_a_json_type_v<JsonElement> );
 		using i_am_a_json_type = void;
-		using element_type = impl::ary_val_t<JsonElement>;
-		static_assert( not std::is_same_v<element_type, void>,
+		using json_element_t = impl::ary_val_t<JsonElement>;
+		static_assert( not std::is_same_v<json_element_t, void>,
 		               "Unknown JsonElement type." );
 		using parse_to_t = Container;
 		using constructor_t = Constructor;
 		using appender_t = Appender;
-		using json_element_t = JsonElement;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
 		using base =
-		  impl::json_array_base<Container, element_type, Constructor, Appender>;
+		  impl::json_array_base<Container, json_element_t, Constructor, Appender>;
 
 		static_assert( json_element_t::name == no_name,
 		               "All elements of json_array must be have no_name" );
@@ -341,28 +339,39 @@ namespace daw::json {
 	 *  @tparam Name name of JSON member to link to
 	 *  @tparam Container type to put values in
 	 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
-	 *  json_string, ... ) @tparam JsonKeyType type of key in kv pair @tparam
-	 *  Constructor A callable used to make Container, default will use the
-	 *  Containers constructor.  Both normal and aggregate are supported @tparam
-	 *  Appender A callable used to add elements to container.
+	 *  json_string, ... ). It also supports basic types like numbers, bool, and
+	 * mapped classes and enums(mapped to numbers)
+	 *  @tparam JsonKeyType type of key in kv pair.  As with value it supports
+	 * basic types too
+	 *  @tparam Constructor A callable used to make Container, default will use
+	 * the Containers constructor.  Both normal and aggregate are supported
+	 *  @tparam Appender A callable used to add elements to container.
 	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType = json_string<no_name>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_kv_appender<Container>>
 	struct json_key_value {
-		static_assert( impl::is_a_json_type_v<JsonValueType> );
-		static_assert( impl::is_a_json_type_v<JsonKeyType> );
 		using i_am_a_json_type = void;
 		using parse_to_t = Container;
 		using constructor_t = Constructor;
 		using appender_t = Appender;
-		using json_element_t = JsonValueType;
-		using json_key_t = JsonKeyType;
+		using json_element_t = impl::ary_val_t<JsonValueType>;
+		static_assert( not std::is_same_v<json_element_t, void>,
+		               "Unknown JsonValueType type." );
+		static_assert( json_element_t::name == no_name,
+		               "Value member name must be the default no_name" );
+
+		using json_key_t = impl::ary_val_t<JsonKeyType>;
+		static_assert( not std::is_same_v<json_key_t, void>,
+		               "Unknown JsonKeyType type." );
+		static_assert( json_key_t::name == no_name,
+		               "Key member name must be the default no_name" );
+
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::KeyValue;
-		using base = impl::json_key_value_base<Container, JsonValueType,
-		                                       JsonKeyType, Constructor, Appender>;
+		using base = impl::json_key_value_base<Container, json_element_t,
+		                                       json_key_t, Constructor, Appender>;
 	};
 
 	/** Map a KV type json array [ {"key": ValueOfKeyType, "value":
@@ -371,29 +380,41 @@ namespace daw::json {
 	 *  @tparam Name name of JSON member to link to
 	 *  @tparam Container type to put values in
 	 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
-	 *  json_string, ... ) @tparam JsonKeyType type of key in kv pair @tparam
-	 *  Constructor A callable used to make Container, default will use the
-	 *  Containers constructor.  Both normal and aggregate are supported @tparam
-	 *  Appender A callable used to add elements to container.
+	 *  json_string, ... ).  If specific json member type isn't specified, the
+	 * member name defaults to "value"
+	 *  @tparam JsonKeyType type of key in kv pair.  If specific json member type
+	 * isn't specified, the key name defaults to "key"
+	 *  @tparam Constructor A callable used to make Container, default will use
+	 * the Containers constructor.  Both normal and aggregate are supported
+	 *  @tparam Appender A callable used to add elements to container.
 	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_kv_appender<Container>>
 	struct json_key_value_array {
-		static_assert( impl::is_a_json_type_v<JsonKeyType> );
-		static_assert( impl::is_a_json_type_v<JsonValueType> );
 		using i_am_a_json_type = void;
 		using parse_to_t = Container;
 		using constructor_t = Constructor;
 		using appender_t = Appender;
-		using json_key_t = JsonKeyType;
-		using json_value_t = JsonValueType;
+		using json_key_t = impl::ary_val_t<JsonKeyType, impl::default_key_name>;
+		static_assert( not std::is_same_v<json_key_t, void>,
+		               "Unknown JsonKeyType type." );
+		static_assert( json_key_t::name != no_name,
+		               "Must supply a valid key member name" );
+		using json_value_t =
+		  impl::ary_val_t<JsonValueType, impl::default_value_name>;
+		static_assert( not std::is_same_v<json_value_t, void>,
+		               "Unknown JsonValueType type." );
+		static_assert( json_value_t::name != no_name,
+		               "Must supply a valid value member name" );
+		static_assert( json_key_t::name != json_value_t::name,
+		               "Key and Value member names cannot be the same" );
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  JsonParseTypes::KeyValueArray;
 		using base =
-		  impl::json_key_value_array_base<Container, JsonValueType, JsonKeyType,
+		  impl::json_key_value_array_base<Container, json_value_t, json_key_t,
 		                                  Constructor, Appender>;
 	};
 

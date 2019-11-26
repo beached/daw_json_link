@@ -87,8 +87,7 @@ struct MyClass1 {
 auto describe_json_class( MyClass1 const & ) {
   using namespace daw::json;
   return class_description_t<
-    json_array<"member0", std::vector<Colours>,
-      json_number<no_name, Colours>
+    json_array<"member0", std::vector<Colours>, Colours>
     >
   >{};
 }

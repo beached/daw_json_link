@@ -38,8 +38,8 @@ namespace daw::cookbook_kv1 {
 #if defined( __cpp_nontype_template_parameter_class )
 	auto describe_json_class( MyKeyValue1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_key_value<
-		  "kv", std::unordered_map<std::string, int>, json_number<no_name, int>>>{};
+		return class_description_t<
+		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>{};
 	}
 #else
 	namespace symbols_MyKeyValue1 {
@@ -48,8 +48,7 @@ namespace daw::cookbook_kv1 {
 	auto describe_json_class( MyKeyValue1 ) {
 		using namespace daw::json;
 		return class_description_t<json_key_value<
-		  symbols_MyKeyValue1::kv, std::unordered_map<std::string, int>,
-		  json_number<no_name, int>>>{};
+		  symbols_MyKeyValue1::kv, std::unordered_map<std::string, int>, int>>{};
 	}
 #endif
 	auto to_json_data( MyKeyValue1 const &value ) {

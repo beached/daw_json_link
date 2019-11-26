@@ -36,17 +36,17 @@ The C++ to contain and parse this could look like
 To see a working example using this code, look at the [cookbook_strings1_test.cpp](../tests/cookbook_strings1_test.cpp) test in tests
 ```cpp
 struct WebData {
-	std::vector<std::string> uris;
+  std::vector<std::string> uris;
 };
 
 auto describe_json_class( WebData const & ) {
-    using namespace daw::json;
-    return class_description_t<
-			json_array<"uris", json_string<no_name>>>{};
+  using namespace daw::json;
+  return class_description_t<
+    json_array<"uris", std::string>>{};
 }
 
 auto to_json_data( WebData const & value ) {
-	return std::forward_as_tuple( value.uris );
+  return std::forward_as_tuple( value.uris );
 }
 ```
 
@@ -61,27 +61,27 @@ struct WebData {
 };
 
 auto describe_json_class( WebData const & ) {
-    using namespace daw::json;
-    return class_description_t<
-			json_array<"uris", json_string_raw<no_name>>>{};
+  using namespace daw::json;
+  return class_description_t<
+    json_array<"uris", json_string_raw<no_name>>>{};
 }
 
 auto to_json_data( WebData const & value ) {
-	return std::forward_as_tuple( value.uris );
+  return std::forward_as_tuple( value.uris );
 }
 ```
 
 Now the C++ `std::vector<string>` will parse as 
 ```cpp
 std::vector<string> uris = {
-    "example.com",
-    "B\u00FCcher.ch",
-    "happy.cn",
-    "happy\u5FEB\u4E50.cn",
-    "\u5FEB\u4E50.cn",
-    "happy.\u4E2D\u56FD",
-    "\u5FEB\u4E50.\u4E2D\u56FD",
-    "www.\u30CF\u30F3\u30C9\u30DC\u30FC\u30EB\u30B5\u30E0\u30BA.com",
-    "\uD83E\uDD84.com"
-		};
+  "example.com",
+  "B\u00FCcher.ch",
+  "happy.cn",
+  "happy\u5FEB\u4E50.cn",
+  "\u5FEB\u4E50.cn",
+  "happy.\u4E2D\u56FD",
+  "\u5FEB\u4E50.\u4E2D\u56FD",
+  "www.\u30CF\u30F3\u30C9\u30DC\u30FC\u30EB\u30B5\u30E0\u30BA.com",
+  "\uD83E\uDD84.com"
+};
 ```		

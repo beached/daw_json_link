@@ -251,8 +251,7 @@ int main( ) {
 
 	{
 		// Unsigned
-		using iterator_t =
-		  daw::json::json_array_iterator<double>;
+		using iterator_t = daw::json::json_array_iterator<double>;
 
 		std::string json_data3 = [] {
 			std::string result = "[";

@@ -42,12 +42,11 @@ namespace symbols_kv_t {
 auto describe_json_class( kv_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-	return class_description_t<json_key_value<
-	  "kv", std::unordered_map<std::string, int>, json_number<no_name, int>>>{};
-#else
 	return class_description_t<
-	  json_key_value<symbols_kv_t::kv, std::unordered_map<std::string, int>,
-	                 json_number<no_name, int>>>{};
+	  json_key_value<"kv", std::unordered_map<std::string, int>, int>>{};
+#else
+	return class_description_t<json_key_value<
+	  symbols_kv_t::kv, std::unordered_map<std::string, int>, int>>{};
 #endif
 }
 
@@ -62,12 +61,10 @@ auto describe_json_class( kv2_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<
-	  json_key_value<"kv", daw::bounded_hash_map<std::string, int, 5>,
-	                 json_number<no_name, int>, json_string<no_name>>>{};
+	  json_key_value<"kv", daw::bounded_hash_map<std::string, int, 5>, int>>{};
 #else
 	return class_description_t<json_key_value<
-	  symbols_kv2_t::kv, daw::bounded_hash_map<std::string, int, 5>,
-	  json_number<no_name, int>, json_string<no_name>>>{};
+	  symbols_kv2_t::kv, daw::bounded_hash_map<std::string, int, 5>, int>>{};
 #endif
 }
 

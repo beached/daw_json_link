@@ -164,6 +164,10 @@ namespace daw::json {
 
 	// Convienience for array members that are required to be unnamed
 	inline constexpr JSONNAMETYPE no_name{""};
+	namespace impl {
+		inline constexpr JSONNAMETYPE default_key_name{"key"};
+		inline constexpr JSONNAMETYPE default_value_name{"value"};
+	} // namespace impl
 
 	template<JSONNAMETYPE n>
 	inline constexpr bool is_no_name = ( n == no_name );
@@ -171,7 +175,10 @@ namespace daw::json {
 #define JSONNAMETYPE char const *
 	// Convienience for array members that are required to be unnamed
 	inline constexpr char const no_name[] = "";
-
+	namespace impl {
+		inline constexpr char const default_key_name[] = "key";
+		inline constexpr char const default_value_name[] = "value";
+	} // namespace impl
 	template<JSONNAMETYPE n>
 	inline constexpr bool
 	  is_no_name = daw::string_view( n ) == daw::string_view( "" );
