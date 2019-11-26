@@ -41,14 +41,10 @@ struct events_value_t {
 #ifdef __cpp_nontype_template_parameter_class
 auto describe_json_class( events_value_t ) {
 	using namespace daw::json;
-	return daw::json::class_description_t<
-	  json_number<"id", int64_t>,
-	  json_nullable<json_string_raw<"logo", std::string_view>>,
-	  json_string_raw<"name", std::string_view>,
-	  json_array<"subTopicIds", std::vector<int64_t>,
-	             json_number<no_name, int64_t>>,
-	  json_array<"topicIds", std::vector<int64_t>,
-	             json_number<no_name, int64_t>>>{};
+	return daw::json::class_description_t < json_number<"id", int64_t>,
+	       json_nullable<json_string_raw<"logo", std::string_view>>,
+	       json_string_raw<"name", std::string_view>,
+	       json_array<"subTopicIds", int64_t, json_array<"topicIds", int64_t>>{};
 }
 #else
 namespace symbols_events_value_t {
@@ -66,10 +62,8 @@ auto describe_json_class( events_value_t ) {
 	  json_nullable<
 	    json_string_raw<symbols_events_value_t::logo, std::string_view>>,
 	  json_string_raw<symbols_events_value_t::name, std::string_view>,
-	  json_array<symbols_events_value_t::subTopicIds, std::vector<int64_t>,
-	             json_number<no_name, int64_t>>,
-	  json_array<symbols_events_value_t::topicIds, std::vector<int64_t>,
-	             json_number<no_name, int64_t>>>{};
+	  json_array<symbols_events_value_t::subTopicIds, int64_t>,
+	  json_array<symbols_events_value_t::topicIds, int64_t>>{};
 }
 #endif
 
@@ -147,8 +141,7 @@ struct seatCategories_element_t {
 auto describe_json_class( seatCategories_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_array<"areas", std::vector<areas_element_t>,
-	             json_class<no_name, areas_element_t>>,
+	  json_array<"areas", areas_element_t>,
 	  json_number<"seatCategoryId", int64_t>>{};
 }
 #else
@@ -160,9 +153,7 @@ namespace symbols_seatCategories_element_t {
 auto describe_json_class( seatCategories_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_array<symbols_seatCategories_element_t::areas,
-	             std::vector<areas_element_t>,
-	             json_class<no_name, areas_element_t>>,
+	  json_array<symbols_seatCategories_element_t::areas, areas_element_t>,
 	  json_number<symbols_seatCategories_element_t::seatCategoryId, int64_t>>{};
 }
 #endif
@@ -187,10 +178,8 @@ auto describe_json_class( performances_element_t ) {
 	return daw::json::class_description_t<
 	  json_number<"eventId", int64_t>, json_number<"id", int64_t>,
 	  json_nullable<json_string_raw<"logo", std::string_view>>,
-	  json_array<"prices", std::vector<prices_element_t>,
-	             json_class<no_name, prices_element_t>>,
-	  json_array<"seatCategories", std::vector<seatCategories_element_t>,
-	             json_class<no_name, seatCategories_element_t>>,
+	  json_array<"prices", prices_element_t>,
+	  json_array<"seatCategories", seatCategories_element_t>,
 	  json_number<"start", int64_t>,
 	  json_string_raw<"venueCode", std::string_view>>{};
 }
@@ -212,12 +201,9 @@ auto describe_json_class( performances_element_t ) {
 	  json_number<symbols_performances_element_t::id, int64_t>,
 	  json_nullable<
 	    json_string_raw<symbols_performances_element_t::logo, std::string_view>>,
-	  json_array<symbols_performances_element_t::prices,
-	             std::vector<prices_element_t>,
-	             json_class<no_name, prices_element_t>>,
+	  json_array<symbols_performances_element_t::prices, prices_element_t>,
 	  json_array<symbols_performances_element_t::seatCategories,
-	             std::vector<seatCategories_element_t>,
-	             json_class<no_name, seatCategories_element_t>>,
+	             seatCategories_element_t>,
 	  json_number<symbols_performances_element_t::start, int64_t>,
 	  json_string_raw<symbols_performances_element_t::venueCode,
 	                  std::string_view>>{};
@@ -271,33 +257,35 @@ struct citm_object_t {
 #ifdef __cpp_nontype_template_parameter_class
 auto describe_json_class( citm_object_t ) {
 	using namespace daw::json;
-	return daw::json::class_description_t<
-	  json_key_value<"areaNames", std::unordered_map<intmax_t, std::string_view>,
-	                 json_string_raw<no_name, std::string_view>,
-	                 json_number<no_name, intmax_t, LiteralAsStringOpt::always>>,
-	  json_key_value<"audienceSubCategoryNames",
-	                 std::unordered_map<intmax_t, std::string_view>,
-	                 json_string_raw<no_name, std::string_view>,
-	                 json_number<no_name, intmax_t, LiteralAsStringOpt::always>>,
-	  json_key_value<"events", std::unordered_map<intmax_t, events_value_t>,
-	                 json_class<no_name, events_value_t>,
-	                 json_number<no_name, intmax_t, LiteralAsStringOpt::always>>,
-	  json_array<"performances", std::vector<performances_element_t>,
-	             json_class<no_name, performances_element_t>>,
-	  json_key_value<"seatCategoryNames",
-	                 std::unordered_map<std::string_view, std::string_view>,
-	                 json_string_raw<no_name, std::string_view>>,
-	  json_key_value<"subTopicNames",
-	                 std::unordered_map<std::string_view, std::string_view>,
-	                 json_string_raw<no_name, std::string_view>>,
-	  json_key_value<"topicNames",
-	                 std::unordered_map<std::string_view, std::string_view>,
-	                 json_string_raw<no_name, std::string_view>>,
-	  json_key_value<
-	    "topicSubTopics",
-	    std::unordered_map<std::string_view, std::vector<int64_t>>,
-	    json_array<no_name, std::vector<int64_t>, json_number<no_name, int64_t>>>,
-	  json_nullable<json_class<"venueNames", venueNames_t>>>{};
+	return daw::json::class_description_t <
+	         json_key_value<
+	           "areaNames", std::unordered_map<intmax_t, std::string_view>,
+	           json_string_raw<no_name, std::string_view>,
+	           json_number<no_name, intmax_t, LiteralAsStringOpt::always>>,
+	       json_key_value<
+	         "audienceSubCategoryNames",
+	         std::unordered_map<intmax_t, std::string_view>,
+	         json_string_raw<no_name, std::string_view>,
+	         json_number<no_name, intmax_t, LiteralAsStringOpt::always>>,
+	       json_key_value<
+	         "events", std::unordered_map<intmax_t, events_value_t>,
+	         json_class<no_name, events_value_t>,
+	         json_number<no_name, intmax_t, LiteralAsStringOpt::always>>,
+	       json_array<"performances", performances_element_t>,
+	       json_key_value<"seatCategoryNames",
+	                      std::unordered_map<std::string_view, std::string_view>,
+	                      json_string_raw<no_name, std::string_view>>,
+	       json_key_value<"subTopicNames",
+	                      std::unordered_map<std::string_view, std::string_view>,
+	                      json_string_raw<no_name, std::string_view>>,
+	       json_key_value<"topicNames",
+	                      std::unordered_map<std::string_view, std::string_view>,
+	                      json_string_raw<no_name, std::string_view>>,
+	       json_key_value<
+	         "topicSubTopics",
+	         std::unordered_map<std::string_view, std::vector<int64_t>>,
+	         json_array<no_name, int64_t>>,
+	       json_nullable<json_class<"venueNames", venueNames_t>>{};
 }
 #else
 namespace symbols_citm_object_t {
@@ -328,9 +316,7 @@ auto describe_json_class( citm_object_t ) {
 	                 std::unordered_map<intmax_t, events_value_t>,
 	                 json_class<no_name, events_value_t>,
 	                 json_number<no_name, intmax_t, LiteralAsStringOpt::always>>,
-	  json_array<symbols_citm_object_t::performances,
-	             std::vector<performances_element_t>,
-	             json_class<no_name, performances_element_t>>,
+	  json_array<symbols_citm_object_t::performances, performances_element_t>,
 	  json_key_value<symbols_citm_object_t::seatCategoryNames,
 	                 std::unordered_map<std::string_view, std::string_view>,
 	                 json_string_raw<no_name, std::string_view>>,
@@ -340,10 +326,9 @@ auto describe_json_class( citm_object_t ) {
 	  json_key_value<symbols_citm_object_t::topicNames,
 	                 std::unordered_map<std::string_view, std::string_view>,
 	                 json_string_raw<no_name, std::string_view>>,
-	  json_key_value<
-	    symbols_citm_object_t::topicSubTopics,
-	    std::unordered_map<std::string_view, std::vector<int64_t>>,
-	    json_array<no_name, std::vector<int64_t>, json_number<no_name, int64_t>>>,
+	  json_key_value<symbols_citm_object_t::topicSubTopics,
+	                 std::unordered_map<std::string_view, std::vector<int64_t>>,
+	                 json_array<no_name, int64_t>>,
 	  json_nullable<
 	    json_class<symbols_citm_object_t::venueNames, venueNames_t>>>{};
 }

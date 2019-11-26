@@ -50,8 +50,7 @@ static inline auto describe_json_class( urls_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_string<"url">, json_string<"expanded_url">, json_string<"display_url">,
-	  json_array<"indices", std::vector<int64_t>,
-	             json_number<no_name, int64_t>>>{};
+	  json_array<"indices", int64_t>>{};
 }
 #else
 namespace symbols_urls_element_t {
@@ -66,8 +65,7 @@ static inline auto describe_json_class( urls_element_t ) {
 	  json_string<symbols_urls_element_t::url>,
 	  json_string<symbols_urls_element_t::expanded_url>,
 	  json_string<symbols_urls_element_t::display_url>,
-	  json_array<symbols_urls_element_t::indices, std::vector<int64_t>,
-	             json_number<no_name, int64_t>>>{};
+	  json_array<symbols_urls_element_t::indices, int64_t>>{};
 }
 #endif
 
@@ -83,9 +81,7 @@ struct url_t {
 #ifdef __cpp_nontype_template_parameter_class
 static inline auto describe_json_class( url_t ) {
 	using namespace daw::json;
-	return daw::json::class_description_t<
-	  json_array<"urls", std::vector<urls_element_t>,
-	             json_class<no_name, urls_element_t>>>{};
+	return daw::json::class_description_t<json_array<"urls", urls_element_t>>{};
 }
 #else
 namespace symbols_url_t {
@@ -94,8 +90,7 @@ namespace symbols_url_t {
 static inline auto describe_json_class( url_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_array<symbols_url_t::urls, std::vector<urls_element_t>,
-	             json_class<no_name, urls_element_t>>>{};
+	  json_array<symbols_url_t::urls, urls_element_t>>{};
 }
 #endif
 
@@ -110,9 +105,7 @@ struct description_t {
 #ifdef __cpp_nontype_template_parameter_class
 static inline auto describe_json_class( description_t ) {
 	using namespace daw::json;
-	return daw::json::class_description_t<
-	  json_array<"urls", std::vector<urls_element_t>,
-	             json_class<no_name, urls_element_t>>>{};
+	return daw::json::class_description_t<json_array<"urls", urls_element_t>>{};
 }
 #else
 namespace symbols_description_t {
@@ -121,8 +114,7 @@ namespace symbols_description_t {
 static inline auto describe_json_class( description_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_array<symbols_description_t::urls, std::vector<urls_element_t>,
-	             json_class<no_name, urls_element_t>>>{};
+	  json_array<symbols_description_t::urls, urls_element_t>>{};
 }
 #endif
 
@@ -364,9 +356,8 @@ struct hashtags_element_t {
 #ifdef __cpp_nontype_template_parameter_class
 static inline auto describe_json_class( hashtags_element_t ) {
 	using namespace daw::json;
-	return daw::json::class_description_t<
-	  json_string<"text">, json_array<"indices", std::vector<int64_t>,
-	                                  json_number<no_name, int64_t>>>{};
+	return daw::json::class_description_t<json_string<"text">,
+	                                      json_array<"indices", int64_t>>{};
 }
 #else
 namespace symbols_hashtags_element_t {
@@ -378,8 +369,7 @@ static inline auto describe_json_class( hashtags_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_string<symbols_hashtags_element_t::text>,
-	  json_array<symbols_hashtags_element_t::indices, std::vector<int64_t>,
-	             json_number<no_name, int64_t>>>{};
+	  json_array<symbols_hashtags_element_t::indices, int64_t>>{};
 }
 #endif
 static inline auto to_json_data( hashtags_element_t const &value ) {
@@ -509,9 +499,7 @@ static inline auto describe_json_class( user_mentions_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_string<"screen_name">, json_string<"name">, json_number<"id", int64_t>,
-	  json_string<"id_str">,
-	  json_array<"indices", std::vector<int64_t>,
-	             json_number<no_name, int64_t>>>{};
+	  json_string<"id_str">, json_array<"indices", int64_t>>{};
 }
 #else
 namespace symbols_user_mentions_element_t {
@@ -529,8 +517,7 @@ static inline auto describe_json_class( user_mentions_element_t ) {
 	  json_string<symbols_user_mentions_element_t::name>,
 	  json_number<symbols_user_mentions_element_t::id, int64_t>,
 	  json_string<symbols_user_mentions_element_t::id_str>,
-	  json_array<symbols_user_mentions_element_t::indices, std::vector<int64_t>,
-	             json_number<no_name, int64_t>>>{};
+	  json_array<symbols_user_mentions_element_t::indices, int64_t>>{};
 }
 #endif
 
@@ -726,9 +713,9 @@ static inline auto describe_json_class( media_element_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
 	  json_number<"id", int64_t>, json_string<"id_str">,
-	  json_array<"indices", std::vector<int64_t>, json_number<no_name, int64_t>>,
-	  json_string<"media_url">, json_string<"media_url_https">,
-	  json_string<"url">, json_string<"display_url">, json_string<"expanded_url">,
+	  json_array<"indices", int64_t>, json_string<"media_url">,
+	  json_string<"media_url_https">, json_string<"url">,
+	  json_string<"display_url">, json_string<"expanded_url">,
 	  json_string<"type">, json_class<"sizes", sizes_t>>{};
 }
 #else
@@ -750,8 +737,7 @@ static inline auto describe_json_class( media_element_t ) {
 	return daw::json::class_description_t<
 	  json_number<symbols_media_element_t::id, int64_t>,
 	  json_string<symbols_media_element_t::id_str>,
-	  json_array<symbols_media_element_t::indices, std::vector<int64_t>,
-	             json_number<no_name, int64_t>>,
+	  json_array<symbols_media_element_t::indices, int64_t>,
 	  json_string<symbols_media_element_t::media_url>,
 	  json_string<symbols_media_element_t::media_url_https>,
 	  json_string<symbols_media_element_t::url>,
@@ -946,8 +932,7 @@ struct twitter_object_t {
 static inline auto describe_json_class( twitter_object_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_array<"statuses", std::vector<statuses_element_t>,
-	             json_class<no_name, statuses_element_t>>,
+	  json_array<"statuses", statuses_element_t>,
 	  json_class<"search_metadata", search_metadata_t>>{};
 }
 #else
@@ -959,9 +944,7 @@ namespace symbols_twitter_object_t {
 static inline auto describe_json_class( twitter_object_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_array<symbols_twitter_object_t::statuses,
-	             std::vector<statuses_element_t>,
-	             json_class<no_name, statuses_element_t>>,
+	  json_array<symbols_twitter_object_t::statuses, statuses_element_t>,
 	  json_class<symbols_twitter_object_t::search_metadata, search_metadata_t>>{};
 }
 #endif

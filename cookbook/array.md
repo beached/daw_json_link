@@ -63,4 +63,3 @@ auto to_json_data( MyClass4 const & value ) {
 std::vector<MyClass4> v = from_json_array<MyClass4>( str );
 ```
 
-

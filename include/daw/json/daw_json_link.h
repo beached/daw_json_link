@@ -313,7 +313,9 @@ namespace daw::json {
 	 * container.  The parsed type from JsonElement
 	 * passed to it
 	 */
-	template<JSONNAMETYPE Name, typename Container, typename JsonElement,
+	template<JSONNAMETYPE Name, typename JsonElement,
+	         typename Container =
+	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	struct json_array {
@@ -327,7 +329,7 @@ namespace daw::json {
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
 		using base =
-		  impl::json_array_base<Container, json_element_t, Constructor, Appender>;
+		  impl::json_array_base<json_element_t, Container, Constructor, Appender>;
 
 		static_assert( json_element_t::name == no_name,
 		               "All elements of json_array must be have no_name" );
@@ -474,14 +476,12 @@ namespace daw::json {
 	}
 
 	namespace impl {
-		template<bool TrustedInput, typename JsonElement,
-		         typename Container = std::vector<typename JsonElement::parse_to_t>,
-		         typename Constructor = daw::construct_a_t<Container>,
-		         typename Appender = impl::basic_appender<Container>>
+		template<bool TrustedInput, typename JsonElement, typename Container,
+		         typename Constructor, typename Appender>
 		[[maybe_unused, nodiscard]] constexpr Container
 		from_json_array_impl( std::string_view json_data ) {
 			using parser_t =
-			  json_array<no_name, Container, JsonElement, Constructor, Appender>;
+			  json_array<no_name, JsonElement, Container, Constructor, Appender>;
 
 			auto rng =
 			  daw::json::impl::IteratorRange<char const *, char const *, false>(

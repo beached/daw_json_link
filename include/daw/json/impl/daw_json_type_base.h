@@ -103,7 +103,7 @@ namespace daw::json::impl {
 		using base = json_custom_base;
 	};
 
-	template<typename Container, typename JsonElement, typename Constructor,
+	template<typename JsonElement, typename Container, typename Constructor,
 	         typename Appender>
 	struct json_array_base {
 		using i_am_a_json_type = void;
