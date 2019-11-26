@@ -1,10 +1,11 @@
-copy glean.cmake.renamewin glean.cmake
+@echo off
+
+echo "Making build directory"
 md build
 cd build
-pwd
+
 echo "Configuring project"
 cmake -DCMAKE_BUILD_TYPE=Debug ..
+
 echo "Starting dep build"
 cmake --build . --config Debug --target -j 2
-echo "Starting full build"
-cmake --build . --config Debug --target full -j 2

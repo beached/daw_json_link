@@ -4,7 +4,9 @@
 This library is different.  It assumes we know what data structures we will be recieving and uses that knowledge to provide a clean interface for parsing.  Describing the mappings between JSON and C++, one needs only one method to parse and an additional one for serialization.
 
 ## Code Examples
-There are examples of json patterns and the code to map them to C++ in the [Cookbook](cookbook/) section. Also, the [tests](tests/) provide another source of working code samples. In addition, there are some small samples below
+* The  [Cookbook](cookbook/) section has precanned tasks and working code examples
+* [Tests](tests/) provide another source of working code samples. 
+* Small samples below
 
 ### Installing and Requirements
 ## Requirements
@@ -100,7 +102,7 @@ std::string my_json_data = to_json_array( arry );
 ## Parsing call
 With error checking enabled globally, you can now designate a parsing call as trusted by calling the _trusted variant.  `from_json_trusted`, `from_json_array_trusted`, and `json_array_iterator_trusted`.  These paths are unchecked beyond missing non-nullable members.  The performance difference is from around 5%-15% in my testing.
 ## Global
-There are two possible ways of handling errors.  The first, `abort( );` on an error in data.  Or the, second, throw a `daw::json::json_exception`.  json_exception has a member function `std::string_view reason( ) const`.  You can control which method is used by defining `DAW_JSON_DONT_USE_EXCEPTIONS` to make code noexcept.  In addition, you can control if the checks are only done in only debug mode `DAW_JSON_CHECK_DEBUG_ONLY`. 
+There are two possible ways of handling errors.  The first, `abort( );` on an error in data.  Or the, second, throw a `daw::json::json_exception`.  json_exception has a member function `std::string_view reason( ) const`.  You can control which method is used by defining `DAW_JSON_DONT_USE_EXCEPTIONS` to make code noexcept.  In addition, you can control if the checks are only done in only debug mode `DAW_JSON_CHECK_DEBUG_ONLY`. In some cases, exporting strings the underlying libraries may throw too. However, the codebase is designed to work around -fno-exceptions and current will abort on error in those cases 
 # Deserializing/Parsing
 This can be accomplished by writing a function called describe_json_class with a single arugment that is your type.  The library is only concerned with it's return value. For example:
 
