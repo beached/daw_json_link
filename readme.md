@@ -1,8 +1,14 @@
 # JSON Link ![](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg) ![](https://github.com/beached/daw_json_link/workflows/Ubuntu/badge.svg) ![](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)
 
+This library provides serialization/deserialization of JSON documents with a known structure into a C++ typed structure.
 
-This library is different.  It assumes we know what data structures we will be recieving and uses that knowledge to provide a clean interface for parsing.  Describing the mappings between JSON and C++, one needs only one method to parse and an additional one for serialization.
+The library is [MIT](LICENCE) licensed so its free to use, just have to give credit.
 
+By using the know data structures in the JSON data we will be able to parse json as simply as 
+```cpp
+MyThing thing = from_json<MyThing>( data );
+std::vector<MyThing> things = from_json_array<json_class<no_name, MyThing>>( data );
+```
 ## Code Examples
 * The  [Cookbook](cookbook/) section has precanned tasks and working code examples
 * [Tests](tests/) provide another source of working code samples. 
@@ -14,7 +20,7 @@ See the [api.md](api.md) document
 ### Installing and Requirements
 ## Requirements
 * C++ 17 compiler, C++ 20 for enhanced names
-* GCC(8/9)/Clang(7/8) have been tested.  Have not yet tested on MSVC
+* GCC(8/9)/Clang(7/8) have been tested.  
 * MSVC 19.21 has been tested. Must copy `glean.cmake.renamewin` to `glean.cmake` prior to running cmake.  
 # For building tests
 * git
@@ -22,7 +28,7 @@ See the [api.md](api.md) document
 
 ## Installing(Linux/Mac commandline)
 
-The following will build and run the tests
+The following will build and run the tests.  Windows is close but uses `md` instead of `mkdir` to make the build folder
 ```
 git clone https://github.com/beached/daw_json_link
 cd daw_json_link
@@ -36,8 +42,6 @@ After the build there the examples can be tested.  ```city_test_bin``` requires 
 ```
 ./city_test_bin ../test_data/cities.json
 ```
-## Generating classes automatically
-Currently I have a another project https://github.com/beached/json_to_cpp that can output the data structures used in json data along with the code to use this library.
 
 ## Performance considerations
 The order of the data in the data structures should generally match that of the json data.  The parser is much faster if it doesn't have to back track for values.  Optional values where they are missing in the json data can slow down the parsing too.  If possible have them sent as null.
@@ -281,3 +285,5 @@ std::string test_001_t_json_data = to_json( value );
 std::vector<AggData> values = //...;
 std::string json_array_data = to_json_array( values );
 ```
+
+Email: [Darrell Wright](json_link@dawdevel.ca)
