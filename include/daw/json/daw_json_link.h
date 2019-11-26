@@ -46,6 +46,7 @@
 
 #include "impl/daw_iterator_range.h"
 #include "impl/daw_json_link_impl.h"
+#include "impl/daw_json_link_types_fwd.h"
 
 namespace daw::json {
 	template<typename... JsonMembers>
@@ -114,10 +115,8 @@ namespace daw::json {
 	 * @tparam Constructor Callable used to construct result
 	 * @tparam RangeCheck Check if the value will fit in the result
 	 */
-	template<JSONNAMETYPE Name, typename T = double,
-	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
-	         typename Constructor = daw::construct_a_t<T>,
-	         bool RangeCheck = false>
+	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
+	         typename Constructor, bool RangeCheck>
 	struct json_number {
 		static_assert( std::is_invocable_v<Constructor, T>,
 		               "Constructor must be callable with T" );
@@ -156,9 +155,8 @@ namespace daw::json {
 	 * @tparam LiteralAsString Could this number be embedded in a string
 	 * @tparam Constructor Callable used to construct result
 	 */
-	template<JSONNAMETYPE Name, typename T = bool,
-	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
-	         typename Constructor = daw::construct_a_t<T>>
+	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
+	         typename Constructor>
 	struct json_bool {
 		static_assert( std::is_constructible_v<T, bool>,
 		               "Supplied type but be constructable from a bool" );
@@ -215,10 +213,8 @@ namespace daw::json {
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
 	 */
-	template<JSONNAMETYPE Name, typename String = std::string,
-	         typename Constructor = daw::construct_a_t<String>,
-	         typename Appender = impl::basic_appender<String>,
-	         bool EmptyStringNull = false, bool DisallowHighEightBit = false>
+	template<JSONNAMETYPE Name, typename String, typename Constructor,
+	         typename Appender, bool EmptyStringNull, bool DisallowHighEightBit>
 	struct json_string {
 		static_assert( std::is_invocable_v<Constructor>,
 		               "Constructor must be default constructable" );
@@ -292,7 +288,19 @@ namespace daw::json {
 		using base =
 		  impl::json_custom_base<T, FromConverter, ToConverter, IsString>;
 	};
-
+	namespace impl {
+		template<typename T>
+		using ary_val_t = std::conditional_t<
+		  is_a_json_type_v<T>, T,
+		  std::conditional_t<
+		    has_json_parser_description_v<T>, json_class<no_name, T>,
+		    std::conditional_t<
+		      std::is_same_v<T, bool>, json_bool<no_name, T>,
+		      std::conditional_t<
+		        std::is_arithmetic_v<T>, json_number<no_name, T>,
+		        std::conditional_t<daw::traits::is_string_v<T>,
+		                           json_string<no_name, T>, void>>>>>;
+	}
 	/** Link to a JSON array
 	 * @tparam Name name of JSON member to link to
 	 * @tparam Container type of C++ container being constructed(e.g.
@@ -311,6 +319,9 @@ namespace daw::json {
 	struct json_array {
 		static_assert( impl::is_a_json_type_v<JsonElement> );
 		using i_am_a_json_type = void;
+		using element_type = impl::ary_val_t<JsonElement>;
+		static_assert( not std::is_same_v<element_type, void>,
+		               "Unknown JsonElement type." );
 		using parse_to_t = Container;
 		using constructor_t = Constructor;
 		using appender_t = Appender;
@@ -318,7 +329,7 @@ namespace daw::json {
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
 		using base =
-		  impl::json_array_base<Container, JsonElement, Constructor, Appender>;
+		  impl::json_array_base<Container, element_type, Constructor, Appender>;
 
 		static_assert( json_element_t::name == no_name,
 		               "All elements of json_array must be have no_name" );
@@ -462,17 +473,6 @@ namespace daw::json {
 			return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
 			                                    rng );
 		}
-		template<typename T>
-		using ary_val_t = std::conditional_t<
-		  is_a_json_type_v<T>, T,
-		  std::conditional_t<
-		    has_json_parser_description_v<T>, json_class<no_name, T>,
-		    std::conditional_t<
-		      std::is_same_v<T, bool>, json_bool<no_name, T>,
-		      std::conditional_t<
-		        std::is_arithmetic_v<T>, json_number<no_name, T>,
-		        std::conditional_t<daw::traits::is_string_v<T>,
-		                           json_string<no_name, T>, void>>>>>;
 	} // namespace impl
 
 	/**

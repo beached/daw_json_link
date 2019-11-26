@@ -22,6 +22,12 @@ See the [api.md](api.md) document
 
 * [api.md](API)
 * [Cookbook](cookbook/)
+  * [Arrays](cookbook/array.md)
+  * [Classes](cookbook/class.md)
+  * [Enums](cookbook/enum.md)
+  * [Key Values](cookbook/key_values.md) - Map and Dictionary like things 
+  * [Strings](cookbook/strings.md)
+  * [Graphs](cookbook/graphs.md)
 * [Installing](#installing)
 * [Performance considerations](#performance-considerations)
 * [Escaping/Unescaping of member names](#escaping/unescaping-of-member-names)
