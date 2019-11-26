@@ -289,4 +289,6 @@ std::vector<AggData> values = //...;
 std::string json_array_data = to_json_array( values );
 ```
 
-Email: [Darrell Wright](json_link@dawdevel.ca)
+Darrell Wright
+
+json_link@dawdevel.ca
