@@ -17,10 +17,8 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 * [Tests](tests/) provide another source of working code samples. 
 * Small samples below
 
-## Api and Data Structures
-See the [api.md](api.md) document
-
-* [api.md](API)
+## Content 
+* [api.md](API) - Member mapping classes
 * [Cookbook](cookbook/)
   * [Arrays](cookbook/array.md)
   * [Classes](cookbook/class.md)
