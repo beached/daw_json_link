@@ -20,15 +20,40 @@ std::vector<MyThing> things = from_json_array<json_class<no_name, MyThing>>( dat
 ## Api and Data Structures
 See the [api.md](api.md) document
 
-### Installing and Requirements
-## Requirements
-* C++ 17 compiler, C++ 20 for enhanced names
-* GCC(8/9)/Clang(7/8) have been tested.  
-* MSVC 19.21 has been tested. Must copy `glean.cmake.renamewin` to `glean.cmake` prior to running cmake.  
-# For building tests
-* git
-* cmake
+## Installing
 
+The following will build and run the tests.  Windows is close but uses `md` instead of `mkdir` to make the build folder
+```
+git clone https://github.com/beached/daw_json_link
+cd daw_json_link
+mkdir build
+cd build
+cmake ..
+cmake --build . --target full -j 2
+ctest -C Debug
+```
+After the build there the examples can be tested.  ```city_test_bin``` requires the path to the cities json file.
+```
+./city_test_bin ../test_data/cities.json
+```
+
+## Performance considerations
+The order of the data in the data structures should generally match that of the json data.  The parser is much faster if it doesn't have to back track for values.  Optional values where they are missing in the json data can slow down the parsing too.  If possible have them sent as null.
+
+## Escaping/Unescaping of member names
+The library will not escape or unescape the member names.  This is a design desision as the current architecture would make it difficult.  Post C++20 this may be doable as one can construct the string as a NTTP and encode it there.  In addition, one can put the escaped name as the name manually.
+
+## Differences between C++17 and C++20
+# C++ 17 Naming of members
+```cpp
+static constexpr char const member_name[] = "memberName";
+
+...json_number<member_name>
+```
+# C++ 20 Enhanced member naming
+```cpp
+...json_number<"memberName">
+```
 
 # Using data types
 Once a data type has been described, you can easily construct an object from a string or string_view.
@@ -255,40 +280,14 @@ std::vector<AggData> values = //...;
 std::string json_array_data = to_json_array( values );
 ```
 
-## Installing
-
-The following will build and run the tests.  Windows is close but uses `md` instead of `mkdir` to make the build folder
-```
-git clone https://github.com/beached/daw_json_link
-cd daw_json_link
-mkdir build
-cd build
-cmake ..
-cmake --build . --target full -j 2
-ctest -C Debug
-```
-After the build there the examples can be tested.  ```city_test_bin``` requires the path to the cities json file.
-```
-./city_test_bin ../test_data/cities.json
-```
-
-## Performance considerations
-The order of the data in the data structures should generally match that of the json data.  The parser is much faster if it doesn't have to back track for values.  Optional values where they are missing in the json data can slow down the parsing too.  If possible have them sent as null.
-
-## Escaping/Unescaping of member names
-The library will not escape or unescape the member names.  This is a design desision as the current architecture would make it difficult.  Post C++20 this may be doable as one can construct the string as a NTTP and encode it there.  In addition, one can put the escaped name as the name manually.
-
-## Differences between C++17 and C++20
-# C++ 17 Naming of members
-```cpp
-static constexpr char const member_name[] = "memberName";
-
-...json_number<member_name>
-```
-# C++ 20 Enhanced member naming
-```cpp
-...json_number<"memberName">
-```
+### Installing and Requirements
+## Requirements
+* C++ 17 compiler, C++ 20 for enhanced names
+* GCC(8/9)/Clang(7/8) have been tested.  
+* MSVC 19.21 has been tested. Must copy `glean.cmake.renamewin` to `glean.cmake` prior to running cmake.  
+# For building tests
+* git
+* cmake
 
 Darrell Wright
 
