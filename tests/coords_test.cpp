@@ -69,12 +69,11 @@ auto describe_json_class( coordinates_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<
-	  json_array<"coordinates", std::vector<coordinate_t>,
-	             json_class<no_name, coordinate_t>>>{};
+	  json_array<"coordinates", std::vector<coordinate_t>, coordinate_t>>{};
 #else
 	return class_description_t<
 	  json_array<symbols_coordinates_t::coordinates, std::vector<coordinate_t>,
-	             json_class<no_name, coordinate_t>>>{};
+	             coordinate_t>>{};
 #endif
 }
 
@@ -89,8 +88,7 @@ int main( int argc, char **argv ) {
 	auto const json_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
-	using iterator_t =
-	  daw::json::json_array_iterator<coordinate_t>;
+	using iterator_t = daw::json::json_array_iterator<coordinate_t>;
 
 	auto first = iterator_t( json_sv, "coordinates" );
 	auto last = iterator_t( );

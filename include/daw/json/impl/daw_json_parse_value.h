@@ -50,11 +50,11 @@ namespace daw::json::impl {
 			rng.remove_prefix( );
 			return;
 	*/	} else {
-			if( rng.front( ) == '"' ) {
-				rng.remove_prefix( );
-			}
-			return;
+		if( rng.front( ) == '"' ) {
+			rng.remove_prefix( );
 		}
+		return;
+	}
 	}
 
 	template<typename JsonMember, typename First, typename Last,

@@ -52,7 +52,7 @@
 
 Here we have a graph in [JGF](https://github.com/jsongraph/json-graph-specification) JSON Graph Format.
 
-Here we are going to use the array iterator tool to populate our graph so that the structure is easier to build in situ.
+Here we are going to use the array iterator tool to populate our graph so that the structure is easier to build in situ. In addition we are going to tell the system that the id members are just numbers wrapped in quotes with the LiteralAsString option.
 
 ```cpp
 namespace daw::cookbook_graphs1 {

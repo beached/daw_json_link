@@ -108,16 +108,14 @@ int main( ) {
 		  "array of class with single intmax_t element: from_json_array",
 		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data =
-			    from_json_array_trusted<Number>( sv );
+			  auto const data = from_json_array_trusted<Number>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
-		using iterator_t =
-		  daw::json::json_array_iterator_trusted<Number>;
+		using iterator_t = daw::json::json_array_iterator_trusted<Number>;
 
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
@@ -140,16 +138,14 @@ int main( ) {
 		auto const count = *daw::bench_n_test_mbs<100>(
 		  "array of intmax_t: from_json_array", json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data =
-			    from_json_array_trusted<intmax_t>( sv );
+			  auto const data = from_json_array_trusted<intmax_t>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv_intmax );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t =
-		  daw::json::json_array_iterator_trusted<intmax_t>;
+		using iterator_t = daw::json::json_array_iterator_trusted<intmax_t>;
 
 		auto data = std::vector<intmax_t>( );
 		data.resize( NUMVALUES );
@@ -182,8 +178,7 @@ int main( ) {
 		  json_sv );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t =
-		  daw::json::json_array_iterator<Number>;
+		using iterator_t = daw::json::json_array_iterator<Number>;
 
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
@@ -252,8 +247,7 @@ int main( ) {
 	std::cout << "Unchecked unsigned\n";
 	{
 		// Unsigned
-		using iterator_t =
-		  daw::json::json_array_iterator_trusted<uintmax_t>;
+		using iterator_t = daw::json::json_array_iterator_trusted<uintmax_t>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -280,8 +274,8 @@ int main( ) {
 			auto const count4 = *daw::bench_n_test_mbs<100>(
 			  "p5. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto result = daw::json::from_json_array_trusted<int_type,
-				    daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
+				  auto result = daw::json::from_json_array_trusted<
+				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -294,8 +288,7 @@ int main( ) {
 	std::cout << "Checked unsigned\n";
 	{
 		// Unsigned
-		using iterator_t =
-		  daw::json::json_array_iterator<uintmax_t>;
+		using iterator_t = daw::json::json_array_iterator<uintmax_t>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -322,8 +315,8 @@ int main( ) {
 			auto const count4 = *daw::bench_n_test_mbs<100>(
 			  "p5. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto result = daw::json::from_json_array<int_type,
-				    daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
+				  auto result = daw::json::from_json_array<
+				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );

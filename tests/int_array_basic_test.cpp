@@ -61,7 +61,8 @@ static void test_from_json_array( std::string_view json_sv ) {
 
 	for( size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_sv );
-		auto result = daw::json::from_json_array_trusted<T, daw::bounded_vector_t<T, NUMVALUES>>( json_sv );
+		auto result = daw::json::from_json_array_trusted<
+		  T, daw::bounded_vector_t<T, NUMVALUES>>( json_sv );
 		daw::do_not_optimize( result );
 	}
 }
@@ -69,16 +70,11 @@ static void test_from_json_array( std::string_view json_sv ) {
 template<typename T>
 static void test_json_array_iterator( std::string_view json_sv ) {
 	using namespace daw::json;
-	using iterator_t = json_array_iterator_trusted<T>;
 	for( size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_sv );
-		auto first = iterator_t( json_sv );
-		auto const last = iterator_t( );
-		T sum = 0;
-		daw::do_not_optimize( sum );
-		while( first != last ) {
-			sum += *first++;
-		}
+		auto rng = json_array_range_trusted<T>( json_sv );
+		daw::do_not_optimize( rng );
+		T sum = std::accumulate( rng.begin( ), rng.end( ), static_cast<T>( 0 ) );
 		daw::do_not_optimize( sum );
 	}
 }

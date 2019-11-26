@@ -109,7 +109,7 @@ struct json_array
 
 ```Container``` is the type of container the ```JsonElement```'s are placed into, such as ```std::vector```
 
-```JsonElement``` one of the above json types with daw::json::no_name or "" as it's name(the name will not be used).  This is the item type in the sequence
+```JsonElement``` one of the above json types with daw::json::no_name or "" as it's name(the name will not be used).  This is the item type in the sequence.  You can also specify a previously mapped type or basic types like numbers, boolean, and std::string's
 
 ```Constructor``` the default is almost always correct here but this will constuct your type.
 
@@ -129,9 +129,9 @@ struct json_key_value
 
 ```Container``` The result type to place all the KV pairs into.  By default must behave like a Map.
 
-```JsonValueType``` One of the above json types with daw::json::no_name or "" as it's name(the name will not be used).  This is the value type in the KV pairs 
+```JsonValueType``` One of the above json types with daw::json::no_name or "" as it's name(the name will not be used).  This is the value type in the KV pairs.     You can also specify a previously mapped type or basic types like numbers, boolean, and std::string's
 
-```JsonKeyType``` The underlying json value is string, so the json_ type must account for that in parsing, with daw::json::no_name or "" as it's name(the name will not be used).  This is the key type in the KV pairs 
+```JsonKeyType``` The underlying json value is string, so the json_ type must account for that in parsing, with daw::json::no_name or "" as it's name(the name will not be used).  This is the key type in the KV pairs.   You can also specify a previously mapped type or basic types like numbers, boolean, and std::string's 
 
 ```Constructor``` the default is almost always correct here but this will constuct your Continer.
 
@@ -151,9 +151,9 @@ struct json_key_value_array
 
 ```Container``` The result type to place all the KV pairs into.  By default must behave like a Map.
 
-```JsonValueType``` One of the above json types with a specified name that matches the value member name as it's name.  This is the value type in the KV pairs 
+```JsonValueType``` One of the above json types with a specified name that matches the value member name as it's name.  This is the value type in the KV pairs   You can also specify a previously mapped type or basic types like numbers, boolean, and std::string's where the default member name is `"value"`
 
-```JsonKeyType``` One of the above json types with a specified name that matches the key member name as it's name.  This is the key type in the KV pairs 
+```JsonKeyType``` One of the above json types with a specified name that matches the key member name as it's name.  This is the key type in the KV pairs.   You can also specify a previously mapped type or basic types like numbers, boolean, and std::string's where the default member name is `"key"`
 
 ```Constructor``` the default is almost always correct here but this will constuct your Continer.
 

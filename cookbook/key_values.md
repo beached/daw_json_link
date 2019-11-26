@@ -23,7 +23,7 @@ struct MyKeyValue {
 auto describe_json_class( MyKeyValue1 const & ) {
     using namespace daw::json;
     return class_description_t<json_key_value<
-      "kv", std::unordered_map<std::string, int>, json_number<no_name, int>>>{};
+      "kv", std::unordered_map<std::string, int>, int>>{};
 }
 
 auto to_json_data( MyKeyValue const & value ) {
@@ -53,8 +53,7 @@ struct MyKeyValue2 {
 auto describe_json_class( MyKeyValue2 const & ) {
 	using namespace daw::json;
 	return class_description_t<json_key_value_array<
-		"kv", std::unordered_map<intmax_t, std::string>, json_string_raw<"value">,
-		json_number<"key", intmax_t>>>{};
+		"kv", std::unordered_map<intmax_t, std::string>, json_string_raw<"value">, intmax_t>>{};
 }
 
 auto to_json_data( MyKeyValue2 const &value ) {

@@ -22,6 +22,12 @@ See the [api.md](api.md) document
 
 * [api.md](API)
 * [Cookbook](cookbook/)
+  * [Arrays](cookbook/array.md)
+  * [Classes](cookbook/class.md)
+  * [Enums](cookbook/enum.md)
+  * [Key Values](cookbook/key_values.md) - Map and Dictionary like things 
+  * [Strings](cookbook/strings.md)
+  * [Graphs](cookbook/graphs.md)
 * [Installing](#installing)
 * [Performance considerations](#performance-considerations)
 * [Escaping/Unescaping of member names](#escaping/unescaping-of-member-names)
@@ -34,9 +40,9 @@ See the [api.md](api.md) document
   * [Global](#global)
 * [Deserializing/Parsing](#deserializing/parsing)
   * [Serialization](#serialization)
-  * [Installing and Requirements](#installing-and-requirements)
-  * [Requirements](#requirements)
-* [For building tests](#for-building-tests)
+* [Installing and Requirements](#installing-and-requirements)
+* [Requirements](#requirements)
+  * [For building tests](#for-building-tests)
 
 
 ## Installing
@@ -152,7 +158,7 @@ auto describe_json_class( TestClass ) {
 		json_number<"d">,
 		json_bool<"b">,
 		json_string<"s", daw::string_view>,
-		json_array<"y", std::vector<int>, json_number<no_name, int>>
+		json_array<"y", std::vector<int>, int>
  	>{};
 }
 
