@@ -360,9 +360,16 @@ namespace daw::json::impl {
 			auto known_locations =
 			  known_locations_v<First, Last, TrustedInput, JsonMembers...>;
 
-			Result result = daw::construct_a<Result>(
+			using tp_t = std::tuple<decltype(
 			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )... );
+			    Is, known_locations, rng ) )...>;
+			/*
+			 * Rather than call directly use apply/tuple to evaluate left->right
+			 */
+			Result result = std::apply(
+			  daw::construct_a<Result>,
+			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )...} );
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
 			while( rng.front( ) != '}' ) {
