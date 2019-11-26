@@ -34,7 +34,7 @@ See the [api.md](api.md) document
   * [Global](#global)
 * [Deserializing/Parsing](#deserializing/parsing)
   * [Serialization](#serialization)
-    * [Installing and Requirements](#installing-and-requirements)
+  * [Installing and Requirements](#installing-and-requirements)
   * [Requirements](#requirements)
 * [For building tests](#for-building-tests)
 
@@ -137,7 +137,7 @@ struct TestClass {
 	std::vector<int> y{};
 
 	TestClass( int Int, double Double, bool Bool, daw::string_view S,
-	            std::vector<int> Y ) noexcept
+	      std::vector<int> Y ) noexcept
 	  : i( Int )
 	  , d( Double )
 	  , b( Bool )
@@ -157,29 +157,29 @@ auto describe_json_class( TestClass ) {
 }
 
 int main( ) {
-    std::string test_001_t_json_data = R"({
-        "i":5,
-        "d":2.2e4,
-        "b":false,
-        "s":"hello world",
-        "y":[1,2,3,4] 
-        })";
-    std::string json_array_data = R"([{
-        "i":5,
-        "d":2.2e4,
-        "b":false,
-        "s":"hello world",
-        "y":[1,2,3,4] 
-        },{
-        "i":4,
-        "d":122e4,
-        "b":true,
-        "s":"goodbye world",
-        "y":[4,3,1,4] 
-        }])";
+  std::string test_001_t_json_data = R"({
+    "i":5,
+    "d":2.2e4,
+    "b":false,
+    "s":"hello world",
+    "y":[1,2,3,4] 
+    })";
+  std::string json_array_data = R"([{
+    "i":5,
+    "d":2.2e4,
+    "b":false,
+    "s":"hello world",
+    "y":[1,2,3,4] 
+    },{
+    "i":4,
+    "d":122e4,
+    "b":true,
+    "s":"goodbye world",
+    "y":[4,3,1,4] 
+    }])";
 
-    TestClass test_class = daw::json::from_json<TestClass>( test_001_t_json_data );
-    std::vector<TestClass> arry_of_test_class = daw::json::from_json_array<TestClass>( test_001_t_json_data );
+  TestClass test_class = daw::json::from_json<TestClass>( test_001_t_json_data );
+  std::vector<TestClass> arry_of_test_class = daw::json::from_json_array<TestClass>( test_001_t_json_data );
 }
 ```
 Both aggregate and normal construction is supported.  The description provides the values needed to construct your type and the order.  The order specified is the order they are placed into the constructor.  There are customization points to provide a way of constructing your type too(TODO discuss customization points)  A class like:
@@ -208,13 +208,15 @@ struct AggClass {
 	int a{};
 	double b{};
 };
-auto describe_json_class( AggClass ) {
-	using namespace daw::json;
+namespace symbols_AggClass {
 	static constexpr char const a[] = "a";
 	static constexpr char const b[] = "b";
+}
+auto describe_json_class( AggClass ) {
+	using namespace daw::json;
 	return class_description_t<
-		json_number<a, int>,
-		json_number<b>
+		json_number<symbols_AggClass::a, int>,
+		json_number<symbols_AggClass::b>
 	>{};
 }
 ```
@@ -222,15 +224,15 @@ The class descriptions are recursive with their submembers.  Using the previous 
 ```cpp
 // See above for AggClass
 struct MyClass {
-    AggClass other;
-    std::string_view some_name;
+  AggClass other;
+  std::string_view some_name;
 };
 auto describe_json_class( MyClass ) {
-    using namespace daw::json;
-    return class_description_t<
-        json_class<"other", AggClass>,
-        json_string<"id", std::string_view>
-    >{};
+  using namespace daw::json;
+  return class_description_t<
+    json_class<"other", AggClass>,
+    json_string<"id", std::string_view>
+  >{};
 }
 ```
 The above maps a class MyClass that has another class that is described AggClass.  Also, you can see that the member names of the C++ class do not have to match that of the mapped json names and that strings can use `std::string_view` as the result type.  This is an important performance enhancement if you can guarantee the buffer containing the json file will exist as long as the class does.
@@ -253,14 +255,14 @@ auto describe_json_class( AggClass ) {
 
 int main( ) {
 	std::string json_array_data = R"([
-	        {"a":5,"b":2.2},
-	        {"a":5,"b":3.14},
-	        {"a":5,"b":0.122e44},
-	        {"a":5334,"b":34342.2}
-	       ])";
+	    {"a":5,"b":2.2},
+	    {"a":5,"b":3.14},
+	    {"a":5,"b":0.122e44},
+	    {"a":5334,"b":34342.2}
+	     ])";
 	using iterator_t = daw::json::json_array_iterator<AggClass>;
 	auto pos = std::find_if( iterator_t( json_array_data ), iterator_t( ),
-	    []( AggData const & element ) { return element.b > 1000.0; } );
+	  []( AggData const & element ) { return element.b > 1000.0; } );
 	if( pos == iterator_t( ) ) {
 		std::cout << "Not found\n";
 	} else {
@@ -288,7 +290,7 @@ auto describe_json_class( AggClass ) {
 	>{};
 }
 auto to_json_data( AggClass const & ) {
-    return std::forward_as_tuple( c.a, c.b );
+  return std::forward_as_tuple( c.a, c.b );
 }
 //...
 AggData value = //...;
