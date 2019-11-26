@@ -21,7 +21,7 @@ std::vector<MyThing> things = from_json_array<json_class<no_name, MyThing>>( dat
 See the [api.md](api.md) document
 
 * [api.md](API)
-* [Cookbook]{cookbook/)
+* [Cookbook](cookbook/)
 * [Installing](#installing)
 * [Performance considerations](#performance-considerations)
 * [Escaping/Unescaping of member names](#escaping/unescaping-of-member-names)
