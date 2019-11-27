@@ -154,10 +154,12 @@ namespace daw::json::impl {
 
 		skip_quote_when_literal_as_string<JsonMember>( rng );
 		bool result = false;
-		if( rng.in( 't' ) and rng.size( ) > 4 ) {
+		if( rng.front( ) == 't' and rng.size( ) > 4 ) {
+			daw_json_assert_untrusted( rng == "true", "Expected a literal true" );
 			rng.remove_prefix( 4 );
 			result = true;
 		} else {
+			daw_json_assert_untrusted( rng == "false", "Expected a literal true" );
 			rng.remove_prefix( 5 );
 		}
 		skip_quote_when_literal_as_string<JsonMember>( rng );

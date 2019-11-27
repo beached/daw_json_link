@@ -28,6 +28,7 @@
 #include <cstdlib>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -51,7 +52,6 @@
 namespace daw::json {
 	template<typename... JsonMembers>
 	struct class_description_t {
-
 		template<typename OutputIterator, typename... Args>
 		[[maybe_unused, nodiscard]] static constexpr OutputIterator
 		serialize( OutputIterator it, std::tuple<Args...> const &args ) {
@@ -64,24 +64,24 @@ namespace daw::json {
 			  it, std::index_sequence_for<Args...>{}, args );
 		}
 
-		template<typename Result, bool TrustedInput>
-		[[maybe_unused, nodiscard]] static constexpr Result
+		template<typename T, bool TrustedInput>
+		[[maybe_unused, nodiscard]] static constexpr T
 		parse( std::string_view sv ) {
 			daw_json_assert_untrusted( not sv.empty( ),
 			                           "Cannot parse an empty string" );
 
 			auto rng = impl::IteratorRange<char const *, char const *, TrustedInput>(
 			  sv.data( ), sv.data( ) + sv.size( ) );
-			return impl::parse_json_class<Result, JsonMembers...>(
+			return impl::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
 		}
 
-		template<typename Result, typename First, typename Last, bool TrustedInput>
-		[[maybe_unused, nodiscard]] static constexpr Result
+		template<typename T, typename First, typename Last, bool TrustedInput>
+		[[maybe_unused, nodiscard]] static constexpr T
 		parse( impl::IteratorRange<First, Last, TrustedInput> &rng ) {
 			daw_json_assert_untrusted( rng.has_more( ),
 			                           "Cannot parse an empty string" );
-			return impl::parse_json_class<Result, JsonMembers...>(
+			return impl::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
 		}
 	};
@@ -122,7 +122,7 @@ namespace daw::json {
 		               "Constructor must be callable with T" );
 
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
+		using parse_to_t = std::invoke_result_t<Constructor, T>;
 		using constructor_t = Constructor;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type =
@@ -158,16 +158,12 @@ namespace daw::json {
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
 	         typename Constructor>
 	struct json_bool {
-		static_assert( std::is_constructible_v<T, bool>,
-		               "Supplied type but be constructable from a bool" );
-		static_assert( std::is_invocable_v<Constructor, T>,
-		               "Constructor must be callable with T" );
+		static_assert( std::is_invocable_v<Constructor, bool>,
+		               "Constructor must be callable with bool" );
 
-		static_assert( std::is_convertible_v<bool, T>,
-		               "Supplied result type must be convertable from bool" );
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
 		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor, bool>;
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
@@ -192,8 +188,8 @@ namespace daw::json {
 		  "Constructor must be callable with a char const * and a size_t" );
 
 		using i_am_a_json_type = void;
-		using parse_to_t = String;
 		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor, char const *, size_t>;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::String;
 		static constexpr bool empty_is_null = EmptyStringNull;
@@ -220,8 +216,8 @@ namespace daw::json {
 		               "Constructor must be default constructable" );
 
 		using i_am_a_json_type = void;
-		using parse_to_t = String;
 		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type =
@@ -248,8 +244,8 @@ namespace daw::json {
 		  "Constructor must be callable with a char const * and a size_t" );
 
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
 		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor, char const *, size_t>;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
 		using base = impl::json_date_base<T, Constructor>;
@@ -279,9 +275,10 @@ namespace daw::json {
 	         bool IsString = true>
 	struct json_custom {
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
 		using to_converter_t = ToConverter;
 		using from_converter_t = FromConverter;
+		// TODO explore using char const *, size_t pair for ctor
+		using parse_to_t = std::invoke_result_t<FromConverter, std::string_view>;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Custom;
 		static constexpr bool const is_string = IsString;
@@ -323,8 +320,8 @@ namespace daw::json {
 		using json_element_t = impl::ary_val_t<JsonElement>;
 		static_assert( not std::is_same_v<json_element_t, void>,
 		               "Unknown JsonElement type." );
-		using parse_to_t = Container;
 		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
@@ -355,8 +352,8 @@ namespace daw::json {
 	         typename Appender = impl::basic_kv_appender<Container>>
 	struct json_key_value {
 		using i_am_a_json_type = void;
-		using parse_to_t = Container;
 		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
 		using json_element_t = impl::ary_val_t<JsonValueType>;
 		static_assert( not std::is_same_v<json_element_t, void>,
@@ -396,8 +393,8 @@ namespace daw::json {
 	         typename Appender = impl::basic_kv_appender<Container>>
 	struct json_key_value_array {
 		using i_am_a_json_type = void;
-		using parse_to_t = Container;
 		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
 		using json_key_t = impl::ary_val_t<JsonKeyType, impl::default_key_name>;
 		static_assert( not std::is_same_v<json_key_t, void>,
@@ -568,4 +565,31 @@ namespace daw::json {
 		result.back( ) = ']';
 		return result;
 	}
+	namespace impl {
+		template<typename... Args>
+		constexpr void is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
+
+		template<typename T>
+		using is_unique_ptr_test =
+		  decltype( is_unique_ptr_test_impl( std::declval<T>( ) ) );
+
+		template<typename T>
+		inline constexpr bool is_unique_ptr_v =
+		  daw::is_detected_v<is_unique_ptr_test, T>;
+	} // namespace impl
+	template<typename T>
+	struct UniquePtrConstructor {
+		static_assert( not impl::is_unique_ptr_v<T>,
+		               "T should be the type contained in the unique_ptr" );
+
+		constexpr std::unique_ptr<T> operator( )( ) const {
+			return {};
+		}
+
+		template<typename Arg, typename... Args>
+		std::unique_ptr<T> operator( )( Arg &&arg, Args &&... args ) const {
+			return std::make_unique<T>( std::forward<Arg>( arg ),
+			                            std::forward<Args>( args )... );
+		}
+	};
 } // namespace daw::json

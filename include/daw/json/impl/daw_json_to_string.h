@@ -375,10 +375,10 @@ namespace daw::json::impl {
 	to_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
 	           parse_to_t const &value ) {
 
-		static_assert(
+		/*static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
-
+		*/
 		if( value ) {
 			return copy_to_iterator( "true", it );
 		}

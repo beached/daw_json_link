@@ -36,6 +36,19 @@ namespace daw::json::impl {
 		First first{};
 		Last last{};
 		static constexpr bool is_trusted_input = TrustedInput;
+		using CharT = daw::remove_cvref_t<decltype( *first )>;
+
+		constexpr bool operator==( char const *ptr ) const {
+			auto f = first;
+			while( *ptr != '\0' ) {
+				if( *f != *ptr ) {
+					return false;
+				}
+				++f;
+				++ptr;
+			}
+			return true;
+		}
 
 		constexpr IteratorRange( ) noexcept = default;
 

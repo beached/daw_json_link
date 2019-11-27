@@ -337,14 +337,15 @@ namespace daw::json::impl {
 	  locations_info_t<sizeof...( JsonMembers ), First, Last, TrustedInput>{
 	    location_info_t<First, Last, TrustedInput>( JsonMembers::name )...};
 
-	template<typename Result, typename... JsonMembers, size_t... Is,
-	         typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr Result
+	template<typename T, typename... JsonMembers, size_t... Is, typename First,
+	         typename Last, bool TrustedInput>
+	[[nodiscard]] static constexpr T
 	parse_json_class( IteratorRange<First, Last, TrustedInput> &rng,
 	                  std::index_sequence<Is...> ) {
 		static_assert(
-		  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
-		  "Supplied types cannot be used for construction of this type" );
+		  can_construct_a_v<
+		    T, decltype( std::declval<typename JsonMembers::parse_to_t>( ) )...>,
+		  "Supplied types cannot be used for	construction of this type" );
 
 		rng.move_to_next_of( '{' );
 		rng.remove_prefix( );
@@ -355,7 +356,7 @@ namespace daw::json::impl {
 			                           "Expected class to end with '}'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
-			return construct_a<Result>( );
+			return construct_a<T>( );
 		} else {
 			auto known_locations =
 			  known_locations_v<First, Last, TrustedInput, JsonMembers...>;
@@ -366,10 +367,11 @@ namespace daw::json::impl {
 			/*
 			 * Rather than call directly use apply/tuple to evaluate left->right
 			 */
-			Result result = std::apply(
-			  daw::construct_a<Result>,
+			T result = std::apply(
+			  daw::construct_a<T>,
 			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng )...} );
+
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
 			while( rng.front( ) != '}' ) {
