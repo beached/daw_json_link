@@ -68,7 +68,12 @@ namespace daw::cookbook_optional_values1 {
 	}
 
 	bool operator==( MyOptionalStuff1 const &lhs, MyOptionalStuff1 const &rhs ) {
-		return to_json_data( lhs ) == to_json_data( rhs );
+		bool result = lhs.member0 == rhs.member0;
+		result = result and ( lhs.member1 == rhs.member1 );
+		result = result and ( lhs.member2 and rhs.member2 and
+		                      ( *lhs.member2 == *rhs.member2 ) );
+		result = result or ( not rhs.member2 );
+		return result;
 	}
 } // namespace daw::cookbook_optional_values1
 
@@ -78,20 +83,18 @@ int main( int argc, char **argv ) {
 		exit( EXIT_FAILURE );
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
-
+	puts( "Original" );
+	puts( std::string( data.data( ), data.size( ) ).c_str( ) );
 	auto stuff = daw::json::from_json_array<
-	  daw::cookbook_optional_values1::MyOptionalStuff1>(
-	  {data.data( ), data.size( )} );
+	  daw::cookbook_optional_values1::MyOptionalStuff1>( data );
 
 	auto const str = daw::json::to_json_array( stuff );
+	puts( "After" );
 	puts( str.c_str( ) );
 	auto stuff2 = daw::json::from_json_array<
-	  daw::cookbook_optional_values1::MyOptionalStuff1>(
-	  {str.data( ), str.size( )} );
-	daw::do_not_optimize( stuff );
-	daw::do_not_optimize( stuff2 );
-	 bool are_equal = stuff == stuff2;
-	daw_json_assert( are_equal, "Unexpected round trip error" );
+	  daw::cookbook_optional_values1::MyOptionalStuff1>( str );
+
+	daw_json_assert( stuff == stuff2, "Unexpected round trip error" );
 
 	return 0;
 }

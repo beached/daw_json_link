@@ -693,6 +693,11 @@ namespace daw::json::impl {
 	                                   std::tuple<Args...> const &args ) {
 
 		static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
+		if constexpr( JsonMember::expected_type == JsonParseTypes::Null ) {
+			if( not std::get<pos>( args ) ) {
+				return;
+			}
+		}
 		*it++ = '"';
 		it = copy_to_iterator<false, false>( JsonMember::name, it );
 		it = copy_to_iterator<false, false>( "\":", it );
