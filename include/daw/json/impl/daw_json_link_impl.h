@@ -318,14 +318,14 @@ namespace daw::json::impl {
 	using nth = daw::traits::nth_element<N, JsonMembers...>;
 
 	template<typename... JsonMembers, typename OutputIterator, size_t... Is,
-	         typename... Args>
+	         typename Tuple>
 	[[nodiscard]] static constexpr OutputIterator
 	serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
-	                      std::tuple<Args...> const &args ) {
+	                      Tuple const &args ) {
 
 		*it++ = '{';
 
-		(void)( ( to_json_str<nth<Is, JsonMembers...>, Is>( it, args ), ... ), 0 );
+		(void)( ( to_json_str<Is, nth<Is, JsonMembers...>>( it, args ), ... ), 0 );
 
 		*it++ = '}';
 		return it;

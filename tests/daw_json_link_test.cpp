@@ -113,8 +113,8 @@ namespace {
 		  json_string_raw<"s", std::string_view>,
 		  json_string_raw<"s2", std::string_view>,
 		  json_array<"y", int, daw::bounded_vector_t<int, 10>>,
-		  json_nullable<json_number<"o", int>>,
-		  json_nullable<json_number<"o2", int>>, json_date<"dte">>{};
+		  json_nullable<json_number<"o", std::optional<int>>>,
+		  json_nullable<json_number<"o2", std::optional<int>>>, json_date<"dte">>{};
 #else
 		return class_description_t<
 		  json_number<symbols_test_001_t::i, int>,
@@ -122,8 +122,8 @@ namespace {
 		  json_string_raw<symbols_test_001_t::s, std::string_view>,
 		  json_string_raw<symbols_test_001_t::s2, std::string_view>,
 		  json_array<symbols_test_001_t::y, int, daw::bounded_vector_t<int, 10>>,
-		  json_nullable<json_number<symbols_test_001_t::o, int>>,
-		  json_nullable<json_number<symbols_test_001_t::o2, int>>,
+		  json_nullable<json_number<symbols_test_001_t::o, std::optional<int>>>,
+		  json_nullable<json_number<symbols_test_001_t::o2, std::optional<int>>>,
 		  json_date<symbols_test_001_t::dte>>{};
 #endif
 	}
@@ -167,10 +167,10 @@ namespace {
 	auto describe_json_class( test_003_t ) noexcept {
 		using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-		return class_description_t<json_nullable<json_class<"a", test_001_t>>>{};
+		return class_description_t<json_nullable<json_class<"a", std::optional<test_001_t>>>>{};
 #else
 		return class_description_t<
-		  json_nullable<json_class<symbols_test_003_t::a, test_001_t>>>{};
+		  json_nullable<json_class<symbols_test_003_t::a, std::optional<test_001_t>>>>{};
 #endif
 	}
 

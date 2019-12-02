@@ -44,13 +44,13 @@ namespace daw::json::impl::signedint {
 				++ptr;
 				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			}
-			Signed n = 0;
+			intmax_t n = 0;
 			while( dig < 10 ) {
 				n = n * 10 + static_cast<Signed>( dig );
 				++ptr;
 				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			}
-			return {sign ? n : -n, ptr};
+			return {daw::construct_a<Signed>( sign ? n : -n ), ptr};
 		}
 	};
 

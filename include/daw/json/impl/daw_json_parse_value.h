@@ -129,16 +129,16 @@ namespace daw::json::impl {
 
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::sub_type;
-		size_t const null_size = 4;
 		if( rng.empty( ) or rng.is_null( ) ) {
 			return constructor_t{}( );
 		}
-		if( rng.size( ) >= null_size and rng.in( 'n' ) ) {
+		constexpr size_t null_size = 4;
+		if( ( rng.size( ) >= null_size ) and rng.front( ) == 'n' ) {
+			daw_json_assert_untrusted( rng == "null", "Expected literal null" );
 			rng.remove_prefix( null_size );
 			rng.trim_left( );
 			return constructor_t{}( );
 		}
-
 		return parse_value<element_t>( ParseTag<element_t::expected_type>{}, rng );
 	}
 
@@ -154,12 +154,12 @@ namespace daw::json::impl {
 
 		skip_quote_when_literal_as_string<JsonMember>( rng );
 		bool result = false;
-		if( rng.front( ) == 't' and rng.size( ) > 4 ) {
+		if( rng.front( ) == 't' and rng.size( ) >= 4 ) {
 			daw_json_assert_untrusted( rng == "true", "Expected a literal true" );
 			rng.remove_prefix( 4 );
 			result = true;
 		} else {
-			daw_json_assert_untrusted( rng == "false", "Expected a literal true" );
+			daw_json_assert_untrusted( rng == "false", "Expected a literal false" );
 			rng.remove_prefix( 5 );
 		}
 		skip_quote_when_literal_as_string<JsonMember>( rng );

@@ -50,8 +50,23 @@ namespace daw::json::impl {
 	  daw::is_detected_v<detect_insert_end, Container, Value>;
 
 	template<typename T>
-	using json_parser_description_t = daw::remove_cvref_t<decltype(
-	  describe_json_class( std::declval<std::add_lvalue_reference_t<T>>( ) ) )>;
+	using json_parser_description_impl =
+	  daw::remove_cvref_t<decltype( describe_json_class( std::declval<T>( ) ) )>;
+
+	template<typename T,
+	         std::enable_if_t<daw::is_detected_v<json_parser_description_impl, T>,
+	                          std::nullptr_t> = nullptr>
+	auto json_parser_description( ) -> json_parser_description_impl<T>;
+
+	template<
+	  typename T,
+	  std::enable_if_t<not daw::is_detected_v<json_parser_description_impl, T>,
+	                   std::nullptr_t> = nullptr>
+	auto json_parser_description( )
+	  -> json_parser_description_impl<traits::deref_t<T>>;
+
+	template<typename T>
+	using json_parser_description_t = decltype( json_parser_description<T>( ) );
 
 	template<typename T>
 	static inline constexpr bool has_json_parser_description_v =

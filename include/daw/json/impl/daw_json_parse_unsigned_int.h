@@ -33,15 +33,15 @@ namespace daw::json::impl::unsignedint {
 	struct unsigned_parser {
 		[[nodiscard]] static constexpr std::pair<Unsigned, char const *>
 		parse( char const *ptr ) {
-			Unsigned n = 0;
+			uintmax_t n = 0;
 			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			while( dig < 10U ) {
-				n *= static_cast<Unsigned>( 10 );
+				n *= 10U;
 				n += dig;
 				++ptr;
 				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			}
-			return {n, ptr};
+			return {daw::construct_a<Unsigned>( n ), ptr};
 		}
 	};
 

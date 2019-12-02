@@ -97,8 +97,8 @@ namespace daw::json {
 	struct json_nullable {
 		using i_am_a_json_type = typename JsonMember::i_am_a_json_type;
 		using parse_to_t = typename JsonMember::parse_to_t;
-		using constructor_t = typename JsonMember::constructor_t;
 		using sub_type = JsonMember;
+		using constructor_t = typename JsonMember::constructor_t;
 		static constexpr JSONNAMETYPE name = JsonMember::name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Null;
 		using base = json_nullable;
@@ -130,6 +130,39 @@ namespace daw::json {
 		                              : impl::number_parse_type_v<T>;
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
 		static constexpr bool range_check = RangeCheck;
+		static constexpr bool is_nullable = false;
+		using base = impl::json_number_base<T, LiteralAsString, Constructor,
+		                                    expected_type, RangeCheck>;
+	};
+
+	/**
+	 * The member is a nullable number
+	 * @tparam Name name of json member
+	 * @tparam T wrapped type of number(e.g. optional<double>, optional<int>,
+	 * optional<unsigned>...) to pass to Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 * @tparam RangeCheck Check if the value will fit in the result
+	 */
+	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
+	         typename Constructor, bool RangeCheck>
+	struct json_number_null {
+		static_assert( std::is_invocable_v<Constructor, T> and,
+		               "Constructor must be callable with T" );
+
+		using i_am_a_json_type = void;
+		using wrapped_type = T;
+		using base_type =
+		  daw::remove_cvref_t<decltype( *std::declval<wrapped_type>( ) )>;
+		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
+		using constructor_t = Constructor;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
+		  std::is_floating_point_v<T> ? JsonParseTypes::Real
+		                              : impl::number_parse_type_v<T>;
+		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
+		static constexpr bool range_check = RangeCheck;
+		static constexpr bool is_nullable = true;
 		using base = impl::json_number_base<T, LiteralAsString, Constructor,
 		                                    expected_type, RangeCheck>;
 	};
@@ -147,6 +180,20 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<T>>
 	using json_checked_number =
 	  json_number<Name, T, LiteralAsString, Constructor, true>;
+
+	/**
+	 * The member is a nullable range checked number
+	 * @tparam Name name of json member
+	 * @tparam T type of number(e.g. optional<double>, optional<int>,
+	 * optional<unsigned>...) to pass to Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 */
+	template<JSONNAMETYPE Name, typename T = double,
+	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
+	         typename Constructor = daw::construct_a_t<T>>
+	using json_checked_number_null =
+	  json_number_null<Name, T, LiteralAsString, Constructor, true>;
 
 	/**
 	 * The membrer is a boolean
@@ -167,6 +214,30 @@ namespace daw::json {
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
+		static constexpr bool is_nullable = false;
+		using base = impl::json_bool_base<T, LiteralAsString, Constructor>;
+	};
+
+	/**
+	 * The membrer is a nullable boolean
+	 * @tparam Name name of json member
+	 * @tparam T result type to pass to Constructor e.g. optional<bool>
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 */
+	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
+	         typename Constructor>
+	struct json_bool_null {
+		static_assert( std::is_invocable_v<Constructor, bool>,
+		               "Constructor must be callable with bool" );
+
+		using i_am_a_json_type = void;
+		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor, bool>;
+		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
+		static constexpr bool is_nullable = false;
 		using base = impl::json_bool_base<T, LiteralAsString, Constructor>;
 	};
 
@@ -194,6 +265,37 @@ namespace daw::json {
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::String;
 		static constexpr bool empty_is_null = EmptyStringNull;
 		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
+		static constexpr bool is_nullable = false;
+		using base =
+		  impl::json_string_raw_base<String, Constructor, EmptyStringNull,
+		                             DisallowHighEightBit>;
+	};
+
+	/**
+	 * The member is a nullable raw string.  Use json_string_escaped if
+	 * escaping/unescaping is needed
+	 * @tparam Name of json member
+	 * @tparam String result type constructed by Constructor
+	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
+	 * @tparam EmptyStringNull if string is empty, call Constructor with no
+	 * arguments
+	 */
+	template<JSONNAMETYPE Name, typename String = std::string,
+	         typename Constructor = daw::construct_a_t<String>,
+	         bool EmptyStringNull = false, bool DisallowHighEightBit = false>
+	struct json_string_raw_null {
+		static_assert(
+		  std::is_invocable_v<Constructor, char const *, size_t>,
+		  "Constructor must be callable with a char const * and a size_t" );
+
+		using i_am_a_json_type = void;
+		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor, char const *, size_t>;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::String;
+		static constexpr bool empty_is_null = EmptyStringNull;
+		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
+		static constexpr bool is_nullable = false;
 		using base =
 		  impl::json_string_raw_base<String, Constructor, EmptyStringNull,
 		                             DisallowHighEightBit>;
@@ -224,6 +326,38 @@ namespace daw::json {
 		  JsonParseTypes::StringEscaped;
 		static constexpr bool empty_is_null = EmptyStringNull;
 		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
+		static constexpr bool is_nullable = false;
+		using base = impl::json_string_base<String, Constructor, Appender,
+		                                    EmptyStringNull, DisallowHighEightBit>;
+	};
+
+	/**
+	 * Member is an escaped nullable string and requires unescaping and escaping
+	 * of string data
+	 * @tparam Name of json member
+	 * @tparam String result type constructed by Constructor (e.g.
+	 * optional<string> )
+	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
+	 * @tparam Appender Allows appending characters to the output object
+	 * @tparam EmptyStringNull if string is empty, call Constructor with no
+	 * arguments
+	 */
+	template<JSONNAMETYPE Name, typename String, typename Constructor,
+	         typename Appender, bool EmptyStringNull, bool DisallowHighEightBit>
+	struct json_string_null {
+		static_assert( std::is_invocable_v<Constructor>,
+		               "Constructor must be default constructable" );
+
+		using i_am_a_json_type = void;
+		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor>;
+		using appender_t = Appender;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
+		  JsonParseTypes::StringEscaped;
+		static constexpr bool empty_is_null = EmptyStringNull;
+		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
+		static constexpr bool is_nullable = false;
 		using base = impl::json_string_base<String, Constructor, Appender,
 		                                    EmptyStringNull, DisallowHighEightBit>;
 	};
@@ -248,6 +382,31 @@ namespace daw::json {
 		using parse_to_t = std::invoke_result_t<Constructor, char const *, size_t>;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
+		static constexpr bool is_nullable = false;
+		using base = impl::json_date_base<T, Constructor>;
+	};
+
+	/** Link to a JSON string representing a nullable date
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T C++ type to consruct, by default is an optional<time_point>
+	 * @tparam Constructor A Callable used to construct a T.
+	 * Must accept a char pointer and size as argument to the date/time string.
+	 */
+	template<JSONNAMETYPE Name,
+	         typename T = std::chrono::time_point<std::chrono::system_clock,
+	                                              std::chrono::milliseconds>,
+	         typename Constructor = parse_js_date>
+	struct json_date_null {
+		static_assert(
+		  std::is_invocable_v<Constructor, char const *, size_t>,
+		  "Constructor must be callable with a char const * and a size_t" );
+
+		using i_am_a_json_type = void;
+		using constructor_t = Constructor;
+		using parse_to_t = std::invoke_result_t<Constructor, char const *, size_t>;
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
+		static constexpr bool is_nullable = false;
 		using base = impl::json_date_base<T, Constructor>;
 	};
 
@@ -266,6 +425,7 @@ namespace daw::json {
 		using constructor_t = Constructor;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
+		static constexpr bool is_nullable = false;
 		using base = impl::json_class_base<T, Constructor>;
 	};
 
@@ -282,6 +442,7 @@ namespace daw::json {
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Custom;
 		static constexpr bool const is_string = IsString;
+		static constexpr bool is_nullable = false;
 		using base =
 		  impl::json_custom_base<T, FromConverter, ToConverter, IsString>;
 	};
@@ -325,6 +486,7 @@ namespace daw::json {
 		using appender_t = Appender;
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
+		static constexpr bool is_nullable = false;
 		using base =
 		  impl::json_array_base<json_element_t, Container, Constructor, Appender>;
 
@@ -369,6 +531,7 @@ namespace daw::json {
 
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::KeyValue;
+		static constexpr bool is_nullable = false;
 		using base = impl::json_key_value_base<Container, json_element_t,
 		                                       json_key_t, Constructor, Appender>;
 	};
@@ -412,6 +575,7 @@ namespace daw::json {
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  JsonParseTypes::KeyValueArray;
+		static constexpr bool is_nullable = false;
 		using base =
 		  impl::json_key_value_array_base<Container, json_value_t, json_key_t,
 		                                  Constructor, Appender>;

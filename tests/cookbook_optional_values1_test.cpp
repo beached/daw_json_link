@@ -34,18 +34,19 @@
 
 namespace daw::cookbook_optional_values1 {
 	struct MyOptionalStuff1 {
-		std::optional<int> member0;
-		std::string member1;
-		std::unique_ptr<bool> member2;
+		std::optional<int> member0{};
+		std::string member1{};
+		std::unique_ptr<bool> member2{};
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
 	auto describe_json_class( MyOptionalStuff1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
-		  json_nullable<json_number<"member0", int>>, json_string<"member1">,
-		  json_nullable<json_bool<"member2", bool, LiteralAsStringOpt::never,
-		                          UniquePtrConstructor<bool>>>>{};
+		json_nullable<json_number<"member0", std::optional<int>>>,
+		  json_string<"member1">,
+		  return class_description_t<
+		    json_nullable<json_bool<"member2", bool, LiteralAsStringOpt::never,
+		                            UniquePtrConstructor<bool>>>>{};
 	}
 #else
 	namespace symbols_MyOptionalStuff1 {
@@ -53,13 +54,15 @@ namespace daw::cookbook_optional_values1 {
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 	} // namespace symbols_MyOptionalStuff1
+
 	auto describe_json_class( MyOptionalStuff1 const & ) {
 		using namespace daw::json;
 		return class_description_t<
-		  json_nullable<json_number<symbols_MyOptionalStuff1::member0, int>>,
+		  json_nullable<
+		    json_number<symbols_MyOptionalStuff1::member0, std::optional<int>>>,
 		  json_string<symbols_MyOptionalStuff1::member1>,
 		  json_nullable<
-		    json_bool<symbols_MyOptionalStuff1::member2, bool,
+		    json_bool<symbols_MyOptionalStuff1::member2, std::unique_ptr<bool>,
 		              LiteralAsStringOpt::never, UniquePtrConstructor<bool>>>>{};
 	}
 #endif
@@ -87,7 +90,9 @@ int main( int argc, char **argv ) {
 	puts( std::string( data.data( ), data.size( ) ).c_str( ) );
 	auto stuff = daw::json::from_json_array<
 	  daw::cookbook_optional_values1::MyOptionalStuff1>( data );
-
+	daw_json_assert( stuff.size( ) == 2, "Unexpected size" );
+	daw_json_assert( not stuff.front( ).member2, "Unexpected value" );
+	daw_json_assert( not stuff.back( ).member0, "Unexpected value" );
 	auto const str = daw::json::to_json_array( stuff );
 	puts( "After" );
 	puts( str.c_str( ) );

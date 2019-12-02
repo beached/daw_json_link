@@ -386,14 +386,14 @@ namespace daw::json::impl {
 	}
 
 	template<typename T>
-	[[nodiscard]] static constexpr auto deref_detect( T &&value ) noexcept
-	  -> decltype( *value ) {
-		return *value;
-	}
+	static constexpr auto deref_detect( T &&value ) noexcept
+	  -> decltype( *value );
 
-	template<typename Optional>
-	using deref_t = decltype(
-	  deref_detect( std::declval<daw::remove_cvref_t<Optional> &>( ) ) );
+	static constexpr void deref_detect( ... ) noexcept;
+
+	template<typename T>
+	using deref_t =
+	  daw::remove_cvref_t<decltype( deref_detect( std::declval<T>( ) ) )>;
 
 	template<typename Optional>
 	static inline constexpr bool is_valid_optional_v =
@@ -404,10 +404,7 @@ namespace daw::json::impl {
 	to_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 	           Optional const &value ) {
 		static_assert( is_valid_optional_v<Optional> );
-		if( not value ) {
-			it = copy_to_iterator( "null", it );
-			return it;
-		}
+		daw_json_assert( value, "Should never get here without a value" );
 		using sub_type = typename JsonMember::sub_type;
 		using tag_type = ParseTag<sub_type::expected_type>;
 		return to_string<sub_type>( tag_type{}, it, *value );
@@ -687,21 +684,21 @@ namespace daw::json::impl {
 	template<typename T>
 	inline constexpr bool is_a_json_type_v = daw::is_detected_v<json_type_t, T>;
 
-	template<typename JsonMember, size_t pos, typename OutputIterator,
+	template<size_t pos, typename JsonMember, typename OutputIterator,
 	         typename... Args>
 	static constexpr void to_json_str( OutputIterator it,
-	                                   std::tuple<Args...> const &args ) {
+	                                   std::tuple<Args...> const &tp ) {
 
 		static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Null ) {
-			if( not std::get<pos>( args ) ) {
+			if( not std::get<pos>( tp ) ) {
 				return;
 			}
 		}
 		*it++ = '"';
 		it = copy_to_iterator<false, false>( JsonMember::name, it );
 		it = copy_to_iterator<false, false>( "\":", it );
-		it = member_to_string<JsonMember>( daw::move( it ), std::get<pos>( args ) );
+		it = member_to_string<JsonMember>( daw::move( it ), std::get<pos>( tp ) );
 		if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
 			*it++ = ',';
 		}
