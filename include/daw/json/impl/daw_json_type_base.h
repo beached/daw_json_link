@@ -25,89 +25,100 @@
 #include "daw_json_parse_common.h"
 
 namespace daw::json::impl {
-	template<typename T, LiteralAsStringOpt LiteralAsString, typename Constructor,
-	         JsonParseTypes ExpectedType, bool RangeCheck>
+	template<typename BaseType, typename ParseTo,
+	         LiteralAsStringOpt LiteralAsString, typename Constructor,
+	         JsonParseTypes ExpectedType, JsonRangeCheck RangeCheck>
 	struct json_number_base {
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
+		using base_type = BaseType;
+		using parse_to_t = ParseTo;
 		using constructor_t = Constructor;
 		static constexpr JsonParseTypes expected_type = ExpectedType;
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
-		static constexpr bool range_check = RangeCheck;
+		static constexpr JsonRangeCheck range_check = RangeCheck;
 		using base = json_number_base;
 	};
 
-	template<typename T, LiteralAsStringOpt LiteralAsString, typename Constructor>
+	template<typename BaseType, typename ParseTo,
+	         LiteralAsStringOpt LiteralAsString, typename Constructor>
 	struct json_bool_base {
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
+		using base_type = BaseType;
+		using parse_to_t = ParseTo;
 		using constructor_t = Constructor;
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
 		using base = json_bool_base;
 	};
 
-	template<typename String, typename Constructor, bool EmptyStringNull,
-	         bool DisallowHighEightBit>
+	template<typename BaseType, typename ParseTo, typename Constructor,
+	         JsonNullable EmptyStringNull, EightBitModes EightBitMode>
 	struct json_string_raw_base {
 		using i_am_a_json_type = void;
-		using parse_to_t = String;
+		using base_type = BaseType;
+		using parse_to_t = ParseTo;
 		using constructor_t = Constructor;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::String;
-		static constexpr bool empty_is_null = EmptyStringNull;
-		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
+		static constexpr JsonNullable empty_is_null = EmptyStringNull;
+		static constexpr EightBitModes eight_bit_mode = EightBitMode;
 		using base = json_string_raw_base;
 	};
 
-	template<typename String, typename Constructor, typename Appender,
-	         bool EmptyStringNull, bool DisallowHighEightBit>
+	template<typename BaseType, typename ParseTo, typename Constructor,
+	         typename Appender, JsonNullable EmptyStringNull,
+	         EightBitModes EightBitMode>
 	struct json_string_base {
 		using i_am_a_json_type = void;
-		using parse_to_t = String;
+		using base_type = BaseType;
+		using parse_to_t = ParseTo;
 		using constructor_t = Constructor;
 		using appender_t = Appender;
 		static constexpr JsonParseTypes expected_type =
 		  JsonParseTypes::StringEscaped;
-		static constexpr bool empty_is_null = EmptyStringNull;
-		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
+		static constexpr JsonNullable empty_is_null = EmptyStringNull;
+		static constexpr EightBitModes eight_bit_mode = EightBitMode;
 		using base = json_string_base;
 	};
 
-	template<typename T, typename Constructor>
+	template<typename BaseType, typename ParseTo, typename Constructor>
 	struct json_date_base {
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
+		using base_type = BaseType;
+		using parse_to_t = ParseTo;
 		using constructor_t = Constructor;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
 		using base = json_date_base;
 	};
 
-	template<typename T, typename Constructor>
+	template<typename BaseType, typename ParseTo, typename Constructor>
 	struct json_class_base {
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
+		using base_type = BaseType;
+		using parse_to_t = ParseTo;
 		using constructor_t = Constructor;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
 		using base = json_class_base;
 	};
 
-	template<typename T, typename FromConverter, typename ToConverter,
-	         bool IsString>
+	template<typename BaseType, typename ParseTo, typename FromConverter,
+	         typename ToConverter, CustomJsonTypes CustomJsonType>
 	struct json_custom_base {
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
+		using base_type = BaseType;
+		using parse_to_t = ParseTo;
 		using to_converter_t = ToConverter;
 		using from_converter_t = FromConverter;
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Custom;
-		static constexpr bool const is_string = IsString;
+		static constexpr CustomJsonTypes custom_json_type = CustomJsonType;
 		using base = json_custom_base;
 	};
 
-	template<typename JsonElement, typename Container, typename Constructor,
-	         typename Appender>
+	template<typename JsonElement, typename BaseContainerType,
+	         typename ParseToContainer, typename Constructor, typename Appender>
 	struct json_array_base {
 		using i_am_a_json_type = void;
-		using parse_to_t = Container;
+		using base_type = BaseContainerType;
+		using parse_to_t = ParseToContainer;
 		using constructor_t = Constructor;
 		using appender_t = Appender;
 		using json_element_t = JsonElement;
@@ -115,11 +126,13 @@ namespace daw::json::impl {
 		using base = json_array_base;
 	};
 
-	template<typename Container, typename JsonValueType, typename JsonKeyType,
-	         typename Constructor, typename Appender>
+	template<typename BaseContainerType, typename ParseToContainer,
+	         typename JsonValueType, typename JsonKeyType, typename Constructor,
+	         typename Appender>
 	struct json_key_value_base {
 		using i_am_a_json_type = void;
-		using parse_to_t = Container;
+		using base_type = BaseContainerType;
+		using parse_to_t = ParseToContainer;
 		using constructor_t = Constructor;
 		using appender_t = Appender;
 		using json_element_t = JsonValueType;
@@ -128,11 +141,13 @@ namespace daw::json::impl {
 		using base = json_key_value_base;
 	};
 
-	template<typename Container, typename JsonValueType, typename JsonKeyType,
-	         typename Constructor, typename Appender>
+	template<typename BaseContainerType, typename ParseToContainer,
+	         typename JsonValueType, typename JsonKeyType, typename Constructor,
+	         typename Appender>
 	struct json_key_value_array_base {
 		using i_am_a_json_type = void;
-		using parse_to_t = Container;
+		using base_type = BaseContainerType;
+		using parse_to_t = ParseToContainer;
 		using constructor_t = Constructor;
 		using appender_t = Appender;
 		using json_key_t = JsonKeyType;

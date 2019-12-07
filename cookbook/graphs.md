@@ -76,7 +76,7 @@ namespace daw::cookbook_graphs1 {
 	auto describe_json_class( GraphNode const & ) {
 		using namespace daw::json;
 		return class_description_t<
-		  json_number<"id", size_t, LiteralAsStringOpt::always>,
+		  json_number<"id", size_t, LiteralAsStringOpt::Always>,
 		  json_class<"metadata", Metadata>>{};
 	}
 
@@ -88,8 +88,8 @@ namespace daw::cookbook_graphs1 {
 	auto describe_json_class( GraphEdge const & ) {
 		using namespace daw::json;
 		return class_description_t<
-		  json_number<"source", size_t, LiteralAsStringOpt::always>,
-		  json_number<"target", size_t, LiteralAsStringOpt::always>>{};
+		  json_number<"source", size_t, LiteralAsStringOpt::Always>,
+		  json_number<"target", size_t, LiteralAsStringOpt::Always>>{};
 	}
 } // namespace daw::cookbook_graphs1
 

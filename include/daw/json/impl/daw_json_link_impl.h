@@ -134,10 +134,6 @@ namespace daw::json::impl {
 	template<typename JsonType>
 	using json_parse_to = typename JsonType::parse_to_t;
 
-	template<typename JsonType>
-	static inline constexpr bool is_json_nullable_v =
-	  JsonType::expected_type == JsonParseTypes::Null;
-
 	struct member_name_parse_error {};
 
 	// Get the next member name
@@ -290,27 +286,25 @@ namespace daw::json::impl {
 	                    IteratorRange<First, Last, TrustedInput> &rng ) {
 
 		rng.clean_tail( );
+		using base = typename JsonMember::base;
 		if constexpr( is_no_name<JsonMember::name> ) {
 			// If we are an array element
-			return parse_value<typename JsonMember::base>(
-			  ParseTag<JsonMember::expected_type>{}, rng );
+			return parse_value<base>( ParseTag<base::expected_type>{}, rng );
 		} else {
 			daw_json_assert_untrusted( rng.front( "\"}" ),
 			                           "Expected end of class or start of member" );
 			auto loc =
 			  find_class_member<JsonMember>( member_position, locations, rng );
 
-			daw_json_assert_untrusted(
-			  JsonMember::expected_type == JsonParseTypes::Null or not loc.is_null( ),
-			  "Could not find required class member" );
+			daw_json_assert_untrusted( is_json_nullable_v<JsonMember> or
+			                             not loc.is_null( ),
+			                           "Could not find required class member" );
 			if( loc.is_null( ) or
 			    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 
-				return parse_value<typename JsonMember::base>(
-				  ParseTag<JsonMember::expected_type>{}, loc );
+				return parse_value<base>( ParseTag<base::expected_type>{}, loc );
 			}
-			return parse_value<typename JsonMember::base>(
-			  ParseTag<JsonMember::expected_type>{}, rng );
+			return parse_value<base>( ParseTag<base::expected_type>{}, rng );
 		}
 	}
 
@@ -337,14 +331,17 @@ namespace daw::json::impl {
 	  locations_info_t<sizeof...( JsonMembers ), First, Last, TrustedInput>{
 	    location_info_t<First, Last, TrustedInput>( JsonMembers::name )...};
 
-	template<typename T, typename... JsonMembers, size_t... Is, typename First,
-	         typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr T
+	template<typename JsonClass, typename... JsonMembers, size_t... Is,
+	         typename First, typename Last, bool TrustedInput>
+	[[nodiscard]] static constexpr JsonClass
 	parse_json_class( IteratorRange<First, Last, TrustedInput> &rng,
 	                  std::index_sequence<Is...> ) {
+		static_assert( has_json_parser_description_v<JsonClass>,
+		               "Unexpected type" );
 		static_assert(
 		  can_construct_a_v<
-		    T, decltype( std::declval<typename JsonMembers::parse_to_t>( ) )...>,
+		    JsonClass,
+		    decltype( std::declval<typename JsonMembers::parse_to_t>( ) )...>,
 		  "Supplied types cannot be used for	construction of this type" );
 
 		rng.move_to_next_of( '{' );
@@ -356,7 +353,7 @@ namespace daw::json::impl {
 			                           "Expected class to end with '}'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
-			return construct_a<T>( );
+			return construct_a<JsonClass>( );
 		} else {
 			auto known_locations =
 			  known_locations_v<First, Last, TrustedInput, JsonMembers...>;
@@ -367,8 +364,8 @@ namespace daw::json::impl {
 			/*
 			 * Rather than call directly use apply/tuple to evaluate left->right
 			 */
-			T result = std::apply(
-			  daw::construct_a<T>,
+			JsonClass result = std::apply(
+			  daw::construct_a<JsonClass>,
 			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng )...} );
 
@@ -447,9 +444,9 @@ namespace daw::json::impl {
 		               "A function call describe_json_class must exist for type." );
 		daw_json_assert_untrusted( not json_data.empty( ),
 		                           "Attempt to parse empty string" );
-		using desc_t = impl::json_parser_description_t<T>;
 
-		return desc_t::template parse<T, TrustedInput>( json_data );
+		return impl::json_parser_description_t<T>::template parse<T, TrustedInput>(
+		  json_data );
 	}
 
 } // namespace daw::json::impl

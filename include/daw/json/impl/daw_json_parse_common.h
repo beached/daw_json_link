@@ -75,6 +75,9 @@ namespace daw::json::impl {
 	template<typename JsonMember>
 	using json_result = typename JsonMember::parse_to_t;
 
+	template<typename JsonMember>
+	using json_base_type = typename JsonMember::base_type;
+
 	template<size_t I, typename... JsonMembers>
 	using json_result_n =
 	  json_result<daw::traits::nth_element<I, JsonMembers...>>;
@@ -228,10 +231,41 @@ namespace daw::json {
 		Custom
 	};
 
+	enum class JsonNullable : bool { Never = false, Nullable = true };
+	enum class JsonRangeCheck : bool { Never = false, CheckForNarrowing = true };
+	enum class EightBitModes : bool { DisallowHigh = false, AllowFull = true };
+	enum class CustomJsonTypes : bool { Literal = false, String = true };
+
+	template<JsonParseTypes ParseType, JsonNullable Nullable>
+	inline constexpr JsonParseTypes get_parse_type_v =
+	  Nullable == JsonNullable::Never ? ParseType : JsonParseTypes::Null;
+
 	namespace impl {
+		template<typename JsonType>
+		static inline constexpr bool is_json_nullable_v =
+		  JsonType::expected_type == JsonParseTypes::Null;
+
+		void unwrapped_type_impl( ... );
+
 		template<typename T>
-		inline constexpr JsonParseTypes number_parse_type_impl_v =
-		  std::is_signed_v<T> ? JsonParseTypes::Signed : JsonParseTypes::Unsigned;
+		auto unwrapped_type_impl( daw::tag_t<T> )
+		  -> decltype( *std::declval<T>( ) );
+
+		template<typename T, JsonNullable Nullable>
+		using unwrap_type = std::conditional_t<
+		  ( Nullable == JsonNullable::Never ), T,
+		  daw::remove_cvref_t<decltype( unwrapped_type_impl( daw::tag<T> ) )>>;
+
+		template<typename T>
+		inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
+			if constexpr( std::is_floating_point_v<T> ) {
+				return JsonParseTypes::Real;
+			} else if constexpr( std::is_signed_v<T> ) {
+				return JsonParseTypes::Signed;
+			} else if constexpr( std::is_unsigned_v<T> ) {
+				return JsonParseTypes::Unsigned;
+			}
+		}( );
 
 		template<typename T>
 		constexpr auto number_parse_type_test( )
@@ -258,11 +292,11 @@ namespace daw::json {
 
 	/**
 	 * Allows having literals parse that are encoded as strings. It allows
-	 * one to have it be never true, maybe true or always true.  This controls
-	 * whether the parser will never remove quotes, check if quotes exist, or
-	 * always remove quotes around the literal
+	 * one to have it be Never true, Maybe true or Always true.  This controls
+	 * whether the parser will Never remove quotes, check if quotes exist, or
+	 * Always remove quotes around the literal
 	 */
-	enum class LiteralAsStringOpt : uint8_t { never, maybe, always };
+	enum class LiteralAsStringOpt : uint8_t { Never, Maybe, Always };
 
 	template<typename T>
 	inline constexpr bool is_range_constructable_v =
@@ -389,7 +423,7 @@ namespace daw::json::impl {
 		                     JsonMember::expected_type == JsonParseTypes::Signed or
 		                     JsonMember::expected_type ==
 		                       JsonParseTypes::Unsigned or
-		                     JsonMember::expected_type == JsonParseTypes::Null or
+		                     is_json_nullable_v<JsonMember> or
 		                     JsonMember::expected_type == JsonParseTypes::Bool ) {
 			return impl::skip_literal( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {

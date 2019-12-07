@@ -64,7 +64,7 @@ std::vector<MyClass4> v = from_json_array<MyClass4>( str );
 ```
 
 ## Array's as members
-The `json_array` member type allows you to easily map a member variable to a vector of T. If the container is different, you can specify it too.
+The `json_array` member type allows you to easily map a member variable to a vector of JsonClass. If the container is different, you can specify it too.
 
 To see a working example using this code, look at the [cookbook_array3_test.cpp](../tests/cookbook_array3_test.cpp) test in tests
 Take the following json

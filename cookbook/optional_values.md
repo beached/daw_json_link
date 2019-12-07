@@ -38,7 +38,7 @@ auto describe_json_class( MyOptionalStuff1 const & ) {
            json_bool<
             "member2", 
             std::unique_ptr<bool>, 
-            LiteralAsStringOpt::never, 
+            LiteralAsStringOpt::Never, 
             UniquePtrConstructor<bool>
         >>>{};
 }

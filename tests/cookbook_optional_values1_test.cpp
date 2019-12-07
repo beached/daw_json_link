@@ -45,7 +45,7 @@ namespace daw::cookbook_optional_values1 {
 		json_nullable<json_number<"member0", std::optional<int>>>,
 		  json_string<"member1">,
 		  return class_description_t<
-		    json_nullable<json_bool<"member2", bool, LiteralAsStringOpt::never,
+		    json_nullable<json_bool<"member2", bool, LiteralAsStringOpt::Never,
 		                            UniquePtrConstructor<bool>>>>{};
 	}
 #else
@@ -63,7 +63,7 @@ namespace daw::cookbook_optional_values1 {
 		  json_string<symbols_MyOptionalStuff1::member1>,
 		  json_nullable<
 		    json_bool<symbols_MyOptionalStuff1::member2, std::unique_ptr<bool>,
-		              LiteralAsStringOpt::never, UniquePtrConstructor<bool>>>>{};
+		              LiteralAsStringOpt::Never, UniquePtrConstructor<bool>>>>{};
 	}
 #endif
 	auto to_json_data( MyOptionalStuff1 const &value ) {

@@ -42,11 +42,11 @@ namespace daw::json::impl {
 	         bool TrustedInput>
 	constexpr void skip_quote_when_literal_as_string(
 	  IteratorRange<First, Last, TrustedInput> &rng ) {
-		if constexpr( JsonMember::literal_as_string == LiteralAsStringOpt::never ) {
+		if constexpr( JsonMember::literal_as_string == LiteralAsStringOpt::Never ) {
 			return;
 			// Temporary fix as right now we are only sometimes having strings to skip
 	/*	else if constexpr( JsonMember::literal_as_string ==
-		                     LiteralAsStringOpt::always ) {
+		                     LiteralAsStringOpt::Always ) {
 			rng.remove_prefix( );
 			return;
 	*/	} else {
@@ -128,7 +128,7 @@ namespace daw::json::impl {
 	             IteratorRange<First, Last, TrustedInput> &rng ) {
 
 		using constructor_t = typename JsonMember::constructor_t;
-		using element_t = typename JsonMember::sub_type;
+		using element_t = typename JsonMember::base;
 		if( rng.empty( ) or rng.is_null( ) ) {
 			return constructor_t{}( );
 		}
@@ -174,7 +174,7 @@ namespace daw::json::impl {
 
 		auto str = skip_string( rng );
 		using constructor_t = typename JsonMember::constructor_t;
-		if constexpr( JsonMember::empty_is_null ) {
+		if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
 			if( str.empty( ) ) {
 				return constructor_t{}( );
 			}

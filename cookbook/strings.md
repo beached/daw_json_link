@@ -51,7 +51,7 @@ auto to_json_data( WebData const & value ) {
 ```
 
 ## Raw strings
-Raw strings are useful where we don't want to process the strings, we know they will never be escaped, or there are non-conformant items encoded.  A raw string, is also simpler in that it only requires a constructor that requires a pointer and size, like a string_view.  
+Raw strings are useful where we don't want to process the strings, we know they will Never be escaped, or there are non-conformant items encoded.  A raw string, is also simpler in that it only requires a constructor that requires a pointer and size, like a string_view.  
 
 Using the json above and contrasting with the code above, all we need to do is change the `json_string` to `json_string_raw`
 
