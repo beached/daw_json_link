@@ -97,6 +97,5 @@ int main( int argc, char **argv ) {
 	  daw::cookbook_optional_values1::MyOptionalStuff1>( str );
 
 	daw_json_assert( stuff == stuff2, "Unexpected round trip error" );
-
 	return 0;
 }

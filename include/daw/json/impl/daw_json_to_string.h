@@ -687,7 +687,7 @@ namespace daw::json::impl {
 
 	template<size_t pos, typename JsonMember, typename OutputIterator,
 	         typename... Args>
-	static constexpr void to_json_str( OutputIterator it,
+	static constexpr void to_json_str( bool &is_first, OutputIterator it,
 	                                   std::tuple<Args...> const &tp ) {
 
 		static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
@@ -696,13 +696,14 @@ namespace daw::json::impl {
 				return;
 			}
 		}
+		if( not is_first ) {
+			*it++ = ',';
+		}
+		is_first = false;
 		*it++ = '"';
 		it =
 		  copy_to_iterator<false, EightBitModes::AllowFull>( JsonMember::name, it );
 		it = copy_to_iterator<false, EightBitModes::AllowFull>( "\":", it );
 		it = member_to_string<JsonMember>( daw::move( it ), std::get<pos>( tp ) );
-		if constexpr( pos < ( sizeof...( Args ) - 1U ) ) {
-			*it++ = ',';
-		}
-	}
+	} // namespace daw::json::impl
 } // namespace daw::json::impl
