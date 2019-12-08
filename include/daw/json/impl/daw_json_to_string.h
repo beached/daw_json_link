@@ -407,9 +407,8 @@ namespace daw::json::impl {
 	           Optional const &value ) {
 		static_assert( is_valid_optional_v<Optional> );
 		daw_json_assert( value, "Should Never get here without a value" );
-		using base_type = typename JsonMember::base;
-		using tag_type = ParseTag<base_type::base_expected_type>;
-		return to_string<base_type>( tag_type{}, it, *value );
+		using tag_type = ParseTag<JsonMember::base_expected_type>;
+		return to_string<JsonMember>( tag_type{}, it, *value );
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>

@@ -57,7 +57,7 @@ namespace daw::json {
 	 * @tparam Constructor Callable used to construct result
 	 * @tparam RangeCheck Check if the value will fit in the result
 	 */
-	template<JSONNAMETYPE Name, typename T = double,
+	template<JSONNAMETYPE Name, typename T = std::optional<double>,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 	         typename Constructor = daw::construct_a_t<T>,
 	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never>
@@ -89,7 +89,7 @@ namespace daw::json {
 	 * @tparam LiteralAsString Could this number be embedded in a string
 	 * @tparam Constructor Callable used to construct result
 	 */
-	template<JSONNAMETYPE Name, typename T = double,
+	template<JSONNAMETYPE Name, typename T = std::optional<double>,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 	         typename Constructor = daw::construct_a_t<T>>
 	using json_checked_number_null =
@@ -117,7 +117,7 @@ namespace daw::json {
 	 * @tparam LiteralAsString Could this number be embedded in a string
 	 * @tparam Constructor Callable used to construct result
 	 */
-	template<JSONNAMETYPE Name, typename T = bool,
+	template<JSONNAMETYPE Name, typename T = std::optional<bool>,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 	         typename Constructor = daw::construct_a_t<T>>
 	using json_bool_null =
@@ -153,7 +153,7 @@ namespace daw::json {
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
 	 * arguments
 	 */
-	template<JSONNAMETYPE Name, typename String = std::string,
+	template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
 	         typename Constructor = daw::construct_a_t<String>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull>
@@ -192,9 +192,10 @@ namespace daw::json {
 	 * arguments
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
 	 */
-	template<JSONNAMETYPE Name, typename String = std::string,
-	         typename Constructor = daw::construct_a_t<String>,
-	         typename Appender = impl::basic_appender<String>,
+	template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
+	         typename Constructor =
+	           daw::construct_a_t<std::optional<std::string>>,
+	         typename Appender = impl::basic_appender<std::string>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull>
 	using json_string_null =
@@ -212,7 +213,7 @@ namespace daw::json {
 	template<JSONNAMETYPE Name,
 	         typename T = std::chrono::time_point<std::chrono::system_clock,
 	                                              std::chrono::milliseconds>,
-	         typename Constructor = parse_js_date,
+	         typename Constructor = parse_js_date<JsonNullable::Never>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_date;
 
@@ -224,9 +225,9 @@ namespace daw::json {
 	 * Must accept a char pointer and size as argument to the date/time string.
 	 */
 	template<JSONNAMETYPE Name,
-	         typename T = std::chrono::time_point<std::chrono::system_clock,
-	                                              std::chrono::milliseconds>,
-	         typename Constructor = parse_js_date>
+	         typename T = std::optional<std::chrono::time_point<
+	           std::chrono::system_clock, std::chrono::milliseconds>>,
+	         typename Constructor = parse_js_date<JsonNullable::Nullable>>
 	using json_date_null =
 	  json_date<Name, T, Constructor, JsonNullable::Nullable>;
 

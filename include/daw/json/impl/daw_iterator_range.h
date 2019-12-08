@@ -31,11 +31,11 @@
 #include "daw_json_assert.h"
 
 namespace daw::json::impl {
-	template<typename First, typename Last, bool TrustedInput>
+	template<typename First, typename Last, bool IsTrustedInput>
 	struct IteratorRange {
 		First first{};
 		Last last{};
-		static constexpr bool is_trusted_input = TrustedInput;
+		static constexpr bool is_trusted_input = IsTrustedInput;
 		using CharT = daw::remove_cvref_t<decltype( *first )>;
 
 		constexpr bool operator==( char const *ptr ) const {
@@ -111,7 +111,7 @@ namespace daw::json::impl {
 		}
 
 		constexpr bool is_space( ) const noexcept {
-			if constexpr( not TrustedInput ) {
+			if constexpr( not IsTrustedInput ) {
 				daw_json_assert( has_more( ), "Unexpected end of stream" );
 				switch( *first ) {
 				case 0x20: // space

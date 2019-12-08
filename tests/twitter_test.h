@@ -131,8 +131,8 @@ struct entities_t {
 static inline auto describe_json_class( entities_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_nullable<json_class<"url", url_t>>,
-	  json_nullable<json_class<"description", description_t>>>{};
+	  json_class_null<"url", std::optional<url_t>>,
+	  json_class_null<"description", std::optional<description_t>>>{};
 }
 #else
 namespace symbols_entities_t {
@@ -142,9 +142,9 @@ namespace symbols_entities_t {
 static inline auto describe_json_class( entities_t ) {
 	using namespace daw::json;
 	return daw::json::class_description_t<
-	  json_nullable<json_class<symbols_entities_t::url, url_t>>,
-	  json_nullable<
-	    json_class<symbols_entities_t::description, description_t>>>{};
+	  json_class_null<symbols_entities_t::url, std::optional<url_t>>,
+	  json_class_null<symbols_entities_t::description,
+	                  std::optional<description_t>>>{};
 }
 #endif
 
@@ -201,13 +201,13 @@ static inline auto describe_json_class( user_t ) {
 	return daw::json::class_description_t<
 	  json_number<"id", int64_t>, json_string<"id_str">, json_string<"name">,
 	  json_string<"screen_name">, json_string<"location">,
-	  json_string<"description">, json_nullable<json_string<"url">>,
+	  json_string<"description">, json_string_null<"url">,
 	  json_class<"entities", entities_t>, json_bool<"protected">,
 	  json_number<"followers_count", int64_t>,
 	  json_number<"friends_count", int64_t>, json_number<"listed_count", int64_t>,
 	  json_string<"created_at">, json_number<"favourites_count", int64_t>,
-	  json_nullable<json_number<"utc_offset", int64_t>>,
-	  json_nullable<json_string<"time_zone">>, json_bool<"geo_enabled">,
+	  json_number_null<"utc_offset", std::optional<int64_t>>,
+	  json_string_null<"time_zone">, json_bool<"geo_enabled">,
 	  json_bool<"verified">, json_number<"statuses_count", int64_t>,
 	  json_string<"lang">, json_bool<"contributors_enabled">,
 	  json_bool<"is_translator">, json_bool<"is_translation_enabled">,
@@ -216,8 +216,7 @@ static inline auto describe_json_class( user_t ) {
 	  json_string<"profile_background_image_url_https">,
 	  json_bool<"profile_background_tile">, json_string<"profile_image_url">,
 	  json_string<"profile_image_url_https">,
-	  json_nullable<json_string<"profile_banner_url">>,
-	  json_string<"profile_link_color">,
+	  json_string_null<"profile_banner_url">, json_string<"profile_link_color">,
 	  json_string<"profile_sidebar_border_color">,
 	  json_string<"profile_sidebar_fill_color">,
 	  json_string<"profile_text_color">,
@@ -292,7 +291,7 @@ static inline auto describe_json_class( user_t ) {
 	  json_string<symbols_user_t::screen_name>,
 	  json_string<symbols_user_t::location>,
 	  json_string<symbols_user_t::description>,
-	  json_nullable<json_string<symbols_user_t::url>>,
+	  json_string_null<symbols_user_t::url>,
 	  json_class<symbols_user_t::entities, entities_t>,
 	  json_bool<symbols_user_t::_jsonprotected>,
 	  json_number<symbols_user_t::followers_count, int64_t>,
@@ -300,8 +299,8 @@ static inline auto describe_json_class( user_t ) {
 	  json_number<symbols_user_t::listed_count, int64_t>,
 	  json_string<symbols_user_t::created_at>,
 	  json_number<symbols_user_t::favourites_count, int64_t>,
-	  json_nullable<json_number<symbols_user_t::utc_offset, int64_t>>,
-	  json_nullable<json_string<symbols_user_t::time_zone>>,
+	  json_number_null<symbols_user_t::utc_offset, std::optional<int64_t>>,
+	  json_string_null<symbols_user_t::time_zone>,
 	  json_bool<symbols_user_t::geo_enabled>, json_bool<symbols_user_t::verified>,
 	  json_number<symbols_user_t::statuses_count, int64_t>,
 	  json_string<symbols_user_t::lang>,
@@ -315,7 +314,7 @@ static inline auto describe_json_class( user_t ) {
 	  json_bool<symbols_user_t::profile_background_tile>,
 	  json_string<symbols_user_t::profile_image_url>,
 	  json_string<symbols_user_t::profile_image_url_https>,
-	  json_nullable<json_string<symbols_user_t::profile_banner_url>>,
+	  json_string_null<symbols_user_t::profile_banner_url>,
 	  json_string<symbols_user_t::profile_link_color>,
 	  json_string<symbols_user_t::profile_sidebar_border_color>,
 	  json_string<symbols_user_t::profile_sidebar_fill_color>,
@@ -406,15 +405,15 @@ static inline auto describe_json_class( statuses_element_t ) {
 	  json_class<"metadata", metadata_t>, json_string<"created_at">,
 	  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
 	  json_string<"source">, json_bool<"truncated">,
-	  json_nullable<json_number<"in_reply_to_status_id", int64_t>>,
-	  json_nullable<json_string<"in_reply_to_status_id_str">>,
-	  json_nullable<json_number<"in_reply_to_user_id", int64_t>>,
-	  json_nullable<json_string<"in_reply_to_user_id_str">>,
-	  json_nullable<json_string<"in_reply_to_screen_name">>,
-	  json_class<"user", user_t>, json_number<"retweet_count", int64_t>,
+	  json_number_null<"in_reply_to_status_id", std::optional<int64_t>>,
+	  json_string_null<"in_reply_to_status_id_str">,
+	  json_number_null<"in_reply_to_user_id", std::optional<int64_t>>,
+	  json_string_null<"in_reply_to_user_id_str">,
+	  json_string_null<"in_reply_to_screen_name">, json_class<"user", user_t>,
+	  json_number<"retweet_count", int64_t>,
 	  json_number<"favorite_count", int64_t>, json_class<"entities", entities_t>,
 	  json_bool<"favorited">, json_bool<"retweeted">,
-	  json_nullable<json_bool<"possibly_sensitive">>, json_string<"lang">>{};
+	  json_bool_null<"possibly_sensitive">, json_string<"lang">>{};
 }
 #else
 namespace symbols_statuses_element_t {
@@ -456,23 +455,20 @@ static inline auto describe_json_class( statuses_element_t ) {
 	  json_string<symbols_statuses_element_t::text>,
 	  json_string<symbols_statuses_element_t::source>,
 	  json_bool<symbols_statuses_element_t::truncated>,
-	  json_nullable<
-	    json_number<symbols_statuses_element_t::in_reply_to_status_id, int64_t>>,
-	  json_nullable<
-	    json_string<symbols_statuses_element_t::in_reply_to_status_id_str>>,
-	  json_nullable<
-	    json_number<symbols_statuses_element_t::in_reply_to_user_id, int64_t>>,
-	  json_nullable<
-	    json_string<symbols_statuses_element_t::in_reply_to_user_id_str>>,
-	  json_nullable<
-	    json_string<symbols_statuses_element_t::in_reply_to_screen_name>>,
+	  json_number_null<symbols_statuses_element_t::in_reply_to_status_id,
+	                   std::optional<int64_t>>,
+	  json_string_null<symbols_statuses_element_t::in_reply_to_status_id_str>,
+	  json_number_null<symbols_statuses_element_t::in_reply_to_user_id,
+	                   std::optional<int64_t>>,
+	  json_string_null<symbols_statuses_element_t::in_reply_to_user_id_str>,
+	  json_string_null<symbols_statuses_element_t::in_reply_to_screen_name>,
 	  json_class<symbols_statuses_element_t::user, user_t>,
 	  json_number<symbols_statuses_element_t::retweet_count, int64_t>,
 	  json_number<symbols_statuses_element_t::favorite_count, int64_t>,
 	  json_class<symbols_statuses_element_t::entities, entities_t>,
 	  json_bool<symbols_statuses_element_t::favorited>,
 	  json_bool<symbols_statuses_element_t::retweeted>,
-	  json_nullable<json_bool<symbols_statuses_element_t::possibly_sensitive>>,
+	  json_bool_null<symbols_statuses_element_t::possibly_sensitive>,
 	  json_string<symbols_statuses_element_t::lang>>{};
 }
 #endif
@@ -785,15 +781,15 @@ static inline auto describe_json_class( retweeted_status_t ) {
 	  json_class<"metadata", metadata_t>, json_string<"created_at">,
 	  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
 	  json_string<"source">, json_bool<"truncated">,
-	  json_nullable<json_number<"in_reply_to_status_id", int64_t>>,
-	  json_nullable<json_string<"in_reply_to_status_id_str">>,
-	  json_nullable<json_number<"in_reply_to_user_id", int64_t>>,
-	  json_nullable<json_string<"in_reply_to_user_id_str">>,
-	  json_nullable<json_string<"in_reply_to_screen_name">>,
-	  json_class<"user", user_t>, json_number<"retweet_count", int64_t>,
+	  json_number_null<"in_reply_to_status_id", std::optional<int64_t>>,
+	  json_string_null<"in_reply_to_status_id_str">,
+	  json_number_null<"in_reply_to_user_id", std::optional<int64_t>>,
+	  json_string_null<"in_reply_to_user_id_str">,
+	  json_string_null<"in_reply_to_screen_name">, json_class<"user", user_t>,
+	  json_number<"retweet_count", int64_t>,
 	  json_number<"favorite_count", int64_t>, json_class<"entities", entities_t>,
 	  json_bool<"favorited">, json_bool<"retweeted">,
-	  json_nullable<json_bool<"possibly_sensitive">>, json_string<"lang">>{};
+	  json_bool_null<"possibly_sensitive">, json_string<"lang">>{};
 }
 #else
 namespace symbols_retweeted_status_t {
@@ -835,23 +831,20 @@ static inline auto describe_json_class( retweeted_status_t ) {
 	  json_string<symbols_retweeted_status_t::text>,
 	  json_string<symbols_retweeted_status_t::source>,
 	  json_bool<symbols_retweeted_status_t::truncated>,
-	  json_nullable<
-	    json_number<symbols_retweeted_status_t::in_reply_to_status_id, int64_t>>,
-	  json_nullable<
-	    json_string<symbols_retweeted_status_t::in_reply_to_status_id_str>>,
-	  json_nullable<
-	    json_number<symbols_retweeted_status_t::in_reply_to_user_id, int64_t>>,
-	  json_nullable<
-	    json_string<symbols_retweeted_status_t::in_reply_to_user_id_str>>,
-	  json_nullable<
-	    json_string<symbols_retweeted_status_t::in_reply_to_screen_name>>,
+	  json_number_null<symbols_retweeted_status_t::in_reply_to_status_id,
+	                   std::optional<int64_t>>,
+	  json_string_null<symbols_retweeted_status_t::in_reply_to_status_id_str>,
+	  json_number_null<symbols_retweeted_status_t::in_reply_to_user_id,
+	                   std::optional<int64_t>>,
+	  json_string_null<symbols_retweeted_status_t::in_reply_to_user_id_str>,
+	  json_string_null<symbols_retweeted_status_t::in_reply_to_screen_name>,
 	  json_class<symbols_retweeted_status_t::user, user_t>,
 	  json_number<symbols_retweeted_status_t::retweet_count, int64_t>,
 	  json_number<symbols_retweeted_status_t::favorite_count, int64_t>,
 	  json_class<symbols_retweeted_status_t::entities, entities_t>,
 	  json_bool<symbols_retweeted_status_t::favorited>,
 	  json_bool<symbols_retweeted_status_t::retweeted>,
-	  json_nullable<json_bool<symbols_retweeted_status_t::possibly_sensitive>>,
+	  json_bool_null<symbols_retweeted_status_t::possibly_sensitive>,
 	  json_string<symbols_retweeted_status_t::lang>>{};
 }
 #endif

@@ -1,6 +1,6 @@
 # Optional Values
 
-null or optional values are supported by wrapping the member type in a `json_nullable` class template.  The requirement of the underlying type is that it will be default constructable.
+null or optional values are supported by appending the type name with `_null`.  The requirement of the underlying type is that it will be default constructable.
 
 Take the following JSON
 ```json
@@ -32,15 +32,13 @@ struct MyOptionalStuff1 {
 auto describe_json_class( MyOptionalStuff1 const & ) {
 	using namespace daw::json;
 	return class_description_t<
-        json_nullable<json_number<"member0", int>>,
+        json_number_null<"member0", int>,
         json_string<"member1">,
-        json_nullable<
-           json_bool<
-            "member2", 
+        json_bool_null<"member2", 
             std::unique_ptr<bool>, 
             LiteralAsStringOpt::Never, 
             UniquePtrConstructor<bool>
-        >>>{};
+        >>{};
 }
 
 auto to_json_data( MyOptionalStuff1 const &value ) {

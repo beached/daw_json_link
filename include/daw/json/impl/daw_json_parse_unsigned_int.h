@@ -49,15 +49,17 @@ namespace daw::json::impl::unsignedint {
 } // namespace daw::json::impl::unsignedint
 
 namespace daw::json::impl {
-	template<typename Result, bool RangeCheck = false, typename First,
-	         typename Last, bool TrustedInput>
+	template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
+	         typename First, typename Last, bool IsTrustedInput>
 	[[nodiscard]] static constexpr auto parse_unsigned_integer2(
-	  IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
+	  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
 		daw_json_assert_untrusted( rng.is_number( ),
 		                           "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
-		using iresult_t = std::conditional_t<RangeCheck, uintmax_t, Result>;
+		using iresult_t =
+		  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing,
+		                     uintmax_t, Result>;
 		auto [v, new_p] = unsigned_parser<iresult_t>::parse( rng.first );
 		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.first );
 		rng.first = new_p;
@@ -67,27 +69,29 @@ namespace daw::json::impl {
 			uint_fast8_t count;
 		};
 
-		if constexpr( RangeCheck ) {
+		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
 			return result_t{daw::narrow_cast<Result>( v ), c};
 		} else {
 			return result_t{v, c};
 		}
 	}
 
-	template<typename Result, bool RangeCheck = false, typename First,
-	         typename Last, bool TrustedInput>
+	template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
+	         typename First, typename Last, bool IsTrustedInput>
 	[[nodiscard]] static constexpr Result parse_unsigned_integer(
-	  IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
+	  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
 		daw_json_assert_untrusted( rng.is_number( ),
 		                           "Expecting a digit as first item" );
 
 		using namespace daw::json::impl::unsignedint;
-		using result_t = std::conditional_t<RangeCheck or std::is_enum_v<Result>,
-		                                    uintmax_t, Result>;
+		using result_t =
+		  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing or
+		                       std::is_enum_v<Result>,
+		                     uintmax_t, Result>;
 		auto [result, ptr] = unsigned_parser<result_t>::parse( rng.first );
 		rng.first = ptr;
 
-		if constexpr( RangeCheck ) {
+		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
 			return daw::narrow_cast<Result>( result );
 		} else {
 			return static_cast<Result>( result );

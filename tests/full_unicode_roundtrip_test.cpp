@@ -82,6 +82,8 @@ int main( int argc, char **argv ) {
 	auto unicode_test_from_escaped = from_json_array<unicode_data>(
 	  std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
 
+	daw_json_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
+	                 "Expected same size" );
 	auto mismatch_pos = std::mismatch( unicode_test.begin( ), unicode_test.end( ),
 	                                   unicode_test_from_escaped.begin( ) );
 	daw_json_assert( mismatch_pos.first == unicode_test.end( ),

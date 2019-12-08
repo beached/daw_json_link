@@ -42,11 +42,10 @@ namespace daw::cookbook_optional_values1 {
 #if defined( __cpp_nontype_template_parameter_class )
 	auto describe_json_class( MyOptionalStuff1 const & ) {
 		using namespace daw::json;
-		json_nullable<json_number<"member0", std::optional<int>>>,
-		  json_string<"member1">,
+		json_number_null<"member0", std::optional<int>>, json_string<"member1">,
 		  return class_description_t<
-		    json_nullable<json_bool<"member2", bool, LiteralAsStringOpt::Never,
-		                            UniquePtrConstructor<bool>>>>{};
+		    json_bool_null<"member2", bool, LiteralAsStringOpt::Never,
+		                   UniquePtrConstructor<bool>>>{};
 	}
 #else
 	namespace symbols_MyOptionalStuff1 {
@@ -58,12 +57,10 @@ namespace daw::cookbook_optional_values1 {
 	auto describe_json_class( MyOptionalStuff1 const & ) {
 		using namespace daw::json;
 		return class_description_t<
-		  json_nullable<
-		    json_number<symbols_MyOptionalStuff1::member0, std::optional<int>>>,
+		  json_number_null<symbols_MyOptionalStuff1::member0, std::optional<int>>,
 		  json_string<symbols_MyOptionalStuff1::member1>,
-		  json_nullable<
-		    json_bool<symbols_MyOptionalStuff1::member2, std::unique_ptr<bool>,
-		              LiteralAsStringOpt::Never, UniquePtrConstructor<bool>>>>{};
+		  json_bool_null<symbols_MyOptionalStuff1::member2, std::unique_ptr<bool>,
+		                 LiteralAsStringOpt::Never, UniquePtrConstructor<bool>>>{};
 	}
 #endif
 	auto to_json_data( MyOptionalStuff1 const &value ) {

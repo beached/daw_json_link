@@ -59,9 +59,9 @@ namespace daw::json::impl::signedint {
 
 namespace daw::json::impl {
 	template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-	         typename First, typename Last, bool TrustedInput>
+	         typename First, typename Last, bool IsTrustedInput>
 	[[nodiscard]] static constexpr Result
-	parse_integer( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
+	parse_integer( IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
 		daw_json_assert_untrusted( rng.front( "+-0123456789" ),
 		                           "Expected +,-, or a digit" );
 

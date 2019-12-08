@@ -202,9 +202,9 @@ namespace daw::json {
 	  is_no_name = daw::string_view( n ) == daw::string_view( "" );
 #endif
 
-	template<typename T, typename First, typename Last, bool TrustedInput>
-	[[maybe_unused, nodiscard]] static constexpr T
-	from_json( daw::json::impl::IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename T, typename First, typename Last, bool IsTrustedInput>
+	[[maybe_unused, nodiscard]] static constexpr T from_json(
+	  daw::json::impl::IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		static_assert( impl::has_json_parser_description_v<T>,
 		               "A function call describe_json_class must exist for type." );
 		daw_json_assert_untrusted( rng.has_more( ),
@@ -245,16 +245,18 @@ namespace daw::json {
 		static inline constexpr bool is_json_nullable_v =
 		  JsonType::expected_type == JsonParseTypes::Null;
 
-		void unwrapped_type_impl( ... );
+		template<typename T>
+		auto dereffed_type_impl( daw::tag_t<T> ) -> decltype( *( T{} ) );
 
 		template<typename T>
-		auto unwrapped_type_impl( daw::tag_t<T> )
-		  -> decltype( *std::declval<T>( ) );
+		using dereffed_type =
+		  daw::remove_cvref_t<decltype( dereffed_type_impl( daw::tag<T> ) )>;
 
 		template<typename T, JsonNullable Nullable>
-		using unwrap_type = std::conditional_t<
-		  ( Nullable == JsonNullable::Never ), T,
-		  daw::remove_cvref_t<decltype( unwrapped_type_impl( daw::tag<T> ) )>>;
+		using unwrap_type =
+		  std::conditional_t<(Nullable == JsonNullable::Nullable and
+		                      daw::is_detected_v<dereffed_type, T>),
+		                     daw::detected_t<dereffed_type, T>, T>;
 
 		template<typename T>
 		inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
@@ -304,9 +306,9 @@ namespace daw::json {
 } // namespace daw::json
 
 namespace daw::json::impl {
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_string_nq( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_string_nq( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		auto result = rng;
 		rng.first = string_quote::string_quote_parser::parse_nq( rng.first );
 
@@ -317,18 +319,18 @@ namespace daw::json::impl {
 		return result;
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_string( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_string( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		if( rng.front( '"' ) ) {
 			rng.remove_prefix( );
 		}
 		return skip_string_nq( rng );
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_literal( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_literal( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		auto result = rng;
 		result.last = literal_end::literal_end_parser::parse( rng.first );
 		rng.first = result.last;
@@ -338,9 +340,9 @@ namespace daw::json::impl {
 	}
 
 	template<char Left, char Right, typename First, typename Last,
-	         bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_bracketed_item( IteratorRange<First, Last, TrustedInput> &rng ) {
+	         bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_bracketed_item( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		daw_json_assert_untrusted( rng.front( Left ),
 		                           "Expected start bracket/brace" );
 		size_t bracket_count = 1;
@@ -378,21 +380,21 @@ namespace daw::json::impl {
 		return result;
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_class( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_class( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		return skip_bracketed_item<'{', '}'>( rng );
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_array( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_array( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		return skip_bracketed_item<'[', ']'>( rng );
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_value( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_value( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		daw_json_assert_untrusted( rng.has_more( ),
 		                           "Expected value, not empty range" );
 
@@ -409,9 +411,9 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last,
-	         bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_known_value( IteratorRange<First, Last, TrustedInput> &rng ) {
+	         bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_known_value( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 		              JsonMember::expected_type == JsonParseTypes::String or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {

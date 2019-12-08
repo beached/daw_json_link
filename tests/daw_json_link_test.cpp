@@ -335,23 +335,22 @@ int main( ) {
 #ifdef _MSC_VER
 #define CX constexpr
 #else
-#define CX
+#define CX constexpr
 #endif
 	daw::do_not_optimize( test_001_t_json_data );
 	CX auto data = daw::json::from_json<test_001_t>( test_001_t_json_data );
 
 	std::clog << to_json( data ) << '\n';
-	/*
-	  CX auto ary =
-	    from_json_array<test_001_t, daw::bounded_vector_t<test_001_t, 10>>(
-	      json_data_array );
-	  std::cout << "read in " << ary.size( ) << " items\n";
-	  for( auto const &v : ary ) {
-	    std::clog << to_json( v ) << "\n\n";
-	  }
-	  std::cout << "as array\n";
-	  std::cout << to_json_array( ary ) << "\n\n";
-	  */
+	CX auto ary =
+	  from_json_array<test_001_t, daw::bounded_vector_t<test_001_t, 10>>(
+	    json_data_array );
+	std::cout << "read in " << ary.size( ) << " items\n";
+	for( auto const &v : ary ) {
+		std::clog << to_json( v ) << "\n\n";
+	}
+	std::cout << "as array\n";
+	std::cout << to_json_array( ary ) << "\n\n";
+
 	test_002_t t2{data};
 	t2.a.o2 = std::nullopt;
 	std::cout << to_json( t2 ) << '\n';
