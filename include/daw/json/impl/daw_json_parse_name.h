@@ -36,9 +36,9 @@ namespace daw::json::impl::name {
 		 * end of string " -> name value separating : -> any white space
 		 * the string can be escaped too
 		 */
-		template<typename First, typename Last, bool TrustedInput>
+		template<typename First, typename Last, bool IsTrustedInput>
 		static constexpr void
-		trim_end_of_name( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
+		trim_end_of_name( IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
 			while( rng.is_space( ) ) {
 				rng.remove_prefix( );
 			}
@@ -49,9 +49,9 @@ namespace daw::json::impl::name {
 			}
 		}
 
-		template<typename First, typename Last, bool TrustedInput>
+		template<typename First, typename Last, bool IsTrustedInput>
 		[[nodiscard]] static constexpr daw::string_view
-		parse_nq( IteratorRange<First, Last, TrustedInput> &rng ) noexcept {
+		parse_nq( IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
 			auto ptr = rng.begin( );
 			while( rng.front( ) != '"' ) {
 				while( rng.front( ) != '"' and rng.front( ) != '\\' ) {

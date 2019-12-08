@@ -50,13 +50,13 @@ auto describe_json_class( City ) noexcept {
 #ifdef __cpp_nontype_template_parameter_class
 	return class_description_t<
 	  json_string<"country">, json_string<"name">,
-	  json_number<"lat", float, LiteralAsStringOpt::always>,
-	  json_number<"lng", float, LiteralAsStringOpt::always>>{};
+	  json_number<"lat", float, LiteralAsStringOpt::Always>,
+	  json_number<"lng", float, LiteralAsStringOpt::Always>>{};
 #else
 	return class_description_t<
 	  json_string<symbols_City::names0>, json_string<symbols_City::names1>,
-	  json_number<symbols_City::names2, float, LiteralAsStringOpt::always>,
-	  json_number<symbols_City::names3, float, LiteralAsStringOpt::always>>{};
+	  json_number<symbols_City::names2, float, LiteralAsStringOpt::Always>,
+	  json_number<symbols_City::names3, float, LiteralAsStringOpt::Always>>{};
 #endif
 }
 // Order of values must match order specified in class_description

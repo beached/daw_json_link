@@ -46,14 +46,14 @@ auto describe_json_class( City ) noexcept {
 	return class_description_t<
 	  json_string_raw<"country", std::string_view>,
 	  json_string_raw<"name", std::string_view>,
-	  json_number<"lat", float, LiteralAsStringOpt::always>,
-	  json_number<"lng", float, LiteralAsStringOpt::always>>{};
+	  json_number<"lat", float, LiteralAsStringOpt::Always>,
+	  json_number<"lng", float, LiteralAsStringOpt::Always>>{};
 #else
 	return class_description_t<
 	  json_string_raw<symbols_City::names0, std::string_view>,
 	  json_string_raw<symbols_City::names1, std::string_view>,
-	  json_number<symbols_City::names2, float, LiteralAsStringOpt::always>,
-	  json_number<symbols_City::names3, float, LiteralAsStringOpt::always>>{};
+	  json_number<symbols_City::names2, float, LiteralAsStringOpt::Always>,
+	  json_number<symbols_City::names3, float, LiteralAsStringOpt::Always>>{};
 #endif
 }
 

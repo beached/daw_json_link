@@ -92,7 +92,19 @@ namespace {
 		  , o2( O2 )
 		  , dte( D ) {}
 	};
-#ifndef __cpp_nontype_template_parameter_class
+
+#ifdef __cpp_nontype_template_parameter_class
+	auto describe_json_class( test_001_t ) noexcept {
+		using namespace daw::json;
+		return class_description_t<
+		  json_number<"i", int>, json_number<"d">, json_bool<"b">,
+		  json_string_raw<"s", std::string_view>,
+		  json_string_raw<"s2", std::string_view>,
+		  json_array<"y", int, daw::bounded_vector_t<int, 10>>,
+		  json_number_null<"o", std::optional<int>>,
+		  json_number_null<"o2", std::optional<int>>, json_date<"dte">>{};
+	}
+#else
 	namespace symbols_test_001_t {
 		constexpr static char const i[] = "i";
 		constexpr static char const d[] = "d";
@@ -104,29 +116,20 @@ namespace {
 		constexpr static char const o2[] = "o2";
 		constexpr static char const dte[] = "dte";
 	} // namespace symbols_test_001_t
-#endif
+
 	auto describe_json_class( test_001_t ) noexcept {
 		using namespace daw::json;
-#ifdef __cpp_nontype_template_parameter_class
-		return class_description_t<
-		  json_number<"i", int>, json_number<"d">, json_bool<"b">,
-		  json_string_raw<"s", std::string_view>,
-		  json_string_raw<"s2", std::string_view>,
-		  json_array<"y", int, daw::bounded_vector_t<int, 10>>,
-		  json_nullable<json_number<"o", int>>,
-		  json_nullable<json_number<"o2", int>>, json_date<"dte">>{};
-#else
 		return class_description_t<
 		  json_number<symbols_test_001_t::i, int>,
 		  json_number<symbols_test_001_t::d>, json_bool<symbols_test_001_t::b>,
 		  json_string_raw<symbols_test_001_t::s, std::string_view>,
 		  json_string_raw<symbols_test_001_t::s2, std::string_view>,
 		  json_array<symbols_test_001_t::y, int, daw::bounded_vector_t<int, 10>>,
-		  json_nullable<json_number<symbols_test_001_t::o, int>>,
-		  json_nullable<json_number<symbols_test_001_t::o2, int>>,
+		  json_number_null<symbols_test_001_t::o, std::optional<int>>,
+		  json_number_null<symbols_test_001_t::o2, std::optional<int>>,
 		  json_date<symbols_test_001_t::dte>>{};
-#endif
 	}
+#endif
 
 	auto to_json_data( test_001_t const &v ) {
 		return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.s2, v.y, v.o, v.o2,
@@ -141,15 +144,16 @@ namespace {
 	namespace symbols_test_002_t {
 		constexpr static char const a[] = "a";
 	}
-#endif
 	auto describe_json_class( test_002_t ) noexcept {
 		using namespace daw::json;
-#ifdef __cpp_nontype_template_parameter_class
-		return class_description_t<json_class<"a", test_001_t>>{};
-#else
 		return class_description_t<json_class<symbols_test_002_t::a, test_001_t>>{};
-#endif
 	}
+#else
+	auto describe_json_class( test_002_t ) noexcept {
+		using namespace daw::json;
+		return class_description_t<json_class<"a", test_001_t>>{};
+	}
+#endif
 
 	auto to_json_data( test_002_t const &v ) {
 		return std::forward_as_tuple( v.a );
@@ -167,10 +171,11 @@ namespace {
 	auto describe_json_class( test_003_t ) noexcept {
 		using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-		return class_description_t<json_nullable<json_class<"a", test_001_t>>>{};
+		return class_description_t<
+		  json_class_null<"a", std::optional<test_001_t>>>{};
 #else
 		return class_description_t<
-		  json_nullable<json_class<symbols_test_003_t::a, test_001_t>>>{};
+		  json_class_null<symbols_test_003_t::a, std::optional<test_001_t>>>{};
 #endif
 	}
 
@@ -336,7 +341,6 @@ int main( ) {
 	CX auto data = daw::json::from_json<test_001_t>( test_001_t_json_data );
 
 	std::clog << to_json( data ) << '\n';
-
 	CX auto ary =
 	  from_json_array<test_001_t, daw::bounded_vector_t<test_001_t, 10>>(
 	    json_data_array );

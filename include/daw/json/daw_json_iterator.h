@@ -49,10 +49,10 @@
 
 namespace daw::json {
 	/// allow iteration over an array of json
-	template<typename JsonElement, bool TrustedInput = false,
+	template<typename JsonElement, bool IsTrustedInput = false,
 	         char separator = ','>
 	class json_array_iterator {
-		impl::IteratorRange<char const *, char const *, TrustedInput> m_state{
+		impl::IteratorRange<char const *, char const *, IsTrustedInput> m_state{
 		  nullptr, nullptr};
 		// This lets us fastpath and just skip n characters
 		mutable intmax_t m_can_skip = -1;
@@ -75,7 +75,7 @@ namespace daw::json {
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr json_array_iterator( String &&jd,
 		                               std::string_view start_path = "" )
-		  : m_state( impl::find_range<TrustedInput>(
+		  : m_state( impl::find_range<IsTrustedInput>(
 		      std::forward<String>( jd ),
 		      {start_path.data( ), start_path.size( )} ) ) {
 
@@ -142,10 +142,10 @@ namespace daw::json {
 		}
 	};
 
-	template<typename JsonElement, bool TrustedInput = false,
+	template<typename JsonElement, bool IsTrustedInput = false,
 	         char separator = ','>
 	struct json_array_range {
-		using iterator = json_array_iterator<JsonElement, TrustedInput, separator>;
+		using iterator = json_array_iterator<JsonElement, IsTrustedInput, separator>;
 
 	private:
 		iterator m_first{};

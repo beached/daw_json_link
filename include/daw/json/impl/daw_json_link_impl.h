@@ -49,13 +49,34 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_value.h"
 #include "daw_json_to_string.h"
-#include "daw_json_type_base.h"
 
 namespace daw::json {
-	struct parse_js_date {
-		[[maybe_unused,
-		  nodiscard]] constexpr std::chrono::time_point<std::chrono::system_clock,
-		                                                std::chrono::milliseconds>
+	template<JsonNullable>
+	struct parse_js_date;
+
+	template<>
+	struct parse_js_date<JsonNullable::Never> {
+		using result_type = std::chrono::time_point<std::chrono::system_clock,
+		                                            std::chrono::milliseconds>;
+
+		[[maybe_unused, nodiscard]] constexpr result_type
+		operator( )( char const *ptr, size_t sz ) const {
+			return daw::date_parsing::parse_javascript_timestamp(
+			  daw::string_view( ptr, sz ) );
+		}
+	};
+
+	template<>
+	struct parse_js_date<JsonNullable::Nullable> {
+		using result_type =
+		  std::optional<std::chrono::time_point<std::chrono::system_clock,
+		                                        std::chrono::milliseconds>>;
+
+		[[maybe_unused, nodiscard]] constexpr result_type operator( )( ) const {
+			return {};
+		}
+
+		[[maybe_unused, nodiscard]] constexpr result_type
 		operator( )( char const *ptr, size_t sz ) const {
 			return daw::date_parsing::parse_javascript_timestamp(
 			  daw::string_view( ptr, sz ) );
@@ -134,19 +155,15 @@ namespace daw::json::impl {
 	template<typename JsonType>
 	using json_parse_to = typename JsonType::parse_to_t;
 
-	template<typename JsonType>
-	static inline constexpr bool is_json_nullable_v =
-	  JsonType::expected_type == JsonParseTypes::Null;
-
 	struct member_name_parse_error {};
 
 	// Get the next member name
 	// Assumes that the current item in stream is a double quote
 	// Ensures that the stream is left at the position of the associated
 	// value(e.g after the colon(:) and trimmed)
-	template<typename First, typename Last, bool TrustedInput>
+	template<typename First, typename Last, bool IsTrustedInput>
 	[[nodiscard]] static constexpr daw::string_view
-	parse_name( IteratorRange<First, Last, TrustedInput> &rng ) {
+	parse_name( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		daw_json_assert_untrusted( rng.front( '"' ),
 		                           "Expected name to start with a quote" );
 		rng.remove_prefix( );
@@ -183,10 +200,10 @@ namespace daw::json::impl {
 		return kv_t<string_t>( type_t::name, type_t::expected_type, N );
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
+	template<typename First, typename Last, bool IsTrustedInput>
 	struct location_info_t {
 		daw::string_view name;
-		IteratorRange<First, Last, TrustedInput> location{};
+		IteratorRange<First, Last, IsTrustedInput> location{};
 
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
 		  : name( Name ) {}
@@ -196,9 +213,9 @@ namespace daw::json::impl {
 		}
 	};
 
-	template<size_t N, typename First, typename Last, bool TrustedInput>
+	template<size_t N, typename First, typename Last, bool IsTrustedInput>
 	struct locations_info_t {
-		using value_type = location_info_t<First, Last, TrustedInput>;
+		using value_type = location_info_t<First, Last, IsTrustedInput>;
 		std::array<value_type, N> names;
 
 		constexpr decltype( auto ) begin( ) const {
@@ -217,12 +234,12 @@ namespace daw::json::impl {
 			return names.end( );
 		}
 
-		constexpr location_info_t<First, Last, TrustedInput> const &
+		constexpr location_info_t<First, Last, IsTrustedInput> const &
 		operator[]( size_t idx ) const {
 			return names[idx];
 		}
 
-		constexpr location_info_t<First, Last, TrustedInput> &
+		constexpr location_info_t<First, Last, IsTrustedInput> &
 		operator[]( size_t idx ) {
 			return names[idx];
 		}
@@ -244,11 +261,11 @@ namespace daw::json::impl {
 	};
 
 	template<typename JsonMember, size_t N, typename First, typename Last,
-	         bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	find_class_member( size_t pos,
-	                   locations_info_t<N, First, Last, TrustedInput> &locations,
-	                   IteratorRange<First, Last, TrustedInput> &rng ) {
+	         bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	find_class_member(
+	  size_t pos, locations_info_t<N, First, Last, IsTrustedInput> &locations,
+	  IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
 		daw_json_assert_untrusted(
 		  is_json_nullable_v<JsonMember> or not locations[pos].missing( ) or
@@ -283,34 +300,34 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, size_t N, typename First, typename Last,
-	         bool TrustedInput>
-	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_class_member( size_t member_position,
-	                    locations_info_t<N, First, Last, TrustedInput> &locations,
-	                    IteratorRange<First, Last, TrustedInput> &rng ) {
+	         bool IsTrustedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember> parse_class_member(
+	  size_t member_position,
+	  locations_info_t<N, First, Last, IsTrustedInput> &locations,
+	  IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
 		rng.clean_tail( );
 		if constexpr( is_no_name<JsonMember::name> ) {
 			// If we are an array element
-			return parse_value<typename JsonMember::base>(
-			  ParseTag<JsonMember::expected_type>{}, rng );
+			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+			                                rng );
 		} else {
 			daw_json_assert_untrusted( rng.front( "\"}" ),
 			                           "Expected end of class or start of member" );
 			auto loc =
 			  find_class_member<JsonMember>( member_position, locations, rng );
 
-			daw_json_assert_untrusted(
-			  JsonMember::expected_type == JsonParseTypes::Null or not loc.is_null( ),
-			  "Could not find required class member" );
+			daw_json_assert_untrusted( is_json_nullable_v<JsonMember> or
+			                             not loc.is_null( ),
+			                           "Could not find required class member" );
 			if( loc.is_null( ) or
 			    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 
-				return parse_value<typename JsonMember::base>(
-				  ParseTag<JsonMember::expected_type>{}, loc );
+				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+				                                loc );
 			}
-			return parse_value<typename JsonMember::base>(
-			  ParseTag<JsonMember::expected_type>{}, rng );
+			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+			                                rng );
 		}
 	}
 
@@ -318,33 +335,37 @@ namespace daw::json::impl {
 	using nth = daw::traits::nth_element<N, JsonMembers...>;
 
 	template<typename... JsonMembers, typename OutputIterator, size_t... Is,
-	         typename... Args>
+	         typename Tuple>
 	[[nodiscard]] static constexpr OutputIterator
 	serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
-	                      std::tuple<Args...> const &args ) {
+	                      Tuple const &args ) {
 
 		*it++ = '{';
 
-		(void)( ( to_json_str<nth<Is, JsonMembers...>, Is>( it, args ), ... ), 0 );
+		(void)( ( to_json_str<Is, nth<Is, JsonMembers...>>( it, args ), ... ), 0 );
 
 		*it++ = '}';
 		return it;
 	}
 
-	template<typename First, typename Last, bool TrustedInput,
+	template<typename First, typename Last, bool IsTrustedInput,
 	         typename... JsonMembers>
 	inline constexpr auto known_locations_v =
-	  locations_info_t<sizeof...( JsonMembers ), First, Last, TrustedInput>{
-	    location_info_t<First, Last, TrustedInput>( JsonMembers::name )...};
+	  locations_info_t<sizeof...( JsonMembers ), First, Last, IsTrustedInput>{
+	    location_info_t<First, Last, IsTrustedInput>( JsonMembers::name )...};
 
-	template<typename Result, typename... JsonMembers, size_t... Is,
-	         typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr Result
-	parse_json_class( IteratorRange<First, Last, TrustedInput> &rng,
+	template<typename JsonClass, typename... JsonMembers, size_t... Is,
+	         typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr JsonClass
+	parse_json_class( IteratorRange<First, Last, IsTrustedInput> &rng,
 	                  std::index_sequence<Is...> ) {
+		static_assert( has_json_parser_description_v<JsonClass>,
+		               "Unexpected type" );
 		static_assert(
-		  can_construct_a_v<Result, typename JsonMembers::parse_to_t...>,
-		  "Supplied types cannot be used for construction of this type" );
+		  can_construct_a_v<
+		    JsonClass,
+		    decltype( std::declval<typename JsonMembers::parse_to_t>( ) )...>,
+		  "Supplied types cannot be used for	construction of this type" );
 
 		rng.move_to_next_of( '{' );
 		rng.remove_prefix( );
@@ -355,10 +376,10 @@ namespace daw::json::impl {
 			                           "Expected class to end with '}'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
-			return construct_a<Result>( );
+			return construct_a<JsonClass>( );
 		} else {
 			auto known_locations =
-			  known_locations_v<First, Last, TrustedInput, JsonMembers...>;
+			  known_locations_v<First, Last, IsTrustedInput, JsonMembers...>;
 
 			using tp_t = std::tuple<decltype(
 			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
@@ -366,10 +387,11 @@ namespace daw::json::impl {
 			/*
 			 * Rather than call directly use apply/tuple to evaluate left->right
 			 */
-			Result result = std::apply(
-			  daw::construct_a<Result>,
+			JsonClass result = std::apply(
+			  daw::construct_a<JsonClass>,
 			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng )...} );
+
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
 			while( rng.front( ) != '}' ) {
@@ -405,9 +427,9 @@ namespace daw::json::impl {
 		return json_path_item.size( ) == member_name.size( );
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
+	template<typename First, typename Last, bool IsTrustedInput>
 	static constexpr void
-	find_range2( IteratorRange<First, Last, TrustedInput> &rng,
+	find_range2( IteratorRange<First, Last, IsTrustedInput> &rng,
 	             daw::string_view path ) {
 		auto current = impl::pop_json_path( path );
 		while( not current.empty( ) ) {
@@ -424,11 +446,11 @@ namespace daw::json::impl {
 		}
 	}
 
-	template<bool TrustedInput, typename String>
+	template<bool IsTrustedInput, typename String>
 	[[nodiscard]] static constexpr auto
 	find_range( String &&str, daw::string_view start_path ) {
 
-		auto rng = IteratorRange<char const *, char const *, TrustedInput>(
+		auto rng = IteratorRange<char const *, char const *, IsTrustedInput>(
 		  std::data( str ), std::data( str ) + std::size( str ) );
 		rng.trim_left( );
 		if( rng.has_more( ) and not start_path.empty( ) ) {
@@ -438,16 +460,16 @@ namespace daw::json::impl {
 		return rng;
 	}
 
-	template<typename T, bool TrustedInput>
-	[[maybe_unused, nodiscard]] constexpr T
+	template<typename JsonClass, bool IsTrustedInput>
+	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json_impl( std::string_view json_data ) {
-		static_assert( impl::has_json_parser_description_v<T>,
+		static_assert( impl::has_json_parser_description_v<JsonClass>,
 		               "A function call describe_json_class must exist for type." );
 		daw_json_assert_untrusted( not json_data.empty( ),
 		                           "Attempt to parse empty string" );
-		using desc_t = impl::json_parser_description_t<T>;
 
-		return desc_t::template parse<T, TrustedInput>( json_data );
+		return impl::json_parser_description_t<JsonClass>::template parse<
+		  JsonClass, IsTrustedInput>( json_data );
 	}
 
 } // namespace daw::json::impl

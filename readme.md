@@ -276,7 +276,7 @@ int main( ) {
 ```
 
 ## Serialization
-To enable serialization on must create an additional free function called ```to_json_data( T );``` It will provide a mapping from your type to the arguments provided in the class description.  To serialize to a json string, one calls ```to_json( value );``` where value is a registered type.  The result of  to_json_data( T ) is a tuple who's arguments match that of the order in describe_json_class. Using the exmaple above lets add that
+To enable serialization on must create an additional free function called ```to_json_data( JsonClass );``` It will provide a mapping from your type to the arguments provided in the class description.  To serialize to a json string, one calls ```to_json( value );``` where value is a registered type.  The result of  to_json_data( JsonClass ) is a tuple who's arguments match that of the order in describe_json_class. Using the exmaple above lets add that
 
 ```cpp
 #include <daw/json/daw_json_link.h>

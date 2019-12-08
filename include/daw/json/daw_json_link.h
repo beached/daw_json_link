@@ -28,6 +28,7 @@
 #include <cstdlib>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -49,9 +50,21 @@
 #include "impl/daw_json_link_types_fwd.h"
 
 namespace daw::json {
+	/**
+	 *
+	 * @tparam JsonMembers Json classes that map the relation ship from the json
+	 * data to the classes constructor
+	 */
 	template<typename... JsonMembers>
 	struct class_description_t {
-
+		/**
+		 * Serialize a C++ class to JSON data
+		 * @tparam OutputIterator An output iterator with a char value_type
+		 * @tparam Args  tuple of values that map to the json members
+		 * @param it OutputIterator to append string data to
+		 * @param args members from C++ class
+		 * @return the OutputIterator it
+		 */
 		template<typename OutputIterator, typename... Args>
 		[[maybe_unused, nodiscard]] static constexpr OutputIterator
 		serialize( OutputIterator it, std::tuple<Args...> const &args ) {
@@ -64,299 +77,224 @@ namespace daw::json {
 			  it, std::index_sequence_for<Args...>{}, args );
 		}
 
-		template<typename Result, bool TrustedInput>
-		[[maybe_unused, nodiscard]] static constexpr Result
+		/**
+		 * Parse JSON data and construct a C++ class
+		 * @tparam JsonClass The result of parsing json_class
+		 * @tparam IsTrustedInput Is the input trusted, less checking is done
+		 * @param sv JSON data to parse
+		 * @return A T object
+		 */
+		template<typename JsonClass, bool IsTrustedInput>
+		[[maybe_unused, nodiscard]] static constexpr JsonClass
 		parse( std::string_view sv ) {
 			daw_json_assert_untrusted( not sv.empty( ),
 			                           "Cannot parse an empty string" );
 
-			auto rng = impl::IteratorRange<char const *, char const *, TrustedInput>(
-			  sv.data( ), sv.data( ) + sv.size( ) );
-			return impl::parse_json_class<Result, JsonMembers...>(
+			auto rng =
+			  impl::IteratorRange<char const *, char const *, IsTrustedInput>(
+			    sv.data( ), sv.data( ) + sv.size( ) );
+			return impl::parse_json_class<JsonClass, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
 		}
 
-		template<typename Result, typename First, typename Last, bool TrustedInput>
-		[[maybe_unused, nodiscard]] static constexpr Result
-		parse( impl::IteratorRange<First, Last, TrustedInput> &rng ) {
+		/**
+		 *
+		 * Parse JSON data and construct a C++ class
+		 * @tparam T The result of parsing json_class
+		 * @tparam First type of first iterator in range
+		 * @tparam Last type of last iterator in range
+		 * @tparam IsTrustedInput Is the input trusted, less checking is done
+		 * @param rng JSON data to parse
+		 * @return A T object
+		 */
+		template<typename T, typename First, typename Last, bool IsTrustedInput>
+		[[maybe_unused, nodiscard]] static constexpr T
+		parse( impl::IteratorRange<First, Last, IsTrustedInput> &rng ) {
 			daw_json_assert_untrusted( rng.has_more( ),
 			                           "Cannot parse an empty string" );
-			return impl::parse_json_class<Result, JsonMembers...>(
+			return impl::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
 		}
 	};
 
 	// Member types
 
-	/**
-	 * Mark the member as nullable, optional.  The resulting type
-	 * must be default constructible
-	 * @tparam JsonMember the member being marked.
-	 */
-	template<typename JsonMember>
-	struct json_nullable {
-		using i_am_a_json_type = typename JsonMember::i_am_a_json_type;
-		using parse_to_t = typename JsonMember::parse_to_t;
-		using constructor_t = typename JsonMember::constructor_t;
-		using sub_type = JsonMember;
-		static constexpr JSONNAMETYPE name = JsonMember::name;
-		static constexpr JsonParseTypes expected_type = JsonParseTypes::Null;
-		using base = json_nullable;
-		static_assert( std::is_invocable_v<constructor_t>,
-		               "Specified constructor must be callable without arguments" );
-	};
-
-	/**
-	 * The member is a number
-	 * @tparam Name name of json member
-	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
-	 * Constructor
-	 * @tparam LiteralAsString Could this number be embedded in a string
-	 * @tparam Constructor Callable used to construct result
-	 * @tparam RangeCheck Check if the value will fit in the result
-	 */
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
-	         typename Constructor, bool RangeCheck>
+	         typename Constructor, JsonRangeCheck RangeCheck,
+	         JsonNullable Nullable>
 	struct json_number {
-		static_assert( std::is_invocable_v<Constructor, T>,
-		               "Constructor must be callable with T" );
-
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
+		using wrapped_type = T;
+		using base_type = impl::unwrap_type<T, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
+		static_assert(
+		  Nullable == JsonNullable::Never or
+		    std::is_same_v<parse_to_t, std::invoke_result_t<Constructor>>,
+		  "Default ctor of constructor must match that of base" );
 		using constructor_t = Constructor;
 		static constexpr JSONNAMETYPE name = Name;
+
 		static constexpr JsonParseTypes expected_type =
-		  std::is_floating_point_v<T> ? JsonParseTypes::Real
-		                              : impl::number_parse_type_v<T>;
+		  get_parse_type_v<impl::number_parse_type_v<base_type>, Nullable>;
+
+		static constexpr JsonParseTypes base_expected_type =
+		  impl::number_parse_type_v<base_type>;
+
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
-		static constexpr bool range_check = RangeCheck;
-		using base = impl::json_number_base<T, LiteralAsString, Constructor,
-		                                    expected_type, RangeCheck>;
+		static constexpr JsonRangeCheck range_check = RangeCheck;
 	};
 
-	/**
-	 * The member is a range checked number
-	 * @tparam Name name of json member
-	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
-	 * Constructor
-	 * @tparam LiteralAsString Could this number be embedded in a string
-	 * @tparam Constructor Callable used to construct result
-	 */
-	template<JSONNAMETYPE Name, typename T = double,
-	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::never,
-	         typename Constructor = daw::construct_a_t<T>>
-	using json_checked_number =
-	  json_number<Name, T, LiteralAsString, Constructor, true>;
-
-	/**
-	 * The membrer is a boolean
-	 * @tparam Name name of json member
-	 * @tparam T result type to pass to Constructor
-	 * @tparam LiteralAsString Could this number be embedded in a string
-	 * @tparam Constructor Callable used to construct result
-	 */
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
-	         typename Constructor>
+	         typename Constructor, JsonNullable Nullable>
 	struct json_bool {
-		static_assert( std::is_constructible_v<T, bool>,
-		               "Supplied type but be constructable from a bool" );
-		static_assert( std::is_invocable_v<Constructor, T>,
-		               "Constructor must be callable with T" );
-
-		static_assert( std::is_convertible_v<bool, T>,
-		               "Supplied result type must be convertable from bool" );
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
+		using wrapped_type = T;
+		using base_type = impl::unwrap_type<T, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 		using constructor_t = Constructor;
+
+		static constexpr JsonParseTypes expected_type =
+		  get_parse_type_v<JsonParseTypes::Bool, Nullable>;
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Bool;
+
+		static constexpr JSONNAMETYPE name = Name;
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type = JsonParseTypes::Bool;
-		using base = impl::json_bool_base<T, LiteralAsString, Constructor>;
 	};
 
-	/**
-	 * The member is a raw string.  Use json_string_escaped if escaping/unescaping
-	 * is needed
-	 * @tparam Name of json member
-	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
-	 * @tparam EmptyStringNull if string is empty, call Constructor with no
-	 * arguments
-	 */
-	template<JSONNAMETYPE Name, typename String = std::string,
-	         typename Constructor = daw::construct_a_t<String>,
-	         bool EmptyStringNull = false, bool DisallowHighEightBit = false>
-	struct json_string_raw {
-		static_assert(
-		  std::is_invocable_v<Constructor, char const *, size_t>,
-		  "Constructor must be callable with a char const * and a size_t" );
-
-		using i_am_a_json_type = void;
-		using parse_to_t = String;
-		using constructor_t = Constructor;
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type = JsonParseTypes::String;
-		static constexpr bool empty_is_null = EmptyStringNull;
-		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
-		using base =
-		  impl::json_string_raw_base<String, Constructor, EmptyStringNull,
-		                             DisallowHighEightBit>;
-	};
-
-	/**
-	 * Member is an escaped string and requires unescaping and escaping of string
-	 * data
-	 * @tparam Name of json member
-	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
-	 * @tparam Appender Allows appending characters to the output object
-	 * @tparam EmptyStringNull if string is empty, call Constructor with no
-	 * arguments
-	 */
 	template<JSONNAMETYPE Name, typename String, typename Constructor,
-	         typename Appender, bool EmptyStringNull, bool DisallowHighEightBit>
-	struct json_string {
-		static_assert( std::is_invocable_v<Constructor>,
-		               "Constructor must be default constructable" );
-
+	         JsonNullable EmptyStringNull, EightBitModes EightBitMode,
+	         JsonNullable Nullable>
+	struct json_string_raw {
 		using i_am_a_json_type = void;
-		using parse_to_t = String;
 		using constructor_t = Constructor;
-		using appender_t = Appender;
+		using wrapped_type = String;
+		using base_type = impl::unwrap_type<String, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
+
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type =
-		  JsonParseTypes::StringEscaped;
-		static constexpr bool empty_is_null = EmptyStringNull;
-		static constexpr bool disallow_high_eight_bit = DisallowHighEightBit;
-		using base = impl::json_string_base<String, Constructor, Appender,
-		                                    EmptyStringNull, DisallowHighEightBit>;
+		  get_parse_type_v<JsonParseTypes::String, Nullable>;
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::String;
+		static constexpr JsonNullable empty_is_null = EmptyStringNull;
+		static constexpr EightBitModes eight_bit_mode = EightBitMode;
 	};
 
-	/** Link to a JSON string representing a date
-	 * @tparam Name name of JSON member to link to
-	 * @tparam T C++ type to consruct, by default is a time_point
-	 * @tparam Constructor A Callable used to construct a T.
-	 * Must accept a char pointer and size as argument to the date/time string.
-	 */
-	template<JSONNAMETYPE Name,
-	         typename T = std::chrono::time_point<std::chrono::system_clock,
-	                                              std::chrono::milliseconds>,
-	         typename Constructor = parse_js_date>
-	struct json_date {
-		static_assert(
-		  std::is_invocable_v<Constructor, char const *, size_t>,
-		  "Constructor must be callable with a char const * and a size_t" );
-
+	template<JSONNAMETYPE Name, typename String, typename Constructor,
+	         typename Appender, JsonNullable EmptyStringNull,
+	         EightBitModes EightBitMode, JsonNullable Nullable>
+	struct json_string {
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
 		using constructor_t = Constructor;
+		using wrapped_type = String;
+		using base_type = impl::unwrap_type<String, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
+		using appender_t = Appender;
+
 		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type = JsonParseTypes::Date;
-		using base = impl::json_date_base<T, Constructor>;
+		static constexpr JsonParseTypes expected_type =
+		  get_parse_type_v<JsonParseTypes::StringEscaped, Nullable>;
+		static constexpr JsonParseTypes base_expected_type =
+		  JsonParseTypes::StringEscaped;
+		static constexpr JsonNullable empty_is_null = EmptyStringNull;
+		static constexpr EightBitModes eight_bit_mode = EightBitMode;
 	};
 
-	/**
-	 * @tparam Name name of JSON member to link to
-	 * @tparam T C++ type being parsed to.  Must have a describe_json_class
-	 * overload
-	 * @tparam Constructor A callable used to construct T.  The
-	 * default supports normal and aggregate construction
-	 */
-	template<JSONNAMETYPE Name, typename T,
-	         typename Constructor = daw::construct_a_t<T>>
+	template<JSONNAMETYPE Name, typename T, typename Constructor,
+	         JsonNullable Nullable>
+	struct json_date {
+		using i_am_a_json_type = void;
+		using constructor_t = Constructor;
+		using wrapped_type = T;
+		using base_type = impl::unwrap_type<T, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = std::invoke_result_t<Constructor, char const *, size_t>;
+
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
+		  get_parse_type_v<JsonParseTypes::Date, Nullable>;
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Date;
+	};
+
+	template<JSONNAMETYPE Name, typename T, typename Constructor,
+	         JsonNullable Nullable>
 	struct json_class {
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
 		using constructor_t = Constructor;
+		using wrapped_type = T;
+		using base_type = impl::unwrap_type<T, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = T;
 		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type = JsonParseTypes::Class;
-		using base = impl::json_class_base<T, Constructor>;
+		static constexpr JsonParseTypes expected_type =
+		  get_parse_type_v<JsonParseTypes::Class, Nullable>;
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Class;
 	};
 
-	template<JSONNAMETYPE Name, typename T,
-	         typename FromConverter = custom_from_converter_t<T>,
-	         typename ToConverter = custom_to_converter_t<T>,
-	         bool IsString = true>
+	template<JSONNAMETYPE Name, typename T, typename FromConverter,
+	         typename ToConverter, CustomJsonTypes CustomJsonType,
+	         JsonNullable Nullable>
 	struct json_custom {
 		using i_am_a_json_type = void;
-		using parse_to_t = T;
 		using to_converter_t = ToConverter;
 		using from_converter_t = FromConverter;
+		// TODO explore using char const *, size_t pair for ctor
+		using base_type = impl::unwrap_type<T, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = std::invoke_result_t<FromConverter, std::string_view>;
+
 		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type = JsonParseTypes::Custom;
-		static constexpr bool const is_string = IsString;
-		using base =
-		  impl::json_custom_base<T, FromConverter, ToConverter, IsString>;
+		static constexpr JsonParseTypes expected_type =
+		  get_parse_type_v<JsonParseTypes::Custom, Nullable>;
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Custom;
+		static constexpr CustomJsonTypes custom_json_type = CustomJsonType;
 	};
-	namespace impl {
-		template<typename T, JSONNAMETYPE Name = no_name>
-		using ary_val_t = std::conditional_t<
-		  is_a_json_type_v<T>, T,
-		  std::conditional_t<
-		    has_json_parser_description_v<T>, json_class<Name, T>,
-		    std::conditional_t<
-		      std::is_same_v<T, bool>, json_bool<Name, T>,
-		      std::conditional_t<std::is_arithmetic_v<T> or std::is_enum_v<T>,
-		                         json_number<Name, T>,
-		                         std::conditional_t<daw::traits::is_string_v<T>,
-		                                            json_string<Name, T>, void>>>>>;
-	}
-	/** Link to a JSON array
-	 * @tparam Name name of JSON member to link to
-	 * @tparam Container type of C++ container being constructed(e.g.
-	 * vector<int>)
-	 * @tparam JsonElement Json type being parsed e.g. json_number,
-	 * json_string...
-	 * @tparam Constructor A callable used to make Container,
-	 * default will use the Containers constructor.  Both normal and aggregate
-	 * are supported @tparam Appender Callable used to add items to the
-	 * container.  The parsed type from JsonElement
-	 * passed to it
-	 */
-	template<JSONNAMETYPE Name, typename JsonElement,
-	         typename Container =
-	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
-	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_appender<Container>>
+
+	template<JSONNAMETYPE Name, typename JsonElement, typename Container,
+	         typename Constructor, typename Appender, JsonNullable Nullable>
 	struct json_array {
 		using i_am_a_json_type = void;
 		using json_element_t = impl::ary_val_t<JsonElement>;
 		static_assert( not std::is_same_v<json_element_t, void>,
 		               "Unknown JsonElement type." );
-		using parse_to_t = Container;
+		static_assert( impl::is_a_json_type_v<json_element_t>,
+		               "Error determining element type" );
 		using constructor_t = Constructor;
+
+		using base_type = impl::unwrap_type<Container, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
 		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type = JsonParseTypes::Array;
-		using base =
-		  impl::json_array_base<json_element_t, Container, Constructor, Appender>;
+		static constexpr JsonParseTypes expected_type =
+		  get_parse_type_v<JsonParseTypes::Array, Nullable>;
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Array;
 
 		static_assert( json_element_t::name == no_name,
 		               "All elements of json_array must be have no_name" );
 	};
 
-	/** Map a KV type json class { "Key String": ValueType, ... }
-	 *  to a c++ class.  Keys are always string like and the destination
-	 *  needs to be constructable with a pointer, size
-	 *  @tparam Name name of JSON member to link to
-	 *  @tparam Container type to put values in
-	 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
-	 *  json_string, ... ). It also supports basic types like numbers, bool, and
-	 * mapped classes and enums(mapped to numbers)
-	 *  @tparam JsonKeyType type of key in kv pair.  As with value it supports
-	 * basic types too
-	 *  @tparam Constructor A callable used to make Container, default will use
-	 * the Containers constructor.  Both normal and aggregate are supported
-	 *  @tparam Appender A callable used to add elements to container.
-	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
-	         typename JsonKeyType = json_string<no_name>,
-	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_kv_appender<Container>>
+	         typename JsonKeyType, typename Constructor, typename Appender,
+	         JsonNullable Nullable>
 	struct json_key_value {
 		using i_am_a_json_type = void;
-		using parse_to_t = Container;
 		using constructor_t = Constructor;
+		using base_type = impl::unwrap_type<Container, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
 		using json_element_t = impl::ary_val_t<JsonValueType>;
 		static_assert( not std::is_same_v<json_element_t, void>,
@@ -371,33 +309,22 @@ namespace daw::json {
 		               "Key member name must be the default no_name" );
 
 		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type = JsonParseTypes::KeyValue;
-		using base = impl::json_key_value_base<Container, json_element_t,
-		                                       json_key_t, Constructor, Appender>;
+		static constexpr JsonParseTypes expected_type =
+		  get_parse_type_v<JsonParseTypes::KeyValue, Nullable>;
+		static constexpr JsonParseTypes base_expected_type =
+		  JsonParseTypes::KeyValue;
 	};
 
-	/** Map a KV type json array [ {"key": ValueOfKeyType, "value":
-	 * ValueOfValueType},... ] to a c++ class. needs to be constructable with a
-	 * pointer, size
-	 *  @tparam Name name of JSON member to link to
-	 *  @tparam Container type to put values in
-	 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
-	 *  json_string, ... ).  If specific json member type isn't specified, the
-	 * member name defaults to "value"
-	 *  @tparam JsonKeyType type of key in kv pair.  If specific json member type
-	 * isn't specified, the key name defaults to "key"
-	 *  @tparam Constructor A callable used to make Container, default will use
-	 * the Containers constructor.  Both normal and aggregate are supported
-	 *  @tparam Appender A callable used to add elements to container.
-	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
-	         typename JsonKeyType,
-	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_kv_appender<Container>>
+	         typename JsonKeyType, typename Constructor, typename Appender,
+	         JsonNullable Nullable>
 	struct json_key_value_array {
 		using i_am_a_json_type = void;
-		using parse_to_t = Container;
 		using constructor_t = Constructor;
+		using base_type = impl::unwrap_type<Container, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
 		using json_key_t = impl::ary_val_t<JsonKeyType, impl::default_key_name>;
 		static_assert( not std::is_same_v<json_key_t, void>,
@@ -414,69 +341,69 @@ namespace daw::json {
 		               "Key and Value member names cannot be the same" );
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type =
+		  get_parse_type_v<JsonParseTypes::KeyValueArray, Nullable>;
+		static constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::KeyValueArray;
-		using base =
-		  impl::json_key_value_array_base<Container, json_value_t, json_key_t,
-		                                  Constructor, Appender>;
 	};
 
 	/**
 	 * Parse json and construct a T as the result.  This method
 	 * provides checked json
-	 * @tparam T type that has a describe_json_class overload
+	 * @tparam JsonClass type that has a describe_json_class overload
 	 * @param json_data Json string data
 	 * @return A reified T constructed from json data
 	 */
-	template<typename T>
-	[[maybe_unused, nodiscard]] constexpr T
+	template<typename JsonClass>
+	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json( std::string_view json_data ) {
 		static_assert(
-		  impl::has_json_parser_description_v<T>,
+		  impl::has_json_parser_description_v<JsonClass>,
 		  "Expected a typed that has been mapped via describe_json_class" );
-		return impl::from_json_impl<T, false>( json_data );
+		return impl::from_json_impl<JsonClass, false>( json_data );
 	}
 
 	/**
-	 * Parse json and construct a T as the result.  This method
+	 * Parse json and construct a JsonClass as the result.  This method
 	 * does not perform most checks on validity of data
-	 * @tparam T type that has a describe_json_class overload
+	 * @tparam JsonClass type that has a describe_json_class overload
 	 * @param json_data Json string data
-	 * @return A reified T constructed from json data
+	 * @return A reified JsonClass constructed from json data
 	 */
-	template<typename T>
-	[[maybe_unused, nodiscard]] constexpr T
+	template<typename JsonClass>
+	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json_trusted( std::string_view json_data ) {
 		static_assert(
-		  impl::has_json_parser_description_v<T>,
+		  impl::has_json_parser_description_v<JsonClass>,
 		  "Expected a typed that has been mapped via describe_json_class" );
 
-		return impl::from_json_impl<T, true>( json_data );
+		return impl::from_json_impl<JsonClass, true>( json_data );
 	}
 
 	/**
 	 *
 	 * @tparam Result std::string like type to put result into
-	 * @tparam T Type that has json_parser_desription and to_json_data function
-	 * overloads
+	 * @tparam JsonClass Type that has json_parser_desription and to_json_data
+	 * function overloads
 	 * @param value  value to serialize
 	 * @return  json string data
 	 */
-	template<typename Result = std::string, typename T>
-	[[maybe_unused, nodiscard]] constexpr Result to_json( T const &value ) {
+	template<typename Result = std::string, typename JsonClass>
+	[[maybe_unused, nodiscard]] constexpr Result
+	to_json( JsonClass const &value ) {
 		static_assert(
-		  impl::has_json_parser_description_v<T>,
+		  impl::has_json_parser_description_v<JsonClass>,
 		  "A function called describe_json_class must exist for type." );
-		static_assert( impl::has_json_to_json_data_v<T>,
+		static_assert( impl::has_json_to_json_data_v<JsonClass>,
 		               "A function called to_json_data must exist for type." );
 
 		Result result{};
-		(void)impl::json_parser_description_t<T>::template serialize(
+		(void)impl::json_parser_description_t<JsonClass>::template serialize(
 		  daw::back_inserter( result ), to_json_data( value ) );
 		return result;
 	}
 
 	namespace impl {
-		template<bool TrustedInput, typename JsonElement, typename Container,
+		template<bool IsTrustedInput, typename JsonElement, typename Container,
 		         typename Constructor, typename Appender>
 		[[maybe_unused, nodiscard]] constexpr Container
 		from_json_array_impl( std::string_view json_data ) {
@@ -568,4 +495,31 @@ namespace daw::json {
 		result.back( ) = ']';
 		return result;
 	}
+	namespace impl {
+		template<typename... Args>
+		constexpr void is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
+
+		template<typename T>
+		using is_unique_ptr_test =
+		  decltype( is_unique_ptr_test_impl( std::declval<T>( ) ) );
+
+		template<typename T>
+		inline constexpr bool is_unique_ptr_v =
+		  daw::is_detected_v<is_unique_ptr_test, T>;
+	} // namespace impl
+	template<typename T>
+	struct UniquePtrConstructor {
+		static_assert( not impl::is_unique_ptr_v<T>,
+		               "T should be the type contained in the unique_ptr" );
+
+		constexpr std::unique_ptr<T> operator( )( ) const {
+			return {};
+		}
+
+		template<typename Arg, typename... Args>
+		std::unique_ptr<T> operator( )( Arg &&arg, Args &&... args ) const {
+			return std::make_unique<T>( std::forward<Arg>( arg ),
+			                            std::forward<Args>( args )... );
+		}
+	};
 } // namespace daw::json

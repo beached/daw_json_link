@@ -50,8 +50,23 @@ namespace daw::json::impl {
 	  daw::is_detected_v<detect_insert_end, Container, Value>;
 
 	template<typename T>
-	using json_parser_description_t = daw::remove_cvref_t<decltype(
-	  describe_json_class( std::declval<std::add_lvalue_reference_t<T>>( ) ) )>;
+	using json_parser_description_impl =
+	  daw::remove_cvref_t<decltype( describe_json_class( std::declval<T>( ) ) )>;
+
+	template<typename T,
+	         std::enable_if_t<daw::is_detected_v<json_parser_description_impl, T>,
+	                          std::nullptr_t> = nullptr>
+	auto json_parser_description( ) -> json_parser_description_impl<T>;
+
+	template<
+	  typename T,
+	  std::enable_if_t<not daw::is_detected_v<json_parser_description_impl, T>,
+	                   std::nullptr_t> = nullptr>
+	auto json_parser_description( )
+	  -> json_parser_description_impl<traits::deref_t<T>>;
+
+	template<typename T>
+	using json_parser_description_t = decltype( json_parser_description<T>( ) );
 
 	template<typename T>
 	static inline constexpr bool has_json_parser_description_v =
@@ -59,6 +74,9 @@ namespace daw::json::impl {
 
 	template<typename JsonMember>
 	using json_result = typename JsonMember::parse_to_t;
+
+	template<typename JsonMember>
+	using json_base_type = typename JsonMember::base_type;
 
 	template<size_t I, typename... JsonMembers>
 	using json_result_n =
@@ -184,9 +202,9 @@ namespace daw::json {
 	  is_no_name = daw::string_view( n ) == daw::string_view( "" );
 #endif
 
-	template<typename T, typename First, typename Last, bool TrustedInput>
-	[[maybe_unused, nodiscard]] static constexpr T
-	from_json( daw::json::impl::IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename T, typename First, typename Last, bool IsTrustedInput>
+	[[maybe_unused, nodiscard]] static constexpr T from_json(
+	  daw::json::impl::IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		static_assert( impl::has_json_parser_description_v<T>,
 		               "A function call describe_json_class must exist for type." );
 		daw_json_assert_untrusted( rng.has_more( ),
@@ -213,10 +231,43 @@ namespace daw::json {
 		Custom
 	};
 
+	enum class JsonNullable : bool { Never = false, Nullable = true };
+	enum class JsonRangeCheck : bool { Never = false, CheckForNarrowing = true };
+	enum class EightBitModes : bool { DisallowHigh = false, AllowFull = true };
+	enum class CustomJsonTypes : bool { Literal = false, String = true };
+
+	template<JsonParseTypes ParseType, JsonNullable Nullable>
+	inline constexpr JsonParseTypes get_parse_type_v =
+	  Nullable == JsonNullable::Never ? ParseType : JsonParseTypes::Null;
+
 	namespace impl {
+		template<typename JsonType>
+		static inline constexpr bool is_json_nullable_v =
+		  JsonType::expected_type == JsonParseTypes::Null;
+
 		template<typename T>
-		inline constexpr JsonParseTypes number_parse_type_impl_v =
-		  std::is_signed_v<T> ? JsonParseTypes::Signed : JsonParseTypes::Unsigned;
+		auto dereffed_type_impl( daw::tag_t<T> ) -> decltype( *( T{} ) );
+
+		template<typename T>
+		using dereffed_type =
+		  daw::remove_cvref_t<decltype( dereffed_type_impl( daw::tag<T> ) )>;
+
+		template<typename T, JsonNullable Nullable>
+		using unwrap_type =
+		  std::conditional_t<(Nullable == JsonNullable::Nullable and
+		                      daw::is_detected_v<dereffed_type, T>),
+		                     daw::detected_t<dereffed_type, T>, T>;
+
+		template<typename T>
+		inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
+			if constexpr( std::is_floating_point_v<T> ) {
+				return JsonParseTypes::Real;
+			} else if constexpr( std::is_signed_v<T> ) {
+				return JsonParseTypes::Signed;
+			} else if constexpr( std::is_unsigned_v<T> ) {
+				return JsonParseTypes::Unsigned;
+			}
+		}( );
 
 		template<typename T>
 		constexpr auto number_parse_type_test( )
@@ -243,11 +294,11 @@ namespace daw::json {
 
 	/**
 	 * Allows having literals parse that are encoded as strings. It allows
-	 * one to have it be never true, maybe true or always true.  This controls
-	 * whether the parser will never remove quotes, check if quotes exist, or
-	 * always remove quotes around the literal
+	 * one to have it be Never true, Maybe true or Always true.  This controls
+	 * whether the parser will Never remove quotes, check if quotes exist, or
+	 * Always remove quotes around the literal
 	 */
-	enum class LiteralAsStringOpt : uint8_t { never, maybe, always };
+	enum class LiteralAsStringOpt : uint8_t { Never, Maybe, Always };
 
 	template<typename T>
 	inline constexpr bool is_range_constructable_v =
@@ -255,9 +306,9 @@ namespace daw::json {
 } // namespace daw::json
 
 namespace daw::json::impl {
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_string_nq( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_string_nq( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		auto result = rng;
 		rng.first = string_quote::string_quote_parser::parse_nq( rng.first );
 
@@ -268,18 +319,18 @@ namespace daw::json::impl {
 		return result;
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_string( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_string( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		if( rng.front( '"' ) ) {
 			rng.remove_prefix( );
 		}
 		return skip_string_nq( rng );
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_literal( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_literal( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		auto result = rng;
 		result.last = literal_end::literal_end_parser::parse( rng.first );
 		rng.first = result.last;
@@ -289,9 +340,9 @@ namespace daw::json::impl {
 	}
 
 	template<char Left, char Right, typename First, typename Last,
-	         bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_bracketed_item( IteratorRange<First, Last, TrustedInput> &rng ) {
+	         bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_bracketed_item( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		daw_json_assert_untrusted( rng.front( Left ),
 		                           "Expected start bracket/brace" );
 		size_t bracket_count = 1;
@@ -329,21 +380,21 @@ namespace daw::json::impl {
 		return result;
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_class( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_class( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		return skip_bracketed_item<'{', '}'>( rng );
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_array( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_array( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		return skip_bracketed_item<'[', ']'>( rng );
 	}
 
-	template<typename First, typename Last, bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_value( IteratorRange<First, Last, TrustedInput> &rng ) {
+	template<typename First, typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_value( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		daw_json_assert_untrusted( rng.has_more( ),
 		                           "Expected value, not empty range" );
 
@@ -360,9 +411,9 @@ namespace daw::json::impl {
 	}
 
 	template<typename JsonMember, typename First, typename Last,
-	         bool TrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, TrustedInput>
-	skip_known_value( IteratorRange<First, Last, TrustedInput> &rng ) {
+	         bool IsTrustedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+	skip_known_value( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 		              JsonMember::expected_type == JsonParseTypes::String or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
@@ -374,7 +425,7 @@ namespace daw::json::impl {
 		                     JsonMember::expected_type == JsonParseTypes::Signed or
 		                     JsonMember::expected_type ==
 		                       JsonParseTypes::Unsigned or
-		                     JsonMember::expected_type == JsonParseTypes::Null or
+		                     is_json_nullable_v<JsonMember> or
 		                     JsonMember::expected_type == JsonParseTypes::Bool ) {
 			return impl::skip_literal( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {

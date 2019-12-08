@@ -28,19 +28,19 @@
 
 namespace daw::json::impl {
 	template<typename JsonMember, typename First, typename Last,
-	         bool TrustedInput>
+	         bool IsTrustedInput>
 	struct json_parse_value_array_iterator {
 		using iterator_category = std::input_iterator_tag;
 		using element_t = typename JsonMember::json_element_t;
 		using value_type = element_t;
 		using reference = void;
 
-		IteratorRange<First, Last, TrustedInput> *rng = nullptr;
+		IteratorRange<First, Last, IsTrustedInput> *rng = nullptr;
 
 		constexpr json_parse_value_array_iterator( ) noexcept = default;
 
 		constexpr json_parse_value_array_iterator(
-		  IteratorRange<First, Last, TrustedInput> &r )
+		  IteratorRange<First, Last, IsTrustedInput> &r )
 		  : rng( &rng ) {}
 
 		constexpr value_type operator*( ) {
