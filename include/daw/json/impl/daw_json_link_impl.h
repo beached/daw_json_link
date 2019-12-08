@@ -340,9 +340,12 @@ namespace daw::json::impl {
 	serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
 	                      Tuple const &args ) {
 
+		bool is_first = true;
 		*it++ = '{';
 
-		(void)( ( to_json_str<Is, nth<Is, JsonMembers...>>( it, args ), ... ), 0 );
+		(void)( ( to_json_str<Is, nth<Is, JsonMembers...>>( is_first, it, args ),
+		          ... ),
+		        0 );
 
 		*it++ = '}';
 		return it;
