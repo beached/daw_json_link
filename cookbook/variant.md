@@ -46,3 +46,6 @@ auto to_json_data( MyVariantStuff1 const &value ) {
   return std::forward_as_tuple( value.member0, value.member1 );
 }
 ```
+
+## Important note:
+The elements in the json_variant_type_list must have matching types in the variant alternatives. (e.g. std::string -> json_string, bool -> json_bool )
