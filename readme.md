@@ -25,10 +25,10 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
   * [Enums](cookbook/enum.md)
   * [Graphs](cookbook/graphs.md)
   * [Key Values](cookbook/key_values.md) - Map and Dictionary like things 
-	* [Optional/Nullable Values](cookbook/optional_values.md)
+  * [Optional/Nullable Values](cookbook/optional_values.md)
   * [Strings](cookbook/strings.md)
   * [Variant](cookbook/variant.md)
-	* [Automatic Code Generation](cookbook/automated_code_generation.md)
+  * [Automatic Code Generation](cookbook/automated_code_generation.md)
 * [Installing](#installing)
 * [Performance considerations](#performance-considerations)
 * [Escaping/Unescaping of member names](#escaping/unescaping-of-member-names)
