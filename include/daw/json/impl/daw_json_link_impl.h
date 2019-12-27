@@ -51,6 +51,46 @@
 #include "daw_json_to_string.h"
 
 namespace daw::json {
+	template<typename CharT, typename Traits>
+	constexpr std::chrono::time_point<std::chrono::system_clock,
+	                                  std::chrono::milliseconds>
+	parse_javascript_timestamp(
+	  daw::basic_string_view<CharT, Traits> timestamp_str ) {
+		daw::exception::precondition_check<invalid_javascript_timestamp>(
+		  timestamp_str.size( ) == 24 and
+		  daw::details::to_lower( timestamp_str[23] ) == 'z' );
+		auto const yr =
+		  daw::details::parse_unsigned<uint16_t, 4>( timestamp_str.data( ) );
+		auto const mo =
+		  daw::details::parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 5 );
+		auto const dy =
+		  daw::details::parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 8 );
+		auto const hr =
+		  daw::details::parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 11 );
+		auto const mi =
+		  daw::details::parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 14 );
+		auto const sc =
+		  daw::details::parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 17 );
+		auto const ms =
+		  daw::details::parse_unsigned<uint16_t, 3>( timestamp_str.data( ) + 20 );
+
+		daw_json_assert( 0 <= yr and yr <= 9999, "Invalid year" );
+		daw_json_assert( 1 <= mo and mo <= 12, "Invalid month" );
+		daw_json_assert( 1 <= dy and dy <= 31, "Invalid month" );
+		daw_json_assert( 0 <= hr and hr <= 24, "Invalid hour" );
+		daw_json_assert( 0 <= mi and mi <= 59, "Invalid minute" );
+		daw_json_assert( 0 <= sc and sc <= 60, "Invalid second" );
+		daw_json_assert( 0 <= ms and ms <= 999, "Invalid millisecond" );
+		std::chrono::time_point<std::chrono::system_clock,
+		                        std::chrono::milliseconds>
+		  result{
+		    date::sys_days{date::year{yr} / date::month( mo ) / date::day( dy )} +
+		    std::chrono::hours{hr} + std::chrono::minutes{mi} +
+		    std::chrono::seconds{sc} + std::chrono::milliseconds{ms}};
+
+		return result;
+	}
+
 	template<JsonNullable>
 	struct parse_js_date;
 
