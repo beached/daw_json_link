@@ -540,4 +540,54 @@ namespace daw::json::impl {
 			return array_container;
 		}
 	}
+
+	template<JsonBaseParseTypes BPT, typename JsonMembers, typename First,
+	         typename Last, bool IsTrustedInput>
+	[[nodiscard]] static constexpr json_result<JsonMembers>
+	parse_variant_value( IteratorRange<First, Last, IsTrustedInput> &rng ) {
+
+		using element_t = typename JsonMembers::json_elements;
+		constexpr size_t idx = element_t::base_map[static_cast<int_fast8_t>( BPT )];
+		if constexpr( idx < std::tuple_size_v<typename element_t::element_map_t> ) {
+			using JsonMember =
+			  std::tuple_element_t<idx, typename element_t::element_map_t>;
+			return parse_value<JsonMember>(
+			  ParseTag<JsonMember::base_expected_type>{}, rng );
+		} else {
+			daw_json_error( "Unexpected JSON Variant type." );
+		}
+	}
+
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsTrustedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Variant>,
+	             IteratorRange<First, Last, IsTrustedInput> &rng ) {
+
+		switch( rng.front( ) ) {
+		case '{':
+			return parse_variant_value<JsonBaseParseTypes::Class, JsonMember>( rng );
+		case '[':
+			return parse_variant_value<JsonBaseParseTypes::Array, JsonMember>( rng );
+		case 't':
+		case 'f':
+			return parse_variant_value<JsonBaseParseTypes::Bool, JsonMember>( rng );
+		case '"':
+			return parse_variant_value<JsonBaseParseTypes::String, JsonMember>( rng );
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		case '+':
+		case '-':
+			return parse_variant_value<JsonBaseParseTypes::Number, JsonMember>( rng );
+		}
+		daw_json_error( "Unexcepted data at start of json member" );
+	}
 } // namespace daw::json::impl

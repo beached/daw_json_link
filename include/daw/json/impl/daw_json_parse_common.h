@@ -228,7 +228,17 @@ namespace daw::json {
 		Null,
 		KeyValue,
 		KeyValueArray,
-		Custom
+		Custom,
+		Variant
+	};
+
+	enum class JsonBaseParseTypes : uint_fast8_t {
+		Number,
+		Bool,
+		String,
+		Class,
+		Array,
+		None
 	};
 
 	enum class JsonNullable : bool { Never = false, Nullable = true };
