@@ -145,7 +145,8 @@ namespace daw::json {
 	template<typename JsonElement, bool IsTrustedInput = false,
 	         char separator = ','>
 	struct json_array_range {
-		using iterator = json_array_iterator<JsonElement, IsTrustedInput, separator>;
+		using iterator =
+		  json_array_iterator<JsonElement, IsTrustedInput, separator>;
 
 	private:
 		iterator m_first{};

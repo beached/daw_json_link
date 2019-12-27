@@ -25,30 +25,32 @@
 #include "daw_json_assert.h"
 
 namespace daw::json::impl::string_quote {
-	struct string_quote_parser {
-		[[nodiscard]] static constexpr char const *
-		parse_nq( char const *ptr ) noexcept {
-			while( *ptr != '"' ) {
-				// TODO: add ability to filter to low 7bits daw_json_assert( *ptr >=
-				// 0x20 and *ptr <= 0x7F, "Use json_string_raw" );
-				while( *ptr != '"' and *ptr != '\\' ) {
-					++ptr;
+	namespace {
+		struct string_quote_parser {
+			[[nodiscard]] static constexpr char const *
+			parse_nq( char const *ptr ) noexcept {
+				while( *ptr != '"' ) {
+					// TODO: add ability to filter to low 7bits daw_json_assert( *ptr >=
+					// 0x20 and *ptr <= 0x7F, "Use json_string_raw" );
+					while( *ptr != '"' and *ptr != '\\' ) {
+						++ptr;
+					}
+					if( *ptr == '\\' ) {
+						++ptr;
+						++ptr;
+					}
 				}
-				if( *ptr == '\\' ) {
-					++ptr;
-					++ptr;
-				}
+				daw_json_assert( *ptr == '"', "Expected a '\"'" );
+				return ptr;
 			}
-			daw_json_assert( *ptr == '"', "Expected a '\"'" );
-			return ptr;
-		}
 
-		[[nodiscard]] static constexpr char const *
-		parse( char const *ptr ) noexcept {
-			if( *ptr == '"' ) {
-				++ptr;
+			[[nodiscard, maybe_unused]] static constexpr char const *
+			parse( char const *ptr ) noexcept {
+				if( *ptr == '"' ) {
+					++ptr;
+				}
+				return parse_nq( ptr );
 			}
-			return parse_nq( ptr );
-		}
-	};
+		};
+	} // namespace
 } // namespace daw::json::impl::string_quote

@@ -27,56 +27,58 @@
 #include "daw_json_parse_value_fwd.h"
 
 namespace daw::json::impl {
-	template<typename JsonMember, typename First, typename Last,
-	         bool IsTrustedInput>
-	struct json_parse_value_array_iterator {
-		using iterator_category = std::input_iterator_tag;
-		using element_t = typename JsonMember::json_element_t;
-		using value_type = element_t;
-		using reference = void;
+	namespace {
+		template<typename JsonMember, typename First, typename Last,
+		         bool IsTrustedInput>
+		struct json_parse_value_array_iterator {
+			using iterator_category = std::input_iterator_tag;
+			using element_t = typename JsonMember::json_element_t;
+			using value_type = element_t;
+			using reference = void;
 
-		IteratorRange<First, Last, IsTrustedInput> *rng = nullptr;
+			IteratorRange<First, Last, IsTrustedInput> *rng = nullptr;
 
-		constexpr json_parse_value_array_iterator( ) noexcept = default;
+			constexpr json_parse_value_array_iterator( ) noexcept = default;
 
-		constexpr json_parse_value_array_iterator(
-		  IteratorRange<First, Last, IsTrustedInput> &r )
-		  : rng( &rng ) {}
+			constexpr json_parse_value_array_iterator(
+			  IteratorRange<First, Last, IsTrustedInput> &r )
+			  : rng( &rng ) {}
 
-		constexpr value_type operator*( ) {
-			return parse_value<element_t>( ParseTag<element_t::expected_type>{},
-			                               *rng );
-		}
-
-		constexpr json_parse_value_array_iterator &operator++( ) {
-			rng->clean_tail( );
-			daw_json_assert_untrusted( rng->has_more( ), "Unexpected end of data" );
-			if( rng->front( ) == ']' ) {
-				// Cleanup at end of value
-				rng->remove_prefix( );
-				rng->trim_left( );
-				// Ensure we are equal to default
-				rng = nullptr;
+			constexpr value_type operator*( ) {
+				return parse_value<element_t>( ParseTag<element_t::expected_type>{},
+				                               *rng );
 			}
-			return *this;
-		}
 
-		constexpr json_parse_value_array_iterator operator++( int ) {
-			auto result = *this;
-			(void)this->operator++( );
-			return result;
-		}
+			constexpr json_parse_value_array_iterator &operator++( ) {
+				rng->clean_tail( );
+				daw_json_assert_untrusted( rng->has_more( ), "Unexpected end of data" );
+				if( rng->front( ) == ']' ) {
+					// Cleanup at end of value
+					rng->remove_prefix( );
+					rng->trim_left( );
+					// Ensure we are equal to default
+					rng = nullptr;
+				}
+				return *this;
+			}
 
-		constexpr bool
-		operator==( json_parse_value_array_iterator const &rhs ) const {
-			// using identity as equality
-			return rng == rhs.rng;
-		}
+			constexpr json_parse_value_array_iterator operator++( int ) {
+				auto result = *this;
+				(void)this->operator++( );
+				return result;
+			}
 
-		constexpr bool
-		operator!=( json_parse_value_array_iterator const &rhs ) const {
-			// using identity as equality
-			return rng != rhs.rng;
-		}
-	};
+			constexpr bool
+			operator==( json_parse_value_array_iterator const &rhs ) const {
+				// using identity as equality
+				return rng == rhs.rng;
+			}
+
+			constexpr bool
+			operator!=( json_parse_value_array_iterator const &rhs ) const {
+				// using identity as equality
+				return rng != rhs.rng;
+			}
+		};
+	} // namespace
 } // namespace daw::json::impl

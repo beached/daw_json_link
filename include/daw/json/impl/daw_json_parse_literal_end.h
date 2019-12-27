@@ -28,21 +28,23 @@
 #include "daw_truth.h"
 
 namespace daw::json::impl::literal_end {
-	class literal_end_parser {
-		static constexpr auto test_arry =
-		  daw::make_truth_table<256, true>( {'\0', ',', ']', '}'} );
+	namespace {
+		class literal_end_parser {
+			static constexpr auto test_arry =
+			  daw::make_truth_table<256, true>( {'\0', ',', ']', '}'} );
 
-		static constexpr bool test( char c ) noexcept {
-			return test_arry[static_cast<size_t>( c )];
-		}
-
-	public:
-		[[nodiscard]] static constexpr char const *
-		parse( char const *ptr ) noexcept {
-			while( test( *ptr ) ) {
-				++ptr;
+			static constexpr bool test( char c ) noexcept {
+				return test_arry[static_cast<size_t>( c )];
 			}
-			return ptr;
-		}
-	};
+
+		public:
+			[[nodiscard, maybe_unused]] static constexpr char const *
+			parse( char const *ptr ) noexcept {
+				while( test( *ptr ) ) {
+					++ptr;
+				}
+				return ptr;
+			}
+		};
+	} // namespace
 } // namespace daw::json::impl::literal_end
