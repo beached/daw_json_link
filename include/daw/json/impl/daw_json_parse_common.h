@@ -316,139 +316,144 @@ namespace daw::json {
 } // namespace daw::json
 
 namespace daw::json::impl {
-	template<typename First, typename Last, bool IsTrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
-	skip_string_nq( IteratorRange<First, Last, IsTrustedInput> &rng ) {
-		auto result = rng;
-		rng.first = string_quote::string_quote_parser::parse_nq( rng.first );
+	namespace {
+		template<typename First, typename Last, bool IsTrustedInput>
+		[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+		skip_string_nq( IteratorRange<First, Last, IsTrustedInput> &rng ) {
+			auto result = rng;
+			rng.first = string_quote::string_quote_parser::parse_nq( rng.first );
 
-		daw_json_assert_untrusted( rng.front( ) == '"',
-		                           "Expected trailing \" at the end of string" );
-		result.last = rng.first;
-		rng.remove_prefix( );
-		return result;
-	}
-
-	template<typename First, typename Last, bool IsTrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
-	skip_string( IteratorRange<First, Last, IsTrustedInput> &rng ) {
-		if( rng.front( '"' ) ) {
+			daw_json_assert_untrusted( rng.front( ) == '"',
+			                           "Expected trailing \" at the end of string" );
+			result.last = rng.first;
 			rng.remove_prefix( );
+			return result;
 		}
-		return skip_string_nq( rng );
-	}
 
-	template<typename First, typename Last, bool IsTrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
-	skip_literal( IteratorRange<First, Last, IsTrustedInput> &rng ) {
-		auto result = rng;
-		result.last = literal_end::literal_end_parser::parse( rng.first );
-		rng.first = result.last;
-		daw_json_assert_untrusted( rng.front( ",}]" ),
-		                           "Expected a ',', '}', ']' to trail literal" );
-		return result;
-	}
+		template<typename First, typename Last, bool IsTrustedInput>
+		[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+		skip_string( IteratorRange<First, Last, IsTrustedInput> &rng ) {
+			if( rng.front( '"' ) ) {
+				rng.remove_prefix( );
+			}
+			return skip_string_nq( rng );
+		}
 
-	template<char Left, char Right, typename First, typename Last,
-	         bool IsTrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
-	skip_bracketed_item( IteratorRange<First, Last, IsTrustedInput> &rng ) {
-		daw_json_assert_untrusted( rng.front( Left ),
-		                           "Expected start bracket/brace" );
-		size_t bracket_count = 1;
-		bool in_quotes = false;
-		auto result = rng;
-		while( not rng.empty( ) and bracket_count > 0 ) {
+		template<typename First, typename Last, bool IsTrustedInput>
+		[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+		skip_literal( IteratorRange<First, Last, IsTrustedInput> &rng ) {
+			auto result = rng;
+			result.last = literal_end::literal_end_parser::parse( rng.first );
+			rng.first = result.last;
+			daw_json_assert_untrusted( rng.front( ",}]" ),
+			                           "Expected a ',', '}', ']' to trail literal" );
+			return result;
+		}
+
+		template<char Left, char Right, typename First, typename Last,
+		         bool IsTrustedInput>
+		[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+		skip_bracketed_item( IteratorRange<First, Last, IsTrustedInput> &rng ) {
+			daw_json_assert_untrusted( rng.front( Left ),
+			                           "Expected start bracket/brace" );
+			size_t bracket_count = 1;
+			bool in_quotes = false;
+			auto result = rng;
+			while( not rng.empty( ) and bracket_count > 0 ) {
+				rng.remove_prefix( );
+				rng.trim_left_no_check( );
+				switch( rng.front( ) ) {
+				case '\\':
+					rng.remove_prefix( 1 );
+					continue;
+				case '"':
+					in_quotes = not in_quotes;
+					continue;
+				case Left:
+					if( not in_quotes ) {
+						++bracket_count;
+					}
+					break;
+				case Right:
+					if( not in_quotes ) {
+						--bracket_count;
+					}
+					break;
+				}
+			}
+			daw_json_assert_untrusted( rng.front( Right ),
+			                           "Expected closing bracket/brace" );
+
 			rng.remove_prefix( );
-			rng.trim_left_no_check( );
+			daw_json_assert_untrusted( rng.has_more( ), "Unexpected empty range" );
+
+			result.last = rng.begin( );
+			return result;
+		}
+
+		template<typename First, typename Last, bool IsTrustedInput>
+		[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+		skip_class( IteratorRange<First, Last, IsTrustedInput> &rng ) {
+			return skip_bracketed_item<'{', '}'>( rng );
+		}
+
+		template<typename First, typename Last, bool IsTrustedInput>
+		[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+		skip_array( IteratorRange<First, Last, IsTrustedInput> &rng ) {
+			return skip_bracketed_item<'[', ']'>( rng );
+		}
+
+		template<typename First, typename Last, bool IsTrustedInput>
+		[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+		skip_value( IteratorRange<First, Last, IsTrustedInput> &rng ) {
+			daw_json_assert_untrusted( rng.has_more( ),
+			                           "Expected value, not empty range" );
+
 			switch( rng.front( ) ) {
-			case '\\':
-				rng.remove_prefix( 1 );
-				continue;
 			case '"':
-				in_quotes = not in_quotes;
-				continue;
-			case Left:
-				if( not in_quotes ) {
-					++bracket_count;
-				}
-				break;
-			case Right:
-				if( not in_quotes ) {
-					--bracket_count;
-				}
-				break;
+				return skip_string( rng );
+			case '[':
+				return skip_array( rng );
+			case '{':
+				return skip_class( rng );
+			default:
+				return skip_literal( rng );
 			}
 		}
-		daw_json_assert_untrusted( rng.front( Right ),
-		                           "Expected closing bracket/brace" );
 
-		rng.remove_prefix( );
-		daw_json_assert_untrusted( rng.has_more( ), "Unexpected empty range" );
-
-		result.last = rng.begin( );
-		return result;
-	}
-
-	template<typename First, typename Last, bool IsTrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
-	skip_class( IteratorRange<First, Last, IsTrustedInput> &rng ) {
-		return skip_bracketed_item<'{', '}'>( rng );
-	}
-
-	template<typename First, typename Last, bool IsTrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
-	skip_array( IteratorRange<First, Last, IsTrustedInput> &rng ) {
-		return skip_bracketed_item<'[', ']'>( rng );
-	}
-
-	template<typename First, typename Last, bool IsTrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
-	skip_value( IteratorRange<First, Last, IsTrustedInput> &rng ) {
-		daw_json_assert_untrusted( rng.has_more( ),
-		                           "Expected value, not empty range" );
-
-		switch( rng.front( ) ) {
-		case '"':
-			return skip_string( rng );
-		case '[':
-			return skip_array( rng );
-		case '{':
-			return skip_class( rng );
-		default:
-			return skip_literal( rng );
+		template<typename JsonMember, typename First, typename Last,
+		         bool IsTrustedInput>
+		[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+		skip_known_value( IteratorRange<First, Last, IsTrustedInput> &rng ) {
+			if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
+			              JsonMember::expected_type == JsonParseTypes::String or
+			              JsonMember::expected_type == JsonParseTypes::Custom ) {
+				daw_json_assert_untrusted(
+				  rng.front( '"' ), "Expected start of value to begin with '\"'" );
+				rng.remove_prefix( );
+				return impl::skip_string_nq( rng );
+			} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
+			                     JsonMember::expected_type ==
+			                       JsonParseTypes::Signed or
+			                     JsonMember::expected_type ==
+			                       JsonParseTypes::Unsigned or
+			                     is_json_nullable_v<JsonMember> or
+			                     JsonMember::expected_type == JsonParseTypes::Bool ) {
+				return impl::skip_literal( rng );
+			} else if constexpr( JsonMember::expected_type ==
+			                     JsonParseTypes::Array ) {
+				daw_json_assert_untrusted( rng.front( '[' ),
+				                           "Expected start of array with '['" );
+				return impl::skip_array( rng );
+			} else if constexpr( JsonMember::expected_type ==
+			                     JsonParseTypes::Class ) {
+				daw_json_assert_untrusted( rng.front( '{' ),
+				                           "Expected start of class with '{'" );
+				return impl::skip_class( rng );
+			} else {
+				// Woah there
+				std::terminate( );
+			}
 		}
-	}
-
-	template<typename JsonMember, typename First, typename Last,
-	         bool IsTrustedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
-	skip_known_value( IteratorRange<First, Last, IsTrustedInput> &rng ) {
-		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
-		              JsonMember::expected_type == JsonParseTypes::String or
-		              JsonMember::expected_type == JsonParseTypes::Custom ) {
-			daw_json_assert_untrusted( rng.front( '"' ),
-			                           "Expected start of value to begin with '\"'" );
-			rng.remove_prefix( );
-			return impl::skip_string_nq( rng );
-		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
-		                     JsonMember::expected_type == JsonParseTypes::Signed or
-		                     JsonMember::expected_type ==
-		                       JsonParseTypes::Unsigned or
-		                     is_json_nullable_v<JsonMember> or
-		                     JsonMember::expected_type == JsonParseTypes::Bool ) {
-			return impl::skip_literal( rng );
-		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
-			daw_json_assert_untrusted( rng.front( '[' ),
-			                           "Expected start of array with '['" );
-			return impl::skip_array( rng );
-		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Class ) {
-			daw_json_assert_untrusted( rng.front( '{' ),
-			                           "Expected start of class with '{'" );
-			return impl::skip_class( rng );
-		} else {
-			// Woah there
-			std::terminate( );
-		}
-	}
+	} // namespace
 } // namespace daw::json::impl

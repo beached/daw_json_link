@@ -26,56 +26,60 @@
 #include <utility>
 
 namespace daw::json::impl::signedint {
-	template<typename Signed>
-	struct signed_parser {
-		static constexpr auto minus =
-		  static_cast<unsigned>( '-' ) - static_cast<unsigned>( '0' );
+	namespace {
+		template<typename Signed>
+		struct signed_parser {
+			static constexpr auto minus =
+			  static_cast<unsigned>( '-' ) - static_cast<unsigned>( '0' );
 
-		[[nodiscard]] static constexpr std::pair<Signed, char const *>
-		parse( char const *ptr ) {
-			daw_json_assert( ptr != nullptr, "Unexpected nullptr" );
-			bool sign = true;
+			[[nodiscard]] static constexpr std::pair<Signed, char const *>
+			parse( char const *ptr ) {
+				daw_json_assert( ptr != nullptr, "Unexpected nullptr" );
+				bool sign = true;
 
-			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
-			if( dig >= 10 ) {
-				if( dig == minus ) {
-					sign = false;
+				auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+				if( dig >= 10 ) {
+					if( dig == minus ) {
+						sign = false;
+					}
+					++ptr;
+					dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 				}
-				++ptr;
-				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+				intmax_t n = 0;
+				while( dig < 10 ) {
+					n = n * 10 + static_cast<Signed>( dig );
+					++ptr;
+					dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+				}
+				return {daw::construct_a<Signed>( sign ? n : -n ), ptr};
 			}
-			intmax_t n = 0;
-			while( dig < 10 ) {
-				n = n * 10 + static_cast<Signed>( dig );
-				++ptr;
-				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
-			}
-			return {daw::construct_a<Signed>( sign ? n : -n ), ptr};
-		}
-	};
+		};
 
-	static_assert( signed_parser<int>::parse( "-12345" ).first == -12345 );
+		static_assert( signed_parser<int>::parse( "-12345" ).first == -12345 );
+	} // namespace
 } // namespace daw::json::impl::signedint
 
 namespace daw::json::impl {
-	template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-	         typename First, typename Last, bool IsTrustedInput>
-	[[nodiscard]] static constexpr Result
-	parse_integer( IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
-		daw_json_assert_untrusted( rng.front( "+-0123456789" ),
-		                           "Expected +,-, or a digit" );
+	namespace {
+		template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
+		         typename First, typename Last, bool IsTrustedInput>
+		[[nodiscard]] static constexpr Result
+		parse_integer( IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
+			daw_json_assert_untrusted( rng.front( "+-0123456789" ),
+			                           "Expected +,-, or a digit" );
 
-		using result_t =
-		  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing or
-		                       std::is_enum_v<Result>,
-		                     intmax_t, Result>;
-		using namespace daw::json::impl::signedint;
-		auto [result, ptr] = signed_parser<result_t>::parse( rng.first );
-		rng.first = ptr;
-		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
-			return daw::narrow_cast<Result>( result );
-		} else {
-			return static_cast<Result>( result );
+			using result_t =
+			  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing or
+			                       std::is_enum_v<Result>,
+			                     intmax_t, Result>;
+			using namespace daw::json::impl::signedint;
+			auto [result, ptr] = signed_parser<result_t>::parse( rng.first );
+			rng.first = ptr;
+			if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
+				return daw::narrow_cast<Result>( result );
+			} else {
+				return static_cast<Result>( result );
+			}
 		}
-	}
+	} // namespace
 } // namespace daw::json::impl

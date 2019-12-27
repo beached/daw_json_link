@@ -29,72 +29,76 @@
 #include "daw_json_assert.h"
 
 namespace daw::json::impl::unsignedint {
-	template<typename Unsigned>
-	struct unsigned_parser {
-		[[nodiscard]] static constexpr std::pair<Unsigned, char const *>
-		parse( char const *ptr ) {
-			uintmax_t n = 0;
-			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
-			while( dig < 10U ) {
-				n *= 10U;
-				n += dig;
-				++ptr;
-				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+	namespace {
+		template<typename Unsigned>
+		struct unsigned_parser {
+			[[nodiscard]] static constexpr std::pair<Unsigned, char const *>
+			parse( char const *ptr ) {
+				uintmax_t n = 0;
+				auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+				while( dig < 10U ) {
+					n *= 10U;
+					n += dig;
+					++ptr;
+					dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+				}
+				return {daw::construct_a<Unsigned>( n ), ptr};
 			}
-			return {daw::construct_a<Unsigned>( n ), ptr};
-		}
-	};
+		};
 
-	static_assert( unsigned_parser<unsigned>::parse( "12345" ).first == 12345 );
+		static_assert( unsigned_parser<unsigned>::parse( "12345" ).first == 12345 );
+	} // namespace
 } // namespace daw::json::impl::unsignedint
 
 namespace daw::json::impl {
-	template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-	         typename First, typename Last, bool IsTrustedInput>
-	[[nodiscard]] static constexpr auto parse_unsigned_integer2(
-	  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
-		daw_json_assert_untrusted( rng.is_number( ),
-		                           "Expecting a digit as first item" );
+	namespace {
+		template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
+		         typename First, typename Last, bool IsTrustedInput>
+		[[nodiscard]] static constexpr auto parse_unsigned_integer2(
+		  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
+			daw_json_assert_untrusted( rng.is_number( ),
+			                           "Expecting a digit as first item" );
 
-		using namespace daw::json::impl::unsignedint;
-		using iresult_t =
-		  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing,
-		                     uintmax_t, Result>;
-		auto [v, new_p] = unsigned_parser<iresult_t>::parse( rng.first );
-		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.first );
-		rng.first = new_p;
+			using namespace daw::json::impl::unsignedint;
+			using iresult_t =
+			  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing,
+			                     uintmax_t, Result>;
+			auto [v, new_p] = unsigned_parser<iresult_t>::parse( rng.first );
+			uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.first );
+			rng.first = new_p;
 
-		struct result_t {
-			Result value;
-			uint_fast8_t count;
-		};
+			struct result_t {
+				Result value;
+				uint_fast8_t count;
+			};
 
-		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
-			return result_t{daw::narrow_cast<Result>( v ), c};
-		} else {
-			return result_t{v, c};
+			if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
+				return result_t{daw::narrow_cast<Result>( v ), c};
+			} else {
+				return result_t{v, c};
+			}
 		}
-	}
 
-	template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-	         typename First, typename Last, bool IsTrustedInput>
-	[[nodiscard]] static constexpr Result parse_unsigned_integer(
-	  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
-		daw_json_assert_untrusted( rng.is_number( ),
-		                           "Expecting a digit as first item" );
+		template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
+		         typename First, typename Last, bool IsTrustedInput>
+		[[nodiscard]] static constexpr Result parse_unsigned_integer(
+		  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
+			daw_json_assert_untrusted( rng.is_number( ),
+			                           "Expecting a digit as first item" );
 
-		using namespace daw::json::impl::unsignedint;
-		using result_t =
-		  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing or
-		                       std::is_enum_v<Result>,
-		                     uintmax_t, Result>;
-		auto [result, ptr] = unsigned_parser<result_t>::parse( rng.first );
-		rng.first = ptr;
+			using namespace daw::json::impl::unsignedint;
+			using result_t =
+			  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing or
+			                       std::is_enum_v<Result>,
+			                     uintmax_t, Result>;
+			auto [result, ptr] = unsigned_parser<result_t>::parse( rng.first );
+			rng.first = ptr;
 
-		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
-			return daw::narrow_cast<Result>( result );
-		} else {
-			return static_cast<Result>( result );
+			if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
+				return daw::narrow_cast<Result>( result );
+			} else {
+				return static_cast<Result>( result );
+			}
 		}
-	}
+	} // namespace
 } // namespace daw::json::impl
