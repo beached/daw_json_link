@@ -291,6 +291,76 @@ namespace daw::json {
 	using json_custom_null = json_custom<Name, T, FromConverter, ToConverter,
 	                                     CustomJsonType, JsonNullable::Nullable>;
 
+	template<JsonBaseParseTypes PT>
+	constexpr size_t
+	find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
+		size_t idx = 0;
+		for( auto const &pt : pts ) {
+			if( pt == PT ) {
+				return idx;
+			}
+			++idx;
+		}
+		return std::numeric_limits<size_t>::max( );
+	}
+
+	/***
+	 * A type to hold the types for parsing variants.
+	 * @tparam JsonElements Up to one of a JsonElement that is a JSON number,
+	 * string, object, or array
+	 */
+	template<typename... JsonElements>
+	struct json_variant_type_list {
+		using i_am_variant_element_list = void;
+		static_assert(
+		  sizeof...( JsonElements ) <= 5U,
+		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
+		using element_map_t = std::tuple<JsonElements...>;
+		static constexpr size_t base_map[5] = {
+		  find_json_element<JsonBaseParseTypes::Number>(
+		    {JsonElements::underlying_json_type...} ),
+		  find_json_element<JsonBaseParseTypes::Bool>(
+		    {JsonElements::underlying_json_type...} ),
+		  find_json_element<JsonBaseParseTypes::String>(
+		    {JsonElements::underlying_json_type...} ),
+		  find_json_element<JsonBaseParseTypes::Class>(
+		    {JsonElements::underlying_json_type...} ),
+		  find_json_element<JsonBaseParseTypes::Array>(
+		    {JsonElements::underlying_json_type...} )};
+	};
+
+	/***
+	 * Link to a variant like data type.  The JSON member can be any one of the
+	 * json types.  This precludes having more than one class type or array
+	 * type(including their specialized keyvalue mappings) or
+	 * string-enum/int-enum.
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T C++ type being parsed to.  Must have a describe_json_class
+	 * overload
+	 * @tparam JsonElements a json_variant_type_list
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 * @tparam Nullable Can the member be missing or have a null value	 *
+	 */
+	template<JSONNAMETYPE Name, typename T, typename JsonElements,
+	         typename Constructor = daw::construct_a_t<T>,
+	         JsonNullable Nullable = JsonNullable::Never>
+	struct json_variant;
+
+	/***
+	 * Link to a nullable JSON variant
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T C++ type being parsed to.  Must have a describe_json_class
+	 * overload
+	 * @tparam JsonElements a json_variant_type_list
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 */
+	template<JSONNAMETYPE Name, typename T, typename JsonElements,
+	         typename Constructor = daw::construct_a_t<T>>
+	using json_variant_null =
+	  json_variant<Name, T, JsonElements, Constructor, JsonNullable::Nullable>;
+
 	namespace impl {
 		template<typename T, JSONNAMETYPE Name = no_name>
 		using ary_val_t = std::conditional_t<

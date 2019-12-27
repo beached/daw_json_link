@@ -24,7 +24,9 @@
 
 #include <optional>
 #include <string>
+#include <tuple>
 #include <type_traits>
+#include <variant>
 
 #include <daw/daw_traits.h>
 #include <utf8/unchecked.h>
@@ -87,6 +89,11 @@ namespace daw::json::impl {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] static constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Custom>, OutputIterator it,
+	           parse_to_t const &value );
+
+	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
+	[[nodiscard]] static constexpr OutputIterator
+	to_string( ParseTag<JsonParseTypes::Variant>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -385,6 +392,33 @@ namespace daw::json::impl {
 			return copy_to_iterator( "true", it );
 		}
 		return copy_to_iterator( "false", it );
+	}
+
+	template<size_t idx, typename JsonMembers, typename OutputIterator,
+	         typename parse_to_t>
+	static constexpr void to_variant_string( OutputIterator &it,
+	                                         parse_to_t const &value ) {
+		if constexpr( idx < std::variant_size_v<parse_to_t> ) {
+			if( value.index( ) != idx ) {
+				to_variant_string<idx + 1, JsonMembers>( it, value );
+				return;
+			}
+			using element_t = typename JsonMembers::json_elements;
+			using JsonMember =
+			  typename std::tuple_element<idx,
+			                              typename element_t::element_map_t>::type;
+			it = to_string<JsonMember>( ParseTag<JsonMember::base_expected_type>{},
+			                            it, std::get<idx>( value ) );
+		}
+	}
+
+	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
+	[[nodiscard]] static constexpr OutputIterator
+	to_string( ParseTag<JsonParseTypes::Variant>, OutputIterator it,
+	           parse_to_t const &value ) {
+
+		to_variant_string<0, JsonMember>( it, value );
+		return it;
 	}
 
 	template<typename T>

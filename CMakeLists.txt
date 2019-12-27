@@ -272,6 +272,11 @@ add_dependencies(cookbook_optional_values1_test_bin dependency_stub)
 add_test(NAME cookbook_optional_values1_test COMMAND cookbook_optional_values1_test_bin ./cookbook_optional_values1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_optional_values1_test_bin)
 
+add_executable(cookbook_variant1_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_variant1_test.cpp)
+add_dependencies(cookbook_variant1_test_bin dependency_stub)
+add_test(NAME cookbook_variant1_test COMMAND cookbook_variant1_test_bin ./cookbook_variant1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_variant1_test_bin)
+
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
