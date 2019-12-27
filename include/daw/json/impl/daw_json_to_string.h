@@ -24,7 +24,9 @@
 
 #include <optional>
 #include <string>
+#include <tuple>
 #include <type_traits>
+#include <variant>
 
 #include <daw/daw_traits.h>
 #include <utf8/unchecked.h>
@@ -403,7 +405,8 @@ namespace daw::json::impl {
 			}
 			using element_t = typename JsonMembers::json_elements;
 			using JsonMember =
-			  std::tuple_element_t<idx, typename element_t::element_map_t>;
+			  typename std::tuple_element<idx,
+			                              typename element_t::element_map_t>::type;
 			it = to_string<JsonMember>( ParseTag<JsonMember::base_expected_type>{},
 			                            it, std::get<idx>( value ) );
 		}
