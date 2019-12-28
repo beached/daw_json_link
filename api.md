@@ -58,6 +58,8 @@ they are processed via push_back or insert( end, ... ), depending on which metho
 
 As above but without the Nullable option, it is set to Nullable, is the ```json_string_null``` alias.
 
+- See also the [cookbook](cookbook/strings.md) item for strings 
+
 ### json_string_raw
 ```cpp
 template<JSONNAMETYPE Name, 
@@ -76,6 +78,8 @@ The defaults for json_string_raw will construct a ```std::string``` with the sup
 - ```Nullable``` is the value optional/nullable.  Valules are ```JsonNullable::Never```, and ```JsonNullable::Nullable``` 
 
 As above but without the Nullable option, it is set to Nullable, is the ```json_string_raw_null``` alias.
+
+- See also the [cookbook](cookbook/strings.md) item for strings 
 
 ### json_date
 ```cpp
@@ -106,6 +110,8 @@ struct json_class
 
 As above but without the Nullable option, it is set to Nullable, is the ```json_class_null``` alias.
 
+- See also the [cookbook](cookbook/class.md) item for classes
+
 ### json_array
 ```cpp
 template<JSONNAMETYPE Name, 
@@ -124,6 +130,7 @@ struct json_array
 - ```Nullable``` is the value optional/nullable.  Valules are ```JsonNullable::Never```, and ```JsonNullable::Nullable``` 
 
 As above but without the Nullable option, it is set to Nullable, is the ```json_array_null``` alias.
+- See also the [cookbook](cookbook/array.md) item for arrays
 
 ### json_key_value
 ```cpp
@@ -146,6 +153,8 @@ struct json_key_value
 
 As above but without the Nullable option, it is set to Nullable, is the ```json_key_value_null``` alias.
 
+- See also the [cookbook](cookbook/key_values.md) item for key/values 
+
 ### json_key_value_array
 ```cpp
 template<JSONNAMETYPE Name, 
@@ -157,7 +166,7 @@ template<JSONNAMETYPE Name,
   JsonNullable Nullable = JsonNullable::Never>
 struct json_key_value_array
 ``` 
-```json_key_value``` Is like both an array and a class. All the keys/member names are json strings.
+```json_key_value_array``` Is like both an array and a class. All the keys/member names are json strings.
 - ```Container``` The result type to place all the KV pairs into.  By default must behave like a Map.
 - ```JsonValueType``` One of the above json types with a specified name that matches the value member name as it's name.  This is the value type in the KV pairs   You can also specify a previously mapped type or basic types like numbers, boolean, and std::string's where the default member name is `"value"`
 - ```JsonKeyType``` One of the above json types with a specified name that matches the key member name as it's name.  This is the key type in the KV pairs.   You can also specify a previously mapped type or basic types like numbers, boolean, and std::string's where the default member name is `"key"`
@@ -166,6 +175,8 @@ struct json_key_value_array
 - ```Nullable``` is the value optional/nullable.  Valules are ```JsonNullable::Never```, and ```JsonNullable::Nullable``` 
 
 As above but without the Nullable option, it is set to Nullable, is the ```json_key_value_array_null``` alias.
+
+- See also the [cookbook](cookbook/key_values.md) item for key/values 
 
 ### json_variant
 ```cpp
@@ -182,6 +193,8 @@ struct json_variant
 - ```Nullable``` is the value optional/nullable.  Valules are ```JsonNullable::Never```, and ```JsonNullable::Nullable``` 
 
 As above but without the Nullable option, it is set to Nullable, is the ```json_variant_null``` alias.
+
+- See also the [cookbook](cookbook/variant.md) item for variants 
 
 ### json_custom
 ```cpp
