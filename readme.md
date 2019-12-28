@@ -18,7 +18,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 * Small samples below
 
 ## Content 
-* [api.md](API) - Member mapping classes
+* [API](api.md) - Member mapping classes
 * [Cookbook](cookbook/)
   * [Arrays](cookbook/array.md)
   * [Classes](cookbook/class.md)
