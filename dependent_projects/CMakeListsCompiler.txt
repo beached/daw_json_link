@@ -1,4 +1,3 @@
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 if (MSVC)
     message("MSVC detected")
     add_definitions(-DNOMINMAX -DD_WIN32_WINNT=0x0601)
