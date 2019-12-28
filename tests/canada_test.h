@@ -22,14 +22,14 @@
 
 #pragma once
 
+#include <daw/json/daw_json_link.h>
+
 #include <array>
 #include <cstdint>
 #include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
-
-#include <daw/json/daw_json_link.h>
 
 namespace {
 	struct properties_t {

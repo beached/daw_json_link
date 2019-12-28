@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "daw/json/daw_json_iterator.h"
+#include "daw/json/daw_json_link.h"
+
 #include <fstream>
 #include <iostream>
 #include <string>
-
-#include "daw/json/daw_json_iterator.h"
-#include "daw/json/daw_json_link.h"
 
 struct City {
 	std::string_view country;

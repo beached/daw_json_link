@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <utf8/checked.h>
+
 #include <array>
 #include <cstdint>
 #include <iostream>
 #include <iterator>
 #include <string_view>
 #include <vector>
-
-#include <utf8/checked.h>
 
 struct code {
 	uint32_t low;

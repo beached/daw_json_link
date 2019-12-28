@@ -22,10 +22,10 @@
 
 #pragma once
 
-#include <daw/daw_algorithm.h>
-
 #include "daw_json_assert.h"
 #include "daw_truth.h"
+
+#include <daw/daw_algorithm.h>
 
 namespace daw::json::impl::literal_end {
 	namespace {

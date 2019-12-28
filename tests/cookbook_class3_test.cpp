@@ -50,12 +50,14 @@ namespace daw::cookbook_class3 {
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 	} // namespace symbols_MyClass1
+
 	auto describe_json_class( MyClass1 const & ) {
 		using namespace daw::json;
 		return class_description_t<json_string<symbols_MyClass1::member0>,
 		                           json_number<symbols_MyClass1::member1, int>,
 		                           json_bool<symbols_MyClass1::member2>>{};
 	}
+
 #endif
 	auto to_json_data( MyClass1 const &value ) {
 		return std::forward_as_tuple( value.member_0, value.member_1,

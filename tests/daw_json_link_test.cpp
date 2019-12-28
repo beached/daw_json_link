@@ -20,19 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "daw/json/daw_json_iterator.h"
+#include "daw/json/daw_json_link.h"
+#include "daw/json/impl/daw_json_assert.h"
+
+#include <daw/daw_benchmark.h>
+#include <daw/daw_bounded_vector.h>
+
 #include <cassert>
 #include <chrono>
 #include <iostream>
 #include <optional>
 #include <sstream>
 #include <vector>
-
-#include <daw/daw_benchmark.h>
-#include <daw/daw_bounded_vector.h>
-
-#include "daw/json/daw_json_iterator.h"
-#include "daw/json/daw_json_link.h"
-#include "daw/json/impl/daw_json_assert.h"
 
 namespace {
 	template<typename Real, bool Trusted = false, size_t N>

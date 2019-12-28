@@ -20,17 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "daw/json/daw_json_iterator.h"
+#include "daw/json/daw_json_link.h"
+
+#include <daw/daw_benchmark.h>
+#include <daw/daw_random.h>
+
 #include <fstream>
 #include <iostream>
 #include <streambuf>
 #include <string_view>
 #include <vector>
-
-#include <daw/daw_benchmark.h>
-#include <daw/daw_random.h>
-
-#include "daw/json/daw_json_iterator.h"
-#include "daw/json/daw_json_link.h"
 
 #ifndef NDEBUG
 static constexpr size_t const NUMVALUES = 1'000ULL;
