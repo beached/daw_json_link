@@ -33,7 +33,7 @@ namespace daw::json::impl {
 	namespace {
 		template<typename Result, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr Result
+		[[nodiscard]] constexpr Result
 		parse_real( IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
 			// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 			daw_json_assert_untrusted( rng.is_real_number_part( ),

@@ -67,72 +67,72 @@ namespace daw::json {
 namespace daw::json::impl {
 	namespace {
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 		           parse_to_t const &container );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::KeyValueArray>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::KeyValue>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Custom>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Variant>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Class>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Real>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Signed>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Unsigned>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::String>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::StringEscaped>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Date>, OutputIterator it,
 		           parse_to_t const &value );
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
 		           parse_to_t const &value );
 
@@ -163,28 +163,6 @@ namespace daw::json::impl {
 			return it;
 		}
 
-		template<typename IteratorF, typename IteratorL>
-		struct rng_t {
-			IteratorF first;
-			IteratorL last;
-
-			constexpr decltype( auto ) begin( ) const {
-				return first;
-			}
-
-			constexpr decltype( auto ) begin( ) {
-				return first;
-			}
-
-			constexpr decltype( auto ) end( ) const {
-				return last;
-			}
-
-			constexpr decltype( auto ) end( ) {
-				return last;
-			}
-		};
-
 		template<typename OutputIterator>
 		constexpr void utf32_to_utf8( uint32_t cp, OutputIterator &it ) {
 			if( cp <= 0x7FU ) {
@@ -212,22 +190,20 @@ namespace daw::json::impl {
 			daw_json_error( "Invalid code point" );
 		}
 
-		template<typename IteratorF, typename IteratorL>
-		[[maybe_unused]] rng_t( IteratorF, IteratorL )->rng_t<IteratorF, IteratorL>;
-
 		template<bool do_escape = false,
 		         EightBitModes EightBitMode = EightBitModes::AllowFull,
 		         typename Container, typename OutputIterator,
 		         daw::enable_when_t<daw::traits::is_container_like_v<
 		           daw::remove_cvref_t<Container>>> = nullptr>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		copy_to_iterator( Container const &container, OutputIterator it ) {
 			if constexpr( do_escape ) {
 				using iter = daw::remove_cvref_t<decltype( std::begin( container ) )>;
 				using it_t = utf8::unchecked::iterator<iter>;
-				auto rng =
-				  rng_t{it_t( std::begin( container ) ), it_t( std::end( container ) )};
-				for( auto cp : rng ) {
+				auto first = it_t( std::begin( container ) );
+				auto const last = it_t( std::end( container ) );
+				while( first != last ) {
+					auto const cp = *first++;
 					switch( cp ) {
 					case '"':
 						*it++ = '\\';
@@ -301,7 +277,7 @@ namespace daw::json::impl {
 		template<bool do_escape = false,
 		         EightBitModes EightBitMode = EightBitModes::AllowFull,
 		         typename OutputIterator>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		copy_to_iterator( char const *ptr, OutputIterator it ) {
 			if( ptr == nullptr ) {
 				return it;
@@ -382,7 +358,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
 		           parse_to_t const &value ) {
 
@@ -398,8 +374,8 @@ namespace daw::json::impl {
 
 		template<size_t idx, typename JsonMembers, typename OutputIterator,
 		         typename parse_to_t>
-		static constexpr void to_variant_string( OutputIterator &it,
-		                                         parse_to_t const &value ) {
+		constexpr void to_variant_string( OutputIterator &it,
+		                                  parse_to_t const &value ) {
 			if constexpr( idx < std::variant_size_v<parse_to_t> ) {
 				if( value.index( ) != idx ) {
 					to_variant_string<idx + 1, JsonMembers>( it, value );
@@ -415,7 +391,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Variant>, OutputIterator it,
 		           parse_to_t const &value ) {
 
@@ -424,21 +400,20 @@ namespace daw::json::impl {
 		}
 
 		template<typename T>
-		static constexpr auto deref_detect( T &&value ) noexcept
-		  -> decltype( *value );
+		constexpr auto deref_detect( T &&value ) noexcept -> decltype( *value );
 
-		static constexpr void deref_detect( ... ) noexcept;
+		constexpr void deref_detect( ... ) noexcept {}
 
 		template<typename T>
 		using deref_t =
 		  daw::remove_cvref_t<decltype( deref_detect( std::declval<T>( ) ) )>;
 
 		template<typename Optional>
-		static inline constexpr bool is_valid_optional_v =
+		inline constexpr bool is_valid_optional_v =
 		  daw::is_detected_v<deref_t, Optional>;
 
 		template<typename JsonMember, typename OutputIterator, typename Optional>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 		           Optional const &value ) {
 			static_assert( is_valid_optional_v<Optional> );
@@ -448,7 +423,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Real>, OutputIterator it,
 		           parse_to_t const &value ) {
 
@@ -461,7 +436,7 @@ namespace daw::json::impl {
 			return copy_to_iterator( to_string( value ), it );
 		}
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Signed>, OutputIterator it,
 		           parse_to_t const &value ) {
 
@@ -481,7 +456,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Unsigned>, OutputIterator it,
 		           parse_to_t const &value ) {
 
@@ -501,7 +476,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::String>, OutputIterator it,
 		           parse_to_t const &value ) {
 
@@ -517,7 +492,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::StringEscaped>, OutputIterator it,
 		           parse_to_t const &value ) {
 
@@ -533,17 +508,17 @@ namespace daw::json::impl {
 		}
 
 		template<typename T>
-		[[nodiscard]] static constexpr bool is_null( std::optional<T> const &v ) {
+		[[nodiscard]] constexpr bool is_null( std::optional<T> const &v ) {
 			return not static_cast<bool>( v );
 		}
 
 		template<typename T>
-		[[nodiscard]] static constexpr bool is_null( T const & ) {
+		[[nodiscard]] constexpr bool is_null( T const & ) {
 			return false;
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Date>, OutputIterator it,
 		           parse_to_t const &value ) {
 
@@ -567,7 +542,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Class>, OutputIterator it,
 		           parse_to_t const &value ) {
 
@@ -581,7 +556,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Custom>, OutputIterator it,
 		           parse_to_t const &value ) {
 
@@ -602,7 +577,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,
 		           parse_to_t const &container ) {
 
@@ -638,7 +613,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::KeyValueArray>, OutputIterator it,
 		           parse_to_t const &container ) {
 
@@ -682,7 +657,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		to_string( ParseTag<JsonParseTypes::KeyValue>, OutputIterator it,
 		           parse_to_t const &container ) {
 
@@ -711,8 +686,8 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename T>
-		[[nodiscard]] static constexpr OutputIterator
-		member_to_string( OutputIterator it, T const &value ) {
+		[[nodiscard]] constexpr OutputIterator member_to_string( OutputIterator it,
+		                                                         T const &value ) {
 			it = to_string<JsonMember>( ParseTag<JsonMember::expected_type>{},
 			                            daw::move( it ), value );
 			return it;
@@ -726,8 +701,8 @@ namespace daw::json::impl {
 
 		template<size_t pos, typename JsonMember, typename OutputIterator,
 		         typename... Args>
-		static constexpr void to_json_str( bool &is_first, OutputIterator it,
-		                                   std::tuple<Args...> const &tp ) {
+		constexpr void to_json_str( bool &is_first, OutputIterator it,
+		                            std::tuple<Args...> const &tp ) {
 
 			static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
 			if constexpr( is_json_nullable_v<JsonMember> ) {
