@@ -20,16 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <fstream>
-#include <iostream>
-#include <streambuf>
+#include "citm_test.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_memory_mapped_file.h>
 #include <daw/daw_string_view.h>
 #include <daw/json/daw_json_link.h>
 
-#include "citm_test.h"
+#include <fstream>
+#include <iostream>
+#include <streambuf>
 
 #if defined( NDEBUG ) and not defined( DEBUG )
 #define NUMRUNS 250

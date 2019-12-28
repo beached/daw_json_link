@@ -20,17 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "daw/json/daw_json_link.h"
+
+#include <daw/daw_benchmark.h>
+#include <daw/daw_memory_mapped_file.h>
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
 #include <optional>
 #include <string>
-
-#include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
-
-#include "daw/json/daw_json_link.h"
 
 namespace daw::cookbook_optional_values1 {
 	struct MyOptionalStuff1 {
@@ -40,10 +40,10 @@ namespace daw::cookbook_optional_values1 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyOptionalStuff1 const & ) {
+	auto json_data_contract_for( MyOptionalStuff1 const & ) {
 		using namespace daw::json;
 		json_number_null<"member0", std::optional<int>>, json_string<"member1">,
-		  return class_description_t<
+		  return json_data_contract<
 		    json_bool_null<"member2", bool, LiteralAsStringOpt::Never,
 		                   UniquePtrConstructor<bool>>>{};
 	}
@@ -54,9 +54,9 @@ namespace daw::cookbook_optional_values1 {
 		static constexpr char const member2[] = "member2";
 	} // namespace symbols_MyOptionalStuff1
 
-	auto describe_json_class( MyOptionalStuff1 const & ) {
+	auto json_data_contract_for( MyOptionalStuff1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_number_null<symbols_MyOptionalStuff1::member0, std::optional<int>>,
 		  json_string<symbols_MyOptionalStuff1::member1>,
 		  json_bool_null<symbols_MyOptionalStuff1::member2, std::unique_ptr<bool>,

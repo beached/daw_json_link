@@ -20,17 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <fstream>
-#include <iostream>
-#include <string>
+#include "daw/json/daw_json_iterator.h"
+#include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_hash_map.h>
 #include <daw/daw_fnv1a_hash.h>
 #include <daw/daw_string_view.h>
 
-#include "daw/json/daw_json_iterator.h"
-#include "daw/json/daw_json_link.h"
+#include <fstream>
+#include <iostream>
+#include <string>
 
 struct kv_t {
 	std::unordered_map<std::string, int> kv{};
@@ -39,13 +39,13 @@ struct kv_t {
 namespace symbols_kv_t {
 	constexpr static char const kv[] = "kv";
 }
-auto describe_json_class( kv_t ) noexcept {
+auto json_data_contract_for( kv_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-	return class_description_t<
+	return json_data_contract<
 	  json_key_value<"kv", std::unordered_map<std::string, int>, int>>{};
 #else
-	return class_description_t<json_key_value<
+	return json_data_contract<json_key_value<
 	  symbols_kv_t::kv, std::unordered_map<std::string, int>, int>>{};
 #endif
 }
@@ -57,13 +57,13 @@ struct kv2_t {
 namespace symbols_kv2_t {
 	constexpr static char const kv[] = "kv";
 }
-auto describe_json_class( kv2_t ) noexcept {
+auto json_data_contract_for( kv2_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-	return class_description_t<
+	return json_data_contract<
 	  json_key_value<"kv", daw::bounded_hash_map<std::string, int, 5>, int>>{};
 #else
-	return class_description_t<json_key_value<
+	return json_data_contract<json_key_value<
 	  symbols_kv2_t::kv, daw::bounded_hash_map<std::string, int, 5>, int>>{};
 #endif
 }

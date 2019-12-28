@@ -20,15 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <string>
-#include <unordered_map>
+#include "daw/json/daw_json_link.h"
 
 #include <daw/daw_memory_mapped_file.h>
-
-#include "daw/json/daw_json_link.h"
 
 namespace daw {
 	struct Data {
@@ -36,18 +30,18 @@ namespace daw {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( Data const & ) {
+	auto json_data_contract_for( Data const & ) {
 		using namespace daw::json;
-		return class_description_t<json_number<"a", int>>{};
+		return json_data_contract<json_number<"a", int>>{};
 	}
 #else
 	namespace symbols_Data {
 		static constexpr char const a[] = "a";
 	} // namespace symbols_Data
 
-	auto describe_json_class( Data const & ) {
+	auto json_data_contract_for( Data const & ) {
 		using namespace daw::json;
-		return class_description_t<json_number<symbols_Data::a, int>>{};
+		return json_data_contract<json_number<symbols_Data::a, int>>{};
 	}
 #endif
 	auto to_json_data( Data const &value ) {

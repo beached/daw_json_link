@@ -20,15 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "daw/json/daw_json_link.h"
+
+#include <daw/daw_memory_mapped_file.h>
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
 #include <unordered_map>
-
-#include <daw/daw_memory_mapped_file.h>
-
-#include "daw/json/daw_json_link.h"
 
 namespace daw::cookbook_kv2 {
 	struct MyKeyValue2 {
@@ -36,9 +36,9 @@ namespace daw::cookbook_kv2 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyKeyValue2 const & ) {
+	auto json_data_contract_for( MyKeyValue2 const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_key_value_array<"kv", std::unordered_map<intmax_t, std::string>,
 		                       json_string_raw<"value">, intmax_t>>{};
 	}
@@ -47,9 +47,9 @@ namespace daw::cookbook_kv2 {
 		static constexpr char const kv[] = "kv";
 		static constexpr char const value[] = "value";
 	} // namespace symbols_MyKeyValue2
-	auto describe_json_class( MyKeyValue2 ) {
+	auto json_data_contract_for( MyKeyValue2 ) {
 		using namespace daw::json;
-		return class_description_t<json_key_value_array<
+		return json_data_contract<json_key_value_array<
 		  symbols_MyKeyValue2::kv, std::unordered_map<intmax_t, std::string>,
 		  json_string_raw<symbols_MyKeyValue2::value>, intmax_t>>{};
 	}

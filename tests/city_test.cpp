@@ -20,17 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "daw/json/daw_json_iterator.h"
+#include "daw/json/daw_json_link.h"
+
+#include <daw/daw_benchmark.h>
+#include <daw/iterator/daw_back_inserter.h>
+
 #include <fstream>
 #include <iostream>
 #include <streambuf>
 #include <string_view>
 #include <vector>
-
-#include <daw/daw_benchmark.h>
-#include <daw/iterator/daw_back_inserter.h>
-
-#include "daw/json/daw_json_iterator.h"
-#include "daw/json/daw_json_link.h"
 
 struct City {
 	std::string country;
@@ -45,15 +45,15 @@ namespace symbols_City {
 	static constexpr char names2[] = "lat";
 	static constexpr char names3[] = "lng";
 } // namespace symbols_City
-auto describe_json_class( City ) noexcept {
+auto json_data_contract_for( City ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-	return class_description_t<
+	return json_data_contract<
 	  json_string<"country">, json_string<"name">,
 	  json_number<"lat", float, LiteralAsStringOpt::Always>,
 	  json_number<"lng", float, LiteralAsStringOpt::Always>>{};
 #else
-	return class_description_t<
+	return json_data_contract<
 	  json_string<symbols_City::names0>, json_string<symbols_City::names1>,
 	  json_number<symbols_City::names2, float, LiteralAsStringOpt::Always>,
 	  json_number<symbols_City::names3, float, LiteralAsStringOpt::Always>>{};

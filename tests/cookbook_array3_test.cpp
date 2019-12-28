@@ -20,15 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "daw/json/daw_json_link.h"
+
+#include <daw/daw_memory_mapped_file.h>
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
 #include <vector>
-
-#include <daw/daw_memory_mapped_file.h>
-
-#include "daw/json/daw_json_link.h"
 
 namespace daw::cookbook_array3 {
 	struct MyArrayClass1 {
@@ -38,11 +38,11 @@ namespace daw::cookbook_array3 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyArrayClass1 const & ) {
+	auto json_data_contract_for( MyArrayClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_number<"member0", int>,
-		                           json_array<"member1", int>,
-		                           json_array<"member2", std::string>>{};
+		return json_data_contract<json_number<"member0", int>,
+		                          json_array<"member1", int>,
+		                          json_array<"member2", std::string>>{};
 	}
 #else
 	namespace symbols_MyArrayClass1 {
@@ -50,9 +50,9 @@ namespace daw::cookbook_array3 {
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 	} // namespace symbols_MyArrayClass1
-	auto describe_json_class( MyArrayClass1 const & ) {
+	auto json_data_contract_for( MyArrayClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_number<symbols_MyArrayClass1::member0, int>,
 		  json_array<symbols_MyArrayClass1::member1, int>,
 		  json_array<symbols_MyArrayClass1::member2, std::string>>{};

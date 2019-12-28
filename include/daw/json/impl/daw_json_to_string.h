@@ -22,32 +22,34 @@
 
 #pragma once
 
+#include "daw_json_parse_common.h"
+
+#include <daw/daw_traits.h>
+#include <daw/iso8601/daw_date_formatting.h>
+#include <utf8/unchecked.h>
+
 #include <optional>
 #include <string>
 #include <tuple>
 #include <type_traits>
 #include <variant>
 
-#include <daw/daw_traits.h>
-#include <utf8/unchecked.h>
-
-#include "daw_json_parse_common.h"
-
-namespace daw::json {
-	namespace to_strings {
-		namespace {
-			using std::to_string;
-		}
+namespace daw::json::impl::to_strings {
+	namespace {
+		using std::to_string;
 
 		template<typename T>
-		[[nodiscard]] auto to_string( std::optional<T> const &v )
+		[[nodiscard, maybe_unused]] auto to_string( std::optional<T> const &v )
 		  -> decltype( to_string( *v ) ) {
 			if( not v ) {
 				return {"null"};
 			}
 			return to_string( *v );
 		}
-	} // namespace to_strings
+	} // namespace
+} // namespace daw::json::impl::to_strings
+
+namespace daw::json {
 	template<typename T>
 	struct custom_to_converter_t {
 		[[nodiscard]] constexpr decltype( auto ) operator( )( T &&value ) const {
@@ -431,8 +433,8 @@ namespace daw::json::impl {
 			  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 			  "value must be convertible to specified type in class contract" );
 
-			using ::daw::json::to_strings::to_string;
 			using std::to_string;
+			using to_strings::to_string;
 			return copy_to_iterator( to_string( value ), it );
 		}
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -444,8 +446,8 @@ namespace daw::json::impl {
 			  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 			  "value must be convertible to specified type in class contract" );
 
-			using ::daw::json::to_strings::to_string;
 			using std::to_string;
+			using to_strings::to_string;
 			if constexpr( std::is_enum_v<parse_to_t> ) {
 				return copy_to_iterator(
 				  to_string( static_cast<std::underlying_type_t<parse_to_t>>( value ) ),
@@ -464,8 +466,8 @@ namespace daw::json::impl {
 			  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 			  "value must be convertible to specified type in class contract" );
 
-			using ::daw::json::to_strings::to_string;
 			using std::to_string;
+			using to_strings::to_string;
 			if constexpr( std::is_enum_v<parse_to_t> ) {
 				return copy_to_iterator(
 				  to_string( static_cast<std::underlying_type_t<parse_to_t>>( value ) ),
@@ -526,13 +528,13 @@ namespace daw::json::impl {
 			  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 			  "value must be convertible to specified type in class contract" );
 
-			using ::daw::json::impl::is_null;
+			using daw::json::impl::is_null;
 			if( is_null( value ) ) {
 				it = copy_to_iterator( "null", it );
 			} else {
 				*it++ = '"';
-				using namespace ::daw::date_formatting::formats;
-				it = copy_to_iterator( ::daw::date_formatting::fmt_string(
+				using namespace daw::date_formatting::formats;
+				it = copy_to_iterator( daw::date_formatting::fmt_string(
 				                         "{0}T{1}:{2}:{3}Z", value, YearMonthDay<>{},
 				                         Hour<>{}, Minute<>{}, Second<>{} ),
 				                       it );

@@ -20,15 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <daw/daw_memory_mapped_file.h>
+
+#include "daw/json/daw_json_link.h"
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
 #include <unordered_map>
-
-#include <daw/daw_memory_mapped_file.h>
-
-#include "daw/json/daw_json_link.h"
 
 namespace daw::cookbook_class1 {
 	struct MyClass1 {
@@ -38,11 +38,11 @@ namespace daw::cookbook_class1 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyClass1 const & ) {
+	auto json_data_contract_for( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_string<"member0">,
-		                           json_number<"member1", int>,
-		                           json_bool<"member2">>{};
+		return json_data_contract<json_string<"member0">,
+		                          json_number<"member1", int>,
+		                          json_bool<"member2">>{};
 	}
 #else
 	namespace symbols_MyClass1 {
@@ -50,11 +50,11 @@ namespace daw::cookbook_class1 {
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 	} // namespace symbols_MyClass1
-	auto describe_json_class( MyClass1 const & ) {
+	auto json_data_contract_for( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_string<symbols_MyClass1::member0>,
-		                           json_number<symbols_MyClass1::member1, int>,
-		                           json_bool<symbols_MyClass1::member2>>{};
+		return json_data_contract<json_string<symbols_MyClass1::member0>,
+		                          json_number<symbols_MyClass1::member1, int>,
+		                          json_bool<symbols_MyClass1::member2>>{};
 	}
 #endif
 	auto to_json_data( MyClass1 const &value ) {

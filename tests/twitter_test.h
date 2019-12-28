@@ -2,8 +2,9 @@
 
 #pragma once
 
-#include <cstdint>
 #include <daw/json/daw_json_link.h>
+
+#include <cstdint>
 #include <optional>
 #include <string_view>
 #include <tuple>
@@ -16,10 +17,10 @@ namespace {
 	}; // metadata_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( metadata_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( metadata_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<json_string<"result_type">,
-		                                      json_string<"iso_language_code">>{};
+		return daw::json::json_data_contract<json_string<"result_type">,
+		                                     json_string<"iso_language_code">>{};
 	}
 #else
 	namespace symbols_metadata_t {
@@ -27,9 +28,9 @@ namespace {
 		inline constexpr char const iso_language_code[] = "iso_language_code";
 	} // namespace symbols_metadata_t
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( metadata_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( metadata_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string<symbols_metadata_t::result_type>,
 		  json_string<symbols_metadata_t::iso_language_code>>{};
 	}
@@ -49,9 +50,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( urls_element_t ) {
+	json_data_contract_for( urls_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string<"url">, json_string<"expanded_url">,
 		  json_string<"display_url">, json_array<"indices", int64_t>>{};
 	}
@@ -63,9 +64,9 @@ namespace {
 		inline constexpr char const indices[] = "indices";
 	} // namespace symbols_urls_element_t
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( urls_element_t ) {
+	json_data_contract_for( urls_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string<symbols_urls_element_t::url>,
 		  json_string<symbols_urls_element_t::expanded_url>,
 		  json_string<symbols_urls_element_t::display_url>,
@@ -84,17 +85,17 @@ namespace {
 	}; // url_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( url_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( url_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<json_array<"urls", urls_element_t>>{};
+		return daw::json::json_data_contract<json_array<"urls", urls_element_t>>{};
 	}
 #else
 	namespace symbols_url_t {
 		inline constexpr char const urls[] = "urls";
 	}
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( url_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( url_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_array<symbols_url_t::urls, urls_element_t>>{};
 	}
 #endif
@@ -108,17 +109,19 @@ namespace {
 	}; // description_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( description_t ) {
+	[[nodiscard, maybe_unused]] inline auto
+	json_data_contract_for( description_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<json_array<"urls", urls_element_t>>{};
+		return daw::json::json_data_contract<json_array<"urls", urls_element_t>>{};
 	}
 #else
 	namespace symbols_description_t {
 		inline constexpr char const urls[] = "urls";
 	}
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( description_t ) {
+	[[nodiscard, maybe_unused]] inline auto
+	json_data_contract_for( description_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_array<symbols_description_t::urls, urls_element_t>>{};
 	}
 #endif
@@ -134,9 +137,9 @@ namespace {
 	}; // entities_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( entities_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( entities_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_class_null<"url", std::optional<url_t>>,
 		  json_class_null<"description", std::optional<description_t>>>{};
 	}
@@ -145,9 +148,9 @@ namespace {
 		inline constexpr char const url[] = "url";
 		inline constexpr char const description[] = "description";
 	} // namespace symbols_entities_t
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( entities_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( entities_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_class_null<symbols_entities_t::url, std::optional<url_t>>,
 		  json_class_null<symbols_entities_t::description,
 		                  std::optional<description_t>>>{};
@@ -203,9 +206,9 @@ namespace {
 	}; // user_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( user_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( user_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"name">,
 		  json_string<"screen_name">, json_string<"location">,
 		  json_string<"description">, json_string_null<"url">,
@@ -286,9 +289,9 @@ namespace {
 		inline constexpr char const notifications[] = "notifications";
 	} // namespace symbols_user_t
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( user_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( user_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_user_t::id, int64_t>,
 		  json_string<symbols_user_t::id_str>, json_string<symbols_user_t::name>,
 		  json_string<symbols_user_t::screen_name>,
@@ -358,10 +361,10 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( hashtags_element_t ) {
+	json_data_contract_for( hashtags_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<json_string<"text">,
-		                                      json_array<"indices", int64_t>>{};
+		return daw::json::json_data_contract<json_string<"text">,
+		                                     json_array<"indices", int64_t>>{};
 	}
 #else
 	namespace symbols_hashtags_element_t {
@@ -370,9 +373,9 @@ namespace {
 	} // namespace symbols_hashtags_element_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( hashtags_element_t ) {
+	json_data_contract_for( hashtags_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string<symbols_hashtags_element_t::text>,
 		  json_array<symbols_hashtags_element_t::indices, int64_t>>{};
 	}
@@ -407,9 +410,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( statuses_element_t ) {
+	json_data_contract_for( statuses_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_class<"metadata", metadata_t>, json_string<"created_at">,
 		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
 		  json_string<"source">, json_bool<"truncated">,
@@ -453,9 +456,9 @@ namespace {
 	} // namespace symbols_statuses_element_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( statuses_element_t ) {
+	json_data_contract_for( statuses_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_class<symbols_statuses_element_t::metadata, metadata_t>,
 		  json_string<symbols_statuses_element_t::created_at>,
 		  json_number<symbols_statuses_element_t::id, int64_t>,
@@ -501,9 +504,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( user_mentions_element_t ) {
+	json_data_contract_for( user_mentions_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string<"screen_name">, json_string<"name">,
 		  json_number<"id", int64_t>, json_string<"id_str">,
 		  json_array<"indices", int64_t>>{};
@@ -518,9 +521,9 @@ namespace {
 	} // namespace symbols_user_mentions_element_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( user_mentions_element_t ) {
+	json_data_contract_for( user_mentions_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string<symbols_user_mentions_element_t::screen_name>,
 		  json_string<symbols_user_mentions_element_t::name>,
 		  json_number<symbols_user_mentions_element_t::id, int64_t>,
@@ -542,11 +545,11 @@ namespace {
 	}; // medium_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( medium_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( medium_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<json_number<"w", int64_t>,
-		                                      json_number<"h", int64_t>,
-		                                      json_string<"resize">>{};
+		return daw::json::json_data_contract<json_number<"w", int64_t>,
+		                                     json_number<"h", int64_t>,
+		                                     json_string<"resize">>{};
 	}
 #else
 	namespace symbols_medium_t {
@@ -555,9 +558,9 @@ namespace {
 		inline constexpr char const resize[] = "resize";
 	} // namespace symbols_medium_t
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( medium_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( medium_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_medium_t::w, int64_t>,
 		  json_number<symbols_medium_t::h, int64_t>,
 		  json_string<symbols_medium_t::resize>>{};
@@ -576,11 +579,11 @@ namespace {
 	}; // small_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( small_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( small_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<json_number<"w", int64_t>,
-		                                      json_number<"h", int64_t>,
-		                                      json_string<"resize">>{};
+		return daw::json::json_data_contract<json_number<"w", int64_t>,
+		                                     json_number<"h", int64_t>,
+		                                     json_string<"resize">>{};
 	}
 #else
 	namespace symbols_small_t {
@@ -589,9 +592,9 @@ namespace {
 		inline constexpr char const resize[] = "resize";
 	} // namespace symbols_small_t
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( small_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( small_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_small_t::w, int64_t>,
 		  json_number<symbols_small_t::h, int64_t>,
 		  json_string<symbols_small_t::resize>>{};
@@ -609,11 +612,11 @@ namespace {
 	}; // thumb_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( thumb_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( thumb_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<json_number<"w", int64_t>,
-		                                      json_number<"h", int64_t>,
-		                                      json_string<"resize">>{};
+		return daw::json::json_data_contract<json_number<"w", int64_t>,
+		                                     json_number<"h", int64_t>,
+		                                     json_string<"resize">>{};
 	}
 #else
 	namespace symbols_thumb_t {
@@ -622,9 +625,9 @@ namespace {
 		inline constexpr char const resize[] = "resize";
 	} // namespace symbols_thumb_t
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( thumb_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( thumb_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_thumb_t::w, int64_t>,
 		  json_number<symbols_thumb_t::h, int64_t>,
 		  json_string<symbols_thumb_t::resize>>{};
@@ -642,11 +645,11 @@ namespace {
 	}; // large_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( large_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( large_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<json_number<"w", int64_t>,
-		                                      json_number<"h", int64_t>,
-		                                      json_string<"resize">>{};
+		return daw::json::json_data_contract<json_number<"w", int64_t>,
+		                                     json_number<"h", int64_t>,
+		                                     json_string<"resize">>{};
 	}
 #else
 	namespace symbols_large_t {
@@ -655,9 +658,9 @@ namespace {
 		inline constexpr char const resize[] = "resize";
 	} // namespace symbols_large_t
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( large_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( large_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_large_t::w, int64_t>,
 		  json_number<symbols_large_t::h, int64_t>,
 		  json_string<symbols_large_t::resize>>{};
@@ -676,9 +679,9 @@ namespace {
 	}; // sizes_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( sizes_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( sizes_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_class<"medium", medium_t>, json_class<"small", small_t>,
 		  json_class<"thumb", thumb_t>, json_class<"large", large_t>>{};
 	}
@@ -690,9 +693,9 @@ namespace {
 		inline constexpr char const large[] = "large";
 	} // namespace symbols_sizes_t
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( sizes_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( sizes_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_class<symbols_sizes_t::medium, medium_t>,
 		  json_class<symbols_sizes_t::small_, small_t>,
 		  json_class<symbols_sizes_t::thumb, thumb_t>,
@@ -720,9 +723,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( media_element_t ) {
+	json_data_contract_for( media_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<"id", int64_t>, json_string<"id_str">,
 		  json_array<"indices", int64_t>, json_string<"media_url">,
 		  json_string<"media_url_https">, json_string<"url">,
@@ -744,9 +747,9 @@ namespace {
 	} // namespace symbols_media_element_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( media_element_t ) {
+	json_data_contract_for( media_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_media_element_t::id, int64_t>,
 		  json_string<symbols_media_element_t::id_str>,
 		  json_array<symbols_media_element_t::indices, int64_t>,
@@ -793,9 +796,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( retweeted_status_t ) {
+	json_data_contract_for( retweeted_status_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_class<"metadata", metadata_t>, json_string<"created_at">,
 		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
 		  json_string<"source">, json_bool<"truncated">,
@@ -839,9 +842,9 @@ namespace {
 	} // namespace symbols_retweeted_status_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( retweeted_status_t ) {
+	json_data_contract_for( retweeted_status_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_class<symbols_retweeted_status_t::metadata, metadata_t>,
 		  json_string<symbols_retweeted_status_t::created_at>,
 		  json_number<symbols_retweeted_status_t::id, int64_t>,
@@ -892,9 +895,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( search_metadata_t ) {
+	json_data_contract_for( search_metadata_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<"completed_in">, json_number<"max_id", int64_t>,
 		  json_string<"max_id_str">, json_string<"next_results">,
 		  json_string<"query">, json_string<"refresh_url">,
@@ -915,9 +918,9 @@ namespace {
 	} // namespace symbols_search_metadata_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( search_metadata_t ) {
+	json_data_contract_for( search_metadata_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_search_metadata_t::completed_in>,
 		  json_number<symbols_search_metadata_t::max_id, int64_t>,
 		  json_string<symbols_search_metadata_t::max_id_str>,
@@ -945,9 +948,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( twitter_object_t ) {
+	json_data_contract_for( twitter_object_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_array<"statuses", statuses_element_t>,
 		  json_class<"search_metadata", search_metadata_t>>{};
 	}
@@ -958,9 +961,9 @@ namespace {
 	} // namespace symbols_twitter_object_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( twitter_object_t ) {
+	json_data_contract_for( twitter_object_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_array<symbols_twitter_object_t::statuses, statuses_element_t>,
 		  json_class<symbols_twitter_object_t::search_metadata,
 		             search_metadata_t>>{};

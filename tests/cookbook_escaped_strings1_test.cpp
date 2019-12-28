@@ -20,15 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "daw/json/daw_json_link.h"
+
+#include <daw/daw_memory_mapped_file.h>
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
 #include <unordered_map>
-
-#include <daw/daw_memory_mapped_file.h>
-
-#include "daw/json/daw_json_link.h"
 
 namespace daw::cookbook_escaped_strings1 {
 	struct WebData {
@@ -36,19 +36,18 @@ namespace daw::cookbook_escaped_strings1 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( WebData const & ) {
+	auto json_data_contract_for( WebData const & ) {
 		using namespace daw::json;
-		return class_description_t<json_array<"uris", std::string>>{};
+		return json_data_contract<json_array<"uris", std::string>>{};
 	}
 #else
 	namespace symbols_WebData {
 		static constexpr char const uris[] = "uris";
 	}
 
-	auto describe_json_class( WebData const & ) {
+	auto json_data_contract_for( WebData const & ) {
 		using namespace daw::json;
-		return class_description_t<
-		  json_array<symbols_WebData::uris, std::string>>{};
+		return json_data_contract<json_array<symbols_WebData::uris, std::string>>{};
 	}
 #endif
 

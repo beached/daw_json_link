@@ -45,9 +45,9 @@ struct MyClass1 {
     std::vector<Colours> member0;
 };
 
-auto describe_json_class( MyClass1 const & ) {
+auto json_data_contract_for( MyClass1 const & ) {
   using namespace daw::json;
-  return class_description_t<
+  return json_data_contract<
     json_array<"member0", std::vector<Colours>,
       json_custom<no_name, Colours>
     >
@@ -84,9 +84,9 @@ struct MyClass1 {
     std::vector<Colours> member0;
 };
 
-auto describe_json_class( MyClass1 const & ) {
+auto json_data_contract_for( MyClass1 const & ) {
   using namespace daw::json;
-  return class_description_t<
+  return json_data_contract<
     json_array<"member0", std::vector<Colours>, Colours>
     >
   >{};

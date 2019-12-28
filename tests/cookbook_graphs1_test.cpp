@@ -20,20 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <optional>
-#include <string>
-#include <unordered_map>
+#include "daw/json/daw_json_iterator.h"
+#include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_graph.h>
 #include <daw/daw_memory_mapped_file.h>
 #include <daw/daw_optional.h>
 
-#include "daw/json/daw_json_iterator.h"
-#include "daw/json/daw_json_link.h"
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <optional>
+#include <string>
+#include <unordered_map>
 
 namespace daw::cookbook_graphs1 {
 	struct Metadata {
@@ -43,10 +43,10 @@ namespace daw::cookbook_graphs1 {
 	};
 
 #ifdef __cpp_nontype_template_parameter_class
-	auto describe_json_class( Metadata const & ) {
+	auto json_data_contract_for( Metadata const & ) {
 		using namespace daw::json;
-		return class_description_t<json_number<"member0", int>,
-		                           json_string<"member1">, json_bool<"member2">>{};
+		return json_data_contract<json_number<"member0", int>,
+		                          json_string<"member1">, json_bool<"member2">>{};
 	}
 #else
 	namespace symbols_Metadata {
@@ -55,11 +55,11 @@ namespace daw::cookbook_graphs1 {
 		static inline constexpr char const member2[] = "member2";
 	} // namespace symbols_Metadata
 
-	auto describe_json_class( Metadata const & ) {
+	auto json_data_contract_for( Metadata const & ) {
 		using namespace daw::json;
-		return class_description_t<json_number<symbols_Metadata::member0, int>,
-		                           json_string<symbols_Metadata::member1>,
-		                           json_bool<symbols_Metadata::member2>>{};
+		return json_data_contract<json_number<symbols_Metadata::member0, int>,
+		                          json_string<symbols_Metadata::member1>,
+		                          json_bool<symbols_Metadata::member2>>{};
 	}
 #endif
 
@@ -69,9 +69,9 @@ namespace daw::cookbook_graphs1 {
 	};
 
 #ifdef __cpp_nontype_template_parameter_class
-	auto describe_json_class( GraphNode const & ) {
+	auto json_data_contract_for( GraphNode const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_number<"id", size_t, LiteralAsStringOpt::Always>,
 		  json_class<"metadata", Metadata>>{};
 	}
@@ -80,9 +80,9 @@ namespace daw::cookbook_graphs1 {
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const metadata[] = "metadata";
 	} // namespace symbols_GraphNode
-	auto describe_json_class( GraphNode const & ) {
+	auto json_data_contract_for( GraphNode const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_number<symbols_GraphNode::id, size_t, LiteralAsStringOpt::Always>,
 		  json_class<symbols_GraphNode::metadata, Metadata>>{};
 	}
@@ -94,9 +94,9 @@ namespace daw::cookbook_graphs1 {
 	};
 
 #ifdef __cpp_nontype_template_parameter_class
-	auto describe_json_class( GraphEdge const & ) {
+	auto json_data_contract_for( GraphEdge const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_number<"source", size_t, LiteralAsStringOpt::Always>,
 		  json_number<"target", size_t, LiteralAsStringOpt::Always>>{};
 	}
@@ -105,12 +105,12 @@ namespace daw::cookbook_graphs1 {
 		static inline constexpr char const source[] = "source";
 		static inline constexpr char const target[] = "target";
 	} // namespace symbols_GraphEdge
-	auto describe_json_class( GraphEdge const & ) {
+	auto json_data_contract_for( GraphEdge const & ) {
 		using namespace daw::json;
-		return class_description_t<json_number<symbols_GraphEdge::source, size_t,
-		                                       LiteralAsStringOpt::Always>,
-		                           json_number<symbols_GraphEdge::target, size_t,
-		                                       LiteralAsStringOpt::Always>>{};
+		return json_data_contract<json_number<symbols_GraphEdge::source, size_t,
+		                                      LiteralAsStringOpt::Always>,
+		                          json_number<symbols_GraphEdge::target, size_t,
+		                                      LiteralAsStringOpt::Always>>{};
 	}
 #endif
 } // namespace daw::cookbook_graphs1

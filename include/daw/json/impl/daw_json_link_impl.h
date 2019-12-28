@@ -22,16 +22,11 @@
 
 #pragma once
 
-#include <array>
-#include <chrono>
-#include <cstdint>
-#include <cstdlib>
-#include <iterator>
-#include <optional>
-#include <string_view>
-#include <tuple>
-#include <type_traits>
-#include <utility>
+#include "daw_iterator_range.h"
+#include "daw_json_assert.h"
+#include "daw_json_parse_common.h"
+#include "daw_json_parse_value.h"
+#include "daw_json_to_string.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_cxmath.h>
@@ -39,58 +34,84 @@
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
-#include <daw/iso8601/daw_date_formatting.h>
-#include <daw/iso8601/daw_date_parsing.h>
 #include <daw/iterator/daw_back_inserter.h>
 #include <daw/iterator/daw_inserter.h>
 
-#include "daw_iterator_range.h"
-#include "daw_json_assert.h"
-#include "daw_json_parse_common.h"
-#include "daw_json_parse_value.h"
-#include "daw_json_to_string.h"
+#include <array>
+#include <chrono>
+#include <cstdint>
+#include <cstdlib>
+#include <date/date.h>
+#include <iterator>
+#include <optional>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+
+namespace daw::json::impl {
+	namespace {
+		[[nodiscard]] constexpr char to_lower( char c ) noexcept {
+			return static_cast<char>( static_cast<unsigned>( c ) |
+			                          static_cast<unsigned>( ' ' ) );
+		}
+
+		[[nodiscard]] constexpr wchar_t to_lower( wchar_t const c ) noexcept {
+			return static_cast<wchar_t>( static_cast<unsigned>( c ) |
+			                             static_cast<unsigned>( L' ' ) );
+		}
+
+		template<typename Result>
+		constexpr Result to_integer( char const c ) noexcept {
+			return static_cast<Result>( c - '0' );
+		}
+
+		template<typename Result, size_t count, typename CharT>
+		constexpr Result parse_unsigned( const CharT *digit_str ) noexcept {
+			Result result = 0;
+			for( size_t n = 0; n < count; ++n ) {
+				result = static_cast<Result>( ( result << 1 ) + ( result << 3 ) ) +
+				         to_integer<Result>( digit_str[n] );
+			}
+			return result;
+		}
+
+		template<typename CharT, typename Traits>
+		constexpr std::chrono::time_point<std::chrono::system_clock,
+		                                  std::chrono::milliseconds>
+		parse_javascript_timestamp(
+		  daw::basic_string_view<CharT, Traits> timestamp_str ) {
+			daw_json_assert(
+			  ( timestamp_str.size( ) == 24 ) and
+			    ( to_lower( timestamp_str[23] ) == static_cast<CharT>( 'z' ) ),
+			  "Invalid ISO8601 Timestamp" );
+			auto const yr = parse_unsigned<uint16_t, 4>( timestamp_str.data( ) );
+			auto const mo = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 5 );
+			auto const dy = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 8 );
+			auto const hr = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 11 );
+			auto const mi = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 14 );
+			auto const sc = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 17 );
+			auto const ms = parse_unsigned<uint16_t, 3>( timestamp_str.data( ) + 20 );
+
+			daw_json_assert( 0 <= yr and yr <= 9999, "Invalid year" );
+			daw_json_assert( 1 <= mo and mo <= 12, "Invalid month" );
+			daw_json_assert( 1 <= dy and dy <= 31, "Invalid month" );
+			daw_json_assert( 0 <= hr and hr <= 24, "Invalid hour" );
+			daw_json_assert( 0 <= mi and mi <= 59, "Invalid minute" );
+			daw_json_assert( 0 <= sc and sc <= 60, "Invalid second" );
+			daw_json_assert( 0 <= ms and ms <= 999, "Invalid millisecond" );
+
+			return std::chrono::time_point<std::chrono::system_clock,
+			                               std::chrono::milliseconds>(
+			  date::sys_days( date::year( yr ) / date::month( mo ) /
+			                  date::day( dy ) ) +
+			  std::chrono::hours( hr ) + std::chrono::minutes( mi ) +
+			  std::chrono::seconds( sc ) + std::chrono::milliseconds( ms ) );
+		}
+	} // namespace
+} // namespace daw::json::impl
 
 namespace daw::json {
-	template<typename CharT, typename Traits>
-	constexpr std::chrono::time_point<std::chrono::system_clock,
-	                                  std::chrono::milliseconds>
-	parse_javascript_timestamp(
-	  daw::basic_string_view<CharT, Traits> timestamp_str ) {
-		daw::exception::precondition_check<invalid_javascript_timestamp>(
-		  timestamp_str.size( ) == 24 and
-		  daw::details::to_lower( timestamp_str[23] ) == 'z' );
-		auto const yr =
-		  daw::details::parse_unsigned<uint16_t, 4>( timestamp_str.data( ) );
-		auto const mo =
-		  daw::details::parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 5 );
-		auto const dy =
-		  daw::details::parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 8 );
-		auto const hr =
-		  daw::details::parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 11 );
-		auto const mi =
-		  daw::details::parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 14 );
-		auto const sc =
-		  daw::details::parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 17 );
-		auto const ms =
-		  daw::details::parse_unsigned<uint16_t, 3>( timestamp_str.data( ) + 20 );
-
-		daw_json_assert( 0 <= yr and yr <= 9999, "Invalid year" );
-		daw_json_assert( 1 <= mo and mo <= 12, "Invalid month" );
-		daw_json_assert( 1 <= dy and dy <= 31, "Invalid month" );
-		daw_json_assert( 0 <= hr and hr <= 24, "Invalid hour" );
-		daw_json_assert( 0 <= mi and mi <= 59, "Invalid minute" );
-		daw_json_assert( 0 <= sc and sc <= 60, "Invalid second" );
-		daw_json_assert( 0 <= ms and ms <= 999, "Invalid millisecond" );
-		std::chrono::time_point<std::chrono::system_clock,
-		                        std::chrono::milliseconds>
-		  result{
-		    date::sys_days{date::year{yr} / date::month( mo ) / date::day( dy )} +
-		    std::chrono::hours{hr} + std::chrono::minutes{mi} +
-		    std::chrono::seconds{sc} + std::chrono::milliseconds{ms}};
-
-		return result;
-	}
-
 	template<JsonNullable>
 	struct parse_js_date;
 
@@ -101,8 +122,7 @@ namespace daw::json {
 
 		[[maybe_unused, nodiscard]] constexpr result_type
 		operator( )( char const *ptr, size_t sz ) const {
-			return daw::date_parsing::parse_javascript_timestamp(
-			  daw::string_view( ptr, sz ) );
+			return impl::parse_javascript_timestamp( daw::string_view( ptr, sz ) );
 		}
 	};
 
@@ -118,8 +138,7 @@ namespace daw::json {
 
 		[[maybe_unused, nodiscard]] constexpr result_type
 		operator( )( char const *ptr, size_t sz ) const {
-			return daw::date_parsing::parse_javascript_timestamp(
-			  daw::string_view( ptr, sz ) );
+			return impl::parse_javascript_timestamp( daw::string_view( ptr, sz ) );
 		}
 	};
 
@@ -173,11 +192,6 @@ namespace daw::json::impl {
 			inline constexpr bool has_data_size_v = daw::is_detected_v<data_detect, T>
 			  and daw::is_detected_v<size_detect, T>;
 		} // namespace data_size
-
-		[[nodiscard]] constexpr char to_lower( char c ) noexcept {
-			return static_cast<char>( static_cast<unsigned>( c ) |
-			                          static_cast<unsigned>( ' ' ) );
-		}
 
 		template<typename string_t>
 		struct kv_t {
@@ -503,7 +517,7 @@ namespace daw::json::impl {
 		from_json_impl( std::string_view json_data ) {
 			static_assert(
 			  impl::has_json_parser_description_v<JsonClass>,
-			  "A function call describe_json_class must exist for type." );
+			  "A function call json_data_contract_for must exist for type." );
 			daw_json_assert_untrusted( not json_data.empty( ),
 			                           "Attempt to parse empty string" );
 

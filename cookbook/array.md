@@ -47,9 +47,9 @@ struct MyClass4 {
 	bool d;
 };
 
-auto describe_json_class( MyClass4 const & ) {
+auto json_data_contract_for( MyClass4 const & ) {
     using namespace daw::json;
-    return class_description_t<
+    return json_data_contract<
 			json_string_raw<"a">,
             json_number<"b", unsigned>,
             json_number<"c", float>,
@@ -90,9 +90,9 @@ struct MyArrayClass1 {
 ```
 With the following functions defined to allow mapping of JSON
 ```cpp
-auto describe_json_class( MyArrayClass1 const & ) {
+auto json_data_contract_for( MyArrayClass1 const & ) {
     using namespace daw::json;
-    return class_description_t<
+    return json_data_contract<
             json_number<"member0", int>,
             json_array<"member1", int>,
             json_array<"member2", std::string>>{};

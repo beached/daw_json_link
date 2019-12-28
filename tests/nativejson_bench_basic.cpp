@@ -20,18 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <fstream>
-#include <iostream>
-#include <streambuf>
-#include <string_view>
-
-#include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
-
 #include "canada_test.h"
 #include "citm_test.h"
 #include "daw/json/daw_json_link.h"
 #include "twitter_test.h"
+
+#include <daw/daw_benchmark.h>
+#include <daw/daw_memory_mapped_file.h>
+
+#include <fstream>
+#include <iostream>
+#include <streambuf>
+#include <string_view>
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;

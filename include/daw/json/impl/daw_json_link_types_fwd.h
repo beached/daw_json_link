@@ -22,11 +22,11 @@
 
 #pragma once
 
-#include <string>
+#include "daw_json_link_impl.h"
 
 #include <daw/daw_utility.h>
 
-#include "daw_json_link_impl.h"
+#include <string>
 
 namespace daw::json {
 	// Forward Declaration for some literal types used in json_arrays
@@ -234,7 +234,7 @@ namespace daw::json {
 	/**
 	 * Link to a JSON class
 	 * @tparam Name name of JSON member to link to
-	 * @tparam T C++ type being parsed to.  Must have a describe_json_class
+	 * @tparam T C++ type being parsed to.  Must have a json_data_contract_for
 	 * overload
 	 * @tparam Constructor A callable used to construct T.  The
 	 * default supports normal and aggregate construction
@@ -248,7 +248,7 @@ namespace daw::json {
 	/**
 	 * Link to a nullable JSON class
 	 * @tparam Name name of JSON member to link to
-	 * @tparam T C++ type being parsed to.  Must have a describe_json_class
+	 * @tparam T C++ type being parsed to.  Must have a json_data_contract_for
 	 * overload
 	 * @tparam Constructor A callable used to construct T.  The
 	 * default supports normal and aggregate construction
@@ -335,7 +335,7 @@ namespace daw::json {
 	 * type(including their specialized keyvalue mappings) or
 	 * string-enum/int-enum.
 	 * @tparam Name name of JSON member to link to
-	 * @tparam T C++ type being parsed to.  Must have a describe_json_class
+	 * @tparam T C++ type being parsed to.  Must have a json_data_contract_for
 	 * overload
 	 * @tparam JsonElements a json_variant_type_list
 	 * @tparam Constructor A callable used to construct T.  The
@@ -350,7 +350,7 @@ namespace daw::json {
 	/***
 	 * Link to a nullable JSON variant
 	 * @tparam Name name of JSON member to link to
-	 * @tparam T C++ type being parsed to.  Must have a describe_json_class
+	 * @tparam T C++ type being parsed to.  Must have a json_data_contract_for
 	 * overload
 	 * @tparam JsonElements a json_variant_type_list
 	 * @tparam Constructor A callable used to construct T.  The

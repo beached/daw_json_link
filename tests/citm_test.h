@@ -22,8 +22,9 @@
 
 #pragma once
 
-#include <cstdint>
 #include <daw/json/daw_json_link.h>
+
+#include <cstdint>
 #include <optional>
 #include <string_view>
 #include <tuple>
@@ -41,9 +42,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( events_value_t ) {
+	json_data_contract_for( events_value_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t < json_number<"id", int64_t>,
+		return daw::json::json_data_contract < json_number<"id", int64_t>,
 		       json_string_raw_null<"logo", std::string_view>,
 		       json_string_raw<"name", std::string_view>,
 		       json_array<"subTopicIds", int64_t,
@@ -59,9 +60,9 @@ namespace {
 	} // namespace symbols_events_value_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( events_value_t ) {
+	json_data_contract_for( events_value_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_events_value_t::id, int64_t>,
 		  json_string_raw_null<symbols_events_value_t::logo, std::string_view>,
 		  json_string_raw<symbols_events_value_t::name, std::string_view>,
@@ -84,9 +85,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( prices_element_t ) {
+	json_data_contract_for( prices_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<"amount", int64_t>,
 		  json_number<"audienceSubCategoryId", int64_t>,
 		  json_number<"seatCategoryId", int64_t>>{};
@@ -100,9 +101,9 @@ namespace {
 	} // namespace symbols_prices_element_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( prices_element_t ) {
+	json_data_contract_for( prices_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_prices_element_t::amount, int64_t>,
 		  json_number<symbols_prices_element_t::audienceSubCategoryId, int64_t>,
 		  json_number<symbols_prices_element_t::seatCategoryId, int64_t>>{};
@@ -121,9 +122,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( areas_element_t ) {
+	json_data_contract_for( areas_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<json_number<"areaId", int64_t>>{};
+		return daw::json::json_data_contract<json_number<"areaId", int64_t>>{};
 	}
 #else
 	namespace symbols_areas_element_t {
@@ -131,9 +132,9 @@ namespace {
 	}
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( areas_element_t ) {
+	json_data_contract_for( areas_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_areas_element_t::areaId, int64_t>>{};
 	}
 #endif
@@ -150,9 +151,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( seatCategories_element_t ) {
+	json_data_contract_for( seatCategories_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_array<"areas", areas_element_t>,
 		  json_number<"seatCategoryId", int64_t>>{};
 	}
@@ -163,9 +164,9 @@ namespace {
 	} // namespace symbols_seatCategories_element_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( seatCategories_element_t ) {
+	json_data_contract_for( seatCategories_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_array<symbols_seatCategories_element_t::areas, areas_element_t>,
 		  json_number<symbols_seatCategories_element_t::seatCategoryId, int64_t>>{};
 	}
@@ -188,9 +189,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( performances_element_t ) {
+	json_data_contract_for( performances_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<"eventId", int64_t>, json_number<"id", int64_t>,
 		  json_string_raw_null<"logo", std::string_view>,
 		  json_array<"prices", prices_element_t>,
@@ -210,9 +211,9 @@ namespace {
 	} // namespace symbols_performances_element_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( performances_element_t ) {
+	json_data_contract_for( performances_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_number<symbols_performances_element_t::eventId, int64_t>,
 		  json_number<symbols_performances_element_t::id, int64_t>,
 		  json_string_raw_null<symbols_performances_element_t::logo,
@@ -238,9 +239,10 @@ namespace {
 	}; // venueNames_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( venueNames_t ) {
+	[[nodiscard, maybe_unused]] inline auto
+	json_data_contract_for( venueNames_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string_raw<"PLEYEL_PLEYEL", std::string_view>>{};
 	}
 #else
@@ -248,9 +250,10 @@ namespace {
 		static constexpr char const PLEYEL_PLEYEL[] = "PLEYEL_PLEYEL";
 	}
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( venueNames_t ) {
+	[[nodiscard, maybe_unused]] inline auto
+	json_data_contract_for( venueNames_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string_raw<symbols_venueNames_t::PLEYEL_PLEYEL, std::string_view>>{};
 	}
 #endif
@@ -273,9 +276,10 @@ namespace {
 	}; // citm_object_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( citm_object_t ) {
+	[[nodiscard, maybe_unused]] inline auto
+	json_data_contract_for( citm_object_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t <
+		return daw::json::json_data_contract <
 		         json_key_value<
 		           "areaNames", std::unordered_map<intmax_t, std::string_view>,
 		           json_string_raw<no_name, std::string_view>,
@@ -322,9 +326,10 @@ namespace {
 		static constexpr char const venueNames[] = "venueNames";
 	} // namespace symbols_citm_object_t
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( citm_object_t ) {
+	[[nodiscard, maybe_unused]] inline auto
+	json_data_contract_for( citm_object_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_key_value<
 		    symbols_citm_object_t::areaNames,
 		    std::unordered_map<intmax_t, std::string_view>,

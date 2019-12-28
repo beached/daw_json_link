@@ -20,15 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "daw/json/daw_json_link.h"
+
+#include <daw/daw_memory_mapped_file.h>
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
 #include <unordered_map>
-
-#include <daw/daw_memory_mapped_file.h>
-
-#include "daw/json/daw_json_link.h"
 
 namespace daw::cookbook_enums1 {
 	enum class Colours : uint8_t { red, green, blue, black };
@@ -68,18 +68,18 @@ namespace daw::cookbook_enums1 {
 	};
 
 #ifdef __cpp_nontype_template_parameter_class
-	auto describe_json_class( MyClass1 const & ) {
+	auto json_data_contract_for( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_array<"member0", json_custom<no_name, Colours>>>{};
 	}
 #else
 	namespace symbols_MyClass1 {
 		static inline constexpr char const member0[] = "member0";
 	} // namespace symbols_MyClass1
-	auto describe_json_class( MyClass1 const & ) {
+	auto json_data_contract_for( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_array<symbols_MyClass1::member0, json_custom<no_name, Colours>>>{};
 	}
 #endif

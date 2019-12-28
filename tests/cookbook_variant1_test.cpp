@@ -20,17 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "daw/json/daw_json_link.h"
+
+#include <daw/daw_benchmark.h>
+#include <daw/daw_memory_mapped_file.h>
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
 #include <optional>
 #include <string>
-
-#include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
-
-#include "daw/json/daw_json_link.h"
 
 namespace daw::cookbook_variant1 {
 	struct MyVariantStuff1 {
@@ -39,9 +39,9 @@ namespace daw::cookbook_variant1 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyVariantStuff1 const & ) {
+	auto json_data_contract_for( MyVariantStuff1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_variant<"member0", std::variant<int, std::string>,
 		               json_variant_type_list<json_number<no_name, int>,
 		                                      json_string<no_name>>>,
@@ -55,9 +55,9 @@ namespace daw::cookbook_variant1 {
 		static constexpr char const member1[] = "member1";
 	} // namespace symbols_MyVariantStuff1
 
-	auto describe_json_class( MyVariantStuff1 const & ) {
+	auto json_data_contract_for( MyVariantStuff1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_variant<symbols_MyVariantStuff1::member0,
 		               std::variant<int, std::string>,
 		               json_variant_type_list<json_number<no_name, int>,
