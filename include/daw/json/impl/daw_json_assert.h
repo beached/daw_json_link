@@ -99,7 +99,7 @@ static constexpr void daw_json_assert(
 }
 
 #define daw_json_assert_untrusted( ... )                                       \
-	if constexpr( not IsTrustedInput ) {                                           \
+	if constexpr( not IsTrustedInput ) {                                         \
 		daw_json_assert( __VA_ARGS__ );                                            \
 	}                                                                            \
 	do {                                                                         \

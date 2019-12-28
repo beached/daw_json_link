@@ -137,7 +137,7 @@ namespace daw::json::impl {
 		// Paths are specified with dot separators, if the name has a dot in it,
 		// it must be escaped
 		// memberA.memberB.member\.C has 3 parts['memberA', 'memberB', 'member.C']
-		[[nodiscard]] static constexpr daw::string_view
+		[[nodiscard]] constexpr daw::string_view
 		pop_json_path( daw::string_view &path ) {
 			return path.pop_front( [in_escape = false]( char c ) mutable {
 				if( in_escape ) {
@@ -174,7 +174,7 @@ namespace daw::json::impl {
 			  and daw::is_detected_v<size_detect, T>;
 		} // namespace data_size
 
-		[[nodiscard]] static constexpr char to_lower( char c ) noexcept {
+		[[nodiscard]] constexpr char to_lower( char c ) noexcept {
 			return static_cast<char>( static_cast<unsigned>( c ) |
 			                          static_cast<unsigned>( ' ' ) );
 		}
@@ -201,7 +201,7 @@ namespace daw::json::impl {
 		// Ensures that the stream is left at the position of the associated
 		// value(e.g after the colon(:) and trimmed)
 		template<typename First, typename Last, bool IsTrustedInput>
-		[[nodiscard]] static constexpr daw::string_view
+		[[nodiscard]] constexpr daw::string_view
 		parse_name( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 			daw_json_assert_untrusted( rng.front( '"' ),
 			                           "Expected name to start with a quote" );
@@ -209,8 +209,7 @@ namespace daw::json::impl {
 			return daw::json::impl::name::name_parser::parse_nq( rng );
 		}
 
-		[[nodiscard]] static constexpr char const *str_find( char const *p,
-		                                                     char c ) {
+		[[nodiscard]] constexpr char const *str_find( char const *p, char c ) {
 			while( *p != c ) {
 				++p;
 			}
@@ -232,7 +231,7 @@ namespace daw::json::impl {
 		};
 
 		template<size_t N, typename string_t, typename... JsonMembers>
-		[[nodiscard]] static constexpr kv_t<string_t> get_item( ) noexcept {
+		[[nodiscard]] constexpr kv_t<string_t> get_item( ) noexcept {
 			using type_t = traits::nth_type<N, JsonMembers...>;
 			return kv_t<string_t>( type_t::name, type_t::expected_type, N );
 		}
@@ -299,7 +298,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, size_t N, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr IteratorRange<First, Last, IsTrustedInput>
+		[[nodiscard]] constexpr IteratorRange<First, Last, IsTrustedInput>
 		find_class_member(
 		  size_t pos, locations_info_t<N, First, Last, IsTrustedInput> &locations,
 		  IteratorRange<First, Last, IsTrustedInput> &rng ) {
@@ -338,7 +337,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, size_t N, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember> parse_class_member(
+		[[nodiscard]] constexpr json_result<JsonMember> parse_class_member(
 		  size_t member_position,
 		  locations_info_t<N, First, Last, IsTrustedInput> &locations,
 		  IteratorRange<First, Last, IsTrustedInput> &rng ) {
@@ -373,7 +372,7 @@ namespace daw::json::impl {
 
 		template<typename... JsonMembers, typename OutputIterator, size_t... Is,
 		         typename Tuple>
-		[[nodiscard]] static constexpr OutputIterator
+		[[nodiscard]] constexpr OutputIterator
 		serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
 		                      Tuple const &args ) {
 
@@ -396,7 +395,7 @@ namespace daw::json::impl {
 
 		template<typename JsonClass, typename... JsonMembers, size_t... Is,
 		         typename First, typename Last, bool IsTrustedInput>
-		[[nodiscard]] static constexpr JsonClass
+		[[nodiscard]] constexpr JsonClass
 		parse_json_class( IteratorRange<First, Last, IsTrustedInput> &rng,
 		                  std::index_sequence<Is...> ) {
 			static_assert( has_json_parser_description_v<JsonClass>,
@@ -448,7 +447,7 @@ namespace daw::json::impl {
 			}
 		}
 
-		[[nodiscard]] static constexpr bool
+		[[nodiscard]] constexpr bool
 		json_path_compare( daw::string_view json_path_item,
 		                   daw::string_view member_name ) noexcept {
 			if( json_path_item.front( ) == '\\' ) {
@@ -468,9 +467,8 @@ namespace daw::json::impl {
 		}
 
 		template<typename First, typename Last, bool IsTrustedInput>
-		static constexpr void
-		find_range2( IteratorRange<First, Last, IsTrustedInput> &rng,
-		             daw::string_view path ) {
+		constexpr void find_range2( IteratorRange<First, Last, IsTrustedInput> &rng,
+		                            daw::string_view path ) {
 			auto current = impl::pop_json_path( path );
 			while( not current.empty( ) ) {
 				daw_json_assert_untrusted( rng.front( '{' ), "Invalid Path Entry" );
@@ -487,8 +485,8 @@ namespace daw::json::impl {
 		}
 
 		template<bool IsTrustedInput, typename String>
-		[[nodiscard]] static constexpr auto
-		find_range( String &&str, daw::string_view start_path ) {
+		[[nodiscard]] constexpr auto find_range( String &&str,
+		                                         daw::string_view start_path ) {
 
 			auto rng = IteratorRange<char const *, char const *, IsTrustedInput>(
 			  std::data( str ), std::data( str ) + std::size( str ) );

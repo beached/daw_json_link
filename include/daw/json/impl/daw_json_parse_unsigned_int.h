@@ -54,7 +54,7 @@ namespace daw::json::impl {
 	namespace {
 		template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
 		         typename First, typename Last, bool IsTrustedInput>
-		[[nodiscard]] static constexpr auto parse_unsigned_integer2(
+		[[nodiscard]] constexpr auto parse_unsigned_integer2(
 		  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
 			daw_json_assert_untrusted( rng.is_number( ),
 			                           "Expecting a digit as first item" );
@@ -81,7 +81,7 @@ namespace daw::json::impl {
 
 		template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
 		         typename First, typename Last, bool IsTrustedInput>
-		[[nodiscard]] static constexpr Result parse_unsigned_integer(
+		[[nodiscard]] constexpr Result parse_unsigned_integer(
 		  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
 			daw_json_assert_untrusted( rng.is_number( ),
 			                           "Expecting a digit as first item" );

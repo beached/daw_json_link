@@ -446,25 +446,26 @@ namespace daw::json {
 	}
 
 	namespace impl {
-		template<bool IsTrustedInput, typename JsonElement, typename Container,
-		         typename Constructor, typename Appender>
-		[[maybe_unused, nodiscard]] constexpr Container
-		from_json_array_impl( std::string_view json_data ) {
-			using parser_t =
-			  json_array<no_name, JsonElement, Container, Constructor, Appender>;
+		namespace {
+			template<bool IsTrustedInput, typename JsonElement, typename Container,
+			         typename Constructor, typename Appender>
+			[[maybe_unused, nodiscard]] constexpr Container
+			from_json_array_impl( std::string_view json_data ) {
+				using parser_t =
+				  json_array<no_name, JsonElement, Container, Constructor, Appender>;
 
-			auto rng =
-			  daw::json::impl::IteratorRange<char const *, char const *, false>(
-			    json_data.data( ),
-			    json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
+				auto rng =
+				  daw::json::impl::IteratorRange<char const *, char const *, false>(
+				    json_data.data( ),
+				    json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
 
-			rng.trim_left_no_check( );
-			daw_json_assert_untrusted( rng.front( '[' ), "Expected array class" );
+				rng.trim_left_no_check( );
+				daw_json_assert_untrusted( rng.front( '[' ), "Expected array class" );
 
-			return impl::parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{},
-			                                    rng );
-		}
-	} // namespace impl
+				return parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{}, rng );
+			}
+		} // namespace
+	}   // namespace impl
 
 	/**
 	 * Parse json data where the root item is an array
@@ -523,6 +524,7 @@ namespace daw::json {
 	 * @param c Data to serialize
 	 * @return A string containing the serialized elements of c
 	 */
+
 	template<typename Result = std::string, typename Container>
 	[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c ) {
 		static_assert(
@@ -538,18 +540,23 @@ namespace daw::json {
 		result.back( ) = ']';
 		return result;
 	}
+
 	namespace impl {
-		template<typename... Args>
-		constexpr void is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
+		namespace {
+			template<typename... Args>
+			constexpr void
+			is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
 
-		template<typename T>
-		using is_unique_ptr_test =
-		  decltype( is_unique_ptr_test_impl( std::declval<T>( ) ) );
+			template<typename T>
+			using is_unique_ptr_test =
+			  decltype( is_unique_ptr_test_impl( std::declval<T>( ) ) );
 
-		template<typename T>
-		inline constexpr bool is_unique_ptr_v =
-		  daw::is_detected_v<is_unique_ptr_test, T>;
-	} // namespace impl
+			template<typename T>
+			inline constexpr bool is_unique_ptr_v =
+			  daw::is_detected_v<is_unique_ptr_test, T>;
+		} // namespace
+	}   // namespace impl
+
 	template<typename T>
 	struct UniquePtrConstructor {
 		static_assert( not impl::is_unique_ptr_v<T>,

@@ -62,7 +62,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Real>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 			using constructor_t = typename JsonMember::constructor_t;
@@ -83,7 +83,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Signed>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 			using constructor_t = typename JsonMember::constructor_t;
@@ -105,7 +105,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Unsigned>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 			using constructor_t = typename JsonMember::constructor_t;
@@ -126,7 +126,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Null>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
@@ -147,7 +147,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Bool>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 			daw_json_assert_untrusted( rng.size( ) >= 4,
@@ -171,7 +171,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::String>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
@@ -275,7 +275,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::StringEscaped>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
@@ -359,7 +359,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Date>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
@@ -370,7 +370,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Custom>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
@@ -385,7 +385,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Class>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
@@ -404,7 +404,7 @@ namespace daw::json::impl {
 		 */
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::KeyValue>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
@@ -453,7 +453,7 @@ namespace daw::json::impl {
 		 */
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::KeyValueArray>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
@@ -511,7 +511,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Array>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
@@ -552,7 +552,7 @@ namespace daw::json::impl {
 
 		template<JsonBaseParseTypes BPT, typename JsonMembers, typename First,
 		         typename Last, bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMembers>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMembers>
 		parse_variant_value( IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
 			using element_t = typename JsonMembers::json_elements;
@@ -571,7 +571,7 @@ namespace daw::json::impl {
 
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsTrustedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Variant>,
 		             IteratorRange<First, Last, IsTrustedInput> &rng ) {
 
