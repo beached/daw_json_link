@@ -462,8 +462,7 @@ namespace daw::json {
 				rng.trim_left_no_check( );
 				daw_json_assert_untrusted( rng.front( '[' ), "Expected array class" );
 
-				return ParseValue::parse_value<parser_t>(
-				  ParseTag<JsonParseTypes::Array>{}, rng );
+				return parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{}, rng );
 			}
 		} // namespace
 	}   // namespace impl

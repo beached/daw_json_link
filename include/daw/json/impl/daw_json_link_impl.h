@@ -345,8 +345,8 @@ namespace daw::json::impl {
 			rng.clean_tail( );
 			if constexpr( is_no_name<JsonMember::name> ) {
 				// If we are an array element
-				return ParseValue::parse_value<JsonMember>(
-				  ParseTag<JsonMember::expected_type>{}, rng );
+				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+				                                rng );
 			} else {
 				daw_json_assert_untrusted( rng.front( "\"}" ),
 				                           "Expected end of class or start of member" );
@@ -359,10 +359,10 @@ namespace daw::json::impl {
 				if( loc.is_null( ) or
 				    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 
-					return ParseValue::parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+					return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
 					                                loc );
 				}
-				return ParseValue::parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
 				                                rng );
 			}
 		}

@@ -45,8 +45,8 @@ namespace daw::json::impl {
 			  : rng( &rng ) {}
 
 			constexpr value_type operator*( ) {
-				return ParseValue::parse_value<element_t>(
-				  ParseTag<element_t::expected_type>{}, *rng );
+				return parse_value<element_t>( ParseTag<element_t::expected_type>{},
+				                               *rng );
 			}
 
 			constexpr json_parse_value_array_iterator &operator++( ) {

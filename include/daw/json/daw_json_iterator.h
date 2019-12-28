@@ -95,7 +95,7 @@ namespace daw::json {
 			                           "Unexpected end of stream" );
 
 			auto tmp = m_state;
-			auto result = impl::ParseValue::parse_value<element_type>(
+			auto result = impl::parse_value<element_type>(
 			  ParseTag<element_type::expected_type>{}, tmp );
 
 			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
