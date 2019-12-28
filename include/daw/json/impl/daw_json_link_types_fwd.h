@@ -258,122 +258,22 @@ namespace daw::json {
 	using json_class_null =
 	  json_class<Name, T, Constructor, JsonNullable::Nullable>;
 
-	/**
-	 * Allow parsing of a type that does not fit
-	 * @tparam Name Name of JSON member to link to
-	 * @tparam T type of value being constructed
-	 * @tparam FromConverter Callable that accepts a std::string_view of the range
-	 * to parse
-	 * @tparam ToConverter Returns a string from the value
-	 * @tparam CustomJsonType JSON type value is encoded as literal/string
-	 * @tparam Nullable Can the member be missing or have a null value
-	 */
-	template<JSONNAMETYPE Name, typename T,
-	         typename FromConverter = custom_from_converter_t<T>,
-	         typename ToConverter = custom_to_converter_t<T>,
-	         CustomJsonTypes CustomJsonType = CustomJsonTypes::String,
-	         JsonNullable Nullable = JsonNullable::Never>
-	struct json_custom;
-
-	/**
-	 * Allow parsing of a nullable type that does not fit
-	 * @tparam Name Name of JSON member to link to
-	 * @tparam T type of value being constructed
-	 * @tparam FromConverter Callable that accepts a std::string_view of the range
-	 * to parse
-	 * @tparam ToConverter Returns a string from the value
-	 * @tparam CustomJsonType JSON type value is encoded as literal/string
-	 */
-	template<JSONNAMETYPE Name, typename T,
-	         typename FromConverter = custom_from_converter_t<T>,
-	         typename ToConverter = custom_to_converter_t<T>,
-	         CustomJsonTypes CustomJsonType = CustomJsonTypes::String>
-	using json_custom_null = json_custom<Name, T, FromConverter, ToConverter,
-	                                     CustomJsonType, JsonNullable::Nullable>;
-
-	template<JsonBaseParseTypes PT>
-	constexpr size_t
-	find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
-		size_t idx = 0;
-		for( auto const &pt : pts ) {
-			if( pt == PT ) {
-				return idx;
-			}
-			++idx;
-		}
-		return std::numeric_limits<size_t>::max( );
-	}
-
-	/***
-	 * A type to hold the types for parsing variants.
-	 * @tparam JsonElements Up to one of a JsonElement that is a JSON number,
-	 * string, object, or array
-	 */
-	template<typename... JsonElements>
-	struct json_variant_type_list {
-		using i_am_variant_element_list = void;
-		static_assert(
-		  sizeof...( JsonElements ) <= 5U,
-		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
-		using element_map_t = std::tuple<JsonElements...>;
-		static constexpr size_t base_map[5] = {
-		  find_json_element<JsonBaseParseTypes::Number>(
-		    {JsonElements::underlying_json_type...} ),
-		  find_json_element<JsonBaseParseTypes::Bool>(
-		    {JsonElements::underlying_json_type...} ),
-		  find_json_element<JsonBaseParseTypes::String>(
-		    {JsonElements::underlying_json_type...} ),
-		  find_json_element<JsonBaseParseTypes::Class>(
-		    {JsonElements::underlying_json_type...} ),
-		  find_json_element<JsonBaseParseTypes::Array>(
-		    {JsonElements::underlying_json_type...} )};
-	};
-
-	/***
-	 * Link to a variant like data type.  The JSON member can be any one of the
-	 * json types.  This precludes having more than one class type or array
-	 * type(including their specialized keyvalue mappings) or
-	 * string-enum/int-enum.
-	 * @tparam Name name of JSON member to link to
-	 * @tparam T C++ type being parsed to.  Must have a json_data_contract_for
-	 * overload
-	 * @tparam JsonElements a json_variant_type_list
-	 * @tparam Constructor A callable used to construct T.  The
-	 * default supports normal and aggregate construction
-	 * @tparam Nullable Can the member be missing or have a null value	 *
-	 */
-	template<JSONNAMETYPE Name, typename T, typename JsonElements,
-	         typename Constructor = daw::construct_a_t<T>,
-	         JsonNullable Nullable = JsonNullable::Never>
-	struct json_variant;
-
-	/***
-	 * Link to a nullable JSON variant
-	 * @tparam Name name of JSON member to link to
-	 * @tparam T C++ type being parsed to.  Must have a json_data_contract_for
-	 * overload
-	 * @tparam JsonElements a json_variant_type_list
-	 * @tparam Constructor A callable used to construct T.  The
-	 * default supports normal and aggregate construction
-	 */
-	template<JSONNAMETYPE Name, typename T, typename JsonElements,
-	         typename Constructor = daw::construct_a_t<T>>
-	using json_variant_null =
-	  json_variant<Name, T, JsonElements, Constructor, JsonNullable::Nullable>;
-
 	namespace impl {
-		template<typename T, JSONNAMETYPE Name = no_name>
-		using ary_val_t = std::conditional_t<
-		  is_a_json_type_v<T>, T,
-		  std::conditional_t<
-		    has_json_parser_description_v<T>, json_class<Name, T>,
-		    std::conditional_t<
-		      std::is_same_v<T, bool>, json_bool<Name, T>,
-		      std::conditional_t<std::is_arithmetic_v<T> or std::is_enum_v<T>,
-		                         json_number<Name, T>,
-		                         std::conditional_t<daw::traits::is_string_v<T>,
-		                                            json_string<Name, T>, void>>>>>;
-	}
+		namespace {
+			template<typename T, JSONNAMETYPE Name = no_name>
+			using ary_val_t = std::conditional_t<
+			  is_a_json_type_v<T>, T,
+			  std::conditional_t<
+			    has_json_parser_description_v<T>, json_class<Name, T>,
+			    std::conditional_t<
+			      std::is_same_v<T, bool>, json_bool<Name, T>,
+			      std::conditional_t<
+			        std::is_arithmetic_v<T> or std::is_enum_v<T>,
+			        json_number<Name, T>,
+			        std::conditional_t<daw::traits::is_string_v<T>,
+			                           json_string<Name, T>, void>>>>>;
+		}
+	} // namespace impl
 
 	/** Link to a JSON array
 	 * @tparam Name name of JSON member to link to
@@ -506,4 +406,110 @@ namespace daw::json {
 	  json_key_value_array<Name, Container, JsonValueType, JsonKeyType,
 	                       Constructor, Appender, JsonNullable::Nullable>;
 
+	/**
+	 * Allow parsing of a type that does not fit
+	 * @tparam Name Name of JSON member to link to
+	 * @tparam T type of value being constructed
+	 * @tparam FromConverter Callable that accepts a std::string_view of the range
+	 * to parse
+	 * @tparam ToConverter Returns a string from the value
+	 * @tparam CustomJsonType JSON type value is encoded as literal/string
+	 * @tparam Nullable Can the member be missing or have a null value
+	 */
+	template<JSONNAMETYPE Name, typename T,
+	         typename FromConverter = custom_from_converter_t<T>,
+	         typename ToConverter = custom_to_converter_t<T>,
+	         CustomJsonTypes CustomJsonType = CustomJsonTypes::String,
+	         JsonNullable Nullable = JsonNullable::Never>
+	struct json_custom;
+
+	/**
+	 * Allow parsing of a nullable type that does not fit
+	 * @tparam Name Name of JSON member to link to
+	 * @tparam T type of value being constructed
+	 * @tparam FromConverter Callable that accepts a std::string_view of the range
+	 * to parse
+	 * @tparam ToConverter Returns a string from the value
+	 * @tparam CustomJsonType JSON type value is encoded as literal/string
+	 */
+	template<JSONNAMETYPE Name, typename T,
+	         typename FromConverter = custom_from_converter_t<T>,
+	         typename ToConverter = custom_to_converter_t<T>,
+	         CustomJsonTypes CustomJsonType = CustomJsonTypes::String>
+	using json_custom_null = json_custom<Name, T, FromConverter, ToConverter,
+	                                     CustomJsonType, JsonNullable::Nullable>;
+
+	namespace impl {
+		namespace {
+			template<JsonBaseParseTypes PT>
+			constexpr size_t
+			find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
+				size_t idx = 0;
+				for( auto const &pt : pts ) {
+					if( pt == PT ) {
+						return idx;
+					}
+					++idx;
+				}
+				return std::numeric_limits<size_t>::max( );
+			}
+		} // namespace
+	}   // namespace impl
+
+	/***
+	 * A type to hold the types for parsing variants.
+	 * @tparam JsonElements Up to one of a JsonElement that is a JSON number,
+	 * string, object, or array
+	 */
+	template<typename... JsonElements>
+	struct json_variant_type_list {
+		using i_am_variant_element_list = void;
+		static_assert(
+		  sizeof...( JsonElements ) <= 5U,
+		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
+		using element_map_t = std::tuple<JsonElements...>;
+		static constexpr size_t base_map[5] = {
+		  impl::find_json_element<JsonBaseParseTypes::Number>(
+		    {JsonElements::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::Bool>(
+		    {JsonElements::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::String>(
+		    {JsonElements::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::Class>(
+		    {JsonElements::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::Array>(
+		    {JsonElements::underlying_json_type...} )};
+	};
+
+	/***
+	 * Link to a variant like data type.  The JSON member can be any one of the
+	 * json types.  This precludes having more than one class type or array
+	 * type(including their specialized keyvalue mappings) or
+	 * string-enum/int-enum.
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T C++ type being parsed to.  Must have a json_data_contract_for
+	 * overload
+	 * @tparam JsonElements a json_variant_type_list
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 * @tparam Nullable Can the member be missing or have a null value	 *
+	 */
+	template<JSONNAMETYPE Name, typename T, typename JsonElements,
+	         typename Constructor = daw::construct_a_t<T>,
+	         JsonNullable Nullable = JsonNullable::Never>
+	struct json_variant;
+
+	/***
+	 * Link to a nullable JSON variant
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T C++ type being parsed to.  Must have a json_data_contract_for
+	 * overload
+	 * @tparam JsonElements a json_variant_type_list
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 */
+	template<JSONNAMETYPE Name, typename T, typename JsonElements,
+	         typename Constructor = daw::construct_a_t<T>>
+	using json_variant_null =
+	  json_variant<Name, T, JsonElements, Constructor, JsonNullable::Nullable>;
 } // namespace daw::json

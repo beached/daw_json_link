@@ -33,87 +33,89 @@
 #include <cstddef>
 
 namespace daw::json::impl {
-	template<typename Container, typename Value>
-	using detect_push_back = decltype(
-	  std::declval<Container &>( ).push_back( std::declval<Value>( ) ) );
+	namespace {
+		template<typename Container, typename Value>
+		using detect_push_back = decltype(
+		  std::declval<Container &>( ).push_back( std::declval<Value>( ) ) );
 
-	template<typename Container, typename Value>
-	using detect_insert_end = decltype( std::declval<Container &>( ).insert(
-	  std::end( std::declval<Container &>( ) ), std::declval<Value>( ) ) );
+		template<typename Container, typename Value>
+		using detect_insert_end = decltype( std::declval<Container &>( ).insert(
+		  std::end( std::declval<Container &>( ) ), std::declval<Value>( ) ) );
 
-	template<typename Container, typename Value>
-	inline constexpr bool has_push_back_v =
-	  daw::is_detected_v<detect_push_back, Container, Value>;
+		template<typename Container, typename Value>
+		inline constexpr bool has_push_back_v =
+		  daw::is_detected_v<detect_push_back, Container, Value>;
 
-	template<typename Container, typename Value>
-	inline constexpr bool has_insert_end_v =
-	  daw::is_detected_v<detect_insert_end, Container, Value>;
+		template<typename Container, typename Value>
+		inline constexpr bool has_insert_end_v =
+		  daw::is_detected_v<detect_insert_end, Container, Value>;
 
-	template<typename T>
-	using json_parser_description_impl = daw::remove_cvref_t<decltype(
-	  json_data_contract_for( std::declval<T>( ) ) )>;
+		template<typename T>
+		using json_parser_description_impl = daw::remove_cvref_t<decltype(
+		  json_data_contract_for( std::declval<T>( ) ) )>;
 
-	template<typename T,
-	         std::enable_if_t<daw::is_detected_v<json_parser_description_impl, T>,
-	                          std::nullptr_t> = nullptr>
-	auto json_parser_description( ) -> json_parser_description_impl<T>;
+		template<typename T, std::enable_if_t<
+		                       daw::is_detected_v<json_parser_description_impl, T>,
+		                       std::nullptr_t> = nullptr>
+		[[maybe_unused]] auto json_parser_description( ) -> json_parser_description_impl<T>;
 
-	template<
-	  typename T,
-	  std::enable_if_t<not daw::is_detected_v<json_parser_description_impl, T>,
-	                   std::nullptr_t> = nullptr>
-	auto json_parser_description( )
-	  -> json_parser_description_impl<traits::deref_t<T>>;
+		template<
+		  typename T,
+		  std::enable_if_t<not daw::is_detected_v<json_parser_description_impl, T>,
+		                   std::nullptr_t> = nullptr>
+		[[maybe_unused]] auto json_parser_description( )
+		  -> json_parser_description_impl<traits::deref_t<T>>;
 
-	template<typename T>
-	using json_parser_description_t = decltype( json_parser_description<T>( ) );
+		template<typename T>
+		using json_parser_description_t = decltype( json_parser_description<T>( ) );
 
-	template<typename T>
-	static inline constexpr bool has_json_parser_description_v =
-	  daw::is_detected_v<json_parser_description_t, T>;
+		template<typename T>
+		static inline constexpr bool has_json_parser_description_v =
+		  daw::is_detected_v<json_parser_description_t, T>;
 
-	template<typename JsonMember>
-	using json_result = typename JsonMember::parse_to_t;
+		template<typename JsonMember>
+		using json_result = typename JsonMember::parse_to_t;
 
-	template<typename JsonMember>
-	using json_base_type = typename JsonMember::base_type;
+		template<typename JsonMember>
+		using json_base_type = typename JsonMember::base_type;
 
-	template<size_t I, typename... JsonMembers>
-	using json_result_n =
-	  json_result<daw::traits::nth_element<I, JsonMembers...>>;
+		template<size_t I, typename... JsonMembers>
+		using json_result_n =
+		  json_result<daw::traits::nth_element<I, JsonMembers...>>;
 
-	template<typename Container>
-	struct basic_appender {
-		Container *m_container;
+		template<typename Container>
+		struct basic_appender {
+			Container *m_container;
 
-		explicit constexpr basic_appender( Container &container ) noexcept
-		  : m_container( &container ) {}
+			explicit constexpr basic_appender( Container &container ) noexcept
+			  : m_container( &container ) {}
 
-		template<typename Value>
-		constexpr void operator( )( Value &&value ) {
-			if constexpr( has_push_back_v<Container, daw::remove_cvref_t<Value>> ) {
-				m_container->push_back( std::forward<Value>( value ) );
-			} else if constexpr( has_insert_end_v<Container,
-			                                      daw::remove_cvref_t<Value>> ) {
-				m_container->insert( std::end( *m_container ),
-				                     std::forward<Value>( value ) );
-			} else {
-				static_assert(
-				  has_push_back_v<Container, daw::remove_cvref_t<Value>> or
-				    has_insert_end_v<Container, daw::remove_cvref_t<Value>>,
-				  "basic_appender requires a Container that either has push_back or "
-				  "insert with the end iterator as first argument" );
+			template<typename Value>
+			constexpr void operator( )( Value &&value ) {
+				if constexpr( has_push_back_v<Container, daw::remove_cvref_t<Value>> ) {
+					m_container->push_back( std::forward<Value>( value ) );
+				} else if constexpr( has_insert_end_v<Container,
+				                                      daw::remove_cvref_t<Value>> ) {
+					m_container->insert( std::end( *m_container ),
+					                     std::forward<Value>( value ) );
+				} else {
+					static_assert(
+					  has_push_back_v<Container, daw::remove_cvref_t<Value>> or
+					    has_insert_end_v<Container, daw::remove_cvref_t<Value>>,
+					  "basic_appender requires a Container that either has push_back or "
+					  "insert with the end iterator as first argument" );
+				}
 			}
-		}
-	};
+		};
 
-	template<typename T>
-	using json_parser_to_json_data_t =
-	  decltype( to_json_data( std::declval<T &>( ) ) );
+		template<typename T>
+		using json_parser_to_json_data_t =
+		  decltype( to_json_data( std::declval<T &>( ) ) );
 
-	template<typename T>
-	static inline constexpr bool has_json_to_json_data_v =
-	  daw::is_detected_v<json_parser_to_json_data_t, T>;
+		template<typename T>
+		static inline constexpr bool has_json_to_json_data_v =
+		  daw::is_detected_v<json_parser_to_json_data_t, T>;
+	} // namespace
 } // namespace daw::json::impl
 
 namespace daw::json {
@@ -194,9 +196,11 @@ namespace daw::json {
 	// Convienience for array members that are required to be unnamed
 	inline constexpr char const no_name[] = "";
 	namespace impl {
-		inline constexpr char const default_key_name[] = "key";
-		inline constexpr char const default_value_name[] = "value";
-	} // namespace impl
+		namespace {
+			inline constexpr char const default_key_name[] = "key";
+			inline constexpr char const default_value_name[] = "value";
+		} // namespace
+	}   // namespace impl
 	template<JSONNAMETYPE n>
 	inline constexpr bool
 	  is_no_name = daw::string_view( n ) == daw::string_view( "" );
@@ -252,50 +256,52 @@ namespace daw::json {
 	  Nullable == JsonNullable::Never ? ParseType : JsonParseTypes::Null;
 
 	namespace impl {
-		template<typename JsonType>
-		static inline constexpr bool is_json_nullable_v =
-		  JsonType::expected_type == JsonParseTypes::Null;
+		namespace {
+			template<typename JsonType>
+			static inline constexpr bool is_json_nullable_v =
+			  JsonType::expected_type == JsonParseTypes::Null;
 
-		template<typename T>
-		auto dereffed_type_impl( daw::tag_t<T> ) -> decltype( *( T{} ) );
+			template<typename T>
+			[[maybe_unused]] auto dereffed_type_impl( daw::tag_t<T> ) -> decltype( *( T{} ) );
 
-		template<typename T>
-		using dereffed_type =
-		  daw::remove_cvref_t<decltype( dereffed_type_impl( daw::tag<T> ) )>;
+			template<typename T>
+			using dereffed_type =
+			  daw::remove_cvref_t<decltype( dereffed_type_impl( daw::tag<T> ) )>;
 
-		template<typename T, JsonNullable Nullable>
-		using unwrap_type =
-		  std::conditional_t<(Nullable == JsonNullable::Nullable and
-		                      daw::is_detected_v<dereffed_type, T>),
-		                     daw::detected_t<dereffed_type, T>, T>;
+			template<typename T, JsonNullable Nullable>
+			using unwrap_type =
+			  std::conditional_t<(Nullable == JsonNullable::Nullable and
+			                      daw::is_detected_v<dereffed_type, T>),
+			                     daw::detected_t<dereffed_type, T>, T>;
 
-		template<typename T>
-		inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
-			if constexpr( std::is_floating_point_v<T> ) {
-				return JsonParseTypes::Real;
-			} else if constexpr( std::is_signed_v<T> ) {
-				return JsonParseTypes::Signed;
-			} else if constexpr( std::is_unsigned_v<T> ) {
-				return JsonParseTypes::Unsigned;
+			template<typename T>
+			inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
+				if constexpr( std::is_floating_point_v<T> ) {
+					return JsonParseTypes::Real;
+				} else if constexpr( std::is_signed_v<T> ) {
+					return JsonParseTypes::Signed;
+				} else if constexpr( std::is_unsigned_v<T> ) {
+					return JsonParseTypes::Unsigned;
+				}
+			}( );
+
+			template<typename T>
+			constexpr auto number_parse_type_test( )
+			  -> std::enable_if_t<std::is_enum_v<T>, JsonParseTypes> {
+
+				return number_parse_type_impl_v<std::underlying_type_t<T>>;
 			}
-		}( );
+			template<typename T>
+			constexpr auto number_parse_type_test( )
+			  -> std::enable_if_t<not std::is_enum_v<T>, JsonParseTypes> {
 
-		template<typename T>
-		constexpr auto number_parse_type_test( )
-		  -> std::enable_if_t<std::is_enum_v<T>, JsonParseTypes> {
-
-			return number_parse_type_impl_v<std::underlying_type_t<T>>;
-		}
-		template<typename T>
-		constexpr auto number_parse_type_test( )
-		  -> std::enable_if_t<not std::is_enum_v<T>, JsonParseTypes> {
-
-			return number_parse_type_impl_v<T>;
-		}
-		template<typename T>
-		inline constexpr JsonParseTypes
-		  number_parse_type_v = number_parse_type_test<T>( );
-	} // namespace impl
+				return number_parse_type_impl_v<T>;
+			}
+			template<typename T>
+			inline constexpr JsonParseTypes
+			  number_parse_type_v = number_parse_type_test<T>( );
+		} // namespace
+	}   // namespace impl
 
 	/**
 	 * Tag lookup for parsing overload selection
