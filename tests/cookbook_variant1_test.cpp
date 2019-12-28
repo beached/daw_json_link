@@ -39,9 +39,9 @@ namespace daw::cookbook_variant1 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyVariantStuff1 const & ) {
+	auto json_data_contract_for( MyVariantStuff1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_variant<"member0", std::variant<int, std::string>,
 		               json_variant_type_list<json_number<no_name, int>,
 		                                      json_string<no_name>>>,
@@ -55,9 +55,9 @@ namespace daw::cookbook_variant1 {
 		static constexpr char const member1[] = "member1";
 	} // namespace symbols_MyVariantStuff1
 
-	auto describe_json_class( MyVariantStuff1 const & ) {
+	auto json_data_contract_for( MyVariantStuff1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_variant<symbols_MyVariantStuff1::member0,
 		               std::variant<int, std::string>,
 		               json_variant_type_list<json_number<no_name, int>,

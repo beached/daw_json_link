@@ -38,18 +38,20 @@ struct Number {
 	float a{};
 };
 #ifdef __cpp_nontype_template_parameter_class
-[[maybe_unused]] static constexpr auto describe_json_class( Number ) noexcept {
+[[maybe_unused]] static constexpr auto
+json_data_contract_for( Number ) noexcept {
 	using namespace daw::json;
-	return class_description_t<json_number<"a", float>>{};
+	return json_data_contract<json_number<"a", float>>{};
 }
 #else
 namespace symbols_Number {
 	static inline constexpr char const a[] = "a";
 }
 
-[[maybe_unused]] static constexpr auto describe_json_class( Number ) noexcept {
+[[maybe_unused]] static constexpr auto
+json_data_contract_for( Number ) noexcept {
 	using namespace daw::json;
-	return class_description_t<json_number<symbols_Number::a, float>>{};
+	return json_data_contract<json_number<symbols_Number::a, float>>{};
 }
 #endif
 

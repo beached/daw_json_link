@@ -37,9 +37,10 @@ namespace {
 	}; // properties_t
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( properties_t ) {
+	[[nodiscard, maybe_unused]] inline auto
+	json_data_contract_for( properties_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string_raw<"name", std::string_view>>{};
 	}
 #else
@@ -47,9 +48,10 @@ namespace {
 		static constexpr char const name[] = "name";
 	}
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( properties_t ) {
+	[[nodiscard, maybe_unused]] inline auto
+	json_data_contract_for( properties_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string_raw<symbols_properties_t::name, std::string_view>>{};
 	}
 #endif
@@ -79,9 +81,9 @@ namespace {
 	};
 
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( geometry_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( geometry_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string_raw<"type", std::string_view>,
 		  json_array<
 		    "coordinates",
@@ -96,10 +98,10 @@ namespace {
 		static constexpr char const coordinates[] = "coordinates";
 	} // namespace symbols_geometry_t
 
-	[[nodiscard, maybe_unused]] inline auto describe_json_class( geometry_t ) {
+	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( geometry_t ) {
 		using namespace daw::json;
 
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string_raw<symbols_geometry_t::type, std::string_view>,
 		  json_array<
 		    symbols_geometry_t::coordinates,
@@ -123,9 +125,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( features_element_t ) {
+	json_data_contract_for( features_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string_raw<"type", std::string_view>,
 		  json_class<"properties", properties_t>,
 		  json_class<"geometry", geometry_t>>{};
@@ -138,9 +140,9 @@ namespace {
 	} // namespace symbols_features_element_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( features_element_t ) {
+	json_data_contract_for( features_element_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string_raw<symbols_features_element_t::type, std::string_view>,
 		  json_class<symbols_features_element_t::properties, properties_t>,
 		  json_class<symbols_features_element_t::geometry, geometry_t>>{};
@@ -160,9 +162,9 @@ namespace {
 
 #ifdef __cpp_nontype_template_parameter_class
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( canada_object_t ) {
+	json_data_contract_for( canada_object_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string_raw<"type", std::string_view>,
 		  json_array<"features", features_element_t>>{};
 	}
@@ -173,9 +175,9 @@ namespace {
 	} // namespace symbols_canada_object_t
 
 	[[nodiscard, maybe_unused]] inline auto
-	describe_json_class( canada_object_t ) {
+	json_data_contract_for( canada_object_t ) {
 		using namespace daw::json;
-		return daw::json::class_description_t<
+		return daw::json::json_data_contract<
 		  json_string_raw<symbols_canada_object_t::type, std::string_view>,
 		  json_array<symbols_canada_object_t::features, features_element_t>>{};
 	}

@@ -62,9 +62,9 @@ namespace daw::cookbook_graphs1 {
 		bool member2;
 	};
 
-	auto describe_json_class( Metadata const & ) {
+	auto json_data_contract_for( Metadata const & ) {
 		using namespace daw::json;
-		return class_description_t<json_number<"member0", int>,
+		return json_data_contract<json_number<"member0", int>,
 		               json_string<"member1">, json_bool<"member2">>{};
 	}
 
@@ -73,9 +73,9 @@ namespace daw::cookbook_graphs1 {
 		Metadata metadata;
 	};
 
-	auto describe_json_class( GraphNode const & ) {
+	auto json_data_contract_for( GraphNode const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_number<"id", size_t, LiteralAsStringOpt::Always>,
 		  json_class<"metadata", Metadata>>{};
 	}
@@ -85,9 +85,9 @@ namespace daw::cookbook_graphs1 {
 		size_t target;
 	};
 
-	auto describe_json_class( GraphEdge const & ) {
+	auto json_data_contract_for( GraphEdge const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_number<"source", size_t, LiteralAsStringOpt::Always>,
 		  json_number<"target", size_t, LiteralAsStringOpt::Always>>{};
 	}

@@ -94,9 +94,9 @@ namespace {
 	};
 
 #ifdef __cpp_nontype_template_parameter_class
-	auto describe_json_class( test_001_t ) noexcept {
+	auto json_data_contract_for( test_001_t ) noexcept {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_number<"i", int>, json_number<"d">, json_bool<"b">,
 		  json_string_raw<"s", std::string_view>,
 		  json_string_raw<"s2", std::string_view>,
@@ -117,9 +117,9 @@ namespace {
 		constexpr static char const dte[] = "dte";
 	} // namespace symbols_test_001_t
 
-	auto describe_json_class( test_001_t ) noexcept {
+	auto json_data_contract_for( test_001_t ) noexcept {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_number<symbols_test_001_t::i, int>,
 		  json_number<symbols_test_001_t::d>, json_bool<symbols_test_001_t::b>,
 		  json_string_raw<symbols_test_001_t::s, std::string_view>,
@@ -144,14 +144,14 @@ namespace {
 	namespace symbols_test_002_t {
 		constexpr static char const a[] = "a";
 	}
-	auto describe_json_class( test_002_t ) noexcept {
+	auto json_data_contract_for( test_002_t ) noexcept {
 		using namespace daw::json;
-		return class_description_t<json_class<symbols_test_002_t::a, test_001_t>>{};
+		return json_data_contract<json_class<symbols_test_002_t::a, test_001_t>>{};
 	}
 #else
-	auto describe_json_class( test_002_t ) noexcept {
+	auto json_data_contract_for( test_002_t ) noexcept {
 		using namespace daw::json;
-		return class_description_t<json_class<"a", test_001_t>>{};
+		return json_data_contract<json_class<"a", test_001_t>>{};
 	}
 #endif
 
@@ -168,13 +168,13 @@ namespace {
 		constexpr static char const a[] = "a";
 	}
 #endif
-	auto describe_json_class( test_003_t ) noexcept {
+	auto json_data_contract_for( test_003_t ) noexcept {
 		using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-		return class_description_t<
+		return json_data_contract<
 		  json_class_null<"a", std::optional<test_001_t>>>{};
 #else
-		return class_description_t<
+		return json_data_contract<
 		  json_class_null<symbols_test_003_t::a, std::optional<test_001_t>>>{};
 #endif
 	}
@@ -223,12 +223,12 @@ namespace {
 		constexpr static char const a[] = "a";
 	}
 #endif
-	auto describe_json_class( e_test_001_t ) noexcept {
+	auto json_data_contract_for( e_test_001_t ) noexcept {
 		using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-		return class_description_t<json_custom<"a", blah_t>>{};
+		return json_data_contract<json_custom<"a", blah_t>>{};
 #else
-		return class_description_t<json_custom<symbols_e_test_001_t::a, blah_t>>{};
+		return json_data_contract<json_custom<symbols_e_test_001_t::a, blah_t>>{};
 #endif
 	}
 

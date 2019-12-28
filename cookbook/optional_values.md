@@ -29,9 +29,9 @@ struct MyOptionalStuff1 {
     std::unique_ptr<bool> member2;
 };
 
-auto describe_json_class( MyOptionalStuff1 const & ) {
+auto json_data_contract_for( MyOptionalStuff1 const & ) {
 	using namespace daw::json;
-	return class_description_t<
+	return json_data_contract<
         json_number_null<"member0", int>,
         json_string<"member1">,
         json_bool_null<"member2", 

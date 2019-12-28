@@ -93,7 +93,7 @@ template<JSONNAMETYPE Name,
     typename Constructor = daw::construct_a<JsonClass>>
 struct json_class
 ``` 
-```json_class``` requires a type argument JsonClass that is a type that has an overload of the ```describe_json_class( JsonClass )```.
+```json_class``` requires a type argument JsonClass that is a type that has an overload of the ```json_data_contract_for( JsonClass )```.
 ```Constructor``` the default is almost Always correct here but this will constuct your type.
 
 ### json_array

@@ -36,18 +36,18 @@ namespace daw::cookbook_kv1 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyKeyValue1 const & ) {
+	auto json_data_contract_for( MyKeyValue1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
+		return json_data_contract<
 		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>{};
 	}
 #else
 	namespace symbols_MyKeyValue1 {
 		static constexpr char const kv[] = "kv";
 	} // namespace symbols_MyKeyValue1
-	auto describe_json_class( MyKeyValue1 ) {
+	auto json_data_contract_for( MyKeyValue1 ) {
 		using namespace daw::json;
-		return class_description_t<json_key_value<
+		return json_data_contract<json_key_value<
 		  symbols_MyKeyValue1::kv, std::unordered_map<std::string, int>, int>>{};
 	}
 #endif

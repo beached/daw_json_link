@@ -33,10 +33,10 @@ struct unicode_data {
 };
 
 #ifdef __cpp_nontype_template_parameter_class
-static inline auto describe_json_class( unicode_data ) {
+static inline auto json_data_contract_for( unicode_data ) {
 	using namespace daw::json;
-	return daw::json::class_description_t<json_string<"escaped">,
-	                                      json_string<"unicode">>{};
+	return daw::json::json_data_contract<json_string<"escaped">,
+	                                     json_string<"unicode">>{};
 }
 #else
 namespace symbols_unicode_data {
@@ -44,9 +44,9 @@ namespace symbols_unicode_data {
 	constexpr static char const unicode[] = "unicode";
 } // namespace symbols_unicode_data
 
-static inline auto describe_json_class( unicode_data ) {
+static inline auto json_data_contract_for( unicode_data ) {
 	using namespace daw::json;
-	return daw::json::class_description_t<
+	return daw::json::json_data_contract<
 	  json_string<symbols_unicode_data::escaped>,
 	  json_string<symbols_unicode_data::unicode>>{};
 }

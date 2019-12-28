@@ -39,10 +39,10 @@ namespace daw::cookbook_array2 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyClass4 const & ) {
+	auto json_data_contract_for( MyClass4 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_string<"a">, json_number<"b", unsigned>,
-		                           json_number<"c", float>, json_bool<"d">>{};
+		return json_data_contract<json_string<"a">, json_number<"b", unsigned>,
+		                          json_number<"c", float>, json_bool<"d">>{};
 	}
 #else
 	namespace symbols_MyClass4 {
@@ -51,12 +51,12 @@ namespace daw::cookbook_array2 {
 		static constexpr char const c[] = "c";
 		static constexpr char const d[] = "d";
 	} // namespace symbols_MyClass4
-	auto describe_json_class( MyClass4 const & ) {
+	auto json_data_contract_for( MyClass4 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_string<symbols_MyClass4::a>,
-		                           json_number<symbols_MyClass4::b, unsigned>,
-		                           json_number<symbols_MyClass4::c, float>,
-		                           json_bool<symbols_MyClass4::d>>{};
+		return json_data_contract<json_string<symbols_MyClass4::a>,
+		                          json_number<symbols_MyClass4::b, unsigned>,
+		                          json_number<symbols_MyClass4::c, float>,
+		                          json_bool<symbols_MyClass4::d>>{};
 	}
 #endif
 	auto to_json_data( MyClass4 const &value ) {

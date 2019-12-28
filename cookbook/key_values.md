@@ -20,9 +20,9 @@ struct MyKeyValue {
 	std::map<std::string, int> kv;
 };
 
-auto describe_json_class( MyKeyValue1 const & ) {
+auto json_data_contract_for( MyKeyValue1 const & ) {
     using namespace daw::json;
-    return class_description_t<json_key_value<
+    return json_data_contract<json_key_value<
       "kv", std::unordered_map<std::string, int>, int>>{};
 }
 
@@ -50,9 +50,9 @@ struct MyKeyValue2 {
 	std::unordered_map<intmax_t, std::string> kv;
 };
 
-auto describe_json_class( MyKeyValue2 const & ) {
+auto json_data_contract_for( MyKeyValue2 const & ) {
 	using namespace daw::json;
-	return class_description_t<json_key_value_array<
+	return json_data_contract<json_key_value_array<
 		"kv", std::unordered_map<intmax_t, std::string>, json_string_raw<"value">, intmax_t>>{};
 }
 

@@ -39,9 +39,9 @@ struct WebData {
   std::vector<std::string> uris;
 };
 
-auto describe_json_class( WebData const & ) {
+auto json_data_contract_for( WebData const & ) {
   using namespace daw::json;
-  return class_description_t<
+  return json_data_contract<
     json_array<"uris", std::string>>{};
 }
 
@@ -60,9 +60,9 @@ struct WebData {
 	std::vector<std::string> uris;
 };
 
-auto describe_json_class( WebData const & ) {
+auto json_data_contract_for( WebData const & ) {
   using namespace daw::json;
-  return class_description_t<
+  return json_data_contract<
     json_array<"uris", json_string_raw<no_name>>>{};
 }
 

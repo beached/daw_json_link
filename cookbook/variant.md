@@ -28,9 +28,9 @@ struct MyVariantStuff1 {
   std::variant<std::string, bool> member1;
 };
 
-auto describe_json_class( MyVariantStuff1 const & ) {
+auto json_data_contract_for( MyVariantStuff1 const & ) {
   using namespace daw::json;
-  return class_description_t<
+  return json_data_contract<
     json_variant<
       "member0", 
       std::variant<int, std::string>, 

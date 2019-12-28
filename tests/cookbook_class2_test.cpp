@@ -38,11 +38,11 @@ namespace daw::cookbook_class2 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyClass1 const & ) {
+	auto json_data_contract_for( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_string<"member0">,
-		                           json_number<"member1", int>,
-		                           json_bool<"member2">>{};
+		return json_data_contract<json_string<"member0">,
+		                          json_number<"member1", int>,
+		                          json_bool<"member2">>{};
 	}
 #else
 	namespace symbols_MyClass1 {
@@ -50,11 +50,11 @@ namespace daw::cookbook_class2 {
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 	} // namespace symbols_MyClass1
-	auto describe_json_class( MyClass1 const & ) {
+	auto json_data_contract_for( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_string<symbols_MyClass1::member0>,
-		                           json_number<symbols_MyClass1::member1, int>,
-		                           json_bool<symbols_MyClass1::member2>>{};
+		return json_data_contract<json_string<symbols_MyClass1::member0>,
+		                          json_number<symbols_MyClass1::member1, int>,
+		                          json_bool<symbols_MyClass1::member2>>{};
 	}
 #endif
 	auto to_json_data( MyClass1 const &value ) {
@@ -72,20 +72,20 @@ namespace daw::cookbook_class2 {
 	};
 
 #if defined( __cpp_nontype_template_parameter_class )
-	auto describe_json_class( MyClass2 const & ) {
+	auto json_data_contract_for( MyClass2 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_class<"a", MyClass1>,
-		                           json_number<"b", unsigned>>{};
+		return json_data_contract<json_class<"a", MyClass1>,
+		                          json_number<"b", unsigned>>{};
 	}
 #else
 	namespace symbols_MyClass2 {
 		static constexpr char const a[] = "a";
 		static constexpr char const b[] = "b";
 	} // namespace symbols_MyClass2
-	auto describe_json_class( MyClass2 const & ) {
+	auto json_data_contract_for( MyClass2 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_class<symbols_MyClass2::a, MyClass1>,
-		                           json_number<symbols_MyClass2::b, unsigned>>{};
+		return json_data_contract<json_class<symbols_MyClass2::a, MyClass1>,
+		                          json_number<symbols_MyClass2::b, unsigned>>{};
 	}
 #endif
 	auto to_json_data( MyClass2 const &value ) {

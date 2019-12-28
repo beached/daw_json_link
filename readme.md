@@ -131,7 +131,7 @@ With error checking enabled globally, you can now designate a parsing call as tr
 ## Global
 There are two possible ways of handling errors.  The first, `abort( );` on an error in data.  Or the, second, throw a `daw::json::json_exception`.  json_exception has a member function `std::string_view reason( ) const`.  You can control which method is used by defining `DAW_JSON_DONT_USE_EXCEPTIONS` to make code noexcept.  In addition, you can control if the checks are only done in only debug mode `DAW_JSON_CHECK_DEBUG_ONLY`. In some cases, exporting strings the underlying libraries may throw too. However, the codebase is designed to work around -fno-exceptions and current will abort on error in those cases 
 # Deserializing/Parsing
-This can be accomplished by writing a function called describe_json_class with a single arugment that is your type.  The library is only concerned with it's return value. For example:
+This can be accomplished by writing a function called json_data_contract_for with a single arugment that is your type.  The library is only concerned with it's return value. For example:
 
 ```C++
 #include <daw/json/daw_json_link.h>
@@ -152,9 +152,9 @@ struct TestClass {
 	  , y( Y ) {}
 };
 
-auto describe_json_class( TestClass ) {
+auto json_data_contract_for( TestClass ) {
 	using namespace daw::json;
-	return class_description_t<
+	return json_data_contract<
 		json_number<"i", int>,
 		json_number<"d">,
 		json_bool<"b">,
@@ -198,9 +198,9 @@ struct AggClass {
 	int a{};
 	double b{};
 };
-auto describe_json_class( AggClass ) {
+auto json_data_contract_for( AggClass ) {
 	using namespace daw::json;
-	return class_description_t<
+	return json_data_contract<
 		json_number<"a", int>,
 		json_number<"b">
 	>{};
@@ -219,9 +219,9 @@ namespace symbols_AggClass {
 	static constexpr char const a[] = "a";
 	static constexpr char const b[] = "b";
 }
-auto describe_json_class( AggClass ) {
+auto json_data_contract_for( AggClass ) {
 	using namespace daw::json;
-	return class_description_t<
+	return json_data_contract<
 		json_number<symbols_AggClass::a, int>,
 		json_number<symbols_AggClass::b>
 	>{};
@@ -234,9 +234,9 @@ struct MyClass {
   AggClass other;
   std::string_view some_name;
 };
-auto describe_json_class( MyClass ) {
+auto json_data_contract_for( MyClass ) {
   using namespace daw::json;
-  return class_description_t<
+  return json_data_contract<
     json_class<"other", AggClass>,
     json_string<"id", std::string_view>
   >{};
@@ -253,9 +253,9 @@ struct AggClass {
 	int a{};
 	double b{};
 };
-auto describe_json_class( AggClass ) {
+auto json_data_contract_for( AggClass ) {
 	using namespace daw::json;
-	return class_description_t<
+	return json_data_contract<
 		json_number<"a", int>,
 		json_number<"b">
 	>{};
@@ -279,7 +279,7 @@ int main( ) {
 ```
 
 ## Serialization
-To enable serialization on must create an additional free function called ```to_json_data( JsonClass );``` It will provide a mapping from your type to the arguments provided in the class description.  To serialize to a json string, one calls ```to_json( value );``` where value is a registered type.  The result of  to_json_data( JsonClass ) is a tuple who's arguments match that of the order in describe_json_class. Using the exmaple above lets add that
+To enable serialization on must create an additional free function called ```to_json_data( JsonClass );``` It will provide a mapping from your type to the arguments provided in the class description.  To serialize to a json string, one calls ```to_json( value );``` where value is a registered type.  The result of  to_json_data( JsonClass ) is a tuple who's arguments match that of the order in json_data_contract_for. Using the exmaple above lets add that
 
 ```cpp
 #include <daw/json/daw_json_link.h>
@@ -289,9 +289,9 @@ struct AggClass {
 	int a{};
 	double b{};
 };
-auto describe_json_class( AggClass ) {
+auto json_data_contract_for( AggClass ) {
 	using namespace daw::json;
-	return class_description_t<
+	return json_data_contract<
 		json_number<"a", int>,
 		json_number<"b">
 	>{};

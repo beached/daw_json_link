@@ -44,15 +44,15 @@ namespace symbols_coordinate_t {
 	constexpr static char const y[] = "y";
 	constexpr static char const z[] = "z";
 } // namespace symbols_coordinate_t
-auto describe_json_class( coordinate_t ) noexcept {
+auto json_data_contract_for( coordinate_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-	return class_description_t<json_number<"x">, json_number<"y">,
-	                           json_number<"z">>{};
+	return json_data_contract<json_number<"x">, json_number<"y">,
+	                          json_number<"z">>{};
 #else
-	return class_description_t<json_number<symbols_coordinate_t::x>,
-	                           json_number<symbols_coordinate_t::y>,
-	                           json_number<symbols_coordinate_t::z>>{};
+	return json_data_contract<json_number<symbols_coordinate_t::x>,
+	                          json_number<symbols_coordinate_t::y>,
+	                          json_number<symbols_coordinate_t::z>>{};
 #endif
 }
 
@@ -65,12 +65,12 @@ namespace symbols_coordinates_t {
 	constexpr static char const coordinates[] = "coordinates";
 }
 
-auto describe_json_class( coordinates_t ) noexcept {
+auto json_data_contract_for( coordinates_t ) noexcept {
 	using namespace daw::json;
 #ifdef __cpp_nontype_template_parameter_class
-	return class_description_t<json_array<"coordinates", coordinate_t>>{};
+	return json_data_contract<json_array<"coordinates", coordinate_t>>{};
 #else
-	return class_description_t<
+	return json_data_contract<
 	  json_array<symbols_coordinates_t::coordinates, coordinate_t>>{};
 #endif
 }

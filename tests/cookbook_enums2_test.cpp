@@ -38,19 +38,18 @@ namespace daw::cookbook_enums2 {
 	};
 
 #ifdef __cpp_nontype_template_parameter_class
-	auto describe_json_class( MyClass1 const & ) {
+	auto json_data_contract_for( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<json_array<"member0", Colours>>{};
+		return json_data_contract<json_array<"member0", Colours>>{};
 	}
 #else
 	namespace symbols_MyClass1 {
 		static inline constexpr char const member0[] = "member0";
 	} // namespace symbols_MyClass1
 
-	auto describe_json_class( MyClass1 const & ) {
+	auto json_data_contract_for( MyClass1 const & ) {
 		using namespace daw::json;
-		return class_description_t<
-		  json_array<symbols_MyClass1::member0, Colours>>{};
+		return json_data_contract<json_array<symbols_MyClass1::member0, Colours>>{};
 	}
 #endif
 	auto to_json_data( MyClass1 const &value ) {

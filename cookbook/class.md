@@ -19,9 +19,9 @@ struct MyClass1 {
 	bool member_2;
 };
 
-auto describe_json_class( MyClass1 const & ) {
+auto json_data_contract_for( MyClass1 const & ) {
     using namespace daw::json;
-    return class_description_t<
+    return json_data_contract<
 			json_string_raw<"member0">, 
 			json_number<"member1", int>,
 			json_bool<"member2">>{};
@@ -57,9 +57,9 @@ struct MyClass2 {
     unsigned b;
 };
 
-auto describe_json_class( MyClass2 const & ) {
+auto json_data_contract_for( MyClass2 const & ) {
     using namespace daw::json;
-    return class_description_t<
+    return json_data_contract<
 			json_class<"a", MyClass1>, 
 			json_number<"b", unsigned>>{};
 }
@@ -93,9 +93,9 @@ struct MyClass2 {
     MyClass1 a;
 };
 
-auto describe_json_class( MyClass2 const & ) {
+auto json_data_contract_for( MyClass2 const & ) {
     using namespace daw::json;
-    return class_description_t<
+    return json_data_contract<
 			json_class<"a", MyClass1>>{};
 }
 

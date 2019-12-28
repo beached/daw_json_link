@@ -50,8 +50,8 @@ namespace daw::json::impl {
 	  daw::is_detected_v<detect_insert_end, Container, Value>;
 
 	template<typename T>
-	using json_parser_description_impl =
-	  daw::remove_cvref_t<decltype( describe_json_class( std::declval<T>( ) ) )>;
+	using json_parser_description_impl = daw::remove_cvref_t<decltype(
+	  json_data_contract_for( std::declval<T>( ) ) )>;
 
 	template<typename T,
 	         std::enable_if_t<daw::is_detected_v<json_parser_description_impl, T>,
@@ -205,8 +205,9 @@ namespace daw::json {
 	template<typename T, typename First, typename Last, bool IsTrustedInput>
 	[[maybe_unused, nodiscard]] static constexpr T from_json(
 	  daw::json::impl::IteratorRange<First, Last, IsTrustedInput> &rng ) {
-		static_assert( impl::has_json_parser_description_v<T>,
-		               "A function call describe_json_class must exist for type." );
+		static_assert(
+		  impl::has_json_parser_description_v<T>,
+		  "A function call json_data_contract_for must exist for type." );
 		daw_json_assert_untrusted( rng.has_more( ),
 		                           "Attempt to parse empty string" );
 

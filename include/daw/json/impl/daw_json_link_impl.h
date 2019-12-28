@@ -517,7 +517,7 @@ namespace daw::json::impl {
 		from_json_impl( std::string_view json_data ) {
 			static_assert(
 			  impl::has_json_parser_description_v<JsonClass>,
-			  "A function call describe_json_class must exist for type." );
+			  "A function call json_data_contract_for must exist for type." );
 			daw_json_assert_untrusted( not json_data.empty( ),
 			                           "Attempt to parse empty string" );
 

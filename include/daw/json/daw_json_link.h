@@ -54,7 +54,7 @@ namespace daw::json {
 	 * data to the classes constructor
 	 */
 	template<typename... JsonMembers>
-	struct class_description_t {
+	struct json_data_contract {
 		/**
 		 * Serialize a C++ class to JSON data
 		 * @tparam OutputIterator An output iterator with a char value_type
@@ -390,7 +390,7 @@ namespace daw::json {
 	/**
 	 * Parse json and construct a T as the result.  This method
 	 * provides checked json
-	 * @tparam JsonClass type that has a describe_json_class overload
+	 * @tparam JsonClass type that has a json_data_contract_for overload
 	 * @param json_data Json string data
 	 * @return A reified T constructed from json data
 	 */
@@ -399,14 +399,14 @@ namespace daw::json {
 	from_json( std::string_view json_data ) {
 		static_assert(
 		  impl::has_json_parser_description_v<JsonClass>,
-		  "Expected a typed that has been mapped via describe_json_class" );
+		  "Expected a typed that has been mapped via json_data_contract_for" );
 		return impl::from_json_impl<JsonClass, false>( json_data );
 	}
 
 	/**
 	 * Parse json and construct a JsonClass as the result.  This method
 	 * does not perform most checks on validity of data
-	 * @tparam JsonClass type that has a describe_json_class overload
+	 * @tparam JsonClass type that has a json_data_contract_for overload
 	 * @param json_data Json string data
 	 * @return A reified JsonClass constructed from json data
 	 */
@@ -415,7 +415,7 @@ namespace daw::json {
 	from_json_trusted( std::string_view json_data ) {
 		static_assert(
 		  impl::has_json_parser_description_v<JsonClass>,
-		  "Expected a typed that has been mapped via describe_json_class" );
+		  "Expected a typed that has been mapped via json_data_contract_for" );
 
 		return impl::from_json_impl<JsonClass, true>( json_data );
 	}
@@ -433,7 +433,7 @@ namespace daw::json {
 	to_json( JsonClass const &value ) {
 		static_assert(
 		  impl::has_json_parser_description_v<JsonClass>,
-		  "A function called describe_json_class must exist for type." );
+		  "A function called json_data_contract_for must exist for type." );
 		static_assert( impl::has_json_to_json_data_v<JsonClass>,
 		               "A function called to_json_data must exist for type." );
 
