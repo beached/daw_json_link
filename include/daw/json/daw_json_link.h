@@ -116,7 +116,6 @@ namespace daw::json {
 	};
 
 	// Member types
-
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
 	         typename Constructor, JsonRangeCheck RangeCheck,
 	         JsonNullable Nullable>

@@ -32,22 +32,20 @@
 #endif
 
 namespace daw::json {
-	namespace {
-		class json_exception {
-			std::string_view m_reason{};
+	class json_exception {
+		std::string_view m_reason{};
 
-		public:
-			[[maybe_unused]] constexpr json_exception( ) noexcept = default;
-			[[maybe_unused]] constexpr json_exception(
-			  std::string_view reason ) noexcept
-			  : m_reason( reason ) {}
+	public:
+		[[maybe_unused]] constexpr json_exception( ) noexcept = default;
+		[[maybe_unused]] constexpr json_exception(
+		  std::string_view reason ) noexcept
+		  : m_reason( reason ) {}
 
-			[[nodiscard, maybe_unused]] constexpr std::string_view reason( ) const
-			  noexcept {
-				return m_reason;
-			}
-		};
-	} // namespace
+		[[nodiscard, maybe_unused]] constexpr std::string_view reason( ) const
+		  noexcept {
+			return m_reason;
+		}
+	};
 } // namespace daw::json
 #ifdef DAW_USE_JSON_EXCEPTIONS
 inline constexpr bool use_daw_json_exceptions_v = true;
