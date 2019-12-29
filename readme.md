@@ -48,7 +48,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 
 ## Installing
 
-The following will build and run the tests.  Windows is close but uses `md` instead of `mkdir` to make the build folder
+The following will build and run the tests. 
 ```
 git clone https://github.com/beached/daw_json_link
 cd daw_json_link
