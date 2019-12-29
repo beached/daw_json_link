@@ -57,7 +57,8 @@ namespace daw::json::impl {
 		template<typename T, std::enable_if_t<
 		                       daw::is_detected_v<json_parser_description_impl, T>,
 		                       std::nullptr_t> = nullptr>
-		[[maybe_unused]] auto json_parser_description( ) -> json_parser_description_impl<T>;
+		[[maybe_unused]] auto json_parser_description( )
+		  -> json_parser_description_impl<T>;
 
 		template<
 		  typename T,
@@ -250,7 +251,7 @@ namespace daw::json {
 	enum class JsonRangeCheck : bool { Never = false, CheckForNarrowing = true };
 	enum class EightBitModes : bool { DisallowHigh = false, AllowFull = true };
 	enum class CustomJsonTypes : bool { Literal = false, String = true };
-
+	enum class SIMDModes : uint8_t { None, SSE2 };
 	template<JsonParseTypes ParseType, JsonNullable Nullable>
 	inline constexpr JsonParseTypes get_parse_type_v =
 	  Nullable == JsonNullable::Never ? ParseType : JsonParseTypes::Null;
@@ -262,7 +263,8 @@ namespace daw::json {
 			  JsonType::expected_type == JsonParseTypes::Null;
 
 			template<typename T>
-			[[maybe_unused]] auto dereffed_type_impl( daw::tag_t<T> ) -> decltype( *( T{} ) );
+			[[maybe_unused]] auto dereffed_type_impl( daw::tag_t<T> )
+			  -> decltype( *( T{} ) );
 
 			template<typename T>
 			using dereffed_type =

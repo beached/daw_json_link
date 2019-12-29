@@ -45,7 +45,8 @@ namespace daw::json {
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 	         typename Constructor = daw::construct_a_t<T>,
 	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-	         JsonNullable Nullable = JsonNullable::Never>
+	         JsonNullable Nullable = JsonNullable::Never,
+	         SIMDModes SIMDMode = SIMDModes::None>
 	struct json_number;
 
 	/**
@@ -63,6 +64,23 @@ namespace daw::json {
 	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never>
 	using json_number_null = json_number<Name, T, LiteralAsString, Constructor,
 	                                     RangeCheck, JsonNullable::Nullable>;
+
+	/**
+	 * The member is a nullable number
+	 * @tparam Name name of json member
+	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+	 * Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 * @tparam RangeCheck Check if the value will fit in the result
+	 */
+	template<JSONNAMETYPE Name, typename T =double,
+	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
+	         typename Constructor = daw::construct_a_t<T>,
+	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
+	         JsonNullable Nullable = JsonNullable::Never>
+	using json_number_sse2 = json_number<Name, T, LiteralAsString, Constructor,
+	                                     RangeCheck, Nullable, SIMDModes::SSE2>;
 
 	/**
 	 * The member is a range checked number

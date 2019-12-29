@@ -73,6 +73,8 @@ static std::string_view make_int_array_data( ) {
 			  ',';
 		}
 		result.back( ) = ']';
+		// Allow SSE Modes to have enough room
+		result += "                                                     ";
 		result.shrink_to_fit( );
 		return result;
 	}( );
@@ -326,6 +328,68 @@ int main( ) {
 			  json_sv );
 
 			std::cout << "unsigned parse count: " << count4 << '\n';
+		}
+	}
+	{
+		// Unsigned SSE2
+		using uint_type = json_number_sse2<no_name, uintmax_t>;
+		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
+
+		{
+			auto const count4 = *daw::bench_n_test_mbs<100>(
+			  "p5. parsing sse2", json_sv.size( ),
+			  [&]( auto &&sv ) noexcept {
+				  auto result = daw::json::from_json_array_trusted<
+				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>>( sv );
+
+				  daw::do_not_optimize( result );
+				  return result.size( );
+			  },
+			  json_sv );
+
+			std::cout << "unsigned sse2 parse count: " << count4 << '\n';
+		}
+	}
+	std::cout << "Checked unsigned sse2\n";
+	{
+		// Unsigned SSE2
+		using uint_type = json_number_sse2<no_name, uintmax_t>;
+		using iterator_t = daw::json::json_array_iterator<uint_type>;
+
+		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
+
+		auto data2 = std::unique_ptr<uintmax_t[]>( new uintmax_t[NUMVALUES] );
+		{
+			auto const count3 = *daw::bench_n_test_mbs<100>(
+			  "p4. parsing sse2", json_sv.size( ),
+			  [&]( auto &&sv ) noexcept {
+				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
+				  daw::do_not_optimize( data2 );
+				  return ptr - data2.get( );
+			  },
+			  json_sv );
+
+			std::cout << "unsigned sse2 parse count: " << count3 << '\n';
+		}
+	}
+	{
+		// Unsigned SSE2
+		using uint_type = json_number_sse2<no_name, uint32_t>;
+		auto const json_sv = make_int_array_data<NUMVALUES, uint32_t>( );
+
+		{
+			auto const count4 = *daw::bench_n_test_mbs<100>(
+			  "p5. parsing sse2", json_sv.size( ),
+			  [&]( auto &&sv ) noexcept {
+				  auto result = daw::json::from_json_array<
+				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>>( sv );
+
+				  daw::do_not_optimize( result );
+				  return result.size( );
+			  },
+			  json_sv );
+
+			std::cout << "unsigned sse2 parse count: " << count4 << '\n';
 		}
 	}
 }

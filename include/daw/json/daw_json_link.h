@@ -118,7 +118,7 @@ namespace daw::json {
 	// Member types
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
 	         typename Constructor, JsonRangeCheck RangeCheck,
-	         JsonNullable Nullable>
+	         JsonNullable Nullable, SIMDModes SIMDMode>
 	struct json_number {
 		using i_am_a_json_type = void;
 		using wrapped_type = T;
@@ -143,6 +143,7 @@ namespace daw::json {
 		static constexpr JsonRangeCheck range_check = RangeCheck;
 		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Number;
+		static constexpr SIMDModes simd_mode = SIMDMode;
 	};
 
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
