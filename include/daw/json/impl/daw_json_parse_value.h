@@ -73,7 +73,8 @@ namespace daw::json::impl {
 			  rng.is_real_number_part( ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 
-			auto result = constructor_t{}( parse_real<element_t>( rng ) );
+			auto result =
+			  constructor_t{}( parse_real<element_t, JsonMember::simd_mode>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			daw_json_assert_untrusted(
 			  rng.at_end_of_item( ),

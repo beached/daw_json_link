@@ -74,7 +74,7 @@ namespace daw::json {
 	 * @tparam Constructor Callable used to construct result
 	 * @tparam RangeCheck Check if the value will fit in the result
 	 */
-	template<JSONNAMETYPE Name, typename T =double,
+	template<JSONNAMETYPE Name, typename T = double,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 	         typename Constructor = daw::construct_a_t<T>,
 	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
@@ -98,6 +98,23 @@ namespace daw::json {
 	using json_checked_number =
 	  json_number<Name, T, LiteralAsString, Constructor,
 	              JsonRangeCheck::CheckForNarrowing, Nullable>;
+
+	/**
+	 * The member is a range checked number
+	 * @tparam Name name of json member
+	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+	 * Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 * @tparam Nullable Can the member be missing or have a null value
+	 */
+	template<JSONNAMETYPE Name, typename T = double,
+	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
+	         typename Constructor = daw::construct_a_t<T>,
+	         JsonNullable Nullable = JsonNullable::Never>
+	using json_checked_number_sse2 =
+	  json_number_sse2<Name, T, LiteralAsString, Constructor,
+	                   JsonRangeCheck::CheckForNarrowing, Nullable>;
 
 	/**
 	 * The member is a nullable range checked number

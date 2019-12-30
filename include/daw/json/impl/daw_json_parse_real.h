@@ -31,7 +31,7 @@
 
 namespace daw::json::impl {
 	namespace {
-		template<typename Result, typename First, typename Last,
+		template<typename Result, SIMDModes SIMDMode, typename First, typename Last,
 		         bool IsTrustedInput>
 		[[nodiscard]] constexpr Result
 		parse_real( IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
@@ -45,14 +45,15 @@ namespace daw::json::impl {
 				}
 				return 1;
 			}( );
-			auto const whole_part =
-			  static_cast<Result>( sign * parse_unsigned_integer<int64_t>( rng ) );
+			auto const whole_part = static_cast<Result>(
+			  sign * parse_unsigned_integer<int64_t, JsonRangeCheck::Never, SIMDMode>(
+			           rng ) );
 
 			Result fract_part = 0.0;
 			if( rng.front( ) == '.' ) {
 				rng.remove_prefix( );
 
-				auto fract_tmp = parse_unsigned_integer2<uint64_t>( rng );
+				auto fract_tmp = parse_unsigned_integer2<uint64_t, SIMDMode>( rng );
 				fract_part = static_cast<Result>( fract_tmp.value );
 				fract_part *= static_cast<Result>(
 				  daw::cxmath::dpow10( -static_cast<int32_t>( fract_tmp.count ) ) );

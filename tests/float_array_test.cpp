@@ -54,6 +54,26 @@ json_data_contract_for( Number ) noexcept {
 	return json_data_contract<json_number<symbols_Number::a, float>>{};
 }
 #endif
+struct Number2 {
+	float a{};
+};
+#ifdef __cpp_nontype_template_parameter_class
+[[maybe_unused]] static constexpr auto
+json_data_contract_for( Number2 ) noexcept {
+	using namespace daw::json;
+	return json_data_contract<json_number_sse2<"a", float>>{};
+}
+#else
+namespace symbols_Number2 {
+	static inline constexpr char const a[] = "a";
+}
+
+[[maybe_unused]] static constexpr auto
+json_data_contract_for( Number2 ) noexcept {
+	using namespace daw::json;
+	return json_data_contract<json_number_sse2<symbols_Number2::a, float>>{};
+}
+#endif
 
 #ifndef NDEBUG
 static constexpr size_t const NUMVALUES = 1'000ULL;
@@ -83,7 +103,7 @@ int main( ) {
 		// 23 is what I calculated as the string size of the serialized class.
 		// It may be incorrect but that is ok, it is close and should reduce
 		// allocations
-		result.reserve( NUMVALUES * 23 + 8 );
+		result.reserve( NUMVALUES * 23U + 8U + 256U );
 		daw::algorithm::do_n( NUMVALUES, [&result] {
 			result += "{\"a\":" + std::to_string( rand_float<float>( ) ) + "},";
 		} );
@@ -101,7 +121,8 @@ int main( ) {
 		return result;
 	}( );
 
-	{ // Class of ints
+	// Normal
+	{
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
@@ -252,7 +273,7 @@ int main( ) {
 	}
 
 	{
-		// Unsigned
+		std::cout << "double parsing\n";
 		using iterator_t = daw::json::json_array_iterator<double>;
 
 		std::string json_data3 = [] {
@@ -265,7 +286,7 @@ int main( ) {
 			return result;
 		}( );
 		auto json_sv3 = daw::string_view( json_data3.data( ), json_data3.size( ) );
-		auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
+		auto data2 = std::unique_ptr<double[]>( new double[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<100>(
 			  "p4. parsing", json_sv3.size( ),
@@ -277,6 +298,189 @@ int main( ) {
 			  json_sv3 );
 
 			std::cout << "double parse count: " << count3 << '\n';
+		}
+	}
+	// ***********************************************
+	// SSE2
+	std::cout << "**********************\nSSE2 Processing\n";
+	{
+		auto json_sv = std::string_view( json_data );
+		std::cout << "Processing " << json_sv.size( ) << " bytes "
+		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
+		auto const count = *daw::bench_n_test_mbs<100>(
+		  "float sse2 parsing 1", json_sv.size( ),
+		  []( auto &&sv ) noexcept {
+			  auto const data = from_json_array<Number2>( sv );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
+		daw::do_not_optimize( count );
+		std::cout << "element count: " << count << '\n';
+		using iterator_t =
+		  daw::json::json_array_iterator<json_class<no_name, Number2>>;
+
+		auto data = std::vector<Number2>( );
+		data.reserve( NUMVALUES );
+
+		auto const count2 = *daw::bench_n_test_mbs<100>(
+		  "float  sse2parsing 2", json_sv.size( ),
+		  [&]( auto &&sv ) noexcept {
+			  data.clear( );
+			  std::copy( iterator_t( sv ), iterator_t( ),
+			             daw::back_inserter( data ) );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
+
+		std::cout << "element count 2: " << count2 << '\n';
+	}
+	{ // just floats
+		auto json_sv = std::string_view( json_data2 );
+		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
+		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
+		auto const count = *daw::bench_n_test_mbs<100>(
+		  "float  sse2parsing 1", json_sv.size( ),
+		  []( auto &&sv ) noexcept {
+			  auto const data =
+			    from_json_array<json_number_sse2<no_name, float>>( sv );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
+
+		std::cout << "element count: " << count << '\n';
+		using iterator_t =
+		  daw::json::json_array_iterator<json_number_sse2<no_name, float>>;
+
+		auto data = std::vector<float>( );
+		data.reserve( NUMVALUES );
+
+		auto const count2 = *daw::bench_n_test_mbs<100>(
+		  "p2. float sse2 parsing 2", json_sv.size( ),
+		  [&]( auto &&sv ) noexcept {
+			  data.clear( );
+			  std::copy( iterator_t( sv ), iterator_t( ),
+			             daw::back_inserter( data ) );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
+
+		std::cout << "element count 2: " << count2 << '\n';
+	}
+
+	std::cout << "Checked\n";
+	{ // Class of floats
+		auto json_sv = std::string_view( json_data );
+		std::cout << "Processing " << json_sv.size( ) << " bytes "
+		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
+		auto const count = *daw::bench_n_test_mbs<100>(
+		  "float sse2 parsing 1", json_sv.size( ),
+		  []( auto &&sv ) noexcept {
+			  auto const data = from_json_array<Number2>( sv );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
+
+		std::cout << "element count: " << count << '\n';
+		using iterator_t =
+		  daw::json::json_array_iterator<json_class<no_name, Number2>>;
+
+		auto data = std::vector<Number2>( );
+		data.reserve( NUMVALUES );
+
+		auto const count2 = *daw::bench_n_test_mbs<100>(
+		  "float sse2 parsing 2", json_sv.size( ),
+		  [&]( auto &&sv ) noexcept {
+			  data.clear( );
+			  std::copy( iterator_t( sv ), iterator_t( ),
+			             daw::back_inserter( data ) );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
+
+		std::cout << "element count 2: " << count2 << '\n';
+	}
+	{ // just ints
+		auto json_sv = std::string_view( json_data2 );
+		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
+		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
+		auto const count = *daw::bench_n_test_mbs<100>(
+		  "float sse2 parsing 1", json_sv.size( ),
+		  []( auto &&sv ) noexcept {
+			  auto const data =
+			    from_json_array<json_checked_number_sse2<no_name, float>>( sv );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
+
+		std::cout << "element count: " << count << '\n';
+		using iterator_t =
+		  daw::json::json_array_iterator<json_checked_number_sse2<no_name, float>>;
+
+		auto data = std::vector<float>( );
+		data.reserve( NUMVALUES );
+
+		auto const count2 = *daw::bench_n_test_mbs<100>(
+		  "p2. float sse2 parsing 2", json_sv.size( ),
+		  [&]( auto &&sv ) noexcept {
+			  data.clear( );
+			  std::copy( iterator_t( sv ), iterator_t( ),
+			             daw::back_inserter( data ) );
+			  daw::do_not_optimize( data );
+			  return data.size( );
+		  },
+		  json_sv );
+
+		std::cout << "element count 2: " << count2 << '\n';
+
+		{
+			auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
+			auto const count3 = *daw::bench_n_test_mbs<100>(
+			  "p3. float sse2 parsing 3", json_sv.size( ),
+			  [&]( auto &&sv ) noexcept {
+				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
+				  daw::do_not_optimize( data2 );
+				  return ptr - data2.get( );
+			  },
+			  json_sv );
+
+			std::cout << "element count 3: " << count3 << '\n';
+		}
+	}
+
+	std::cout << "double sse2 parsing\n";
+	{
+		using iterator_t =
+		  daw::json::json_array_iterator<json_number_sse2<no_name, double>>;
+
+		std::string json_data3 = [] {
+			std::string result = "[";
+			result.reserve( NUMVALUES * 23 + 8 );
+			daw::algorithm::do_n( NUMVALUES, [&result] {
+				result += std::to_string( rand_float<double>( ) ) + ',';
+			} );
+			result.back( ) = ']';
+			return result;
+		}( );
+		auto json_sv3 = daw::string_view( json_data3.data( ), json_data3.size( ) );
+		auto data2 = std::unique_ptr<double[]>( new double[NUMVALUES] );
+		{
+			auto const count3 = *daw::bench_n_test_mbs<100>(
+			  "p4. parsing", json_sv3.size( ),
+			  [&]( auto &&sv ) noexcept {
+				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
+				  daw::do_not_optimize( data2 );
+				  return ptr - data2.get( );
+			  },
+			  json_sv3 );
+
+			std::cout << "double sse2 parse count: " << count3 << '\n';
 		}
 	}
 }
