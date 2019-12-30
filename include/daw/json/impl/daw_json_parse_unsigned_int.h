@@ -58,7 +58,41 @@ namespace daw::json::impl::unsignedint {
 #ifdef DAW_ALLOW_SSE2
 			// SSE2 end of number finding.  Using technique from
 			// https://github.com/vinniefalco/json/blob/develop/include/boost/json/detail/sse2.hpp
-			[[nodiscard]] static constexpr size_t find_len_sse2( char const *ptr ) {
+			[[nodiscard]] static inline size_t find_len_sse2_32( char const *ptr ) {
+				__m128i const lower_bound = _mm_set1_epi8( '0' );
+				__m128i const upper_bound = _mm_set1_epi8( '9' );
+				__m128i values1 =
+				  _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) );
+				__m128i values2 =
+				  _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr + 16 ) );
+
+				values1 = _mm_or_si128( _mm_cmplt_epi8( values1, lower_bound ),
+				                        _mm_cmpgt_epi8( values1, upper_bound ) );
+				values2 = _mm_or_si128( _mm_cmplt_epi8( values2, lower_bound ),
+				                        _mm_cmpgt_epi8( values2, upper_bound ) );
+
+				auto m0 = _mm_movemask_epi8( values1 );
+				auto m1 = _mm_movemask_epi8( values2 );
+#if defined( __GNUC__ ) or defined( __clang__ )
+				auto const m0b = __builtin_ffs( m0 ) - 1;
+				m1 = __builtin_ffs( m1 ) - 1; // We will never have a 32 digit number
+				if( m0 == 0 ) {
+					return static_cast<size_t>( 16 + m1 );
+				}
+				return static_cast<size_t>( m0b );
+#else
+				// MSVC
+				unsigned long index0 = 16U;
+				unsigned long index1 = 16U;
+				_BitScanForward( &index0, m0 );
+				_BitScanForward( &index1, m1 ); // Will never have a 32 digit number
+				if( m0 == 0 ) {
+					return static_cast<size_t>( 16U + index1 );
+				}
+				return static_cast<size_t>( index0 );
+#endif
+			}
+			[[nodiscard]] static inline size_t find_len_sse2_16( char const *ptr ) {
 				__m128i const lower_bound = _mm_set1_epi8( '0' );
 				__m128i const upper_bound = _mm_set1_epi8( '9' );
 				__m128i values1 =
@@ -67,25 +101,32 @@ namespace daw::json::impl::unsignedint {
 				values1 = _mm_or_si128( _mm_cmplt_epi8( values1, lower_bound ),
 				                        _mm_cmpgt_epi8( values1, upper_bound ) );
 
-				auto const m = _mm_movemask_epi8( values1 );
-				if( m == 0 ) {
-					return static_cast<size_t>( 16U );
-				}
+				auto m0 = _mm_movemask_epi8( values1 );
 #if defined( __GNUC__ ) or defined( __clang__ )
-				return static_cast<size_t>( __builtin_ffs( m ) - 1 );
+				auto const m0b = __builtin_ffs( m0 ) - 1;
+				if( m0 == 0 ) {
+					return static_cast<size_t>( 16 );
+				}
+				return static_cast<size_t>( m0b );
 #else
 				// MSVC
-				unsigned long index;
-				_BitScanForward( &index, m );
-				return static_cast<size_t>( index );
+				unsigned long index0 = 16U;
+				_BitScanForward( &index0, m0 );
+				if( m0 == 0 ) {
+					return static_cast<size_t>( 16U );
+				}
+				return static_cast<size_t>( index0 );
 #endif
 			}
 
-			[[nodiscard]] static constexpr std::pair<Unsigned, char const *>
+			[[nodiscard]] static inline std::pair<Unsigned, char const *>
 			parse_sse2( char const *ptr ) {
 				auto const digits = [ptr] {
-					auto result = find_len_sse2( ptr );
-					return result == 16U ? result + find_len_sse2( ptr + 16 ) : result;
+					if constexpr( std::numeric_limits<Unsigned>::digits10 <= 16 ) {
+						return find_len_sse2_16( ptr );
+					} else {
+						return find_len_sse2_32( ptr );
+					}
 				}( );
 				uintmax_t result = 0;
 				for( size_t n = 0; n < digits; ++n ) {
@@ -145,10 +186,7 @@ namespace daw::json::impl {
 			                     uintmax_t, Result>;
 			auto [result, ptr] = [&] {
 				if constexpr( SimdMode == SIMDModes::SSE2 ) {
-					if( rng.size( ) >= 32U ) {
-						return unsigned_parser<result_t>::parse_sse2( rng.first );
-					}
-					return unsigned_parser<result_t>::parse( rng.first );
+					return unsigned_parser<result_t>::parse_sse2( rng.first );
 				} else {
 					return unsigned_parser<result_t>::parse( rng.first );
 				}
