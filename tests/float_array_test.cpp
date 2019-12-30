@@ -61,7 +61,7 @@ struct Number2 {
 [[maybe_unused]] static constexpr auto
 json_data_contract_for( Number2 ) noexcept {
 	using namespace daw::json;
-	return json_data_contract<json_number_sse2<"a", float>>{};
+	return json_data_contract<json_number_sse3<"a", float>>{};
 }
 #else
 namespace symbols_Number2 {
@@ -71,7 +71,7 @@ namespace symbols_Number2 {
 [[maybe_unused]] static constexpr auto
 json_data_contract_for( Number2 ) noexcept {
 	using namespace daw::json;
-	return json_data_contract<json_number_sse2<symbols_Number2::a, float>>{};
+	return json_data_contract<json_number_sse3<symbols_Number2::a, float>>{};
 }
 #endif
 
@@ -301,7 +301,7 @@ int main( ) {
 		}
 	}
 	// ***********************************************
-	// SSE2
+	// SSE3
 	std::cout << "**********************\nSSE2 Processing\n";
 	{
 		auto json_sv = std::string_view( json_data );
@@ -344,7 +344,7 @@ int main( ) {
 		  "float  sse2parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<json_number_sse2<no_name, float>>( sv );
+			    from_json_array<json_number_sse3<no_name, float>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -352,7 +352,7 @@ int main( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<json_number_sse2<no_name, float>>;
+		  daw::json::json_array_iterator<json_number_sse3<no_name, float>>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -413,7 +413,7 @@ int main( ) {
 		  "float sse2 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<json_checked_number_sse2<no_name, float>>( sv );
+			    from_json_array<json_checked_number_sse3<no_name, float>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -421,7 +421,7 @@ int main( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<json_checked_number_sse2<no_name, float>>;
+		  daw::json::json_array_iterator<json_checked_number_sse3<no_name, float>>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -457,7 +457,7 @@ int main( ) {
 	std::cout << "double sse2 parsing\n";
 	{
 		using iterator_t =
-		  daw::json::json_array_iterator<json_number_sse2<no_name, double>>;
+		  daw::json::json_array_iterator<json_number_sse3<no_name, double>>;
 
 		std::string json_data3 = [] {
 			std::string result = "[";

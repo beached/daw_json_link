@@ -334,8 +334,8 @@ int main( ) {
 	}
 
 	{
-		// Unsigned SSE2
-		using uint_type = json_number_sse2<no_name, uintmax_t>;
+		// Unsigned SSE3
+		using uint_type = json_number_sse3<no_name, uintmax_t>;
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
 		{
@@ -355,8 +355,8 @@ int main( ) {
 	}
 	std::cout << "Checked unsigned sse2\n";
 	{
-		// Unsigned SSE2
-		using uint_type = json_number_sse2<no_name, uintmax_t>;
+		// Unsigned SSE3
+		using uint_type = json_number_sse3<no_name, uintmax_t>;
 		using iterator_t = daw::json::json_array_iterator<uint_type>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
@@ -376,8 +376,8 @@ int main( ) {
 		}
 	}
 	{
-		// Unsigned SSE2
-		using uint_type = json_number_sse2<no_name, uint32_t>;
+		// Unsigned SSE3
+		using uint_type = json_number_sse3<no_name, uint32_t>;
 		auto const json_sv = make_int_array_data<NUMVALUES, uint32_t>( );
 
 		{

@@ -65,8 +65,10 @@ namespace daw::json {
 	using json_number_null = json_number<Name, T, LiteralAsString, Constructor,
 	                                     RangeCheck, JsonNullable::Nullable>;
 
+#ifdef DAW_ALLOW_SSE3
 	/**
-	 * The member is a nullable number
+	 * The member is a nullable number.  Requires at least 16bytes padding after
+	 * any value
 	 * @tparam Name name of json member
 	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
 	 * Constructor
@@ -79,9 +81,9 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<T>,
 	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
 	         JsonNullable Nullable = JsonNullable::Never>
-	using json_number_sse2 = json_number<Name, T, LiteralAsString, Constructor,
-	                                     RangeCheck, Nullable, SIMDModes::SSE2>;
-
+	using json_number_sse3 = json_number<Name, T, LiteralAsString, Constructor,
+	                                     RangeCheck, Nullable, SIMDModes::SSE3>;
+#endif
 	/**
 	 * The member is a range checked number
 	 * @tparam Name name of json member
@@ -99,8 +101,10 @@ namespace daw::json {
 	  json_number<Name, T, LiteralAsString, Constructor,
 	              JsonRangeCheck::CheckForNarrowing, Nullable>;
 
+#ifdef DAW_ALLOW_SSE3
 	/**
-	 * The member is a range checked number
+	 * The member is a range checked number Requires at least 16bytes padding
+	 * after any value
 	 * @tparam Name name of json member
 	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
 	 * Constructor
@@ -112,10 +116,10 @@ namespace daw::json {
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 	         typename Constructor = daw::construct_a_t<T>,
 	         JsonNullable Nullable = JsonNullable::Never>
-	using json_checked_number_sse2 =
-	  json_number_sse2<Name, T, LiteralAsString, Constructor,
+	using json_checked_number_sse3 =
+	  json_number_sse3<Name, T, LiteralAsString, Constructor,
 	                   JsonRangeCheck::CheckForNarrowing, Nullable>;
-
+#endif
 	/**
 	 * The member is a nullable range checked number
 	 * @tparam Name name of json member

@@ -251,7 +251,13 @@ namespace daw::json {
 	enum class JsonRangeCheck : bool { Never = false, CheckForNarrowing = true };
 	enum class EightBitModes : bool { DisallowHigh = false, AllowFull = true };
 	enum class CustomJsonTypes : bool { Literal = false, String = true };
-	enum class SIMDModes : uint8_t { None, SSE2 };
+	enum class SIMDModes : uint8_t {
+		None
+#ifdef DAW_ALLOW_SSE3
+		,
+		SSE3
+#endif
+	};
 	template<JsonParseTypes ParseType, JsonNullable Nullable>
 	inline constexpr JsonParseTypes get_parse_type_v =
 	  Nullable == JsonNullable::Never ? ParseType : JsonParseTypes::Null;

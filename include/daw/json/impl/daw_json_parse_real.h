@@ -31,8 +31,8 @@
 
 namespace daw::json::impl {
 	namespace {
-		template<typename Result, SIMDModes SIMDMode, typename First, typename Last,
-		         bool IsTrustedInput>
+		template<typename Result, SIMDModes SIMDMode = SIMDModes::None,
+		         typename First, typename Last, bool IsTrustedInput>
 		[[nodiscard]] constexpr Result
 		parse_real( IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
 			// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]

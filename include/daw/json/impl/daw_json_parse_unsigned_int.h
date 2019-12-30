@@ -30,7 +30,7 @@
 #include <cstddef>
 #include <utility>
 
-#ifdef DAW_ALLOW_SSE2
+#ifdef DAW_ALLOW_SSE3
 #include <emmintrin.h>
 #include <smmintrin.h>
 #include <tmmintrin.h>
@@ -57,7 +57,7 @@ namespace daw::json::impl::unsignedint {
 				return {daw::construct_a<Unsigned>( n ), ptr};
 			}
 
-#ifdef DAW_ALLOW_SSE2
+#ifdef DAW_ALLOW_SSE3
 			// Adapted from
 			// https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
 			static inline uint32_t parse_eight_digits_unrolled( const char *ptr ) {
@@ -75,7 +75,8 @@ namespace daw::json::impl::unsignedint {
 				__m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );
 				__m128i const t3 = _mm_packus_epi32( t2, t2 );
 				__m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
-				return static_cast<uint32_t>( _mm_cvtsi128_si32( t4 ) ); // only captures the sum of the first 8 digits, drop the rest
+				return static_cast<uint32_t>( _mm_cvtsi128_si32(
+				  t4 ) ); // only captures the sum of the first 8 digits, drop the rest
 			}
 
 			static inline bool is_made_of_eight_digits_fast( const char *ptr ) {
@@ -132,7 +133,7 @@ namespace daw::json::impl {
 			  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing,
 			                     uintmax_t, Result>;
 			auto [v, new_p] = [rng] {
-				if constexpr( SIMDMode == SIMDModes::SSE2 ) {
+				if constexpr( SIMDMode == SIMDModes::SSE3 ) {
 					return unsigned_parser<iresult_t>::parse_sse2( rng.first );
 				}
 				return unsigned_parser<iresult_t>::parse( rng.first );
@@ -152,8 +153,9 @@ namespace daw::json::impl {
 			}
 		}
 
-		template<typename Result, JsonRangeCheck RangeCheck, SIMDModes SimdMode,
-		         typename First, typename Last, bool IsTrustedInput>
+		template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
+		         SIMDModes SimdMode = SIMDModes::None, typename First,
+		         typename Last, bool IsTrustedInput>
 		[[nodiscard]] constexpr Result parse_unsigned_integer(
 		  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
 			daw_json_assert_untrusted( rng.is_number( ),
@@ -165,7 +167,7 @@ namespace daw::json::impl {
 			                       std::is_enum_v<Result>,
 			                     uintmax_t, Result>;
 			auto [result, ptr] = [&] {
-				if constexpr( SimdMode == SIMDModes::SSE2 ) {
+				if constexpr( SimdMode == SIMDModes::SSE3 ) {
 					return unsigned_parser<result_t>::parse_sse2( rng.first );
 				} else {
 					return unsigned_parser<result_t>::parse( rng.first );
