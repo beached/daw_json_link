@@ -145,7 +145,10 @@ namespace daw::json::impl {
 			                     uintmax_t, Result>;
 			auto [result, ptr] = [&] {
 				if constexpr( SimdMode == SIMDModes::SSE2 ) {
-					return unsigned_parser<result_t>::parse_sse2( rng.first );
+					if( rng.size( ) >= 32U ) {
+						return unsigned_parser<result_t>::parse_sse2( rng.first );
+					}
+					return unsigned_parser<result_t>::parse( rng.first );
 				} else {
 					return unsigned_parser<result_t>::parse( rng.first );
 				}

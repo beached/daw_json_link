@@ -74,7 +74,7 @@ static std::string_view make_int_array_data( ) {
 		}
 		result.back( ) = ']';
 		// Allow SSE Modes to have enough room
-		result.reserve( result.size( ) + 256U );
+		result.shrink_to_fit( );
 		return result;
 	}( );
 	return {json_data.data( ), json_data.size( )};
