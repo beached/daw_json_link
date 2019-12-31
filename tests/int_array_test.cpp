@@ -333,6 +333,7 @@ int main( ) {
 		}
 	}
 
+#ifdef DAW_ALLOW_SSE3
 	{
 		// Unsigned SSE3
 		using uint_type = json_number_sse3<no_name, uintmax_t>;
@@ -340,7 +341,7 @@ int main( ) {
 
 		{
 			auto const count4 = *daw::bench_n_test_mbs<100>(
-			  "p5. parsing sse2", json_sv.size( ),
+			  "p5. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array_trusted<
 				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>>( sv );
@@ -350,10 +351,10 @@ int main( ) {
 			  },
 			  json_sv );
 
-			std::cout << "unsigned sse2 parse count: " << count4 << '\n';
+			std::cout << "unsigned sse3 parse count: " << count4 << '\n';
 		}
 	}
-	std::cout << "Checked unsigned sse2\n";
+	std::cout << "Checked unsigned sse3\n";
 	{
 		// Unsigned SSE3
 		using uint_type = json_number_sse3<no_name, uintmax_t>;
@@ -364,7 +365,7 @@ int main( ) {
 		auto data2 = std::unique_ptr<uintmax_t[]>( new uintmax_t[NUMVALUES] );
 		{
 			auto const count3 = *daw::bench_n_test_mbs<100>(
-			  "p4. parsing sse2", json_sv.size( ),
+			  "p4. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );
@@ -372,7 +373,7 @@ int main( ) {
 			  },
 			  json_sv );
 
-			std::cout << "unsigned sse2 parse count: " << count3 << '\n';
+			std::cout << "unsigned sse3 parse count: " << count3 << '\n';
 		}
 	}
 	{
@@ -382,7 +383,7 @@ int main( ) {
 
 		{
 			auto const count4 = *daw::bench_n_test_mbs<100>(
-			  "p5. parsing sse2", json_sv.size( ),
+			  "p5. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
 				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>>( sv );
@@ -392,7 +393,8 @@ int main( ) {
 			  },
 			  json_sv );
 
-			std::cout << "unsigned sse2 parse count: " << count4 << '\n';
+			std::cout << "unsigned sse3 parse count: " << count4 << '\n';
 		}
 	}
+#endif
 }

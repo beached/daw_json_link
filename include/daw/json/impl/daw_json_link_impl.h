@@ -403,7 +403,7 @@ namespace daw::json::impl {
 
 		template<typename First, typename Last, bool IsTrustedInput,
 		         typename... JsonMembers>
-		inline constexpr auto known_locations_v =
+		static inline constexpr auto known_locations_v =
 		  locations_info_t<sizeof...( JsonMembers ), First, Last, IsTrustedInput>{
 		    location_info_t<First, Last, IsTrustedInput>( JsonMembers::name )...};
 

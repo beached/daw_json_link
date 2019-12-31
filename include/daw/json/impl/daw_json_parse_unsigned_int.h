@@ -133,10 +133,15 @@ namespace daw::json::impl {
 			  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing,
 			                     uintmax_t, Result>;
 			auto [v, new_p] = [rng] {
+#ifdef DAW_ALLOW_SSE3
 				if constexpr( SIMDMode == SIMDModes::SSE3 ) {
 					return unsigned_parser<iresult_t>::parse_sse2( rng.first );
+				} else {
+#endif 
+					return unsigned_parser<iresult_t>::parse( rng.first );
+#ifdef DAW_ALLOW_SSE3
 				}
-				return unsigned_parser<iresult_t>::parse( rng.first );
+#endif
 			}( );
 			uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.first );
 			rng.first = new_p;
@@ -167,11 +172,15 @@ namespace daw::json::impl {
 			                       std::is_enum_v<Result>,
 			                     uintmax_t, Result>;
 			auto [result, ptr] = [&] {
+#ifdef DAW_ALLOW_SSE3
 				if constexpr( SimdMode == SIMDModes::SSE3 ) {
 					return unsigned_parser<result_t>::parse_sse2( rng.first );
 				} else {
+#endif
 					return unsigned_parser<result_t>::parse( rng.first );
+#ifdef DAW_ALLOW_SSE3
 				}
+#endif
 			}( );
 			rng.first = ptr;
 

@@ -300,15 +300,16 @@ int main( ) {
 			std::cout << "double parse count: " << count3 << '\n';
 		}
 	}
+#ifdef DAW_ALLOW_SSE3
 	// ***********************************************
 	// SSE3
-	std::cout << "**********************\nSSE2 Processing\n";
+	std::cout << "**********************\nSSE3 Processing\n";
 	{
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<100>(
-		  "float sse2 parsing 1", json_sv.size( ),
+		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number2>( sv );
 			  daw::do_not_optimize( data );
@@ -324,7 +325,7 @@ int main( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<100>(
-		  "float  sse2parsing 2", json_sv.size( ),
+		  "float  sse3parsing 2", json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
 			  std::copy( iterator_t( sv ), iterator_t( ),
@@ -341,7 +342,7 @@ int main( ) {
 		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<100>(
-		  "float  sse2parsing 1", json_sv.size( ),
+		  "float  sse3parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<json_number_sse3<no_name, float>>( sv );
@@ -358,7 +359,7 @@ int main( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<100>(
-		  "p2. float sse2 parsing 2", json_sv.size( ),
+		  "p2. float sse3 parsing 2", json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
 			  std::copy( iterator_t( sv ), iterator_t( ),
@@ -377,7 +378,7 @@ int main( ) {
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<100>(
-		  "float sse2 parsing 1", json_sv.size( ),
+		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number2>( sv );
 			  daw::do_not_optimize( data );
@@ -393,7 +394,7 @@ int main( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<100>(
-		  "float sse2 parsing 2", json_sv.size( ),
+		  "float sse3 parsing 2", json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
 			  std::copy( iterator_t( sv ), iterator_t( ),
@@ -410,7 +411,7 @@ int main( ) {
 		std::cout << "p2. Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
 		auto const count = *daw::bench_n_test_mbs<100>(
-		  "float sse2 parsing 1", json_sv.size( ),
+		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<json_checked_number_sse3<no_name, float>>( sv );
@@ -427,7 +428,7 @@ int main( ) {
 		data.reserve( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<100>(
-		  "p2. float sse2 parsing 2", json_sv.size( ),
+		  "p2. float sse3 parsing 2", json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
 			  std::copy( iterator_t( sv ), iterator_t( ),
@@ -442,7 +443,7 @@ int main( ) {
 		{
 			auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
 			auto const count3 = *daw::bench_n_test_mbs<100>(
-			  "p3. float sse2 parsing 3", json_sv.size( ),
+			  "p3. float sse3 parsing 3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
 				  daw::do_not_optimize( data2 );
@@ -454,7 +455,7 @@ int main( ) {
 		}
 	}
 
-	std::cout << "double sse2 parsing\n";
+	std::cout << "double sse3 parsing\n";
 	{
 		using iterator_t =
 		  daw::json::json_array_iterator<json_number_sse3<no_name, double>>;
@@ -480,7 +481,8 @@ int main( ) {
 			  },
 			  json_sv3 );
 
-			std::cout << "double sse2 parse count: " << count3 << '\n';
+			std::cout << "double sse3 parse count: " << count3 << '\n';
 		}
 	}
+#endif
 }
