@@ -28,23 +28,24 @@ struct MyVariantStuff1 {
   std::variant<std::string, bool> member1;
 };
 
-auto json_data_contract_for( MyVariantStuff1 const & ) {
-  using namespace daw::json;
-  return json_data_contract<
-    json_variant<
-      "member0", 
-      std::variant<int, std::string>, 
-      json_variant_type_list<json_number<no_name, int>, json_string<no_name>>>,
-    json_variant<
-      "member1", 
-      std::variant<std::string, bool>, 
-      json_variant_type_list<json_string<no_name>, json_bool<no_name>>>
-    >{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyVariantStuff1> {
+    using type = json_member_list<
+      json_variant<"member0", std::variant<int, std::string>,
+        json_variant_type_list<
+          json_number<no_name, int>,
+          json_string<no_name>>>,
+      json_variant<
+        "member1", std::variant<std::string, bool>,
+        json_variant_type_list<json_string<no_name>, json_bool<no_name>>>>;
 
-auto to_json_data( MyVariantStuff1 const &value ) {
-  return std::forward_as_tuple( value.member0, value.member1 );
-}
+    static inline auto
+    to_json_data( MyVariantStuff1 const &value ) {
+      return std::forward_as_tuple( value.member0, value.member1 );
+    }
+  };
+} 
 ```
 
 ## Important note:

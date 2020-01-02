@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -35,30 +35,28 @@ namespace daw::cookbook_kv1 {
 		std::unordered_map<std::string, int> kv;
 	};
 
-#if defined( __cpp_nontype_template_parameter_class )
-	auto json_data_contract_for( MyKeyValue1 const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>{};
-	}
-#else
-	namespace symbols_MyKeyValue1 {
-		static constexpr char const kv[] = "kv";
-	} // namespace symbols_MyKeyValue1
-	auto json_data_contract_for( MyKeyValue1 ) {
-		using namespace daw::json;
-		return json_data_contract<json_key_value<
-		  symbols_MyKeyValue1::kv, std::unordered_map<std::string, int>, int>>{};
-	}
-#endif
-	auto to_json_data( MyKeyValue1 const &value ) {
-		return std::forward_as_tuple( value.kv );
-	}
-
 	bool operator==( MyKeyValue1 const &lhs, MyKeyValue1 const &rhs ) {
 		return lhs.kv == rhs.kv;
 	}
 } // namespace daw::cookbook_kv1
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::cookbook_kv1::MyKeyValue1> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<
+		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
+#else
+		static constexpr char const kv[] = "kv";
+		using type = json_member_list<
+		  json_key_value<kv, std::unordered_map<std::string, int>, int>>;
+#endif
+		static inline auto
+		to_json_data( daw::cookbook_kv1::MyKeyValue1 const &value ) {
+			return std::forward_as_tuple( value.kv );
+		}
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {

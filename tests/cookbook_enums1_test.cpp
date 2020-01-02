@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -67,30 +67,28 @@ namespace daw::cookbook_enums1 {
 		std::vector<Colours> member0;
 	};
 
-#ifdef __cpp_nontype_template_parameter_class
-	auto json_data_contract_for( MyClass1 const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_array<"member0", json_custom<no_name, Colours>>>{};
-	}
-#else
-	namespace symbols_MyClass1 {
-		static inline constexpr char const member0[] = "member0";
-	} // namespace symbols_MyClass1
-	auto json_data_contract_for( MyClass1 const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_array<symbols_MyClass1::member0, json_custom<no_name, Colours>>>{};
-	}
-#endif
-
-	auto to_json_data( MyClass1 const &value ) {
-		return std::forward_as_tuple( value.member0 );
-	}
 	bool operator==( MyClass1 const &lhs, MyClass1 const &rhs ) {
-		return to_json_data( lhs ) == to_json_data( rhs );
+		return lhs.member0 == rhs.member0;
 	}
 } // namespace daw::cookbook_enums1
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::cookbook_enums1::MyClass1> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<json_array<
+		  "member0", json_custom<no_name, daw::cookbook_enums1::Colours>>>;
+#else
+		static constexpr inline char const member0[] = "member0";
+		using type = json_member_list<
+		  json_array<member0, json_custom<no_name, daw::cookbook_enums1::Colours>>>;
+#endif
+		static inline auto
+		to_json_data( daw::cookbook_enums1::MyClass1 const &value ) {
+			return std::forward_as_tuple( value.member0 );
+		}
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {

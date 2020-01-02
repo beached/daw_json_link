@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "twitter_test.h"
+#include "canada_test.h"
 #include "daw/json/daw_json_link.h"
 
 #include <daw/cpp_17.h>
@@ -64,37 +64,37 @@ int main( int argc, char **argv ) {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	std::optional<daw::twitter::twitter_object_t> twitter_result;
+	std::optional<daw::canada::canada_object_t> canada_result;
 	daw::bench_n_test_mbs<100>(
-	  "twitter_catalog bench", sz,
-	  [&twitter_result]( auto f1 ) {
-		  twitter_result =
-		    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
-		  daw::do_not_optimize( twitter_result );
+	  "canada bench", sz,
+	  [&canada_result]( auto f1 ) {
+		  canada_result = daw::json::from_json<daw::canada::canada_object_t>( f1 );
+		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
-	daw::do_not_optimize( twitter_result );
-	daw_json_assert( twitter_result, "Missing value" );
-	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	                 "Missing value" );
+	daw::do_not_optimize( canada_result );
+	daw_json_assert( canada_result, "Missing value" );
+	/*	daw_json_assert( canada_result->statuses.size( ) > 0, "Expected values" );
+	  daw_json_assert( canada_result->statuses.front( ).user.id == 1186275104,
+	                   "Missing value" );
+	*/
 
 	std::optional<std::string> str{};
 	daw::bench_n_test_mbs<100>(
-	  "twitter_catalog bench(to_json_string)", sz,
+	  "canada bench(to_json_string)", sz,
 	  [&str]( auto const &tr ) {
 		  str = daw::json::to_json( *tr );
 		  daw::do_not_optimize( str );
 	  },
-	  twitter_result );
+	  canada_result );
 	daw_json_assert( str, "Expected a string value" );
 	daw::do_not_optimize( *str );
-	auto const twitter_result2 =
-	  daw::json::from_json<daw::twitter::twitter_object_t>( *str );
-	daw::do_not_optimize( twitter_result2 );
+	auto const canada_result2 =
+	  daw::json::from_json<daw::canada::canada_object_t>( *str );
+	daw::do_not_optimize( canada_result2 );
 	// Removing for now as it will do a float compare and fail
 	/*
-	daw_json_assert( twitter_result == twitter_result2,
+	daw_json_assert( canada_result == canada_result2,
 	                 "Expected round trip to produce same result" );
 	                 */
 }

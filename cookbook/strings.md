@@ -21,15 +21,15 @@ The above JSON describes a class with three members, a string named `member0`, a
 The C++ `vector<string>` of the above json should be equivilent to:
 ```cpp
 std::vector<string> uris = {
-	"example.com", 
-	"Bücher.ch",
-	"happy.cn", 
-	"happy快乐.cn",
-	"快乐.cn", 
-	"happy.中国", 
-	"快乐.中国", 
-	"www.ハンドボールサムズ.com", 
-	"🦄.com"};
+  "example.com", 
+  "Bücher.ch",
+  "happy.cn", 
+  "happy快乐.cn",
+  "快乐.cn", 
+  "happy.中国", 
+  "快乐.中国", 
+  "www.ハンドボールサムズ.com", 
+  "🦄.com"};
 ```
 
 The C++ to contain and parse this could look like
@@ -39,15 +39,22 @@ struct WebData {
   std::vector<std::string> uris;
 };
 
-auto json_data_contract_for( WebData const & ) {
-  using namespace daw::json;
-  return json_data_contract<
-    json_array<"uris", std::string>>{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<WebData> {
+    using type = json_member_list<
+      json_array<
+        "uris",
+        std::string
+      >
+    >;
 
-auto to_json_data( WebData const & value ) {
-  return std::forward_as_tuple( value.uris );
-}
+    static inline auto
+    to_json_data( WebData const &value ) {
+      return std::forward_as_tuple( value.uris );
+    }
+  };
+} 
 ```
 
 ## Raw strings
@@ -60,14 +67,17 @@ struct WebData {
 	std::vector<std::string> uris;
 };
 
-auto json_data_contract_for( WebData const & ) {
-  using namespace daw::json;
-  return json_data_contract<
-    json_array<"uris", json_string_raw<no_name>>>{};
-}
+namespace daw::json {
+  template<>  
+  json_data_contract<WebData> {
+    using type = json_member_list<
+      json_array<"uris", json_string_raw<no_name>>
+    >;
 
-auto to_json_data( WebData const & value ) {
-  return std::forward_as_tuple( value.uris );
+    static inline auto to_json_data( WebData const & value ) {
+      return std::forward_as_tuple( value.uris );
+    }
+  };
 }
 ```
 

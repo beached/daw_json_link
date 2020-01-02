@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -38,36 +38,32 @@ namespace daw::cookbook_array2 {
 		bool d;
 	};
 
-#if defined( __cpp_nontype_template_parameter_class )
-	auto json_data_contract_for( MyClass4 const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_string<"a">, json_number<"b", unsigned>,
-		                          json_number<"c", float>, json_bool<"d">>{};
+	bool operator==( MyClass4 const &lhs, MyClass4 const &rhs ) {
+		return std::tie( lhs.a, lhs.b, lhs.c, lhs.d ) ==
+		       std::tie( rhs.a, rhs.b, rhs.c, rhs.d );
 	}
+} // namespace daw::cookbook_array2
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::cookbook_array2::MyClass4> {
+#if defined( __cpp_nontype_template_parameter_class )
+		using type = json_member_list<json_string<"a">, json_number<"b", unsigned>,
+		                              json_number<"c", float>, json_bool<"d">>;
 #else
-	namespace symbols_MyClass4 {
 		static constexpr char const a[] = "a";
 		static constexpr char const b[] = "b";
 		static constexpr char const c[] = "c";
 		static constexpr char const d[] = "d";
-	} // namespace symbols_MyClass4
-	auto json_data_contract_for( MyClass4 const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_string<symbols_MyClass4::a>,
-		                          json_number<symbols_MyClass4::b, unsigned>,
-		                          json_number<symbols_MyClass4::c, float>,
-		                          json_bool<symbols_MyClass4::d>>{};
-	}
+		using type = json_member_list<json_string<a>, json_number<b, unsigned>,
+		                              json_number<c, float>, json_bool<d>>;
 #endif
-	auto to_json_data( MyClass4 const &value ) {
-		return std::forward_as_tuple( value.a, value.b, value.c, value.d );
-	}
-
-	bool operator==( MyClass4 const &lhs, MyClass4 const &rhs ) {
-		return to_json_data( lhs ) == to_json_data( rhs );
-	}
-
-} // namespace daw::cookbook_array2
+		static inline auto
+		to_json_data( daw::cookbook_array2::MyClass4 const &value ) {
+			return std::forward_as_tuple( value.a, value.b, value.c, value.d );
+		}
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {

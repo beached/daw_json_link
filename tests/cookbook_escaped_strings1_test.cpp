@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -35,30 +35,26 @@ namespace daw::cookbook_escaped_strings1 {
 		std::vector<std::string> uris;
 	};
 
-#if defined( __cpp_nontype_template_parameter_class )
-	auto json_data_contract_for( WebData const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_array<"uris", std::string>>{};
-	}
-#else
-	namespace symbols_WebData {
-		static constexpr char const uris[] = "uris";
-	}
-
-	auto json_data_contract_for( WebData const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_array<symbols_WebData::uris, std::string>>{};
-	}
-#endif
-
-	auto to_json_data( WebData const &value ) {
-		return std::forward_as_tuple( value.uris );
-	}
-
 	bool operator==( WebData const &lhs, WebData const &rhs ) {
-		return to_json_data( lhs ) == to_json_data( rhs );
+		return lhs.uris == rhs.uris;
 	}
 } // namespace daw::cookbook_escaped_strings1
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::cookbook_escaped_strings1::WebData> {
+#if defined( __cpp_nontype_template_parameter_class )
+		using type = json_member_list<json_array<"uris", std::string>>;
+#else
+		static inline constexpr char const uris[] = "uris";
+		using type = json_member_list<json_array<uris, std::string>>;
+#endif
+		static inline auto
+		to_json_data( daw::cookbook_escaped_strings1::WebData const &value ) {
+			return std::forward_as_tuple( value.uris );
+		}
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {

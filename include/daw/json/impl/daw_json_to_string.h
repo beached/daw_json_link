@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -552,9 +552,10 @@ namespace daw::json::impl {
 			  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 			  "value must be convertible to specified type in class contract" );
 
-			return json_parser_description_t<
-			  typename JsonMember::parse_to_t>::serialize( it,
-			                                               to_json_data( value ) );
+			// DAW**********return json_data_contract_trait_t<typename
+			// JsonMember::parse_to_t>::
+			return json_data_contract_trait_t<parse_to_t>::serialize(
+			  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ) );
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>

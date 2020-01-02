@@ -1,5 +1,7 @@
 # Automated Code Generation
 
+## This is currently out of date
+
 What we need to begin
 We need the [json_to_cpp](https://github.com/beached/json_to_cpp) tool. 
 
@@ -42,7 +44,7 @@ namespace symbols_a_t {
 
 inline auto json_data_contract_for( a_t ) {
 	using namespace daw::json;
-	return daw::json::json_data_contract<
+	return daw::json::json_member_list<
 		json_string<symbols_a_t::member0>
 		,json_number<symbols_a_t::member1, int64_t>
 		,json_bool<symbols_a_t::member2>
@@ -65,7 +67,7 @@ namespace symbols_root_object_t {
 
 inline auto json_data_contract_for( root_object_t ) {
 	using namespace daw::json;
-	return daw::json::json_data_contract<
+	return daw::json::json_member_list<
 		json_class<symbols_root_object_t::a, a_t>
 		,json_number<symbols_root_object_t::b, int64_t>
 	>{};

@@ -48,7 +48,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 
 ## Installing
 
-The following will build and run the tests.  Windows is close but uses `md` instead of `mkdir` to make the build folder
+The following will build and run the tests. 
 ```
 git clone https://github.com/beached/daw_json_link
 cd daw_json_link
@@ -137,30 +137,31 @@ This can be accomplished by writing a function called json_data_contract_for wit
 #include <daw/json/daw_json_link.h>
 
 struct TestClass {
-	int i = 0;
-	double d = 0.0;
-	bool b = false;
-	daw::string_view s{};
-	std::vector<int> y{};
+  int i = 0;
+  double d = 0.0;
+  bool b = false;
+  daw::string_view s{};
+  std::vector<int> y{};
 
-	TestClass( int Int, double Double, bool Bool, daw::string_view S,
-	      std::vector<int> Y ) noexcept
-	  : i( Int )
-	  , d( Double )
-	  , b( Bool )
-	  , s( S )
-	  , y( Y ) {}
+  TestClass( int Int, double Double, bool Bool, daw::string_view S, std::vector<int> Y ) 
+    : i( Int )
+    , d( Double )
+    , b( Bool )
+    , s( S )
+    , y( Y ) {}
 };
 
-auto json_data_contract_for( TestClass ) {
-	using namespace daw::json;
-	return json_data_contract<
-		json_number<"i", int>,
-		json_number<"d">,
-		json_bool<"b">,
-		json_string<"s", daw::string_view>,
-		json_array<"y", int>
- 	>{};
+namespace daw::json {
+  template<>
+  struct json_data_contract<TestClass> {
+  using type = json_member_list<
+    json_number<"i", int>,
+    json_number<"d">,
+    json_bool<"b">,
+    json_string<"s", daw::string_view>,
+    json_array<"y", int>
+   >;
+  };
 }
 
 int main( ) {
@@ -195,15 +196,18 @@ Both aggregate and normal construction is supported.  The description provides t
 #include <daw/json/daw_json_link.h>
 
 struct AggClass {
-	int a{};
-	double b{};
+  int a{};
+  double b{};
 };
-auto json_data_contract_for( AggClass ) {
-	using namespace daw::json;
-	return json_data_contract<
-		json_number<"a", int>,
-		json_number<"b">
-	>{};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<AggClass> {
+    using type = json_member_list<
+      json_number<"a", int>,
+      json_number<"b">
+    >;
+  };
 }
 ```
 Works too.
@@ -212,36 +216,42 @@ Same but C++17
 #include <daw/json/daw_json_link.h>
 
 struct AggClass {
-	int a{};
-	double b{};
+  int a{};
+  double b{};
 };
-namespace symbols_AggClass {
-	static constexpr char const a[] = "a";
-	static constexpr char const b[] = "b";
-}
-auto json_data_contract_for( AggClass ) {
-	using namespace daw::json;
-	return json_data_contract<
-		json_number<symbols_AggClass::a, int>,
-		json_number<symbols_AggClass::b>
-	>{};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<AggClass> {
+    static inline constexpr char const a[] = "a";
+    static inline constexpr char const b[] = "b";
+    using type = json_member_list<
+      json_number<symbols_AggClass::a, int>,
+      json_number<symbols_AggClass::b>
+    >;
+  };
 }
 ```
 The class descriptions are recursive with their submembers.  Using the previous `AggClass` one can include it as a member of another class
+
 ```cpp
 // See above for AggClass
 struct MyClass {
   AggClass other;
   std::string_view some_name;
 };
-auto json_data_contract_for( MyClass ) {
-  using namespace daw::json;
-  return json_data_contract<
-    json_class<"other", AggClass>,
-    json_string<"id", std::string_view>
-  >{};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyClass> {
+    using type = json_member_list<
+      json_class<"other", AggClass>,
+      json_string<"id", std::string_view>
+    >;
+  };
 }
 ```
+
 The above maps a class MyClass that has another class that is described AggClass.  Also, you can see that the member names of the C++ class do not have to match that of the mapped json names and that strings can use `std::string_view` as the result type.  This is an important performance enhancement if you can guarantee the buffer containing the json file will exist as long as the class does.
 
 Iterating over JSON arrays.  The input iterator ```daw::json::json_array_iterator<JsonElement>``` allows one to iterator over the array of JSON elements.  It is technically an input iterator but can be stored and reused like a forward iterator.  It does not return a reference but a value.
@@ -250,31 +260,35 @@ Iterating over JSON arrays.  The input iterator ```daw::json::json_array_iterato
 #include <daw/json/daw_json_link.h>
 
 struct AggClass {
-	int a{};
-	double b{};
+  int a{};
+  double b{};
 };
-auto json_data_contract_for( AggClass ) {
-	using namespace daw::json;
-	return json_data_contract<
-		json_number<"a", int>,
-		json_number<"b">
-	>{};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<AggClass> {
+    using type = json_member_list<
+      json_number<"a", int>,
+      json_number<"b">
+    >;
+  };
+}
 
 int main( ) {
-	std::string json_array_data = R"([
-	    {"a":5,"b":2.2},
-	    {"a":5,"b":3.14},
-	    {"a":5,"b":0.122e44},
-	    {"a":5334,"b":34342.2}
-	     ])";
-	using iterator_t = daw::json::json_array_iterator<AggClass>;
-	auto pos = std::find_if( iterator_t( json_array_data ), iterator_t( ),
-	  []( AggData const & element ) { return element.b > 1000.0; } );
-	if( pos == iterator_t( ) ) {
-		std::cout << "Not found\n";
-	} else {
-		std::cout << "Found\n";
-	}
+  std::string json_array_data = R"([
+    {"a":5,"b":2.2},
+    {"a":5,"b":3.14},
+    {"a":5,"b":0.122e44},
+    {"a":5334,"b":34342.2}
+     ])";
+  using iterator_t = daw::json::json_array_iterator<AggClass>;
+  auto pos = std::find_if( iterator_t( json_array_data ), iterator_t( ),
+    []( AggData const & element ) { return element.b > 1000.0; } );
+  if( pos == iterator_t( ) ) {
+    std::cout << "Not found\n";
+  } else {
+    std::cout << "Found\n";
+  }
 }
 ```
 
@@ -286,18 +300,22 @@ To enable serialization on must create an additional free function called ```to_
 #include <tuple>
 
 struct AggClass {
-	int a{};
-	double b{};
+  int a{};
+  double b{};
 };
-auto json_data_contract_for( AggClass ) {
-	using namespace daw::json;
-	return json_data_contract<
-		json_number<"a", int>,
-		json_number<"b">
-	>{};
-}
-auto to_json_data( AggClass const & ) {
-  return std::forward_as_tuple( c.a, c.b );
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<AggClass> {
+    using type = json_member_list<
+      json_number<"a", int>,
+      json_number<"b">
+    >;
+
+    static inline auto to_json_data( AggClass const & ) {
+      return std::forward_as_tuple( c.a, c.b );
+    }
+  };
 }
 //...
 AggData value = //...;

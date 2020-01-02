@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -39,34 +39,6 @@ namespace daw::cookbook_optional_values1 {
 		std::unique_ptr<bool> member2{};
 	};
 
-#if defined( __cpp_nontype_template_parameter_class )
-	auto json_data_contract_for( MyOptionalStuff1 const & ) {
-		using namespace daw::json;
-		json_number_null<"member0", std::optional<int>>, json_string<"member1">,
-		  return json_data_contract<
-		    json_bool_null<"member2", bool, LiteralAsStringOpt::Never,
-		                   UniquePtrConstructor<bool>>>{};
-	}
-#else
-	namespace symbols_MyOptionalStuff1 {
-		static constexpr char const member0[] = "member0";
-		static constexpr char const member1[] = "member1";
-		static constexpr char const member2[] = "member2";
-	} // namespace symbols_MyOptionalStuff1
-
-	auto json_data_contract_for( MyOptionalStuff1 const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_number_null<symbols_MyOptionalStuff1::member0, std::optional<int>>,
-		  json_string<symbols_MyOptionalStuff1::member1>,
-		  json_bool_null<symbols_MyOptionalStuff1::member2, std::unique_ptr<bool>,
-		                 LiteralAsStringOpt::Never, UniquePtrConstructor<bool>>>{};
-	}
-#endif
-	auto to_json_data( MyOptionalStuff1 const &value ) {
-		return std::forward_as_tuple( value.member0, value.member1, value.member2 );
-	}
-
 	bool operator==( MyOptionalStuff1 const &lhs, MyOptionalStuff1 const &rhs ) {
 		bool result = lhs.member0 == rhs.member0;
 		result = result and ( lhs.member1 == rhs.member1 );
@@ -77,6 +49,31 @@ namespace daw::cookbook_optional_values1 {
 	}
 } // namespace daw::cookbook_optional_values1
 
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::cookbook_optional_values1::MyOptionalStuff1> {
+#if defined( __cpp_nontype_template_parameter_class )
+		using type = json_member_list<
+		  json_number_null<"member0", std::optional<int>>, json_string<"member1">,
+		  json_bool_null<"member2", std::unique_ptr<bool>,
+		                 LiteralAsStringOpt::Never, UniquePtrConstructor<bool>>>;
+#else
+		static inline constexpr char const member0[] = "member0";
+		static inline constexpr char const member1[] = "member1";
+		static inline constexpr char const member2[] = "member2";
+		using type = json_member_list<
+		  json_number_null<member0, std::optional<int>>, json_string<member1>,
+		  json_bool_null<member2, std::unique_ptr<bool>, LiteralAsStringOpt::Never,
+		                 UniquePtrConstructor<bool>>>;
+#endif
+		static inline auto to_json_data(
+		  daw::cookbook_optional_values1::MyOptionalStuff1 const &value ) {
+			return std::forward_as_tuple( value.member0, value.member1,
+			                              value.member2 );
+		}
+	};
+} // namespace daw::json
+
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_optional_values1.json file\n" );
@@ -85,16 +82,23 @@ int main( int argc, char **argv ) {
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 	puts( "Original" );
 	puts( std::string( data.data( ), data.size( ) ).c_str( ) );
-	auto stuff = daw::json::from_json_array<
-	  daw::cookbook_optional_values1::MyOptionalStuff1>( data );
+
+	std::vector<daw::cookbook_optional_values1::MyOptionalStuff1> stuff =
+	  daw::json::from_json_array<
+	    daw::cookbook_optional_values1::MyOptionalStuff1>( data );
+
 	daw_json_assert( stuff.size( ) == 2, "Unexpected size" );
 	daw_json_assert( not stuff.front( ).member2, "Unexpected value" );
 	daw_json_assert( not stuff.back( ).member0, "Unexpected value" );
-	auto const str = daw::json::to_json_array( stuff );
+
+	std::string const str = daw::json::to_json_array( stuff );
+
 	puts( "After" );
 	puts( str.c_str( ) );
-	auto stuff2 = daw::json::from_json_array<
-	  daw::cookbook_optional_values1::MyOptionalStuff1>( str );
+
+	std::vector<daw::cookbook_optional_values1::MyOptionalStuff1> stuff2 =
+	  daw::json::from_json_array<
+	    daw::cookbook_optional_values1::MyOptionalStuff1>( str );
 
 	daw_json_assert( stuff == stuff2, "Unexpected round trip error" );
 	return 0;

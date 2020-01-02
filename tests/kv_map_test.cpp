@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -36,40 +36,37 @@ struct kv_t {
 	std::unordered_map<std::string, int> kv{};
 };
 
-namespace symbols_kv_t {
-	constexpr static char const kv[] = "kv";
-}
-auto json_data_contract_for( kv_t ) noexcept {
-	using namespace daw::json;
-#ifdef __cpp_nontype_template_parameter_class
-	return json_data_contract<
-	  json_key_value<"kv", std::unordered_map<std::string, int>, int>>{};
-#else
-	return json_data_contract<json_key_value<
-	  symbols_kv_t::kv, std::unordered_map<std::string, int>, int>>{};
-#endif
-}
-
 struct kv2_t {
 	daw::bounded_hash_map<std::string, int, 5> kv{};
 };
 
-namespace symbols_kv2_t {
-	constexpr static char const kv[] = "kv";
-}
-auto json_data_contract_for( kv2_t ) noexcept {
-	using namespace daw::json;
+namespace daw::json {
+	template<>
+	struct json_data_contract<kv_t> {
 #ifdef __cpp_nontype_template_parameter_class
-	return json_data_contract<
-	  json_key_value<"kv", daw::bounded_hash_map<std::string, int, 5>, int>>{};
+		using type = json_member_list<
+		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
 #else
-	return json_data_contract<json_key_value<
-	  symbols_kv2_t::kv, daw::bounded_hash_map<std::string, int, 5>, int>>{};
+		constexpr inline static char const kv[] = "kv";
+		using type = json_member_list<
+		  json_key_value<kv, std::unordered_map<std::string, int>, int>>;
 #endif
-}
+	};
+
+	template<>
+	struct json_data_contract<kv2_t> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<
+		  json_key_value<"kv", daw::bounded_hash_map<std::string, int, 5>, int>>;
+#else
+		constexpr inline static char const kv[] = "kv";
+		using type = json_member_list<
+		  json_key_value<kv, daw::bounded_hash_map<std::string, int, 5>, int>>;
+#endif
+	};
+} // namespace daw::json
 
 int main( int, char ** ) {
-	using namespace daw::json;
 	constexpr std::string_view const json_data3 =
 	  R"( {"kv": {
 				"key0": 0,
@@ -77,10 +74,11 @@ int main( int, char ** ) {
 				"key2": 2
 	}})";
 
-	auto kv_test = from_json<kv_t>( json_data3 );
+	kv_t kv_test = daw::json::from_json<kv_t>( json_data3 );
 	daw::do_not_optimize( kv_test );
 
-	auto const kv2_test = from_json<kv2_t>( json_data3 );
+	kv2_t const kv2_test = daw::json::from_json<kv2_t>( json_data3 );
+
 	daw_json_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
 	daw_json_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
 	daw_json_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );

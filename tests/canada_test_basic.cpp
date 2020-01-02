@@ -20,20 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "citm_test.h"
+#include "canada_test.h"
 
-#include <daw/daw_benchmark.h>
+#include <daw/daw_do_not_optimize.h>
 #include <daw/daw_memory_mapped_file.h>
 #include <daw/daw_string_view.h>
 #include <daw/json/daw_json_link.h>
 
-#include <fstream>
-#include <iostream>
-#include <streambuf>
+#include <cstdio>
 
 int main( int argc, char **argv ) {
 	if( argc < 2 ) {
-		std::cerr << "Must supply a filenames to open\n";
+		puts( "Must supply a file name\n" );
 		exit( 1 );
 	}
 	using namespace daw::json;
@@ -41,11 +39,7 @@ int main( int argc, char **argv ) {
 	auto const json_sv1 =
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 
-	auto citm_result = daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
-	daw::do_not_optimize( citm_result );
-	daw_json_assert( citm_result.areaNames.size( ) > 0, "Expected values" );
-	daw_json_assert( citm_result.areaNames.count( 205706005 ) == 1,
-	                 "Expected value" );
-	daw_json_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
-	                 "Incorrect value" );
+	auto const canada_result =
+	  daw::json::from_json<daw::canada::canada_object_t>( json_sv1 );
+	daw::do_not_optimize( canada_result );
 }

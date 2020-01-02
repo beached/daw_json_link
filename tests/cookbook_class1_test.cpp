@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -37,35 +37,34 @@ namespace daw::cookbook_class1 {
 		bool member_2;
 	};
 
-#if defined( __cpp_nontype_template_parameter_class )
-	auto json_data_contract_for( MyClass1 const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_string<"member0">,
-		                          json_number<"member1", int>,
-		                          json_bool<"member2">>{};
-	}
-#else
-	namespace symbols_MyClass1 {
-		static constexpr char const member0[] = "member0";
-		static constexpr char const member1[] = "member1";
-		static constexpr char const member2[] = "member2";
-	} // namespace symbols_MyClass1
-	auto json_data_contract_for( MyClass1 const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_string<symbols_MyClass1::member0>,
-		                          json_number<symbols_MyClass1::member1, int>,
-		                          json_bool<symbols_MyClass1::member2>>{};
-	}
-#endif
-	auto to_json_data( MyClass1 const &value ) {
-		return std::forward_as_tuple( value.member_0, value.member_1,
-		                              value.member_2 );
-	}
-
 	bool operator==( MyClass1 const &lhs, MyClass1 const &rhs ) {
-		return to_json_data( lhs ) == to_json_data( rhs );
+		return std::tie( lhs.member_0, lhs.member_1, lhs.member_2 ) ==
+		       std::tie( rhs.member_0, rhs.member_1, rhs.member_2 );
 	}
 } // namespace daw::cookbook_class1
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::cookbook_class1::MyClass1> {
+#if defined( __cpp_nontype_template_parameter_class )
+		using type =
+		  json_member_list<json_string<"member0">, json_number<"member1", int>,
+		                   json_bool<"member2">>;
+#else
+		static inline constexpr char const member0[] = "member0";
+		static inline constexpr char const member1[] = "member1";
+		static inline constexpr char const member2[] = "member2";
+		using type =
+		  json_member_list<json_string<member0>, json_number<member1, int>,
+		                   json_bool<member2>>;
+#endif
+		static inline auto
+		to_json_data( daw::cookbook_class1::MyClass1 const &value ) {
+			return std::forward_as_tuple( value.member_0, value.member_1,
+			                              value.member_2 );
+		}
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {
@@ -74,17 +73,19 @@ int main( int argc, char **argv ) {
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
-	auto const cls = daw::json::from_json<daw::cookbook_class1::MyClass1>(
-	  std::string_view( data.data( ), data.size( ) ) );
+	daw::cookbook_class1::MyClass1 const cls =
+	  daw::json::from_json<daw::cookbook_class1::MyClass1>(
+	    std::string_view( data.data( ), data.size( ) ) );
 
 	daw_json_assert( cls.member_0 == "this is a test", "Unexpected value" );
 	daw_json_assert( cls.member_1 == 314159, "Unexpected value" );
 	daw_json_assert( cls.member_2 == true, "Unexpected value" );
-	auto const str = daw::json::to_json( cls );
+	std::string const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
-	auto const cls2 = daw::json::from_json<daw::cookbook_class1::MyClass1>(
-	  std::string_view( str.data( ), str.size( ) ) );
+	daw::cookbook_class1::MyClass1 const cls2 =
+	  daw::json::from_json<daw::cookbook_class1::MyClass1>(
+	    std::string_view( str.data( ), str.size( ) ) );
 
 	daw_json_assert( cls == cls2, "Unexpected round trip error" );
 }

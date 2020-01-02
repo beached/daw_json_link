@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -73,7 +73,8 @@ namespace daw::json::impl {
 			  rng.is_real_number_part( ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 
-			auto result = constructor_t{}( parse_real<element_t>( rng ) );
+			auto result =
+			  constructor_t{}( parse_real<element_t, JsonMember::simd_mode>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			daw_json_assert_untrusted(
 			  rng.at_end_of_item( ),
@@ -116,7 +117,8 @@ namespace daw::json::impl {
 			  rng.is_real_number_part( ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 			auto result = constructor_t{}(
-			  parse_unsigned_integer<element_t, JsonMember::range_check>( rng ) );
+			  parse_unsigned_integer<element_t, JsonMember::range_check,
+			                         JsonMember::simd_mode>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			daw_json_assert_untrusted(
 			  rng.at_end_of_item( ),
@@ -187,24 +189,29 @@ namespace daw::json::impl {
 
 		template<bool IsTrustedInput>
 		constexpr unsigned to_nibble( unsigned chr ) {
-			if( auto tmp = chr - static_cast<unsigned>( '0' ); tmp < 10U ) {
-				return tmp;
-			}
-			if( auto tmp = chr - static_cast<unsigned>( 'a' ); tmp < 6U ) {
-				return tmp + 10U;
-			}
-			auto tmp = chr - static_cast<unsigned>( 'A' );
-			daw_json_assert_untrusted( tmp < 6U, "Expected nibble" );
-			return tmp + 10U;
+			auto const b = static_cast<int>( chr );
+			int const maskLetter = ( ( '9' - b ) >> 31 );
+			int const maskSmall = ( ( 'Z' - b ) >> 31 );
+			int const offset = '0' + ( maskLetter & int( 'A' - '0' - 10 ) ) +
+			                   ( maskSmall & int( 'a' - 'A' ) );
+			auto const result = static_cast<unsigned>( b - offset );
+			daw_json_assert( result < 16U, "Expected a hex nibble" );
+			return result;
 		}
+		static_assert( to_nibble<true>( static_cast<unsigned>( '0' ) ) == 0U );
+		static_assert( to_nibble<true>( static_cast<unsigned>( '9' ) ) == 9U );
+		static_assert( to_nibble<true>( static_cast<unsigned>( 'a' ) ) == 10U );
+		static_assert( to_nibble<true>( static_cast<unsigned>( 'A' ) ) == 10U );
+		static_assert( to_nibble<true>( static_cast<unsigned>( 'f' ) ) == 15U );
+		static_assert( to_nibble<true>( static_cast<unsigned>( 'F' ) ) == 15U );
 
 		template<typename First, typename Last, bool IsTrustedInput>
 		constexpr uint16_t byte_from_nibbles(
 		  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
-			auto n0 =
+			auto const n0 =
 			  to_nibble<IsTrustedInput>( static_cast<unsigned>( rng.front( ) ) );
 			rng.remove_prefix( );
-			auto n1 =
+			auto const n1 =
 			  to_nibble<IsTrustedInput>( static_cast<unsigned>( rng.front( ) ) );
 			rng.remove_prefix( );
 			return static_cast<uint16_t>( ( n0 << 4U ) | n1 );

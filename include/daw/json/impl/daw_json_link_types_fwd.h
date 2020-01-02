@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -45,7 +45,8 @@ namespace daw::json {
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 	         typename Constructor = daw::construct_a_t<T>,
 	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-	         JsonNullable Nullable = JsonNullable::Never>
+	         JsonNullable Nullable = JsonNullable::Never,
+	         SIMDModes SIMDMode = SIMDModes::None>
 	struct json_number;
 
 	/**
@@ -64,6 +65,25 @@ namespace daw::json {
 	using json_number_null = json_number<Name, T, LiteralAsString, Constructor,
 	                                     RangeCheck, JsonNullable::Nullable>;
 
+#ifdef DAW_ALLOW_SSE3
+	/**
+	 * The member is a nullable number.  Requires at least 16bytes padding after
+	 * any value
+	 * @tparam Name name of json member
+	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+	 * Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 * @tparam RangeCheck Check if the value will fit in the result
+	 */
+	template<JSONNAMETYPE Name, typename T = double,
+	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
+	         typename Constructor = daw::construct_a_t<T>,
+	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
+	         JsonNullable Nullable = JsonNullable::Never>
+	using json_number_sse3 = json_number<Name, T, LiteralAsString, Constructor,
+	                                     RangeCheck, Nullable, SIMDModes::SSE3>;
+#endif
 	/**
 	 * The member is a range checked number
 	 * @tparam Name name of json member
@@ -81,6 +101,25 @@ namespace daw::json {
 	  json_number<Name, T, LiteralAsString, Constructor,
 	              JsonRangeCheck::CheckForNarrowing, Nullable>;
 
+#ifdef DAW_ALLOW_SSE3
+	/**
+	 * The member is a range checked number Requires at least 16bytes padding
+	 * after any value
+	 * @tparam Name name of json member
+	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+	 * Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 * @tparam Nullable Can the member be missing or have a null value
+	 */
+	template<JSONNAMETYPE Name, typename T = double,
+	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
+	         typename Constructor = daw::construct_a_t<T>,
+	         JsonNullable Nullable = JsonNullable::Never>
+	using json_checked_number_sse3 =
+	  json_number_sse3<Name, T, LiteralAsString, Constructor,
+	                   JsonRangeCheck::CheckForNarrowing, Nullable>;
+#endif
 	/**
 	 * The member is a nullable range checked number
 	 * @tparam Name name of json member
@@ -264,14 +303,15 @@ namespace daw::json {
 			using ary_val_t = std::conditional_t<
 			  is_a_json_type_v<T>, T,
 			  std::conditional_t<
-			    has_json_parser_description_v<T>, json_class<Name, T>,
+			    has_json_data_contract_trait_v<T>, json_class<Name, T>,
 			    std::conditional_t<
 			      std::is_same_v<T, bool>, json_bool<Name, T>,
 			      std::conditional_t<
 			        std::is_arithmetic_v<T> or std::is_enum_v<T>,
 			        json_number<Name, T>,
 			        std::conditional_t<daw::traits::is_string_v<T>,
-			                           json_string<Name, T>, void>>>>>;
+			                           json_string<Name, T>,
+			                           daw::json::missing_json_data_contract_for<T>>>>>>;
 		}
 	} // namespace impl
 

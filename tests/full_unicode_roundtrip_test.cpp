@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -31,34 +31,27 @@ struct unicode_data {
 	std::string escaped;
 	std::string unicode;
 };
-
-#ifdef __cpp_nontype_template_parameter_class
-static inline auto json_data_contract_for( unicode_data ) {
-	using namespace daw::json;
-	return daw::json::json_data_contract<json_string<"escaped">,
-	                                     json_string<"unicode">>{};
-}
-#else
-namespace symbols_unicode_data {
-	constexpr static char const escaped[] = "escaped";
-	constexpr static char const unicode[] = "unicode";
-} // namespace symbols_unicode_data
-
-static inline auto json_data_contract_for( unicode_data ) {
-	using namespace daw::json;
-	return daw::json::json_data_contract<
-	  json_string<symbols_unicode_data::escaped>,
-	  json_string<symbols_unicode_data::unicode>>{};
-}
-#endif
-
-static inline auto to_json_data( unicode_data const &value ) {
-	return std::forward_as_tuple( value.escaped, value.unicode );
-}
-
 bool operator==( unicode_data const &lhs, unicode_data const &rhs ) {
-	return to_json_data( lhs ) == to_json_data( rhs );
+	return std::tie( lhs.escaped, lhs.unicode ) ==
+	       std::tie( rhs.escaped, rhs.unicode );
 }
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<unicode_data> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type =
+		  json_member_list<json_string<"escaped">, json_string<"unicode">>;
+#else
+		constexpr inline static char const escaped[] = "escaped";
+		constexpr inline static char const unicode[] = "unicode";
+		using type = json_member_list<json_string<escaped>, json_string<unicode>>;
+#endif
+		static inline auto to_json_data( unicode_data const &value ) {
+			return std::forward_as_tuple( value.escaped, value.unicode );
+		}
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;
@@ -77,10 +70,12 @@ int main( int argc, char **argv ) {
 	auto const json_str_escaped =
 	  daw::filesystem::memory_mapped_file_t<>( argv[2] );
 
-	auto unicode_test = from_json_array<unicode_data>(
-	  std::string_view( json_str.data( ), json_str.size( ) ) );
-	auto unicode_test_from_escaped = from_json_array<unicode_data>(
-	  std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
+	std::vector<unicode_data> const unicode_test =
+	  daw::json::from_json_array<unicode_data>(
+	    std::string_view( json_str.data( ), json_str.size( ) ) );
+	std::vector<unicode_data> const unicode_test_from_escaped =
+	  daw::json::from_json_array<unicode_data>(
+	    std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
 
 	daw_json_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
 	                 "Expected same size" );
@@ -89,9 +84,10 @@ int main( int argc, char **argv ) {
 	daw_json_assert( mismatch_pos.first == unicode_test.end( ),
 	                 "Should be the same after parsing" );
 
-	auto const json_str2 = to_json_array( unicode_test );
-	auto unicode_test2 = from_json_array<unicode_data>(
-	  std::string_view( json_str2.data( ), json_str2.size( ) ) );
+	std::string const json_str2 = daw::json::to_json_array( unicode_test );
+	std::vector<unicode_data> unicode_test2 =
+	  daw::json::from_json_array<unicode_data>(
+	    std::string_view( json_str2.data( ), json_str2.size( ) ) );
 
 	auto mismatch_pos2 = std::mismatch(
 	  unicode_test.begin( ), unicode_test.end( ), unicode_test2.begin( ) );

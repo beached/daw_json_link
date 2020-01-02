@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -35,34 +35,30 @@ namespace daw::cookbook_kv2 {
 		std::unordered_map<intmax_t, std::string> kv;
 	};
 
-#if defined( __cpp_nontype_template_parameter_class )
-	auto json_data_contract_for( MyKeyValue2 const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_key_value_array<"kv", std::unordered_map<intmax_t, std::string>,
-		                       json_string_raw<"value">, intmax_t>>{};
-	}
-#else
-	namespace symbols_MyKeyValue2 {
-		static constexpr char const kv[] = "kv";
-		static constexpr char const value[] = "value";
-	} // namespace symbols_MyKeyValue2
-	auto json_data_contract_for( MyKeyValue2 ) {
-		using namespace daw::json;
-		return json_data_contract<json_key_value_array<
-		  symbols_MyKeyValue2::kv, std::unordered_map<intmax_t, std::string>,
-		  json_string_raw<symbols_MyKeyValue2::value>, intmax_t>>{};
-	}
-
-#endif
-	auto to_json_data( MyKeyValue2 const &value ) {
-		return std::forward_as_tuple( value.kv );
-	}
-
 	bool operator==( MyKeyValue2 const &lhs, MyKeyValue2 const &rhs ) {
 		return lhs.kv == rhs.kv;
 	}
 } // namespace daw::cookbook_kv2
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::cookbook_kv2::MyKeyValue2> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<
+		  json_key_value_array<"kv", std::unordered_map<intmax_t, std::string>,
+		                       json_string_raw<"value">, intmax_t>>;
+#else
+		static inline constexpr char const kv[] = "kv";
+		static inline constexpr char const value[] = "value";
+		using type = json_member_list<
+		  json_key_value_array<kv, std::unordered_map<intmax_t, std::string>,
+		                       json_string_raw<value>, intmax_t>>;
+#endif
+		static inline auto to_json_data( daw::cookbook_kv2::MyKeyValue2 const &v ) {
+			return std::forward_as_tuple( v.kv );
+		}
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {
