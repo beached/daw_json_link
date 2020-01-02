@@ -312,8 +312,8 @@ namespace daw::json {
       json_number<"b">
     >;
 
-    static inline auto to_json_data( AggClass const & ) {
-      return std::forward_as_tuple( c.a, c.b );
+    static inline auto to_json_data( AggClass const & value ) {
+      return std::forward_as_tuple( value.a, value.b );
     }
   };
 }
