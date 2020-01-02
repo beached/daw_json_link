@@ -390,32 +390,34 @@ namespace daw::json {
 	/**
 	 * Parse json and construct a T as the result.  This method
 	 * provides checked json
-	 * @tparam JsonClass type that has a json_data_contract_for overload
+	 * @tparam JsonClass type that has specialization of
+	 * daw::json::json_data_contract
 	 * @param json_data Json string data
 	 * @return A reified T constructed from json data
 	 */
 	template<typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json( std::string_view json_data ) {
-		static_assert(
-		  impl::has_json_data_contract_trait_v<JsonClass>,
-		  "Expected a typed that has been mapped via json_data_contract_for" );
+		static_assert( impl::has_json_data_contract_trait_v<JsonClass>,
+		               "Expected a typed that has been mapped via specialization "
+		               "of daw::json::json_data_contract" );
 		return impl::from_json_impl<JsonClass, false>( json_data );
 	}
 
 	/**
 	 * Parse json and construct a JsonClass as the result.  This method
 	 * does not perform most checks on validity of data
-	 * @tparam JsonClass type that has a json_data_contract_for overload
+	 * @tparam JsonClass type that has specialization of
+	 * daw::json::json_data_contract
 	 * @param json_data Json string data
 	 * @return A reified JsonClass constructed from json data
 	 */
 	template<typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json_trusted( std::string_view json_data ) {
-		static_assert(
-		  impl::has_json_data_contract_trait_v<JsonClass>,
-		  "Expected a typed that has been mapped via json_data_contract_for" );
+		static_assert( impl::has_json_data_contract_trait_v<JsonClass>,
+		               "Expected a typed that has been mapped via specialization "
+		               "of daw::json::json_data_contract" );
 
 		return impl::from_json_impl<JsonClass, true>( json_data );
 	}
@@ -431,9 +433,9 @@ namespace daw::json {
 	template<typename Result = std::string, typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr Result
 	to_json( JsonClass const &value ) {
-		static_assert(
-		  impl::has_json_data_contract_trait_v<JsonClass>,
-		  "A function called json_data_contract_for must exist for type." );
+		static_assert( impl::has_json_data_contract_trait_v<JsonClass>,
+		               "Expected a typed that has been mapped via specialization "
+		               "of daw::json::json_data_contract" );
 		static_assert( impl::has_json_to_json_data_v<JsonClass>,
 		               "A function called to_json_data must exist for type." );
 
