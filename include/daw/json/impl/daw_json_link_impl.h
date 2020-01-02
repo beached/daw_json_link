@@ -515,9 +515,10 @@ namespace daw::json::impl {
 		template<typename JsonClass, bool IsTrustedInput>
 		[[maybe_unused, nodiscard]] constexpr JsonClass
 		from_json_impl( std::string_view json_data ) {
-			static_assert(
-			  impl::has_json_data_contract_trait_v<JsonClass>,
-			  "A function call json_data_contract_for must exist for type." );
+			static_assert( impl::has_json_data_contract_trait_v<JsonClass>,
+			               "Expected a typed that has been mapped via specialization "
+			               "of daw::json::json_data_contract" );
+
 			daw_json_assert_untrusted( not json_data.empty( ),
 			                           "Attempt to parse empty string" );
 
