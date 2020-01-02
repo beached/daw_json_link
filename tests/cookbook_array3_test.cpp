@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -37,35 +37,34 @@ namespace daw::cookbook_array3 {
 		std::vector<std::string> member2;
 	};
 
-#if defined( __cpp_nontype_template_parameter_class )
-	auto json_data_contract_for( MyArrayClass1 const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_number<"member0", int>,
-		                          json_array<"member1", int>,
-		                          json_array<"member2", std::string>>{};
+	bool operator==( MyArrayClass1 const &lhs, MyArrayClass1 const &rhs ) {
+		return std::tie( lhs.member0, lhs.member1, lhs.member2 ) ==
+		       std::tie( rhs.member0, rhs.member1, rhs.member2 );
 	}
+} // namespace daw::cookbook_array3
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::cookbook_array3::MyArrayClass1> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type =
+		  json_member_list<json_number<"member0", int>, json_array<"member1", int>,
+		                   json_array<"member2", std::string>>;
 #else
-	namespace symbols_MyArrayClass1 {
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
-	} // namespace symbols_MyArrayClass1
-	auto json_data_contract_for( MyArrayClass1 const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_number<symbols_MyArrayClass1::member0, int>,
-		  json_array<symbols_MyArrayClass1::member1, int>,
-		  json_array<symbols_MyArrayClass1::member2, std::string>>{};
-	}
+		using type =
+		  json_member_list<json_number<member0, int>, json_array<member1, int>,
+		                   json_array<member2, std::string>>;
 #endif
-	auto to_json_data( MyArrayClass1 const &value ) {
-		return std::forward_as_tuple( value.member0, value.member1, value.member2 );
-	}
-
-	bool operator==( MyArrayClass1 const &lhs, MyArrayClass1 const &rhs ) {
-		return to_json_data( lhs ) == to_json_data( rhs );
-	}
-} // namespace daw::cookbook_array3
+		static inline auto
+		to_json_data( daw::cookbook_array3::MyArrayClass1 const &value ) {
+			return std::forward_as_tuple( value.member0, value.member1,
+			                              value.member2 );
+		}
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {

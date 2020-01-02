@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -63,13 +63,14 @@ int main( int argc, char **argv ) {
 
 	std::cout << std::flush;
 
-	std::optional<twitter_object_t> twitter_result{};
-	std::optional<citm_object_t> citm_result{};
-	std::optional<canada_object_t> canada_result{};
+	std::optional<daw::twitter::twitter_object_t> twitter_result{};
+	std::optional<daw::citm::citm_object_t> citm_result{};
+	std::optional<daw::canada::canada_object_t> canada_result{};
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_twitter bench", json_sv1.size( ),
 	  [&twitter_result]( auto f1 ) {
-		  twitter_result = daw::json::from_json<twitter_object_t>( f1 );
+		  twitter_result =
+		    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
@@ -84,7 +85,8 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_twitter bench trusted", json_sv1.size( ),
 	  [&twitter_result]( auto f1 ) {
-		  twitter_result = daw::json::from_json_trusted<twitter_object_t>( f1 );
+		  twitter_result =
+		    daw::json::from_json_trusted<daw::twitter::twitter_object_t>( f1 );
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
@@ -99,7 +101,7 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_citm bench", json_sv2.size( ),
 	  [&citm_result]( auto f2 ) {
-		  citm_result = daw::json::from_json<citm_object_t>( f2 );
+		  citm_result = daw::json::from_json<daw::citm::citm_object_t>( f2 );
 	  },
 	  json_sv2 );
 	daw::do_not_optimize( citm_result );
@@ -116,7 +118,8 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_citm bench trusted", json_sv2.size( ),
 	  [&citm_result]( auto f2 ) {
-		  citm_result = daw::json::from_json_trusted<citm_object_t>( f2 );
+		  citm_result =
+		    daw::json::from_json_trusted<daw::citm::citm_object_t>( f2 );
 	  },
 	  json_sv2 );
 	daw_json_assert( citm_result, "Missing value" );
@@ -132,7 +135,7 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_canada bench", json_sv3.size( ),
 	  [&canada_result]( auto f3 ) {
-		  canada_result = daw::json::from_json<canada_object_t>( f3 );
+		  canada_result = daw::json::from_json<daw::canada::canada_object_t>( f3 );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -144,7 +147,8 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_canada bench trusted", json_sv3.size( ),
 	  [&canada_result]( auto f3 ) {
-		  canada_result = daw::json::from_json_trusted<canada_object_t>( f3 );
+		  canada_result =
+		    daw::json::from_json_trusted<daw::canada::canada_object_t>( f3 );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -156,9 +160,10 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
-		  twitter_result = daw::json::from_json<twitter_object_t>( f1 );
-		  citm_result = daw::json::from_json<citm_object_t>( f2 );
-		  canada_result = daw::json::from_json<canada_object_t>( f3 );
+		  twitter_result =
+		    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
+		  citm_result = daw::json::from_json<daw::citm::citm_object_t>( f2 );
+		  canada_result = daw::json::from_json<daw::canada::canada_object_t>( f3 );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -185,9 +190,12 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson bench trusted", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
-		  twitter_result = daw::json::from_json_trusted<twitter_object_t>( f1 );
-		  citm_result = daw::json::from_json_trusted<citm_object_t>( f2 );
-		  canada_result = daw::json::from_json_trusted<canada_object_t>( f3 );
+		  twitter_result =
+		    daw::json::from_json_trusted<daw::twitter::twitter_object_t>( f1 );
+		  citm_result =
+		    daw::json::from_json_trusted<daw::citm::citm_object_t>( f2 );
+		  canada_result =
+		    daw::json::from_json_trusted<daw::canada::canada_object_t>( f3 );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 

@@ -3,9 +3,9 @@
 ## Single Class
 ```json
 { 
-	"member0": "this is a test",
-	"member1": 314159,
-	"member2": true 
+  "member0": "this is a test",
+  "member1": 314159,
+  "member2": true 
 }
 ```
 The above JSON describes a class with three members, a string named `member0`, an integer named `member1`, and a boolean named `member2`
@@ -14,21 +14,25 @@ The C++ to contain and parse this could look like
 To see a working example using this code, look at the [cookbook_class1_test.cpp](../tests/cookbook_class1_test.cpp) test in tests
 ```cpp
 struct MyClass1 {
-	std::string member_0;
-	int member_1;
-	bool member_2;
+  std::string member_0;
+  int member_1;
+  bool member_2;
 };
 
-auto json_data_contract_for( MyClass1 const & ) {
-    using namespace daw::json;
-    return json_data_contract<
-			json_string_raw<"member0">, 
-			json_number<"member1", int>,
-			json_bool<"member2">>{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<daw::cookbook_class1::MyClass1> {
+    using type = json_member_list<
+      json_string<"member0">, 
+      json_number<"member1", int>,
+      json_bool<"member2">>;
 
-auto to_json_data( MyClass1 const & value ) {
-	return std::forward_as_tuple( value.member_0, value.member_1, value.member_2 );
+    static inline auto
+    to_json_data( daw::cookbook_class1::MyClass1 const &value ) {
+      return std::forward_as_tuple( value.member_0, value.member_1,
+                                    value.member_2 );
+    }
+  };
 }
 ```
 As you can see the local c++ member names do not have to match the json member names.
@@ -53,20 +57,24 @@ To see a working example using this code, look at the [cookbook_class2_test.cpp]
 // Code from previous MyClass1 example
 
 struct MyClass2 {
-    MyClass1 a;
-    unsigned b;
+  MyClass1 a;
+  unsigned b;
 };
 
-auto json_data_contract_for( MyClass2 const & ) {
-    using namespace daw::json;
-    return json_data_contract<
-			json_class<"a", MyClass1>, 
-			json_number<"b", unsigned>>{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyClass2> {
+    using type = json_member_list<
+      json_class<"a", MyClass1>,
+      json_number<"b", unsigned>
+    >;
 
-auto to_json_data( MyClass2 const & value ) {
-	return std::forward_as_tuple( value.a, value.b );
-}
+    static inline auto
+    to_json_data( MyClass2 const &value ) {
+      return std::forward_as_tuple( value.a, value.b );
+    }
+  };
+} // namespace daw::json
 ```
 
 As you can see, we only had to say that member `"a"` is of type MyClass1
@@ -89,18 +97,24 @@ To see a working example using this code, look at the [cookbook_class3_test.cpp]
 ```cpp
 // Code from previous MyClass1 example
 
-struct MyClass2 {
-    MyClass1 a;
+struct MyClass3 {
+  MyClass1 a;
 };
 
-auto json_data_contract_for( MyClass2 const & ) {
-    using namespace daw::json;
-    return json_data_contract<
-			json_class<"a", MyClass1>>{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyClass3> {
+    using type = json_member_list<
+      json_class<
+        "a",
+        daw::cookbook_class3::MyClass1>
+      >;
 
-auto to_json_data( MyClass2 const & value ) {
-	return std::forward_as_tuple( value.a );
+    static inline auto
+    to_json_data( MyClass3 const &value ) {
+      return std::forward_as_tuple( value.a );
+    }
+  };
 }
 ```
 

@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -42,78 +42,62 @@ namespace daw::cookbook_graphs1 {
 		bool member2;
 	};
 
-#ifdef __cpp_nontype_template_parameter_class
-	auto json_data_contract_for( Metadata const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_number<"member0", int>,
-		                          json_string<"member1">, json_bool<"member2">>{};
-	}
-#else
-	namespace symbols_Metadata {
-		static inline constexpr char const member0[] = "member0";
-		static inline constexpr char const member1[] = "member1";
-		static inline constexpr char const member2[] = "member2";
-	} // namespace symbols_Metadata
-
-	auto json_data_contract_for( Metadata const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_number<symbols_Metadata::member0, int>,
-		                          json_string<symbols_Metadata::member1>,
-		                          json_bool<symbols_Metadata::member2>>{};
-	}
-#endif
-
 	struct GraphNode {
 		size_t id;
 		Metadata metadata;
 	};
 
-#ifdef __cpp_nontype_template_parameter_class
-	auto json_data_contract_for( GraphNode const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_number<"id", size_t, LiteralAsStringOpt::Always>,
-		  json_class<"metadata", Metadata>>{};
-	}
-#else
-	namespace symbols_GraphNode {
-		static inline constexpr char const id[] = "id";
-		static inline constexpr char const metadata[] = "metadata";
-	} // namespace symbols_GraphNode
-	auto json_data_contract_for( GraphNode const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_number<symbols_GraphNode::id, size_t, LiteralAsStringOpt::Always>,
-		  json_class<symbols_GraphNode::metadata, Metadata>>{};
-	}
-#endif
-
 	struct GraphEdge {
 		size_t source;
 		size_t target;
 	};
+} // namespace daw::cookbook_graphs1
 
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::cookbook_graphs1::Metadata> {
 #ifdef __cpp_nontype_template_parameter_class
-	auto json_data_contract_for( GraphEdge const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_number<"source", size_t, LiteralAsStringOpt::Always>,
-		  json_number<"target", size_t, LiteralAsStringOpt::Always>>{};
-	}
+		using type = json_member_list<json_number<"member0", int>,
+		                              json_string<"member1">, json_bool<"member2">>;
 #else
-	namespace symbols_GraphEdge {
+		static inline constexpr char const member0[] = "member0";
+		static inline constexpr char const member1[] = "member1";
+		static inline constexpr char const member2[] = "member2";
+		using type = json_member_list<json_number<member0, int>,
+		                              json_string<member1>, json_bool<member2>>;
+#endif
+	};
+
+	template<>
+	struct json_data_contract<daw::cookbook_graphs1::GraphNode> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type =
+		  json_member_list<json_number<"id", size_t, LiteralAsStringOpt::Always>,
+		                   json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
+#else
+		static inline constexpr char const id[] = "id";
+		static inline constexpr char const metadata[] = "metadata";
+		using type =
+		  json_member_list<json_number<id, size_t, LiteralAsStringOpt::Always>,
+		                   json_class<metadata, daw::cookbook_graphs1::Metadata>>;
+#endif
+	};
+
+	template<>
+	struct json_data_contract<daw::cookbook_graphs1::GraphEdge> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<
+		  json_number<"source", size_t, LiteralAsStringOpt::Always>,
+		  json_number<"target", size_t, LiteralAsStringOpt::Always>>;
+#else
 		static inline constexpr char const source[] = "source";
 		static inline constexpr char const target[] = "target";
-	} // namespace symbols_GraphEdge
-	auto json_data_contract_for( GraphEdge const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_number<symbols_GraphEdge::source, size_t,
-		                                      LiteralAsStringOpt::Always>,
-		                          json_number<symbols_GraphEdge::target, size_t,
-		                                      LiteralAsStringOpt::Always>>{};
-	}
+		using type =
+		  json_member_list<json_number<source, size_t, LiteralAsStringOpt::Always>,
+		                   json_number<target, size_t, LiteralAsStringOpt::Always>>;
 #endif
-} // namespace daw::cookbook_graphs1
+	};
+} // namespace daw::json
 
 struct Node {
 	size_t id;

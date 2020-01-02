@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -137,7 +137,7 @@ namespace daw::json::impl {
 				if constexpr( SIMDMode == SIMDModes::SSE3 ) {
 					return unsigned_parser<iresult_t>::parse_sse2( rng.first );
 				} else {
-#endif 
+#endif
 					return unsigned_parser<iresult_t>::parse( rng.first );
 #ifdef DAW_ALLOW_SSE3
 				}

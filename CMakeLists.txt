@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(daw_json_link_prj)
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
+
+message( "CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}" )
 enable_testing()
 
 include("${CMAKE_SOURCE_DIR}/dependent_projects/CMakeListsCompiler.txt")
@@ -36,12 +38,12 @@ else ()
 endif ()
 
 set(DAW_ALLOW_SSE3 ON CACHE STRING "Allow SSE3 Modes")
-if(DAW_ALLOW_SSE3)
+if (DAW_ALLOW_SSE3)
     message("DAW_ALLOW_SSE3=ON: Allow SSE3 Modes")
     add_compile_definitions(DAW_ALLOW_SSE3=true)
-else()
+else ()
     message("DAW_ALLOW_SSE3=OFF: Do not allow SSE3 Modes")
-endif()
+endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(GLEAN_CACHE "${CMAKE_SOURCE_DIR}/.glean/debug")
@@ -109,7 +111,6 @@ set(HEADER_FILES
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 add_custom_target(full)
 add_dependencies(check full)
-
 
 
 add_executable(daw_json_link_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_link_test.cpp)
@@ -200,6 +201,18 @@ add_dependencies(twitter_test_basic_bin dependency_stub)
 target_link_libraries(twitter_test_basic_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 add_test(NAME twitter_test_basic COMMAND twitter_test_basic_bin ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full twitter_test_basic_bin)
+
+add_executable(canada_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/canada_test.h ${TEST_FOLDER}/canada_test.cpp)
+add_dependencies(canada_test_bin dependency_stub)
+target_link_libraries(canada_test_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+add_test(NAME canada_test COMMAND canada_test_bin ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full canada_test_bin)
+
+add_executable(canada_test_basic_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/canada_test.h ${TEST_FOLDER}/canada_test_basic.cpp)
+add_dependencies(canada_test_basic_bin dependency_stub)
+target_link_libraries(canada_test_basic_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+add_test(NAME canada_test_basic COMMAND canada_test_basic_bin ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full canada_test_basic_bin)
 
 add_executable(kv_map_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/kv_map_test.cpp)
 add_dependencies(kv_map_test_bin dependency_stub)

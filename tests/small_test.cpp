@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -29,29 +29,25 @@ namespace daw {
 		int a;
 	};
 
-#if defined( __cpp_nontype_template_parameter_class )
-	auto json_data_contract_for( Data const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_number<"a", int>>{};
-	}
-#else
-	namespace symbols_Data {
-		static constexpr char const a[] = "a";
-	} // namespace symbols_Data
-
-	auto json_data_contract_for( Data const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_number<symbols_Data::a, int>>{};
-	}
-#endif
-	auto to_json_data( Data const &value ) {
-		return std::forward_as_tuple( value.a );
-	}
-
 	bool operator==( Data const &lhs, Data const &rhs ) {
-		return to_json_data( lhs ) == to_json_data( rhs );
+		return lhs.a == rhs.a;
 	}
 } // namespace daw
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::Data> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<json_number<"a", int>>;
+#else
+		static constexpr char const a[] = "a";
+		using type = json_member_list<json_number<a, int>>;
+#endif
+		static inline auto to_json_data( daw::Data const &value ) {
+			return std::forward_as_tuple( value.a );
+		}
+	}; // namespace daw::json
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {
@@ -60,7 +56,7 @@ int main( int argc, char **argv ) {
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
-	auto const cls = daw::json::from_json<daw::Data>(
+	daw::Data const cls = daw::json::from_json<daw::Data>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
 	daw_json_assert( cls.a == 12345, "Unexpected value" );

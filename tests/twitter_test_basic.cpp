@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -42,7 +42,7 @@ int main( int argc, char **argv ) {
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 
 	auto const twitter_result =
-	  daw::json::from_json<twitter_object_t>( json_sv1 );
+	  daw::json::from_json<daw::twitter::twitter_object_t>( json_sv1 );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result.statuses.front( ).user.id == 1186275104,

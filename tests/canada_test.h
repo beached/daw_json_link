@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -31,160 +31,128 @@
 #include <utility>
 #include <vector>
 
-namespace {
-	struct properties_t {
-		std::string_view name;
-	}; // properties_t
+namespace daw::canada {
+	namespace {
+		struct properties_t {
+			std::string_view name;
+		}; // properties_t
 
+		struct geometry_t {
+			std::string_view type;
+			std::vector<std::vector<std::array<double, 2>>> coordinates;
+		}; // geometry_t
+
+		struct features_element_t {
+			std::string_view type;
+			properties_t properties;
+			geometry_t geometry;
+		}; // features_element_t
+
+		struct canada_object_t {
+			std::string_view type;
+			std::vector<features_element_t> features;
+		}; // canada_object_t
+
+		template<typename T>
+		struct array_appender {
+			T *ptr;
+
+			template<size_t N>
+			inline array_appender( std::array<T, N> &ary ) noexcept
+			  : ptr( ary.data( ) ) {}
+
+			template<typename U>
+			inline void operator( )( U &&item ) noexcept {
+				*ptr++ = std::forward<U>( item );
+			}
+		};
+	} // namespace
+} // namespace daw::canada
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::canada::properties_t> {
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto
-	json_data_contract_for( properties_t ) {
-		using namespace daw::json;
-		return daw::json::json_data_contract<
-		  json_string_raw<"name", std::string_view>>{};
-	}
+		using type = json_member_list<json_string_raw<"name", std::string_view>>;
 #else
-	namespace symbols_properties_t {
-		static constexpr char const name[] = "name";
-	}
-
-	[[nodiscard, maybe_unused]] inline auto
-	json_data_contract_for( properties_t ) {
-		using namespace daw::json;
-		return daw::json::json_data_contract<
-		  json_string_raw<symbols_properties_t::name, std::string_view>>{};
-	}
+		static inline constexpr char const name[] = "name";
+		using type = json_member_list<json_string_raw<name, std::string_view>>;
 #endif
-
-	[[nodiscard, maybe_unused]] inline auto
-	to_json_data( properties_t const &value ) {
-		return std::forward_as_tuple( value.name );
-	}
-
-	struct geometry_t {
-		std::string_view type;
-		std::vector<std::vector<std::array<double, 2>>> coordinates;
-	}; // geometry_t
-
-	template<typename T>
-	struct array_appender {
-		T *ptr;
-
-		template<size_t N>
-		constexpr array_appender( std::array<T, N> &ary ) noexcept
-		  : ptr( ary.data( ) ) {}
-
-		template<typename U>
-		constexpr void operator( )( U &&item ) noexcept {
-			*ptr++ = std::forward<U>( item );
+		[[nodiscard, maybe_unused]] static inline auto
+		to_json_data( daw::canada::properties_t const &value ) {
+			return std::forward_as_tuple( value.name );
 		}
 	};
 
+	template<>
+	struct json_data_contract<daw::canada::geometry_t> {
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( geometry_t ) {
-		using namespace daw::json;
-		return daw::json::json_data_contract<
+		using type = json_member_list<
 		  json_string_raw<"type", std::string_view>,
 		  json_array<
 		    "coordinates",
 		    json_array<no_name,
 		               json_array<no_name, double, std::array<double, 2>,
 		                          daw::construct_a_t<std::array<double, 2>>,
-		                          array_appender<double>>>>>{};
-	}
+		                          daw::canada::array_appender<double>>>>>;
 #else
-	namespace symbols_geometry_t {
-		static constexpr char const type[] = "type";
-		static constexpr char const coordinates[] = "coordinates";
-	} // namespace symbols_geometry_t
-
-	[[nodiscard, maybe_unused]] inline auto json_data_contract_for( geometry_t ) {
-		using namespace daw::json;
-
-		return daw::json::json_data_contract<
-		  json_string_raw<symbols_geometry_t::type, std::string_view>,
+		static inline constexpr char const type_sym[] = "type";
+		static inline constexpr char const coordinates[] = "coordinates";
+		using type = json_member_list<
+		  json_string_raw<type_sym, std::string_view>,
 		  json_array<
-		    symbols_geometry_t::coordinates,
+		    coordinates,
 		    json_array<no_name,
 		               json_array<no_name, double, std::array<double, 2>,
 		                          daw::construct_a_t<std::array<double, 2>>,
-		                          array_appender<double>>>>>{};
-	}
+		                          daw::canada::array_appender<double>>>>>;
 #endif
+		[[nodiscard, maybe_unused]] static inline auto
+		to_json_data( daw::canada::geometry_t const &value ) {
+			return std::forward_as_tuple( value.type, value.coordinates );
+		}
+	};
 
-	[[nodiscard, maybe_unused]] inline auto
-	to_json_data( geometry_t const &value ) {
-		return std::forward_as_tuple( value.type, value.coordinates );
-	}
-
-	struct features_element_t {
-		std::string_view type;
-		properties_t properties;
-		geometry_t geometry;
-	}; // features_element_t
-
+	template<>
+	struct json_data_contract<daw::canada::features_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto
-	json_data_contract_for( features_element_t ) {
-		using namespace daw::json;
-		return daw::json::json_data_contract<
-		  json_string_raw<"type", std::string_view>,
-		  json_class<"properties", properties_t>,
-		  json_class<"geometry", geometry_t>>{};
-	}
+		using type =
+		  json_member_list<json_string_raw<"type", std::string_view>,
+		                   json_class<"properties", daw::canada::properties_t>,
+		                   json_class<"geometry", daw::canada::geometry_t>>;
 #else
-	namespace symbols_features_element_t {
-		static constexpr char const type[] = "type";
-		static constexpr char const properties[] = "properties";
-		static constexpr char const geometry[] = "geometry";
-	} // namespace symbols_features_element_t
+		static inline constexpr char const type_sym[] = "type";
+		static inline constexpr char const properties[] = "properties";
+		static inline constexpr char const geometry[] = "geometry";
+		using type =
+		  json_member_list<json_string_raw<type_sym, std::string_view>,
+		                   json_class<properties, daw::canada::properties_t>,
+		                   json_class<geometry, daw::canada::geometry_t>>;
 
-	[[nodiscard, maybe_unused]] inline auto
-	json_data_contract_for( features_element_t ) {
-		using namespace daw::json;
-		return daw::json::json_data_contract<
-		  json_string_raw<symbols_features_element_t::type, std::string_view>,
-		  json_class<symbols_features_element_t::properties, properties_t>,
-		  json_class<symbols_features_element_t::geometry, geometry_t>>{};
-	}
+		[[nodiscard, maybe_unused]] static inline auto
+		to_json_data( daw::canada::features_element_t const &value ) {
+			return std::forward_as_tuple( value.type, value.properties,
+			                              value.geometry );
+		}
 #endif
+	};
 
-	[[nodiscard, maybe_unused]] inline auto
-	to_json_data( features_element_t const &value ) {
-		return std::forward_as_tuple( value.type, value.properties,
-		                              value.geometry );
-	}
-
-	struct canada_object_t {
-		std::string_view type;
-		std::vector<features_element_t> features;
-	}; // canada_object_t
-
+	template<>
+	struct json_data_contract<daw::canada::canada_object_t> {
 #ifdef __cpp_nontype_template_parameter_class
-	[[nodiscard, maybe_unused]] inline auto
-	json_data_contract_for( canada_object_t ) {
-		using namespace daw::json;
-		return daw::json::json_data_contract<
-		  json_string_raw<"type", std::string_view>,
-		  json_array<"features", features_element_t>>{};
-	}
+		using type =
+		  json_member_list<json_string_raw<"type", std::string_view>,
+		                   json_array<"features", daw::canada::features_element_t>>;
 #else
-	namespace symbols_canada_object_t {
-		static constexpr char const type[] = "type";
-		static constexpr char const features[] = "features";
-	} // namespace symbols_canada_object_t
-
-	[[nodiscard, maybe_unused]] inline auto
-	json_data_contract_for( canada_object_t ) {
-		using namespace daw::json;
-		return daw::json::json_data_contract<
-		  json_string_raw<symbols_canada_object_t::type, std::string_view>,
-		  json_array<symbols_canada_object_t::features, features_element_t>>{};
-	}
+		static inline constexpr char const type_sym[] = "type";
+		static inline constexpr char const features[] = "features";
+		using type =
+		  json_member_list<json_string_raw<type_sym, std::string_view>,
+		                   json_array<features, daw::canada::features_element_t>>;
 #endif
-
-	[[nodiscard, maybe_unused]] inline auto
-	to_json_data( canada_object_t const &value ) {
-		return std::forward_as_tuple( value.type, value.features );
-	}
-} // namespace
+		[[nodiscard, maybe_unused]] static inline auto
+		to_json_data( daw::canada::canada_object_t const &value ) {
+			return std::forward_as_tuple( value.type, value.features );
+		}
+	};
+} // namespace daw::json

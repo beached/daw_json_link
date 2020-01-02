@@ -16,46 +16,46 @@ To see a working example using this code, look at the [cookbook_enums1_test.cpp]
 enum class Colours : uint8_t { red, green, blue, black };
 
 constexpr std::string_view to_string( Colours c ) {
-    switch( c ) {
-        case Colours::red: return "red";
-        case Colours::green: return "green";
-        case Colours::blue: return "blue";
-        case Colours::black: return "black";
-    }
-    std::abort( );
+  switch( c ) {
+    case Colours::red: return "red";
+    case Colours::green: return "green";
+    case Colours::blue: return "blue";
+    case Colours::black: return "black";
+  }
+  std::abort( );
 }
 
 constexpr Colours from_string( daw::tag_t<Colours>, std::string_view sv ) {
-    if( sv == "red" ) {
-        return Colours::red;
-    }
-    if( sv == "green" ) {
-        return Colours::green;
-    }
-    if( sv == "blue" ) {
-        return Colours::blue;
-    }
-    if( sv == "black" ) {
-        return Colours::black;
-    }
-    std::abort( );
+  if( sv == "red" ) {
+    return Colours::red;
+  }
+  if( sv == "green" ) {
+    return Colours::green;
+  }
+  if( sv == "blue" ) {
+    return Colours::blue;
+  }
+  if( sv == "black" ) {
+    return Colours::black;
+  }
+  std::abort( );
 }
 
 struct MyClass1 {
-    std::vector<Colours> member0;
+  std::vector<Colours> member0;
 };
 
-auto json_data_contract_for( MyClass1 const & ) {
-  using namespace daw::json;
-  return json_data_contract<
-    json_array<"member0", std::vector<Colours>,
-      json_custom<no_name, Colours>
-    >
-  >{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyClass1> {
+    using type = json_member_list<json_array<
+      "member0", json_custom<no_name, Colours>>>;
 
-auto to_json_data( MyClass1 const &value ) {
-    return std::forward_as_tuple( value.member0 );
+    static inline auto
+    to_json_data( MyClass1 const &value ) {
+      return std::forward_as_tuple( value.member0 );
+    }
+  };
 }
 ```
 
@@ -81,18 +81,23 @@ To see a working example using this code, look at the [cookbook_enums2_test.cpp]
 enum class Colours : uint8_t { red, green, blue, black };
 
 struct MyClass1 {
-    std::vector<Colours> member0;
+  std::vector<Colours> member0;
 };
 
-auto json_data_contract_for( MyClass1 const & ) {
-  using namespace daw::json;
-  return json_data_contract<
-    json_array<"member0", std::vector<Colours>, Colours>
-    >
-  >{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyClass1> {
+    using type = json_member_list<
+      json_array<
+          "member0", 
+              daw::cookbook_enums2::Colours
+          >
+        >;
 
-auto to_json_data( MyClass1 const &value ) {
-  return std::forward_as_tuple( value.member0 );
+    static inline auto
+    to_json_data( MyClass1 const &value ) {
+      return std::forward_as_tuple( value.member0 );
+    }
+  };
 }
 ```

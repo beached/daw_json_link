@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -32,8 +32,32 @@
 
 #include <cstddef>
 
+namespace daw::json {
+	template<typename>
+	struct missing_json_data_contract_for {};
+
+	template<typename T>
+	struct json_data_contract {
+		using type = missing_json_data_contract_for<T>;
+	};
+} // namespace daw::json
+
 namespace daw::json::impl {
 	namespace {
+		template<typename T>
+		using json_data_contract_trait_t =
+		  typename daw::json::json_data_contract<T>::type;
+
+		template<typename T>
+		struct has_json_data_contract_trait
+		  : std::bool_constant<
+		      not std::is_same_v<daw::json::missing_json_data_contract_for<T>,
+		                         json_data_contract_trait_t<T>>> {};
+
+		template<typename T>
+		inline constexpr bool has_json_data_contract_trait_v =
+		  has_json_data_contract_trait<T>::value;
+
 		template<typename Container, typename Value>
 		using detect_push_back = decltype(
 		  std::declval<Container &>( ).push_back( std::declval<Value>( ) ) );
@@ -49,30 +73,6 @@ namespace daw::json::impl {
 		template<typename Container, typename Value>
 		inline constexpr bool has_insert_end_v =
 		  daw::is_detected_v<detect_insert_end, Container, Value>;
-
-		template<typename T>
-		using json_parser_description_impl = daw::remove_cvref_t<decltype(
-		  json_data_contract_for( std::declval<T>( ) ) )>;
-
-		template<typename T, std::enable_if_t<
-		                       daw::is_detected_v<json_parser_description_impl, T>,
-		                       std::nullptr_t> = nullptr>
-		[[maybe_unused]] auto json_parser_description( )
-		  -> json_parser_description_impl<T>;
-
-		template<
-		  typename T,
-		  std::enable_if_t<not daw::is_detected_v<json_parser_description_impl, T>,
-		                   std::nullptr_t> = nullptr>
-		[[maybe_unused]] auto json_parser_description( )
-		  -> json_parser_description_impl<traits::deref_t<T>>;
-
-		template<typename T>
-		using json_parser_description_t = decltype( json_parser_description<T>( ) );
-
-		template<typename T>
-		static inline constexpr bool has_json_parser_description_v =
-		  daw::is_detected_v<json_parser_description_t, T>;
 
 		template<typename JsonMember>
 		using json_result = typename JsonMember::parse_to_t;
@@ -110,8 +110,8 @@ namespace daw::json::impl {
 		};
 
 		template<typename T>
-		using json_parser_to_json_data_t =
-		  decltype( to_json_data( std::declval<T &>( ) ) );
+		using json_parser_to_json_data_t = decltype(
+		  daw::json::json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
 
 		template<typename T>
 		static inline constexpr bool has_json_to_json_data_v =
@@ -210,13 +210,12 @@ namespace daw::json {
 	template<typename T, typename First, typename Last, bool IsTrustedInput>
 	[[maybe_unused, nodiscard]] static constexpr T from_json(
 	  daw::json::impl::IteratorRange<First, Last, IsTrustedInput> &rng ) {
-		static_assert(
-		  impl::has_json_parser_description_v<T>,
-		  "A function call json_data_contract_for must exist for type." );
+		static_assert( impl::has_json_data_contract_trait_v<T>,
+		               "Missing daw::json::daata_contract_trait for your type." );
 		daw_json_assert_untrusted( rng.has_more( ),
 		                           "Attempt to parse empty string" );
 
-		T result = impl::json_parser_description_t<T>::template parse<T>( rng );
+		T result = impl::json_data_contract_trait_t<T>::template parse<T>( rng );
 		rng.trim_left( );
 		return result;
 	}

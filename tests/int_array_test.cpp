@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -37,23 +37,17 @@
 struct Number {
 	intmax_t a{};
 };
+namespace daw::json {
+	template<>
+	struct json_data_contract<Number> {
 #ifdef __cpp_nontype_template_parameter_class
-[[maybe_unused]] static constexpr auto
-json_data_contract_for( Number ) noexcept {
-	using namespace daw::json;
-	return json_data_contract<json_number<"a", intmax_t>>{};
-}
+		using type = json_member_list<json_number<"a", intmax_t>>;
 #else
-namespace symbols_Number {
-	static inline constexpr char const a[] = "a";
-}
-
-[[maybe_unused]] static constexpr auto
-json_data_contract_for( Number ) noexcept {
-	using namespace daw::json;
-	return json_data_contract<json_number<symbols_Number::a, intmax_t>>{};
-}
+		static inline constexpr char const a[] = "a";
+		using type = json_member_list<json_number<a, intmax_t>>;
 #endif
+	};
+} // namespace daw::json
 
 #ifndef NDEBUG
 static constexpr size_t const NUMVALUES = 1'000ULL;
@@ -103,7 +97,6 @@ int main( ) {
 		return result;
 	}( );
 
-	/*
 	std::cout << "Unchecked\n";
 	{ // Class of ints
 	  auto json_sv = std::string_view( json_data );
@@ -240,16 +233,15 @@ int main( ) {
 	    auto const count3 = *daw::bench_n_test_mbs<100>(
 	      "p3. int parsing 3", json_sv_intmax.size( ),
 	      [&]( auto &&sv ) noexcept {
-	        auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
-	        daw::do_not_optimize( data2 );
-	        return ptr - data2.get( );
+	        auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( )
+	); daw::do_not_optimize( data2 ); return ptr - data2.get( );
 	      },
 	      json_sv_intmax );
 
 	    std::cout << "element count 3: " << count3 << '\n';
 	  }
 	}
-	 */
+	
 	std::cout << "Unchecked unsigned\n";
 	{
 		// Unsigned

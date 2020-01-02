@@ -47,18 +47,27 @@ struct MyClass4 {
 	bool d;
 };
 
-auto json_data_contract_for( MyClass4 const & ) {
-    using namespace daw::json;
-    return json_data_contract<
-			json_string_raw<"a">,
-            json_number<"b", unsigned>,
-            json_number<"c", float>,
-            json_bool<"d">>{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyClass4> {
+  using type =
+  json_member_list<
+  json_string<"a">, 
+  json_number<"b", unsigned>,
+  json_number<"c", float>, 
+  json_bool<"d">
+  >;
 
-auto to_json_data( MyClass4 const & value ) {
-	return std::forward_as_tuple( value.a, value.b, value.c, value.d );
-}
+  static inline auto
+  to_json_data( MyClass4 const &value ) {
+  return std::forward_as_tuple( 
+  value.a, 
+  value.b, 
+  value.c, 
+  value.d );
+  }
+  };
+} // namespace daw::json
 
 std::vector<MyClass4> v = from_json_array<MyClass4>( str );
 ```
@@ -83,23 +92,26 @@ In C++ it could be represented like
 
 ```cpp
 struct MyArrayClass1 {
-    int member0;
-    std::vector<int> member1;
-    std::vector<std::string> member2;
+  int member0;
+  std::vector<int> member1;
+  std::vector<std::string> member2;
 };
 ```
-With the following functions defined to allow mapping of JSON
+With the following trait defined to allow mapping of JSON
 ```cpp
-auto json_data_contract_for( MyArrayClass1 const & ) {
-    using namespace daw::json;
-    return json_data_contract<
-            json_number<"member0", int>,
-            json_array<"member1", int>,
-            json_array<"member2", std::string>>{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyArrayClass1> {
+    using type = json_member_list<json_number<"member0", int>,
+      json_array<"member1", int>,
+      json_array<"member2", std::string>>;
 
-auto to_json_data( MyArrayClass1 const & value ) {
-	return std::forward_as_tuple( value.member0, value.member1, value.member2 );
+    static inline auto
+    to_json_data( MyArrayClass1 const &value ) {
+      return std::forward_as_tuple( value.member0, value.member1,
+                                    value.member2 );
+    }
+  };
 }
 ```
 

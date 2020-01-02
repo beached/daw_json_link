@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -54,7 +54,9 @@ int main( int argc, char **argv ) {
 
 	auto citm_result = daw::bench_n_test_mbs<NUMRUNS>(
 	  "citm_catalog bench", sz,
-	  []( auto f1 ) { return daw::json::from_json<citm_object_t>( f1 ); },
+	  []( auto f1 ) {
+		  return daw::json::from_json<daw::citm::citm_object_t>( f1 );
+	  },
 	  json_sv1 );
 	daw::do_not_optimize( citm_result );
 	daw_json_assert( citm_result, "Missing value" );

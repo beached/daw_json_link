@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -38,43 +38,39 @@ namespace daw::cookbook_variant1 {
 		std::variant<std::string, bool> member1;
 	};
 
-#if defined( __cpp_nontype_template_parameter_class )
-	auto json_data_contract_for( MyVariantStuff1 const & ) {
-		using namespace daw::json;
-		return json_data_contract<
+	bool operator==( MyVariantStuff1 const &lhs, MyVariantStuff1 const &rhs ) {
+		return lhs.member0 == rhs.member0 and lhs.member1 == rhs.member1;
+	}
+} // namespace daw::cookbook_variant1
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<daw::cookbook_variant1::MyVariantStuff1> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<
 		  json_variant<"member0", std::variant<int, std::string>,
 		               json_variant_type_list<json_number<no_name, int>,
 		                                      json_string<no_name>>>,
 		  json_variant<
 		    "member1", std::variant<std::string, bool>,
-		    json_variant_type_list<json_string<no_name>, json_bool<no_name>>>>{};
-	}
+		    json_variant_type_list<json_string<no_name>, json_bool<no_name>>>>;
 #else
-	namespace symbols_MyVariantStuff1 {
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
-	} // namespace symbols_MyVariantStuff1
-
-	auto json_data_contract_for( MyVariantStuff1 const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_variant<symbols_MyVariantStuff1::member0,
-		               std::variant<int, std::string>,
+		using type = json_member_list<
+		  json_variant<member0, std::variant<int, std::string>,
 		               json_variant_type_list<json_number<no_name, int>,
 		                                      json_string<no_name>>>,
 		  json_variant<
-		    symbols_MyVariantStuff1::member1, std::variant<std::string, bool>,
-		    json_variant_type_list<json_string<no_name>, json_bool<no_name>>>>{};
-	}
+		    member1, std::variant<std::string, bool>,
+		    json_variant_type_list<json_string<no_name>, json_bool<no_name>>>>;
 #endif
-	auto to_json_data( MyVariantStuff1 const &value ) {
-		return std::forward_as_tuple( value.member0, value.member1 );
-	}
-
-	bool operator==( MyVariantStuff1 const &lhs, MyVariantStuff1 const &rhs ) {
-		return lhs.member0 == rhs.member0 and lhs.member1 == rhs.member1;
-	}
-} // namespace daw::cookbook_variant1
+		static inline auto
+		to_json_data( daw::cookbook_variant1::MyVariantStuff1 const &value ) {
+			return std::forward_as_tuple( value.member0, value.member1 );
+		}
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {

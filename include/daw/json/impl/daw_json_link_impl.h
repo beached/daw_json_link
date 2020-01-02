@@ -1,6 +1,6 @@
 // The MIT License( MIT )
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -412,7 +412,7 @@ namespace daw::json::impl {
 		[[nodiscard]] constexpr JsonClass
 		parse_json_class( IteratorRange<First, Last, IsTrustedInput> &rng,
 		                  std::index_sequence<Is...> ) {
-			static_assert( has_json_parser_description_v<JsonClass>,
+			static_assert( has_json_data_contract_trait_v<JsonClass>,
 			               "Unexpected type" );
 			static_assert(
 			  can_construct_a_v<
@@ -516,12 +516,12 @@ namespace daw::json::impl {
 		[[maybe_unused, nodiscard]] constexpr JsonClass
 		from_json_impl( std::string_view json_data ) {
 			static_assert(
-			  impl::has_json_parser_description_v<JsonClass>,
+			  impl::has_json_data_contract_trait_v<JsonClass>,
 			  "A function call json_data_contract_for must exist for type." );
 			daw_json_assert_untrusted( not json_data.empty( ),
 			                           "Attempt to parse empty string" );
 
-			return impl::json_parser_description_t<JsonClass>::template parse<
+			return impl::json_data_contract_trait_t<JsonClass>::template parse<
 			  JsonClass, IsTrustedInput>( json_data );
 		}
 	} // namespace

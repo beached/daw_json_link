@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -34,210 +34,188 @@
 #include <sstream>
 #include <vector>
 
-namespace {
-	template<typename Real, bool Trusted = false, size_t N>
-	constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
-		auto rng =
-		  daw::json::impl::IteratorRange<char const *, char const *, Trusted>(
-		    str, str + N );
-		auto res = daw::json::impl::parse_real<Real>( rng );
-		return not( res < expected or res > expected );
+template<typename Real, bool Trusted = false, size_t N>
+constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
+	auto rng =
+	  daw::json::impl::IteratorRange<char const *, char const *, Trusted>(
+	    str, str + N );
+	auto res = daw::json::impl::parse_real<Real>( rng );
+	return not( res < expected or res > expected );
+}
+
+template<typename Unsigned, bool Trusted = false, size_t N>
+constexpr bool parse_unsigned_test( char const ( &str )[N],
+                                    Unsigned expected ) {
+	auto tmp =
+	  daw::json::impl::IteratorRange<char const *, char const *, Trusted>(
+	    str, str + N );
+	return daw::json::impl::parse_unsigned_integer<Unsigned>( tmp ) == expected;
+}
+
+template<typename Signed, bool TrustedInput = false, size_t N>
+constexpr bool parse_signed_test( char const ( &str )[N], Signed expected ) {
+	auto tmp =
+	  daw::json::impl::IteratorRange<char const *, char const *, TrustedInput>(
+	    str, str + N );
+	return daw::json::impl::parse_integer<Signed>( tmp ) == expected;
+}
+
+struct test_001_t {
+	int i = 0;
+	double d = 0.0;
+	bool b = false;
+	std::string_view s{};
+	std::string_view s2{};
+	daw::bounded_vector_t<int, 10> y{};
+	std::optional<int> o{};
+	std::optional<int> o2{};
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>
+	  dte{};
+
+	constexpr test_001_t( ) = default;
+
+	constexpr test_001_t( int Int, double Double, bool Bool, std::string_view S,
+	                      std::string_view S2, daw::bounded_vector_t<int, 10> Y,
+	                      std::optional<int> O, std::optional<int> O2,
+	                      std::chrono::time_point<std::chrono::system_clock,
+	                                              std::chrono::milliseconds>
+	                        D ) noexcept
+	  : i( Int )
+	  , d( Double )
+	  , b( Bool )
+	  , s( S )
+	  , s2( S2 )
+	  , y( Y )
+	  , o( O )
+	  , o2( O2 )
+	  , dte( D ) {}
+};
+
+struct test_002_t {
+	test_001_t a{};
+};
+
+struct test_003_t {
+	std::optional<test_001_t> a;
+};
+
+enum class blah_t { a, b, c };
+
+std::string to_string( blah_t e ) noexcept {
+	switch( e ) {
+	case blah_t::a:
+		return "a";
+	case blah_t::b:
+		return "b";
+	case blah_t::c:
+		return "c";
 	}
+	std::abort( );
+}
 
-	template<typename Unsigned, bool Trusted = false, size_t N>
-	constexpr bool parse_unsigned_test( char const ( &str )[N],
-	                                    Unsigned expected ) {
-		auto tmp =
-		  daw::json::impl::IteratorRange<char const *, char const *, Trusted>(
-		    str, str + N );
-		return daw::json::impl::parse_unsigned_integer<Unsigned>( tmp ) == expected;
+constexpr blah_t from_string( daw::tag_t<blah_t>,
+                              std::string_view sv ) noexcept {
+	if( sv.empty( ) ) {
+		daw_json_error( "Unexpected empty string_view" );
 	}
-
-	template<typename Signed, bool TrustedInput = false, size_t N>
-	constexpr bool parse_signed_test( char const ( &str )[N], Signed expected ) {
-		auto tmp =
-		  daw::json::impl::IteratorRange<char const *, char const *, TrustedInput>(
-		    str, str + N );
-		return daw::json::impl::parse_integer<Signed>( tmp ) == expected;
-	}
-
-	struct test_001_t {
-		int i = 0;
-		double d = 0.0;
-		bool b = false;
-		std::string_view s{};
-		std::string_view s2{};
-		daw::bounded_vector_t<int, 10> y{};
-		std::optional<int> o{};
-		std::optional<int> o2{};
-		std::chrono::time_point<std::chrono::system_clock,
-		                        std::chrono::milliseconds>
-		  dte{};
-
-		constexpr test_001_t( ) = default;
-
-		constexpr test_001_t( int Int, double Double, bool Bool, std::string_view S,
-		                      std::string_view S2, daw::bounded_vector_t<int, 10> Y,
-		                      std::optional<int> O, std::optional<int> O2,
-		                      std::chrono::time_point<std::chrono::system_clock,
-		                                              std::chrono::milliseconds>
-		                        D ) noexcept
-		  : i( Int )
-		  , d( Double )
-		  , b( Bool )
-		  , s( S )
-		  , s2( S2 )
-		  , y( Y )
-		  , o( O )
-		  , o2( O2 )
-		  , dte( D ) {}
-	};
-
-#ifdef __cpp_nontype_template_parameter_class
-	auto json_data_contract_for( test_001_t ) noexcept {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_number<"i", int>, json_number<"d">, json_bool<"b">,
-		  json_string_raw<"s", std::string_view>,
-		  json_string_raw<"s2", std::string_view>,
-		  json_array<"y", int, daw::bounded_vector_t<int, 10>>,
-		  json_number_null<"o", std::optional<int>>,
-		  json_number_null<"o2", std::optional<int>>, json_date<"dte">>{};
-	}
-#else
-	namespace symbols_test_001_t {
-		constexpr static char const i[] = "i";
-		constexpr static char const d[] = "d";
-		constexpr static char const b[] = "b";
-		constexpr static char const s[] = "s";
-		constexpr static char const s2[] = "s2";
-		constexpr static char const y[] = "y";
-		constexpr static char const o[] = "o";
-		constexpr static char const o2[] = "o2";
-		constexpr static char const dte[] = "dte";
-	} // namespace symbols_test_001_t
-
-	auto json_data_contract_for( test_001_t ) noexcept {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_number<symbols_test_001_t::i, int>,
-		  json_number<symbols_test_001_t::d>, json_bool<symbols_test_001_t::b>,
-		  json_string_raw<symbols_test_001_t::s, std::string_view>,
-		  json_string_raw<symbols_test_001_t::s2, std::string_view>,
-		  json_array<symbols_test_001_t::y, int, daw::bounded_vector_t<int, 10>>,
-		  json_number_null<symbols_test_001_t::o, std::optional<int>>,
-		  json_number_null<symbols_test_001_t::o2, std::optional<int>>,
-		  json_date<symbols_test_001_t::dte>>{};
-	}
-#endif
-
-	auto to_json_data( test_001_t const &v ) {
-		return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.s2, v.y, v.o, v.o2,
-		                              v.dte );
-	}
-
-	struct test_002_t {
-		test_001_t a{};
-	};
-
-#ifndef __cpp_nontype_template_parameter_class
-	namespace symbols_test_002_t {
-		constexpr static char const a[] = "a";
-	}
-	auto json_data_contract_for( test_002_t ) noexcept {
-		using namespace daw::json;
-		return json_data_contract<json_class<symbols_test_002_t::a, test_001_t>>{};
-	}
-#else
-	auto json_data_contract_for( test_002_t ) noexcept {
-		using namespace daw::json;
-		return json_data_contract<json_class<"a", test_001_t>>{};
-	}
-#endif
-
-	auto to_json_data( test_002_t const &v ) {
-		return std::forward_as_tuple( v.a );
-	}
-
-	struct test_003_t {
-		std::optional<test_001_t> a;
-	};
-
-#ifndef __cpp_nontype_template_parameter_class
-	namespace symbols_test_003_t {
-		constexpr static char const a[] = "a";
-	}
-#endif
-	auto json_data_contract_for( test_003_t ) noexcept {
-		using namespace daw::json;
-#ifdef __cpp_nontype_template_parameter_class
-		return json_data_contract<
-		  json_class_null<"a", std::optional<test_001_t>>>{};
-#else
-		return json_data_contract<
-		  json_class_null<symbols_test_003_t::a, std::optional<test_001_t>>>{};
-#endif
-	}
-
-	auto to_json_data( test_003_t const &v ) {
-		return std::forward_as_tuple( v.a );
-	}
-
-	enum class blah_t { a, b, c };
-
-	std::string to_string( blah_t e ) noexcept {
-		switch( e ) {
-		case blah_t::a:
-			return "a";
-		case blah_t::b:
-			return "b";
-		case blah_t::c:
-			return "c";
-		}
+	switch( sv.front( ) ) {
+	case 'a':
+		return blah_t::a;
+	case 'b':
+		return blah_t::b;
+	case 'c':
+		return blah_t::c;
+	default:
 		std::abort( );
 	}
+}
 
-	constexpr blah_t from_string( daw::tag_t<blah_t>,
-	                              std::string_view sv ) noexcept {
-		if( sv.empty( ) ) {
-			daw_json_error( "Unexpected empty string_view" );
-		}
-		switch( sv.front( ) ) {
-		case 'a':
-			return blah_t::a;
-		case 'b':
-			return blah_t::b;
-		case 'c':
-			return blah_t::c;
-		default:
-			std::abort( );
-		}
-	}
+struct e_test_001_t {
+	blah_t a = blah_t::a;
+};
 
-	struct e_test_001_t {
-		blah_t a = blah_t::a;
+namespace daw::json {
+	template<>
+	struct json_data_contract<test_001_t> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type =
+		  json_member_list<json_number<"i", int>, json_number<"d">, json_bool<"b">,
+		                   json_string_raw<"s", std::string_view>,
+		                   json_string_raw<"s2", std::string_view>,
+		                   json_array<"y", int, daw::bounded_vector_t<int, 10>>,
+		                   json_number_null<"o", std::optional<int>>,
+		                   json_number_null<"o2", std::optional<int>>,
+		                   json_date<"dte">>;
+
+#else
+		static inline constexpr char const i[] = "i";
+		static inline constexpr char const d[] = "d";
+		static inline constexpr char const b[] = "b";
+		static inline constexpr char const s[] = "s";
+		static inline constexpr char const s2[] = "s2";
+		static inline constexpr char const y[] = "y";
+		static inline constexpr char const o[] = "o";
+		static inline constexpr char const o2[] = "o2";
+		static inline constexpr char const dte[] = "dte";
+		using type =
+		  json_member_list<json_number<i, int>, json_number<d>, json_bool<b>,
+		                   json_string_raw<s, std::string_view>,
+		                   json_string_raw<s2, std::string_view>,
+		                   json_array<y, int, daw::bounded_vector_t<int, 10>>,
+		                   json_number_null<o, std::optional<int>>,
+		                   json_number_null<o2, std::optional<int>>,
+		                   json_date<dte>>;
+#endif
+		static constexpr auto to_json_data( test_001_t const &v ) {
+			return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.s2, v.y, v.o, v.o2,
+			                              v.dte );
+		}
 	};
 
-#ifndef __cpp_nontype_template_parameter_class
-	namespace symbols_e_test_001_t {
-		constexpr static char const a[] = "a";
-	}
-#endif
-	auto json_data_contract_for( e_test_001_t ) noexcept {
-		using namespace daw::json;
+	template<>
+	struct json_data_contract<test_002_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		return json_data_contract<json_custom<"a", blah_t>>{};
+		using type = json_member_list<json_class<"a", test_001_t>>;
 #else
-		return json_data_contract<json_custom<symbols_e_test_001_t::a, blah_t>>{};
+		static inline constexpr char const a[] = "a";
+		using type = json_member_list<json_class<a, test_001_t>>;
 #endif
-	}
+		static constexpr auto to_json_data( test_002_t const &v ) {
+			return std::forward_as_tuple( v.a );
+		}
+	};
 
-	auto to_json_data( e_test_001_t const &v ) {
-		return std::forward_as_tuple( v.a );
-	}
+	template<>
+	struct json_data_contract<test_003_t> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type =
+		  json_member_list<json_class_null<"a", std::optional<test_001_t>>>;
+#else
+		static inline constexpr char const a[] = "a";
+		using type =
+		  json_member_list<json_class_null<a, std::optional<test_001_t>>>;
+#endif
+		static constexpr auto to_json_data( test_003_t const &v ) {
+			return std::forward_as_tuple( v.a );
+		}
+	};
 
-	constexpr auto const test_001_t_json_data =
-	  R"({
+	template<>
+	struct json_data_contract<e_test_001_t> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<json_custom<"a", blah_t>>;
+#else
+		static inline constexpr char const a[] = "a";
+		using type = json_member_list<json_custom<a, blah_t>>;
+#endif
+		static constexpr auto to_json_data( e_test_001_t const &v ) {
+			return std::forward_as_tuple( v.a );
+		}
+	}; // namespace daw::json
+} // namespace daw::json
+
+constexpr auto const test_001_t_json_data =
+  R"({
 	    "d": -1.234e+3,
 	    "i": 55,
 			"b": true,
@@ -251,8 +229,8 @@ namespace {
 			"dte": "2016-12-31T01:02:03.343Z"
 	  })";
 
-	constexpr char const json_data_array[] =
-	  R"([
+constexpr char const json_data_array[] =
+  R"([
 			{
 	    "i": 55,
 	    "d": 2.2,
@@ -316,8 +294,6 @@ namespace {
 			"o": 1322,
 			"dte": "2010-06-31T01:02:03.343Z"
 	  }])";
-
-} // namespace
 
 int main( ) {
 	using namespace daw::json;

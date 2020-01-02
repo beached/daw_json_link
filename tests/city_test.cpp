@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -24,6 +24,7 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
+#include <daw/daw_memory_mapped_file.h>
 #include <daw/iterator/daw_back_inserter.h>
 
 #include <fstream>
@@ -39,62 +40,51 @@ struct City {
 	float lng;
 };
 
-namespace symbols_City {
-	static constexpr char names0[] = "country";
-	static constexpr char names1[] = "name";
-	static constexpr char names2[] = "lat";
-	static constexpr char names3[] = "lng";
-} // namespace symbols_City
-auto json_data_contract_for( City ) noexcept {
-	using namespace daw::json;
+namespace daw::json {
+	template<>
+	struct json_data_contract<City> {
 #ifdef __cpp_nontype_template_parameter_class
-	return json_data_contract<
-	  json_string<"country">, json_string<"name">,
-	  json_number<"lat", float, LiteralAsStringOpt::Always>,
-	  json_number<"lng", float, LiteralAsStringOpt::Always>>{};
+		using type =
+		  json_member_list<json_string<"country">, json_string<"name">,
+		                   json_number<"lat", float, LiteralAsStringOpt::Always>,
+		                   json_number<"lng", float, LiteralAsStringOpt::Always>>;
 #else
-	return json_data_contract<
-	  json_string<symbols_City::names0>, json_string<symbols_City::names1>,
-	  json_number<symbols_City::names2, float, LiteralAsStringOpt::Always>,
-	  json_number<symbols_City::names3, float, LiteralAsStringOpt::Always>>{};
+		static inline constexpr char const country[] = "country";
+		static inline constexpr char const name[] = "name";
+		static inline constexpr char const lat[] = "lat";
+		static inline constexpr char const lng[] = "lng";
+		using type =
+		  json_member_list<json_string<country>, json_string<name>,
+		                   json_number<lat, float, LiteralAsStringOpt::Always>,
+		                   json_number<lng, float, LiteralAsStringOpt::Always>>;
 #endif
-}
-// Order of values must match order specified in class_description
-auto to_json_data( City const &c ) {
-	return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
-}
+
+		static inline auto to_json_data( City const &c ) {
+			return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
+		}
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
-	using namespace daw::json;
-	if( argc < 2 ) {
-		std::cerr << "Must supply a filename to open\n";
-		exit( 1 );
+	if( argc <= 1 ) {
+		puts( "Must supply path to cookbook_optional_values1.json file\n" );
+		exit( EXIT_FAILURE );
 	}
-	std::cout << "Opening file: '" << argv[1] << "'\n";
-	auto in_file = std::ifstream( argv[1] );
-	if( !in_file ) {
-		std::cerr << "Could not open input file\n";
-		exit( 1 );
-	}
-	auto json_data = std::string( std::istreambuf_iterator<char>( in_file ),
-	                              std::istreambuf_iterator<char>( ) );
-	in_file.close( );
-	auto sz = json_data.size( );
-	json_data.append( 60ULL,
-	                  ' ' ); // Account for max digits in float if in bad form
-	json_data += ",]\"}tfn"; // catch any thing looking for these values
-	auto json_sv = std::string_view( json_data.data( ), sz );
+	auto file_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const json_data =
+	  std::string_view( file_data.data( ), file_data.size( ) );
 
 	std::cout << "File size(B): " << json_data.size( ) << " "
 	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
 
 	auto count = *daw::bench_n_test_mbs<10>(
-	  "cities parsing 1", json_sv.size( ),
-	  []( auto &&sv ) {
-		  auto const data = daw::json::from_json_array<City>( sv );
+	  "cities parsing 1", json_data.size( ),
+	  []( auto sv ) {
+		  std::vector<City> data = daw::json::from_json_array<City>( sv );
+		  daw::do_not_optimize( data );
 		  return data.size( );
 	  },
-	  json_sv );
+	  json_data );
 
 	std::cout << "element count: " << count << '\n';
 
@@ -103,27 +93,28 @@ int main( int argc, char **argv ) {
 	auto data = std::vector<City>( );
 
 	auto count2 = *daw::bench_n_test_mbs<10>(
-	  "cities parsing 2", json_sv.size( ),
-	  [&]( auto &&sv ) {
+	  "cities parsing 2", json_data.size( ),
+	  [&]( auto const &sv ) {
 		  data.clear( );
 		  std::copy( iterator_t( sv ), iterator_t( ), daw::back_inserter( data ) );
+		  daw::do_not_optimize( data );
 		  return data.size( );
 	  },
-	  json_sv );
+	  json_data );
 
 	std::cout << "element count 2: " << count2 << '\n';
 	auto count3 = *daw::bench_n_test_mbs<10>(
-	  "cities parsing 3", json_sv.size( ),
-	  []( auto &&sv ) {
+	  "cities parsing 3", json_data.size( ),
+	  []( auto const &sv ) {
 		  return static_cast<size_t>(
 		    std::distance( iterator_t( sv ), iterator_t( ) ) );
 	  },
-	  json_sv );
+	  json_data );
 
 	std::cout << "element count 3: " << count3 << '\n';
 
 	auto has_toronto = *daw::bench_n_test_mbs<10>(
-	  "Find Toronto", json_sv.size( ),
+	  "Find Toronto", json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
 		    std::find_if( iterator_t( sv ), iterator_t( ),
@@ -133,14 +124,14 @@ int main( int argc, char **argv ) {
 		  }
 		  return std::nullopt;
 	  },
-	  json_sv );
+	  json_data );
 	std::cout << "Toronto was " << ( has_toronto ? "" : "not" );
 	if( has_toronto ) {
-		std::cout << " found at " << to_json( *has_toronto );
+		std::cout << " found at " << daw::json::to_json( *has_toronto );
 	}
 	std::cout << '\n';
 	auto has_chitungwiza = *daw::bench_n_test_mbs<10>(
-	  "Find Chitungwiza(last item)", json_sv.size( ),
+	  "Find Chitungwiza(last item)", json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
 		    std::find_if( iterator_t( sv ), iterator_t( ), []( City &&city ) {
@@ -151,22 +142,22 @@ int main( int argc, char **argv ) {
 		  }
 		  return std::nullopt;
 	  },
-	  json_sv );
+	  json_data );
 
 	std::cout << "Chitungwiza was " << ( has_chitungwiza ? "" : "not" )
-	          << " found at " << to_json( *has_chitungwiza ) << '\n';
+	          << " found at " << daw::json::to_json( *has_chitungwiza ) << '\n';
 
-	std::cout << ( *iterator_t( json_sv ) ).name << '\n';
+	std::cout << ( *iterator_t( json_data ) ).name << '\n';
 
-	auto const city_ary = daw::json::from_json_array<City>( json_sv );
+	auto const city_ary = daw::json::from_json_array<City>( json_data );
 
-	auto const city_ary_str = to_json_array( city_ary );
+	auto const city_ary_str = daw::json::to_json_array( city_ary );
 	auto sv = std::string_view( city_ary_str );
 	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 )
 	          << '\n';
 
 	auto mid_lat = *daw::bench_n_test_mbs<10>(
-	  "Calculate Middle Latitude", json_sv.size( ),
+	  "Calculate Middle Latitude", json_data.size( ),
 	  []( auto const &jstr ) -> float {
 		  uint32_t tot = 0;
 		  auto result =
@@ -177,12 +168,12 @@ int main( int argc, char **argv ) {
 		                                } );
 		  return result / static_cast<float>( tot );
 	  },
-	  json_sv );
+	  json_data );
 
 	std::cout << "mid_lat of all is: " << mid_lat << '\n';
 
 	auto mid_lat2 = *daw::bench_n_test_mbs<10>(
-	  "Calculate Middle Latitude2", json_sv.size( ),
+	  "Calculate Middle Latitude2", json_data.size( ),
 	  []( auto const &jstr ) -> float {
 		  std::vector<float> lats{};
 		  daw::algorithm::transform( iterator_t( jstr ), iterator_t( ),
@@ -193,7 +184,7 @@ int main( int argc, char **argv ) {
 		                                            std::cend( lats ), 0.0f );
 		  return result / static_cast<float>( lats.size( ) );
 	  },
-	  json_sv );
+	  json_data );
 
 	std::cout << "mid_lat2 of all is: " << mid_lat2 << '\n';
 }

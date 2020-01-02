@@ -56,75 +56,79 @@ Here we are going to use the array iterator tool to populate our graph so that t
 
 ```cpp
 namespace daw::cookbook_graphs1 {
-	struct Metadata {
-		int member0;
-		std::string member1;
-		bool member2;
-	};
+  struct Metadata {
+    int member0;
+    std::string member1;
+    bool member2;
+  };
 
-	auto json_data_contract_for( Metadata const & ) {
-		using namespace daw::json;
-		return json_data_contract<json_number<"member0", int>,
-		               json_string<"member1">, json_bool<"member2">>{};
-	}
+  struct GraphNode {
+    size_t id;
+    Metadata metadata;
+  };
 
-	struct GraphNode {
-		size_t id;
-		Metadata metadata;
-	};
+  struct GraphEdge {
+    size_t source;
+    size_t target;
+  };
+} 
 
-	auto json_data_contract_for( GraphNode const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_number<"id", size_t, LiteralAsStringOpt::Always>,
-		  json_class<"metadata", Metadata>>{};
-	}
+namespace daw::json {
+  template<>
+  struct json_data_contract<daw::cookbook_graphs1::Metadata> {
+    using type = json_member_list<
+      json_number<"member0", int>,
+      json_string<"member1">, 
+      json_bool<"member2">>;
+  };
 
-	struct GraphEdge {
-		size_t source;
-		size_t target;
-	};
+  template<>
+  struct json_data_contract<daw::cookbook_graphs1::GraphNode> {
+    using type = json_member_list<
+      json_number<"id", size_t, LiteralAsStringOpt::Always>,
+      json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
+  };
 
-	auto json_data_contract_for( GraphEdge const & ) {
-		using namespace daw::json;
-		return json_data_contract<
-		  json_number<"source", size_t, LiteralAsStringOpt::Always>,
-		  json_number<"target", size_t, LiteralAsStringOpt::Always>>{};
-	}
-} // namespace daw::cookbook_graphs1
+  template<>
+  struct json_data_contract<daw::cookbook_graphs1::GraphEdge> {
+    using type = json_member_list<
+      json_number<"source", size_t, LiteralAsStringOpt::Always>,
+      json_number<"target", size_t, LiteralAsStringOpt::Always>>;
+  };
+} 
 
 struct Node {
-	size_t id;
-	int member0;
-	std::string member1;
-	bool member2;
+  size_t id;
+  int member0;
+  std::string member1;
+  bool member2;
 };
 
 using namespace daw::json;
-json_sv = ...;
+json_sv = /*get_json_graph( )*/;
 
 Graph<Node> g{};
 
 using node_range_t = json_array_range<daw::cookbook_graphs1::GraphNode>;
 for( auto node : node_range_t( json_sv, "nodes" ) ) {
-    g.add_node( node.id, node.metadata.member0, node.metadata.member1,
-                node.metadata.member2 );
+  g.add_node( node.id, node.metadata.member0, node.metadata.member1,
+    node.metadata.member2 );
 }
 
 auto const find_node_id = [&g]( size_t id ) -> std::optional<daw::node_id_t> {
-    auto result =
-      g.find( [id]( auto const &node ) { return node.value( ).id == id; } );
-    if( result.empty( ) ) {
-        return {};
-    }
-    return result.front( );
+  auto result =
+    g.find( [id]( auto const &node ) { return node.value( ).id == id; } );
+  if( result.empty( ) ) {
+    return {};
+  }
+  return result.front( );
 };
 
 using edge_range_t = json_array_range<daw::cookbook_graphs1::GraphEdge>;
 for( auto edge : edge_range_t( json_sv, "edges" ) ) {
-    auto source_id = *find_node_id( edge.source );
-    auto target_id = *find_node_id( edge.target );
+  auto source_id = *find_node_id( edge.source );
+  auto target_id = *find_node_id( edge.target );
 
-    g.add_directed_edge( source_id, target_id );
+  g.add_directed_edge( source_id, target_id );
 }
 ```

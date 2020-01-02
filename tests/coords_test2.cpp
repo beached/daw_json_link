@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -39,39 +39,36 @@ struct coordinate_t {
 	std::string name;
 };
 
-namespace symbols_coordinate_t {
-	constexpr static char const x[] = "x";
-	constexpr static char const y[] = "y";
-	constexpr static char const z[] = "z";
-} // namespace symbols_coordinate_t
-auto json_data_contract_for( coordinate_t ) noexcept {
-	using namespace daw::json;
-#ifdef __cpp_nontype_template_parameter_class
-	return json_data_contract<json_number<"x">, json_number<"y">,
-	                          json_number<"z">>{};
-#else
-	return json_data_contract<json_number<symbols_coordinate_t::x>,
-	                          json_number<symbols_coordinate_t::y>,
-	                          json_number<symbols_coordinate_t::z>>{};
-#endif
-}
-
-namespace symbols_coordinates_t {
-	constexpr static char const coordinates[] = "coordinates";
-}
 struct coordinates_t {
 	std::vector<coordinate_t> coordinates;
 	std::string info;
 };
-auto json_data_contract_for( coordinates_t ) noexcept {
-	using namespace daw::json;
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<coordinate_t> {
 #ifdef __cpp_nontype_template_parameter_class
-	return json_data_contract<json_array<"coordinates", coordinate_t>>{};
+		using type =
+		  json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
 #else
-	return json_data_contract<
-	  json_array<symbols_coordinates_t::coordinates, coordinate_t>>{};
+		static inline constexpr char const x[] = "x";
+		static inline constexpr char const y[] = "y";
+		static inline constexpr char const z[] = "z";
+		using type =
+		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
 #endif
-}
+	};
+
+	template<>
+	struct json_data_contract<coordinates_t> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<json_array<"coordinates", coordinate_t>>;
+#else
+		static inline constexpr char const coordinates[] = "coordinates";
+		using type = json_member_list<json_array<coordinates, coordinate_t>>;
+#endif
+	};
+} // namespace daw::json
 
 int main( int argc, char **argv ) {
 	using namespace daw::json;

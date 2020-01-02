@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -303,14 +303,15 @@ namespace daw::json {
 			using ary_val_t = std::conditional_t<
 			  is_a_json_type_v<T>, T,
 			  std::conditional_t<
-			    has_json_parser_description_v<T>, json_class<Name, T>,
+			    has_json_data_contract_trait_v<T>, json_class<Name, T>,
 			    std::conditional_t<
 			      std::is_same_v<T, bool>, json_bool<Name, T>,
 			      std::conditional_t<
 			        std::is_arithmetic_v<T> or std::is_enum_v<T>,
 			        json_number<Name, T>,
 			        std::conditional_t<daw::traits::is_string_v<T>,
-			                           json_string<Name, T>, void>>>>>;
+			                           json_string<Name, T>,
+			                           daw::json::missing_json_data_contract_for<T>>>>>>;
 		}
 	} // namespace impl
 

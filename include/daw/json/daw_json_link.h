@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -54,7 +54,7 @@ namespace daw::json {
 	 * data to the classes constructor
 	 */
 	template<typename... JsonMembers>
-	struct json_data_contract {
+	struct json_member_list {
 		/**
 		 * Serialize a C++ class to JSON data
 		 * @tparam OutputIterator An output iterator with a char value_type
@@ -398,7 +398,7 @@ namespace daw::json {
 	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json( std::string_view json_data ) {
 		static_assert(
-		  impl::has_json_parser_description_v<JsonClass>,
+		  impl::has_json_data_contract_trait_v<JsonClass>,
 		  "Expected a typed that has been mapped via json_data_contract_for" );
 		return impl::from_json_impl<JsonClass, false>( json_data );
 	}
@@ -414,7 +414,7 @@ namespace daw::json {
 	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json_trusted( std::string_view json_data ) {
 		static_assert(
-		  impl::has_json_parser_description_v<JsonClass>,
+		  impl::has_json_data_contract_trait_v<JsonClass>,
 		  "Expected a typed that has been mapped via json_data_contract_for" );
 
 		return impl::from_json_impl<JsonClass, true>( json_data );
@@ -432,14 +432,15 @@ namespace daw::json {
 	[[maybe_unused, nodiscard]] constexpr Result
 	to_json( JsonClass const &value ) {
 		static_assert(
-		  impl::has_json_parser_description_v<JsonClass>,
+		  impl::has_json_data_contract_trait_v<JsonClass>,
 		  "A function called json_data_contract_for must exist for type." );
 		static_assert( impl::has_json_to_json_data_v<JsonClass>,
 		               "A function called to_json_data must exist for type." );
 
 		Result result{};
-		(void)impl::json_parser_description_t<JsonClass>::template serialize(
-		  daw::back_inserter( result ), to_json_data( value ) );
+		(void)impl::json_data_contract_trait_t<JsonClass>::template serialize(
+		  daw::back_inserter( result ),
+		  daw::json::json_data_contract<JsonClass>::to_json_data( value ) );
 		return result;
 	}
 

@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -37,43 +37,32 @@
 struct Number {
 	float a{};
 };
-#ifdef __cpp_nontype_template_parameter_class
-[[maybe_unused]] static constexpr auto
-json_data_contract_for( Number ) noexcept {
-	using namespace daw::json;
-	return json_data_contract<json_number<"a", float>>{};
-}
-#else
-namespace symbols_Number {
-	static inline constexpr char const a[] = "a";
-}
 
-[[maybe_unused]] static constexpr auto
-json_data_contract_for( Number ) noexcept {
-	using namespace daw::json;
-	return json_data_contract<json_number<symbols_Number::a, float>>{};
-}
-#endif
 struct Number2 {
 	float a{};
 };
-#ifdef __cpp_nontype_template_parameter_class
-[[maybe_unused]] static constexpr auto
-json_data_contract_for( Number2 ) noexcept {
-	using namespace daw::json;
-	return json_data_contract<json_number_sse3<"a", float>>{};
-}
-#else
-namespace symbols_Number2 {
-	static inline constexpr char const a[] = "a";
-}
 
-[[maybe_unused]] static constexpr auto
-json_data_contract_for( Number2 ) noexcept {
-	using namespace daw::json;
-	return json_data_contract<json_number_sse3<symbols_Number2::a, float>>{};
-}
+namespace daw::json {
+	template<>
+	struct json_data_contract<Number> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<json_number<"a", float>>;
+#else
+		static inline constexpr char const a[] = "a";
+		using type = json_member_list<json_number<a, float>>;
 #endif
+	};
+
+	template<>
+	struct json_data_contract<Number2> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<json_number_sse3<"a", float>>;
+#else
+		static inline constexpr char const a[] = "a";
+		using type = json_member_list<json_number_sse3<a, float>>;
+#endif
+	};
+} // namespace daw::json
 
 #ifndef NDEBUG
 static constexpr size_t const NUMVALUES = 1'000ULL;

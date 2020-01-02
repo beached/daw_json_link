@@ -24,24 +24,28 @@ The following C++ can provide a mapping
 
 ```cpp
 struct MyOptionalStuff1 {
-	std::optional<int> member0;
-	std::string member1;
-    std::unique_ptr<bool> member2;
+  std::optional<int> member0;
+  std::string member1;
+  std::unique_ptr<bool> member2;
 };
 
-auto json_data_contract_for( MyOptionalStuff1 const & ) {
-	using namespace daw::json;
-	return json_data_contract<
-        json_number_null<"member0", int>,
-        json_string<"member1">,
-        json_bool_null<"member2", 
-            std::unique_ptr<bool>, 
-            LiteralAsStringOpt::Never, 
-            UniquePtrConstructor<bool>
-        >>{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyOptionalStuff1> {
+    using type = json_member_list<
+      json_number_null<"member0", std::optional<int>>, 
+      json_string<"member1">,
+      json_bool_null<
+        "member2", 
+        std::unique_ptr<bool>, 
+        LiteralAsStringOpt::Never, 
+        UniquePtrConstructor<bool>
+      >
+    >;
 
-auto to_json_data( MyOptionalStuff1 const &value ) {
-	return std::forward_as_tuple( value.member0, value.member1, value.member2 );
+    static inline auto to_json_data( MyOptionalStuff1 const &value ) {
+      return std::forward_as_tuple( value.member0, value.member1, value.member2 );
+    }
+  };
 }
 ```

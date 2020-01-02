@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Darrell Wright
+// Copyright (c) 2019-2020 Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -34,33 +34,31 @@ struct City {
 	float lng;
 };
 
-namespace symbols_City {
-	static constexpr char const names0[] = "country";
-	static constexpr char const names1[] = "name";
-	static constexpr char const names2[] = "lat";
-	static constexpr char const names3[] = "lng";
-} // namespace symbols_City
-auto json_data_contract_for( City ) noexcept {
-	using namespace daw::json;
+namespace daw::json {
+	template<>
+	struct json_data_contract<City> {
 #ifdef __cpp_nontype_template_parameter_class
-	return json_data_contract<
-	  json_string_raw<"country", std::string_view>,
-	  json_string_raw<"name", std::string_view>,
-	  json_number<"lat", float, LiteralAsStringOpt::Always>,
-	  json_number<"lng", float, LiteralAsStringOpt::Always>>{};
+		using type =
+		  json_member_list<json_string_raw<"country", std::string_view>,
+		                   json_string_raw<"name", std::string_view>,
+		                   json_number<"lat", float, LiteralAsStringOpt::Always>,
+		                   json_number<"lng", float, LiteralAsStringOpt::Always>>;
 #else
-	return json_data_contract<
-	  json_string_raw<symbols_City::names0, std::string_view>,
-	  json_string_raw<symbols_City::names1, std::string_view>,
-	  json_number<symbols_City::names2, float, LiteralAsStringOpt::Always>,
-	  json_number<symbols_City::names3, float, LiteralAsStringOpt::Always>>{};
+		static inline constexpr char const country[] = "country";
+		static inline constexpr char const name[] = "name";
+		static inline constexpr char const lat[] = "lat";
+		static inline constexpr char const lng[] = "lng";
+		using type =
+		  json_member_list<json_string_raw<country, std::string_view>,
+		                   json_string_raw<name, std::string_view>,
+		                   json_number<lat, float, LiteralAsStringOpt::Always>,
+		                   json_number<lng, float, LiteralAsStringOpt::Always>>;
 #endif
-}
-
-// Order of values must match order specified in class_description
-constexpr auto to_json_data( City const &c ) {
-	return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
-}
+		static constexpr auto to_json_data( City const &c ) {
+			return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
+		}
+	};
+} // namespace daw::json
 
 std::string get_json_data( std::string file_name ) {
 	auto in_file = std::ifstream( std::data( file_name ) );
