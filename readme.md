@@ -49,7 +49,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 ## Installing
 
 The following will build and run the tests. 
-```
+```bash
 git clone https://github.com/beached/daw_json_link
 cd daw_json_link
 mkdir build
@@ -59,7 +59,7 @@ cmake --build . --target full -j 2
 ctest -C Debug
 ```
 After the build there the examples can be tested.  ```city_test_bin``` requires the path to the cities json file.
-```
+```bash
 ./city_test_bin ../test_data/cities.json
 ```
 
@@ -84,44 +84,44 @@ static constexpr char const member_name[] = "memberName";
 # Using data types
 Once a data type has been described, you can easily construct an object from a string or string_view.
 
-```C++
+```cpp
 auto my_class = from_json<MyClass>( json_str );
 ```
 Alternatively, if the input is trusted you can called the less checked version
-```C++
+```cpp
 auto my_class = from_json_trusted<MyClass>( json_str );
 ```
 
 Or one can create a collection of your object from a JSON array
 
-```C++
+```cpp
 auto my_data = from_json_array<MyClass>( json_str );
 ```
 Alternatively, if the input is trusted you can called the less checked version
-```C++
+```cpp
 auto my_data = from_json_array_trusted<MyClass>( json_str );
 ```
 
 If you want to work from JSON array data you can get an iterator and use the std algorithms too
 
-```C++
+```cpp
 using iterator_t = json_array_iterator<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
 Alternatively, if the input is trusted you can called the less checked version
-```C++
+```cpp
 using iterator_t = daw::json::json_array_iterator_trusted<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
 
 If you want to serialize to JSON 
 
-```C++
+```cpp
 std::string my_json_data = to_json( MyClass{} );
 ```
 
 Or serialize a collection of things
-```C++
+```cpp
 std::vector<MyClass> arry = ...;
 std::string my_json_data = to_json_array( arry );
 ```
@@ -133,7 +133,7 @@ There are two possible ways of handling errors.  The first, `abort( );` on an er
 # Deserializing/Parsing
 This can be accomplished by writing a function called json_data_contract_for with a single arugment that is your type.  The library is only concerned with it's return value. For example:
 
-```C++
+```cpp
 #include <daw/json/daw_json_link.h>
 
 struct TestClass {
