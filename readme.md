@@ -226,8 +226,8 @@ namespace daw::json {
     static inline constexpr char const a[] = "a";
     static inline constexpr char const b[] = "b";
     using type = json_member_list<
-      json_number<symbols_AggClass::a, int>,
-      json_number<symbols_AggClass::b>
+      json_number<a, int>,
+      json_number<b>
     >;
   };
 }
