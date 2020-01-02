@@ -122,11 +122,11 @@ namespace daw::json::impl {
 	namespace {
 		template<typename Result, SIMDModes SIMDMode,
 		         JsonRangeCheck RangeCheck = JsonRangeCheck::Never, typename First,
-		         typename Last, bool IsTrustedInput>
+		         typename Last, bool IsUnCheckedInput>
 		[[nodiscard]] constexpr auto parse_unsigned_integer2(
-		  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
-			daw_json_assert_untrusted( rng.is_number( ),
-			                           "Expecting a digit as first item" );
+		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
+			daw_json_assert_weak( rng.is_number( ),
+			                      "Expecting a digit as first item" );
 
 			using namespace daw::json::impl::unsignedint;
 			using iresult_t =
@@ -160,11 +160,11 @@ namespace daw::json::impl {
 
 		template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
 		         SIMDModes SimdMode = SIMDModes::None, typename First,
-		         typename Last, bool IsTrustedInput>
+		         typename Last, bool IsUnCheckedInput>
 		[[nodiscard]] constexpr Result parse_unsigned_integer(
-		  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
-			daw_json_assert_untrusted( rng.is_number( ),
-			                           "Expecting a digit as first item" );
+		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
+			daw_json_assert_weak( rng.is_number( ),
+			                      "Expecting a digit as first item" );
 
 			using namespace daw::json::impl::unsignedint;
 			using result_t =

@@ -80,9 +80,9 @@ static constexpr void daw_json_assert(
 	}
 }
 
-#define daw_json_assert_untrusted( ... )                                       \
+#define daw_json_assert_weak( ... )                                            \
 	do {                                                                         \
-		if constexpr( not IsTrustedInput ) {                                       \
+		if constexpr( not IsUnCheckedInput ) {                                     \
 			daw_json_assert( __VA_ARGS__ );                                          \
 		}                                                                          \
 	} while( false )
@@ -98,8 +98,8 @@ static constexpr void daw_json_assert(
 	}
 }
 
-#define daw_json_assert_untrusted( ... )                                       \
-	if constexpr( not IsTrustedInput ) {                                         \
+#define daw_json_assert_weak( ... )                                            \
+	if constexpr( not IsUnCheckedInput ) {                                       \
 		daw_json_assert( __VA_ARGS__ );                                            \
 	}                                                                            \
 	do {                                                                         \
@@ -109,7 +109,7 @@ static constexpr void daw_json_assert(
 	do {                                                                         \
 	} while( false )
 
-#define daw_json_assert_untrusted( ... )                                       \
+#define daw_json_assert_weak( ... )                                            \
 	do {                                                                         \
 	} while( false )
 #endif

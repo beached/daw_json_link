@@ -78,18 +78,17 @@ namespace daw::json {
 		/**
 		 * Parse JSON data and construct a C++ class
 		 * @tparam JsonClass The result of parsing json_class
-		 * @tparam IsTrustedInput Is the input trusted, less checking is done
+		 * @tparam IsUnCheckedInput Is the input trusted, less checking is done
 		 * @param sv JSON data to parse
 		 * @return A T object
 		 */
-		template<typename JsonClass, bool IsTrustedInput>
+		template<typename JsonClass, bool IsUnCheckedInput>
 		[[maybe_unused, nodiscard]] static constexpr JsonClass
 		parse( std::string_view sv ) {
-			daw_json_assert_untrusted( not sv.empty( ),
-			                           "Cannot parse an empty string" );
+			daw_json_assert_weak( not sv.empty( ), "Cannot parse an empty string" );
 
 			auto rng =
-			  impl::IteratorRange<char const *, char const *, IsTrustedInput>(
+			  impl::IteratorRange<char const *, char const *, IsUnCheckedInput>(
 			    sv.data( ), sv.data( ) + sv.size( ) );
 			return impl::parse_json_class<JsonClass, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
@@ -101,15 +100,14 @@ namespace daw::json {
 		 * @tparam T The result of parsing json_class
 		 * @tparam First type of first iterator in range
 		 * @tparam Last type of last iterator in range
-		 * @tparam IsTrustedInput Is the input trusted, less checking is done
+		 * @tparam IsUnCheckedInput Is the input trusted, less checking is done
 		 * @param rng JSON data to parse
 		 * @return A T object
 		 */
-		template<typename T, typename First, typename Last, bool IsTrustedInput>
+		template<typename T, typename First, typename Last, bool IsUnCheckedInput>
 		[[maybe_unused, nodiscard]] static constexpr T
-		parse( impl::IteratorRange<First, Last, IsTrustedInput> &rng ) {
-			daw_json_assert_untrusted( rng.has_more( ),
-			                           "Cannot parse an empty string" );
+		parse( impl::IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
 			return impl::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
 		}
@@ -414,7 +412,7 @@ namespace daw::json {
 	 */
 	template<typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr JsonClass
-	from_json_trusted( std::string_view json_data ) {
+	from_json_unchecked( std::string_view json_data ) {
 		static_assert( impl::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
@@ -448,7 +446,7 @@ namespace daw::json {
 
 	namespace impl {
 		namespace {
-			template<bool IsTrustedInput, typename JsonElement, typename Container,
+			template<bool IsUnCheckedInput, typename JsonElement, typename Container,
 			         typename Constructor, typename Appender>
 			[[maybe_unused, nodiscard]] constexpr Container
 			from_json_array_impl( std::string_view json_data ) {
@@ -461,7 +459,7 @@ namespace daw::json {
 				    json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
 
 				rng.trim_left_no_check( );
-				daw_json_assert_untrusted( rng.front( '[' ), "Expected array class" );
+				daw_json_assert_weak( rng.front( '[' ), "Expected array class" );
 
 				return parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{}, rng );
 			}
@@ -494,7 +492,7 @@ namespace daw::json {
 	}
 
 	/**
-	 * Parse json data where the root item is an array
+	 * Parse json data where the root item is an array but do less checking
 	 * @tparam JsonElement The type of each element in array.  Must be one of
 	 * the above json_XXX classes.  This version isn't checked
 	 * @tparam Container Container to store values in
@@ -509,7 +507,7 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
-	from_json_array_trusted( std::string_view json_data ) {
+	from_json_array_unchecked( std::string_view json_data ) {
 		using element_type = impl::ary_val_t<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
@@ -525,7 +523,6 @@ namespace daw::json {
 	 * @param c Data to serialize
 	 * @return A string containing the serialized elements of c
 	 */
-
 	template<typename Result = std::string, typename Container>
 	[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c ) {
 		static_assert(

@@ -47,10 +47,10 @@
 
 namespace daw::json {
 	/// allow iteration over an array of json
-	template<typename JsonElement, bool IsTrustedInput = false,
+	template<typename JsonElement, bool IsUnCheckedInput = false,
 	         char separator = ','>
 	class json_array_iterator {
-		impl::IteratorRange<char const *, char const *, IsTrustedInput> m_state{
+		impl::IteratorRange<char const *, char const *, IsUnCheckedInput> m_state{
 		  nullptr, nullptr};
 		// This lets us fastpath and just skip n characters
 		mutable intmax_t m_can_skip = -1;
@@ -73,7 +73,7 @@ namespace daw::json {
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr json_array_iterator( String &&jd,
 		                               std::string_view start_path = "" )
-		  : m_state( impl::find_range<IsTrustedInput>(
+		  : m_state( impl::find_range<IsUnCheckedInput>(
 		      std::forward<String>( jd ),
 		      {start_path.data( ), start_path.size( )} ) ) {
 
@@ -81,16 +81,16 @@ namespace daw::json {
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
 			  "String must be like a string_view" );
 
-			daw_json_assert_untrusted( m_state.front( ) == '[',
-			                           "Arrays are expected to start with a [" );
+			daw_json_assert_weak( m_state.front( ) == '[',
+			                      "Arrays are expected to start with a [" );
 
 			m_state.remove_prefix( );
 			m_state.trim_left( );
 		}
 
 		[[nodiscard]] constexpr value_type operator*( ) const noexcept {
-			daw_json_assert_untrusted( m_state.has_more( ) and not m_state.in( ']' ),
-			                           "Unexpected end of stream" );
+			daw_json_assert_weak( m_state.has_more( ) and not m_state.in( ']' ),
+			                      "Unexpected end of stream" );
 
 			auto tmp = m_state;
 			auto result = impl::parse_value<element_type>(
@@ -101,9 +101,8 @@ namespace daw::json {
 		}
 
 		constexpr json_array_iterator &operator++( ) noexcept {
-			daw_json_assert_untrusted( m_state.has_more( ) and
-			                             m_state.front( ) != ']',
-			                           "Unexpected end of stream" );
+			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
+			                      "Unexpected end of stream" );
 			if( m_can_skip >= 0 ) {
 				m_state.first = std::next( m_state.first, m_can_skip );
 				m_can_skip = -1;
@@ -140,11 +139,11 @@ namespace daw::json {
 		}
 	};
 
-	template<typename JsonElement, bool IsTrustedInput = false,
+	template<typename JsonElement, bool IsUnCheckedInput = false,
 	         char separator = ','>
 	struct json_array_range {
 		using iterator =
-		  json_array_iterator<JsonElement, IsTrustedInput, separator>;
+		  json_array_iterator<JsonElement, IsUnCheckedInput, separator>;
 
 	private:
 		iterator m_first{};
@@ -173,10 +172,10 @@ namespace daw::json {
 	};
 
 	template<typename JsonElement, char separator = ','>
-	using json_array_range_trusted =
+	using json_array_range_unchecked =
 	  json_array_range<JsonElement, true, separator>;
 
 	template<typename JsonElement, char separator = ','>
-	using json_array_iterator_trusted =
+	using json_array_iterator_unchecked =
 	  json_array_iterator<JsonElement, true, separator>;
 } // namespace daw::json
