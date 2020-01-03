@@ -262,6 +262,14 @@ namespace daw::json {
 
 	namespace impl {
 		namespace {
+			template<SIMDModes>
+			inline constexpr size_t parse_space_needed_v = 1U;
+
+#ifdef DAW_ALLOW_SSE3
+			template<>
+			inline constexpr size_t parse_space_needed_v<SIMDModes::SSE3> = 8U;
+#endif
+
 			template<typename JsonType>
 			static inline constexpr bool is_json_nullable_v =
 			  JsonType::expected_type == JsonParseTypes::Null;

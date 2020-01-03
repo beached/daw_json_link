@@ -96,7 +96,7 @@ namespace daw::json::impl::unsignedint {
 			}
 
 			[[nodiscard]] static inline std::pair<Unsigned, char const *>
-			parse_sse2( char const *ptr ) {
+			parse_sse3( char const *ptr ) {
 				uintmax_t result = 0;
 				while( is_made_of_eight_digits_fast( ptr ) ) {
 					result *= 100'000'000ULL;
@@ -135,7 +135,7 @@ namespace daw::json::impl {
 			auto [v, new_p] = [rng] {
 #ifdef DAW_ALLOW_SSE3
 				if constexpr( SIMDMode == SIMDModes::SSE3 ) {
-					return unsigned_parser<iresult_t>::parse_sse2( rng.first );
+					return unsigned_parser<iresult_t>::parse_sse3( rng.first );
 				} else {
 #endif
 					return unsigned_parser<iresult_t>::parse( rng.first );
@@ -174,7 +174,10 @@ namespace daw::json::impl {
 			auto [result, ptr] = [&] {
 #ifdef DAW_ALLOW_SSE3
 				if constexpr( SimdMode == SIMDModes::SSE3 ) {
-					return unsigned_parser<result_t>::parse_sse2( rng.first );
+					daw_json_assert_weak(
+					  rng.size( ) >= parse_space_needed_v<SimdMode>,
+					  "Insufficient space to parse number in SSE3 Mode" );
+					return unsigned_parser<result_t>::parse_sse3( rng.first );
 				} else {
 #endif
 					return unsigned_parser<result_t>::parse( rng.first );
