@@ -51,6 +51,32 @@ JSON Link allows serializing and deserializing of arbitrary C++ data types to JS
 Mapping of data structures is done by specializing ```daw::json::json_data_contract``` for type ```T```.
 There are two parts to the trait `json_data_contract`, first is a type alias named ```type``` that maps JSON object members by name to the argumenets of the C++ data structures constructor. Second, an optional, static method with a signatures like ```static tuple<MemberTypes> to_json_data( T const & )``` which returns a tuple of calculated for referenced members corresponding to the previous mapping.  `to_json_data` is only required if serialization is wanted. 
 
+For example a `json_data_contract` for a `Coordinate` class could look like 
+```cpp
+namespace daw::json {
+  template<>
+  struct json_data_contract<Coordinate> {
+    using type = json_member_list<json_number<"lat">, json_number<"lng">>;
+  };
+}
+```
+This says that there is a json object with members `lat` and `lng` that are numbers.  The default mapping for numbers is `double`, but one can benefit from specifying and restring that e.g. `int`.  The Coordinate class would need to be constructable from two double's.
+
+To allow for serializing, the `to_json_data` method takes an existing C++ object and breaks out the values to the serializer.  
+```cpp
+namespace daw::json {
+  template<>
+  struct json_data_contract<Coordinate> {
+  	// Same as previous example
+    using type = json_member_list<json_number<"lat">, json_number<"lng">>;
+
+    static inline auto to_json_data( Coordinate const & c ) {
+      return std::forward_as_tuple( c.latitude, c.longitude ); 
+    }
+  };
+}
+```
+The return of to_json_data does not have to return a reference to the existing object, but can return calculated values too.
 ## Installing
 
 The following will build and run the tests. 
