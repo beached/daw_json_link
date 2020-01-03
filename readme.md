@@ -56,7 +56,10 @@ For example a `json_data_contract` for a `Coordinate` class could look like
 namespace daw::json {
   template<>
   struct json_data_contract<Coordinate> {
-    using type = json_member_list<json_number<"lat">, json_number<"lng">>;
+    using type = json_member_list<
+      json_number<"lat">, 
+      json_number<"lng">
+    >;
   };
 }
 ```
@@ -67,8 +70,11 @@ To allow for serializing, the `to_json_data` method takes an existing C++ object
 namespace daw::json {
   template<>
   struct json_data_contract<Coordinate> {
-  	// Same as previous example
-    using type = json_member_list<json_number<"lat">, json_number<"lng">>;
+    // Same as previous example
+    using type = json_member_list<
+      json_number<"lat">, 
+      json_number<"lng">
+    >;
 
     static inline auto to_json_data( Coordinate const & c ) {
       return std::forward_as_tuple( c.latitude, c.longitude ); 
