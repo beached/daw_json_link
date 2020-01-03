@@ -30,12 +30,13 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
   * [Strings](cookbook/strings.md)
   * [Variant](cookbook/variant.md)
   * [Automatic Code Generation](cookbook/automated_code_generation.md)
+* [Intro](#intro)
 * [Installing](#installing)
 * [Performance considerations](#performance-considerations)
-* [Escaping/Unescaping of member names](#escaping/unescaping-of-member-names)
-* [Differences between C++17 and C++20](#differences-between-c++17-and-c++20)
-* [C++ 17 Naming of members](#c++-17-naming-of-members)
-* [C++ 20 Enhanced member naming](#c++-20-enhanced-member-naming)
+* [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
+* [Differences between C++17 and C++20](#differences-between-c17-and-c20)
+  * [C++ 17 Naming of members](#c-17-naming-of-json-members)
+  * [C++ 20 Naming of members](#c-20-naming-of-json-members)
 * [Using data types](#using-data-types)
 * [Error Handling](#error-handling)
   * [Parsing call](#parsing-call)
@@ -47,7 +48,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
   * [For building tests](#for-building-tests)
 
 ## Intro
-JSON Link allows serializing and deserializing of C++ data types and JSON using a predefined schema.   The underlying premise is the constructor of C++ data structures can be called with the JSON object's members. 
+JSON Link allows serializing and deserializing of C++ data types and JSON using a predefined schema.   The underlying premise is the constructor of C++ data structures can be called with the JSON object's members.  The parsers goal isn't conformance.  It should be stricter in many ways, but somethings will not be checked(e.g. trailing commas).  The serializer is attempting to be conformant and generates minimal JSON. 
 Mapping of data structures is done by specializing ```daw::json::json_data_contract``` for type ```T```.
 There are two parts to the trait `json_data_contract`, first is a type alias named ```type``` that maps JSON object members by name to the argumenets of the C++ data structures constructor. Second, an optional, static method with a signatures like ```static tuple<MemberTypes> to_json_data( T const & )``` which returns a tuple of calculated for referenced members corresponding to the previous mapping.  `to_json_data` is only required if serialization is wanted. 
 
@@ -82,7 +83,7 @@ namespace daw::json {
   };
 }
 ```
-The return of to_json_data does not have to return a reference to the existing object, but can return calculated values too.
+ * Note: The return type of `to_json_data` does not have to return a reference to the existing object, but can return calculated values.
 ## Installing
 
 The following will build and run the tests. 
@@ -107,7 +108,7 @@ The order of the members in the data structures should generally match that of t
 The library, currently, does not escape or unescape the member names.  This is a design desision as the current architecture would make it difficult.  Post C++20 this may be doable as one can construct the string as a NTTP and encode it there.  In addition, one can put the escaped name as the name manually.
 
 ## Differences between C++17 and C++20
-# C++ 17 Naming of members
+# C++ 17 Naming of JSON members
 ```cpp
 namespace daw::json {
   template<>
@@ -117,7 +118,7 @@ namespace daw::json {
   };
 }
 ```
-# C++ 20 Enhanced member naming
+# C++ 20 Naming of JSON members
 ```cpp
 namespace daw::json {
   template<>
@@ -128,28 +129,27 @@ namespace daw::json {
 ```
 
 # Using mapped data types
-Once a data type has been described, you can easily construct an object from a string or string_view.
+Once a data type has been mapped with a `json_data_contract`, the library provides methods to parse JSON to them
 
 ```cpp
 MyClass my_class = from_json<MyClass>( json_str );
 ```
-Alternatively, if the input is trusted you can called the less checked version
+Alternatively, if the input is trusted, the less checked version can be faster 
 ```cpp
 MyClass my_class = from_json_unchecked<MyClass>( json_str );
 ```
 
-Or one can create a collection of object's from a JSON array
-
+JSON documents with array root's use the `from_json_array` function to parse 
 ```cpp
 std::vector<MyClass> my_data = from_json_array<MyClass>( json_str );
 ```
-Alternatively, if the input is trusted you can called the less checked version
+Alternatively, if the input is trusted, the less checked version can be faster 
 ```cpp
 std::vector<MyClass> my_data = from_json_array_unchecked<MyClass>( json_str );
 ```
 
-If you want to work from JSON array data you can get an iterator and use the std algorithms too
-
+If you want to work from JSON array data you can get an iterator and use the std algorithms to
+Iterating over array's in JSON data can be done via the `json_array_iterator`
 ```cpp
 using iterator_t = json_array_iterator<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );

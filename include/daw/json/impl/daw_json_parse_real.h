@@ -45,6 +45,7 @@ namespace daw::json::impl {
 				}
 				return 1;
 			}( );
+			daw_json_assert_weak( rng.is_number(), "Expected a number" );
 			auto const whole_part = static_cast<Result>(
 			  sign * parse_unsigned_integer<int64_t, JsonRangeCheck::Never, SIMDMode>(
 			           rng ) );

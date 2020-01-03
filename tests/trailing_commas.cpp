@@ -27,6 +27,9 @@
 #include <string_view>
 #include <vector>
 
+// Trailing commas are explicitly supported.  It is a cost to differentiate them
+// and it "should" be no risk for corruption.  The tests here verify that it is
+// working
 struct string_trail {
 	std::string a;
 };

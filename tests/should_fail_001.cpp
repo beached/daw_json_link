@@ -25,15 +25,15 @@
 
 #include <string_view>
 
-namespace test_001 {
+namespace bad_types {
 	struct Coordinate {
 		double lat;
 		double lng;
 	};
-} // namespace test_001
+} // namespace bad_types
 
 template<>
-struct daw::json::json_data_contract<test_001::Coordinate> {
+struct daw::json::json_data_contract<bad_types::Coordinate> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<json_number<"lat">, json_number<"lng">>;
 #else
@@ -43,12 +43,12 @@ struct daw::json::json_data_contract<test_001::Coordinate> {
 #endif
 };
 
-namespace test_001 {
+namespace bad_types {
 	bool quotes_in_numbers( ) {
 		static constexpr std::string_view data =
 		  R"({"lat": "55.55", "lng": "12.34" })";
 		try {
-			Coordinate c = daw::json::from_json<test_001::Coordinate>( data );
+			Coordinate c = daw::json::from_json<bad_types::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -57,14 +57,14 @@ namespace test_001 {
 	bool bool_in_numbers( ) {
 		static constexpr std::string_view data = R"({"lat": true, "lng": false })";
 		try {
-			Coordinate c = daw::json::from_json<test_001::Coordinate>( data );
+			Coordinate c = daw::json::from_json<bad_types::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
 	}
-} // namespace test_001
+} // namespace bad_types
 
 int main( ) {
-	daw::expecting( test_001::quotes_in_numbers( ) );
-	daw::expecting( test_001::bool_in_numbers( ) );
+	daw::expecting( bad_types::quotes_in_numbers( ) );
+	daw::expecting( bad_types::bool_in_numbers( ) );
 }

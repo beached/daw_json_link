@@ -308,6 +308,11 @@ add_dependencies(should_fail_bin dependency_stub)
 add_test(should_fail_test should_fail_bin)
 add_dependencies(full should_fail_bin)
 
+add_executable(trailing_commas_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/trailing_commas.cpp)
+add_dependencies(trailing_commas_bin dependency_stub)
+add_test(trailing_commas_test trailing_commas_bin)
+add_dependencies(full trailing_commas_bin)
+
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
