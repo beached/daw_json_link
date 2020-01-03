@@ -2,7 +2,7 @@
 
 This library provides serialization/deserialization of JSON documents with a known structure into a C++ typed structure.
 
-The library is [MIT](LICENCE) licensed so its free to use, just have to give credit.
+The library is [MIT](LICENSE) licensed so its free to use, just have to give credit.
 
 Because the struct of the document is known, parsing is like the following 
 ```cpp
@@ -13,17 +13,17 @@ or for array documents
 std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 ```
 ## Code Examples
-* The  [Cookbook](cookbook/) section has precanned tasks and working code examples
+* The  [Cookbook](cookbook/readme.md) section has precanned tasks and working code examples
 * [Tests](tests/) provide another source of working code samples. 
 * Small samples below
 
 ## Content 
 * [Intro](#intro)
 * [API](api.md) - Member mapping classes
-* [Cookbook](cookbook/)
+* [Cookbook](cookbook/readme.md) Get cooking and putting it all together 
   * [Arrays](cookbook/array.md)
   * [Classes](cookbook/class.md)
-  * [Enums](cookbook/enum.md)
+  * [Enums](cookbook/enums.md)
   * [Graphs](cookbook/graphs.md)
   * [Key Values](cookbook/key_values.md) - Map and Dictionary like things 
   * [Optional/Nullable Values](cookbook/optional_values.md)
@@ -37,12 +37,12 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 * [Differences between C++17 and C++20](#differences-between-c17-and-c20)
   * [C++ 17 Naming of members](#c-17-naming-of-json-members)
   * [C++ 20 Naming of members](#c-20-naming-of-json-members)
-* [Using data types](#using-data-types)
+* [Using data types](#using-mapped-data-types)
 * [Error Handling](#error-handling)
   * [Parsing call](#parsing-call)
   * [Global](#global)
-* [Deserializing/Parsing](#deserializing/parsing)
-  * [Serialization](#serialization)
+* [Deserializing/Parsing](#deserializingparsing)
+* [Serialization](#serialization)
 * [Installing and Requirements](#installing-and-requirements)
 * [Requirements](#requirements)
   * [For building tests](#for-building-tests)
