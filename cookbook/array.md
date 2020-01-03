@@ -67,7 +67,7 @@ namespace daw::json {
       value.d );
     }
   };
-} // namespace daw::json
+} 
 
 std::vector<MyClass4> v = from_json_array<MyClass4>( str );
 ```
