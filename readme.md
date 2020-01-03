@@ -49,7 +49,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 ## Intro
 JSON Link allows serializing and deserializing of arbitrary C++ data types to JSON.   The underlying premise is that C++ data structures can be constructed from the values in the JSON object. 
 Mapping of data structures is done by specializing ```daw::json::json_data_contract``` for type ```T```.
-There are two parts to the trait `json_data_contract`, first is a type alias named ```type``` that maps JSON object members by name to the argumenets of the C++ data structures constructor. Second, an optional, static method with a signatures like ```static tuple<MemberTypes> to_json_data( T const & )``` which returns a tuple of calculated for referenced members corresponding to the previous mapping. 
+There are two parts to the trait `json_data_contract`, first is a type alias named ```type``` that maps JSON object members by name to the argumenets of the C++ data structures constructor. Second, an optional, static method with a signatures like ```static tuple<MemberTypes> to_json_data( T const & )``` which returns a tuple of calculated for referenced members corresponding to the previous mapping.  `to_json_data` is only required if serialization is wanted. 
 
 ## Installing
 
