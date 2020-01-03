@@ -43,11 +43,12 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
   * [Global](#global)
 * [Deserializing/Parsing](#deserializingparsing)
 * [Serialization](#serialization)
-* [Installing and Requirements](#installing-and-requirements)
 * [Requirements](#requirements)
   * [For building tests](#for-building-tests)
 
-## Intro
+## Intro 
+###### [Top](#0)
+
 JSON Link allows serializing and deserializing of C++ data types and JSON using a predefined schema.   The underlying premise is the constructor of C++ data structures can be called with the JSON object's members.  The parsers goal isn't conformance.  It should be stricter in many ways, but somethings will not be checked(e.g. trailing commas).  The serializer is attempting to be conformant and generates minimal JSON. 
 Mapping of data structures is done by specializing ```daw::json::json_data_contract``` for type ```T```.
 There are two parts to the trait `json_data_contract`, first is a type alias named ```type``` that maps JSON object members by name to the argumenets of the C++ data structures constructor. Second, an optional, static method with a signatures like ```static tuple<MemberTypes> to_json_data( T const & )``` which returns a tuple of calculated for referenced members corresponding to the previous mapping.  `to_json_data` is only required if serialization is wanted. 
@@ -85,6 +86,7 @@ namespace daw::json {
 ```
  * Note: The return type of `to_json_data` does not have to return a reference to the existing object, but can return calculated values.
 ## Installing
+###### [Top](#0)
 
 The following will build and run the tests. 
 ```bash
@@ -102,12 +104,19 @@ After the build there the examples can be tested.  ```city_test_bin``` requires 
 ```
 
 ## Performance considerations
+###### [Top](#0)
+
 The order of the members in the data structures should generally match that of the JSON data.  The parser is faster if it doesn't have to back track for values.  Optional values, when missing in the JSON data, can slow down the parsing too.  If possible have them sent as null.  The parser does not allocate.  The parsed to data types may and this allows one to use custom allocators or a mix as their data structures will do the allocation.  The defaults for arrays is to use the std::vector<T> and if this isn't desireable, you must supply the type.
 
 ## Escaping/Unescaping of member names
+###### [Top](#0)
+
 The library, currently, does not escape or unescape the member names.  This is a design desision as the current architecture would make it difficult.  Post C++20 this may be doable as one can construct the string as a NTTP and encode it there.  In addition, one can put the escaped name as the name manually.
 
 ## Differences between C++17 and C++20
+###### [Top](#0)
+
+There are slight differences between C++17 and C++20 
 # C++ 17 Naming of JSON members
 ```cpp
 namespace daw::json {
@@ -119,6 +128,7 @@ namespace daw::json {
 }
 ```
 # C++ 20 Naming of JSON members
+When compiled within C++20 compiler, the member names are specified inside the types as follows.
 ```cpp
 namespace daw::json {
   template<>
@@ -173,8 +183,12 @@ std::string my_json_data = to_json_array( arry );
 ```
 # Error Handling
 ## Parsing call
+###### [Top](#0)
+
 With error checking enabled globally, you can now designate a parsing call as trusted by calling the _unchecked variant.  `from_json_unchecked`, `from_json_array_unchecked`, and `json_array_iterator_trusted`.  These paths are unchecked beyond missing non-nullable members.  The performance difference is from around 5%-15% in my testing.
 ## Global
+###### [Top](#0)
+
 There are two possible ways of handling errors.  The first, `abort( );` on an error in data.  Or the, second, throw a `daw::json::json_exception`.  json_exception has a member function `std::string_view reason( ) const`.  You can control which method is used by defining `DAW_JSON_DONT_USE_EXCEPTIONS` to make code noexcept.  In addition, you can control if the checks are only done in only debug mode `DAW_JSON_CHECK_DEBUG_ONLY`. In some cases, exporting strings the underlying libraries may throw too. However, the codebase is designed to work around -fno-exceptions and current will abort on error in those cases 
 # Deserializing/Parsing
 This can be accomplished by writing a function called json_data_contract_for with a single arugment that is your type.  The library is only concerned with it's return value. For example:
@@ -339,6 +353,8 @@ int main( ) {
 ```
 
 ## Serialization
+###### [Top](#0)
+
 To enable serialization on must create an additional free function called ```to_json_data( JsonClass );``` It will provide a mapping from your type to the arguments provided in the class description.  To serialize to a JSON string, one calls ```to_json( value );``` where value is a registered type.  The result of  to_json_data( JsonClass ) is a tuple who's arguments match that of the order in json_data_contract_for. Using the exmaple above lets add that
 
 ```cpp
@@ -372,12 +388,14 @@ std::vector<AggData> values = //...;
 std::string json_array_data = to_json_array( values );
 ```
 
-### Installing and Requirements
 ## Requirements
+###### [Top](#0)
+
 * C++ 17 compiler, C++ 20 for enhanced names
 * GCC(8/9)/Clang(7/8/9) have been tested.  
 * MSVC 19.21 has been tested. 
-# For building tests
+
+### For building tests
 * git
 * cmake
 
