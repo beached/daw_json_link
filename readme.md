@@ -84,7 +84,8 @@ namespace daw::json {
   };
 }
 ```
- * Note: The return type of `to_json_data` does not have to return a reference to the existing object, but can return calculated values.
+ * Note: The return type of `to_json_data` does not have to return references to the existing object members, but can return calculated values.
+ 
 ## Installing
 ###### [Top](#content)
 
@@ -191,6 +192,8 @@ With error checking enabled globally, you can now designate a parsing call as tr
 
 There are two possible ways of handling errors.  The first, `abort( );` on an error in data.  Or the, second, throw a `daw::json::json_exception`.  json_exception has a member function `std::string_view reason( ) const`.  You can control which method is used by defining `DAW_JSON_DONT_USE_EXCEPTIONS` to make code noexcept.  In addition, you can control if the checks are only done in only debug mode `DAW_JSON_CHECK_DEBUG_ONLY`. In some cases, exporting strings the underlying libraries may throw too. However, the codebase is designed to work around -fno-exceptions and current will abort on error in those cases 
 # Deserializing/Parsing
+###### [Top](#content)
+
 This can be accomplished by writing a function called json_data_contract_for with a single arugment that is your type.  The library is only concerned with it's return value. For example:
 
 ```cpp
