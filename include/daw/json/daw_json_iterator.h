@@ -56,7 +56,7 @@ namespace daw::json {
 		mutable intmax_t m_can_skip = -1;
 
 	public:
-		using element_type = impl::ary_val_t<JsonElement>;
+		using element_type = impl::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
 		using value_type = typename element_type::parse_to_t;

@@ -259,18 +259,18 @@ namespace daw::json {
 		static_assert(
 		  sizeof...( JsonElements ) <= 5U,
 		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
-		using element_map_t = std::tuple<impl::ary_val_t<JsonElements>...>;
+		using element_map_t = std::tuple<impl::unnamed_default_type_mapping<JsonElements>...>;
 		static constexpr size_t base_map[5] = {
 		  impl::find_json_element<JsonBaseParseTypes::Number>(
-		    {impl::ary_val_t<JsonElements>::underlying_json_type...} ),
+		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
 		  impl::find_json_element<JsonBaseParseTypes::Bool>(
-		    {impl::ary_val_t<JsonElements>::underlying_json_type...} ),
+		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
 		  impl::find_json_element<JsonBaseParseTypes::String>(
-		    {impl::ary_val_t<JsonElements>::underlying_json_type...} ),
+		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
 		  impl::find_json_element<JsonBaseParseTypes::Class>(
-		    {impl::ary_val_t<JsonElements>::underlying_json_type...} ),
+		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
 		  impl::find_json_element<JsonBaseParseTypes::Array>(
-		    {impl::ary_val_t<JsonElements>::underlying_json_type...} )};
+		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} )};
 	};
 
 	template<JSONNAMETYPE Name, typename T, typename JsonElements,
@@ -322,7 +322,7 @@ namespace daw::json {
 	         typename Constructor, typename Appender, JsonNullable Nullable>
 	struct json_array {
 		using i_am_a_json_type = void;
-		using json_element_t = impl::ary_val_t<JsonElement>;
+		using json_element_t = impl::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<json_element_t, void>,
 		               "Unknown JsonElement type." );
 		static_assert( impl::is_a_json_type_v<json_element_t>,
@@ -356,13 +356,13 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
-		using json_element_t = impl::ary_val_t<JsonValueType>;
+		using json_element_t = impl::unnamed_default_type_mapping<JsonValueType>;
 		static_assert( not std::is_same_v<json_element_t, void>,
 		               "Unknown JsonValueType type." );
 		static_assert( json_element_t::name == no_name,
 		               "Value member name must be the default no_name" );
 
-		using json_key_t = impl::ary_val_t<JsonKeyType>;
+		using json_key_t = impl::unnamed_default_type_mapping<JsonKeyType>;
 		static_assert( not std::is_same_v<json_key_t, void>,
 		               "Unknown JsonKeyType type." );
 		static_assert( json_key_t::name == no_name,
@@ -388,13 +388,13 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
-		using json_key_t = impl::ary_val_t<JsonKeyType, impl::default_key_name>;
+		using json_key_t = impl::unnamed_default_type_mapping<JsonKeyType, impl::default_key_name>;
 		static_assert( not std::is_same_v<json_key_t, void>,
 		               "Unknown JsonKeyType type." );
 		static_assert( json_key_t::name != no_name,
 		               "Must supply a valid key member name" );
 		using json_value_t =
-		  impl::ary_val_t<JsonValueType, impl::default_value_name>;
+		  impl::unnamed_default_type_mapping<JsonValueType, impl::default_value_name>;
 		static_assert( not std::is_same_v<json_value_t, void>,
 		               "Unknown JsonValueType type." );
 		static_assert( json_value_t::name != no_name,
@@ -503,12 +503,12 @@ namespace daw::json {
 	 */
 	template<typename JsonElement,
 	         typename Container =
-	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
+	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data ) {
-		using element_type = impl::ary_val_t<JsonElement>;
+		using element_type = impl::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
 
@@ -528,12 +528,12 @@ namespace daw::json {
 	 */
 	template<typename JsonElement,
 	         typename Container =
-	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
+	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array_unchecked( std::string_view json_data ) {
-		using element_type = impl::ary_val_t<JsonElement>;
+		using element_type = impl::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
 

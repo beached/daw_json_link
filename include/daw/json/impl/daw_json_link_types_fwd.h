@@ -302,7 +302,7 @@ namespace daw::json {
 	namespace impl {
 		namespace {
 			template<typename T, JSONNAMETYPE Name = no_name>
-			using ary_val_t = std::conditional_t<
+			using unnamed_default_type_mapping = std::conditional_t<
 			  impl::is_a_json_type_v<T>, T,
 			  std::conditional_t<
 			    has_json_data_contract_trait_v<T>, json_class<Name, T>,
@@ -332,7 +332,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename JsonElement,
 	         typename Container =
-	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
+	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>,
 	         JsonNullable Nullable = JsonNullable::Never>
@@ -352,7 +352,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename JsonElement,
 	         typename Container =
-	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
+	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	using json_array_null = json_array<Name, JsonElement, Container, Constructor,
