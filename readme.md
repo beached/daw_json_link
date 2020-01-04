@@ -88,6 +88,8 @@ namespace daw::json {
  * Note: The return type of `to_json_data` does not have to return references to the existing object members, but can return calculated values.
 
 ## Default mapping of types
+###### [Top](#content)
+
 In unnamed contexts, array element types, some key value types, and variant element lists where the name would be `no_name`, one can use some native C++ data types instead of the the JSON member types.  This includes, integer, floating point, bool, std::string, and previously mapped types.  
 
 For example, to map an array of string's.
@@ -152,6 +154,8 @@ namespace daw::json {
 ```
 
 # Using mapped data types
+###### [Top](#content)
+
 Once a data type has been mapped with a `json_data_contract`, the library provides methods to parse JSON to them
 
 ```cpp
