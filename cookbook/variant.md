@@ -20,7 +20,7 @@ Here we have an array of a class that has two members.  A variant of types numbe
 
 Too see a working example using this code, look at the [cookbook_variant1_test.cpp](../tests/cookbook_variant1_test.cpp) test in tests
 
-The following C++ can provide a mapping.  It, also, highlights that the types bool, integers, floating point, and std::string can be default mapped to elements that do not require a name.  Such as variant, array, and some key_value's.
+The following C++ can provide a mapping.  It, also, highlights that the types bool, integers, floating point, std::string, and previously mapped types can be default mapped to elements that do not require a name.  Such as variant, array, and some key_value's.
 
 ```cpp
 struct MyVariantStuff1 {
