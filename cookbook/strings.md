@@ -1,4 +1,5 @@
 # Strings
+JSON natively encodes strings.  There are two options for mapping them to C++ data structures, fully processed and raw strings. Raw strings only find the end of the string and do not change the underlying values.
 
 ## Escaped
 ```json
@@ -16,9 +17,9 @@
   ]
 }
 ```
-The above JSON describes a class with three members, a string named `member0`, an integer named `member1`, and a boolean named `member2`
+The above JSON document consists of an array member named `"uris"` with an element type of string.
 
-The C++ `vector<string>` of the above json should be equivilent to:
+The C++ `std::vector<std::string>` of the above json should be equivalent to:
 ```cpp
 std::vector<string> uris = {
   "example.com", 
@@ -32,8 +33,9 @@ std::vector<string> uris = {
   "🦄.com"};
 ```
 
-The C++ to contain and parse this could look like
-To see a working example using this code, look at the [cookbook_strings1_test.cpp](../tests/cookbook_strings1_test.cpp) test in tests
+To see a working example using this code, refer to [cookbook_escaped_strings1_test.cpp](../tests/cookbook_escaped_strings1_test.cpp). 
+
+Below the mapping of the JSON object with C++ data structures.
 ```cpp
 struct WebData {
   std::vector<std::string> uris;
@@ -43,10 +45,7 @@ namespace daw::json {
   template<>
   struct json_data_contract<WebData> {
     using type = json_member_list<
-      json_array<
-        "uris",
-        std::string
-      >
+      json_array<"uris", std::string>
     >;
 
     static inline auto
@@ -58,9 +57,40 @@ namespace daw::json {
 ```
 
 ## Raw strings
-Raw strings are useful where we don't want to process the strings, we know they will Never be escaped, or there are non-conformant items encoded.  A raw string, is also simpler in that it only requires a constructor that requires a pointer and size, like a string_view.  
+Raw strings are useful where we don't want to process the strings, we know they will never be escaped, or we do not require processing.  A raw string, is also simpler in that it only requires a constructor that requires a pointer and size, like `std::string_view` or `std::string`.  
+```json
+{
+  "uris": [
+    "example.com",
+    "B\u00FCcher.ch",
+    "happy.cn",
+    "happy\u5FEB\u4E50.cn",
+    "\u5FEB\u4E50.cn",
+    "happy.\u4E2D\u56FD",
+    "\u5FEB\u4E50.\u4E2D\u56FD",
+    "www.\u30CF\u30F3\u30C9\u30DC\u30FC\u30EB\u30B5\u30E0\u30BA.com",
+    "\uD83E\uDD84.com"
+  ]
+}
+```
+The above JSON document consists of an array member named `"uris"` with an element type of string.
 
-Using the json above and contrasting with the code above, all we need to do is change the `json_string` to `json_string_raw`
+The C++ `std::vector<std::string>` of the above json should be equivalent to when used as `json_string_raw`:
+```cpp
+std::vector<std::string> uris = {
+  "example.com",
+  "B\u00FCcher.ch",
+  "happy.cn",
+  "happy\u5FEB\u4E50.cn",
+  "\u5FEB\u4E50.cn",
+  "happy.\u4E2D\u56FD",
+  "\u5FEB\u4E50.\u4E2D\u56FD",
+  "www.\u30CF\u30F3\u30C9\u30DC\u30FC\u30EB\u30B5\u30E0\u30BA.com",
+  "\uD83E\uDD84.com"
+};
+```
+
+Contrasting with the (Escaped)[#escaped] example, the difference will be that the array element type is `json_string_raw`
 
 ```cpp
 struct WebData {
@@ -80,18 +110,3 @@ namespace daw::json {
   };
 }
 ```
-
-Now the C++ `std::vector<string>` will parse as 
-```cpp
-std::vector<string> uris = {
-  "example.com",
-  "B\u00FCcher.ch",
-  "happy.cn",
-  "happy\u5FEB\u4E50.cn",
-  "\u5FEB\u4E50.cn",
-  "happy.\u4E2D\u56FD",
-  "\u5FEB\u4E50.\u4E2D\u56FD",
-  "www.\u30CF\u30F3\u30C9\u30DC\u30FC\u30EB\u30B5\u30E0\u30BA.com",
-  "\uD83E\uDD84.com"
-};
-```		

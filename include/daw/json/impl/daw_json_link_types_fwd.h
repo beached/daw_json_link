@@ -26,6 +26,8 @@
 
 #include <daw/daw_utility.h>
 
+#include <chrono>
+#include <optional>
 #include <string>
 
 namespace daw::json {
@@ -56,7 +58,7 @@ namespace daw::json {
 	 * Constructor
 	 * @tparam LiteralAsString Could this number be embedded in a string
 	 * @tparam Constructor Callable used to construct result
-	 * @tparam RangeCheck Check if the value will fit in the result
+	 * @tparam RangeCheck Check if thevalue will fit in the result
 	 */
 	template<JSONNAMETYPE Name, typename T = std::optional<double>,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
@@ -300,8 +302,8 @@ namespace daw::json {
 	namespace impl {
 		namespace {
 			template<typename T, JSONNAMETYPE Name = no_name>
-			using ary_val_t = std::conditional_t<
-			  is_a_json_type_v<T>, T,
+			using unnamed_default_type_mapping = std::conditional_t<
+			  impl::is_a_json_type_v<T>, T,
 			  std::conditional_t<
 			    has_json_data_contract_trait_v<T>, json_class<Name, T>,
 			    std::conditional_t<
@@ -330,7 +332,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename JsonElement,
 	         typename Container =
-	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
+	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>,
 	         JsonNullable Nullable = JsonNullable::Never>
@@ -350,7 +352,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename JsonElement,
 	         typename Container =
-	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
+	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	using json_array_null = json_array<Name, JsonElement, Container, Constructor,
@@ -495,31 +497,6 @@ namespace daw::json {
 			}
 		} // namespace
 	}   // namespace impl
-
-	/***
-	 * A type to hold the types for parsing variants.
-	 * @tparam JsonElements Up to one of a JsonElement that is a JSON number,
-	 * string, object, or array
-	 */
-	template<typename... JsonElements>
-	struct json_variant_type_list {
-		using i_am_variant_element_list = void;
-		static_assert(
-		  sizeof...( JsonElements ) <= 5U,
-		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
-		using element_map_t = std::tuple<JsonElements...>;
-		static constexpr size_t base_map[5] = {
-		  impl::find_json_element<JsonBaseParseTypes::Number>(
-		    {JsonElements::underlying_json_type...} ),
-		  impl::find_json_element<JsonBaseParseTypes::Bool>(
-		    {JsonElements::underlying_json_type...} ),
-		  impl::find_json_element<JsonBaseParseTypes::String>(
-		    {JsonElements::underlying_json_type...} ),
-		  impl::find_json_element<JsonBaseParseTypes::Class>(
-		    {JsonElements::underlying_json_type...} ),
-		  impl::find_json_element<JsonBaseParseTypes::Array>(
-		    {JsonElements::underlying_json_type...} )};
-	};
 
 	/***
 	 * Link to a variant like data type.  The JSON member can be any one of the

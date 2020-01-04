@@ -28,87 +28,87 @@
 namespace daw::json::impl {
 	namespace {
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Real>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Signed>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Unsigned>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Null>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Bool>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::String>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::StringEscaped>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Date>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Custom>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Class>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Array>,
-		             IteratorRange<First, Last, IsTrustedInput> & );
+		             IteratorRange<First, Last, IsUnCheckedInput> & );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::KeyValue>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::KeyValueArray>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
 		parse_value( ParseTag<JsonParseTypes::Variant>,
-		             IteratorRange<First, Last, IsTrustedInput> &rng );
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 	} // namespace
 } // namespace daw::json::impl

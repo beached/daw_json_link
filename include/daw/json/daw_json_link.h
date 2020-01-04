@@ -78,18 +78,17 @@ namespace daw::json {
 		/**
 		 * Parse JSON data and construct a C++ class
 		 * @tparam JsonClass The result of parsing json_class
-		 * @tparam IsTrustedInput Is the input trusted, less checking is done
+		 * @tparam IsUnCheckedInput Is the input trusted, less checking is done
 		 * @param sv JSON data to parse
 		 * @return A T object
 		 */
-		template<typename JsonClass, bool IsTrustedInput>
+		template<typename JsonClass, bool IsUnCheckedInput>
 		[[maybe_unused, nodiscard]] static constexpr JsonClass
 		parse( std::string_view sv ) {
-			daw_json_assert_untrusted( not sv.empty( ),
-			                           "Cannot parse an empty string" );
+			daw_json_assert_weak( not sv.empty( ), "Cannot parse an empty string" );
 
 			auto rng =
-			  impl::IteratorRange<char const *, char const *, IsTrustedInput>(
+			  impl::IteratorRange<char const *, char const *, IsUnCheckedInput>(
 			    sv.data( ), sv.data( ) + sv.size( ) );
 			return impl::parse_json_class<JsonClass, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
@@ -101,15 +100,14 @@ namespace daw::json {
 		 * @tparam T The result of parsing json_class
 		 * @tparam First type of first iterator in range
 		 * @tparam Last type of last iterator in range
-		 * @tparam IsTrustedInput Is the input trusted, less checking is done
+		 * @tparam IsUnCheckedInput Is the input trusted, less checking is done
 		 * @param rng JSON data to parse
 		 * @return A T object
 		 */
-		template<typename T, typename First, typename Last, bool IsTrustedInput>
+		template<typename T, typename First, typename Last, bool IsUnCheckedInput>
 		[[maybe_unused, nodiscard]] static constexpr T
-		parse( impl::IteratorRange<First, Last, IsTrustedInput> &rng ) {
-			daw_json_assert_untrusted( rng.has_more( ),
-			                           "Cannot parse an empty string" );
+		parse( impl::IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
 			return impl::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{} );
 		}
@@ -250,6 +248,31 @@ namespace daw::json {
 		  JsonBaseParseTypes::Class;
 	};
 
+	/***
+	 * A type to hold the types for parsing variants.
+	 * @tparam JsonElements Up to one of a JsonElement that is a JSON number,
+	 * string, object, or array
+	 */
+	template<typename... JsonElements>
+	struct json_variant_type_list {
+		using i_am_variant_element_list = void;
+		static_assert(
+		  sizeof...( JsonElements ) <= 5U,
+		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
+		using element_map_t = std::tuple<impl::unnamed_default_type_mapping<JsonElements>...>;
+		static constexpr size_t base_map[5] = {
+		  impl::find_json_element<JsonBaseParseTypes::Number>(
+		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::Bool>(
+		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::String>(
+		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::Class>(
+		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::Array>(
+		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} )};
+	};
+
 	template<JSONNAMETYPE Name, typename T, typename JsonElements,
 	         typename Constructor, JsonNullable Nullable>
 	struct json_variant {
@@ -299,7 +322,7 @@ namespace daw::json {
 	         typename Constructor, typename Appender, JsonNullable Nullable>
 	struct json_array {
 		using i_am_a_json_type = void;
-		using json_element_t = impl::ary_val_t<JsonElement>;
+		using json_element_t = impl::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<json_element_t, void>,
 		               "Unknown JsonElement type." );
 		static_assert( impl::is_a_json_type_v<json_element_t>,
@@ -333,13 +356,13 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
-		using json_element_t = impl::ary_val_t<JsonValueType>;
+		using json_element_t = impl::unnamed_default_type_mapping<JsonValueType>;
 		static_assert( not std::is_same_v<json_element_t, void>,
 		               "Unknown JsonValueType type." );
 		static_assert( json_element_t::name == no_name,
 		               "Value member name must be the default no_name" );
 
-		using json_key_t = impl::ary_val_t<JsonKeyType>;
+		using json_key_t = impl::unnamed_default_type_mapping<JsonKeyType>;
 		static_assert( not std::is_same_v<json_key_t, void>,
 		               "Unknown JsonKeyType type." );
 		static_assert( json_key_t::name == no_name,
@@ -365,13 +388,13 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
-		using json_key_t = impl::ary_val_t<JsonKeyType, impl::default_key_name>;
+		using json_key_t = impl::unnamed_default_type_mapping<JsonKeyType, impl::default_key_name>;
 		static_assert( not std::is_same_v<json_key_t, void>,
 		               "Unknown JsonKeyType type." );
 		static_assert( json_key_t::name != no_name,
 		               "Must supply a valid key member name" );
 		using json_value_t =
-		  impl::ary_val_t<JsonValueType, impl::default_value_name>;
+		  impl::unnamed_default_type_mapping<JsonValueType, impl::default_value_name>;
 		static_assert( not std::is_same_v<json_value_t, void>,
 		               "Unknown JsonValueType type." );
 		static_assert( json_value_t::name != no_name,
@@ -414,7 +437,7 @@ namespace daw::json {
 	 */
 	template<typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr JsonClass
-	from_json_trusted( std::string_view json_data ) {
+	from_json_unchecked( std::string_view json_data ) {
 		static_assert( impl::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
@@ -448,7 +471,7 @@ namespace daw::json {
 
 	namespace impl {
 		namespace {
-			template<bool IsTrustedInput, typename JsonElement, typename Container,
+			template<bool IsUnCheckedInput, typename JsonElement, typename Container,
 			         typename Constructor, typename Appender>
 			[[maybe_unused, nodiscard]] constexpr Container
 			from_json_array_impl( std::string_view json_data ) {
@@ -461,7 +484,7 @@ namespace daw::json {
 				    json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
 
 				rng.trim_left_no_check( );
-				daw_json_assert_untrusted( rng.front( '[' ), "Expected array class" );
+				daw_json_assert_weak( rng.front( '[' ), "Expected array class" );
 
 				return parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{}, rng );
 			}
@@ -480,12 +503,12 @@ namespace daw::json {
 	 */
 	template<typename JsonElement,
 	         typename Container =
-	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
+	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data ) {
-		using element_type = impl::ary_val_t<JsonElement>;
+		using element_type = impl::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
 
@@ -494,7 +517,7 @@ namespace daw::json {
 	}
 
 	/**
-	 * Parse json data where the root item is an array
+	 * Parse json data where the root item is an array but do less checking
 	 * @tparam JsonElement The type of each element in array.  Must be one of
 	 * the above json_XXX classes.  This version isn't checked
 	 * @tparam Container Container to store values in
@@ -505,12 +528,12 @@ namespace daw::json {
 	 */
 	template<typename JsonElement,
 	         typename Container =
-	           std::vector<typename impl::ary_val_t<JsonElement>::parse_to_t>,
+	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
-	from_json_array_trusted( std::string_view json_data ) {
-		using element_type = impl::ary_val_t<JsonElement>;
+	from_json_array_unchecked( std::string_view json_data ) {
+		using element_type = impl::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
 
@@ -525,7 +548,6 @@ namespace daw::json {
 	 * @param c Data to serialize
 	 * @return A string containing the serialized elements of c
 	 */
-
 	template<typename Result = std::string, typename Container>
 	[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c ) {
 		static_assert(

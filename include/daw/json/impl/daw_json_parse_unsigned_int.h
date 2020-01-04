@@ -79,24 +79,17 @@ namespace daw::json::impl::unsignedint {
 				  t4 ) ); // only captures the sum of the first 8 digits, drop the rest
 			}
 
-			static inline bool is_made_of_eight_digits_fast( const char *ptr ) {
+			[[nodiscard]] static inline bool
+			is_made_of_eight_digits_fast( const char *ptr ) {
 				uint64_t val;
 				memcpy( &val, ptr, sizeof( uint64_t ) );
-				// this can read up to 7 bytes beyond the buffer size, but we require
-				// SIMDJSON_PADDING of padding
-				// a branchy method might be faster:
-				/*
-				 return (( val & 0xF0F0F0F0F0F0F0F0 ) == 0x3030303030303030)
-				  && (( (val + 0x0606060606060606) & 0xF0F0F0F0F0F0F0F0 ) ==
-				  0x3030303030303030);
-				  */
 				return ( ( ( val & 0xF0F0F0F0F0F0F0F0U ) |
 				           ( ( ( val + 0x0606060606060606U ) & 0xF0F0F0F0F0F0F0F0U ) >>
 				             4U ) ) == 0x3333333333333333U );
 			}
 
 			[[nodiscard]] static inline std::pair<Unsigned, char const *>
-			parse_sse2( char const *ptr ) {
+			parse_sse3( char const *ptr ) {
 				uintmax_t result = 0;
 				while( is_made_of_eight_digits_fast( ptr ) ) {
 					result *= 100'000'000ULL;
@@ -122,11 +115,11 @@ namespace daw::json::impl {
 	namespace {
 		template<typename Result, SIMDModes SIMDMode,
 		         JsonRangeCheck RangeCheck = JsonRangeCheck::Never, typename First,
-		         typename Last, bool IsTrustedInput>
+		         typename Last, bool IsUnCheckedInput>
 		[[nodiscard]] constexpr auto parse_unsigned_integer2(
-		  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
-			daw_json_assert_untrusted( rng.is_number( ),
-			                           "Expecting a digit as first item" );
+		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
+			daw_json_assert_weak( rng.is_number( ),
+			                      "Expecting a digit as first item" );
 
 			using namespace daw::json::impl::unsignedint;
 			using iresult_t =
@@ -135,7 +128,7 @@ namespace daw::json::impl {
 			auto [v, new_p] = [rng] {
 #ifdef DAW_ALLOW_SSE3
 				if constexpr( SIMDMode == SIMDModes::SSE3 ) {
-					return unsigned_parser<iresult_t>::parse_sse2( rng.first );
+					return unsigned_parser<iresult_t>::parse_sse3( rng.first );
 				} else {
 #endif
 					return unsigned_parser<iresult_t>::parse( rng.first );
@@ -160,11 +153,11 @@ namespace daw::json::impl {
 
 		template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
 		         SIMDModes SimdMode = SIMDModes::None, typename First,
-		         typename Last, bool IsTrustedInput>
+		         typename Last, bool IsUnCheckedInput>
 		[[nodiscard]] constexpr Result parse_unsigned_integer(
-		  IteratorRange<First, Last, IsTrustedInput> &rng ) noexcept {
-			daw_json_assert_untrusted( rng.is_number( ),
-			                           "Expecting a digit as first item" );
+		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
+			daw_json_assert_weak( rng.is_number( ),
+			                      "Expecting a digit as first item" );
 
 			using namespace daw::json::impl::unsignedint;
 			using result_t =
@@ -174,7 +167,10 @@ namespace daw::json::impl {
 			auto [result, ptr] = [&] {
 #ifdef DAW_ALLOW_SSE3
 				if constexpr( SimdMode == SIMDModes::SSE3 ) {
-					return unsigned_parser<result_t>::parse_sse2( rng.first );
+					daw_json_assert_weak(
+					  rng.size( ) >= parse_space_needed_v<SimdMode>,
+					  "Insufficient space to parse number in SSE3 Mode" );
+					return unsigned_parser<result_t>::parse_sse3( rng.first );
 				} else {
 #endif
 					return unsigned_parser<result_t>::parse( rng.first );

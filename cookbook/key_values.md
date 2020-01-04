@@ -1,7 +1,9 @@
 # Key Values
 
+Dictionaries and Maps are not directly represented in JSON.  There are several ways that they are commonly encoded.
+
 ## As Class
-Stored in JSON objects and string/value pairs
+Keys are stored as member names and Values as their value.  This is very common, but limits the Key type to strings in JSON.  However, numbers and other literals are encodable as strings.
 
 ```json
 { 
@@ -11,10 +13,9 @@ Stored in JSON objects and string/value pairs
   }
 }
 ```
-The above JSON describes a class with a key value member that represents a map with a string key and a numeric value
 
-The C++ to contain and parse this could look like
-Too see a working example using this code, look at the [cookbook_kv1_test.cpp](../tests/cookbook_kv1_test.cpp) test in tests
+Too see a working example using this code, refer to [cookbook_kv1_test.cpp](../tests/cookbook_kv1_test.cpp) 
+Below the JSON object is mapped to a `std::unordered_map<std::string, int>`
 ```cpp
 struct MyKeyValue {
   std::map<std::string, int> kv;
@@ -24,10 +25,7 @@ namespace daw::json {
   template<>
   struct json_data_contract<MyKeyValue1> {
     using type = json_member_list<
-      json_key_value<
-        "kv", 
-        std::unordered_map<std::string, int>, 
-        int>
+      json_key_value<"kv", std::unordered_map<std::string, int>, int>
     >;
 
     static inline auto
@@ -40,16 +38,20 @@ namespace daw::json {
 
 
 ## As Array
-Too see a working example using this code, look at the [cookbook_kv2_test.cpp](../tests/cookbook_kv2_test.cpp) test in tests
+Key/Values are stored as JSON objects in an array.  Generally the key member's name is `"key"` and the value members name is `"value"`
+
 ```json
+{
   "kv": [
     { "key": 0, "value": "test_001" },
     { "key": 1, "value": "test_002" }
   ]
+}
 ```
-The above JSON describes a class with a member that stores key valus as objects in an array.  In this case the key is integral and the value is a string
+The above JSON document an array member named `"kv"` whose element is an object with int keys, named `"key"` and string values named `"value"`.
 
-The C++ to contain and parse this could look like
+Below it is mapped to a `std::unorderd_map<intmax_t, std::string>`
+Too see a working example using this code, refer to [cookbook_kv2_test.cpp](../tests/cookbook_kv2_test.cpp) 
 ```cpp
 struct MyKeyValue2 {
   std::unordered_map<intmax_t, std::string> kv;

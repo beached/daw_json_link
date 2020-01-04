@@ -552,8 +552,6 @@ namespace daw::json::impl {
 			  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 			  "value must be convertible to specified type in class contract" );
 
-			// DAW**********return json_data_contract_trait_t<typename
-			// JsonMember::parse_to_t>::
 			return json_data_contract_trait_t<parse_to_t>::serialize(
 			  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ) );
 		}
@@ -695,12 +693,6 @@ namespace daw::json::impl {
 			                            daw::move( it ), value );
 			return it;
 		}
-
-		template<typename T>
-		using json_type_t = typename T::i_am_a_json_type;
-
-		template<typename T>
-		inline constexpr bool is_a_json_type_v = daw::is_detected_v<json_type_t, T>;
 
 		template<size_t pos, typename JsonMember, typename OutputIterator,
 		         typename... Args>

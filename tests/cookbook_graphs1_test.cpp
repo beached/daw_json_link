@@ -23,10 +23,8 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_benchmark.h>
 #include <daw/daw_graph.h>
 #include <daw/daw_memory_mapped_file.h>
-#include <daw/daw_optional.h>
 
 #include <cstdint>
 #include <cstdio>
@@ -112,12 +110,12 @@ int main( int argc, char **argv ) {
 		exit( EXIT_FAILURE );
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
-	auto json_sv = std::string_view( data.data( ), data.size( ) );
+	std::string_view json_sv = std::string_view( data.data( ), data.size( ) );
 
 	daw::graph_t<Node> g{};
-	using namespace daw::json;
 
-	using node_range_t = json_array_range<daw::cookbook_graphs1::GraphNode>;
+	using node_range_t =
+	  daw::json::json_array_range<daw::cookbook_graphs1::GraphNode>;
 	for( auto node : node_range_t( json_sv, "nodes" ) ) {
 		g.add_node( node.id, node.metadata.member0, node.metadata.member1,
 		            node.metadata.member2 );
@@ -129,23 +127,25 @@ int main( int argc, char **argv ) {
 		if( result.empty( ) ) {
 			return {};
 		}
-		daw::expecting( result.size( ) == 1 );
+		daw_json_assert( result.size( ) == 1, "Unexpected size" );
 		return result.front( );
 	};
+
 	auto const find_node = [&]( size_t id ) {
 		auto result = find_node_id( id );
 		daw_json_assert( result, "Expected a result" );
 		return g.get_node( *result );
 	};
 
-	using edge_range_t = json_array_range<daw::cookbook_graphs1::GraphEdge>;
+	using edge_range_t =
+	  daw::json::json_array_range<daw::cookbook_graphs1::GraphEdge>;
 	for( auto edge : edge_range_t( json_sv, "edges" ) ) {
 		auto source_id = *find_node_id( edge.source );
 		auto target_id = *find_node_id( edge.target );
 
 		g.add_directed_edge( source_id, target_id );
 	}
-	daw::do_not_optimize( g );
+	(void)g;
 
 	daw_json_assert( g.size( ) == 3U, "Expected graph to have 3 nodes" );
 	auto nid_0 = find_node_id( 0 );

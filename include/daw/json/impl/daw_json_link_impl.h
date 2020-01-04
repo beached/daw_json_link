@@ -51,6 +51,7 @@
 
 namespace daw::json::impl {
 	namespace {
+
 		[[nodiscard]] constexpr char to_lower( char c ) noexcept {
 			return static_cast<char>( static_cast<unsigned>( c ) |
 			                          static_cast<unsigned>( ' ' ) );
@@ -214,11 +215,11 @@ namespace daw::json::impl {
 		// Assumes that the current item in stream is a double quote
 		// Ensures that the stream is left at the position of the associated
 		// value(e.g after the colon(:) and trimmed)
-		template<typename First, typename Last, bool IsTrustedInput>
+		template<typename First, typename Last, bool IsUnCheckedInput>
 		[[nodiscard]] constexpr daw::string_view
-		parse_name( IteratorRange<First, Last, IsTrustedInput> &rng ) {
-			daw_json_assert_untrusted( rng.front( '"' ),
-			                           "Expected name to start with a quote" );
+		parse_name( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+			daw_json_assert_weak( rng.front( '"' ),
+			                      "Expected name to start with a quote" );
 			rng.remove_prefix( );
 			return daw::json::impl::name::name_parser::parse_nq( rng );
 		}
@@ -250,10 +251,10 @@ namespace daw::json::impl {
 			return kv_t<string_t>( type_t::name, type_t::expected_type, N );
 		}
 
-		template<typename First, typename Last, bool IsTrustedInput>
+		template<typename First, typename Last, bool IsUnCheckedInput>
 		struct location_info_t {
 			daw::string_view name;
-			IteratorRange<First, Last, IsTrustedInput> location{};
+			IteratorRange<First, Last, IsUnCheckedInput> location{};
 
 			explicit constexpr location_info_t( daw::string_view Name ) noexcept
 			  : name( Name ) {}
@@ -263,9 +264,9 @@ namespace daw::json::impl {
 			}
 		};
 
-		template<size_t N, typename First, typename Last, bool IsTrustedInput>
+		template<size_t N, typename First, typename Last, bool IsUnCheckedInput>
 		struct locations_info_t {
-			using value_type = location_info_t<First, Last, IsTrustedInput>;
+			using value_type = location_info_t<First, Last, IsUnCheckedInput>;
 			std::array<value_type, N> names;
 
 			constexpr decltype( auto ) begin( ) const {
@@ -284,12 +285,12 @@ namespace daw::json::impl {
 				return names.end( );
 			}
 
-			constexpr location_info_t<First, Last, IsTrustedInput> const &
+			constexpr location_info_t<First, Last, IsUnCheckedInput> const &
 			operator[]( size_t idx ) const {
 				return names[idx];
 			}
 
-			constexpr location_info_t<First, Last, IsTrustedInput> &
+			constexpr location_info_t<First, Last, IsUnCheckedInput> &
 			operator[]( size_t idx ) {
 				return names[idx];
 			}
@@ -311,13 +312,13 @@ namespace daw::json::impl {
 		};
 
 		template<typename JsonMember, size_t N, typename First, typename Last,
-		         bool IsTrustedInput>
-		[[nodiscard]] constexpr IteratorRange<First, Last, IsTrustedInput>
+		         bool IsUnCheckedInput>
+		[[nodiscard]] constexpr IteratorRange<First, Last, IsUnCheckedInput>
 		find_class_member(
-		  size_t pos, locations_info_t<N, First, Last, IsTrustedInput> &locations,
-		  IteratorRange<First, Last, IsTrustedInput> &rng ) {
+		  size_t pos, locations_info_t<N, First, Last, IsUnCheckedInput> &locations,
+		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
-			daw_json_assert_untrusted(
+			daw_json_assert_weak(
 			  is_json_nullable_v<JsonMember> or not locations[pos].missing( ) or
 			    not rng.front( '}' ),
 			  "Unexpected end of class.  Non-nullable members still not found" );
@@ -350,11 +351,11 @@ namespace daw::json::impl {
 		}
 
 		template<typename JsonMember, size_t N, typename First, typename Last,
-		         bool IsTrustedInput>
+		         bool IsUnCheckedInput>
 		[[nodiscard]] constexpr json_result<JsonMember> parse_class_member(
 		  size_t member_position,
-		  locations_info_t<N, First, Last, IsTrustedInput> &locations,
-		  IteratorRange<First, Last, IsTrustedInput> &rng ) {
+		  locations_info_t<N, First, Last, IsUnCheckedInput> &locations,
+		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
 			rng.clean_tail( );
 			if constexpr( is_no_name<JsonMember::name> ) {
@@ -362,14 +363,14 @@ namespace daw::json::impl {
 				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
 				                                rng );
 			} else {
-				daw_json_assert_untrusted( rng.front( "\"}" ),
-				                           "Expected end of class or start of member" );
+				daw_json_assert_weak( rng.front( "\"}" ),
+				                      "Expected end of class or start of member" );
 				auto loc =
 				  find_class_member<JsonMember>( member_position, locations, rng );
 
-				daw_json_assert_untrusted( is_json_nullable_v<JsonMember> or
-				                             not loc.is_null( ),
-				                           "Could not find required class member" );
+				daw_json_assert_weak( is_json_nullable_v<JsonMember> or
+				                        not loc.is_null( ),
+				                      "Could not find required class member" );
 				if( loc.is_null( ) or
 				    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 
@@ -401,16 +402,16 @@ namespace daw::json::impl {
 			return it;
 		}
 
-		template<typename First, typename Last, bool IsTrustedInput,
+		template<typename First, typename Last, bool IsUnCheckedInput,
 		         typename... JsonMembers>
 		static inline constexpr auto known_locations_v =
-		  locations_info_t<sizeof...( JsonMembers ), First, Last, IsTrustedInput>{
-		    location_info_t<First, Last, IsTrustedInput>( JsonMembers::name )...};
+		  locations_info_t<sizeof...( JsonMembers ), First, Last, IsUnCheckedInput>{
+		    location_info_t<First, Last, IsUnCheckedInput>( JsonMembers::name )...};
 
 		template<typename JsonClass, typename... JsonMembers, size_t... Is,
-		         typename First, typename Last, bool IsTrustedInput>
+		         typename First, typename Last, bool IsUnCheckedInput>
 		[[nodiscard]] constexpr JsonClass
-		parse_json_class( IteratorRange<First, Last, IsTrustedInput> &rng,
+		parse_json_class( IteratorRange<First, Last, IsUnCheckedInput> &rng,
 		                  std::index_sequence<Is...> ) {
 			static_assert( has_json_data_contract_trait_v<JsonClass>,
 			               "Unexpected type" );
@@ -425,14 +426,14 @@ namespace daw::json::impl {
 			rng.move_to_next_of( "\"}" );
 			if constexpr( sizeof...( JsonMembers ) == 0 ) {
 				// We are an empty class
-				daw_json_assert_untrusted( rng.front( '}' ),
-				                           "Expected class to end with '}'" );
+				daw_json_assert_weak( rng.front( '}' ),
+				                      "Expected class to end with '}'" );
 				rng.remove_prefix( );
 				rng.trim_left( );
 				return construct_a<JsonClass>( );
 			} else {
 				auto known_locations =
-				  known_locations_v<First, Last, IsTrustedInput, JsonMembers...>;
+				  known_locations_v<First, Last, IsUnCheckedInput, JsonMembers...>;
 
 				using tp_t = std::tuple<decltype(
 				  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
@@ -453,8 +454,8 @@ namespace daw::json::impl {
 					rng.clean_tail( );
 				}
 
-				daw_json_assert_untrusted( rng.front( ) == '}',
-				                           "Expected class to end with '}'" );
+				daw_json_assert_weak( rng.front( ) == '}',
+				                      "Expected class to end with '}'" );
 				rng.remove_prefix( );
 				rng.trim_left( );
 				return result;
@@ -480,12 +481,13 @@ namespace daw::json::impl {
 			return json_path_item.size( ) == member_name.size( );
 		}
 
-		template<typename First, typename Last, bool IsTrustedInput>
-		constexpr void find_range2( IteratorRange<First, Last, IsTrustedInput> &rng,
-		                            daw::string_view path ) {
+		template<typename First, typename Last, bool IsUnCheckedInput>
+		constexpr void
+		find_range2( IteratorRange<First, Last, IsUnCheckedInput> &rng,
+		             daw::string_view path ) {
 			auto current = impl::pop_json_path( path );
 			while( not current.empty( ) ) {
-				daw_json_assert_untrusted( rng.front( '{' ), "Invalid Path Entry" );
+				daw_json_assert_weak( rng.front( '{' ), "Invalid Path Entry" );
 				rng.remove_prefix( );
 				rng.trim_left_no_check( );
 				auto name = parse_name( rng );
@@ -498,11 +500,11 @@ namespace daw::json::impl {
 			}
 		}
 
-		template<bool IsTrustedInput, typename String>
+		template<bool IsUnCheckedInput, typename String>
 		[[nodiscard]] constexpr auto find_range( String &&str,
 		                                         daw::string_view start_path ) {
 
-			auto rng = IteratorRange<char const *, char const *, IsTrustedInput>(
+			auto rng = IteratorRange<char const *, char const *, IsUnCheckedInput>(
 			  std::data( str ), std::data( str ) + std::size( str ) );
 			rng.trim_left( );
 			if( rng.has_more( ) and not start_path.empty( ) ) {
@@ -512,18 +514,18 @@ namespace daw::json::impl {
 			return rng;
 		}
 
-		template<typename JsonClass, bool IsTrustedInput>
+		template<typename JsonClass, bool IsUnCheckedInput>
 		[[maybe_unused, nodiscard]] constexpr JsonClass
 		from_json_impl( std::string_view json_data ) {
 			static_assert( impl::has_json_data_contract_trait_v<JsonClass>,
 			               "Expected a typed that has been mapped via specialization "
 			               "of daw::json::json_data_contract" );
 
-			daw_json_assert_untrusted( not json_data.empty( ),
-			                           "Attempt to parse empty string" );
+			daw_json_assert_weak( not json_data.empty( ),
+			                      "Attempt to parse empty string" );
 
 			return impl::json_data_contract_trait_t<JsonClass>::template parse<
-			  JsonClass, IsTrustedInput>( json_data );
+			  JsonClass, IsUnCheckedInput>( json_data );
 		}
 	} // namespace
 } // namespace daw::json::impl

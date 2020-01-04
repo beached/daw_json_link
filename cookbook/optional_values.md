@@ -1,6 +1,6 @@
 # Optional Values
 
-null or optional values are supported by appending the type name with `_null`.  The requirement of the underlying type is that it will be default constructable.
+null or optional values are supported by appending the type name with `_null`.  The requirement of the underlying type is that it will be default constructable for null values.
 
 Take the following JSON
 ```json
@@ -16,11 +16,9 @@ Take the following JSON
 ]
 ```
 
-Here we have an array of a class that has two members.  An optional int, a string, and an optional bool.
+The JSON document is an array of an object with two members, an optional int, a string, and an optional bool.
 
-Too see a working example using this code, look at the [cookbook_optional_values1_test.cpp](../tests/cookbook_optional_values1_test.cpp) test in tests
-
-The following C++ can provide a mapping
+Too see a working example using this code, refer to [cookbook_optional_values1_test.cpp](../tests/cookbook_optional_values1_test.cpp). 
 
 ```cpp
 struct MyOptionalStuff1 {

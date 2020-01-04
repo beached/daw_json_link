@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(daw_json_link_prj)
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 
-message( "CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}" )
+message("CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
 enable_testing()
 
 include("${CMAKE_SOURCE_DIR}/dependent_projects/CMakeListsCompiler.txt")
@@ -303,6 +303,15 @@ add_dependencies(small_test_bin dependency_stub)
 add_test(NAME small_test COMMAND small_test_bin ./small_test.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full small_test_bin)
 
+add_executable(should_fail_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/should_fail_001.cpp)
+add_dependencies(should_fail_bin dependency_stub)
+add_test(should_fail_test should_fail_bin)
+add_dependencies(full should_fail_bin)
+
+add_executable(trailing_commas_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/trailing_commas.cpp)
+add_dependencies(trailing_commas_bin dependency_stub)
+add_test(trailing_commas_test trailing_commas_bin)
+add_dependencies(full trailing_commas_bin)
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 

@@ -2,54 +2,95 @@
 
 This library provides serialization/deserialization of JSON documents with a known structure into a C++ typed structure.
 
-The library is [MIT](LICENCE) licensed so its free to use, just have to give credit.
+The library is [MIT](LICENSE) licensed so its free to use, just have to give credit.
 
-By using the know data structures in the JSON data we will be able to parse json as simply as 
+Because the struct of the document is known, parsing is like the following 
 ```cpp
 MyThing thing = from_json<MyThing>( data );
 ```
-or
+or for array documents 
 ```cpp
 std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 ```
 ## Code Examples
-* The  [Cookbook](cookbook/) section has precanned tasks and working code examples
+* The  [Cookbook](cookbook/readme.md) section has precanned tasks and working code examples
 * [Tests](tests/) provide another source of working code samples. 
 * Small samples below
 
 ## Content 
+* [Intro](#intro)
 * [API](api.md) - Member mapping classes
-* [Cookbook](cookbook/)
+* [Cookbook](cookbook/readme.md) Get cooking and putting it all together 
   * [Arrays](cookbook/array.md)
   * [Classes](cookbook/class.md)
-  * [Enums](cookbook/enum.md)
+  * [Enums](cookbook/enums.md)
   * [Graphs](cookbook/graphs.md)
   * [Key Values](cookbook/key_values.md) - Map and Dictionary like things 
   * [Optional/Nullable Values](cookbook/optional_values.md)
   * [Strings](cookbook/strings.md)
   * [Variant](cookbook/variant.md)
   * [Automatic Code Generation](cookbook/automated_code_generation.md)
+* [Intro](#intro)
 * [Installing](#installing)
 * [Performance considerations](#performance-considerations)
-* [Escaping/Unescaping of member names](#escaping/unescaping-of-member-names)
-* [Differences between C++17 and C++20](#differences-between-c++17-and-c++20)
-* [C++ 17 Naming of members](#c++-17-naming-of-members)
-* [C++ 20 Enhanced member naming](#c++-20-enhanced-member-naming)
-* [Using data types](#using-data-types)
+* [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
+* [Differences between C++17 and C++20](#differences-between-c17-and-c20)
+  * [C++ 17 Naming of members](#c-17-naming-of-json-members)
+  * [C++ 20 Naming of members](#c-20-naming-of-json-members)
+* [Using data types](#using-mapped-data-types)
 * [Error Handling](#error-handling)
   * [Parsing call](#parsing-call)
   * [Global](#global)
-* [Deserializing/Parsing](#deserializing/parsing)
-  * [Serialization](#serialization)
-* [Installing and Requirements](#installing-and-requirements)
+* [Deserializing/Parsing](#deserializingparsing)
+* [Serialization](#serialization)
 * [Requirements](#requirements)
   * [For building tests](#for-building-tests)
 
+## Intro 
+###### [Top](#content)
 
+JSON Link allows serializing and deserializing of C++ data types and JSON using a predefined schema.   The underlying premise is the constructor of C++ data structures can be called with the JSON object's members.  The parsers goal isn't conformance.  It should be stricter in many ways, but somethings will not be checked(e.g. trailing commas).  The serializer is attempting to be conformant and generates minimal JSON. 
+Mapping of data structures is done by specializing ```daw::json::json_data_contract``` for type ```T```.
+There are two parts to the trait `json_data_contract`, first is a type alias named ```type``` that maps JSON object members by name to the argumenets of the C++ data structures constructor. Second, an optional, static method with a signatures like ```static tuple<MemberTypes> to_json_data( T const & )``` which returns a tuple of calculated for referenced members corresponding to the previous mapping.  `to_json_data` is only required if serialization is wanted. 
+
+For example a `json_data_contract` for a `Coordinate` class could look like 
+```cpp
+namespace daw::json {
+  template<>
+  struct json_data_contract<Coordinate> {
+    using type = json_member_list<
+      json_number<"lat">, 
+      json_number<"lng">
+    >;
+  };
+}
+```
+This says that there is a json object with members `lat` and `lng` that are numbers.  The default mapping for numbers is `double`, but one can benefit from specifying and restring that e.g. `int`.  The Coordinate class would need to be constructable from two double's.
+
+To allow for serializing, the `to_json_data` method takes an existing C++ object and breaks out the values to the serializer.  
+```cpp
+namespace daw::json {
+  template<>
+  struct json_data_contract<Coordinate> {
+    // Same as previous example
+    using type = json_member_list<
+      json_number<"lat">, 
+      json_number<"lng">
+    >;
+
+    static inline auto to_json_data( Coordinate const & c ) {
+      return std::forward_as_tuple( c.latitude, c.longitude ); 
+    }
+  };
+}
+```
+ * Note: The return type of `to_json_data` does not have to return references to the existing object members, but can return calculated values.
+ 
 ## Installing
+###### [Top](#content)
 
 The following will build and run the tests. 
-```
+```bash
 git clone https://github.com/beached/daw_json_link
 cd daw_json_link
 mkdir build
@@ -58,82 +99,104 @@ cmake ..
 cmake --build . --target full -j 2
 ctest -C Debug
 ```
-After the build there the examples can be tested.  ```city_test_bin``` requires the path to the cities json file.
-```
+After the build there the examples can be tested.  ```city_test_bin``` requires the path to the cities JSON file.
+```bash
 ./city_test_bin ../test_data/cities.json
 ```
 
 ## Performance considerations
-The order of the data in the data structures should generally match that of the json data.  The parser is much faster if it doesn't have to back track for values.  Optional values where they are missing in the json data can slow down the parsing too.  If possible have them sent as null.  The parser does not allocate.  The parsed to data types may and this allows one to use custom allocators or a mix as their data structures will do the allocation.  The defaults for arrays is to use the std::vector<T> and if this isn't desireable, you must supply the type.
+###### [Top](#content)
+
+The order of the members in the data structures should generally match that of the JSON data.  The parser is faster if it doesn't have to back track for values.  Optional values, when missing in the JSON data, can slow down the parsing too.  If possible have them sent as null.  The parser does not allocate.  The parsed to data types may and this allows one to use custom allocators or a mix as their data structures will do the allocation.  The defaults for arrays is to use the std::vector<T> and if this isn't desireable, you must supply the type.
 
 ## Escaping/Unescaping of member names
-The library will not escape or unescape the member names.  This is a design desision as the current architecture would make it difficult.  Post C++20 this may be doable as one can construct the string as a NTTP and encode it there.  In addition, one can put the escaped name as the name manually.
+###### [Top](#content)
+
+The library, currently, does not escape or unescape the member names.  This is a design desision as the current architecture would make it difficult.  Post C++20 this may be doable as one can construct the string as a NTTP and encode it there.  In addition, one can put the escaped name as the name manually.
 
 ## Differences between C++17 and C++20
-# C++ 17 Naming of members
+###### [Top](#content)
+
+There are slight differences between C++17 and C++20 
+# C++ 17 Naming of JSON members
 ```cpp
-static constexpr char const member_name[] = "memberName";
-
-...json_number<member_name>
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyType> {
+    static constexpr char const member_name[] = "memberName";
+    using type = json_member_list<json_number<member_name>>;
+  };
+}
 ```
-# C++ 20 Enhanced member naming
+# C++ 20 Naming of JSON members
+When compiled within C++20 compiler, the member names are specified inside the types as follows.
 ```cpp
-...json_number<"memberName">
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyType> {
+    using type = json_member_list<json_number<"member_name">>;
+  };
+}
 ```
 
-# Using data types
-Once a data type has been described, you can easily construct an object from a string or string_view.
+# Using mapped data types
+Once a data type has been mapped with a `json_data_contract`, the library provides methods to parse JSON to them
 
-```C++
-auto my_class = from_json<MyClass>( json_str );
+```cpp
+MyClass my_class = from_json<MyClass>( json_str );
 ```
-Alternatively, if the input is trusted you can called the less checked version
-```C++
-auto my_class = from_json_trusted<MyClass>( json_str );
-```
-
-Or one can create a collection of your object from a JSON array
-
-```C++
-auto my_data = from_json_array<MyClass>( json_str );
-```
-Alternatively, if the input is trusted you can called the less checked version
-```C++
-auto my_data = from_json_array_trusted<MyClass>( json_str );
+Alternatively, if the input is trusted, the less checked version can be faster 
+```cpp
+MyClass my_class = from_json_unchecked<MyClass>( json_str );
 ```
 
-If you want to work from JSON array data you can get an iterator and use the std algorithms too
+JSON documents with array root's use the `from_json_array` function to parse 
+```cpp
+std::vector<MyClass> my_data = from_json_array<MyClass>( json_str );
+```
+Alternatively, if the input is trusted, the less checked version can be faster 
+```cpp
+std::vector<MyClass> my_data = from_json_array_unchecked<MyClass>( json_str );
+```
 
-```C++
+If you want to work from JSON array data you can get an iterator and use the std algorithms to
+Iterating over array's in JSON data can be done via the `json_array_iterator`
+```cpp
 using iterator_t = json_array_iterator<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
 Alternatively, if the input is trusted you can called the less checked version
-```C++
+```cpp
 using iterator_t = daw::json::json_array_iterator_trusted<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
 
 If you want to serialize to JSON 
 
-```C++
+```cpp
 std::string my_json_data = to_json( MyClass{} );
 ```
 
 Or serialize a collection of things
-```C++
+```cpp
 std::vector<MyClass> arry = ...;
 std::string my_json_data = to_json_array( arry );
 ```
 # Error Handling
 ## Parsing call
-With error checking enabled globally, you can now designate a parsing call as trusted by calling the _trusted variant.  `from_json_trusted`, `from_json_array_trusted`, and `json_array_iterator_trusted`.  These paths are unchecked beyond missing non-nullable members.  The performance difference is from around 5%-15% in my testing.
+###### [Top](#content)
+
+With error checking enabled globally, you can now designate a parsing call as trusted by calling the _unchecked variant.  `from_json_unchecked`, `from_json_array_unchecked`, and `json_array_iterator_trusted`.  These paths are unchecked beyond missing non-nullable members.  The performance difference is from around 5%-15% in my testing.
 ## Global
+###### [Top](#content)
+
 There are two possible ways of handling errors.  The first, `abort( );` on an error in data.  Or the, second, throw a `daw::json::json_exception`.  json_exception has a member function `std::string_view reason( ) const`.  You can control which method is used by defining `DAW_JSON_DONT_USE_EXCEPTIONS` to make code noexcept.  In addition, you can control if the checks are only done in only debug mode `DAW_JSON_CHECK_DEBUG_ONLY`. In some cases, exporting strings the underlying libraries may throw too. However, the codebase is designed to work around -fno-exceptions and current will abort on error in those cases 
 # Deserializing/Parsing
+###### [Top](#content)
+
 This can be accomplished by writing a function called json_data_contract_for with a single arugment that is your type.  The library is only concerned with it's return value. For example:
 
-```C++
+```cpp
 #include <daw/json/daw_json_link.h>
 
 struct TestClass {
@@ -226,8 +289,8 @@ namespace daw::json {
     static inline constexpr char const a[] = "a";
     static inline constexpr char const b[] = "b";
     using type = json_member_list<
-      json_number<symbols_AggClass::a, int>,
-      json_number<symbols_AggClass::b>
+      json_number<a, int>,
+      json_number<b>
     >;
   };
 }
@@ -252,7 +315,7 @@ namespace daw::json {
 }
 ```
 
-The above maps a class MyClass that has another class that is described AggClass.  Also, you can see that the member names of the C++ class do not have to match that of the mapped json names and that strings can use `std::string_view` as the result type.  This is an important performance enhancement if you can guarantee the buffer containing the json file will exist as long as the class does.
+The above maps a class MyClass that has another class that is described AggClass.  Also, you can see that the member names of the C++ class do not have to match that of the mapped JSON names and that strings can use `std::string_view` as the result type.  This is an important performance enhancement if you can guarantee the buffer containing the JSON file will exist as long as the class does.
 
 Iterating over JSON arrays.  The input iterator ```daw::json::json_array_iterator<JsonElement>``` allows one to iterator over the array of JSON elements.  It is technically an input iterator but can be stored and reused like a forward iterator.  It does not return a reference but a value.
 ```cpp
@@ -293,7 +356,9 @@ int main( ) {
 ```
 
 ## Serialization
-To enable serialization on must create an additional free function called ```to_json_data( JsonClass );``` It will provide a mapping from your type to the arguments provided in the class description.  To serialize to a json string, one calls ```to_json( value );``` where value is a registered type.  The result of  to_json_data( JsonClass ) is a tuple who's arguments match that of the order in json_data_contract_for. Using the exmaple above lets add that
+###### [Top](#content)
+
+To enable serialization on must create an additional free function called ```to_json_data( JsonClass );``` It will provide a mapping from your type to the arguments provided in the class description.  To serialize to a JSON string, one calls ```to_json( value );``` where value is a registered type.  The result of  to_json_data( JsonClass ) is a tuple who's arguments match that of the order in json_data_contract_for. Using the exmaple above lets add that
 
 ```cpp
 #include <daw/json/daw_json_link.h>
@@ -312,8 +377,8 @@ namespace daw::json {
       json_number<"b">
     >;
 
-    static inline auto to_json_data( AggClass const & ) {
-      return std::forward_as_tuple( c.a, c.b );
+    static inline auto to_json_data( AggClass const & value ) {
+      return std::forward_as_tuple( value.a, value.b );
     }
   };
 }
@@ -326,15 +391,17 @@ std::vector<AggData> values = //...;
 std::string json_array_data = to_json_array( values );
 ```
 
-### Installing and Requirements
 ## Requirements
-* C++ 17 compiler, C++ 20 for enhanced names
-* GCC(8/9)/Clang(7/8/9) have been tested.  
+###### [Top](#content)
+
+* C++ 17 compiler 
+* GCC(8/9)/Clang(7/8/9/10) have been tested.  
 * MSVC 19.21 has been tested. 
-# For building tests
+
+### For building tests
 * git
 * cmake
 
+#### Contact
 Darrell Wright
-
 json_link@dawdevel.ca

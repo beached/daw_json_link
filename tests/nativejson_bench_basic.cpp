@@ -59,9 +59,9 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<250>(
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
-		  j1 = daw::json::from_json_trusted<daw::twitter::twitter_object_t>( f1 );
-		  j2 = daw::json::from_json_trusted<daw::citm::citm_object_t>( f2 );
-		  j3 = daw::json::from_json_trusted<daw::canada::canada_object_t>( f3 );
+		  j1 = daw::json::from_json_unchecked<daw::twitter::twitter_object_t>( f1 );
+		  j2 = daw::json::from_json_unchecked<daw::citm::citm_object_t>( f2 );
+		  j3 = daw::json::from_json_unchecked<daw::canada::canada_object_t>( f3 );
 		  daw::do_not_optimize( sv_twitter );
 		  daw::do_not_optimize( sv_citm );
 		  daw::do_not_optimize( sv_canada );
@@ -72,11 +72,11 @@ int main( int argc, char **argv ) {
 	  sv_twitter, sv_citm, sv_canada );
 #else
 	for( size_t n = 0; n < 25; ++n ) {
-		j1 = daw::json::from_json_trusted<daw::twitter::twitter_object_t>(
+		j1 = daw::json::from_json_unchecked<daw::twitter::twitter_object_t>(
 		  sv_twitter );
-		j2 = daw::json::from_json_trusted<daw::citm::citm_object_t>( sv_citm );
+		j2 = daw::json::from_json_unchecked<daw::citm::citm_object_t>( sv_citm );
 		j3 =
-		  daw::json::from_json_trusted<daw::canada::canada_object_t>( sv_canada );
+		  daw::json::from_json_unchecked<daw::canada::canada_object_t>( sv_canada );
 		daw::do_not_optimize( sv_twitter );
 		daw::do_not_optimize( sv_citm );
 		daw::do_not_optimize( sv_canada );
