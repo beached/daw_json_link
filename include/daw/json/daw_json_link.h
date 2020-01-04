@@ -248,6 +248,31 @@ namespace daw::json {
 		  JsonBaseParseTypes::Class;
 	};
 
+	/***
+	 * A type to hold the types for parsing variants.
+	 * @tparam JsonElements Up to one of a JsonElement that is a JSON number,
+	 * string, object, or array
+	 */
+	template<typename... JsonElements>
+	struct json_variant_type_list {
+		using i_am_variant_element_list = void;
+		static_assert(
+		  sizeof...( JsonElements ) <= 5U,
+		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
+		using element_map_t = std::tuple<impl::ary_val_t<JsonElements>...>;
+		static constexpr size_t base_map[5] = {
+		  impl::find_json_element<JsonBaseParseTypes::Number>(
+		    {impl::ary_val_t<JsonElements>::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::Bool>(
+		    {impl::ary_val_t<JsonElements>::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::String>(
+		    {impl::ary_val_t<JsonElements>::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::Class>(
+		    {impl::ary_val_t<JsonElements>::underlying_json_type...} ),
+		  impl::find_json_element<JsonBaseParseTypes::Array>(
+		    {impl::ary_val_t<JsonElements>::underlying_json_type...} )};
+	};
+
 	template<JSONNAMETYPE Name, typename T, typename JsonElements,
 	         typename Constructor, JsonNullable Nullable>
 	struct json_variant {

@@ -20,7 +20,7 @@ Here we have an array of a class that has two members.  A variant of types numbe
 
 Too see a working example using this code, look at the [cookbook_variant1_test.cpp](../tests/cookbook_variant1_test.cpp) test in tests
 
-The following C++ can provide a mapping
+The following C++ can provide a mapping.  It, also, highlights that the types bool, integers, floating point, and std::string can be default mapped to elements that do not require a name.  Such as variant, array, and some key_value's.
 
 ```cpp
 struct MyVariantStuff1 {
@@ -33,12 +33,11 @@ namespace daw::json {
   struct json_data_contract<MyVariantStuff1> {
     using type = json_member_list<
       json_variant<"member0", std::variant<int, std::string>,
-        json_variant_type_list<
-          json_number<no_name, int>,
+        json_variant_type_list<int,
           json_string<no_name>>>,
       json_variant<
         "member1", std::variant<std::string, bool>,
-        json_variant_type_list<json_string<no_name>, json_bool<no_name>>>>;
+        json_variant_type_list<std::string, json_bool<no_name>>>>;
 
     static inline auto
     to_json_data( MyVariantStuff1 const &value ) {
@@ -49,4 +48,4 @@ namespace daw::json {
 ```
 
 ## Important note:
-The elements in the json_variant_type_list must have matching types in the variant alternatives. (e.g. std::string -> json_string, bool -> json_bool )
+The elements in the `json_variant_type_list` must have matching types in the variant alternatives. (e.g. std::string -> json_string, bool -> json_bool )

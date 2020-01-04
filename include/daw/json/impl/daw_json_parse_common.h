@@ -44,6 +44,13 @@ namespace daw::json {
 
 namespace daw::json::impl {
 	namespace {
+
+		template<typename T>
+		using json_type_t = typename T::i_am_a_json_type;
+
+		template<typename T>
+		inline constexpr bool is_a_json_type_v = daw::is_detected_v<json_type_t, T>;
+
 		template<typename T>
 		using json_data_contract_trait_t =
 		  typename daw::json::json_data_contract<T>::type;
@@ -338,6 +345,7 @@ namespace daw::json {
 
 namespace daw::json::impl {
 	namespace {
+
 		template<typename First, typename Last, bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 		skip_string_nq( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {

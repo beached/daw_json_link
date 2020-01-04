@@ -51,6 +51,7 @@
 
 namespace daw::json::impl {
 	namespace {
+
 		[[nodiscard]] constexpr char to_lower( char c ) noexcept {
 			return static_cast<char>( static_cast<unsigned>( c ) |
 			                          static_cast<unsigned>( ' ' ) );
