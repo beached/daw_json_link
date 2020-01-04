@@ -108,12 +108,16 @@ std::string_view json_sv = load_json_data( );
 
 daw::graph_t<Node> g{};
 
+
 using node_range_t = daw::json::json_array_range<GraphNode>;
+// Create a json_array_range of GraphNode's and have it 
+// iterate over the "nodes" JSON member
 for( auto node : node_range_t( json_sv, "nodes" ) ) {
   g.add_node( node.id, node.metadata.member0, node.metadata.member1,
     node.metadata.member2 );
 }
 
+// Helper to lookup nodes we just added by their id member
 auto const find_node_id = [&g]( size_t id ) -> std::optional<daw::node_id_t> {
   auto result =
     g.find( [id]( auto const &node ) { return node.value( ).id == id; } );
@@ -123,11 +127,13 @@ auto const find_node_id = [&g]( size_t id ) -> std::optional<daw::node_id_t> {
   return result.front( );
 };
 
-using edge_range_t = json_array_range<GraphEdge>;
+// Create a json_array_range of GraphEdge's and have it 
+// iterate over the "edges" JSON member
+using edge_range_t = daw::json::json_array_range<GraphEdge>;
 for( auto edge : edge_range_t( json_sv, "edges" ) ) {
   auto source_id = *find_node_id( edge.source );
   auto target_id = *find_node_id( edge.target );
-
+  // Add a directed edge from the source node id to the target node id
   g.add_directed_edge( source_id, target_id );
 }
 ```
