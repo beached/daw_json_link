@@ -41,7 +41,7 @@ Here we hae a JSON array containing a class with members of type string, unsigne
 The C++ data structures and the mapping could look like the following
 To see a working example using this code, refer to [cookbook_array2_test.cpp](../tests/cookbook_array2_test.cpp)
 
-```C++
+```cpp
 struct MyClass4 {
   std::string a;
   unsigned b;

@@ -79,17 +79,10 @@ namespace daw::json::impl::unsignedint {
 				  t4 ) ); // only captures the sum of the first 8 digits, drop the rest
 			}
 
-			static inline bool is_made_of_eight_digits_fast( const char *ptr ) {
+			[[nodiscard]] static inline bool
+			is_made_of_eight_digits_fast( const char *ptr ) {
 				uint64_t val;
 				memcpy( &val, ptr, sizeof( uint64_t ) );
-				// this can read up to 7 bytes beyond the buffer size, but we require
-				// SIMDJSON_PADDING of padding
-				// a branchy method might be faster:
-				/*
-				 return (( val & 0xF0F0F0F0F0F0F0F0 ) == 0x3030303030303030)
-				  && (( (val + 0x0606060606060606) & 0xF0F0F0F0F0F0F0F0 ) ==
-				  0x3030303030303030);
-				  */
 				return ( ( ( val & 0xF0F0F0F0F0F0F0F0U ) |
 				           ( ( ( val + 0x0606060606060606U ) & 0xF0F0F0F0F0F0F0F0U ) >>
 				             4U ) ) == 0x3333333333333333U );

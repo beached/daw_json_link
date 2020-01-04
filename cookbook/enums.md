@@ -1,6 +1,6 @@
 # Enums
 
-Enums are generally transmitted as number of strings.
+There is no direct support for enum's in JSON.  However, they are often encoded as a number or a string.
 
 ## As String 
 ```json
@@ -8,10 +8,10 @@ Enums are generally transmitted as number of strings.
   "member0": [ "red", "green", "blue", "black" ]
 }
 ```
-The above JSON describes a class with an array, ```member0``` of strings
-In order to store as json strings we need as to_string and from_string method as below
-The C++ to contain and parse this could look like
-To see a working example using this code, look at the [cookbook_enums1_test.cpp](../tests/cookbook_enums1_test.cpp) test in tests
+The above JSON object has a member, `"member0"`, that is an array of strings.
+In order to store the enum as a JSON string, an overload for `to_string` and `from_string` are required. `to_string` is required to return a `Container` where the `begin( )` iterator's `value_type` is `char, not necessarily a `std::string`.
+
+To see a working example using this code, refer to [cookbook_enums1_test.cpp](../tests/cookbook_enums1_test.cpp) 
 ```cpp
 enum class Colours : uint8_t { red, green, blue, black };
 
@@ -22,7 +22,6 @@ constexpr std::string_view to_string( Colours c ) {
     case Colours::blue: return "blue";
     case Colours::black: return "black";
   }
-  std::abort( );
 }
 
 constexpr Colours from_string( daw::tag_t<Colours>, std::string_view sv ) {
@@ -38,7 +37,6 @@ constexpr Colours from_string( daw::tag_t<Colours>, std::string_view sv ) {
   if( sv == "black" ) {
     return Colours::black;
   }
-  std::abort( );
 }
 
 struct MyClass1 {
@@ -48,8 +46,9 @@ struct MyClass1 {
 namespace daw::json {
   template<>
   struct json_data_contract<MyClass1> {
-    using type = json_member_list<json_array<
-      "member0", json_custom<no_name, Colours>>>;
+    using type = json_member_list<
+      json_array<"member0", json_custom<no_name, Colours>>
+    >;
 
     static inline auto
     to_json_data( MyClass1 const &value ) {
@@ -61,22 +60,21 @@ namespace daw::json {
 
 ## As Number
 
-We can use enums just like json numbers.
+Enums can, also, be stored as numbers.  The underlying value is used.
 
-With the enum above 
-```cpp
-enum class Colours : uint8_t { red, green, blue, black };
-```
-We have an enum where `red = 0`, `green=1`,...
-
-The json above would look like 
 ```json
 {
   "member0": [ 0, 1, 2, 3 ]
 }
 ```
-The C++ to contain and parse this could look like
-To see a working example using this code, look at the [cookbook_enums2_test.cpp](../tests/cookbook_enums2_test.cpp) test in tests
+
+With a C++ enum of
+```cpp
+enum class Colours : uint8_t { red = 0, green = 1, blue = 2, black = 3 };
+```
+
+The enum type is encoded as the type in the `json_number` member type.
+To see a working example using this code, refer to [cookbook_enums2_test.cpp](../tests/cookbook_enums2_test.cpp) 
 ```cpp
 enum class Colours : uint8_t { red, green, blue, black };
 
@@ -88,11 +86,8 @@ namespace daw::json {
   template<>
   struct json_data_contract<MyClass1> {
     using type = json_member_list<
-      json_array<
-          "member0", 
-              daw::cookbook_enums2::Colours
-          >
-        >;
+      json_array<"member0", Colours>
+    >;
 
     static inline auto
     to_json_data( MyClass1 const &value ) {

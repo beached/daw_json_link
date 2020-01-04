@@ -394,14 +394,14 @@ std::string json_array_data = to_json_array( values );
 ## Requirements
 ###### [Top](#content)
 
-* C++ 17 compiler, C++ 20 for enhanced names
-* GCC(8/9)/Clang(7/8/9) have been tested.  
+* C++ 17 compiler 
+* GCC(8/9)/Clang(7/8/9/10) have been tested.  
 * MSVC 19.21 has been tested. 
 
 ### For building tests
 * git
 * cmake
 
+#### Contact
 Darrell Wright
-
 json_link@dawdevel.ca

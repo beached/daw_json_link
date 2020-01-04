@@ -187,7 +187,7 @@ namespace daw::json::impl {
 		}
 
 		template<bool IsUnCheckedInput>
-		constexpr unsigned to_nibble( unsigned chr ) {
+		[[nodiscard]] constexpr unsigned to_nibble( unsigned chr ) {
 			auto const b = static_cast<int>( chr );
 			int const maskLetter = ( ( '9' - b ) >> 31 );
 			int const maskSmall = ( ( 'Z' - b ) >> 31 );
@@ -197,6 +197,7 @@ namespace daw::json::impl {
 			daw_json_assert( result < 16U, "Expected a hex nibble" );
 			return result;
 		}
+
 		static_assert( to_nibble<true>( static_cast<unsigned>( '0' ) ) == 0U );
 		static_assert( to_nibble<true>( static_cast<unsigned>( '9' ) ) == 9U );
 		static_assert( to_nibble<true>( static_cast<unsigned>( 'a' ) ) == 10U );
@@ -205,7 +206,7 @@ namespace daw::json::impl {
 		static_assert( to_nibble<true>( static_cast<unsigned>( 'F' ) ) == 15U );
 
 		template<typename First, typename Last, bool IsUnCheckedInput>
-		constexpr uint16_t byte_from_nibbles(
+		[[nodiscard]] constexpr uint16_t byte_from_nibbles(
 		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
 			auto const n0 =
 			  to_nibble<IsUnCheckedInput>( static_cast<unsigned>( rng.front( ) ) );

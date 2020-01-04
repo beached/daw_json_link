@@ -1,5 +1,8 @@
 # Graphs
 
+JSON does not natively support graph storage. There are some formats, such as [JGF](https://github.com/jsongraph/json-graph-specification) JSON Graph Format, to provide a common encoding.
+
+The following is a JGF graph encoded in JSON.
 ```json
 {
   "nodes": [
@@ -47,35 +50,32 @@
     }
   ]
 }
-
 ```
 
-Here we have a graph in [JGF](https://github.com/jsongraph/json-graph-specification) JSON Graph Format.
 
-Here we are going to use the array iterator tool to populate our graph so that the structure is easier to build in situ. In addition we are going to tell the system that the id members are just numbers wrapped in quotes with the LiteralAsString option.
-
+The code below uses a `json_array_range` to iterate over the nodes and edges separately to populate the internal graph.  The `"id"` members are an example of parsing strings as numbers with the `LiteralAsString` option.
+The JSON document does not directly represent the in memory representation.
+To see a working example using this code, refer to [cookbook_graphs1_test.cpp](../tests/cookbook_graphs1_test.cpp) 
 ```cpp
-namespace daw::cookbook_graphs1 {
-  struct Metadata {
-    int member0;
-    std::string member1;
-    bool member2;
-  };
+struct Metadata {
+  int member0;
+  std::string member1;
+  bool member2;
+};
 
-  struct GraphNode {
-    size_t id;
-    Metadata metadata;
-  };
+struct GraphNode {
+  size_t id;
+  Metadata metadata;
+};
 
-  struct GraphEdge {
-    size_t source;
-    size_t target;
-  };
-} 
+struct GraphEdge {
+  size_t source;
+  size_t target;
+};
 
 namespace daw::json {
   template<>
-  struct json_data_contract<daw::cookbook_graphs1::Metadata> {
+  struct json_data_contract<Metadata> {
     using type = json_member_list<
       json_number<"member0", int>,
       json_string<"member1">, 
@@ -83,14 +83,14 @@ namespace daw::json {
   };
 
   template<>
-  struct json_data_contract<daw::cookbook_graphs1::GraphNode> {
+  struct json_data_contract<GraphNode> {
     using type = json_member_list<
       json_number<"id", size_t, LiteralAsStringOpt::Always>,
-      json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
+      json_class<"metadata", Metadata>>;
   };
 
   template<>
-  struct json_data_contract<daw::cookbook_graphs1::GraphEdge> {
+  struct json_data_contract<GraphEdge> {
     using type = json_member_list<
       json_number<"source", size_t, LiteralAsStringOpt::Always>,
       json_number<"target", size_t, LiteralAsStringOpt::Always>>;
@@ -104,12 +104,11 @@ struct Node {
   bool member2;
 };
 
-using namespace daw::json;
-json_sv = /*get_json_graph( )*/;
+std::string_view json_sv = load_json_data( );
 
-Graph<Node> g{};
+daw::graph_t<Node> g{};
 
-using node_range_t = json_array_range<daw::cookbook_graphs1::GraphNode>;
+using node_range_t = daw::json::json_array_range<GraphNode>;
 for( auto node : node_range_t( json_sv, "nodes" ) ) {
   g.add_node( node.id, node.metadata.member0, node.metadata.member1,
     node.metadata.member2 );
@@ -124,7 +123,7 @@ auto const find_node_id = [&g]( size_t id ) -> std::optional<daw::node_id_t> {
   return result.front( );
 };
 
-using edge_range_t = json_array_range<daw::cookbook_graphs1::GraphEdge>;
+using edge_range_t = json_array_range<GraphEdge>;
 for( auto edge : edge_range_t( json_sv, "edges" ) ) {
   auto source_id = *find_node_id( edge.source );
   auto target_id = *find_node_id( edge.target );
