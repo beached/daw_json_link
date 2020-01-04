@@ -2,7 +2,7 @@
 
 There is no direct support for enum's in JSON.  However, they are often encoded as a number or a string.
 
-## As String 
+## As StringRaw 
 ```json
 {
   "member0": [ "red", "green", "blue", "black" ]

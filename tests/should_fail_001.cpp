@@ -20,15 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <daw/daw_benchmark.h>
 #include <daw/json/daw_json_link.h>
 
+#include <iostream>
 #include <string_view>
 
 namespace bad_types {
 	struct Coordinate {
 		double lat;
 		double lng;
+	};
+
+	struct UriList {
+		std::vector<std::string> uris;
 	};
 } // namespace bad_types
 
@@ -40,6 +44,16 @@ struct daw::json::json_data_contract<bad_types::Coordinate> {
 	static inline constexpr char const lat[] = "lat";
 	static inline constexpr char const lng[] = "lng";
 	using type = json_member_list<json_number<lat>, json_number<lng>>;
+#endif
+};
+
+template<>
+struct daw::json::json_data_contract<bad_types::UriList> {
+#ifdef __cpp_nontype_template_parameter_class
+	using type = json_member_list<json_array<"uris", std::string>>;
+#else
+	static inline constexpr char const uris[] = "uris";
+	using type = json_member_list<json_array<uris, std::string>>;
 #endif
 };
 
@@ -62,9 +76,54 @@ namespace bad_types {
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
 	}
+
+	bool invalid_numbers( ) {
+		static constexpr std::string_view data =
+		  R"({"lat": 1.23b34, "lng": 1234.4 })";
+		try {
+			Coordinate c = daw::json::from_json<bad_types::Coordinate>( data );
+			(void)c;
+		} catch( daw::json::json_exception const & ) { return true; }
+		return false;
+	}
+
+	bool invalid_strings( ) {
+		static constexpr std::string_view data =
+		  R"({"uris": [ "http://www.example.com", "http://www.example.com/missing_quote ] })";
+		try {
+			UriList ul = daw::json::from_json<bad_types::UriList>( data );
+			(void)ul;
+		} catch( daw::json::json_exception const & ) {
+			std::cerr << "Expected exception\n";
+			return true;
+		} catch( ... ) {
+			std::cerr << "Unexpected exception\n";
+			return false;
+		}
+		return false;
+	}
+
+	bool bad_escape( ) {
+		static constexpr std::string_view data =
+		  R"({"uris": [ "http://www.example.com", "http://www.example.com/missing_quote\uFFFF\uFFFF" ] })";
+		try {
+			UriList ul = daw::json::from_json<bad_types::UriList>( data );
+			(void)ul;
+		} catch( daw::json::json_exception const & ) { return true; }
+		return false;
+	}
 } // namespace bad_types
 
 int main( ) {
-	daw::expecting( bad_types::quotes_in_numbers( ) );
-	daw::expecting( bad_types::bool_in_numbers( ) );
+	/*
+	daw_json_assert( bad_types::quotes_in_numbers( ),
+	                 "Failed to find unexpected quotes in numbers" );
+	daw_json_assert( bad_types::bool_in_numbers( ),
+	                 "Failed to find a bool when a number was expected" );
+	daw_json_assert( bad_types::invalid_numbers( ),
+	                 "Failed to find an invalid number" );
+	                 */
+	daw_json_assert( bad_types::invalid_strings( ), "Failed to missing quote" );
+	daw_json_assert( bad_types::bad_escape( ),
+	                 "Failed to catch bad escaped unicode" );
 }

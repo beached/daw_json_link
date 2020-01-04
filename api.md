@@ -39,16 +39,16 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 ### json_string
 ```cpp
 template<JSONNAMETYPE Name, 
-  typename String = std::string,
-  typename Constructor = daw::construct_a_t<String>,
-  typename Appender = impl::basic_appender<String>,
+  typename StringRaw = std::string,
+  typename Constructor = daw::construct_a_t<StringRaw>,
+  typename Appender = impl::basic_appender<StringRaw>,
   JsonNullable EmptyStringNull = JsonNullable::Never,
   EightBitModes EightBitMode = EightBitModes::AllowFull,
   JsonNullable Nullable = JsonNullable::Never>
 struct json_string
 ``` 
 ```json_string``` is fully processed and unescapes during deserialization and escapes while serializing
-The defaults for json_string will construct a ```std::string``` with the supplied name.  The resulting type String must be default constructable if EmptyIsNull is JsonNullalbe::Nullable, otherwise the resulting type String must be constructable from two arguments(a ```char const *``` and a ```size_t```).
+The defaults for json_string will construct a ```std::string``` with the supplied name.  The resulting type StringRaw must be default constructable if EmptyIsNull is JsonNullalbe::Nullable, otherwise the resulting type StringRaw must be constructable from two arguments(a ```char const *``` and a ```size_t```).
 
 - ```Constructor``` the default is almost always correct here but this will constuct your type.  Appender will append each character to the string as
 they are processed via push_back or insert( end, ... ), depending on which method is available.
@@ -63,15 +63,15 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 ### json_string_raw
 ```cpp
 template<JSONNAMETYPE Name, 
-  typename String = std::string,
-  typename Constructor = daw::construct_a_t<String>,
+  typename StringRaw = std::string,
+  typename Constructor = daw::construct_a_t<StringRaw>,
   JsonNullable EmptyStringNull = JsonNullable::Never,
   EightBitModes EightBitMode = EightBitModes::AllowFull,
   JsonNullable Nullable = JsonNullable::Never>
 struct json_string_raw
 ``` 
 ```json_string_raw``` is unescaped and the exact bytes that are between the quotes in the string passed from json 
-The defaults for json_string_raw will construct a ```std::string``` with the supplied name.  The resulting type String must be default constructable if EmptyIsNull is JsonNullalbe::Nullable, otherwise the resulting type String must be constructable from two arguments(a ```char const *``` and a ```size_t```).
+The defaults for json_string_raw will construct a ```std::string``` with the supplied name.  The resulting type StringRaw must be default constructable if EmptyIsNull is JsonNullalbe::Nullable, otherwise the resulting type StringRaw must be constructable from two arguments(a ```char const *``` and a ```size_t```).
 - ```Constructor``` the default is almost always correct here but this will constuct your type.
 - ```EmptyStringNull``` treat an empty JSON value ```""``` as a null value.
 - ```EightBitMode``` allow filtering of characters with MSB set. Values are ```EightBitModes::AllowFull```, and ```EightBitModes::DisallowHigh```
@@ -201,14 +201,14 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 template<JSONNAMETYPE Name, typename T,
   typename FromConverter = custom_from_converter_t<T>,
   typename ToConverter = custom_to_converter_t<T>,
-  CustomJsonTypes CustomJsonType = CustomJsonTypes::String,
+  CustomJsonTypes CustomJsonType = CustomJsonTypes::StringRaw,
   JsonNullable Nullable = JsonNullable::Never>
 struct json_custom
 ``` 
 ```json_custom``` allows one to map unusual types.  The FromConverter is fed the raw value that is in the json and returns a `T`.  The ToConverter outputs a string from the `T` value.
 - ```FromConverter``` A class who's `operator( )` take a `std::string_view` and returns an instance of `T`;  The default calls `from_string( daw::tag_t<T>, T )`.
 - ```ToConverter``` A class who's `operator( )` is takes an instance of `T`  value and returns a string like type.  The default uses `to_string( T )`.
-- ```CustomJsonType``` - The JSON data will be a literal or a string.  Values are `CustomJsonTypes::Literal`, and `CustomJsonTypes::String`
+- ```CustomJsonType``` - The JSON data will be a literal or a string.  Values are `CustomJsonTypes::Literal`, and `CustomJsonTypes::StringRaw`
 - ```Nullable``` is the value optional/nullable.  Valules are ```JsonNullable::Never```, and ```JsonNullable::Nullable``` 
 
 As above but without the Nullable option, it is set to Nullable, is the ```json_custom_null``` alias.
