@@ -180,7 +180,8 @@ namespace daw::json {
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::StringRaw, Nullable>;
-		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::StringRaw;
+		static constexpr JsonParseTypes base_expected_type =
+		  JsonParseTypes::StringRaw;
 		static constexpr JsonNullable empty_is_null = EmptyStringNull;
 		static constexpr EightBitModes eight_bit_mode = EightBitMode;
 		static constexpr JsonBaseParseTypes underlying_json_type =
@@ -259,18 +260,24 @@ namespace daw::json {
 		static_assert(
 		  sizeof...( JsonElements ) <= 5U,
 		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
-		using element_map_t = std::tuple<impl::unnamed_default_type_mapping<JsonElements>...>;
+		using element_map_t =
+		  std::tuple<impl::unnamed_default_type_mapping<JsonElements>...>;
 		static constexpr size_t base_map[5] = {
 		  impl::find_json_element<JsonBaseParseTypes::Number>(
-		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
+		    {impl::unnamed_default_type_mapping<
+		      JsonElements>::underlying_json_type...} ),
 		  impl::find_json_element<JsonBaseParseTypes::Bool>(
-		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
+		    {impl::unnamed_default_type_mapping<
+		      JsonElements>::underlying_json_type...} ),
 		  impl::find_json_element<JsonBaseParseTypes::String>(
-		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
+		    {impl::unnamed_default_type_mapping<
+		      JsonElements>::underlying_json_type...} ),
 		  impl::find_json_element<JsonBaseParseTypes::Class>(
-		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} ),
+		    {impl::unnamed_default_type_mapping<
+		      JsonElements>::underlying_json_type...} ),
 		  impl::find_json_element<JsonBaseParseTypes::Array>(
-		    {impl::unnamed_default_type_mapping<JsonElements>::underlying_json_type...} )};
+		    {impl::unnamed_default_type_mapping<
+		      JsonElements>::underlying_json_type...} )};
 	};
 
 	template<JSONNAMETYPE Name, typename T, typename JsonElements,
@@ -388,13 +395,15 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
-		using json_key_t = impl::unnamed_default_type_mapping<JsonKeyType, impl::default_key_name>;
+		using json_key_t =
+		  impl::unnamed_default_type_mapping<JsonKeyType, impl::default_key_name>;
 		static_assert( not std::is_same_v<json_key_t, void>,
 		               "Unknown JsonKeyType type." );
 		static_assert( json_key_t::name != no_name,
 		               "Must supply a valid key member name" );
 		using json_value_t =
-		  impl::unnamed_default_type_mapping<JsonValueType, impl::default_value_name>;
+		  impl::unnamed_default_type_mapping<JsonValueType,
+		                                     impl::default_value_name>;
 		static_assert( not std::is_same_v<json_value_t, void>,
 		               "Unknown JsonValueType type." );
 		static_assert( json_value_t::name != no_name,
@@ -501,11 +510,12 @@ namespace daw::json {
 	 * @param json_data Json string data containing array
 	 * @return A Container containing parsed data from json string
 	 */
-	template<typename JsonElement,
-	         typename Container =
-	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
-	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_appender<Container>>
+	template<
+	  typename JsonElement,
+	  typename Container = std::vector<
+	    typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
+	  typename Constructor = daw::construct_a_t<Container>,
+	  typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data ) {
 		using element_type = impl::unnamed_default_type_mapping<JsonElement>;
@@ -526,11 +536,12 @@ namespace daw::json {
 	 * @param json_data Json string data containing array
 	 * @return A Container containing parsed data from json string
 	 */
-	template<typename JsonElement,
-	         typename Container =
-	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
-	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_appender<Container>>
+	template<
+	  typename JsonElement,
+	  typename Container = std::vector<
+	    typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
+	  typename Constructor = daw::construct_a_t<Container>,
+	  typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array_unchecked( std::string_view json_data ) {
 		using element_type = impl::unnamed_default_type_mapping<JsonElement>;

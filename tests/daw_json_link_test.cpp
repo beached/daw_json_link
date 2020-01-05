@@ -52,14 +52,6 @@ constexpr bool parse_unsigned_test( char const ( &str )[N],
 	return daw::json::impl::parse_unsigned_integer<Unsigned>( tmp ) == expected;
 }
 
-template<typename Signed, bool TrustedInput = false, size_t N>
-constexpr bool parse_signed_test( char const ( &str )[N], Signed expected ) {
-	auto tmp =
-	  daw::json::impl::IteratorRange<char const *, char const *, TrustedInput>(
-	    str, str + N );
-	return daw::json::impl::parse_integer<Signed>( tmp ) == expected;
-}
-
 struct test_001_t {
 	int i = 0;
 	double d = 0.0;
@@ -298,8 +290,6 @@ constexpr char const json_data_array[] =
 int main( ) {
 	using namespace daw::json;
 	static_assert( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
-	static_assert( parse_signed_test<intmax_t>( "12345", 12345 ) );
-	static_assert( parse_signed_test<intmax_t>( "-12345", -12345 ) );
 	static_assert( parse_real_test<double>( "5", 5.0 ) );
 	static_assert( parse_real_test<double>( "5.5", 5.5 ) );
 	static_assert( parse_real_test<double>( "5.5e2", 550.0 ) );

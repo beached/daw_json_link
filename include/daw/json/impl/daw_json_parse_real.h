@@ -24,7 +24,6 @@
 
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
-#include "daw_json_parse_signed_int.h"
 #include "daw_json_parse_unsigned_int.h"
 
 #include <daw/daw_cxmath.h>
@@ -45,7 +44,7 @@ namespace daw::json::impl {
 				}
 				return 1;
 			}( );
-			daw_json_assert_weak( rng.is_number(), "Expected a number" );
+			daw_json_assert_weak( rng.is_number( ), "Expected a number" );
 			auto const whole_part = static_cast<Result>(
 			  sign * parse_unsigned_integer<int64_t, JsonRangeCheck::Never, SIMDMode>(
 			           rng ) );
@@ -64,7 +63,21 @@ namespace daw::json::impl {
 			int32_t exp_part = 0;
 			if( auto const frnt = rng.front( ); frnt == 'e' or frnt == 'E' ) {
 				rng.remove_prefix( );
-				exp_part = parse_integer<int32_t>( rng );
+				int32_t const exsign = [&]( ) -> int32_t {
+					if( rng.front( ) == '-' ) {
+						rng.remove_prefix( );
+						return -1;
+					} else if( rng.front( ) == '+' ) {
+						rng.remove_prefix( );
+					}
+					return 1;
+				}( );
+				exp_part =
+				  exsign *
+				  parse_unsigned_integer<
+				    int32_t, ( IsUnCheckedInput ? JsonRangeCheck::Never
+				                                : JsonRangeCheck::CheckForNarrowing )>(
+				    rng );
 			}
 			if constexpr( std::is_same_v<Result, float> ) {
 				return ( whole_part + fract_part ) * daw::cxmath::fpow10( exp_part );

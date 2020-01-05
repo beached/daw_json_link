@@ -152,7 +152,8 @@ namespace daw::json::impl {
 			auto [v, new_p] = [rng] {
 #ifdef DAW_ALLOW_SSE3
 				if constexpr( SIMDMode == SIMDModes::SSE3 ) {
-					return unsigned_parser<iresult_t>::parse_sse3( rng.first );
+					return unsigned_parser<iresult_t>::template parse_sse3<RangeCheck>(
+					  rng.first );
 				} else {
 #endif
 					return unsigned_parser<iresult_t>::template parse<RangeCheck>(
@@ -195,7 +196,8 @@ namespace daw::json::impl {
 					daw_json_assert_weak(
 					  rng.size( ) >= parse_space_needed_v<SimdMode>,
 					  "Insufficient space to parse number in SSE3 Mode" );
-					return unsigned_parser<result_t>::parse_sse3( rng.first );
+					return unsigned_parser<result_t>::template parse_sse3<RangeCheck>(
+					  rng.first );
 				} else {
 #endif
 					return unsigned_parser<result_t>::template parse<RangeCheck>(
