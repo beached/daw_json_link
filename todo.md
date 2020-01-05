@@ -5,3 +5,4 @@
 * support inf/nan in floating point numbers
 * implement arrow proxy on json array iterator
 * add fallback to iostreams to string encoding/decoding
+* add SIMD for signed parser, merge signed/unsigned

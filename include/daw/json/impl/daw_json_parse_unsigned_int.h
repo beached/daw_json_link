@@ -44,15 +44,25 @@ namespace daw::json::impl::unsignedint {
 	namespace {
 		template<typename Unsigned>
 		struct unsigned_parser {
+			template<JsonRangeCheck RangeChecked>
 			[[nodiscard]] static constexpr std::pair<Unsigned, char const *>
 			parse( char const *ptr ) {
 				uintmax_t n = 0;
 				auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+				int count = std::numeric_limits<Unsigned>::digits10 + 1U;
 				while( dig < 10U ) {
+					if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+						--count;
+					}
 					n *= 10U;
 					n += static_cast<uintmax_t>( dig );
 					++ptr;
 					dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+				}
+				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+					daw_json_assert(
+					  n <= std::numeric_limits<Unsigned>::max( ) and count >= 0,
+					  "Unsigned number outside of range of unsigned numbers" );
 				}
 				return {daw::construct_a<Unsigned>( n ), ptr};
 			}
@@ -88,14 +98,20 @@ namespace daw::json::impl::unsignedint {
 				             4U ) ) == 0x3333333333333333U );
 			}
 
+			template<JsonRangeCheck RangeChecked>
 			[[nodiscard]] static inline std::pair<Unsigned, char const *>
 			parse_sse3( char const *ptr ) {
 				uintmax_t result = 0;
+				int count = std::numeric_limits<Unsigned>::digits10 + 1;
 				while( is_made_of_eight_digits_fast( ptr ) ) {
+					if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+						count -= 8;
+					}
 					result *= 100'000'000ULL;
 					result += parse_eight_digits_unrolled( ptr );
 					ptr += 8;
 				}
+
 				auto dig = static_cast<unsigned>( *ptr - '0' );
 				while( dig < 10U ) {
 					result *= 10U;
@@ -103,11 +119,19 @@ namespace daw::json::impl::unsignedint {
 					++ptr;
 					dig = static_cast<unsigned>( *ptr - '0' );
 				}
+				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+					daw_json_assert( count >= 0 or
+					                   result > static_cast<uintmax_t>(
+					                              std::numeric_limits<Unsigned>::max( ) ),
+					                 "Parsed number is out of range" );
+				}
 				return {daw::construct_a<Unsigned>( result ), ptr};
 			}
 #endif
 		};
-		static_assert( unsigned_parser<unsigned>::parse( "12345" ).first == 12345 );
+		static_assert( unsigned_parser<unsigned>::template parse<
+		                 JsonRangeCheck::CheckForNarrowing>( "12345" )
+		                 .first == 12345 );
 	} // namespace
 } // namespace daw::json::impl::unsignedint
 
@@ -131,7 +155,8 @@ namespace daw::json::impl {
 					return unsigned_parser<iresult_t>::parse_sse3( rng.first );
 				} else {
 #endif
-					return unsigned_parser<iresult_t>::parse( rng.first );
+					return unsigned_parser<iresult_t>::template parse<RangeCheck>(
+					  rng.first );
 #ifdef DAW_ALLOW_SSE3
 				}
 #endif
@@ -173,7 +198,8 @@ namespace daw::json::impl {
 					return unsigned_parser<result_t>::parse_sse3( rng.first );
 				} else {
 #endif
-					return unsigned_parser<result_t>::parse( rng.first );
+					return unsigned_parser<result_t>::template parse<RangeCheck>(
+					  rng.first );
 #ifdef DAW_ALLOW_SSE3
 				}
 #endif

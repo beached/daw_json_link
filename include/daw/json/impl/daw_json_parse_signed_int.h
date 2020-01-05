@@ -32,6 +32,7 @@ namespace daw::json::impl::signedint {
 			static constexpr auto minus =
 			  static_cast<unsigned>( '-' ) - static_cast<unsigned>( '0' );
 
+			template<JsonRangeCheck RangeChecked>
 			[[nodiscard]] static constexpr std::pair<Signed, char const *>
 			parse( char const *ptr ) {
 				daw_json_assert( ptr != nullptr, "Unexpected nullptr" );
@@ -45,35 +46,64 @@ namespace daw::json::impl::signedint {
 					++ptr;
 					dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 				}
-				intmax_t n = 0;
+				uintmax_t n = 0;
+				// This is used to catch when uintmax_t has overflow and wrapped
+				int count = std::numeric_limits<Signed>::digits10 + 1U;
 				while( dig < 10 ) {
-					n = n * 10 + static_cast<Signed>( dig );
+					if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+						--count;
+					}
+					n = n * 10 + static_cast<unsigned>( dig );
 					++ptr;
 					dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 				}
-				return {daw::construct_a<Signed>( sign ? n : -n ), ptr};
+				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+					daw_json_assert( n <= std::numeric_limits<Signed>::max( ) and
+					                   count >= 0,
+					                 "Signed number outside of range of signed numbers" );
+				}
+				return {daw::construct_a<Signed>( sign ? static_cast<intmax_t>( n )
+				                                       : -static_cast<intmax_t>( n ) ),
+				        ptr};
 			}
 		};
 
-		static_assert( signed_parser<int>::parse( "-12345" ).first == -12345 );
+		static_assert(
+		  signed_parser<int>::template parse<JsonRangeCheck::CheckForNarrowing>(
+		    "-12345" )
+		    .first == -12345 );
 	} // namespace
 } // namespace daw::json::impl::signedint
 
 namespace daw::json::impl {
 	namespace {
+		template<typename E, bool = std::is_enum_v<E>>
+		struct enum_base {
+			using type =
+			  std::conditional_t<std::is_signed_v<std::underlying_type_t<E>>,
+			                     intmax_t, uintmax_t>;
+		};
+
+		template<typename T>
+		struct enum_base<T, false> {
+			using type = void;
+		};
+
 		template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
 		         typename First, typename Last, bool IsUnCheckedInput>
-		[[nodiscard]] constexpr Result parse_integer(
-		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
+		[[nodiscard]] constexpr Result
+		parse_integer( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 			daw_json_assert_weak( rng.front( "+-0123456789" ),
 			                      "Expected +,-, or a digit" );
 
 			using result_t =
-			  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing or
-			                       std::is_enum_v<Result>,
-			                     intmax_t, Result>;
+			  std::conditional_t<std::is_enum_v<Result>,
+			                     typename enum_base<Result>::type, Result>;
+
 			using namespace daw::json::impl::signedint;
-			auto [result, ptr] = signed_parser<result_t>::parse( rng.first );
+
+			auto [result, ptr] =
+			  signed_parser<result_t>::template parse<RangeCheck>( rng.first );
 			rng.first = ptr;
 			if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
 				return daw::narrow_cast<Result>( result );
