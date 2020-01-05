@@ -117,7 +117,7 @@ namespace daw::json::impl {
 		         JsonRangeCheck RangeCheck = JsonRangeCheck::Never, typename First,
 		         typename Last, bool IsUnCheckedInput>
 		[[nodiscard]] constexpr auto parse_unsigned_integer2(
-		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
+		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 			daw_json_assert_weak( rng.is_number( ),
 			                      "Expecting a digit as first item" );
 
@@ -155,7 +155,7 @@ namespace daw::json::impl {
 		         SIMDModes SimdMode = SIMDModes::None, typename First,
 		         typename Last, bool IsUnCheckedInput>
 		[[nodiscard]] constexpr Result parse_unsigned_integer(
-		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
+		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 			daw_json_assert_weak( rng.is_number( ),
 			                      "Expecting a digit as first item" );
 

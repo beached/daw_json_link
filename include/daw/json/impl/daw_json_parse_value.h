@@ -172,7 +172,7 @@ namespace daw::json::impl {
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsUnCheckedInput>
 		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::String>,
+		parse_value( ParseTag<JsonParseTypes::StringRaw>,
 		             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
 			auto str = skip_string( rng );
@@ -205,8 +205,8 @@ namespace daw::json::impl {
 		static_assert( to_nibble<true>( static_cast<unsigned>( 'F' ) ) == 15U );
 
 		template<typename First, typename Last, bool IsUnCheckedInput>
-		[[nodiscard]] constexpr uint16_t byte_from_nibbles(
-		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
+		[[nodiscard]] constexpr uint16_t
+		byte_from_nibbles( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 			auto const n0 =
 			  to_nibble<IsUnCheckedInput>( static_cast<unsigned>( rng.front( ) ) );
 			rng.remove_prefix( );
@@ -221,7 +221,7 @@ namespace daw::json::impl {
 		constexpr void
 		decode_utf16( IteratorRange<First, Last, IsUnCheckedInput> &rng,
 		              Appender &app ) {
-			daw_json_assert_weak( rng.front( ) == 'u' or rng.front( ) == 'U',
+			daw_json_assert_weak( rng.front( "uU" ),
 			                      "Expected rng to start with a u" );
 			rng.remove_prefix( );
 			uint32_t cp = static_cast<uint32_t>( byte_from_nibbles( rng ) ) << 8U;
@@ -230,10 +230,10 @@ namespace daw::json::impl {
 				app( static_cast<char>( cp ) );
 				return;
 			}
-			if( cp >= 0xD800U and cp <= 0xDBFFU ) {
+			if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 				cp = ( cp - 0xD800U ) * 0x400U;
 				rng.remove_prefix( );
-				daw_json_assert_weak( rng.front( ) == 'u' or rng.front( ) == 'U',
+				daw_json_assert_weak( rng.front( "uU" ),
 				                      "Expected rng to start with a \\u" );
 				rng.remove_prefix( );
 				auto trailing = static_cast<uint32_t>( byte_from_nibbles( rng ) ) << 8U;
@@ -300,15 +300,19 @@ namespace daw::json::impl {
 				}
 			}( );
 
-			if( rng.front( '"' ) ) {
+			bool const has_quote = rng.front( '"' );
+			if( has_quote ) {
 				rng.remove_prefix( );
 			}
+			daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
 			while( rng.front( ) != '"' ) {
 				while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
+					daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
 					app( rng.front( ) );
 					rng.remove_prefix( );
 				}
 				if( rng.front( ) == '\\' ) {
+					daw_json_assert_weak( rng.front( ) >= 0x20, "Invalid codepoint" );
 					rng.remove_prefix( );
 					switch( rng.front( ) ) {
 					case 'b':
@@ -353,11 +357,14 @@ namespace daw::json::impl {
 						rng.remove_prefix( );
 					}
 				} else {
-					daw_json_assert_weak( rng.front( ) == '"',
+					daw_json_assert_weak( not has_quote or rng.front( '"' ),
 					                      "Unexpected end of string" );
 				}
+				daw_json_assert_weak( not has_quote or rng.has_more( ),
+				                      "Unexpected end of data" );
 			}
-			daw_json_assert_weak( rng.front( ) == '"', "Unexpected state, no \"" );
+			daw_json_assert_weak( not has_quote or rng.front( '"' ),
+			                      "Unexpected state, no \"" );
 			rng.remove_prefix( );
 			return result;
 		}

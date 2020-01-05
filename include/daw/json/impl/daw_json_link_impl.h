@@ -425,11 +425,7 @@ namespace daw::json::impl {
 			rng.remove_prefix( );
 			rng.move_to_next_of( "\"}" );
 			if constexpr( sizeof...( JsonMembers ) == 0 ) {
-				// We are an empty class
-				daw_json_assert_weak( rng.front( '}' ),
-				                      "Expected class to end with '}'" );
-				rng.remove_prefix( );
-				rng.trim_left( );
+				// We are an empty class, ignore what is there
 				return construct_a<JsonClass>( );
 			} else {
 				auto known_locations =

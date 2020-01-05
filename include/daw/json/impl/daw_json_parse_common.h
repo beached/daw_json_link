@@ -231,7 +231,7 @@ namespace daw::json {
 		Signed,
 		Unsigned,
 		Bool,
-		String,
+		StringRaw,
 		StringEscaped,
 		Date,
 		Class,
@@ -454,7 +454,7 @@ namespace daw::json::impl {
 		[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 		skip_known_value( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 			if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
-			              JsonMember::expected_type == JsonParseTypes::String or
+			              JsonMember::expected_type == JsonParseTypes::StringRaw or
 			              JsonMember::expected_type == JsonParseTypes::Custom ) {
 				daw_json_assert_weak( rng.front( '"' ),
 				                      "Expected start of value to begin with '\"'" );

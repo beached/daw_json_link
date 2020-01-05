@@ -60,7 +60,7 @@ namespace daw::json::impl {
 		template<typename JsonMember, typename First, typename Last,
 		         bool IsUnCheckedInput>
 		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::String>,
+		parse_value( ParseTag<JsonParseTypes::StringRaw>,
 		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
 		template<typename JsonMember, typename First, typename Last,

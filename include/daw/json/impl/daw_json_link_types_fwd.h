@@ -185,7 +185,7 @@ namespace daw::json {
 
 	/**
 	 * Member is a nullable escaped string and requires unescaping and escaping of
-	 * string data
+	 * string data.  Not all invalid codepoints are detected
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
 	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
@@ -358,7 +358,7 @@ namespace daw::json {
 	using json_array_null = json_array<Name, JsonElement, Container, Constructor,
 	                                   Appender, JsonNullable::Nullable>;
 
-	/** Map a KV type json class { "Key String": ValueType, ... }
+	/** Map a KV type json class { "Key StringRaw": ValueType, ... }
 	 *  to a c++ class.  Keys are Always string like and the destination
 	 *  needs to be constructable with a pointer, size
 	 *  @tparam Name name of JSON member to link to
@@ -380,7 +380,7 @@ namespace daw::json {
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_key_value;
 
-	/** Map a nullable KV type json class { "Key String": ValueType, ... }
+	/** Map a nullable KV type json class { "Key StringRaw": ValueType, ... }
 	 *  to a c++ class.  Keys are Always string like and the destination
 	 *  needs to be constructable with a pointer, size
 	 *  @tparam Name name of JSON member to link to

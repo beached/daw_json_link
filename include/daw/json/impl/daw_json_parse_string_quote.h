@@ -28,7 +28,7 @@ namespace daw::json::impl::string_quote {
 	namespace {
 		struct string_quote_parser {
 			[[nodiscard]] static constexpr char const *
-			parse_nq( char const *ptr ) noexcept {
+			parse_nq( char const *ptr ) {
 				while( *ptr != '"' ) {
 					// TODO: add ability to filter to low 7bits daw_json_assert( *ptr >=
 					// 0x20 and *ptr <= 0x7F, "Use json_string_raw" );
@@ -45,7 +45,7 @@ namespace daw::json::impl::string_quote {
 			}
 
 			[[nodiscard, maybe_unused]] static constexpr char const *
-			parse( char const *ptr ) noexcept {
+			parse( char const *ptr ) {
 				if( *ptr == '"' ) {
 					++ptr;
 				}

@@ -179,8 +179,8 @@ namespace daw::json {
 
 		static constexpr JSONNAMETYPE name = Name;
 		static constexpr JsonParseTypes expected_type =
-		  get_parse_type_v<JsonParseTypes::String, Nullable>;
-		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::String;
+		  get_parse_type_v<JsonParseTypes::StringRaw, Nullable>;
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::StringRaw;
 		static constexpr JsonNullable empty_is_null = EmptyStringNull;
 		static constexpr EightBitModes eight_bit_mode = EightBitMode;
 		static constexpr JsonBaseParseTypes underlying_json_type =

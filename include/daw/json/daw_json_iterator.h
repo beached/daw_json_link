@@ -79,7 +79,7 @@ namespace daw::json {
 
 			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
-			  "String must be like a string_view" );
+			  "StringRaw must be like a string_view" );
 
 			daw_json_assert_weak( m_state.front( ) == '[',
 			                      "Arrays are expected to start with a [" );
@@ -88,7 +88,7 @@ namespace daw::json {
 			m_state.trim_left( );
 		}
 
-		[[nodiscard]] constexpr value_type operator*( ) const noexcept {
+		[[nodiscard]] constexpr value_type operator*( ) const {
 			daw_json_assert_weak( m_state.has_more( ) and not m_state.in( ']' ),
 			                      "Unexpected end of stream" );
 
@@ -100,7 +100,7 @@ namespace daw::json {
 			return result;
 		}
 
-		constexpr json_array_iterator &operator++( ) noexcept {
+		constexpr json_array_iterator &operator++( ) {
 			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 			                      "Unexpected end of stream" );
 			if( m_can_skip >= 0 ) {
@@ -117,7 +117,7 @@ namespace daw::json {
 			return *this;
 		}
 
-		constexpr json_array_iterator operator++( int ) noexcept {
+		constexpr json_array_iterator operator++( int ) {
 			auto tmp = *this;
 			(void)operator++( );
 			return tmp;
