@@ -28,3 +28,12 @@ Too see a working example using this code, refer to [cookbook_parsing_individual
 ```c++
 std::vector<int> values = daw::json::from_json_array<int>( json_data, "member1" );
 ```
+
+## Specifying array indexes
+
+In the member path array indexes are specified inside square brackets `[` and `]`.  Below the 3rd item of `"member1"` will be extracted 
+
+Too see a working example using this code, refer to [cookbook_parsing_individual_members3_test.cpp](../tests/cookbook_parsing_individual_members3_test.cpp). 
+```c++
+int third_value = daw::json::from_json<int>( json_data, "member1[2]" );
+```

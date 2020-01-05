@@ -225,6 +225,8 @@ static_assert( daw::json::from_json<int>( test_001_t_json_data, "i" ) == 55,
 static_assert( daw::json::from_json_unchecked<int>( test_001_t_json_data,
                                                     "i" ) == 55,
                "Unexpected value" );
+static_assert( daw::json::from_json<int>( test_001_t_json_data, "y[2]" ) == 3,
+               "Unexpected value" );
 
 constexpr char const json_data_array[] =
   R"([

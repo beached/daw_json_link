@@ -441,7 +441,8 @@ namespace daw::json {
 	 * @tparam JsonMember The type of the item being parsed
 	 * @param json_data JSON string data
 	 * @param member_path A dot separated path of member names, default is the
-	 * root
+	 * root.  Array indices are specified with square brackets e.g. [5] is the 6th
+	 * item
 	 * @return A value reified from the JSON data member
 	 */
 	template<typename JsonMember>
@@ -457,7 +458,8 @@ namespace daw::json {
 	 * @tparam JsonMember The type of the item being parsed
 	 * @param json_data JSON string data
 	 * @param member_path A dot separated path of member names, default is the
-	 * root
+	 * root. Array indices are specified with square brackets e.g. [5] is the 6th
+	 * item.
 	 * @return A value reified from the JSON data member
 	 */
 	template<typename JsonMember>
@@ -546,7 +548,7 @@ namespace daw::json {
 	 * @tparam Appender Callable to call with JsonElement
 	 * @param json_data JSON string data containing array
 	 * @param member_path A dot separated path of member names to start parsing
-	 * from.
+	 * from. Array indices are specified with square brackets e.g. [5] is the 6th item
 	 * @return A Container containing parsed data from JSON string
 	 */
 	template<
@@ -576,7 +578,7 @@ namespace daw::json {
 	 * @tparam Appender Callable to call with JsonElement
 	 * @param json_data JSON string data containing array
 	 * @param member_path A dot separated path of member names to start parsing
-	 * from.
+	 * from. Array indices are specified with square brackets e.g. [5] is the 6th item
 	 * @return A Container containing parsed data from JSON string
 	 */
 	template<

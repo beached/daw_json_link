@@ -322,6 +322,11 @@ add_dependencies(cookbook_parsing_individual_members2_test_bin dependency_stub)
 add_test(NAME cookbook_parsing_individual_members2_test COMMAND cookbook_parsing_individual_members2_test_bin ./cookbook_parsing_individual_members2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_parsing_individual_members2_test_bin)
 
+add_executable(cookbook_parsing_individual_members3_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_parsing_individual_members3_test.cpp)
+add_dependencies(cookbook_parsing_individual_members3_test_bin dependency_stub)
+add_test(NAME cookbook_parsing_individual_members3_test COMMAND cookbook_parsing_individual_members3_test_bin ./cookbook_parsing_individual_members3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_parsing_individual_members3_test_bin)
+
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")

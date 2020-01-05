@@ -157,19 +157,31 @@ namespace daw::json::impl {
 		// Paths are specified with dot separators, if the name has a dot in it,
 		// it must be escaped
 		// memberA.memberB.member\.C has 3 parts['memberA', 'memberB', 'member.C']
-		[[nodiscard]] constexpr daw::string_view
-		pop_json_path( daw::string_view &path ) {
-			return path.pop_front( [in_escape = false]( char c ) mutable {
-				if( in_escape ) {
-					in_escape = false;
-					return false;
-				}
-				if( c == '\\' ) {
-					in_escape = true;
-					return false;
-				}
-				return ( c == '.' );
-			} );
+		[[nodiscard]] constexpr auto pop_json_path( daw::string_view &path ) {
+			struct pop_json_path_result {
+				daw::string_view current{};
+				char found_char = 0;
+			} result{};
+			result.current =
+			  path.pop_front( [&, in_escape = false]( char c ) mutable {
+				  if( in_escape ) {
+					  in_escape = false;
+					  return false;
+				  }
+				  switch( c ) {
+				  case '\\':
+					  in_escape = true;
+					  return false;
+				  case '.':
+				  case '[':
+				  case ']':
+					  result.found_char = c;
+					  return true;
+				  default:
+					  return false;
+				  }
+			  } );
+			return result;
 		}
 
 		namespace data_size {
@@ -481,21 +493,44 @@ namespace daw::json::impl {
 		constexpr bool
 		find_range2( IteratorRange<First, Last, IsUnCheckedInput> &rng,
 		             daw::string_view path ) {
-			auto current = impl::pop_json_path( path );
-			while( not current.empty( ) ) {
-				daw_json_assert_weak( rng.front( '{' ), "Invalid Path Entry" );
-				rng.remove_prefix( );
-				rng.trim_left_no_check( );
-				auto name = parse_name( rng );
-				while( not json_path_compare( current, name ) ) {
-					(void)skip_value( rng );
-					rng.clean_tail( );
-					if( rng.empty( ) or rng.front( ) != '"' ) {
-						return false;
+
+			auto pop_result = impl::pop_json_path( path );
+			while( not pop_result.current.empty( ) ) {
+				if( pop_result.found_char == ']' ) {
+					// Array Index
+					daw_json_assert_weak( rng.front( '[' ), "Invalid Path Entry" );
+					rng.remove_prefix( );
+					rng.trim_left_no_check( );
+					auto [idx, ptr] =
+					  unsignedint::unsigned_parser<size_t>::parse<JsonRangeCheck::Never>(
+					    pop_result.current.data( ) );
+					daw_json_assert_weak( ptr != nullptr and ptr < path.data( ),
+					                      "Unexpected end of index" );
+					path.remove_prefix( static_cast<size_t>( ptr - path.data( ) ) );
+					while( idx > 0 ) {
+						--idx;
+						(void)skip_value( rng );
+						rng.trim_left( );
+						if( idx > 0 and not rng.front( ',' ) ) {
+							return false;
+						}
+						rng.clean_tail( );
 					}
-					name = parse_name( rng );
+				} else {
+					daw_json_assert_weak( rng.front( '{' ), "Invalid Path Entry" );
+					rng.remove_prefix( );
+					rng.trim_left_no_check( );
+					auto name = parse_name( rng );
+					while( not json_path_compare( pop_result.current, name ) ) {
+						(void)skip_value( rng );
+						rng.clean_tail( );
+						if( rng.empty( ) or rng.front( ) != '"' ) {
+							return false;
+						}
+						name = parse_name( rng );
+					}
 				}
-				current = impl::pop_json_path( path );
+				pop_result = impl::pop_json_path( path );
 			}
 			return true;
 		}
