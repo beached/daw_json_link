@@ -50,7 +50,7 @@
 namespace daw::json {
 	/**
 	 *
-	 * @tparam JsonMembers Json classes that map the relation ship from the json
+	 * @tparam JsonMembers JSON classes that map the relation ship from the json
 	 * data to the classes constructor
 	 */
 	template<typename... JsonMembers>
@@ -58,7 +58,7 @@ namespace daw::json {
 		/**
 		 * Serialize a C++ class to JSON data
 		 * @tparam OutputIterator An output iterator with a char value_type
-		 * @tparam Args  tuple of values that map to the json members
+		 * @tparam Args  tuple of values that map to the JSON members
 		 * @param it OutputIterator to append string data to
 		 * @param args members from C++ class
 		 * @return the OutputIterator it
@@ -70,7 +70,7 @@ namespace daw::json {
 			               "Argument count is incorrect" );
 
 			static_assert( ( impl::is_a_json_type_v<JsonMembers> and ... ),
-			               "Only value json types can be used" );
+			               "Only value JSON types can be used" );
 			return impl::serialize_json_class<JsonMembers...>(
 			  it, std::index_sequence_for<Args...>{}, args );
 		}
@@ -420,12 +420,12 @@ namespace daw::json {
 	};
 
 	/**
-	 * Parse json and construct a T as the result.  This method
+	 * Parse JSON and construct a T as the result.  This method
 	 * provides checked json
 	 * @tparam JsonClass type that has specialization of
 	 * daw::json::json_data_contract
 	 * @param json_data JSON string data
-	 * @return A reified T constructed from json data
+	 * @return A reified T constructed from JSON data
 	 */
 	template<typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr JsonClass
@@ -436,6 +436,14 @@ namespace daw::json {
 		return impl::from_json_impl<JsonClass, false>( json_data );
 	}
 
+	/***
+	 * Parse a JSONMember from the json_data starting at member_path.
+	 * @tparam JsonMember The type of the item being parsed
+	 * @param json_data JSON string data
+	 * @param member_path A dot separated path of member names, default is the
+	 * root
+	 * @return A value reified from the JSON data member
+	 */
 	template<typename JsonMember>
 	[[maybe_unused, nodiscard]] static constexpr auto
 	from_json( std::string_view json_data, std::string_view member_path ) {
@@ -443,6 +451,15 @@ namespace daw::json {
 		                                                       member_path );
 	}
 
+	/***
+	 * Parse a JSONMember from the json_data starting at member_path.  This method
+	 * performs less checking than the non-unchecked method
+	 * @tparam JsonMember The type of the item being parsed
+	 * @param json_data JSON string data
+	 * @param member_path A dot separated path of member names, default is the
+	 * root
+	 * @return A value reified from the JSON data member
+	 */
 	template<typename JsonMember>
 	[[maybe_unused, nodiscard]] static constexpr auto
 	from_json_unchecked( std::string_view json_data,
@@ -452,12 +469,12 @@ namespace daw::json {
 	}
 
 	/**
-	 * Parse json and construct a JsonClass as the result.  This method
+	 * Parse JSON and construct a JsonClass as the result.  This method
 	 * does not perform most checks on validity of data
 	 * @tparam JsonClass type that has specialization of
 	 * daw::json::json_data_contract
-	 * @param json_data Json string data
-	 * @return A reified JsonClass constructed from json data
+	 * @param json_data JSON string data
+	 * @return A reified JsonClass constructed from JSON data
 	 */
 	template<typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr JsonClass
@@ -475,7 +492,7 @@ namespace daw::json {
 	 * @tparam JsonClass Type that has json_parser_desription and to_json_data
 	 * function overloads
 	 * @param value  value to serialize
-	 * @return  json string data
+	 * @return  JSON string data
 	 */
 	template<typename Result = std::string, typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr Result
@@ -521,14 +538,16 @@ namespace daw::json {
 	}   // namespace impl
 
 	/**
-	 * Parse json data where the root item is an array
+	 * Parse JSON data where the root item is an array
 	 * @tparam JsonElement The type of each element in array.  Must be one of
 	 * the above json_XXX classes.  This version is checked
 	 * @tparam Container Container to store values in
 	 * @tparam Constructor Callable to construct Container with no arguments
 	 * @tparam Appender Callable to call with JsonElement
-	 * @param json_data Json string data containing array
-	 * @return A Container containing parsed data from json string
+	 * @param json_data JSON string data containing array
+	 * @param member_path A dot separated path of member names to start parsing
+	 * from.
+	 * @return A Container containing parsed data from JSON string
 	 */
 	template<
 	  typename JsonElement,
@@ -549,14 +568,16 @@ namespace daw::json {
 	}
 
 	/**
-	 * Parse json data where the root item is an array but do less checking
+	 * Parse JSON data where the root item is an array but do less checking
 	 * @tparam JsonElement The type of each element in array.  Must be one of
 	 * the above json_XXX classes.  This version isn't checked
 	 * @tparam Container Container to store values in
 	 * @tparam Constructor Callable to construct Container with no arguments
 	 * @tparam Appender Callable to call with JsonElement
-	 * @param json_data Json string data containing array
-	 * @return A Container containing parsed data from json string
+	 * @param json_data JSON string data containing array
+	 * @param member_path A dot separated path of member names to start parsing
+	 * from.
+	 * @return A Container containing parsed data from JSON string
 	 */
 	template<
 	  typename JsonElement,
@@ -577,7 +598,7 @@ namespace daw::json {
 	}
 
 	/**
-	 * Serialize Container to a json array string
+	 * Serialize Container to a JSON array string
 	 * @tparam Result std::string like type to serialize to
 	 * @tparam Container Type of Container to serialize
 	 * @param c Data to serialize
