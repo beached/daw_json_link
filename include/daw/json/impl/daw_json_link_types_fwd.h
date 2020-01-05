@@ -185,7 +185,7 @@ namespace daw::json {
 
 	/**
 	 * Member is a nullable escaped string and requires unescaping and escaping of
-	 * string data
+	 * string data.  Not all invalid codepoints are detected
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
 	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )

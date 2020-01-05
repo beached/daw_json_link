@@ -230,7 +230,7 @@ namespace daw::json::impl {
 				app( static_cast<char>( cp ) );
 				return;
 			}
-			if( cp >= 0xD800U and cp <= 0xDBFFU ) {
+			if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 				cp = ( cp - 0xD800U ) * 0x400U;
 				rng.remove_prefix( );
 				daw_json_assert_weak( rng.front( "uU" ),
@@ -300,7 +300,8 @@ namespace daw::json::impl {
 				}
 			}( );
 
-			if( rng.front( '"' ) ) {
+			bool const has_quote = rng.front( '"' );
+			if( has_quote ) {
 				rng.remove_prefix( );
 			}
 			daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
@@ -311,6 +312,7 @@ namespace daw::json::impl {
 					rng.remove_prefix( );
 				}
 				if( rng.front( ) == '\\' ) {
+					daw_json_assert_weak( rng.front( ) >= 0x20, "Invalid codepoint" );
 					rng.remove_prefix( );
 					switch( rng.front( ) ) {
 					case 'b':
@@ -355,11 +357,14 @@ namespace daw::json::impl {
 						rng.remove_prefix( );
 					}
 				} else {
-					daw_json_assert_weak( rng.front( '"' ), "Unexpected end of string" );
+					daw_json_assert_weak( not has_quote or rng.front( '"' ),
+					                      "Unexpected end of string" );
 				}
-				daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
+				daw_json_assert_weak( not has_quote or rng.has_more( ),
+				                      "Unexpected end of data" );
 			}
-			daw_json_assert_weak( rng.front( '"' ), "Unexpected state, no \"" );
+			daw_json_assert_weak( not has_quote or rng.front( '"' ),
+			                      "Unexpected state, no \"" );
 			rng.remove_prefix( );
 			return result;
 		}
@@ -541,10 +546,8 @@ namespace daw::json::impl {
 				return container_t( iterator_t( rng ), iterator_t( ) );
 			} else {
 				auto array_container = typename JsonMember::constructor_t{}( );
-				auto apdr = typename JsonMember::appender_t( array_container );
-				auto container_appender = [&]( auto && v ) {
-					return apdr( std::forward<decltype(v)>( v ) );
-				};
+				auto container_appender =
+				  typename JsonMember::appender_t( array_container );
 
 				while( rng.front( ) != ']' ) {
 					container_appender( parse_value<element_t>(
