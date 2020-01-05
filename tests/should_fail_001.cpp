@@ -23,12 +23,14 @@
 #include <daw/json/daw_json_link.h>
 
 #include <iostream>
+#include <optional>
 #include <string_view>
 
 namespace tests {
 	struct Coordinate {
 		double lat;
 		double lng;
+		std::optional<std::string> name;
 	};
 
 	struct UriList {
@@ -39,11 +41,14 @@ namespace tests {
 template<>
 struct daw::json::json_data_contract<tests::Coordinate> {
 #ifdef __cpp_nontype_template_parameter_class
-	using type = json_member_list<json_number<"lat">, json_number<"lng">>;
+	using type = json_member_list<json_number<"lat">, json_number<"lng">,
+	                              json_string<"name">>;
 #else
 	static inline constexpr char const lat[] = "lat";
 	static inline constexpr char const lng[] = "lng";
-	using type = json_member_list<json_number<lat>, json_number<lng>>;
+	static inline constexpr char const name[] = "name";
+	using type =
+	  json_member_list<json_number<lat>, json_number<lng>, json_string<name>>;
 #endif
 };
 
@@ -105,6 +110,16 @@ namespace tests {
 		return false;
 	}
 
+	bool missing_value_003( ) {
+		static constexpr std::string_view data =
+		  R"({"name": "lat": 1.23, "lng": 1.34 })";
+		try {
+			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			(void)c;
+		} catch( daw::json::json_exception const & ) { return true; }
+		return false;
+	}
+
 	bool missing_member( ) {
 		static constexpr std::string_view data = R"({"lng": 1.23 })";
 		try {
@@ -155,6 +170,9 @@ int main( ) {
 	             "Failed to catch a missing value that has a member name" );
 
 	expect_fail( tests::missing_value_002( ),
+	             "Failed to catch a missing value that has a member name" );
+
+	expect_fail( tests::missing_value_003( ),
 	             "Failed to catch a missing value that has a member name" );
 
 	expect_fail( tests::missing_member( ),
