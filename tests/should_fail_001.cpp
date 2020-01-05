@@ -129,6 +129,15 @@ namespace tests {
 		return false;
 	}
 
+	bool missing_closing_brace( ) {
+		static constexpr std::string_view data = R"({"lng": 1.23, "lat": 1.22 )";
+		try {
+			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			(void)c;
+		} catch( daw::json::json_exception const & ) { return true; }
+		return false;
+	}
+
 	bool invalid_strings( ) {
 		std::string data =
 		  R"({"uris": [ "http://www.example.com", "http://www.example.com/missing_quote ] })";
@@ -176,5 +185,8 @@ int main( ) {
 	             "Failed to catch a missing value that has a member name" );
 
 	expect_fail( tests::missing_member( ),
-	             "Failed to catch a missing required member" );
+							 "Failed to catch a missing required member" );
+
+	expect_fail( tests::missing_closing_brace( ),
+	             "Failed to catch a missing closing brace on object" );
 }
