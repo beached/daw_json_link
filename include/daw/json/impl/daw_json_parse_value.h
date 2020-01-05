@@ -303,8 +303,10 @@ namespace daw::json::impl {
 			if( rng.front( '"' ) ) {
 				rng.remove_prefix( );
 			}
+			daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
 			while( rng.front( ) != '"' ) {
 				while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
+					daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
 					app( rng.front( ) );
 					rng.remove_prefix( );
 				}
@@ -355,6 +357,7 @@ namespace daw::json::impl {
 				} else {
 					daw_json_assert_weak( rng.front( '"' ), "Unexpected end of string" );
 				}
+				daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
 			}
 			daw_json_assert_weak( rng.front( '"' ), "Unexpected state, no \"" );
 			rng.remove_prefix( );
@@ -538,8 +541,10 @@ namespace daw::json::impl {
 				return container_t( iterator_t( rng ), iterator_t( ) );
 			} else {
 				auto array_container = typename JsonMember::constructor_t{}( );
-				auto container_appender =
-				  typename JsonMember::appender_t( array_container );
+				auto apdr = typename JsonMember::appender_t( array_container );
+				auto container_appender = [&]( auto && v ) {
+					return apdr( std::forward<decltype(v)>( v ) );
+				};
 
 				while( rng.front( ) != ']' ) {
 					container_appender( parse_value<element_t>(

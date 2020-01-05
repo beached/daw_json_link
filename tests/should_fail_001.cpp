@@ -88,27 +88,22 @@ namespace bad_types {
 	}
 
 	bool invalid_strings( ) {
-		static constexpr std::string_view data =
+		std::string data =
 		  R"({"uris": [ "http://www.example.com", "http://www.example.com/missing_quote ] })";
 		try {
 			UriList ul = daw::json::from_json<bad_types::UriList>( data );
 			(void)ul;
-		} catch( daw::json::json_exception const & ) {
-			std::cerr << "Expected exception\n";
-			return true;
-		} catch( ... ) {
-			std::cerr << "Unexpected exception\n";
-			return false;
-		}
+		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
 	}
 
 	bool bad_escape( ) {
-		static constexpr std::string_view data =
+		std::string data =
 		  R"({"uris": [ "http://www.example.com", "http://www.example.com/missing_quote\uFFFF\uFFFF" ] })";
 		try {
 			UriList ul = daw::json::from_json<bad_types::UriList>( data );
 			(void)ul;
+			daw::breakpoint( );
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
 	}
@@ -122,8 +117,9 @@ int main( ) {
 	                 "Failed to find a bool when a number was expected" );
 	daw_json_assert( bad_types::invalid_numbers( ),
 	                 "Failed to find an invalid number" );
+	daw_json_assert( bad_types::invalid_strings( ),
+	                 "Failed to find missing quote" );
 	                 */
-	daw_json_assert( bad_types::invalid_strings( ), "Failed to missing quote" );
 	daw_json_assert( bad_types::bad_escape( ),
 	                 "Failed to catch bad escaped unicode" );
 }
