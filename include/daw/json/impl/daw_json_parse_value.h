@@ -28,7 +28,6 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_real.h"
-#include "daw_json_parse_signed_int.h"
 #include "daw_json_parse_string_quote.h"
 #include "daw_json_parse_unsigned_int.h"
 #include "daw_json_parse_value_fwd.h"
@@ -94,8 +93,21 @@ namespace daw::json::impl {
 			  rng.is_real_number_part( ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 
+			element_t sign = [&]( ) -> element_t {
+				if( rng.front( ) == '-' ) {
+					rng.remove_prefix( );
+					return -1;
+				} else if( rng.front( ) == '+' ) {
+					rng.remove_prefix( );
+				}
+				return 1;
+			}( );
 			auto result = constructor_t{}(
-			  parse_integer<element_t, JsonMember::range_check>( rng ) );
+			  sign * parse_unsigned_integer<element_t, JsonMember::range_check,
+			                                JsonMember::simd_mode>( rng ) );
+			/*
+	parse_integer<element_t, JsonMember::range_check>( rng ) );
+			 */
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			daw_json_assert_weak(
 			  rng.at_end_of_item( ),

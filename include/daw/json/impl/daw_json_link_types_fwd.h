@@ -330,12 +330,13 @@ namespace daw::json {
 	 * passed to it
 	 * @tparam Nullable Can the member be missing or have a null value
 	 */
-	template<JSONNAMETYPE Name, typename JsonElement,
-	         typename Container =
-	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
-	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_appender<Container>,
-	         JsonNullable Nullable = JsonNullable::Never>
+	template<
+	  JSONNAMETYPE Name, typename JsonElement,
+	  typename Container = std::vector<
+	    typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
+	  typename Constructor = daw::construct_a_t<Container>,
+	  typename Appender = impl::basic_appender<Container>,
+	  JsonNullable Nullable = JsonNullable::Never>
 	struct json_array;
 
 	/** Link to a nullable JSON array
@@ -350,11 +351,12 @@ namespace daw::json {
 	 * container.  The parsed type from JsonElement
 	 * passed to it
 	 */
-	template<JSONNAMETYPE Name, typename JsonElement,
-	         typename Container =
-	           std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
-	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_appender<Container>>
+	template<
+	  JSONNAMETYPE Name, typename JsonElement,
+	  typename Container = std::vector<
+	    typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
+	  typename Constructor = daw::construct_a_t<Container>,
+	  typename Appender = impl::basic_appender<Container>>
 	using json_array_null = json_array<Name, JsonElement, Container, Constructor,
 	                                   Appender, JsonNullable::Nullable>;
 
