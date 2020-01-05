@@ -24,7 +24,7 @@ json_to_cpp --infile=cookbook_class2.json
 ```
 
 The program will output the following C++ code
-```cpp
+```c++
 #include <tuple>
 #include <cstdint>
 #include <string>

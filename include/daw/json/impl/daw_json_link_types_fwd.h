@@ -312,8 +312,12 @@ namespace daw::json {
 			        std::is_arithmetic_v<T> or std::is_enum_v<T>,
 			        json_number<Name, T>,
 			        std::conditional_t<
-			          daw::traits::is_string_v<T>, json_string<Name, T>,
-			          daw::json::missing_json_data_contract_for<T>>>>>>;
+			          std::is_same_v<T, std::string_view>, json_string_raw<Name, T>,
+			          std::conditional_t<
+			            std::is_same_v<T, daw::string_view>, json_string_raw<Name, T>,
+			            std::conditional_t<
+			              daw::traits::is_string_v<T>, json_string<Name, T>,
+			              daw::json::missing_json_data_contract_for<T>>>>>>>>;
 		}
 	} // namespace impl
 
@@ -531,4 +535,27 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<T>>
 	using json_variant_null =
 	  json_variant<Name, T, JsonElements, Constructor, JsonNullable::Nullable>;
+
+	namespace impl {
+		namespace {
+			template<typename JsonMember, bool IsUnCheckedInput>
+			[[maybe_unused, nodiscard]] static constexpr auto
+			from_json_member_impl( std::string_view json_data,
+			                       std::string_view member_path ) {
+				using json_member = unnamed_default_type_mapping<JsonMember>;
+				auto [is_found, rng] = impl::find_range<IsUnCheckedInput>(
+				  json_data, {member_path.data( ), member_path.size( )} );
+				if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
+					if( not is_found ) {
+						return typename json_member::constructor_t{}( );
+					}
+				} else {
+					daw_json_assert( is_found,
+					                 "Could not find member and type isn't Nullable" );
+				}
+				return impl::parse_value<json_member>(
+				  ParseTag<json_member::expected_type>{}, rng );
+			}
+		} // namespace
+	}   // namespace impl
 } // namespace daw::json

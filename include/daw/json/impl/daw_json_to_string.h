@@ -29,14 +29,30 @@
 #include <utf8/unchecked.h>
 
 #include <optional>
+#include <sstream>
 #include <string>
 #include <tuple>
 #include <type_traits>
 #include <variant>
 
 namespace daw::json::impl::to_strings {
+
 	namespace {
 		using std::to_string;
+		namespace to_string_test {
+			template<typename T>
+			[[maybe_unused]] auto to_string_test( T &&v )
+			  -> decltype( to_string( std::forward<T>( v ) ) );
+
+			template<typename T>
+			using to_string_result = decltype( to_string_test( std::declval<T>( ) ) );
+		} // namespace to_string_test
+
+		template<typename T>
+		using has_to_string = daw::is_detected<to_string_test::to_string_result, T>;
+
+		template<typename T>
+		inline constexpr bool has_to_string_v = has_to_string<T>::value;
 
 		template<typename T>
 		[[nodiscard, maybe_unused]] auto to_string( std::optional<T> const &v )
@@ -52,18 +68,22 @@ namespace daw::json::impl::to_strings {
 namespace daw::json {
 	template<typename T>
 	struct custom_to_converter_t {
-		[[nodiscard]] constexpr decltype( auto ) operator( )( T &&value ) const {
+		template<typename U, std::enable_if_t<impl::to_strings::has_to_string_v<U>,
+		                                      std::nullptr_t> = nullptr>
+		[[nodiscard]] constexpr decltype( auto ) operator( )( U &&value ) const {
 			using std::to_string;
-			return to_string( daw::move( value ) );
+			return to_string( std::forward<U>( value ) );
 		}
 
-		[[nodiscard]] constexpr decltype( auto )
-		operator( )( T const &value ) const {
-			using std::to_string;
-			return to_string( value );
+		template<typename U,
+		         std::enable_if_t<not impl::to_strings::has_to_string_v<U>,
+		                          std::nullptr_t> = nullptr>
+		[[nodiscard]] std::string operator( )( U &&value ) const {
+			std::stringstream ss;
+			ss << std::forward<U>( value );
+			return ss.str( );
 		}
 	};
-
 } // namespace daw::json
 
 namespace daw::json::impl {

@@ -20,7 +20,7 @@ The JSON document is an array of an object with two members, an optional int, a 
 
 Too see a working example using this code, refer to [cookbook_optional_values1_test.cpp](../tests/cookbook_optional_values1_test.cpp). 
 
-```cpp
+```c++
 struct MyOptionalStuff1 {
   std::optional<int> member0;
   std::string member1;

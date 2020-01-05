@@ -12,7 +12,7 @@ The above JSON object has a member, `"member0"`, that is an array of strings.
 In order to store the enum as a JSON string, an overload for `to_string` and `from_string` are required. `to_string` is required to return a `Container` where the `begin( )` iterator's `value_type` is `char, not necessarily a `std::string`.
 
 To see a working example using this code, refer to [cookbook_enums1_test.cpp](../tests/cookbook_enums1_test.cpp) 
-```cpp
+```c++
 enum class Colours : uint8_t { red, green, blue, black };
 
 constexpr std::string_view to_string( Colours c ) {
@@ -69,13 +69,13 @@ Enums can, also, be stored as numbers.  The underlying value is used.
 ```
 
 With a C++ enum of
-```cpp
+```c++
 enum class Colours : uint8_t { red = 0, green = 1, blue = 2, black = 3 };
 ```
 
 The enum type is encoded as the type in the `json_number` member type.
 To see a working example using this code, refer to [cookbook_enums2_test.cpp](../tests/cookbook_enums2_test.cpp) 
-```cpp
+```c++
 enum class Colours : uint8_t { red, green, blue, black };
 
 struct MyClass1 {

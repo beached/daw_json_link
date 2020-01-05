@@ -16,7 +16,7 @@ Keys are stored as member names and Values as their value.  This is very common,
 
 Too see a working example using this code, refer to [cookbook_kv1_test.cpp](../tests/cookbook_kv1_test.cpp) 
 Below the JSON object is mapped to a `std::unordered_map<std::string, int>`
-```cpp
+```c++
 struct MyKeyValue {
   std::map<std::string, int> kv;
 };
@@ -52,7 +52,7 @@ The above JSON document an array member named `"kv"` whose element is an object 
 
 Below it is mapped to a `std::unorderd_map<intmax_t, std::string>`
 Too see a working example using this code, refer to [cookbook_kv2_test.cpp](../tests/cookbook_kv2_test.cpp) 
-```cpp
+```c++
 struct MyKeyValue2 {
   std::unordered_map<intmax_t, std::string> kv;
 };

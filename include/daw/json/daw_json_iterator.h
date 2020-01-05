@@ -55,6 +55,18 @@ namespace daw::json {
 		// This lets us fastpath and just skip n characters
 		mutable intmax_t m_can_skip = -1;
 
+		template<typename String>
+		static constexpr impl::IteratorRange<char const *, char const *,
+		                                     IsUnCheckedInput>
+		get_range( String &&data, std::string_view member_path ) {
+			auto [is_found, result] = impl::find_range<IsUnCheckedInput>(
+			  std::forward<String>( data ),
+			  {member_path.data( ), member_path.size( )} );
+			daw_json_assert( is_found, "Could not find path to member" );
+			daw_json_assert( result.front( ) == '[', "Member is not an array" );
+			return result;
+		}
+
 	public:
 		using element_type = impl::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
@@ -73,9 +85,7 @@ namespace daw::json {
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr json_array_iterator( String &&jd,
 		                               std::string_view start_path = "" )
-		  : m_state( impl::find_range<IsUnCheckedInput>(
-		      std::forward<String>( jd ),
-		      {start_path.data( ), start_path.size( )} ) ) {
+		  : m_state( get_range( std::forward<String>( jd ), start_path ) ) {
 
 			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,

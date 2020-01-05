@@ -22,7 +22,7 @@ Too see a working example using this code, look at the [cookbook_variant1_test.c
 
 The following C++ can provide a mapping.  It, also, highlights that the types bool, integers, floating point, std::string, and previously mapped types can be default mapped to elements that do not require a name.  Such as variant, array, and some key_value's.
 
-```cpp
+```c++
 struct MyVariantStuff1 {
   std::variant<int, std::string> member0;
   std::variant<std::string, bool> member1;
