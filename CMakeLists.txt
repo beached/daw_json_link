@@ -89,24 +89,23 @@ set(SOURCE_FOLDER "src")
 include_directories(${HEADER_FOLDER})
 
 set(HEADER_FILES
-        ${HEADER_FOLDER}/daw/json/daw_json_link.h
-        ${HEADER_FOLDER}/daw/json/daw_json_iterator.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_iterator_range.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_assert.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_link_impl.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_iterator_range.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_common.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_literal_end.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_name.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_real.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_signed_int.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_string_quote.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_unsigned_int.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value_fwd.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_to_string.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_truth.h
-        )
+	${HEADER_FOLDER}/daw/json/daw_json_link.h
+	${HEADER_FOLDER}/daw/json/daw_json_iterator.h
+	${HEADER_FOLDER}/daw/json/impl/daw_iterator_range.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_assert.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_link_types_fwd.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_array_iterator.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_common.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_literal_end.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_name.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_real.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_string_quote.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_unsigned_int.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value_fwd.h
+	${HEADER_FOLDER}/daw/json/impl/daw_json_to_string.h
+	${HEADER_FOLDER}/daw/json/impl/daw_truth.h
+)
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 add_custom_target(full)
@@ -316,4 +315,5 @@ add_dependencies(full trailing_commas_bin)
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
+
 
