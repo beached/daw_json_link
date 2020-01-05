@@ -20,7 +20,7 @@ JSON natively encodes strings.  There are two options for mapping them to C++ da
 The above JSON document consists of an array member named `"uris"` with an element type of string.
 
 The C++ `std::vector<std::string>` of the above json should be equivalent to:
-```cpp
+```c++
 std::vector<string> uris = {
   "example.com", 
   "Bücher.ch",
@@ -36,7 +36,7 @@ std::vector<string> uris = {
 To see a working example using this code, refer to [cookbook_escaped_strings1_test.cpp](../tests/cookbook_escaped_strings1_test.cpp). 
 
 Below the mapping of the JSON object with C++ data structures.
-```cpp
+```c++
 struct WebData {
   std::vector<std::string> uris;
 };
@@ -76,7 +76,7 @@ Raw strings are useful where we don't want to process the strings, we know they 
 The above JSON document consists of an array member named `"uris"` with an element type of string.
 
 The C++ `std::vector<std::string>` of the above json should be equivalent to when used as `json_string_raw`:
-```cpp
+```c++
 std::vector<std::string> uris = {
   "example.com",
   "B\u00FCcher.ch",
@@ -92,7 +92,7 @@ std::vector<std::string> uris = {
 
 Contrasting with the (Escaped)[#escaped] example, the difference will be that the array element type is `json_string_raw`
 
-```cpp
+```c++
 struct WebData {
 	std::vector<std::string> uris;
 };

@@ -14,7 +14,7 @@ The above JSON describes a class with three members, a string named `member0`, a
 
 Below is the C++ data structure and the trait to map the members to that of the JSON object.  Note that the names of the C++ data members do not have to be the same as the JSON object's.
 To see a working example using this code, refer to [cookbook_class1_test.cpp](../tests/cookbook_class1_test.cpp) 
-```cpp
+```c++
 struct MyClass1 {
   std::string member_0;
   int member_1;
@@ -57,7 +57,7 @@ The serializing and deserializing is recursive.  So if a class contains another 
 
 The JSON object that has a member `"a"` that matches `MyClass1`, and a second member is an `unsigned`
 To see a working example using this code, refer to [cookbook_class2_test.cpp](../tests/cookbook_class2_test.cpp) 
-```cpp
+```c++
 // Code from previous MyClass1 example
 
 struct MyClass2 {
@@ -96,7 +96,7 @@ To see a working example using this code, refer to [cookbook_class3_test.cpp](..
 }
 ```
 
-```cpp
+```c++
 // Code from previous MyClass1 example
 
 struct MyClass3 {

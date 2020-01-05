@@ -9,7 +9,7 @@ The above JSON document contains an array of integers as the root object.
 
 
 The C++ to parse this could look like
-```cpp
+```c++
 std::vector<int> vec = from_json_array<int>( json_str );
 ```
 
@@ -41,7 +41,7 @@ Here we hae a JSON array containing a class with members of type string, unsigne
 The C++ data structures and the mapping could look like the following
 To see a working example using this code, refer to [cookbook_array2_test.cpp](../tests/cookbook_array2_test.cpp)
 
-```cpp
+```c++
 struct MyClass4 {
   std::string a;
   unsigned b;
@@ -89,7 +89,7 @@ The above JSON document, has an object root, with int, array of int, and an arra
 
 The C++ data structures could look like the following
 
-```cpp
+```c++
 struct MyArrayClass1 {
   int member0;
   std::vector<int> member1;
@@ -98,7 +98,7 @@ struct MyArrayClass1 {
 ```
 
 The `json_data_contract` specialization as follows
-```cpp
+```c++
 namespace daw::json {
   template<>
   struct json_data_contract<MyArrayClass1> {

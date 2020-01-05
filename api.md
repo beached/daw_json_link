@@ -2,7 +2,7 @@
 The json types match those of the underlying JSON data types from the standard.
 
 ### json_number
-```cpp
+```c++
 template<JSONNAMETYPE Name, 
   typename T = double,
   LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
@@ -21,7 +21,7 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 Or the alias ```json_checked_number``` that is always checked for narrowing, but has the Nullable option.
 
 ### json_bool
-```cpp
+```c++
 template<JSONNAMETYPE Name, 
   typename T = bool,
   LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
@@ -37,7 +37,7 @@ The defaults for ```json_bool``` will construct a ```bool``` with the supplied n
 As above but without the Nullable option, it is set to Nullable, is the ```json_bool_null``` alias.
 
 ### json_string
-```cpp
+```c++
 template<JSONNAMETYPE Name, 
   typename StringRaw = std::string,
   typename Constructor = daw::construct_a_t<StringRaw>,
@@ -61,7 +61,7 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 - See also the [cookbook](cookbook/strings.md) item for strings 
 
 ### json_string_raw
-```cpp
+```c++
 template<JSONNAMETYPE Name, 
   typename StringRaw = std::string,
   typename Constructor = daw::construct_a_t<StringRaw>,
@@ -82,7 +82,7 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 - See also the [cookbook](cookbook/strings.md) item for strings 
 
 ### json_date
-```cpp
+```c++
 template<JSONNAMETYPE Name,
   typename T = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>,
   typename Constructor = parse_js_date<JsonNullable::Never>,
@@ -97,7 +97,7 @@ The defaults for json_date will construct a ```std::chrono::time_point<std::chro
 As above but without the Nullable option, it is set to Nullable, is the ```json_date_null``` alias.
 
 ### json_class
-```cpp
+```c++
 template<JSONNAMETYPE Name, 
   typename T,
   typename Constructor = daw::construct_a_t<T>,
@@ -113,7 +113,7 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 - See also the [cookbook](cookbook/class.md) item for classes
 
 ### json_array
-```cpp
+```c++
 template<JSONNAMETYPE Name, 
   typename JsonElement,
   typename Container = std::vector<typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
@@ -133,7 +133,7 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 - See also the [cookbook](cookbook/array.md) item for arrays
 
 ### json_key_value
-```cpp
+```c++
 template<JSONNAMETYPE Name, 
   typename Container, 
   typename JsonValueType,
@@ -156,7 +156,7 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 - See also the [cookbook](cookbook/key_values.md) item for key/values 
 
 ### json_key_value_array
-```cpp
+```c++
 template<JSONNAMETYPE Name, 
   typename Container, 
   typename JsonValueType,
@@ -179,7 +179,7 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 - See also the [cookbook](cookbook/key_values.md) item for key/values 
 
 ### json_variant
-```cpp
+```c++
 template<JSONNAMETYPE Name, 
   typename T, 
   typename JsonElements,
@@ -197,7 +197,7 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 - See also the [cookbook](cookbook/variant.md) item for variants 
 
 ### json_custom
-```cpp
+```c++
 template<JSONNAMETYPE Name, typename T,
   typename FromConverter = custom_from_converter_t<T>,
   typename ToConverter = custom_to_converter_t<T>,

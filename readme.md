@@ -5,11 +5,11 @@ This library provides serialization/deserialization of JSON documents with a kno
 The library is [MIT](LICENSE) licensed so its free to use, just have to give credit.
 
 Because the struct of the document is known, parsing is like the following 
-```cpp
+```c++
 MyThing thing = from_json<MyThing>( data );
 ```
 or for array documents 
-```cpp
+```c++
 std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 ```
 ## Code Examples
@@ -55,7 +55,7 @@ Mapping of data structures is done by specializing ```daw::json::json_data_contr
 There are two parts to the trait `json_data_contract`, first is a type alias named ```type``` that maps JSON object members by name to the argumenets of the C++ data structures constructor. Second, an optional, static method with a signatures like ```static tuple<MemberTypes> to_json_data( T const & )``` which returns a tuple of calculated for referenced members corresponding to the previous mapping.  `to_json_data` is only required if serialization is wanted. 
 
 For example a `json_data_contract` for a `Coordinate` class could look like 
-```cpp
+```c++
 namespace daw::json {
   template<>
   struct json_data_contract<Coordinate> {
@@ -69,7 +69,7 @@ namespace daw::json {
 This says that there is a json object with members `lat` and `lng` that are numbers.  The default mapping for numbers is `double`, but one can benefit from specifying and restring that e.g. `int`.  The Coordinate class would need to be constructable from two double's.
 
 To allow for serializing, the `to_json_data` method takes an existing C++ object and breaks out the values to the serializer.  
-```cpp
+```c++
 namespace daw::json {
   template<>
   struct json_data_contract<Coordinate> {
@@ -93,7 +93,7 @@ namespace daw::json {
 In unnamed contexts, array element types, some key value types, and variant element lists where the name would be `no_name`, one can use some native C++ data types instead of the the JSON member types.  This includes, integer, floating point, bool, std::string, and previously mapped types.  
 
 For example, to map an array of string's.
-```cpp
+```c++
 template<>
 struct daw::json::json_data_contract<MyType> {
   using type = json_member_list<json_array<"member_name", std::string>>;
@@ -133,7 +133,7 @@ The library, currently, does not escape or unescape the member names.  This is a
 
 There are slight differences between C++17 and C++20 
 # C++ 17 Naming of JSON members
-```cpp
+```c++
 namespace daw::json {
   template<>
   struct json_data_contract<MyType> {
@@ -144,7 +144,7 @@ namespace daw::json {
 ```
 # C++ 20 Naming of JSON members
 When compiled within C++20 compiler, the member names are specified inside the types as follows.
-```cpp
+```c++
 namespace daw::json {
   template<>
   struct json_data_contract<MyType> {
@@ -158,43 +158,43 @@ namespace daw::json {
 
 Once a data type has been mapped with a `json_data_contract`, the library provides methods to parse JSON to them
 
-```cpp
+```c++
 MyClass my_class = from_json<MyClass>( json_str );
 ```
 Alternatively, if the input is trusted, the less checked version can be faster 
-```cpp
+```c++
 MyClass my_class = from_json_unchecked<MyClass>( json_str );
 ```
 
 JSON documents with array root's use the `from_json_array` function to parse 
-```cpp
+```c++
 std::vector<MyClass> my_data = from_json_array<MyClass>( json_str );
 ```
 Alternatively, if the input is trusted, the less checked version can be faster 
-```cpp
+```c++
 std::vector<MyClass> my_data = from_json_array_unchecked<MyClass>( json_str );
 ```
 
 If you want to work from JSON array data you can get an iterator and use the std algorithms to
 Iterating over array's in JSON data can be done via the `json_array_iterator`
-```cpp
+```c++
 using iterator_t = json_array_iterator<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
 Alternatively, if the input is trusted you can called the less checked version
-```cpp
+```c++
 using iterator_t = daw::json::json_array_iterator_trusted<MyClass>;
 auto pos = std::find( iterator_t( json_str ), iterator_t( ), MyClass( ... ) );
 ```
 
 If you want to serialize to JSON 
 
-```cpp
+```c++
 std::string my_json_data = to_json( MyClass{} );
 ```
 
 Or serialize a collection of things
-```cpp
+```c++
 std::vector<MyClass> arry = ...;
 std::string my_json_data = to_json_array( arry );
 ```
@@ -212,7 +212,7 @@ There are two possible ways of handling errors.  The first, `abort( );` on an er
 
 This can be accomplished by writing a function called json_data_contract_for with a single arugment that is your type.  The library is only concerned with it's return value. For example:
 
-```cpp
+```c++
 #include <daw/json/daw_json_link.h>
 
 struct TestClass {
@@ -271,7 +271,7 @@ int main( ) {
 ```
 Both aggregate and normal construction is supported.  The description provides the values needed to construct your type and the order.  The order specified is the order they are placed into the constructor.  There are customization points to provide a way of constructing your type too(TODO discuss customization points)  A class like:
 
-```cpp
+```c++
 #include <daw/json/daw_json_link.h>
 
 struct AggClass {
@@ -291,7 +291,7 @@ namespace daw::json {
 ```
 Works too.
 Same but C++17
-```cpp
+```c++
 #include <daw/json/daw_json_link.h>
 
 struct AggClass {
@@ -313,7 +313,7 @@ namespace daw::json {
 ```
 The class descriptions are recursive with their submembers.  Using the previous `AggClass` one can include it as a member of another class
 
-```cpp
+```c++
 // See above for AggClass
 struct MyClass {
   AggClass other;
@@ -334,7 +334,7 @@ namespace daw::json {
 The above maps a class MyClass that has another class that is described AggClass.  Also, you can see that the member names of the C++ class do not have to match that of the mapped JSON names and that strings can use `std::string_view` as the result type.  This is an important performance enhancement if you can guarantee the buffer containing the JSON file will exist as long as the class does.
 
 Iterating over JSON arrays.  The input iterator ```daw::json::json_array_iterator<JsonElement>``` allows one to iterator over the array of JSON elements.  It is technically an input iterator but can be stored and reused like a forward iterator.  It does not return a reference but a value.
-```cpp
+```c++
 
 #include <daw/json/daw_json_link.h>
 
@@ -376,7 +376,7 @@ int main( ) {
 
 To enable serialization on must create an additional free function called ```to_json_data( JsonClass );``` It will provide a mapping from your type to the arguments provided in the class description.  To serialize to a JSON string, one calls ```to_json( value );``` where value is a registered type.  The result of  to_json_data( JsonClass ) is a tuple who's arguments match that of the order in json_data_contract_for. Using the exmaple above lets add that
 
-```cpp
+```c++
 #include <daw/json/daw_json_link.h>
 #include <tuple>
 

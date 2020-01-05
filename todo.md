@@ -5,3 +5,5 @@
 * support inf/nan in floating point numbers
 * implement arrow proxy on json array iterator
 * add fallback to iostreams to string encoding/decoding
+* allow member_path to allow parsing array indexes
+* tag disriminator for variant classes.  Merge the member's into a special merged type that allows a callable to select which variant item to construct

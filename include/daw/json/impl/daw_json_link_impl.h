@@ -478,7 +478,7 @@ namespace daw::json::impl {
 		}
 
 		template<typename First, typename Last, bool IsUnCheckedInput>
-		constexpr void
+		constexpr bool
 		find_range2( IteratorRange<First, Last, IsUnCheckedInput> &rng,
 		             daw::string_view path ) {
 			auto current = impl::pop_json_path( path );
@@ -490,24 +490,30 @@ namespace daw::json::impl {
 				while( not json_path_compare( current, name ) ) {
 					(void)skip_value( rng );
 					rng.clean_tail( );
+					if( rng.empty( ) or rng.front( ) != '"' ) {
+						return false;
+					}
 					name = parse_name( rng );
 				}
 				current = impl::pop_json_path( path );
 			}
+			return true;
 		}
 
 		template<bool IsUnCheckedInput, typename String>
-		[[nodiscard]] constexpr auto find_range( String &&str,
-		                                         daw::string_view start_path ) {
+		[[nodiscard]] constexpr std::pair<
+		  bool, IteratorRange<char const *, char const *, IsUnCheckedInput>>
+		find_range( String &&str, daw::string_view start_path ) {
 
 			auto rng = IteratorRange<char const *, char const *, IsUnCheckedInput>(
 			  std::data( str ), std::data( str ) + std::size( str ) );
 			rng.trim_left( );
 			if( rng.has_more( ) and not start_path.empty( ) ) {
-				find_range2( rng, start_path );
+				if( not find_range2( rng, start_path ) ) {
+					return {false, rng};
+				}
 			}
-			daw_json_assert( rng.front( ) == '[', "Expected start of json array" );
-			return rng;
+			return {true, rng};
 		}
 
 		template<typename JsonClass, bool IsUnCheckedInput>

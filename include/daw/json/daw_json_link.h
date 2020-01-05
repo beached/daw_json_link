@@ -424,7 +424,7 @@ namespace daw::json {
 	 * provides checked json
 	 * @tparam JsonClass type that has specialization of
 	 * daw::json::json_data_contract
-	 * @param json_data Json string data
+	 * @param json_data JSON string data
 	 * @return A reified T constructed from json data
 	 */
 	template<typename JsonClass>
@@ -434,6 +434,21 @@ namespace daw::json {
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
 		return impl::from_json_impl<JsonClass, false>( json_data );
+	}
+
+	template<typename JsonMember>
+	[[maybe_unused, nodiscard]] static constexpr auto
+	from_json( std::string_view json_data, std::string_view member_path ) {
+		return impl::from_json_member_impl<JsonMember, false>( json_data,
+		                                                       member_path );
+	}
+
+	template<typename JsonMember>
+	[[maybe_unused, nodiscard]] static constexpr auto
+	from_json_unchecked( std::string_view json_data,
+	                     std::string_view member_path ) {
+		return impl::from_json_member_impl<JsonMember, true>( json_data,
+		                                                      member_path );
 	}
 
 	/**
@@ -483,15 +498,20 @@ namespace daw::json {
 			template<bool IsUnCheckedInput, typename JsonElement, typename Container,
 			         typename Constructor, typename Appender>
 			[[maybe_unused, nodiscard]] constexpr Container
-			from_json_array_impl( std::string_view json_data ) {
+			from_json_array_impl( std::string_view json_data,
+			                      std::string_view member_path ) {
 				using parser_t =
 				  json_array<no_name, JsonElement, Container, Constructor, Appender>;
 
-				auto rng =
-				  daw::json::impl::IteratorRange<char const *, char const *, false>(
-				    json_data.data( ),
-				    json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
-
+				auto [is_found, rng] = impl::find_range<IsUnCheckedInput>(
+				  json_data, {member_path.data( ), member_path.size( )} );
+				if constexpr( parser_t::expected_type == JsonParseTypes::Null ) {
+					if( not is_found ) {
+						return typename parser_t::constructor_t{}( );
+					}
+				} else {
+					daw_json_assert( is_found, "Could not find specified member" );
+				}
 				rng.trim_left_no_check( );
 				daw_json_assert_weak( rng.front( '[' ), "Expected array class" );
 
@@ -502,8 +522,8 @@ namespace daw::json {
 
 	/**
 	 * Parse json data where the root item is an array
-	 * @tparam JsonElement The type of each element in array.  Must be one of the
-	 * above json_XXX classes.  This version is checked
+	 * @tparam JsonElement The type of each element in array.  Must be one of
+	 * the above json_XXX classes.  This version is checked
 	 * @tparam Container Container to store values in
 	 * @tparam Constructor Callable to construct Container with no arguments
 	 * @tparam Appender Callable to call with JsonElement
@@ -517,13 +537,15 @@ namespace daw::json {
 	  typename Constructor = daw::construct_a_t<Container>,
 	  typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
-	from_json_array( std::string_view json_data ) {
+	from_json_array( std::string_view json_data,
+	                 std::string_view member_path = "" ) {
 		using element_type = impl::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
 
 		return impl::from_json_array_impl<false, element_type, Container,
-		                                  Constructor, Appender>( json_data );
+		                                  Constructor, Appender>( json_data,
+		                                                          member_path );
 	}
 
 	/**
@@ -543,13 +565,15 @@ namespace daw::json {
 	  typename Constructor = daw::construct_a_t<Container>,
 	  typename Appender = impl::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
-	from_json_array_unchecked( std::string_view json_data ) {
+	from_json_array_unchecked( std::string_view json_data,
+	                           std::string_view member_path = "" ) {
 		using element_type = impl::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
 
 		return impl::from_json_array_impl<true, element_type, Container,
-		                                  Constructor, Appender>( json_data );
+		                                  Constructor, Appender>( json_data,
+		                                                          member_path );
 	}
 
 	/**
