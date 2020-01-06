@@ -24,8 +24,8 @@
 
 #include "daw_json_assert.h"
 
-#include <daw/daw_parser_helper_sv.h>
-#include <daw/daw_string_view.h>
+#include <daw/cpp_17.h>
+#include <daw/daw_do_n.h>
 
 #include <iterator>
 #include <type_traits>
@@ -51,8 +51,8 @@
 	}                                                                            \
 	while( false )
 #else
-#define skip_comments( )
-#define skip_comments_unchecked( )
+#define skip_comments( ) while( false )
+#define skip_comments_unchecked( ) while( false )
 #endif
 
 namespace daw::json::impl {
@@ -132,7 +132,7 @@ namespace daw::json::impl {
 		}
 
 		constexpr void remove_prefix( size_t n ) {
-			first += static_cast<intmax_t>( n );
+			std::advance( first, static_cast<intmax_t>( n ) );
 		}
 
 		constexpr bool is_space( ) const noexcept {
@@ -173,7 +173,6 @@ namespace daw::json::impl {
 				daw_json_assert_weak( first != last, "Unexpected end of stream" );
 			}
 		}
-
 
 		[[nodiscard]] constexpr First begin( ) const noexcept {
 			return first;

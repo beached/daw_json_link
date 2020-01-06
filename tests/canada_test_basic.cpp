@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "canada_test.h"
+#include "geojson.h"
 
 #include <daw/daw_do_not_optimize.h>
 #include <daw/daw_memory_mapped_file.h>
@@ -40,6 +40,6 @@ int main( int argc, char **argv ) {
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 
 	auto const canada_result =
-	  daw::json::from_json<daw::canada::canada_object_t>( json_sv1 );
+	  daw::json::from_json<daw::geojson::FeatureCollection>( json_sv1 );
 	daw::do_not_optimize( canada_result );
 }

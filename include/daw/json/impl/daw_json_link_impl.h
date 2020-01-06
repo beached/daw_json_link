@@ -151,6 +151,12 @@ namespace daw::json::impl {
 				daw::string_view current{};
 				char found_char = 0;
 			} result{};
+			if( path.empty( ) ) {
+				return result;
+			}
+			if( path.front( ) == '.' ) {
+				path.remove_prefix( );
+			}
 			result.current =
 			  path.pop_front( [&, in_escape = false]( char c ) mutable {
 				  if( in_escape ) {
@@ -395,9 +401,7 @@ namespace daw::json::impl {
 			static_assert( has_json_data_contract_trait_v<JsonClass>,
 			               "Unexpected type" );
 			static_assert(
-			  can_construct_a_v<
-			    JsonClass,
-			    decltype( std::declval<typename JsonMembers::parse_to_t>( ) )...>,
+			  can_construct_a_v<JsonClass, typename JsonMembers::parse_to_t...>,
 			  "Supplied types cannot be used for	construction of this type" );
 
 			rng.move_to_next_of( '{' );
@@ -473,7 +477,6 @@ namespace daw::json::impl {
 					    pop_result.current.data( ) );
 					daw_json_assert_weak( ptr != nullptr and ptr < path.data( ),
 					                      "Unexpected end of index" );
-					path.remove_prefix( static_cast<size_t>( ptr - path.data( ) ) );
 					while( idx > 0 ) {
 						--idx;
 						(void)skip_value( rng );

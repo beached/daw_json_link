@@ -31,27 +31,29 @@
 #include <utility>
 #include <vector>
 
-namespace daw::canada {
+namespace daw::geojson {
 	namespace {
-		struct properties_t {
+		struct Property {
+			// This is a Map but outside of specific items we do not know the
+			// resulting type
 			std::string_view name;
-		}; // properties_t
+		}; // Property
 
-		struct geometry_t {
+		struct Polygon {
 			std::string_view type;
 			std::vector<std::vector<std::array<double, 2>>> coordinates;
-		}; // geometry_t
+		}; // Polygon
 
-		struct features_element_t {
+		struct Feature {
 			std::string_view type;
-			properties_t properties;
-			geometry_t geometry;
-		}; // features_element_t
+			Property properties;
+			Polygon geometry;
+		}; // Feature
 
-		struct canada_object_t {
+		struct FeatureCollection {
 			std::string_view type;
-			std::vector<features_element_t> features;
-		}; // canada_object_t
+			std::vector<Feature> features;
+		}; // FeatureCollection
 
 		template<typename T>
 		struct array_appender {
@@ -67,11 +69,11 @@ namespace daw::canada {
 			}
 		};
 	} // namespace
-} // namespace daw::canada
+} // namespace daw::geojson
 
 namespace daw::json {
 	template<>
-	struct json_data_contract<daw::canada::properties_t> {
+	struct json_data_contract<daw::geojson::Property> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_string_raw<"name", std::string_view>>;
 #else
@@ -79,13 +81,13 @@ namespace daw::json {
 		using type = json_member_list<json_string_raw<name, std::string_view>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::canada::properties_t const &value ) {
+		to_json_data( daw::geojson::Property const &value ) {
 			return std::forward_as_tuple( value.name );
 		}
 	};
 
 	template<>
-	struct json_data_contract<daw::canada::geometry_t> {
+	struct json_data_contract<daw::geojson::Polygon> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_string_raw<"type", std::string_view>,
@@ -94,7 +96,7 @@ namespace daw::json {
 		    json_array<no_name,
 		               json_array<no_name, double, std::array<double, 2>,
 		                          daw::construct_a_t<std::array<double, 2>>,
-		                          daw::canada::array_appender<double>>>>>;
+		                          daw::geojson::array_appender<double>>>>>;
 #else
 		static inline constexpr char const type_sym[] = "type";
 		static inline constexpr char const coordinates[] = "coordinates";
@@ -105,32 +107,32 @@ namespace daw::json {
 		    json_array<no_name,
 		               json_array<no_name, double, std::array<double, 2>,
 		                          daw::construct_a_t<std::array<double, 2>>,
-		                          daw::canada::array_appender<double>>>>>;
+		                          daw::geojson::array_appender<double>>>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::canada::geometry_t const &value ) {
+		to_json_data( daw::geojson::Polygon const &value ) {
 			return std::forward_as_tuple( value.type, value.coordinates );
 		}
 	};
 
 	template<>
-	struct json_data_contract<daw::canada::features_element_t> {
+	struct json_data_contract<daw::geojson::Feature> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string_raw<"type", std::string_view>,
-		                   json_class<"properties", daw::canada::properties_t>,
-		                   json_class<"geometry", daw::canada::geometry_t>>;
+		                   json_class<"properties", daw::geojson::Property>,
+		                   json_class<"geometry", daw::geojson::Polygon>>;
 #else
 		static inline constexpr char const type_sym[] = "type";
 		static inline constexpr char const properties[] = "properties";
 		static inline constexpr char const geometry[] = "geometry";
 		using type =
 		  json_member_list<json_string_raw<type_sym, std::string_view>,
-		                   json_class<properties, daw::canada::properties_t>,
-		                   json_class<geometry, daw::canada::geometry_t>>;
+		                   json_class<properties, daw::geojson::Property>,
+		                   json_class<geometry, daw::geojson::Polygon>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::canada::features_element_t const &value ) {
+		to_json_data( daw::geojson::Feature const &value ) {
 			return std::forward_as_tuple( value.type, value.properties,
 			                              value.geometry );
 		}
@@ -138,20 +140,19 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::canada::canada_object_t> {
+	struct json_data_contract<daw::geojson::FeatureCollection> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string_raw<"type", std::string_view>,
-		                   json_array<"features", daw::canada::features_element_t>>;
+		                   json_array<"features", daw::geojson::Feature>>;
 #else
 		static inline constexpr char const type_sym[] = "type";
 		static inline constexpr char const features[] = "features";
-		using type =
-		  json_member_list<json_string_raw<type_sym, std::string_view>,
-		                   json_array<features, daw::canada::features_element_t>>;
+		using type = json_member_list<json_string_raw<type_sym, std::string_view>,
+		                              json_array<features, daw::geojson::Feature>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::canada::canada_object_t const &value ) {
+		to_json_data( daw::geojson::FeatureCollection const &value ) {
 			return std::forward_as_tuple( value.type, value.features );
 		}
 	};

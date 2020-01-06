@@ -219,7 +219,7 @@ namespace daw::json {
 			return std::forward_as_tuple( value.result_type,
 			                              value.iso_language_code );
 		}
-	}; // namespace daw::json
+	};
 
 	template<>
 	struct json_data_contract<daw::twitter::urls_element_t> {
