@@ -389,7 +389,7 @@ namespace daw::json::impl {
 			auto result = rng;
 			while( not rng.empty( ) and bracket_count > 0 ) {
 				rng.remove_prefix( );
-				rng.trim_left_no_check( );
+				rng.trim_left_raw( );
 				switch( rng.front( ) ) {
 				case '\\':
 					rng.remove_prefix( 1 );
@@ -405,6 +405,11 @@ namespace daw::json::impl {
 				case Right:
 					if( not in_quotes ) {
 						--bracket_count;
+					}
+					break;
+				case '#':
+					if( not in_quotes ) {
+						rng.trim_left( );
 					}
 					break;
 				}
