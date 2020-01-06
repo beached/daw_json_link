@@ -28,6 +28,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
   * [Graphs](cookbook/graphs.md)
   * [Key Values](cookbook/key_values.md) - Map and Dictionary like things 
   * [Optional/Nullable Values](cookbook/optional_values.md)
+  * [Parsing Invidual Members](cookbook/parsing_idividual_members.md)
   * [Strings](cookbook/strings.md)
   * [Variant](cookbook/variant.md)
   * [Automatic Code Generation](cookbook/automated_code_generation.md)
