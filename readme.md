@@ -371,6 +371,10 @@ int main( ) {
 }
 ```
 
+## Member Paths
+Parsing can begin at a specific member.  An optional member path to `from_json_array`, `from_json_array_unchecked`, `from_json_array`, or `from_json_array_unchecked` can be specified.
+The format is a dot separated list of member names and optionally an array index such as `member0.member1` or `member0[5].member1`.
+
 ## Serialization
 ###### [Top](#content)
 
