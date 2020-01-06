@@ -51,17 +51,6 @@
 
 namespace daw::json::impl {
 	namespace {
-
-		[[nodiscard]] constexpr char to_lower( char c ) noexcept {
-			return static_cast<char>( static_cast<unsigned>( c ) |
-			                          static_cast<unsigned>( ' ' ) );
-		}
-
-		[[nodiscard]] constexpr wchar_t to_lower( wchar_t const c ) noexcept {
-			return static_cast<wchar_t>( static_cast<unsigned>( c ) |
-			                             static_cast<unsigned>( L' ' ) );
-		}
-
 		template<typename Result>
 		constexpr Result to_integer( char const c ) noexcept {
 			return static_cast<Result>( c - '0' );
@@ -82,10 +71,10 @@ namespace daw::json::impl {
 		                                  std::chrono::milliseconds>
 		parse_javascript_timestamp(
 		  daw::basic_string_view<CharT, Traits> timestamp_str ) {
-			daw_json_assert(
-			  ( timestamp_str.size( ) == 24 ) and
-			    ( to_lower( timestamp_str[23] ) == static_cast<CharT>( 'z' ) ),
-			  "Invalid ISO8601 Timestamp" );
+			daw_json_assert( ( timestamp_str.size( ) == 24 ) and
+			                   ( ( timestamp_str[23] == static_cast<CharT>( 'z' ) ) or
+			                     ( timestamp_str[23] == static_cast<CharT>( 'Z' ) ) ),
+			                 "Invalid ISO8601 Timestamp" );
 			auto const yr = parse_unsigned<uint16_t, 4>( timestamp_str.data( ) );
 			auto const mo = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 5 );
 			auto const dy = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 8 );
@@ -183,28 +172,6 @@ namespace daw::json::impl {
 			  } );
 			return result;
 		}
-
-		namespace data_size {
-			[[nodiscard]] constexpr char const *data( char const *ptr ) noexcept {
-				return ptr;
-			}
-
-			[[nodiscard]] constexpr size_t size( char const *ptr ) noexcept {
-				return std::string_view( ptr ).size( );
-			}
-
-			using std::data;
-			template<typename T>
-			using data_detect = decltype( data( std::declval<T &>( ) ) );
-
-			using std::size;
-			template<typename T>
-			using size_detect = decltype( size( std::declval<T &>( ) ) );
-
-			template<typename T>
-			inline constexpr bool has_data_size_v = daw::is_detected_v<data_detect, T>
-			  and daw::is_detected_v<size_detect, T>;
-		} // namespace data_size
 
 		template<typename string_t>
 		struct kv_t {
