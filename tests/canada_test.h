@@ -58,7 +58,7 @@ namespace daw::canada {
 			T *ptr;
 
 			template<size_t N>
-			inline array_appender( std::array<T, N> &ary ) noexcept
+			inline explicit array_appender( std::array<T, N> &ary ) noexcept
 			  : ptr( ary.data( ) ) {}
 
 			template<typename U>

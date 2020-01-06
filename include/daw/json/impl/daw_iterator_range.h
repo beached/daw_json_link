@@ -30,6 +30,31 @@
 #include <iterator>
 #include <type_traits>
 
+#ifdef DAW_ALLOW_COMMENTS
+#define skip_comments( )                                                       \
+	if( front( '#' ) ) {                                                         \
+		remove_prefix( );                                                          \
+		while( has_more( ) and front( ) != '\n' ) {                                \
+			remove_prefix( );                                                        \
+		}                                                                          \
+		remove_prefix( );                                                          \
+	}                                                                            \
+	while( false )
+
+#define skip_comments_unchecked( )                                             \
+	if( front( ) == '#' ) {                                                      \
+		remove_prefix( );                                                          \
+		while( front( ) != '\n' ) {                                                \
+			remove_prefix( );                                                        \
+		}                                                                          \
+		remove_prefix( );                                                          \
+	}                                                                            \
+	while( false )
+#else
+#define skip_comments( )
+#define skip_comments_unchecked( )
+#endif
+
 namespace daw::json::impl {
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	struct IteratorRange {
@@ -127,32 +152,28 @@ namespace daw::json::impl {
 		}
 
 		constexpr void trim_left( ) noexcept {
+			skip_comments( );
 			while( has_more( ) and is_space( ) ) {
 				remove_prefix( );
-			}
-		}
-
-		constexpr void trim_left_escaped_no_check( ) noexcept {
-			while( is_space( ) or front( ) == '\\' ) {
-				if( front( ) == '\\' ) {
-					auto ptr = first + 1;
-					if( *ptr == 'b' or *ptr == 'f' or *ptr == 'n' or *ptr == 'r' or
-					    *ptr == 't' ) {
-						remove_prefix( );
-					} else {
-						break;
-					}
-				}
-				remove_prefix( );
+				skip_comments( );
 			}
 		}
 
 		constexpr void trim_left_no_check( ) noexcept {
+			skip_comments_unchecked( );
 			while( is_space( ) ) {
 				remove_prefix( );
 				daw_json_assert_weak( first != last, "Unexpected end of stream" );
 			}
 		}
+
+		constexpr void trim_left_raw( ) noexcept {
+			while( is_space( ) ) {
+				remove_prefix( );
+				daw_json_assert_weak( first != last, "Unexpected end of stream" );
+			}
+		}
+
 
 		[[nodiscard]] constexpr First begin( ) const noexcept {
 			return first;
@@ -167,28 +188,23 @@ namespace daw::json::impl {
 		}
 
 		constexpr void move_to_next_of( char c ) noexcept {
+			skip_comments_unchecked( );
+			daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 			while( front( ) != c ) {
 				daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 				remove_prefix( );
+				skip_comments_unchecked( );
 			}
 		}
 
 		template<size_t N>
 		constexpr void move_to_next_of( char const ( &str )[N] ) noexcept {
+			skip_comments_unchecked( );
 			while( not in( str ) ) {
 				daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 				remove_prefix( );
+				skip_comments_unchecked( );
 			}
-		}
-
-		[[nodiscard]] constexpr IteratorRange
-		move_to_first_of( daw::string_view const chars ) noexcept {
-			auto result = *this;
-			while( chars.find( front( ) ) == daw::string_view::npos ) {
-				remove_prefix( );
-			}
-			result.last = first;
-			return result;
 		}
 
 		[[nodiscard]] constexpr bool in( char c ) const noexcept {

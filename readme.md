@@ -44,6 +44,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
   * [Parsing call](#parsing-call)
   * [Global](#global)
 * [Deserializing/Parsing](#deserializingparsing)
+  * [Member Paths](#member-paths) 
 * [Serialization](#serialization)
 * [Requirements](#requirements)
   * [For building tests](#for-building-tests)
@@ -376,6 +377,14 @@ int main( ) {
 Parsing can begin at a specific member.  An optional member path to `from_json_array`, `from_json_array_unchecked`, `from_json_array`, or `from_json_array_unchecked` can be specified.
 The format is a dot separated list of member names and optionally an array index such as `member0.member1` or `member0[5].member1`.
 
+## Comments
+Comments are optionally supported when `DAW_ALLOW_COMMENTS` is defined or set in the cmake build.  This allows the `#` symbol to comment to the end of line.
+```json
+{ # This is a comment
+    "a" #this is also a comment
+      : "a's value"
+}
+```
 ## Serialization
 ###### [Top](#content)
 
