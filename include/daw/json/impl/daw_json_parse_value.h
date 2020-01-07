@@ -44,7 +44,7 @@ namespace daw::json::impl {
 			if constexpr( JsonMember::literal_as_string ==
 			              LiteralAsStringOpt::Never ) {
 				daw_json_assert( rng.front( ) != '"',
-				                      "Unexpected quote prior to number" );
+				                 "Unexpected quote prior to number" );
 				return;
 				// Temporary fix as right now we are only sometimes having strings to
 				// skip
@@ -649,7 +649,11 @@ namespace daw::json::impl {
 					return {parse_value<JsonMember>(
 					  ParseTag<JsonMember::expected_type>{}, rng )};
 				}
-				return parse_visit<Result, TypeList, pos + 1>( idx, rng );
+				if constexpr( pos + 1 < std::tuple_size_v<TypeList> ) {
+					return parse_visit<Result, TypeList, pos + 1>( idx, rng );
+				} else {
+					std::abort( );
+				}
 			} else {
 				std::abort( );
 			}
