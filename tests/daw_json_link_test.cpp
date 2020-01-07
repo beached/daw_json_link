@@ -302,8 +302,7 @@ int main( ) {
 	static_assert( parse_real_test<double>( "5.5e2", 550.0 ) );
 	static_assert( parse_real_test<double>( "5.5e+2", 550.0 ) );
 	static_assert( parse_real_test<double>( "5e2", 500.0 ) );
-
-	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
+	static_assert( parse_real_test<double>( "5.5e+2", 550.0 ) );
 
 #ifdef _MSC_VER
 #define CX constexpr

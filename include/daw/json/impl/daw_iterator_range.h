@@ -60,6 +60,8 @@ namespace daw::json::impl {
 	struct IteratorRange {
 		First first{};
 		Last last{};
+		First class_first{};
+
 		static constexpr bool is_trusted_input = IsUnCheckedInput;
 		using CharT = daw::remove_cvref_t<decltype( *first )>;
 
@@ -79,7 +81,8 @@ namespace daw::json::impl {
 
 		constexpr IteratorRange( First f, Last l ) noexcept
 		  : first( f )
-		  , last( l ) {}
+		  , last( l )
+		  , class_first( f ) {}
 
 		[[nodiscard]] constexpr bool empty( ) const noexcept {
 			return first == last;
@@ -175,6 +178,10 @@ namespace daw::json::impl {
 		}
 
 		[[nodiscard]] constexpr First begin( ) const noexcept {
+			return first;
+		}
+
+		[[nodiscard]] constexpr First data( ) const noexcept {
 			return first;
 		}
 

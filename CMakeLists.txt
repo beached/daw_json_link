@@ -173,13 +173,13 @@ target_link_libraries(coords_test2_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_
 #add_test( NAME coords_test2 COMMAND coords_test2_bin)
 add_dependencies(full coords_test2_bin)
 
-add_executable(nativejson_bench_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test.h ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/canada_test.h ${TEST_FOLDER}/nativejson_bench.cpp)
+add_executable(nativejson_bench_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test.h ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/geojson.h ${TEST_FOLDER}/nativejson_bench.cpp)
 add_dependencies(nativejson_bench_bin dependency_stub)
 target_link_libraries(nativejson_bench_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 add_test(NAME nativejson_bench COMMAND nativejson_bench_bin ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_bench_bin)
 
-add_executable(nativejson_bench_basic_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test.h ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/canada_test.h ${TEST_FOLDER}/nativejson_bench_basic.cpp)
+add_executable(nativejson_bench_basic_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test.h ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/geojson.h ${TEST_FOLDER}/nativejson_bench_basic.cpp)
 add_dependencies(nativejson_bench_basic_bin dependency_stub)
 target_link_libraries(nativejson_bench_basic_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 add_test(NAME nativejson_bench_basic COMMAND nativejson_bench_basic_bin ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
@@ -209,13 +209,13 @@ target_link_libraries(twitter_test_basic_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_T
 add_test(NAME twitter_test_basic COMMAND twitter_test_basic_bin ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full twitter_test_basic_bin)
 
-add_executable(canada_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/canada_test.h ${TEST_FOLDER}/canada_test.cpp)
+add_executable(canada_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/geojson.h ${TEST_FOLDER}/canada_test.cpp)
 add_dependencies(canada_test_bin dependency_stub)
 target_link_libraries(canada_test_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 add_test(NAME canada_test COMMAND canada_test_bin ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full canada_test_bin)
 
-add_executable(canada_test_basic_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/canada_test.h ${TEST_FOLDER}/canada_test_basic.cpp)
+add_executable(canada_test_basic_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/geojson.h ${TEST_FOLDER}/canada_test_basic.cpp)
 add_dependencies(canada_test_basic_bin dependency_stub)
 target_link_libraries(canada_test_basic_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 add_test(NAME canada_test_basic COMMAND canada_test_basic_bin ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
@@ -334,6 +334,13 @@ add_executable(cookbook_parsing_individual_members3_test_bin EXCLUDE_FROM_ALL ${
 add_dependencies(cookbook_parsing_individual_members3_test_bin dependency_stub)
 add_test(NAME cookbook_parsing_individual_members3_test COMMAND cookbook_parsing_individual_members3_test_bin ./cookbook_parsing_individual_members3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_parsing_individual_members3_test_bin)
+
+add_executable(cookbook_variant2_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_variant2_test.cpp)
+add_dependencies(cookbook_variant2_test_bin dependency_stub)
+add_test(NAME cookbook_variant2_test COMMAND cookbook_variant2_test_bin ./cookbook_variant2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_variant2_test_bin)
+
+
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
