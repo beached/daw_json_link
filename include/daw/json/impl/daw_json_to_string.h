@@ -421,6 +421,15 @@ namespace daw::json::impl {
 			return it;
 		}
 
+		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
+		[[nodiscard]] constexpr OutputIterator
+		to_string( ParseTag<JsonParseTypes::VariantTagged>, OutputIterator it,
+		           parse_to_t const &value ) {
+
+			to_variant_string<0, JsonMember>( it, value );
+			return it;
+		}
+
 		template<typename T>
 		constexpr auto deref_detect( T &&value ) noexcept -> decltype( *value );
 
@@ -712,6 +721,40 @@ namespace daw::json::impl {
 			it = to_string<JsonMember>( ParseTag<JsonMember::expected_type>{},
 			                            daw::move( it ), value );
 			return it;
+		}
+
+		template<typename JsonMember>
+		using tag_member_t = typename JsonMember::tag_member;
+
+		template<typename JsonMember>
+		inline constexpr bool has_tag_member_v =
+		  daw::is_detected_v<tag_member_t, JsonMember>;
+
+		template<size_t pos, typename JsonMember, typename OutputIterator,
+		         typename Value, typename VisitedMembers>
+		constexpr void tags_to_json_str( bool &is_first, OutputIterator it,
+		                                 Value const &v,
+		                                 VisitedMembers &visited_members ) {
+			if constexpr( has_tag_member_v<JsonMember> ) {
+				using tag_member = tag_member_t<JsonMember>;
+				constexpr auto tag_member_name = daw::string_view( tag_member::name );
+				if( daw::algorithm::contains( visited_members.begin( ),
+				                              visited_members.end( ),
+				                              tag_member_name ) ) {
+					return;
+				}
+				visited_members.push_back( tag_member_name );
+				if( not is_first ) {
+					*it++ = ',';
+				}
+				is_first = false;
+				*it++ = '"';
+				it = copy_to_iterator<false, EightBitModes::AllowFull>( tag_member_name,
+				                                                        it );
+				it = copy_to_iterator<false, EightBitModes::AllowFull>( "\":", it );
+				it = member_to_string<tag_member>(
+				  daw::move( it ), typename JsonMember::switcher{}( v ) );
+			}
 		}
 
 		template<size_t pos, typename JsonMember, typename OutputIterator,

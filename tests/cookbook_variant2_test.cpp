@@ -38,6 +38,10 @@ namespace daw::cookbook_variant2 {
 		std::variant<std::string, int, bool> value;
 	};
 
+	bool operator==( MyClass const &lhs, MyClass const &rhs ) {
+		return std::tie( lhs.name, lhs.value ) == std::tie( rhs.name, rhs.value );
+	}
+
 	struct MyClassSwitcher {
 		// Convert JSON tag member to type index
 		constexpr size_t operator( )( int type ) const {
@@ -84,8 +88,13 @@ int main( int argc, char **argv ) {
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 	auto json_data = std::string_view( data.data( ), data.size( ) );
 
-	std::vector<daw::cookbook_variant2::MyClass> values =
+	std::vector<daw::cookbook_variant2::MyClass> values1 =
 	  daw::json::from_json_array<daw::cookbook_variant2::MyClass>( json_data );
 
-	std::string json_str = daw::json::to_json_array( values );
+	std::string const json_str = daw::json::to_json_array( values1 );
+
+	std::vector<daw::cookbook_variant2::MyClass> values2 =
+	  daw::json::from_json_array<daw::cookbook_variant2::MyClass>( json_str );
+
+	daw_json_assert( values1 == values2, "Error in round tripping" );
 }

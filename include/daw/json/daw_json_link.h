@@ -64,16 +64,17 @@ namespace daw::json {
 		 * @param args members from C++ class
 		 * @return the OutputIterator it
 		 */
-		template<typename OutputIterator, typename... Args>
+		template<typename OutputIterator, typename Value, typename... Args>
 		[[maybe_unused, nodiscard]] static constexpr OutputIterator
-		serialize( OutputIterator it, std::tuple<Args...> const &args ) {
+		serialize( OutputIterator it, std::tuple<Args...> const &args,
+		           Value const &v ) {
 			static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 			               "Argument count is incorrect" );
 
 			static_assert( ( impl::is_a_json_type_v<JsonMembers> and ... ),
 			               "Only value JSON types can be used" );
 			return impl::serialize_json_class<JsonMembers...>(
-			  it, std::index_sequence_for<Args...>{}, args );
+			  it, std::index_sequence_for<Args...>{}, args, v );
 		}
 
 		/**
@@ -302,9 +303,8 @@ namespace daw::json {
 		using json_elements = JsonElements;
 	};
 
-	template<JSONNAMETYPE Name, typename T, typename TagMember	,
-	         typename Switcher, typename JsonElements, typename Constructor,
-	         JsonNullable Nullable>
+	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
+	         typename JsonElements, typename Constructor, JsonNullable Nullable>
 	struct json_tagged_variant {
 		using i_am_a_json_type = void;
 		static_assert(
@@ -312,10 +312,9 @@ namespace daw::json {
 		                 void>,
 		  "Expected a json_member_list" );
 
-		static_assert(
-		  std::is_same_v<typename TagMember::i_am_a_json_type, void>,
-		  "JSON member types must be passed as "
-		  "TagMember" );
+		static_assert( std::is_same_v<typename TagMember::i_am_a_json_type, void>,
+		               "JSON member types must be passed as "
+		               "TagMember" );
 		using constructor_t = Constructor;
 		using wrapped_type = T;
 		using tag_member = TagMember;
@@ -540,7 +539,7 @@ namespace daw::json {
 		Result result{};
 		(void)impl::json_data_contract_trait_t<JsonClass>::template serialize(
 		  daw::back_inserter( result ),
-		  daw::json::json_data_contract<JsonClass>::to_json_data( value ) );
+		  daw::json::json_data_contract<JsonClass>::to_json_data( value ), value );
 		return result;
 	}
 

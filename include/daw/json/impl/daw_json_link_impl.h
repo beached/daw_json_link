@@ -144,7 +144,6 @@ namespace daw::json {
 namespace daw::json::impl {
 	namespace {
 
-
 		[[nodiscard]] constexpr char const *str_find( char const *p, char c ) {
 			while( *p != c ) {
 				++p;
@@ -173,9 +172,9 @@ namespace daw::json::impl {
 			size_t pos;
 
 			constexpr kv_t( string_t Name, JsonParseTypes Expected, size_t Pos )
-				: name( daw::move( Name ) )
-				, expected_type( Expected )
-				, pos( Pos ) {}
+			  : name( daw::move( Name ) )
+			  , expected_type( Expected )
+			  , pos( Pos ) {}
 		};
 
 		template<size_t N, typename string_t, typename... JsonMembers>
@@ -319,14 +318,22 @@ namespace daw::json::impl {
 		using nth = daw::traits::nth_element<N, JsonMembers...>;
 
 		template<typename... JsonMembers, typename OutputIterator, size_t... Is,
-		         typename Tuple>
+		         typename Tuple, typename Value>
 		[[nodiscard]] constexpr OutputIterator
 		serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
-		                      Tuple const &args ) {
+		                      Tuple const &args, Value const &v ) {
 
 			bool is_first = true;
 			*it++ = '{';
 
+			daw::bounded_vector_t<daw::string_view, sizeof...( JsonMembers ) * 2U>
+			  visited_members{};
+			// Tag Members, if any
+			(void)( ( tags_to_json_str<Is, nth<Is, JsonMembers...>>(
+			            is_first, it, v, visited_members ),
+			          ... ),
+			        0 );
+			// Regular Members
 			(void)( ( to_json_str<Is, nth<Is, JsonMembers...>>( is_first, it, args ),
 			          ... ),
 			        0 );
