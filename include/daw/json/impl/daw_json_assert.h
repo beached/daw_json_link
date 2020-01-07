@@ -55,8 +55,7 @@ inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
 template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] void
-daw_json_error( std::string_view reason ) noexcept( not ShouldThrow ) {
+[[maybe_unused, noreturn]] void daw_json_error( std::string_view reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
 		throw daw::json::json_exception( reason );
@@ -72,9 +71,7 @@ daw_json_error( std::string_view reason ) noexcept( not ShouldThrow ) {
 
 #ifdef DAW_JSON_CHECK_ALWAYS
 template<typename Bool, size_t N>
-static constexpr void daw_json_assert(
-  Bool &&b,
-  char const ( &reason )[N] ) noexcept( not use_daw_json_exceptions_v ) {
+static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
 	if( not static_cast<bool>( b ) ) {
 		daw_json_error( std::string_view( reason ) );
 	}
@@ -90,9 +87,7 @@ static constexpr void daw_json_assert(
 #else // undef DAW_JSON_CHECK_ALWAYS
 #ifndef NDEBUG
 template<typename Bool, size_t N>
-static constexpr void daw_json_assert(
-  Bool &&b,
-  char const ( &reason )[N] ) noexcept( not use_daw_json_exceptions_v ) {
+static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
 	if( not static_cast<bool>( b ) ) {
 		daw_json_error( std::string_view( reason ) );
 	}

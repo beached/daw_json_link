@@ -465,7 +465,7 @@ namespace daw::json {
 		static_assert( impl::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
-		return impl::from_json_member_impl<JsonClass, true>( json_data );
+		return impl::from_json_member_impl<JsonClass, false>( json_data );
 	}
 
 	/***

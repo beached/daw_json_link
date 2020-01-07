@@ -43,6 +43,8 @@ namespace daw::json::impl {
 		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 			if constexpr( JsonMember::literal_as_string ==
 			              LiteralAsStringOpt::Never ) {
+				daw_json_assert( rng.front( ) != '"',
+				                      "Unexpected quote prior to number" );
 				return;
 				// Temporary fix as right now we are only sometimes having strings to
 				// skip
@@ -66,6 +68,7 @@ namespace daw::json::impl {
 			using constructor_t = typename JsonMember::constructor_t;
 			using element_t = typename JsonMember::base_type;
 
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			daw_json_assert_weak(
 			  rng.is_real_number_part( ),
@@ -88,6 +91,7 @@ namespace daw::json::impl {
 			using constructor_t = typename JsonMember::constructor_t;
 			using element_t = typename JsonMember::base_type;
 
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			daw_json_assert_weak(
 			  rng.is_real_number_part( ),
@@ -123,6 +127,7 @@ namespace daw::json::impl {
 			using constructor_t = typename JsonMember::constructor_t;
 			using element_t = typename JsonMember::base_type;
 
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			daw_json_assert_weak(
 			  rng.is_real_number_part( ),
@@ -387,6 +392,7 @@ namespace daw::json::impl {
 		parse_value( ParseTag<JsonParseTypes::Date>,
 		             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			auto str = skip_string( rng );
 			using constructor_t = typename JsonMember::constructor_t;
 			return constructor_t{}( str.begin( ), str.size( ) );

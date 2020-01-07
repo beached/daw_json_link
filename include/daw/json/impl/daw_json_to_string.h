@@ -582,7 +582,8 @@ namespace daw::json::impl {
 			  "value must be convertible to specified type in class contract" );
 
 			return json_data_contract_trait_t<parse_to_t>::serialize(
-			  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ) );
+			  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ),
+			  value );
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -758,10 +759,17 @@ namespace daw::json::impl {
 		}
 
 		template<size_t pos, typename JsonMember, typename OutputIterator,
-		         typename... Args>
+		         typename... Args, typename Value, typename Visited>
 		constexpr void to_json_str( bool &is_first, OutputIterator it,
-		                            std::tuple<Args...> const &tp ) {
-
+		                            std::tuple<Args...> const &tp, Value const &v,
+		                            Visited &visited_members ) {
+			constexpr auto json_member_name = daw::string_view( JsonMember::name );
+			if( daw::algorithm::contains( visited_members.begin( ),
+			                              visited_members.end( ),
+			                              json_member_name ) ) {
+				return;
+			}
+			visited_members.push_back( json_member_name );
 			static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
 			if constexpr( is_json_nullable_v<JsonMember> ) {
 				if( not std::get<pos>( tp ) ) {

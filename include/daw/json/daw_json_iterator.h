@@ -78,7 +78,7 @@ namespace daw::json {
 		// Can do forward iteration and be stored
 		using iterator_category = std::input_iterator_tag;
 
-		constexpr json_array_iterator( ) noexcept = default;
+		constexpr json_array_iterator( ) = default;
 
 		template<typename String,
 		         daw::enable_when_t<not std::is_same_v<
@@ -160,7 +160,7 @@ namespace daw::json {
 		iterator m_last{};
 
 	public:
-		constexpr json_array_range( ) noexcept = default;
+		constexpr json_array_range( ) = default;
 
 		template<typename String,
 		         daw::enable_when_t<not std::is_same_v<

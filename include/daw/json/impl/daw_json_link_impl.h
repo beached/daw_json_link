@@ -52,12 +52,12 @@
 namespace daw::json::impl {
 	namespace {
 		template<typename Result>
-		constexpr Result to_integer( char const c ) noexcept {
+		constexpr Result to_integer( char const c ) {
 			return static_cast<Result>( c - '0' );
 		}
 
 		template<typename Result, size_t count, typename CharT>
-		constexpr Result parse_unsigned( const CharT *digit_str ) noexcept {
+		constexpr Result parse_unsigned( const CharT *digit_str ) {
 			Result result = 0;
 			for( size_t n = 0; n < count; ++n ) {
 				result = static_cast<Result>( ( result << 1 ) + ( result << 3 ) ) +
@@ -155,7 +155,7 @@ namespace daw::json::impl {
 		struct basic_kv_appender {
 			Container *m_container;
 
-			constexpr basic_kv_appender( Container &container ) noexcept
+			constexpr basic_kv_appender( Container &container )
 			  : m_container( &container ) {}
 
 			template<typename Key, typename Value>
@@ -178,7 +178,7 @@ namespace daw::json::impl {
 		};
 
 		template<size_t N, typename string_t, typename... JsonMembers>
-		[[nodiscard]] constexpr kv_t<string_t> get_item( ) noexcept {
+		[[nodiscard]] constexpr kv_t<string_t> get_item( ) {
 			using type_t = traits::nth_type<N, JsonMembers...>;
 			return kv_t<string_t>( type_t::name, type_t::expected_type, N );
 		}
@@ -334,7 +334,8 @@ namespace daw::json::impl {
 			          ... ),
 			        0 );
 			// Regular Members
-			(void)( ( to_json_str<Is, nth<Is, JsonMembers...>>( is_first, it, args ),
+			(void)( ( to_json_str<Is, nth<Is, JsonMembers...>>( is_first, it, args, v,
+			                                                    visited_members ),
 			          ... ),
 			        0 );
 
