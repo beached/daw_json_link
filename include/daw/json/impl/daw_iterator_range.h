@@ -24,8 +24,8 @@
 
 #include "daw_json_assert.h"
 
-#include <daw/daw_parser_helper_sv.h>
-#include <daw/daw_string_view.h>
+#include <daw/cpp_17.h>
+#include <daw/daw_do_n.h>
 
 #include <iterator>
 #include <type_traits>
@@ -51,8 +51,8 @@
 	}                                                                            \
 	while( false )
 #else
-#define skip_comments( )
-#define skip_comments_unchecked( )
+#define skip_comments( ) while( false )
+#define skip_comments_unchecked( ) while( false )
 #endif
 
 namespace daw::json::impl {
@@ -60,6 +60,8 @@ namespace daw::json::impl {
 	struct IteratorRange {
 		First first{};
 		Last last{};
+		First class_first{};
+
 		static constexpr bool is_trusted_input = IsUnCheckedInput;
 		using CharT = daw::remove_cvref_t<decltype( *first )>;
 
@@ -79,7 +81,8 @@ namespace daw::json::impl {
 
 		constexpr IteratorRange( First f, Last l ) noexcept
 		  : first( f )
-		  , last( l ) {}
+		  , last( l )
+		  , class_first( f ) {}
 
 		[[nodiscard]] constexpr bool empty( ) const noexcept {
 			return first == last;
@@ -127,15 +130,15 @@ namespace daw::json::impl {
 			}
 		}
 
-		constexpr void remove_prefix( ) {
+		constexpr void remove_prefix( ) noexcept {
 			++first;
 		}
 
-		constexpr void remove_prefix( size_t n ) {
-			first += static_cast<intmax_t>( n );
+		constexpr void remove_prefix( size_t n ) noexcept {
+			std::advance( first, static_cast<intmax_t>( n ) );
 		}
 
-		constexpr bool is_space( ) const noexcept {
+		constexpr bool is_space( ) const {
 			if constexpr( not IsUnCheckedInput ) {
 				daw_json_assert( has_more( ), "Unexpected end of stream" );
 				switch( *first ) {
@@ -151,7 +154,7 @@ namespace daw::json::impl {
 			}
 		}
 
-		constexpr void trim_left( ) noexcept {
+		constexpr void trim_left( ) {
 			skip_comments( );
 			while( has_more( ) and is_space( ) ) {
 				remove_prefix( );
@@ -159,7 +162,7 @@ namespace daw::json::impl {
 			}
 		}
 
-		constexpr void trim_left_no_check( ) noexcept {
+		constexpr void trim_left_no_check( ) {
 			skip_comments_unchecked( );
 			while( is_space( ) ) {
 				remove_prefix( );
@@ -167,15 +170,18 @@ namespace daw::json::impl {
 			}
 		}
 
-		constexpr void trim_left_raw( ) noexcept {
+		constexpr void trim_left_raw( ) {
 			while( is_space( ) ) {
 				remove_prefix( );
 				daw_json_assert_weak( first != last, "Unexpected end of stream" );
 			}
 		}
 
-
 		[[nodiscard]] constexpr First begin( ) const noexcept {
+			return first;
+		}
+
+		[[nodiscard]] constexpr First data( ) const noexcept {
 			return first;
 		}
 
@@ -187,7 +193,7 @@ namespace daw::json::impl {
 			return not empty( );
 		}
 
-		constexpr void move_to_next_of( char c ) noexcept {
+		constexpr void move_to_next_of( char c ) {
 			skip_comments_unchecked( );
 			daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 			while( front( ) != c ) {
@@ -198,7 +204,7 @@ namespace daw::json::impl {
 		}
 
 		template<size_t N>
-		constexpr void move_to_next_of( char const ( &str )[N] ) noexcept {
+		constexpr void move_to_next_of( char const ( &str )[N] ) {
 			skip_comments_unchecked( );
 			while( not in( str ) ) {
 				daw_json_assert_weak( has_more( ), "Unexpected end of data" );
@@ -207,34 +213,45 @@ namespace daw::json::impl {
 			}
 		}
 
-		[[nodiscard]] constexpr bool in( char c ) const noexcept {
+		[[nodiscard]] constexpr bool in( char c ) const {
 			daw_json_assert_weak( first != nullptr, "Empty or null InteratorRange" );
 			return *first == c;
 		}
 
 		template<size_t N>
 		[[nodiscard]] constexpr bool in( char const ( &set )[N] ) const noexcept {
-			bool result = false;
-			daw::algorithm::do_n_arg<N>(
-			  [&]( size_t n ) { result |= ( set[n] == *first ); } );
-			return result;
+			unsigned result = 0;
+			daw::algorithm::do_n_arg<N>( [&]( size_t n ) {
+				result |= static_cast<unsigned>( set[n] == *first );
+			} );
+			return static_cast<bool>( result );
 		}
 
 		[[nodiscard]] constexpr bool is_real_number_part( ) const noexcept {
-			auto const c = *first;
-			bool b0 =
-			  ( static_cast<unsigned>( c ) - static_cast<unsigned>( '0' ) ) < 10U;
-			bool b1 = c == 'e' or c == 'E';
-			bool b2 = c == '+' or c == '-';
-			return b0 or b1 or b2;
+			if constexpr( IsUnCheckedInput ) {
+				return true;
+			} else {
+				auto const c = *first;
+				auto const b0 = static_cast<unsigned>(
+				  ( static_cast<unsigned>( c ) - static_cast<unsigned>( '0' ) ) < 10U );
+				auto const b1 =
+				  static_cast<unsigned>( c == 'e' ) | static_cast<unsigned>( c == 'E' );
+				auto const b2 =
+				  static_cast<unsigned>( c == '+' ) | static_cast<unsigned>( c == '-' );
+				auto result = static_cast<bool>( b0 | b1 | b2 );
+				return result;
+			}
 		}
 
 		[[nodiscard]] constexpr bool at_end_of_item( ) const noexcept {
 			auto const c = front( );
-			return c == ',' or c == '}' or c == ']' or c == ':' or c <= 0x20;
+			return static_cast<bool>(
+			  static_cast<unsigned>( c == ',' ) | static_cast<unsigned>( c == '}' ) |
+			  static_cast<unsigned>( c == ']' ) | static_cast<unsigned>( c == ':' ) |
+			  static_cast<unsigned>( c <= 0x20 ) );
 		}
 
-		constexpr void clean_tail( ) noexcept {
+		constexpr void clean_tail( ) {
 			// trim_left
 			while( has_more( ) and is_space( ) ) {
 				remove_prefix( );

@@ -55,6 +55,7 @@ namespace daw::json {
 	 */
 	template<typename... JsonMembers>
 	struct json_member_list {
+		using i_am_a_json_member_list = void;
 		/**
 		 * Serialize a C++ class to JSON data
 		 * @tparam OutputIterator An output iterator with a char value_type
@@ -63,40 +64,23 @@ namespace daw::json {
 		 * @param args members from C++ class
 		 * @return the OutputIterator it
 		 */
-		template<typename OutputIterator, typename... Args>
+		template<typename OutputIterator, typename Value, typename... Args>
 		[[maybe_unused, nodiscard]] static constexpr OutputIterator
-		serialize( OutputIterator it, std::tuple<Args...> const &args ) {
+		serialize( OutputIterator it, std::tuple<Args...> const &args,
+		           Value const &v ) {
 			static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 			               "Argument count is incorrect" );
 
 			static_assert( ( impl::is_a_json_type_v<JsonMembers> and ... ),
 			               "Only value JSON types can be used" );
 			return impl::serialize_json_class<JsonMembers...>(
-			  it, std::index_sequence_for<Args...>{}, args );
-		}
-
-		/**
-		 * Parse JSON data and construct a C++ class
-		 * @tparam JsonClass The result of parsing json_class
-		 * @tparam IsUnCheckedInput Is the input trusted, less checking is done
-		 * @param sv JSON data to parse
-		 * @return A T object
-		 */
-		template<typename JsonClass, bool IsUnCheckedInput>
-		[[maybe_unused, nodiscard]] static constexpr JsonClass
-		parse( std::string_view sv ) {
-			daw_json_assert_weak( not sv.empty( ), "Cannot parse an empty string" );
-
-			auto rng =
-			  impl::IteratorRange<char const *, char const *, IsUnCheckedInput>(
-			    sv.data( ), sv.data( ) + sv.size( ) );
-			return impl::parse_json_class<JsonClass, JsonMembers...>(
-			  rng, std::index_sequence_for<JsonMembers...>{} );
+			  it, std::index_sequence_for<Args...>{}, args, v );
 		}
 
 		/**
 		 *
-		 * Parse JSON data and construct a C++ class
+		 * Parse JSON data and construct a C++ class.  This is used by parse_value
+		 * to get back into a mode with a JsonMembers...
 		 * @tparam T The result of parsing json_class
 		 * @tparam First type of first iterator in range
 		 * @tparam Last type of last iterator in range
@@ -129,19 +113,20 @@ namespace daw::json {
 		    std::is_same_v<parse_to_t, std::invoke_result_t<Constructor>>,
 		  "Default ctor of constructor must match that of base" );
 		using constructor_t = Constructor;
-		static constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JSONNAMETYPE name = Name;
 
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<impl::number_parse_type_v<base_type>, Nullable>;
 
-		static constexpr JsonParseTypes base_expected_type =
+		static inline constexpr JsonParseTypes base_expected_type =
 		  impl::number_parse_type_v<base_type>;
 
-		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
-		static constexpr JsonRangeCheck range_check = RangeCheck;
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr LiteralAsStringOpt literal_as_string =
+		  LiteralAsString;
+		static inline constexpr JsonRangeCheck range_check = RangeCheck;
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Number;
-		static constexpr SIMDModes simd_mode = SIMDMode;
+		static inline constexpr SIMDModes simd_mode = SIMDMode;
 	};
 
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
@@ -155,13 +140,15 @@ namespace daw::json {
 		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 		using constructor_t = Constructor;
 
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Bool, Nullable>;
-		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Bool;
+		static inline constexpr JsonParseTypes base_expected_type =
+		  JsonParseTypes::Bool;
 
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr LiteralAsStringOpt literal_as_string =
+		  LiteralAsString;
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Bool;
 	};
 
@@ -177,14 +164,14 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::StringRaw, Nullable>;
-		static constexpr JsonParseTypes base_expected_type =
+		static inline constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::StringRaw;
-		static constexpr JsonNullable empty_is_null = EmptyStringNull;
-		static constexpr EightBitModes eight_bit_mode = EightBitMode;
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr JsonNullable empty_is_null = EmptyStringNull;
+		static inline constexpr EightBitModes eight_bit_mode = EightBitMode;
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::String;
 	};
 
@@ -201,14 +188,14 @@ namespace daw::json {
 		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 		using appender_t = Appender;
 
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::StringEscaped, Nullable>;
-		static constexpr JsonParseTypes base_expected_type =
+		static inline constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::StringEscaped;
-		static constexpr JsonNullable empty_is_null = EmptyStringNull;
-		static constexpr EightBitModes eight_bit_mode = EightBitMode;
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr JsonNullable empty_is_null = EmptyStringNull;
+		static inline constexpr EightBitModes eight_bit_mode = EightBitMode;
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::String;
 	};
 
@@ -223,11 +210,12 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor, char const *, size_t>;
 
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Date, Nullable>;
-		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Date;
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr JsonParseTypes base_expected_type =
+		  JsonParseTypes::Date;
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::String;
 	};
 
@@ -241,11 +229,12 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Class, Nullable>;
-		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Class;
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr JsonParseTypes base_expected_type =
+		  JsonParseTypes::Class;
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Class;
 	};
 
@@ -256,13 +245,13 @@ namespace daw::json {
 	 */
 	template<typename... JsonElements>
 	struct json_variant_type_list {
-		using i_am_variant_element_list = void;
+		using i_am_variant_type_list = void;
 		static_assert(
 		  sizeof...( JsonElements ) <= 5U,
 		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
 		using element_map_t =
 		  std::tuple<impl::unnamed_default_type_mapping<JsonElements>...>;
-		static constexpr size_t base_map[5] = {
+		static inline constexpr size_t base_map[5] = {
 		  impl::find_json_element<JsonBaseParseTypes::Number>(
 		    {impl::unnamed_default_type_mapping<
 		      JsonElements>::underlying_json_type...} ),
@@ -280,12 +269,23 @@ namespace daw::json {
 		      JsonElements>::underlying_json_type...} )};
 	};
 
+	/***
+	 * A type to hold the types for parsing tagged variants.
+	 * @tparam JsonElements a list of types that can be parsed,
+	 */
+	template<typename... JsonElements>
+	struct json_tagged_variant_type_list {
+		using i_am_tagged_variant_type_list = void;
+		using element_map_t =
+		  std::tuple<impl::unnamed_default_type_mapping<JsonElements>...>;
+	};
+
 	template<JSONNAMETYPE Name, typename T, typename JsonElements,
 	         typename Constructor, JsonNullable Nullable>
 	struct json_variant {
 		using i_am_a_json_type = void;
 		static_assert(
-		  std::is_same_v<typename JsonElements::i_am_variant_element_list, void>,
+		  std::is_same_v<typename JsonElements::i_am_variant_type_list, void>,
 		  "Expected a json_variant_type_list" );
 		using constructor_t = Constructor;
 		using wrapped_type = T;
@@ -293,12 +293,42 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Variant, Nullable>;
-		static constexpr JsonParseTypes base_expected_type =
+		static inline constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::Variant;
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		  JsonBaseParseTypes::None;
+		using json_elements = JsonElements;
+	};
+
+	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
+	         typename JsonElements, typename Constructor, JsonNullable Nullable>
+	struct json_tagged_variant {
+		using i_am_a_json_type = void;
+		static_assert(
+		  std::is_same_v<typename JsonElements::i_am_tagged_variant_type_list,
+		                 void>,
+		  "Expected a json_member_list" );
+
+		static_assert( std::is_same_v<typename TagMember::i_am_a_json_type, void>,
+		               "JSON member types must be passed as "
+		               "TagMember" );
+		using constructor_t = Constructor;
+		using wrapped_type = T;
+		using tag_member = TagMember;
+		using switcher = Switcher;
+		using base_type = impl::unwrap_type<T, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+		using parse_to_t = T;
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JsonParseTypes expected_type =
+		  get_parse_type_v<JsonParseTypes::VariantTagged, Nullable>;
+		static inline constexpr JsonParseTypes base_expected_type =
+		  JsonParseTypes::VariantTagged;
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::None;
 		using json_elements = JsonElements;
 	};
@@ -316,12 +346,13 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<FromConverter, std::string_view>;
 
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Custom, Nullable>;
-		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Custom;
-		static constexpr CustomJsonTypes custom_json_type = CustomJsonType;
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr JsonParseTypes base_expected_type =
+		  JsonParseTypes::Custom;
+		static inline constexpr CustomJsonTypes custom_json_type = CustomJsonType;
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::String;
 	};
 
@@ -341,14 +372,15 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Array, Nullable>;
-		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Array;
+		static inline constexpr JsonParseTypes base_expected_type =
+		  JsonParseTypes::Array;
 
 		static_assert( json_element_t::name == no_name,
 		               "All elements of json_array must be have no_name" );
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Array;
 	};
 
@@ -375,12 +407,12 @@ namespace daw::json {
 		static_assert( json_key_t::name == no_name,
 		               "Key member name must be the default no_name" );
 
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::KeyValue, Nullable>;
-		static constexpr JsonParseTypes base_expected_type =
+		static inline constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::KeyValue;
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Class;
 	};
 
@@ -410,12 +442,12 @@ namespace daw::json {
 		               "Must supply a valid value member name" );
 		static_assert( json_key_t::name != json_value_t::name,
 		               "Key and Value member names cannot be the same" );
-		static constexpr JSONNAMETYPE name = Name;
-		static constexpr JsonParseTypes expected_type =
+		static inline constexpr JSONNAMETYPE name = Name;
+		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::KeyValueArray, Nullable>;
-		static constexpr JsonParseTypes base_expected_type =
+		static inline constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::KeyValueArray;
-		static constexpr JsonBaseParseTypes underlying_json_type =
+		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Array;
 	};
 
@@ -433,7 +465,7 @@ namespace daw::json {
 		static_assert( impl::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
-		return impl::from_json_impl<JsonClass, false>( json_data );
+		return impl::from_json_member_impl<JsonClass, false>( json_data );
 	}
 
 	/***
@@ -446,28 +478,10 @@ namespace daw::json {
 	 * @return A value reified from the JSON data member
 	 */
 	template<typename JsonMember>
-	[[maybe_unused, nodiscard]] static constexpr auto
+	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( std::string_view json_data, std::string_view member_path ) {
 		return impl::from_json_member_impl<JsonMember, false>( json_data,
 		                                                       member_path );
-	}
-
-	/***
-	 * Parse a JSONMember from the json_data starting at member_path.  This method
-	 * performs less checking than the non-unchecked method
-	 * @tparam JsonMember The type of the item being parsed
-	 * @param json_data JSON string data
-	 * @param member_path A dot separated path of member names, default is the
-	 * root. Array indices are specified with square brackets e.g. [5] is the 6th
-	 * item.
-	 * @return A value reified from the JSON data member
-	 */
-	template<typename JsonMember>
-	[[maybe_unused, nodiscard]] static constexpr auto
-	from_json_unchecked( std::string_view json_data,
-	                     std::string_view member_path ) {
-		return impl::from_json_member_impl<JsonMember, true>( json_data,
-		                                                      member_path );
 	}
 
 	/**
@@ -484,8 +498,25 @@ namespace daw::json {
 		static_assert( impl::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
+		return impl::from_json_member_impl<JsonClass, true>( json_data );
+	}
 
-		return impl::from_json_impl<JsonClass, true>( json_data );
+	/***
+	 * Parse a JSONMember from the json_data starting at member_path.  This method
+	 * performs less checking than the non-unchecked method
+	 * @tparam JsonMember The type of the item being parsed
+	 * @param json_data JSON string data
+	 * @param member_path A dot separated path of member names, default is the
+	 * root. Array indices are specified with square brackets e.g. [5] is the 6th
+	 * item.
+	 * @return A value reified from the JSON data member
+	 */
+	template<typename JsonMember>
+	[[maybe_unused, nodiscard]] constexpr auto
+	from_json_unchecked( std::string_view json_data,
+	                     std::string_view member_path ) {
+		return impl::from_json_member_impl<JsonMember, true>( json_data,
+		                                                      member_path );
 	}
 
 	/**
@@ -508,7 +539,7 @@ namespace daw::json {
 		Result result{};
 		(void)impl::json_data_contract_trait_t<JsonClass>::template serialize(
 		  daw::back_inserter( result ),
-		  daw::json::json_data_contract<JsonClass>::to_json_data( value ) );
+		  daw::json::json_data_contract<JsonClass>::to_json_data( value ), value );
 		return result;
 	}
 
@@ -548,7 +579,8 @@ namespace daw::json {
 	 * @tparam Appender Callable to call with JsonElement
 	 * @param json_data JSON string data containing array
 	 * @param member_path A dot separated path of member names to start parsing
-	 * from. Array indices are specified with square brackets e.g. [5] is the 6th item
+	 * from. Array indices are specified with square brackets e.g. [5] is the 6th
+	 * item
 	 * @return A Container containing parsed data from JSON string
 	 */
 	template<
@@ -578,7 +610,8 @@ namespace daw::json {
 	 * @tparam Appender Callable to call with JsonElement
 	 * @param json_data JSON string data containing array
 	 * @param member_path A dot separated path of member names to start parsing
-	 * from. Array indices are specified with square brackets e.g. [5] is the 6th item
+	 * from. Array indices are specified with square brackets e.g. [5] is the 6th
+	 * item
 	 * @return A Container containing parsed data from JSON string
 	 */
 	template<

@@ -20,10 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "canada_test.h"
 #include "citm_test.h"
-#include "daw/json/daw_json_link.h"
+#include "geojson.h"
 #include "twitter_test.h"
+
+#include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_memory_mapped_file.h>
@@ -65,7 +66,7 @@ int main( int argc, char **argv ) {
 
 	std::optional<daw::twitter::twitter_object_t> twitter_result{};
 	std::optional<daw::citm::citm_object_t> citm_result{};
-	std::optional<daw::canada::canada_object_t> canada_result{};
+	std::optional<daw::geojson::Polygon> canada_result{};
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_twitter bench", json_sv1.size( ),
 	  [&twitter_result]( auto f1 ) {
@@ -135,7 +136,8 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_canada bench", json_sv3.size( ),
 	  [&canada_result]( auto f3 ) {
-		  canada_result = daw::json::from_json<daw::canada::canada_object_t>( f3 );
+		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+		    f3, "features[0].geometry" );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -147,8 +149,8 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<NUMRUNS>(
 	  "nativejson_canada bench trusted", json_sv3.size( ),
 	  [&canada_result]( auto f3 ) {
-		  canada_result =
-		    daw::json::from_json_unchecked<daw::canada::canada_object_t>( f3 );
+		  canada_result = daw::json::from_json_unchecked<daw::geojson::Polygon>(
+		    f3, "features[0].geometry" );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -163,7 +165,8 @@ int main( int argc, char **argv ) {
 		  twitter_result =
 		    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
 		  citm_result = daw::json::from_json<daw::citm::citm_object_t>( f2 );
-		  canada_result = daw::json::from_json<daw::canada::canada_object_t>( f3 );
+		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+		    f3, "features[0].geometry" );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -194,8 +197,8 @@ int main( int argc, char **argv ) {
 		    daw::json::from_json_unchecked<daw::twitter::twitter_object_t>( f1 );
 		  citm_result =
 		    daw::json::from_json_unchecked<daw::citm::citm_object_t>( f2 );
-		  canada_result =
-		    daw::json::from_json_unchecked<daw::canada::canada_object_t>( f3 );
+		  canada_result = daw::json::from_json_unchecked<daw::geojson::Polygon>(
+		    f3, "features[0].geometry" );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 

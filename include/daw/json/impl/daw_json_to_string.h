@@ -421,6 +421,15 @@ namespace daw::json::impl {
 			return it;
 		}
 
+		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
+		[[nodiscard]] constexpr OutputIterator
+		to_string( ParseTag<JsonParseTypes::VariantTagged>, OutputIterator it,
+		           parse_to_t const &value ) {
+
+			to_variant_string<0, JsonMember>( it, value );
+			return it;
+		}
+
 		template<typename T>
 		constexpr auto deref_detect( T &&value ) noexcept -> decltype( *value );
 
@@ -573,7 +582,8 @@ namespace daw::json::impl {
 			  "value must be convertible to specified type in class contract" );
 
 			return json_data_contract_trait_t<parse_to_t>::serialize(
-			  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ) );
+			  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ),
+			  value );
 		}
 
 		template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -714,11 +724,57 @@ namespace daw::json::impl {
 			return it;
 		}
 
-		template<size_t pos, typename JsonMember, typename OutputIterator,
-		         typename... Args>
-		constexpr void to_json_str( bool &is_first, OutputIterator it,
-		                            std::tuple<Args...> const &tp ) {
+		template<typename JsonMember>
+		using tag_member_t = typename JsonMember::tag_member;
 
+		template<typename JsonMember>
+		inline constexpr bool has_tag_member_v =
+		  daw::is_detected_v<tag_member_t, JsonMember>;
+		template<size_t, typename JsonMember, typename OutputIterator,
+		         typename Value, typename VisitedMembers,
+		         std::enable_if_t<not has_tag_member_v<JsonMember>,
+		                          std::nullptr_t> = nullptr>
+		constexpr void tags_to_json_str( bool &, OutputIterator const &,
+		                                 Value const &, VisitedMembers const & ) {}
+		template<
+		  size_t pos, typename JsonMember, typename OutputIterator, typename Value,
+		  typename VisitedMembers,
+		  std::enable_if_t<has_tag_member_v<JsonMember>, std::nullptr_t> = nullptr>
+		constexpr void tags_to_json_str( bool &is_first, OutputIterator it,
+		                                 Value const &v,
+		                                 VisitedMembers &visited_members ) {
+			using tag_member = tag_member_t<JsonMember>;
+			constexpr auto tag_member_name = daw::string_view( tag_member::name );
+			if( daw::algorithm::contains( visited_members.begin( ),
+			                              visited_members.end( ),
+			                              tag_member_name ) ) {
+				return;
+			}
+			visited_members.push_back( tag_member_name );
+			if( not is_first ) {
+				*it++ = ',';
+			}
+			is_first = false;
+			*it++ = '"';
+			it = copy_to_iterator<false, EightBitModes::AllowFull>( tag_member_name,
+			                                                        it );
+			it = copy_to_iterator<false, EightBitModes::AllowFull>( "\":", it );
+			it = member_to_string<tag_member>( daw::move( it ),
+			                                   typename JsonMember::switcher{}( v ) );
+		}
+
+		template<size_t pos, typename JsonMember, typename OutputIterator,
+		         typename... Args, typename Value, typename Visited>
+		constexpr void to_json_str( bool &is_first, OutputIterator it,
+		                            std::tuple<Args...> const &tp, Value const &v,
+		                            Visited &visited_members ) {
+			constexpr auto json_member_name = daw::string_view( JsonMember::name );
+			if( daw::algorithm::contains( visited_members.begin( ),
+			                              visited_members.end( ),
+			                              json_member_name ) ) {
+				return;
+			}
+			visited_members.push_back( json_member_name );
 			static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
 			if constexpr( is_json_nullable_v<JsonMember> ) {
 				if( not std::get<pos>( tp ) ) {

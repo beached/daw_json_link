@@ -23,6 +23,7 @@
 #pragma once
 
 #include "daw_json_link_impl.h"
+#include "daw_json_parse_name.h"
 
 #include <daw/daw_utility.h>
 
@@ -318,8 +319,21 @@ namespace daw::json {
 			            std::conditional_t<
 			              daw::traits::is_string_v<T>, json_string<Name, T>,
 			              daw::json::missing_json_data_contract_for<T>>>>>>>>;
-		}
-	} // namespace impl
+
+			template<typename JsonMember, bool IsUnCheckedInput>
+			[[maybe_unused, nodiscard]] constexpr auto
+			from_json_member_impl( std::string_view json_data ) {
+				using json_member = unnamed_default_type_mapping<JsonMember>;
+				auto rng = IteratorRange<char const *, char const *, IsUnCheckedInput>(
+				  json_data.data( ),
+				  json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
+
+				return impl::parse_value<json_member>(
+				  ParseTag<json_member::expected_type>{}, rng );
+			}
+
+		} // namespace
+	}   // namespace impl
 
 	/** Link to a JSON array
 	 * @tparam Name name of JSON member to link to
@@ -510,8 +524,7 @@ namespace daw::json {
 	 * type(including their specialized keyvalue mappings) or
 	 * string-enum/int-enum.
 	 * @tparam Name name of JSON member to link to
-	 * @tparam T type that has specialization of
-	 * daw::json::json_data_contract
+	 * @tparam T type of value to construct
 	 * @tparam JsonElements a json_variant_type_list
 	 * @tparam Constructor A callable used to construct T.  The
 	 * default supports normal and aggregate construction
@@ -521,6 +534,24 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<T>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_variant;
+
+	/***
+	 * Link to a variant like data type that is discriminated via another member.
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T type of value to construct
+	 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
+	 * declared in member list
+	 * @tparam Switcher A callable that returns an index into JsonElements when
+	 * passed the TagMember object in parent member list
+	 * @tparam JsonElements a json_tagged_variant_type_list
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 * @tparam Nullable Can the member be missing or have a null value	 *
+	 */
+	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
+	         typename JsonElements, typename Constructor = daw::construct_a_t<T>,
+	         JsonNullable Nullable = JsonNullable::Never>
+	struct json_tagged_variant;
 
 	/***
 	 * Link to a nullable JSON variant
@@ -538,8 +569,9 @@ namespace daw::json {
 
 	namespace impl {
 		namespace {
+
 			template<typename JsonMember, bool IsUnCheckedInput>
-			[[maybe_unused, nodiscard]] static constexpr auto
+			[[maybe_unused, nodiscard]] constexpr auto
 			from_json_member_impl( std::string_view json_data,
 			                       std::string_view member_path ) {
 				using json_member = unnamed_default_type_mapping<JsonMember>;

@@ -27,10 +27,12 @@
 #include "daw_json_parse_literal_end.h"
 #include "daw_json_parse_string_quote.h"
 
+#include <daw/daw_parser_helper_sv.h>
+#include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
-#include <iterator>
 
 #include <cstddef>
+#include <iterator>
 
 namespace daw::json {
 	template<typename>
@@ -199,6 +201,10 @@ namespace daw::json {
 
 	template<JSONNAMETYPE n>
 	inline constexpr bool is_no_name = ( n == no_name );
+
+	constexpr char const *as_cstr( JSONNAMETYPE const &n ) {
+		return n.begin( );
+	}
 #else
 #define JSONNAMETYPE char const *
 	// Convienience for array members that are required to be unnamed
@@ -214,16 +220,8 @@ namespace daw::json {
 	  is_no_name = daw::string_view( n ) == daw::string_view( "" );
 #endif
 
-	template<typename T, typename First, typename Last, bool IsUnCheckedInput>
-	[[maybe_unused, nodiscard]] static constexpr T from_json(
-	  daw::json::impl::IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		static_assert( impl::has_json_data_contract_trait_v<T>,
-		               "Missing daw::json::daata_contract_trait for your type." );
-		daw_json_assert_weak( rng.has_more( ), "Attempt to parse empty string" );
-
-		T result = impl::json_data_contract_trait_t<T>::template parse<T>( rng );
-		rng.trim_left( );
-		return result;
+	constexpr char const *as_cstr( JSONNAMETYPE ptr ) {
+		return ptr;
 	}
 
 	enum class JsonParseTypes : uint_fast8_t {
@@ -240,7 +238,8 @@ namespace daw::json {
 		KeyValue,
 		KeyValueArray,
 		Custom,
-		Variant
+		Variant,
+		VariantTagged
 	};
 
 	enum class JsonBaseParseTypes : uint_fast8_t {
@@ -488,5 +487,6 @@ namespace daw::json::impl {
 				std::terminate( );
 			}
 		}
+
 	} // namespace
 } // namespace daw::json::impl

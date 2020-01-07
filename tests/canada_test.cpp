@@ -20,7 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "canada_test.h"
+#include "geojson.h"
+
 #include "daw/json/daw_json_link.h"
 
 #include <daw/cpp_17.h>
@@ -64,11 +65,12 @@ int main( int argc, char **argv ) {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	std::optional<daw::canada::canada_object_t> canada_result;
+	std::optional<daw::geojson::Polygon> canada_result;
 	daw::bench_n_test_mbs<100>(
 	  "canada bench", sz,
 	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<daw::canada::canada_object_t>( f1 );
+		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+		    f1, "features[0].geometry" );
 		  daw::do_not_optimize( canada_result );
 	  },
 	  json_sv1 );
@@ -90,7 +92,7 @@ int main( int argc, char **argv ) {
 	daw_json_assert( str, "Expected a string value" );
 	daw::do_not_optimize( *str );
 	auto const canada_result2 =
-	  daw::json::from_json<daw::canada::canada_object_t>( *str );
+	  daw::json::from_json<daw::geojson::Polygon>( *str );
 	daw::do_not_optimize( canada_result2 );
 	// Removing for now as it will do a float compare and fail
 	/*

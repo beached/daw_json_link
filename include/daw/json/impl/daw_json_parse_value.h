@@ -25,7 +25,6 @@
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_array_iterator.h"
-#include "daw_json_parse_common.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_real.h"
 #include "daw_json_parse_string_quote.h"
@@ -34,6 +33,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <tuple>
 
 namespace daw::json::impl {
 	namespace {
@@ -43,6 +43,8 @@ namespace daw::json::impl {
 		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 			if constexpr( JsonMember::literal_as_string ==
 			              LiteralAsStringOpt::Never ) {
+				daw_json_assert( rng.front( ) != '"',
+				                 "Unexpected quote prior to number" );
 				return;
 				// Temporary fix as right now we are only sometimes having strings to
 				// skip
@@ -66,6 +68,7 @@ namespace daw::json::impl {
 			using constructor_t = typename JsonMember::constructor_t;
 			using element_t = typename JsonMember::base_type;
 
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			daw_json_assert_weak(
 			  rng.is_real_number_part( ),
@@ -88,6 +91,7 @@ namespace daw::json::impl {
 			using constructor_t = typename JsonMember::constructor_t;
 			using element_t = typename JsonMember::base_type;
 
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			daw_json_assert_weak(
 			  rng.is_real_number_part( ),
@@ -123,6 +127,7 @@ namespace daw::json::impl {
 			using constructor_t = typename JsonMember::constructor_t;
 			using element_t = typename JsonMember::base_type;
 
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			daw_json_assert_weak(
 			  rng.is_real_number_part( ),
@@ -387,6 +392,7 @@ namespace daw::json::impl {
 		parse_value( ParseTag<JsonParseTypes::Date>,
 		             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			auto str = skip_string( rng );
 			using constructor_t = typename JsonMember::constructor_t;
 			return constructor_t{}( str.begin( ), str.size( ) );
@@ -414,7 +420,13 @@ namespace daw::json::impl {
 		             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
 			using element_t = typename JsonMember::base_type;
-			return from_json<element_t>( rng );
+			daw_json_assert_weak( rng.has_more( ), "Attempt to parse empty string" );
+
+			element_t result =
+			  impl::json_data_contract_trait_t<element_t>::template parse<element_t>(
+			    rng );
+			rng.trim_left( );
+			return result;
 		}
 		/**
 		 * Parse a key_value pair encoded as a json object where the keys are the
@@ -627,6 +639,43 @@ namespace daw::json::impl {
 				  rng );
 			}
 			daw_json_error( "Unexcepted data at start of json member" );
+		}
+
+		template<typename Result, typename TypeList, size_t pos = 0, typename Rng>
+		constexpr Result parse_visit( size_t idx, Rng &rng ) {
+			if constexpr( pos < std::tuple_size_v<TypeList> ) {
+				if( idx == pos ) {
+					using JsonMember = std::tuple_element_t<pos, TypeList>;
+					return {parse_value<JsonMember>(
+					  ParseTag<JsonMember::expected_type>{}, rng )};
+				}
+				if constexpr( pos + 1 < std::tuple_size_v<TypeList> ) {
+					return parse_visit<Result, TypeList, pos + 1>( idx, rng );
+				} else {
+					std::abort( );
+				}
+			} else {
+				std::abort( );
+			}
+		}
+
+		template<typename JsonMember, typename First, typename Last,
+		         bool IsUnCheckedInput>
+		[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
+		parse_value( ParseTag<JsonParseTypes::VariantTagged>,
+		             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+
+			using tag_member = typename JsonMember::tag_member;
+			auto [is_found, rng2] = find_range<IsUnCheckedInput>(
+			  daw::string_view( rng.class_first, rng.last ),
+			  daw::string_view( as_cstr( tag_member::name ) ) );
+			daw_json_assert( is_found, "Tag Member is manditory" );
+			auto index = typename JsonMember::switcher{}( parse_value<tag_member>(
+			  ParseTag<tag_member::expected_type>{}, rng2 ) );
+
+			return parse_visit<json_result<JsonMember>,
+			                   typename JsonMember::json_elements::element_map_t>(
+			  index, rng );
 		}
 	} // namespace
 } // namespace daw::json::impl

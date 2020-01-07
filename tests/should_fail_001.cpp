@@ -217,7 +217,8 @@ namespace tests {
 	while( not static_cast<bool>( Bool ) ) {                                     \
 		std::cerr << "Fail: " << Reason << '\n';                                   \
 		exit( 1 );                                                                 \
-	}
+	}                                                                            \
+	while( false )
 
 int main( ) {
 	expect_fail( tests::quotes_in_numbers( ),
