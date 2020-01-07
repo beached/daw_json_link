@@ -269,17 +269,6 @@ namespace daw::json {
 		      JsonElements>::underlying_json_type...} )};
 	};
 
-	/***
-	 * A type to hold the types for parsing tagged variants.
-	 * @tparam JsonElements a list of types that can be parsed,
-	 */
-	template<typename... JsonElements>
-	struct json_tagged_variant_type_list {
-		using i_am_tagged_variant_type_list = void;
-		using element_map_t =
-		  std::tuple<impl::unnamed_default_type_mapping<JsonElements>...>;
-	};
-
 	template<JSONNAMETYPE Name, typename T, typename JsonElements,
 	         typename Constructor, JsonNullable Nullable>
 	struct json_variant {

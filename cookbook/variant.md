@@ -102,8 +102,7 @@ struct daw::json::json_data_contract<MyClass> {
       "value", 
       std::variant<std::string, int, bool>,
       json_number<"type", int>,
-      MyClassSwitcher,
-      json_tagged_variant_type_list<std::string, int, bool>>
+      MyClassSwitcher>
     >;
 
   static constexpr inline to_json_data( MyClass const & v ) {
