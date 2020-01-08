@@ -29,7 +29,9 @@
 #if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
          defined( _CPPUNWIND ) )
 // account for no exceptions -fno-exceptions
+#ifdef DAW_USE_JSON_EXCEPTIONS
 #undef DAW_USE_JSON_EXCEPTIONS
+#endif
 #endif
 
 namespace daw::json {
@@ -69,7 +71,7 @@ template<bool ShouldThrow = use_daw_json_exceptions_v>
 #endif
 }
 
-#ifdef DAW_JSON_CHECK_ALWAYS
+#ifndef DAW_JSON_CHECK_DEBUG_ONLY
 template<typename Bool, size_t N>
 static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
 	if( not static_cast<bool>( b ) ) {
@@ -84,7 +86,7 @@ static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
 		}                                                                          \
 	} while( false )
 
-#else // undef DAW_JSON_CHECK_ALWAYS
+#else // undef DAW_JSON_CHECK_DEBUG_ONLY
 #ifndef NDEBUG
 template<typename Bool, size_t N>
 static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {

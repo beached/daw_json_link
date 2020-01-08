@@ -105,7 +105,7 @@ struct daw::json::json_data_contract<MyClass> {
       MyClassSwitcher>
     >;
 
-  static constexpr inline to_json_data( MyClass const & v ) {
+  static constexpr to_json_data( MyClass const & v ) {
     return std::forward_as_tuple( v.name, v.value );
   }
 };
