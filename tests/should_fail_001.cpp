@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 // Ensure that we are always checking
-#ifdef DAW_JSON_CHECK_DEBUG_ONLY
+#ifndef DAW_JSON_CHECK_DEBUG_ONLY
 #define DAW_JSON_CHECK_DEBUG_ONLY
 #endif
 

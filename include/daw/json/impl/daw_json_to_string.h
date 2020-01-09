@@ -24,6 +24,7 @@
 
 #include "daw_json_parse_common.h"
 
+#include <daw/daw_algorithm.h>
 #include <daw/daw_traits.h>
 #include <daw/iso8601/daw_date_formatting.h>
 #include <utf8/unchecked.h>
