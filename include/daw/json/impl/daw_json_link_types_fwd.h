@@ -320,6 +320,11 @@ namespace daw::json {
 			              daw::traits::is_string_v<T>, json_string<Name, T>,
 			              daw::json::missing_json_data_contract_for<T>>>>>>>>;
 
+			template<typename T>
+			using has_unnamed_default_type_mapping = daw::not_trait<
+			  std::is_same<unnamed_default_type_mapping<T>,
+			               daw::json::missing_json_data_contract_for<T>>>;
+
 			template<typename JsonMember, bool IsUnCheckedInput>
 			[[maybe_unused, nodiscard]] constexpr auto
 			from_json_member_impl( std::string_view json_data ) {
@@ -334,6 +339,17 @@ namespace daw::json {
 
 		} // namespace
 	}   // namespace impl
+
+	/***
+	 * A type to hold the types for parsing tagged variants.
+	 * @tparam JsonElements a list of types that can be parsed,
+	 */
+	template<typename... JsonElements>
+	struct json_tagged_variant_type_list {
+		using i_am_tagged_variant_type_list = void;
+		using element_map_t =
+		  std::tuple<impl::unnamed_default_type_mapping<JsonElements>...>;
+	};
 
 	/** Link to a JSON array
 	 * @tparam Name name of JSON member to link to
@@ -536,24 +552,6 @@ namespace daw::json {
 	struct json_variant;
 
 	/***
-	 * Link to a variant like data type that is discriminated via another member.
-	 * @tparam Name name of JSON member to link to
-	 * @tparam T type of value to construct
-	 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
-	 * declared in member list
-	 * @tparam Switcher A callable that returns an index into JsonElements when
-	 * passed the TagMember object in parent member list
-	 * @tparam JsonElements a json_tagged_variant_type_list
-	 * @tparam Constructor A callable used to construct T.  The
-	 * default supports normal and aggregate construction
-	 * @tparam Nullable Can the member be missing or have a null value	 *
-	 */
-	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
-	         typename JsonElements, typename Constructor = daw::construct_a_t<T>,
-	         JsonNullable Nullable = JsonNullable::Never>
-	struct json_tagged_variant;
-
-	/***
 	 * Link to a nullable JSON variant
 	 * @tparam Name name of JSON member to link to
 	 * @tparam T type that has specialization of
@@ -566,6 +564,72 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<T>>
 	using json_variant_null =
 	  json_variant<Name, T, JsonElements, Constructor, JsonNullable::Nullable>;
+
+	namespace impl {
+		template<typename T>
+		struct unknown_variant_type {
+			using i_am_tagged_variant_type_list = void;
+		};
+
+		template<typename... Ts>
+		struct missing_default_type_mapping {
+			using i_am_tagged_variant_type_list = void;
+		};
+
+		template<typename... Ts>
+		constexpr std::conditional_t<
+		  std::conjunction_v<has_unnamed_default_type_mapping<Ts>...>,
+		  json_tagged_variant_type_list<unnamed_default_type_mapping<Ts>...>,
+		  missing_default_type_mapping<unnamed_default_type_mapping<Ts>...>>
+		get_variant_type_list( std::variant<Ts...> const * );
+
+		template<typename T>
+		constexpr unknown_variant_type<T> get_variant_type_list( T const * );
+
+		template<typename Variant>
+		using determine_variant_element_types = std::remove_reference_t<decltype(
+		  get_variant_type_list( std::declval<Variant const *>( ) ) )>;
+	} // namespace impl
+
+	/***
+	 * Link to a variant like data type that is discriminated via another member.
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T type of value to construct
+	 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
+	 * declared in member list
+	 * @tparam Switcher A callable that returns an index into JsonElements when
+	 * passed the TagMember object in parent member list
+	 * @tparam JsonElements a json_tagged_variant_type_list, defaults to type
+	 * elements of T when T is a std::variant and they are all auto mappable
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 * @tparam Nullable Can the member be missing or have a null value	 *
+	 */
+	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
+	         typename JsonElements = impl::determine_variant_element_types<T>,
+	         typename Constructor = daw::construct_a_t<T>,
+	         JsonNullable Nullable = JsonNullable::Never>
+	struct json_tagged_variant;
+
+	/***
+	 * Link to a nullable variant like data type that is discriminated via another member.
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T type of value to construct
+	 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
+	 * declared in member list
+	 * @tparam Switcher A callable that returns an index into JsonElements when
+	 * passed the TagMember object in parent member list
+	 * @tparam JsonElements a json_tagged_variant_type_list, defaults to type
+	 * elements of T when T is a std::variant and they are all auto mappable
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 */
+	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
+	         typename JsonElements = impl::determine_variant_element_types<T>,
+	         typename Constructor = daw::construct_a_t<T>>
+	using json_tagged_variant_null =
+	  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements, Constructor,
+	                      JsonNullable::Nullable>;
 
 	namespace impl {
 		namespace {

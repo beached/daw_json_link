@@ -643,18 +643,15 @@ namespace daw::json::impl {
 
 		template<typename Result, typename TypeList, size_t pos = 0, typename Rng>
 		constexpr Result parse_visit( size_t idx, Rng &rng ) {
-			if constexpr( pos < std::tuple_size_v<TypeList> ) {
-				if( idx == pos ) {
-					using JsonMember = std::tuple_element_t<pos, TypeList>;
-					return {parse_value<JsonMember>(
-					  ParseTag<JsonMember::expected_type>{}, rng )};
-				}
-				if constexpr( pos + 1 < std::tuple_size_v<TypeList> ) {
-					return parse_visit<Result, TypeList, pos + 1>( idx, rng );
-				} else {
-					std::abort( );
-				}
+			if( idx == pos ) {
+				using JsonMember = std::tuple_element_t<pos, TypeList>;
+				return {parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+				                                 rng )};
+			}
+			if constexpr( pos + 1 < std::tuple_size_v<TypeList> ) {
+				return parse_visit<Result, TypeList, pos + 1>( idx, rng );
 			} else {
+				// Should never happen
 				std::abort( );
 			}
 		}

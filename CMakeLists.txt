@@ -14,10 +14,10 @@ include_directories("./include")
 set(DAW_JSON_DONT_USE_EXCEPTIONS OFF CACHE STRING "Don't throw exceptions when json errors occur")
 if (DAW_JSON_DONT_USE_EXCEPTIONS)
     if (DAW_JSON_DONT_USE_EXCEPTIONS=OFF)
-        message("DAW_JSON_DONT_USE_EXCEPTIONS=OFF: Errors throw json_exception")
+        message("DAW_USE_JSON_EXCEPTIONS=ON: Errors throw json_exception")
         add_compile_definitions(DAW_USE_JSON_EXCEPTIONS=true)
     else ()
-        message("DAW_JSON_DONT_USE_EXCEPTIONS=ON: Errors abort program")
+        message("DAW_USE_JSON_EXCEPTIONSON_DONT_USE_EXCEPTIONS=ON: Errors abort program")
     endif ()
 else ()
     message("DAW_JSON_DONT_USE_EXCEPTIONS=OFF: Errors throw json_exception")
@@ -28,9 +28,9 @@ set(DAW_JSON_CHECK_DEBUG_ONLY OFF CACHE STRING "Only check for json errors in de
 if (DAW_JSON_CHECK_DEBUG_ONLY)
     if (DAW_JSON_CHECK_DEBUG_ONLY=OFF)
         message("DAW_JSON_CHECK_DEBUG_ONLY=OFF: Always checking for valid json")
-        add_compile_definitions(DAW_JSON_CHECK_ALWAYS=true)
     else ()
         message("DAW_JSON_CHECK_DEBUG_ONLY=ON: Only checking for valid json in debug")
+        add_compile_definitions(DAW_JSON_CHECK_DEBUG_ONLY=true)
     endif ()
 else ()
     message("DAW_JSON_CHECK_DEBUG_ONLY=OFF: Always checking for valid json")
@@ -97,23 +97,23 @@ set(SOURCE_FOLDER "src")
 include_directories(${HEADER_FOLDER})
 
 set(HEADER_FILES
-	${HEADER_FOLDER}/daw/json/daw_json_link.h
-	${HEADER_FOLDER}/daw/json/daw_json_iterator.h
-	${HEADER_FOLDER}/daw/json/impl/daw_iterator_range.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_assert.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_link_types_fwd.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_array_iterator.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_common.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_literal_end.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_name.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_real.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_string_quote.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_unsigned_int.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value_fwd.h
-	${HEADER_FOLDER}/daw/json/impl/daw_json_to_string.h
-	${HEADER_FOLDER}/daw/json/impl/daw_truth.h
-)
+        ${HEADER_FOLDER}/daw/json/daw_json_link.h
+        ${HEADER_FOLDER}/daw/json/daw_json_iterator.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_iterator_range.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_assert.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_link_types_fwd.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_array_iterator.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_common.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_literal_end.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_name.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_real.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_string_quote.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_unsigned_int.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value_fwd.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_json_to_string.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_truth.h
+        )
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 add_custom_target(full)
@@ -339,7 +339,6 @@ add_executable(cookbook_variant2_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TES
 add_dependencies(cookbook_variant2_test_bin dependency_stub)
 add_test(NAME cookbook_variant2_test COMMAND cookbook_variant2_test_bin ./cookbook_variant2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_variant2_test_bin)
-
 
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)

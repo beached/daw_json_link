@@ -20,6 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// Ensure that we are always checking
+#ifndef DAW_JSON_CHECK_DEBUG_ONLY
+#define DAW_JSON_CHECK_DEBUG_ONLY
+#endif
+
 #include <daw/json/daw_json_link.h>
 
 #include <iostream>
