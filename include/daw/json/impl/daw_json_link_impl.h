@@ -321,7 +321,7 @@ namespace daw::json::impl {
 		         typename Tuple, typename Value>
 		[[nodiscard]] constexpr OutputIterator
 		serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
-		                      Tuple const &args, Value const &v ) {
+		                      Tuple const &args, Value const &value ) {
 
 			bool is_first = true;
 			*it++ = '{';
@@ -330,12 +330,12 @@ namespace daw::json::impl {
 			  visited_members{};
 			// Tag Members, if any
 			(void)( ( tags_to_json_str<Is, nth<Is, JsonMembers...>>(
-			            is_first, it, v, visited_members ),
+			            is_first, it, value, visited_members ),
 			          ... ),
 			        0 );
 			// Regular Members
-			(void)( ( to_json_str<Is, nth<Is, JsonMembers...>>( is_first, it, args, v,
-			                                                    visited_members ),
+			(void)( ( to_json_str<Is, nth<Is, JsonMembers...>>(
+			            is_first, it, args, value, visited_members ),
 			          ... ),
 			        0 );
 

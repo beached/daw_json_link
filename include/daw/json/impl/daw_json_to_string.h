@@ -767,7 +767,7 @@ namespace daw::json::impl {
 		template<size_t pos, typename JsonMember, typename OutputIterator,
 		         typename... Args, typename Value, typename Visited>
 		constexpr void to_json_str( bool &is_first, OutputIterator it,
-		                            std::tuple<Args...> const &tp, Value const &v,
+		                            std::tuple<Args...> const &tp, Value const &,
 		                            Visited &visited_members ) {
 			constexpr auto json_member_name = daw::string_view( JsonMember::name );
 			if( daw::algorithm::contains( visited_members.begin( ),
