@@ -72,7 +72,7 @@ template<bool ShouldThrow = use_daw_json_exceptions_v>
 
 #ifndef DAW_JSON_CHECK_DEBUG_ONLY
 template<typename Bool>
-static constexpr void daw_json_assert( Bool &&b, std::string_view reason ) {
+static constexpr void daw_json_assert( Bool const &b, std::string_view reason ) {
 	if( not static_cast<bool>( b ) ) {
 		daw_json_error( reason );
 	}
@@ -88,7 +88,7 @@ static constexpr void daw_json_assert( Bool &&b, std::string_view reason ) {
 #else // undef DAW_JSON_CHECK_DEBUG_ONLY
 #ifndef NDEBUG
 template<typename Bool>
-static constexpr void daw_json_assert( Bool &&b, std::string_view reason ) {
+static constexpr void daw_json_assert( Bool const &b, std::string_view reason ) {
 	if( not static_cast<bool>( b ) ) {
 		daw_json_error( reason );
 	}
