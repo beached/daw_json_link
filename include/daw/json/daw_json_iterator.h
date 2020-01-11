@@ -50,11 +50,6 @@ namespace daw::json {
 	template<typename JsonElement, bool IsUnCheckedInput = false,
 	         char separator = ','>
 	class json_array_iterator {
-		impl::IteratorRange<char const *, char const *, IsUnCheckedInput> m_state{
-		  nullptr, nullptr};
-		// This lets us fastpath and just skip n characters
-		mutable intmax_t m_can_skip = -1;
-
 		template<typename String>
 		static constexpr impl::IteratorRange<char const *, char const *,
 		                                     IsUnCheckedInput>
@@ -78,6 +73,13 @@ namespace daw::json {
 		// Can do forward iteration and be stored
 		using iterator_category = std::input_iterator_tag;
 
+	private:
+		// This lets us fastpath and just skip n characters
+		impl::IteratorRange<char const *, char const *, IsUnCheckedInput> m_state{
+		  nullptr, nullptr};
+		mutable difference_type m_can_skip = -1;
+
+	public:
 		constexpr json_array_iterator( ) = default;
 
 		template<typename String,
