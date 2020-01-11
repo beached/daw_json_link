@@ -32,6 +32,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 #if defined( NDEBUG ) and not defined( DEBUG )
 #define NUMRUNS 250
@@ -77,10 +78,14 @@ int main( int argc, char **argv ) {
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( twitter_result );
-		daw_json_assert( twitter_result, "Missing value" );
-		daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-		daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-		                 "Expected values" );
+		daw_json_assert( twitter_result, "Missing value -> twitter_result" );
+		daw_json_assert( twitter_result->statuses.size( ) > 0,
+		                 "Expected values: twitter_result is empty" );
+		daw_json_assert(
+		  twitter_result->statuses.front( ).user.id == 1186275104,
+		  std::string( "Expected values: user_id had wrong value, "
+		               "expected 1186275104.  Got " ) +
+		    std::to_string( twitter_result->statuses.front( ).user.id ) );
 		twitter_result.reset( );
 
 		std::cout << std::flush;
