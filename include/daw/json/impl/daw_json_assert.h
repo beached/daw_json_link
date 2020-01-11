@@ -23,6 +23,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <string_view>
 
 #pragma once
 
@@ -41,7 +42,7 @@ namespace daw::json {
 	public:
 		[[maybe_unused]] json_exception( ) = default;
 		[[maybe_unused]] inline json_exception( std::string_view reason ) noexcept
-		  : m_reason( std::move( reason ) ) {}
+		  : m_reason( reason ) {}
 
 		[[nodiscard, maybe_unused]] std::string const &reason( ) const noexcept {
 			return m_reason;
