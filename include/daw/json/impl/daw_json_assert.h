@@ -23,7 +23,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
-#include <string_view>
 
 #pragma once
 
@@ -37,16 +36,14 @@
 
 namespace daw::json {
 	class json_exception {
-		std::string_view m_reason{};
+		std::string m_reason{};
 
 	public:
-		[[maybe_unused]] constexpr json_exception( ) noexcept = default;
-		[[maybe_unused]] constexpr json_exception(
-		  std::string_view reason ) noexcept
-		  : m_reason( reason ) {}
+		[[maybe_unused]] json_exception( ) = default;
+		[[maybe_unused]] inline json_exception( std::string_view reason ) noexcept
+		  : m_reason( std::move( reason ) ) {}
 
-		[[nodiscard, maybe_unused]] constexpr std::string_view reason( ) const
-		  noexcept {
+		[[nodiscard, maybe_unused]] std::string const &reason( ) const noexcept {
 			return m_reason;
 		}
 	};
@@ -58,10 +55,10 @@ inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
 template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] void daw_json_error( std::string_view reason ) {
+[[maybe_unused, noreturn]] void daw_json_error( std::string reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
-		throw daw::json::json_exception( reason );
+		throw daw::json::json_exception( std::move( reason ) );
 	} else {
 #endif
 		(void)ShouldThrow;
@@ -76,7 +73,7 @@ template<bool ShouldThrow = use_daw_json_exceptions_v>
 template<typename Bool, size_t N>
 static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
 	if( not static_cast<bool>( b ) ) {
-		daw_json_error( std::string_view( reason ) );
+		daw_json_error( std::string( reason ) );
 	}
 }
 
@@ -92,7 +89,7 @@ static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
 template<typename Bool, size_t N>
 static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
 	if( not static_cast<bool>( b ) ) {
-		daw_json_error( std::string_view( reason ) );
+		daw_json_error( std::string( reason ) );
 	}
 }
 
