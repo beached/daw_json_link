@@ -22,6 +22,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 #include <string_view>
 
 #pragma once
@@ -112,3 +113,11 @@ static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
 #endif
 #endif
 #undef DAW_UNLIKELY
+
+namespace daw::json::impl {
+	template<typename String>
+	std::string missing_member_message( String member_name ) {
+		std::string result = "Could not find required class member" + member_name;
+		return result;
+	}
+} // namespace daw::json::impl

@@ -302,7 +302,8 @@ namespace daw::json::impl {
 
 				daw_json_assert_weak( is_json_nullable_v<JsonMember> or
 				                        not loc.is_null( ),
-				                      "Could not find required class member" );
+				                      missing_member_message( JsonMember::name ) );
+
 				if( loc.is_null( ) or
 				    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 
