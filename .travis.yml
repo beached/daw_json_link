@@ -14,16 +14,25 @@ before_install:
 install:
   - sudo apt-get install g++-9 git build-essential
 
+cache:
+  directories:
+    - /usr/local/share/cmake-3.16/
+    - /usr/local/bin/
+
 script:
-  - mkdir cmake_build
-  - cd cmake_build
-  - travis_retry wget --quiet https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2.tar.gz
-  - tar xzf cmake-3.16.2.tar.gz
-  - cd cmake-3.16.2
-  - ./bootstrap
-  - make
-  - sudo make install
-  - cd ..
+  - |
+    if [ ! -f /usr/local/bin/cmake ]; then
+      mkdir cmake_build
+      cd cmake_build
+      travis_retry wget --quiet https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2.tar.gz
+      tar xzf cmake-3.16.2.tar.gz
+      cd cmake-3.16.2
+      ./bootstrap
+      make
+      sudo make install
+      cd ..
+      cd ..
+    fi
   - mkdir build && cd build
   - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
   - cmake --build . --config ${BUILD_TYPE} --target full
