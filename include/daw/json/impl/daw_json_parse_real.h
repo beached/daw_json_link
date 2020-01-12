@@ -29,21 +29,21 @@
 #include <daw/daw_cxmath.h>
 
 namespace daw::json::json_details {
-
 	template<typename Result, SIMDModes SIMDMode = SIMDModes::None,
 	         typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] constexpr Result
 	parse_real( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
-		daw_json_assert_weak( rng.is_real_number_part( ),
+		daw_json_assert_weak( rng.has_more( ) and rng.is_real_number_part( ),
 		                      "Expected a real number" );
-		auto const sign = [&] {
-			if( rng.front( ) == '-' ) {
-				rng.remove_prefix( );
-				return -1;
-			}
-			return 1;
-		}( );
+
+		int sign = 1;
+		if( rng.front( ) == '-' ) {
+			rng.remove_prefix( );
+			sign = -1;
+		} else if( rng.front( ) == '+' ) {
+			rng.remove_prefix( );
+		}
 		daw_json_assert_weak( rng.is_number( ), "Expected a number" );
 		auto const whole_part = static_cast<Result>(
 		  sign *
