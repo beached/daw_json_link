@@ -1,10 +1,11 @@
+arch: arm64
+language: cpp
+
 matrix:
   include:
     - os: linux
     - dist: bionic
-    - arch: arm64
     - sudo: true
-    - language: cpp
 
     - addons:
       apt:
