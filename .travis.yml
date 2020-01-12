@@ -16,14 +16,9 @@ install:
   - |
     sudo apt-get install g++-9 cmake cmake-data git build-essential 
 
-before_script:
-- |
-  cd ${TRAVIS_BUILD_DIR}
-  mkdir build && cd build
-  cmake .. -DCMAKE_CXX_COMPILER=${CXX_COMPILER} -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-
 script:
 - |
+  cmake .. -DCMAKE_CXX_COMPILER=${CXX_COMPILER} -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
   cmake --build --config ${BUILD_TYPE} --target full
 
 notifications:
