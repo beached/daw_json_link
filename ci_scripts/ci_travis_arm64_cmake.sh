@@ -8,12 +8,12 @@ if [ ! -f /usr/local/bin/cmake ];then
   cd cmake_build
 	echo "###################################"
 	echo "cmake build: download"
-  travis_retry wget --quiet https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2.tar.gz
+  wget --quiet https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2.tar.gz
   tar xzf cmake-3.16.2.tar.gz
   cd cmake-3.16.2
 	echo "###################################"
 	echo "cmake build: bootstrap"
-  ./bootstrap
+  ./bootstrap --prefix=${HOME}/cmake_bin
 	echo "###################################"
 	echo "cmake build: make"
   make

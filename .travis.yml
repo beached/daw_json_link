@@ -16,15 +16,14 @@ install:
 
 cache:
   directories:
-    - /usr/local/share/cmake-3.16/
-    - /usr/local/bin/
+    - ${HOME}/cmake_bin/bin/
 
 script:
   - ./ci_scripts/ci_travis_arm64_cmake.sh
   - mkdir build && cd build
-  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-  - cmake --build . --config ${BUILD_TYPE} --target full
-  - ctest -C ${BUILD_TYPE} -j5 -VV
+  - ${HOME}/cmake_bin/bin/cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  - ${HOME}/cmake_bin/bin/cmake --build . --config ${BUILD_TYPE} --target full
+  - ${HOME}/cmake_bin/bin/ctest -C ${BUILD_TYPE} -j5 -VV
 
 notifications:
   email: false
