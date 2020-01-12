@@ -4,8 +4,8 @@ language: cpp
 dist: bionic
 
 env:
-  - BUILD_TYPE=Debug
-  - BUILD_TYPE=Release
+  - BUILD_TYPE=Debug CC=gcc-9 CXX=g++-9
+  - BUILD_TYPE=Release CC=gcc-9 CXX=g++-9
 
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -16,7 +16,7 @@ install:
 
 script:
   - mkdir build && cd build
-  - CC=gcc-9 CXX=g++-9 cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
   - cmake --build . --config ${BUILD_TYPE} --target full
   - ctest -C ${BUILD_TYPE} -j5 -VV
 
