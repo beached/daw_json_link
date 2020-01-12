@@ -2,6 +2,7 @@ dist: bionic
 os: linux
 arch: arm64
 sudo: false
+language: cpp
 
 addons:
   apt:
