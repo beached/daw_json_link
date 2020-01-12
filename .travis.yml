@@ -1,7 +1,7 @@
 dist: bionic
 os: linux
 arch: arm64
-sudo: false
+sudo: true
 language: cpp
 
 addons:
