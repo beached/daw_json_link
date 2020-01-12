@@ -53,6 +53,7 @@ namespace daw::json {
 #endif
 	};
 
+#ifdef DAW_ALLOW_SSE3
 	template<>
 	struct json_data_contract<Number2> {
 #ifdef __cpp_nontype_template_parameter_class
@@ -61,7 +62,8 @@ namespace daw::json {
 		static inline constexpr char const a[] = "a";
 		using type = json_member_list<json_number_sse3<a, float>>;
 #endif
-	};
+#endif
+	}; // namespace daw::json
 } // namespace daw::json
 
 #ifndef NDEBUG
