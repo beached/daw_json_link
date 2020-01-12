@@ -221,6 +221,8 @@ constexpr auto const test_001_t_json_data =
 			"o": 1344,
 			"dte": "2016-12-31T01:02:03.343Z"
 	  })";
+
+#if not defined( __GNUC__ ) and __GNUC__ > 8
 static_assert( daw::json::from_json<int>( test_001_t_json_data, "i" ) == 55,
                "Unexpected value" );
 static_assert( daw::json::from_json_unchecked<int>( test_001_t_json_data,
@@ -228,6 +230,7 @@ static_assert( daw::json::from_json_unchecked<int>( test_001_t_json_data,
                "Unexpected value" );
 static_assert( daw::json::from_json<int>( test_001_t_json_data, "y[2]" ) == 3,
                "Unexpected value" );
+#endif
 
 constexpr char const json_data_array[] =
   R"([
@@ -297,13 +300,13 @@ constexpr char const json_data_array[] =
 
 int main( ) {
 	using namespace daw::json;
-	static_assert( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
-	static_assert( parse_real_test<double>( "5", 5.0 ) );
-	static_assert( parse_real_test<double>( "5.5", 5.5 ) );
-	static_assert( parse_real_test<double>( "5.5e2", 550.0 ) );
-	static_assert( parse_real_test<double>( "5.5e+2", 550.0 ) );
-	static_assert( parse_real_test<double>( "5e2", 500.0 ) );
-	static_assert( parse_real_test<double>( "5.5e+2", 550.0 ) );
+	daw::expecting( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
+	daw::expecting( parse_real_test<double>( "5", 5.0 ) );
+	daw::expecting( parse_real_test<double>( "5.5", 5.5 ) );
+	daw::expecting( parse_real_test<double>( "5.5e2", 550.0 ) );
+	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
+	daw::expecting( parse_real_test<double>( "5e2", 500.0 ) );
+	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
 
 #ifdef _MSC_VER
 #define CX constexpr
