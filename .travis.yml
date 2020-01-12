@@ -1,20 +1,23 @@
-dist: bionic
-os: linux
-arch: arm64
-sudo: true
-language: cpp
+matrix:
+  include:
+    - os: linux
+    - dist: bionic
+    - arch: arm64
+    - sudo: true
+    - language: cpp
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-9
-      - cmake
-      - git
-      - build-essential  
+    - addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-9
+          - cmake
+          - cmake-data
+          - git
+          - build-essential
 
-script:
+before-install:
   - CXX=/usr/bin/g++-9 CC=/usr/bin/gcc-9 cmake .
   - cmake --build .
   - ctest
