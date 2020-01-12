@@ -20,20 +20,7 @@ cache:
     - /usr/local/bin/
 
 script:
-  - |
-    if [ ! -f /usr/local/bin/cmake ]; then
-      ls /usr/local/bin;
-      mkdir cmake_build;
-      cd cmake_build;
-      travis_retry wget --quiet https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2.tar.gz;
-      tar xzf cmake-3.16.2.tar.gz;
-      cd cmake-3.16.2;
-      ./bootstrap;
-      make;
-      sudo make install;
-      cd ..;
-      cd ..;
-    fi
+  - ./ci_scripts/ci_travis_arm64_cmake.sh
   - mkdir build && cd build
   - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
   - cmake --build . --config ${BUILD_TYPE} --target full
