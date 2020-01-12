@@ -1,0 +1,18 @@
+dist: bionic
+os: linux
+arch: arm64
+sudo: false
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-9
+      - cmake
+      - git
+
+script:
+  - CXX=/usr/bin/g++-9 CC=/usr/bin/gcc-9 cmake .
+  - cmake --build .
+  - ctest

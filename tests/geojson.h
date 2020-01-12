@@ -32,43 +32,43 @@
 #include <vector>
 
 namespace daw::geojson {
+	namespace {
+		struct Property {
+			// This is a Map but outside of specific items we do not know the
+			// resulting type
+			std::string_view name;
+		}; // Property
 
-	struct Property {
-		// This is a Map but outside of specific items we do not know the
-		// resulting type
-		std::string_view name;
-	}; // Property
+		struct Polygon {
+			std::string_view type;
+			std::vector<std::vector<std::array<double, 2>>> coordinates;
+		}; // Polygon
 
-	struct Polygon {
-		std::string_view type;
-		std::vector<std::vector<std::array<double, 2>>> coordinates;
-	}; // Polygon
+		struct Feature {
+			std::string_view type;
+			Property properties;
+			Polygon geometry;
+		}; // Feature
 
-	struct Feature {
-		std::string_view type;
-		Property properties;
-		Polygon geometry;
-	}; // Feature
+		struct FeatureCollection {
+			std::string_view type;
+			std::vector<Feature> features;
+		}; // FeatureCollection
 
-	struct FeatureCollection {
-		std::string_view type;
-		std::vector<Feature> features;
-	}; // FeatureCollection
+		template<typename T>
+		struct array_appender {
+			T *ptr;
 
-	template<typename T>
-	struct array_appender {
-		T *ptr;
+			template<size_t N>
+			inline explicit array_appender( std::array<T, N> &ary ) noexcept
+			  : ptr( ary.data( ) ) {}
 
-		template<size_t N>
-		inline explicit array_appender( std::array<T, N> &ary ) noexcept
-		  : ptr( ary.data( ) ) {}
-
-		template<typename U>
-		inline void operator( )( U &&item ) noexcept {
-			*ptr++ = std::forward<U>( item );
-		}
-	};
-
+			template<typename U>
+			inline void operator( )( U &&item ) noexcept {
+				*ptr++ = std::forward<U>( item );
+			}
+		};
+	} // namespace
 } // namespace daw::geojson
 
 namespace daw::json {
