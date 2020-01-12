@@ -1,24 +1,31 @@
 arch: arm64
+os: linux
 language: cpp
+dist: bionic
 
-matrix:
-  include:
-    - os: linux
-    - dist: bionic
-    - sudo: true
+env:
+- CXX_COMPILER=g++-9       BUILD_TYPE=Debug
+- CXX_COMPILER=g++-9       BUILD_TYPE=Release
 
-    - addons:
-      apt:
-        sources:
-          - ubuntu-toolchain-r-test
-        packages:
-          - g++-9
-          - cmake
-          - cmake-data
-          - git
-          - build-essential
+before_install:
+  - |
+    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    sudo apt-get update -qq
 
-before-install:
-  - CXX=/usr/bin/g++-9 CC=/usr/bin/gcc-9 cmake .
-  - cmake --build .
-  - ctest
+install:
+  - |
+    sudo apt-get install g++-9 cmake cmake-data git build-essential libboost-all-dev
+
+before_script:
+- |
+  cd ${TRAVIS_BUILD_DIR}
+  mkdir build && cd build
+  cmake .. -DCMAKE_CXX_COMPILER=${CXX_COMPILER} -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+
+script:
+- |
+  cmake --build --config ${BUILD_TYPE} --target full
+
+notifications:
+  email: false
+
