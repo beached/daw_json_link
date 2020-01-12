@@ -418,12 +418,14 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
-		using json_key_t = json_details::unnamed_default_type_mapping<JsonKeyType, json_details::default_key_name>;
+		using json_key_t = json_details::unnamed_default_type_mapping<
+		  JsonKeyType, json_details::default_key_name>;
 		static_assert( not std::is_same_v<json_key_t, void>,
 		               "Unknown JsonKeyType type." );
-		static_assert( json_key_t::name != no_name,
+		static_assert( daw::string_view( json_key_t::name ) != daw::string_view( no_name ),
 		               "Must supply a valid key member name" );
-		using json_value_t = json_details::unnamed_default_type_mapping<JsonValueType, json_details::default_value_name>;
+		using json_value_t = json_details::unnamed_default_type_mapping<
+		  JsonValueType, json_details::default_value_name>;
 		static_assert( not std::is_same_v<json_value_t, void>,
 		               "Unknown JsonValueType type." );
 		static_assert( json_value_t::name != no_name,
@@ -468,8 +470,8 @@ namespace daw::json {
 	template<typename JsonMember>
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( std::string_view json_data, std::string_view member_path ) {
-		return json_details::from_json_member_impl<JsonMember, false>( json_data,
-		                                                            member_path );
+		return json_details::from_json_member_impl<JsonMember, false>(
+		  json_data, member_path );
 	}
 
 	/**
@@ -504,7 +506,7 @@ namespace daw::json {
 	from_json_unchecked( std::string_view json_data,
 	                     std::string_view member_path ) {
 		return json_details::from_json_member_impl<JsonMember, true>( json_data,
-		                                                           member_path );
+		                                                              member_path );
 	}
 
 	/**
@@ -527,8 +529,9 @@ namespace daw::json {
 		Result result{};
 		(void)
 		  json_details::json_data_contract_trait_t<JsonClass>::template serialize(
-		  daw::back_inserter( result ),
-		  daw::json::json_data_contract<JsonClass>::to_json_data( value ), value );
+		    daw::back_inserter( result ),
+		    daw::json::json_data_contract<JsonClass>::to_json_data( value ),
+		    value );
 		return result;
 	}
 
@@ -587,7 +590,7 @@ namespace daw::json {
 		               "Unknown JsonElement type." );
 
 		return json_details::from_json_array_impl<false, element_type, Container,
-		                                       Constructor, Appender>(
+		                                          Constructor, Appender>(
 		  json_data, member_path );
 	}
 
@@ -619,7 +622,7 @@ namespace daw::json {
 		               "Unknown JsonElement type." );
 
 		return json_details::from_json_array_impl<true, element_type, Container,
-		                                       Constructor, Appender>(
+		                                          Constructor, Appender>(
 		  json_data, member_path );
 	}
 
