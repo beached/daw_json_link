@@ -10,11 +10,20 @@ env:
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
-
+  -
 install:
-  - sudo apt-get install g++-9 cmake cmake-data git build-essential
+  - sudo apt-get install g++-9 git build-essential
 
 script:
+  - mkdir cmake_build
+  - cd cmake_build
+  - travis_retry wget --quiet https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2.tar.gz
+  - tar xzf cmake-3.16.2.tar.gz
+  - cd cmake-3.16.2
+  - ./bootstrap
+  - make
+  - sudo make install
+  - cd ..
   - mkdir build && cd build
   - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
   - cmake --build . --config ${BUILD_TYPE} --target full
