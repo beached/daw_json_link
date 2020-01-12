@@ -62,8 +62,8 @@ namespace daw::json {
 		static inline constexpr char const a[] = "a";
 		using type = json_member_list<json_number_sse3<a, float>>;
 #endif
-#endif
 	}; // namespace daw::json
+#endif
 } // namespace daw::json
 
 #ifndef NDEBUG
