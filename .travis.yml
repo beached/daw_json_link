@@ -17,8 +17,8 @@ install:
 script:
   - mkdir build && cd build
   - cmake .. -DCMAKE_CXX_COMPILER=g++-9 -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-  - cmake --build --config ${BUILD_TYPE} --target full
-  - ctest --config ${BUILD_TYPE}
+  - cmake --build . --config ${BUILD_TYPE} --target full
+  - ctest -C ${BUILD_TYPE} -j5 -VV
 
 notifications:
   email: false
