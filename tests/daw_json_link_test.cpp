@@ -222,7 +222,7 @@ constexpr auto const test_001_t_json_data =
 			"dte": "2016-12-31T01:02:03.343Z"
 	  })";
 
-#if not defined( __GNUC__ ) and __GNUC__ > 8
+#if not defined( __GNUC__ ) or __GNUC__ > 8
 static_assert( daw::json::from_json<int>( test_001_t_json_data, "i" ) == 55,
                "Unexpected value" );
 static_assert( daw::json::from_json_unchecked<int>( test_001_t_json_data,
@@ -311,7 +311,11 @@ int main( ) {
 #ifdef _MSC_VER
 #define CX constexpr
 #else
+#if not defined( __GNUC__ ) or __GNUC__ > 8
 #define CX constexpr
+#else
+#define CX
+#endif
 #endif
 	daw::do_not_optimize( test_001_t_json_data );
 	CX auto data = daw::json::from_json<test_001_t>( test_001_t_json_data );
