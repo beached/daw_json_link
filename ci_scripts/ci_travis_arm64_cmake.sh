@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -f /usr/local/bin/cmake ];then
-	ls /usr/local/bin/
+	find ${HOME}/cmake_bin
 	echo "###################################"
 	echo "cmake build: starting, not in cache"
   mkdir cmake_build
