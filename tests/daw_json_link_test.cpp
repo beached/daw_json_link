@@ -37,9 +37,9 @@
 template<typename Real, bool Trusted = false, size_t N>
 constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
 	auto rng =
-	  daw::json::impl::IteratorRange<char const *, char const *, Trusted>(
+	  daw::json::json_details::IteratorRange<char const *, char const *, Trusted>(
 	    str, str + N );
-	auto res = daw::json::impl::parse_real<Real>( rng );
+	auto res = daw::json::json_details::parse_real<Real>( rng );
 	return not( res < expected or res > expected );
 }
 
@@ -47,9 +47,10 @@ template<typename Unsigned, bool Trusted = false, size_t N>
 constexpr bool parse_unsigned_test( char const ( &str )[N],
                                     Unsigned expected ) {
 	auto tmp =
-	  daw::json::impl::IteratorRange<char const *, char const *, Trusted>(
+	  daw::json::json_details::IteratorRange<char const *, char const *, Trusted>(
 	    str, str + N );
-	return daw::json::impl::parse_unsigned_integer<Unsigned>( tmp ) == expected;
+	return daw::json::json_details::parse_unsigned_integer<Unsigned>( tmp ) ==
+	       expected;
 }
 
 struct test_001_t {

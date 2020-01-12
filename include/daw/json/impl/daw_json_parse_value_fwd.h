@@ -25,90 +25,90 @@
 #include "daw_iterator_range.h"
 #include "daw_json_parse_common.h"
 
-namespace daw::json::impl {
-	namespace {
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::Real>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+namespace daw::json::json_details {
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::Signed>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Real>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::Unsigned>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Signed>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::Null>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Unsigned>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::Bool>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Null>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::StringRaw>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Bool>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::StringEscaped>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::StringRaw>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::Date>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::StringEscaped>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::Custom>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Date>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::Class>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Custom>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::Array>,
-		             IteratorRange<First, Last, IsUnCheckedInput> & );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Class>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::KeyValue>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Array>,
+	             IteratorRange<First, Last, IsUnCheckedInput> & );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::KeyValueArray>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::KeyValue>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
 
-		template<typename JsonMember, typename First, typename Last,
-		         bool IsUnCheckedInput>
-		[[nodiscard]] static constexpr json_result<JsonMember>
-		parse_value( ParseTag<JsonParseTypes::Variant>,
-		             IteratorRange<First, Last, IsUnCheckedInput> &rng );
-	} // namespace
-} // namespace daw::json::impl
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::KeyValueArray>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Variant>,
+	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+
+} // namespace daw::json::json_details

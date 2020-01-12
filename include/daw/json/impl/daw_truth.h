@@ -27,8 +27,9 @@
 
 namespace daw {
 	template<size_t Size, bool Default = false>
-	constexpr auto make_truth_table( std::initializer_list<size_t> set_indices ) {
-		auto result = std::array<bool, Size>{};
+	constexpr std::array<bool, Size>
+	make_truth_table( std::initializer_list<size_t> set_indices ) {
+		std::array<bool, Size> result = {};
 		if constexpr( Default ) {
 			for( size_t n = 0; n < Size; ++n ) {
 				result[n] = Default;

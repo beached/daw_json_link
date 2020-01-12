@@ -51,10 +51,10 @@ namespace daw::json {
 	         char separator = ','>
 	class json_array_iterator {
 		template<typename String>
-		static constexpr impl::IteratorRange<char const *, char const *,
-		                                     IsUnCheckedInput>
+		static constexpr json_details::IteratorRange<char const *, char const *,
+		                                          IsUnCheckedInput>
 		get_range( String &&data, std::string_view member_path ) {
-			auto [is_found, result] = impl::find_range<IsUnCheckedInput>(
+			auto [is_found, result] = json_details::find_range<IsUnCheckedInput>(
 			  std::forward<String>( data ),
 			  {member_path.data( ), member_path.size( )} );
 			daw_json_assert( is_found, "Could not find path to member" );
@@ -63,7 +63,8 @@ namespace daw::json {
 		}
 
 	public:
-		using element_type = impl::unnamed_default_type_mapping<JsonElement>;
+		using element_type =
+		  json_details::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
 		using value_type = typename element_type::parse_to_t;
@@ -75,8 +76,8 @@ namespace daw::json {
 
 	private:
 		// This lets us fastpath and just skip n characters
-		impl::IteratorRange<char const *, char const *, IsUnCheckedInput> m_state{
-		  nullptr, nullptr};
+		json_details::IteratorRange<char const *, char const *, IsUnCheckedInput>
+		  m_state{nullptr, nullptr};
 		mutable difference_type m_can_skip = -1;
 
 	public:
@@ -105,7 +106,7 @@ namespace daw::json {
 			                      "Unexpected end of stream" );
 
 			auto tmp = m_state;
-			auto result = impl::parse_value<element_type>(
+			auto result = json_details::parse_value<element_type>(
 			  ParseTag<element_type::expected_type>{}, tmp );
 
 			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
@@ -119,7 +120,7 @@ namespace daw::json {
 				m_state.first = std::next( m_state.first, m_can_skip );
 				m_can_skip = -1;
 			} else {
-				(void)impl::skip_known_value<element_type>( m_state );
+				(void)json_details::skip_known_value<element_type>( m_state );
 			}
 			m_state.trim_left( );
 			if( m_state.in( separator ) ) {

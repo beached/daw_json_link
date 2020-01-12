@@ -55,7 +55,7 @@
 #define skip_comments_unchecked( ) while( false )
 #endif
 
-namespace daw::json::impl {
+namespace daw::json::json_details {
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	struct IteratorRange {
 		First first{};
@@ -261,5 +261,5 @@ namespace daw::json::impl {
 				trim_left_no_check( );
 			}
 		}
-	}; // namespace daw::json::impl
-} // namespace daw::json::impl
+	}; // namespace daw::json::json_details
+} // namespace daw::json::json_details
