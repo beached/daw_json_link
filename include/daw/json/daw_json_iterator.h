@@ -52,7 +52,7 @@ namespace daw::json {
 	class json_array_iterator {
 		template<typename String>
 		static constexpr json_details::IteratorRange<char const *, char const *,
-		                                          IsUnCheckedInput>
+		                                             IsUnCheckedInput>
 		get_range( String &&data, std::string_view member_path ) {
 			auto [is_found, result] = json_details::find_range<IsUnCheckedInput>(
 			  std::forward<String>( data ),
@@ -136,18 +136,19 @@ namespace daw::json {
 			return tmp;
 		}
 
-		[[nodiscard]] explicit constexpr operator bool( ) const noexcept {
-			return not m_state.is_null( ) and not m_state.front( ']' );
+		[[nodiscard]] explicit constexpr operator bool( ) const {
+			return not m_state.is_null( ) and m_state.has_more( ) and
+				       m_state.front( ) != ']';
 		}
 
 		[[nodiscard]] constexpr bool
-		operator==( json_array_iterator const &rhs ) const noexcept {
+		operator==( json_array_iterator const &rhs ) const {
 			return ( m_state.begin( ) == rhs.m_state.begin( ) ) or
 			       ( not( *this ) and not rhs );
 		}
 
 		[[nodiscard]] constexpr bool
-		operator!=( json_array_iterator const &rhs ) const noexcept {
+		operator!=( json_array_iterator const &rhs ) const {
 			return not( *this == rhs );
 		}
 	};
@@ -171,11 +172,11 @@ namespace daw::json {
 		constexpr json_array_range( String &&jd, std::string_view start_path = "" )
 		  : m_first( std::forward<String>( jd ), start_path ) {}
 
-		[[nodiscard]] constexpr iterator begin( ) noexcept {
+		[[nodiscard]] constexpr iterator begin( ) {
 			return m_first;
 		}
 
-		[[nodiscard]] constexpr iterator end( ) noexcept {
+		[[nodiscard]] constexpr iterator end( ) {
 			return m_last;
 		}
 

@@ -124,6 +124,8 @@ namespace daw::json::json_details {
 		[[nodiscard]] constexpr bool is_null( ) const {
 			if constexpr( std::is_pointer_v<First> ) {
 				return first == nullptr;
+			} else if constexpr( std::is_convertible_v<First, bool> ) {
+				return static_cast<bool>( first );
 			} else {
 				return false;
 			}
