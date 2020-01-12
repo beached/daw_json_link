@@ -14,7 +14,7 @@ before_install:
 
 install:
   - |
-    sudo apt-get install g++-9 cmake cmake-data git build-essential libboost-all-dev
+    sudo apt-get install g++-9 cmake cmake-data git build-essential 
 
 before_script:
 - |
