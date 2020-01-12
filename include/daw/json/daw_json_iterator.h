@@ -93,8 +93,8 @@ namespace daw::json {
 			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
 			  "StringRaw must be like a string_view" );
-
-			daw_json_assert_weak( m_state.front( ) == '[',
+			m_state.trim_left( );
+			daw_json_assert_weak( m_state.front( '[' ),
 			                      "Arrays are expected to start with a [" );
 
 			m_state.remove_prefix( );
@@ -138,7 +138,7 @@ namespace daw::json {
 
 		[[nodiscard]] explicit constexpr operator bool( ) const {
 			return not m_state.is_null( ) and m_state.has_more( ) and
-				       m_state.front( ) != ']';
+			       m_state.front( ) != ']';
 		}
 
 		[[nodiscard]] constexpr bool
