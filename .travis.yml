@@ -22,6 +22,7 @@ cache:
 script:
   - |
     if [ ! -f /usr/local/bin/cmake ]; then
+      ls /usr/local/bin;
       mkdir cmake_build;
       cd cmake_build;
       travis_retry wget --quiet https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2.tar.gz;
