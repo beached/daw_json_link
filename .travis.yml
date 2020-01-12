@@ -16,7 +16,7 @@ install:
 
 cache:
   directories:
-    - ${HOME}/cmake_bin/bin/
+    - ${HOME}/cmake_bin/
 
 script:
   - ./ci_scripts/ci_travis_arm64_cmake.sh

@@ -422,15 +422,18 @@ namespace daw::json {
 		  JsonKeyType, json_details::default_key_name>;
 		static_assert( not std::is_same_v<json_key_t, void>,
 		               "Unknown JsonKeyType type." );
-		static_assert( daw::string_view( json_key_t::name ) != daw::string_view( no_name ),
+		static_assert( daw::string_view( json_key_t::name ) !=
+		                 daw::string_view( no_name ),
 		               "Must supply a valid key member name" );
 		using json_value_t = json_details::unnamed_default_type_mapping<
 		  JsonValueType, json_details::default_value_name>;
 		static_assert( not std::is_same_v<json_value_t, void>,
 		               "Unknown JsonValueType type." );
-		static_assert( json_value_t::name != no_name,
+		static_assert( daw::string_view( json_value_t::name ) !=
+		                 daw::string_view( no_name ),
 		               "Must supply a valid value member name" );
-		static_assert( json_key_t::name != json_value_t::name,
+		static_assert( daw::string_view( json_key_t::name ) !=
+		                 daw::string_view( json_value_t::name ),
 		               "Key and Value member names cannot be the same" );
 		static inline constexpr JSONNAMETYPE name = Name;
 		static inline constexpr JsonParseTypes expected_type =
