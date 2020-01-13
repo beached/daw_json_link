@@ -55,7 +55,7 @@
 #define skip_comments_unchecked( ) while( false )
 #endif
 
-namespace daw::json::impl {
+namespace daw::json::json_details {
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	struct IteratorRange {
 		First first{};
@@ -77,30 +77,30 @@ namespace daw::json::impl {
 			return true;
 		}
 
-		constexpr IteratorRange( ) noexcept = default;
+		constexpr IteratorRange( ) = default;
 
-		constexpr IteratorRange( First f, Last l ) noexcept
+		constexpr IteratorRange( First f, Last l )
 		  : first( f )
 		  , last( l )
 		  , class_first( f ) {}
 
-		[[nodiscard]] constexpr bool empty( ) const noexcept {
+		[[nodiscard]] constexpr bool empty( ) const {
 			return first == last;
 		}
 
-		[[nodiscard]] constexpr bool has_more( ) const noexcept {
+		[[nodiscard]] constexpr bool has_more( ) const {
 			return first != last;
 		}
 
-		[[nodiscard]] constexpr decltype( auto ) front( ) const noexcept {
+		[[nodiscard]] constexpr decltype( auto ) front( ) const {
 			return *first;
 		}
 
-		[[nodiscard]] constexpr bool front( char c ) const noexcept {
+		[[nodiscard]] constexpr bool front( char c ) const {
 			return first != last and *first == c;
 		}
 
-		[[nodiscard]] constexpr size_t size( ) const noexcept {
+		[[nodiscard]] constexpr size_t size( ) const {
 			return static_cast<size_t>( std::distance( first, last ) );
 		}
 
@@ -110,8 +110,7 @@ namespace daw::json::impl {
 		}
 
 		template<size_t N>
-		[[nodiscard]] constexpr bool front( char const ( &set )[N] ) const
-		  noexcept {
+		[[nodiscard]] constexpr bool front( char const ( &set )[N] ) const {
 			if( empty( ) ) {
 				return false;
 			}
@@ -122,19 +121,21 @@ namespace daw::json::impl {
 			return result;
 		}
 
-		[[nodiscard]] constexpr bool is_null( ) const noexcept {
+		[[nodiscard]] constexpr bool is_null( ) const {
 			if constexpr( std::is_pointer_v<First> ) {
 				return first == nullptr;
+			} else if constexpr( std::is_convertible_v<First, bool> ) {
+				return static_cast<bool>( first );
 			} else {
 				return false;
 			}
 		}
 
-		constexpr void remove_prefix( ) noexcept {
+		constexpr void remove_prefix( ) {
 			++first;
 		}
 
-		constexpr void remove_prefix( size_t n ) noexcept {
+		constexpr void remove_prefix( size_t n ) {
 			std::advance( first, static_cast<intmax_t>( n ) );
 		}
 
@@ -177,19 +178,19 @@ namespace daw::json::impl {
 			}
 		}
 
-		[[nodiscard]] constexpr First begin( ) const noexcept {
+		[[nodiscard]] constexpr First begin( ) const {
 			return first;
 		}
 
-		[[nodiscard]] constexpr First data( ) const noexcept {
+		[[nodiscard]] constexpr First data( ) const {
 			return first;
 		}
 
-		[[nodiscard]] constexpr Last end( ) const noexcept {
+		[[nodiscard]] constexpr Last end( ) const {
 			return last;
 		}
 
-		[[nodiscard]] explicit constexpr operator bool( ) const noexcept {
+		[[nodiscard]] explicit constexpr operator bool( ) const {
 			return not empty( );
 		}
 
@@ -219,7 +220,7 @@ namespace daw::json::impl {
 		}
 
 		template<size_t N>
-		[[nodiscard]] constexpr bool in( char const ( &set )[N] ) const noexcept {
+		[[nodiscard]] constexpr bool in( char const ( &set )[N] ) const {
 			unsigned result = 0;
 			daw::algorithm::do_n_arg<N>( [&]( size_t n ) {
 				result |= static_cast<unsigned>( set[n] == *first );
@@ -227,7 +228,7 @@ namespace daw::json::impl {
 			return static_cast<bool>( result );
 		}
 
-		[[nodiscard]] constexpr bool is_real_number_part( ) const noexcept {
+		[[nodiscard]] constexpr bool is_real_number_part( ) const {
 			if constexpr( IsUnCheckedInput ) {
 				return true;
 			} else {
@@ -243,7 +244,7 @@ namespace daw::json::impl {
 			}
 		}
 
-		[[nodiscard]] constexpr bool at_end_of_item( ) const noexcept {
+		[[nodiscard]] constexpr bool at_end_of_item( ) const {
 			auto const c = front( );
 			return static_cast<bool>(
 			  static_cast<unsigned>( c == ',' ) | static_cast<unsigned>( c == '}' ) |
@@ -261,5 +262,5 @@ namespace daw::json::impl {
 				trim_left_no_check( );
 			}
 		}
-	}; // namespace daw::json::impl
-} // namespace daw::json::impl
+	}; // namespace daw::json::json_details
+} // namespace daw::json::json_details

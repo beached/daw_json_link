@@ -81,8 +81,6 @@ constexpr bool test_string_raw_trail( ) {
 	daw_json_assert( result.a == "hello", "Unexpected result" );
 	return true;
 }
-static_assert( test_string_raw_trail( ),
-               "Raw strings fail to accommodate trailing strings" );
 
 /***********************************************/
 struct int_trail {
@@ -107,8 +105,6 @@ constexpr bool test_int_trail( ) {
 	daw_json_assert( result.a == -5, "Unexpected result" );
 	return true;
 }
-static_assert( test_int_trail( ),
-               "Signed integers fail to accommodate trailing strings" );
 
 /***********************************************/
 struct unsigned_trail {
@@ -134,9 +130,6 @@ constexpr bool test_unsigned_trail( ) {
 	daw_json_assert( result.a == 5, "Unexpected result" );
 	return true;
 }
-static_assert( test_unsigned_trail( ),
-               "Unsigned integers fail to accommodate trailing strings" );
-
 /***********************************************/
 struct bool_trail {
 	bool a;
@@ -160,8 +153,6 @@ constexpr bool test_bool_trail( ) {
 	daw_json_assert( result.a, "Unexpected result" );
 	return true;
 }
-static_assert( test_bool_trail( ),
-               "Bools fail to accommodate trailing strings" );
 
 /***********************************************/
 struct object_trail {
@@ -187,8 +178,6 @@ constexpr bool test_object_trail( ) {
 	daw_json_assert( result.a.a == 5, "Unexpected result" );
 	return true;
 }
-static_assert( test_object_trail( ),
-               "Objects fail to accommodate trailing strings" );
 
 /***********************************************/
 struct array_member_trail {
@@ -236,6 +225,16 @@ bool test_array_trail( ) {
 }
 
 int main( ) {
+	daw_json_assert( test_int_trail( ),
+	                 "Signed integers fail to accommodate trailing strings" );
+	daw_json_assert( test_string_raw_trail( ),
+	                 "Raw strings fail to accommodate trailing strings" );
+	daw_json_assert( test_unsigned_trail( ),
+	                 "Unsigned integers fail to accommodate trailing strings" );
+	daw_json_assert( test_bool_trail( ),
+	                 "Bools fail to accommodate trailing strings" );
+	daw_json_assert( test_object_trail( ),
+	                 "Objects fail to accommodate trailing strings" );
 	daw::expecting( test_string_trail( ) );
 	daw::expecting( test_array_member_trail( ) );
 	daw::expecting( test_array_trail( ) );

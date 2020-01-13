@@ -1,0 +1,30 @@
+arch: arm64
+os: linux
+language: cpp
+dist: bionic
+
+env:
+  - BUILD_TYPE=Debug CC=gcc-9 CXX=g++-9
+  - BUILD_TYPE=Release CC=gcc-9 CXX=g++-9
+
+before_install:
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+  - sudo apt-get update -qq
+  -
+install:
+  - sudo apt-get install g++-9 git build-essential
+
+cache:
+  directories:
+    - ${HOME}/cmake_bin/
+
+script:
+  - ./ci_scripts/ci_travis_arm64_cmake.sh
+  - mkdir build && cd build
+  - ${HOME}/cmake_bin/bin/cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  - make -k full
+  - ${HOME}/cmake_bin/bin/ctest -C ${BUILD_TYPE} -j5 -VV
+
+notifications:
+  email: false
+

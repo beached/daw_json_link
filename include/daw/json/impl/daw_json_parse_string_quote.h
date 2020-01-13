@@ -24,32 +24,32 @@
 
 #include "daw_json_assert.h"
 
-namespace daw::json::impl::string_quote {
-	namespace {
-		struct string_quote_parser {
-			[[nodiscard]] static constexpr char const *parse_nq( char const *ptr ) {
-				while( *ptr != '"' ) {
-					// TODO: add ability to filter to low 7bits daw_json_assert( *ptr >=
-					// 0x20 and *ptr <= 0x7F, "Use json_string_raw" );
-					while( *ptr != '"' and *ptr != '\\' ) {
-						++ptr;
-					}
-					if( *ptr == '\\' ) {
-						++ptr;
-						++ptr;
-					}
-				}
-				daw_json_assert( *ptr == '"', "Expected a '\"'" );
-				return ptr;
-			}
+namespace daw::json::json_details::string_quote {
 
-			[[nodiscard, maybe_unused]] static constexpr char const *
-			parse( char const *ptr ) {
-				if( *ptr == '"' ) {
+	struct string_quote_parser {
+		[[nodiscard]] static constexpr char const *parse_nq( char const *ptr ) {
+			while( *ptr != '"' ) {
+				// TODO: add ability to filter to low 7bits daw_json_assert( *ptr >=
+				// 0x20 and *ptr <= 0x7F, "Use json_string_raw" );
+				while( *ptr != '"' and *ptr != '\\' ) {
 					++ptr;
 				}
-				return parse_nq( ptr );
+				if( *ptr == '\\' ) {
+					++ptr;
+					++ptr;
+				}
 			}
-		};
-	} // namespace
-} // namespace daw::json::impl::string_quote
+			daw_json_assert( *ptr == '"', "Expected a '\"'" );
+			return ptr;
+		}
+
+		[[nodiscard, maybe_unused]] static constexpr char const *
+		parse( char const *ptr ) {
+			if( *ptr == '"' ) {
+				++ptr;
+			}
+			return parse_nq( ptr );
+		}
+	};
+
+} // namespace daw::json::json_details::string_quote

@@ -217,7 +217,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename String = std::string,
 	         typename Constructor = daw::construct_a_t<String>,
-	         typename Appender = impl::basic_appender<String>,
+	         typename Appender = json_details::basic_appender<String>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
 	         JsonNullable Nullable = JsonNullable::Never>
@@ -237,7 +237,7 @@ namespace daw::json {
 	template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
 	         typename Constructor =
 	           daw::construct_a_t<std::optional<std::string>>,
-	         typename Appender = impl::basic_appender<std::string>,
+	         typename Appender = json_details::basic_appender<std::string>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull>
 	using json_string_null =
@@ -300,45 +300,42 @@ namespace daw::json {
 	using json_class_null =
 	  json_class<Name, T, Constructor, JsonNullable::Nullable>;
 
-	namespace impl {
-		namespace {
-			template<typename T, JSONNAMETYPE Name = no_name>
-			using unnamed_default_type_mapping = std::conditional_t<
-			  impl::is_a_json_type_v<T>, T,
-			  std::conditional_t<
-			    has_json_data_contract_trait_v<T>, json_class<Name, T>,
-			    std::conditional_t<
-			      std::is_same_v<T, bool>, json_bool<Name, T>,
-			      std::conditional_t<
-			        std::is_arithmetic_v<T> or std::is_enum_v<T>,
-			        json_number<Name, T>,
-			        std::conditional_t<
-			          std::is_same_v<T, std::string_view>, json_string_raw<Name, T>,
-			          std::conditional_t<
-			            std::is_same_v<T, daw::string_view>, json_string_raw<Name, T>,
-			            std::conditional_t<
-			              daw::traits::is_string_v<T>, json_string<Name, T>,
-			              daw::json::missing_json_data_contract_for<T>>>>>>>>;
+	namespace json_details {
+		template<typename T, JSONNAMETYPE Name = no_name>
+		using unnamed_default_type_mapping = std::conditional_t<
+		  json_details::is_a_json_type_v<T>, T,
+		  std::conditional_t<
+		    has_json_data_contract_trait_v<T>, json_class<Name, T>,
+		    std::conditional_t<
+		      std::is_same_v<T, bool>, json_bool<Name, T>,
+		      std::conditional_t<
+		        std::is_arithmetic_v<T> or std::is_enum_v<T>, json_number<Name, T>,
+		        std::conditional_t<
+		          std::is_same_v<T, std::string_view>, json_string_raw<Name, T>,
+		          std::conditional_t<
+		            std::is_same_v<T, daw::string_view>, json_string_raw<Name, T>,
+		            std::conditional_t<
+		              daw::traits::is_string_v<T>, json_string<Name, T>,
+		              daw::json::missing_json_data_contract_for<T>>>>>>>>;
 
-			template<typename T>
-			using has_unnamed_default_type_mapping = daw::not_trait<
-			  std::is_same<unnamed_default_type_mapping<T>,
-			               daw::json::missing_json_data_contract_for<T>>>;
+		template<typename T>
+		using has_unnamed_default_type_mapping = daw::not_trait<
+		  std::is_same<unnamed_default_type_mapping<T>,
+		               daw::json::missing_json_data_contract_for<T>>>;
 
-			template<typename JsonMember, bool IsUnCheckedInput>
-			[[maybe_unused, nodiscard]] constexpr auto
-			from_json_member_impl( std::string_view json_data ) {
-				using json_member = unnamed_default_type_mapping<JsonMember>;
-				auto rng = IteratorRange<char const *, char const *, IsUnCheckedInput>(
-				  json_data.data( ),
-				  json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
+		template<typename JsonMember, bool IsUnCheckedInput>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json_member_impl( std::string_view json_data ) {
+			using json_member = unnamed_default_type_mapping<JsonMember>;
+			auto rng = IteratorRange<char const *, char const *, IsUnCheckedInput>(
+			  json_data.data( ),
+			  json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
 
-				return impl::parse_value<json_member>(
-				  ParseTag<json_member::expected_type>{}, rng );
-			}
+			return json_details::parse_value<json_member>(
+			  ParseTag<json_member::expected_type>{}, rng );
+		}
 
-		} // namespace
-	}   // namespace impl
+	} // namespace json_details
 
 	/***
 	 * A type to hold the types for parsing tagged variants.
@@ -348,7 +345,7 @@ namespace daw::json {
 	struct json_tagged_variant_type_list {
 		using i_am_tagged_variant_type_list = void;
 		using element_map_t =
-		  std::tuple<impl::unnamed_default_type_mapping<JsonElements>...>;
+		  std::tuple<json_details::unnamed_default_type_mapping<JsonElements>...>;
 	};
 
 	/** Link to a JSON array
@@ -364,13 +361,13 @@ namespace daw::json {
 	 * passed to it
 	 * @tparam Nullable Can the member be missing or have a null value
 	 */
-	template<
-	  JSONNAMETYPE Name, typename JsonElement,
-	  typename Container = std::vector<
-	    typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
-	  typename Constructor = daw::construct_a_t<Container>,
-	  typename Appender = impl::basic_appender<Container>,
-	  JsonNullable Nullable = JsonNullable::Never>
+	template<JSONNAMETYPE Name, typename JsonElement,
+	         typename Container =
+	           std::vector<typename json_details::unnamed_default_type_mapping<
+	             JsonElement>::parse_to_t>,
+	         typename Constructor = daw::construct_a_t<Container>,
+	         typename Appender = json_details::basic_appender<Container>,
+	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_array;
 
 	/** Link to a nullable JSON array
@@ -385,12 +382,12 @@ namespace daw::json {
 	 * container.  The parsed type from JsonElement
 	 * passed to it
 	 */
-	template<
-	  JSONNAMETYPE Name, typename JsonElement,
-	  typename Container = std::vector<
-	    typename impl::unnamed_default_type_mapping<JsonElement>::parse_to_t>,
-	  typename Constructor = daw::construct_a_t<Container>,
-	  typename Appender = impl::basic_appender<Container>>
+	template<JSONNAMETYPE Name, typename JsonElement,
+	         typename Container =
+	           std::vector<typename json_details::unnamed_default_type_mapping<
+	             JsonElement>::parse_to_t>,
+	         typename Constructor = daw::construct_a_t<Container>,
+	         typename Appender = json_details::basic_appender<Container>>
 	using json_array_null = json_array<Name, JsonElement, Container, Constructor,
 	                                   Appender, JsonNullable::Nullable>;
 
@@ -412,7 +409,7 @@ namespace daw::json {
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType = json_string<no_name>,
 	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_kv_appender<Container>,
+	         typename Appender = json_details::basic_kv_appender<Container>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_key_value;
 
@@ -433,7 +430,7 @@ namespace daw::json {
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType = json_string<no_name>,
 	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_kv_appender<Container>>
+	         typename Appender = json_details::basic_kv_appender<Container>>
 	using json_key_value_null =
 	  json_key_value<Name, Container, JsonValueType, JsonKeyType, Constructor,
 	                 Appender, JsonNullable::Nullable>;
@@ -457,7 +454,7 @@ namespace daw::json {
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType,
 	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_kv_appender<Container>,
+	         typename Appender = json_details::basic_kv_appender<Container>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_key_value_array;
 
@@ -479,7 +476,7 @@ namespace daw::json {
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType,
 	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = impl::basic_kv_appender<Container>>
+	         typename Appender = json_details::basic_kv_appender<Container>>
 	using json_key_value_array_null =
 	  json_key_value_array<Name, Container, JsonValueType, JsonKeyType,
 	                       Constructor, Appender, JsonNullable::Nullable>;
@@ -517,22 +514,22 @@ namespace daw::json {
 	using json_custom_null = json_custom<Name, T, FromConverter, ToConverter,
 	                                     CustomJsonType, JsonNullable::Nullable>;
 
-	namespace impl {
-		namespace {
-			template<JsonBaseParseTypes PT>
-			constexpr size_t
-			find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
-				size_t idx = 0;
-				for( auto const &pt : pts ) {
-					if( pt == PT ) {
-						return idx;
-					}
-					++idx;
+	namespace json_details {
+
+		template<JsonBaseParseTypes PT>
+		constexpr size_t
+		find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
+			size_t idx = 0;
+			for( auto const &pt : pts ) {
+				if( pt == PT ) {
+					return idx;
 				}
-				return std::numeric_limits<size_t>::max( );
+				++idx;
 			}
-		} // namespace
-	}   // namespace impl
+			return std::numeric_limits<size_t>::max( );
+		}
+
+	} // namespace json_details
 
 	/***
 	 * Link to a variant like data type.  The JSON member can be any one of the
@@ -565,7 +562,7 @@ namespace daw::json {
 	using json_variant_null =
 	  json_variant<Name, T, JsonElements, Constructor, JsonNullable::Nullable>;
 
-	namespace impl {
+	namespace json_details {
 		template<typename T>
 		struct unknown_variant_type {
 			using i_am_tagged_variant_type_list = void;
@@ -589,7 +586,7 @@ namespace daw::json {
 		template<typename Variant>
 		using determine_variant_element_types = std::remove_reference_t<decltype(
 		  get_variant_type_list( std::declval<Variant const *>( ) ) )>;
-	} // namespace impl
+	} // namespace json_details
 
 	/***
 	 * Link to a variant like data type that is discriminated via another member.
@@ -606,13 +603,15 @@ namespace daw::json {
 	 * @tparam Nullable Can the member be missing or have a null value	 *
 	 */
 	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
-	         typename JsonElements = impl::determine_variant_element_types<T>,
+	         typename JsonElements =
+	           json_details::determine_variant_element_types<T>,
 	         typename Constructor = daw::construct_a_t<T>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_tagged_variant;
 
 	/***
-	 * Link to a nullable variant like data type that is discriminated via another member.
+	 * Link to a nullable variant like data type that is discriminated via another
+	 * member.
 	 * @tparam Name name of JSON member to link to
 	 * @tparam T type of value to construct
 	 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
@@ -625,33 +624,33 @@ namespace daw::json {
 	 * default supports normal and aggregate construction
 	 */
 	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
-	         typename JsonElements = impl::determine_variant_element_types<T>,
+	         typename JsonElements =
+	           json_details::determine_variant_element_types<T>,
 	         typename Constructor = daw::construct_a_t<T>>
 	using json_tagged_variant_null =
 	  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements, Constructor,
 	                      JsonNullable::Nullable>;
 
-	namespace impl {
-		namespace {
+	namespace json_details {
 
-			template<typename JsonMember, bool IsUnCheckedInput>
-			[[maybe_unused, nodiscard]] constexpr auto
-			from_json_member_impl( std::string_view json_data,
-			                       std::string_view member_path ) {
-				using json_member = unnamed_default_type_mapping<JsonMember>;
-				auto [is_found, rng] = impl::find_range<IsUnCheckedInput>(
-				  json_data, {member_path.data( ), member_path.size( )} );
-				if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
-					if( not is_found ) {
-						return typename json_member::constructor_t{}( );
-					}
-				} else {
-					daw_json_assert( is_found,
-					                 "Could not find member and type isn't Nullable" );
+		template<typename JsonMember, bool IsUnCheckedInput>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json_member_impl( std::string_view json_data,
+		                       std::string_view member_path ) {
+			using json_member = unnamed_default_type_mapping<JsonMember>;
+			auto [is_found, rng] = json_details::find_range<IsUnCheckedInput>(
+			  json_data, {member_path.data( ), member_path.size( )} );
+			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
+				if( not is_found ) {
+					return typename json_member::constructor_t{}( );
 				}
-				return impl::parse_value<json_member>(
-				  ParseTag<json_member::expected_type>{}, rng );
+			} else {
+				daw_json_assert( is_found,
+				                 "Could not find member and type isn't Nullable" );
 			}
-		} // namespace
-	}   // namespace impl
+			return json_details::parse_value<json_member>(
+			  ParseTag<json_member::expected_type>{}, rng );
+		}
+
+	} // namespace json_details
 } // namespace daw::json

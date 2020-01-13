@@ -27,24 +27,24 @@
 
 #include <daw/daw_algorithm.h>
 
-namespace daw::json::impl::literal_end {
-	namespace {
-		class literal_end_parser {
-			static constexpr auto test_arry =
-			  daw::make_truth_table<256, true>( {'\0', ',', ']', '}'} );
+namespace daw::json::json_details::literal_end {
 
-			static constexpr bool test( char c ) noexcept {
-				return test_arry[static_cast<size_t>( c )];
-			}
+	class literal_end_parser {
+		static constexpr auto test_arry =
+		  daw::make_truth_table<256, true>( {'\0', ',', ']', '}'} );
 
-		public:
-			[[nodiscard, maybe_unused]] static constexpr char const *
-			parse( char const *ptr ) noexcept {
-				while( test( *ptr ) ) {
-					++ptr;
-				}
-				return ptr;
+		static constexpr bool test( char c ) noexcept {
+			return test_arry[static_cast<size_t>( c )];
+		}
+
+	public:
+		[[nodiscard, maybe_unused]] static constexpr char const *
+		parse( char const *ptr ) noexcept {
+			while( test( *ptr ) ) {
+				++ptr;
 			}
-		};
-	} // namespace
-} // namespace daw::json::impl::literal_end
+			return ptr;
+		}
+	};
+
+} // namespace daw::json::json_details::literal_end

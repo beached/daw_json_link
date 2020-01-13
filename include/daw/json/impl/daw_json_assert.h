@@ -22,6 +22,8 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
+#include <string>
 #include <string_view>
 
 #pragma once
@@ -34,22 +36,30 @@
 #endif
 #endif
 
+namespace daw::json::json_details {
+	struct missing_member {
+		std::string_view member_name;
+
+		explicit constexpr missing_member( std::string_view name )
+		  : member_name( name ) {}
+	};
+} // namespace daw::json::json_details
+
 namespace daw::json {
 	class json_exception {
-		std::string_view m_reason{};
+		std::string m_reason{};
 
 	public:
-		[[maybe_unused]] constexpr json_exception( ) noexcept = default;
-		[[maybe_unused]] constexpr json_exception(
-		  std::string_view reason ) noexcept
+		[[maybe_unused]] json_exception( ) = default;
+		[[maybe_unused]] inline json_exception( std::string_view reason ) noexcept
 		  : m_reason( reason ) {}
 
-		[[nodiscard, maybe_unused]] constexpr std::string_view reason( ) const
-		  noexcept {
+		[[nodiscard, maybe_unused]] std::string const &reason( ) const noexcept {
 			return m_reason;
 		}
 	};
 } // namespace daw::json
+
 #ifdef DAW_USE_JSON_EXCEPTIONS
 inline constexpr bool use_daw_json_exceptions_v = true;
 #else
@@ -71,11 +81,39 @@ template<bool ShouldThrow = use_daw_json_exceptions_v>
 #endif
 }
 
+template<bool ShouldThrow = use_daw_json_exceptions_v>
+[[maybe_unused, noreturn]] void
+daw_json_error( daw::json::json_details::missing_member reason ) {
+#ifdef DAW_USE_JSON_EXCEPTIONS
+	if constexpr( ShouldThrow ) {
+		using namespace std::string_literals;
+		std::string msg = "Could not find required class member '"s +
+		                  static_cast<std::string>( reason.member_name ) + "'"s;
+		throw daw::json::json_exception( msg );
+	} else {
+#endif
+		(void)ShouldThrow;
+		(void)reason;
+		std::abort( );
+#ifdef DAW_USE_JSON_EXCEPTIONS
+	}
+#endif
+}
+
 #ifndef DAW_JSON_CHECK_DEBUG_ONLY
-template<typename Bool, size_t N>
-static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
+template<typename Bool>
+static constexpr void daw_json_assert( Bool const &b,
+                                       std::string_view reason ) {
 	if( not static_cast<bool>( b ) ) {
-		daw_json_error( std::string_view( reason ) );
+		daw_json_error( reason );
+	}
+}
+template<typename Bool>
+static constexpr void
+daw_json_assert( Bool const &b,
+                 daw::json::json_details::missing_member reason ) {
+	if( not static_cast<bool>( b ) ) {
+		daw_json_error( reason );
 	}
 }
 
@@ -88,10 +126,19 @@ static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
 
 #else // undef DAW_JSON_CHECK_DEBUG_ONLY
 #ifndef NDEBUG
-template<typename Bool, size_t N>
-static constexpr void daw_json_assert( Bool &&b, char const ( &reason )[N] ) {
+template<typename Bool>
+static constexpr void daw_json_assert( Bool const &b,
+                                       std::string_view reason ) {
 	if( not static_cast<bool>( b ) ) {
-		daw_json_error( std::string_view( reason ) );
+		daw_json_error( reason );
+	}
+}
+template<typename Bool>
+static constexpr void
+daw_json_assert( Bool const &b,
+                 daw::json::json_details::missing_member reason ) {
+	if( not static_cast<bool>( b ) ) {
+		daw_json_error( reason );
 	}
 }
 

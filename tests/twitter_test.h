@@ -11,194 +11,195 @@
 #include <daw/json/daw_json_link.h>
 
 namespace daw::twitter {
-	struct metadata_t {
-		std::string result_type;
-		std::string iso_language_code;
-	}; // metadata_t
+	namespace {
+		struct metadata_t {
+			std::string result_type;
+			std::string iso_language_code;
+		}; // metadata_t
 
-	struct urls_element_t {
-		std::string url;
-		std::string expanded_url;
-		std::string display_url;
-		std::vector<int64_t> indices;
-	}; // urls_element_t
+		struct urls_element_t {
+			std::string url;
+			std::string expanded_url;
+			std::string display_url;
+			std::vector<int64_t> indices;
+		}; // urls_element_t
 
-	struct url_t {
-		std::vector<urls_element_t> urls;
-	}; // url_t
+		struct url_t {
+			std::vector<urls_element_t> urls;
+		}; // url_t
 
-	struct description_t {
-		std::vector<urls_element_t> urls;
-	}; // description_t
+		struct description_t {
+			std::vector<urls_element_t> urls;
+		}; // description_t
 
-	struct entities_t {
-		std::optional<url_t> url;
-		std::optional<description_t> description;
-	}; // entities_t
+		struct entities_t {
+			std::optional<url_t> url;
+			std::optional<description_t> description;
+		}; // entities_t
 
-	struct user_t {
-		int64_t id;
-		std::string id_str;
-		std::string name;
-		std::string screen_name;
-		std::string location;
-		std::string description;
-		std::optional<std::string> url;
-		entities_t entities;
-		bool _jsonprotected;
-		int64_t followers_count;
-		int64_t friends_count;
-		int64_t listed_count;
-		std::string created_at;
-		int64_t favourites_count;
-		std::optional<int64_t> utc_offset;
-		std::optional<std::string> time_zone;
-		bool geo_enabled;
-		bool verified;
-		int64_t statuses_count;
-		std::string lang;
-		bool contributors_enabled;
-		bool is_translator;
-		bool is_translation_enabled;
-		std::string profile_background_color;
-		std::string profile_background_image_url;
-		std::string profile_background_image_url_https;
-		bool profile_background_tile;
-		std::string profile_image_url;
-		std::string profile_image_url_https;
-		std::optional<std::string> profile_banner_url;
-		std::string profile_link_color;
-		std::string profile_sidebar_border_color;
-		std::string profile_sidebar_fill_color;
-		std::string profile_text_color;
-		bool profile_use_background_image;
-		bool default_profile;
-		bool default_profile_image;
-		bool following;
-		bool follow_request_sent;
-		bool notifications;
-	}; // user_t
+		struct user_t {
+			int64_t id;
+			std::string id_str;
+			std::string name;
+			std::string screen_name;
+			std::string location;
+			std::string description;
+			std::optional<std::string> url;
+			entities_t entities;
+			bool _jsonprotected;
+			int64_t followers_count;
+			int64_t friends_count;
+			int64_t listed_count;
+			std::string created_at;
+			int64_t favourites_count;
+			std::optional<int64_t> utc_offset;
+			std::optional<std::string> time_zone;
+			bool geo_enabled;
+			bool verified;
+			int64_t statuses_count;
+			std::string lang;
+			bool contributors_enabled;
+			bool is_translator;
+			bool is_translation_enabled;
+			std::string profile_background_color;
+			std::string profile_background_image_url;
+			std::string profile_background_image_url_https;
+			bool profile_background_tile;
+			std::string profile_image_url;
+			std::string profile_image_url_https;
+			std::optional<std::string> profile_banner_url;
+			std::string profile_link_color;
+			std::string profile_sidebar_border_color;
+			std::string profile_sidebar_fill_color;
+			std::string profile_text_color;
+			bool profile_use_background_image;
+			bool default_profile;
+			bool default_profile_image;
+			bool following;
+			bool follow_request_sent;
+			bool notifications;
+		}; // user_t
 
-	struct hashtags_element_t {
-		std::string text;
-		std::vector<int64_t> indices;
-	}; // hashtags_element_t
+		struct hashtags_element_t {
+			std::string text;
+			std::vector<int64_t> indices;
+		}; // hashtags_element_t
 
-	struct statuses_element_t {
-		metadata_t metadata;
-		std::string created_at;
-		int64_t id;
-		std::string id_str;
-		std::string text;
-		std::string source;
-		bool truncated;
-		std::optional<int64_t> in_reply_to_status_id;
-		std::optional<std::string> in_reply_to_status_id_str;
-		std::optional<int64_t> in_reply_to_user_id;
-		std::optional<std::string> in_reply_to_user_id_str;
-		std::optional<std::string> in_reply_to_screen_name;
-		user_t user;
-		int64_t retweet_count;
-		int64_t favorite_count;
-		entities_t entities;
-		bool favorited;
-		bool retweeted;
-		std::optional<bool> possibly_sensitive;
-		std::string lang;
-	}; // statuses_element_t
+		struct statuses_element_t {
+			metadata_t metadata;
+			std::string created_at;
+			int64_t id;
+			std::string id_str;
+			std::string text;
+			std::string source;
+			bool truncated;
+			std::optional<int64_t> in_reply_to_status_id;
+			std::optional<std::string> in_reply_to_status_id_str;
+			std::optional<int64_t> in_reply_to_user_id;
+			std::optional<std::string> in_reply_to_user_id_str;
+			std::optional<std::string> in_reply_to_screen_name;
+			user_t user;
+			int64_t retweet_count;
+			int64_t favorite_count;
+			entities_t entities;
+			bool favorited;
+			bool retweeted;
+			std::optional<bool> possibly_sensitive;
+			std::string lang;
+		}; // statuses_element_t
 
-	struct user_mentions_element_t {
-		std::string screen_name;
-		std::string name;
-		int64_t id;
-		std::string id_str;
-		std::vector<int64_t> indices;
-	}; // user_mentions_element_t
+		struct user_mentions_element_t {
+			std::string screen_name;
+			std::string name;
+			int64_t id;
+			std::string id_str;
+			std::vector<int64_t> indices;
+		}; // user_mentions_element_t
 
-	struct medium_t {
-		int64_t w;
-		int64_t h;
-		std::string resize;
-	}; // medium_t
+		struct medium_t {
+			int64_t w;
+			int64_t h;
+			std::string resize;
+		}; // medium_t
 
-	struct small_t {
-		int64_t w;
-		int64_t h;
-		std::string resize;
-	}; // small_t
+		struct small_t {
+			int64_t w;
+			int64_t h;
+			std::string resize;
+		}; // small_t
 
-	struct thumb_t {
-		int64_t w;
-		int64_t h;
-		std::string resize;
-	}; // thumb_t
+		struct thumb_t {
+			int64_t w;
+			int64_t h;
+			std::string resize;
+		}; // thumb_t
 
-	struct large_t {
-		int64_t w;
-		int64_t h;
-		std::string resize;
-	}; // large_t
+		struct large_t {
+			int64_t w;
+			int64_t h;
+			std::string resize;
+		}; // large_t
 
-	struct sizes_t {
-		medium_t medium;
-		small_t small_;
-		thumb_t thumb;
-		large_t large;
-	}; // sizes_t
+		struct sizes_t {
+			medium_t medium;
+			small_t small_;
+			thumb_t thumb;
+			large_t large;
+		}; // sizes_t
 
-	struct media_element_t {
-		int64_t id;
-		std::string id_str;
-		std::vector<int64_t> indices;
-		std::string media_url;
-		std::string media_url_https;
-		std::string url;
-		std::string display_url;
-		std::string expanded_url;
-		std::string type;
-		sizes_t sizes;
-	}; // media_element_t
+		struct media_element_t {
+			int64_t id;
+			std::string id_str;
+			std::vector<int64_t> indices;
+			std::string media_url;
+			std::string media_url_https;
+			std::string url;
+			std::string display_url;
+			std::string expanded_url;
+			std::string type;
+			sizes_t sizes;
+		}; // media_element_t
 
-	struct retweeted_status_t {
-		metadata_t metadata;
-		std::string created_at;
-		int64_t id;
-		std::string id_str;
-		std::string text;
-		std::string source;
-		bool truncated;
-		std::optional<int64_t> in_reply_to_status_id;
-		std::optional<std::string> in_reply_to_status_id_str;
-		std::optional<int64_t> in_reply_to_user_id;
-		std::optional<std::string> in_reply_to_user_id_str;
-		std::optional<std::string> in_reply_to_screen_name;
-		user_t user;
-		int64_t retweet_count;
-		int64_t favorite_count;
-		entities_t entities;
-		bool favorited;
-		bool retweeted;
-		std::optional<bool> possibly_sensitive;
-		std::string lang;
-	}; // retweeted_status_t
+		struct retweeted_status_t {
+			metadata_t metadata;
+			std::string created_at;
+			int64_t id;
+			std::string id_str;
+			std::string text;
+			std::string source;
+			bool truncated;
+			std::optional<int64_t> in_reply_to_status_id;
+			std::optional<std::string> in_reply_to_status_id_str;
+			std::optional<int64_t> in_reply_to_user_id;
+			std::optional<std::string> in_reply_to_user_id_str;
+			std::optional<std::string> in_reply_to_screen_name;
+			user_t user;
+			int64_t retweet_count;
+			int64_t favorite_count;
+			entities_t entities;
+			bool favorited;
+			bool retweeted;
+			std::optional<bool> possibly_sensitive;
+			std::string lang;
+		}; // retweeted_status_t
 
-	struct search_metadata_t {
-		double completed_in;
-		int64_t max_id;
-		std::string max_id_str;
-		std::string next_results;
-		std::string query;
-		std::string refresh_url;
-		int64_t count;
-		int64_t since_id;
-		std::string since_id_str;
-	}; // search_metadata_t
+		struct search_metadata_t {
+			double completed_in;
+			int64_t max_id;
+			std::string max_id_str;
+			std::string next_results;
+			std::string query;
+			std::string refresh_url;
+			int64_t count;
+			int64_t since_id;
+			std::string since_id_str;
+		}; // search_metadata_t
 
-	struct twitter_object_t {
-		std::vector<statuses_element_t> statuses;
-		search_metadata_t search_metadata;
-	}; // twitter_object_t
-
+		struct twitter_object_t {
+			std::vector<statuses_element_t> statuses;
+			search_metadata_t search_metadata;
+		}; // twitter_object_t
+	}    // namespace
 } // namespace daw::twitter
 
 namespace daw::json {

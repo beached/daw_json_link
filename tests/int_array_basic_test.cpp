@@ -80,9 +80,14 @@ static void test_json_array_iterator( std::string_view json_sv ) {
 }
 
 int main( ) {
-	using int_type = uintmax_t;
-	auto const json_str = make_int_array_data<NUMVALUES, int_type>( );
-	auto const json_sv = std::string_view( json_str.data( ), json_str.size( ) );
-	test_from_json_array<int_type>( json_sv );
-	test_json_array_iterator<int_type>( json_sv );
+	try {
+		using int_type = uintmax_t;
+		auto const json_str = make_int_array_data<NUMVALUES, int_type>( );
+		auto const json_sv = std::string_view( json_str.data( ), json_str.size( ) );
+		test_from_json_array<int_type>( json_sv );
+		test_json_array_iterator<int_type>( json_sv );
+	} catch( daw::json::json_exception const & je ) {
+		std::cout << "Exception while processing: " << je.reason() << '\n';
+		return 1;
+	}
 }
