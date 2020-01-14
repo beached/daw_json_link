@@ -102,6 +102,7 @@ namespace daw::json::json_details {
 		return calc( yr, mo, dy, hr, mn, se, ms ) + offset;
 	}
 
+	// TODO: be more flexible in format.
 	template<typename CharT, typename Traits>
 	constexpr std::chrono::time_point<std::chrono::system_clock,
 	                                  std::chrono::milliseconds>
@@ -128,12 +129,6 @@ namespace daw::json::json_details {
 		daw_json_assert( 0 <= ms and ms <= 999, "Invalid millisecond" );
 
 		return civil_to_time_point( yr, mo, dy, hr, mi, sc, ms );
-		/*
-		return std::chrono::time_point<std::chrono::system_clock,
-		                               std::chrono::milliseconds>(
-		  date::sys_days( date::year( yr ) / date::month( mo ) / date::day( dy ) ) +
-		  std::chrono::hours( hr ) + std::chrono::minutes( mi ) +
-		  std::chrono::seconds( sc ) + std::chrono::milliseconds( ms ) );*/
 	}
 
 } // namespace daw::json::json_details
