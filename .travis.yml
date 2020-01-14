@@ -12,18 +12,18 @@ before_install:
   - sudo apt-get update -qq
   -
 install:
-  - sudo apt-get install g++-9 git build-essential
+  - sudo apt-get install g++-9 git build-essential cmake
 
-cache:
-  directories:
-    - ${HOME}/cmake_bin/
+#cache:
+#  directories:
+#    - ${HOME}/cmake_bin/
 
 script:
-  - ./ci_scripts/ci_travis_arm64_cmake.sh
+#  - ./ci_scripts/ci_travis_arm64_cmake.sh
   - mkdir build && cd build
-  - ${HOME}/cmake_bin/bin/cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
   - make -k full
-  - ${HOME}/cmake_bin/bin/ctest -C ${BUILD_TYPE} -j5 -VV
+  - ctest -C ${BUILD_TYPE} -j5 -VV
 
 notifications:
   email: false
