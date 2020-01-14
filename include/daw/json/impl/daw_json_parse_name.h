@@ -38,8 +38,8 @@ namespace daw::json::json_details::name {
 		 * the string can be escaped too
 		 */
 		template<typename First, typename Last, bool IsUnCheckedInput>
-		[[maybe_unused]] static constexpr void trim_end_of_name(
-		  IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
+		[[maybe_unused]] static constexpr void
+		trim_end_of_name( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 			while( rng.is_space( ) ) {
 				rng.remove_prefix( );
 			}
@@ -52,7 +52,7 @@ namespace daw::json::json_details::name {
 
 		template<typename First, typename Last, bool IsUnCheckedInput>
 		[[nodiscard, maybe_unused]] static constexpr daw::string_view
-		parse_nq( IteratorRange<First, Last, IsUnCheckedInput> &rng ) noexcept {
+		parse_nq( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 			auto ptr = rng.begin( );
 			while( rng.front( ) != '"' ) {
 				while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
@@ -112,7 +112,7 @@ namespace daw::json::json_details {
 
 	[[nodiscard]] constexpr bool
 	json_path_compare( daw::string_view json_path_item,
-	                   daw::string_view member_name ) noexcept {
+	                   daw::string_view member_name ) {
 		if( json_path_item.front( ) == '\\' ) {
 			json_path_item.remove_prefix( );
 		}

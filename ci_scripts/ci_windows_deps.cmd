@@ -1,11 +1,12 @@
-@echo off
-
 echo "Making build directory"
 md build
 cd build
 
-echo "Configuring project"
-cmake -DCMAKE_BUILD_TYPE=Debug ..
+REM ##############################
+REM Setting VCVars
+@call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
-echo "Starting dep build"
-cmake --build . --config Debug --target -j 2
+REM ##############################
+REM Running cmake
+cmake -DCMAKE_BUILD_TYPE=Debug -GNinja -DCMAKE_CXX_COMPILER=cl.exe -DCMAKE_C_COMPILER=cl.exe .. 
+

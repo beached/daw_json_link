@@ -38,7 +38,7 @@ namespace daw::json::json_details {
 
 		IteratorRange<First, Last, IsUnCheckedInput> *rng = nullptr;
 
-		constexpr json_parse_value_array_iterator( ) noexcept = default;
+		constexpr json_parse_value_array_iterator( ) = default;
 
 		constexpr json_parse_value_array_iterator(
 		  IteratorRange<First, Last, IsUnCheckedInput> &r )
