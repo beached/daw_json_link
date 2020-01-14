@@ -12,5 +12,5 @@ REM Setting VCVars
 
 REM ##############################
 REM Running cmake
-cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
+cmake -DCMAKE_BUILD_TYPE=Debug -GNinja -DCMAKE_CXX_COMPILER=cl.exe -DCMAKE_C_COMPILER=cl.exe  ..
 
