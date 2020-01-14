@@ -1,7 +1,3 @@
-REM ##############################
-REM Installing Ninja
-vcpkg install ninja
-
 echo "Making build directory"
 md build
 cd build
@@ -12,5 +8,5 @@ REM Setting VCVars
 
 REM ##############################
 REM Running cmake
-cmake -DCMAKE_BUILD_TYPE=Debug -GNinja -DCMAKE_CXX_COMPILER=cl.exe -DCMAKE_C_COMPILER=cl.exe  ..
+cmake -DCMAKE_BUILD_TYPE=Debug -GNinja -DCMAKE_CXX_COMPILER=cl.exe -DCMAKE_C_COMPILER=cl.exe .. 
 
