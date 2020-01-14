@@ -3,5 +3,5 @@
 cd build
 
 echo "Starting full build"
-cmake --build . --config Debug --target full -j 2
+cmake --build . --config Debug --target full -j 2 -- -k 1000
 

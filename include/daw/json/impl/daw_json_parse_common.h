@@ -142,15 +142,14 @@ namespace daw::json {
 
 	private:
 		template<size_t... Is>
-		constexpr json_name( char const ( &ptr )[N],
-		                     std::index_sequence<Is...> ) noexcept
+		constexpr json_name( char const ( &ptr )[N], std::index_sequence<Is...> )
 		  : m_data{ptr[Is]...} {}
 
 	public:
-		constexpr json_name( char const ( &ptr )[N] ) noexcept
+		constexpr json_name( char const ( &ptr )[N] )
 		  : json_name( ptr, std::make_index_sequence<N>{} ) {}
 
-		constexpr operator daw::string_view( ) const noexcept {
+		constexpr operator daw::string_view( ) const {
 			return {m_data, N - 1};
 		}
 
@@ -164,12 +163,12 @@ namespace daw::json {
 			return m_data + static_cast<ptrdiff_t>( size( ) );
 		}
 
-		[[nodiscard]] constexpr size_t size( ) const noexcept {
+		[[nodiscard]] static constexpr size_t size( ) noexcept {
 			return N - 1;
 		}
 
 		template<size_t M>
-		constexpr bool operator==( json_name<M> const &rhs ) const noexcept {
+		constexpr bool operator==( json_name<M> const &rhs ) const {
 			if( N != M ) {
 				return false;
 			}
@@ -181,7 +180,7 @@ namespace daw::json {
 			return true;
 		}
 
-		constexpr bool operator==( daw::string_view sv ) const noexcept {
+		constexpr bool operator==( daw::string_view sv ) const {
 			return daw::string_view( m_data, N - 1 ) == sv;
 		}
 	};

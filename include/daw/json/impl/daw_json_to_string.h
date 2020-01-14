@@ -161,7 +161,7 @@ namespace daw::json::json_details {
 
 	//************************************************
 	template<typename Char>
-	constexpr char to_nibble_char( Char c ) noexcept {
+	constexpr char to_nibble_char( Char c ) {
 		daw_json_assert( c < 16, "Unexpected hex nibble" );
 		if( c < 10 ) {
 			return static_cast<char>( c + '0' );
@@ -430,9 +430,9 @@ namespace daw::json::json_details {
 	}
 
 	template<typename T>
-	constexpr auto deref_detect( T &&value ) noexcept -> decltype( *value );
+	constexpr auto deref_detect( T &&value ) -> decltype( *value );
 
-	constexpr void deref_detect( ... ) noexcept {}
+	constexpr void deref_detect( ... ) {}
 
 	template<typename T>
 	using deref_t =
