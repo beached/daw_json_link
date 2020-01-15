@@ -65,6 +65,38 @@ namespace daw::json::json_details {
 		return result;
 	}
 
+	template<typename CharT>
+	constexpr bool is_number( CharT c ) {
+		unsigned const dig = static_cast<unsigned>( c - static_cast<CharT>( '0' ) );
+		return dig < 10U;
+	}
+
+	template<typename Result, typename CharT, typename Traits>
+	constexpr Result parse_number( daw::basic_string_view<CharT, Traits> sv ) {
+		static_assert( std::numeric_limits<Result>::digits10 >= 4 );
+		if( sv.empty( ) ) {
+			daw_json_error( "Invalid number" );
+		}
+		Result result = 0;
+		Result sign = 1;
+		if( sv.front( ) == '-' ) {
+			if constexpr( std::is_signed_v<Result> ) {
+				sign = -1;
+			}
+			sv.remove_prefix( );
+		} else if( sv.front( ) == '+' ) {
+			sv.remove_prefix( );
+		}
+		while( not sv.empty( ) ) {
+			unsigned const dig =
+			  static_cast<unsigned>( sv.pop_front( ) - static_cast<CharT>( '0' ) );
+			daw_json_assert( dig < 10U, "Invalid digit" );
+			result *= 10;
+			result += static_cast<Result>( dig );
+		}
+		return result * sign;
+	}
+
 	// See:
 	// https://stackoverflow.com/questions/16773285/how-to-convert-stdchronotime-point-to-stdtm-without-using-time-t
 	template<typename Clock = std::chrono::system_clock,
@@ -102,12 +134,72 @@ namespace daw::json::json_details {
 		return calc( yr, mo, dy, hr, mn, se, ms ) + offset;
 	}
 
-	// TODO: be more flexible in format.
+	struct date_parts {
+		int32_t year;
+		uint32_t month;
+		uint32_t day;
+	};
+
+	template<typename CharT, typename Traits>
+	constexpr date_parts
+	parse_iso_8601_date( daw::basic_string_view<CharT, Traits> timestamp_str ) {
+		auto result = date_parts{0, 0, 0};
+		result.day =
+		  parse_unsigned<uint32_t, 2>( timestamp_str.pop_back( 2U ).data( ) );
+		if( not is_number( timestamp_str.back( ) ) ) {
+			timestamp_str.remove_suffix( );
+		}
+		result.month =
+		  parse_unsigned<uint32_t, 2>( timestamp_str.pop_back( 2U ).data( ) );
+		if( not is_number( timestamp_str.back( ) ) ) {
+			timestamp_str.remove_suffix( );
+		}
+		result.year = parse_number<int32_t>( timestamp_str );
+		return result;
+	}
+
+	struct time_parts {
+		uint32_t hour;
+		uint32_t minute;
+		uint32_t second;
+		uint32_t millisecond;
+	};
+
+	template<typename CharT, typename Traits>
+	constexpr time_parts
+	parse_iso_8601_time( daw::basic_string_view<CharT, Traits> timestamp_str ) {
+		auto result = time_parts{0, 0, 0, 0};
+		result.hour =
+		  parse_unsigned<uint32_t, 2>( timestamp_str.pop_front( 2 ).data( ) );
+		if( not is_number( timestamp_str.front( ) ) ) {
+			timestamp_str.remove_prefix( );
+		}
+		result.minute =
+		  parse_unsigned<uint32_t, 2>( timestamp_str.pop_front( 2 ).data( ) );
+		if( timestamp_str.empty( ) ) {
+			return result;
+		}
+		if( not is_number( timestamp_str.front( ) ) ) {
+			timestamp_str.remove_prefix( );
+		}
+		result.second =
+		  parse_unsigned<uint32_t, 2>( timestamp_str.pop_front( 2 ).data( ) );
+		if( timestamp_str.empty( ) ) {
+			return result;
+		}
+		if( not is_number( timestamp_str.front( ) ) ) {
+			timestamp_str.remove_prefix( );
+		}
+		result.millisecond = parse_number<uint32_t>( timestamp_str.pop_front( 3 ) );
+		return result;
+	}
+
 	template<typename CharT, typename Traits>
 	constexpr std::chrono::time_point<std::chrono::system_clock,
 	                                  std::chrono::milliseconds>
 	parse_javascript_timestamp(
 	  daw::basic_string_view<CharT, Traits> timestamp_str ) {
+		/*
 		daw_json_assert( ( timestamp_str.size( ) == 24 ) and
 		                   ( ( timestamp_str[23] == static_cast<CharT>( 'z' ) ) or
 		                     ( timestamp_str[23] == static_cast<CharT>( 'Z' ) ) ),
@@ -127,8 +219,29 @@ namespace daw::json::json_details {
 		daw_json_assert( 0 <= mi and mi <= 59, "Invalid minute" );
 		daw_json_assert( 0 <= sc and sc <= 60, "Invalid second" );
 		daw_json_assert( 0 <= ms and ms <= 999, "Invalid millisecond" );
-
-		return civil_to_time_point( yr, mo, dy, hr, mi, sc, ms );
+		  */
+		// Find the 'T' and parse backwards.  This way we can detect if it is
+		// YYYY-MM-DD (with or without the '-')
+		// MM-DD (with or without the '-')
+		auto const date_str = timestamp_str.pop_front( "T" );
+		if( timestamp_str.empty( ) ) {
+			daw_json_error( "Invalid timestamp, missing T separator" );
+		}
+		date_parts const ymd = parse_iso_8601_date( date_str );
+		if( timestamp_str.back( ) == 'Z' ) {
+			timestamp_str.remove_suffix( );
+		} else if( timestamp_str.ends_with( "-000" ) or
+		           timestamp_str.ends_with( "+000" ) ) {
+			timestamp_str.remove_suffix( 4 );
+		} else if( timestamp_str.ends_with( "-0:00" ) or
+		           timestamp_str.ends_with( "+0:00" ) ) {
+			timestamp_str.remove_suffix( 5 );
+		} else {
+			daw_json_error( "Only timestamps with UTC timezone are supported" );
+		}
+		time_parts const hms = parse_iso_8601_time( timestamp_str );
+		return civil_to_time_point( ymd.year, ymd.month, ymd.day, hms.hour,
+		                            hms.minute, hms.second, hms.millisecond );
 	}
 
 } // namespace daw::json::json_details
