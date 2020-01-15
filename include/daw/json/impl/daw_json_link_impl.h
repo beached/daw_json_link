@@ -197,20 +197,19 @@ namespace daw::json::json_details {
 	template<typename CharT, typename Traits>
 	constexpr std::chrono::time_point<std::chrono::system_clock,
 	                                  std::chrono::milliseconds>
-	parse_javascript_timestamp(
-	  daw::basic_string_view<CharT, Traits> timestamp_str ) {
+	parse_javascript_timestamp( daw::basic_string_view<CharT, Traits> ts ) {
 		/*
-		daw_json_assert( ( timestamp_str.size( ) == 24 ) and
-		                   ( ( timestamp_str[23] == static_cast<CharT>( 'z' ) ) or
-		                     ( timestamp_str[23] == static_cast<CharT>( 'Z' ) ) ),
+		daw_json_assert( ( ts.size( ) == 24 ) and
+		                   ( ( ts[23] == static_cast<CharT>( 'z' ) ) or
+		                     ( ts[23] == static_cast<CharT>( 'Z' ) ) ),
 		                 "Invalid ISO8601 Timestamp" );
-		auto const yr = parse_unsigned<uint16_t, 4>( timestamp_str.data( ) );
-		auto const mo = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 5 );
-		auto const dy = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 8 );
-		auto const hr = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 11 );
-		auto const mi = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 14 );
-		auto const sc = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 17 );
-		auto const ms = parse_unsigned<uint16_t, 3>( timestamp_str.data( ) + 20 );
+		auto const yr = parse_unsigned<uint16_t, 4>( ts.data( ) );
+		auto const mo = parse_unsigned<uint8_t, 2>( ts.data( ) + 5 );
+		auto const dy = parse_unsigned<uint8_t, 2>( ts.data( ) + 8 );
+		auto const hr = parse_unsigned<uint8_t, 2>( ts.data( ) + 11 );
+		auto const mi = parse_unsigned<uint8_t, 2>( ts.data( ) + 14 );
+		auto const sc = parse_unsigned<uint8_t, 2>( ts.data( ) + 17 );
+		auto const ms = parse_unsigned<uint16_t, 3>( ts.data( ) + 20 );
 
 		daw_json_assert( 0 <= yr and yr <= 9999, "Invalid year" );
 		daw_json_assert( 1 <= mo and mo <= 12, "Invalid month" );
@@ -223,23 +222,36 @@ namespace daw::json::json_details {
 		// Find the 'T' and parse backwards.  This way we can detect if it is
 		// YYYY-MM-DD (with or without the '-')
 		// MM-DD (with or without the '-')
-		auto const date_str = timestamp_str.pop_front( "T" );
-		if( timestamp_str.empty( ) ) {
+		auto const date_str = ts.pop_front( "T" );
+		if( ts.empty( ) ) {
 			daw_json_error( "Invalid timestamp, missing T separator" );
 		}
 		date_parts const ymd = parse_iso_8601_date( date_str );
-		if( timestamp_str.back( ) == 'Z' ) {
-			timestamp_str.remove_suffix( );
-		} else if( timestamp_str.ends_with( "-000" ) or
-		           timestamp_str.ends_with( "+000" ) ) {
-			timestamp_str.remove_suffix( 4 );
-		} else if( timestamp_str.ends_with( "-0:00" ) or
-		           timestamp_str.ends_with( "+0:00" ) ) {
-			timestamp_str.remove_suffix( 5 );
-		} else {
-			daw_json_error( "Only timestamps with UTC timezone are supported" );
+		auto time_str = ts.pop_front( []( CharT c ) {
+			return not( is_number( c ) or c == static_cast<CharT>( ':' ) or
+			            c == static_cast<CharT>( '.' ) );
+		} );
+		// TODO: verify or parse timezone
+		time_parts hms = parse_iso_8601_time( time_str );
+		if( not( ts.empty( ) or ts.front( ) == 'Z' ) ) {
+			daw_json_assert( ts.size( ) == 5 or ts.size( ) == 6,
+			                 "Invalid timezone offset" );
+			// The format will be (+|-)hh[:]mm
+			bool const sign = ts.front( ) == '+';
+			ts.remove_prefix( );
+			auto hr_offset = parse_unsigned<uint32_t, 2>( ts.data( ) );
+			if( ts.front( ) == ':' ) {
+				ts.remove_prefix( );
+			}
+			auto mn_offset = parse_unsigned<uint32_t, 2>( ts.data( ) );
+			if( sign ) {
+				hms.hour += hr_offset;
+				hms.minute += mn_offset;
+			} else {
+				hms.hour -= hr_offset;
+				hms.minute -= mn_offset;
+			}
 		}
-		time_parts const hms = parse_iso_8601_time( timestamp_str );
 		return civil_to_time_point( ymd.year, ymd.month, ymd.day, hms.hour,
 		                            hms.minute, hms.second, hms.millisecond );
 	}
