@@ -256,7 +256,8 @@ namespace daw::json {
 	template<JSONNAMETYPE Name,
 	         typename T = std::chrono::time_point<std::chrono::system_clock,
 	                                              std::chrono::milliseconds>,
-	         typename Constructor = parse_iso8601_timestamp<JsonNullable::Never>,
+	         typename Constructor =
+	           construct_from_iso8601_timestamp<JsonNullable::Never>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_date;
 
@@ -271,7 +272,7 @@ namespace daw::json {
 	         typename T = std::optional<std::chrono::time_point<
 	           std::chrono::system_clock, std::chrono::milliseconds>>,
 	         typename Constructor =
-	           parse_iso8601_timestamp<JsonNullable::Nullable>>
+	           construct_from_iso8601_timestamp<JsonNullable::Nullable>>
 	using json_date_null =
 	  json_date<Name, T, Constructor, JsonNullable::Nullable>;
 

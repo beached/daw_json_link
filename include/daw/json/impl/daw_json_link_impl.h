@@ -197,31 +197,7 @@ namespace daw::json::json_details {
 	template<typename CharT, typename Traits>
 	constexpr std::chrono::time_point<std::chrono::system_clock,
 	                                  std::chrono::milliseconds>
-	parse_javascript_timestamp( daw::basic_string_view<CharT, Traits> ts ) {
-		/*
-		daw_json_assert( ( ts.size( ) == 24 ) and
-		                   ( ( ts[23] == static_cast<CharT>( 'z' ) ) or
-		                     ( ts[23] == static_cast<CharT>( 'Z' ) ) ),
-		                 "Invalid ISO8601 Timestamp" );
-		auto const yr = parse_unsigned<uint16_t, 4>( ts.data( ) );
-		auto const mo = parse_unsigned<uint8_t, 2>( ts.data( ) + 5 );
-		auto const dy = parse_unsigned<uint8_t, 2>( ts.data( ) + 8 );
-		auto const hr = parse_unsigned<uint8_t, 2>( ts.data( ) + 11 );
-		auto const mi = parse_unsigned<uint8_t, 2>( ts.data( ) + 14 );
-		auto const sc = parse_unsigned<uint8_t, 2>( ts.data( ) + 17 );
-		auto const ms = parse_unsigned<uint16_t, 3>( ts.data( ) + 20 );
-
-		daw_json_assert( 0 <= yr and yr <= 9999, "Invalid year" );
-		daw_json_assert( 1 <= mo and mo <= 12, "Invalid month" );
-		daw_json_assert( 1 <= dy and dy <= 31, "Invalid month" );
-		daw_json_assert( 0 <= hr and hr <= 24, "Invalid hour" );
-		daw_json_assert( 0 <= mi and mi <= 59, "Invalid minute" );
-		daw_json_assert( 0 <= sc and sc <= 60, "Invalid second" );
-		daw_json_assert( 0 <= ms and ms <= 999, "Invalid millisecond" );
-		  */
-		// Find the 'T' and parse backwards.  This way we can detect if it is
-		// YYYY-MM-DD (with or without the '-')
-		// MM-DD (with or without the '-')
+	parse_iso8601_timestamp( daw::basic_string_view<CharT, Traits> ts ) {
 		auto const date_str = ts.pop_front( "T" );
 		if( ts.empty( ) ) {
 			daw_json_error( "Invalid timestamp, missing T separator" );
@@ -244,12 +220,15 @@ namespace daw::json::json_details {
 				ts.remove_prefix( );
 			}
 			auto mn_offset = parse_unsigned<uint32_t, 2>( ts.data( ) );
+			// Want to subtract offset from current time, we are converting to UTC
 			if( sign ) {
+				// Positive offset
+				hms.hour -= hr_offset;
+				hms.minute -+ mn_offset;
+			} else {
+				// Negative offset
 				hms.hour += hr_offset;
 				hms.minute += mn_offset;
-			} else {
-				hms.hour -= hr_offset;
-				hms.minute -= mn_offset;
 			}
 		}
 		return civil_to_time_point( ymd.year, ymd.month, ymd.day, hms.hour,
@@ -260,22 +239,22 @@ namespace daw::json::json_details {
 
 namespace daw::json {
 	template<JsonNullable>
-	struct parse_iso8601_timestamp;
+	struct construct_from_iso8601_timestamp;
 
 	template<>
-	struct parse_iso8601_timestamp<JsonNullable::Never> {
+	struct construct_from_iso8601_timestamp<JsonNullable::Never> {
 		using result_type = std::chrono::time_point<std::chrono::system_clock,
 		                                            std::chrono::milliseconds>;
 
 		[[maybe_unused, nodiscard]] constexpr result_type
 		operator( )( char const *ptr, size_t sz ) const {
-			return json_details::parse_javascript_timestamp(
+			return json_details::parse_iso8601_timestamp(
 			  daw::string_view( ptr, sz ) );
 		}
 	};
 
 	template<>
-	struct parse_iso8601_timestamp<JsonNullable::Nullable> {
+	struct construct_from_iso8601_timestamp<JsonNullable::Nullable> {
 		using result_type =
 		  std::optional<std::chrono::time_point<std::chrono::system_clock,
 		                                        std::chrono::milliseconds>>;
@@ -286,7 +265,7 @@ namespace daw::json {
 
 		[[maybe_unused, nodiscard]] constexpr result_type
 		operator( )( char const *ptr, size_t sz ) const {
-			return json_details::parse_javascript_timestamp(
+			return json_details::parse_iso8601_timestamp(
 			  daw::string_view( ptr, sz ) );
 		}
 	};
@@ -301,7 +280,6 @@ namespace daw::json {
 } // namespace daw::json
 
 namespace daw::json::json_details {
-
 	[[nodiscard]] constexpr char const *str_find( char const *p, char c ) {
 		while( *p != c ) {
 			++p;
