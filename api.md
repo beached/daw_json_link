@@ -85,7 +85,7 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 ```c++
 template<JSONNAMETYPE Name,
   typename T = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>,
-  typename Constructor = parse_js_date<JsonNullable::Never>,
+  typename Constructor = parse_iso8601_timestamp<JsonNullable::Never>,
   JsonNullable Nullable = JsonNullable::Never>
 struct json_date
 ``` 

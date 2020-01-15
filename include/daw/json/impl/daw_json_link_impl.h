@@ -260,10 +260,10 @@ namespace daw::json::json_details {
 
 namespace daw::json {
 	template<JsonNullable>
-	struct parse_js_date;
+	struct parse_iso8601_timestamp;
 
 	template<>
-	struct parse_js_date<JsonNullable::Never> {
+	struct parse_iso8601_timestamp<JsonNullable::Never> {
 		using result_type = std::chrono::time_point<std::chrono::system_clock,
 		                                            std::chrono::milliseconds>;
 
@@ -275,7 +275,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct parse_js_date<JsonNullable::Nullable> {
+	struct parse_iso8601_timestamp<JsonNullable::Nullable> {
 		using result_type =
 		  std::optional<std::chrono::time_point<std::chrono::system_clock,
 		                                        std::chrono::milliseconds>>;

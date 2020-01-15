@@ -250,12 +250,13 @@ namespace daw::json {
 	 * @tparam T C++ type to construct, must be a std::chrono::time_point
 	 * @tparam Constructor A Callable used to construct a T.
 	 * Must accept a char pointer and size as argument to the date/time string.
+	 * The default is an iso8601 timestamp parser
 	 * @tparam Nullable Can the member be missing or have a null value
 	 */
 	template<JSONNAMETYPE Name,
 	         typename T = std::chrono::time_point<std::chrono::system_clock,
 	                                              std::chrono::milliseconds>,
-	         typename Constructor = parse_js_date<JsonNullable::Never>,
+	         typename Constructor = parse_iso8601_timestamp<JsonNullable::Never>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_date;
 
@@ -269,7 +270,8 @@ namespace daw::json {
 	template<JSONNAMETYPE Name,
 	         typename T = std::optional<std::chrono::time_point<
 	           std::chrono::system_clock, std::chrono::milliseconds>>,
-	         typename Constructor = parse_js_date<JsonNullable::Nullable>>
+	         typename Constructor =
+	           parse_iso8601_timestamp<JsonNullable::Nullable>>
 	using json_date_null =
 	  json_date<Name, T, Constructor, JsonNullable::Nullable>;
 
