@@ -105,6 +105,7 @@ set(HEADER_FILES
         ${HEADER_FOLDER}/daw/json/daw_json_iterator.h
         ${HEADER_FOLDER}/daw/json/impl/daw_iterator_range.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_assert.h
+        ${HEADER_FOLDER}/daw/json/impl/daw_iso8601_utils.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_link_types_fwd.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_array_iterator.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_common.h

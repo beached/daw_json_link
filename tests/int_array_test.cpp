@@ -69,7 +69,7 @@ static std::string_view make_int_array_data( ) {
 		result.back( ) = ']';
 		// result.shrink_to_fit( );
 		// Allow SSE Modes to have enough room
-		result.reserve( result.size( ) + 256U );
+		result.resize( result.size( ) + 256U );
 		return result;
 	}( );
 	return {json_data.data( ), json_data.size( )};

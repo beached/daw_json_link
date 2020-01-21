@@ -250,12 +250,14 @@ namespace daw::json {
 	 * @tparam T C++ type to construct, must be a std::chrono::time_point
 	 * @tparam Constructor A Callable used to construct a T.
 	 * Must accept a char pointer and size as argument to the date/time string.
+	 * The default is an iso8601 timestamp parser
 	 * @tparam Nullable Can the member be missing or have a null value
 	 */
 	template<JSONNAMETYPE Name,
 	         typename T = std::chrono::time_point<std::chrono::system_clock,
 	                                              std::chrono::milliseconds>,
-	         typename Constructor = parse_js_date<JsonNullable::Never>,
+	         typename Constructor =
+	           construct_from_iso8601_timestamp<JsonNullable::Never>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_date;
 
@@ -269,7 +271,8 @@ namespace daw::json {
 	template<JSONNAMETYPE Name,
 	         typename T = std::optional<std::chrono::time_point<
 	           std::chrono::system_clock, std::chrono::milliseconds>>,
-	         typename Constructor = parse_js_date<JsonNullable::Nullable>>
+	         typename Constructor =
+	           construct_from_iso8601_timestamp<JsonNullable::Nullable>>
 	using json_date_null =
 	  json_date<Name, T, Constructor, JsonNullable::Nullable>;
 
@@ -301,6 +304,41 @@ namespace daw::json {
 	  json_class<Name, T, Constructor, JsonNullable::Nullable>;
 
 	namespace json_details {
+		/** Link to a JSON array that has been detected
+		 * @tparam Name name of JSON member to link to
+		 * @tparam Container type of C++ container being constructed(e.g.
+		 * vector<int>)
+		 * @tparam JsonElement Json type being parsed e.g. json_number,
+		 * json_string...
+		 * @tparam Constructor A callable used to make Container,
+		 * default will use the Containers constructor.  Both normal and aggregate
+		 * are supported @tparam Appender Callable used to add items to the
+		 * container.  The parsed type from JsonElement
+		 * passed to it
+		 * @tparam Nullable Can the member be missing or have a null value
+		 */
+		template<JSONNAMETYPE Name, typename JsonElement, typename Container,
+		         typename Constructor = daw::construct_a_t<Container>,
+		         typename Appender = json_details::basic_appender<Container>,
+		         JsonNullable Nullable = JsonNullable::Never>
+		struct json_array_detect;
+
+		namespace vector_detect {
+			template<typename T, typename... Alloc>
+			auto vector_test( daw::tag_t<std::vector<T, Alloc...>> ) -> T;
+
+			template<typename T>
+			int vector_test( daw::tag_t<T> );
+
+			template<typename T>
+			using detector =
+			  std::remove_reference_t<decltype( vector_test( daw::tag<T> ) )>;
+		} // namespace vector_detect
+
+		template<typename T>
+		inline constexpr bool is_vector_v =
+		  daw::is_detected_v<vector_detect::detector, T>;
+
 		template<typename T, JSONNAMETYPE Name = no_name>
 		using unnamed_default_type_mapping = std::conditional_t<
 		  json_details::is_a_json_type_v<T>, T,
@@ -316,7 +354,10 @@ namespace daw::json {
 		            std::is_same_v<T, daw::string_view>, json_string_raw<Name, T>,
 		            std::conditional_t<
 		              daw::traits::is_string_v<T>, json_string<Name, T>,
-		              daw::json::missing_json_data_contract_for<T>>>>>>>>;
+		              std::conditional_t<
+		                is_vector_v<T>,
+		                json_array_detect<Name, vector_detect::detector<T>, T>,
+		                daw::json::missing_json_data_contract_for<T>>>>>>>>>;
 
 		template<typename T>
 		using has_unnamed_default_type_mapping = daw::not_trait<

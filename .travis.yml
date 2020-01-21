@@ -10,19 +10,14 @@ env:
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
-  -
 install:
   - sudo apt-get install g++-9 git build-essential cmake
 
-#cache:
-#  directories:
-#    - ${HOME}/cmake_bin/
 
 script:
-#  - ./ci_scripts/ci_travis_arm64_cmake.sh
   - mkdir build && cd build
   - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-  - make -k full
+  - cmake --build . --config ${BUILD_TYPE} --target full -- -k
   - ctest -C ${BUILD_TYPE} -j5 -VV
 
 notifications:

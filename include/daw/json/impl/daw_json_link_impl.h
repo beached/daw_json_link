@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "daw_iso8601_utils.h"
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
@@ -48,109 +49,24 @@
 #include <type_traits>
 #include <utility>
 
-namespace daw::json::json_details {
-
-	template<typename Result>
-	constexpr Result to_integer( char const c ) {
-		return static_cast<Result>( c - '0' );
-	}
-
-	template<typename Result, size_t count, typename CharT>
-	constexpr Result parse_unsigned( const CharT *digit_str ) {
-		Result result = 0;
-		for( size_t n = 0; n < count; ++n ) {
-			result = static_cast<Result>( ( result << 1 ) + ( result << 3 ) ) +
-			         to_integer<Result>( digit_str[n] );
-		}
-		return result;
-	}
-
-	// See:
-	// https://stackoverflow.com/questions/16773285/how-to-convert-stdchronotime-point-to-stdtm-without-using-time-t
-	template<typename Clock = std::chrono::system_clock,
-	         typename Duration = std::chrono::milliseconds>
-	constexpr std::chrono::time_point<Clock, Duration>
-	civil_to_time_point( int32_t yr, uint32_t mo, uint32_t dy, uint32_t hr,
-	                     uint32_t mn, uint32_t se, uint32_t ms ) {
-		constexpr auto calc = []( int32_t y, uint32_t m, uint32_t d, uint32_t h,
-		                          uint32_t min, uint32_t s, uint32_t mil ) {
-			y -= static_cast<int32_t>( m ) <= 2;
-			int32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
-			uint32_t const yoe = static_cast<uint32_t>( static_cast<int32_t>( y ) -
-			                                            era * 400 ); // [0, 399]
-			uint32_t const doy = static_cast<uint32_t>(
-			  ( 153 * ( static_cast<int32_t>( m ) +
-			            ( static_cast<int32_t>( m ) > 2 ? -3 : 9 ) ) +
-			    2 ) /
-			    5 +
-			  static_cast<int32_t>( d ) - 1 );                          // [0, 365]
-			uint32_t const doe = yoe * 365 + yoe / 4 - yoe / 100 + doy; // [0, 146096]
-			int32_t const days_since_epoch =
-			  era * 146097 + static_cast<int32_t>( doe ) - 719468;
-
-			using Days = std::chrono::duration<int32_t, std::ratio<86400>>;
-			return std::chrono::time_point<std::chrono::system_clock,
-			                               std::chrono::milliseconds>{} +
-			       ( Days( days_since_epoch ) + std::chrono::hours( h ) +
-			         std::chrono::minutes( min ) +
-			         std::chrono::seconds( static_cast<uint32_t>( s ) ) +
-			         std::chrono::milliseconds( mil ) );
-		};
-		constexpr auto system_epoch = std::chrono::time_point<Clock, Duration>{};
-		constexpr auto unix_epoch = calc( 1970, 1, 1, 0, 0, 0, 0 );
-		constexpr auto offset = unix_epoch - system_epoch;
-		return calc( yr, mo, dy, hr, mn, se, ms ) + offset;
-	}
-
-	// TODO: be more flexible in format.
-	template<typename CharT, typename Traits>
-	constexpr std::chrono::time_point<std::chrono::system_clock,
-	                                  std::chrono::milliseconds>
-	parse_javascript_timestamp(
-	  daw::basic_string_view<CharT, Traits> timestamp_str ) {
-		daw_json_assert( ( timestamp_str.size( ) == 24 ) and
-		                   ( ( timestamp_str[23] == static_cast<CharT>( 'z' ) ) or
-		                     ( timestamp_str[23] == static_cast<CharT>( 'Z' ) ) ),
-		                 "Invalid ISO8601 Timestamp" );
-		auto const yr = parse_unsigned<uint16_t, 4>( timestamp_str.data( ) );
-		auto const mo = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 5 );
-		auto const dy = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 8 );
-		auto const hr = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 11 );
-		auto const mi = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 14 );
-		auto const sc = parse_unsigned<uint8_t, 2>( timestamp_str.data( ) + 17 );
-		auto const ms = parse_unsigned<uint16_t, 3>( timestamp_str.data( ) + 20 );
-
-		daw_json_assert( 0 <= yr and yr <= 9999, "Invalid year" );
-		daw_json_assert( 1 <= mo and mo <= 12, "Invalid month" );
-		daw_json_assert( 1 <= dy and dy <= 31, "Invalid month" );
-		daw_json_assert( 0 <= hr and hr <= 24, "Invalid hour" );
-		daw_json_assert( 0 <= mi and mi <= 59, "Invalid minute" );
-		daw_json_assert( 0 <= sc and sc <= 60, "Invalid second" );
-		daw_json_assert( 0 <= ms and ms <= 999, "Invalid millisecond" );
-
-		return civil_to_time_point( yr, mo, dy, hr, mi, sc, ms );
-	}
-
-} // namespace daw::json::json_details
-
 namespace daw::json {
 	template<JsonNullable>
-	struct parse_js_date;
+	struct construct_from_iso8601_timestamp;
 
 	template<>
-	struct parse_js_date<JsonNullable::Never> {
+	struct construct_from_iso8601_timestamp<JsonNullable::Never> {
 		using result_type = std::chrono::time_point<std::chrono::system_clock,
 		                                            std::chrono::milliseconds>;
 
 		[[maybe_unused, nodiscard]] constexpr result_type
 		operator( )( char const *ptr, size_t sz ) const {
-			return json_details::parse_javascript_timestamp(
+			return json_details::parse_iso8601_timestamp(
 			  daw::string_view( ptr, sz ) );
 		}
 	};
 
 	template<>
-	struct parse_js_date<JsonNullable::Nullable> {
+	struct construct_from_iso8601_timestamp<JsonNullable::Nullable> {
 		using result_type =
 		  std::optional<std::chrono::time_point<std::chrono::system_clock,
 		                                        std::chrono::milliseconds>>;
@@ -161,7 +77,7 @@ namespace daw::json {
 
 		[[maybe_unused, nodiscard]] constexpr result_type
 		operator( )( char const *ptr, size_t sz ) const {
-			return json_details::parse_javascript_timestamp(
+			return json_details::parse_iso8601_timestamp(
 			  daw::string_view( ptr, sz ) );
 		}
 	};
@@ -176,7 +92,6 @@ namespace daw::json {
 } // namespace daw::json
 
 namespace daw::json::json_details {
-
 	[[nodiscard]] constexpr char const *str_find( char const *p, char c ) {
 		while( *p != c ) {
 			++p;
