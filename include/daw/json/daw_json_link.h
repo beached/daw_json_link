@@ -345,6 +345,37 @@ namespace daw::json {
 		  JsonBaseParseTypes::String;
 	};
 
+	namespace json_details {
+		template<JSONNAMETYPE Name, typename JsonElement, typename Container,
+			typename Constructor, typename Appender, JsonNullable Nullable>
+		struct json_array_detect {
+			using i_am_a_json_type = void;
+			using json_element_t =
+			json_details::unnamed_default_type_mapping<JsonElement>;
+			static_assert( not std::is_same_v<json_element_t, void>,
+										 "Unknown JsonElement type." );
+			static_assert( json_details::is_a_json_type_v<json_element_t>,
+										 "Error determining element type" );
+			using constructor_t = Constructor;
+
+			using base_type = json_details::unwrap_type<Container, Nullable>;
+			static_assert( not std::is_same_v<void, base_type>,
+										 "Failed to detect base type" );
+			using parse_to_t = std::invoke_result_t<Constructor>;
+			using appender_t = Appender;
+			static inline constexpr JSONNAMETYPE name = Name;
+			static inline constexpr JsonParseTypes expected_type =
+				get_parse_type_v<JsonParseTypes::Array, Nullable>;
+			static inline constexpr JsonParseTypes base_expected_type =
+				JsonParseTypes::Array;
+
+			static_assert( json_element_t::name == no_name,
+										 "All elements of json_array must be have no_name" );
+			static inline constexpr JsonBaseParseTypes underlying_json_type =
+				JsonBaseParseTypes::Array;
+		};
+	}
+
 	template<JSONNAMETYPE Name, typename JsonElement, typename Container,
 	         typename Constructor, typename Appender, JsonNullable Nullable>
 	struct json_array {

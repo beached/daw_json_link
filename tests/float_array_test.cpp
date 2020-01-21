@@ -99,6 +99,7 @@ int main( ) {
 			result += "{\"a\":" + std::to_string( rand_float<float>( ) ) + "},";
 		} );
 		result.back( ) = ']';
+		result.resize( result.size( ) + 16U );
 		return result;
 	}( );
 
@@ -109,6 +110,7 @@ int main( ) {
 			result += std::to_string( rand_float<float>( ) ) + ',';
 		} );
 		result.back( ) = ']';
+		result.resize( result.size( ) + 16U );
 		return result;
 	}( );
 
@@ -274,6 +276,8 @@ int main( ) {
 				result += std::to_string( rand_float<double>( ) ) + ',';
 			} );
 			result.back( ) = ']';
+			// Allow for SSE to have room to look ahead
+			result.resize( result.size( ) + 16U );
 			return result;
 		}( );
 		auto json_sv3 = daw::string_view( json_data3.data( ), json_data3.size( ) );
@@ -458,6 +462,7 @@ int main( ) {
 				result += std::to_string( rand_float<double>( ) ) + ',';
 			} );
 			result.back( ) = ']';
+			result.resize( result.size( ) + 16U );
 			return result;
 		}( );
 		auto json_sv3 = daw::string_view( json_data3.data( ), json_data3.size( ) );

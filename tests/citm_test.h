@@ -243,7 +243,7 @@ namespace daw::json {
 		                 json_string_raw<no_name, std::string_view>>,
 		  json_key_value<"topicSubTopics",
 		                 std::unordered_map<std::string_view, std::vector<int64_t>>,
-		                 json_array<no_name, int64_t>>,
+		                 std::vector<int64_t>>,
 		  json_class_null<"venueNames", std::optional<daw::citm::venueNames_t>>>;
 #else
 		static inline constexpr char const areaNames[] = "areaNames";
@@ -284,7 +284,7 @@ namespace daw::json {
 		                 json_string_raw<no_name, std::string_view>>,
 		  json_key_value<topicSubTopics,
 		                 std::unordered_map<std::string_view, std::vector<int64_t>>,
-		                 json_array<no_name, int64_t>>,
+		                 std::vector<int64_t>>,
 		  json_class_null<venueNames, std::optional<daw::citm::venueNames_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
