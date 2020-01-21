@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include "daw_iso8601_utils.h"
+
 #include <daw/daw_algorithm.h>
 #include <daw/daw_bounded_vector.h>
 #include <daw/daw_traits.h>
@@ -544,58 +546,6 @@ namespace daw::json::json_details {
 	template<typename T>
 	[[nodiscard]] constexpr bool is_null( T const & ) {
 		return false;
-	}
-	struct ymdhms {
-		int32_t year;
-		uint32_t month;
-		uint32_t day;
-		uint32_t hour;
-		uint32_t minute;
-		uint32_t second;
-		uint32_t millisecond;
-	};
-
-	template<typename Clock, typename Duration>
-	constexpr ymdhms time_point_to_civil(
-	  std::chrono::time_point<Clock, Duration> const &tp ) noexcept {
-		auto dur_from_epoch = tp.time_since_epoch( );
-		using Days = std::chrono::duration<int32_t, std::ratio<86400>>;
-		auto const days_since_epoch =
-		  std::chrono::duration_cast<Days>( dur_from_epoch );
-		int32_t z = days_since_epoch.count( );
-		z += 719468;
-		int32_t const era = ( z >= 0 ? z : z - 146096 ) / 146097;
-		uint32_t const doe =
-		  static_cast<uint32_t>( z - era * 146097 ); // [0, 146096]
-		uint32_t const yoe =
-		  ( doe - doe / 1460 + doe / 36524 - doe / 146096 ) / 365; // [0, 399]
-		int32_t const y = static_cast<int32_t>( yoe ) + era * 400;
-		uint32_t const doy = doe - ( 365 * yoe + yoe / 4 - yoe / 100 ); // [0, 365]
-		uint32_t const mp = ( 5 * doy + 2 ) / 153;                      // [0, 11]
-		uint32_t const d = doy - ( 153 * mp + 2 ) / 5 + 1;              // [1, 31]
-		uint32_t const m = static_cast<uint32_t>(
-		  static_cast<int32_t>( mp ) +
-		  ( static_cast<int32_t>( mp ) < 10 ? 3 : -9 ) ); // [1, 12]
-
-		dur_from_epoch -= days_since_epoch;
-		auto const hrs =
-		  std::chrono::duration_cast<std::chrono::hours>( dur_from_epoch );
-		dur_from_epoch -= hrs;
-		auto const min =
-		  std::chrono::duration_cast<std::chrono::minutes>( dur_from_epoch );
-		dur_from_epoch -= min;
-		auto const sec =
-		  std::chrono::duration_cast<std::chrono::seconds>( dur_from_epoch );
-		dur_from_epoch -= sec;
-		auto const ms =
-		  std::chrono::duration_cast<std::chrono::milliseconds>( dur_from_epoch );
-		return ymdhms{y + ( m <= 2 ),
-		              m,
-		              d,
-		              static_cast<uint32_t>( hrs.count( ) ),
-		              static_cast<uint32_t>( min.count( ) ),
-		              static_cast<uint32_t>( sec.count( ) ),
-		              static_cast<uint32_t>( ms.count( ) )};
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>

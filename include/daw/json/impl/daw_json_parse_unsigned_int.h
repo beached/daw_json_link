@@ -73,12 +73,16 @@ namespace daw::json::json_details::unsignedint {
 		static inline uint32_t parse_eight_digits_unrolled( const char *ptr ) {
 			// this actually computes *16* values so we are being wasteful.
 			__m128i const ascii0 = _mm_set1_epi8( '0' );
+
 			__m128i const mul_1_10 =
 			  _mm_setr_epi8( 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1 );
+
 			__m128i const mul_1_100 =
 			  _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );
+
 			__m128i const mul_1_10000 =
 			  _mm_setr_epi16( 10000, 1, 10000, 1, 10000, 1, 10000, 1 );
+
 			__m128i const input = _mm_sub_epi8(
 			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) ), ascii0 );
 			__m128i const t1 = _mm_maddubs_epi16( input, mul_1_10 );
@@ -87,6 +91,27 @@ namespace daw::json::json_details::unsignedint {
 			__m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
 			return static_cast<uint32_t>( _mm_cvtsi128_si32(
 			  t4 ) ); // only captures the sum of the first 8 digits, drop the rest
+		}
+
+		static inline uint64_t parse_sixteen_digits_unrolled( const char *ptr ) {
+			__m128i const ascii0 = _mm_set1_epi8( '0' );
+
+			__m128i const mul_1_10 =
+			  _mm_setr_epi8( 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1 );
+
+			__m128i const mul_1_100 =
+			  _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );
+
+			__m128i const mul_1_10000 =
+			  _mm_setr_epi16( 10000, 1, 10000, 1, 10000, 1, 10000, 1 );
+
+			__m128i const input = _mm_sub_epi8(
+			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) ), ascii0 );
+			__m128i const t1 = _mm_maddubs_epi16( input, mul_1_10 );
+			__m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );
+			__m128i const t3 = _mm_packus_epi32( t2, t2 );
+			__m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
+			return static_cast<uint64_t>( _mm_cvtsi128_si64( t4 ) );
 		}
 
 		[[nodiscard]] static inline bool
@@ -107,9 +132,15 @@ namespace daw::json::json_details::unsignedint {
 				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 					count -= 8;
 				}
-				result *= 100'000'000ULL;
-				result += parse_eight_digits_unrolled( ptr );
-				ptr += 8;
+				if( not is_made_of_eight_digits_fast( ptr + 8 ) ) {
+					result *= 100'000'000ULL;
+					result += parse_eight_digits_unrolled( ptr );
+					ptr += 8;
+					break;
+				}
+				result *= 10'000'000'000'000'000ULL;
+				result += parse_sixteen_digits_unrolled( ptr );
+				ptr += 16;
 			}
 
 			auto dig = static_cast<unsigned>( *ptr - '0' );
