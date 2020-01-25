@@ -100,8 +100,8 @@ namespace daw::json::json_details {
 			return first != last and *first == c;
 		}
 
-		[[nodiscard]] constexpr size_t size( ) const {
-			return static_cast<size_t>( std::distance( first, last ) );
+		[[nodiscard]] constexpr std::size_t size( ) const {
+			return static_cast<std::size_t>( std::distance( first, last ) );
 		}
 
 		[[nodiscard]] constexpr bool is_number( ) const {
@@ -109,13 +109,13 @@ namespace daw::json::json_details {
 			       10U;
 		}
 
-		template<size_t N>
+		template<std::size_t N>
 		[[nodiscard]] constexpr bool front( char const ( &set )[N] ) const {
 			if( empty( ) ) {
 				return false;
 			}
 			bool result = false;
-			for( size_t n = 0; n < ( N - 1 ); ++n ) {
+			for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
 				result |= in( set[n] );
 			}
 			return result;
@@ -135,7 +135,7 @@ namespace daw::json::json_details {
 			++first;
 		}
 
-		constexpr void remove_prefix( size_t n ) {
+		constexpr void remove_prefix( std::size_t n ) {
 			std::advance( first, static_cast<intmax_t>( n ) );
 		}
 
@@ -204,7 +204,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		template<size_t N>
+		template<std::size_t N>
 		constexpr void move_to_next_of( char const ( &str )[N] ) {
 			skip_comments_unchecked( );
 			while( not in( str ) ) {
@@ -219,10 +219,10 @@ namespace daw::json::json_details {
 			return *first == c;
 		}
 
-		template<size_t N>
+		template<std::size_t N>
 		[[nodiscard]] constexpr bool in( char const ( &set )[N] ) const {
 			unsigned result = 0;
-			daw::algorithm::do_n_arg<N>( [&]( size_t n ) {
+			daw::algorithm::do_n_arg<N>( [&]( std::size_t n ) {
 				result |= static_cast<unsigned>( set[n] == *first );
 			} );
 			return static_cast<bool>( result );

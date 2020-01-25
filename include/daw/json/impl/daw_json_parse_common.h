@@ -88,7 +88,7 @@ namespace daw::json::json_details {
 	template<typename JsonMember>
 	using json_base_type = typename JsonMember::base_type;
 
-	template<size_t I, typename... JsonMembers>
+	template<std::size_t I, typename... JsonMembers>
 	using json_result_n =
 	  json_result<daw::traits::nth_element<I, JsonMembers...>>;
 
@@ -135,13 +135,13 @@ namespace daw::json {
 	 * A fixed string used for member names in json descriptions
 	 * @tparam N size of string plus 1.  Do not set explicitly.  Use CTAD
 	 */
-	template<size_t N>
+	template<std::size_t N>
 	struct json_name {
 		static_assert( N > 0 );
 		char const m_data[N]{};
 
 	private:
-		template<size_t... Is>
+		template<std::size_t... Is>
 		constexpr json_name( char const ( &ptr )[N], std::index_sequence<Is...> )
 		  : m_data{ptr[Is]...} {}
 
@@ -163,16 +163,16 @@ namespace daw::json {
 			return m_data + static_cast<ptrdiff_t>( size( ) );
 		}
 
-		[[nodiscard]] static constexpr size_t size( ) noexcept {
+		[[nodiscard]] static constexpr std::size_t size( ) noexcept {
 			return N - 1;
 		}
 
-		template<size_t M>
+		template<std::size_t M>
 		constexpr bool operator==( json_name<M> const &rhs ) const {
 			if( N != M ) {
 				return false;
 			}
-			for( size_t n = 0; n < N; ++n ) {
+			for( std::size_t n = 0; n < N; ++n ) {
 				if( m_data[n] != rhs.m_data[n] ) {
 					return false;
 				}
@@ -224,7 +224,7 @@ namespace daw::json {
 		return ptr;
 	}
 
-	enum class JsonParseTypes : uint_fast8_t {
+	enum class JsonParseTypes : std::uint_fast8_t {
 		Real,
 		Signed,
 		Unsigned,
@@ -242,7 +242,7 @@ namespace daw::json {
 		VariantTagged
 	};
 
-	enum class JsonBaseParseTypes : uint_fast8_t {
+	enum class JsonBaseParseTypes : std::uint_fast8_t {
 		Number,
 		Bool,
 		String,
@@ -255,7 +255,7 @@ namespace daw::json {
 	enum class JsonRangeCheck : bool { Never = false, CheckForNarrowing = true };
 	enum class EightBitModes : bool { DisallowHigh = false, AllowFull = true };
 	enum class CustomJsonTypes : bool { Literal = false, String = true };
-	enum class SIMDModes : uint8_t {
+	enum class SIMDModes : std::uint8_t {
 		None
 #ifdef DAW_ALLOW_SSE3
 		,
@@ -268,11 +268,11 @@ namespace daw::json {
 
 	namespace json_details {
 		template<SIMDModes>
-		inline constexpr size_t parse_space_needed_v = 1U;
+		inline constexpr std::size_t parse_space_needed_v = 1U;
 
 #ifdef DAW_ALLOW_SSE3
 		template<>
-		inline constexpr size_t parse_space_needed_v<SIMDModes::SSE3> = 16U;
+		inline constexpr std::size_t parse_space_needed_v<SIMDModes::SSE3> = 16U;
 #endif
 
 		template<typename JsonType>
@@ -334,7 +334,7 @@ namespace daw::json {
 	 * whether the parser will Never remove quotes, check if quotes exist, or
 	 * Always remove quotes around the literal
 	 */
-	enum class LiteralAsStringOpt : uint8_t { Never, Maybe, Always };
+	enum class LiteralAsStringOpt : std::uint8_t { Never, Maybe, Always };
 
 	template<typename T>
 	inline constexpr bool is_range_constructable_v =
@@ -381,7 +381,7 @@ namespace daw::json::json_details {
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_bracketed_item( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		daw_json_assert_weak( rng.front( Left ), "Expected start bracket/brace" );
-		size_t bracket_count = 1;
+		std::size_t bracket_count = 1;
 		bool in_quotes = false;
 		auto result = rng;
 		while( not rng.empty( ) and bracket_count > 0 ) {

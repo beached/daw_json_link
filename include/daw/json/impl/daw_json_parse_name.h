@@ -64,7 +64,7 @@ namespace daw::json::json_details::name {
 			}
 			daw_json_assert_weak( rng.front( ) == '"', "Expected a '\"'" );
 			auto result =
-			  daw::string_view( ptr, static_cast<size_t>( rng.begin( ) - ptr ) );
+			  daw::string_view( ptr, static_cast<std::size_t>( rng.begin( ) - ptr ) );
 			rng.remove_prefix( );
 			trim_end_of_name( rng );
 			return result;
@@ -154,7 +154,7 @@ namespace daw::json::json_details {
 				rng.remove_prefix( );
 				rng.trim_left_no_check( );
 				auto idx =
-				  daw::parser::parse_unsigned_int<size_t>( pop_result.current );
+				  daw::parser::parse_unsigned_int<std::size_t>( pop_result.current );
 
 				while( idx > 0 ) {
 					--idx;

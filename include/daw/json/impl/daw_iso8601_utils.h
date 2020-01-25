@@ -33,10 +33,10 @@ namespace daw::json::json_details {
 		return static_cast<Result>( c - static_cast<CharT>( '0' ) );
 	}
 
-	template<typename Result, size_t count, typename CharT>
+	template<typename Result, std::size_t count, typename CharT>
 	constexpr Result parse_unsigned( const CharT *digit_str ) {
 		Result result = 0;
-		for( size_t n = 0; n < count; ++n ) {
+		for( std::size_t n = 0; n < count; ++n ) {
 			result = static_cast<Result>( ( result << 1 ) + ( result << 3 ) ) +
 			         to_integer<Result>( digit_str[n] );
 		}
@@ -80,43 +80,65 @@ namespace daw::json::json_details {
 	template<typename Clock = std::chrono::system_clock,
 	         typename Duration = std::chrono::milliseconds>
 	constexpr std::chrono::time_point<Clock, Duration>
-	civil_to_time_point( int_least32_t yr, uint_least32_t mo, uint_least32_t dy,
-	                     uint_least32_t hr, uint_least32_t mn, uint_least32_t se,
-	                     uint_least32_t ms ) {
-		constexpr auto calc =
-		  []( int_least32_t y, uint_least32_t m, uint_least32_t d, uint_least32_t h,
-		      uint_least32_t min, uint_least32_t s, uint_least32_t mil ) {
-			  y -= static_cast<int_least32_t>( m ) <= 2;
-			  int_least32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
-			  uint_least32_t const yoe = static_cast<uint_least32_t>(
-			    static_cast<int_least32_t>( y ) - era * 400 ); // [0, 399]
-			  uint_least32_t const doy = static_cast<uint_least32_t>(
-			    ( 153 * ( static_cast<int_least32_t>( m ) +
-			              ( static_cast<int_least32_t>( m ) > 2 ? -3 : 9 ) ) +
-			      2 ) /
-			      5 +
-			    static_cast<int_least32_t>( d ) - 1 ); // [0, 365]
-			  uint_least32_t const doe =
-			    yoe * 365 + yoe / 4 - yoe / 100 + doy; // [0, 146096]
-			  int_least32_t const days_since_epoch =
-			    era * 146097 + static_cast<int_least32_t>( doe ) - 719468;
+	civil_to_time_point( std::int_least32_t yr, std::uint_least32_t mo,
+	                     std::uint_least32_t dy, std::uint_least32_t hr,
+	                     std::uint_least32_t mn, std::uint_least32_t se,
+	                     std::uint_least32_t ms ) {
+		constexpr auto calc = []( std::int_least32_t y, std::uint_least32_t m,
+		                          std::uint_least32_t d, std::uint_least32_t h,
+		                          std::uint_least32_t min, std::uint_least32_t s,
+		                          std::uint_least32_t mil ) {
+			y -= static_cast<std::int_least32_t>( m ) <= 2;
+			std::int_least32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
+			std::uint_least32_t const yoe = static_cast<std::uint_least32_t>(
+			  static_cast<std::int_least32_t>( y ) - era * 400 ); // [0, 399]
+			std::uint_least32_t const doy = static_cast<std::uint_least32_t>(
+			  ( 153 * ( static_cast<std::int_least32_t>( m ) +
+			            ( static_cast<std::int_least32_t>( m ) > 2 ? -3 : 9 ) ) +
+			    2 ) /
+			    5 +
+			  static_cast<std::int_least32_t>( d ) - 1 ); // [0, 365]
+			std::uint_least32_t const doe =
+			  yoe * 365 + yoe / 4 - yoe / 100 + doy; // [0, 146096]
+			std::int_least32_t const days_since_epoch =
+			  era * 146097 + static_cast<std::int_least32_t>( doe ) - 719468;
 
-			  using Days = std::chrono::duration<int_least32_t, std::ratio<86400>>;
-			  return std::chrono::time_point<std::chrono::system_clock,
-			                                 std::chrono::milliseconds>{} +
-			         ( Days( days_since_epoch ) + std::chrono::hours( h ) +
-			           std::chrono::minutes( min ) +
-			           std::chrono::seconds( static_cast<uint_least32_t>( s ) ) +
-			           std::chrono::milliseconds( mil ) );
-		  };
+			using Days = std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
+			return std::chrono::time_point<std::chrono::system_clock,
+			                               std::chrono::milliseconds>{} +
+			       ( Days( days_since_epoch ) + std::chrono::hours( h ) +
+			         std::chrono::minutes( min ) +
+			         std::chrono::seconds( static_cast<std::uint_least32_t>( s ) ) +
+			         std::chrono::milliseconds( mil ) );
+		};
 		// Not all clocks have the same epoch.  This should account for the offset
 		// and adjust the time_point so that the days prior are in relation to unix
 		// epoch.  If system_clock is used, as is the default for the return value,
 		// it will be zero and should be removed by the compiler
-		constexpr auto system_epoch = std::chrono::time_point<Clock, Duration>{};
-		constexpr auto unix_epoch = calc( 1970, 1, 1, 0, 0, 0, 0 );
-		constexpr auto offset = unix_epoch - system_epoch;
-		return calc( yr, mo, dy, hr, mn, se, ms ) + offset;
+		auto result = calc( yr, mo, dy, hr, mn, se, ms );
+#if defined( __cpp_lib_chrono ) and __cpp_lib_chrono >= 201907
+		// We have clock_cast
+		return std::chrono::duration_cast<Duration>(
+		  std::chrono::clock_cast<Clock>( result ) );
+#else
+		if constexpr( std::is_same_v<Clock, std::chrono::system_clock> ) {
+			return result;
+		} else {
+			// This is a guess and will not be constexpr
+
+			// System epoch is unix epoch on(gcc/clang/msvc)
+			auto const system_epoch = std::chrono::floor<std::chrono::hours>(
+			  std::chrono::system_clock::now( ).time_since_epoch( ) +
+			  std::chrono::minutes( 30 ) );
+			auto const clock_epoch = std::chrono::floor<std::chrono::hours>(
+			  Clock::now( ).time_since_epoch( ) + std::chrono::minutes( 30 ) );
+
+			constexpr auto offset =
+			  std::chrono::duration_cast<std::chrono::milliseconds>( clock_epoch -
+			                                                         system_epoch );
+			return std::chrono::duration_cast<Duration>( result + offset );
+		}
+#endif
 	}
 
 	struct date_parts {
@@ -129,17 +151,17 @@ namespace daw::json::json_details {
 	constexpr date_parts
 	parse_iso_8601_date( daw::basic_string_view<CharT, Traits> timestamp_str ) {
 		auto result = date_parts{0, 0, 0};
-		result.day =
-		  parse_unsigned<uint_least32_t, 2>( timestamp_str.pop_back( 2U ).data( ) );
+		result.day = parse_unsigned<std::uint_least32_t, 2>(
+		  timestamp_str.pop_back( 2U ).data( ) );
 		if( not is_number( timestamp_str.back( ) ) ) {
 			timestamp_str.remove_suffix( );
 		}
-		result.month =
-		  parse_unsigned<uint_least32_t, 2>( timestamp_str.pop_back( 2U ).data( ) );
+		result.month = parse_unsigned<std::uint_least32_t, 2>(
+		  timestamp_str.pop_back( 2U ).data( ) );
 		if( not is_number( timestamp_str.back( ) ) ) {
 			timestamp_str.remove_suffix( );
 		}
-		result.year = parse_number<int_least32_t>( timestamp_str );
+		result.year = parse_number<std::int_least32_t>( timestamp_str );
 		return result;
 	}
 
@@ -154,21 +176,21 @@ namespace daw::json::json_details {
 	constexpr time_parts
 	parse_iso_8601_time( daw::basic_string_view<CharT, Traits> timestamp_str ) {
 		auto result = time_parts{0, 0, 0, 0};
-		result.hour =
-		  parse_unsigned<uint_least32_t, 2>( timestamp_str.pop_front( 2 ).data( ) );
+		result.hour = parse_unsigned<std::uint_least32_t, 2>(
+		  timestamp_str.pop_front( 2 ).data( ) );
 		if( not is_number( timestamp_str.front( ) ) ) {
 			timestamp_str.remove_prefix( );
 		}
-		result.minute =
-		  parse_unsigned<uint_least32_t, 2>( timestamp_str.pop_front( 2 ).data( ) );
+		result.minute = parse_unsigned<std::uint_least32_t, 2>(
+		  timestamp_str.pop_front( 2 ).data( ) );
 		if( timestamp_str.empty( ) ) {
 			return result;
 		}
 		if( not is_number( timestamp_str.front( ) ) ) {
 			timestamp_str.remove_prefix( );
 		}
-		result.second =
-		  parse_unsigned<uint_least32_t, 2>( timestamp_str.pop_front( 2 ).data( ) );
+		result.second = parse_unsigned<std::uint_least32_t, 2>(
+		  timestamp_str.pop_front( 2 ).data( ) );
 		if( timestamp_str.empty( ) ) {
 			return result;
 		}
@@ -176,7 +198,7 @@ namespace daw::json::json_details {
 			timestamp_str.remove_prefix( );
 		}
 		result.millisecond =
-		  parse_number<uint_least32_t>( timestamp_str.pop_front( 3 ) );
+		  parse_number<std::uint_least32_t>( timestamp_str.pop_front( 3 ) );
 		return result;
 	}
 
@@ -202,11 +224,11 @@ namespace daw::json::json_details {
 			// The format will be (+|-)hh[:]mm
 			bool const sign = ts.front( ) == static_cast<CharT>( '+' );
 			ts.remove_prefix( );
-			auto hr_offset = parse_unsigned<uint_least32_t, 2>( ts.data( ) );
+			auto hr_offset = parse_unsigned<std::uint_least32_t, 2>( ts.data( ) );
 			if( ts.front( ) == static_cast<CharT>( ':' ) ) {
 				ts.remove_prefix( );
 			}
-			auto mn_offset = parse_unsigned<uint_least32_t, 2>( ts.data( ) );
+			auto mn_offset = parse_unsigned<std::uint_least32_t, 2>( ts.data( ) );
 			// Want to subtract offset from current time, we are converting to UTC
 			if( sign ) {
 				// Positive offset
@@ -222,37 +244,38 @@ namespace daw::json::json_details {
 		                            hms.minute, hms.second, hms.millisecond );
 	}
 	struct ymdhms {
-		int_least32_t year;
-		uint_least32_t month;
-		uint_least32_t day;
-		uint_least32_t hour;
-		uint_least32_t minute;
-		uint_least32_t second;
-		uint_least32_t millisecond;
+		std::int_least32_t year;
+		std::uint_least32_t month;
+		std::uint_least32_t day;
+		std::uint_least32_t hour;
+		std::uint_least32_t minute;
+		std::uint_least32_t second;
+		std::uint_least32_t millisecond;
 	};
 
 	template<typename Clock, typename Duration>
 	constexpr ymdhms time_point_to_civil(
 	  std::chrono::time_point<Clock, Duration> const &tp ) noexcept {
 		auto dur_from_epoch = tp.time_since_epoch( );
-		using Days = std::chrono::duration<int_least32_t, std::ratio<86400>>;
+		using Days = std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
 		auto const days_since_epoch =
 		  std::chrono::duration_cast<Days>( dur_from_epoch );
-		int_least32_t z = days_since_epoch.count( );
+		std::int_least32_t z = days_since_epoch.count( );
 		z += 719468;
-		int_least32_t const era = ( z >= 0 ? z : z - 146096 ) / 146097;
-		uint_least32_t const doe =
-		  static_cast<uint_least32_t>( z - era * 146097 ); // [0, 146096]
-		uint_least32_t const yoe =
+		std::int_least32_t const era = ( z >= 0 ? z : z - 146096 ) / 146097;
+		std::uint_least32_t const doe =
+		  static_cast<std::uint_least32_t>( z - era * 146097 ); // [0, 146096]
+		std::uint_least32_t const yoe =
 		  ( doe - doe / 1460 + doe / 36524 - doe / 146096 ) / 365; // [0, 399]
-		int_least32_t const y = static_cast<int_least32_t>( yoe ) + era * 400;
-		uint_least32_t const doy =
-		  doe - ( 365 * yoe + yoe / 4 - yoe / 100 );             // [0, 365]
-		uint_least32_t const mp = ( 5 * doy + 2 ) / 153;         // [0, 11]
-		uint_least32_t const d = doy - ( 153 * mp + 2 ) / 5 + 1; // [1, 31]
-		uint_least32_t const m = static_cast<uint_least32_t>(
-		  static_cast<int_least32_t>( mp ) +
-		  ( static_cast<int_least32_t>( mp ) < 10 ? 3 : -9 ) ); // [1, 12]
+		std::int_least32_t const y =
+		  static_cast<std::int_least32_t>( yoe ) + era * 400;
+		std::uint_least32_t const doy =
+		  doe - ( 365 * yoe + yoe / 4 - yoe / 100 );                  // [0, 365]
+		std::uint_least32_t const mp = ( 5 * doy + 2 ) / 153;         // [0, 11]
+		std::uint_least32_t const d = doy - ( 153 * mp + 2 ) / 5 + 1; // [1, 31]
+		std::uint_least32_t const m = static_cast<std::uint_least32_t>(
+		  static_cast<std::int_least32_t>( mp ) +
+		  ( static_cast<std::int_least32_t>( mp ) < 10 ? 3 : -9 ) ); // [1, 12]
 
 		dur_from_epoch -= days_since_epoch;
 		auto const hrs =
@@ -269,9 +292,9 @@ namespace daw::json::json_details {
 		return ymdhms{y + ( m <= 2 ),
 		              m,
 		              d,
-		              static_cast<uint_least32_t>( hrs.count( ) ),
-		              static_cast<uint_least32_t>( min.count( ) ),
-		              static_cast<uint_least32_t>( sec.count( ) ),
-		              static_cast<uint_least32_t>( ms.count( ) )};
+		              static_cast<std::uint_least32_t>( hrs.count( ) ),
+		              static_cast<std::uint_least32_t>( min.count( ) ),
+		              static_cast<std::uint_least32_t>( sec.count( ) ),
+		              static_cast<std::uint_least32_t>( ms.count( ) )};
 	}
 } // namespace daw::json::json_details

@@ -34,7 +34,7 @@ namespace daw::json::json_details::literal_end {
 		  daw::make_truth_table<256, true>( {'\0', ',', ']', '}'} );
 
 		static constexpr bool test( char c ) noexcept {
-			return test_arry[static_cast<size_t>( c )];
+			return test_arry[static_cast<std::size_t>( c )];
 		}
 
 	public:

@@ -70,7 +70,7 @@ namespace daw::json::json_details::unsignedint {
 #ifdef DAW_ALLOW_SSE3
 		// Adapted from
 		// https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
-		static inline uint32_t parse_eight_digits_unrolled( const char *ptr ) {
+		static inline std::uint32_t parse_eight_digits_unrolled( const char *ptr ) {
 			// this actually computes *16* values so we are being wasteful.
 			__m128i const ascii0 = _mm_set1_epi8( '0' );
 
@@ -89,11 +89,11 @@ namespace daw::json::json_details::unsignedint {
 			__m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );
 			__m128i const t3 = _mm_packus_epi32( t2, t2 );
 			__m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
-			return static_cast<uint32_t>( _mm_cvtsi128_si32(
+			return static_cast<std::uint32_t>( _mm_cvtsi128_si32(
 			  t4 ) ); // only captures the sum of the first 8 digits, drop the rest
 		}
 
-		static inline uint64_t parse_sixteen_digits_unrolled( const char *ptr ) {
+		static inline std::uint64_t parse_sixteen_digits_unrolled( const char *ptr ) {
 			__m128i const ascii0 = _mm_set1_epi8( '0' );
 
 			__m128i const mul_1_10 =
@@ -111,13 +111,13 @@ namespace daw::json::json_details::unsignedint {
 			__m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );
 			__m128i const t3 = _mm_packus_epi32( t2, t2 );
 			__m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
-			return static_cast<uint64_t>( _mm_cvtsi128_si64( t4 ) );
+			return static_cast<std::uint64_t>( _mm_cvtsi128_si64( t4 ) );
 		}
 
 		[[nodiscard]] static inline bool
 		is_made_of_eight_digits_fast( const char *ptr ) {
-			uint64_t val;
-			memcpy( &val, ptr, sizeof( uint64_t ) );
+			std::uint64_t val;
+			memcpy( &val, ptr, sizeof( std::uint64_t ) );
 			return ( ( ( val & 0xF0F0F0F0F0F0F0F0U ) |
 			           ( ( ( val + 0x0606060606060606U ) & 0xF0F0F0F0F0F0F0F0U ) >>
 			             4U ) ) == 0x3333333333333333U );
@@ -178,7 +178,7 @@ namespace daw::json::json_details {
 		using namespace daw::json::json_details::unsignedint;
 		using iresult_t =
 		  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing,
-		                     uintmax_t, Result>;
+		                     std::uintmax_t, Result>;
 		auto [v, new_p] = [rng] {
 #ifdef DAW_ALLOW_SSE3
 			if constexpr( SIMDMode == SIMDModes::SSE3 ) {
@@ -192,12 +192,12 @@ namespace daw::json::json_details {
 			}
 #endif
 		}( );
-		uint_fast8_t c = static_cast<uint_fast8_t>( new_p - rng.first );
+		std::uint_fast8_t c = static_cast<std::uint_fast8_t>( new_p - rng.first );
 		rng.first = new_p;
 
 		struct result_t {
 			Result value;
-			uint_fast8_t count;
+			std::uint_fast8_t count;
 		};
 
 		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
@@ -218,7 +218,7 @@ namespace daw::json::json_details {
 		using result_t =
 		  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing or
 		                       std::is_enum_v<Result>,
-		                     uintmax_t, Result>;
+		                     std::uintmax_t, Result>;
 		auto [result, ptr] = [&] {
 #ifdef DAW_ALLOW_SSE3
 			if constexpr( SimdMode == SIMDModes::SSE3 ) {

@@ -70,7 +70,7 @@ namespace daw::json {
 		using value_type = typename element_type::parse_to_t;
 		using reference = value_type;
 		using pointer = value_type;
-		using difference_type = ptrdiff_t;
+		using difference_type = std::ptrdiff_t;
 		// Can do forward iteration and be stored
 		using iterator_category = std::input_iterator_tag;
 

@@ -208,7 +208,8 @@ namespace daw::json {
 		using base_type = json_details::unwrap_type<T, Nullable>;
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
-		using parse_to_t = std::invoke_result_t<Constructor, char const *, size_t>;
+		using parse_to_t =
+		  std::invoke_result_t<Constructor, char const *, std::size_t>;
 
 		static inline constexpr JSONNAMETYPE name = Name;
 		static inline constexpr JsonParseTypes expected_type =
@@ -251,7 +252,7 @@ namespace daw::json {
 		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
 		using element_map_t =
 		  std::tuple<json_details::unnamed_default_type_mapping<JsonElements>...>;
-		static inline constexpr size_t base_map[5] = {
+		static inline constexpr std::size_t base_map[5] = {
 		  json_details::find_json_element<JsonBaseParseTypes::Number>(
 		    {json_details::unnamed_default_type_mapping<
 		      JsonElements>::underlying_json_type...} ),
@@ -329,7 +330,7 @@ namespace daw::json {
 		using i_am_a_json_type = void;
 		using to_converter_t = ToConverter;
 		using from_converter_t = FromConverter;
-		// TODO explore using char const *, size_t pair for ctor
+		// TODO explore using char const *, std::size_t pair for ctor
 		using base_type = json_details::unwrap_type<T, Nullable>;
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
@@ -347,34 +348,34 @@ namespace daw::json {
 
 	namespace json_details {
 		template<JSONNAMETYPE Name, typename JsonElement, typename Container,
-			typename Constructor, typename Appender, JsonNullable Nullable>
+		         typename Constructor, typename Appender, JsonNullable Nullable>
 		struct json_array_detect {
 			using i_am_a_json_type = void;
 			using json_element_t =
-			json_details::unnamed_default_type_mapping<JsonElement>;
+			  json_details::unnamed_default_type_mapping<JsonElement>;
 			static_assert( not std::is_same_v<json_element_t, void>,
-										 "Unknown JsonElement type." );
+			               "Unknown JsonElement type." );
 			static_assert( json_details::is_a_json_type_v<json_element_t>,
-										 "Error determining element type" );
+			               "Error determining element type" );
 			using constructor_t = Constructor;
 
 			using base_type = json_details::unwrap_type<Container, Nullable>;
 			static_assert( not std::is_same_v<void, base_type>,
-										 "Failed to detect base type" );
+			               "Failed to detect base type" );
 			using parse_to_t = std::invoke_result_t<Constructor>;
 			using appender_t = Appender;
 			static inline constexpr JSONNAMETYPE name = Name;
 			static inline constexpr JsonParseTypes expected_type =
-				get_parse_type_v<JsonParseTypes::Array, Nullable>;
+			  get_parse_type_v<JsonParseTypes::Array, Nullable>;
 			static inline constexpr JsonParseTypes base_expected_type =
-				JsonParseTypes::Array;
+			  JsonParseTypes::Array;
 
 			static_assert( json_element_t::name == no_name,
-										 "All elements of json_array must be have no_name" );
+			               "All elements of json_array must be have no_name" );
 			static inline constexpr JsonBaseParseTypes underlying_json_type =
-				JsonBaseParseTypes::Array;
+			  JsonBaseParseTypes::Array;
 		};
-	}
+	} // namespace json_details
 
 	template<JSONNAMETYPE Name, typename JsonElement, typename Container,
 	         typename Constructor, typename Appender, JsonNullable Nullable>

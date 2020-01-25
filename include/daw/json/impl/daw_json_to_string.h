@@ -172,7 +172,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename OutputIterator>
-	constexpr OutputIterator output_hex( uint16_t c, OutputIterator it ) {
+	constexpr OutputIterator output_hex( std::uint16_t c, OutputIterator it ) {
 		char const n0 = to_nibble_char( ( c >> 12U ) & 0xFU );
 		char const n1 = to_nibble_char( ( c >> 8U ) & 0xFU );
 		char const n2 = to_nibble_char( ( c >> 4U ) & 0xFU );
@@ -188,7 +188,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename OutputIterator>
-	constexpr void utf32_to_utf8( uint32_t cp, OutputIterator &it ) {
+	constexpr void utf32_to_utf8( std::uint32_t cp, OutputIterator &it ) {
 		if( cp <= 0x7FU ) {
 			*it++ = cp;
 			return;
@@ -264,18 +264,18 @@ namespace daw::json::json_details {
 				default:
 					if constexpr( EightBitMode == EightBitModes::DisallowHigh ) {
 						if( cp < 0x20U ) {
-							it = output_hex( static_cast<uint16_t>( cp ), it );
+							it = output_hex( static_cast<std::uint16_t>( cp ), it );
 							break;
 						}
 						if( cp >= 0x7FU and cp <= 0xFFFFU ) {
-							it = output_hex( static_cast<uint16_t>( cp ), it );
+							it = output_hex( static_cast<std::uint16_t>( cp ), it );
 							break;
 						}
 						if( cp > 0xFFFFU ) {
-							it = output_hex( static_cast<uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
+							it = output_hex( static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
 							                 it );
 							it = output_hex(
-							  static_cast<uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
+							  static_cast<std::uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
 							break;
 						}
 					}
@@ -346,18 +346,18 @@ namespace daw::json::json_details {
 				default:
 					if constexpr( EightBitMode == EightBitModes::DisallowHigh ) {
 						if( cp < 0x20U ) {
-							it = output_hex( static_cast<uint16_t>( cp ), it );
+							it = output_hex( static_cast<std::uint16_t>( cp ), it );
 							break;
 						}
 						if( cp >= 0x7FU and cp <= 0xFFFFU ) {
-							it = output_hex( static_cast<uint16_t>( cp ), it );
+							it = output_hex( static_cast<std::uint16_t>( cp ), it );
 							break;
 						}
 						if( cp > 0xFFFFU ) {
-							it = output_hex( static_cast<uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
+							it = output_hex( static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
 							                 it );
 							it = output_hex(
-							  static_cast<uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
+							  static_cast<std::uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
 							break;
 						}
 					}
@@ -394,7 +394,7 @@ namespace daw::json::json_details {
 		return copy_to_iterator( "false", it );
 	}
 
-	template<size_t idx, typename JsonMembers, typename OutputIterator,
+	template<std::size_t idx, typename JsonMembers, typename OutputIterator,
 	         typename parse_to_t>
 	constexpr void to_variant_string( OutputIterator &it,
 	                                  parse_to_t const &value ) {
@@ -756,14 +756,14 @@ namespace daw::json::json_details {
 	template<typename JsonMember>
 	inline constexpr bool has_tag_member_v =
 	  daw::is_detected_v<tag_member_t, JsonMember>;
-	template<size_t, typename JsonMember, typename OutputIterator, typename Value,
+	template<std::size_t, typename JsonMember, typename OutputIterator, typename Value,
 	         typename VisitedMembers,
 	         std::enable_if_t<not has_tag_member_v<JsonMember>, std::nullptr_t> =
 	           nullptr>
 	constexpr void tags_to_json_str( bool &, OutputIterator const &,
 	                                 Value const &, VisitedMembers const & ) {}
 	template<
-	  size_t pos, typename JsonMember, typename OutputIterator, typename Value,
+	  std::size_t pos, typename JsonMember, typename OutputIterator, typename Value,
 	  typename VisitedMembers,
 	  std::enable_if_t<has_tag_member_v<JsonMember>, std::nullptr_t> = nullptr>
 	constexpr void tags_to_json_str( bool &is_first, OutputIterator it,
@@ -788,7 +788,7 @@ namespace daw::json::json_details {
 		                                   typename JsonMember::switcher{}( v ) );
 	}
 
-	template<size_t pos, typename JsonMember, typename OutputIterator,
+	template<std::size_t pos, typename JsonMember, typename OutputIterator,
 	         typename... Args, typename Value, typename Visited>
 	constexpr void to_json_str( bool &is_first, OutputIterator it,
 	                            std::tuple<Args...> const &tp, Value const &,
