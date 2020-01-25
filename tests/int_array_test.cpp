@@ -49,12 +49,6 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-#ifndef NDEBUG
-static constexpr size_t const NUMVALUES = 1'000ULL;
-#else
-static constexpr size_t const NUMVALUES = 1'000'000ULL;
-#endif
-
 template<size_t N, typename T>
 static std::string_view make_int_array_data( ) {
 	static std::string const json_data = [] {
@@ -75,7 +69,9 @@ static std::string_view make_int_array_data( ) {
 	return {json_data.data( ), json_data.size( )};
 }
 
-int main( ) {
+template<size_t NUMVALUES>
+void test_func( ) {
+
 	using namespace daw::json;
 	auto const json_sv_intmax = make_int_array_data<NUMVALUES, intmax_t>( );
 
@@ -390,4 +386,12 @@ int main( ) {
 		}
 	}
 #endif
+}
+
+int main( int argc, char ** ) {
+	if( argc > 1 ) {
+		test_func<1'000'000ULL>( );
+	} else {
+		test_func<1'000ULL>( );
+	}
 }

@@ -55,13 +55,6 @@ json_data_contract_for( Number ) noexcept {
 }
 #endif
 
-#ifndef NDEBUG
-static constexpr size_t const NUMVALUES = 10'000ULL;
-#else
-// static constexpr size_t const NUMVALUES = 1'000'000ULL;
-static constexpr size_t const NUMVALUES = 10'000ULL;
-#endif
-
 template<typename Float>
 Float rand_float( ) {
 	auto f0 = daw::randint<intmax_t>( std::numeric_limits<intmax_t>::min( ),
@@ -76,7 +69,8 @@ Float rand_float( ) {
 	return static_cast<Float>( f1 ) / static_cast<Float>( f0 );
 }
 
-int main( ) {
+template<size_t NUMVALUES>
+void test_func( ) {
 	using namespace daw::json;
 	using iterator_t = daw::json::json_array_iterator<float>;
 
@@ -103,5 +97,13 @@ int main( ) {
 		  json_sv );
 
 		std::cout << "float parse count: " << count3 << '\n';
+	}
+}
+
+int main( int argc, char ** ) {
+	if( argc > 1 ) {
+		test_func<1'000'000ULL>( );
+	} else {
+		test_func<1'000ULL>( );
 	}
 }
