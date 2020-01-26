@@ -143,13 +143,24 @@ namespace daw::json {
 
 		[[nodiscard]] constexpr bool
 		operator==( json_array_iterator const &rhs ) const {
-			return ( m_state.begin( ) == rhs.m_state.begin( ) ) or
-			       ( not( *this ) and not rhs );
+			if( not( *this ) ) {
+				return not rhs;
+			}
+			if( not rhs ) {
+				return false;
+			}
+			return ( m_state.begin( ) == rhs.m_state.begin( ) );
 		}
 
 		[[nodiscard]] constexpr bool
 		operator!=( json_array_iterator const &rhs ) const {
-			return not( *this == rhs );
+			if( not( *this ) ) {
+				return static_cast<bool>( rhs );
+			}
+			if( not rhs ) {
+				return true;
+			}
+			return m_state.begin( ) != rhs.m_state.begin( );
 		}
 	};
 
