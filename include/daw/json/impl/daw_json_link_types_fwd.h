@@ -170,7 +170,7 @@ namespace daw::json {
 	 * data
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
@@ -189,7 +189,7 @@ namespace daw::json {
 	 * string data.  Not all invalid codepoints are detected
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
@@ -208,7 +208,7 @@ namespace daw::json {
 	 * data
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
 	 * @tparam Appender Allows appending characters to the output object
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
@@ -228,7 +228,7 @@ namespace daw::json {
 	 * string data
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
 	 * @tparam Appender Allows appending characters to the output object
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
@@ -558,16 +558,16 @@ namespace daw::json {
 	namespace json_details {
 
 		template<JsonBaseParseTypes PT>
-		constexpr size_t
+		constexpr std::size_t
 		find_json_element( std::initializer_list<JsonBaseParseTypes> pts ) {
-			size_t idx = 0;
+			std::size_t idx = 0;
 			for( auto const &pt : pts ) {
 				if( pt == PT ) {
 					return idx;
 				}
 				++idx;
 			}
-			return std::numeric_limits<size_t>::max( );
+			return std::numeric_limits<std::size_t>::max( );
 		}
 
 	} // namespace json_details

@@ -32,12 +32,6 @@
 #include <string_view>
 #include <vector>
 
-#ifndef NDEBUG
-static constexpr size_t const NUMVALUES = 1'000ULL;
-#else
-static constexpr size_t const NUMVALUES = 100'000ULL;
-#endif
-
 template<size_t N, typename T>
 static std::string make_int_array_data( ) {
 	return [] {
@@ -55,7 +49,7 @@ static std::string make_int_array_data( ) {
 	}( );
 }
 
-template<typename T>
+template<size_t NUMVALUES, typename T>
 static void test_from_json_array( std::string_view json_sv ) {
 	using namespace daw::json;
 
@@ -71,23 +65,32 @@ template<typename T>
 static void test_json_array_iterator( std::string_view json_sv ) {
 	using namespace daw::json;
 	for( size_t n = 0; n < 1000; ++n ) {
-		daw::do_not_optimize( json_sv );
+		//daw::do_not_optimize( json_sv );
 		auto rng = json_array_range_unchecked<T>( json_sv );
-		daw::do_not_optimize( rng );
+		//daw::do_not_optimize( rng );
 		T sum = std::accumulate( rng.begin( ), rng.end( ), static_cast<T>( 0 ) );
 		daw::do_not_optimize( sum );
 	}
 }
 
-int main( ) {
+template<size_t NUMVALUES>
+void test_func( ) {
 	try {
 		using int_type = uintmax_t;
 		auto const json_str = make_int_array_data<NUMVALUES, int_type>( );
 		auto const json_sv = std::string_view( json_str.data( ), json_str.size( ) );
-		test_from_json_array<int_type>( json_sv );
+		test_from_json_array<NUMVALUES, int_type>( json_sv );
 		test_json_array_iterator<int_type>( json_sv );
-	} catch( daw::json::json_exception const & je ) {
-		std::cout << "Exception while processing: " << je.reason() << '\n';
-		return 1;
+	} catch( daw::json::json_exception const &je ) {
+		std::cout << "Exception while processing: " << je.reason( ) << '\n';
+		return;
+	}
+}
+
+int main( int argc, char ** ) {
+	if( argc > 1 ) {
+		test_func<1'000'000ULL>( );
+	} else {
+		test_func<1'000ULL>( );
 	}
 }

@@ -53,7 +53,7 @@ namespace daw::json::json_details {
 		if( rng.front( ) == '.' ) {
 			rng.remove_prefix( );
 
-			auto fract_tmp = parse_unsigned_integer2<uint64_t, SIMDMode>( rng );
+			auto fract_tmp = parse_unsigned_integer2<std::uint64_t, SIMDMode>( rng );
 			fract_part = static_cast<Result>( fract_tmp.value );
 			fract_part *= static_cast<Result>(
 			  daw::cxmath::dpow10( -static_cast<int32_t>( fract_tmp.count ) ) );

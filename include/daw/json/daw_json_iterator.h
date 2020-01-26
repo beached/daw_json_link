@@ -70,7 +70,7 @@ namespace daw::json {
 		using value_type = typename element_type::parse_to_t;
 		using reference = value_type;
 		using pointer = value_type;
-		using difference_type = ptrdiff_t;
+		using difference_type = std::ptrdiff_t;
 		// Can do forward iteration and be stored
 		using iterator_category = std::input_iterator_tag;
 
@@ -143,13 +143,24 @@ namespace daw::json {
 
 		[[nodiscard]] constexpr bool
 		operator==( json_array_iterator const &rhs ) const {
-			return ( m_state.begin( ) == rhs.m_state.begin( ) ) or
-			       ( not( *this ) and not rhs );
+			if( not( *this ) ) {
+				return not rhs;
+			}
+			if( not rhs ) {
+				return false;
+			}
+			return ( m_state.begin( ) == rhs.m_state.begin( ) );
 		}
 
 		[[nodiscard]] constexpr bool
 		operator!=( json_array_iterator const &rhs ) const {
-			return not( *this == rhs );
+			if( not( *this ) ) {
+				return static_cast<bool>( rhs );
+			}
+			if( not rhs ) {
+				return true;
+			}
+			return m_state.begin( ) != rhs.m_state.begin( );
 		}
 	};
 

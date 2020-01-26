@@ -59,7 +59,7 @@ namespace daw::json {
 		                                            std::chrono::milliseconds>;
 
 		[[maybe_unused, nodiscard]] constexpr result_type
-		operator( )( char const *ptr, size_t sz ) const {
+		operator( )( char const *ptr, std::size_t sz ) const {
 			return json_details::parse_iso8601_timestamp(
 			  daw::string_view( ptr, sz ) );
 		}
@@ -76,7 +76,7 @@ namespace daw::json {
 		}
 
 		[[maybe_unused, nodiscard]] constexpr result_type
-		operator( )( char const *ptr, size_t sz ) const {
+		operator( )( char const *ptr, std::size_t sz ) const {
 			return json_details::parse_iso8601_timestamp(
 			  daw::string_view( ptr, sz ) );
 		}
@@ -117,15 +117,15 @@ namespace daw::json::json_details {
 	struct kv_t {
 		string_t name;
 		JsonParseTypes expected_type;
-		size_t pos;
+		std::size_t pos;
 
-		constexpr kv_t( string_t Name, JsonParseTypes Expected, size_t Pos )
+		constexpr kv_t( string_t Name, JsonParseTypes Expected, std::size_t Pos )
 		  : name( daw::move( Name ) )
 		  , expected_type( Expected )
 		  , pos( Pos ) {}
 	};
 
-	template<size_t N, typename string_t, typename... JsonMembers>
+	template<std::size_t N, typename string_t, typename... JsonMembers>
 	[[nodiscard]] constexpr kv_t<string_t> get_item( ) {
 		using type_t = traits::nth_type<N, JsonMembers...>;
 		return kv_t<string_t>( type_t::name, type_t::expected_type, N );
@@ -144,7 +144,7 @@ namespace daw::json::json_details {
 		}
 	};
 
-	template<size_t N, typename First, typename Last, bool IsUnCheckedInput>
+	template<std::size_t N, typename First, typename Last, bool IsUnCheckedInput>
 	struct locations_info_t {
 		using value_type = location_info_t<First, Last, IsUnCheckedInput>;
 		std::array<value_type, N> names;
@@ -166,35 +166,35 @@ namespace daw::json::json_details {
 		}
 
 		constexpr location_info_t<First, Last, IsUnCheckedInput> const &
-		operator[]( size_t idx ) const {
+		operator[]( std::size_t idx ) const {
 			return names[idx];
 		}
 
 		constexpr location_info_t<First, Last, IsUnCheckedInput> &
-		operator[]( size_t idx ) {
+		operator[]( std::size_t idx ) {
 			return names[idx];
 		}
 
-		static constexpr size_t size( ) noexcept {
+		static constexpr std::size_t size( ) noexcept {
 			return N;
 		}
 
-		[[nodiscard]] constexpr size_t find_name( daw::string_view key ) const {
+		[[nodiscard]] constexpr std::size_t find_name( daw::string_view key ) const {
 
 			auto result =
 			  algorithm::find_if( begin( ), end( ), [key]( auto const &loc ) {
 				  return loc.name == key;
 			  } );
 
-			return static_cast<size_t>( std::distance( begin( ), result ) );
+			return static_cast<std::size_t>( std::distance( begin( ), result ) );
 		}
 	};
 
-	template<typename JsonMember, size_t N, typename First, typename Last,
+	template<typename JsonMember, std::size_t N, typename First, typename Last,
 	         bool IsUnCheckedInput>
 	[[nodiscard]] constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	find_class_member(
-	  size_t pos, locations_info_t<N, First, Last, IsUnCheckedInput> &locations,
+	  std::size_t pos, locations_info_t<N, First, Last, IsUnCheckedInput> &locations,
 	  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
 		daw_json_assert_weak(
@@ -229,10 +229,10 @@ namespace daw::json::json_details {
 		return locations[pos].location;
 	}
 
-	template<typename JsonMember, size_t N, typename First, typename Last,
+	template<typename JsonMember, std::size_t N, typename First, typename Last,
 	         bool IsUnCheckedInput>
 	[[nodiscard]] constexpr json_result<JsonMember> parse_class_member(
-	  size_t member_position,
+	  std::size_t member_position,
 	  locations_info_t<N, First, Last, IsUnCheckedInput> &locations,
 	  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
@@ -262,10 +262,10 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<size_t N, typename... JsonMembers>
+	template<std::size_t N, typename... JsonMembers>
 	using nth = daw::traits::nth_element<N, JsonMembers...>;
 
-	template<typename... JsonMembers, typename OutputIterator, size_t... Is,
+	template<typename... JsonMembers, typename OutputIterator, std::size_t... Is,
 	         typename Tuple, typename Value>
 	[[nodiscard]] constexpr OutputIterator
 	serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
@@ -297,7 +297,7 @@ namespace daw::json::json_details {
 	  locations_info_t<sizeof...( JsonMembers ), First, Last, IsUnCheckedInput>{
 	    location_info_t<First, Last, IsUnCheckedInput>( JsonMembers::name )...};
 
-	template<typename JsonClass, typename... JsonMembers, size_t... Is,
+	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] constexpr JsonClass
 	parse_json_class( IteratorRange<First, Last, IsUnCheckedInput> &rng,
