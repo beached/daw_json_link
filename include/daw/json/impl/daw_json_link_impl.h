@@ -179,7 +179,8 @@ namespace daw::json::json_details {
 			return N;
 		}
 
-		[[nodiscard]] constexpr std::size_t find_name( daw::string_view key ) const {
+		[[nodiscard]] constexpr std::size_t
+		find_name( daw::string_view key ) const {
 
 			auto result =
 			  algorithm::find_if( begin( ), end( ), [key]( auto const &loc ) {
@@ -194,7 +195,8 @@ namespace daw::json::json_details {
 	         bool IsUnCheckedInput>
 	[[nodiscard]] constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	find_class_member(
-	  std::size_t pos, locations_info_t<N, First, Last, IsUnCheckedInput> &locations,
+	  std::size_t pos,
+	  locations_info_t<N, First, Last, IsUnCheckedInput> &locations,
 	  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
 		daw_json_assert_weak(

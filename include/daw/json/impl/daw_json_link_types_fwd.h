@@ -170,7 +170,8 @@ namespace daw::json {
 	 * data
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *,
+	 * std::size_t )
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
@@ -189,7 +190,8 @@ namespace daw::json {
 	 * string data.  Not all invalid codepoints are detected
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *,
+	 * std::size_t )
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
@@ -208,7 +210,8 @@ namespace daw::json {
 	 * data
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *,
+	 * std::size_t )
 	 * @tparam Appender Allows appending characters to the output object
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
@@ -228,7 +231,8 @@ namespace daw::json {
 	 * string data
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *,
+	 * std::size_t )
 	 * @tparam Appender Allows appending characters to the output object
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments

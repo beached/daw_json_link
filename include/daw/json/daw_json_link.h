@@ -699,6 +699,10 @@ namespace daw::json {
 
 	} // namespace json_details
 
+	/**
+	 * This is used for nullables who's member is a unique_ptr.
+	 * @tparam T Type of value stored in unique_ptr
+	 */
 	template<typename T>
 	struct UniquePtrConstructor {
 		static_assert( not json_details::is_unique_ptr_v<T>,
