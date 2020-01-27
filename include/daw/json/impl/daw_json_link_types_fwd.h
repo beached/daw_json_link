@@ -626,16 +626,32 @@ namespace daw::json {
 		get_variant_type_list( std::variant<Ts...> const * );
 
 		template<typename T>
+		using underlying_nullable_type = decltype( *std::declval<T>( ) );
+
+		template<typename T>
+		using detected_underlying_nullable_type =
+		  std::remove_reference_t<daw::detected_t<underlying_nullable_type, T>>;
+
+		template<typename T>
+		inline constexpr bool is_nullable_type =
+		  daw::is_detected_v<underlying_nullable_type, T>;
+
+		template<typename T>
 		constexpr unknown_variant_type<T> get_variant_type_list( T const * );
+
+		struct must_specify_variant_element_types {};
 
 		template<JsonNullable Nullable, typename Variant>
 		using determine_variant_element_types = std::conditional_t<
-		  Nullable == JsonNullable::Never,
+		  Nullable == JsonNullable::Never or not is_nullable_type<Variant>,
 		  std::remove_reference_t<decltype(
 		    get_variant_type_list( std::declval<Variant const *>( ) ) )>,
-		  std::remove_reference_t<decltype(
-		    get_variant_type_list( std::declval<std::add_pointer_t<decltype(
-		                             *std::declval<Variant const &>( ) )>>( ) ) )>>;
+		  std::conditional_t<
+		    is_nullable_type<Variant>,
+		    std::remove_reference_t<decltype( get_variant_type_list(
+		      std::declval<
+		        detected_underlying_nullable_type<Variant> const *>( ) ) )>,
+		    must_specify_variant_element_types>>;
 	} // namespace json_details
 
 	/***
