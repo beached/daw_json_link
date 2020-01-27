@@ -28,6 +28,7 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_value.h"
 #include "daw_json_to_string.h"
+#include "daw_murmur3.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_cxmath.h>
