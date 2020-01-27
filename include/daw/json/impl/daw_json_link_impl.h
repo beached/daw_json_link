@@ -186,13 +186,11 @@ namespace daw::json::json_details {
 		[[nodiscard]] constexpr std::size_t
 		find_name( daw::string_view key ) const {
 
-			auto result = algorithm::find_if(
+			return algorithm::find_index_of_if(
 			  begin( ), end( ),
 			  [&, hash = daw::murmur3_32( key )]( auto const &loc ) {
 				  return loc.hash_value == hash and loc.name == key;
 			  } );
-
-			return static_cast<std::size_t>( std::distance( begin( ), result ) );
 		}
 	};
 
