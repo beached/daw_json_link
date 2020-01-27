@@ -39,8 +39,13 @@ namespace daw::geojson {
 	}; // Property
 
 	struct Polygon {
-		std::string_view type;
+		/*std::string_view type;*/
 		std::vector<std::vector<std::array<double, 2>>> coordinates;
+
+		Polygon( std::string_view,
+		         std::vector<std::vector<std::array<double, 2>>> &&coords )
+		  : coordinates( std::move( coords ) ) {}
+
 	}; // Polygon
 
 	struct Feature {
@@ -109,7 +114,8 @@ namespace daw::json {
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::geojson::Polygon const &value ) {
-			return std::forward_as_tuple( value.type, value.coordinates );
+			return std::forward_as_tuple( std::string_view( "Polygon" ),
+			                              value.coordinates );
 		}
 	};
 
