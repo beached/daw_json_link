@@ -152,7 +152,6 @@ namespace daw::json::json_details {
 	struct locations_info_t {
 		using value_type = location_info_t<First, Last, IsUnCheckedInput>;
 		std::array<value_type, N> names;
-		bool unique_hashes = false;
 
 		constexpr decltype( auto ) begin( ) const {
 			return names.begin( );
@@ -190,8 +189,7 @@ namespace daw::json::json_details {
 			auto result = algorithm::find_if(
 			  begin( ), end( ),
 			  [&, hash = daw::murmur3_32( key )]( auto const &loc ) {
-				  return loc.hash_value == hash and
-				         ( unique_hashes or loc.name == key );
+				  return loc.hash_value == hash and loc.name == key;
 			  } );
 
 			return static_cast<std::size_t>( std::distance( begin( ), result ) );
@@ -302,31 +300,10 @@ namespace daw::json::json_details {
 
 	template<typename First, typename Last, bool IsUnCheckedInput,
 	         typename... JsonMembers>
-	constexpr locations_info_t<sizeof...( JsonMembers ), First, Last,
-	                           IsUnCheckedInput>
-	make_location_info( ) {
-		locations_info_t<sizeof...( JsonMembers ), First, Last, IsUnCheckedInput>
-		  result{
-		    location_info_t<First, Last, IsUnCheckedInput>( JsonMembers::name )...};
-		std::array<uint32_t, sizeof...( JsonMembers )> hashes{};
-		daw::algorithm::transform( result.begin( ), result.end( ), hashes.data( ),
-		                           []( auto const &v ) { return v.hash_value; } );
-		daw::sort( hashes.begin( ), hashes.end( ) );
-		result.unique_hashes =
-		  daw::algorithm::adjacent_find(
-		    hashes.begin( ), hashes.end( ),
-		    []( auto lhs, auto rhs ) { return lhs == rhs; } ) == hashes.end( );
-		return result;
-	}
-
-	template<typename First, typename Last, bool IsUnCheckedInput,
-	         typename... JsonMembers>
 	static inline constexpr auto known_locations_v =
-	  make_location_info<First, Last, IsUnCheckedInput, JsonMembers...>( );
-	/*
 	  locations_info_t<sizeof...( JsonMembers ), First, Last, IsUnCheckedInput>{
 	    location_info_t<First, Last, IsUnCheckedInput>( JsonMembers::name )...};
-	*/
+
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] constexpr JsonClass
