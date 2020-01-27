@@ -308,7 +308,9 @@ namespace daw::json::json_details {
 		locations_info_t<sizeof...( JsonMembers ), First, Last, IsUnCheckedInput>
 		  result{
 		    location_info_t<First, Last, IsUnCheckedInput>( JsonMembers::name )...};
-		std::array hashes{daw::murmur3_32( JsonMembers::name )...};
+		std::array<uint32_t, sizeof...( JsonMembers )> hashes{};
+		daw::algorithm::transform( result.begin( ), result.end( ), hashes.data( ),
+		                           []( auto const &v ) { return v.hash_value; } );
 		daw::sort( hashes.begin( ), hashes.end( ) );
 		result.unique_hashes =
 		  daw::algorithm::adjacent_find(
