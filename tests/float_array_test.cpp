@@ -34,7 +34,6 @@
 #include <string_view>
 #include <vector>
 
-
 struct Number {
 	float a{};
 };

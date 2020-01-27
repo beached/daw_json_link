@@ -272,8 +272,8 @@ namespace daw::json::json_details {
 							break;
 						}
 						if( cp > 0xFFFFU ) {
-							it = output_hex( static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
-							                 it );
+							it = output_hex(
+							  static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ), it );
 							it = output_hex(
 							  static_cast<std::uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
 							break;
@@ -354,8 +354,8 @@ namespace daw::json::json_details {
 							break;
 						}
 						if( cp > 0xFFFFU ) {
-							it = output_hex( static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ),
-							                 it );
+							it = output_hex(
+							  static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ), it );
 							it = output_hex(
 							  static_cast<std::uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
 							break;
@@ -756,15 +756,15 @@ namespace daw::json::json_details {
 	template<typename JsonMember>
 	inline constexpr bool has_tag_member_v =
 	  daw::is_detected_v<tag_member_t, JsonMember>;
-	template<std::size_t, typename JsonMember, typename OutputIterator, typename Value,
-	         typename VisitedMembers,
+	template<std::size_t, typename JsonMember, typename OutputIterator,
+	         typename Value, typename VisitedMembers,
 	         std::enable_if_t<not has_tag_member_v<JsonMember>, std::nullptr_t> =
 	           nullptr>
 	constexpr void tags_to_json_str( bool &, OutputIterator const &,
 	                                 Value const &, VisitedMembers const & ) {}
 	template<
-	  std::size_t pos, typename JsonMember, typename OutputIterator, typename Value,
-	  typename VisitedMembers,
+	  std::size_t pos, typename JsonMember, typename OutputIterator,
+	  typename Value, typename VisitedMembers,
 	  std::enable_if_t<has_tag_member_v<JsonMember>, std::nullptr_t> = nullptr>
 	constexpr void tags_to_json_str( bool &is_first, OutputIterator it,
 	                                 Value const &v,

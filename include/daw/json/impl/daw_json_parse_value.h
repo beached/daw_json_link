@@ -236,7 +236,8 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 	              Appender &app ) {
 		daw_json_assert_weak( rng.front( "uU" ), "Expected rng to start with a u" );
 		rng.remove_prefix( );
-		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) ) << 8U;
+		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
+		                   << 8U;
 		cp |= static_cast<std::uint32_t>( byte_from_nibbles( rng ) );
 		if( cp <= 0x7FU ) {
 			app( static_cast<char>( cp ) );
@@ -248,7 +249,8 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 			daw_json_assert_weak( rng.front( "uU" ),
 			                      "Expected rng to start with a \\u" );
 			rng.remove_prefix( );
-			auto trailing = static_cast<std::uint32_t>( byte_from_nibbles( rng ) ) << 8U;
+			auto trailing = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
+			                << 8U;
 			trailing |= static_cast<std::uint32_t>( byte_from_nibbles( rng ) );
 			trailing = static_cast<std::uint32_t>( trailing - 0xDC00U );
 			cp += trailing;
@@ -584,7 +586,8 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 	parse_variant_value( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
 		using element_t = typename JsonMembers::json_elements;
-		constexpr std::size_t idx = element_t::base_map[static_cast<int_fast8_t>( BPT )];
+		constexpr std::size_t idx =
+		  element_t::base_map[static_cast<int_fast8_t>( BPT )];
 		if constexpr( idx < std::tuple_size_v<typename element_t::element_map_t> ) {
 			using JsonMember =
 			  std::tuple_element_t<idx, typename element_t::element_map_t>;
@@ -628,7 +631,8 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 		daw_json_error( "Unexcepted data at start of json member" );
 	}
 
-	template<typename Result, typename TypeList, std::size_t pos = 0, typename Rng>
+	template<typename Result, typename TypeList, std::size_t pos = 0,
+	         typename Rng>
 	constexpr Result parse_visit( std::size_t idx, Rng &rng ) {
 		if( idx == pos ) {
 			using JsonMember = std::tuple_element_t<pos, TypeList>;

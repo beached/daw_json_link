@@ -93,7 +93,8 @@ namespace daw::json::json_details::unsignedint {
 			  t4 ) ); // only captures the sum of the first 8 digits, drop the rest
 		}
 
-		static inline std::uint64_t parse_sixteen_digits_unrolled( const char *ptr ) {
+		static inline std::uint64_t
+		parse_sixteen_digits_unrolled( const char *ptr ) {
 			__m128i const ascii0 = _mm_set1_epi8( '0' );
 
 			__m128i const mul_1_10 =

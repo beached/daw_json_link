@@ -29,12 +29,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace daw::cookbook_variant2 {
 	struct MyClass {
 		std::string name;
-		std::variant<std::string, int, bool> value;
+		std::optional<std::variant<std::string, int, bool>> value;
 	};
 
 	bool operator==( MyClass const &lhs, MyClass const &rhs ) {
@@ -48,7 +49,7 @@ namespace daw::cookbook_variant2 {
 		}
 		// Get value for Tag from class value
 		int operator( )( MyClass const &v ) const {
-			return static_cast<int>( v.value.index( ) );
+			return static_cast<int>( v.value->index( ) );
 		}
 	};
 } // namespace daw::cookbook_variant2
@@ -56,21 +57,19 @@ namespace daw::cookbook_variant2 {
 template<>
 struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 #ifdef __cpp_nontype_template_parameter_class
-	using type = json_member_list<
-	  json_string<"name">,
-	  json_tagged_variant<"value", std::variant<std::string, int, bool>,
-	                      json_number<"type", int>,
-	                      daw::cookbook_variant2::MyClassSwitcher,
-	                      json_tagged_variant_type_list<std::string, int, bool>>>;
+	using type = json_member_list < json_string<"name">,
+	      json_tagged_variant_null<
+	        "value", std::optional<std::variant<std::string, int, bool>>,
+	        json_number<"type", int>, daw::cookbook_variant2::MyClassSwitcher>;
 #else
 	static inline constexpr char const type_mem[] = "type";
 	static inline constexpr char const name[] = "name";
 	static inline constexpr char const value[] = "value";
 	using type = json_member_list<
 	  json_string<name>,
-	  json_tagged_variant<value, std::variant<std::string, int, bool>,
-	                      json_number<type_mem, int>,
-	                      daw::cookbook_variant2::MyClassSwitcher>>;
+	  json_tagged_variant_null<
+	    value, std::optional<std::variant<std::string, int, bool>>,
+	    json_number<type_mem, int>, daw::cookbook_variant2::MyClassSwitcher>>;
 #endif
 	static constexpr inline auto
 	to_json_data( daw::cookbook_variant2::MyClass const &v ) {
@@ -80,7 +79,7 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {
-		puts( "Must supply path to cookbook_variant2.json file\n" );
+		puts( "Must supply path to optional_tagged_variant.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );

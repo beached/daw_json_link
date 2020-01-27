@@ -170,7 +170,8 @@ namespace daw::json {
 	 * data
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *,
+	 * std::size_t )
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
@@ -189,7 +190,8 @@ namespace daw::json {
 	 * string data.  Not all invalid codepoints are detected
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *,
+	 * std::size_t )
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
@@ -208,7 +210,8 @@ namespace daw::json {
 	 * data
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *,
+	 * std::size_t )
 	 * @tparam Appender Allows appending characters to the output object
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
@@ -228,7 +231,8 @@ namespace daw::json {
 	 * string data
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *, std::size_t )
+	 * @tparam Constructor a callable taking as arguments ( char const *,
+	 * std::size_t )
 	 * @tparam Appender Allows appending characters to the output object
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
@@ -624,9 +628,14 @@ namespace daw::json {
 		template<typename T>
 		constexpr unknown_variant_type<T> get_variant_type_list( T const * );
 
-		template<typename Variant>
-		using determine_variant_element_types = std::remove_reference_t<decltype(
-		  get_variant_type_list( std::declval<Variant const *>( ) ) )>;
+		template<JsonNullable Nullable, typename Variant>
+		using determine_variant_element_types = std::conditional_t<
+		  Nullable == JsonNullable::Never,
+		  std::remove_reference_t<decltype(
+		    get_variant_type_list( std::declval<Variant const *>( ) ) )>,
+		  std::remove_reference_t<decltype(
+		    get_variant_type_list( std::declval<std::add_pointer_t<decltype(
+		                             *std::declval<Variant const &>( ) )>>( ) ) )>>;
 	} // namespace json_details
 
 	/***
@@ -643,11 +652,12 @@ namespace daw::json {
 	 * default supports normal and aggregate construction
 	 * @tparam Nullable Can the member be missing or have a null value	 *
 	 */
-	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
-	         typename JsonElements =
-	           json_details::determine_variant_element_types<T>,
-	         typename Constructor = daw::construct_a_t<T>,
-	         JsonNullable Nullable = JsonNullable::Never>
+	template<
+	  JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
+	  typename JsonElements =
+	    json_details::determine_variant_element_types<JsonNullable::Never, T>,
+	  typename Constructor = daw::construct_a_t<T>,
+	  JsonNullable Nullable = JsonNullable::Never>
 	struct json_tagged_variant;
 
 	/***
@@ -664,10 +674,11 @@ namespace daw::json {
 	 * @tparam Constructor A callable used to construct T.  The
 	 * default supports normal and aggregate construction
 	 */
-	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
-	         typename JsonElements =
-	           json_details::determine_variant_element_types<T>,
-	         typename Constructor = daw::construct_a_t<T>>
+	template<
+	  JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
+	  typename JsonElements =
+	    json_details::determine_variant_element_types<JsonNullable::Nullable, T>,
+	  typename Constructor = daw::construct_a_t<T>>
 	using json_tagged_variant_null =
 	  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements, Constructor,
 	                      JsonNullable::Nullable>;
