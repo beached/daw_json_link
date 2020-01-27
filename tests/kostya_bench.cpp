@@ -90,7 +90,7 @@ int main( int argc, char **argv ) {
 	size_t sz = 0U;
 
 	// first will be json_array_iterator to the array coordinates in root object
-	for( auto c : range_t( json_sv, "coordnates" ) ) {
+	for( auto c : range_t( json_sv, "coordinates" ) ) {
 		++sz;
 		x += c.x;
 		y += c.y;
