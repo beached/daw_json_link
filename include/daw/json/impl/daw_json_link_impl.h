@@ -28,10 +28,12 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_value.h"
 #include "daw_json_to_string.h"
+#include "daw_murmur3.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_parser_helper_sv.h>
+#include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
@@ -134,10 +136,12 @@ namespace daw::json::json_details {
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	struct location_info_t {
 		daw::string_view name;
+		std::uint32_t hash_value;
 		IteratorRange<First, Last, IsUnCheckedInput> location{};
 
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
-		  : name( Name ) {}
+		  : name( Name )
+		  , hash_value( daw::murmur3_32( Name ) ) {}
 
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
 			return location.is_null( );
@@ -182,9 +186,10 @@ namespace daw::json::json_details {
 		[[nodiscard]] constexpr std::size_t
 		find_name( daw::string_view key ) const {
 
-			auto result =
-			  algorithm::find_if( begin( ), end( ), [key]( auto const &loc ) {
-				  return loc.name == key;
+			auto result = algorithm::find_if(
+			  begin( ), end( ),
+			  [&, hash = daw::murmur3_32( key )]( auto const &loc ) {
+				  return loc.hash_value == hash and loc.name == key;
 			  } );
 
 			return static_cast<std::size_t>( std::distance( begin( ), result ) );

@@ -639,7 +639,7 @@ namespace daw::json {
 		template<typename T>
 		constexpr unknown_variant_type<T> get_variant_type_list( T const * );
 
-		struct must_specify_variant_element_types {};
+		struct cannot_deduce_variant_element_types {};
 
 		template<JsonNullable Nullable, typename Variant>
 		using determine_variant_element_types = std::conditional_t<
@@ -651,7 +651,7 @@ namespace daw::json {
 		    std::remove_reference_t<decltype( get_variant_type_list(
 		      std::declval<
 		        detected_underlying_nullable_type<Variant> const *>( ) ) )>,
-		    must_specify_variant_element_types>>;
+		    cannot_deduce_variant_element_types>>;
 	} // namespace json_details
 
 	/***
