@@ -33,6 +33,7 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_parser_helper_sv.h>
+#include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
@@ -135,10 +136,12 @@ namespace daw::json::json_details {
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	struct location_info_t {
 		daw::string_view name;
+		std::uint32_t hash_value;
 		IteratorRange<First, Last, IsUnCheckedInput> location{};
 
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
-		  : name( Name ) {}
+		  : name( Name )
+		  , hash_value( daw::murmur3_32( Name ) ) {}
 
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
 			return location.is_null( );
@@ -149,6 +152,7 @@ namespace daw::json::json_details {
 	struct locations_info_t {
 		using value_type = location_info_t<First, Last, IsUnCheckedInput>;
 		std::array<value_type, N> names;
+		bool unique_hashes = false;
 
 		constexpr decltype( auto ) begin( ) const {
 			return names.begin( );
@@ -183,9 +187,11 @@ namespace daw::json::json_details {
 		[[nodiscard]] constexpr std::size_t
 		find_name( daw::string_view key ) const {
 
-			auto result =
-			  algorithm::find_if( begin( ), end( ), [key]( auto const &loc ) {
-				  return loc.name == key;
+			auto result = algorithm::find_if(
+			  begin( ), end( ),
+			  [&, hash = daw::murmur3_32( key )]( auto const &loc ) {
+				  return loc.hash_value == hash and
+				         ( unique_hashes or loc.name == key );
 			  } );
 
 			return static_cast<std::size_t>( std::distance( begin( ), result ) );
@@ -296,10 +302,29 @@ namespace daw::json::json_details {
 
 	template<typename First, typename Last, bool IsUnCheckedInput,
 	         typename... JsonMembers>
+	constexpr locations_info_t<sizeof...( JsonMembers ), First, Last,
+	                           IsUnCheckedInput>
+	make_location_info( ) {
+		locations_info_t<sizeof...( JsonMembers ), First, Last, IsUnCheckedInput>
+		  result{
+		    location_info_t<First, Last, IsUnCheckedInput>( JsonMembers::name )...};
+		std::array hashes{daw::murmur3_32( JsonMembers::name )...};
+		daw::sort( hashes.begin( ), hashes.end( ) );
+		result.unique_hashes =
+		  daw::algorithm::adjacent_find(
+		    hashes.begin( ), hashes.end( ),
+		    []( auto lhs, auto rhs ) { return lhs == rhs; } ) == hashes.end( );
+		return result;
+	}
+
+	template<typename First, typename Last, bool IsUnCheckedInput,
+	         typename... JsonMembers>
 	static inline constexpr auto known_locations_v =
+	  make_location_info<First, Last, IsUnCheckedInput, JsonMembers...>( );
+	/*
 	  locations_info_t<sizeof...( JsonMembers ), First, Last, IsUnCheckedInput>{
 	    location_info_t<First, Last, IsUnCheckedInput>( JsonMembers::name )...};
-
+	*/
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] constexpr JsonClass

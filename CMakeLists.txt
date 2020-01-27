@@ -355,6 +355,11 @@ add_dependencies(optional_variant_test_bin dependency_stub)
 add_test(NAME optional_variant_test COMMAND optional_variant_test_bin ./optional_variant.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full optional_variant_test_bin)
 
+add_executable(daw_murmur3_test_bin EXCLUDE_FROM_ALL ${TEST_FOLDER}/daw_murmur3_test.cpp)
+add_dependencies(daw_murmur3_test_bin dependency_stub)
+add_test(NAME daw_murmur3_test COMMAND daw_murmur3_test_bin)
+add_dependencies(full daw_murmur3_test_bin)
+
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
