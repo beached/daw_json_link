@@ -28,7 +28,9 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_value.h"
 #include "daw_json_to_string.h"
+#ifndef _MSC_VER
 #include "daw_murmur3.h"
+#endif
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_cxmath.h>
@@ -136,12 +138,19 @@ namespace daw::json::json_details {
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	struct location_info_t {
 		daw::string_view name;
+#ifndef _MSC_VER
 		std::uint32_t hash_value;
+#endif
 		IteratorRange<First, Last, IsUnCheckedInput> location{};
 
+#ifndef _MSC_VER
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
 		  : name( Name )
 		  , hash_value( daw::murmur3_32( Name ) ) {}
+#else
+		explicit constexpr location_info_t( daw::string_view Name ) noexcept
+		  : name( Name ) {}
+#endif
 
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
 			return location.is_null( );
@@ -185,16 +194,20 @@ namespace daw::json::json_details {
 
 		[[nodiscard]] constexpr std::size_t
 		find_name( daw::string_view key ) const {
-
-			auto result = algorithm::find_if(
+#ifdef _MSC_VER
+			// Bug in MSVC is making the constexpr string creation not work
+			return algorithm::find_index_of_if(
+			  begin( ), end( ),
+			  [key]( auto const &loc ) { return loc.name == key; } );
+#else
+			return algorithm::find_index_of_if(
 			  begin( ), end( ),
 			  [&, hash = daw::murmur3_32( key )]( auto const &loc ) {
 				  return loc.hash_value == hash and loc.name == key;
 			  } );
-
-			return static_cast<std::size_t>( std::distance( begin( ), result ) );
+#endif
 		}
-	};
+	}; // namespace daw::json::json_details
 
 	template<typename JsonMember, std::size_t N, typename First, typename Last,
 	         bool IsUnCheckedInput>

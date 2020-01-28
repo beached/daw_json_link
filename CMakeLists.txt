@@ -360,6 +360,12 @@ add_dependencies(daw_murmur3_test_bin dependency_stub)
 add_test(NAME daw_murmur3_test COMMAND daw_murmur3_test_bin)
 add_dependencies(full daw_murmur3_test_bin)
 
+add_executable(apache_builds_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/apache_builds.h ${TEST_FOLDER}/apache_builds_test.cpp)
+add_dependencies(apache_builds_test_bin dependency_stub)
+target_link_libraries(apache_builds_test_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+add_test(NAME apache_builds_test COMMAND apache_builds_test_bin ./apache_builds.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full apache_builds_test_bin)
+
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")

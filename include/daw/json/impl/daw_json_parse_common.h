@@ -201,7 +201,8 @@ namespace daw::json {
 	template<JSONNAMETYPE n>
 	inline constexpr bool is_no_name = ( n == no_name );
 
-	constexpr char const *as_cstr( JSONNAMETYPE const &n ) {
+	template<typename Name>
+	constexpr char const *as_cstr( Name const &n ) {
 		return n.begin( );
 	}
 #else
@@ -218,11 +219,11 @@ namespace daw::json {
 	template<JSONNAMETYPE n>
 	inline constexpr bool
 	  is_no_name = daw::string_view( n ) == daw::string_view( "" );
-#endif
 
 	constexpr char const *as_cstr( JSONNAMETYPE ptr ) {
 		return ptr;
 	}
+#endif
 
 	enum class JsonParseTypes : std::uint_fast8_t {
 		Real,

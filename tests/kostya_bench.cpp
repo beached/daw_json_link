@@ -25,6 +25,7 @@
 
 #include <daw/daw_memory_mapped_file.h>
 
+#include <cstdint>
 #include <daw/daw_benchmark.h>
 #include <fstream>
 #include <iostream>
@@ -87,10 +88,10 @@ int main( int argc, char **argv ) {
 	double x = 0.0;
 	double y = 0.0;
 	double z = 0.0;
-	size_t sz = 0U;
+	uint_fast32_t sz = 0U;
 
 	// first will be json_array_iterator to the array coordinates in root object
-	for( auto c : range_t( json_sv, "coordnates" ) ) {
+	for( auto c : range_t( json_sv, "coordinates" ) ) {
 		++sz;
 		x += c.x;
 		y += c.y;
