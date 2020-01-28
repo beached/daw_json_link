@@ -286,8 +286,8 @@ namespace daw::json::json_details {
 		} else {
 			for( auto c : container ) {
 				if constexpr( EightBitMode == EightBitModes::DisallowHigh ) {
-					daw_json_assert( static_cast<unsigned>( c ) >= 0x20U and
-					                   static_cast<unsigned>( c ) <= 0x7FU,
+					daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U and
+					                   static_cast<unsigned char>( c ) <= 0x7FU,
 					                 "string support limited to 0x20 < chr <= 0x7F when "
 					                 "DisallowHighEightBit is true" );
 				}
@@ -517,7 +517,9 @@ namespace daw::json::json_details {
 
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 		*it++ = '"';
-		it = copy_to_iterator<false, eight_bit_mode>( value, it );
+		if( value.size( ) > 0U ) {
+			it = copy_to_iterator<false, eight_bit_mode>( value, it );
+		}
 		*it++ = '"';
 		return it;
 	}

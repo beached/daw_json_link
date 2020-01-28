@@ -33,18 +33,17 @@
 
 namespace daw::geojson {
 	struct Property {
-		// This is a Map but outside of specific items we do not know the
-		// resulting type
 		std::string_view name;
 	}; // Property
 
 	struct Polygon {
-		/*std::string_view type;*/
+		std::string_view type;
 		std::vector<std::vector<std::array<double, 2>>> coordinates;
 
-		Polygon( std::string_view,
+		Polygon( std::string_view t,
 		         std::vector<std::vector<std::array<double, 2>>> &&coords )
-		  : coordinates( std::move( coords ) ) {}
+		  : type( t )
+		  , coordinates( std::move( coords ) ) {}
 
 	}; // Polygon
 
@@ -80,6 +79,7 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_string_raw<"name", std::string_view>>;
 #else
+		static inline constexpr char const type_sym[] = "type";
 		static inline constexpr char const name[] = "name";
 		using type = json_member_list<json_string_raw<name, std::string_view>>;
 #endif
@@ -114,8 +114,7 @@ namespace daw::json {
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::geojson::Polygon const &value ) {
-			return std::forward_as_tuple( std::string_view( "Polygon" ),
-			                              value.coordinates );
+			return std::forward_as_tuple( value.type, value.coordinates );
 		}
 	};
 
