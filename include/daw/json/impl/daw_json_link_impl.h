@@ -135,12 +135,12 @@ namespace daw::json::json_details {
 
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	struct location_info_t {
-		daw::string_view name;
+		std::string_view name;
 		std::uint32_t hash_value;
 		IteratorRange<First, Last, IsUnCheckedInput> location{};
 
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
-		  : name( Name )
+		  : name( {Name.data( ), Name.size( )} )
 		  , hash_value( daw::murmur3_32( Name ) ) {}
 
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
@@ -189,7 +189,8 @@ namespace daw::json::json_details {
 			return algorithm::find_index_of_if(
 			  begin( ), end( ),
 			  [&, hash = daw::murmur3_32( key )]( auto const &loc ) {
-				  return loc.hash_value == hash and loc.name == key;
+				  return loc.hash_value == hash and
+				         daw::string_view( loc.name.data( ), loc.name.size( ) ) == key;
 			  } );
 		}
 	};
