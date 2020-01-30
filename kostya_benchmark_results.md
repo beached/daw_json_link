@@ -5,31 +5,28 @@ Each machine has a different data set, so the relative times/memory/power is wha
 ### 2017 Macbook Air. 8GB Ram Intel(R) Core(TM) i5-5350U CPU @ 1.80GHz
 Memory/Energy is not available on Macos
 
-|                  |                   |                  |
-|------------------|-------------------|------------------|
-|C++ DAW JSON Link |Rust Serde Custom  |Rust Serde Typed  |
-|0.49911           |0.4991090973866923 |0.4991100493617468|
-|0.499847          |0.49984583848234004|0.4998467918626167|                    
-|0.499494          |0.4994933947197277 |0.4994943474277712|                   
-|0.20 s, 0.0 Mb    |0.21 s, 0.0 Mb     |0.22 s, 0.0 Mb    |
-| | | |
-|C++ simdjson  | C++ gason     |C++ RapidJSON |
-|0.49911       | 0.49911       |0.49911       |
-|0.499847      | 0.499847      |0.499847      |
-|0.499494      | 0.499494      |0.499494      |
-|0.30 s, 0.0 Mb| 0.38 s, 0.0 Mb|0.45 s, 0.0 Mb|
-| | | |
-|C++ RapidJSON SAX|Rust Serde Untyped|V Clang       |
-|0.49911          |0.4991100493617468|0.499110      |
-|0.499847         |0.4998467918626167|0.499847      |
-|0.499494         |0.4994943474277712|0.499494      |
-|0.77 s, 0.0 Mb   |1.32 s, 0.0 Mb    |3.16 s, 0.0 Mb|
-| | | |
-|C++ json-c    |Rust jq           |C++ Boost      |
-|0.49911005    |0.4991100493617468|0.49911005     |
-|0.49984679    |0.4998467918626167|0.49984679     |
-|0.49949435    |0.4994943474277712|0.49949435     |
-|4.60 s, 0.0 Mb|5.34 s, 0.0 Mb    |10.67 s, 0.0 Mb|
+|           Language |       Time, s |
+| :----------------- | ------------: |
+|  C++ DAW JSON Link |  0.19 ± 00.01 |
+|   Rust Serde Typed |  0.21 ± 00.00 |
+|  Rust Serde Custom |  0.21 ± 00.00 |
+|       C++ simdjson |  0.31 ± 00.01 |
+|          C++ gason |  0.35 ± 00.00 |
+|      C++ RapidJSON |  0.53 ± 00.09 |
+|  C++ RapidJSON SAX |  0.78 ± 00.02 |
+|            Node.js |  1.10 ± 00.01 |
+|     Crystal Schema |  1.19 ± 00.01 |
+|       Crystal Pull |  1.19 ± 00.02 |
+| Rust Serde Untyped |  1.34 ± 00.02 |
+|            Crystal |  1.66 ± 00.05 |
+|                 Go |  2.12 ± 00.01 |
+|  CPython UltraJSON |  2.43 ± 00.04 |
+|             Python |  2.88 ± 00.04 |
+|            V Clang |  3.20 ± 00.04 |
+|         C++ json-c |  3.95 ± 00.08 |
+|               Ruby |  4.10 ± 00.10 |
+|            Rust jq |  5.45 ± 00.26 |
+|          C++ Boost | 10.42 ± 00.11 |
 
 ### Linux 5.3.0-29 32GB Intel(R) Core(TM) i7-7500U CPU @ 2.70GHz
 gcc 9.2.1, rustc 1.37.0, V 0.1.24 80d936a
