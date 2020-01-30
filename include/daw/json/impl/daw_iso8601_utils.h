@@ -49,8 +49,8 @@ namespace daw::json::json_details {
 		return dig < 10U;
 	}
 
-	template<typename Result, typename CharT, typename Traits>
-	constexpr Result parse_number( daw::basic_string_view<CharT, Traits> sv ) {
+	template<typename Result, typename CharT, typename Bounds, std::ptrdiff_t Ex> 
+	constexpr Result parse_number( daw::basic_string_view<CharT, Bounds, Ex> sv ) {
 		static_assert( std::numeric_limits<Result>::digits10 >= 4 );
 		if( sv.empty( ) ) {
 			daw_json_error( "Invalid number" );
@@ -147,9 +147,9 @@ namespace daw::json::json_details {
 		uint_least32_t day;
 	};
 
-	template<typename CharT, typename Traits>
+	template<typename CharT, typename Bounds, std::ptrdiff_t Ex>
 	constexpr date_parts
-	parse_iso_8601_date( daw::basic_string_view<CharT, Traits> timestamp_str ) {
+	parse_iso_8601_date( daw::basic_string_view<CharT, Bounds, Ex> timestamp_str ) {
 		auto result = date_parts{0, 0, 0};
 		result.day = parse_unsigned<std::uint_least32_t, 2>(
 		  timestamp_str.pop_back( 2U ).data( ) );
@@ -172,9 +172,9 @@ namespace daw::json::json_details {
 		uint_least32_t millisecond;
 	};
 
-	template<typename CharT, typename Traits>
+	template<typename CharT, typename Bounds, std::ptrdiff_t Ex>
 	constexpr time_parts
-	parse_iso_8601_time( daw::basic_string_view<CharT, Traits> timestamp_str ) {
+	parse_iso_8601_time( daw::basic_string_view<CharT, Bounds, Ex> timestamp_str ) {
 		auto result = time_parts{0, 0, 0, 0};
 		result.hour = parse_unsigned<std::uint_least32_t, 2>(
 		  timestamp_str.pop_front( 2 ).data( ) );
@@ -202,10 +202,10 @@ namespace daw::json::json_details {
 		return result;
 	}
 
-	template<typename CharT, typename Traits>
+	template<typename CharT, typename Bounds, std::ptrdiff_t Ex>
 	constexpr std::chrono::time_point<std::chrono::system_clock,
 	                                  std::chrono::milliseconds>
-	parse_iso8601_timestamp( daw::basic_string_view<CharT, Traits> ts ) {
+	parse_iso8601_timestamp( daw::basic_string_view<CharT, Bounds, Ex> ts ) {
 		constexpr CharT t_str[2] = {static_cast<CharT>( 'T' ), 0};
 		auto const date_str = ts.pop_front( t_str );
 		if( ts.empty( ) ) {
