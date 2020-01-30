@@ -1,11 +1,13 @@
 This is the results of kostya json benchmark
 https://github.com/kostya/benchmarks/
+Each machine has a different data set, so the relative times/memory/power is what is important
 
-2017 Macbook Air. 8GB Ram Intel(R) Core(TM) i5-5350U CPU @ 1.80GHz
+### 2017 Macbook Air. 8GB Ram Intel(R) Core(TM) i5-5350U CPU @ 1.80GHz
 Memory/Energy is not available on Macos
 
-|C++ DAW JSON Link |Rust Serde Custom  |Rust Serde Typed  |
+|                  |                   |                  |
 |------------------|-------------------|------------------|
+|C++ DAW JSON Link |Rust Serde Custom  |Rust Serde Typed  |
 |0.49911           |0.4991090973866923 |0.4991100493617468|
 |0.499847          |0.49984583848234004|0.4998467918626167|                    
 |0.499494          |0.4994933947197277 |0.4994943474277712|                   
@@ -28,4 +30,33 @@ Memory/Energy is not available on Macos
 |0.49984679    |0.4998467918626167|0.49984679     |
 |0.49949435    |0.4994943474277712|0.49949435     |
 |4.60 s, 0.0 Mb|5.34 s, 0.0 Mb    |10.67 s, 0.0 Mb|
+
+### Linux 5.3.0-29 32GB Intel(R) Core(TM) i7-7500U CPU @ 2.70GHz
+
+|C++ DAW JSON Link      |Rust Serde Typed       |Rust Serde Custom      |
+|-----------------------|-----------------------|-----------------------|
+|0.500238               |0.5002380756310587     |0.500237121504469      |
+|0.499897               |0.49989728970250913    |0.49989633622591567    |
+|0.499794               |0.4997938587055141     |0.49979290542619925    |
+|0.12 s, 98.5 Mb, 2.2 J |0.17 s, 120.1 Mb, 1.7 J|0.18 s, 108.6 Mb, 1.7 J|
+| | | |
+|C++ simdjson           |C++ gason              |C++ RapidJSON          |
+|0.500238               |0.500238               |0.500238               |
+|0.499897               |0.499897               |0.499897               |
+|0.499794               |0.499794               |0.499794               |
+|0.21 s, 489.9 Mb, 2.1 J|0.23 s, 313.2 Mb, 2.3 J|0.33 s, 345.4 Mb, 3.4 J|
+| | | |                         
+|C++ RapidJSON SAX      |Rust Serde Untyped     |V Clang                 |
+|0.500238               |0.5002380756310587     |0.500238                |
+|0.499897               |0.49989728970250913    |0.499897                |
+|0.499794               |0.4997938587055141     |0.499794                |
+|0.63 s, 110.2 Mb, 6.7 J|0.74 s, 916.8 Mb, 7.2 J|1.43 s, 592.5 Mb, 14.0 J|
+| | | |
+|C++ json-c               |Rust jq                  |C++ Boost                |
+|0.50023808               |0.5002380756310587       |0.50023808               |
+|0.49989729               |0.49989728970250913      |0.49989729               |
+|0.49979386               |0.4997938587055141       |0.49979386               |
+|1.98 s, 1756.3 Mb, 19.3 J|4.56 s, 1013.5 Mb, 41.6 J|4.59 s, 1549.8 Mb, 47.4 J|
+| | | |
+
 
