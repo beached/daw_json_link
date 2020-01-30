@@ -70,7 +70,7 @@ int main( int argc, char *argv[] ) {
 	std::ios_base::sync_with_stdio( false );
 	std::string_view fpath = "/tmp/1.json";
 	if( argc > 1 ) {
-		fpath = argv[1]
+		fpath = argv[1];
 	}
 	auto const text = daw::filesystem::memory_mapped_file_t<>( fpath );
 	auto const json_sv = std::string_view( text.data( ), text.size( ) );
@@ -78,7 +78,7 @@ int main( int argc, char *argv[] ) {
 	int len = 0;
 
 	using range_t = daw::json::json_array_range<coordinate_t, true>;
-	auto rng = range_t( json_sv, "coordinates" )
+	auto rng = range_t( json_sv, "coordinates" );
 
 	{
 		std::stringstream ostr;
