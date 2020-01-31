@@ -543,9 +543,9 @@ namespace daw::json::json_details {
 
 		if constexpr( std::is_enum_v<parse_to_t> or
 		              std::is_integral_v<parse_to_t> ) {
-			daw_json_assert(
-			  value >= 0, "Negative numbers are not supported for unsigned types" );
 			auto v = static_cast<under_type>( value );
+			daw_json_assert(
+			  v >= 0, "Negative numbers are not supported for unsigned types" );
 			char buff[std::numeric_limits<under_type>::digits10];
 			char *ptr = buff;
 			do {
