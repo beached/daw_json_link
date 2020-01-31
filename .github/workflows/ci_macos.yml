@@ -2,6 +2,10 @@ name: MacOS
 
 on:
   pull_request:
+    push:
+      branches-ignore: dev
+    pull_request:
+      branches-ignore: dev
 
 jobs:
   build:
