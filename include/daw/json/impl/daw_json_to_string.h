@@ -190,25 +190,26 @@ namespace daw::json::json_details {
 	template<typename OutputIterator>
 	constexpr void utf32_to_utf8( std::uint32_t cp, OutputIterator &it ) {
 		if( cp <= 0x7FU ) {
-			*it++ = cp;
+			*it++ = static_cast<char>( cp );
 			return;
 		}
 		if( cp <= 0x7FFU ) {
-			*it++ = ( cp >> 6U ) | 0b11000000;
-			*it++ = ( cp & 0b00111111 ) | 0b10000000;
+			*it++ = static_cast<char>( ( cp >> 6U ) | 0b11000000U );
+			*it++ = static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U );
 			return;
 		}
 		if( cp <= 0xFFFFU ) {
-			*it++ = ( cp >> 12U ) | 0b11100000;
-			*it++ = ( ( cp >> 6U ) & 0b00111111 ) | 0b10000000;
-			*it++ = ( cp & 0b00111111 ) | 0b10000000;
+			*it++ = static_cast<char>( ( cp >> 12U ) | 0b11100000U );
+			*it++ = static_cast<char>( ( ( cp >> 6U ) & 0b00111111U ) | 0b10000000U );
+			*it++ = static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U );
 			return;
 		}
-		if( cp <= 0x10FFFF ) {
-			*it++ = ( cp >> 18 ) | 0b11110000;
-			*it++ = ( ( cp >> 12 ) & 0b00111111 ) | 0b10000000;
-			*it++ = ( ( cp >> 6 ) & 0b00111111 ) | 0b10000000;
-			*it++ = ( cp & 0b00111111 ) | 0b10000000;
+		if( cp <= 0x10FFFFU ) {
+			*it++ = static_cast<char>( ( cp >> 18U ) | 0b11110000U );
+			*it++ =
+			  static_cast<char>( ( ( cp >> 12U ) & 0b00111111U ) | 0b10000000U );
+			*it++ = static_cast<char>( ( ( cp >> 6U ) & 0b00111111U ) | 0b10000000U );
+			*it++ = static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U );
 			return;
 		}
 		daw_json_error( "Invalid code point" );
