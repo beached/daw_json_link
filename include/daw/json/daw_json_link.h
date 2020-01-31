@@ -546,6 +546,29 @@ namespace daw::json {
 
 	/**
 	 *
+	 * @tparam OutputIterator Iterator to character data to
+	 * @tparam JsonClass Type that has json_parser_desription and to_json_data
+	 * function overloads
+	 * @param value  value to serialize
+	 * @param out_it result to serialize to
+	 */
+	template<typename JsonClass, typename OutputIterator>
+	[[maybe_unused]] constexpr void to_json( JsonClass const &value,
+	                                         OutputIterator out_it ) {
+		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
+		               "Expected a typed that has been mapped via specialization "
+		               "of daw::json::json_data_contract" );
+		static_assert( json_details::has_json_to_json_data_v<JsonClass>,
+		               "A function called to_json_data must exist for type." );
+
+		(void)
+		  json_details::json_data_contract_trait_t<JsonClass>::template serialize(
+		    out_it, daw::json::json_data_contract<JsonClass>::to_json_data( value ),
+		    value );
+	}
+
+	/**
+	 *
 	 * @tparam Result std::string like type to put result into
 	 * @tparam JsonClass Type that has json_parser_desription and to_json_data
 	 * function overloads
@@ -562,11 +585,7 @@ namespace daw::json {
 		               "A function called to_json_data must exist for type." );
 
 		Result result{};
-		(void)
-		  json_details::json_data_contract_trait_t<JsonClass>::template serialize(
-		    daw::back_inserter( result ),
-		    daw::json::json_data_contract<JsonClass>::to_json_data( value ),
-		    value );
+		to_json( value, daw::back_inserter( result ) );
 		return result;
 	}
 
