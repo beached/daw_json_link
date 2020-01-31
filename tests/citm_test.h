@@ -158,7 +158,7 @@ namespace daw::json {
 		using type = json_member_list<json_array<areas, daw::citm::areas_element_t>,
 		                              json_number<seatCategoryId, int64_t>>;
 #endif
-		[[nodiscard, maybe_unused]] inline auto
+		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::citm::seatCategories_element_t const &value ) {
 			return std::forward_as_tuple( value.areas, value.seatCategoryId );
 		}
@@ -234,16 +234,16 @@ namespace daw::json {
 		  json_array<"performances", daw::citm::performances_element_t>,
 		  json_key_value<"seatCategoryNames",
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 json_string_raw<no_name, std::string_view>>,
+		                 std::string_view, std::string_view>,
 		  json_key_value<"subTopicNames",
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 json_string_raw<no_name, std::string_view>>,
+		                 std::string_view, std::string_view>,
 		  json_key_value<"topicNames",
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 json_string_raw<no_name, std::string_view>>,
+		                 std::string_view, std::string_view>,
 		  json_key_value<"topicSubTopics",
 		                 std::unordered_map<std::string_view, std::vector<int64_t>>,
-		                 std::vector<int64_t>>,
+		                 std::vector<int64_t>, std::string_view>,
 		  json_class_null<"venueNames", std::optional<daw::citm::venueNames_t>>>;
 #else
 		static inline constexpr char const areaNames[] = "areaNames";
@@ -261,12 +261,11 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_key_value<
 		    areaNames, std::unordered_map<intmax_t, std::string_view>,
-		    json_string_raw<no_name, std::string_view>,
+		    std::string_view,
 		    json_number<no_name, intmax_t, LiteralAsStringOpt::Always>>,
 		  json_key_value<
 		    audienceSubCategoryNames,
-		    std::unordered_map<intmax_t, std::string_view>,
-		    json_string_raw<no_name, std::string_view>,
+		    std::unordered_map<intmax_t, std::string_view>, std::string_view,
 		    json_number<no_name, intmax_t, LiteralAsStringOpt::Always>>,
 		  json_key_value<
 		    events, std::unordered_map<intmax_t, daw::citm::events_value_t>,
@@ -275,16 +274,16 @@ namespace daw::json {
 		  json_array<performances, daw::citm::performances_element_t>,
 		  json_key_value<seatCategoryNames,
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 json_string_raw<no_name, std::string_view>>,
+		                 std::string_view, std::string_view>,
 		  json_key_value<subTopicNames,
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 json_string_raw<no_name, std::string_view>>,
+		                 std::string_view, std::string_view>,
 		  json_key_value<topicNames,
 		                 std::unordered_map<std::string_view, std::string_view>,
-		                 json_string_raw<no_name, std::string_view>>,
+		                 std::string_view, std::string_view>,
 		  json_key_value<topicSubTopics,
 		                 std::unordered_map<std::string_view, std::vector<int64_t>>,
-		                 std::vector<int64_t>>,
+		                 std::vector<int64_t>, std::string_view>,
 		  json_class_null<venueNames, std::optional<daw::citm::venueNames_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
