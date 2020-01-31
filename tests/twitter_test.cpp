@@ -95,8 +95,8 @@ int main( int argc, char **argv ) {
 	  daw::json::from_json<daw::twitter::twitter_object_t>( str );
 	daw::do_not_optimize( twitter_result2 );
 	// Removing for now as it will do a float compare and fail
-	/*
-	daw_json_assert( twitter_result == twitter_result2,
-	                 "Expected round trip to produce same result" );
-	                 */
+
+	/*daw_json_assert( twitter_result == twitter_result2,
+	                 "Expected round trip to produce same result" );*/
+
 }
