@@ -78,18 +78,22 @@ int main( int argc, char **argv ) {
 	daw_json_assert( apache_builds_result->jobs.size( ) > 0, "Expected values" );
 	daw_json_assert( apache_builds_result->numExecutors == 0, "Missing value" );
 
-	std::optional<std::string> str{};
+	std::string str{};
+	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<100>(
 	  "apache_builds bench(to_json_string)", sz,
-	  [&str]( auto const &tr ) {
-		  str = daw::json::to_json( *tr );
+	  [&]( auto const &tr ) {
+		  str.clear( );
+			daw::json::to_json( *tr, out_it );
 		  daw::do_not_optimize( str );
 	  },
 	  apache_builds_result );
-	daw_json_assert( str, "Expected a string value" );
-	daw::do_not_optimize( *str );
+
+	daw_json_assert( not str.empty( ), "Expected a string value" );
+
+	daw::do_not_optimize( str );
 	auto const apache_builds_result2 =
-	  daw::json::from_json<apache_builds::apache_builds>( *str );
+	  daw::json::from_json<apache_builds::apache_builds>( str );
 	daw::do_not_optimize( apache_builds_result2 );
 	// Removing for now as it will do a float compare and fail
 	/*
