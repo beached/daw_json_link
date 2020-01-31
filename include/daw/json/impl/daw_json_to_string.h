@@ -818,9 +818,8 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename T>
 	[[nodiscard]] constexpr OutputIterator member_to_string( OutputIterator it,
 	                                                         T const &value ) {
-		it = to_string<JsonMember>( ParseTag<JsonMember::expected_type>{},
-		                            daw::move( it ), value );
-		return it;
+		return to_string<JsonMember>( ParseTag<JsonMember::expected_type>{},
+		                              daw::move( it ), value );
 	}
 
 	template<typename JsonMember>
@@ -863,7 +862,7 @@ namespace daw::json::json_details {
 
 	template<std::size_t pos, typename JsonMember, typename OutputIterator,
 	         typename... Args, typename Value, typename Visited>
-	constexpr void to_json_str( bool &is_first, OutputIterator & it,
+	constexpr void to_json_str( bool &is_first, OutputIterator &it,
 	                            std::tuple<Args...> const &tp, Value const &,
 	                            Visited &visited_members ) {
 		constexpr auto json_member_name = daw::string_view( JsonMember::name );
