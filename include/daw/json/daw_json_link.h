@@ -553,18 +553,19 @@ namespace daw::json {
 	 * @param out_it result to serialize to
 	 */
 	template<typename JsonClass, typename OutputIterator>
-	[[maybe_unused]] constexpr void to_json( JsonClass const &value,
-	                                         OutputIterator out_it ) {
+	[[maybe_unused]] constexpr OutputIterator to_json( JsonClass const &value,
+	                                                   OutputIterator out_it ) {
 		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
 		static_assert( json_details::has_json_to_json_data_v<JsonClass>,
 		               "A function called to_json_data must exist for type." );
 
-		(void)
+		out_it =
 		  json_details::json_data_contract_trait_t<JsonClass>::template serialize(
 		    out_it, daw::json::json_data_contract<JsonClass>::to_json_data( value ),
 		    value );
+		return out_it;
 	}
 
 	/**

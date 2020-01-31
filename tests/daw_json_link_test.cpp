@@ -230,6 +230,7 @@ static_assert( daw::json::from_json_unchecked<int>( test_001_t_json_data,
                "Unexpected value" );
 static_assert( daw::json::from_json<int>( test_001_t_json_data, "y[2]" ) == 3,
                "Unexpected value" );
+
 #endif
 
 constexpr char const json_data_array[] =
@@ -308,30 +309,36 @@ int main( ) {
 	daw::expecting( parse_real_test<double>( "5e2", 500.0 ) );
 	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
 
-#ifdef _MSC_VER
-#define CX constexpr
-#else
-#if not defined( __GNUC__ ) or __GNUC__ > 8
-#define CX constexpr
-#else
+#if defined( __GNUC__ ) and __GNUC__ <= 8
 #define CX
-#endif
+#elif defined( _MSC_VER )
+#define CX constexpr
+#else
+#define CX constexpr
 #endif
 	daw::do_not_optimize( test_001_t_json_data );
 	CX auto data = daw::json::from_json<test_001_t>( test_001_t_json_data );
-
-	std::clog << to_json( data ) << '\n';
+	{
+		std::string tmp = to_json( data );
+		auto data2 = daw::json::from_json<test_001_t>( tmp );
+		daw::do_not_optimize( data2 );
+	}
+	{
+		auto dtmp = to_json( data );
+		std::cout << dtmp << '\n';
+	}
 	CX auto ary =
 	  from_json_array<test_001_t, daw::bounded_vector_t<test_001_t, 10>>(
 	    json_data_array );
-	std::cout << "read in " << ary.size( ) << " items\n";
+	std::cout << "read in ";
+	std::cout << ary.size( ) << " items\n";
 	for( auto const &v : ary ) {
-		std::clog << to_json( v ) << "\n\n";
+		std::cout << to_json( v ) << "\n\n";
 	}
 	std::cout << "as array\n";
 	std::cout << to_json_array( ary ) << "\n\n";
 
-	test_002_t t2{data};
+	auto t2 = test_002_t{data};
 	t2.a.o2 = std::nullopt;
 	std::cout << to_json( t2 ) << '\n';
 

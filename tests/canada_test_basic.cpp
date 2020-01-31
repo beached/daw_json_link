@@ -42,4 +42,7 @@ int main( int argc, char **argv ) {
 	auto const canada_result =
 	  daw::json::from_json<daw::geojson::FeatureCollection>( json_sv1 );
 	daw::do_not_optimize( canada_result );
+
+	auto const new_json_result = daw::json::to_json( canada_result );
+	daw::do_not_optimize( canada_result );
 }

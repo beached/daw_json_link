@@ -498,7 +498,7 @@ namespace daw::json::json_details {
 		if constexpr( std::is_enum_v<parse_to_t> or
 		              std::is_integral_v<parse_to_t> ) {
 			auto v = static_cast<under_type>( value );
-			char buff[std::numeric_limits<under_type>::digits10];
+			char buff[std::numeric_limits<under_type>::digits10+1]{};
 			char *ptr = buff;
 			if( v < 0 ) {
 				*it++ = '-';
@@ -546,7 +546,7 @@ namespace daw::json::json_details {
 			auto v = static_cast<under_type>( value );
 			daw_json_assert(
 			  v >= 0, "Negative numbers are not supported for unsigned types" );
-			char buff[std::numeric_limits<under_type>::digits10];
+			char buff[std::numeric_limits<under_type>::digits10+1]{};
 			char *ptr = buff;
 			do {
 				*ptr++ = '0' + static_cast<char>( v % 10 );
@@ -609,6 +609,11 @@ namespace daw::json::json_details {
 		return false;
 	}
 
+	template<typename Number>
+	struct date_number {
+		using parse_to_t = Number;
+	};
+
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Date>, OutputIterator it,
@@ -624,35 +629,42 @@ namespace daw::json::json_details {
 		} else {
 			*it++ = '"';
 			ymdhms const civil = time_point_to_civil( value );
-			it = copy_to_iterator( std::to_string( civil.year ), it );
+			it = to_string<date_number<int_least32_t>>(
+			  ParseTag<JsonParseTypes::Signed>{}, it, civil.year );
 			*it++ = '-';
 			if( civil.month < 10 ) {
 				*it++ = '0';
 			}
-			it = copy_to_iterator( std::to_string( civil.month ), it );
+			it = to_string<date_number<uint_least32_t>>(
+			  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.month );
 			*it++ = '-';
 			if( civil.day < 10 ) {
 				*it++ = '0';
 			}
-			it = copy_to_iterator( std::to_string( civil.day ), it );
+			it = to_string<date_number<uint_least32_t>>(
+			  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.day );
 			*it++ = 'T';
 			if( civil.hour < 10 ) {
 				*it++ = '0';
 			}
-			it = copy_to_iterator( std::to_string( civil.hour ), it );
+			it = to_string<date_number<uint_least32_t>>(
+			  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.hour );
 			*it++ = ':';
 			if( civil.minute < 10 ) {
 				*it++ = '0';
 			}
-			it = copy_to_iterator( std::to_string( civil.minute ), it );
+			it = to_string<date_number<uint_least32_t>>(
+			  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.minute );
 			*it++ = ':';
 			if( civil.second < 10 ) {
 				*it++ = '0';
 			}
-			it = copy_to_iterator( std::to_string( civil.second ), it );
+			it = to_string<date_number<uint_least32_t>>(
+			  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.second );
 			if( civil.millisecond > 0 ) {
 				*it++ = '.';
-				it = copy_to_iterator( std::to_string( civil.millisecond ), it );
+				it = to_string<date_number<uint_least32_t>>(
+				  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.millisecond );
 			}
 			*it++ = 'Z';
 			*it++ = '"';
@@ -806,9 +818,8 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename T>
 	[[nodiscard]] constexpr OutputIterator member_to_string( OutputIterator it,
 	                                                         T const &value ) {
-		it = to_string<JsonMember>( ParseTag<JsonMember::expected_type>{},
-		                            daw::move( it ), value );
-		return it;
+		return to_string<JsonMember>( ParseTag<JsonMember::expected_type>{},
+		                              daw::move( it ), value );
 	}
 
 	template<typename JsonMember>
@@ -851,7 +862,7 @@ namespace daw::json::json_details {
 
 	template<std::size_t pos, typename JsonMember, typename OutputIterator,
 	         typename... Args, typename Value, typename Visited>
-	constexpr void to_json_str( bool &is_first, OutputIterator it,
+	constexpr void to_json_str( bool &is_first, OutputIterator &it,
 	                            std::tuple<Args...> const &tp, Value const &,
 	                            Visited &visited_members ) {
 		constexpr auto json_member_name = daw::string_view( JsonMember::name );
