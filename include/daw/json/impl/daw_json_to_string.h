@@ -467,6 +467,21 @@ namespace daw::json::json_details {
 		using to_strings::to_string;
 		return copy_to_iterator( to_string( value ), it );
 	}
+
+	template<typename T, bool>
+	struct base_int_type_impl {
+		using type = T;
+	};
+
+	template<typename T>
+	struct base_int_type_impl<T, true> {
+		using type = std::underlying_type_t<T>;
+	};
+
+	template<typename T>
+	using base_int_type_t =
+	  typename base_int_type_impl<T, std::is_enum_v<T>>::type;
+
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Signed>, OutputIterator it,
@@ -478,11 +493,37 @@ namespace daw::json::json_details {
 
 		using std::to_string;
 		using to_strings::to_string;
-		if constexpr( std::is_enum_v<parse_to_t> ) {
-			return copy_to_iterator(
-			  to_string( static_cast<std::underlying_type_t<parse_to_t>>( value ) ),
-			  it );
+		using under_type = base_int_type_t<parse_to_t>;
+
+		if constexpr( std::is_enum_v<parse_to_t> or
+		              std::is_integral_v<parse_to_t> ) {
+			auto v = static_cast<under_type>( value );
+			char buff[std::numeric_limits<under_type>::digits10];
+			char *ptr = buff;
+			if( v < 0 ) {
+				*it++ = '-';
+				// Do 1 round here just incase we are
+				// std::numeric_limits<intmax_t>::min( ) and cannot negate
+				*ptr++ = '0' - static_cast<char>( v % 10 );
+				v /= -10;
+				if( v == 0 ) {
+					*it++ = buff[0];
+					return it;
+				}
+			}
+			do {
+				*ptr++ = '0' + static_cast<char>( v % 10 );
+				v /= 10;
+			} while( v > 0 );
+			--ptr;
+			*it++ = *ptr;
+			while( ptr != buff ) {
+				--ptr;
+				*it++ = *ptr;
+			}
+			return it;
 		} else {
+			// Fallback to ADL
 			return copy_to_iterator( to_string( value ), it );
 		}
 	}
@@ -498,14 +539,31 @@ namespace daw::json::json_details {
 
 		using std::to_string;
 		using to_strings::to_string;
-		if constexpr( std::is_enum_v<parse_to_t> ) {
-			return copy_to_iterator(
-			  to_string( static_cast<std::underlying_type_t<parse_to_t>>( value ) ),
-			  it );
+		using under_type = base_int_type_t<parse_to_t>;
+
+		if constexpr( std::is_enum_v<parse_to_t> or
+		              std::is_integral_v<parse_to_t> ) {
+			auto v = static_cast<under_type>( value );
+			daw_json_assert(
+			  v >= 0, "Negative numbers are not supported for unsigned types" );
+			char buff[std::numeric_limits<under_type>::digits10];
+			char *ptr = buff;
+			do {
+				*ptr++ = '0' + static_cast<char>( v % 10 );
+				v /= 10;
+			} while( v > 0 );
+			--ptr;
+			*it++ = *ptr;
+			while( ptr != buff ) {
+				--ptr;
+				*it++ = *ptr;
+			}
+			return it;
 		} else {
+			// Fallback to ADL
 			return copy_to_iterator( to_string( value ), it );
 		}
-	}
+	} // namespace daw::json::json_details
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
