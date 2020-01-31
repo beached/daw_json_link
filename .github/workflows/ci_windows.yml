@@ -1,9 +1,7 @@
 name: Windows
 
 on:
-  pull_request:
-    branches-ignore: dev
-    
+  pull_request:    
 
 jobs:
   build:
