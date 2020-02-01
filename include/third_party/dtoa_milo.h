@@ -89,7 +89,7 @@ namespace milo {
 			return DiyFp( f << s, e - s );
 #else
 			DiyFp res = *this;
-			while( !( res.f & kDpHiddenBit ) ) {
+			while( not( res.f & kDpHiddenBit ) ) {
 				res.f <<= 1;
 				res.e--;
 			}
@@ -106,7 +106,7 @@ namespace milo {
 			return DiyFp( f << ( 63 - index ), e - ( 63 - index ) );
 #else
 			DiyFp res = *this;
-			while( !( res.f & ( kDpHiddenBit << 1 ) ) ) {
+			while( not( res.f & ( kDpHiddenBit << 1 ) ) ) {
 				res.f <<= 1;
 				res.e--;
 			}
@@ -429,8 +429,8 @@ namespace milo {
 
 	inline void dtoa_milo( double value, char *buffer ) {
 		// Not handling NaN and inf
-		assert( !isnan( value ) );
-		assert( !isinf( value ) );
+		assert( not std::isnan( value ) );
+		assert( not std::isinf( value ) );
 
 		if( value == 0 ) {
 			buffer[0] = '0';
