@@ -29,11 +29,11 @@
 #include <daw/daw_traits.h>
 #include <utf8/unchecked.h>
 
-#include <third_party/dtoa_milo.h>
 #include <chrono>
 #include <optional>
 #include <sstream>
 #include <string>
+#include <third_party/dtoa_milo.h>
 #include <tuple>
 #include <type_traits>
 #include <variant>
@@ -467,10 +467,8 @@ namespace daw::json::json_details {
 		// TODO determine actual number
 		if constexpr( std::is_floating_point_v<parse_to_t> ) {
 			char buff[50]{};
-			//int result = sprintf( buff, "%g", value );
-			milo::dtoa_milo( value, buff );
+			milo::dtoa_milo( static_cast<double>( value ), buff );
 			size_t const result = strlen( buff );
-			//daw_json_assert( result >= 0, "Invalid floating point number" );
 			return copy_to_iterator(
 			  daw::string_view( buff, static_cast<size_t>( result ) ), it );
 		} else {
