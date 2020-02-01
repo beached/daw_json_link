@@ -463,9 +463,18 @@ namespace daw::json::json_details {
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
-		using std::to_string;
-		using to_strings::to_string;
-		return copy_to_iterator( to_string( value ), it );
+		// TODO determine actual number
+		if constexpr( std::is_floating_point_v<parse_to_t> ) {
+			char buff[50]{};
+			int result = sprintf( buff, "%g", value );
+			daw_json_assert( result >= 0, "Invalid floating point number" );
+			return copy_to_iterator(
+			  daw::string_view( buff, static_cast<size_t>( result ) ), it );
+		} else {
+			using std::to_string;
+			using to_strings::to_string;
+			return copy_to_iterator( to_string( value ), it );
+		}
 	}
 
 	template<typename T, bool>
@@ -498,7 +507,7 @@ namespace daw::json::json_details {
 		if constexpr( std::is_enum_v<parse_to_t> or
 		              std::is_integral_v<parse_to_t> ) {
 			auto v = static_cast<under_type>( value );
-			char buff[std::numeric_limits<under_type>::digits10+1]{};
+			char buff[std::numeric_limits<under_type>::digits10 + 1]{};
 			char *ptr = buff;
 			if( v < 0 ) {
 				*it++ = '-';
@@ -546,7 +555,7 @@ namespace daw::json::json_details {
 			auto v = static_cast<under_type>( value );
 			daw_json_assert(
 			  v >= 0, "Negative numbers are not supported for unsigned types" );
-			char buff[std::numeric_limits<under_type>::digits10+1]{};
+			char buff[std::numeric_limits<under_type>::digits10 + 1]{};
 			char *ptr = buff;
 			do {
 				*ptr++ = '0' + static_cast<char>( v % 10 );
