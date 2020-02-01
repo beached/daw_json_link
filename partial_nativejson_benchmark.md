@@ -33,7 +33,7 @@ This is taken from https://github.com/serde-rs/json-benchmark/ with DAW JSON Lin
 |       Parser/File    | Dom     | Dom     | Struct  | Struct  |
 |----------------------|---------|---------|---------|---------|
 | DAW JSON Link        |   parse |stringify|   parse |stringify|
-|data/canada.json      |         |         | 655 MB/s|  58 MB/s|
+|data/canada.json      |         |         | 655 MB/s|  97 MB/s|
 |data/citm_catalog.json|         |         | 590 MB/s| 811 MB/s|
 |data/twitter.json     |         |         | 296 MB/s| 277 MB/s|
 
@@ -71,7 +71,7 @@ This is taken from https://github.com/serde-rs/json-benchmark/ with DAW JSON Lin
 |       Parser/File    | Dom     | Dom     | Struct  | Struct   |
 |----------------------|---------|---------|---------|----------|
 | DAW JSON Link        |   parse |stringify|   parse |stringify |
-|data/canada.json      |         |         | 973 MB/s|  40 MB/s |
+|data/canada.json      |         |         | 973 MB/s| 239 MB/s |
 |data/citm_catalog.json|         |         | 940 MB/s|1930 MB/s |
 |data/twitter.json     |         |         | 457 MB/s| 532 MB/s |
 
