@@ -44,7 +44,7 @@ namespace milo {
 			return DiyFp( f - rhs.f, e );
 		}
 
-		DiyFp operator*( const DiyFp &rhs ) const {
+		DiyFp operator*( DiyFp const &rhs ) const {
 #if defined( _MSC_VER ) && defined( _M_AMD64 )
 			uint64_t h = 0;
 			uint64_t l = _umul128( f, rhs.f, &h );
@@ -57,8 +57,8 @@ namespace milo {
     defined( __x86_64__ ) )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-			unsigned __int128 const p = static_cast<unsigned __int128>( f ) *
-			                            static_cast<unsigned __int128>( rhs.f );
+			__uint128_t const p =
+			  static_cast<__uint128_t>( f ) * static_cast<__uint128_t>( rhs.f );
 			uint64_t h = p >> 64U;
 			uint64_t l = static_cast<uint64_t>( p );
 			if( l & ( uint64_t( 1 ) << 63U ) ) { // rounding
@@ -77,7 +77,7 @@ namespace milo {
 			uint64_t const ad = a * d;
 			uint64_t const bd = b * d;
 			uint64_t tmp = ( bd >> 32U ) + ( ad & M32 ) + ( bc & M32 );
-			tmp += 1U << 31; /// mult_round
+			tmp += 1U << 31U; /// mult_round
 			return DiyFp( ac + ( ad >> 32U ) + ( bc >> 32U ) + ( tmp >> 32U ),
 			              e + rhs.e + 64 );
 #endif
@@ -88,7 +88,7 @@ namespace milo {
 			unsigned long index;
 			_BitScanReverse64( &index, f );
 			return DiyFp( f << ( 63U - index ), e - ( 63U - index ) );
-#elif defined( __GNUC__ )
+#elif defined( __GNUC__ ) or defined( __clang__ )
 			int s = __builtin_clzll( f );
 			return DiyFp( f << s, e - s );
 #else
@@ -232,13 +232,13 @@ namespace milo {
 		return 10;
 	}
 
-	inline void DigitGen( const DiyFp &W, const DiyFp &Mp, uint64_t delta,
+	inline void DigitGen( DiyFp const &W, DiyFp const &Mp, uint64_t delta,
 	                      char *buffer, int *len, int *K ) {
-		static const uint32_t kPow10[] = {1,         10,        100,     1000,
+		static uint32_t const kPow10[] = {1,         10,        100,     1000,
 		                                  10000,     100000,    1000000, 10000000,
 		                                  100000000, 1000000000};
-		const DiyFp one( uint64_t( 1 ) << -Mp.e, Mp.e );
-		const DiyFp wp_w = Mp - W;
+		DiyFp const one( uint64_t( 1 ) << -Mp.e, Mp.e );
+		DiyFp const wp_w = Mp - W;
 		uint32_t p1 = static_cast<uint32_t>( Mp.f >> -one.e );
 		uint64_t p2 = Mp.f & ( one.f - 1 );
 		int kappa = static_cast<int>( CountDecimalDigit32( p1 ) );
@@ -290,7 +290,7 @@ namespace milo {
 			default:
 #if defined( _MSC_VER )
 				__assume( 0 );
-#elif __GNUC__ > 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ >= 5 )
+#elif defined( __GNUC ) or defined( __clang__ )
 				__builtin_unreachable( );
 #else
 				d = 0;
@@ -326,12 +326,12 @@ namespace milo {
 	}
 
 	inline void Grisu2( double value, char *buffer, int *length, int *K ) {
-		const DiyFp v( value );
+		DiyFp const v( value );
 		DiyFp w_m, w_p;
 		v.NormalizedBoundaries( &w_m, &w_p );
 
-		const DiyFp c_mk = GetCachedPower( w_p.e, K );
-		const DiyFp W = v.Normalize( ) * c_mk;
+		DiyFp const c_mk = GetCachedPower( w_p.e, K );
+		DiyFp const W = v.Normalize( ) * c_mk;
 		DiyFp Wp = w_p * c_mk;
 		DiyFp Wm = w_m * c_mk;
 		Wm.f++;
@@ -339,7 +339,7 @@ namespace milo {
 		DigitGen( W, Wp, Wp.f - Wm.f, buffer, length, K );
 	}
 
-	inline constexpr const char cDigitsLut[200] = {
+	inline constexpr char const cDigitsLut[200] = {
 	  '0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6', '0',
 	  '7', '0', '8', '0', '9', '1', '0', '1', '1', '1', '2', '1', '3', '1', '4',
 	  '1', '5', '1', '6', '1', '7', '1', '8', '1', '9', '2', '0', '2', '1', '2',
@@ -364,11 +364,11 @@ namespace milo {
 		if( K >= 100 ) {
 			*buffer++ = '0' + static_cast<char>( K / 100 );
 			K %= 100;
-			const char *d = cDigitsLut + K * 2;
+			char const *d = cDigitsLut + K * 2;
 			*buffer++ = d[0];
 			*buffer++ = d[1];
 		} else if( K >= 10 ) {
-			const char *d = cDigitsLut + K * 2;
+			char const *d = cDigitsLut + K * 2;
 			*buffer++ = d[0];
 			*buffer++ = d[1];
 		} else
@@ -378,7 +378,7 @@ namespace milo {
 	}
 
 	inline void Prettify( char *buffer, int length, int k ) {
-		const int kk = length + k; // 10^(kk-1) <= v < 10^kk
+		int const kk = length + k; // 10^(kk-1) <= v < 10^kk
 
 		if( length <= kk && kk <= 21 ) {
 			// 1234e7 -> 12340000000
@@ -395,7 +395,7 @@ namespace milo {
 			buffer[length + 1] = '\0';
 		} else if( -6 < kk && kk <= 0 ) {
 			// 1234e-6 -> 0.001234
-			const int offset = 2 - kk;
+			int const offset = 2 - kk;
 			memmove( &buffer[offset], &buffer[0], static_cast<size_t>( length ) );
 			buffer[0] = '0';
 			buffer[1] = '.';
