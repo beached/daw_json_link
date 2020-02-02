@@ -400,9 +400,13 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 	parse_value( ParseTag<JsonParseTypes::Custom>,
 	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
-		daw_json_assert_weak( rng.front( '"' ),
+		/* Cannot ensure as stored locations do not have "
+		 daw_json_assert_weak( rng.front( '"' ),
 		                      "Custom types requite a string at the beginning" );
-		rng.remove_prefix( );
+		                      */
+		if( rng.front( ) == '"' ) {
+			rng.remove_prefix( );
+		}
 		auto str = skip_string_nq( rng );
 		// TODO make custom require a ptr/sz pair
 		using constructor_t = typename JsonMember::from_converter_t;

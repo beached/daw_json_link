@@ -531,8 +531,10 @@ namespace daw::json {
 	 * @tparam Name Name of JSON member to link to
 	 * @tparam T type of value being constructed
 	 * @tparam FromConverter Callable that accepts a std::string_view of the range
-	 * to parse
-	 * @tparam ToConverter Returns a string from the value
+	 * to parse.  The default requires an overload of from_string( daw::tag<T>,
+	 * std::string_view ) that returns a T
+	 * @tparam ToConverter Returns a string from the value.  The default requires
+	 * a to_string( T const & ) overload that returns a String like type
 	 * @tparam CustomJsonType JSON type value is encoded as literal/string
 	 * @tparam Nullable Can the member be missing or have a null value
 	 */

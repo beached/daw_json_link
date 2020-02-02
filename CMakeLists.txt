@@ -371,7 +371,15 @@ add_dependencies(cookbook_dates1_test_bin dependency_stub)
 add_test(NAME cookbook_dates1_test COMMAND cookbook_dates1_test_bin ./cookbook_dates1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_dates1_test_bin)
 
+add_executable(cookbook_dates2_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_dates2_test.cpp)
+add_dependencies(cookbook_dates2_test_bin dependency_stub)
+add_test(NAME cookbook_dates2_test COMMAND cookbook_dates2_test_bin ./cookbook_dates2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_dates2_test_bin)
 
+add_executable(cookbook_dates3_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_dates3_test.cpp)
+add_dependencies(cookbook_dates3_test_bin dependency_stub)
+add_test(NAME cookbook_dates3_test COMMAND cookbook_dates3_test_bin ./cookbook_dates3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_dates3_test_bin)
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
