@@ -35,6 +35,7 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_parser_helper_sv.h>
+#include <daw/daw_scope_guard.h>
 #include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -340,6 +341,71 @@ namespace daw::json::json_details {
 			using tp_t = std::tuple<decltype(
 			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng ) )...>;
+
+			auto clean_up_fn = [&] {
+				rng.clean_tail( );
+				// If we fullfill the contract before all values are parses
+				while( rng.front( ) != '}' ) {
+					(void)parse_name( rng );
+					(void)skip_value( rng );
+					rng.clean_tail( );
+				}
+
+				daw_json_assert_weak( rng.front( ) == '}',
+				                      "Expected class to end with '}'" );
+				rng.remove_prefix( );
+				rng.trim_left( );
+			};
+#if __cpp_constexpr >= 201907 or defined( DAW_JSON_NO_CONST_EXPR )
+			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
+			// not in a constant expression.  It does allow for construction of
+			// classes without move/copy special members
+
+			// Do this before we exit but after return
+			auto const oe = daw::on_exit_success( std::move( clean_up_fn ) );
+			/*
+			 * Rather than call directly use apply/tuple to evaluate left->right
+			 */
+			return std::apply(
+			  daw::construct_a<JsonClass>,
+			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )...} );
+#else
+			auto result = std::apply(
+			  daw::construct_a<JsonClass>,
+			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )...} );
+			clean_up_fn( );
+			return result;
+#endif
+		}
+	}
+
+	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
+	         typename First, typename Last, bool IsUnCheckedInput>
+	[[nodiscard]] constexpr JsonClass
+	parse_ordered_json_class( IteratorRange<First, Last, IsUnCheckedInput> &rng,
+	                          std::index_sequence<Is...> ) {
+		static_assert( has_json_data_contract_trait_v<JsonClass>,
+		               "Unexpected type" );
+		static_assert(
+		  can_construct_a_v<JsonClass, typename JsonMembers::parse_to_t...>,
+		  "Supplied types cannot be used for	construction of this type" );
+
+		rng.move_to_next_of( '[' );
+		rng.class_first = rng.first;
+		rng.remove_prefix( );
+		rng.move_to_next_of( "\"]" );
+		if constexpr( sizeof...( JsonMembers ) == 0 ) {
+			// We are an empty class, ignore what is there
+			return construct_a<JsonClass>( );
+		} else {
+			auto known_locations =
+			  known_locations_v<First, Last, IsUnCheckedInput, JsonMembers...>;
+
+			using tp_t = std::tuple<decltype(
+			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng ) )...>;
 			/*
 			 * Rather than call directly use apply/tuple to evaluate left->right
 			 */
@@ -348,20 +414,19 @@ namespace daw::json::json_details {
 			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng )...} );
 
+			// TODO investigate using on_successful_exit to do this
 			rng.clean_tail( );
-			// If we fullfill the contract before all values are parses
-			while( rng.front( ) != '}' ) {
-				(void)parse_name( rng );
-				(void)skip_value( rng );
-				rng.clean_tail( );
+			if constexpr( true ) { // ignore_trailing_elements_v<JsonClass> ) {
+				while( rng.front( ) != ']' ) {
+					(void)skip_value( rng );
+					rng.clean_tail( );
+				}
+			} else {
+				daw_json_assert_weak( rng.front( ) == ']', "Must specify all members" );
 			}
-
-			daw_json_assert_weak( rng.front( ) == '}',
-			                      "Expected class to end with '}'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 			return result;
 		}
 	}
-
 } // namespace daw::json::json_details

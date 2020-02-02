@@ -100,12 +100,12 @@ A time_point can be encoded into JSON a the number of seconds since epoch(Jan 1,
 {
  "title":"The Title",
  "id":24,
- "dateAdded":1356753810000000,
+ "dateAdded":"1356753810000000",
  "lastModified":1356753810000000
 }
 ```
 
-This example will use the constructor of the class to construct the `time_point` from the integer.  Otherwise, a `json_custom` type could be used here too.  It demonstrates using a constructor to do the data conversions, along with `to_json_data` to reverse the conversion.  Another alternative is to use the `Constructor` template argument to do the conversion of the integer to the `time_point`.
+This example will use the constructor of the class to construct the `time_point` from the integer.  Otherwise, a `json_custom` type could be used here too.  It demonstrates using a constructor to do the data conversions, along with `to_json_data` to reverse the conversion.  Another alternative is to use the `Constructor` template argument to do the conversion of the integer to the `time_point`.  The `dateAdded` member shows parsing strings into numbers.  This is often done as numbers in JSON are double and can only hold integers as large as 2^53.
 
 ```c++
 using my_timepoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
@@ -138,7 +138,7 @@ namespace daw::json {
     using type = json_member_list<
       json_string<"title">, 
       json_number<"id", unsigned>,
-    json_number<"dateAdded", int64_t>,
+    json_number<"dateAdded", int64_t, LiteralAsStringOpt::Always>,
     json_number<"lastModified", int64_t>>;
 
   static inline auto to_json_data( daw::cookbook_dates3::MyClass3 const &v ) {

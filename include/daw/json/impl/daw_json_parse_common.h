@@ -35,9 +35,16 @@
 #include <iterator>
 
 namespace daw::json {
+	/***
+	 * Attempt to parse/serialize a type that has not yet been mapped
+	 */
 	template<typename>
 	struct missing_json_data_contract_for {};
 
+	/***
+	 * Mapping class for JSON data structures to C++
+	 * @tparam T Class to map
+	 */
 	template<typename T>
 	struct json_data_contract {
 		using type = missing_json_data_contract_for<T>;
