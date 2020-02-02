@@ -32,6 +32,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 * [Cookbook](cookbook/readme.md) Get cooking and putting it all together 
   * [Arrays](cookbook/array.md)
   * [Classes](cookbook/class.md)
+  * [Dates](cookbook/dates.md)
   * [Enums](cookbook/enums.md)
   * [Graphs](cookbook/graphs.md)
   * [Key Values](cookbook/key_values.md) - Map and Dictionary like things 

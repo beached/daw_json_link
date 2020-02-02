@@ -356,7 +356,8 @@ namespace daw::json::json_details {
 				rng.remove_prefix( );
 				rng.trim_left( );
 			};
-#if __cpp_constexpr >= 201907 or defined( DAW_JSON_NO_CONST_EXPR )
+#if defined( __cpp_constexpr_dynamic_alloc ) or                                \
+  defined( DAW_JSON_NO_CONST_EXPR )
 			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
 			// not in a constant expression.  It does allow for construction of
 			// classes without move/copy special members

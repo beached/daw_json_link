@@ -28,6 +28,14 @@
 
 #pragma once
 
+#if defined( __GNUC__ ) or defined( __clang__ )
+#define DAW_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )
+#define DAW_UNLIKELY( Bool ) ( __builtin_expect( !!( Bool ), 0 ) )
+#else
+#define DAW_LIKELY( Bool ) Bool
+#define DAW_UNLIKELY( Bool ) Bool
+#endif
+
 #if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
          defined( _CPPUNWIND ) )
 // account for no exceptions -fno-exceptions
@@ -104,7 +112,7 @@ daw_json_error( daw::json::json_details::missing_member reason ) {
 template<typename Bool>
 static constexpr void daw_json_assert( Bool const &b,
                                        std::string_view reason ) {
-	if( not static_cast<bool>( b ) ) {
+	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
@@ -112,7 +120,7 @@ template<typename Bool>
 static constexpr void
 daw_json_assert( Bool const &b,
                  daw::json::json_details::missing_member reason ) {
-	if( not static_cast<bool>( b ) ) {
+	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
@@ -129,7 +137,7 @@ daw_json_assert( Bool const &b,
 template<typename Bool>
 static constexpr void daw_json_assert( Bool const &b,
                                        std::string_view reason ) {
-	if( not static_cast<bool>( b ) ) {
+	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
@@ -137,7 +145,7 @@ template<typename Bool>
 static constexpr void
 daw_json_assert( Bool const &b,
                  daw::json::json_details::missing_member reason ) {
-	if( not static_cast<bool>( b ) ) {
+	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
@@ -159,3 +167,4 @@ daw_json_assert( Bool const &b,
 #endif
 #endif
 #undef DAW_UNLIKELY
+#undef DAW_LIKELY
