@@ -43,6 +43,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 * [Intro](#intro)
 * [Installing](#installing)
 * [Performance considerations](#performance-considerations)
+  * [Benchmarks](#benchmarks)
 * [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
 * [Differences between C++17 and C++20](#differences-between-c17-and-c20)
   * [C++ 17 Naming of members](#c-17-naming-of-json-members)
@@ -54,6 +55,7 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 * [Deserializing/Parsing](#deserializingparsing)
   * [Member Paths](#member-paths) 
 * [Serialization](#serialization)
+* [Build Configuration Points](#build-configuration-points)
 * [Requirements](#requirements)
   * [For building tests](#for-building-tests)
 
@@ -432,6 +434,14 @@ std::string test_001_t_json_data = to_json( value );
 std::vector<AggData> values = //...;
 std::string json_array_data = to_json_array( values );
 ```
+
+## Build configuration points
+There are a few defines that affect how JSON Link operates
+* `DAW_JSON_DONT_USE_EXCEPTIONS` - Controls if exceptions are allowed.  If they are not, an `abort()` on errors will occur
+* `DAW_JSON_CHECK_DEBUG_ONLY` - Most checks are disabled in release mode
+* `DAW_ALLOW_SSE3` - Allow experimental SSE3 mode
+* `DAW_ALLOW_COMMENTS` - Allow comments in JSON data.  This is of the form of a `#` and will comment the rest of the line
+* `DAW_JSON_NO_CONST_EXPR` - This can be used to allow classes without move/copy special members to be constructed from JSON data prior to C++ 20.  This mode does not work in a constant expression prior to C++20 when this flag is no longer needed. 
 
 ## Requirements
 ###### [Top](#content)
