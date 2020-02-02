@@ -97,6 +97,104 @@ namespace daw::json {
 		}
 	};
 
+	struct json_ignored_member {};
+
+	template<std::size_t Index, typename JsonMember>
+	struct ordered_json_member {
+		static constexpr std::size_t member_index = Index;
+		using json_member = JsonMember;
+	};
+
+	namespace json_details {
+		template<typename...>
+		struct ordered_member_filter;
+
+		template<>
+		struct ordered_member_filter<> {
+			using type = std::tuple<>;
+		};
+
+		template<typename, typename>
+		struct json_member_list;
+
+		template<typename T, typename... Ts>
+		struct json_member_list<T, std::tuple<Ts...>> {
+			using type = std::tuple<T, Ts...>;
+		};
+
+		template<typename Head, typename... Tail>
+		struct ordered_member_filter<Head, Tail...> {
+			using type = std::conditional_t<
+			  std::is_same_v<typename Head::json_member, json_ignored_member>,
+			  typename ordered_member_filter<Tail...>::type,
+			  typename json_member_list<
+			    Head, typename ordered_member_filter<Tail...>::type>::type>;
+		};
+
+		template<typename... JsonMembers, size_t... Is>
+		auto get_ordered_member_list_fn( std::index_sequence<Is...> ) ->
+		  typename ordered_member_filter<
+		    ordered_json_member<Is, JsonMembers>...>::type;
+
+		template<typename... JsonMembers>
+		auto get_ordered_member_list_fn( ) -> std::remove_reference_t<
+		  decltype( ordered_member_filter<JsonMembers...>(
+		    std::make_index_sequence<sizeof...( JsonMembers )>{} ) )>;
+
+		template<typename... JsonMembers>
+		using ordered_member_list = typename std::remove_reference_t<decltype(
+		  get_ordered_member_list_fn<JsonMembers...>( ) )>::type;
+	} // namespace json_details
+
+	template<typename... JsonMembers>
+	struct json_ordered_member_list {
+		using i_am_a_json_member_list = void;
+		using i_am_a_ordered_member_list = void;
+
+		/**
+		 * Serialize a C++ class to JSON data
+		 * @tparam OutputIterator An output iterator with a char value_type
+		 * @tparam Args  tuple of values that map to the JSON members
+		 * @param it OutputIterator to append string data to
+		 * @param args members from C++ class
+		 * @return the OutputIterator it
+		 */
+		template<typename OutputIterator, typename Value, typename... Args>
+		[[maybe_unused, nodiscard]] static constexpr OutputIterator
+		serialize( OutputIterator it, std::tuple<Args...> const &args,
+		           Value const &v ) {
+			static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
+			               "Argument count is incorrect" );
+
+			static_assert( ( json_details::is_a_json_type_v<JsonMembers> and ... ),
+			               "Only value JSON types can be used" );
+			return it;
+			/*
+			return json_details::serialize_ordered_json_class<JsonMembers...>(
+			  it, std::index_sequence_for<Args...>{}, args, v );
+			  */
+		}
+
+		/**
+		 *
+		 * Parse JSON data and construct a C++ class.  This is used by parse_value
+		 * to get back into a mode with a JsonMembers...
+		 * @tparam T The result of parsing json_class
+		 * @tparam First type of first iterator in range
+		 * @tparam Last type of last iterator in range
+		 * @tparam IsUnCheckedInput Is the input trusted, less checking is done
+		 * @param rng JSON data to parse
+		 * @return A T object
+		 */
+		template<typename T, typename First, typename Last, bool IsUnCheckedInput>
+		[[maybe_unused, nodiscard]] static constexpr T
+		parse( json_details::IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
+			return json_details::parse_ordered_json_class<T, JsonMembers...>(
+			  rng, std::index_sequence_for<JsonMembers...>{} );
+		}
+	};
+
 	// Member types
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
 	         typename Constructor, JsonRangeCheck RangeCheck,

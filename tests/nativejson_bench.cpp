@@ -20,6 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#if __cpp_constexpr < 201907
+// constexpr dtor's are not available prior to c++20
+#define DAW_JSON_NO_CONST_EXPR
+#endif
+
 #include "citm_test.h"
 #include "geojson.h"
 #include "twitter_test.h"

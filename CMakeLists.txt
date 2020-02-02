@@ -37,11 +37,12 @@ else ()
     add_definitions(-DDAW_JSON_CHECK_ALWAYS=true)
 endif ()
 
-if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
-    set(DAW_ALLOW_SSE3 ON CACHE STRING "Allow SSE3 Modes")
-else ()
+#if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
+#    set(DAW_ALLOW_SSE3 ON CACHE STRING "Allow SSE3 Modes")
+#else ()
+#Experimental
     set(DAW_ALLOW_SSE3 OFF CACHE STRING "Allow SSE3 Modes")
-endif ()
+#endif ()
 if (DAW_ALLOW_SSE3)
     message("DAW_ALLOW_SSE3=ON: Allow SSE3 Modes")
     add_definitions(-DDAW_ALLOW_SSE3=true)
@@ -380,6 +381,11 @@ add_executable(cookbook_dates3_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_
 add_dependencies(cookbook_dates3_test_bin dependency_stub)
 add_test(NAME cookbook_dates3_test COMMAND cookbook_dates3_test_bin ./cookbook_dates3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_dates3_test_bin)
+
+add_executable(no_move_or_copy_cls_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/no_move_or_copy_cls_test.cpp)
+add_dependencies(no_move_or_copy_cls_test_bin dependency_stub)
+add_test(NAME no_move_or_copy_cls_test COMMAND no_move_or_copy_cls_test_bin)
+add_dependencies(full no_move_or_copy_cls_test_bin)
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 

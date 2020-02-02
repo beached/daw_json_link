@@ -422,10 +422,19 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 		using element_t = typename JsonMember::base_type;
 		daw_json_assert_weak( rng.has_more( ), "Attempt to parse empty string" );
 
-		element_t result = json_details::json_data_contract_trait_t<
+#if __cpp_constexpr >= 201907 or defined( DAW_JSON_NO_CONST_EXPR )
+		// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
+		// not in a constant expression.  It does allow for construction of classes
+		// without move/copy special members
+		auto const oe = daw::on_exit_success( [&] { rng.trim_left( ); } );
+		return json_details::json_data_contract_trait_t<element_t>::template parse<
+		  element_t>( rng );
+#else
+		auto result = json_details::json_data_contract_trait_t<
 		  element_t>::template parse<element_t>( rng );
 		rng.trim_left( );
 		return result;
+#endif
 	}
 	/**
 	 * Parse a key_value pair encoded as a json object where the keys are the
