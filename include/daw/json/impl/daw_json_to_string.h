@@ -215,14 +215,16 @@ namespace daw::json::json_details {
 		}
 		daw_json_error( "Invalid code point" );
 	}
+} // namespace daw::json::json_details
 
+namespace daw::json::utils {
 	template<bool do_escape = false,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
-	         typename Container, typename OutputIterator,
+	         typename OutputIterator, typename Container,
 	         daw::enable_when_t<daw::traits::is_container_like_v<
 	           daw::remove_cvref_t<Container>>> = nullptr>
 	[[nodiscard]] constexpr OutputIterator
-	copy_to_iterator( Container const &container, OutputIterator it ) {
+	copy_to_iterator( OutputIterator it, Container const &container ) {
 		if constexpr( do_escape ) {
 			using iter = daw::remove_cvref_t<decltype( std::begin( container ) )>;
 			using it_t = utf8::unchecked::iterator<iter>;
@@ -281,7 +283,7 @@ namespace daw::json::json_details {
 							break;
 						}
 					}
-					utf32_to_utf8( cp, it );
+					json_details::utf32_to_utf8( cp, it );
 					break;
 				}
 			}
@@ -302,8 +304,8 @@ namespace daw::json::json_details {
 	template<bool do_escape = false,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
 	         typename OutputIterator>
-	[[nodiscard]] constexpr OutputIterator copy_to_iterator( char const *ptr,
-	                                                         OutputIterator it ) {
+	[[nodiscard]] constexpr OutputIterator copy_to_iterator( OutputIterator it,
+	                                                         char const *ptr ) {
 		if( ptr == nullptr ) {
 			return it;
 		}
@@ -348,22 +350,24 @@ namespace daw::json::json_details {
 				default:
 					if constexpr( EightBitMode == EightBitModes::DisallowHigh ) {
 						if( cp < 0x20U ) {
-							it = output_hex( static_cast<std::uint16_t>( cp ), it );
+							it = json_details::output_hex( static_cast<std::uint16_t>( cp ),
+							                               it );
 							break;
 						}
 						if( cp >= 0x7FU and cp <= 0xFFFFU ) {
-							it = output_hex( static_cast<std::uint16_t>( cp ), it );
+							it = json_details::output_hex( static_cast<std::uint16_t>( cp ),
+							                               it );
 							break;
 						}
 						if( cp > 0xFFFFU ) {
-							it = output_hex(
+							it = json_details::output_hex(
 							  static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ), it );
 							it = output_hex(
 							  static_cast<std::uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
 							break;
 						}
 					}
-					utf32_to_utf8( cp, it );
+					json_details::utf32_to_utf8( cp, it );
 					break;
 				}
 			}
@@ -380,6 +384,9 @@ namespace daw::json::json_details {
 		}
 		return it;
 	}
+} // namespace daw::json::utils
+
+namespace daw::json::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
@@ -391,9 +398,9 @@ namespace daw::json::json_details {
 		  "value must be convertible to specified type in class contract" );
 		*/
 		if( value ) {
-			return copy_to_iterator( "true", it );
+			return utils::copy_to_iterator( it, "true" );
 		}
-		return copy_to_iterator( "false", it );
+		return utils::copy_to_iterator( it, "false" );
 	}
 
 	template<std::size_t idx, typename JsonMembers, typename OutputIterator,
@@ -469,12 +476,12 @@ namespace daw::json::json_details {
 			char buff[50]{};
 			milo::dtoa_milo( static_cast<double>( value ), buff );
 			size_t const result = strlen( buff );
-			return copy_to_iterator(
-			  daw::string_view( buff, static_cast<size_t>( result ) ), it );
+			return utils::copy_to_iterator(
+			  it, daw::string_view( buff, static_cast<size_t>( result ) ) );
 		} else {
 			using std::to_string;
 			using to_strings::to_string;
-			return copy_to_iterator( to_string( value ), it );
+			return utils::copy_to_iterator( it, to_string( value ) );
 		}
 	}
 
@@ -534,7 +541,7 @@ namespace daw::json::json_details {
 			return it;
 		} else {
 			// Fallback to ADL
-			return copy_to_iterator( to_string( value ), it );
+			return utils::copy_to_iterator( it, to_string( value ) );
 		}
 	}
 
@@ -571,10 +578,30 @@ namespace daw::json::json_details {
 			return it;
 		} else {
 			// Fallback to ADL
-			return copy_to_iterator( to_string( value ), it );
+			return utils::copy_to_iterator( it, to_string( value ) );
 		}
-	} // namespace daw::json::json_details
+	}
+} // namespace daw::json::json_details
 
+namespace daw::json::utils {
+	template<typename Integer, typename OutputIterator>
+	constexpr OutputIterator integer_to_string( OutputIterator it,
+	                                            Integer const &value ) {
+		static_assert( std::is_integral_v<Integer> );
+		struct date_number {
+			using parse_to_t = Integer;
+		};
+		if constexpr( std::is_unsigned_v<Integer> ) {
+			return json_details::to_string<date_number>(
+			  ParseTag<JsonParseTypes::Unsigned>{}, it, value );
+		} else {
+			return json_details::to_string<date_number>(
+			  ParseTag<JsonParseTypes::Signed>{}, it, value );
+		}
+	}
+} // namespace daw::json::utils
+
+namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::StringRaw>, OutputIterator it,
@@ -587,7 +614,7 @@ namespace daw::json::json_details {
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 		*it++ = '"';
 		if( value.size( ) > 0U ) {
-			it = copy_to_iterator<false, eight_bit_mode>( value, it );
+			it = utils::copy_to_iterator<false, eight_bit_mode>( it, value );
 		}
 		*it++ = '"';
 		return it;
@@ -604,7 +631,7 @@ namespace daw::json::json_details {
 
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 		*it++ = '"';
-		it = copy_to_iterator<true, eight_bit_mode>( value, it );
+		it = utils::copy_to_iterator<true, eight_bit_mode>( it, value );
 		*it++ = '"';
 		return it;
 	}
@@ -619,11 +646,6 @@ namespace daw::json::json_details {
 		return false;
 	}
 
-	template<typename Number>
-	struct date_number {
-		using parse_to_t = Number;
-	};
-
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Date>, OutputIterator it,
@@ -635,46 +657,39 @@ namespace daw::json::json_details {
 
 		using daw::json::json_details::is_null;
 		if( is_null( value ) ) {
-			it = copy_to_iterator( "null", it );
+			it = utils::copy_to_iterator( it, "null" );
 		} else {
 			*it++ = '"';
-			ymdhms const civil = time_point_to_civil( value );
-			it = to_string<date_number<int_least32_t>>(
-			  ParseTag<JsonParseTypes::Signed>{}, it, civil.year );
+			datetime::ymdhms const civil = datetime::time_point_to_civil( value );
+			it = utils::integer_to_string( it, civil.year );
 			*it++ = '-';
 			if( civil.month < 10 ) {
 				*it++ = '0';
 			}
-			it = to_string<date_number<uint_least32_t>>(
-			  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.month );
+			it = utils::integer_to_string( it, civil.month );
 			*it++ = '-';
 			if( civil.day < 10 ) {
 				*it++ = '0';
 			}
-			it = to_string<date_number<uint_least32_t>>(
-			  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.day );
+			it = utils::integer_to_string( it, civil.day );
 			*it++ = 'T';
 			if( civil.hour < 10 ) {
 				*it++ = '0';
 			}
-			it = to_string<date_number<uint_least32_t>>(
-			  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.hour );
+			it = utils::integer_to_string( it, civil.hour );
 			*it++ = ':';
 			if( civil.minute < 10 ) {
 				*it++ = '0';
 			}
-			it = to_string<date_number<uint_least32_t>>(
-			  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.minute );
+			it = utils::integer_to_string( it, civil.minute );
 			*it++ = ':';
 			if( civil.second < 10 ) {
 				*it++ = '0';
 			}
-			it = to_string<date_number<uint_least32_t>>(
-			  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.second );
+			it = utils::integer_to_string( it, civil.second );
 			if( civil.millisecond > 0 ) {
 				*it++ = '.';
-				it = to_string<date_number<uint_least32_t>>(
-				  ParseTag<JsonParseTypes::Unsigned>{}, it, civil.millisecond );
+				it = utils::integer_to_string( it, civil.millisecond );
 			}
 			*it++ = 'Z';
 			*it++ = '"';
@@ -707,13 +722,20 @@ namespace daw::json::json_details {
 
 		if constexpr( JsonMember::custom_json_type == CustomJsonTypes::String ) {
 			*it++ = '"';
-			it =
-			  copy_to_iterator( typename JsonMember::to_converter_t{}( value ), it );
+			if constexpr( std::is_invocable_r_v<OutputIterator,
+			                                    typename JsonMember::to_converter_t,
+			                                    OutputIterator, parse_to_t> ) {
+
+				it = typename JsonMember::to_converter_t{}( it, value );
+			} else {
+				it = utils::copy_to_iterator(
+				  it, typename JsonMember::to_converter_t{}( value ) );
+			}
 			*it++ = '"';
 			return it;
 		} else {
-			return copy_to_iterator( typename JsonMember::to_converter_t{}( value ),
-			                         it );
+			return utils::copy_to_iterator(
+			  it, typename JsonMember::to_converter_t{}( value ) );
 		}
 	}
 
@@ -769,7 +791,7 @@ namespace daw::json::json_details {
 				*it++ = '{';
 				// Append Key Name
 				*it++ = '"';
-				it = copy_to_iterator( key_t::name, it );
+				it = utils::copy_to_iterator( it, key_t::name );
 				*it++ = '"';
 				*it++ = ':';
 				// Append Key Value
@@ -779,7 +801,7 @@ namespace daw::json::json_details {
 				*it++ = ',';
 				// Append Value Name
 				*it++ = '"';
-				it = copy_to_iterator( value_t::name, it );
+				it = utils::copy_to_iterator( it, value_t::name );
 				*it++ = '"';
 				*it++ = ':';
 				// Append Value Value
@@ -863,9 +885,9 @@ namespace daw::json::json_details {
 		}
 		is_first = false;
 		*it++ = '"';
-		it =
-		  copy_to_iterator<false, EightBitModes::AllowFull>( tag_member_name, it );
-		it = copy_to_iterator<false, EightBitModes::AllowFull>( "\":", it );
+		it = utils::copy_to_iterator<false, EightBitModes::AllowFull>(
+		  it, tag_member_name );
+		it = utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
 		it = member_to_string<tag_member>( daw::move( it ),
 		                                   typename JsonMember::switcher{}( v ) );
 	}
@@ -892,10 +914,9 @@ namespace daw::json::json_details {
 		}
 		is_first = false;
 		*it++ = '"';
-		it =
-		  copy_to_iterator<false, EightBitModes::AllowFull>( JsonMember::name, it );
-		it = copy_to_iterator<false, EightBitModes::AllowFull>( "\":", it );
+		it = utils::copy_to_iterator<false, EightBitModes::AllowFull>(
+		  it, JsonMember::name );
+		it = utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
 		it = member_to_string<JsonMember>( daw::move( it ), std::get<pos>( tp ) );
 	}
-
 } // namespace daw::json::json_details

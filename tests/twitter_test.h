@@ -11,6 +11,92 @@
 #include <daw/json/daw_json_link.h>
 
 namespace daw::twitter {
+	using twitter_tp = std::chrono::time_point<std::chrono::system_clock,
+	                                           std::chrono::milliseconds>;
+	struct TimestampConverter {
+		constexpr twitter_tp operator( )( std::string_view sv ) const {
+			daw_json_assert( sv.size( ) >= 26,
+			                 "Date format is always 26 characters long" );
+			// Skip Day of Week
+			sv.remove_prefix( 4 );
+			auto const mo = daw::json::datetime::parse_short_month( sv );
+			sv.remove_prefix( 4 );
+			auto const dy =
+			  daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
+			sv.remove_prefix( 3 );
+			auto const hr =
+			  daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
+			sv.remove_prefix( 3 );
+			auto const mn =
+			  daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
+			sv.remove_prefix( 3 );
+			auto const se =
+			  daw::json::parse_utils::parse_unsigned<uint_least32_t, 2>( sv.data( ) );
+			sv.remove_prefix( 3 );
+			auto const sign = sv.front( ) == '+' ? 1 : -1;
+			sv.remove_prefix( 1 );
+			auto const off_hr =
+			  daw::json::parse_utils::parse_unsigned<int_least32_t, 2>( sv.data( ) ) *
+			  sign;
+			sv.remove_prefix( 2 );
+			auto const off_mn =
+			  daw::json::parse_utils::parse_unsigned<int_least32_t, 2>( sv.data( ) ) *
+			  sign;
+			sv.remove_prefix( 3 );
+			int const yr_sign = [&] {
+				if( sv.front( ) == '-' ) {
+					sv.remove_prefix( 1 );
+					return -1;
+				} else if( sv.front( ) == '+' ) {
+					sv.remove_prefix( 1 );
+				}
+				return 1;
+			}( );
+			auto const yr =
+			  yr_sign *
+			  daw::json::parse_utils::parse_unsigned2<int_least32_t>( sv.data( ) );
+
+			return daw::json::datetime::civil_to_time_point( yr, mo, dy, hr, mn, se,
+			                                                 0 ) +
+			       std::chrono::hours( off_hr ) + std::chrono::minutes( off_mn );
+		}
+
+		template<typename OutputIterator>
+		constexpr OutputIterator operator( )( OutputIterator it,
+		                                      twitter_tp tp ) const {
+
+			auto const &[yr, mo, dy, hr, mn, se, ms] =
+			  daw::json::datetime::time_point_to_civil( tp );
+			// Day of Week
+			it = daw::json::utils::copy_to_iterator(
+			  it, daw::json::datetime::short_day_of_week( tp ) );
+			*it++ = ' ';
+			// Month
+			it = daw::json::utils::copy_to_iterator(
+			  it, daw::json::datetime::month_short_name( mo ) );
+			*it++ = ' ';
+			it = daw::json::utils::integer_to_string( it, dy );
+			*it++ = ' ';
+			if( hr < 10 ) {
+				*it++ = '0';
+			}
+			it = daw::json::utils::integer_to_string( it, hr );
+			*it++ = ':';
+			if( mn < 10 ) {
+				*it++ = '0';
+			}
+			it = daw::json::utils::integer_to_string( it, mn );
+			*it++ = ':';
+			if( se < 10 ) {
+				*it++ = '0';
+			}
+			it = daw::json::utils::integer_to_string( it, se );
+			it = daw::json::utils::copy_to_iterator( it, " +0000 " );
+			it = daw::json::utils::integer_to_string( it, yr );
+			return it;
+		}
+	};
+
 	struct metadata_t {
 		std::string result_type;
 		std::string iso_language_code;
@@ -49,7 +135,7 @@ namespace daw::twitter {
 		int64_t followers_count;
 		int64_t friends_count;
 		int64_t listed_count;
-		std::string created_at;
+		twitter_tp created_at;
 		int64_t favourites_count;
 		std::optional<int64_t> utc_offset;
 		std::optional<std::string> time_zone;
@@ -86,7 +172,7 @@ namespace daw::twitter {
 
 	struct statuses_element_t {
 		metadata_t metadata;
-		std::string created_at;
+		twitter_tp created_at;
 		int64_t id;
 		std::string id_str;
 		std::string text;
@@ -161,7 +247,7 @@ namespace daw::twitter {
 
 	struct retweeted_status_t {
 		metadata_t metadata;
-		std::string created_at;
+		twitter_tp created_at;
 		int64_t id;
 		std::string id_str;
 		std::string text;
@@ -305,7 +391,9 @@ namespace daw::json {
 		  json_class<"entities", daw::twitter::entities_t>, json_bool<"protected">,
 		  json_number<"followers_count", int64_t>,
 		  json_number<"friends_count", int64_t>,
-		  json_number<"listed_count", int64_t>, json_string<"created_at">,
+		  json_number<"listed_count", int64_t>,
+		  json_custom<"created_at", twitter_tp, TimestampConverter,
+		              TimestampConverter>,
 		  json_number<"favourites_count", int64_t>,
 		  json_number_null<"utc_offset", std::optional<int64_t>>,
 		  json_string_null<"time_zone">, json_bool<"geo_enabled">,
@@ -387,7 +475,10 @@ namespace daw::json {
 		  json_string_null<url>, json_class<entities, daw::twitter::entities_t>,
 		  json_bool<_jsonprotected>, json_number<followers_count, int64_t>,
 		  json_number<friends_count, int64_t>, json_number<listed_count, int64_t>,
-		  json_string<created_at>, json_number<favourites_count, int64_t>,
+		  json_custom<created_at, daw::twitter::twitter_tp,
+		              daw::twitter::TimestampConverter,
+		              daw::twitter::TimestampConverter>,
+		  json_number<favourites_count, int64_t>,
 		  json_number_null<utc_offset, std::optional<int64_t>>,
 		  json_string_null<time_zone>, json_bool<geo_enabled>, json_bool<verified>,
 		  json_number<statuses_count, int64_t>, json_string<lang>,
@@ -447,9 +538,11 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
-		  json_string<"created_at">, json_number<"id", int64_t>,
-		  json_string<"id_str">, json_string<"text">, json_string<"source">,
-		  json_bool<"truncated">,
+		  json_custom<"created_at", daw::twitter::twitter_tp,
+		              daw::twitter::TimestampConverter,
+		              daw::twitter::TimestampConverter>,
+		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
+		  json_string<"source">, json_bool<"truncated">,
 		  json_number_null<"in_reply_to_status_id", std::optional<int64_t>>,
 		  json_string_null<"in_reply_to_status_id_str">,
 		  json_number_null<"in_reply_to_user_id", std::optional<int64_t>>,
@@ -489,7 +582,10 @@ namespace daw::json {
 		  "possibly_sensitive";
 		static inline constexpr char const lang[] = "lang";
 		using type = json_member_list<
-		  json_class<metadata, daw::twitter::metadata_t>, json_string<created_at>,
+		  json_class<metadata, daw::twitter::metadata_t>,
+		  json_custom<created_at, daw::twitter::twitter_tp,
+		              daw::twitter::TimestampConverter,
+		              daw::twitter::TimestampConverter>,
 		  json_number<id, int64_t>, json_string<id_str>, json_string<text>,
 		  json_string<source>, json_bool<truncated>,
 		  json_number_null<in_reply_to_status_id, std::optional<int64_t>>,
@@ -683,9 +779,11 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
-		  json_string<"created_at">, json_number<"id", int64_t>,
-		  json_string<"id_str">, json_string<"text">, json_string<"source">,
-		  json_bool<"truncated">,
+		  json_custom<"created_at", daw::twitter::twitter_tp,
+		              daw::twitter::TimestampConverter,
+		              daw::twitter::TimestampConverter>,
+		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
+		  json_string<"source">, json_bool<"truncated">,
 		  json_number_null<"in_reply_to_status_id", std::optional<int64_t>>,
 		  json_string_null<"in_reply_to_status_id_str">,
 		  json_number_null<"in_reply_to_user_id", std::optional<int64_t>>,
@@ -725,7 +823,10 @@ namespace daw::json {
 		  "possibly_sensitive";
 		static inline constexpr char const lang[] = "lang";
 		using type = json_member_list<
-		  json_class<metadata, daw::twitter::metadata_t>, json_string<created_at>,
+		  json_class<metadata, daw::twitter::metadata_t>,
+		  json_custom<created_at, daw::twitter::twitter_tp,
+		              daw::twitter::TimestampConverter,
+		              daw::twitter::TimestampConverter>,
 		  json_number<id, int64_t>, json_string<id_str>, json_string<text>,
 		  json_string<source>, json_bool<truncated>,
 		  json_number_null<in_reply_to_status_id, std::optional<int64_t>>,

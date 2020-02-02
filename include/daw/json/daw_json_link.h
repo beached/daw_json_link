@@ -335,7 +335,13 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<FromConverter, std::string_view>;
-
+		static_assert( std::is_invocable_v<FromConverter, std::string_view>,
+		               "FromConverter must be callable with a std::string_view" );
+		static_assert(
+		  std::is_invocable_v<ToConverter, parse_to_t> or
+		    std::is_invocable_r_v<char const *, ToConverter, char const *,
+		                          parse_to_t>,
+		  "ToConverter must be callable with T or T and and OutputIterator" );
 		static inline constexpr JSONNAMETYPE name = Name;
 		static inline constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Custom, Nullable>;

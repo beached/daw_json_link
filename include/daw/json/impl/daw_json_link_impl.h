@@ -64,8 +64,7 @@ namespace daw::json {
 
 		[[maybe_unused, nodiscard]] constexpr result_type
 		operator( )( char const *ptr, std::size_t sz ) const {
-			return json_details::parse_iso8601_timestamp(
-			  daw::string_view( ptr, sz ) );
+			return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
 		}
 	};
 
@@ -81,8 +80,7 @@ namespace daw::json {
 
 		[[maybe_unused, nodiscard]] constexpr result_type
 		operator( )( char const *ptr, std::size_t sz ) const {
-			return json_details::parse_iso8601_timestamp(
-			  daw::string_view( ptr, sz ) );
+			return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
 		}
 	};
 
