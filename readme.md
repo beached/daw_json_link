@@ -1,11 +1,11 @@
 # JSON Link 
 
 
-[![Build Status Macos](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg)](https://github.com/beached/daw_json_link/actions?query=branch%3Amaster+workflow%3AMacOS)
+[![Build Status Macos](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AMacOS)
 
-[![Build Status Ubuntu](https://github.com/beached/daw_json_link/workflows/Ubuntu/badge.svg)](https://github.com/beached/daw_json_link/actions?query=branch%3Amaster+workflow%3AUbuntu)
+[![Build Status Ubuntu](https://github.com/beached/daw_json_link/workflows/Ubuntu/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AUbuntu)
 
-[![Build Status Windows](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=branch%3Amaster+workflow%3AWindows)
+[![Build Status Windows](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows)
 
 [![Build Status Arm Linux](https://travis-ci.com/beached/daw_json_link.svg?branch=master)](https://travis-ci.com/beached/daw_json_link) - Arm64 Linux
 
