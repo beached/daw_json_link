@@ -457,6 +457,12 @@ There are a few defines that affect how JSON Link operates
 * git
 * cmake
 
+### Quickly pulling into a project.  
+
+Two other header only libraries are needed.  When making tests they are automatically pulled in.  However, having the include folder of the following two projects is needed
+* https://github.com/beached/header_libraries - `git clone --depth 1 https://github.com/beached/header_libraries.git`
+* https://github.com/beached/utf_range - `git clone --depth 1 https://github.com/beached/utf_range.git`
+
 #### Contact
 Darrell Wright
 json_link@dawdevel.ca
