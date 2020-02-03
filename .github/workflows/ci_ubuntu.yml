@@ -1,11 +1,13 @@
 name: Ubuntu
 
 on:
+  push:
+    branches: master
   pull_request:
     push:
       branches-ignore: dev
     pull_request:
-      branches-ignore: dev
+      branches-ignore: dev        
 
 jobs:
   build:
