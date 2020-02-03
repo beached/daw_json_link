@@ -36,15 +36,18 @@ namespace daw::geojson {
 		std::string_view name;
 	}; // Property
 
+	struct Point {
+		double x;
+		double y;
+	};
+
 	struct Polygon {
 		std::string_view type;
-		std::vector<std::vector<std::array<double, 2>>> coordinates;
+		std::vector<std::vector<Point>> coordinates;
 
-		Polygon( std::string_view t,
-		         std::vector<std::vector<std::array<double, 2>>> &&coords )
+		Polygon( std::string_view t, std::vector<std::vector<Point>> &&coords )
 		  : type( t )
 		  , coordinates( std::move( coords ) ) {}
-
 	}; // Polygon
 
 	struct Feature {
@@ -75,6 +78,16 @@ namespace daw::geojson {
 
 namespace daw::json {
 	template<>
+	struct json_data_contract<daw::geojson::Point> {
+		using type = json_ordered_member_list<double, double>;
+
+		[[nodiscard, maybe_unused]] static inline auto
+		to_json_data( daw::geojson::Point const &p ) {
+			return std::forward_as_tuple( p.x, p.y );
+		}
+	};
+
+	template<>
 	struct json_data_contract<daw::geojson::Property> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_string_raw<"name", std::string_view>>;
@@ -94,24 +107,15 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_string_raw<"type", std::string_view>,
-		  json_array<
-		    "coordinates",
-		    json_array<no_name,
-		               json_array<no_name, double, std::array<double, 2>,
-		                          daw::construct_a_t<std::array<double, 2>>,
-		                          daw::geojson::array_appender<double>>>>>;
+		  json_array<"coordinates", std::vector<daw::geojson::Point>>>;
 #else
 		static inline constexpr char const type_sym[] = "type";
 		static inline constexpr char const coordinates[] = "coordinates";
 		using type = json_member_list<
 		  json_string_raw<type_sym, std::string_view>,
-		  json_array<
-		    coordinates,
-		    json_array<no_name,
-		               json_array<no_name, double, std::array<double, 2>,
-		                          daw::construct_a_t<std::array<double, 2>>,
-		                          daw::geojson::array_appender<double>>>>>;
+		  json_array<coordinates, std::vector<daw::geojson::Point>>>;
 #endif
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::geojson::Polygon const &value ) {
 			return std::forward_as_tuple( value.type, value.coordinates );

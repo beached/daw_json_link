@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #include <daw/daw_benchmark.h>
-#if __cpp_constexpr < 201907
+#if not defined( __cpp_constexpr_dynamic_alloc )
 // constexpr dtor's are not available prior to c++20
 #define DAW_JSON_NO_CONST_EXPR
 #endif
@@ -57,7 +57,7 @@ namespace daw::json {
 
 int main( ) {
 	constexpr std::string_view json_data = R"({ "some_num": 1234 } )";
-#if __cpp_constexpr < 201907
+#if not defined( __cpp_constexpr_dynamic_alloc )
 	daw::expecting( daw::json::from_json<A>( json_data ).member == 1234 );
 #else
 	static_assert( daw::json::from_json<A>( json_data ).member == 1234 );
