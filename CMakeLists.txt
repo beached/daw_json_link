@@ -397,6 +397,10 @@ add_dependencies(cookbook_class_from_array2_test_bin dependency_stub)
 add_test(NAME cookbook_class_from_array2_test COMMAND cookbook_class_from_array2_test_bin ./cookbook_class_from_array2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_class_from_array2_test_bin)
 
+add_executable(stream_output_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/stream_output_test.cpp)
+add_dependencies(stream_output_test_bin dependency_stub)
+add_test(NAME stream_output_test COMMAND stream_output_test_bin )
+add_dependencies(full stream_output_test_bin)
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 

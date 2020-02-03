@@ -1,12 +1,13 @@
 # JSON Link 
 
-![](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg) 
 
-![](https://github.com/beached/daw_json_link/workflows/Ubuntu/badge.svg) 
+[![Build Status Macos](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AMacOS)
 
-![](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg) 
+[![Build Status Ubuntu](https://github.com/beached/daw_json_link/workflows/Ubuntu/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AUbuntu)
 
-[![Build Status](https://travis-ci.com/beached/daw_json_link.svg?branch=master)](https://travis-ci.com/beached/daw_json_link) - Arm64 Linux
+[![Build Status Windows](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows)
+
+[![Build Status Arm Linux](https://travis-ci.com/beached/daw_json_link.svg?branch=master)](https://travis-ci.com/beached/daw_json_link) - Arm64 Linux
 
 This library provides serialization/deserialization of JSON documents with a known structure into a C++ typed structure.
 
