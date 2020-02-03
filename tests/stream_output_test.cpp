@@ -20,13 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <daw/daw_memory_mapped_file.h>
-
 #include "daw/json/daw_json_link.h"
 
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <sstream>
 #include <string>
 
 namespace daw::cookbook_class1 {
@@ -66,11 +65,13 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv ) {
-	if( argc <= 1 ) {
-		puts( "Must supply path to cookbook_class1.json file\n" );
-		exit( EXIT_FAILURE );
-	}
-	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	std::string_view data = R"(
+{
+  "member0": "this is a test",
+  "member1": 314159,
+  "member2": true
+}
+)";
 
 	daw::cookbook_class1::MyClass1 const cls =
 	  daw::json::from_json<daw::cookbook_class1::MyClass1>(
@@ -79,12 +80,11 @@ int main( int argc, char **argv ) {
 	daw_json_assert( cls.member_0 == "this is a test", "Unexpected value" );
 	daw_json_assert( cls.member_1 == 314159, "Unexpected value" );
 	daw_json_assert( cls.member_2 == true, "Unexpected value" );
-	std::string const str = daw::json::to_json( cls );
+
+	std::stringstream ss{};
+	auto it = std::ostreambuf_iterator<char>( ss );
+
+	(void)daw::json::to_json( cls, it );
+	std::string const str = ss.str( );
 	puts( str.c_str( ) );
-
-	daw::cookbook_class1::MyClass1 const cls2 =
-	  daw::json::from_json<daw::cookbook_class1::MyClass1>(
-	    std::string_view( str.data( ), str.size( ) ) );
-
-	daw_json_assert( cls == cls2, "Unexpected round trip error" );
 }
