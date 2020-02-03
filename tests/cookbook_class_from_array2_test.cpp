@@ -30,7 +30,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace daw::cookbook_class_from_array1 {
+namespace daw::cookbook_class_from_array2 {
 	struct Point {
 		double x;
 		double y;
@@ -39,15 +39,16 @@ namespace daw::cookbook_class_from_array1 {
 	bool operator!=( Point const &lhs, Point const &rhs ) {
 		return lhs.x != rhs.x and lhs.y != rhs.y;
 	}
-} // namespace daw::cookbook_class_from_array1
+} // namespace daw::cookbook_class_from_array2
 
 namespace daw::json {
 	template<>
-	struct json_data_contract<daw::cookbook_class_from_array1::Point> {
-		using type = json_ordered_member_list<double, double>;
+	struct json_data_contract<daw::cookbook_class_from_array2::Point> {
+		using type = json_ordered_member_list<ordered_json_member<0, double>,
+		                                      ordered_json_member<3, double>>;
 
 		static inline auto
-		to_json_data( daw::cookbook_class_from_array1::Point const &p ) {
+		to_json_data( daw::cookbook_class_from_array2::Point const &p ) {
 			return std::forward_as_tuple( p.x, p.y );
 		}
 	};
@@ -55,23 +56,22 @@ namespace daw::json {
 
 int main( int argc, char **argv ) {
 	if( argc <= 1 ) {
-		puts( "Must supply path to cookbook_class_from_array1.json file\n" );
+		puts( "Must supply path to cookbook_class_from_array2.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 	puts( "Original\n" );
 	puts( data.data( ) );
 
-	daw::cookbook_class_from_array1::Point const cls =
-	  daw::json::from_json<daw::cookbook_class_from_array1::Point>(
+	daw::cookbook_class_from_array2::Point const cls =
+	  daw::json::from_json<daw::cookbook_class_from_array2::Point>(
 	    std::string_view( data.data( ), data.size( ) ) );
 
 	std::string const str = daw::json::to_json( cls );
-
 	puts( "Round trip\n" );
 	puts( str.c_str( ) );
-	daw::cookbook_class_from_array1::Point const cls2 =
-	  daw::json::from_json<daw::cookbook_class_from_array1::Point>(
+	daw::cookbook_class_from_array2::Point const cls2 =
+	  daw::json::from_json<daw::cookbook_class_from_array2::Point>(
 	    std::string_view( str.data( ), str.size( ) ) );
 
 	if( cls != cls2 ) {

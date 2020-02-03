@@ -258,12 +258,14 @@ namespace daw::json::json_details {
 			daw_json_assert( member_position <= JsonMember::member_index,
 			                 "Order of ordered members must be ascending" );
 			for( ; member_position < JsonMember::member_index; ++member_position ) {
-				rng = skip_value( rng );
+				rng.clean_tail( );
+				(void)skip_value( rng );
 			}
 		}
 		using json_member_type = ordered_member_subtype_t<JsonMember>;
 
 		rng.clean_tail( );
+		++member_position;
 		return parse_value<json_member_type>(
 		  ParseTag<json_member_type::expected_type>{}, rng );
 	}
