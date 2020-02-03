@@ -60,6 +60,34 @@ namespace daw::json::json_details {
 	inline constexpr bool is_a_json_type_v = daw::is_detected_v<json_type_t, T>;
 
 	template<typename T>
+	using ordered_member_t = typename T::i_am_an_ordered_member;
+
+	template<typename T>
+	inline constexpr bool is_an_ordered_member_v =
+	  daw::is_detected_v<ordered_member_t, T>;
+
+	template<typename T>
+	using is_a_json_tagged_variant_test = typename T::i_am_a_json_tagged_variant;
+
+	template<typename T>
+	inline constexpr bool is_a_json_tagged_variant_v =
+	  daw::is_detected_v<is_a_json_tagged_variant_test, T>;
+
+	template<typename T, bool = false>
+	struct ordered_member_subtype {
+		using type = T;
+	};
+
+	template<typename T>
+	struct ordered_member_subtype<T, true> {
+		using type = typename T::json_member;
+	};
+
+	template<typename T>
+	using ordered_member_subtype_t =
+	  typename ordered_member_subtype<T, is_an_ordered_member_v<T>>::type;
+
+	template<typename T>
 	using json_data_contract_trait_t =
 	  typename daw::json::json_data_contract<T>::type;
 
@@ -189,6 +217,10 @@ namespace daw::json {
 
 		constexpr bool operator==( daw::string_view sv ) const {
 			return daw::string_view( m_data, N - 1 ) == sv;
+		}
+
+		constexpr operator std::string_view( ) const {
+			return std::string_view( m_data, N - 1 );
 		}
 	};
 

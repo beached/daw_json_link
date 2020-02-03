@@ -97,55 +97,33 @@ namespace daw::json {
 		}
 	};
 
-	struct json_ignored_member {};
-
 	template<std::size_t Index, typename JsonMember>
 	struct ordered_json_member {
+		using i_am_an_ordered_member = void;
+		using i_am_a_json_type = void;
 		static constexpr std::size_t member_index = Index;
-		using json_member = JsonMember;
+		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
+		using parse_to_t = typename json_details::unnamed_default_type_mapping<
+		  JsonMember>::parse_to_t;
 	};
 
 	namespace json_details {
-		template<typename...>
-		struct ordered_member_filter;
-
-		template<>
-		struct ordered_member_filter<> {
-			using type = std::tuple<>;
-		};
-
-		template<typename, typename>
-		struct json_member_list;
-
-		template<typename T, typename... Ts>
-		struct json_member_list<T, std::tuple<Ts...>> {
-			using type = std::tuple<T, Ts...>;
-		};
-
-		template<typename Head, typename... Tail>
-		struct ordered_member_filter<Head, Tail...> {
-			using type = std::conditional_t<
-			  std::is_same_v<typename Head::json_member, json_ignored_member>,
-			  typename ordered_member_filter<Tail...>::type,
-			  typename json_member_list<
-			    Head, typename ordered_member_filter<Tail...>::type>::type>;
-		};
-
-		template<typename... JsonMembers, size_t... Is>
-		auto get_ordered_member_list_fn( std::index_sequence<Is...> ) ->
-		  typename ordered_member_filter<
-		    ordered_json_member<Is, JsonMembers>...>::type;
-
-		template<typename... JsonMembers>
-		auto get_ordered_member_list_fn( ) -> std::remove_reference_t<
-		  decltype( ordered_member_filter<JsonMembers...>(
-		    std::make_index_sequence<sizeof...( JsonMembers )>{} ) )>;
-
-		template<typename... JsonMembers>
-		using ordered_member_list = typename std::remove_reference_t<decltype(
-		  get_ordered_member_list_fn<JsonMembers...>( ) )>::type;
+		template<typename JsonMember>
+		struct ordered_member_wrapper
+		  : json_details::unnamed_default_type_mapping<JsonMember> {};
 	} // namespace json_details
 
+	/***
+	 * Allow extracting elements from a JSON array and constructing from it.
+	 * Members can be either normal C++ no_name members, or an ordered_member with
+	 * a position. All ordered members must have a value greater than the
+	 * previous.  The first element in the list, unless it is specified as an
+	 * ordered_member, is 0.  A non-ordered_member item will be 1 more than the
+	 * previous item in the list.  All items must have an index greater than the
+	 * previous.
+	 * @tparam JsonMembers A list of json_TYPE mappings or a json_TYPE mapping
+	 * wrapped into a ordered_json_member
+	 */
 	template<typename... JsonMembers>
 	struct json_ordered_member_list {
 		using i_am_a_json_member_list = void;
@@ -166,13 +144,13 @@ namespace daw::json {
 			static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 			               "Argument count is incorrect" );
 
-			static_assert( ( json_details::is_a_json_type_v<JsonMembers> and ... ),
+			static_assert( ( json_details::is_a_json_type_v<
+			                   json_details::ordered_member_wrapper<JsonMembers>> and
+			                 ... ),
 			               "Only value JSON types can be used" );
-			return it;
-			/*
-			return json_details::serialize_ordered_json_class<JsonMembers...>(
+			return json_details::serialize_ordered_json_class<
+			  json_details::ordered_member_wrapper<JsonMembers>...>(
 			  it, std::index_sequence_for<Args...>{}, args, v );
-			  */
 		}
 
 		/**
@@ -190,8 +168,8 @@ namespace daw::json {
 		[[maybe_unused, nodiscard]] static constexpr T
 		parse( json_details::IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
-			return json_details::parse_ordered_json_class<T, JsonMembers...>(
-			  rng, std::index_sequence_for<JsonMembers...>{} );
+			return json_details::parse_ordered_json_class<
+			  T, json_details::ordered_member_wrapper<JsonMembers>...>( rng );
 		}
 	};
 
@@ -395,6 +373,7 @@ namespace daw::json {
 	         typename JsonElements, typename Constructor, JsonNullable Nullable>
 	struct json_tagged_variant {
 		using i_am_a_json_type = void;
+		using i_am_a_tagged_variant = void;
 		static_assert(
 		  std::is_same_v<typename JsonElements::i_am_tagged_variant_type_list,
 		                 void>,

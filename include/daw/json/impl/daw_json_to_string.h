@@ -584,18 +584,22 @@ namespace daw::json::json_details {
 } // namespace daw::json::json_details
 
 namespace daw::json::utils {
+	namespace utils_details {
+		template<typename Integer>
+		struct number {
+			using parse_to_t = Integer;
+		};
+	} // namespace utils_details
 	template<typename Integer, typename OutputIterator>
 	constexpr OutputIterator integer_to_string( OutputIterator it,
 	                                            Integer const &value ) {
 		static_assert( std::is_integral_v<Integer> );
-		struct date_number {
-			using parse_to_t = Integer;
-		};
+
 		if constexpr( std::is_unsigned_v<Integer> ) {
-			return json_details::to_string<date_number>(
+			return json_details::to_string<utils_details::number<Integer>>(
 			  ParseTag<JsonParseTypes::Unsigned>{}, it, value );
 		} else {
-			return json_details::to_string<date_number>(
+			return json_details::to_string<utils_details::number<Integer>>(
 			  ParseTag<JsonParseTypes::Signed>{}, it, value );
 		}
 	}
@@ -919,4 +923,39 @@ namespace daw::json::json_details {
 		it = utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
 		it = member_to_string<JsonMember>( daw::move( it ), std::get<pos>( tp ) );
 	}
+
+	template<size_t TupleIdx, typename JsonMember, typename OutputIterator,
+	         typename... Args>
+	constexpr void to_json_ordered_str( std::size_t &array_idx,
+	                                    OutputIterator &it,
+	                                    std::tuple<Args...> const &tp ) {
+
+		using json_member_type = ordered_member_subtype_t<JsonMember>;
+		static_assert( is_a_json_type_v<json_member_type>,
+		               "Unsupported data type" );
+		// json_tagged_variant like members cannot work as we have no member names
+		// to work with
+		static_assert(
+		  not is_a_json_tagged_variant_v<json_member_type>,
+		  "JSON tagged variant types are not supported when inside an array "
+		  "as an ordered structure" );
+
+		if constexpr( is_an_ordered_member_v<JsonMember> ) {
+			for( ; array_idx < JsonMember::member_index; ++array_idx ) {
+				if( array_idx > 0 ) {
+					*it++ = ',';
+				}
+				*it++ = 'n';
+				*it++ = 'u';
+				*it++ = 'l';
+				*it++ = 'l';
+			}
+		}
+		if( array_idx > 0 ) {
+			*it++ = ',';
+		}
+		it = member_to_string<json_member_type>( it, std::get<TupleIdx>( tp ) );
+		++array_idx;
+	}
+
 } // namespace daw::json::json_details

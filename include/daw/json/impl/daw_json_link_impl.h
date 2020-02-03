@@ -248,6 +248,26 @@ namespace daw::json::json_details {
 		return locations[pos].location;
 	}
 
+	template<typename JsonMember, typename First, typename Last,
+	         bool IsUnCheckedInput>
+	[[nodiscard]] constexpr auto parse_ordered_class_member(
+	  std::size_t &member_position,
+	  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+
+		if constexpr( is_an_ordered_member_v<JsonMember> ) {
+			daw_json_assert( member_position <= JsonMember::member_index,
+			                 "Order of ordered members must be ascending" );
+			for( ; member_position < JsonMember::member_index; ++member_position ) {
+				rng = skip_value( rng );
+			}
+		}
+		using json_member_type = ordered_member_subtype_t<JsonMember>;
+
+		rng.clean_tail( );
+		return parse_value<json_member_type>(
+		  ParseTag<json_member_type::expected_type>{}, rng );
+	}
+
 	template<typename JsonMember, std::size_t N, typename First, typename Last,
 	         bool IsUnCheckedInput>
 	[[nodiscard]] constexpr json_result<JsonMember> parse_class_member(
@@ -307,6 +327,23 @@ namespace daw::json::json_details {
 		        0 );
 
 		*it++ = '}';
+		return it;
+	}
+
+	template<typename... JsonMembers, typename OutputIterator, typename Tuple,
+	         typename Value, std::size_t... Is>
+	[[nodiscard]] constexpr OutputIterator
+	serialize_ordered_json_class( OutputIterator it, std::index_sequence<Is...>,
+	                              Tuple const &args, Value const &value ) {
+
+		*it++ = '[';
+		size_t array_idx = 0;
+		Unused( value );
+		(void)std::array{
+		  ( to_json_ordered_str<Is, nth<Is, JsonMembers...>>( array_idx, it, args ),
+		    0 )...};
+
+		*it++ = ']';
 		return it;
 	}
 
@@ -382,11 +419,10 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
-	         typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] constexpr JsonClass
-	parse_ordered_json_class( IteratorRange<First, Last, IsUnCheckedInput> &rng,
-	                          std::index_sequence<Is...> ) {
+	template<typename JsonClass, typename... JsonMembers, typename First,
+	         typename Last, bool IsUnCheckedInput>
+	[[nodiscard]] constexpr JsonClass parse_ordered_json_class(
+	  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
 		static_assert(
@@ -394,40 +430,29 @@ namespace daw::json::json_details {
 		  "Supplied types cannot be used for	construction of this type" );
 
 		rng.move_to_next_of( '[' );
-		rng.class_first = rng.first;
 		rng.remove_prefix( );
-		rng.move_to_next_of( "\"]" );
-		if constexpr( sizeof...( JsonMembers ) == 0 ) {
-			// We are an empty class, ignore what is there
-			return construct_a<JsonClass>( );
-		} else {
-			auto known_locations =
-			  known_locations_v<First, Last, IsUnCheckedInput, JsonMembers...>;
+		rng.trim_left( );
+		/*
+		 * Rather than call directly use apply/tuple to evaluate left->right
+		 */
+		size_t current_idx = 0;
+		JsonClass result =
+		  std::apply( daw::construct_a<JsonClass>,
+		              std::tuple{parse_ordered_class_member<JsonMembers>(
+		                current_idx, rng )...} );
 
-			using tp_t = std::tuple<decltype(
-			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng ) )...>;
-			/*
-			 * Rather than call directly use apply/tuple to evaluate left->right
-			 */
-			JsonClass result = std::apply(
-			  daw::construct_a<JsonClass>,
-			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )...} );
-
-			// TODO investigate using on_successful_exit to do this
-			rng.clean_tail( );
-			if constexpr( true ) { // ignore_trailing_elements_v<JsonClass> ) {
-				while( rng.front( ) != ']' ) {
-					(void)skip_value( rng );
-					rng.clean_tail( );
-				}
-			} else {
-				daw_json_assert_weak( rng.front( ) == ']', "Must specify all members" );
+		// TODO investigate using on_successful_exit to do this
+		rng.clean_tail( );
+		if constexpr( true ) { // ignore_trailing_elements_v<JsonClass> ) {
+			while( rng.front( ) != ']' ) {
+				(void)skip_value( rng );
+				rng.clean_tail( );
 			}
-			rng.remove_prefix( );
-			rng.trim_left( );
-			return result;
+		} else {
+			daw_json_assert_weak( rng.front( ) == ']', "Must specify all members" );
 		}
+		rng.remove_prefix( );
+		rng.trim_left( );
+		return result;
 	}
 } // namespace daw::json::json_details
