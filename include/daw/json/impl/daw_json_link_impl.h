@@ -371,13 +371,6 @@ namespace daw::json::json_details {
 		rng.remove_prefix( );
 		rng.move_to_next_of( "\"}" );
 
-		auto known_locations =
-		  known_locations_v<First, Last, IsUnCheckedInput, JsonMembers...>;
-
-		using tp_t = std::tuple<decltype(
-		  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-		    Is, known_locations, rng ) )...>;
-
 		auto clean_up_fn = [&] {
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
@@ -392,29 +385,41 @@ namespace daw::json::json_details {
 			rng.remove_prefix( );
 			rng.trim_left( );
 		};
+		if constexpr( sizeof...( JsonMembers ) == 0 ) {
+			clean_up_fn( );
+			return daw::construct_a<JsonClass>( );
+		} else {
+			auto known_locations =
+			  known_locations_v<First, Last, IsUnCheckedInput, JsonMembers...>;
+
+			using tp_t = std::tuple<decltype(
+			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng ) )...>;
+
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
-		// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
-		// not in a constant expression.  It does allow for construction of
-		// classes without move/copy special members
+			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
+			// not in a constant expression.  It does allow for construction of
+			// classes without move/copy special members
 
-		// Do this before we exit but after return
-		auto const oe = daw::on_exit_success( std::move( clean_up_fn ) );
-		/*
-		 * Rather than call directly use apply/tuple to evaluate left->right
-		 */
-		return std::apply(
-		  daw::construct_a<JsonClass>,
-		  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-		    Is, known_locations, rng )...} );
+			// Do this before we exit but after return
+			auto const oe = daw::on_exit_success( std::move( clean_up_fn ) );
+			/*
+			 * Rather than call directly use apply/tuple to evaluate left->right
+			 */
+			return std::apply(
+			  daw::construct_a<JsonClass>,
+			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )...} );
 #else
-		auto result =
-		  std::apply( daw::construct_a<JsonClass>,
-		              tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-		                Is, known_locations, rng )...} );
-		clean_up_fn( );
-		return result;
+			auto result = std::apply(
+			  daw::construct_a<JsonClass>,
+			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )...} );
+			clean_up_fn( );
+			return result;
 #endif
+		}
 	}
 
 	template<typename JsonClass, typename... JsonMembers, typename First,
