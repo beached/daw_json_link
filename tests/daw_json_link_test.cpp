@@ -311,7 +311,7 @@ namespace daw::json {
 	struct json_data_contract<EmptyClassTest> {
 		using type = json_member_list<>;
 
-		static constexpr auto to_json_data( EmptyClassTest const &v ) {
+		static constexpr auto to_json_data( EmptyClassTest const & ) {
 			return std::tuple<>{};
 		}
 	};
@@ -348,6 +348,27 @@ namespace daw::json {
 	};
 } // namespace daw::json
 static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
+
+struct OptionalOrdered {
+	int a;
+	std::optional<int> b;
+};
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<OptionalOrdered> {
+		using type =
+		  json_ordered_member_list<int,
+		                           json_number_null<no_name, std::optional<int>>>;
+
+		static constexpr auto to_json_data( OptionalOrdered const &v ) {
+			return std::forward_as_tuple( v.a, v.b );
+		}
+	};
+} // namespace daw::json
+constexpr std::string_view optional_ordered1_data = "[1]";
+static_assert(
+  not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b );
 
 int main( ) {
 	using namespace daw::json;

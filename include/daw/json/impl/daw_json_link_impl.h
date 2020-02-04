@@ -257,15 +257,23 @@ namespace daw::json::json_details {
 		if constexpr( is_an_ordered_member_v<JsonMember> ) {
 			daw_json_assert( member_position <= JsonMember::member_index,
 			                 "Order of ordered members must be ascending" );
-			for( ; member_position < JsonMember::member_index; ++member_position ) {
-				rng.clean_tail( );
+			rng.clean_tail( );
+			for( ; ( member_position < JsonMember::member_index ) and
+			       ( rng.front( ) != ']' );
+			     ++member_position ) {
 				(void)skip_value( rng );
+				rng.clean_tail( );
 			}
 		}
 		using json_member_type = ordered_member_subtype_t<JsonMember>;
 
 		rng.clean_tail( );
 		++member_position;
+		if( rng.front( ) == ']' ) {
+			auto rng2 = IteratorRange<First, Last, IsUnCheckedInput>{};
+			return parse_value<json_member_type>(
+			  ParseTag<json_member_type::expected_type>{}, rng2 );
+		}
 		return parse_value<json_member_type>(
 		  ParseTag<json_member_type::expected_type>{}, rng );
 	}
