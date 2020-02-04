@@ -334,6 +334,9 @@ namespace daw::json {
 		                     daw::detected_t<dereffed_type, T>, T>;
 
 		template<typename T>
+		inline constexpr bool can_deref_v = daw::is_detected_v<dereffed_type, T>;
+
+		template<typename T>
 		inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
 			if constexpr( std::is_floating_point_v<T> ) {
 				return JsonParseTypes::Real;

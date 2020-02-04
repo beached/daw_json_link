@@ -359,7 +359,7 @@ namespace daw::json {
 		            std::conditional_t<
 		              daw::traits::is_string_v<T>, json_string<Name, T>,
 		              std::conditional_t<
-		                is_vector_v<T>,
+		                not can_deref_v<T> and is_vector_v<T>,
 		                json_array_detect<Name, vector_detect::detector<T>, T>,
 		                daw::json::missing_json_data_contract_for<T>>>>>>>>>;
 
