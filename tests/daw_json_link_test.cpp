@@ -299,6 +299,56 @@ constexpr char const json_data_array[] =
 			"dte": "2010-06-31T01:02:03.343Z"
 	  }])";
 
+struct EmptyClassTest {
+	int a = 0;
+};
+constexpr bool operator==( EmptyClassTest const &l, EmptyClassTest const &r ) {
+	return l.a == r.a;
+}
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<EmptyClassTest> {
+		using type = json_member_list<>;
+
+		static constexpr auto to_json_data( EmptyClassTest const &v ) {
+			return std::tuple<>{};
+		}
+	};
+} // namespace daw::json
+static constexpr std::string_view empty_class_data = R"(
+{
+	"b": { "a":[1,2,3,4], "b": true, "dfd": null },
+	"c": 5
+}
+)";
+static_assert( daw::json::from_json<EmptyClassTest>( test_001_t_json_data ) ==
+               EmptyClassTest{} );
+
+struct Empty2 {
+	EmptyClassTest b = EmptyClassTest{};
+	int c = 0;
+};
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<Empty2> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type =
+		  json_member_list<json_class<"b", EmptyClassTest>, json_number<"c", int>>;
+#else
+		static constexpr char const b[] = "b";
+		static constexpr char const c[] = "c";
+		using type =
+		  json_member_list<json_class<b, EmptyClassTest>, json_number<c, int>>;
+#endif
+		static constexpr auto to_json_data( Empty2 const &v ) {
+			return std::forward_as_tuple( v.b );
+		}
+	};
+} // namespace daw::json
+static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
+
 int main( ) {
 	using namespace daw::json;
 	daw::expecting( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );

@@ -370,9 +370,24 @@ namespace daw::json::json_details {
 		rng.class_first = rng.first;
 		rng.remove_prefix( );
 		rng.move_to_next_of( "\"}" );
+
+		auto clean_up_fn = [&] {
+			rng.clean_tail( );
+			// If we fullfill the contract before all values are parses
+			while( rng.front( ) != '}' ) {
+				(void)parse_name( rng );
+				(void)skip_value( rng );
+				rng.clean_tail( );
+			}
+
+			daw_json_assert_weak( rng.front( ) == '}',
+			                      "Expected class to end with '}'" );
+			rng.remove_prefix( );
+			rng.trim_left( );
+		};
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
-			// We are an empty class, ignore what is there
-			return construct_a<JsonClass>( );
+			clean_up_fn( );
+			return daw::construct_a<JsonClass>( );
 		} else {
 			auto known_locations =
 			  known_locations_v<First, Last, IsUnCheckedInput, JsonMembers...>;
@@ -381,20 +396,6 @@ namespace daw::json::json_details {
 			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng ) )...>;
 
-			auto clean_up_fn = [&] {
-				rng.clean_tail( );
-				// If we fullfill the contract before all values are parses
-				while( rng.front( ) != '}' ) {
-					(void)parse_name( rng );
-					(void)skip_value( rng );
-					rng.clean_tail( );
-				}
-
-				daw_json_assert_weak( rng.front( ) == '}',
-				                      "Expected class to end with '}'" );
-				rng.remove_prefix( );
-				rng.trim_left( );
-			};
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
 			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
