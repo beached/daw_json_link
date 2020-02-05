@@ -110,7 +110,6 @@ set(HEADER_FILES
         ${HEADER_FOLDER}/daw/json/impl/daw_json_link_types_fwd.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_array_iterator.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_common.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_literal_end.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_name.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_real.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_string_quote.h
@@ -118,8 +117,7 @@ set(HEADER_FILES
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value_fwd.h
         ${HEADER_FOLDER}/daw/json/impl/daw_json_to_string.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_truth.h
-        )
+)
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 add_custom_target(full)

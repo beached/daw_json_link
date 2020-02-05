@@ -64,7 +64,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) {
+int main( ) {
 	std::string_view data = R"(
 {
   "member0": "this is a test",

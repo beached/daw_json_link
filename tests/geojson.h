@@ -137,13 +137,12 @@ namespace daw::json {
 		  json_member_list<json_string_raw<type_sym, std::string_view>,
 		                   json_class<properties, daw::geojson::Property>,
 		                   json_class<geometry, daw::geojson::Polygon>>;
-
+#endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::geojson::Feature const &value ) {
 			return std::forward_as_tuple( value.type, value.properties,
 			                              value.geometry );
 		}
-#endif
 	};
 
 	template<>
