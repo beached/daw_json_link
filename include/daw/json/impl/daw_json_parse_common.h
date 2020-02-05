@@ -24,7 +24,6 @@
 
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
-#include "daw_json_parse_literal_end.h"
 #include "daw_json_parse_string_quote.h"
 
 #include <daw/daw_parser_helper_sv.h>
@@ -408,12 +407,19 @@ namespace daw::json::json_details {
 		return skip_string_nq( rng );
 	}
 
+	constexpr bool at_literal_end( char c ) {
+		return c == '\0' or c == ',' or c == ']' or c == '}';
+	}
+
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_literal( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		auto result = rng;
-		result.last = literal_end::literal_end_parser::parse( rng.first );
-		rng.first = result.last;
+		while( not at_literal_end( *rng.first ) ) {
+			daw_json_assert( rng.has_more( ), "Expected more data" );
+			++rng.first;
+		}
+		result.last = rng.first;
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
@@ -521,7 +527,10 @@ namespace daw::json::json_details {
 			return json_details::skip_class( rng );
 		} else {
 			// Woah there
-			std::terminate( );
+			static_assert( JsonMember::expected_type == JsonParseTypes::Class,
+			               "Unknown JsonParseTypes value.  This is a programmer "
+			               "error and the preceding did not check for it" );
+			std::abort( );
 		}
 	}
 

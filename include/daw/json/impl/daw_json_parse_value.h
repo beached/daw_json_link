@@ -87,7 +87,8 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
 
-		daw_json_assert_weak( rng.has_more( ), "Could not find value" );
+		daw_json_assert_weak( not rng.is_null( ) and rng.has_more( ),
+		                      "Could not find value" );
 		skip_quote_when_literal_as_string<JsonMember>( rng );
 		daw_json_assert_weak(
 		  rng.is_real_number_part( ),

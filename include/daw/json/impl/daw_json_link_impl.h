@@ -357,6 +357,9 @@ namespace daw::json::json_details {
 		return it;
 	}
 
+	/***
+	 * This is here to force constant evaluation prior to C++20.
+	 */
 	template<typename First, typename Last, bool IsUnCheckedInput,
 	         typename... JsonMembers>
 	static inline constexpr auto known_locations_v =
@@ -379,7 +382,7 @@ namespace daw::json::json_details {
 		rng.remove_prefix( );
 		rng.move_to_next_of( "\"}" );
 
-		auto clean_up_fn = [&] {
+		auto const clean_up_fn = [&] {
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
 			while( rng.front( ) != '}' ) {

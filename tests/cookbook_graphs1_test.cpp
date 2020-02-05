@@ -122,8 +122,10 @@ int main( int argc, char **argv ) {
 	}
 
 	auto const find_node_id = [&g]( size_t id ) -> std::optional<daw::node_id_t> {
-		auto result =
-		  g.find( [id]( auto const &node ) { return node.value( ).id == id; } );
+		auto result = g.find( [id]( auto const &node ) {
+			daw_json_assert( node, "Expected a node" );
+			return node.value( ).id == id;
+		} );
 		if( result.empty( ) ) {
 			return {};
 		}

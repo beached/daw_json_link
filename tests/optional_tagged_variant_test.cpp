@@ -57,10 +57,11 @@ namespace daw::cookbook_variant2 {
 template<>
 struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 #ifdef __cpp_nontype_template_parameter_class
-	using type = json_member_list < json_string<"name">,
-	      json_tagged_variant_null<
-	        "value", std::optional<std::variant<std::string, int, bool>>,
-	        json_number<"type", int>, daw::cookbook_variant2::MyClassSwitcher>;
+	using type = json_member_list<
+	  json_string<"name">,
+	  json_tagged_variant_null<
+	    "value", std::optional<std::variant<std::string, int, bool>>,
+	    json_number<"type", int>, daw::cookbook_variant2::MyClassSwitcher>>;
 #else
 	static inline constexpr char const type_mem[] = "type";
 	static inline constexpr char const name[] = "name";
