@@ -31,6 +31,7 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_exception.h>
 #include <daw/daw_parser_helper_sv.h>
+#include <daw/daw_scope_guard.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 #include <daw/iterator/daw_back_inserter.h>
@@ -47,9 +48,9 @@
 
 namespace daw::json {
 	/// allow iteration over an array of json
-	template<typename JsonElement, bool IsUnCheckedInput = false,
-	         char separator = ','>
+	template<typename JsonElement, bool IsUnCheckedInput = false>
 	class json_array_iterator {
+
 		template<typename String>
 		static constexpr json_details::IteratorRange<char const *, char const *,
 		                                             IsUnCheckedInput>
@@ -106,11 +107,20 @@ namespace daw::json {
 			                      "Unexpected end of stream" );
 
 			auto tmp = m_state;
+
+#if defined( __cpp_constexpr_dynamic_alloc ) or                                \
+  defined( DAW_JSON_NO_CONST_EXPR )
+			auto const ae = daw::on_exit_success(
+			  [&] { m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) ); } );
+			return json_details::parse_value<element_type>(
+			  ParseTag<element_type::expected_type>{}, tmp );
+#else
 			auto result = json_details::parse_value<element_type>(
 			  ParseTag<element_type::expected_type>{}, tmp );
 
 			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
 			return result;
+#endif
 		}
 
 		constexpr json_array_iterator &operator++( ) {
@@ -123,7 +133,7 @@ namespace daw::json {
 				(void)json_details::skip_known_value<element_type>( m_state );
 			}
 			m_state.trim_left( );
-			if( m_state.in( separator ) ) {
+			if( m_state.in( ',' ) ) {
 				m_state.remove_prefix( );
 				m_state.trim_left( );
 			}
@@ -164,11 +174,9 @@ namespace daw::json {
 		}
 	};
 
-	template<typename JsonElement, bool IsUnCheckedInput = false,
-	         char separator = ','>
+	template<typename JsonElement, bool IsUnCheckedInput = false>
 	struct json_array_range {
-		using iterator =
-		  json_array_iterator<JsonElement, IsUnCheckedInput, separator>;
+		using iterator = json_array_iterator<JsonElement, IsUnCheckedInput>;
 
 	private:
 		iterator m_first{};
@@ -196,11 +204,9 @@ namespace daw::json {
 		}
 	};
 
-	template<typename JsonElement, char separator = ','>
-	using json_array_range_unchecked =
-	  json_array_range<JsonElement, true, separator>;
+	template<typename JsonElement>
+	using json_array_range_unchecked = json_array_range<JsonElement, true>;
 
-	template<typename JsonElement, char separator = ','>
-	using json_array_iterator_unchecked =
-	  json_array_iterator<JsonElement, true, separator>;
+	template<typename JsonElement>
+	using json_array_iterator_unchecked = json_array_iterator<JsonElement, true>;
 } // namespace daw::json

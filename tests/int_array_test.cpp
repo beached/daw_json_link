@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#if not defined( __cpp_constexpr_dynamic_alloc )
+#define DAW_JSON_NO_CONST_EXPR
+#endif
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
