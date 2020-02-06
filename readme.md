@@ -68,7 +68,6 @@ std::vector<MyThing> things = from_json_array<MyThing>( data2 );
 JSON Link allows serializing and deserializing of C++ data types and JSON using a predefined schema.   The underlying premise is the constructor of C++ data structures can be called with the JSON object's members.  The parsers goal isn't conformance.  It should be stricter in many ways, but somethings will not be checked(e.g. trailing commas).  The serializer is attempting to be conformant and generates minimal JSON. 
 Mapping of data structures is done by specializing ```daw::json::json_data_contract``` for type ```T```.
 There are two parts to the trait `json_data_contract`, first is a type alias named ```type``` that maps JSON object members by name to the argumenets of the C++ data structures constructor. Second, an optional, static method with a signatures like ```static tuple<MemberTypes> to_json_data( T const & )``` which returns a tuple of calculated for referenced members corresponding to the previous mapping.  `to_json_data` is only required if serialization is wanted. 
-
 For example a `json_data_contract` for a `Coordinate` class could look like 
 ```c++
 namespace daw::json {
@@ -101,6 +100,8 @@ namespace daw::json {
 }
 ```
  * Note: The return type of `to_json_data` does not have to return references to the existing object members, but can return calculated values.
+
+![general parsing flow](general_parser.jpg)
 
 ## Default mapping of types
 ###### [Top](#content)
