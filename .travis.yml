@@ -1,4 +1,7 @@
-arch: arm64
+arch:
+  - arm64
+  - ppc64le
+  - s390x
 os: linux
 language: cpp
 dist: bionic
