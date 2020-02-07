@@ -101,7 +101,8 @@ namespace daw::json {
 ```
  * Note: The return type of `to_json_data` does not have to return references to the existing object members, but can return calculated values.
 
-![general parsing flow](general_parser.jpg)
+The parsers work by constructing each argument in place to the constructor of a class.  The individual argument parsers can be tuned for the specified circumstances of the data(e.g. floating point and integral numbers)
+![general parsing flow](parse_flow.jpg)
 
 ## Default mapping of types
 ###### [Top](#content)
