@@ -31,7 +31,6 @@
 #include <iostream>
 #include <sstream>
 #include <string_view>
-#include <unistd.h>
 
 std::string read_file( std::string const &filename ) {
 	std::ifstream f( filename );
@@ -58,7 +57,7 @@ int main( int argc, char *argv[] ) {
 	std::string const citm_data = read_file( argv[2] );
 	std::string const canada_data = read_file( argv[3] );
 
-	std::cout << "C++ DAW JSON Link\t" << getpid( );
+	std::cout << "C++ DAW JSON Link\n";
 	auto const canada_obj =
 	  daw::json::from_json<daw::geojson::FeatureCollection>( canada_data );
 	auto const twitter_obj =
