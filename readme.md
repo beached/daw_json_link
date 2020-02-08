@@ -142,6 +142,9 @@ The order of the members in the data structures should generally match that of t
 
 ### Benchmarks
 * [Kostya results](kostya_benchmark_results.md)
+
+![chart desribing kostya benmark results](kostya_bench_chart.png)
+
 * [Parial NativeJson](partial_nativejson_benchmark.md)
 
 ## Escaping/Unescaping of member names
