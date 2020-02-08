@@ -765,6 +765,37 @@ namespace daw::json {
 	}
 
 	/**
+	 * Serialize Container to JSON data via an iterator
+	 * @tparam OutputIterator Iterator to write data to
+	 * @tparam Container Type of Container to serialize
+	 * @param c Data to serialize
+	 * @return OutputIterator with final state of iterator
+	 */
+	template<typename Container, typename OutputIterator>
+	[[maybe_unused]] constexpr OutputIterator
+	to_json_array( Container &&c, OutputIterator out_it ) {
+		static_assert(
+		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
+		  "Supplied container must support begin( )/end( )" );
+
+		*out_it++ = '[';
+		bool is_first = true;
+		for( auto const &v : c ) {
+			using JsonMember = json_details::unnamed_default_type_mapping<
+			  daw::remove_cvref_t<decltype( v )>>;
+			if( is_first ) {
+				is_first = false;
+			} else {
+				*out_it++ = ',';
+			}
+			out_it = json_details::member_to_string<JsonMember>( out_it, v );
+		}
+		// The last character will be a ',' prior to this
+		*out_it++ = ']';
+		return out_it;
+	}
+
+	/**
 	 * Serialize Container to a JSON array string
 	 * @tparam Result std::string like type to serialize to
 	 * @tparam Container Type of Container to serialize
@@ -777,18 +808,13 @@ namespace daw::json {
 		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 		  "Supplied container must support begin( )/end( )" );
 
-		Result result = "[";
-		for( auto const &v : c ) {
-			result += to_json( v );
-			result += ',';
-		}
-		// The last character will be a ',' prior to this
-		result.back( ) = ']';
+		Result result{};
+		auto out_it = json_details::basic_appender<Result>( result );
+		to_json_array( c, out_it );
 		return result;
 	}
 
 	namespace json_details {
-
 		template<typename... Args>
 		constexpr void is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
 

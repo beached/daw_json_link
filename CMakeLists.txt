@@ -399,6 +399,13 @@ add_dependencies(stream_output_test_bin dependency_stub)
 add_test(NAME stream_output_test COMMAND stream_output_test_bin )
 add_dependencies(full stream_output_test_bin)
 
+add_executable(int_sanity_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/int_sanity_test.cpp)
+add_dependencies(int_sanity_test_bin dependency_stub)
+add_test(NAME int_sanity_test COMMAND int_sanity_test_bin )
+add_dependencies(full int_sanity_test_bin)
+
+
+
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
