@@ -764,6 +764,8 @@ namespace daw::json {
 		  json_data, member_path );
 	}
 
+	struct auto_detect_array_element {};
+
 	/**
 	 * Serialize Container to JSON data via an iterator
 	 * @tparam OutputIterator Iterator to write data to
@@ -771,7 +773,8 @@ namespace daw::json {
 	 * @param c Data to serialize
 	 * @return OutputIterator with final state of iterator
 	 */
-	template<typename Container, typename OutputIterator>
+	template<typename JsonElement = auto_detect_array_element, typename Container,
+	         typename OutputIterator>
 	[[maybe_unused]] constexpr OutputIterator
 	to_json_array( Container &&c, OutputIterator out_it ) {
 		static_assert(
@@ -781,8 +784,11 @@ namespace daw::json {
 		*out_it++ = '[';
 		bool is_first = true;
 		for( auto const &v : c ) {
-			using JsonMember = json_details::unnamed_default_type_mapping<
-			  daw::remove_cvref_t<decltype( v )>>;
+			using JsonMember = std::conditional_t<
+			  std::is_same_v<JsonElement, auto_detect_array_element>,
+			  json_details::unnamed_default_type_mapping<
+			    daw::remove_cvref_t<decltype( v )>>,
+			  JsonElement>;
 			if( is_first ) {
 				is_first = false;
 			} else {
@@ -802,7 +808,8 @@ namespace daw::json {
 	 * @param c Data to serialize
 	 * @return A string containing the serialized elements of c
 	 */
-	template<typename Result = std::string, typename Container>
+	template<typename Result = std::string,
+	         typename JsonElement = auto_detect_array_element, typename Container>
 	[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c ) {
 		static_assert(
 		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
@@ -810,7 +817,7 @@ namespace daw::json {
 
 		Result result{};
 		auto out_it = json_details::basic_appender<Result>( result );
-		to_json_array( c, out_it );
+		to_json_array<JsonElement>( c, out_it );
 		return result;
 	}
 
