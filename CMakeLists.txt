@@ -404,6 +404,11 @@ add_dependencies(int_sanity_test_bin dependency_stub)
 add_test(NAME int_sanity_test COMMAND int_sanity_test_bin )
 add_dependencies(full int_sanity_test_bin)
 
+add_executable(nativejson_roundtrip_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test.h ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/geojson.h ${TEST_FOLDER}/nativejson_roundtrip.cpp)
+add_dependencies(nativejson_roundtrip_bin dependency_stub)
+target_link_libraries(nativejson_roundtrip_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+add_test(NAME nativejson_roundtrip COMMAND nativejson_roundtrip_bin ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full nativejson_roundtrip_bin)
 
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)

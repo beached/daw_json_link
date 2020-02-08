@@ -397,10 +397,20 @@ namespace daw::json::json_details {
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 		*/
-		if( value ) {
-			return utils::copy_to_iterator( it, "true" );
+		if constexpr( JsonMember::literal_as_string ==
+		              LiteralAsStringOpt::Always ) {
+			*it++ = '"';
 		}
-		return utils::copy_to_iterator( it, "false" );
+		if( value ) {
+			it = utils::copy_to_iterator( it, "true" );
+		} else {
+			it = utils::copy_to_iterator( it, "false" );
+		}
+		if constexpr( JsonMember::literal_as_string ==
+		              LiteralAsStringOpt::Always ) {
+			*it++ = '"';
+		}
+		return it;
 	}
 
 	template<std::size_t idx, typename JsonMembers, typename OutputIterator,
@@ -472,17 +482,26 @@ namespace daw::json::json_details {
 		  "value must be convertible to specified type in class contract" );
 
 		// TODO determine actual number
+		if constexpr( JsonMember::literal_as_string ==
+		              LiteralAsStringOpt::Always ) {
+			*it++ = '"';
+		}
 		if constexpr( std::is_floating_point_v<parse_to_t> ) {
 			char buff[50]{};
 			milo::dtoa_milo( static_cast<double>( value ), buff );
 			size_t const result = strlen( buff );
-			return utils::copy_to_iterator(
+			it = utils::copy_to_iterator(
 			  it, daw::string_view( buff, static_cast<size_t>( result ) ) );
 		} else {
 			using std::to_string;
 			using to_strings::to_string;
-			return utils::copy_to_iterator( it, to_string( value ) );
+			it = utils::copy_to_iterator( it, to_string( value ) );
 		}
+		if constexpr( JsonMember::literal_as_string ==
+		              LiteralAsStringOpt::Always ) {
+			*it++ = '"';
+		}
+		return it;
 	}
 
 	template<typename T, bool>
@@ -512,9 +531,14 @@ namespace daw::json::json_details {
 		using to_strings::to_string;
 		using under_type = base_int_type_t<parse_to_t>;
 
+		if constexpr( JsonMember::literal_as_string ==
+		              LiteralAsStringOpt::Always ) {
+			*it++ = '"';
+		}
 		if constexpr( std::is_enum_v<parse_to_t> or
 		              std::is_integral_v<parse_to_t> ) {
 			auto v = static_cast<under_type>( value );
+
 			char buff[std::numeric_limits<under_type>::digits10 + 1]{};
 			char *ptr = buff;
 			if( v < 0 ) {
@@ -525,6 +549,10 @@ namespace daw::json::json_details {
 				v /= -10;
 				if( v == 0 ) {
 					*it++ = buff[0];
+					if constexpr( JsonMember::literal_as_string ==
+					              LiteralAsStringOpt::Always ) {
+						*it++ = '"';
+					}
 					return it;
 				}
 			}
@@ -538,11 +566,15 @@ namespace daw::json::json_details {
 				--ptr;
 				*it++ = *ptr;
 			}
-			return it;
 		} else {
 			// Fallback to ADL
-			return utils::copy_to_iterator( it, to_string( value ) );
+			it = utils::copy_to_iterator( it, to_string( value ) );
 		}
+		if constexpr( JsonMember::literal_as_string ==
+		              LiteralAsStringOpt::Always ) {
+			*it++ = '"';
+		}
+		return it;
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -558,6 +590,10 @@ namespace daw::json::json_details {
 		using to_strings::to_string;
 		using under_type = base_int_type_t<parse_to_t>;
 
+		if constexpr( JsonMember::literal_as_string ==
+		              LiteralAsStringOpt::Always ) {
+			*it++ = '"';
+		}
 		if constexpr( std::is_enum_v<parse_to_t> or
 		              std::is_integral_v<parse_to_t> ) {
 			auto v = static_cast<under_type>( value );
@@ -575,11 +611,15 @@ namespace daw::json::json_details {
 				--ptr;
 				*it++ = *ptr;
 			}
-			return it;
 		} else {
 			// Fallback to ADL
-			return utils::copy_to_iterator( it, to_string( value ) );
+			it = utils::copy_to_iterator( it, to_string( value ) );
 		}
+		if constexpr( JsonMember::literal_as_string ==
+		              LiteralAsStringOpt::Always ) {
+			*it++ = '"';
+		}
+		return it;
 	}
 } // namespace daw::json::json_details
 
@@ -588,6 +628,8 @@ namespace daw::json::utils {
 		template<typename Integer>
 		struct number {
 			using parse_to_t = Integer;
+			static constexpr LiteralAsStringOpt literal_as_string =
+			  LiteralAsStringOpt::Never;
 		};
 	} // namespace utils_details
 	template<typename Integer, typename OutputIterator>
