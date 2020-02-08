@@ -1,5 +1,5 @@
+![logo image](images/json_link_logo_128.png)
 # JSON Link 
-
 
 [![Build Status Macos](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AMacOS)
 
@@ -143,7 +143,7 @@ The order of the members in the data structures should generally match that of t
 ### Benchmarks
 * [Kostya results](kostya_benchmark_results.md) using [test_dawjsonlink.cpp](tests/test_dawjsonlink.cpp)
 
-![chart desribing kostya benmark results](kostya_bench_chart.png)
+![chart desribing kostya benmark results](images/kostya_bench_chart.png)
 
 * [Parial NativeJson](partial_nativejson_benchmark.md)
 
