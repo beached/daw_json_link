@@ -149,6 +149,27 @@ namespace daw::json::json_details {
 				  "insert with the end iterator as first argument" );
 			}
 		}
+
+		template<typename Value,
+		         std::enable_if_t<
+		           not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>>,
+		           std::nullptr_t> = nullptr>
+		basic_appender &operator=( Value &&v ) {
+			operator( )( std::forward<Value>( v ) );
+			return *this;
+		}
+
+		basic_appender &operator++( ) {
+			return *this;
+		}
+
+		basic_appender operator++( int ) {
+			return *this;
+		}
+
+		basic_appender &operator*( ) {
+			return *this;
+		}
 	};
 
 	template<typename T>

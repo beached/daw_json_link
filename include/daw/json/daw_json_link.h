@@ -764,6 +764,43 @@ namespace daw::json {
 		  json_data, member_path );
 	}
 
+	struct auto_detect_array_element {};
+
+	/**
+	 * Serialize Container to JSON data via an iterator
+	 * @tparam OutputIterator Iterator to write data to
+	 * @tparam Container Type of Container to serialize
+	 * @param c Data to serialize
+	 * @return OutputIterator with final state of iterator
+	 */
+	template<typename JsonElement = auto_detect_array_element, typename Container,
+	         typename OutputIterator>
+	[[maybe_unused]] constexpr OutputIterator
+	to_json_array( Container &&c, OutputIterator out_it ) {
+		static_assert(
+		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
+		  "Supplied container must support begin( )/end( )" );
+
+		*out_it++ = '[';
+		bool is_first = true;
+		for( auto const &v : c ) {
+			using JsonMember = std::conditional_t<
+			  std::is_same_v<JsonElement, auto_detect_array_element>,
+			  json_details::unnamed_default_type_mapping<
+			    daw::remove_cvref_t<decltype( v )>>,
+			  JsonElement>;
+			if( is_first ) {
+				is_first = false;
+			} else {
+				*out_it++ = ',';
+			}
+			out_it = json_details::member_to_string<JsonMember>( out_it, v );
+		}
+		// The last character will be a ',' prior to this
+		*out_it++ = ']';
+		return out_it;
+	}
+
 	/**
 	 * Serialize Container to a JSON array string
 	 * @tparam Result std::string like type to serialize to
@@ -771,24 +808,20 @@ namespace daw::json {
 	 * @param c Data to serialize
 	 * @return A string containing the serialized elements of c
 	 */
-	template<typename Result = std::string, typename Container>
+	template<typename Result = std::string,
+	         typename JsonElement = auto_detect_array_element, typename Container>
 	[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c ) {
 		static_assert(
 		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 		  "Supplied container must support begin( )/end( )" );
 
-		Result result = "[";
-		for( auto const &v : c ) {
-			result += to_json( v );
-			result += ',';
-		}
-		// The last character will be a ',' prior to this
-		result.back( ) = ']';
+		Result result{};
+		auto out_it = json_details::basic_appender<Result>( result );
+		to_json_array<JsonElement>( c, out_it );
 		return result;
 	}
 
 	namespace json_details {
-
 		template<typename... Args>
 		constexpr void is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
 
