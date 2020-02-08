@@ -119,13 +119,13 @@ namespace daw::json::json_details {
 	template<typename string_t>
 	struct kv_t {
 		string_t name;
-		JsonParseTypes expected_type;
 		std::size_t pos;
+		JsonParseTypes expected_type;
 
 		constexpr kv_t( string_t Name, JsonParseTypes Expected, std::size_t Pos )
 		  : name( daw::move( Name ) )
-		  , expected_type( Expected )
-		  , pos( Pos ) {}
+		  , pos( Pos )
+		  , expected_type( Expected ) {}
 	};
 
 	template<std::size_t N, typename string_t, typename... JsonMembers>
