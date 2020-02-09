@@ -34,6 +34,22 @@
 #include <sstream>
 #include <vector>
 
+struct NumberX {
+	int x;
+};
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<NumberX> {
+#ifdef __cpp_nontype_template_parameter_class
+		using type = json_member_list<json_number<"x", int>>;
+#else
+		static constexpr char const x[] = "x";
+		using type = json_member_list<json_number<x, int>>;
+#endif
+	};
+} // namespace daw::json
+
 template<typename Real, bool Trusted = false, size_t N>
 constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
 	auto rng =
@@ -438,4 +454,20 @@ int main( ) {
 		++first;
 	}
 	std::cout << "sum: " << sum << '\n';
+
+	constexpr std::string_view const json_data3 =
+	  R"({
+	"a": {
+		"b.hi": {
+			"c": [{"x":1},{"x":2},{"x":3}] }}})";
+
+	using iterator3_t = daw::json::json_array_iterator<NumberX>;
+
+	auto first3 = iterator3_t( json_data3, "a.b\\.hi.c" );
+	sum = 0;
+	while( first3 ) {
+		sum += first3->x;
+		++first3;
+	}
+	std::cout << "sum2: " << sum << '\n';
 }

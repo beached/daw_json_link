@@ -47,6 +47,21 @@
 #include <tuple>
 
 namespace daw::json {
+	namespace json_details {
+		template<typename T>
+		struct arrow_proxy {
+			T value;
+
+			[[nodiscard]] constexpr T *operator->( ) {
+				return &value;
+			}
+
+			[[nodiscard]] constexpr T &operator*( ) {
+				return value;
+			}
+		};
+	} // namespace json_details
+
 	/// allow iteration over an array of json
 	template<typename JsonElement, bool IsUnCheckedInput = false>
 	class json_array_iterator {
@@ -70,7 +85,7 @@ namespace daw::json {
 		               "Unknown JsonElement type." );
 		using value_type = typename element_type::parse_to_t;
 		using reference = value_type;
-		using pointer = value_type;
+		using pointer = json_details::arrow_proxy<value_type>;
 		using difference_type = std::ptrdiff_t;
 		// Can do forward iteration and be stored
 		using iterator_category = std::input_iterator_tag;
@@ -121,6 +136,10 @@ namespace daw::json {
 			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
 			return result;
 #endif
+		}
+
+		[[nodiscard]] pointer operator->( ) const {
+			return pointer{operator*( )};
 		}
 
 		constexpr json_array_iterator &operator++( ) {

@@ -84,7 +84,7 @@ int main( int argc, char **argv ) {
 	daw::bench_n_test_mbs<100>(
 	  "twitter_catalog bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
-	  	str.clear( );
+		  str.clear( );
 		  daw::json::to_json( *tr, out_it );
 		  daw::do_not_optimize( str );
 	  },
@@ -98,5 +98,4 @@ int main( int argc, char **argv ) {
 
 	/*daw_json_assert( twitter_result == twitter_result2,
 	                 "Expected round trip to produce same result" );*/
-
 }
