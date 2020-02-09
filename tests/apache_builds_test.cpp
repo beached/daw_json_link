@@ -84,7 +84,7 @@ int main( int argc, char **argv ) {
 	  "apache_builds bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
-			daw::json::to_json( *tr, out_it );
+		  daw::json::to_json( *tr, out_it );
 		  daw::do_not_optimize( str );
 	  },
 	  apache_builds_result );
