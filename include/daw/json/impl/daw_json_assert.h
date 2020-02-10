@@ -161,18 +161,9 @@ daw_json_assert( Bool const &b,
 	do {                                                                         \
 	} while( false )
 
-#if defined( __GNUC__ ) or defined( __clang__ )
-#define daw_json_assert_weak( Bool, ... )                                      \
-	do {                                                                         \
-		if( __builtin_expect( not( Bool ), 0 ) ) {                                 \
-			__builtin_unreachable( );                                                \
-		}                                                                          \
-	} while( false )
-#else
 #define daw_json_assert_weak( ... )                                            \
 	do {                                                                         \
 	} while( false )
-#endif
 #endif
 #endif
 #undef DAW_UNLIKELY
