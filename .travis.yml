@@ -19,7 +19,7 @@ install:
 
 script:
   - mkdir build && cd build
-  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDAW_JSON_USE_SANITIZERS=On
   - cmake --build . --config ${BUILD_TYPE} --target full -- -k
   - ctest -C ${BUILD_TYPE} -j2 -VV --timeout 300 
 
