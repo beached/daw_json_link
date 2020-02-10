@@ -437,7 +437,7 @@ namespace daw::json::json_details {
 	skip_literal( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		auto result = rng;
 		while( not at_literal_end( *rng.first ) ) {
-			daw_json_assert( rng.has_more( ), "Expected more data" );
+			daw_json_assert_weak( rng.has_more( ), "Expected more data" );
 			++rng.first;
 		}
 		result.last = rng.first;
