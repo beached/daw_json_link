@@ -217,8 +217,8 @@ namespace daw::json::json_details {
 	  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
 		daw_json_assert_weak(
-		  is_json_nullable_v<JsonMember> or not locations[pos].missing( ) or
-		    not rng.front( '}' ),
+		  ( is_json_nullable_v<JsonMember> or not locations[pos].missing( ) or
+		    not rng.front( '}' ) ),
 		  "Unexpected end of class.  Non-nullable members still not found" );
 
 		rng.trim_left_no_check( );
@@ -296,9 +296,9 @@ namespace daw::json::json_details {
 			auto loc =
 			  find_class_member<JsonMember>( member_position, locations, rng );
 
-			daw_json_assert_weak( is_json_nullable_v<JsonMember> or
-			                        not loc.is_null( ),
-			                      missing_member( JsonMember::name ) );
+			daw_json_assert_weak(
+			  ( is_json_nullable_v<JsonMember> or not loc.is_null( ) ),
+			  missing_member( JsonMember::name ) );
 
 			if( loc.is_null( ) or
 			    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
