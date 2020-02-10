@@ -131,7 +131,6 @@ namespace daw::twitter {
 		std::string description;
 		std::optional<std::string> url;
 		entities_t entities;
-		bool _jsonprotected;
 		int64_t followers_count;
 		int64_t friends_count;
 		int64_t listed_count;
@@ -139,17 +138,11 @@ namespace daw::twitter {
 		int64_t favourites_count;
 		std::optional<int64_t> utc_offset;
 		std::optional<std::string> time_zone;
-		bool geo_enabled;
-		bool verified;
 		int64_t statuses_count;
 		std::string lang;
-		bool contributors_enabled;
-		bool is_translator;
-		bool is_translation_enabled;
 		std::string profile_background_color;
 		std::string profile_background_image_url;
 		std::string profile_background_image_url_https;
-		bool profile_background_tile;
 		std::string profile_image_url;
 		std::string profile_image_url_https;
 		std::optional<std::string> profile_banner_url;
@@ -157,6 +150,13 @@ namespace daw::twitter {
 		std::string profile_sidebar_border_color;
 		std::string profile_sidebar_fill_color;
 		std::string profile_text_color;
+		bool _jsonprotected;
+		bool geo_enabled;
+		bool verified;
+		bool contributors_enabled;
+		bool is_translator;
+		bool is_translation_enabled;
+		bool profile_background_tile;
 		bool profile_use_background_image;
 		bool default_profile;
 		bool default_profile_image;
@@ -388,7 +388,7 @@ namespace daw::json {
 		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"name">,
 		  json_string<"screen_name">, json_string<"location">,
 		  json_string<"description">, json_string_null<"url">,
-		  json_class<"entities", daw::twitter::entities_t>, json_bool<"protected">,
+		  json_class<"entities", daw::twitter::entities_t>,
 		  json_number<"followers_count", int64_t>,
 		  json_number<"friends_count", int64_t>,
 		  json_number<"listed_count", int64_t>,
@@ -397,19 +397,18 @@ namespace daw::json {
 		              daw::twitter::TimestampConverter>,
 		  json_number<"favourites_count", int64_t>,
 		  json_number_null<"utc_offset", std::optional<int64_t>>,
-		  json_string_null<"time_zone">, json_bool<"geo_enabled">,
-		  json_bool<"verified">, json_number<"statuses_count", int64_t>,
-		  json_string<"lang">, json_bool<"contributors_enabled">,
-		  json_bool<"is_translator">, json_bool<"is_translation_enabled">,
-		  json_string<"profile_background_color">,
+		  json_string_null<"time_zone">, json_number<"statuses_count", int64_t>,
+		  json_string<"lang">, json_string<"profile_background_color">,
 		  json_string<"profile_background_image_url">,
 		  json_string<"profile_background_image_url_https">,
-		  json_bool<"profile_background_tile">, json_string<"profile_image_url">,
-		  json_string<"profile_image_url_https">,
+		  json_string<"profile_image_url">, json_string<"profile_image_url_https">,
 		  json_string_null<"profile_banner_url">, json_string<"profile_link_color">,
 		  json_string<"profile_sidebar_border_color">,
 		  json_string<"profile_sidebar_fill_color">,
-		  json_string<"profile_text_color">,
+		  json_string<"profile_text_color">, json_bool<"protected">,
+		  json_bool<"geo_enabled">, json_bool<"verified">,
+		  json_bool<"contributors_enabled">, json_bool<"is_translator">,
+		  json_bool<"is_translation_enabled">, json_bool<"profile_background_tile">,
 		  json_bool<"profile_use_background_image">, json_bool<"default_profile">,
 		  json_bool<"default_profile_image">, json_bool<"following">,
 		  json_bool<"follow_request_sent">, json_bool<"notifications">>;
@@ -474,46 +473,48 @@ namespace daw::json {
 		  json_number<id, int64_t>, json_string<id_str>, json_string<name>,
 		  json_string<screen_name>, json_string<location>, json_string<description>,
 		  json_string_null<url>, json_class<entities, daw::twitter::entities_t>,
-		  json_bool<_jsonprotected>, json_number<followers_count, int64_t>,
+		  json_number<followers_count, int64_t>,
 		  json_number<friends_count, int64_t>, json_number<listed_count, int64_t>,
 		  json_custom<created_at, daw::twitter::twitter_tp,
 		              daw::twitter::TimestampConverter,
 		              daw::twitter::TimestampConverter>,
 		  json_number<favourites_count, int64_t>,
 		  json_number_null<utc_offset, std::optional<int64_t>>,
-		  json_string_null<time_zone>, json_bool<geo_enabled>, json_bool<verified>,
-		  json_number<statuses_count, int64_t>, json_string<lang>,
-		  json_bool<contributors_enabled>, json_bool<is_translator>,
-		  json_bool<is_translation_enabled>, json_string<profile_background_color>,
+		  json_string_null<time_zone>, json_number<statuses_count, int64_t>,
+		  json_string<lang>, json_string<profile_background_color>,
 		  json_string<profile_background_image_url>,
 		  json_string<profile_background_image_url_https>,
-		  json_bool<profile_background_tile>, json_string<profile_image_url>,
-		  json_string<profile_image_url_https>,
+		  json_string<profile_image_url>, json_string<profile_image_url_https>,
 		  json_string_null<profile_banner_url>, json_string<profile_link_color>,
 		  json_string<profile_sidebar_border_color>,
 		  json_string<profile_sidebar_fill_color>, json_string<profile_text_color>,
+		  json_bool<_jsonprotected>, json_bool<geo_enabled>, json_bool<verified>,
+		  json_bool<contributors_enabled>, json_bool<is_translator>,
+		  json_bool<is_translation_enabled>, json_bool<profile_background_tile>,
 		  json_bool<profile_use_background_image>, json_bool<default_profile>,
 		  json_bool<default_profile_image>, json_bool<following>,
 		  json_bool<follow_request_sent>, json_bool<notifications>>;
+
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::user_t const &value ) {
 			return std::forward_as_tuple(
 			  value.id, value.id_str, value.name, value.screen_name, value.location,
-			  value.description, value.url, value.entities, value._jsonprotected,
-			  value.followers_count, value.friends_count, value.listed_count,
-			  value.created_at, value.favourites_count, value.utc_offset,
-			  value.time_zone, value.geo_enabled, value.verified,
-			  value.statuses_count, value.lang, value.contributors_enabled,
-			  value.is_translator, value.is_translation_enabled,
-			  value.profile_background_color, value.profile_background_image_url,
-			  value.profile_background_image_url_https, value.profile_background_tile,
-			  value.profile_image_url, value.profile_image_url_https,
-			  value.profile_banner_url, value.profile_link_color,
-			  value.profile_sidebar_border_color, value.profile_sidebar_fill_color,
-			  value.profile_text_color, value.profile_use_background_image,
-			  value.default_profile, value.default_profile_image, value.following,
-			  value.follow_request_sent, value.notifications );
+			  value.description, value.url, value.entities, value.followers_count,
+			  value.friends_count, value.listed_count, value.created_at,
+			  value.favourites_count, value.utc_offset, value.time_zone,
+			  value.statuses_count, value.lang, value.profile_background_color,
+			  value.profile_background_image_url,
+			  value.profile_background_image_url_https, value.profile_image_url,
+			  value.profile_image_url_https, value.profile_banner_url,
+			  value.profile_link_color, value.profile_sidebar_border_color,
+			  value.profile_sidebar_fill_color, value.profile_text_color,
+			  value._jsonprotected, value.geo_enabled, value.verified,
+			  value.contributors_enabled, value.is_translator,
+			  value.is_translation_enabled, value.profile_background_tile,
+			  value.profile_use_background_image, value.default_profile,
+			  value.default_profile_image, value.following, value.follow_request_sent,
+			  value.notifications );
 		}
 	};
 
