@@ -305,12 +305,12 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 
 		auto result = constructor_t{}( );
-		auto app = [&result] {
+		auto app = [&] {
 			if constexpr( std::is_same_v<typename JsonMember::parse_to_t,
 			                             typename JsonMember::base_type> ) {
-				return appender_t{result};
+				return daw::construct_a<appender_t>(result);
 			} else {
-				return appender_t{*result};
+				return daw::construct_a<appender_t>(*result);
 			}
 		}( );
 

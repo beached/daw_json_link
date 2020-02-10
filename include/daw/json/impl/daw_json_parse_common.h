@@ -130,11 +130,11 @@ namespace daw::json::json_details {
 	struct basic_appender {
 		Container *m_container;
 
-		explicit constexpr basic_appender( Container &container ) noexcept
+		explicit constexpr basic_appender( Container &container )
 		  : m_container( &container ) {}
 
 		template<typename Value>
-		constexpr void operator( )( Value &&value ) {
+		constexpr void operator( )( Value &&value ) const {
 			if constexpr( has_push_back_v<Container, daw::remove_cvref_t<Value>> ) {
 				m_container->push_back( std::forward<Value>( value ) );
 			} else if constexpr( has_insert_end_v<Container,
