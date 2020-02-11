@@ -176,4 +176,4 @@ a.out
 cmake-build-*/*
 CMakeSettings.json
 .vs/
-.DS_Store/
+**/.DS_Store
