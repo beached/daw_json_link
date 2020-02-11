@@ -412,6 +412,7 @@ add_dependencies(full nativejson_roundtrip_bin)
 
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
+install(DIRECTORY ${HEADER_FOLDER}/daw/third_party/ DESTINATION include/daw/third_party/)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 
