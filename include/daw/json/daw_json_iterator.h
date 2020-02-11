@@ -55,10 +55,6 @@ namespace daw::json {
 			[[nodiscard]] constexpr T *operator->( ) {
 				return &value;
 			}
-
-			[[nodiscard]] constexpr T &operator*( ) {
-				return value;
-			}
 		};
 	} // namespace json_details
 
