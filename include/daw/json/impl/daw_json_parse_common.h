@@ -563,19 +563,16 @@ namespace daw::json::json_details {
 	                  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		switch( parse_type ) {
 		case JsonBaseParseTypes::String:
-			return skip_string<First, Last, IsUnCheckedInput>( rng );
+			return skip_string( rng );
 		case JsonBaseParseTypes::Class:
-			return skip_class<First, Last, IsUnCheckedInput>( rng );
+			return skip_class( rng );
 		case JsonBaseParseTypes::Array:
-			return skip_array<First, Last, IsUnCheckedInput>( rng );
+			return skip_array( rng );
 		case JsonBaseParseTypes::Number:
 		case JsonBaseParseTypes::Bool:
-			return skip_literal<First, Last, IsUnCheckedInput>( rng );
+			return skip_literal( rng );
 		case JsonBaseParseTypes::None:
-			break;
+			return skip_value( rng );
 		}
-		daw_json_assert( parse_type != JsonBaseParseTypes::None,
-		                "Unexpected parse_type" );
-		return rng;
 	}
 } // namespace daw::json::json_details

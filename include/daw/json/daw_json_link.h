@@ -364,6 +364,7 @@ namespace daw::json {
 		  get_parse_type_v<JsonParseTypes::Variant, Nullable>;
 		static inline constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::Variant;
+
 		static inline constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::None;
 		using json_elements = JsonElements;
