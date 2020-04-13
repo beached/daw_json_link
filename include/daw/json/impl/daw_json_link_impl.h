@@ -141,22 +141,19 @@ namespace daw::json::json_details {
 		std::uint32_t hash_value;
 #endif
 		IteratorRange<First, Last, IsUnCheckedInput> location{};
-		using skip_fn_t =
-		  std::add_pointer_t<IteratorRange<First, Last, IsUnCheckedInput>(
-		    IteratorRange<First, Last, IsUnCheckedInput> & )>;
-		skip_fn_t skip_fn;
+		JsonBaseParseTypes parse_type;
 
 #ifndef _MSC_VER
 		explicit constexpr location_info_t( daw::string_view Name,
-		                                    skip_fn_t skip ) noexcept
+		                                    JsonBaseParseTypes pt ) noexcept
 		  : name( Name )
 		  , hash_value( daw::murmur3_32( Name ) )
-		  , skip_fn( skip ) {}
+		  , parse_type( pt ) {}
 #else
 		explicit constexpr location_info_t( daw::string_view Name,
-		                                    skip_fn_t skip ) noexcept
+		                                    JsonBaseParseTypes pt ) noexcept
 		  : name( Name )
-		  , skip_fn( skip ) {}
+		  , parse_type( pt ) {}
 #endif
 
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
@@ -247,7 +244,8 @@ namespace daw::json::json_details {
 				//				reparse them after
 				// RESULT: storing preparsed is slower, don't try 3 times
 				// it also limits the type of things we can parse potentially
-				locations[name_pos].location = locations[name_pos].skip_fn( rng ); // skip_value( rng );
+				locations[name_pos].location = skip_value_known(
+				  locations[name_pos].parse_type, rng ); // skip_value( rng );
 				rng.clean_tail( );
 				continue;
 			}
@@ -373,8 +371,7 @@ namespace daw::json::json_details {
 	static inline constexpr auto known_locations_v =
 	  locations_info_t<sizeof...( JsonMembers ), First, Last, IsUnCheckedInput>{
 	    location_info_t<First, Last, IsUnCheckedInput>(
-	      JsonMembers::name,
-	      skip_fn_for<JsonMembers, First, Last, IsUnCheckedInput> )...};
+	      JsonMembers::name, JsonMembers::underlying_json_type )...};
 
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename First, typename Last, bool IsUnCheckedInput>

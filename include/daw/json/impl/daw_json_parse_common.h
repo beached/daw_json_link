@@ -558,24 +558,24 @@ namespace daw::json::json_details {
 	}
 
 	template<typename First, typename Last, bool IsUnCheckedInput>
-	using skip_fn_t = IteratorRange<First, Last, IsUnCheckedInput> ( * )(
-	  IteratorRange<First, Last, IsUnCheckedInput> & );
-
-	template<typename JsonMember, typename First, typename Last,
-	         bool IsUnCheckedInput>
-	inline constexpr auto skip_fn_for =
-	  []( ) -> skip_fn_t<First, Last, IsUnCheckedInput> {
-		constexpr JsonBaseParseTypes parse_type = JsonMember::underlying_json_type;
-		static_assert( parse_type != JsonBaseParseTypes::None );
-		if constexpr( parse_type == JsonBaseParseTypes::String ) {
-			return skip_string<First, Last, IsUnCheckedInput>;
-		} else if constexpr( parse_type == JsonBaseParseTypes::Class ) {
-			return skip_class<First, Last, IsUnCheckedInput>;
-		} else if constexpr( parse_type == JsonBaseParseTypes::Array ) {
-			return skip_array<First, Last, IsUnCheckedInput>;
-		} else {
-			return skip_literal<First, Last, IsUnCheckedInput>;
+	constexpr IteratorRange<First, Last, IsUnCheckedInput>
+	skip_value_known( JsonBaseParseTypes parse_type,
+	                  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+		switch( parse_type ) {
+		case JsonBaseParseTypes::String:
+			return skip_string<First, Last, IsUnCheckedInput>( rng );
+		case JsonBaseParseTypes::Class:
+			return skip_class<First, Last, IsUnCheckedInput>( rng );
+		case JsonBaseParseTypes::Array:
+			return skip_array<First, Last, IsUnCheckedInput>( rng );
+		case JsonBaseParseTypes::Number:
+		case JsonBaseParseTypes::Bool:
+			return skip_literal<First, Last, IsUnCheckedInput>( rng );
+		case JsonBaseParseTypes::None:
+			break;
 		}
-	}( );
-
+		daw_json_assert( parse_type != JsonBaseParseTypes::None,
+		                "Unexpected parse_type" );
+		return rng;
+	}
 } // namespace daw::json::json_details
