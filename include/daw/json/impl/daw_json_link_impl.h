@@ -141,14 +141,22 @@ namespace daw::json::json_details {
 		std::uint32_t hash_value;
 #endif
 		IteratorRange<First, Last, IsUnCheckedInput> location{};
+		using skip_fn_t =
+		  std::add_pointer_t<IteratorRange<First, Last, IsUnCheckedInput>(
+		    IteratorRange<First, Last, IsUnCheckedInput> & )>;
+		skip_fn_t skip_fn;
 
 #ifndef _MSC_VER
-		explicit constexpr location_info_t( daw::string_view Name ) noexcept
+		explicit constexpr location_info_t( daw::string_view Name,
+		                                    skip_fn_t skip ) noexcept
 		  : name( Name )
-		  , hash_value( daw::murmur3_32( Name ) ) {}
+		  , hash_value( daw::murmur3_32( Name ) )
+		  , skip_fn( skip ) {}
 #else
-		explicit constexpr location_info_t( daw::string_view Name ) noexcept
-		  : name( Name ) {}
+		explicit constexpr location_info_t( daw::string_view Name,
+		                                    skip_fn_t skip ) noexcept
+		  : name( Name )
+		  , skip_fn( skip ) {}
 #endif
 
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
@@ -239,7 +247,7 @@ namespace daw::json::json_details {
 				//				reparse them after
 				// RESULT: storing preparsed is slower, don't try 3 times
 				// it also limits the type of things we can parse potentially
-				locations[name_pos].location = skip_value( rng );
+				locations[name_pos].location = locations[name_pos].skip_fn( rng ); // skip_value( rng );
 				rng.clean_tail( );
 				continue;
 			}
@@ -364,7 +372,9 @@ namespace daw::json::json_details {
 	         typename... JsonMembers>
 	static inline constexpr auto known_locations_v =
 	  locations_info_t<sizeof...( JsonMembers ), First, Last, IsUnCheckedInput>{
-	    location_info_t<First, Last, IsUnCheckedInput>( JsonMembers::name )...};
+	    location_info_t<First, Last, IsUnCheckedInput>(
+	      JsonMembers::name,
+	      skip_fn_for<JsonMembers, First, Last, IsUnCheckedInput> )...};
 
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename First, typename Last, bool IsUnCheckedInput>

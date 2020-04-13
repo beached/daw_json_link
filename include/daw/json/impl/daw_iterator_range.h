@@ -58,6 +58,10 @@
 namespace daw::json::json_details {
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	struct IteratorRange {
+		static_assert( std::is_convertible_v<
+		                 typename std::iterator_traits<First>::iterator_category,
+		                 std::random_access_iterator_tag>,
+		               "Expecting a Random Contiguous Iterator" );
 		First first{};
 		Last last{};
 		First class_first{};
