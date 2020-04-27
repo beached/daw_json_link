@@ -170,7 +170,7 @@ namespace milo {
 		  0x8bab8eefb6409c1aU, 0xd01fef10a657842cU, 0x9b10a4e5e9913129U,
 		  0xe7109bfba19c0c9dU, 0xac2820d9623bf429U, 0x80444b5e7aa7cf85U,
 		  0xbf21e44003acdd2dU, 0x8e679c2f5e44ff8fU, 0xd433179d9c8cb841U,
-		  0x9e19db92b4e31ba9U, 0xeb96bf6ebadf77d9U, 0xaf87023b9bf0ee6bU};
+		  0x9e19db92b4e31ba9U, 0xeb96bf6ebadf77d9U, 0xaf87023b9bf0ee6bU };
 
 		static constexpr int16_t kCachedPowers_E[] = {
 		  -1220, -1193, -1166, -1140, -1113, -1087, -1060, -1034, -1007, -980, -954,
@@ -180,7 +180,7 @@ namespace milo {
 		  -50,   -24,   3,     30,    56,    83,    109,   136,   162,   189,  216,
 		  242,   269,   295,   322,   348,   375,   402,   428,   455,   481,  508,
 		  534,   561,   588,   614,   641,   667,   694,   720,   747,   774,  800,
-		  827,   853,   880,   907,   933,   960,   986,   1013,  1039,  1066};
+		  827,   853,   880,   907,   933,   960,   986,   1013,  1039,  1066 };
 
 		// int k = static_cast<int>(ceil((-61 - e) * 0.30102999566398114)) + 374;
 		double const dk = ( -61 - e ) * 0.30102999566398114 +
@@ -198,12 +198,13 @@ namespace milo {
 		return DiyFp( kCachedPowers_F[index], kCachedPowers_E[index] );
 	}
 
-	inline void GrisuRound( char *buffer, int len, uint64_t delta, uint64_t rest,
-	                        uint64_t ten_kappa, uint64_t wp_w ) {
+	constexpr void GrisuRound( char *buffer, int len, uint64_t delta,
+	                           uint64_t rest, uint64_t ten_kappa,
+	                           uint64_t wp_w ) {
 		while( rest < wp_w && delta - rest >= ten_kappa &&
 		       ( rest + ten_kappa < wp_w || /// closer
 		         wp_w - rest > rest + ten_kappa - wp_w ) ) {
-			buffer[len - 1]--;
+			--buffer[len - 1];
 			rest += ten_kappa;
 		}
 	}
@@ -234,9 +235,9 @@ namespace milo {
 
 	inline void DigitGen( DiyFp const &W, DiyFp const &Mp, uint64_t delta,
 	                      char *buffer, int *len, int *K ) {
-		static uint32_t const kPow10[] = {1,         10,        100,     1000,
-		                                  10000,     100000,    1000000, 10000000,
-		                                  100000000, 1000000000};
+		static uint32_t const kPow10[] = { 1,         10,        100,     1000,
+		                                   10000,     100000,    1000000, 10000000,
+		                                   100000000, 1000000000 };
 		DiyFp const one( uint64_t( 1 ) << -Mp.e, Mp.e );
 		DiyFp const wp_w = Mp - W;
 		uint32_t p1 = static_cast<uint32_t>( Mp.f >> -one.e );
@@ -353,7 +354,7 @@ namespace milo {
 	  '7', '5', '7', '6', '7', '7', '7', '8', '7', '9', '8', '0', '8', '1', '8',
 	  '2', '8', '3', '8', '4', '8', '5', '8', '6', '8', '7', '8', '8', '8', '9',
 	  '9', '0', '9', '1', '9', '2', '9', '3', '9', '4', '9', '5', '9', '6', '9',
-	  '7', '9', '8', '9', '9'};
+	  '7', '9', '8', '9', '9' };
 
 	constexpr void WriteExponent( int K, char *buffer ) {
 		if( K < 0 ) {

@@ -35,17 +35,19 @@ namespace daw::json::json_details {
 		using element_t = typename JsonMember::json_element_t;
 		using value_type = element_t;
 		using reference = void;
+		using pointer = void;
+		using difference_type = std::ptrdiff_t;
+		using iterator_range_t = IteratorRange<First, Last, IsUnCheckedInput>;
 
-		IteratorRange<First, Last, IsUnCheckedInput> *rng = nullptr;
+		iterator_range_t *rng = nullptr;
 
 		constexpr json_parse_value_array_iterator( ) = default;
 
-		constexpr json_parse_value_array_iterator(
-		  IteratorRange<First, Last, IsUnCheckedInput> &r )
-		  : rng( &rng ) {}
+		constexpr json_parse_value_array_iterator( iterator_range_t &r )
+		  : rng( &r ) {}
 
-		constexpr value_type operator*( ) {
-			return parse_value<element_t>( ParseTag<element_t::expected_type>{},
+		constexpr decltype(auto) operator*( ) {
+			return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
 			                               *rng );
 		}
 

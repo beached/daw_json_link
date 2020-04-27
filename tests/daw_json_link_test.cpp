@@ -470,4 +470,8 @@ int main( ) {
 		++first3;
 	}
 	std::cout << "sum2: " << sum << '\n';
+
+
+	std::vector<double> a = {1.1, 11.1};
+	std::cout << daw::json::to_json_array( a ) << '\n';
 }

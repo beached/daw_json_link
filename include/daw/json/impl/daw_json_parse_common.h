@@ -400,8 +400,18 @@ namespace daw::json {
 	enum class LiteralAsStringOpt : std::uint8_t { Never, Maybe, Always };
 
 	template<typename T>
+	struct TestInputIteratorType {
+		using iterator_category = std::input_iterator_tag;
+		using value_type = T;
+		using reference = void;
+		using pointer = void;
+		using difference_type = std::ptrdiff_t;
+	};
+
+	template<typename Container, typename Value>
 	inline constexpr bool is_range_constructable_v =
-	  not std::is_trivially_constructible_v<T>;
+	  std::is_constructible_v<Container, TestInputIteratorType<Value>,
+	                          TestInputIteratorType<Value>>;
 } // namespace daw::json
 
 namespace daw::json::json_details {

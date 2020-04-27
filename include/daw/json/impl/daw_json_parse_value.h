@@ -566,16 +566,35 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 		rng.remove_prefix( );
 		rng.trim_left_no_check( );
 		using container_t = typename JsonMember::base_type;
-		if constexpr( std::is_same_v<container_t, basic_appender<container_t>> and
+
+		if constexpr( std::is_same_v<typename JsonMember::appender_t,
+		                             basic_appender<container_t>> and
 		              std::is_same_v<typename JsonMember::constructor_t,
 		                             daw::construct_a_t<container_t>> and
-		              is_range_constructable_v<container_t> ) {
+		              is_range_constructable_v<
+		                container_t, typename JsonMember::json_element_t> ) {
 			// We are using the default constructor and appender.  This should allow
-			// for
+			// for constructing the vector directly when it is constructable from a
+			// Iterator pair
 			using iterator_t =
 			  json_parse_value_array_iterator<JsonMember, First, Last,
 			                                  IsUnCheckedInput>;
+#if defined( __cpp_constexpr_dynamic_alloc ) or                                \
+  defined( DAW_JSON_NO_CONST_EXPR )
+			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
+			// not in a constant expression.  It does allow for construction of
+			// classes without move/copy special members
+			auto const oe = daw::on_exit_success( [&] {
+				rng.remove_prefix( );
+				rng.trim_left( );
+			} );
 			return container_t( iterator_t( rng ), iterator_t( ) );
+#else
+			auto result = container_t( iterator_t( rng ), iterator_t( ) );
+			rng.remove_prefix( );
+			rng.trim_left( );
+			return result;
+#endif
 		} else {
 			auto array_container = typename JsonMember::constructor_t{ }( );
 			auto container_appender =
