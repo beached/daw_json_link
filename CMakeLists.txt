@@ -182,6 +182,12 @@ target_link_libraries(nativejson_bench_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THR
 add_test(NAME nativejson_bench COMMAND nativejson_bench_bin ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_bench_bin)
 
+add_executable(nativejson_bench2_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test2.h ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/geojson.h ${TEST_FOLDER}/nativejson_bench2.cpp)
+add_dependencies(nativejson_bench2_bin dependency_stub)
+target_link_libraries(nativejson_bench2_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+add_test(NAME nativejson_bench2 COMMAND nativejson_bench2_bin ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full nativejson_bench2_bin)
+
 add_executable(nativejson_bench_basic_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test.h ${TEST_FOLDER}/citm_test.h ${TEST_FOLDER}/geojson.h ${TEST_FOLDER}/nativejson_bench_basic.cpp)
 add_dependencies(nativejson_bench_basic_bin dependency_stub)
 target_link_libraries(nativejson_bench_basic_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
