@@ -76,7 +76,7 @@ namespace daw::json {
 		                                        std::chrono::milliseconds>>;
 
 		[[maybe_unused, nodiscard]] constexpr result_type operator( )( ) const {
-			return {};
+			return { };
 		}
 
 		[[maybe_unused, nodiscard]] constexpr result_type
@@ -87,9 +87,25 @@ namespace daw::json {
 
 	template<typename T>
 	struct custom_from_converter_t {
+		[[nodiscard]] constexpr decltype( auto ) operator( )( ) {
+			if constexpr( std::is_same_v<T, std::string_view> ) {
+				return std::string_view{ };
+			} else if constexpr( std::is_same_v<T,
+			                                    std::optional<std::string_view>> ) {
+				return std::string_view{ };
+			} else {
+				return from_string( daw::tag<T> );
+			}
+		}
+
 		[[nodiscard]] constexpr decltype( auto )
 		operator( )( std::string_view sv ) {
-			return from_string( daw::tag<T>, sv );
+			if constexpr( std::is_same_v<T, std::string_view> or
+			              std::is_same_v<T, std::optional<std::string_view>> ) {
+				return sv;
+			} else {
+				return from_string( daw::tag<T>, sv );
+			}
 		}
 	};
 } // namespace daw::json
@@ -140,7 +156,7 @@ namespace daw::json::json_details {
 #ifndef _MSC_VER
 		std::uint32_t hash_value;
 #endif
-		IteratorRange<First, Last, IsUnCheckedInput> location{};
+		IteratorRange<First, Last, IsUnCheckedInput> location{ };
 
 #ifndef _MSC_VER
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
@@ -271,12 +287,12 @@ namespace daw::json::json_details {
 		rng.clean_tail( );
 		++member_position;
 		if( rng.front( ) == ']' ) {
-			auto rng2 = IteratorRange<First, Last, IsUnCheckedInput>{};
+			auto rng2 = IteratorRange<First, Last, IsUnCheckedInput>{ };
 			return parse_value<json_member_type>(
-			  ParseTag<json_member_type::expected_type>{}, rng2 );
+			  ParseTag<json_member_type::expected_type>{ }, rng2 );
 		}
 		return parse_value<json_member_type>(
-		  ParseTag<json_member_type::expected_type>{}, rng );
+		  ParseTag<json_member_type::expected_type>{ }, rng );
 	}
 
 	template<typename JsonMember, std::size_t N, typename First, typename Last,
@@ -289,7 +305,7 @@ namespace daw::json::json_details {
 		rng.clean_tail( );
 		if constexpr( is_no_name<JsonMember::name> ) {
 			// If we are an array element
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 			                                rng );
 		} else {
 			daw_json_assert_weak( rng.front( "\"}" ),
@@ -304,10 +320,10 @@ namespace daw::json::json_details {
 			if( loc.is_null( ) or
 			    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
 
-				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 				                                loc );
 			}
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 			                                rng );
 		}
 	}
@@ -325,7 +341,7 @@ namespace daw::json::json_details {
 		*it++ = '{';
 
 		daw::bounded_vector_t<daw::string_view, sizeof...( JsonMembers ) * 2U>
-		  visited_members{};
+		  visited_members{ };
 		// Tag Members, if any
 		(void)( ( tags_to_json_str<Is, nth<Is, JsonMembers...>>(
 		            is_first, it, value, visited_members ),
@@ -352,7 +368,7 @@ namespace daw::json::json_details {
 		Unused( value );
 		(void)std::array{
 		  ( to_json_ordered_str<Is, nth<Is, JsonMembers...>>( array_idx, it, args ),
-		    0 )...};
+		    0 )... };
 
 		*it++ = ']';
 		return it;
@@ -365,7 +381,7 @@ namespace daw::json::json_details {
 	         typename... JsonMembers>
 	static inline constexpr auto known_locations_v =
 	  locations_info_t<sizeof...( JsonMembers ), First, Last, IsUnCheckedInput>{
-	    location_info_t<First, Last, IsUnCheckedInput>( JsonMembers::name )...};
+	    location_info_t<First, Last, IsUnCheckedInput>( JsonMembers::name )... };
 
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename First, typename Last, bool IsUnCheckedInput>
@@ -421,13 +437,13 @@ namespace daw::json::json_details {
 			 */
 			return std::apply(
 			  daw::construct_a<JsonClass>,
-			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )...} );
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
 #else
 			auto result = std::apply(
 			  daw::construct_a<JsonClass>,
-			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )...} );
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
 			clean_up_fn( );
 			return result;
 #endif
@@ -453,8 +469,8 @@ namespace daw::json::json_details {
 		size_t current_idx = 0;
 		JsonClass result =
 		  std::apply( daw::construct_a<JsonClass>,
-		              std::tuple{parse_ordered_class_member<JsonMembers>(
-		                current_idx, rng )...} );
+		              std::tuple{ parse_ordered_class_member<JsonMembers>(
+		                current_idx, rng )... } );
 
 		// TODO investigate using on_successful_exit to do this
 		rng.clean_tail( );
