@@ -87,8 +87,7 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
 
-		daw_json_assert_weak( not rng.is_null( ) and rng.has_more( ),
-		                      "Could not find value" );
+		daw_json_assert_weak( rng.can_parse_more( ), "Could not find value" );
 		skip_quote_when_literal_as_string<JsonMember>( rng );
 		daw_json_assert_weak(
 		  rng.is_real_number_part( ),
@@ -146,7 +145,7 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
 		using constructor_t = typename JsonMember::constructor_t;
-		if( rng.empty( ) or rng.is_null( ) ) {
+		if( not rng.can_parse_more( ) ) {
 			return constructor_t{ }( );
 		}
 		constexpr std::size_t null_size = 4;
@@ -567,12 +566,13 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 		rng.trim_left_no_check( );
 		using container_t = typename JsonMember::base_type;
 
-		if constexpr( std::is_same_v<typename JsonMember::appender_t,
-		                             basic_appender<container_t>> and
-		              std::is_same_v<typename JsonMember::constructor_t,
-		                             daw::construct_a_t<container_t>> and
-		              is_range_constructable_v<
-		                container_t, typename JsonMember::json_element_t> ) {
+		if constexpr( std::conjunction<
+		                std::is_same<typename JsonMember::appender_t,
+		                             basic_appender<container_t>>,
+		                std::is_same<typename JsonMember::constructor_t,
+		                             daw::construct_a_t<container_t>>,
+		                is_range_constructible<
+		                  container_t, typename JsonMember::json_element_t>>::value ) {
 			// We are using the default constructor and appender.  This should allow
 			// for constructing the vector directly when it is constructable from a
 			// Iterator pair
@@ -610,7 +610,7 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 			rng.trim_left( );
 			return array_container;
 		}
-	}
+	} // namespace daw::json::json_details
 
 	template<JsonBaseParseTypes BPT, typename JsonMembers, typename First,
 	         typename Last, bool IsUnCheckedInput>

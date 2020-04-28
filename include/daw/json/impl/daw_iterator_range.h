@@ -62,9 +62,9 @@ namespace daw::json::json_details {
 		                 typename std::iterator_traits<First>::iterator_category,
 		                 std::random_access_iterator_tag>,
 		               "Expecting a Random Contiguous Iterator" );
-		First first{};
-		Last last{};
-		First class_first{};
+		First first{ };
+		Last last{ };
+		First class_first{ };
 
 		static constexpr bool is_trusted_input = IsUnCheckedInput;
 		using CharT = daw::remove_cvref_t<decltype( *first )>;
@@ -94,6 +94,10 @@ namespace daw::json::json_details {
 
 		[[nodiscard]] constexpr bool has_more( ) const {
 			return first != last;
+		}
+
+		[[nodiscard]] constexpr bool can_parse_more( ) const {
+			return not is_null( ) and has_more( );
 		}
 
 		[[nodiscard]] constexpr decltype( auto ) front( ) const {
@@ -129,7 +133,7 @@ namespace daw::json::json_details {
 			if constexpr( std::is_pointer_v<First> ) {
 				return first == nullptr;
 			} else if constexpr( std::is_convertible_v<First, bool> ) {
-				return static_cast<bool>( first );
+				return not static_cast<bool>( first );
 			} else {
 				return false;
 			}

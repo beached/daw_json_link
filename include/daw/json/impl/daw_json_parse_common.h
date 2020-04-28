@@ -403,15 +403,19 @@ namespace daw::json {
 	struct TestInputIteratorType {
 		using iterator_category = std::input_iterator_tag;
 		using value_type = T;
-		using reference = void;
-		using pointer = void;
+		using reference = T &;
+		using pointer = T *;
 		using difference_type = std::ptrdiff_t;
 	};
 
 	template<typename Container, typename Value>
+	using is_range_constructible =
+	  std::is_constructible<Container, TestInputIteratorType<Value>,
+	                        TestInputIteratorType<Value>>;
+
+	template<typename Container, typename Value>
 	inline constexpr bool is_range_constructable_v =
-	  std::is_constructible_v<Container, TestInputIteratorType<Value>,
-	                          TestInputIteratorType<Value>>;
+	  is_range_constructible<Container, Value>::value;
 } // namespace daw::json
 
 namespace daw::json::json_details {

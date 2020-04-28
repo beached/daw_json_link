@@ -310,21 +310,32 @@ namespace daw::json::json_details {
 		} else {
 			daw_json_assert_weak( rng.front( "\"}" ),
 			                      "Expected end of class or start of member" );
+			// auto const r2 = rng;
 			auto loc =
 			  find_class_member<JsonMember>( member_position, locations, rng );
 
-			daw_json_assert_weak(
-			  ( is_json_nullable_v<JsonMember> or not loc.is_null( ) ),
-			  missing_member( JsonMember::name ) );
-
-			if( loc.is_null( ) or
-			    ( not rng.is_null( ) and rng.begin( ) != loc.begin( ) ) ) {
-
-				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
-				                                loc );
+			if( not loc.can_parse_more( ) ) {
+				if constexpr( is_json_nullable_v<JsonMember> ) {
+					return parse_value<JsonMember>(
+					  ParseTag<JsonMember::expected_type>{ }, loc );
+				} else {
+					daw_json_error( missing_member( JsonMember::name ) );
+				}
 			}
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
-			                                rng );
+			if( rng.can_parse_more( ) ) {
+				if( rng.begin( ) != loc.begin( ) ) {
+					return parse_value<JsonMember>(
+					  ParseTag<JsonMember::expected_type>{ }, loc );
+				}
+				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
+				                                rng );
+			}
+			if constexpr( is_json_nullable_v<JsonMember> ) {
+				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
+				                                rng );
+			} else {
+				daw_json_error( missing_member( JsonMember::name ) );
+			}
 		}
 	}
 
@@ -426,8 +437,8 @@ namespace daw::json::json_details {
 
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
-			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
-			// not in a constant expression.  It does allow for construction of
+			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr
+			// or not in a constant expression.  It does allow for construction of
 			// classes without move/copy special members
 
 			// Do this before we exit but after return

@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019-2020 Darrell Wright
+// Copyright (c) Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -572,6 +572,8 @@ namespace daw::json {
 	template<typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json( std::string_view json_data ) {
+		daw_json_assert( json_data.data( ) != nullptr,
+		                 "Cannot parse null strings" );
 		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
@@ -590,6 +592,10 @@ namespace daw::json {
 	template<typename JsonMember>
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( std::string_view json_data, std::string_view member_path ) {
+		daw_json_assert( json_data.data( ) != nullptr,
+		                 "Cannot parse null strings" );
+		daw_json_assert( member_path.data( ) != nullptr,
+		                 "Cannot parse null strings" );
 		return json_details::from_json_member_impl<JsonMember, false>(
 		  json_data, member_path );
 	}
@@ -605,6 +611,8 @@ namespace daw::json {
 	template<typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json_unchecked( std::string_view json_data ) {
+		daw_json_assert( json_data.data( ) != nullptr,
+		                 "Cannot parse null strings" );
 		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
@@ -640,6 +648,9 @@ namespace daw::json {
 	template<typename JsonClass, typename OutputIterator>
 	[[maybe_unused]] constexpr OutputIterator to_json( JsonClass const &value,
 	                                                   OutputIterator out_it ) {
+		if constexpr( std::is_pointer_v<OutputIterator> ) {
+			daw_json_assert( out_it, "Expected valid output iterator" );
+		}
 		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
@@ -724,6 +735,10 @@ namespace daw::json {
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data,
 	                 std::string_view member_path = "" ) {
+		daw_json_assert( json_data.data( ) != nullptr,
+		                 "Cannot parse null strings" );
+		daw_json_assert( member_path.data( ) != nullptr,
+		                 "Cannot parse null strings" );
 		using element_type =
 		  json_details::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
@@ -756,6 +771,10 @@ namespace daw::json {
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array_unchecked( std::string_view json_data,
 	                           std::string_view member_path = "" ) {
+		daw_json_assert( json_data.data( ) != nullptr,
+		                 "Cannot parse null strings" );
+		daw_json_assert( member_path.data( ) != nullptr,
+		                 "Cannot parse null strings" );
 		using element_type =
 		  json_details::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
@@ -783,6 +802,9 @@ namespace daw::json {
 		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 		  "Supplied container must support begin( )/end( )" );
 
+		if constexpr( std::is_pointer_v<OutputIterator> ) {
+			daw_json_assert( out_it, "Expected valid output iterator" );
+		}
 		*out_it++ = '[';
 		bool is_first = true;
 		for( auto const &v : c ) {
