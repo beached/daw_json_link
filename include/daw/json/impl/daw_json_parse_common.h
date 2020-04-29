@@ -193,19 +193,19 @@ namespace daw::json {
 	template<std::size_t N>
 	struct json_name {
 		static_assert( N > 0 );
-		char const m_data[N]{ };
+		char const m_data[N]{};
 
 	private:
 		template<std::size_t... Is>
 		constexpr json_name( char const ( &ptr )[N], std::index_sequence<Is...> )
-		  : m_data{ ptr[Is]... } {}
+		  : m_data{ptr[Is]...} {}
 
 	public:
 		constexpr json_name( char const ( &ptr )[N] )
-		  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
+		  : json_name( ptr, std::make_index_sequence<N>{} ) {}
 
 		constexpr operator daw::string_view( ) const {
-			return { m_data, N - 1 };
+			return {m_data, N - 1};
 		}
 
 		// Needed for copy_to_iterator
@@ -250,11 +250,11 @@ namespace daw::json {
 #define JSONNAMETYPE daw::json::json_name
 
 	// Convienience for array members that are required to be unnamed
-	inline constexpr JSONNAMETYPE no_name{ "" };
+	inline constexpr JSONNAMETYPE no_name{""};
 
 	namespace json_details {
-		inline constexpr JSONNAMETYPE default_key_name{ "key" };
-		inline constexpr JSONNAMETYPE default_value_name{ "value" };
+		inline constexpr JSONNAMETYPE default_key_name{"key"};
+		inline constexpr JSONNAMETYPE default_value_name{"value"};
 	} // namespace json_details
 
 	template<JSONNAMETYPE n>
@@ -341,7 +341,7 @@ namespace daw::json {
 
 		template<typename T>
 		[[maybe_unused]] auto dereffed_type_impl( daw::tag_t<T> )
-		  -> decltype( *( T{ } ) );
+		  -> decltype( *( T{} ) );
 
 		template<typename T>
 		using dereffed_type =
@@ -436,13 +436,16 @@ namespace daw::json::json_details {
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_string( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		if( rng.front( '"' ) ) {
-			rng.remove_prefix( );
-		} else {
-			daw_json_assert_weak( *std::prev( rng.begin( ) ) == '"',
-			                      "Attempt to parse a non-string as string" );
+		if( *std::prev( rng.begin( ) ) != '"' ) {
+			if( rng.front( ) == '"' ) {
+				rng.remove_prefix( );
+			} else {
+				daw_json_error( "Attempt to parse a non-string as string" );
+			}
 		}
-		return skip_string_nq( rng );
+		auto result = skip_string_nq( rng );
+		--result.first;
+		return result;
 	}
 
 	constexpr bool at_literal_end( char c ) {

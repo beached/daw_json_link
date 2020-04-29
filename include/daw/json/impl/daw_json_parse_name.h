@@ -62,7 +62,7 @@ namespace daw::json::json_details::name {
 					rng.remove_prefix( 2 );
 				}
 			}
-			daw_json_assert_weak( rng.front( ) == '"', "Expected a '\"'" );
+			daw_json_assert_weak( rng.front( ) == '"', "Expected a '\"' at the end of string" );
 			auto result =
 			  daw::string_view( ptr, static_cast<std::size_t>( rng.begin( ) - ptr ) );
 			rng.remove_prefix( );
