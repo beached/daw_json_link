@@ -64,20 +64,20 @@ int main( int argc, char **argv ) try {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	auto apache_builds_result = std::optional<apache_builds::apache_builds>( );
+	auto apache_builds_result =
+	  daw::json::from_json<apache_builds::apache_builds>( json_sv1 );
+	daw_json_assert( apache_builds_result.jobs.size( ) > 0,
+	                 "Bad value for jobs.size( )" );
+	daw_json_assert( apache_builds_result.numExecutors == 0,
+	                 "Bad value for numExecutors" );
+
 	daw::bench_n_test_mbs<100>(
 	  "apache_builds bench", sz,
-	  [&apache_builds_result]( auto f1 ) {
-		  apache_builds_result = std::nullopt;
-		  apache_builds_result.emplace(
-		    daw::json::from_json<apache_builds::apache_builds>( f1 ) );
-		  daw::do_not_optimize( apache_builds_result );
+	  []( auto f1 ) {
+		  auto r = daw::json::from_json<apache_builds::apache_builds>( f1 );
+		  daw::do_not_optimize( r );
 	  },
 	  json_sv1 );
-	daw::do_not_optimize( apache_builds_result );
-	//daw_json_assert( apache_builds_result, "Missing result of parse" );
-	daw_json_assert( apache_builds_result->jobs.size( ) > 0, "Bad value for jobs.size( )" );
-	daw_json_assert( apache_builds_result->numExecutors == 0, "Bad value for numExecutors" );
 
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
@@ -85,7 +85,7 @@ int main( int argc, char **argv ) try {
 	  "apache_builds bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
-		  daw::json::to_json( *tr, out_it );
+		  daw::json::to_json( tr, out_it );
 		  daw::do_not_optimize( str );
 	  },
 	  apache_builds_result );
