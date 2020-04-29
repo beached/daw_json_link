@@ -245,7 +245,7 @@ namespace daw::json {
 	};
 
 	template<typename... Chars>
-	json_name( Chars... ) -> json_name<sizeof...( Chars )>;
+	json_name( Chars... )->json_name<sizeof...( Chars )>;
 
 #define JSONNAMETYPE daw::json::json_name
 

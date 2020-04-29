@@ -35,13 +35,13 @@
 #include <vector>
 
 struct Number {
-	float a{};
+	float a{ };
 };
 #ifdef __cpp_nontype_template_parameter_class
 [[maybe_unused]] static constexpr auto
 json_data_contract_for( Number ) noexcept {
 	using namespace daw::json;
-	return json_member_list<json_number<"a", float>>{};
+	return json_member_list<json_number<"a", float>>{ };
 }
 #else
 namespace symbols_Number {
@@ -51,7 +51,7 @@ namespace symbols_Number {
 [[maybe_unused]] static constexpr auto
 json_data_contract_for( Number ) noexcept {
 	using namespace daw::json;
-	return json_member_list<json_number<symbols_Number::a, float>>{};
+	return json_member_list<json_number<symbols_Number::a, float>>{ };
 }
 #endif
 
@@ -84,7 +84,7 @@ void test_func( ) {
 		return result;
 	}( );
 
-	daw::string_view json_sv{json_data3.data( ), json_data3.size( )};
+	daw::string_view json_sv{ json_data3.data( ), json_data3.size( ) };
 	auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
 	{
 		auto const count3 = *daw::bench_n_test_mbs<100>(

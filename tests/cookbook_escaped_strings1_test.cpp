@@ -63,8 +63,8 @@ int main( int argc, char **argv ) try {
 		exit( EXIT_FAILURE );
 	}
 	auto const expected_wd = daw::cookbook_escaped_strings1::WebData{
-	  {"example.com", "Bücher.ch", "happy.cn", "happy快乐.cn", "快乐.cn",
-	   "happy.中国", "快乐.中国", "www.ハンドボールサムズ.com", "🦄.com"}};
+	  { "example.com", "Bücher.ch", "happy.cn", "happy快乐.cn", "快乐.cn",
+	    "happy.中国", "快乐.中国", "www.ハンドボールサムズ.com", "🦄.com" } };
 
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 

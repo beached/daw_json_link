@@ -36,7 +36,7 @@ namespace daw::cookbook_dates3 {
 	                                             std::chrono::milliseconds>;
 
 	my_timepoint seconds_since_epoch_to_tp( int64_t seconds ) {
-		return my_timepoint{} + std::chrono::seconds( seconds );
+		return my_timepoint{ } + std::chrono::seconds( seconds );
 	}
 
 	struct MyClass3 {

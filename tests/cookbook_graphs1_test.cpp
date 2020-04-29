@@ -113,7 +113,7 @@ int main( int argc, char **argv ) try {
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 	std::string_view json_sv = std::string_view( data.data( ), data.size( ) );
 
-	daw::graph_t<Node> g{};
+	daw::graph_t<Node> g{ };
 
 	using node_range_t =
 	  daw::json::json_array_range<daw::cookbook_graphs1::GraphNode>;
@@ -128,7 +128,7 @@ int main( int argc, char **argv ) try {
 			return node.value( ).id == id;
 		} );
 		if( result.empty( ) ) {
-			return {};
+			return { };
 		}
 		daw_json_assert( result.size( ) == 1, "Unexpected size" );
 		return result.front( );

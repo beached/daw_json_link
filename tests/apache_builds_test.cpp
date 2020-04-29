@@ -78,7 +78,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( apache_builds_result->jobs.size( ) > 0, "Expected values" );
 	daw_json_assert( apache_builds_result->numExecutors == 0, "Missing value" );
 
-	std::string str{};
+	std::string str{ };
 	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<100>(
 	  "apache_builds bench(to_json_string)", sz,

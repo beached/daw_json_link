@@ -558,56 +558,39 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 	parse_value( ParseTag<JsonParseTypes::Array>,
 	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
-		using element_t = typename JsonMember::json_element_t;
 		daw_json_assert_weak( rng.front( '[' ),
 		                      "Expected array to start with a '['" );
 
 		rng.remove_prefix( );
 		rng.trim_left_no_check( );
 		using container_t = typename JsonMember::base_type;
-
+		using iterator_t =
+		json_parse_value_array_iterator<JsonMember, First, Last,
+			IsUnCheckedInput>;
+		iterator_t first = iterator_t( rng );
+		iterator_t const last = iterator_t( );
 		if constexpr( std::conjunction<
 		                std::is_same<typename JsonMember::appender_t,
 		                             basic_appender<container_t>>,
 		                std::is_same<typename JsonMember::constructor_t,
 		                             daw::construct_a_t<container_t>>,
 		                is_range_constructible<
-		                  container_t, typename JsonMember::json_element_t>>::value ) {
+		                  container_t,
+		                  typename JsonMember::json_element_t>>::value ) {
 			// We are using the default constructor and appender.  This should allow
 			// for constructing the vector directly when it is constructable from a
 			// Iterator pair
-			using iterator_t =
-			  json_parse_value_array_iterator<JsonMember, First, Last,
-			                                  IsUnCheckedInput>;
-#if defined( __cpp_constexpr_dynamic_alloc ) or                                \
-  defined( DAW_JSON_NO_CONST_EXPR )
-			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
-			// not in a constant expression.  It does allow for construction of
-			// classes without move/copy special members
-			auto const oe = daw::on_exit_success( [&] {
-				rng.remove_prefix( );
-				rng.trim_left( );
-			} );
-			return container_t( iterator_t( rng ), iterator_t( ) );
-#else
-			auto result = container_t( iterator_t( rng ), iterator_t( ) );
-			rng.remove_prefix( );
-			rng.trim_left( );
-			return result;
-#endif
+
+			return container_t( first, last );
 		} else {
 			auto array_container = typename JsonMember::constructor_t{ }( );
 			auto container_appender =
 			  typename JsonMember::appender_t( array_container );
 
-			while( rng.front( ) != ']' ) {
-				container_appender( parse_value<element_t>(
-				  ParseTag<element_t::expected_type>{ }, rng ) );
-				rng.clean_tail( );
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
+			while( first != last ) {
+				container_appender( *first );
+				++first;
 			}
-			rng.remove_prefix( );
-			rng.trim_left( );
 			return array_container;
 		}
 	} // namespace daw::json::json_details
