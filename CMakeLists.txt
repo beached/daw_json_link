@@ -11,6 +11,8 @@ include("${CMAKE_SOURCE_DIR}/dependent_projects/CMakeListsCompiler.txt")
 include_directories("./include")
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
+set(DAW_JSON_USE_SANITIZERS OFF CACHE STRING "Enable address and undefined behaviour sanitizers")
+
 set(DAW_JSON_DONT_USE_EXCEPTIONS OFF CACHE STRING "Don't throw exceptions when json errors occur")
 if (DAW_JSON_DONT_USE_EXCEPTIONS)
     if (DAW_JSON_DONT_USE_EXCEPTIONS=OFF)

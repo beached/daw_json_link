@@ -311,15 +311,15 @@ namespace daw::json::json_details {
 		} else {
 			daw_json_assert_weak( rng.front( "\"}" ),
 			                      "Expected end of class or start of member" );
-			//auto const r2 = rng;
+			// auto const r2 = rng;
 			auto loc =
 			  find_class_member<JsonMember>( member_position, locations, rng );
 
 			// If the member was found loc will have it's position
 			if( loc.can_parse_more( ) ) {
 				if( loc.begin( ) == rng.begin( ) ) {
-					return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
-																					rng );
+					return parse_value<JsonMember>(
+					  ParseTag<JsonMember::expected_type>{ }, rng );
 				}
 				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 				                                loc );
@@ -405,6 +405,9 @@ namespace daw::json::json_details {
 		rng.move_to_next_of( "\"}" );
 
 		auto const clean_up_fn = [&] {
+			if( not rng.has_more( ) ) {
+				return;
+			}
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
 			while( rng.front( ) != '}' ) {
