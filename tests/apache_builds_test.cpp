@@ -75,7 +75,7 @@ int main( int argc, char **argv ) try {
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( apache_builds_result );
-	daw_json_assert( apache_builds_result, "Missing result of parse" );
+	//daw_json_assert( apache_builds_result, "Missing result of parse" );
 	daw_json_assert( apache_builds_result->jobs.size( ) > 0, "Bad value for jobs.size( )" );
 	daw_json_assert( apache_builds_result->numExecutors == 0, "Bad value for numExecutors" );
 
