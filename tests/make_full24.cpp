@@ -385,7 +385,7 @@ void output_item( uint32_t cp ) {
 }
 
 // Generated the full unicode range escaped
-int main( ) {
+int main( int, char ** ) {
 	std::cout << "[";
 	bool is_first = true;
 	auto const codes = get_codes( );

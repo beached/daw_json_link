@@ -70,7 +70,7 @@ std::string get_json_data( std::string file_name ) {
 	                    std::istreambuf_iterator<char>( ) );
 }
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	using namespace daw::json;
 	// uses cities.json
 	if( argc < 2 ) {
@@ -95,4 +95,7 @@ int main( int argc, char **argv ) {
 	}
 
 	std::cout << "Chitungwiza was found.\n" << to_json( *pos ) << '\n';
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

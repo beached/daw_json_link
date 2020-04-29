@@ -27,10 +27,11 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <string>
 #include <vector>
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_array1.json file\n" );
 		exit( EXIT_FAILURE );
@@ -48,4 +49,7 @@ int main( int argc, char **argv ) {
 		(void)val;
 		daw_json_assert( count++ == val, "Unexpected value" );
 	}
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

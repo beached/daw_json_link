@@ -34,7 +34,7 @@
 #include <streambuf>
 #include <string_view>
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	using namespace daw::json;
 	if( argc < 4 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -96,4 +96,7 @@ int main( int argc, char **argv ) {
 	if( not j3 ) {
 		daw_json_error( "Missing value" );
 	}
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

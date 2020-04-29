@@ -24,6 +24,8 @@
 
 #include <daw/daw_memory_mapped_file.h>
 
+#include <iostream>
+
 namespace daw {
 	struct Data {
 		int a;
@@ -49,7 +51,7 @@ namespace daw::json {
 	}; // namespace daw::json
 } // namespace daw::json
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	if( argc <= 1 ) {
 		puts( "Must supply path to small_test.json file\n" );
 		exit( EXIT_FAILURE );
@@ -60,4 +62,7 @@ int main( int argc, char **argv ) {
 	  std::string_view( data.data( ), data.size( ) ) );
 
 	daw_json_assert( cls.a == 12345, "Unexpected value" );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

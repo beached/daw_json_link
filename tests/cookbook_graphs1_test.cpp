@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -104,7 +105,7 @@ struct Node {
 	bool member2;
 };
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_graphs1.json file\n" );
 		exit( EXIT_FAILURE );
@@ -174,4 +175,7 @@ int main( int argc, char **argv ) {
 	                 "Node id 0 should have 1 incoming edge from node id 2" );
 
 	return 0;
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

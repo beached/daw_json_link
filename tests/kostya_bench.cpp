@@ -75,7 +75,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	using namespace daw::json;
 	std::ios_base::sync_with_stdio( false );
 
@@ -106,4 +106,7 @@ int main( int argc, char **argv ) {
 	std::cout << x / dsz << '\n';
 	std::cout << y / dsz << '\n';
 	std::cout << z / dsz << '\n';
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

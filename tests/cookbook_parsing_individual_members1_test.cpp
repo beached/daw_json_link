@@ -27,10 +27,11 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <string>
 #include <unordered_map>
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	if( argc <= 1 ) {
 		puts(
 		  "Must supply path to cookbook_parsing_individual_members1.json file\n" );
@@ -51,4 +52,7 @@ int main( int argc, char **argv ) {
 	  from_json<json_string_null<no_name>>( json_data, "a.b" );
 
 	daw_json_assert( not opt_value, "Did not expect a value" );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

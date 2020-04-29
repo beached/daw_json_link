@@ -53,7 +53,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	using namespace daw::json;
 #if defined( NDEBUG ) and not defined( DEBUG )
 	std::cout << "release run\n";
@@ -93,4 +93,7 @@ int main( int argc, char **argv ) {
 	  unicode_test.begin( ), unicode_test.end( ), unicode_test2.begin( ) );
 	daw_json_assert( mismatch_pos2.first == unicode_test.end( ),
 	                 "Should be the same after parsing" );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

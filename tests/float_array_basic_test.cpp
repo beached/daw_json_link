@@ -100,10 +100,13 @@ void test_func( ) {
 	}
 }
 
-int main( int argc, char ** ) {
+int main( int argc, char ** ) try {
 	if( argc > 1 ) {
 		test_func<1'000'000ULL>( );
 	} else {
 		test_func<1'000ULL>( );
 	}
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

@@ -28,6 +28,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
@@ -68,7 +69,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_variant1.json file\n" );
 		exit( EXIT_FAILURE );
@@ -94,4 +95,7 @@ int main( int argc, char **argv ) {
 
 	daw_json_assert( stuff == stuff2, "Unexpected round trip error" );
 	return 0;
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

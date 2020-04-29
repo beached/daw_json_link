@@ -37,7 +37,7 @@
 #define NUMRUNS 10
 #endif
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -80,4 +80,7 @@ int main( int argc, char **argv ) {
 	  *citm_result );
 	daw_json_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

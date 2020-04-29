@@ -25,6 +25,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -64,7 +65,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( ) {
+int main( int, char ** ) try {
 	std::string_view data = R"(
 {
   "member0": "this is a test",
@@ -87,4 +88,7 @@ int main( ) {
 	(void)daw::json::to_json( cls, it );
 	std::string const str = ss.str( );
 	puts( str.c_str( ) );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

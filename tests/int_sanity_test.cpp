@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iostream>
 #include <vector>
 
 template<typename T, size_t N>
@@ -78,7 +79,10 @@ bool signed_test( ) {
 #endif
 }
 
-int main( ) {
+int main( int, char ** ) try {
 	daw::expecting( unsigned_test<1000>( ) );
 	daw::expecting( signed_test<1000>( ) );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

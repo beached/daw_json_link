@@ -49,7 +49,7 @@ constexpr bool operator==( T const &lhs, T const &rhs ) {
 	daw_json_error( "Expected that values would be equal" );
 }
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -102,4 +102,7 @@ int main( int argc, char **argv ) {
 	daw_json_assert( canada_result == canada_result2,
 	                 "Expected round trip to produce same result" );
 	                 */
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

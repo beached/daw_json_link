@@ -23,6 +23,7 @@
 #include <daw/daw_benchmark.h>
 #include <daw/json/daw_json_link.h>
 
+#include <iostream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -224,7 +225,7 @@ bool test_array_trail( ) {
 	return true;
 }
 
-int main( ) {
+int main( int, char ** ) try {
 	daw_json_assert( test_int_trail( ),
 	                 "Signed integers fail to accommodate trailing strings" );
 	daw_json_assert( test_string_raw_trail( ),
@@ -238,4 +239,7 @@ int main( ) {
 	daw::expecting( test_string_trail( ) );
 	daw::expecting( test_array_member_trail( ) );
 	daw::expecting( test_array_trail( ) );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

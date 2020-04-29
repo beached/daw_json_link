@@ -77,7 +77,7 @@ std::string read_file( std::string const &filename ) {
 	                    std::istreambuf_iterator<char>( ) );
 }
 
-int main( int argc, char *argv[] ) {
+int main( int argc, char *argv[] ) try {
 	std::string const text = read_file( "/tmp/1.json" );
 
 	auto const json_sv = std::string_view( text.data( ), text.size( ) );
@@ -105,4 +105,7 @@ int main( int argc, char *argv[] ) {
 	notify( "stop" );
 
 	return EXIT_SUCCESS;
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

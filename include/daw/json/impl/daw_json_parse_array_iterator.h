@@ -33,7 +33,7 @@ namespace daw::json::json_details {
 	struct json_parse_value_array_iterator {
 		using iterator_category = std::input_iterator_tag;
 		using element_t = typename JsonMember::json_element_t;
-		using value_type = element_t;
+		using value_type = typename element_t::parse_to_t;
 		using reference = void;
 		using pointer = void;
 		using difference_type = std::ptrdiff_t;
@@ -54,7 +54,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		constexpr decltype( auto ) operator*( ) {
+		constexpr value_type operator*( ) {
 			daw_json_assert_weak( rng and rng->can_parse_more( ),
 			                      "Expected data to parse" );
 			return parse_value<element_t>( ParseTag<element_t::expected_type>{ },

@@ -55,7 +55,7 @@ namespace daw::json::json_details {
 
 namespace daw::json {
 	class json_exception {
-		std::string m_reason{};
+		std::string m_reason{ };
 
 	public:
 		[[maybe_unused]] json_exception( ) = default;
@@ -95,8 +95,8 @@ daw_json_error( daw::json::json_details::missing_member reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
 		using namespace std::string_literals;
-		std::string msg = "Could not find required class member '"s +
-		                  static_cast<std::string>( reason.member_name ) + "'"s;
+		std::string msg = "Could not find required class member '"s;
+		msg += static_cast<std::string>( reason.member_name ) + "'"s;
 		throw daw::json::json_exception( msg );
 	} else {
 #endif

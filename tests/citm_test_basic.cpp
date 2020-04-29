@@ -31,7 +31,7 @@
 #include <iostream>
 #include <streambuf>
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
 		exit( 1 );
@@ -48,4 +48,7 @@ int main( int argc, char **argv ) {
 	                 "Expected value" );
 	daw_json_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
 	                 "Incorrect value" );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

@@ -28,8 +28,9 @@
 #include <daw/json/daw_json_link.h>
 
 #include <cstdio>
+#include <iostream>
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	if( argc < 2 ) {
 		puts( "Must supply a file name\n" );
 		exit( 1 );
@@ -45,4 +46,7 @@ int main( int argc, char **argv ) {
 
 	auto const new_json_result = daw::json::to_json( canada_result );
 	daw::do_not_optimize( canada_result );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

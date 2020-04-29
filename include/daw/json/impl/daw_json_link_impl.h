@@ -239,6 +239,7 @@ namespace daw::json::json_details {
 
 		rng.trim_left_no_check( );
 		while( locations[pos].missing( ) and rng.front( ) != '}' ) {
+			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
 			auto const name = parse_name( rng );
 			auto const name_pos = locations.find_name( name );
 			if( name_pos >= locations.size( ) ) {
@@ -247,7 +248,9 @@ namespace daw::json::json_details {
 				rng.clean_tail( );
 				continue;
 			}
-			if( name_pos != pos ) {
+			if( name_pos == pos ) {
+				locations[pos].location = rng;
+			} else {
 				// We are out of order, store position for later
 				// TODO:	use type knowledge to speed up skip
 				// TODO:	on skipped classes see if way to store
@@ -258,9 +261,7 @@ namespace daw::json::json_details {
 				// Using locations to switch on BaseType is slower too
 				locations[name_pos].location = skip_value( rng );
 				rng.clean_tail( );
-				continue;
 			}
-			locations[pos].location = rng;
 		}
 		return locations[pos].location;
 	}
@@ -310,29 +311,22 @@ namespace daw::json::json_details {
 		} else {
 			daw_json_assert_weak( rng.front( "\"}" ),
 			                      "Expected end of class or start of member" );
-			// auto const r2 = rng;
+			//auto const r2 = rng;
 			auto loc =
 			  find_class_member<JsonMember>( member_position, locations, rng );
 
-			if( not loc.can_parse_more( ) ) {
-				if constexpr( is_json_nullable_v<JsonMember> ) {
-					return parse_value<JsonMember>(
-					  ParseTag<JsonMember::expected_type>{ }, loc );
-				} else {
-					daw_json_error( missing_member( JsonMember::name ) );
-				}
-			}
-			if( rng.can_parse_more( ) ) {
-				if( rng.begin( ) != loc.begin( ) ) {
-					return parse_value<JsonMember>(
-					  ParseTag<JsonMember::expected_type>{ }, loc );
+			// If the member was found loc will have it's position
+			if( loc.can_parse_more( ) ) {
+				if( loc.begin( ) == rng.begin( ) ) {
+					return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
+																					rng );
 				}
 				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
-				                                rng );
+				                                loc );
 			}
 			if constexpr( is_json_nullable_v<JsonMember> ) {
 				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
-				                                rng );
+				                                loc );
 			} else {
 				daw_json_error( missing_member( JsonMember::name ) );
 			}

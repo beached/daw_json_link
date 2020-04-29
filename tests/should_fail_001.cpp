@@ -225,7 +225,7 @@ namespace tests {
 	}                                                                            \
 	while( false )
 
-int main( ) {
+int main( int, char ** ) try {
 	expect_fail( tests::quotes_in_numbers( ),
 	             "Failed to find unexpected quotes in numbers" );
 	expect_fail( tests::bool_in_numbers( ),
@@ -264,4 +264,7 @@ int main( ) {
 	             "Incomplete false in array not caught" );
 
 	expect_fail( tests::bad_true( ), "Incomplete true in array not caught" );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

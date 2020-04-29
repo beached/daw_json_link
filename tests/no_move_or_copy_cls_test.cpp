@@ -27,6 +27,8 @@
 #endif
 #include <daw/json/daw_json_link.h>
 
+#include <iostream>
+
 struct A {
 	int member;
 
@@ -55,11 +57,14 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( ) {
+int main( int, char ** ) try {
 	constexpr std::string_view json_data = R"({ "some_num": 1234 } )";
 #if not defined( __cpp_constexpr_dynamic_alloc )
 	daw::expecting( daw::json::from_json<A>( json_data ).member == 1234 );
 #else
 	static_assert( daw::json::from_json<A>( json_data ).member == 1234 );
 #endif
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

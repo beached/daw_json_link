@@ -65,7 +65,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_optional_values1.json file\n" );
 		exit( EXIT_FAILURE );
@@ -187,4 +187,7 @@ int main( int argc, char **argv ) {
 	  json_data );
 
 	std::cout << "mid_lat2 of all is: " << mid_lat2 << '\n';
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

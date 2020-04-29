@@ -31,7 +31,7 @@
 #include <iostream>
 #include <streambuf>
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	if( argc < 2 ) {
 		std::cerr << "Must supply a file name\n";
 		exit( 1 );
@@ -47,4 +47,7 @@ int main( int argc, char **argv ) {
 	daw_json_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result.statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

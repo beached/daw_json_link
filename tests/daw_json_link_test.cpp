@@ -386,7 +386,7 @@ constexpr std::string_view optional_ordered1_data = "[1]";
 static_assert(
   not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b );
 
-int main( ) {
+int main( int, char ** ) try {
 	using namespace daw::json;
 	daw::expecting( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
 	daw::expecting( parse_real_test<double>( "5", 5.0 ) );
@@ -396,7 +396,7 @@ int main( ) {
 	daw::expecting( parse_real_test<double>( "5e2", 500.0 ) );
 	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
 
-#if defined( __GNUC__ ) and __GNUC__ <= 8
+#if defined( __GNUC__ ) and __GNUC__ <= 9
 #define CX
 #elif defined( _MSC_VER )
 #define CX constexpr
@@ -471,7 +471,9 @@ int main( ) {
 	}
 	std::cout << "sum2: " << sum << '\n';
 
-
 	std::vector<double> a = {1.1, 11.1};
 	std::cout << daw::json::to_json_array( a ) << '\n';
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

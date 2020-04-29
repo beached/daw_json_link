@@ -28,6 +28,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <string>
 
 namespace daw::cookbook_dates1 {
@@ -61,7 +62,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) try {
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_dates1.json file\n" );
 		exit( EXIT_FAILURE );
@@ -81,4 +82,7 @@ int main( int argc, char **argv ) {
 	  daw::json::from_json<daw::cookbook_dates1::MyClass1>( str );
 
 	daw_json_assert( cls == cls2, "Unexpected round trip error" );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }

@@ -66,7 +66,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int, char ** ) {
+int main( int, char ** ) try {
 	constexpr std::string_view const json_data3 =
 	  R"( {"kv": {
 				"key0": 0,
@@ -83,4 +83,7 @@ int main( int, char ** ) {
 	daw_json_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
 	daw_json_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
 	daw_json_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
+} catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	exit( 1 );
 }
