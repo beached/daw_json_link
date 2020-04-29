@@ -28,7 +28,7 @@
 #include <iostream>
 #include <string_view>
 
-constexpr bool test_empty( ) {
+bool test_empty( ) {
 	constexpr std::string_view sv = " \"\"";
 	constexpr std::string_view sv2 = sv.substr( 2 );
 	auto rng =
@@ -38,9 +38,8 @@ constexpr bool test_empty( ) {
 	auto v = skip_string( rng );
 	return v.empty( );
 }
-static_assert( test_empty( ) );
 
-constexpr bool test_embeded_quotes( ) {
+bool test_embeded_quotes( ) {
 	constexpr std::string_view sv = " \"\\\"  \\\\ \"";
 	constexpr std::string_view sv2 = sv.substr( 2 );
 	auto rng =
@@ -51,7 +50,6 @@ constexpr bool test_embeded_quotes( ) {
 	constexpr std::string_view ans = "\\\"  \\\\ ";
 	return std::string_view( v.data( ), v.size( ) ) == ans;
 }
-static_assert( test_embeded_quotes( ) );
 
 bool test_missing_quotes_001( ) {
 	constexpr std::string_view sv = " \"";
@@ -96,6 +94,8 @@ bool test_missing_quotes_003( ) {
 }
 
 int main( int, char ** ) try {
+	daw::expecting( test_empty( ) );
+	daw::expecting( test_embeded_quotes( ) );
 	daw::expecting( test_missing_quotes_001( ) );
 	daw::expecting( test_missing_quotes_002( ) );
 	daw::expecting( test_missing_quotes_003( ) );
