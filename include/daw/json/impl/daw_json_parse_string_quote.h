@@ -43,22 +43,24 @@ namespace daw::json::json_details::string_quote {
 			return ptr;
 		}
 
-		[[nodiscard]] static constexpr char const *parse_nq( char const *first,
-		                                                     char const *last ) {
-			while( first != last and *first != '"' ) {
+		[[nodiscard]] static constexpr char const *
+		parse_nq( IteratorRange<char const *, char const *, true> rng ) {
+			while( rng.first != rng.last and *rng.first != '"' ) {
 				// TODO: add ability to filter to low 7bits daw_json_assert( *ptr >=
-				// 0x20 and *first <= 0x7F, "Use json_string_raw" );
-				while( first != last and *first != '"' and *first != '\\' ) {
-					++first;
+				// 0x20 and *rng.first <= 0x7F, "Use json_string_raw" );
+				while( rng.first != rng.last and *rng.first != '"' and
+				       *rng.first != '\\' ) {
+					++rng.first;
 				}
-				if( first != last and *first == '\\' ) {
-					++first;
-					daw_json_assert( first != last, "Unexpected end of string" );
-					++first;
+				if( rng.first != rng.last and *rng.first == '\\' ) {
+					++rng.first;
+					daw_json_assert( rng.first != rng.last, "Unexpected end of string" );
+					++rng.first;
 				}
 			}
-			daw_json_assert( first != last and *first == '"', "Expected a '\"' at end of string" );
-			return first;
+			daw_json_assert( rng.first != rng.class_last and *rng.first == '"',
+			                 "Expected a '\"' at end of string" );
+			return rng.first;
 		}
 
 		[[nodiscard, maybe_unused]] static constexpr char const *

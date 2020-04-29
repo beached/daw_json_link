@@ -426,8 +426,7 @@ namespace daw::json::json_details {
 		auto result = rng;
 		rng.first = [&] {
 			if constexpr( IsUnCheckedInput ) {
-				return string_quote::string_quote_parser::parse_nq( rng.first,
-				                                                    rng.last );
+				return string_quote::string_quote_parser::parse_nq( rng );
 			} else {
 				return string_quote::string_quote_parser::parse_nq( rng.first );
 			}

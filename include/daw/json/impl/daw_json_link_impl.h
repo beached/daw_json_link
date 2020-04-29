@@ -396,6 +396,7 @@ namespace daw::json::json_details {
 
 		rng.move_to_next_of( '{' );
 		rng.class_first = rng.first;
+		rng.class_last = rng.last;
 		rng.remove_prefix( );
 		rng.move_to_next_of( "\"}" );
 
