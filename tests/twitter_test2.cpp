@@ -80,7 +80,8 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.front( ).user.id == "1186275104",
 	                 "Missing value" );
 
-	std::string str{ };
+	std::string str = std::string( );
+	str.reserve( json_sv1.size( ) );
 	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<100>(
 	  "twitter_catalog bench(to_json_string)", sz,
