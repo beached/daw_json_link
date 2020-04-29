@@ -44,7 +44,7 @@ namespace daw::json::json_details::string_quote {
 		}
 
 		[[nodiscard]] static constexpr char const *
-		parse_nq( IteratorRange<char const *, char const *, true> rng ) {
+		parse_nq( IteratorRange<char const *, char const *, false> rng ) {
 			while( rng.first != rng.last and *rng.first != '"' ) {
 				// TODO: add ability to filter to low 7bits daw_json_assert( *ptr >=
 				// 0x20 and *rng.first <= 0x7F, "Use json_string_raw" );

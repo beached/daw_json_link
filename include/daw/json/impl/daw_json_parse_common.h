@@ -424,13 +424,11 @@ namespace daw::json::json_details {
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_string_nq( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		auto result = rng;
-		rng.first = [&] {
-			if constexpr( IsUnCheckedInput ) {
-				return string_quote::string_quote_parser::parse_nq( rng );
-			} else {
-				return string_quote::string_quote_parser::parse_nq( rng.first );
-			}
-		}( );
+		if constexpr( IsUnCheckedInput ) {
+			rng.first = string_quote::string_quote_parser::parse_nq( rng.first );
+		} else {
+			rng.first = string_quote::string_quote_parser::parse_nq( rng );
+		}
 
 		daw_json_assert_weak( rng.front( ) == '"',
 		                      "Expected trailing \" at the end of string" );
