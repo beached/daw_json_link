@@ -54,8 +54,8 @@ int main( int argc, char **argv ) try {
 		std::cerr << "Must supply a path to apache_builds.json\n";
 		exit( 1 );
 	}
-
-	auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto fname = argv[1];
+	auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( fname );
 	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 	auto const json_sv1 =
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
@@ -64,19 +64,20 @@ int main( int argc, char **argv ) try {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	std::optional<apache_builds::apache_builds> apache_builds_result;
+	auto apache_builds_result = std::optional<apache_builds::apache_builds>( );
 	daw::bench_n_test_mbs<100>(
 	  "apache_builds bench", sz,
 	  [&apache_builds_result]( auto f1 ) {
-		  apache_builds_result =
-		    daw::json::from_json<apache_builds::apache_builds>( f1 );
+		  apache_builds_result = std::nullopt;
+		  apache_builds_result.emplace(
+		    daw::json::from_json<apache_builds::apache_builds>( f1 ) );
 		  daw::do_not_optimize( apache_builds_result );
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( apache_builds_result );
-	daw_json_assert( apache_builds_result, "Missing value" );
-	daw_json_assert( apache_builds_result->jobs.size( ) > 0, "Expected values" );
-	daw_json_assert( apache_builds_result->numExecutors == 0, "Missing value" );
+	daw_json_assert( apache_builds_result, "Missing result of parse" );
+	daw_json_assert( apache_builds_result->jobs.size( ) > 0, "Bad value for jobs.size( )" );
+	daw_json_assert( apache_builds_result->numExecutors == 0, "Bad value for numExecutors" );
 
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
