@@ -430,6 +430,10 @@ target_link_libraries(nativejson_roundtrip_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE
 add_test(NAME nativejson_roundtrip COMMAND nativejson_roundtrip_bin ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_roundtrip_bin)
 
+add_executable(test_details_skip_string_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/test_details_skip_string.cpp)
+add_dependencies(test_details_skip_string_bin dependency_stub)
+add_test(test_details_skip_string_test test_details_skip_string_bin)
+add_dependencies(full test_details_skip_string_bin)
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 install(DIRECTORY ${HEADER_FOLDER}/third_party/ DESTINATION include/third_party/)

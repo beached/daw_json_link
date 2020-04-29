@@ -564,9 +564,8 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 		rng.remove_prefix( );
 		rng.trim_left_no_check( );
 		using container_t = typename JsonMember::base_type;
-		using iterator_t =
-		json_parse_value_array_iterator<JsonMember, First, Last,
-			IsUnCheckedInput>;
+		using iterator_t = json_parse_value_array_iterator<JsonMember, First, Last,
+		                                                   IsUnCheckedInput>;
 		iterator_t first = iterator_t( rng );
 		iterator_t const last = iterator_t( );
 		if constexpr( std::conjunction<
@@ -681,5 +680,4 @@ parse_integer<element_t, JsonMember::range_check>( rng ) );
 		                   typename JsonMember::json_elements::element_map_t>(
 		  index, rng );
 	}
-
 } // namespace daw::json::json_details

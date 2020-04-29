@@ -75,7 +75,8 @@ inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
 template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] void daw_json_error( std::string_view reason ) {
+[[maybe_unused, noreturn]]  void
+daw_json_error( std::string_view reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
 		throw daw::json::json_exception( reason );
@@ -90,7 +91,7 @@ template<bool ShouldThrow = use_daw_json_exceptions_v>
 }
 
 template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] void
+[[maybe_unused, noreturn]]  void
 daw_json_error( daw::json::json_details::missing_member reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
@@ -110,14 +111,14 @@ daw_json_error( daw::json::json_details::missing_member reason ) {
 
 #ifndef DAW_JSON_CHECK_DEBUG_ONLY
 template<typename Bool>
-static constexpr void daw_json_assert( Bool const &b,
+ static constexpr void daw_json_assert( Bool const &b,
                                        std::string_view reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
 template<typename Bool>
-static constexpr void
+ static constexpr void
 daw_json_assert( Bool const &b,
                  daw::json::json_details::missing_member reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
@@ -135,14 +136,14 @@ daw_json_assert( Bool const &b,
 #else // undef DAW_JSON_CHECK_DEBUG_ONLY
 #ifndef NDEBUG
 template<typename Bool>
-static constexpr void daw_json_assert( Bool const &b,
+ static constexpr void daw_json_assert( Bool const &b,
                                        std::string_view reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
 template<typename Bool>
-static constexpr void
+ static constexpr void
 daw_json_assert( Bool const &b,
                  daw::json::json_details::missing_member reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {

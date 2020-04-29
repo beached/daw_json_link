@@ -43,6 +43,24 @@ namespace daw::json::json_details::string_quote {
 			return ptr;
 		}
 
+		[[nodiscard]] static constexpr char const *parse_nq( char const *first,
+		                                                     char const *last ) {
+			while( first != last and *first != '"' ) {
+				// TODO: add ability to filter to low 7bits daw_json_assert( *ptr >=
+				// 0x20 and *first <= 0x7F, "Use json_string_raw" );
+				while( first != last and *first != '"' and *first != '\\' ) {
+					++first;
+				}
+				if( first != last and *first == '\\' ) {
+					++first;
+					daw_json_assert( first != last, "Unexpected end of string" );
+					++first;
+				}
+			}
+			daw_json_assert( first != last and *first == '"', "Expected a '\"' at end of string" );
+			return first;
+		}
+
 		[[nodiscard, maybe_unused]] static constexpr char const *
 		parse( char const *ptr ) {
 			if( *ptr == '"' ) {
