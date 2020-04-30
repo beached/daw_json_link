@@ -136,18 +136,20 @@ bool test_embedded_arrays_broken_001( ) {
 	return false;
 }
 
+#define do_test( ... ) daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ )
+
 int main( int, char ** ) try {
-	daw::expecting( test_empty( ) );
-	daw::expecting( test_end_of_stream( ) );
-	daw::expecting( test_extra_slash( ) );
-	daw::expecting( test_trailing_comma( ) );
-	daw::expecting( test_strings( ) );
-	daw::expecting( test_bad_strings_001( ) );
-	daw::expecting( test_bad_strings_002( ) );
-	daw::expecting( test_classes_001( ) );
-	daw::expecting( test_classes_002( ) );
-	daw::expecting( test_embedded_arrays( ) );
-	daw::expecting( test_embedded_arrays_broken_001( ) );
+	do_test( test_empty( ) );
+	do_test( test_end_of_stream( ) );
+	do_test( test_extra_slash( ) );
+	do_test( test_trailing_comma( ) );
+	do_test( test_strings( ) );
+	do_test( test_bad_strings_001( ) );
+	do_test( test_bad_strings_002( ) );
+	do_test( test_classes_001( ) );
+	do_test( test_classes_002( ) );
+	do_test( test_embedded_arrays( ) );
+	do_test( test_embedded_arrays_broken_001( ) );
 } catch( json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

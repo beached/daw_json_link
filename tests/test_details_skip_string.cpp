@@ -88,12 +88,14 @@ bool test_missing_quotes_003( ) {
 	return false;
 }
 
+#define do_test( ... ) daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ )
+
 int main( int, char ** ) try {
-	daw::expecting( test_empty( ) );
-	daw::expecting( test_embeded_quotes( ) );
-	daw::expecting( test_missing_quotes_001( ) );
-	daw::expecting( test_missing_quotes_002( ) );
-	daw::expecting( test_missing_quotes_003( ) );
+	do_test( test_empty( ) );
+	do_test( test_embeded_quotes( ) );
+	do_test( test_missing_quotes_001( ) );
+	do_test( test_missing_quotes_002( ) );
+	do_test( test_missing_quotes_003( ) );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
