@@ -29,6 +29,16 @@
 #include <string_view>
 
 bool test_empty( ) {
+	constexpr std::string_view sv = "  ";
+	constexpr std::string_view sv2 = sv.substr( 2 );
+	auto rng = daw::json::json_details::IteratorRange(
+		sv2.data( ), sv2.data( ) + sv2.size( ) );
+	using namespace daw::json::json_details;
+	auto v = skip_string( rng );
+	return v.empty( );
+}
+
+bool test_empty_quoted( ) {
 	constexpr std::string_view sv = R"( "")";
 	constexpr std::string_view sv2 = sv.substr( 2 );
 	auto rng = daw::json::json_details::IteratorRange(
@@ -51,7 +61,7 @@ bool test_embeded_quotes( ) {
 
 bool test_missing_quotes_001( ) {
 	constexpr std::string_view sv = R"( ")";
-	constexpr std::string_view sv2 = sv.substr( 2 );
+	constexpr std::string_view sv2 = sv.substr( 1 );
 	auto rng = daw::json::json_details::IteratorRange(
 	  sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
@@ -92,6 +102,7 @@ bool test_missing_quotes_003( ) {
 
 int main( int, char ** ) try {
 	do_test( test_empty( ) );
+	do_test( test_empty_quoted( ) );
 	do_test( test_embeded_quotes( ) );
 	do_test( test_missing_quotes_001( ) );
 	do_test( test_missing_quotes_002( ) );

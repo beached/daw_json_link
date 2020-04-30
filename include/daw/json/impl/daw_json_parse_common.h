@@ -436,6 +436,9 @@ namespace daw::json::json_details {
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_string( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+		if( rng.empty( ) ) {
+			return rng;
+		}
 		if( *std::prev( rng.begin( ) ) != '"' ) {
 			if( rng.front( ) == '"' ) {
 				rng.remove_prefix( );
@@ -443,7 +446,7 @@ namespace daw::json::json_details {
 				daw_json_error( "Attempt to parse a non-string as string" );
 			}
 		}
-		daw_json_assert( rng.has_more( ), "Unexpected end of string" );
+		daw_json_assert( rng.has_more( ), "Unexpect end of string" );
 		return skip_string_nq( rng );
 	}
 

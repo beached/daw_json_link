@@ -31,7 +31,7 @@
 using namespace daw::json;
 using namespace daw::json::json_details;
 
-bool test_empty( ) {
+bool test_empty_quoted( ) {
 	constexpr std::string_view sv = "{}";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
@@ -172,7 +172,7 @@ bool test_embedded_class_broken_001( ) {
 #define do_test( ... ) daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ )
 
 int main( int, char ** ) try {
-	do_test( test_empty( ) );
+	do_test( test_empty_quoted( ) );
 	do_test( test_end_of_stream( ) );
 	do_test( test_extra_slash( ) );
 	do_test( test_trailing_comma( ) );
