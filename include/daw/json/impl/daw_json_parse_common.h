@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019-2020 Darrell Wright
+// Copyright (c) Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -424,11 +424,7 @@ namespace daw::json::json_details {
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_string_nq( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		auto result = rng;
-		if constexpr( IsUnCheckedInput ) {
-			rng.first = string_quote::string_quote_parser::parse_nq( rng.first );
-		} else {
-			rng.first = string_quote::string_quote_parser::parse_nq( rng );
-		}
+		string_quote::string_quote_parser::parse_nq( rng );
 
 		daw_json_assert_weak( rng.front( ) == '"',
 		                      "Expected trailing \" at the end of string" );
@@ -477,6 +473,7 @@ namespace daw::json::json_details {
 		std::size_t bracket_count = 1;
 		bool in_quotes = false;
 		auto result = rng;
+		// TODO: optimize quote processing or try to make it a tighter loop
 		while( not rng.empty( ) and bracket_count > 0 ) {
 			rng.remove_prefix( );
 			rng.trim_left_raw( );
@@ -510,9 +507,8 @@ namespace daw::json::json_details {
 		                      "Expected closing bracket/brace" );
 
 		rng.remove_prefix( );
-		daw_json_assert_weak( rng.has_more( ), "Unexpected empty range" );
-
 		result.last = rng.begin( );
+
 		return result;
 	}
 

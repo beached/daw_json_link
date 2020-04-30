@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2019-2020 Darrell Wright
+// Copyright (c) Darrell Wright
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to
@@ -27,49 +27,38 @@
 namespace daw::json::json_details::string_quote {
 
 	struct string_quote_parser {
-		[[nodiscard]] static constexpr char const *parse_nq( char const *ptr ) {
-			while( *ptr != '"' ) {
-				// TODO: add ability to filter to low 7bits daw_json_assert( *ptr >=
-				// 0x20 and *ptr <= 0x7F, "Use json_string_raw" );
-				while( *ptr != '"' and *ptr != '\\' ) {
-					++ptr;
+		static constexpr void
+		parse_nq( IteratorRange<char const *, char const *, true> &rng ) {
+			constexpr bool IsUnCheckedInput = true;
+			while( *rng.first != '"' ) {
+				while( *rng.first != '"' and *rng.first != '\\' ) {
+					++rng.first;
 				}
-				if( *ptr == '\\' ) {
-					++ptr;
-					++ptr;
+				if( *rng.first == '\\' ) {
+					++rng.first;
+					++rng.first;
 				}
 			}
-			daw_json_assert( *ptr == '"', "Expected a '\"'" );
-			return ptr;
+			daw_json_assert_weak( *rng.first == '"', "Expected a '\"'" );
 		}
 
-		[[nodiscard]] static constexpr char const *
-		parse_nq( IteratorRange<char const *, char const *, false> rng ) {
+		static constexpr void
+		parse_nq( IteratorRange<char const *, char const *, false> &rng ) {
+			constexpr bool IsUnCheckedInput = false;
 			while( rng.first != rng.last and *rng.first != '"' ) {
-				// TODO: add ability to filter to low 7bits daw_json_assert( *ptr >=
-				// 0x20 and *rng.first <= 0x7F, "Use json_string_raw" );
 				while( rng.first != rng.last and *rng.first != '"' and
 				       *rng.first != '\\' ) {
 					++rng.first;
 				}
 				if( rng.first != rng.last and *rng.first == '\\' ) {
 					++rng.first;
-					daw_json_assert( rng.first != rng.last, "Unexpected end of string" );
+					daw_json_assert_weak( rng.first != rng.last,
+					                      "Unexpected end of string" );
 					++rng.first;
 				}
 			}
-			daw_json_assert( rng.first != rng.class_last and *rng.first == '"',
-			                 "Expected a '\"' at end of string" );
-			return rng.first;
-		}
-
-		[[nodiscard, maybe_unused]] static constexpr char const *
-		parse( char const *ptr ) {
-			if( *ptr == '"' ) {
-				++ptr;
-			}
-			return parse_nq( ptr );
+			daw_json_assert_weak( rng.first != rng.class_last and *rng.first == '"',
+			                      "Expected a '\"' at end of string" );
 		}
 	};
-
 } // namespace daw::json::json_details::string_quote

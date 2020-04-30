@@ -20,34 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "daw/json/daw_json_link.h"
+#include <daw/json/impl/daw_iterator_range.h>
+#include <daw/json/impl/daw_json_parse_common.h>
 
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_benchmark.h>
 
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
-#include <string>
-#include <unordered_map>
+#include <string_view>
 
-int main( int argc, char **argv ) try {
-	if( argc <= 1 ) {
-		puts(
-		  "Must supply path to cookbook_parsing_individual_members2.json file\n" );
-		exit( EXIT_FAILURE );
-	}
+bool test_empty( ) {
+	constexpr std::string_view sv = "[]";
+	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
+	                                                   sv.data( ) + sv.size( ) );
+	using namespace daw::json::json_details;
+	auto v = skip_array( rng );
+	return std::string_view( v.begin( ), v.size( ) ) == "[]";
+}
 
-	auto const file_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
-	auto const json_data =
-	  std::string_view( file_data.data( ), file_data.size( ) );
+bool test_extra_slash( ) {
+	constexpr std::string_view sv = "[\\]";
+	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
+	                                                   sv.data( ) + sv.size( ) );
+	using namespace daw::json::json_details;
+	try {
+		auto v = skip_array( rng );
+		daw::do_not_optimize( v );
+	} catch( daw::json::json_exception const ) { return true; }
+	return false;
+}
 
-	using namespace daw::json;
-	std::vector<std::string_view> value =
-	  from_json_array<std::string_view>( json_data, "member1" );
-
-	daw_json_assert( value.size( ) == 4, "Unexpected value" );
-	daw_json_assert( value[1] == "is", "Unexpected value" );
+int main( int, char ** ) try {
+	//daw::expecting( test_empty( ) );
+	daw::expecting( test_extra_slash( ) );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
