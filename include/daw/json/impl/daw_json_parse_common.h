@@ -465,6 +465,9 @@ namespace daw::json::json_details {
 		return result;
 	}
 
+	/***
+	 * used by skip_class/skip_array
+	 */
 	template<char Left, char Right, typename First, typename Last,
 	         bool IsUnCheckedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
@@ -541,6 +544,9 @@ namespace daw::json::json_details {
 		}
 	}
 
+	/***
+	 * Used in json_array_iterator::operator++( )
+	 */
 	template<typename JsonMember, typename First, typename Last,
 	         bool IsUnCheckedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
@@ -573,25 +579,6 @@ namespace daw::json::json_details {
 			               "Unknown JsonParseTypes value.  This is a programmer "
 			               "error and the preceding did not check for it" );
 			std::abort( );
-		}
-	}
-
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_value_known( JsonBaseParseTypes parse_type,
-	                  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		switch( parse_type ) {
-		case JsonBaseParseTypes::String:
-			return skip_string( rng );
-		case JsonBaseParseTypes::Class:
-			return skip_class( rng );
-		case JsonBaseParseTypes::Array:
-			return skip_array( rng );
-		case JsonBaseParseTypes::Number:
-		case JsonBaseParseTypes::Bool:
-			return skip_literal( rng );
-		case JsonBaseParseTypes::None:
-			return skip_value( rng );
 		}
 	}
 } // namespace daw::json::json_details

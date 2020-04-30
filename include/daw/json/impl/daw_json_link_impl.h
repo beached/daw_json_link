@@ -312,7 +312,7 @@ namespace daw::json::json_details {
 		auto loc = find_class_member<JsonMember>( member_position, locations, rng );
 
 		// If the member was found loc will have it's position
-		if( loc.can_parse_more( ) ) {
+		if( not loc.is_null( ) ) {
 			if( loc.begin( ) == rng.begin( ) ) {
 				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 				                                rng );
