@@ -440,6 +440,11 @@ add_dependencies(test_details_skip_array_bin dependency_stub)
 add_test(test_details_skip_array_test test_details_skip_array_bin)
 add_dependencies(full test_details_skip_array_bin)
 
+add_executable(test_details_skip_class_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/test_details_skip_class.cpp)
+add_dependencies(test_details_skip_class_bin dependency_stub)
+add_test(test_details_skip_class_test test_details_skip_class_bin)
+add_dependencies(full test_details_skip_class_bin)
+
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 install(DIRECTORY ${HEADER_FOLDER}/third_party/ DESTINATION include/third_party/)
 
