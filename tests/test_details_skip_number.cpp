@@ -34,7 +34,7 @@ bool test_bool_true( ) {
 	auto rng = daw::json::json_details::IteratorRange(
 	  sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
-	auto v = skip_literal( rng );
+	auto v = skip_number( rng );
 	return std::string_view( v.data( ), v.size( ) ) == "true";
 }
 
@@ -43,7 +43,7 @@ bool test_number( ) {
 	auto rng = daw::json::json_details::IteratorRange(
 	  sv.data( ), sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
-	auto v = skip_literal( rng );
+	auto v = skip_number( rng );
 	return std::string_view( v.data( ), v.size( ) ) == "12345";
 }
 
@@ -52,7 +52,7 @@ bool test_number_space( ) {
 	auto rng = daw::json::json_details::IteratorRange(
 		sv.data( ), sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
-	auto v = skip_literal( rng );
+	auto v = skip_number( rng );
 	return std::string_view( v.data( ), v.size( ) ) == "12345";
 }
 

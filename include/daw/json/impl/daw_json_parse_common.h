@@ -477,7 +477,7 @@ namespace daw::json::json_details {
 			rng.trim_left( );
 		}
 		daw_json_assert_weak( rng.front( ",}]" ),
-													"Expected a ',', '}', ']' to trail literal" );
+		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
 	}
 
@@ -500,7 +500,7 @@ namespace daw::json::json_details {
 			rng.trim_left( );
 		}
 		daw_json_assert_weak( rng.front( ",}]" ),
-													"Expected a ',', '}', ']' to trail literal" );
+		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
 	}
 
@@ -523,14 +523,15 @@ namespace daw::json::json_details {
 			rng.trim_left( );
 		}
 		daw_json_assert_weak( rng.front( ",}]" ),
-													"Expected a ',', '}', ']' to trail literal" );
+		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
 	}
 
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_literal( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	skip_number( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		auto result = rng;
+		++rng.first;
 		while( not rng.is_space( ) and not at_literal_end( *rng.first ) ) {
 			++rng.first;
 		}
@@ -626,9 +627,21 @@ namespace daw::json::json_details {
 			return skip_false( rng );
 		case 'n':
 			return skip_null( rng );
-		default:
-			return skip_literal( rng );
+		case '-':
+		case '+':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			return skip_number( rng );
 		}
+		daw_json_error( "Unknown value type" );
 	}
 
 	/***
@@ -651,7 +664,7 @@ namespace daw::json::json_details {
 		                       JsonParseTypes::Unsigned or
 		                     is_json_nullable_v<JsonMember> or
 		                     JsonMember::expected_type == JsonParseTypes::Bool ) {
-			return json_details::skip_literal( rng );
+			return json_details::skip_number( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
 			daw_json_assert_weak( rng.front( '[' ),
 			                      "Expected start of array with '['" );
