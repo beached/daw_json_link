@@ -451,21 +451,28 @@ namespace daw::json::json_details {
 	}
 
 	constexpr bool at_literal_end( char c ) {
+#ifndef DAW_ALLOW_COMMENTS
 		return c == '\0' or c == ',' or c == ']' or c == '}';
+#else
+		return c == '\0' or c == ',' or c == ']' or c == '}' or c == '#';
+#endif
 	}
 
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_literal( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		// TODO: change to go until not a valid literal char, then comments can be skipped
 		auto result = rng;
-		while( not at_literal_end( *rng.first ) ) {
-			daw_json_assert_weak( rng.has_more( ), "Expected more data" );
+
+		while( not rng.is_space( ) and not at_literal_end( *rng.first ) ) {
 			++rng.first;
 		}
 		result.last = rng.first;
-		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of literal" );
-		rng.trim_left_no_check( );
+		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
+		if constexpr( IsUnCheckedInput ) {
+			rng.trim_left_no_check( );
+		} else {
+			rng.trim_left( );
+		}
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;

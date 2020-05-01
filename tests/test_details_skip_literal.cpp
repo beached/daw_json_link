@@ -53,7 +53,7 @@ bool test_number_space( ) {
 		sv.data( ), sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_literal( rng );
-	return std::string_view( v.data( ), v.size( ) ) == "12345         ";
+	return std::string_view( v.data( ), v.size( ) ) == "12345";
 }
 
 
