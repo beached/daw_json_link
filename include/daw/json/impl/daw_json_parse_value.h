@@ -160,6 +160,11 @@ namespace daw::json::json_details {
 	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
 		using constructor_t = typename JsonMember::constructor_t;
+		if constexpr( KnownBounds ) {
+			if( rng.front( 'n' ) ) {
+				return constructor_t{ }( );
+			}
+		}
 		if( not rng.can_parse_more( ) ) {
 			return constructor_t{ }( );
 		}
@@ -183,7 +188,19 @@ namespace daw::json::json_details {
 
 		using constructor_t = typename JsonMember::constructor_t;
 
-		skip_quote_when_literal_as_string<JsonMember>( rng );
+		if constexpr( KnownBounds and
+		              JsonMember::literal_as_string == LiteralAsStringOpt::Never ) {
+			// We have already checked if it is a true/false
+			switch( rng.front( ) ) {
+			case 't':
+				return true;
+			case 'f':
+				return false;
+			}
+			daw_json_error( "Expected a literal true or false" );
+		} else {
+			skip_quote_when_literal_as_string<JsonMember>( rng );
+		}
 		bool result = false;
 		if( rng.front( ) == 't' and rng.size( ) >= 4 ) {
 			daw_json_assert_weak( rng == "true", "Expected a literal true" );

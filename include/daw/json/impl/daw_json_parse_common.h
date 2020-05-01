@@ -460,6 +460,75 @@ namespace daw::json::json_details {
 
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
+	skip_true( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+		auto result = rng;
+		if constexpr( IsUnCheckedInput ) {
+			rng.remove_prefix( 4 );
+		} else {
+			rng.remove_prefix( );
+			daw_json_assert( rng == "rue", "Expected true" );
+			rng.remove_prefix( 3 );
+		}
+		result.last = rng.first;
+		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
+		if constexpr( IsUnCheckedInput ) {
+			rng.trim_left_no_check( );
+		} else {
+			rng.trim_left( );
+		}
+		daw_json_assert_weak( rng.front( ",}]" ),
+													"Expected a ',', '}', ']' to trail literal" );
+		return result;
+	}
+
+	template<typename First, typename Last, bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
+	skip_false( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+		auto result = rng;
+		if constexpr( IsUnCheckedInput ) {
+			rng.remove_prefix( 5 );
+		} else {
+			rng.remove_prefix( );
+			daw_json_assert( rng == "alse", "Expected false" );
+			rng.remove_prefix( 4 );
+		}
+		result.last = rng.first;
+		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
+		if constexpr( IsUnCheckedInput ) {
+			rng.trim_left_no_check( );
+		} else {
+			rng.trim_left( );
+		}
+		daw_json_assert_weak( rng.front( ",}]" ),
+													"Expected a ',', '}', ']' to trail literal" );
+		return result;
+	}
+
+	template<typename First, typename Last, bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
+	skip_null( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+		auto result = rng;
+		if constexpr( IsUnCheckedInput ) {
+			rng.remove_prefix( 4 );
+		} else {
+			rng.remove_prefix( );
+			daw_json_assert( rng == "ull", "Expected null" );
+			rng.remove_prefix( 3 );
+		}
+		result.last = rng.first;
+		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
+		if constexpr( IsUnCheckedInput ) {
+			rng.trim_left_no_check( );
+		} else {
+			rng.trim_left( );
+		}
+		daw_json_assert_weak( rng.front( ",}]" ),
+													"Expected a ',', '}', ']' to trail literal" );
+		return result;
+	}
+
+	template<typename First, typename Last, bool IsUnCheckedInput>
+	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_literal( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		auto result = rng;
 		while( not rng.is_space( ) and not at_literal_end( *rng.first ) ) {
@@ -551,6 +620,12 @@ namespace daw::json::json_details {
 			return skip_array( rng );
 		case '{':
 			return skip_class( rng );
+		case 't':
+			return skip_true( rng );
+		case 'f':
+			return skip_false( rng );
+		case 'n':
+			return skip_null( rng );
 		default:
 			return skip_literal( rng );
 		}
