@@ -317,11 +317,11 @@ namespace daw::json::json_details {
 				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 				                                rng );
 			}
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
+			return parse_value<JsonMember, true>( ParseTag<JsonMember::expected_type>{ },
 			                                loc );
 		}
 		if constexpr( is_json_nullable_v<JsonMember> ) {
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
+			return parse_value<JsonMember, true>( ParseTag<JsonMember::expected_type>{ },
 			                                loc );
 		} else {
 			daw_json_error( missing_member( JsonMember::name ) );
