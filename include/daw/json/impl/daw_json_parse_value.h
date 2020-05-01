@@ -64,16 +64,18 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
 
-		daw_json_assert_weak( rng.has_more( ), "Could not find value" );
-		skip_quote_when_literal_as_string<JsonMember>( rng );
-		daw_json_assert_weak(
-		  rng.is_real_number_part( ),
-		  "Expected number to start with on of \"0123456789eE+-\"" );
-
 		if constexpr( KnownBounds ) {
+			daw_json_assert_weak(
+			  rng.is_real_number_part( ),
+			  "Expected number to start with on of \"0123456789eE+-\"" );
 			return constructor_t{ }(
 			  parse_real<element_t, JsonMember::simd_mode>( rng ) );
 		} else {
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
+			skip_quote_when_literal_as_string<JsonMember>( rng );
+			daw_json_assert_weak(
+			  rng.is_real_number_part( ),
+			  "Expected number to start with on of \"0123456789eE+-\"" );
 			auto result =
 			  constructor_t{ }( parse_real<element_t, JsonMember::simd_mode>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
@@ -92,11 +94,17 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
 
-		daw_json_assert_weak( rng.can_parse_more( ), "Could not find value" );
-		skip_quote_when_literal_as_string<JsonMember>( rng );
-		daw_json_assert_weak(
-		  rng.is_real_number_part( ),
-		  "Expected number to start with on of \"0123456789eE+-\"" );
+		if constexpr( KnownBounds ) {
+			daw_json_assert_weak(
+			  rng.is_real_number_part( ),
+			  "Expected number to start with on of \"0123456789eE+-\"" );
+		} else {
+			daw_json_assert_weak( rng.can_parse_more( ), "Could not find value" );
+			skip_quote_when_literal_as_string<JsonMember>( rng );
+			daw_json_assert_weak(
+			  rng.is_real_number_part( ),
+			  "Expected number to start with on of \"0123456789eE+-\"" );
+		}
 
 		element_t sign = [&]( ) -> element_t {
 			if( rng.front( ) == '-' ) {
@@ -132,16 +140,19 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
 
-		daw_json_assert_weak( rng.has_more( ), "Could not find value" );
-		skip_quote_when_literal_as_string<JsonMember>( rng );
-		daw_json_assert_weak(
-		  rng.is_real_number_part( ),
-		  "Expected number to start with on of \"0123456789eE+-\"" );
 		if constexpr( KnownBounds ) {
+			daw_json_assert_weak(
+			  rng.is_real_number_part( ),
+			  "Expected number to start with on of \"0123456789eE+-\"" );
 			return constructor_t{ }(
 			  parse_unsigned_integer<element_t, JsonMember::range_check,
 			                         JsonMember::simd_mode>( rng ) );
 		} else {
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
+			skip_quote_when_literal_as_string<JsonMember>( rng );
+			daw_json_assert_weak(
+			  rng.is_real_number_part( ),
+			  "Expected number to start with on of \"0123456789eE+-\"" );
 			auto result = constructor_t{ }(
 			  parse_unsigned_integer<element_t, JsonMember::range_check,
 			                         JsonMember::simd_mode>( rng ) );
@@ -188,8 +199,7 @@ namespace daw::json::json_details {
 
 		using constructor_t = typename JsonMember::constructor_t;
 
-		if constexpr( KnownBounds and
-		              JsonMember::literal_as_string == LiteralAsStringOpt::Never ) {
+		if constexpr( KnownBounds ) {
 			// We have already checked if it is a true/false
 			switch( rng.front( ) ) {
 			case 't':
@@ -222,11 +232,24 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::StringRaw>,
 	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
-		auto str = skip_string( rng );
 		using constructor_t = typename JsonMember::constructor_t;
+		if constexpr( KnownBounds ) {
+			if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
+				if( rng.empty( ) ) {
+					return constructor_t{ }( );
+				} else {
+					return constructor_t{ }( rng.begin( ), rng.size( ) );
+				}
+			} else {
+				return constructor_t{ }( rng.begin( ), rng.size( ) );
+			}
+		}
+		auto str = skip_string( rng );
 		if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
 			if( str.empty( ) ) {
 				return constructor_t{ }( );
+			} else {
+				return constructor_t{ }( str.begin( ), str.size( ) );
 			}
 		} else {
 			return constructor_t{ }( str.begin( ), str.size( ) );
