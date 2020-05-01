@@ -462,7 +462,6 @@ namespace daw::json::json_details {
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_literal( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		auto result = rng;
-
 		while( not rng.is_space( ) and not at_literal_end( *rng.first ) ) {
 			++rng.first;
 		}
