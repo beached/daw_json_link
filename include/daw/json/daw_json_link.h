@@ -189,20 +189,20 @@ namespace daw::json {
 		    std::is_same_v<parse_to_t, std::invoke_result_t<Constructor>>,
 		  "Default ctor of constructor must match that of base" );
 		using constructor_t = Constructor;
-		static inline constexpr JSONNAMETYPE name = Name;
+		static constexpr JSONNAMETYPE name = Name;
 
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<json_details::number_parse_type_v<base_type>, Nullable>;
 
-		static inline constexpr JsonParseTypes base_expected_type =
+		static constexpr JsonParseTypes base_expected_type =
 		  json_details::number_parse_type_v<base_type>;
 
-		static inline constexpr LiteralAsStringOpt literal_as_string =
-		  LiteralAsString;
-		static inline constexpr JsonRangeCheck range_check = RangeCheck;
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
+		static constexpr JsonRangeCheck range_check = RangeCheck;
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Number;
-		static inline constexpr SIMDModes simd_mode = SIMDMode;
+		static constexpr SIMDModes simd_mode = SIMDMode;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
@@ -216,16 +216,15 @@ namespace daw::json {
 		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 		using constructor_t = Constructor;
 
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Bool, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
-		  JsonParseTypes::Bool;
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Bool;
 
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr LiteralAsStringOpt literal_as_string =
-		  LiteralAsString;
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Bool;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	template<JSONNAMETYPE Name, typename String, typename Constructor,
@@ -240,15 +239,16 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::StringRaw, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
+		static constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::StringRaw;
-		static inline constexpr JsonNullable empty_is_null = EmptyStringNull;
-		static inline constexpr EightBitModes eight_bit_mode = EightBitMode;
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JsonNullable empty_is_null = EmptyStringNull;
+		static constexpr EightBitModes eight_bit_mode = EightBitMode;
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::String;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	template<JSONNAMETYPE Name, typename String, typename Constructor,
@@ -264,15 +264,16 @@ namespace daw::json {
 		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 		using appender_t = Appender;
 
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::StringEscaped, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
+		static constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::StringEscaped;
-		static inline constexpr JsonNullable empty_is_null = EmptyStringNull;
-		static inline constexpr EightBitModes eight_bit_mode = EightBitMode;
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JsonNullable empty_is_null = EmptyStringNull;
+		static constexpr EightBitModes eight_bit_mode = EightBitMode;
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::String;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	template<JSONNAMETYPE Name, typename T, typename Constructor,
@@ -287,13 +288,13 @@ namespace daw::json {
 		using parse_to_t =
 		  std::invoke_result_t<Constructor, char const *, std::size_t>;
 
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Date, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
-		  JsonParseTypes::Date;
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Date;
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::String;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	template<JSONNAMETYPE Name, typename T, typename Constructor,
@@ -306,13 +307,13 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Class, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
-		  JsonParseTypes::Class;
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Class;
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Class;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	/***
@@ -328,7 +329,7 @@ namespace daw::json {
 		  "There can be at most 5 items, one for each JsonBaseParseTypes" );
 		using element_map_t =
 		  std::tuple<json_details::unnamed_default_type_mapping<JsonElements>...>;
-		static inline constexpr std::size_t base_map[5] = {
+		static constexpr std::size_t base_map[5] = {
 		  json_details::find_json_element<JsonBaseParseTypes::Number>(
 		    { json_details::unnamed_default_type_mapping<
 		      JsonElements>::underlying_json_type... } ),
@@ -359,15 +360,16 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Variant, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
+		static constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::Variant;
 
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::None;
 		using json_elements = JsonElements;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
@@ -391,14 +393,15 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::VariantTagged, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
+		static constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::VariantTagged;
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::None;
 		using json_elements = JsonElements;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	template<JSONNAMETYPE Name, typename T, typename FromConverter,
@@ -421,14 +424,14 @@ namespace daw::json {
 		    std::is_invocable_r_v<char const *, ToConverter, char const *,
 		                          parse_to_t>,
 		  "ToConverter must be callable with T or T and and OutputIterator" );
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Custom, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
-		  JsonParseTypes::Custom;
-		static inline constexpr CustomJsonTypes custom_json_type = CustomJsonType;
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Custom;
+		static constexpr CustomJsonTypes custom_json_type = CustomJsonType;
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::String;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	namespace json_details {
@@ -449,16 +452,17 @@ namespace daw::json {
 			               "Failed to detect base type" );
 			using parse_to_t = std::invoke_result_t<Constructor>;
 			using appender_t = Appender;
-			static inline constexpr JSONNAMETYPE name = Name;
-			static inline constexpr JsonParseTypes expected_type =
+			static constexpr JSONNAMETYPE name = Name;
+			static constexpr JsonParseTypes expected_type =
 			  get_parse_type_v<JsonParseTypes::Array, Nullable>;
-			static inline constexpr JsonParseTypes base_expected_type =
+			static constexpr JsonParseTypes base_expected_type =
 			  JsonParseTypes::Array;
 
 			static_assert( json_element_t::name == no_name,
 			               "All elements of json_array must be have no_name" );
-			static inline constexpr JsonBaseParseTypes underlying_json_type =
+			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::Array;
+			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 		};
 	} // namespace json_details
 
@@ -479,16 +483,16 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
 		using appender_t = Appender;
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Array, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
-		  JsonParseTypes::Array;
+		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Array;
 
 		static_assert( json_element_t::name == no_name,
 		               "All elements of json_array must be have no_name" );
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Array;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
@@ -515,13 +519,14 @@ namespace daw::json {
 		static_assert( json_key_t::name == no_name,
 		               "Key member name must be the default no_name" );
 
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::KeyValue, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
+		static constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::KeyValue;
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Class;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
@@ -552,13 +557,14 @@ namespace daw::json {
 		static_assert( daw::string_view( json_key_t::name ) !=
 		                 daw::string_view( json_value_t::name ),
 		               "Key and Value member names cannot be the same" );
-		static inline constexpr JSONNAMETYPE name = Name;
-		static inline constexpr JsonParseTypes expected_type =
+		static constexpr JSONNAMETYPE name = Name;
+		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::KeyValueArray, Nullable>;
-		static inline constexpr JsonParseTypes base_expected_type =
+		static constexpr JsonParseTypes base_expected_type =
 		  JsonParseTypes::KeyValueArray;
-		static inline constexpr JsonBaseParseTypes underlying_json_type =
+		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Array;
+		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
 	/**
@@ -854,8 +860,7 @@ namespace daw::json {
 		  decltype( is_unique_ptr_test_impl( std::declval<T>( ) ) );
 
 		template<typename T>
-		inline constexpr bool is_unique_ptr_v =
-		  daw::is_detected_v<is_unique_ptr_test, T>;
+		constexpr bool is_unique_ptr_v = daw::is_detected_v<is_unique_ptr_test, T>;
 
 	} // namespace json_details
 

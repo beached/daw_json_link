@@ -507,7 +507,6 @@ namespace daw::json::json_details {
 	template<typename First, typename Last, bool IsUnCheckedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_null( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		auto result = rng;
 		if constexpr( IsUnCheckedInput ) {
 			rng.remove_prefix( 4 );
 		} else {
@@ -515,7 +514,6 @@ namespace daw::json::json_details {
 			daw_json_assert( rng == "ull", "Expected null" );
 			rng.remove_prefix( 3 );
 		}
-		result.last = rng.first;
 		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
 		if constexpr( IsUnCheckedInput ) {
 			rng.trim_left_no_check( );
@@ -524,6 +522,9 @@ namespace daw::json::json_details {
 		}
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
+		auto result = rng;
+		result.first = nullptr;
+		result.last = nullptr;
 		return result;
 	}
 
@@ -609,24 +610,82 @@ namespace daw::json::json_details {
 		return skip_bracketed_item<'[', ']'>( rng );
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
+	namespace skip_value_details {
+		template<typename JsonMember>
+		constexpr JsonBaseParseTypes get_base_parser_type( ) {
+			if constexpr( std::is_same_v<JsonMember, void> ) {
+				return JsonBaseParseTypes::None;
+			} else {
+				return JsonMember::underlying_json_type;
+			}
+		}
+
+		template<typename JsonMember>
+		inline constexpr bool is_nulluble( ) {
+			if constexpr( std::is_same_v<JsonMember, void> ) {
+				return true;
+			} else {
+				return JsonMember::nullable;
+			}
+		}
+
+		template<JsonBaseParseTypes BaseType, typename JsonMember>
+		constexpr bool can_parse_base_type =
+		  ( get_base_parser_type<JsonMember>( ) == BaseType ) or
+		  get_base_parser_type<JsonMember>( ) == JsonBaseParseTypes::None;
+	} // namespace skip_value_details
+
+	template<typename JsonMember = void, typename First, typename Last,
+	         bool IsUnCheckedInput>
 	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
 	skip_value( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range" );
 
+		constexpr bool can_be_string =
+		  skip_value_details::can_parse_base_type<JsonBaseParseTypes::String,
+		                                          JsonMember>;
+		constexpr bool is_nullable = skip_value_details::is_nulluble<JsonMember>( );
 		switch( rng.front( ) ) {
 		case '"':
-			return skip_string( rng );
+			if constexpr( can_be_string ) {
+				return skip_string( rng );
+			} else {
+				daw_json_error( "Unexpected string value" );
+			}
 		case '[':
-			return skip_array( rng );
+			if constexpr( skip_value_details::can_parse_base_type<
+			                JsonBaseParseTypes::Array, JsonMember> ) {
+				return skip_array( rng );
+			} else {
+				daw_json_error( "Unexpected array value" );
+			}
 		case '{':
-			return skip_class( rng );
+			if constexpr( skip_value_details::can_parse_base_type<
+			                JsonBaseParseTypes::Class, JsonMember> ) {
+				return skip_class( rng );
+			} else {
+				daw_json_error( "Unexpected class value" );
+			}
 		case 't':
-			return skip_true( rng );
+			if constexpr( skip_value_details::can_parse_base_type<
+			                JsonBaseParseTypes::Bool, JsonMember> ) {
+				return skip_true( rng );
+			} else {
+				daw_json_error( "Unexpected boolean - true value" );
+			}
 		case 'f':
-			return skip_false( rng );
+			if constexpr( skip_value_details::can_parse_base_type<
+			                JsonBaseParseTypes::Bool, JsonMember> ) {
+				return skip_false( rng );
+			} else {
+				daw_json_error( "Unexpected boolean - false value" );
+			}
 		case 'n':
-			return skip_null( rng );
+			if constexpr( is_nullable ) {
+				return skip_null( rng );
+			} else {
+				daw_json_error( "Unexpected null value" );
+			}
 		case '-':
 		case '+':
 		case '0':
@@ -639,7 +698,12 @@ namespace daw::json::json_details {
 		case '7':
 		case '8':
 		case '9':
-			return skip_number( rng );
+			if constexpr( skip_value_details::can_parse_base_type<
+			                JsonBaseParseTypes::Number, JsonMember> ) {
+				return skip_number( rng );
+			} else {
+				daw_json_error( "Unexpected number value" );
+			}
 		}
 		daw_json_error( "Unknown value type" );
 	}
