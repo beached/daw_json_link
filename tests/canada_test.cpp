@@ -82,21 +82,37 @@ int main( int argc, char **argv ) try {
 	*/
 
 	std::string str{ };
-	auto out_it = std::back_inserter( str );
-	str.reserve( json_sv1.size( ) );
-	daw::bench_n_test_mbs<100>(
-	  "canada bench(to_json_string)", sz,
-	  [&]( auto const &tr ) {
-		  str.clear( );
-		  daw::json::to_json( *tr, out_it );
-		  daw::do_not_optimize( str );
-	  },
-	  canada_result );
+	{
+		auto out_it = std::back_inserter( str );
+		str.reserve( json_sv1.size( ) );
+		daw::bench_n_test_mbs<100>(
+		  "canada bench(to_json_string)", sz,
+		  [&]( auto const &tr ) {
+			  str.clear( );
+			  daw::json::to_json( *tr, out_it );
+			  daw::do_not_optimize( str );
+		  },
+		  canada_result );
+	}
 	daw_json_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
 	auto const canada_result2 =
 	  daw::json::from_json<daw::geojson::Polygon>( str );
 	daw::do_not_optimize( canada_result2 );
+	{
+		auto out_it = str.data( );
+		auto const str_sz = str.size( );
+		str.clear( );
+		str.resize( str_sz * 2 );
+		daw::bench_n_test_mbs<100>(
+			"canada bench(to_json_string2)", sz,
+			[&]( auto const &tr ) {
+				str.clear( );
+				daw::json::to_json( *tr, out_it );
+				daw::do_not_optimize( str );
+			},
+			canada_result );
+	}
 	// Removing for now as it will do a float compare and fail
 	/*
 	daw_json_assert( canada_result == canada_result2,
