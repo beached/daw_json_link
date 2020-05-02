@@ -100,13 +100,13 @@ int main( int argc, char **argv ) try {
 	  daw::json::from_json<daw::geojson::Polygon>( str );
 	daw::do_not_optimize( canada_result2 );
 	{
-		auto out_it = str.data( );
 		auto const str_sz = str.size( );
 		str.clear( );
 		str.resize( str_sz * 2 );
 		daw::bench_n_test_mbs<100>(
 			"canada bench(to_json_string2)", sz,
 			[&]( auto const &tr ) {
+				auto out_it = str.data( );
 				daw::json::to_json( *tr, out_it );
 				daw::do_not_optimize( str );
 			},
