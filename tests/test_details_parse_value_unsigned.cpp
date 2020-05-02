@@ -50,9 +50,8 @@ bool test_missing_untrusted( ) {
 	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
 	try {
 		auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
-	} catch( json_exception const & ) {
-		return true;
-	}
+		daw::do_not_optimize( v );
+	} catch( json_exception const & ) { return true; }
 	return false;
 }
 

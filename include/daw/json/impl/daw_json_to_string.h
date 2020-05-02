@@ -92,7 +92,7 @@ namespace daw::json {
 namespace daw::json::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] OutputIterator constexpr to_string(
+	[[nodiscard]] inline OutputIterator constexpr to_string(
 	  ParseTag<JsonParseTypes::Null>, OutputIterator it,
 	  parse_to_t const &container );
 
@@ -469,7 +469,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] OutputIterator to_string( ParseTag<JsonParseTypes::Real>,
+	[[nodiscard]] inline OutputIterator to_string( ParseTag<JsonParseTypes::Real>,
 	                                        OutputIterator it,
 	                                        parse_to_t const &value ) {
 
