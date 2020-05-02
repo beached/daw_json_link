@@ -233,15 +233,11 @@ namespace daw::json::json_details {
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			bool result = false;
 			if constexpr( IsUnCheckedInput ) {
-				switch( rng.front( ) ) {
-				case 't':
+				if( rng.front( ) == 't' ) {
 					result = true;
 					rng.remove_prefix( 4 );
-				case 'f':
+				} else {
 					rng.remove_prefix( 5 );
-					break;
-				default:
-					daw_json_error( "Expected a boolean." );
 				}
 			} else {
 				if( rng == "true" ) {
