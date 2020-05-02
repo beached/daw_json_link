@@ -107,7 +107,6 @@ int main( int argc, char **argv ) try {
 		daw::bench_n_test_mbs<100>(
 			"canada bench(to_json_string2)", sz,
 			[&]( auto const &tr ) {
-				str.clear( );
 				daw::json::to_json( *tr, out_it );
 				daw::do_not_optimize( str );
 			},
