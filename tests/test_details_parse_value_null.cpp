@@ -20,46 +20,77 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
 #include <daw/daw_benchmark.h>
 
 #include <iostream>
+#include <optional>
 #include <string_view>
 
-bool test_number_in_class( ) {
-	constexpr std::string_view sv = R"({"a":1234})";
-	constexpr std::string_view sv2 = sv.substr( 5 );
-	auto rng = daw::json::json_details::IteratorRange(
-	  sv2.data( ), sv2.data( ) + sv2.size( ) );
+bool test_null_literal_untrusted( ) {
+	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto v = skip_number( rng );
-	return std::string_view( v.data( ), v.size( ) ) == "1234";
+
+	using my_number = json_number_null<no_name, std::optional<int>>;
+	constexpr std::string_view sv = "null,";
+	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	return not v;
 }
 
-bool test_number( ) {
-	constexpr std::string_view sv = "12345,";
-	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
-	                                                   sv.data( ) + sv.size( ) );
+bool test_null_literal_known( ) {
+	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto v = skip_number( rng );
-	return std::string_view( v.data( ), v.size( ) ) == "12345";
+
+	using my_number = json_number_null<no_name, std::optional<int>>;
+	auto rng = IteratorRange<char const *, char const *, false>( );
+	auto v =
+	  parse_value<my_number, true>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	return not v;
 }
 
-bool test_number_space( ) {
-	constexpr std::string_view sv = "12345         ,";
-	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
-	                                                   sv.data( ) + sv.size( ) );
+bool test_null_number_untrusted( ) {
+	using namespace daw::json;
 	using namespace daw::json::json_details;
-	auto v = skip_number( rng );
-	return std::string_view( v.data( ), v.size( ) ) == "12345";
+
+	using my_number = json_number_null<no_name, std::optional<int>>;
+	constexpr std::string_view sv = "5,";
+	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	return v and *v == 5;
+}
+
+bool test_null_number_trusted( ) {
+	using namespace daw::json;
+	using namespace daw::json::json_details;
+
+	using my_number = json_number_null<no_name, std::optional<int>>;
+	constexpr std::string_view sv = "5,";
+	auto rng = IteratorRange<char const *, char const *, true>(
+	  sv.data( ), sv.data( ) + sv.size( ) );
+	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	return v and *v == 5;
+}
+
+bool test_null_number_untrusted_known( ) {
+	using namespace daw::json;
+	using namespace daw::json::json_details;
+
+	using my_number = json_number_null<no_name, std::optional<int>>;
+	constexpr std::string_view sv = "5,";
+	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto v =
+		parse_value<my_number, true>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	return v and *v == 5;
 }
 
 #define do_test( ... )                                                         \
 	try {                                                                        \
 		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                    \
-	} catch( daw::json::json_exception const &jex ) {                                       \
+	} catch( daw::json::json_exception const &jex ) {                            \
 		std::cerr << "Unexpected exception thrown by parser in test '"             \
 		          << "" #__VA_ARGS__ << "': " << jex.reason( ) << std::endl;       \
 	}                                                                            \
@@ -67,9 +98,11 @@ bool test_number_space( ) {
 	} while( false )
 
 int main( int, char ** ) try {
-	do_test( test_number_in_class( ) );
-	do_test( test_number( ) );
-	do_test( test_number_space( ) );
+	do_test( test_null_literal_untrusted( ) );
+	do_test( test_null_literal_known( ) );
+	do_test( test_null_number_untrusted( ) );
+	do_test( test_null_number_trusted( ) );
+	do_test( test_null_number_untrusted_known( ) );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

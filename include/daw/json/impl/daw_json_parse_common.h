@@ -559,7 +559,6 @@ namespace daw::json::json_details {
 		std::size_t bracket_count = 1;
 		bool in_quotes = false;
 		auto result = rng;
-		// TODO: optimize quote processing or try to make it a tighter loop
 		while( not rng.empty( ) and bracket_count > 0 ) {
 			rng.remove_prefix( );
 			rng.trim_left_raw( );

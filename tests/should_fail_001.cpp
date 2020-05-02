@@ -219,9 +219,8 @@ namespace tests {
 } // namespace tests
 
 #define expect_fail( Bool, Reason )                                            \
-	while( not static_cast<bool>( Bool ) ) {                                     \
+	if( not static_cast<bool>( Bool ) ) {                                        \
 		std::cerr << "Fail: " << Reason << '\n';                                   \
-		exit( 1 );                                                                 \
 	}                                                                            \
 	while( false )
 
@@ -263,7 +262,8 @@ int main( int, char ** ) try {
 	expect_fail( tests::incomplete_false( ),
 	             "Incomplete false in array not caught" );
 
-	expect_fail( tests::bad_true( ), "Incomplete true in array not caught" );
+	expect_fail( tests::bad_true( ), "bad true value not caught" );
+
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

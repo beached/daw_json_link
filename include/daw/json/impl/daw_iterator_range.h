@@ -31,7 +31,7 @@
 #include <type_traits>
 
 #ifdef DAW_ALLOW_COMMENTS
-#define skip_comments( )                                                       \
+#define skip_comments_checked( )                                               \
 	if( front( '#' ) ) {                                                         \
 		remove_prefix( );                                                          \
 		while( has_more( ) and front( ) != '\n' ) {                                \
@@ -50,8 +50,28 @@
 		remove_prefix( );                                                          \
 	}                                                                            \
 	while( false )
+#define skip_comments( )                                                       \
+	if constexpr( IsUncheckedInput ) {                                           \
+		if( front( ) == '#' ) {                                                    \
+			remove_prefix( );                                                        \
+			while( front( ) != '\n' ) {                                              \
+				remove_prefix( );                                                      \
+			}                                                                        \
+			remove_prefix( );                                                        \
+		}                                                                          \
+	} else {                                                                     \
+		if( front( '#' ) ) {                                                       \
+			remove_prefix( );                                                        \
+			while( has_more( ) and front( ) != '\n' ) {                              \
+				remove_prefix( );                                                      \
+			}                                                                        \
+			remove_prefix( );                                                        \
+		}                                                                          \
+	}                                                                            \
+	while( false )
 #else
 #define skip_comments( ) while( false )
+#define skip_comments_checked( ) while( false )
 #define skip_comments_unchecked( ) while( false )
 #endif
 
@@ -70,16 +90,16 @@ namespace daw::json::json_details {
 		static constexpr bool is_trusted_input = IsUnCheckedInput;
 		using CharT = daw::remove_cvref_t<decltype( *first )>;
 
-		constexpr bool operator==( char const *ptr ) const {
-			auto f = first;
-			while( *ptr != '\0' ) {
-				if( *f != *ptr ) {
-					return false;
-				}
-				++f;
-				++ptr;
+		template<std::size_t N>
+		constexpr bool operator==( char const ( &rhs )[N] ) const {
+			if( size( ) < ( N - 1 ) ) {
+				return false;
 			}
-			return true;
+			bool result = true;
+			for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
+				result = result and ( first[n] == rhs[n] );
+			}
+			return result;
 		}
 
 		constexpr IteratorRange( ) = default;
@@ -166,10 +186,10 @@ namespace daw::json::json_details {
 		}
 
 		constexpr void trim_left( ) {
-			skip_comments( );
+			skip_comments_checked( );
 			while( has_more( ) and is_space( ) ) {
 				remove_prefix( );
-				skip_comments( );
+				skip_comments_checked( );
 			}
 		}
 

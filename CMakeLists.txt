@@ -445,6 +445,11 @@ add_dependencies(test_details_skip_class_bin dependency_stub)
 add_test(test_details_skip_class_test test_details_skip_class_bin)
 add_dependencies(full test_details_skip_class_bin)
 
+add_executable(test_details_parse_value_null_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/test_details_parse_value_null.cpp)
+add_dependencies(test_details_parse_value_null_bin dependency_stub)
+add_test(test_details_parse_value_null_test test_details_parse_value_null_bin)
+add_dependencies(full test_details_parse_value_null_bin)
+
 add_executable(test_details_skip_number_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/test_details_skip_number.cpp)
 add_dependencies(test_details_skip_number_bin dependency_stub)
 add_test(test_details_skip_number_test test_details_skip_number_bin)

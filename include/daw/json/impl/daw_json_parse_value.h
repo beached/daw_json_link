@@ -125,6 +125,11 @@ namespace daw::json::json_details {
 			  sign * parse_unsigned_integer<element_t, JsonMember::range_check,
 			                                JsonMember::simd_mode>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
+			if constexpr( IsUnCheckedInput ) {
+				rng.trim_left_no_check( );
+			} else {
+				rng.trim_left( );
+			}
 			daw_json_assert_weak(
 			  rng.at_end_of_item( ),
 			  "Expected whitespace or one of \",}]\" at end of number" );
@@ -172,22 +177,34 @@ namespace daw::json::json_details {
 
 		using constructor_t = typename JsonMember::constructor_t;
 		if constexpr( KnownBounds ) {
-			if( rng.front( 'n' ) ) {
+			if( rng.is_null( ) ) {
 				return constructor_t{ }( );
 			}
+			return parse_value<JsonMember, true>(
+			  ParseTag<JsonMember::base_expected_type>{ }, rng );
+		} else if constexpr( IsUnCheckedInput ) {
+			if( not rng.can_parse_more( ) ) {
+				return constructor_t{ }( );
+			} else if( rng.front( ) == 'n' ) {
+				rng.remove_prefix( 4 );
+				rng.trim_left_no_check( );
+				rng.remove_prefix( );
+				return constructor_t{ }( );
+			}
+			return parse_value<JsonMember>(
+			  ParseTag<JsonMember::base_expected_type>{ }, rng );
+		} else {
+			if( not rng.can_parse_more( ) ) {
+				return constructor_t{ }( );
+			} else if( rng == "null" ) {
+				rng.remove_prefix( 4 );
+				daw_json_assert_weak( rng.at_end_of_item( ), "Unexpectd value" );
+				rng.trim_left( );
+				return constructor_t{ }( );
+			}
+			return parse_value<JsonMember>(
+			  ParseTag<JsonMember::base_expected_type>{ }, rng );
 		}
-		if( not rng.can_parse_more( ) ) {
-			return constructor_t{ }( );
-		}
-		constexpr std::size_t null_size = 4;
-		if( ( rng.size( ) >= null_size ) and rng.front( ) == 'n' and
-		    rng == "null" ) {
-			rng.remove_prefix( null_size );
-			rng.trim_left( );
-			return constructor_t{ }( );
-		}
-		return parse_value<JsonMember>( ParseTag<JsonMember::base_expected_type>{ },
-		                                rng );
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
@@ -201,29 +218,50 @@ namespace daw::json::json_details {
 
 		if constexpr( KnownBounds ) {
 			// We have already checked if it is a true/false
-			switch( rng.front( ) ) {
-			case 't':
-				return true;
-			case 'f':
-				return false;
+			if constexpr( IsUnCheckedInput ) {
+				return rng.front( ) == 't';
+			} else {
+				switch( rng.front( ) ) {
+				case 't':
+					return constructor_t{ }( true );
+				case 'f':
+					return constructor_t{ }( false );
+				}
+				daw_json_error( "Expected a literal true or false" );
 			}
-			daw_json_error( "Expected a literal true or false" );
 		} else {
 			skip_quote_when_literal_as_string<JsonMember>( rng );
-		}
-		bool result = false;
-		if( rng.front( ) == 't' and rng.size( ) >= 4 ) {
-			daw_json_assert_weak( rng == "true", "Expected a literal true" );
-			rng.remove_prefix( 4 );
-			result = true;
-		} else {
-			daw_json_assert_weak( rng == "false", "Expected a literal false" );
-			rng.remove_prefix( 5 );
-		}
-		if constexpr( not KnownBounds ) {
+			bool result = false;
+			if constexpr( IsUnCheckedInput ) {
+				switch( rng.front( ) ) {
+				case 't':
+					result = true;
+					rng.remove_prefix( 4 );
+				case 'f':
+					rng.remove_prefix( 5 );
+					break;
+				default:
+					daw_json_error( "Expected a boolean." );
+				}
+			} else {
+				if( rng == "true" ) {
+					rng.remove_prefix( 4 );
+					result = true;
+				} else if( rng == "false" ) {
+					rng.remove_prefix( 5 );
+				} else {
+					daw_json_error( "Invalid boolean value, expected true or false" );
+				}
+			}
 			skip_quote_when_literal_as_string<JsonMember>( rng );
+			if constexpr( IsUnCheckedInput ) {
+				rng.trim_left_no_check( );
+			} else {
+				rng.trim_left( );
+			}
+			daw_json_assert_weak( rng.at_end_of_item( ), "Unexpectd value" );
+			return constructor_t{ }( result );
 		}
-		return constructor_t{ }( result );
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
@@ -356,7 +394,6 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::StringEscaped>,
 	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
-		// TODO: make escape aware skip_string
 		using constructor_t = typename JsonMember::constructor_t;
 		using appender_t = typename JsonMember::appender_t;
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;

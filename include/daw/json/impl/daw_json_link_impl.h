@@ -252,8 +252,8 @@ namespace daw::json::json_details {
 				locations[pos].location = rng;
 			} else {
 				// We are out of order, store position for later
-				// TODO:	use type knowledge to speed up skip
-				// TODO:	on skipped classes see if way to store
+				// OLDTODO:	use type knowledge to speed up skip
+				// OLDTODO:	on skipped classes see if way to store
 				// 				member positions so that we don't have to
 				//				reparse them after
 				// RESULT: storing preparsed is slower, don't try 3 times
@@ -266,6 +266,21 @@ namespace daw::json::json_details {
 		return locations[pos].location;
 	}
 
+	template<typename First, typename Last, bool IsUnCheckedInput>
+	constexpr void
+	move_rng_to_member_n( IteratorRange<First, Last, IsUnCheckedInput> &rng,
+	                      std::size_t &current_position,
+	                      std::size_t desired_position ) {
+		daw_json_assert_weak( current_position <= desired_position,
+		                      "Order of ordered members must be ascending" );
+		rng.clean_tail( );
+		for( ; ( current_position < desired_position ) and ( rng.front( ) != ']' );
+		     ++current_position ) {
+			(void)skip_value( rng );
+			rng.clean_tail( );
+		}
+	}
+
 	template<typename JsonMember, typename First, typename Last,
 	         bool IsUnCheckedInput>
 	[[nodiscard]] constexpr auto parse_ordered_class_member(
@@ -273,24 +288,21 @@ namespace daw::json::json_details {
 	  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
 
 		if constexpr( is_an_ordered_member_v<JsonMember> ) {
-			daw_json_assert( member_position <= JsonMember::member_index,
-			                 "Order of ordered members must be ascending" );
+			move_rng_to_member_n( rng, member_position, JsonMember::member_index );
+		} else {
 			rng.clean_tail( );
-			for( ; ( member_position < JsonMember::member_index ) and
-			       ( rng.front( ) != ']' );
-			     ++member_position ) {
-				(void)skip_value( rng );
-				rng.clean_tail( );
-			}
 		}
 		using json_member_type = ordered_member_subtype_t<JsonMember>;
 
-		rng.clean_tail( );
+		// this is an out value, get position ready
 		++member_position;
 		if( rng.front( ) == ']' ) {
-			auto rng2 = IteratorRange<First, Last, IsUnCheckedInput>{ };
-			return parse_value<json_member_type>(
-			  ParseTag<json_member_type::expected_type>{ }, rng2 );
+			if constexpr( is_json_nullable_v<json_member_type> ) {
+				using constructor_t = typename json_member_type::constructor_t;
+				return constructor_t{ }( );
+			} else {
+				daw_json_error( missing_member( "ordered_class_member" ) );
+			}
 		}
 		return parse_value<json_member_type>(
 		  ParseTag<json_member_type::expected_type>{ }, rng );
@@ -471,12 +483,14 @@ namespace daw::json::json_details {
 		 * Rather than call directly use apply/tuple to evaluate left->right
 		 */
 		size_t current_idx = 0;
-		JsonClass result =
-		  std::apply( daw::construct_a<JsonClass>,
-		              std::tuple{ parse_ordered_class_member<JsonMembers>(
-		                current_idx, rng )... } );
+		using tp_t = std::tuple<decltype(
+		  parse_ordered_class_member<JsonMembers>( current_idx, rng ) )...>;
 
-		// TODO investigate using on_successful_exit to do this
+		JsonClass result = std::apply(
+		  daw::construct_a<JsonClass>,
+		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
+
+		// TODO: use on_successful_exit to do this
 		rng.clean_tail( );
 		if constexpr( true ) { // ignore_trailing_elements_v<JsonClass> ) {
 			while( rng.front( ) != ']' ) {

@@ -169,7 +169,15 @@ bool test_embedded_class_broken_001( ) {
 	return false;
 }
 
-#define do_test( ... ) daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ )
+#define do_test( ... )                                                         \
+	try {                                                                        \
+		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                    \
+	} catch( daw::json::json_exception const &jex ) {                                       \
+		std::cerr << "Unexpected exception thrown by parser in test '"             \
+		          << "" #__VA_ARGS__ << "': " << jex.reason( ) << std::endl;       \
+	}                                                                            \
+	do {                                                                         \
+	} while( false )
 
 int main( int, char ** ) try {
 	do_test( test_empty_quoted( ) );

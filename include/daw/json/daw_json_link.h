@@ -412,7 +412,7 @@ namespace daw::json {
 		using to_converter_t = ToConverter;
 		using from_converter_t = FromConverter;
 		using constructor_t = FromConverter;
-		// TODO explore using char const *, std::size_t pair for ctor
+
 		using base_type = json_details::unwrap_type<T, Nullable>;
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );

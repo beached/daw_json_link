@@ -92,9 +92,9 @@ namespace daw::json {
 namespace daw::json::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
-	           parse_to_t const &container );
+	[[nodiscard]] OutputIterator constexpr to_string(
+	  ParseTag<JsonParseTypes::Null>, OutputIterator it,
+	  parse_to_t const &container );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
@@ -127,9 +127,9 @@ namespace daw::json::json_details {
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Real>, OutputIterator it,
-	           parse_to_t const &value );
+	[[nodiscard]] OutputIterator to_string( ParseTag<JsonParseTypes::Real>,
+	                                        OutputIterator it,
+	                                        parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
@@ -393,10 +393,6 @@ namespace daw::json::json_details {
 	to_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
 	           parse_to_t const &value ) {
 
-		/*static_assert(
-		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
-		  "value must be convertible to specified type in class contract" );
-		*/
 		if constexpr( JsonMember::literal_as_string ==
 		              LiteralAsStringOpt::Always ) {
 			*it++ = '"';
@@ -473,25 +469,28 @@ namespace daw::json::json_details {
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Real>, OutputIterator it,
-	           parse_to_t const &value ) {
+	[[nodiscard]] OutputIterator to_string( ParseTag<JsonParseTypes::Real>,
+	                                        OutputIterator it,
+	                                        parse_to_t const &value ) {
 
 		static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
-		// TODO determine actual number
 		if constexpr( JsonMember::literal_as_string ==
 		              LiteralAsStringOpt::Always ) {
 			*it++ = '"';
 		}
 		if constexpr( std::is_floating_point_v<parse_to_t> ) {
-			char buff[50]{ };
+			char buff[50]; // dtoa_milo will zero term the output
+			buff[49] = 0;
+			static_assert( sizeof( parse_to_t ) <= sizeof( double ) );
 			milo::dtoa_milo( static_cast<double>( value ), buff );
-			size_t const result = strlen( buff );
-			it = utils::copy_to_iterator(
-			  it, daw::string_view( buff, static_cast<size_t>( result ) ) );
+			auto ptr = buff;
+			while( *ptr != '\0' ) {
+				*it++ = *ptr;
+				++ptr;
+			}
 		} else {
 			using std::to_string;
 			using to_strings::to_string;

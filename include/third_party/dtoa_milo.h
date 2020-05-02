@@ -431,7 +431,8 @@ namespace milo {
 				*buffer++ = '-';
 				value = -value;
 			}
-			int length, K;
+			int length = 0;
+			int K = 0;
 			Grisu2( value, buffer, &length, &K );
 			Prettify( buffer, length, K );
 		}
