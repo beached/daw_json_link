@@ -46,7 +46,7 @@ bool test_null_literal_known( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number_null<no_name, std::optional<int>>;
-	auto rng = IteratorRange<char const *, char const *, false>( );
+	auto rng = IteratorRange<char const *, false>( );
 	auto v =
 	  parse_value<my_number, true>( ParseTag<JsonParseTypes::Null>{ }, rng );
 	return not v;
@@ -69,7 +69,7 @@ bool test_null_number_trusted( ) {
 
 	using my_number = json_number_null<no_name, std::optional<int>>;
 	constexpr std::string_view sv = "5,";
-	auto rng = IteratorRange<char const *, char const *, true>(
+	auto rng = IteratorRange<char const *, true>(
 	  sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
 	return v and *v == 5;
@@ -83,7 +83,7 @@ bool test_null_number_untrusted_known( ) {
 	constexpr std::string_view sv = "5,";
 	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v =
-		parse_value<my_number, true>( ParseTag<JsonParseTypes::Null>{ }, rng );
+	  parse_value<my_number, true>( ParseTag<JsonParseTypes::Null>{ }, rng );
 	return v and *v == 5;
 }
 

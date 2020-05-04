@@ -52,9 +52,8 @@ namespace daw::json {
 
 template<typename Real, bool Trusted = false, size_t N>
 constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
-	auto rng =
-	  daw::json::json_details::IteratorRange<char const *, char const *, Trusted>(
-	    str, str + N );
+	auto rng = daw::json::json_details::IteratorRange<char const *, Trusted>(
+	  str, str + N );
 	auto res = daw::json::json_details::parse_real<Real>( rng );
 	return not( res < expected or res > expected );
 }
@@ -62,9 +61,8 @@ constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
 template<typename Unsigned, bool Trusted = false, size_t N>
 constexpr bool parse_unsigned_test( char const ( &str )[N],
                                     Unsigned expected ) {
-	auto tmp =
-	  daw::json::json_details::IteratorRange<char const *, char const *, Trusted>(
-	    str, str + N );
+	auto tmp = daw::json::json_details::IteratorRange<char const *, Trusted>(
+	  str, str + N );
 	return daw::json::json_details::parse_unsigned_integer<Unsigned>( tmp ) ==
 	       expected;
 }

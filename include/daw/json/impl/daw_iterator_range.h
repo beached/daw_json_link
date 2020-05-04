@@ -76,17 +76,17 @@
 #endif
 
 namespace daw::json::json_details {
-	template<typename First, typename Last, bool IsUnCheckedInput>
+	template<typename First, bool IsUnCheckedInput>
 	struct IteratorRange {
 		static_assert( std::is_convertible_v<
 		                 typename std::iterator_traits<First>::iterator_category,
 		                 std::random_access_iterator_tag>,
 		               "Expecting a Random Contiguous Iterator" );
 		First first{ };
-		Last last{ };
+		First last{ };
 		First class_first{ };
-		Last class_last{ };
-		using Range = IteratorRange<First, Last, IsUnCheckedInput>;
+		First class_last{ };
+		using Range = IteratorRange<First, IsUnCheckedInput>;
 
 		static constexpr bool is_unchecked_input = IsUnCheckedInput;
 		using CharT = daw::remove_cvref_t<decltype( *first )>;
@@ -106,7 +106,7 @@ namespace daw::json::json_details {
 
 		constexpr IteratorRange( ) = default;
 
-		constexpr IteratorRange( First f, Last l )
+		constexpr IteratorRange( First f, First l )
 		  : first( f )
 		  , last( l )
 		  , class_first( f )
@@ -217,7 +217,7 @@ namespace daw::json::json_details {
 			return first;
 		}
 
-		[[nodiscard]] constexpr Last end( ) const {
+		[[nodiscard]] constexpr First end( ) const {
 			return last;
 		}
 
@@ -297,5 +297,5 @@ namespace daw::json::json_details {
 
 	template<typename CharT>
 	IteratorRange( CharT const *, CharT const * )
-	  -> IteratorRange<CharT const *, CharT const *, false>;
+	  -> IteratorRange<CharT const *, false>;
 } // namespace daw::json::json_details

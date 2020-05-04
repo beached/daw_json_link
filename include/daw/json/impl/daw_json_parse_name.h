@@ -184,10 +184,10 @@ namespace daw::json::json_details {
 
 	template<bool IsUnCheckedInput, typename String>
 	[[nodiscard]] constexpr std::pair<
-	  bool, IteratorRange<char const *, char const *, IsUnCheckedInput>>
+	  bool, IteratorRange<char const *, IsUnCheckedInput>>
 	find_range( String &&str, daw::string_view start_path ) {
 
-		auto rng = IteratorRange<char const *, char const *, IsUnCheckedInput>(
+		auto rng = IteratorRange<char const *, IsUnCheckedInput>(
 		  std::data( str ), std::data( str ) + std::size( str ) );
 		rng.trim_left_checked( );
 		if( rng.has_more( ) and not start_path.empty( ) ) {

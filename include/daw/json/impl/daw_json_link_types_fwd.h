@@ -372,7 +372,7 @@ namespace daw::json {
 		[[maybe_unused, nodiscard]] constexpr auto
 		from_json_member_impl( std::string_view json_data ) {
 			using json_member = unnamed_default_type_mapping<JsonMember>;
-			auto rng = IteratorRange<char const *, char const *, IsUnCheckedInput>(
+			auto rng = IteratorRange<char const *, IsUnCheckedInput>(
 			  json_data.data( ),
 			  json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
 

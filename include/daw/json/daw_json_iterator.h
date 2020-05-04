@@ -63,8 +63,7 @@ namespace daw::json {
 	class json_array_iterator {
 
 		template<typename String>
-		static constexpr json_details::IteratorRange<char const *, char const *,
-		                                             IsUnCheckedInput>
+		static constexpr json_details::IteratorRange<char const *, IsUnCheckedInput>
 		get_range( String &&data, std::string_view member_path ) {
 			auto [is_found, result] = json_details::find_range<IsUnCheckedInput>(
 			  std::forward<String>( data ),
@@ -88,8 +87,7 @@ namespace daw::json {
 
 	private:
 		// This lets us fastpath and just skip n characters
-		using Range =
-		  json_details::IteratorRange<char const *, char const *, IsUnCheckedInput>;
+		using Range = json_details::IteratorRange<char const *, IsUnCheckedInput>;
 		Range m_state{ nullptr, nullptr };
 		mutable difference_type m_can_skip = -1;
 
@@ -100,7 +98,7 @@ namespace daw::json {
 		         daw::enable_when_t<not std::is_same_v<
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr explicit json_array_iterator( String &&jd,
-		                               std::string_view start_path = "" )
+		                                        std::string_view start_path = "" )
 		  : m_state( get_range( std::forward<String>( jd ), start_path ) ) {
 
 			static_assert(
@@ -204,7 +202,8 @@ namespace daw::json {
 		template<typename String,
 		         daw::enable_when_t<not std::is_same_v<
 		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
-		constexpr explicit json_array_range( String &&jd, std::string_view start_path = "" )
+		constexpr explicit json_array_range( String &&jd,
+		                                     std::string_view start_path = "" )
 		  : m_first( std::forward<String>( jd ), start_path ) {}
 
 		[[nodiscard]] constexpr iterator begin( ) {
