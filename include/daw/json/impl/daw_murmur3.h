@@ -50,7 +50,7 @@ namespace daw {
 	                                    std::uint32_t seed = 0 ) {
 		std::uint32_t h = seed;
 		std::uint32_t k = 0;
-		std::uint32_t const len = static_cast<uint32_t>( key.size( ) );
+		auto const len = static_cast<uint32_t>( key.size( ) );
 
 		auto chunk = key.pop_front( 4U );
 		while( chunk.size( ) >= 4U ) {

@@ -163,7 +163,7 @@ namespace daw::json::json_details {
 			return *this;
 		}
 
-		basic_appender operator++( int ) {
+		basic_appender operator++( int ) const {
 			return *this;
 		}
 
@@ -468,11 +468,7 @@ namespace daw::json::json_details {
 		}
 		result.last = rng.first;
 		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
-		if constexpr( Range::is_unchecked_input ) {
-			rng.trim_left_unchecked( );
-		} else {
-			rng.trim_left_checked( );
-		}
+		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
@@ -490,11 +486,7 @@ namespace daw::json::json_details {
 		}
 		result.last = rng.first;
 		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
-		if constexpr( Range::is_unchecked_input ) {
-			rng.trim_left_unchecked( );
-		} else {
-			rng.trim_left_checked( );
-		}
+		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
@@ -510,11 +502,7 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 3 );
 		}
 		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
-		if constexpr( Range::is_unchecked_input ) {
-			rng.trim_left_unchecked( );
-		} else {
-			rng.trim_left_checked( );
-		}
+		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		auto result = rng;

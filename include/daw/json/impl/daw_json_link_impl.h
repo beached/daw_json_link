@@ -122,7 +122,7 @@ namespace daw::json::json_details {
 	struct basic_kv_appender {
 		Container *m_container;
 
-		constexpr basic_kv_appender( Container &container )
+		explicit constexpr basic_kv_appender( Container &container )
 		  : m_container( &container ) {}
 
 		template<typename Key, typename Value>
@@ -267,13 +267,17 @@ namespace daw::json::json_details {
 		constexpr void move_rng_to_member_n( Range &rng,
 		                                     std::size_t &current_position,
 		                                     std::size_t desired_position ) {
+
+			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of range" );
 			daw_json_assert_weak( current_position <= desired_position,
 			                      "Order of ordered members must be ascending" );
 			rng.clean_tail( );
 			while( current_position < desired_position and rng.front( ) != ']' ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
-				rng.remove_prefix( );
+				++current_position;
+				daw_json_assert_weak( rng.can_parse_more( ),
+				                      "Unexpected end of range" );
 			}
 		}
 	} // namespace pocm_details

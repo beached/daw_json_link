@@ -59,7 +59,7 @@ namespace daw::json {
 
 	public:
 		[[maybe_unused]] json_exception( ) = default;
-		[[maybe_unused]] inline json_exception( std::string_view reason ) noexcept
+		[[maybe_unused]] explicit inline json_exception( std::string_view reason ) noexcept
 		  : m_reason( reason ) {}
 
 		[[nodiscard, maybe_unused]] std::string const &reason( ) const noexcept {

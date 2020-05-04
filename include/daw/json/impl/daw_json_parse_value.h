@@ -51,7 +51,6 @@ namespace daw::json::json_details {
 				rng.remove_prefix( );
 			}
 		}
-		return;
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
@@ -119,11 +118,7 @@ namespace daw::json::json_details {
 			  sign * parse_unsigned_integer<element_t, JsonMember::range_check,
 			                                JsonMember::simd_mode>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
-			if constexpr( Range::is_unchecked_input ) {
-				rng.trim_left_unchecked( );
-			} else {
-				rng.trim_left_checked( );
-			}
+			rng.trim_left( );
 			daw_json_assert_weak(
 			  rng.at_end_of_item( ),
 			  "Expected whitespace or one of \",}]\" at end of number" );
@@ -238,11 +233,7 @@ namespace daw::json::json_details {
 				}
 			}
 			skip_quote_when_literal_as_string<JsonMember>( rng );
-			if constexpr( Range::is_unchecked_input ) {
-				rng.trim_left_unchecked( );
-			} else {
-				rng.trim_left_checked( );
-			}
+			rng.trim_left( );
 			daw_json_assert_weak( rng.at_end_of_item( ), "Unexpectd value" );
 			return constructor_t{ }( result );
 		}

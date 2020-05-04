@@ -171,20 +171,11 @@ namespace daw::json::json_details {
 			std::advance( first, static_cast<intmax_t>( n ) );
 		}
 
-		constexpr bool is_space( ) const {
-			if constexpr( not IsUnCheckedInput ) {
-				daw_json_assert( has_more( ), "Unexpected end of stream" );
-				switch( *first ) {
-				case 0x20: // space
-				case 0x09: // tab
-				case 0x0A: // new line
-				case 0x0D: // carriage return
-					return true;
-				}
-				return false;
-			} else {
-				return *first <= 0x20;
-			}
+		[[nodiscard]] constexpr bool is_space( ) const {
+			// Faster to be liberal here and accept <= 0x20
+			daw_json_assert_weak( has_more( ), "Unexpected end of stream" );
+			auto const c = *first;
+			return c > 0x0 and c <= 0x20;
 		}
 
 		constexpr void trim_left( ) {
@@ -299,7 +290,7 @@ namespace daw::json::json_details {
 			}
 			if( front( ) == ',' ) {
 				remove_prefix( );
-				trim_left_unchecked( );
+				trim_left( );
 			}
 		}
 	}; // namespace daw::json::json_details

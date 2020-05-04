@@ -23,8 +23,8 @@ namespace milo {
 		  : f( F )
 		  , e( E ) {}
 
-		DiyFp( double d ) {
-			uint64_t const u = daw::bit_cast<uint64_t>( d );
+		explicit DiyFp( double d ) {
+			auto const u = daw::bit_cast<uint64_t>( d );
 
 			int const biased_e = ( u & kDpExponentMask ) >> kDpSignificandSize;
 			uint64_t const significand = ( u & kDpSignificandMask );
@@ -83,7 +83,7 @@ namespace milo {
 #endif
 		}
 
-		inline DiyFp Normalize( ) const {
+		[[nodiscard]] inline DiyFp Normalize( ) const {
 #if defined( _MSC_VER ) && defined( _M_AMD64 )
 			unsigned long index;
 			_BitScanReverse64( &index, f );
@@ -103,7 +103,7 @@ namespace milo {
 #endif
 		}
 
-		inline DiyFp NormalizeBoundary( ) const {
+		[[nodiscard]] inline DiyFp NormalizeBoundary( ) const {
 #if defined( _MSC_VER ) && defined( _M_AMD64 )
 			unsigned long index;
 			_BitScanReverse64( &index, f );
@@ -190,7 +190,7 @@ namespace milo {
 			k++;
 		}
 
-		unsigned const index = static_cast<unsigned>( ( k >> 3U ) + 1 );
+		auto const index = static_cast<unsigned>( ( k >> 3U ) + 1 );
 		*K = -( -348 + static_cast<int>(
 		                 index << 3 ) ); // decimal exponent no need lookup table
 
@@ -240,7 +240,7 @@ namespace milo {
 		                                   100000000, 1000000000 };
 		DiyFp const one( uint64_t( 1 ) << -Mp.e, Mp.e );
 		DiyFp const wp_w = Mp - W;
-		uint32_t p1 = static_cast<uint32_t>( Mp.f >> -one.e );
+		auto p1 = static_cast<uint32_t>( Mp.f >> -one.e );
 		uint64_t p2 = Mp.f & ( one.f - 1 );
 		int kappa = static_cast<int>( CountDecimalDigit32( p1 ) );
 		*len = 0;

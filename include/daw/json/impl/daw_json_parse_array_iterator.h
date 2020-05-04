@@ -42,7 +42,7 @@ namespace daw::json::json_details {
 
 		constexpr json_parse_value_array_iterator( ) = default;
 
-		constexpr json_parse_value_array_iterator( iterator_range_t &r )
+		constexpr explicit json_parse_value_array_iterator( iterator_range_t &r )
 		  : rng( &r ) {
 			if( rng->front( ) == ']' ) {
 				// Cleanup at end of value

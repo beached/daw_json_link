@@ -59,7 +59,7 @@ namespace daw::json::parse_utils {
 
 	template<typename CharT>
 	constexpr bool is_number( CharT c ) {
-		unsigned const dig = static_cast<unsigned>( c - static_cast<CharT>( '0' ) );
+		auto const dig = static_cast<unsigned>( c - static_cast<CharT>( '0' ) );
 		return dig < 10U;
 	}
 } // namespace daw::json::parse_utils
@@ -86,7 +86,7 @@ namespace daw::json::datetime {
 				sv.remove_prefix( );
 			}
 			while( not sv.empty( ) ) {
-				unsigned const dig =
+				auto const dig =
 				  static_cast<unsigned>( sv.pop_front( ) - static_cast<CharT>( '0' ) );
 				daw_json_assert( dig < 10U, "Invalid digit" );
 				result *= 10;
@@ -110,9 +110,9 @@ namespace daw::json::datetime {
 		                          std::uint_least32_t mil ) {
 			y -= static_cast<std::int_least32_t>( m ) <= 2;
 			std::int_least32_t const era = ( y >= 0 ? y : y - 399 ) / 400;
-			std::uint_least32_t const yoe = static_cast<std::uint_least32_t>(
+			auto const yoe = static_cast<std::uint_least32_t>(
 			  static_cast<std::int_least32_t>( y ) - era * 400 ); // [0, 399]
-			std::uint_least32_t const doy = static_cast<std::uint_least32_t>(
+			auto const doy = static_cast<std::uint_least32_t>(
 			  ( 153 * ( static_cast<std::int_least32_t>( m ) +
 			            ( static_cast<std::int_least32_t>( m ) > 2 ? -3 : 9 ) ) +
 			    2 ) /
@@ -287,7 +287,7 @@ namespace daw::json::datetime {
 		std::int_least32_t z = days_since_epoch.count( );
 		z += 719468;
 		std::int_least32_t const era = ( z >= 0 ? z : z - 146096 ) / 146097;
-		std::uint_least32_t const doe =
+		auto const doe =
 		  static_cast<std::uint_least32_t>( z - era * 146097 ); // [0, 146096]
 		std::uint_least32_t const yoe =
 		  ( doe - doe / 1460 + doe / 36524 - doe / 146096 ) / 365; // [0, 399]
@@ -297,7 +297,7 @@ namespace daw::json::datetime {
 		  doe - ( 365 * yoe + yoe / 4 - yoe / 100 );                  // [0, 365]
 		std::uint_least32_t const mp = ( 5 * doy + 2 ) / 153;         // [0, 11]
 		std::uint_least32_t const d = doy - ( 153 * mp + 2 ) / 5 + 1; // [1, 31]
-		std::uint_least32_t const m = static_cast<std::uint_least32_t>(
+		auto const m = static_cast<std::uint_least32_t>(
 		  static_cast<std::int_least32_t>( mp ) +
 		  ( static_cast<std::int_least32_t>( mp ) < 10 ? 3 : -9 ) ); // [1, 12]
 
@@ -386,11 +386,11 @@ namespace daw::json::datetime {
 		constexpr std::uint_least32_t month2num( std::string_view ts ) {
 			daw_json_assert( ts.size( ) >= 3,
 			                 "All months must be 3 characters long" );
-			std::uint_least32_t const b0 =
+			auto const b0 =
 			  static_cast<std::uint_least32_t>( static_cast<unsigned char>( ts[0] ) );
-			std::uint_least32_t const b1 =
+			auto const b1 =
 			  static_cast<std::uint_least32_t>( static_cast<unsigned char>( ts[1] ) );
-			std::uint_least32_t const b2 =
+			auto const b2 =
 			  static_cast<std::uint_least32_t>( static_cast<unsigned char>( ts[2] ) );
 			return ( b0 << 16U ) | ( b1 << 8U ) | b2;
 		}

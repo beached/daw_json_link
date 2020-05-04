@@ -191,7 +191,7 @@ namespace daw::json::json_details {
 			}
 #endif
 		}( );
-		std::uint_fast8_t c = static_cast<std::uint_fast8_t>( new_p - rng.first );
+		auto c = static_cast<std::uint_fast8_t>( new_p - rng.first );
 		rng.first = new_p;
 
 		struct result_t {
