@@ -82,15 +82,12 @@ namespace daw::json {
 		 * Parse JSON data and construct a C++ class.  This is used by parse_value
 		 * to get back into a mode with a JsonMembers...
 		 * @tparam T The result of parsing json_class
-		 * @tparam First type of first iterator in range
-		 * @tparam Last type of last iterator in range
-		 * @tparam IsUnCheckedInput Is the input trusted, less checking is done
+		 * @tparam Range Input range type
 		 * @param rng JSON data to parse
 		 * @return A T object
 		 */
-		template<typename T, typename First, typename Last, bool IsUnCheckedInput>
-		[[maybe_unused, nodiscard]] static constexpr T
-		parse( json_details::IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+		template<typename T, typename Range>
+		[[maybe_unused, nodiscard]] static constexpr T parse( Range &rng ) {
 			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
 			return json_details::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{ } );
@@ -158,15 +155,12 @@ namespace daw::json {
 		 * Parse JSON data and construct a C++ class.  This is used by parse_value
 		 * to get back into a mode with a JsonMembers...
 		 * @tparam T The result of parsing json_class
-		 * @tparam First type of first iterator in range
-		 * @tparam Last type of last iterator in range
-		 * @tparam IsUnCheckedInput Is the input trusted, less checking is done
+		 * @tparam Range Input range type
 		 * @param rng JSON data to parse
 		 * @return A T object
 		 */
-		template<typename T, typename First, typename Last, bool IsUnCheckedInput>
-		[[maybe_unused, nodiscard]] static constexpr T
-		parse( json_details::IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+		template<typename T, typename Range>
+		[[maybe_unused, nodiscard]] static constexpr T parse( Range &rng ) {
 			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
 			return json_details::parse_ordered_json_class<
 			  T, json_details::ordered_member_wrapper<JsonMembers>...>( rng );
@@ -704,6 +698,7 @@ namespace daw::json {
 
 			auto [is_found, rng] = json_details::find_range<IsUnCheckedInput>(
 			  json_data, { member_path.data( ), member_path.size( ) } );
+			using Range = daw::remove_cvref_t<decltype( rng )>;
 			if constexpr( parser_t::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
 					return typename parser_t::constructor_t{ }( );
@@ -711,7 +706,7 @@ namespace daw::json {
 			} else {
 				daw_json_assert( is_found, "Could not find specified member" );
 			}
-			rng.trim_left_no_check( );
+			rng.trim_left_unchecked( );
 			daw_json_assert_weak( rng.front( '[' ), "Expected array class" );
 
 			return parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{ }, rng );

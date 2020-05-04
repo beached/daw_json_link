@@ -127,7 +127,7 @@ daw_json_assert( Bool const &b,
 
 #define daw_json_assert_weak( ... )                                            \
 	do {                                                                         \
-		if constexpr( not IsUnCheckedInput ) {                                     \
+		if constexpr( not Range::is_unchecked_input ) {                            \
 			daw_json_assert( __VA_ARGS__ );                                          \
 		}                                                                          \
 	} while( false )
@@ -151,7 +151,7 @@ daw_json_assert( Bool const &b,
 }
 
 #define daw_json_assert_weak( ... )                                            \
-	if constexpr( not IsUnCheckedInput ) {                                       \
+	if constexpr( not Range::is_unchecked_input ) {                              \
 		daw_json_assert( __VA_ARGS__ );                                            \
 	}                                                                            \
 	do {                                                                         \

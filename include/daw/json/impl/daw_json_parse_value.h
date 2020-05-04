@@ -36,10 +36,8 @@
 #include <tuple>
 
 namespace daw::json::json_details {
-	template<typename JsonMember, typename First, typename Last,
-	         bool IsUnCheckedInput>
-	constexpr void skip_quote_when_literal_as_string(
-	  IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename JsonMember, typename Range>
+	constexpr void skip_quote_when_literal_as_string( Range &rng ) {
 		if constexpr( JsonMember::literal_as_string == LiteralAsStringOpt::Never ) {
 			daw_json_assert_weak( rng.empty( ) or rng.front( ) != '"',
 			                      "Unexpected quote prior to number" );
@@ -56,11 +54,9 @@ namespace daw::json::json_details {
 		return;
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Real>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::Real>, Range &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
 
@@ -86,11 +82,9 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Signed>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::Signed>, Range &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
 
@@ -125,10 +119,10 @@ namespace daw::json::json_details {
 			  sign * parse_unsigned_integer<element_t, JsonMember::range_check,
 			                                JsonMember::simd_mode>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember>( rng );
-			if constexpr( IsUnCheckedInput ) {
-				rng.trim_left_no_check( );
+			if constexpr( Range::is_unchecked_input ) {
+				rng.trim_left_unchecked( );
 			} else {
-				rng.trim_left( );
+				rng.trim_left_checked( );
 			}
 			daw_json_assert_weak(
 			  rng.at_end_of_item( ),
@@ -137,11 +131,9 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Unsigned>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::Unsigned>, Range &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
 
@@ -169,11 +161,9 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Null>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::Null>, Range &rng ) {
 
 		using constructor_t = typename JsonMember::constructor_t;
 		if constexpr( KnownBounds ) {
@@ -182,12 +172,12 @@ namespace daw::json::json_details {
 			}
 			return parse_value<JsonMember, true>(
 			  ParseTag<JsonMember::base_expected_type>{ }, rng );
-		} else if constexpr( IsUnCheckedInput ) {
+		} else if constexpr( Range::is_unchecked_input ) {
 			if( not rng.can_parse_more( ) ) {
 				return constructor_t{ }( );
 			} else if( rng.front( ) == 'n' ) {
 				rng.remove_prefix( 4 );
-				rng.trim_left_no_check( );
+				rng.trim_left_unchecked( );
 				rng.remove_prefix( );
 				return constructor_t{ }( );
 			}
@@ -199,7 +189,7 @@ namespace daw::json::json_details {
 			} else if( rng == "null" ) {
 				rng.remove_prefix( 4 );
 				daw_json_assert_weak( rng.at_end_of_item( ), "Unexpectd value" );
-				rng.trim_left( );
+				rng.trim_left_checked( );
 				return constructor_t{ }( );
 			}
 			return parse_value<JsonMember>(
@@ -207,18 +197,16 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Bool>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::Bool>, Range &rng ) {
 		daw_json_assert_weak( rng.size( ) >= 4, "Range to small to be a bool" );
 
 		using constructor_t = typename JsonMember::constructor_t;
 
 		if constexpr( KnownBounds ) {
 			// We have already checked if it is a true/false
-			if constexpr( IsUnCheckedInput ) {
+			if constexpr( Range::is_unchecked_input ) {
 				return rng.front( ) == 't';
 			} else {
 				switch( rng.front( ) ) {
@@ -232,7 +220,7 @@ namespace daw::json::json_details {
 		} else {
 			skip_quote_when_literal_as_string<JsonMember>( rng );
 			bool result = false;
-			if constexpr( IsUnCheckedInput ) {
+			if constexpr( Range::is_unchecked_input ) {
 				if( rng.front( ) == 't' ) {
 					result = true;
 					rng.remove_prefix( 4 );
@@ -250,21 +238,19 @@ namespace daw::json::json_details {
 				}
 			}
 			skip_quote_when_literal_as_string<JsonMember>( rng );
-			if constexpr( IsUnCheckedInput ) {
-				rng.trim_left_no_check( );
+			if constexpr( Range::is_unchecked_input ) {
+				rng.trim_left_unchecked( );
 			} else {
-				rng.trim_left( );
+				rng.trim_left_checked( );
 			}
 			daw_json_assert_weak( rng.at_end_of_item( ), "Unexpectd value" );
 			return constructor_t{ }( result );
 		}
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::StringRaw>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::StringRaw>, Range &rng ) {
 
 		using constructor_t = typename JsonMember::constructor_t;
 		if constexpr( KnownBounds ) {
@@ -290,8 +276,14 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<bool IsUnCheckedInput>
+	template<bool IsUncheckedInput>
+	struct RangeHelper {
+		static constexpr bool is_unchecked_input = IsUncheckedInput;
+	};
+
+	template<bool IsUncheckedInput>
 	[[nodiscard]] constexpr unsigned to_nibble( unsigned chr ) {
+		using Range = RangeHelper<IsUncheckedInput>;
 		auto const b = static_cast<int>( chr );
 		int const maskLetter = ( ( '9' - b ) >> 31 );
 		int const maskSmall = ( ( 'Z' - b ) >> 31 );
@@ -309,23 +301,19 @@ namespace daw::json::json_details {
 	static_assert( to_nibble<true>( static_cast<unsigned>( 'f' ) ) == 15U );
 	static_assert( to_nibble<true>( static_cast<unsigned>( 'F' ) ) == 15U );
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] constexpr std::uint16_t
-	byte_from_nibbles( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		auto const n0 =
-		  to_nibble<IsUnCheckedInput>( static_cast<unsigned>( rng.front( ) ) );
+	template<typename Range>
+	[[nodiscard]] constexpr std::uint16_t byte_from_nibbles( Range &rng ) {
+		auto const n0 = to_nibble<Range::is_unchecked_input>(
+		  static_cast<unsigned>( rng.front( ) ) );
 		rng.remove_prefix( );
-		auto const n1 =
-		  to_nibble<IsUnCheckedInput>( static_cast<unsigned>( rng.front( ) ) );
+		auto const n1 = to_nibble<Range::is_unchecked_input>(
+		  static_cast<unsigned>( rng.front( ) ) );
 		rng.remove_prefix( );
 		return static_cast<std::uint16_t>( ( n0 << 4U ) | n1 );
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput,
-	         typename Appender>
-	constexpr void
-	decode_utf16( IteratorRange<First, Last, IsUnCheckedInput> &rng,
-	              Appender &app ) {
+	template<typename Range, typename Appender>
+	constexpr void decode_utf16( Range &rng, Appender &app ) {
 		daw_json_assert_weak( rng.front( "uU" ), "Expected rng to start with a u" );
 		rng.remove_prefix( );
 		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
@@ -384,11 +372,9 @@ namespace daw::json::json_details {
 		app( enc1 );
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::StringEscaped>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng ) {
 
 		using constructor_t = typename JsonMember::constructor_t;
 		using appender_t = typename JsonMember::appender_t;
@@ -476,11 +462,9 @@ namespace daw::json::json_details {
 		return result;
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Date>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::Date>, Range &rng ) {
 
 		daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 		auto str = skip_string( rng );
@@ -488,11 +472,9 @@ namespace daw::json::json_details {
 		return constructor_t{ }( str.begin( ), str.size( ) );
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Custom>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::Custom>, Range &rng ) {
 
 		if( rng.front( ) != '"' and rng.class_first != nullptr and
 		    rng.begin( ) > rng.class_first and *std::prev( rng.begin( ) ) == '"' ) {
@@ -504,11 +486,9 @@ namespace daw::json::json_details {
 		return constructor_t{ }( std::string_view( str.begin( ), str.size( ) ) );
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Class>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::Class>, Range &rng ) {
 
 		using element_t = typename JsonMember::base_type;
 		daw_json_assert_weak( rng.has_more( ), "Attempt to parse empty string" );
@@ -519,7 +499,7 @@ namespace daw::json::json_details {
 		// not in a constant expression.  It does allow for construction of classes
 		// without move/copy special members
 		if constexpr( not KnownBounds ) {
-			auto const oe = daw::on_exit_success( [&] { rng.trim_left( ); } );
+			auto const oe = daw::on_exit_success( [&] { rng.trim_left_checked( ); } );
 		}
 		return json_details::json_data_contract_trait_t<element_t>::template parse<
 		  element_t>( rng );
@@ -530,7 +510,7 @@ namespace daw::json::json_details {
 		} else {
 			auto result = json_details::json_data_contract_trait_t<
 			  element_t>::template parse<element_t>( rng );
-			rng.trim_left( );
+			rng.trim_left_checked( );
 			return result;
 		}
 #endif
@@ -539,17 +519,13 @@ namespace daw::json::json_details {
 	 * Parse a key_value pair encoded as a json object where the keys are the
 	 * member names
 	 * @tparam JsonMember json_key_value type
-	 * @tparam First Type of Iterator for beginning of stream range
-	 * @tparam Last Type of Iterator for end of stream range
-	 * @tparam IsUnCheckedInput Are we parsing a trusted stream
+	 * @tparam Range Input range typee
 	 * @param rng Range of input to parse
 	 * @return Constructed key_value container
 	 */
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::KeyValue>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::KeyValue>, Range &rng ) {
 
 		static_assert( JsonMember::expected_type == JsonParseTypes::KeyValue,
 		               "Expected a json_key_value" );
@@ -568,6 +544,7 @@ namespace daw::json::json_details {
 		using key_t = typename JsonMember::json_key_t;
 		using value_t = typename JsonMember::json_element_t;
 		while( rng.front( ) != '}' ) {
+			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of range" );
 			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{ }, rng );
 			name::name_parser::trim_end_of_name( rng );
 			container_appender(
@@ -583,7 +560,7 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( rng.front( '}' ),
 			                      "Expected keyvalue type to end with a '}'" );
 			rng.remove_prefix( );
-			rng.trim_left( );
+			rng.trim_left_checked( );
 		}
 		return array_container;
 	}
@@ -592,17 +569,13 @@ namespace daw::json::json_details {
 	 * Parse a key_value pair encoded as a json object where the keys are the
 	 * member names
 	 * @tparam JsonMember json_key_value type
-	 * @tparam First Type of Iterator for beginning of stream range
-	 * @tparam Last Type of Iterator for end of stream range
-	 * @tparam IsUnCheckedInput Are we parsing a trusted stream
+	 * @tparam Range Input Range type
 	 * @param rng Range of input to parse
 	 * @return Constructed key_value container
 	 */
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::KeyValueArray>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::KeyValueArray>, Range &rng ) {
 
 		static_assert( JsonMember::expected_type == JsonParseTypes::KeyValueArray,
 		               "Expected a json_key_value" );
@@ -645,7 +618,7 @@ namespace daw::json::json_details {
 
 			rng.move_to_next_of( '}' );
 			rng.remove_prefix( );
-			rng.trim_left( );
+			rng.trim_left_checked( );
 			if constexpr( not KnownBounds ) {
 				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 			}
@@ -655,25 +628,22 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( rng.front( ']' ),
 			                      "Expected keyvalue type to end with a '}'" );
 			rng.remove_prefix( );
-			rng.trim_left( );
+			rng.trim_left_checked( );
 		}
 		return array_container;
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Array>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::Array>, Range &rng ) {
 
 		daw_json_assert_weak( rng.front( '[' ),
 		                      "Expected array to start with a '['" );
 
 		rng.remove_prefix( );
-		rng.trim_left_no_check( );
+		rng.trim_left_unchecked( );
 		using container_t = typename JsonMember::base_type;
-		using iterator_t = json_parse_value_array_iterator<JsonMember, First, Last,
-		                                                   IsUnCheckedInput>;
+		using iterator_t = json_parse_value_array_iterator<JsonMember, Range>;
 		iterator_t first = iterator_t( rng );
 		iterator_t const last = iterator_t( );
 		if constexpr( std::conjunction<
@@ -702,10 +672,9 @@ namespace daw::json::json_details {
 		}
 	} // namespace daw::json::json_details
 
-	template<JsonBaseParseTypes BPT, typename JsonMembers, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<JsonBaseParseTypes BPT, typename JsonMembers, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMembers>
-	parse_variant_value( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_variant_value( Range &rng ) {
 
 		using element_t = typename JsonMembers::json_elements;
 		constexpr std::size_t idx =
@@ -720,11 +689,9 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Variant>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::Variant>, Range &rng ) {
 
 		switch( rng.front( ) ) {
 		case '{':
@@ -754,8 +721,8 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Result, typename TypeList, std::size_t pos = 0,
-	         typename Rng>
-	constexpr Result parse_visit( std::size_t idx, Rng &rng ) {
+	         typename Range>
+	constexpr Result parse_visit( std::size_t idx, Range &rng ) {
 		if( idx == pos ) {
 			using JsonMember = std::tuple_element_t<pos, TypeList>;
 			return { parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
@@ -769,14 +736,12 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::VariantTagged>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng ) {
 
 		using tag_member = typename JsonMember::tag_member;
-		auto [is_found, rng2] = find_range<IsUnCheckedInput>(
+		auto [is_found, rng2] = find_range<Range::is_unchecked_input>(
 		  daw::string_view( rng.class_first, rng.last ),
 		  daw::string_view( as_cstr( tag_member::name ) ) );
 

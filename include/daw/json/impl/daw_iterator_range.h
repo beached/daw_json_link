@@ -86,9 +86,11 @@ namespace daw::json::json_details {
 		Last last{ };
 		First class_first{ };
 		Last class_last{ };
+		using Range = IteratorRange<First, Last, IsUnCheckedInput>;
 
-		static constexpr bool is_trusted_input = IsUnCheckedInput;
+		static constexpr bool is_unchecked_input = IsUnCheckedInput;
 		using CharT = daw::remove_cvref_t<decltype( *first )>;
+		using Iterator = First;
 
 		template<std::size_t N>
 		constexpr bool operator==( char const ( &rhs )[N] ) const {
@@ -186,6 +188,14 @@ namespace daw::json::json_details {
 		}
 
 		constexpr void trim_left( ) {
+			if constexpr( is_unchecked_input ) {
+				trim_left_unchecked( );
+			} else {
+				trim_left_checked( );
+			}
+		}
+
+		constexpr void trim_left_checked( ) {
 			skip_comments_checked( );
 			while( has_more( ) and is_space( ) ) {
 				remove_prefix( );
@@ -193,7 +203,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		constexpr void trim_left_no_check( ) {
+		constexpr void trim_left_unchecked( ) {
 			skip_comments_unchecked( );
 			while( is_space( ) ) {
 				remove_prefix( );
@@ -201,7 +211,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		constexpr void trim_left_raw( ) {
+		constexpr void trim_left_checked_raw( ) {
 			while( is_space( ) ) {
 				remove_prefix( );
 				daw_json_assert_weak( first != last, "Unexpected end of stream" );
@@ -283,13 +293,13 @@ namespace daw::json::json_details {
 		}
 
 		constexpr void clean_tail( ) {
-			// trim_left
+			// trim_left_checked
 			while( has_more( ) and is_space( ) ) {
 				remove_prefix( );
 			}
 			if( front( ) == ',' ) {
 				remove_prefix( );
-				trim_left_no_check( );
+				trim_left_unchecked( );
 			}
 		}
 	}; // namespace daw::json::json_details

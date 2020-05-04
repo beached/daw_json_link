@@ -88,8 +88,9 @@ namespace daw::json {
 
 	private:
 		// This lets us fastpath and just skip n characters
-		json_details::IteratorRange<char const *, char const *, IsUnCheckedInput>
-		  m_state{ nullptr, nullptr };
+		using Range =
+		  json_details::IteratorRange<char const *, char const *, IsUnCheckedInput>;
+		Range m_state{ nullptr, nullptr };
 		mutable difference_type m_can_skip = -1;
 
 	public:
@@ -105,12 +106,12 @@ namespace daw::json {
 			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
 			  "StringRaw must be like a string_view" );
-			m_state.trim_left( );
+			m_state.trim_left_checked( );
 			daw_json_assert_weak( m_state.front( '[' ),
 			                      "Arrays are expected to start with a [" );
 
 			m_state.remove_prefix( );
-			m_state.trim_left( );
+			m_state.trim_left_checked( );
 		}
 
 		[[nodiscard]] constexpr value_type operator*( ) const {
@@ -147,10 +148,10 @@ namespace daw::json {
 			} else {
 				(void)json_details::skip_known_value<element_type>( m_state );
 			}
-			m_state.trim_left( );
+			m_state.trim_left_checked( );
 			if( m_state.in( ',' ) ) {
 				m_state.remove_prefix( );
-				m_state.trim_left( );
+				m_state.trim_left_checked( );
 			}
 			return *this;
 		}

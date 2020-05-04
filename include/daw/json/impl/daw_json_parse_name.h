@@ -37,9 +37,8 @@ namespace daw::json::json_details::name {
 		 * end of string " -> name value separating : -> any white space
 		 * the string can be escaped too
 		 */
-		template<typename First, typename Last, bool IsUnCheckedInput>
-		[[maybe_unused]] static constexpr void
-		trim_end_of_name( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+		template<typename Range>
+		[[maybe_unused]] static constexpr void trim_end_of_name( Range &rng ) {
 			while( rng.is_space( ) ) {
 				rng.remove_prefix( );
 			}
@@ -50,9 +49,9 @@ namespace daw::json::json_details::name {
 			}
 		}
 
-		template<typename First, typename Last, bool IsUnCheckedInput>
+		template<typename Range>
 		[[nodiscard, maybe_unused]] static constexpr daw::string_view
-		parse_nq( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+		parse_nq( Range &rng ) {
 			auto ptr = rng.begin( );
 			while( rng.front( ) != '"' ) {
 				while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
@@ -62,7 +61,8 @@ namespace daw::json::json_details::name {
 					rng.remove_prefix( 2 );
 				}
 			}
-			daw_json_assert_weak( rng.front( ) == '"', "Expected a '\"' at the end of string" );
+			daw_json_assert_weak( rng.front( ) == '"',
+			                      "Expected a '\"' at the end of string" );
 			auto result =
 			  daw::string_view( ptr, static_cast<std::size_t>( rng.begin( ) - ptr ) );
 			rng.remove_prefix( );
@@ -133,18 +133,16 @@ namespace daw::json::json_details {
 	// Assumes that the current item in stream is a double quote
 	// Ensures that the stream is left at the position of the associated
 	// value(e.g after the colon(:) and trimmed)
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] constexpr daw::string_view
-	parse_name( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename Range>
+	[[nodiscard]] constexpr daw::string_view parse_name( Range &rng ) {
 		daw_json_assert_weak( rng.front( '"' ),
 		                      "Expected name to start with a quote" );
 		rng.remove_prefix( );
 		return name::name_parser::parse_nq( rng );
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	constexpr bool find_range2( IteratorRange<First, Last, IsUnCheckedInput> &rng,
-	                            daw::string_view path ) {
+	template<typename Range>
+	constexpr bool find_range2( Range &rng, daw::string_view path ) {
 
 		auto pop_result = pop_json_path( path );
 		while( not pop_result.current.empty( ) ) {
@@ -152,14 +150,14 @@ namespace daw::json::json_details {
 				// Array Index
 				daw_json_assert_weak( rng.front( '[' ), "Invalid Path Entry" );
 				rng.remove_prefix( );
-				rng.trim_left_no_check( );
+				rng.trim_left_unchecked( );
 				auto idx =
 				  daw::parser::parse_unsigned_int<std::size_t>( pop_result.current );
 
 				while( idx > 0 ) {
 					--idx;
 					(void)skip_value( rng );
-					rng.trim_left( );
+					rng.trim_left_checked( );
 					if( idx > 0 and not rng.front( ',' ) ) {
 						return false;
 					}
@@ -168,7 +166,7 @@ namespace daw::json::json_details {
 			} else {
 				daw_json_assert_weak( rng.front( '{' ), "Invalid Path Entry" );
 				rng.remove_prefix( );
-				rng.trim_left_no_check( );
+				rng.trim_left_unchecked( );
 				auto name = parse_name( rng );
 				while( not json_path_compare( pop_result.current, name ) ) {
 					(void)skip_value( rng );
@@ -191,7 +189,7 @@ namespace daw::json::json_details {
 
 		auto rng = IteratorRange<char const *, char const *, IsUnCheckedInput>(
 		  std::data( str ), std::data( str ) + std::size( str ) );
-		rng.trim_left( );
+		rng.trim_left_checked( );
 		if( rng.has_more( ) and not start_path.empty( ) ) {
 			if( not find_range2( rng, start_path ) ) {
 				return { false, rng };
@@ -199,5 +197,4 @@ namespace daw::json::json_details {
 		}
 		return { true, rng };
 	}
-
 } // namespace daw::json::json_details

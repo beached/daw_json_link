@@ -27,9 +27,9 @@
 namespace daw::json::json_details::string_quote {
 
 	struct string_quote_parser {
-		static constexpr void
-		parse_nq( IteratorRange<char const *, char const *, true> &rng ) {
-			constexpr bool IsUnCheckedInput = true;
+		template<typename Range, std::enable_if_t<Range::is_unchecked_input,
+		                                          std::nullptr_t> = nullptr>
+		static constexpr void parse_nq( Range &rng ) {
 			while( *rng.first != '"' ) {
 				while( *rng.first != '"' and *rng.first != '\\' ) {
 					++rng.first;
@@ -42,9 +42,9 @@ namespace daw::json::json_details::string_quote {
 			daw_json_assert_weak( *rng.first == '"', "Expected a '\"'" );
 		}
 
-		static constexpr void
-		parse_nq( IteratorRange<char const *, char const *, false> &rng ) {
-			constexpr bool IsUnCheckedInput = false;
+		template<typename Range, std::enable_if_t<not Range::is_unchecked_input,
+		                                          std::nullptr_t> = nullptr>
+		static constexpr void parse_nq( Range &rng ) {
 			while( rng.first != rng.last and *rng.first != '"' ) {
 				while( rng.first != rng.last and *rng.first != '"' and
 				       *rng.first != '\\' ) {

@@ -170,10 +170,8 @@ namespace daw::json::json_details::unsignedint {
 namespace daw::json::json_details {
 
 	template<typename Result, SIMDModes SIMDMode,
-	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never, typename First,
-	         typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] constexpr auto
-	parse_unsigned_integer2( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never, typename Range>
+	[[nodiscard]] constexpr auto parse_unsigned_integer2( Range &rng ) {
 		daw_json_assert_weak( rng.is_number( ), "Expecting a digit as first item" );
 
 		using namespace daw::json::json_details::unsignedint;
@@ -209,10 +207,8 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-	         SIMDModes SimdMode = SIMDModes::None, typename First, typename Last,
-	         bool IsUnCheckedInput>
-	[[nodiscard]] constexpr Result
-	parse_unsigned_integer( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	         SIMDModes SimdMode = SIMDModes::None, typename Range>
+	[[nodiscard]] constexpr Result parse_unsigned_integer( Range &rng ) {
 		daw_json_assert_weak( rng.is_number( ), "Expecting a digit as first item" );
 
 		using namespace daw::json::json_details::unsignedint;
@@ -244,5 +240,4 @@ namespace daw::json::json_details {
 			return static_cast<Result>( result );
 		}
 	}
-
 } // namespace daw::json::json_details

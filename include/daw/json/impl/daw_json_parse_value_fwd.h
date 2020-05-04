@@ -27,93 +27,63 @@
 
 namespace daw::json::json_details {
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Real>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::Real>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Signed>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::Signed>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Unsigned>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::Unsigned>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Null>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::Null>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Bool>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::Bool>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::StringRaw>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::StringRaw>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::StringEscaped>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Date>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::Date>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Custom>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::Custom>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Class>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::Class>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Array>,
-	             IteratorRange<First, Last, IsUnCheckedInput> & );
+	parse_value( ParseTag<JsonParseTypes::Array>, Range & );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::KeyValue>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::KeyValue>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::KeyValueArray>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::KeyValueArray>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Variant>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::Variant>, Range &rng );
 
-	template<typename JsonMember, bool KnownBounds = false, typename First,
-	         typename Last, bool IsUnCheckedInput>
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::VariantTagged>,
-	             IteratorRange<First, Last, IsUnCheckedInput> &rng );
+	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng );
 } // namespace daw::json::json_details

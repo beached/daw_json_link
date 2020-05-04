@@ -30,9 +30,8 @@
 
 namespace daw::json::json_details {
 	template<typename Result, SIMDModes SIMDMode = SIMDModes::None,
-	         typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] constexpr Result
-	parse_real( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	         typename Range>
+	[[nodiscard]] constexpr Result parse_real( Range &rng ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak( rng.has_more( ) and rng.is_real_number_part( ),
 		                      "Expected a real number" );
@@ -73,11 +72,10 @@ namespace daw::json::json_details {
 				return 1;
 			}( );
 			exp_part =
-			  exsign *
-			  parse_unsigned_integer<
-			    int32_t, ( IsUnCheckedInput ? JsonRangeCheck::Never
-			                                : JsonRangeCheck::CheckForNarrowing )>(
-			    rng );
+			  exsign * parse_unsigned_integer<
+			             int32_t, ( Range::is_unchecked_input
+			                          ? JsonRangeCheck::Never
+			                          : JsonRangeCheck::CheckForNarrowing )>( rng );
 		}
 		if constexpr( std::is_same_v<Result, float> ) {
 			return ( whole_part + fract_part ) * daw::cxmath::fpow10( exp_part );
@@ -87,5 +85,4 @@ namespace daw::json::json_details {
 			       static_cast<Result>( daw::cxmath::dpow10( exp_part ) );
 		}
 	}
-
 } // namespace daw::json::json_details

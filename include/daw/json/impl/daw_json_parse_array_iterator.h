@@ -28,8 +28,7 @@
 
 namespace daw::json::json_details {
 
-	template<typename JsonMember, typename First, typename Last,
-	         bool IsUnCheckedInput>
+	template<typename JsonMember, typename Range>
 	struct json_parse_value_array_iterator {
 		using iterator_category = std::input_iterator_tag;
 		using element_t = typename JsonMember::json_element_t;
@@ -37,7 +36,7 @@ namespace daw::json::json_details {
 		using reference = void;
 		using pointer = void;
 		using difference_type = std::ptrdiff_t;
-		using iterator_range_t = IteratorRange<First, Last, IsUnCheckedInput>;
+		using iterator_range_t = Range;
 
 		iterator_range_t *rng = nullptr;
 
@@ -48,7 +47,7 @@ namespace daw::json::json_details {
 			if( rng->front( ) == ']' ) {
 				// Cleanup at end of value
 				rng->remove_prefix( );
-				rng->trim_left( );
+				rng->trim_left_checked( );
 				// Ensure we are equal to default
 				rng = nullptr;
 			}
@@ -68,7 +67,7 @@ namespace daw::json::json_details {
 			if( rng->front( ) == ']' ) {
 				// Cleanup at end of value
 				rng->remove_prefix( );
-				rng->trim_left( );
+				rng->trim_left_checked( );
 				// Ensure we are equal to default
 				rng = nullptr;
 			}
@@ -93,5 +92,4 @@ namespace daw::json::json_details {
 			return rng != rhs.rng;
 		}
 	};
-
 } // namespace daw::json::json_details

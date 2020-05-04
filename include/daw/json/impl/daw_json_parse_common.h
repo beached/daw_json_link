@@ -420,9 +420,8 @@ namespace daw::json {
 
 namespace daw::json::json_details {
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_string_nq( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_string_nq( Range &rng ) {
 		auto result = rng;
 		string_quote::string_quote_parser::parse_nq( rng );
 
@@ -433,9 +432,8 @@ namespace daw::json::json_details {
 		return result;
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_string( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_string( Range &rng ) {
 		if( rng.empty( ) ) {
 			return rng;
 		}
@@ -458,11 +456,10 @@ namespace daw::json::json_details {
 #endif
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_true( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_true( Range &rng ) {
 		auto result = rng;
-		if constexpr( IsUnCheckedInput ) {
+		if constexpr( Range::is_unchecked_input ) {
 			rng.remove_prefix( 4 );
 		} else {
 			rng.remove_prefix( );
@@ -471,21 +468,20 @@ namespace daw::json::json_details {
 		}
 		result.last = rng.first;
 		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
-		if constexpr( IsUnCheckedInput ) {
-			rng.trim_left_no_check( );
+		if constexpr( Range::is_unchecked_input ) {
+			rng.trim_left_unchecked( );
 		} else {
-			rng.trim_left( );
+			rng.trim_left_checked( );
 		}
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_false( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_false( Range &rng ) {
 		auto result = rng;
-		if constexpr( IsUnCheckedInput ) {
+		if constexpr( Range::is_unchecked_input ) {
 			rng.remove_prefix( 5 );
 		} else {
 			rng.remove_prefix( );
@@ -494,20 +490,19 @@ namespace daw::json::json_details {
 		}
 		result.last = rng.first;
 		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
-		if constexpr( IsUnCheckedInput ) {
-			rng.trim_left_no_check( );
+		if constexpr( Range::is_unchecked_input ) {
+			rng.trim_left_unchecked( );
 		} else {
-			rng.trim_left( );
+			rng.trim_left_checked( );
 		}
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_null( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		if constexpr( IsUnCheckedInput ) {
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_null( Range &rng ) {
+		if constexpr( Range::is_unchecked_input ) {
 			rng.remove_prefix( 4 );
 		} else {
 			rng.remove_prefix( );
@@ -515,10 +510,10 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 3 );
 		}
 		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
-		if constexpr( IsUnCheckedInput ) {
-			rng.trim_left_no_check( );
+		if constexpr( Range::is_unchecked_input ) {
+			rng.trim_left_unchecked( );
 		} else {
-			rng.trim_left( );
+			rng.trim_left_checked( );
 		}
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
@@ -528,9 +523,8 @@ namespace daw::json::json_details {
 		return result;
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_number( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_number( Range &rng ) {
 		auto result = rng;
 		++rng.first;
 		while( not rng.is_space( ) and not at_literal_end( *rng.first ) ) {
@@ -538,11 +532,7 @@ namespace daw::json::json_details {
 		}
 		result.last = rng.first;
 		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
-		if constexpr( IsUnCheckedInput ) {
-			rng.trim_left_no_check( );
-		} else {
-			rng.trim_left( );
-		}
+		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
@@ -551,17 +541,15 @@ namespace daw::json::json_details {
 	/***
 	 * used by skip_class/skip_array
 	 */
-	template<char Left, char Right, typename First, typename Last,
-	         bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_bracketed_item( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<char Left, char Right, typename Range>
+	[[nodiscard]] static constexpr Range skip_bracketed_item( Range &rng ) {
 		daw_json_assert_weak( rng.front( Left ), "Expected start bracket/brace" );
 		std::size_t bracket_count = 1;
 		bool in_quotes = false;
 		auto result = rng;
 		while( not rng.empty( ) and bracket_count > 0 ) {
 			rng.remove_prefix( );
-			rng.trim_left_raw( );
+			rng.trim_left_checked_raw( );
 			switch( rng.front( ) ) {
 			case '\\':
 				rng.remove_prefix( 1 );
@@ -582,7 +570,7 @@ namespace daw::json::json_details {
 #ifdef DAW_ALLOW_COMMENTS
 			case '#':
 				if( not in_quotes ) {
-					rng.trim_left( );
+					rng.trim_left_checked( );
 				}
 				break;
 #endif
@@ -597,21 +585,18 @@ namespace daw::json::json_details {
 		return result;
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_class( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_class( Range &rng ) {
 		return skip_bracketed_item<'{', '}'>( rng );
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_array( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_array( Range &rng ) {
 		return skip_bracketed_item<'[', ']'>( rng );
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_value( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_value( Range &rng ) {
 		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range" );
 
 		switch( rng.front( ) ) {
@@ -647,10 +632,8 @@ namespace daw::json::json_details {
 	/***
 	 * Used in json_array_iterator::operator++( )
 	 */
-	template<typename JsonMember, typename First, typename Last,
-	         bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_known_value( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename JsonMember, typename Range>
+	[[nodiscard]] static constexpr Range skip_known_value( Range &rng ) {
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 		              JsonMember::expected_type == JsonParseTypes::StringRaw or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
