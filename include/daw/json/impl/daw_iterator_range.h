@@ -76,21 +76,21 @@
 #endif
 
 namespace daw::json::json_details {
-	template<typename First, bool IsUnCheckedInput>
+	template<typename Iterator, bool IsUnCheckedInput>
 	struct IteratorRange {
 		static_assert( std::is_convertible_v<
-		                 typename std::iterator_traits<First>::iterator_category,
+		                 typename std::iterator_traits<Iterator>::iterator_category,
 		                 std::random_access_iterator_tag>,
 		               "Expecting a Random Contiguous Iterator" );
-		First first{ };
-		First last{ };
-		First class_first{ };
-		First class_last{ };
-		using Range = IteratorRange<First, IsUnCheckedInput>;
+		using iterator = Iterator;
+		iterator first{ };
+		iterator last{ };
+		iterator class_first{ };
+		iterator class_last{ };
+		using Range = IteratorRange<iterator, IsUnCheckedInput>;
 
 		static constexpr bool is_unchecked_input = IsUnCheckedInput;
 		using CharT = daw::remove_cvref_t<decltype( *first )>;
-		using Iterator = First;
 
 		template<std::size_t N>
 		constexpr bool operator==( char const ( &rhs )[N] ) const {
@@ -106,7 +106,7 @@ namespace daw::json::json_details {
 
 		constexpr IteratorRange( ) = default;
 
-		constexpr IteratorRange( First f, First l )
+		constexpr IteratorRange( iterator f, iterator l )
 		  : first( f )
 		  , last( l )
 		  , class_first( f )
@@ -154,9 +154,9 @@ namespace daw::json::json_details {
 		}
 
 		[[nodiscard]] constexpr bool is_null( ) const {
-			if constexpr( std::is_pointer_v<First> ) {
+			if constexpr( std::is_pointer_v<iterator> ) {
 				return first == nullptr;
-			} else if constexpr( std::is_convertible_v<First, bool> ) {
+			} else if constexpr( std::is_convertible_v<iterator, bool> ) {
 				return not static_cast<bool>( first );
 			} else {
 				return false;
@@ -209,15 +209,15 @@ namespace daw::json::json_details {
 			}
 		}
 
-		[[nodiscard]] constexpr First begin( ) const {
+		[[nodiscard]] constexpr iterator begin( ) const {
 			return first;
 		}
 
-		[[nodiscard]] constexpr First data( ) const {
+		[[nodiscard]] constexpr iterator data( ) const {
 			return first;
 		}
 
-		[[nodiscard]] constexpr First end( ) const {
+		[[nodiscard]] constexpr iterator end( ) const {
 			return last;
 		}
 
