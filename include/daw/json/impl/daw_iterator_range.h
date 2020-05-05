@@ -70,9 +70,15 @@
 	}                                                                            \
 	while( false )
 #else
-#define skip_comments( ) while( false )
-#define skip_comments_checked( ) while( false )
-#define skip_comments_unchecked( ) while( false )
+#define skip_comments( )                                                       \
+	do {                                                                         \
+	} while( false )
+#define skip_comments_checked( )                                               \
+	do {                                                                         \
+	} while( false )
+#define skip_comments_unchecked( )                                             \
+	do {                                                                         \
+	} while( false )
 #endif
 
 namespace daw::json::json_details {
@@ -83,10 +89,10 @@ namespace daw::json::json_details {
 		                 std::random_access_iterator_tag>,
 		               "Expecting a Random Contiguous Iterator" );
 		using iterator = Iterator;
-		iterator first{ };
-		iterator last{ };
-		iterator class_first{ };
-		iterator class_last{ };
+		iterator first{};
+		iterator last{};
+		iterator class_first{};
+		iterator class_last{};
 		using Range = IteratorRange<iterator, IsUnCheckedInput>;
 
 		static constexpr bool is_unchecked_input = IsUnCheckedInput;
@@ -297,5 +303,5 @@ namespace daw::json::json_details {
 
 	template<typename CharT>
 	IteratorRange( CharT const *, CharT const * )
-	  -> IteratorRange<CharT const *, false>;
+	  ->IteratorRange<CharT const *, false>;
 } // namespace daw::json::json_details

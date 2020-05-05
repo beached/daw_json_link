@@ -325,31 +325,32 @@ namespace daw::json::datetime {
 	constexpr std::string_view month_short_name( unsigned m ) {
 		switch( m ) {
 		case 1:
-			return { "Jan" };
+			return {"Jan"};
 		case 2:
-			return { "Feb" };
+			return {"Feb"};
 		case 3:
-			return { "Mar" };
+			return {"Mar"};
 		case 4:
-			return { "Apr" };
+			return {"Apr"};
 		case 5:
-			return { "May" };
+			return {"May"};
 		case 6:
-			return { "Jun" };
+			return {"Jun"};
 		case 7:
-			return { "Jul" };
+			return {"Jul"};
 		case 8:
-			return { "Aug" };
+			return {"Aug"};
 		case 9:
-			return { "Sep" };
+			return {"Sep"};
 		case 10:
-			return { "Oct" };
+			return {"Oct"};
 		case 11:
-			return { "Nov" };
+			return {"Nov"};
 		case 12:
-			return { "Dec" };
+			return {"Dec"};
+		default:
+			daw_json_error( "Invalid Month" );
 		}
-		daw_json_error( "Invalid Month" );
 	}
 
 	// Formula from
@@ -363,19 +364,20 @@ namespace daw::json::datetime {
 		auto const dow = z >= -4L ? ( z + 4L ) % 7L : ( z + 5L ) % 7L + 6L;
 		switch( dow ) {
 		case 0:
-			return { "Sun" };
+			return {"Sun"};
 		case 1:
-			return { "Mon" };
+			return {"Mon"};
 		case 2:
-			return { "Tue" };
+			return {"Tue"};
 		case 3:
-			return { "Wed" };
+			return {"Wed"};
 		case 4:
-			return { "Thu" };
+			return {"Thu"};
 		case 5:
-			return { "Fri" };
+			return {"Fri"};
+		default:
+			return {"Sat"};
 		}
-		return { "Sat" };
 	}
 	static_assert( short_day_of_week(
 	                 std::chrono::time_point<std::chrono::system_clock,
@@ -423,7 +425,8 @@ namespace daw::json::datetime {
 			return 11;
 		case datetime_details::month2num( "Dec" ):
 			return 12;
+		default:
+			daw_json_error( "Invalid Month" );
 		}
-		daw_json_error( "Invalid Month" );
 	}
 } // namespace daw::json::datetime

@@ -26,22 +26,15 @@
 #include "impl/daw_json_link_impl.h"
 #include "impl/daw_json_link_types_fwd.h"
 
-#include <daw/daw_algorithm.h>
 #include <daw/daw_array.h>
 #include <daw/daw_bounded_string.h>
-#include <daw/daw_cxmath.h>
-#include <daw/daw_exception.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 #include <daw/iterator/daw_back_inserter.h>
 
 #include <array>
-#include <chrono>
-#include <cstdint>
-#include <cstdlib>
 #include <iterator>
-#include <limits>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -707,7 +700,7 @@ namespace daw::json {
 				daw_json_assert( is_found, "Could not find specified member" );
 			}
 			rng.trim_left_unchecked( );
-			daw_json_assert_weak( rng.front( '[' ), "Expected array class" );
+			daw_json_assert_weak( rng.front( '[' ), "Expected array class to being with a '['" );
 
 			return parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{ }, rng );
 		}
@@ -848,7 +841,7 @@ namespace daw::json {
 
 	namespace json_details {
 		template<typename... Args>
-		constexpr void is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
+		[[maybe_unused]] constexpr void is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
 
 		template<typename T>
 		using is_unique_ptr_test =

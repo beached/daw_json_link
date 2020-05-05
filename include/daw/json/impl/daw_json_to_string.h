@@ -29,7 +29,6 @@
 #include <daw/daw_traits.h>
 #include <utf8/unchecked.h>
 
-#include <chrono>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -446,9 +445,9 @@ namespace daw::json::json_details {
 	}
 
 	template<typename T>
-	constexpr auto deref_detect( T &&value ) -> decltype( *value );
+	[[maybe_unused]] constexpr auto deref_detect( T &&value ) -> decltype( *value );
 
-	constexpr void deref_detect( ... ) {}
+	[[maybe_unused]] constexpr void deref_detect( ... ) {}
 
 	template<typename T>
 	using deref_t =

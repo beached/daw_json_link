@@ -329,10 +329,10 @@ namespace daw::json {
 
 		namespace vector_detect {
 			template<typename T, typename... Alloc>
-			auto vector_test( daw::tag_t<std::vector<T, Alloc...>> ) -> T;
+			[[maybe_unused]] auto vector_test( daw::tag_t<std::vector<T, Alloc...>> ) -> T;
 
 			template<typename T>
-			int vector_test( daw::tag_t<T> );
+			[[maybe_unused]] int vector_test( daw::tag_t<T> );
 
 			template<typename T>
 			using detector =
@@ -621,7 +621,7 @@ namespace daw::json {
 		};
 
 		template<typename... Ts>
-		constexpr std::conditional_t<
+		[[maybe_unused]] constexpr std::conditional_t<
 		  std::conjunction_v<has_unnamed_default_type_mapping<Ts>...>,
 		  json_tagged_variant_type_list<unnamed_default_type_mapping<Ts>...>,
 		  missing_default_type_mapping<unnamed_default_type_mapping<Ts>...>>
@@ -639,7 +639,7 @@ namespace daw::json {
 		  daw::is_detected_v<underlying_nullable_type, T>;
 
 		template<typename T>
-		constexpr unknown_variant_type<T> get_variant_type_list( T const * );
+		[[maybe_unused]] constexpr unknown_variant_type<T> get_variant_type_list( T const * );
 
 		struct cannot_deduce_variant_element_types {};
 
