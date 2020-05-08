@@ -13,6 +13,14 @@ include_directories("./include")
 
 set(DAW_JSON_USE_SANITIZERS OFF CACHE STRING "Enable address and undefined behaviour sanitizers")
 
+set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
+if( DAW_JSON_NO_CONST_EXPR )
+    message("DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
+    add_definitions(-DDAW_JSON_NO_CONST_EXPR)
+else( )
+    message("DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
+endif( )
+
 set(DAW_JSON_DONT_USE_EXCEPTIONS OFF CACHE STRING "Don't throw exceptions when json errors occur")
 if (DAW_JSON_DONT_USE_EXCEPTIONS)
     if (DAW_JSON_DONT_USE_EXCEPTIONS=OFF)

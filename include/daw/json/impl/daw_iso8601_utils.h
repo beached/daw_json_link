@@ -125,7 +125,7 @@ namespace daw::json::datetime {
 
 			using Days = std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
 			return std::chrono::time_point<std::chrono::system_clock,
-			                               std::chrono::milliseconds>{ } +
+			                               std::chrono::milliseconds>{} +
 			       ( Days( days_since_epoch ) + std::chrono::hours( h ) +
 			         std::chrono::minutes( min ) +
 			         std::chrono::seconds( static_cast<std::uint_least32_t>( s ) ) +
@@ -170,7 +170,7 @@ namespace daw::json::datetime {
 	template<typename CharT, typename Bounds, std::ptrdiff_t Ex>
 	constexpr date_parts parse_iso_8601_date(
 	  daw::basic_string_view<CharT, Bounds, Ex> timestamp_str ) {
-		auto result = date_parts{ 0, 0, 0 };
+		auto result = date_parts{0, 0, 0};
 		result.day = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 		  timestamp_str.pop_back( 2U ).data( ) );
 		if( not parse_utils::is_number( timestamp_str.back( ) ) ) {
@@ -196,7 +196,7 @@ namespace daw::json::datetime {
 	template<typename CharT, typename Bounds, std::ptrdiff_t Ex>
 	constexpr time_parts parse_iso_8601_time(
 	  daw::basic_string_view<CharT, Bounds, Ex> timestamp_str ) {
-		auto result = time_parts{ 0, 0, 0, 0 };
+		auto result = time_parts{0, 0, 0, 0};
 		result.hour = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 		  timestamp_str.pop_front( 2 ).data( ) );
 		if( not parse_utils::is_number( timestamp_str.front( ) ) ) {
@@ -227,7 +227,7 @@ namespace daw::json::datetime {
 	constexpr std::chrono::time_point<std::chrono::system_clock,
 	                                  std::chrono::milliseconds>
 	parse_iso8601_timestamp( daw::basic_string_view<CharT, Bounds, Ex> ts ) {
-		constexpr CharT t_str[2] = { static_cast<CharT>( 'T' ), 0 };
+		constexpr CharT t_str[2] = {static_cast<CharT>( 'T' ), 0};
 		auto const date_str = ts.pop_front( t_str );
 		if( ts.empty( ) ) {
 			daw_json_error( "Invalid timestamp, missing T separator" );
@@ -313,13 +313,13 @@ namespace daw::json::datetime {
 		dur_from_epoch -= sec;
 		auto const ms =
 		  std::chrono::duration_cast<std::chrono::milliseconds>( dur_from_epoch );
-		return ymdhms{ y + ( m <= 2 ),
-		               m,
-		               d,
-		               static_cast<std::uint_least32_t>( hrs.count( ) ),
-		               static_cast<std::uint_least32_t>( min.count( ) ),
-		               static_cast<std::uint_least32_t>( sec.count( ) ),
-		               static_cast<std::uint_least32_t>( ms.count( ) ) };
+		return ymdhms{y + ( m <= 2 ),
+		              m,
+		              d,
+		              static_cast<std::uint_least32_t>( hrs.count( ) ),
+		              static_cast<std::uint_least32_t>( min.count( ) ),
+		              static_cast<std::uint_least32_t>( sec.count( ) ),
+		              static_cast<std::uint_least32_t>( ms.count( ) )};
 	}
 
 	constexpr std::string_view month_short_name( unsigned m ) {

@@ -20,6 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifdef DAW_JSON_NO_CONST_EXPR
+// Need to test constexpr and this will prevent it
+#undef DAW_JSON_NO_CONST_EXPR
+#endif
+
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 #include "daw/json/impl/daw_json_assert.h"
@@ -364,8 +369,8 @@ namespace daw::json {
 static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
 
 struct OptionalOrdered {
-	int a;
-	std::optional<int> b;
+	int a = 0;
+	std::optional<int> b{ };
 };
 
 namespace daw::json {
@@ -382,10 +387,14 @@ namespace daw::json {
 } // namespace daw::json
 constexpr std::string_view optional_ordered1_data = "[1]";
 static_assert(
-  not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b );
+  static_cast<bool>(
+    daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) ==
+  false );
 
 int main( int, char ** ) try {
 	using namespace daw::json;
+	daw::expecting(
+	  not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b );
 	daw::expecting( parse_unsigned_test<uintmax_t>( "12345", 12345 ) );
 	daw::expecting( parse_real_test<double>( "5", 5.0 ) );
 	daw::expecting( parse_real_test<double>( "5.5", 5.5 ) );

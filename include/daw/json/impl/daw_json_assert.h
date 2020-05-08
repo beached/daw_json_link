@@ -55,11 +55,12 @@ namespace daw::json::json_details {
 
 namespace daw::json {
 	class json_exception {
-		std::string m_reason{ };
+		std::string m_reason{};
 
 	public:
 		[[maybe_unused]] json_exception( ) = default;
-		[[maybe_unused]] explicit inline json_exception( std::string_view reason ) noexcept
+		[[maybe_unused]] explicit inline json_exception(
+		  std::string_view reason ) noexcept
 		  : m_reason( reason ) {}
 
 		[[nodiscard, maybe_unused]] std::string const &reason( ) const noexcept {
