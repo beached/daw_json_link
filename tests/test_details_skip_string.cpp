@@ -39,8 +39,8 @@ bool test_empty( ) {
 }
 
 bool test_quoted_number( ) {
-	constexpr std::string_view sv = R"("1234")";
-	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
+	constexpr std::string_view sv = R"( "1234")";
+	auto rng = daw::json::json_details::IteratorRange( sv.data( ) + 1,
 	                                                   sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
