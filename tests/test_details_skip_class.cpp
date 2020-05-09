@@ -172,7 +172,7 @@ bool test_embedded_class_broken_001( ) {
 #define do_test( ... )                                                         \
 	try {                                                                        \
 		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                    \
-	} catch( daw::json::json_exception const &jex ) {                                       \
+	} catch( daw::json::json_exception const &jex ) {                            \
 		std::cerr << "Unexpected exception thrown by parser in test '"             \
 		          << "" #__VA_ARGS__ << "': " << jex.reason( ) << std::endl;       \
 	}                                                                            \

@@ -69,8 +69,8 @@ bool test_null_number_trusted( ) {
 
 	using my_number = json_number_null<no_name, std::optional<int>>;
 	constexpr std::string_view sv = "5,";
-	auto rng = IteratorRange<char const *, true>(
-	  sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng =
+	  IteratorRange<char const *, true>( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
 	return v and *v == 5;
 }

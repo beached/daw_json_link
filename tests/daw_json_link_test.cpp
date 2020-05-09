@@ -394,7 +394,8 @@ static_assert(
 
 int main( int, char ** ) try {
 	{
-		constexpr auto const v = daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
+		constexpr auto const v =
+		  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
 		daw::expecting( not v.b );
 	}
 	using namespace daw::json;

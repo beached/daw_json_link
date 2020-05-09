@@ -702,8 +702,8 @@ namespace daw::json {
 			rng.trim_left_unchecked( );
 #ifdef _MSC_VER
 			// Work around MSVC ICE
-      daw_json_assert( rng.front( '[' ),
-                            "Expected array class to being with a '['" );
+			daw_json_assert( rng.front( '[' ),
+			                 "Expected array class to being with a '['" );
 #else
 			daw_json_assert_weak( rng.front( '[' ),
 			                      "Expected array class to being with a '['" );
