@@ -70,10 +70,8 @@ bool test_missing_untrusted( ) {
 	using my_number = json_number<no_name>;
 	constexpr std::string_view sv = " ,";
 	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
-	try {
-		auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
-		daw::do_not_optimize( v );
-	} catch( json_exception const & ) { return true; }
+	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
+	daw::do_not_optimize( v );
 	return false;
 }
 
@@ -99,11 +97,20 @@ bool test_real_untrusted( ) {
 	do {                                                                         \
 	} while( false )
 
+#define do_fail_test( ... )                                                    \
+	do {                                                                         \
+		try {                                                                      \
+			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                  \
+		} catch( daw::json::json_exception const & ) { break; }                    \
+		std::cerr << "Expected exception, but none thrown in '"                    \
+		          << "" #__VA_ARGS__ << "'\n";                                     \
+	} while( false )
+
 int main( int, char ** ) try {
 	do_test( test_zero_untrusted( ) );
 	do_test( test_positive_zero_untrusted( ) );
 	do_test( test_negative_zero_untrusted( ) );
-	do_test( test_missing_untrusted( ) );
+	do_fail_test( test_missing_untrusted( ) );
 	do_test( test_real_untrusted( ) );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

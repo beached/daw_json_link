@@ -66,6 +66,15 @@ bool test_number_space( ) {
 	do {                                                                         \
 	} while( false )
 
+#define do_fail_test( ... )                                                    \
+	do {                                                                         \
+		try {                                                                      \
+			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                  \
+		} catch( daw::json::json_exception const & ) { break; }                    \
+		std::cerr << "Expected exception, but none thrown in '"                    \
+		          << "" #__VA_ARGS__ << "'\n";                                     \
+	} while( false )
+
 int main( int, char ** ) try {
 	do_test( test_number_in_class( ) );
 	do_test( test_number( ) );

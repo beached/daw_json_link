@@ -74,10 +74,8 @@ bool test_missing_quotes_001( ) {
 	auto rng = daw::json::json_details::IteratorRange(
 	  sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
-	try {
-		auto v = skip_string( rng );
-		daw::do_not_optimize( v );
-	} catch( daw::json::json_exception const & ) { return true; }
+	auto v = skip_string( rng );
+	daw::do_not_optimize( v );
 	return false;
 }
 
@@ -87,10 +85,8 @@ bool test_missing_quotes_002( ) {
 	auto rng = daw::json::json_details::IteratorRange(
 	  sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
-	try {
-		auto v = skip_string( rng );
-		daw::do_not_optimize( v );
-	} catch( daw::json::json_exception const & ) { return true; }
+	auto v = skip_string( rng );
+	daw::do_not_optimize( v );
 	return false;
 }
 
@@ -100,10 +96,8 @@ bool test_missing_quotes_003( ) {
 	auto rng = daw::json::json_details::IteratorRange(
 	  sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
-	try {
-		auto v = skip_string( rng );
-		daw::do_not_optimize( v );
-	} catch( daw::json::json_exception const & ) { return true; }
+	auto v = skip_string( rng );
+	daw::do_not_optimize( v );
 	return false;
 }
 
@@ -117,14 +111,23 @@ bool test_missing_quotes_003( ) {
 	do {                                                                         \
 	} while( false )
 
+#define do_fail_test( ... )                                                    \
+	do {                                                                         \
+		try {                                                                      \
+			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                  \
+		} catch( daw::json::json_exception const & ) { break; }                    \
+		std::cerr << "Expected exception, but none thrown in '"                    \
+		          << "" #__VA_ARGS__ << "'\n";                                     \
+	} while( false )
+
 int main( int, char ** ) try {
 	do_test( test_empty( ) );
 	do_test( test_quoted_number( ) );
 	do_test( test_empty_quoted( ) );
 	do_test( test_embeded_quotes( ) );
-	do_test( test_missing_quotes_001( ) );
-	do_test( test_missing_quotes_002( ) );
-	do_test( test_missing_quotes_003( ) );
+	do_fail_test( test_missing_quotes_001( ) );
+	do_fail_test( test_missing_quotes_002( ) );
+	do_fail_test( test_missing_quotes_003( ) );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
