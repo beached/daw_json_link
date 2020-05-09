@@ -386,12 +386,17 @@ namespace daw::json {
 	};
 } // namespace daw::json
 constexpr std::string_view optional_ordered1_data = "[1]";
+/*
 static_assert(
   static_cast<bool>(
-    daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) ==
-  false );
+   not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) );
+*/
 
 int main( int, char ** ) try {
+	{
+		constexpr auto const v = daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
+		daw::expecting( not v.b );
+	}
 	using namespace daw::json;
 	daw::expecting(
 	  not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b );

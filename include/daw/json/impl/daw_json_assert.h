@@ -55,7 +55,7 @@ namespace daw::json::json_details {
 
 namespace daw::json {
 	class json_exception {
-		std::string m_reason{};
+		std::string m_reason{ };
 
 	public:
 		[[maybe_unused]] json_exception( ) = default;
@@ -127,10 +127,8 @@ daw_json_assert( Bool const &b,
 }
 
 #define daw_json_assert_weak( ... )                                            \
-	do {                                                                         \
-		if constexpr( not Range::is_unchecked_input ) {                            \
-			daw_json_assert( __VA_ARGS__ );                                          \
-		}                                                                          \
+	if constexpr( not Range::is_unchecked_input ) {                              \
+		daw_json_assert( __VA_ARGS__ );                                            \
 	} while( false )
 
 #else // undef DAW_JSON_CHECK_DEBUG_ONLY
