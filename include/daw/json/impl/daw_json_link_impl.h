@@ -347,9 +347,10 @@ namespace daw::json::json_details {
 		bool is_first = true;
 		*it++ = '{';
 
-		daw::bounded_vector_t<daw::string_view, sizeof...( JsonMembers ) * 2U>
-		  visited_members{ };
-		// Tag Members, if any
+		auto visited_members =
+		  daw::bounded_vector_t<daw::string_view, sizeof...( JsonMembers ) * 2U>{ };
+		// Tag Members, if any.  Putting them ahead means we can parse this faster
+		// in the future
 		(void)( ( tags_to_json_str<Is,
 		                           daw::traits::nth_element<Is, JsonMembers...>>(
 		            is_first, it, value, visited_members ),
@@ -383,9 +384,6 @@ namespace daw::json::json_details {
 		return it;
 	}
 
-	/***
-	 * This is here to force constant evaluation prior to C++20.
-	 */
 	template<typename Range, typename... JsonMembers>
 	static inline constexpr auto known_locations_v =
 	  locations_info_t<sizeof...( JsonMembers ), Range>{
@@ -413,12 +411,13 @@ namespace daw::json::json_details {
 			}
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
+			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of range" );
 			while( rng.front( ) != '}' ) {
-				daw_json_assert_weak( rng.can_parse_more( ),
-				                      "Unexpected end of range" );
 				(void)parse_name( rng );
 				(void)skip_value( rng );
 				rng.clean_tail( );
+				daw_json_assert_weak( rng.can_parse_more( ),
+				                      "Unexpected end of range" );
 			}
 
 			daw_json_assert_weak( rng.front( ) == '}',
