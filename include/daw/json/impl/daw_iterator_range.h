@@ -232,22 +232,23 @@ namespace daw::json::json_details {
 		}
 
 		constexpr void move_to_next_of( char c ) {
-			skip_comments_unchecked( );
+			skip_comments( );
 			daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 			while( front( ) != c ) {
 				daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 				remove_prefix( );
-				skip_comments_unchecked( );
+				skip_comments( );
 			}
 		}
 
 		template<std::size_t N>
 		constexpr void move_to_next_of( char const ( &str )[N] ) {
-			skip_comments_unchecked( );
+			skip_comments( );
+			daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 			while( not in( str ) ) {
 				daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 				remove_prefix( );
-				skip_comments_unchecked( );
+				skip_comments( );
 			}
 		}
 

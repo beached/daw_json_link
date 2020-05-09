@@ -401,7 +401,8 @@ namespace daw::json::json_details {
 		  can_construct_a_v<JsonClass, typename JsonMembers::parse_to_t...>,
 		  "Supplied types cannot be used for	construction of this type" );
 
-		rng.move_to_next_of( '{' );
+		rng.trim_left( );
+		daw_json_assert_weak( rng.front( '{' ), "Expected start of class" );
 		rng.class_first = rng.first;
 		rng.class_last = rng.last;
 		rng.remove_prefix( );
