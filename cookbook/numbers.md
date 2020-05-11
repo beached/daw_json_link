@@ -42,3 +42,40 @@ namespace daw::json {
   };
 }
 ```
+
+## Specific numeric type parsing
+The parser supports parsing to specific types such as int32_t and uin64_t with range checking, if possible.
+
+```json
+{
+  "unsigned_member": 12345,
+  "signed_member": -12345
+}
+```
+The above JSON object has 2 members, both numbers but one is expected to always be an unsigned, the other a signed integer
+
+Below is the C++ data structure and trait to map the structure to the JSON object.
+To see a working example using this code, refer to [cookbook_numbers1_test.cpp](../tests/cookbook_numbers2_test.cpp) 
+```
+struct MyClass2 {
+  unsigned member_unsigned;
+  signed member_signed;
+};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyClass2> {
+    using type = json_member_list<
+      json_number<"member_unsigned", unsigned>,
+      json_number<"member_signed", signed>
+    >;
+
+    static inline auto to_json_data( MyClass1 const &value ) {
+      return std::forward_as_tuple( 
+        value.member_unsigned, 
+        value.member_signed );
+    }
+  };
+}
+```
+
