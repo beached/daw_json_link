@@ -59,7 +59,7 @@ namespace daw::json::json_details::to_strings {
 	[[nodiscard, maybe_unused]] auto to_string( std::optional<T> const &v )
 	  -> decltype( to_string( *v ) ) {
 		if( not v ) {
-			return { "null" };
+			return {"null"};
 		}
 		return to_string( *v );
 	}
@@ -421,7 +421,7 @@ namespace daw::json::json_details {
 			using JsonMember =
 			  typename std::tuple_element<idx,
 			                              typename element_t::element_map_t>::type;
-			it = to_string<JsonMember>( ParseTag<JsonMember::base_expected_type>{ },
+			it = to_string<JsonMember>( ParseTag<JsonMember::base_expected_type>{},
 			                            it, std::get<idx>( value ) );
 		}
 	}
@@ -465,7 +465,7 @@ namespace daw::json::json_details {
 		static_assert( is_valid_optional_v<Optional> );
 		daw_json_assert( value, "Should Never get here without a value" );
 		using tag_type = ParseTag<JsonMember::base_expected_type>;
-		return to_string<JsonMember>( tag_type{ }, it, *value );
+		return to_string<JsonMember>( tag_type{}, it, *value );
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -538,7 +538,7 @@ namespace daw::json::json_details {
 		              std::is_integral_v<parse_to_t> ) {
 			auto v = static_cast<under_type>( value );
 
-			char buff[std::numeric_limits<under_type>::digits10 + 1]{ };
+			char buff[std::numeric_limits<under_type>::digits10 + 1]{};
 			char *ptr = buff;
 			if( v < 0 ) {
 				*it++ = '-';
@@ -598,7 +598,7 @@ namespace daw::json::json_details {
 			auto v = static_cast<under_type>( value );
 			daw_json_assert(
 			  v >= 0, "Negative numbers are not supported for unsigned types" );
-			char buff[std::numeric_limits<under_type>::digits10 + 1]{ };
+			char buff[std::numeric_limits<under_type>::digits10 + 1]{};
 			char *ptr = buff;
 			do {
 				*ptr++ = '0' + static_cast<char>( v % 10 );
@@ -638,10 +638,10 @@ namespace daw::json::utils {
 
 		if constexpr( std::is_unsigned_v<Integer> ) {
 			return json_details::to_string<utils_details::number<Integer>>(
-			  ParseTag<JsonParseTypes::Unsigned>{ }, it, value );
+			  ParseTag<JsonParseTypes::Unsigned>{}, it, value );
 		} else {
 			return json_details::to_string<utils_details::number<Integer>>(
-			  ParseTag<JsonParseTypes::Signed>{ }, it, value );
+			  ParseTag<JsonParseTypes::Signed>{}, it, value );
 		}
 	}
 } // namespace daw::json::utils
@@ -771,16 +771,16 @@ namespace daw::json::json_details {
 			                                    typename JsonMember::to_converter_t,
 			                                    OutputIterator, parse_to_t> ) {
 
-				it = typename JsonMember::to_converter_t{ }( it, value );
+				it = typename JsonMember::to_converter_t{}( it, value );
 			} else {
 				it = utils::copy_to_iterator(
-				  it, typename JsonMember::to_converter_t{ }( value ) );
+				  it, typename JsonMember::to_converter_t{}( value ) );
 			}
 			*it++ = '"';
 			return it;
 		} else {
 			return utils::copy_to_iterator(
-			  it, typename JsonMember::to_converter_t{ }( value ) );
+			  it, typename JsonMember::to_converter_t{}( value ) );
 		}
 	}
 
@@ -798,7 +798,7 @@ namespace daw::json::json_details {
 			auto count = std::size( container ) - 1U;
 			for( auto const &v : container ) {
 				it = to_string<typename JsonMember::json_element_t>(
-				  ParseTag<JsonMember::json_element_t::expected_type>{ }, it, v );
+				  ParseTag<JsonMember::json_element_t::expected_type>{}, it, v );
 				if( count-- > 0 ) {
 					*it++ = ',';
 				}
@@ -840,7 +840,7 @@ namespace daw::json::json_details {
 				*it++ = '"';
 				*it++ = ':';
 				// Append Key Value
-				it = to_string<key_t>( ParseTag<key_t::expected_type>{ }, it,
+				it = to_string<key_t>( ParseTag<key_t::expected_type>{}, it,
 				                       json_get_key( v ) );
 
 				*it++ = ',';
@@ -850,7 +850,7 @@ namespace daw::json::json_details {
 				*it++ = '"';
 				*it++ = ':';
 				// Append Value Value
-				it = to_string<value_t>( ParseTag<value_t::expected_type>{ }, it,
+				it = to_string<value_t>( ParseTag<value_t::expected_type>{}, it,
 				                         json_get_value( v ) );
 
 				*it++ = '}';
@@ -877,11 +877,11 @@ namespace daw::json::json_details {
 			auto count = std::size( container ) - 1U;
 			for( auto const &v : container ) {
 				it = to_string<typename JsonMember::json_key_t>(
-				  ParseTag<JsonMember::json_key_t::expected_type>{ }, it,
+				  ParseTag<JsonMember::json_key_t::expected_type>{}, it,
 				  json_get_key( v ) );
 				*it++ = ':';
 				it = to_string<typename JsonMember::json_element_t>(
-				  ParseTag<JsonMember::json_element_t::expected_type>{ }, it,
+				  ParseTag<JsonMember::json_element_t::expected_type>{}, it,
 				  json_get_value( v ) );
 				if( count-- > 0 ) {
 					*it++ = ',';
@@ -895,7 +895,7 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename T>
 	[[nodiscard]] constexpr OutputIterator member_to_string( OutputIterator it,
 	                                                         T const &value ) {
-		return to_string<JsonMember>( ParseTag<JsonMember::expected_type>{ },
+		return to_string<JsonMember>( ParseTag<JsonMember::expected_type>{},
 		                              daw::move( it ), value );
 	}
 
@@ -934,7 +934,7 @@ namespace daw::json::json_details {
 		  it, tag_member_name );
 		it = utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
 		it = member_to_string<tag_member>( daw::move( it ),
-		                                   typename JsonMember::switcher{ }( v ) );
+		                                   typename JsonMember::switcher{}( v ) );
 	}
 
 	template<std::size_t pos, typename JsonMember, typename OutputIterator,

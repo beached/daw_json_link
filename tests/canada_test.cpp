@@ -81,7 +81,7 @@ int main( int argc, char **argv ) try {
 	                   "Missing value" );
 	*/
 
-	std::string str{ };
+	std::string str{};
 	{
 		auto out_it = std::back_inserter( str );
 		str.reserve( json_sv1.size( ) );

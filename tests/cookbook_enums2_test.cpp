@@ -50,7 +50,7 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_array<"member0", daw::cookbook_enums2::Colours>>;
 #else
-		static constexpr inline char const member0[] = "member0";
+		static constexpr char const member0[] = "member0";
 		using type =
 		  json_member_list<json_array<member0, daw::cookbook_enums2::Colours>>;
 #endif

@@ -89,10 +89,10 @@ namespace daw::json::json_details {
 		                 std::random_access_iterator_tag>,
 		               "Expecting a Random Contiguous Iterator" );
 		using iterator = Iterator;
-		iterator first{ };
-		iterator last{ };
-		iterator class_first{ };
-		iterator class_last{ };
+		iterator first{};
+		iterator last{};
+		iterator class_first{};
+		iterator class_last{};
 		using Range = IteratorRange<iterator, IsUnCheckedInput>;
 
 		static constexpr bool is_unchecked_input = IsUnCheckedInput;

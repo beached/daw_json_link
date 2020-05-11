@@ -55,7 +55,7 @@ namespace daw::json::json_details {
 
 namespace daw::json {
 	class json_exception {
-		std::string m_reason{ };
+		std::string m_reason{};
 
 	public:
 		[[maybe_unused]] json_exception( ) = default;

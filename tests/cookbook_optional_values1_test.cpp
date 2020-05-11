@@ -35,9 +35,9 @@
 
 namespace daw::cookbook_optional_values1 {
 	struct MyOptionalStuff1 {
-		std::optional<int> member0{ };
-		std::string member1{ };
-		std::unique_ptr<bool> member2{ };
+		std::optional<int> member0{};
+		std::string member1{};
+		std::unique_ptr<bool> member2{};
 	};
 
 	bool operator==( MyOptionalStuff1 const &lhs, MyOptionalStuff1 const &rhs ) {

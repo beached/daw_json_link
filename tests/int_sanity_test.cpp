@@ -32,7 +32,7 @@
 
 template<typename T, size_t N>
 std::vector<T> make_random_data( ) {
-	std::vector<T> result{ };
+	std::vector<T> result{};
 	result.reserve( N );
 	for( size_t n = 0; n < N; ++n ) {
 		result.push_back( daw::randint<T>( std::numeric_limits<T>::min( ),

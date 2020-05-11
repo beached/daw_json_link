@@ -71,7 +71,7 @@ namespace daw::json {
 std::string read_file( std::string const &filename ) {
 	std::ifstream f( filename );
 	if( !f ) {
-		return { };
+		return {};
 	}
 	return std::string( std::istreambuf_iterator<char>( f ),
 	                    std::istreambuf_iterator<char>( ) );
