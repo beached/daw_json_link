@@ -234,17 +234,23 @@ namespace daw::json {
 			return true;
 		}
 
-		constexpr bool operator==( daw::string_view sv ) const {
-			return daw::string_view( m_data, N - 1 ) == sv;
+		constexpr bool operator==( daw::string_view rhs ) const {
+			return daw::string_view( m_data, N - 1 ) == rhs;
+		}
+
+		constexpr bool operator==( std::string_view rhs ) const {
+			return std::string_view( m_data, N - 1 ) == rhs;
 		}
 
 		constexpr operator std::string_view( ) const {
 			return std::string_view( m_data, N - 1 );
 		}
 	};
-
 	template<typename... Chars>
-	json_name( Chars... )->json_name<sizeof...( Chars )>;
+	json_name( Chars... ) -> json_name<sizeof...( Chars )>;
+
+	template<std::size_t N>
+	json_name( char const ( & )[N] ) -> json_name<N>;
 
 #define JSONNAMETYPE daw::json::json_name
 
