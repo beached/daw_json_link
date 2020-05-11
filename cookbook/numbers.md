@@ -48,8 +48,8 @@ The parser supports parsing to specific types such as int32_t and uin64_t with r
 
 ```json
 {
-  "unsigned_member": 12345,
-  "signed_member": -12345
+  "member_unsigned": 12345,
+  "member_signed": -12345
 }
 ```
 The above JSON object has 2 members, both numbers but one is expected to always be an unsigned, the other a signed integer
