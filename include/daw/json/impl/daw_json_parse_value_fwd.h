@@ -23,6 +23,7 @@
 #pragma once
 
 #include "daw_json_parse_common.h"
+#include "daw_json_value.h"
 
 namespace daw::json::json_details {
 
@@ -85,4 +86,8 @@ namespace daw::json::json_details {
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng );
+
+	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	constexpr basic_json_value<IteratorRange<char const *, false>>
+	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng );
 } // namespace daw::json::json_details

@@ -47,16 +47,6 @@
 #include <tuple>
 
 namespace daw::json {
-	namespace json_details {
-		template<typename T>
-		struct arrow_proxy {
-			T value;
-
-			[[nodiscard]] constexpr T *operator->( ) {
-				return &value;
-			}
-		};
-	} // namespace json_details
 
 	/// allow iteration over an array of json
 	template<typename JsonElement, bool IsUnCheckedInput = false>
@@ -67,7 +57,7 @@ namespace daw::json {
 		get_range( String &&data, std::string_view member_path ) {
 			auto [is_found, result] = json_details::find_range<IsUnCheckedInput>(
 			  std::forward<String>( data ),
-			  {member_path.data( ), member_path.size( )} );
+			  { member_path.data( ), member_path.size( ) } );
 			daw_json_assert( is_found, "Could not find path to member" );
 			daw_json_assert( result.front( ) == '[', "Member is not an array" );
 			return result;
@@ -88,7 +78,7 @@ namespace daw::json {
 	private:
 		// This lets us fastpath and just skip n characters
 		using Range = json_details::IteratorRange<char const *, IsUnCheckedInput>;
-		Range m_state{nullptr, nullptr};
+		Range m_state{ nullptr, nullptr };
 		mutable difference_type m_can_skip = -1;
 
 	public:
@@ -123,10 +113,10 @@ namespace daw::json {
 			auto const ae = daw::on_exit_success(
 			  [&] { m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) ); } );
 			return json_details::parse_value<element_type>(
-			  ParseTag<element_type::expected_type>{}, tmp );
+			  ParseTag<element_type::expected_type>{ }, tmp );
 #else
 			auto result = json_details::parse_value<element_type>(
-			  ParseTag<element_type::expected_type>{}, tmp );
+			  ParseTag<element_type::expected_type>{ }, tmp );
 
 			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
 			return result;
@@ -134,7 +124,7 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] pointer operator->( ) const {
-			return pointer{operator*( )};
+			return pointer{ operator*( ) };
 		}
 
 		constexpr json_array_iterator &operator++( ) {
@@ -193,8 +183,8 @@ namespace daw::json {
 		using iterator = json_array_iterator<JsonElement, IsUnCheckedInput>;
 
 	private:
-		iterator m_first{};
-		iterator m_last{};
+		iterator m_first{ };
+		iterator m_last{ };
 
 	public:
 		constexpr json_array_range( ) = default;

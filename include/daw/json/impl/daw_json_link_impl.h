@@ -22,12 +22,13 @@
 
 #pragma once
 
+#include "daw_arrow_proxy.h"
 #include "daw_iso8601_utils.h"
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
-#include "daw_json_parse_value.h"
 #include "daw_json_to_string.h"
+#include "daw_json_parse_value.h"
 #ifndef _MSC_VER
 #include "daw_murmur3.h"
 #endif
@@ -76,7 +77,7 @@ namespace daw::json {
 		                                        std::chrono::milliseconds>>;
 
 		[[maybe_unused, nodiscard]] constexpr result_type operator( )( ) const {
-			return {};
+			return { };
 		}
 
 		[[maybe_unused, nodiscard]] constexpr result_type
@@ -89,10 +90,10 @@ namespace daw::json {
 	struct custom_from_converter_t {
 		[[nodiscard]] constexpr decltype( auto ) operator( )( ) {
 			if constexpr( std::is_same_v<T, std::string_view> ) {
-				return std::string_view{};
+				return std::string_view{ };
 			} else if constexpr( std::is_same_v<T,
 			                                    std::optional<std::string_view>> ) {
-				return std::string_view{};
+				return std::string_view{ };
 			} else {
 				return from_string( daw::tag<T> );
 			}
@@ -156,7 +157,7 @@ namespace daw::json::json_details {
 #ifndef _MSC_VER
 		std::uint32_t hash_value;
 #endif
-		Range location{};
+		Range location{ };
 
 #ifndef _MSC_VER
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
@@ -299,13 +300,13 @@ namespace daw::json::json_details {
 		if( rng.front( ) == ']' ) {
 			if constexpr( is_json_nullable_v<ordered_member_subtype_t<JsonMember>> ) {
 				using constructor_t = typename json_member_type::constructor_t;
-				return constructor_t{}( );
+				return constructor_t{ }( );
 			} else if constexpr( is_json_nullable_v<json_member_type> ) {
 				daw_json_error( missing_member( "ordered_class_member" ) );
 			}
 		}
 		return parse_value<json_member_type>(
-		  ParseTag<json_member_type::expected_type>{}, rng );
+		  ParseTag<json_member_type::expected_type>{ }, rng );
 	}
 
 	template<typename JsonMember, std::size_t N, typename Range>
@@ -324,15 +325,15 @@ namespace daw::json::json_details {
 		// If the member was found loc will have it's position
 		if( not loc.is_null( ) ) {
 			if( loc.begin( ) == rng.begin( ) ) {
-				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 				                                rng );
 			}
 			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::expected_type>{}, loc );
+			  ParseTag<JsonMember::expected_type>{ }, loc );
 		}
 		if constexpr( is_json_nullable_v<JsonMember> ) {
 			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::expected_type>{}, loc );
+			  ParseTag<JsonMember::expected_type>{ }, loc );
 		} else {
 			daw_json_error( missing_member( JsonMember::name ) );
 		}
@@ -348,7 +349,7 @@ namespace daw::json::json_details {
 		*it++ = '{';
 
 		auto visited_members =
-		  daw::bounded_vector_t<daw::string_view, sizeof...( JsonMembers ) * 2U>{};
+		  daw::bounded_vector_t<daw::string_view, sizeof...( JsonMembers ) * 2U>{ };
 		// Tag Members, if any.  Putting them ahead means we can parse this faster
 		// in the future
 		(void)( ( tags_to_json_str<Is,
@@ -378,7 +379,7 @@ namespace daw::json::json_details {
 		(void)std::array{
 		  ( to_json_ordered_str<Is, daw::traits::nth_element<Is, JsonMembers...>>(
 		      array_idx, it, args ),
-		    0 )...};
+		    0 )... };
 
 		*it++ = ']';
 		return it;
@@ -387,7 +388,7 @@ namespace daw::json::json_details {
 	template<typename Range, typename... JsonMembers>
 	static inline constexpr auto known_locations_v =
 	  locations_info_t<sizeof...( JsonMembers ), Range>{
-	    location_info_t<Range>( JsonMembers::name )...};
+	    location_info_t<Range>( JsonMembers::name )... };
 
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
@@ -448,13 +449,13 @@ namespace daw::json::json_details {
 			 */
 			return std::apply(
 			  daw::construct_a<JsonClass>,
-			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )...} );
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
 #else
 			JsonClass result = std::apply(
 			  daw::construct_a<JsonClass>,
-			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )...} );
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
 			cleanup_fn( );
 			return result;
 #endif
@@ -497,14 +498,15 @@ namespace daw::json::json_details {
 		auto const oe = daw::on_exit_success( cleanup_fn );
 		return std::apply(
 		  daw::construct_a<JsonClass>,
-		  tp_t{parse_ordered_class_member<JsonMembers>( current_idx, rng )...} );
+		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
 #else
 		JsonClass result = std::apply(
 		  daw::construct_a<JsonClass>,
-		  tp_t{parse_ordered_class_member<JsonMembers>( current_idx, rng )...} );
+		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
 
 		cleanup_fn( );
 		return result;
 #endif
 	}
 } // namespace daw::json::json_details
+
