@@ -69,11 +69,22 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] constexpr mapped_type value( ) const {
-			return { Range( m_state ) };
+			if( is_array( ) ) {
+				return Range( m_state );
+			}
+			auto rng = m_state;
+			(void)parse_name( rng );
+			return Range( rng.first, rng.last );
 		}
 
 		[[nodiscard]] constexpr value_type operator*( ) const {
-			return { name( ), value( ) };
+			if( is_array( ) ) {
+				return { {}, Range( m_state ) };
+			}
+			auto rng = m_state;
+			auto name = parse_name( rng );
+			return { std::string_view( name.data( ), name.size( ) ),
+			         Range( rng.first, rng.last ) };
 		}
 
 		[[nodiscard]] constexpr pointer operator->( ) const {
@@ -150,13 +161,14 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] constexpr iterator begin( ) const {
-			auto rng = m_rng;
+			Range rng = Range( m_rng.first, m_rng.last );
 			rng.remove_prefix( );
-			return basic_json_value_iterator<Range>{ rng };
+			rng.trim_left( );
+			return basic_json_value_iterator<Range>( rng );
 		}
 
 		[[nodiscard]] constexpr iterator end( ) const {
-			return basic_json_value_iterator<Range>{ };
+			return basic_json_value_iterator<Range>( );
 		}
 
 		[[nodiscard]] JsonBaseParseTypes type( ) const {
