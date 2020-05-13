@@ -42,10 +42,12 @@ json_value val = json_value( json_string );
   * [Dates](cookbook/dates.md)
   * [Enums](cookbook/enums.md)
   * [Graphs](cookbook/graphs.md)
-  * [Key Values](cookbook/key_values.md) - Map and Dictionary like things 
+  * [Key Values](cookbook/key_values.md) - Map and Dictionary like things
+	* [Numbers](cookbook/numbers.md)
   * [Optional/Nullable Values](cookbook/optional_values.md)
   * [Parsing Invidual Members](cookbook/parsing_idividual_members.md)
   * [Strings](cookbook/strings.md)
+	* [Unknown JSON and Delayed Parsing](cookbook/unknown_types_and_delayed_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
   * [Variant](cookbook/variant.md)
   * [Automatic Code Generation](cookbook/automated_code_generation.md)
 * [Intro](#intro)
