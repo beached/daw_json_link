@@ -141,6 +141,28 @@ namespace daw::json {
 			  "basic_state_full_json_value is only valid on arrays or classes" );
 		}
 
+		constexpr basic_stateful_json_value( )
+		  : basic_stateful_json_value( basic_json_value<Range>( "{}" ) ) {}
+
+		constexpr void reset( basic_json_value<Range> val ) {
+			bool const was_an_array = is_array( );
+			m_value = std::move( val );
+			bool const is_an_array = m_value.is_array( );
+			if( is_an_array ) {
+				if( was_an_array ) {
+					get_array_locs( ).clear( );
+				} else {
+					m_locs = array_locs( );
+				}
+			} else {
+				if( was_an_array ) {
+					m_locs = class_locs( );
+				} else {
+					get_class_locs( ).clear( );
+				}
+			}
+		}
+
 		[[nodiscard]] constexpr basic_json_value<Range>
 		operator[]( std::string_view key ) {
 			daw_json_assert_weak( is_class( ),

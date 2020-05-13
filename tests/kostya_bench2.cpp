@@ -58,9 +58,10 @@ int main( int argc, char *argv[] ) {
 	auto rng =
 	  from_json_unchecked<json_delayed<no_name>>( json_sv, "coordinates" );
 
+	auto val = stateful_json_value( );
 	for( auto item : rng ) {
 		++len;
-		stateful_json_value val = stateful_json_value( item.value );
+		val.reset( item.value );
 		x += from_json_unchecked<double>( val["x"] );
 		y += from_json_unchecked<double>( val["y"] );
 		z += from_json_unchecked<double>( val["z"] );
