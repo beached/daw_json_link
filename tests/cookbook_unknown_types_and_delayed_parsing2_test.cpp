@@ -63,6 +63,10 @@ namespace daw::json {
 struct MyDelayedClass {
 	int a;
 	bool b;
+
+	constexpr bool operator==( MyDelayedClass const &rhs ) const {
+		return a == rhs.a and b == rhs.b;
+	}
 };
 
 namespace daw::json {
@@ -81,6 +85,15 @@ namespace daw::json {
 		}
 	};
 } // namespace daw::json
+
+bool operator==( MyClass2 const &lhs, MyClass2 const &rhs ) {
+	if( lhs.member0 != rhs.member0 or lhs.member1 != lhs.member1 ) {
+		return false;
+	}
+	using namespace daw::json;
+	return from_json<MyDelayedClass>( rhs.member_later ) ==
+	       from_json<MyDelayedClass>( rhs.member_later );
+}
 
 int main( int argc, char **argv ) try {
 	if( argc <= 1 ) {
@@ -102,6 +115,9 @@ int main( int argc, char **argv ) try {
 
 	std::string json_str2 = daw::json::to_json( val );
 	puts( json_str2.c_str( ) );
+	MyClass2 val2 = daw::json::from_json<MyClass2>( json_str2 );
+	daw_json_assert( val == val2, "Broken round trip" );
+
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
