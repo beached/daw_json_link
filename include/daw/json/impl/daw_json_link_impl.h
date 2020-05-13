@@ -27,8 +27,8 @@
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
-#include "daw_json_to_string.h"
 #include "daw_json_parse_value.h"
+#include "daw_json_to_string.h"
 #ifndef _MSC_VER
 #include "daw_murmur3.h"
 #endif
@@ -170,6 +170,16 @@ namespace daw::json::json_details {
 
 		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
 			return location.is_null( );
+		}
+
+		[[nodiscard]] constexpr bool is_match( daw::string_view Name ) noexcept {
+#ifndef _MSC_VER
+			uint32_t const h = daw::murmur3_32( Name );
+			if( hash_value != h ) {
+				return false;
+			}
+#endif
+			return name == Name;
 		}
 	};
 
@@ -509,4 +519,3 @@ namespace daw::json::json_details {
 #endif
 	}
 } // namespace daw::json::json_details
-

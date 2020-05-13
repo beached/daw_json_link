@@ -22,6 +22,7 @@
 
 #include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
+#include <daw/json/impl/daw_stateful_json_value.h>
 
 #include <fstream>
 #include <iostream>
@@ -54,29 +55,15 @@ int main( int argc, char *argv[] ) {
 	int len = 0;
 
 	using namespace daw::json;
-	auto rng = from_json_unchecked<json_delayed<no_name>>( json_sv, "coordinates" );
+	auto rng =
+	  from_json_unchecked<json_delayed<no_name>>( json_sv, "coordinates" );
 
-	for( auto item_p : rng ) {
-		auto const & item = item_p.value;
+	for( auto item : rng ) {
 		++len;
-		int member_count = 0;
-		for( auto member: item ) {
-			if( member.name == "x" ) {
-				x += from_json_unchecked<double>( member.value );
-				if( ++member_count > 2 ) break;
-				continue;
-			}
-			if( member.name == "y" ) {
-				y += from_json_unchecked<double>( member.value );
-				if( ++member_count > 2 ) break;
-				continue;
-			}
-			if( member.name == "z" ) {
-				z += from_json_unchecked<double>( member.value );
-				if( ++member_count > 2 ) break;
-				continue;
-			}
-		}
+		stateful_json_value val = stateful_json_value( item.value );
+		x += from_json_unchecked<double>( val["x"] );
+		y += from_json_unchecked<double>( val["y"] );
+		z += from_json_unchecked<double>( val["z"] );
 	}
 	std::cout << x / len << '\n';
 	std::cout << y / len << '\n';

@@ -174,7 +174,7 @@ target_link_libraries(coords_test_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_L
 #add_test( NAME coords_test COMMAND coords_test_bin)
 add_dependencies(full coords_test_bin)
 
-if (!MSVC)
+if (NOT DEFINED MSVC)
 	add_executable(kostya_bench_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/kostya_bench.cpp)
 	add_dependencies(kostya_bench_bin dependency_stub)
 	target_link_libraries(kostya_bench_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})

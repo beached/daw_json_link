@@ -79,7 +79,7 @@ namespace daw::json {
 
 		[[nodiscard]] constexpr value_type operator*( ) const {
 			if( is_array( ) ) {
-				return { {}, Range( m_state ) };
+				return { { }, Range( m_state ) };
 			}
 			auto rng = m_state;
 			auto name = parse_name( rng );
@@ -245,11 +245,11 @@ namespace daw::json {
 		}
 
 		constexpr bool is_class( ) const {
-			return m_rng.can_parse_more( ) and m_rng == '{';
+			return m_rng.can_parse_more( ) and m_rng.front( ) == '{';
 		}
 
 		constexpr bool is_array( ) const {
-			return m_rng.can_parse_more( ) and m_rng == '[';
+			return m_rng.can_parse_more( ) and m_rng.front( ) == '[';
 		}
 
 		constexpr bool is_number( ) const {
