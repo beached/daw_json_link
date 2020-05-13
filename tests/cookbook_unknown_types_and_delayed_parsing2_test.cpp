@@ -98,6 +98,10 @@ int main( int argc, char **argv ) try {
 	  daw::json::from_json<MyDelayedClass>( val.member_later );
 
 	daw_json_assert( delayed_val.a == 1, "Unexpected value" );
+	daw_json_assert( delayed_val.b, "Unexpected value" );
+
+	std::string json_str2 = daw::json::to_json( val );
+	puts( json_str2.c_str( ) );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

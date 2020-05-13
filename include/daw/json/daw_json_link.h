@@ -635,8 +635,26 @@ namespace daw::json {
 	}
 
 	template<typename JsonMember, typename Range>
-	constexpr auto from_json( basic_json_value<Range> rng ) {
-		return from_json<JsonMember>( rng.get_string_view( ) );
+	constexpr auto from_json( basic_json_value<Range> value ) {
+		return from_json<JsonMember>( value.get_string_view( ) );
+	}
+
+	template<typename JsonMember, typename Range>
+	constexpr auto from_json( basic_json_value<Range> value,
+	                          std::string_view member_path ) {
+		return from_json<JsonMember>( value.get_string_view( ), member_path );
+	}
+
+	template<typename JsonMember, typename Range>
+	constexpr auto from_json_unchecked( basic_json_value<Range> value ) {
+		return from_json_unchecked<JsonMember>( value.get_string_view( ) );
+	}
+
+	template<typename JsonMember, typename Range>
+	constexpr auto from_json_unchecked( basic_json_value<Range> value,
+	                                    std::string_view member_path ) {
+		return from_json_unchecked<JsonMember>( value.get_string_view( ),
+		                                        member_path );
 	}
 
 	/***
