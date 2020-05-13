@@ -9,18 +9,23 @@
 
 [![Build Status Arm64 Linux](https://travis-ci.com/beached/daw_json_link.svg?branch=master)](https://travis-ci.com/beached/daw_json_link) - Arm64/PPC64LE/S390X Linux
 
-This library provides serialization/deserialization of JSON documents with a known structure into a C++ typed structure.
+This library provides serialization/deserialization of JSON documents with a known structure into a C++ object.   In addition, it supports iterating and browsing the document or delayed loading of members.
 
 The library is [MIT](LICENSE) licensed so its free to use, just have to give credit.
 
-Because the struct of the document is known, parsing is like the following 
+Because the structure of the JSON document is known, parsing is like the following 
 ```c++
-MyThing thing = from_json<MyThing>( data );
+MyThing thing = from_json<MyThing>( string );
 ```
 or for array documents 
 ```c++
-std::vector<MyThing> things = from_json_array<MyThing>( data2 );
+std::vector<MyThing> things = from_json_array<MyThing>( json_string2 );
 ```
+If the structure of the JSON document is unknown, one can construt a `json_value` that acts as a container and allows iteration and parsing on demand.  The following is an example
+```c++
+json_value val = json_value( json_string );
+```
+
 ## Code Examples
 * The  [Cookbook](cookbook/readme.md) section has precanned tasks and working code examples
 * [Tests](tests/) provide another source of working code samples. 
