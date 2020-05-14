@@ -76,6 +76,9 @@ namespace daw::json {
 				}
 			}
 			auto it = [&] {
+				if( m_locs.empty( ) ) {
+					return m_value.begin( );
+				}
 				auto res = m_locs.back( ).location;
 				++res;
 				return res;
@@ -100,6 +103,9 @@ namespace daw::json {
 				return index;
 			}
 			auto it = [&] {
+				if( m_locs.empty( ) ) {
+					return m_value.begin( );
+				}
 				auto res = m_locs.back( ).location;
 				++res;
 				return res;
