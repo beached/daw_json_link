@@ -11,7 +11,7 @@
 
 This library provides serialization/deserialization of JSON documents with a known structure into a C++ object.   In addition, it supports iterating and browsing the document or delayed loading of members.
 
-The library is [MIT](LICENSE) licensed so its free to use, just have to give credit.
+The library is using the [BSL](LICENSE) licensed
 
 Because the structure of the JSON document is known, parsing is like the following 
 ```c++

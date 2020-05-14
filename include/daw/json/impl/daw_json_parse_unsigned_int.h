@@ -1,24 +1,10 @@
-// The MIT License (MIT)
-//
 // Copyright (c) Darrell Wright
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files( the "Software" ), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and / or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// Official repository: https://github.com/beached/daw_json_link
 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
 
 #pragma once
 
@@ -67,7 +53,7 @@ namespace daw::json::json_details::unsignedint {
 				  n <= std::numeric_limits<result_t>::max( ) and count >= 0,
 				  "Unsigned number outside of range of unsigned numbers" );
 			}
-			return { daw::construct_a<Unsigned>( n ), ptr };
+			return {daw::construct_a<Unsigned>( n ), ptr};
 		}
 
 #ifdef DAW_ALLOW_SSE3
@@ -160,7 +146,7 @@ namespace daw::json::json_details::unsignedint {
 				                              std::numeric_limits<Unsigned>::max( ) ),
 				                 "Parsed number is out of range" );
 			}
-			return { daw::construct_a<Unsigned>( result ), ptr };
+			return {daw::construct_a<Unsigned>( result ), ptr};
 		}
 #endif
 	};
@@ -203,9 +189,9 @@ namespace daw::json::json_details {
 		};
 
 		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
-			return result_t{ daw::narrow_cast<Result>( v ), c };
+			return result_t{daw::narrow_cast<Result>( v ), c};
 		} else {
-			return result_t{ v, c };
+			return result_t{v, c};
 		}
 	}
 

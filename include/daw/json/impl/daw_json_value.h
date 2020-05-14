@@ -1,24 +1,10 @@
-// The MIT License (MIT)
-//
 // Copyright (c) Darrell Wright
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files( the "Software" ), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and / or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// Official repository: https://github.com/beached/daw_json_link
 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
 
 #pragma once
 
@@ -48,8 +34,8 @@ namespace daw::json {
 		using iterator_category = std::forward_iterator_tag;
 
 	private:
-		Range m_state{ };
-		Range m_new_state{ };
+		Range m_state{};
+		Range m_new_state{};
 
 		constexpr basic_json_value_iterator( Range rng )
 		  : m_state( rng ) {}
@@ -61,7 +47,7 @@ namespace daw::json {
 
 		constexpr std::optional<std::string_view> name( ) const {
 			if( is_array( ) ) {
-				return { };
+				return {};
 			}
 			auto rng = m_state;
 			auto result = parse_name( rng );
@@ -79,16 +65,16 @@ namespace daw::json {
 
 		[[nodiscard]] constexpr value_type operator*( ) const {
 			if( is_array( ) ) {
-				return { { }, Range( m_state ) };
+				return {{}, Range( m_state )};
 			}
 			auto rng = m_state;
 			auto name = parse_name( rng );
-			return { std::string_view( name.data( ), name.size( ) ),
-			         Range( rng.first, rng.last ) };
+			return {std::string_view( name.data( ), name.size( ) ),
+			        Range( rng.first, rng.last )};
 		}
 
 		[[nodiscard]] constexpr pointer operator->( ) const {
-			return { operator*( ) };
+			return {operator*( )};
 		}
 
 		constexpr basic_json_value_iterator &operator++( ) {
@@ -143,7 +129,7 @@ namespace daw::json {
 
 	template<typename Range>
 	class basic_json_value {
-		Range m_rng{ };
+		Range m_rng{};
 
 	public:
 		using iterator = basic_json_value_iterator<Range>;
@@ -227,7 +213,7 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return { result.first, result.size( ) };
+			return {result.first, result.size( )};
 		}
 
 		std::string get_string( ) const {
@@ -237,7 +223,7 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return { result.first, result.size( ) };
+			return {result.first, result.size( )};
 		}
 
 		constexpr bool is_null( ) const {

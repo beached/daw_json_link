@@ -1,24 +1,10 @@
-// The MIT License (MIT)
-//
 // Copyright (c) Darrell Wright
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files( the "Software" ), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and / or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// Official repository: https://github.com/beached/daw_json_link
 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
 
 #pragma once
 
@@ -51,8 +37,8 @@ namespace daw::json {
 			  , location( std::move( val ) ) {}
 #endif
 
-			[[nodiscard]] constexpr bool
-			is_match( daw::string_view Name ) const noexcept {
+			[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const
+			  noexcept {
 #ifndef _MSC_VER
 				uint32_t const h = daw::murmur3_32( Name );
 				if( hash_value != h ) {
@@ -66,7 +52,7 @@ namespace daw::json {
 	template<typename Range>
 	class basic_stateful_json_value {
 		basic_json_value<Range> m_value;
-		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{ };
+		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{};
 
 		[[nodiscard]] constexpr std::size_t move_to( daw::string_view key ) {
 			std::size_t pos = 0;
@@ -161,7 +147,7 @@ namespace daw::json {
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
-			return { };
+			return {};
 		}
 
 		[[nodiscard]] std::size_t size( ) {
@@ -181,7 +167,7 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					if( static_cast<std::size_t>( index ) >= sz ) {
-						return { };
+						return {};
 					}
 					sz -= static_cast<std::size_t>( index );
 					return std::string_view( m_locs[sz].name( ).data( ),
@@ -193,7 +179,7 @@ namespace daw::json {
 				return std::string_view( m_locs[pos].name( ).data( ),
 				                         m_locs[pos].name( ).size( ) );
 			}
-			return { };
+			return {};
 		}
 
 		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
@@ -224,7 +210,7 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					if( static_cast<std::size_t>( index ) >= sz ) {
-						return { };
+						return {};
 					}
 					sz -= static_cast<std::size_t>( index );
 					return m_locs[sz].location->value;
@@ -234,7 +220,7 @@ namespace daw::json {
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
-			return { };
+			return {};
 		}
 
 		[[nodiscard]] constexpr basic_json_value<Range> get_json_value( ) const {
