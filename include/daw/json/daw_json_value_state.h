@@ -176,15 +176,17 @@ namespace daw::json {
 		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
 		                                            std::nullptr_t> = nullptr>
 		[[nodiscard]] std::optional<std::string_view> name_of( Integer index ) {
-			if( index < 0 ) {
-				index = -index;
-				auto sz = size( );
-				if( static_cast<std::size_t>( index ) >= sz ) {
-					return { };
+			if constexpr( std::is_signed_v<Integer> ) {
+				if( index < 0 ) {
+					index = -index;
+					auto sz = size( );
+					if( static_cast<std::size_t>( index ) >= sz ) {
+						return { };
+					}
+					sz -= static_cast<std::size_t>( index );
+					return std::string_view( m_locs[sz].name( ).data( ),
+					                         m_locs[sz].name( ).size( ) );
 				}
-				sz -= static_cast<std::size_t>( index );
-				return std::string_view( m_locs[sz].name( ).data( ),
-				                         m_locs[sz].name( ).size( ) );
 			}
 			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
 			if( pos < m_locs.size( ) ) {
@@ -198,13 +200,15 @@ namespace daw::json {
 		                                            std::nullptr_t> = nullptr>
 		[[nodiscard]] constexpr basic_json_value<Range>
 		operator[]( Integer index ) {
-			if( index < 0 ) {
-				index = -index;
-				auto sz = size( );
-				daw_json_assert_weak( static_cast<std::size_t>( index ) < sz,
-				                      "Unknown member" );
-				sz -= static_cast<std::size_t>( index );
-				return m_locs[sz].location->value;
+			if constexpr( std::is_signed_v<Integer> ) {
+				if( index < 0 ) {
+					index = -index;
+					auto sz = size( );
+					daw_json_assert_weak( static_cast<std::size_t>( index ) < sz,
+					                      "Unknown member" );
+					sz -= static_cast<std::size_t>( index );
+					return m_locs[sz].location->value;
+				}
 			}
 			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
 			daw_json_assert_weak( pos < m_locs.size( ), "Unknown member" );
@@ -215,14 +219,16 @@ namespace daw::json {
 		                                            std::nullptr_t> = nullptr>
 		[[nodiscard]] constexpr std::optional<basic_json_value<Range>>
 		at( Integer index ) {
-			if( index < 0 ) {
-				index = -index;
-				auto sz = size( );
-				if( static_cast<std::size_t>( index ) >= sz ) {
-					return { };
+			if constexpr( std::is_signed_v<Integer> ) {
+				if( index < 0 ) {
+					index = -index;
+					auto sz = size( );
+					if( static_cast<std::size_t>( index ) >= sz ) {
+						return { };
+					}
+					sz -= static_cast<std::size_t>( index );
+					return m_locs[sz].location->value;
 				}
-				sz -= static_cast<std::size_t>( index );
-				return m_locs[sz].location->value;
 			}
 			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
 			if( pos < m_locs.size( ) ) {
