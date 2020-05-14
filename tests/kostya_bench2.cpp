@@ -22,7 +22,7 @@
 
 #include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
-#include <daw/json/impl/daw_stateful_json_value.h>
+#include <daw/json/daw_json_value_state.h>
 
 #include <fstream>
 #include <iostream>
