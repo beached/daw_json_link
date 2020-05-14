@@ -46,24 +46,28 @@ namespace daw::json::json_details::unsignedint {
 		template<JsonRangeCheck RangeChecked>
 		[[nodiscard]] static constexpr std::pair<Unsigned, char const *>
 		parse( char const *ptr ) {
-			uintmax_t n = 0;
+			using result_t =
+			  std::conditional_t<std::is_integral_v<Unsigned> and
+			                       ( sizeof( Unsigned ) > sizeof( uintmax_t ) ),
+			                     Unsigned, uintmax_t>;
+			result_t n = 0;
 			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
-			int count = std::numeric_limits<Unsigned>::digits10 + 1U;
+			int count = std::numeric_limits<result_t>::digits10 + 1U;
 			while( dig < 10U ) {
 				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 					--count;
 				}
 				n *= 10U;
-				n += static_cast<uintmax_t>( dig );
+				n += static_cast<result_t>( dig );
 				++ptr;
 				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
 			}
 			if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 				daw_json_assert(
-				  n <= std::numeric_limits<Unsigned>::max( ) and count >= 0,
+				  n <= std::numeric_limits<result_t>::max( ) and count >= 0,
 				  "Unsigned number outside of range of unsigned numbers" );
 			}
-			return {daw::construct_a<Unsigned>( n ), ptr};
+			return { daw::construct_a<Unsigned>( n ), ptr };
 		}
 
 #ifdef DAW_ALLOW_SSE3
@@ -156,7 +160,7 @@ namespace daw::json::json_details::unsignedint {
 				                              std::numeric_limits<Unsigned>::max( ) ),
 				                 "Parsed number is out of range" );
 			}
-			return {daw::construct_a<Unsigned>( result ), ptr};
+			return { daw::construct_a<Unsigned>( result ), ptr };
 		}
 #endif
 	};
@@ -199,9 +203,9 @@ namespace daw::json::json_details {
 		};
 
 		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
-			return result_t{daw::narrow_cast<Result>( v ), c};
+			return result_t{ daw::narrow_cast<Result>( v ), c };
 		} else {
-			return result_t{v, c};
+			return result_t{ v, c };
 		}
 	}
 
@@ -211,10 +215,12 @@ namespace daw::json::json_details {
 		daw_json_assert_weak( rng.is_number( ), "Expecting a digit as first item" );
 
 		using namespace daw::json::json_details::unsignedint;
-		using result_t =
-		  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing or
-		                       std::is_enum_v<Result>,
-		                     std::uintmax_t, Result>;
+		using result_t = std::conditional_t<
+		  RangeCheck == JsonRangeCheck::CheckForNarrowing or std::is_enum_v<Result>,
+		  std::conditional_t<std::is_integral_v<Result> and
+		                       ( sizeof( Result ) > sizeof( uintmax_t ) ),
+		                     Result, std::uintmax_t>,
+		  Result>;
 		auto [result, ptr] = [&] {
 #ifdef DAW_ALLOW_SSE3
 			if constexpr( SimdMode == SIMDModes::SSE3 ) {

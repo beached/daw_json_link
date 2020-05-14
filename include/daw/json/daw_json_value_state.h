@@ -114,13 +114,12 @@ namespace daw::json {
 			std::size_t pos = m_locs.size( );
 			while( it != last ) {
 				auto name = it.name( );
-				auto const &new_loc = [&] {
-					if( name ) {
-						return m_locs.emplace_back(
-						  daw::string_view( name->data( ), name->size( ) ), it );
-					}
-					return m_locs.emplace_back( daw::string_view( ), it );
-				}( );
+				if( name ) {
+					m_locs.emplace_back( daw::string_view( name->data( ), name->size( ) ),
+					                     it );
+				} else {
+					m_locs.emplace_back( daw::string_view( ), it );
+				}
 				if( pos == index ) {
 					return pos;
 				}
