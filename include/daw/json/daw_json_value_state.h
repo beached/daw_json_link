@@ -120,7 +120,7 @@ namespace daw::json {
 						  daw::string_view( name->data( ), name->size( ) ), it );
 					}
 					return m_locs.emplace_back( daw::string_view( ), it );
-				};
+				}( );
 				if( pos == index ) {
 					return pos;
 				}

@@ -61,9 +61,14 @@ int main( int argc, char *argv[] ) {
 	auto val = json_value_state( );
 	for( auto item : rng ) {
 		val.reset( item.value );
+		x += from_json_unchecked<double>( val[0] );
+		y += from_json_unchecked<double>( val[1] );
+		z += from_json_unchecked<double>( val[2] );
+		/*
 		x += from_json_unchecked<double>( val["x"] );
 		y += from_json_unchecked<double>( val["y"] );
 		z += from_json_unchecked<double>( val["z"] );
+		 */
 		++len;
 	}
 	std::cout << x / len << '\n';
