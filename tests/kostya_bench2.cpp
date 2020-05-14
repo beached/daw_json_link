@@ -58,13 +58,13 @@ int main( int argc, char *argv[] ) {
 	auto rng =
 	  from_json_unchecked<json_delayed<no_name>>( json_sv, "coordinates" );
 
-	auto val = stateful_json_value( );
+	auto val = json_value_state( );
 	for( auto item : rng ) {
-		++len;
 		val.reset( item.value );
 		x += from_json_unchecked<double>( val["x"] );
 		y += from_json_unchecked<double>( val["y"] );
 		z += from_json_unchecked<double>( val["z"] );
+		++len;
 	}
 	std::cout << x / len << '\n';
 	std::cout << y / len << '\n';

@@ -66,34 +66,11 @@ namespace daw::json {
 	template<typename Range>
 	class basic_stateful_json_value {
 		basic_json_value<Range> m_value;
-
-		using array_locs = std::vector<Range>;
-		using class_locs =
-		  std::vector<json_details::basic_stateful_json_value_state<Range>>;
-		using loc_var = std::variant<array_locs, class_locs>;
-		loc_var m_locs;
-
-		constexpr array_locs const &get_array_locs( ) const {
-			return std::get<array_locs>( m_locs );
-		}
-
-		constexpr array_locs &get_array_locs( ) {
-			return std::get<array_locs>( m_locs );
-		}
-
-		constexpr class_locs const &get_class_locs( ) const {
-			return std::get<class_locs>( m_locs );
-		}
-
-		constexpr class_locs &get_class_locs( ) {
-			return std::get<class_locs>( m_locs );
-		}
+		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{ };
 
 		[[nodiscard]] constexpr basic_json_value_iterator<Range>
 		search_locs( daw::string_view key ) const {
-			daw_json_assert_weak( is_class( ),
-			                      "Expected class type for string member lookup" );
-			for( auto const &l : get_class_locs( ) ) {
+			for( auto const &l : m_locs ) {
 				if( l.is_match( key ) ) {
 					return l.location;
 				}
@@ -102,16 +79,20 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] constexpr basic_json_value_iterator<Range>
-		add_member( daw::string_view key ) {
-			daw_json_assert_weak( is_class( ),
-			                      "Expected class type for string member lookup" );
+		search_locs( std::size_t index ) const {
+			if( index < m_locs.size( ) ) {
+				return m_locs[index].location;
+			}
+			return m_value.end( );
+		}
 
-			auto &loc = get_class_locs( );
+		[[nodiscard]] constexpr basic_json_value_iterator<Range>
+		add_member( daw::string_view key ) {
 			auto it = [&] {
-				if( loc.empty( ) ) {
+				if( m_locs.empty( ) ) {
 					return m_value.begin( );
 				}
-				auto res = loc.back( ).location;
+				auto res = m_locs.back( ).location;
 				++res;
 				return res;
 			}( );
@@ -119,7 +100,7 @@ namespace daw::json {
 			while( it != last ) {
 				auto name = it.name( );
 				daw_json_assert_weak( name, "Expected a class member, not array item" );
-				auto const &new_loc = loc.emplace_back(
+				auto const &new_loc = m_locs.emplace_back(
 				  daw::string_view( name->data( ), name->size( ) ), it );
 				if( new_loc.is_match( key ) ) {
 					return it;
@@ -129,11 +110,39 @@ namespace daw::json {
 			return last;
 		}
 
+		[[nodiscard]] constexpr basic_json_value_iterator<Range>
+		add_member( std::size_t index ) {
+			auto it = [&] {
+				if( m_locs.empty( ) ) {
+					return m_value.begin( );
+				}
+				auto res = m_locs.back( ).location;
+				++res;
+				return res;
+			}( );
+			auto last = m_value.end( );
+			std::size_t pos = m_locs.size( );
+			while( it != last ) {
+				auto name = it.name( );
+				auto const &new_loc = [&] {
+					if( name ) {
+						return m_locs.emplace_back(
+						  daw::string_view( name->data( ), name->size( ) ), it );
+					}
+					return m_locs.emplace_back( daw::string_view( ), it );
+				};
+				if( pos == index ) {
+					return it;
+				}
+				++pos;
+				++it;
+			}
+			return last;
+		}
+
 	public:
 		constexpr basic_stateful_json_value( basic_json_value<Range> val )
-		  : m_value( std::move( val ) )
-		  , m_locs( m_value.is_array( ) ? loc_var( array_locs( ) )
-		                                : loc_var( class_locs( ) ) ) {
+		  : m_value( std::move( val ) ) {
 
 			auto const t = m_value.type( );
 			daw_json_assert_weak(
@@ -145,28 +154,12 @@ namespace daw::json {
 		  : basic_stateful_json_value( basic_json_value<Range>( "{}" ) ) {}
 
 		constexpr void reset( basic_json_value<Range> val ) {
-			bool const was_an_array = is_array( );
 			m_value = std::move( val );
-			bool const is_an_array = m_value.is_array( );
-			if( is_an_array ) {
-				if( was_an_array ) {
-					get_array_locs( ).clear( );
-				} else {
-					m_locs = array_locs( );
-				}
-			} else {
-				if( was_an_array ) {
-					m_locs = class_locs( );
-				} else {
-					get_class_locs( ).clear( );
-				}
-			}
+			m_locs.clear( );
 		}
 
 		[[nodiscard]] constexpr basic_json_value<Range>
 		operator[]( std::string_view key ) {
-			daw_json_assert_weak( is_class( ),
-			                      "Attempt to access a member of a non-class type" );
 
 			daw::string_view k = daw::string_view( key.data( ), key.size( ) );
 			auto loc = search_locs( k );
@@ -178,16 +171,19 @@ namespace daw::json {
 			return loc->value;
 		}
 
+		[[nodiscard]] constexpr basic_json_value<Range>
+		operator[]( std::size_t index ) {
+			auto loc = search_locs( index );
+			if( loc == m_value.end( ) ) {
+				loc = add_member( index );
+				daw_json_assert_weak( loc != m_value.end( ),
+				                      "Expected member to exist" );
+			}
+			return loc->value;
+		}
+
 		[[nodiscard]] constexpr basic_json_value<Range> get_json_value( ) const {
 			return m_value;
-		}
-
-		[[nodiscard]] constexpr bool is_array( ) const {
-			return std::holds_alternative<array_locs>( m_locs );
-		}
-
-		[[nodiscard]] constexpr bool is_class( ) const {
-			return std::holds_alternative<class_locs>( m_locs );
 		}
 
 		[[nodiscard]] JsonBaseParseTypes type( ) const {
@@ -203,6 +199,6 @@ namespace daw::json {
 		}
 	};
 
-	using stateful_json_value =
+	using json_value_state =
 	  basic_stateful_json_value<json_details::IteratorRange<char const *, false>>;
 } // namespace daw::json
