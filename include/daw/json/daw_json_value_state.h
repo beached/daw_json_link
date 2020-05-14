@@ -173,8 +173,20 @@ namespace daw::json {
 			return move_to( k );
 		}
 
-		[[nodiscard]] std::optional<std::string_view> name_of( std::size_t index ) {
-			auto pos = move_to( index );
+		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
+		                                            std::nullptr_t> = nullptr>
+		[[nodiscard]] std::optional<std::string_view> name_of( Integer index ) {
+			if( index < 0 ) {
+				index = -index;
+				auto sz = size( );
+				if( static_cast<std::size_t>( index ) >= sz ) {
+					return { };
+				}
+				sz -= static_cast<std::size_t>( index );
+				return std::string_view( m_locs[sz].name( ).data( ),
+				                         m_locs[sz].name( ).size( ) );
+			}
+			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
 			if( pos < m_locs.size( ) ) {
 				return std::string_view( m_locs[pos].name( ).data( ),
 				                         m_locs[pos].name( ).size( ) );
@@ -182,16 +194,37 @@ namespace daw::json {
 			return { };
 		}
 
+		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
+		                                            std::nullptr_t> = nullptr>
 		[[nodiscard]] constexpr basic_json_value<Range>
-		operator[]( std::size_t index ) {
-			std::size_t pos = move_to( index );
+		operator[]( Integer index ) {
+			if( index < 0 ) {
+				index = -index;
+				auto sz = size( );
+				daw_json_assert_weak( static_cast<std::size_t>( index ) < sz,
+				                      "Unknown member" );
+				sz -= static_cast<std::size_t>( index );
+				return m_locs[sz].location->value;
+			}
+			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
 			daw_json_assert_weak( pos < m_locs.size( ), "Unknown member" );
 			return m_locs[pos].location->value;
 		}
 
+		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
+		                                            std::nullptr_t> = nullptr>
 		[[nodiscard]] constexpr std::optional<basic_json_value<Range>>
-		at( std::size_t index ) {
-			auto pos = move_to( index );
+		at( Integer index ) {
+			if( index < 0 ) {
+				index = -index;
+				auto sz = size( );
+				if( static_cast<std::size_t>( index ) >= sz ) {
+					return { };
+				}
+				sz -= static_cast<std::size_t>( index );
+				return m_locs[sz].location->value;
+			}
+			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
