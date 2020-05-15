@@ -159,6 +159,15 @@ namespace daw::json {
 			return move_to( k );
 		}
 
+		[[nodiscard]] constexpr bool contains( std::string_view key ) {
+			daw::string_view const k = daw::string_view( key.data( ), key.size( ) );
+			return move_to( k ) < m_locs.size( );
+		}
+
+		[[nodiscard]] constexpr bool contains( std::size_t index ) {
+			return move_to( index ) < m_locs.size( );
+		}
+
 		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
 		                                            std::nullptr_t> = nullptr>
 		[[nodiscard]] std::optional<std::string_view> name_of( Integer index ) {
