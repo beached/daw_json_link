@@ -15,27 +15,34 @@ namespace daw::json {
 	template<typename Range>
 	class basic_json_value;
 
+	/***
+	 * A name/value pair of string_view/json_value
+	 * @tparam Range see IteratorRange
+	 */
 	template<typename Range>
 	struct basic_json_pair {
 		std::optional<std::string_view> name;
 		basic_json_value<Range> value;
 	};
 
+	/***
+	 * Iterator for iterating over arbutrary JSON members and array elements
+	 * @tparam Range see IteratorRange
+	 */
 	template<typename Range>
 	struct basic_json_value_iterator {
 		using key_type = std::string_view;
 		using mapped_type = basic_json_value<Range>;
 
 		using json_pair = basic_json_pair<Range>;
-		using value_type = json_pair;
+		using value_type = basic_json_pair<Range>;
 		using reference = value_type;
 		using pointer = json_details::arrow_proxy<value_type>;
 		using difference_type = std::ptrdiff_t;
 		using iterator_category = std::forward_iterator_tag;
 
 	private:
-		Range m_state{};
-		Range m_new_state{};
+		Range m_state{ };
 
 		constexpr basic_json_value_iterator( Range rng )
 		  : m_state( rng ) {}
@@ -45,16 +52,25 @@ namespace daw::json {
 	public:
 		constexpr basic_json_value_iterator( ) = default;
 
+		/***
+		 * Name of member
+		 * @return The name, if any, of the current member
+		 */
 		constexpr std::optional<std::string_view> name( ) const {
 			if( is_array( ) ) {
-				return {};
+				return { };
 			}
 			auto rng = m_state;
 			auto result = parse_name( rng );
 			return std::string_view( result.data( ), result.size( ) );
 		}
 
-		[[nodiscard]] constexpr mapped_type value( ) const {
+		/***
+		 * Get the value currently being referenced
+		 * @return A basic_json_value representing the currently referenced element
+		 * in the range
+		 */
+		[[nodiscard]] constexpr basic_json_value<Range> value( ) const {
 			if( is_array( ) ) {
 				return Range( m_state );
 			}
@@ -63,20 +79,34 @@ namespace daw::json {
 			return Range( rng.first, rng.last );
 		}
 
-		[[nodiscard]] constexpr value_type operator*( ) const {
+		/***
+		 * Get the name/value pair of the currently referenced element
+		 * @return a json_pair with the name, if any, and json_value
+		 */
+		[[nodiscard]] constexpr basic_json_pair<Range> operator*( ) const {
 			if( is_array( ) ) {
-				return {{}, Range( m_state )};
+				return { { }, Range( m_state.first, m_state.last ) };
 			}
 			auto rng = m_state;
 			auto name = parse_name( rng );
-			return {std::string_view( name.data( ), name.size( ) ),
-			        Range( rng.first, rng.last )};
+			return { std::string_view( name.data( ), name.size( ) ),
+			         Range( rng.first, rng.last ) };
 		}
 
+		/***
+		 * Return an arrow_proxy object containing the result of operator*
+		 * Should not use this method unless you must(std algorithms), it is here
+		 * for Iterator compatability
+		 * @return arrow_proxy object containing the result of operator*
+		 */
 		[[nodiscard]] constexpr pointer operator->( ) const {
-			return {operator*( )};
+			return { operator*( ) };
 		}
 
+		/***
+		 * Move the parser to the next value
+		 * @return A reference to the iterator
+		 */
 		constexpr basic_json_value_iterator &operator++( ) {
 			if( good( ) ) {
 				if( is_class( ) ) {
@@ -88,28 +118,53 @@ namespace daw::json {
 			return *this;
 		}
 
+		/***
+		 * Moved parser to next value
+		 * @return copy of iterator upon entering method
+		 */
 		constexpr basic_json_value_iterator operator++( int ) {
 			auto result = *this;
 			operator++( );
 			return result;
 		}
 
+		/***
+		 * Is the value this iterator iterates over an array
+		 * @return true if the value is an array
+		 */
 		[[nodiscard]] constexpr bool is_array( ) const {
 			return *m_state.class_first == '[';
 		}
 
+		/***
+		 * Is the value this iterator iterates over an class
+		 * @return true if the value is an class
+		 */
 		[[nodiscard]] constexpr bool is_class( ) const {
 			return *m_state.class_first == '{';
 		}
 
+		/***
+		 * Can we increment more
+		 * @return True if safe to increment more
+		 */
 		constexpr bool good( ) const {
 			return m_state.can_parse_more( ) and not m_state.in( "]}" );
 		}
 
+		/***
+		 * Can we increment more
+		 * @return True if safe to increment more
+		 */
 		constexpr explicit operator bool( ) const {
 			return good( );
 		}
 
+		/***
+		 * Check for equivilence with rhs iterator
+		 * @param rhs iterator to compare for equivilence with
+		 * @return true if both are equivilent
+		 */
 		constexpr bool
 		operator==( basic_json_value_iterator<Range> const &rhs ) const {
 			if( good( ) ) {
@@ -121,31 +176,57 @@ namespace daw::json {
 			return not rhs.good( );
 		}
 
+		/***
+		 * Check if rhs is not equivilent to self
+		 * @param rhs iterator to compare for equivilence with
+		 * @return true if the rhs is not equivilent
+		 */
 		constexpr bool
 		operator!=( basic_json_value_iterator<Range> const &rhs ) const {
 			return not operator==( rhs );
 		}
 	};
 
+	/***
+	 * A container for arbutrary JSON values
+	 * @tparam Range see IteratorRange
+	 */
 	template<typename Range>
 	class basic_json_value {
-		Range m_rng{};
+		Range m_rng{ };
 
 	public:
 		using iterator = basic_json_value_iterator<Range>;
 
+		/***
+		 * Construct from IteratorRange
+		 * @param rng string data where start is the start of our value
+		 */
 		constexpr basic_json_value( Range rng )
 		  : m_rng( std::move( rng ) ) {
+			// Ensure we are at the actual value
 			m_rng.trim_left( );
 		}
 
-		constexpr basic_json_value( std::string_view sv )
+		/***
+		 * Construct from std::string_view
+		 */
+		explicit constexpr basic_json_value( std::string_view sv )
 		  : m_rng( sv.data( ), sv.data( ) + sv.size( ) ) {}
 
+		/***
+		 * Get a copy of the underlying range
+		 * @return IteratoRange containing values JSON data
+		 */
 		[[nodiscard]] constexpr Range get_range( ) const {
 			return m_rng;
 		}
 
+		/***
+		 * Get the first member/item
+		 * @pre type of value is class or array
+		 * @return basic_json_value_iterator to the first item/member
+		 */
 		[[nodiscard]] constexpr iterator begin( ) const {
 			Range rng = Range( m_rng.first, m_rng.last );
 			rng.remove_prefix( );
@@ -153,10 +234,18 @@ namespace daw::json {
 			return basic_json_value_iterator<Range>( rng );
 		}
 
+		/***
+		 * End of range over class/arrays members/items
+		 * @return default constructed basic_json_value_iterator
+		 */
 		[[nodiscard]] constexpr iterator end( ) const {
 			return basic_json_value_iterator<Range>( );
 		}
 
+		/***
+		 * Get the type of JSON value
+		 * @return a JSONBaseParseTypes enum value with the type of this JSON value
+		 */
 		[[nodiscard]] JsonBaseParseTypes type( ) const {
 			if( not m_rng.can_parse_more( ) ) {
 				return JsonBaseParseTypes::None;
@@ -206,6 +295,10 @@ namespace daw::json {
 			return JsonBaseParseTypes::None;
 		}
 
+		/***
+		 * Get the JSON data
+		 * @return the JSON data as a std::string_view
+		 */
 		constexpr std::string_view get_string_view( ) const {
 			auto rng = m_rng;
 			auto result = json_details::skip_value( rng );
@@ -213,9 +306,13 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return {result.first, result.size( )};
+			return { result.first, result.size( ) };
 		}
 
+		/***
+		 * Get a copy of the JSON data
+		 * @return the JSON data as a std::string
+		 */
 		std::string get_string( ) const {
 			auto rng = m_rng;
 			auto result = json_details::skip_value( rng );
@@ -223,29 +320,53 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return {result.first, result.size( )};
+			return { result.first, result.size( ) };
 		}
 
+		/***
+		 * Is the JSON value a null literal
+		 * @return true if the value is a null literal
+		 */
 		constexpr bool is_null( ) const {
 			return ( not m_rng.can_parse_more( ) ) or m_rng == "null";
 		}
 
+		/***
+		 * Is the JSON value a class
+		 * @return true if the value is a class
+		 */
 		constexpr bool is_class( ) const {
 			return m_rng.can_parse_more( ) and m_rng.front( ) == '{';
 		}
 
+		/***
+		 * Is the JSON value a array
+		 * @return true if the value is a array
+		 */
 		constexpr bool is_array( ) const {
 			return m_rng.can_parse_more( ) and m_rng.front( ) == '[';
 		}
 
+		/***
+		 * Is the JSON value a number literal
+		 * @return true if the value is a number literal
+		 */
 		constexpr bool is_number( ) const {
 			return m_rng.can_parse_more( ) and m_rng.in( "0123456789+-" );
 		}
 
+		/***
+		 * Is the JSON value a string
+		 * @return true if the value is a string
+		 */
 		constexpr bool is_string( ) const {
 			return m_rng.can_parse_more( ) and m_rng.front( ) == '"';
 		}
 
+		/***
+		 * Is the JSON value a boolean
+		 * @return true if the value is a boolean
+		 */
 		constexpr bool is_bool( ) const {
 			if( not m_rng.can_parse_more( ) ) {
 				return false;
@@ -267,6 +388,11 @@ namespace daw::json {
 			return false;
 		}
 
+		/***
+		 * Is the JSON data unrecognizable.  JSON members will start with one of
+		 * ",[,{,0,1,2,3,4,5,6,7,8,9,-,t,f, or n and this does not
+		 * @return true if the parser is unsure what the data is
+		 */
 		constexpr bool is_unknown( ) const {
 			return type( ) == JsonBaseParseTypes::None;
 		}

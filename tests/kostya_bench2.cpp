@@ -27,7 +27,7 @@ struct coordinate_t {
 std::string read_file( std::string const &filename ) {
 	std::ifstream f( filename );
 	if( !f ) {
-		return {};
+		return { };
 	}
 	return std::string( std::istreambuf_iterator<char>( f ),
 	                    std::istreambuf_iterator<char>( ) );
@@ -45,7 +45,7 @@ int main( int argc, char *argv[] ) {
 	  from_json_unchecked<json_delayed<no_name>>( json_sv, "coordinates" );
 
 	auto val = json_value_state( );
-	for( auto item : rng ) {
+	for( json_pair item : rng ) {
 		val.reset( item.value );
 		x += from_json_unchecked<double>( val[0] );
 		y += from_json_unchecked<double>( val[1] );
