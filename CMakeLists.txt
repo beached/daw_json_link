@@ -248,6 +248,12 @@ target_link_libraries(twitter_test_basic_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_T
 add_test(NAME twitter_test_basic COMMAND twitter_test_basic_bin ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full twitter_test_basic_bin)
 
+add_executable(twitter_test_basic2_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/twitter_test.h ${TEST_FOLDER}/twitter_test_basic2.cpp)
+add_dependencies(twitter_test_basic2_bin dependency_stub)
+target_link_libraries(twitter_test_basic2_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+add_test(NAME twitter_test_basic2 COMMAND twitter_test_basic2_bin ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full twitter_test_basic2_bin)
+
 add_executable(canada_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/geojson.h ${TEST_FOLDER}/canada_test.cpp)
 add_dependencies(canada_test_bin dependency_stub)
 target_link_libraries(canada_test_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
