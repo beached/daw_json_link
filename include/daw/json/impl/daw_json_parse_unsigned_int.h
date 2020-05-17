@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "daw_arith_traits.h"
 #include "daw_json_assert.h"
 
 #include <daw/daw_cxmath.h>
@@ -33,7 +34,7 @@ namespace daw::json::json_details::unsignedint {
 		[[nodiscard]] static constexpr std::pair<Unsigned, char const *>
 		parse( char const *ptr ) {
 			using result_t =
-			  std::conditional_t<std::is_integral_v<Unsigned> and
+			  std::conditional_t<daw::is_integral_v<Unsigned> and
 			                       ( sizeof( Unsigned ) > sizeof( uintmax_t ) ),
 			                     Unsigned, uintmax_t>;
 			result_t n = 0;
@@ -203,7 +204,7 @@ namespace daw::json::json_details {
 		using namespace daw::json::json_details::unsignedint;
 		using result_t = std::conditional_t<
 		  RangeCheck == JsonRangeCheck::CheckForNarrowing or std::is_enum_v<Result>,
-		  std::conditional_t<std::is_integral_v<Result> and
+		  std::conditional_t<daw::is_integral_v<Result> and
 		                       ( sizeof( Result ) > sizeof( uintmax_t ) ),
 		                     Result, std::uintmax_t>,
 		  Result>;

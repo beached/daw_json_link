@@ -16,15 +16,20 @@ namespace daw {
 	                        std::numeric_limits<T>::is_signed and
 	                        ( not std::numeric_limits<T>::is_exact );
 
-	inline constexpr bool is_integer_v = std::numeric_limits<T>::is_integer;
+	template<typename T>
+	inline constexpr bool is_integral_v = std::numeric_limits<T>::is_integer;
 
-	inline constexpr bool is_signed_v =
-	  (is_floating_point_v<T> or
-	   is_integer_v<T>)and std::numeric_limits<T>::is_signed;
+	template<typename T>
+	inline constexpr bool
+	  is_signed_v = (is_floating_point_v<T> or
+	                 is_integral_v<T>)and std::numeric_limits<T>::is_signed;
 
-	inline constexpr bool is_unsigned_v =
-	  is_integer_v<T> and ( not std::numeric_limits<T>::is_signed );
+	template<typename T>
+	inline constexpr bool
+	  is_unsigned_v = is_integral_v<T> and
+	                  ( not std::numeric_limits<T>::is_signed );
 
+	template<typename T>
 	inline constexpr bool is_arithmetic_v =
-	  is_integer_v<T> or is_floating_point_v<T>;
-}
+	  is_integral_v<T> or is_floating_point_v<T>;
+} // namespace daw

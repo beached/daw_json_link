@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "daw_arith_traits.h"
 #include "daw_json_link_impl.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
@@ -339,7 +340,7 @@ namespace daw::json {
 		    std::conditional_t<
 		      std::is_same_v<T, bool>, json_bool<Name, T>,
 		      std::conditional_t<
-		        std::is_arithmetic_v<T> or std::is_enum_v<T>, json_number<Name, T>,
+		        daw::is_arithmetic_v<T> or std::is_enum_v<T>, json_number<Name, T>,
 		        std::conditional_t<
 		          std::is_same_v<T, std::string_view>, json_string_raw<Name, T>,
 		          std::conditional_t<

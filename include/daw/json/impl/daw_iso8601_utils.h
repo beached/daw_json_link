@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "daw_arith_traits.h"
+
 #include <daw/daw_string_view.h>
 
 #include <chrono>
@@ -64,7 +66,7 @@ namespace daw::json::datetime {
 			Result result = 0;
 			Result sign = 1;
 			if( sv.front( ) == '-' ) {
-				if constexpr( std::is_signed_v<Result> ) {
+				if constexpr( daw::is_signed_v<Result> ) {
 					sign = -1;
 				}
 				sv.remove_prefix( );

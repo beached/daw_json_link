@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "daw_arith_traits.h"
 #include "daw_iso8601_utils.h"
 
 #include <daw/daw_algorithm.h>
@@ -467,7 +468,7 @@ namespace daw::json::json_details {
 		              LiteralAsStringOpt::Always ) {
 			*it++ = '"';
 		}
-		if constexpr( std::is_floating_point_v<parse_to_t> ) {
+		if constexpr( daw::is_floating_point_v<parse_to_t> ) {
 			char buff[50]; // dtoa_milo will zero term the output
 			buff[49] = 0;
 			static_assert( sizeof( parse_to_t ) <= sizeof( double ) );
@@ -521,7 +522,7 @@ namespace daw::json::json_details {
 			*it++ = '"';
 		}
 		if constexpr( std::is_enum_v<parse_to_t> or
-		              std::is_integral_v<parse_to_t> ) {
+		              daw::is_integral_v<parse_to_t> ) {
 			auto v = static_cast<under_type>( value );
 
 			char buff[std::numeric_limits<under_type>::digits10 + 1]{};
@@ -580,7 +581,7 @@ namespace daw::json::json_details {
 			*it++ = '"';
 		}
 		if constexpr( std::is_enum_v<parse_to_t> or
-		              std::is_integral_v<parse_to_t> ) {
+		              daw::is_integral_v<parse_to_t> ) {
 			auto v = static_cast<under_type>( value );
 			daw_json_assert(
 			  v >= 0, "Negative numbers are not supported for unsigned types" );
@@ -620,9 +621,9 @@ namespace daw::json::utils {
 	template<typename Integer, typename OutputIterator>
 	constexpr OutputIterator integer_to_string( OutputIterator it,
 	                                            Integer const &value ) {
-		static_assert( std::is_integral_v<Integer> );
+		static_assert( daw::is_integral_v<Integer> );
 
-		if constexpr( std::is_unsigned_v<Integer> ) {
+		if constexpr( daw::is_unsigned_v<Integer> ) {
 			return json_details::to_string<utils_details::number<Integer>>(
 			  ParseTag<JsonParseTypes::Unsigned>{}, it, value );
 		} else {

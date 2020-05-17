@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "daw_arith_traits.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_string_quote.h"
 
@@ -371,16 +372,15 @@ namespace daw::json {
 
 		template<typename T>
 		inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
-			static_assert( std::is_arithmetic_v<T>, "Unexpected non-number" );
-			if constexpr( std::is_floating_point_v<T> ) {
+			static_assert( daw::is_arithmetic_v<T>, "Unexpected non-number" );
+			if constexpr( daw::is_floating_point_v<T> ) {
 				return JsonParseTypes::Real;
-			} else if constexpr( std::is_signed_v<T> ) {
+			} else if constexpr( daw::is_signed_v<T> ) {
 				return JsonParseTypes::Signed;
-			} else if constexpr( std::is_unsigned_v<T> ) {
+			} else if constexpr( daw::is_unsigned_v<T> ) {
 				return JsonParseTypes::Unsigned;
 			}
 		}( );
-
 
 		template<typename T>
 		constexpr auto number_parse_type_test( )

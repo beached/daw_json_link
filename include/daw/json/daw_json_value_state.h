@@ -36,8 +36,8 @@ namespace daw::json {
 			  : name( Name )
 			  , location( std::move( val ) ) {}
 #endif
-			[[nodiscard]] constexpr bool
-			is_match( daw::string_view Name ) const noexcept {
+			[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const
+			  noexcept {
 				return name == Name;
 			}
 
@@ -61,7 +61,7 @@ namespace daw::json {
 	template<typename Range>
 	class basic_stateful_json_value {
 		basic_json_value<Range> m_value;
-		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{ };
+		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{};
 
 		[[nodiscard]] constexpr std::size_t move_to( daw::string_view key ) {
 			std::size_t pos = 0;
@@ -103,7 +103,8 @@ namespace daw::json {
 		}
 
 		/***
-		 * Keep moving the parser to the specified member, or stop when end is reached
+		 * Keep moving the parser to the specified member, or stop when end is
+		 * reached
 		 * @param index index into range of members
 		 * @return position in members or the size
 		 */
@@ -170,7 +171,7 @@ namespace daw::json {
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
-			return { };
+			return {};
 		}
 
 		[[nodiscard]] std::size_t size( ) {
@@ -199,7 +200,7 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					if( static_cast<std::size_t>( index ) >= sz ) {
-						return { };
+						return {};
 					}
 					sz -= static_cast<std::size_t>( index );
 					return std::string_view( m_locs[sz].name( ).data( ),
@@ -211,7 +212,7 @@ namespace daw::json {
 				return std::string_view( m_locs[pos].name( ).data( ),
 				                         m_locs[pos].name( ).size( ) );
 			}
-			return { };
+			return {};
 		}
 
 		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
@@ -242,7 +243,7 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					if( static_cast<std::size_t>( index ) >= sz ) {
-						return { };
+						return {};
 					}
 					sz -= static_cast<std::size_t>( index );
 					return m_locs[sz].location->value;
@@ -252,7 +253,7 @@ namespace daw::json {
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
-			return { };
+			return {};
 		}
 
 		[[nodiscard]] constexpr basic_json_value<Range> get_json_value( ) const {
