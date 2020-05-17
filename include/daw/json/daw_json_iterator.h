@@ -34,7 +34,12 @@
 
 namespace daw::json {
 
-	/// allow iteration over an array of json
+	/***
+	 * Iterator for iterating over JSON array's
+	 * @tparam JsonElement type under underlying element in array. If
+	 * heterogenous, a basic_json_value_iterator may be more appropriate
+	 * @tparam IsUnCheckedInput Skip most checking of JSON data
+	 */
 	template<typename JsonElement, bool IsUnCheckedInput = false>
 	class json_array_iterator {
 
@@ -43,7 +48,7 @@ namespace daw::json {
 		get_range( String &&data, std::string_view member_path ) {
 			auto [is_found, result] = json_details::find_range<IsUnCheckedInput>(
 			  std::forward<String>( data ),
-			  {member_path.data( ), member_path.size( )} );
+			  { member_path.data( ), member_path.size( ) } );
 			daw_json_assert( is_found, "Could not find path to member" );
 			daw_json_assert( result.front( ) == '[', "Member is not an array" );
 			return result;
@@ -62,9 +67,12 @@ namespace daw::json {
 		using iterator_category = std::input_iterator_tag;
 
 	private:
-		// This lets us fastpath and just skip n characters
 		using Range = json_details::IteratorRange<char const *, IsUnCheckedInput>;
-		Range m_state{nullptr, nullptr};
+		Range m_state = Range( nullptr, nullptr );
+		/***
+		 * This lets us fastpath and just skip n characters as we have already
+		 * parsed them
+		 */
 		mutable difference_type m_can_skip = -1;
 
 	public:
@@ -88,6 +96,11 @@ namespace daw::json {
 			m_state.trim_left_checked( );
 		}
 
+		/***
+		 * Parse the current element
+		 * @pre good( ) returns true
+		 * @return The parsed result of ParseElement
+		 */
 		[[nodiscard]] constexpr value_type operator*( ) const {
 			daw_json_assert_weak( m_state.has_more( ) and not m_state.in( ']' ),
 			                      "Unexpected end of stream" );
@@ -99,20 +112,31 @@ namespace daw::json {
 			auto const ae = daw::on_exit_success(
 			  [&] { m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) ); } );
 			return json_details::parse_value<element_type>(
-			  ParseTag<element_type::expected_type>{}, tmp );
+			  ParseTag<element_type::expected_type>{ }, tmp );
 #else
 			auto result = json_details::parse_value<element_type>(
-			  ParseTag<element_type::expected_type>{}, tmp );
+			  ParseTag<element_type::expected_type>{ }, tmp );
 
 			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
 			return result;
 #endif
 		}
 
+		/***
+		 * A dereferenable value proxy holding the result of operator*
+		 * This is for compatability with the Iterator concepts and should be
+		 * avoided
+		 * @pre good( ) returns true
+		 * @return an arrow_proxy of the operator* result
+		 */
 		[[nodiscard]] pointer operator->( ) const {
-			return pointer{operator*( )};
+			return pointer{ operator*( ) };
 		}
 
+		/***
+		 * Move the parse state to the next element
+		 * @return iterator after moving
+		 */
 		constexpr json_array_iterator &operator++( ) {
 			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 			                      "Unexpected end of stream" );
@@ -130,17 +154,38 @@ namespace daw::json {
 			return *this;
 		}
 
+		/***
+		 * Move the parse state to the next element
+		 * @return iterator prior to moving
+		 */
 		constexpr json_array_iterator operator++( int ) {
 			auto tmp = *this;
 			(void)operator++( );
 			return tmp;
 		}
 
-		[[nodiscard]] explicit constexpr operator bool( ) const {
+		/***
+		 * Is it ok to dereference itereator
+		 * @return true when there is parse data available
+		 */
+		[[nodiscard]] constexpr bool good( ) const {
 			return not m_state.is_null( ) and m_state.has_more( ) and
 			       m_state.front( ) != ']';
 		}
 
+		/***
+		 * Are we good( )
+		 * @return result of good( )
+		 */
+		[[nodiscard]] explicit constexpr operator bool( ) const {
+			return good( );
+		}
+
+		/***
+		 * Compare rhs for equivilence
+		 * @param rhs Another json_array_iterator
+		 * @return true when equivilent to rhs
+		 */
 		[[nodiscard]] constexpr bool
 		operator==( json_array_iterator const &rhs ) const {
 			if( not( *this ) ) {
@@ -152,6 +197,11 @@ namespace daw::json {
 			return ( m_state.begin( ) == rhs.m_state.begin( ) );
 		}
 
+		/***
+		 * Check if the other iterator is not equivilent
+		 * @param rhs another json_array_iterator
+		 * @return true when rhs is not equivilent
+		 */
 		[[nodiscard]] constexpr bool
 		operator!=( json_array_iterator const &rhs ) const {
 			if( not( *this ) ) {
@@ -164,13 +214,18 @@ namespace daw::json {
 		}
 	};
 
+	/***
+	 * A range of json_array_iterators
+	 * @tparam JsonElement Type of each element in array
+	 * @tparam IsUnCheckedInput Skip most checking of JSON data
+	 */
 	template<typename JsonElement, bool IsUnCheckedInput = false>
 	struct json_array_range {
 		using iterator = json_array_iterator<JsonElement, IsUnCheckedInput>;
 
 	private:
-		iterator m_first{};
-		iterator m_last{};
+		iterator m_first{ };
+		iterator m_last{ };
 
 	public:
 		constexpr json_array_range( ) = default;
@@ -182,14 +237,24 @@ namespace daw::json {
 		                                     std::string_view start_path = "" )
 		  : m_first( std::forward<String>( jd ), start_path ) {}
 
+		/***
+		 * @return first item in range
+		 */
 		[[nodiscard]] constexpr iterator begin( ) {
 			return m_first;
 		}
 
+		/***
+		 * @return one past last item in range
+		 */
 		[[nodiscard]] constexpr iterator end( ) {
 			return m_last;
 		}
 
+		/***
+		 * Are there any elements in range
+		 * @return true when begin( ) == end( )
+		 */
 		[[nodiscard]] constexpr bool empty( ) const {
 			return m_first == m_last;
 		}
