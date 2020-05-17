@@ -738,7 +738,7 @@ namespace daw::json {
 
 			auto [is_found, rng] = json_details::find_range<IsUnCheckedInput>(
 			  json_data, { member_path.data( ), member_path.size( ) } );
-			using Range = daw::remove_cvref_t<decltype( rng )>;
+
 			if constexpr( parser_t::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
 					return typename parser_t::constructor_t{ }( );

@@ -371,6 +371,7 @@ namespace daw::json {
 
 		template<typename T>
 		inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
+			static_assert( std::is_arithmetic_v<T>, "Unexpected non-number" );
 			if constexpr( std::is_floating_point_v<T> ) {
 				return JsonParseTypes::Real;
 			} else if constexpr( std::is_signed_v<T> ) {
@@ -379,6 +380,7 @@ namespace daw::json {
 				return JsonParseTypes::Unsigned;
 			}
 		}( );
+
 
 		template<typename T>
 		constexpr auto number_parse_type_test( )
