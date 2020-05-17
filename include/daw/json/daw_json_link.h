@@ -158,7 +158,7 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 
-		static_assert( daw::is_arithmetic_v<base_type>, "Unexpected non-number" );
+		static_assert( daw::is_arithmetic_v<base_type> or std::is_enum_v<base_type>, "json_number requires an arithmetic type" );
 		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 		static_assert(
 		  Nullable == JsonNullable::Never or
