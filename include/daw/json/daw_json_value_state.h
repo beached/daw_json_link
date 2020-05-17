@@ -53,6 +53,11 @@ namespace daw::json {
 		};
 	} // namespace json_details
 
+	/**
+	 * Maintains the parse positions of a json_value so that you pay the lookup
+	 * costs once
+	 * @tparam Range see IteratorRange
+	 */
 	template<typename Range>
 	class basic_stateful_json_value {
 		basic_json_value<Range> m_value;
@@ -97,6 +102,11 @@ namespace daw::json {
 			return m_locs.size( );
 		}
 
+		/***
+		 * Keep moving the parser to the specified member, or stop when end is reached
+		 * @param index index into range of members
+		 * @return position in members or the size
+		 */
 		[[nodiscard]] constexpr std::size_t move_to( std::size_t index ) {
 			if( index < m_locs.size( ) ) {
 				return index;
