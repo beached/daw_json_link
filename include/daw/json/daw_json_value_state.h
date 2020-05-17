@@ -36,8 +36,8 @@ namespace daw::json {
 			  : name( Name )
 			  , location( std::move( val ) ) {}
 #endif
-			[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const
-			  noexcept {
+			[[nodiscard]] constexpr bool
+			is_match( daw::string_view Name ) const noexcept {
 				return name == Name;
 			}
 
@@ -61,8 +61,13 @@ namespace daw::json {
 	template<typename Range>
 	class basic_stateful_json_value {
 		basic_json_value<Range> m_value;
-		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{};
+		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{ };
 
+		/***
+		 * Move parser until member name matches key if needed
+		 * @param key name of member to move to
+		 * @return position of member or size
+		 */
 		[[nodiscard]] constexpr std::size_t move_to( daw::string_view key ) {
 			std::size_t pos = 0;
 #ifndef _MSC_VER
@@ -73,6 +78,8 @@ namespace daw::json {
 				}
 			}
 #else
+			// FIX: Have not verified but using the hash causes errors in known
+			// locations coode in daw_json_link_impl
 			for( ; pos < m_locs.size( ); ++pos ) {
 				if( m_locs[pos].is_match( key ) ) {
 					return pos;
@@ -103,10 +110,9 @@ namespace daw::json {
 		}
 
 		/***
-		 * Keep moving the parser to the specified member, or stop when end is
-		 * reached
-		 * @param index index into range of members
-		 * @return position in members or the size
+		 * Move parser until member index matches, if needed
+		 * @param index position of member to move to
+		 * @return position in members or size
 		 */
 		[[nodiscard]] constexpr std::size_t move_to( std::size_t index ) {
 			if( index < m_locs.size( ) ) {
@@ -143,20 +149,29 @@ namespace daw::json {
 		constexpr basic_stateful_json_value( basic_json_value<Range> val )
 		  : m_value( std::move( val ) ) {
 
-			auto const t = m_value.type( );
 			daw_json_assert_weak(
-			  t == JsonBaseParseTypes::Array or t == JsonBaseParseTypes::Class,
+			  m_value.is_class( ) or m_value.is_array( ),
 			  "basic_state_full_json_value is only valid on arrays or classes" );
 		}
 
 		constexpr basic_stateful_json_value( )
 		  : basic_stateful_json_value( basic_json_value<Range>( "{}" ) ) {}
 
+		/***
+		 * Reuse state storage for another basic_json_value
+		 * @param val Value to contian state for
+		 */
 		constexpr void reset( basic_json_value<Range> val ) {
 			m_value = std::move( val );
 			m_locs.clear( );
 		}
 
+		/***
+		 * Create a basic_json_member for the named member
+		 * @pre name must be valid
+		 * @param key name of member
+		 * @return a new basic_json_member
+		 */
 		[[nodiscard]] constexpr basic_json_value<Range>
 		operator[]( std::string_view key ) {
 			daw::string_view const k = daw::string_view( key.data( ), key.size( ) );
@@ -165,33 +180,78 @@ namespace daw::json {
 			return m_locs[pos].location->value;
 		}
 
+		/***
+		 * Create a basic_json_member for the named member
+		 * @pre name must be valid
+		 * @param key name of member
+		 * @return a new basic_json_member for the JSON data or an emtpy one if the
+		 * member does not exist
+		 */
 		[[nodiscard]] constexpr basic_json_value<Range> at( std::string_view key ) {
 			daw::string_view const k = daw::string_view( key.data( ), key.size( ) );
 			std::size_t pos = move_to( k );
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
-			return {};
+			return { };
 		}
 
+		/***
+		 * Count the number of elements/members in the JSON class or array
+		 * This method is O(N) worst case and O(1) if the locations have already
+		 * been determined
+		 * @return number of members/elements
+		 */
 		[[nodiscard]] std::size_t size( ) {
-			return move_to( std::numeric_limits<std::size_t>::max( ) );
+			JsonBaseParseTypes const current_type = m_value.type( );
+			switch( current_type ) {
+			case JsonBaseParseTypes::Array:
+			case JsonBaseParseTypes::Class:
+				return move_to( std::numeric_limits<std::size_t>::max( ) );
+			default:
+				return 0;
+			}
 		}
 
+		/***
+		 * Return the index of named member
+		 * This method is O(N) worst case and O(1) if the locations have already
+		 * @param key name of member
+		 * @return the position of the member or the count of members if not present
+		 */
 		[[nodiscard]] std::size_t index_of( std::string_view key ) {
 			daw::string_view const k = daw::string_view( key.data( ), key.size( ) );
 			return move_to( k );
 		}
 
+		/***
+		 * Is the named member present
+		 * This method is O(N) worst case and O(1) if the locations have already
+		 * @param key name of member
+		 * @return true if the member is present
+		 */
 		[[nodiscard]] constexpr bool contains( std::string_view key ) {
 			daw::string_view const k = daw::string_view( key.data( ), key.size( ) );
 			return move_to( k ) < m_locs.size( );
 		}
 
+		/***
+		 * Is the indexed member/element present
+		 * This method is O(N) worst case and O(1) if the locations have already
+		 * @param index position of member/element
+		 * @return true if the member/element is present
+		 */
 		[[nodiscard]] constexpr bool contains( std::size_t index ) {
 			return move_to( index ) < m_locs.size( );
 		}
 
+		/***
+		 * Get the position of the named member
+		 * @tparam Integer An integer type
+		 * @param index position of member.  If negative it returns the position
+		 * from one past last, e.g. -1 is last item
+		 * @return The name of the member or an empty optional
+		 */
 		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
 		                                            std::nullptr_t> = nullptr>
 		[[nodiscard]] std::optional<std::string_view> name_of( Integer index ) {
@@ -200,7 +260,7 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					if( static_cast<std::size_t>( index ) >= sz ) {
-						return {};
+						return { };
 					}
 					sz -= static_cast<std::size_t>( index );
 					return std::string_view( m_locs[sz].name( ).data( ),
@@ -212,9 +272,17 @@ namespace daw::json {
 				return std::string_view( m_locs[pos].name( ).data( ),
 				                         m_locs[pos].name( ).size( ) );
 			}
-			return {};
+			return { };
 		}
 
+		/***
+		 * basic_json_value for the indexed member
+		 * @tparam Integer An integer type
+		 * @param index position of member.  If negative it returns the position
+		 * from one past last, e.g. -1 is last item
+		 * @pre index must exist
+		 * @return A new basic_json_value for the indexed member
+		 */
 		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
 		                                            std::nullptr_t> = nullptr>
 		[[nodiscard]] constexpr basic_json_value<Range>
@@ -234,6 +302,13 @@ namespace daw::json {
 			return m_locs[pos].location->value;
 		}
 
+		/***
+		 * basic_json_value for the indexed member
+		 * @tparam Integer An integer type
+		 * @param index position of member.  If negative it returns the position
+		 * from one past last, e.g. -1 is last item
+		 * @return A new basic_json_value for the indexed member
+		 */
 		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
 		                                            std::nullptr_t> = nullptr>
 		[[nodiscard]] constexpr std::optional<basic_json_value<Range>>
@@ -243,7 +318,7 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					if( static_cast<std::size_t>( index ) >= sz ) {
-						return {};
+						return { };
 					}
 					sz -= static_cast<std::size_t>( index );
 					return m_locs[sz].location->value;
@@ -253,9 +328,12 @@ namespace daw::json {
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
-			return {};
+			return { };
 		}
 
+		/***
+		 * @return A copy of the underlying basic_json_value
+		 */
 		[[nodiscard]] constexpr basic_json_value<Range> get_json_value( ) const {
 			return m_value;
 		}

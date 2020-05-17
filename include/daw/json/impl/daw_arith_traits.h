@@ -7,6 +7,13 @@
 //
 #pragma once
 
+/***
+ * Arithmetic Traits
+ * This allows us to use the numeric_limits traits to build up the number traits
+ * from traits.  If a user supplied type can do what an arithmetic type can, it
+ * should work
+ */
+
 #include <limits>
 #include <type_traits>
 
