@@ -25,6 +25,12 @@
 #include <sstream>
 #include <vector>
 
+static_assert( daw::is_arithmetic_v<int> );
+
+#if defined( __GNUC ) or defined( __clang__ ) and not defined( _MSC_VER )
+static_assert( daw::is_arithmetic_v<__int128> );
+#endif
+
 struct NumberX {
 	int x;
 };
@@ -403,8 +409,8 @@ int main( int, char ** ) try {
 #define CX constexpr
 #endif
 
-#if defined( __GNUC ) or defined( __clang__ )
-	{
+#if defined( __GNUC ) or defined( __clang__ ) and not defined( _MSC_VER )
+	if constexpr( daw::is_arithmetic_v<__int128> ) {
 		using namespace daw::json;
 		constexpr std::string_view very_big_int =
 		  "[340282366920938463463374607431768211455]";

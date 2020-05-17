@@ -157,6 +157,8 @@ namespace daw::json {
 		using base_type = json_details::unwrap_type<T, Nullable>;
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
+
+		static_assert( daw::is_arithmetic_v<base_type>, "Unexpected non-number" );
 		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 		static_assert(
 		  Nullable == JsonNullable::Never or
@@ -752,7 +754,7 @@ namespace daw::json {
 			daw_json_assert( rng.front( '[' ),
 			                 "Expected array class to being with a '['" );
 #else
-			using Range = daw::remove_cvref_t<decltype(rng)>;
+			using Range = daw::remove_cvref_t<decltype( rng )>;
 			daw_json_assert_weak( rng.front( '[' ),
 			                      "Expected array class to being with a '['" );
 #endif
