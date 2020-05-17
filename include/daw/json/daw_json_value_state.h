@@ -36,31 +36,44 @@ namespace daw::json {
 			  : name( Name )
 			  , location( std::move( val ) ) {}
 #endif
-
-			[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const
-			  noexcept {
-#ifndef _MSC_VER
-				uint32_t const h = daw::murmur3_32( Name );
-				if( hash_value != h ) {
-					return false;
-				}
-#endif
+			[[nodiscard]] constexpr bool
+			is_match( daw::string_view Name ) const noexcept {
 				return name == Name;
 			}
+
+#ifndef _MSC_VER
+			[[nodiscard]] constexpr bool is_match( daw::string_view Name,
+			                                       uint32_t hash ) const noexcept {
+				if( hash != hash_value ) {
+					return false;
+				}
+				return name == Name;
+			}
+#endif
 		};
 	} // namespace json_details
+
 	template<typename Range>
 	class basic_stateful_json_value {
 		basic_json_value<Range> m_value;
-		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{};
+		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{ };
 
 		[[nodiscard]] constexpr std::size_t move_to( daw::string_view key ) {
 			std::size_t pos = 0;
+#ifndef _MSC_VER
+			auto const h = daw::murmur3_32( key );
+			for( ; pos < m_locs.size( ); ++pos ) {
+				if( m_locs[pos].is_match( key, h ) ) {
+					return pos;
+				}
+			}
+#else
 			for( ; pos < m_locs.size( ); ++pos ) {
 				if( m_locs[pos].is_match( key ) ) {
 					return pos;
 				}
 			}
+#endif
 			auto it = [&] {
 				if( m_locs.empty( ) ) {
 					return m_value.begin( );
@@ -147,7 +160,7 @@ namespace daw::json {
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
-			return {};
+			return { };
 		}
 
 		[[nodiscard]] std::size_t size( ) {
@@ -176,7 +189,7 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					if( static_cast<std::size_t>( index ) >= sz ) {
-						return {};
+						return { };
 					}
 					sz -= static_cast<std::size_t>( index );
 					return std::string_view( m_locs[sz].name( ).data( ),
@@ -188,7 +201,7 @@ namespace daw::json {
 				return std::string_view( m_locs[pos].name( ).data( ),
 				                         m_locs[pos].name( ).size( ) );
 			}
-			return {};
+			return { };
 		}
 
 		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
@@ -219,7 +232,7 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					if( static_cast<std::size_t>( index ) >= sz ) {
-						return {};
+						return { };
 					}
 					sz -= static_cast<std::size_t>( index );
 					return m_locs[sz].location->value;
@@ -229,7 +242,7 @@ namespace daw::json {
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
-			return {};
+			return { };
 		}
 
 		[[nodiscard]] constexpr basic_json_value<Range> get_json_value( ) const {
