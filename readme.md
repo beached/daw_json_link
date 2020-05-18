@@ -174,7 +174,7 @@ namespace daw::json {
 }
 ```
 # C++ 20 Naming of JSON members
-When compiled within C++20 compiler, the member names are specified inside the types as follows.
+When compiled within C++20 compiler, in addition to passing a `char const *` as in C++17, the member names can be specified as string literals directly.
 ```c++
 namespace daw::json {
   template<>
