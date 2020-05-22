@@ -48,7 +48,7 @@ namespace daw::json {
 		 * @return the OutputIterator it at final position
 		 */
 		template<typename OutputIterator, typename Value, typename... Args>
-		[[maybe_unused, nodiscard]] static constexpr OutputIterator
+		[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
 		serialize( OutputIterator it, std::tuple<Args...> const &args,
 		           Value const &v ) {
 			static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
@@ -70,7 +70,7 @@ namespace daw::json {
 		 * @return A T object
 		 */
 		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] static constexpr T parse( Range &rng ) {
+		[[maybe_unused, nodiscard]] static inline constexpr T parse( Range &rng ) {
 			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
 			return json_details::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{ } );
@@ -118,7 +118,7 @@ namespace daw::json {
 		 * @return the OutputIterator it
 		 */
 		template<typename OutputIterator, typename Value, typename... Args>
-		[[maybe_unused, nodiscard]] static constexpr OutputIterator
+		[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
 		serialize( OutputIterator it, std::tuple<Args...> const &args,
 		           Value const &v ) {
 			static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
@@ -143,7 +143,7 @@ namespace daw::json {
 		 * @return A T object
 		 */
 		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] static constexpr T parse( Range &rng ) {
+		[[maybe_unused, nodiscard]] static inline constexpr T parse( Range &rng ) {
 			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
 			return json_details::parse_ordered_json_class<
 			  T, json_details::ordered_member_wrapper<JsonMembers>...>( rng );
@@ -923,12 +923,12 @@ namespace daw::json {
 		static_assert( not json_details::is_unique_ptr_v<T>,
 		               "T should be the type contained in the unique_ptr" );
 
-		constexpr std::unique_ptr<T> operator( )( ) const {
+		inline constexpr std::unique_ptr<T> operator( )( ) const {
 			return { };
 		}
 
 		template<typename Arg, typename... Args>
-		std::unique_ptr<T> operator( )( Arg &&arg, Args &&... args ) const {
+		inline std::unique_ptr<T> operator( )( Arg &&arg, Args &&... args ) const {
 			return std::make_unique<T>( std::forward<Arg>( arg ),
 			                            std::forward<Args>( args )... );
 		}
