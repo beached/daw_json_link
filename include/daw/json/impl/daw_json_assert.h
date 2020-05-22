@@ -34,7 +34,7 @@ namespace daw::json::json_details {
 	struct missing_member {
 		std::string_view member_name;
 
-		explicit constexpr missing_member( std::string_view name )
+		explicit inline constexpr missing_member( std::string_view name )
 		  : member_name( name ) {}
 	};
 } // namespace daw::json::json_details
@@ -77,7 +77,7 @@ template<bool ShouldThrow = use_daw_json_exceptions_v>
 }
 
 template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] void
+[[maybe_unused, noreturn]] inline void
 daw_json_error( daw::json::json_details::missing_member reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
@@ -97,14 +97,14 @@ daw_json_error( daw::json::json_details::missing_member reason ) {
 
 #ifndef DAW_JSON_CHECK_DEBUG_ONLY
 template<typename Bool>
-static constexpr void daw_json_assert( Bool const &b,
+static inline constexpr void daw_json_assert( Bool const &b,
                                        std::string_view reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
 template<typename Bool>
-static constexpr void
+static inline constexpr void
 daw_json_assert( Bool const &b,
                  daw::json::json_details::missing_member reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
@@ -121,14 +121,14 @@ daw_json_assert( Bool const &b,
 #else // undef DAW_JSON_CHECK_DEBUG_ONLY
 #ifndef NDEBUG
 template<typename Bool>
-static constexpr void daw_json_assert( Bool const &b,
+static inline constexpr void daw_json_assert( Bool const &b,
                                        std::string_view reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
 template<typename Bool>
-static constexpr void
+static inline constexpr void
 daw_json_assert( Bool const &b,
                  daw::json::json_details::missing_member reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {

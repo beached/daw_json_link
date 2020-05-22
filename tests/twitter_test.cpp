@@ -52,7 +52,7 @@ int main( int argc, char **argv ) try {
 
 	std::optional<daw::twitter::twitter_object_t> twitter_result;
 	daw::bench_n_test_mbs<100>(
-	  "twitter_catalog bench", sz,
+	  "twitter bench", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
 		    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
@@ -65,10 +65,10 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 
-	std::string str{};
+	std::string str{ };
 	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<100>(
-	  "twitter_catalog bench(to_json_string)", sz,
+	  "twitter bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
 		  daw::json::to_json( *tr, out_it );
