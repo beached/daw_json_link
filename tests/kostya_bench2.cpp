@@ -24,7 +24,7 @@ std::string read_file( std::string const &filename ) {
 	                    std::istreambuf_iterator<char>( ) );
 }
 
-int main( int argc, char *argv[] ) {
+int main( int, char ** ) {
 	std::string const json_text = read_file( "/tmp/1.json" );
 
 	double x = 0;

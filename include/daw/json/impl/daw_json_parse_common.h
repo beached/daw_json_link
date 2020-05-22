@@ -116,11 +116,11 @@ namespace daw::json::json_details {
 	struct basic_appender {
 		Container *m_container;
 
-		explicit constexpr basic_appender( Container &container )
+		explicit inline constexpr basic_appender( Container &container )
 		  : m_container( &container ) {}
 
 		template<typename Value>
-		constexpr void operator( )( Value &&value ) const {
+		inline constexpr void operator( )( Value &&value ) const {
 			if constexpr( has_push_back_v<Container, daw::remove_cvref_t<Value>> ) {
 				m_container->push_back( std::forward<Value>( value ) );
 			} else if constexpr( has_insert_end_v<Container,
@@ -140,20 +140,20 @@ namespace daw::json::json_details {
 		         std::enable_if_t<
 		           not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>>,
 		           std::nullptr_t> = nullptr>
-		basic_appender &operator=( Value &&v ) {
+		inline constexpr basic_appender &operator=( Value &&v ) {
 			operator( )( std::forward<Value>( v ) );
 			return *this;
 		}
 
-		basic_appender &operator++( ) {
+		inline constexpr basic_appender &operator++( ) {
 			return *this;
 		}
 
-		basic_appender operator++( int ) const {
+		inline constexpr basic_appender operator++( int ) const {
 			return *this;
 		}
 
-		basic_appender &operator*( ) {
+		inline constexpr basic_appender &operator*( ) {
 			return *this;
 		}
 	};
@@ -179,37 +179,37 @@ namespace daw::json {
 	template<std::size_t N>
 	struct json_name {
 		static_assert( N > 0 );
-		char const m_data[N]{};
+		char const m_data[N]{ };
 
 	private:
 		template<std::size_t... Is>
 		constexpr json_name( char const ( &ptr )[N], std::index_sequence<Is...> )
-		  : m_data{ptr[Is]...} {}
+		  : m_data{ ptr[Is]... } {}
 
 	public:
-		constexpr json_name( char const ( &ptr )[N] )
-		  : json_name( ptr, std::make_index_sequence<N>{} ) {}
+		inline constexpr json_name( char const ( &ptr )[N] )
+		  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
 
-		constexpr operator daw::string_view( ) const {
-			return {m_data, N - 1};
+		inline constexpr operator daw::string_view( ) const {
+			return { m_data, N - 1 };
 		}
 
 		// Needed for copy_to_iterator
-		[[nodiscard]] constexpr char const *begin( ) const {
+		[[nodiscard]] inline constexpr char const *begin( ) const {
 			return m_data;
 		}
 
 		// Needed for copy_to_iterator
-		[[nodiscard]] constexpr char const *end( ) const {
+		[[nodiscard]] inline constexpr char const *end( ) const {
 			return m_data + static_cast<ptrdiff_t>( size( ) );
 		}
 
-		[[nodiscard]] static constexpr std::size_t size( ) noexcept {
+		[[nodiscard]] static inline constexpr std::size_t size( ) noexcept {
 			return N - 1;
 		}
 
 		template<std::size_t M>
-		constexpr bool operator==( json_name<M> const &rhs ) const {
+		inline constexpr bool operator==( json_name<M> const &rhs ) const {
 			if( N != M ) {
 				return false;
 			}
@@ -221,32 +221,32 @@ namespace daw::json {
 			return true;
 		}
 
-		constexpr bool operator==( daw::string_view rhs ) const {
+		inline constexpr bool operator==( daw::string_view rhs ) const {
 			return daw::string_view( m_data, N - 1 ) == rhs;
 		}
 
-		constexpr bool operator==( std::string_view rhs ) const {
+		inline constexpr bool operator==( std::string_view rhs ) const {
 			return std::string_view( m_data, N - 1 ) == rhs;
 		}
 
-		constexpr operator std::string_view( ) const {
+		inline constexpr operator std::string_view( ) const {
 			return std::string_view( m_data, N - 1 );
 		}
 	};
 	template<typename... Chars>
-	json_name( Chars... )->json_name<sizeof...( Chars )>;
+	json_name( Chars... ) -> json_name<sizeof...( Chars )>;
 
 	template<std::size_t N>
-	json_name( char const ( & )[N] )->json_name<N>;
+	json_name( char const ( & )[N] ) -> json_name<N>;
 
 #define JSONNAMETYPE daw::json::json_name
 
 	// Convienience for array members that are required to be unnamed
-	inline constexpr JSONNAMETYPE no_name{""};
+	inline constexpr JSONNAMETYPE no_name{ "" };
 
 	namespace json_details {
-		inline constexpr JSONNAMETYPE default_key_name{"key"};
-		inline constexpr JSONNAMETYPE default_value_name{"value"};
+		inline constexpr JSONNAMETYPE default_key_name{ "key" };
+		inline constexpr JSONNAMETYPE default_value_name{ "value" };
 	} // namespace json_details
 
 	template<JSONNAMETYPE n>
@@ -355,7 +355,7 @@ namespace daw::json {
 
 		template<typename T>
 		[[maybe_unused]] auto dereffed_type_impl( daw::tag_t<T> )
-		  -> decltype( *( T{} ) );
+		  -> decltype( *( T{ } ) );
 
 		template<typename T>
 		using dereffed_type =

@@ -17,7 +17,7 @@
 namespace daw::json::json_details {
 	template<typename Result, SIMDModes SIMDMode = SIMDModes::None,
 	         typename Range>
-	[[nodiscard]] constexpr Result parse_real( Range &rng ) {
+	[[nodiscard]] inline constexpr Result parse_real( Range &rng ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak( rng.has_more( ) and rng.is_real_number_part( ),
 		                      "Expected a real number" );

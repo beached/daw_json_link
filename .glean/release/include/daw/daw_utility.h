@@ -165,7 +165,7 @@ namespace daw {
 	// For generic types that are functors, delegate to its 'operator()'
 
 	template<typename T>
-	struct function_traits : public function_traits<decltype( &T{}( ) )> {};
+	struct function_traits : public function_traits<decltype( &T{ }( ) )> {};
 
 	// for pointers to member function(const version)
 	template<typename ClassType, typename ReturnType, typename... Args>
@@ -212,21 +212,21 @@ namespace daw {
 	template<typename ReturnType, typename... Args, class T>
 	[[nodiscard]] auto make_function( T &&t ) -> std::function<
 	  decltype( ReturnType( t( std::declval<Args>( )... ) ) )( Args... )> {
-		return {std::forward<T>( t )};
+		return { std::forward<T>( t ) };
 	}
 
 	// handles explicit overloads
 	template<typename ReturnType, typename... Args>
 	[[nodiscard]] std::function<ReturnType( Args... )>
 	make_function( ReturnType ( *p )( Args... ) ) {
-		return {p};
+		return { p };
 	}
 
 	// handles explicit overloads
 	template<typename ReturnType, typename... Args, typename ClassType>
 	[[nodiscard]] std::function<ReturnType( Args... )>
 	make_function( ReturnType ( ClassType::*p )( Args... ) ) {
-		return {p};
+		return { p };
 	}
 
 	//*****************
@@ -235,7 +235,7 @@ namespace daw {
 	[[nodiscard]] auto make_root_function( T &&t )
 	  -> std::function<decltype( daw::traits::root_type_t<ReturnType>(
 	    t( std::declval<daw::traits::root_type_t<Args>>( )... ) ) )( Args... )> {
-		return {std::forward<T>( t )};
+		return { std::forward<T>( t ) };
 	}
 
 	// handles explicit overloads
@@ -243,7 +243,7 @@ namespace daw {
 	[[nodiscard]] std::function<
 	  daw::traits::root_type_t<ReturnType>( daw::traits::root_type_t<Args>... )>
 	make_function( ReturnType ( *p )( Args... ) ) {
-		return {p};
+		return { p };
 	}
 
 	// handles explicit overloads
@@ -251,7 +251,7 @@ namespace daw {
 	[[nodiscard]] std::function<
 	  daw::traits::root_type_t<ReturnType>( daw::traits::root_type_t<Args>... )>
 	make_function( ReturnType ( ClassType::*p )( Args... ) ) {
-		return {p};
+		return { p };
 	}
 	//*****************
 
@@ -259,7 +259,7 @@ namespace daw {
 	template<typename ReturnType, typename... Args, typename ClassType>
 	[[nodiscard]] std::function<ReturnType( Args... )>
 	make_std_function( ReturnType ( ClassType::*p )( Args... ) ) {
-		return {p};
+		return { p };
 	}
 
 	template<typename T>
@@ -292,7 +292,7 @@ namespace daw {
 	template<typename Iterator1, typename Iterator2, typename Pred>
 	[[nodiscard]] std::vector<Iterator1>
 	find_all_where( Iterator1 first, Iterator2 const last, Pred predicate ) {
-		std::vector<Iterator1> results{};
+		std::vector<Iterator1> results{ };
 		std::copy_if( first, last, std::back_inserter( results ), predicate );
 		return results;
 	}
@@ -389,15 +389,15 @@ namespace daw {
 
 	template<typename Arg, typename... Args>
 	[[nodiscard]] auto make_initializer_list( Arg &&arg, Args &&... args ) {
-		return std::initializer_list<Arg>{std::forward<Arg>( arg ),
-		                                  std::forward<Args>( args )...};
+		return std::initializer_list<Arg>{ std::forward<Arg>( arg ),
+		                                   std::forward<Args>( args )... };
 	}
 
 	template<typename Container, typename... Args>
 	[[nodiscard]] decltype( auto ) append( Container &container,
 	                                       Args &&... args ) {
 		return container.insert( container.end( ),
-		                         {std::forward<Args>( args )...} );
+		                         { std::forward<Args>( args )... } );
 	}
 
 	template<typename Container, typename Item>
@@ -630,7 +630,7 @@ namespace daw {
 				m_last -= static_cast<difference_type>( count );
 			}
 		};
-		return range_t{first, last};
+		return range_t{ first, last };
 	}
 
 	template<typename... Ts>
@@ -655,7 +655,7 @@ namespace daw {
 	struct tag_t {};
 
 	template<typename... Args>
-	constexpr tag_t<Args...> tag = tag_t<Args...>{};
+	constexpr tag_t<Args...> tag = tag_t<Args...>{ };
 
 	template<typename T>
 	struct use_aggregate_construction {
@@ -686,7 +686,7 @@ namespace daw {
 		template<typename... Args,
 		         std::enable_if_t<std::is_constructible_v<T, Args...>,
 		                          std::nullptr_t> = nullptr>
-		[[nodiscard]] constexpr T operator( )( Args &&... args ) const
+		[[nodiscard]] inline constexpr T operator( )( Args &&... args ) const
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
 
 			return T( std::forward<Args>( args )... );
@@ -695,10 +695,10 @@ namespace daw {
 		template<typename... Args,
 		         std::enable_if_t<not std::is_constructible_v<T, Args...>,
 		                          std::nullptr_t> = nullptr>
-		[[nodiscard]] constexpr auto operator( )( Args &&... args ) const
+		[[nodiscard]] inline constexpr auto operator( )( Args &&... args ) const
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
 
-			return T{std::forward<Args>( args )...};
+			return T{ std::forward<Args>( args )... };
 		}
 	};
 
@@ -706,14 +706,14 @@ namespace daw {
 	struct construct_a_t<daw::use_aggregate_construction<T>> {
 
 		template<typename... Args>
-		[[nodiscard]] constexpr T operator( )( Args &&... args ) const
+		[[nodiscard]] inline constexpr T operator( )( Args &&... args ) const
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
 
-			return T{std::forward<Args>( args )...};
+			return T{ std::forward<Args>( args )... };
 		}
 	};
 	template<typename T>
-	inline constexpr construct_a_t<T> construct_a = construct_a_t<T>{};
+	inline constexpr construct_a_t<T> construct_a = construct_a_t<T>{ };
 
 	namespace utility_details {
 		template<typename T, typename... Args>
@@ -828,7 +828,7 @@ namespace daw {
 	[[nodiscard]] auto as_char_array( From &&from ) noexcept {
 		static_assert( std::is_trivially_copyable_v<remove_cvref_t<From>>,
 		               "From type must be trivially copiable" );
-		auto result = std::array<unsigned char, sizeof( From )>{0};
+		auto result = std::array<unsigned char, sizeof( From )>{ 0 };
 		memcpy( result.data( ), &from, result.size( ) );
 		return result;
 	}
@@ -842,12 +842,12 @@ namespace daw {
 		               "Must have integral number of To's in From" );
 
 		auto const as_chars = as_char_array( from );
-		auto result = std::array<To, num_values>{0};
+		auto result = std::array<To, num_values>{ 0 };
 
 		for( size_t entry = 0; entry < num_values; ++entry ) {
 			result[entry] =
 			  value_from_chars( std::next( as_chars.data( ), entry * sizeof( To ) ),
-			                    std::integral_constant<size_t, sizeof( To )>{} );
+			                    std::integral_constant<size_t, sizeof( To )>{ } );
 		}
 		return result;
 	}
@@ -900,11 +900,11 @@ namespace daw {
 	};
 
 	template<typename T>
-	mutable_capture( T const & )->mutable_capture<T>;
+	mutable_capture( T const & ) -> mutable_capture<T>;
 	template<typename T>
-	mutable_capture( T & )->mutable_capture<T>;
+	mutable_capture( T & ) -> mutable_capture<T>;
 	template<typename T>
-	mutable_capture( T && )->mutable_capture<T>;
+	mutable_capture( T && ) -> mutable_capture<T>;
 
 	template<typename T>
 	class countable_resource_t {
@@ -932,7 +932,7 @@ namespace daw {
 		}
 	};
 	template<typename T>
-	std::atomic<T> countable_resource_t<T>::m_resource_count = {};
+	std::atomic<T> countable_resource_t<T>::m_resource_count = { };
 
 	namespace utility_details {
 		template<typename T>
@@ -944,7 +944,7 @@ namespace daw {
 	  -> daw::utility_details::value_is_utility_details<
 	    std::remove_reference_t<decltype( value )>> {
 
-		return {std::forward<T>( value )};
+		return { std::forward<T>( value ) };
 	}
 
 	namespace utility_details {

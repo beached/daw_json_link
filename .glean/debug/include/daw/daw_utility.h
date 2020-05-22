@@ -686,7 +686,7 @@ namespace daw {
 		template<typename... Args,
 		         std::enable_if_t<std::is_constructible_v<T, Args...>,
 		                          std::nullptr_t> = nullptr>
-		[[nodiscard]] constexpr T operator( )( Args &&... args ) const
+		[[nodiscard]] inline constexpr T operator( )( Args &&... args ) const
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
 
 			return T( std::forward<Args>( args )... );
@@ -695,7 +695,7 @@ namespace daw {
 		template<typename... Args,
 		         std::enable_if_t<not std::is_constructible_v<T, Args...>,
 		                          std::nullptr_t> = nullptr>
-		[[nodiscard]] constexpr auto operator( )( Args &&... args ) const
+		[[nodiscard]] inline constexpr auto operator( )( Args &&... args ) const
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
 
 			return T{std::forward<Args>( args )...};
@@ -706,7 +706,7 @@ namespace daw {
 	struct construct_a_t<daw::use_aggregate_construction<T>> {
 
 		template<typename... Args>
-		[[nodiscard]] constexpr T operator( )( Args &&... args ) const
+		[[nodiscard]] inline constexpr T operator( )( Args &&... args ) const
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> ) {
 
 			return T{std::forward<Args>( args )...};
