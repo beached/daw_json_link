@@ -519,17 +519,17 @@ namespace daw::json {
 	 * Allow parsing of a type that does not fit
 	 * @tparam Name Name of JSON member to link to
 	 * @tparam T type of value being constructed
-	 * @tparam FromConverter Callable that accepts a std::string_view of the range
+	 * @tparam FromJsonConverter Callable that accepts a std::string_view of the range
 	 * to parse.  The default requires an overload of from_string( daw::tag<T>,
 	 * std::string_view ) that returns a T
-	 * @tparam ToConverter Returns a string from the value.  The default requires
+	 * @tparam ToJsonConverter Returns a string from the value.  The default requires
 	 * a to_string( T const & ) overload that returns a String like type
 	 * @tparam CustomJsonType JSON type value is encoded as literal/string
 	 * @tparam Nullable Can the member be missing or have a null value
 	 */
 	template<JSONNAMETYPE Name, typename T,
-	         typename FromConverter = custom_from_converter_t<T>,
-	         typename ToConverter = custom_to_converter_t<T>,
+	         typename FromJsonConverter = custom_from_converter_t<T>,
+	         typename ToJsonConverter = custom_to_converter_t<T>,
 	         CustomJsonTypes CustomJsonType = CustomJsonTypes::Either,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_custom;

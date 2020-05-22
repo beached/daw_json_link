@@ -75,17 +75,17 @@ namespace daw::json::json_details {
 		                 std::random_access_iterator_tag>,
 		               "Expecting a Random Contiguous Iterator" );
 		using iterator = Iterator;
-		iterator first{};
-		iterator last{};
-		iterator class_first{};
-		iterator class_last{};
+		iterator first{ };
+		iterator last{ };
+		iterator class_first{ };
+		iterator class_last{ };
 		using Range = IteratorRange<iterator, IsUnCheckedInput>;
 
-		static constexpr bool is_unchecked_input = IsUnCheckedInput;
+		static inline constexpr bool is_unchecked_input = IsUnCheckedInput;
 		using CharT = daw::remove_cvref_t<decltype( *first )>;
 
 		template<std::size_t N>
-		constexpr bool operator==( char const ( &rhs )[N] ) const {
+		inline constexpr bool operator==( char const ( &rhs )[N] ) const {
 			if( size( ) < ( N - 1 ) ) {
 				return false;
 			}
@@ -96,45 +96,45 @@ namespace daw::json::json_details {
 			return result;
 		}
 
-		constexpr IteratorRange( ) = default;
+		inline constexpr IteratorRange( ) = default;
 
-		constexpr IteratorRange( iterator f, iterator l )
+		inline constexpr IteratorRange( iterator f, iterator l )
 		  : first( f )
 		  , last( l )
 		  , class_first( f )
 		  , class_last( l ) {}
 
-		[[nodiscard]] constexpr bool empty( ) const {
+		[[nodiscard]] inline constexpr bool empty( ) const {
 			return first == last;
 		}
 
-		[[nodiscard]] constexpr bool has_more( ) const {
+		[[nodiscard]] inline constexpr bool has_more( ) const {
 			return first != last;
 		}
 
-		[[nodiscard]] constexpr bool can_parse_more( ) const {
+		[[nodiscard]] inline constexpr bool can_parse_more( ) const {
 			return not is_null( ) and has_more( );
 		}
 
-		[[nodiscard]] constexpr decltype( auto ) front( ) const {
+		[[nodiscard]] inline constexpr decltype( auto ) front( ) const {
 			return *first;
 		}
 
-		[[nodiscard]] constexpr bool front( char c ) const {
+		[[nodiscard]] inline constexpr bool front( char c ) const {
 			return first != last and *first == c;
 		}
 
-		[[nodiscard]] constexpr std::size_t size( ) const {
+		[[nodiscard]] inline constexpr std::size_t size( ) const {
 			return static_cast<std::size_t>( std::distance( first, last ) );
 		}
 
-		[[nodiscard]] constexpr bool is_number( ) const {
+		[[nodiscard]] inline constexpr bool is_number( ) const {
 			return static_cast<unsigned>( front( ) ) - static_cast<unsigned>( '0' ) <
 			       10U;
 		}
 
 		template<std::size_t N>
-		[[nodiscard]] constexpr bool front( char const ( &set )[N] ) const {
+		[[nodiscard]] inline constexpr bool front( char const ( &set )[N] ) const {
 			if( empty( ) ) {
 				return false;
 			}
@@ -145,7 +145,7 @@ namespace daw::json::json_details {
 			return result;
 		}
 
-		[[nodiscard]] constexpr bool is_null( ) const {
+		[[nodiscard]] inline constexpr bool is_null( ) const {
 			if constexpr( std::is_pointer_v<iterator> ) {
 				return first == nullptr;
 			} else if constexpr( std::is_convertible_v<iterator, bool> ) {
@@ -155,22 +155,22 @@ namespace daw::json::json_details {
 			}
 		}
 
-		constexpr void remove_prefix( ) {
+		inline constexpr void remove_prefix( ) {
 			++first;
 		}
 
-		constexpr void remove_prefix( std::size_t n ) {
+		inline constexpr void remove_prefix( std::size_t n ) {
 			std::advance( first, static_cast<intmax_t>( n ) );
 		}
 
-		[[nodiscard]] constexpr bool is_space( ) const {
+		[[nodiscard]] inline constexpr bool is_space( ) const {
 			// Faster to be liberal here and accept <= 0x20
 			daw_json_assert_weak( has_more( ), "Unexpected end of stream" );
 			auto const c = *first;
 			return c > 0x0 and c <= 0x20;
 		}
 
-		constexpr void trim_left( ) {
+		inline constexpr void trim_left( ) {
 			if constexpr( is_unchecked_input ) {
 				trim_left_unchecked( );
 			} else {
@@ -178,7 +178,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		constexpr void trim_left_checked( ) {
+		inline constexpr void trim_left_checked( ) {
 			skip_comments_checked( );
 			while( has_more( ) and is_space( ) ) {
 				remove_prefix( );
@@ -186,7 +186,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		constexpr void trim_left_unchecked( ) {
+		inline constexpr void trim_left_unchecked( ) {
 			skip_comments_unchecked( );
 			while( is_space( ) ) {
 				remove_prefix( );
@@ -194,30 +194,30 @@ namespace daw::json::json_details {
 			}
 		}
 
-		constexpr void trim_left_checked_raw( ) {
+		inline constexpr void trim_left_checked_raw( ) {
 			while( is_space( ) ) {
 				remove_prefix( );
 				daw_json_assert_weak( first != last, "Unexpected end of stream" );
 			}
 		}
 
-		[[nodiscard]] constexpr iterator begin( ) const {
+		[[nodiscard]] inline constexpr iterator begin( ) const {
 			return first;
 		}
 
-		[[nodiscard]] constexpr iterator data( ) const {
+		[[nodiscard]] inline constexpr iterator data( ) const {
 			return first;
 		}
 
-		[[nodiscard]] constexpr iterator end( ) const {
+		[[nodiscard]] inline constexpr iterator end( ) const {
 			return last;
 		}
 
-		[[nodiscard]] explicit constexpr operator bool( ) const {
+		[[nodiscard]] explicit inline constexpr operator bool( ) const {
 			return not empty( );
 		}
 
-		constexpr void move_to_next_of( char c ) {
+		inline constexpr void move_to_next_of( char c ) {
 			skip_comments( );
 			daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 			while( front( ) != c ) {
@@ -228,7 +228,7 @@ namespace daw::json::json_details {
 		}
 
 		template<std::size_t N>
-		constexpr void move_to_next_of( char const ( &str )[N] ) {
+		inline constexpr void move_to_next_of( char const ( &str )[N] ) {
 			skip_comments( );
 			daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 			while( not in( str ) ) {
@@ -238,13 +238,13 @@ namespace daw::json::json_details {
 			}
 		}
 
-		[[nodiscard]] constexpr bool in( char c ) const {
+		[[nodiscard]] inline constexpr bool in( char c ) const {
 			daw_json_assert_weak( first != nullptr, "Empty or null InteratorRange" );
 			return *first == c;
 		}
 
 		template<std::size_t N>
-		[[nodiscard]] constexpr bool in( char const ( &set )[N] ) const {
+		[[nodiscard]] inline constexpr bool in( char const ( &set )[N] ) const {
 			unsigned result = 0;
 			daw::algorithm::do_n_arg<N>( [&]( std::size_t n ) {
 				result |= static_cast<unsigned>( set[n] == *first );
@@ -252,7 +252,7 @@ namespace daw::json::json_details {
 			return static_cast<bool>( result );
 		}
 
-		[[nodiscard]] constexpr bool is_real_number_part( ) const {
+		[[nodiscard]] inline constexpr bool is_real_number_part( ) const {
 			if constexpr( IsUnCheckedInput ) {
 				return true;
 			} else {
@@ -268,7 +268,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		[[nodiscard]] constexpr bool at_end_of_item( ) const {
+		[[nodiscard]] inline constexpr bool at_end_of_item( ) const {
 			auto const c = front( );
 			return static_cast<bool>(
 			  static_cast<unsigned>( c == ',' ) | static_cast<unsigned>( c == '}' ) |
@@ -276,7 +276,7 @@ namespace daw::json::json_details {
 			  static_cast<unsigned>( c <= 0x20 ) );
 		}
 
-		constexpr void clean_tail( ) {
+		inline constexpr void clean_tail( ) {
 			// trim_left_checked
 			while( has_more( ) and is_space( ) ) {
 				remove_prefix( );
@@ -287,7 +287,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		constexpr void set_class_position( ) {
+		inline constexpr void set_class_position( ) {
 			class_first = first;
 			class_last = last;
 		}
@@ -295,5 +295,5 @@ namespace daw::json::json_details {
 
 	template<typename CharT>
 	IteratorRange( CharT const *, CharT const * )
-	  ->IteratorRange<CharT const *, false>;
+	  -> IteratorRange<CharT const *, false>;
 } // namespace daw::json::json_details

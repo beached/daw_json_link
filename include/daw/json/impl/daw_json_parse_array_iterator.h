@@ -26,9 +26,9 @@ namespace daw::json::json_details {
 
 		iterator_range_t *rng = nullptr;
 
-		constexpr json_parse_value_array_iterator( ) = default;
+		inline constexpr json_parse_value_array_iterator( ) = default;
 
-		constexpr explicit json_parse_value_array_iterator( iterator_range_t &r )
+		inline constexpr explicit json_parse_value_array_iterator( iterator_range_t &r )
 		  : rng( &r ) {
 			if( rng->front( ) == ']' ) {
 				// Cleanup at end of value
@@ -39,14 +39,14 @@ namespace daw::json::json_details {
 			}
 		}
 
-		constexpr value_type operator*( ) {
+		inline constexpr value_type operator*( ) {
 			daw_json_assert_weak( rng and rng->can_parse_more( ),
 			                      "Expected data to parse" );
 			return parse_value<element_t>( ParseTag<element_t::expected_type>{},
 			                               *rng );
 		}
 
-		constexpr json_parse_value_array_iterator &operator++( ) {
+		inline constexpr json_parse_value_array_iterator &operator++( ) {
 			daw_json_assert_weak( rng, "Unexpected increment" );
 			rng->clean_tail( );
 			daw_json_assert_weak( rng->has_more( ), "Unexpected end of data" );
@@ -60,19 +60,19 @@ namespace daw::json::json_details {
 			return *this;
 		}
 
-		constexpr json_parse_value_array_iterator operator++( int ) {
+		inline constexpr json_parse_value_array_iterator operator++( int ) {
 			auto result = *this;
 			(void)this->operator++( );
 			return result;
 		}
 
-		constexpr bool
+		inline constexpr bool
 		operator==( json_parse_value_array_iterator const &rhs ) const {
 			// using identity as equality
 			return rng == rhs.rng;
 		}
 
-		constexpr bool
+		inline constexpr bool
 		operator!=( json_parse_value_array_iterator const &rhs ) const {
 			// using identity as equality
 			return rng != rhs.rng;

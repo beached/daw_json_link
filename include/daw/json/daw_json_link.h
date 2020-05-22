@@ -384,24 +384,24 @@ namespace daw::json {
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
-	template<JSONNAMETYPE Name, typename T, typename FromConverter,
-	         typename ToConverter, CustomJsonTypes CustomJsonType,
+	template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
+	         typename ToJsonConverter, CustomJsonTypes CustomJsonType,
 	         JsonNullable Nullable>
 	struct json_custom {
 		using i_am_a_json_type = void;
-		using to_converter_t = ToConverter;
-		using from_converter_t = FromConverter;
-		using constructor_t = FromConverter;
+		using to_converter_t = ToJsonConverter;
+		using from_converter_t = FromJsonConverter;
+		using constructor_t = FromJsonConverter;
 
 		using base_type = json_details::unwrap_type<T, Nullable>;
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
-		using parse_to_t = std::invoke_result_t<FromConverter, std::string_view>;
-		static_assert( std::is_invocable_v<FromConverter, std::string_view>,
+		using parse_to_t = std::invoke_result_t<FromJsonConverter, std::string_view>;
+		static_assert( std::is_invocable_v<FromJsonConverter, std::string_view>,
 		               "FromConverter must be callable with a std::string_view" );
 		static_assert(
-		  std::is_invocable_v<ToConverter, parse_to_t> or
-		    std::is_invocable_r_v<char const *, ToConverter, char const *,
+		  std::is_invocable_v<ToJsonConverter, parse_to_t> or
+		    std::is_invocable_r_v<char const *, ToJsonConverter, char const *,
 		                          parse_to_t>,
 		  "ToConverter must be callable with T or T and and OutputIterator" );
 		static constexpr JSONNAMETYPE name = Name;

@@ -99,13 +99,6 @@ namespace daw::json {
 } // namespace daw::json
 
 namespace daw::json::json_details {
-	[[nodiscard]] constexpr char const *str_find( char const *p, char c ) {
-		while( *p != c ) {
-			++p;
-		}
-		return p;
-	}
-
 	template<typename Container>
 	struct basic_kv_appender {
 		Container *m_container;

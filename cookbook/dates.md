@@ -49,7 +49,7 @@ namespace daw::json {
 
 The above json is like the first example, but the timestamp format is not iso8601.  It is the date format used in some twitter JSON apis.  The string member will be a `json_string` and the timestmap will use `json_custom`.  This example is more involved and also outlines using `json_custom` to work with data that does not fit the other mappings.
 
-`json_custom` requires a callable FromConverter and a callable ToConverter type to convert to `T` from a `std::string_view` and to a string like type from a `T`.
+`json_custom` requires a callable FromJsonConverter and a callable ToJsonConverter type to convert to `T` from a `std::string_view` and to a string like type from a `T`.
 
 The To and From Converters can be the same type with different overloads for `operator()`.  T will be a `std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>`.
 

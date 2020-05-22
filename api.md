@@ -199,15 +199,15 @@ As above but without the Nullable option, it is set to Nullable, is the ```json_
 ### json_custom
 ```c++
 template<JSONNAMETYPE Name, typename T,
-  typename FromConverter = custom_from_converter_t<T>,
-  typename ToConverter = custom_to_converter_t<T>,
+  typename FromJsonConverter = custom_from_converter_t<T>,
+  typename ToJsonConverter = custom_to_converter_t<T>,
   CustomJsonTypes CustomJsonType = CustomJsonTypes::StringRaw,
   JsonNullable Nullable = JsonNullable::Never>
 struct json_custom
 ``` 
-```json_custom``` allows one to map unusual types.  The FromConverter is fed the raw value that is in the json and returns a `T`.  The ToConverter outputs a string from the `T` value.
-- ```FromConverter``` A class who's `operator( )` take a `std::string_view` and returns an instance of `T`;  The default calls `from_string( daw::tag_t<T>, T )`.
-- ```ToConverter``` A class who's `operator( )` is takes an instance of `T`  value and returns a string like type.  The default uses `to_string( T )`.
+```json_custom``` allows one to map unusual types.  The FromJsonConverter is fed the raw value that is in the json and returns a `T`.  The ToJsonConverter outputs a string from the `T` value.
+- ```FromJsonConverter``` A class who's `operator( )` take a `std::string_view` and returns an instance of `T`;  The default calls `from_string( daw::tag_t<T>, T )`.
+- ```ToJsonConverter``` A class who's `operator( )` is takes an instance of `T`  value and returns a string like type.  The default uses `to_string( T )`.
 - ```CustomJsonType``` - The JSON data will be a literal or a string.  Values are `CustomJsonTypes::Literal`, and `CustomJsonTypes::StringRaw`
 - ```Nullable``` is the value optional/nullable.  Valules are ```JsonNullable::Never```, and ```JsonNullable::Nullable``` 
 
