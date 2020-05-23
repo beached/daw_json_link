@@ -23,7 +23,7 @@
 
 namespace daw::json::json_details {
 	template<LiteralAsStringOpt literal_as_string, typename Range>
-	static inline constexpr void skip_quote_when_literal_as_string( Range &rng ) {
+	constexpr void skip_quote_when_literal_as_string( Range &rng ) {
 		if constexpr( literal_as_string == LiteralAsStringOpt::Always ) {
 			daw_json_assert_weak( rng.front( '"' ),
 			                      "Unexpected quote prior to number" );
@@ -34,6 +34,8 @@ namespace daw::json::json_details {
 				rng.remove_prefix( );
 			}
 		} else {
+			daw_json_assert_weak( rng.front( ) != '"',
+			                      "Unexpected quote prior to number" );
 		}
 	}
 
