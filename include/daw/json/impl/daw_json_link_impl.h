@@ -232,7 +232,7 @@ namespace daw::json::json_details {
 	 * @return IteratorRange with begin( ) being start of value
 	 */
 	template<typename JsonMember, std::size_t N, typename Range>
-	[[nodiscard]] static constexpr Range
+	[[nodiscard]] constexpr Range
 	find_class_member( std::size_t pos, locations_info_t<N, Range> &locations,
 	                   Range &rng ) {
 
