@@ -358,7 +358,7 @@ namespace daw::json {
 		               daw::json::missing_json_data_contract_for<T>>>;
 
 		template<typename JsonMember, bool IsUnCheckedInput>
-		[[maybe_unused, nodiscard]] constexpr auto
+		[[maybe_unused, nodiscard]] inline constexpr auto
 		from_json_member_impl( std::string_view json_data ) {
 			using json_member = unnamed_default_type_mapping<JsonMember>;
 			auto rng = IteratorRange<char const *, IsUnCheckedInput>(
@@ -519,11 +519,11 @@ namespace daw::json {
 	 * Allow parsing of a type that does not fit
 	 * @tparam Name Name of JSON member to link to
 	 * @tparam T type of value being constructed
-	 * @tparam FromJsonConverter Callable that accepts a std::string_view of the range
-	 * to parse.  The default requires an overload of from_string( daw::tag<T>,
-	 * std::string_view ) that returns a T
-	 * @tparam ToJsonConverter Returns a string from the value.  The default requires
-	 * a to_string( T const & ) overload that returns a String like type
+	 * @tparam FromJsonConverter Callable that accepts a std::string_view of the
+	 * range to parse.  The default requires an overload of from_string(
+	 * daw::tag<T>, std::string_view ) that returns a T
+	 * @tparam ToJsonConverter Returns a string from the value.  The default
+	 * requires a to_string( T const & ) overload that returns a String like type
 	 * @tparam CustomJsonType JSON type value is encoded as literal/string
 	 * @tparam Nullable Can the member be missing or have a null value
 	 */
@@ -693,7 +693,7 @@ namespace daw::json {
 
 	namespace json_details {
 		template<typename JsonMember, bool IsUnCheckedInput>
-		[[maybe_unused, nodiscard]] constexpr auto
+		[[maybe_unused, nodiscard]] inline constexpr auto
 		from_json_member_impl( std::string_view json_data,
 		                       std::string_view member_path ) {
 			using json_member = unnamed_default_type_mapping<JsonMember>;
