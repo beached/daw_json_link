@@ -173,36 +173,36 @@ namespace daw::json::json_details {
 		using value_type = location_info_t<Range>;
 		std::array<value_type, N> names;
 
-		constexpr decltype( auto ) begin( ) const {
+		inline constexpr decltype( auto ) begin( ) const {
 			return names.begin( );
 		}
 
-		constexpr decltype( auto ) begin( ) {
+		inline constexpr decltype( auto ) begin( ) {
 			return names.begin( );
 		}
 
-		constexpr decltype( auto ) end( ) const {
+		inline constexpr decltype( auto ) end( ) const {
 			return names.end( );
 		}
 
-		constexpr decltype( auto ) end( ) {
+		inline constexpr decltype( auto ) end( ) {
 			return names.end( );
 		}
 
-		constexpr location_info_t<Range> const &
+		inline constexpr location_info_t<Range> const &
 		operator[]( std::size_t idx ) const {
 			return names[idx];
 		}
 
-		constexpr location_info_t<Range> &operator[]( std::size_t idx ) {
+		inline constexpr location_info_t<Range> &operator[]( std::size_t idx ) {
 			return names[idx];
 		}
 
-		static constexpr std::size_t size( ) noexcept {
+		static inline constexpr std::size_t size( ) noexcept {
 			return N;
 		}
 
-		[[nodiscard]] constexpr std::size_t
+		[[nodiscard]] inline constexpr std::size_t
 		find_name( daw::string_view key ) const {
 #ifdef _MSC_VER
 			// Bug in MSVC is making the constexpr ptr/ptr string_view like classes
