@@ -450,7 +450,8 @@ namespace daw::json::json_details {
 	template<typename Range>
 	[[nodiscard]] static constexpr Range skip_string( Range &rng ) {
 		if( rng.empty( ) ) {
-			return rng;
+			auto result = rng;
+			return result;
 		}
 		if( *std::prev( rng.begin( ) ) != '"' ) {
 			if( rng.front( ) == '"' ) {

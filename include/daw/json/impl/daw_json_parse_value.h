@@ -234,22 +234,21 @@ namespace daw::json::json_details {
 			if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
 				if( rng.empty( ) ) {
 					return constructor_t{ }( );
-				} else {
-					return constructor_t{ }( rng.begin( ), rng.size( ) );
 				}
+				return constructor_t{ }( rng.begin( ), rng.size( ) );
 			} else {
 				return constructor_t{ }( rng.begin( ), rng.size( ) );
 			}
-		}
-		auto str = skip_string( rng );
-		if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
-			if( str.empty( ) ) {
-				return constructor_t{ }( );
+		} else {
+			auto const str = skip_string( rng );
+			if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
+				if( str.empty( ) ) {
+					return constructor_t{ }( );
+				}
+				return constructor_t{ }( str.begin( ), str.size( ) );
 			} else {
 				return constructor_t{ }( str.begin( ), str.size( ) );
 			}
-		} else {
-			return constructor_t{ }( str.begin( ), str.size( ) );
 		}
 	}
 
