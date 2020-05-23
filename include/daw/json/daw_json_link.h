@@ -396,7 +396,8 @@ namespace daw::json {
 		using base_type = json_details::unwrap_type<T, Nullable>;
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
-		using parse_to_t = std::invoke_result_t<FromJsonConverter, std::string_view>;
+		using parse_to_t =
+		  std::invoke_result_t<FromJsonConverter, std::string_view>;
 		static_assert( std::is_invocable_v<FromJsonConverter, std::string_view>,
 		               "FromConverter must be callable with a std::string_view" );
 		static_assert(
@@ -636,30 +637,33 @@ namespace daw::json {
 	}
 
 	template<typename JsonMember, typename Range>
-	constexpr auto from_json( basic_json_value<Range> value ) {
+	[[maybe_unused, nodiscard]] constexpr auto
+	from_json( basic_json_value<Range> value ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		return json_details::from_json_member_impl<json_member, false>(
 		  value.get_string_view( ) );
 	}
 
 	template<typename JsonMember, typename Range>
-	constexpr auto from_json( basic_json_value<Range> value,
-	                          std::string_view member_path ) {
+	[[maybe_unused, nodiscard]] constexpr auto
+	from_json( basic_json_value<Range> value, std::string_view member_path ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		return json_details::from_json_member_impl<json_member, false>(
 		  value.get_string_view( ), member_path );
 	}
 
 	template<typename JsonMember, typename Range>
-	constexpr auto from_json_unchecked( basic_json_value<Range> value ) {
+	[[maybe_unused, nodiscard]] constexpr auto
+	from_json_unchecked( basic_json_value<Range> value ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		return json_details::from_json_member_impl<json_member, true>(
 		  value.get_string_view( ) );
 	}
 
 	template<typename JsonMember, typename Range>
-	constexpr auto from_json_unchecked( basic_json_value<Range> value,
-	                                    std::string_view member_path ) {
+	[[maybe_unused, nodiscard]] constexpr auto
+	from_json_unchecked( basic_json_value<Range> value,
+	                     std::string_view member_path ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		return json_details::from_json_member_impl<json_member, true>(
 		  value.get_string_view( ), member_path );
