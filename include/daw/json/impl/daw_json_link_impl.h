@@ -202,7 +202,7 @@ namespace daw::json::json_details {
 			return N;
 		}
 
-		[[nodiscard]] inline constexpr std::size_t
+		[[nodiscard]] constexpr std::size_t
 		find_name( daw::string_view key ) const {
 #ifdef _MSC_VER
 			// Bug in MSVC is making the constexpr ptr/ptr string_view like classes
