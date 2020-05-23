@@ -557,10 +557,10 @@ namespace daw::json::json_details {
 			switch( rng.front( ) ) {
 			case '\\':
 				rng.remove_prefix( 1 );
-				continue;
+				break;
 			case '"':
 				in_quotes = not in_quotes;
-				continue;
+				break;
 			case Left:
 				if( not in_quotes ) {
 					++bracket_count;
