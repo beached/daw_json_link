@@ -232,7 +232,7 @@ namespace daw::json::json_details {
 	 * @return IteratorRange with begin( ) being start of value
 	 */
 	template<typename JsonMember, std::size_t N, typename Range>
-	[[nodiscard]] constexpr Range
+	[[nodiscard]] static constexpr Range
 	find_class_member( std::size_t pos, locations_info_t<N, Range> &locations,
 	                   Range &rng ) {
 
@@ -346,7 +346,7 @@ namespace daw::json::json_details {
 	 * @return parsed value from JSON data
 	 */
 	template<typename JsonMember, std::size_t N, typename Range>
-	[[nodiscard]] constexpr json_result<JsonMember>
+	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_class_member( std::size_t member_position,
 	                    locations_info_t<N, Range> &locations, Range &rng ) {
 
@@ -375,14 +375,9 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename Range, typename... JsonMembers>
-	static inline constexpr auto known_locations_v =
-	  locations_info_t<sizeof...( JsonMembers ), Range>{
-	    location_info_t<Range>( JsonMembers::name )... };
-
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
-	[[nodiscard]] constexpr JsonClass
+	[[nodiscard]] static constexpr JsonClass
 	parse_json_class( Range &rng, std::index_sequence<Is...> ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
@@ -420,7 +415,11 @@ namespace daw::json::json_details {
 			cleanup_fn( );
 			return daw::construct_a<JsonClass>( );
 		} else {
-			auto known_locations = known_locations_v<Range, JsonMembers...>;
+			constexpr auto known_locations_v =
+			  locations_info_t<sizeof...( JsonMembers ), Range>{
+			    location_info_t<Range>( JsonMembers::name )... };
+
+			auto known_locations = known_locations_v;
 
 			using tp_t = std::tuple<decltype(
 			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
@@ -453,7 +452,8 @@ namespace daw::json::json_details {
 	}
 
 	template<typename JsonClass, typename... JsonMembers, typename Range>
-	[[nodiscard]] constexpr JsonClass parse_ordered_json_class( Range &rng ) {
+	[[nodiscard]] static constexpr JsonClass
+	parse_ordered_json_class( Range &rng ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
 		static_assert(

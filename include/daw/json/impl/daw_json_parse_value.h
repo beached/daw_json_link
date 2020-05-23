@@ -290,7 +290,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Range, typename Appender>
-	constexpr void decode_utf16( Range &rng, Appender &app ) {
+	static constexpr void decode_utf16( Range &rng, Appender &app ) {
 		daw_json_assert_weak( rng.front( "uU" ), "Expected rng to start with a u" );
 		rng.remove_prefix( );
 		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
