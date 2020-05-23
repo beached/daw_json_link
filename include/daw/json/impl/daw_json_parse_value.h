@@ -22,16 +22,13 @@
 #include <tuple>
 
 namespace daw::json::json_details {
-	template<typename JsonMember, typename Range>
-	inline constexpr void skip_quote_when_literal_as_string( Range &rng ) {
-		if constexpr( JsonMember::literal_as_string == LiteralAsStringOpt::Never ) {
+	template<LiteralAsStringOpt literal_as_string, typename Range>
+	static inline constexpr void skip_quote_when_literal_as_string( Range &rng ) {
+		if constexpr( literal_as_string == LiteralAsStringOpt::Never ) {
 			daw_json_assert_weak( rng.empty( ) or rng.front( ) != '"',
 			                      "Unexpected quote prior to number" );
-			// Temporary fix as right now we are only sometimes having strings to
-			// skip
-			// else if constexpr( JsonMember::literal_as_string ==
-			//                   LiteralAsStringOpt::Always ) {
-			// rng.remove_prefix( );
+		} else if constexpr( literal_as_string == LiteralAsStringOpt::Always ) {
+			rng.remove_prefix( );
 		} else {
 			if( rng.front( '"' ) ) {
 				rng.remove_prefix( );
@@ -53,13 +50,13 @@ namespace daw::json::json_details {
 			  parse_real<element_t, JsonMember::simd_mode>( rng ) );
 		} else {
 			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
-			skip_quote_when_literal_as_string<JsonMember>( rng );
+			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  rng.is_real_number_part( ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 			auto result =
 			  constructor_t{ }( parse_real<element_t, JsonMember::simd_mode>( rng ) );
-			skip_quote_when_literal_as_string<JsonMember>( rng );
+			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  rng.at_end_of_item( ),
 			  "Expected whitespace or one of \",}]\" at end of number" );
@@ -79,7 +76,7 @@ namespace daw::json::json_details {
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 		} else {
 			daw_json_assert_weak( rng.can_parse_more( ), "Could not find value" );
-			skip_quote_when_literal_as_string<JsonMember>( rng );
+			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  rng.is_real_number_part( ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
@@ -103,7 +100,7 @@ namespace daw::json::json_details {
 			auto result = constructor_t{ }(
 			  sign * parse_unsigned_integer<element_t, JsonMember::range_check,
 			                                JsonMember::simd_mode>( rng ) );
-			skip_quote_when_literal_as_string<JsonMember>( rng );
+			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			rng.trim_left( );
 			daw_json_assert_weak(
 			  rng.at_end_of_item( ),
@@ -127,14 +124,14 @@ namespace daw::json::json_details {
 			                         JsonMember::simd_mode>( rng ) );
 		} else {
 			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
-			skip_quote_when_literal_as_string<JsonMember>( rng );
+			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  rng.is_real_number_part( ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 			auto result = constructor_t{ }(
 			  parse_unsigned_integer<element_t, JsonMember::range_check,
 			                         JsonMember::simd_mode>( rng ) );
-			skip_quote_when_literal_as_string<JsonMember>( rng );
+			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  rng.at_end_of_item( ),
 			  "Expected whitespace or one of \",}]\" at end of number" );
@@ -199,7 +196,7 @@ namespace daw::json::json_details {
 				daw_json_error( "Expected a literal true or false" );
 			}
 		} else {
-			skip_quote_when_literal_as_string<JsonMember>( rng );
+			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			bool result = false;
 			if constexpr( Range::is_unchecked_input ) {
 				if( rng.front( ) == 't' ) {
@@ -218,7 +215,7 @@ namespace daw::json::json_details {
 					daw_json_error( "Invalid boolean value, expected true or false" );
 				}
 			}
-			skip_quote_when_literal_as_string<JsonMember>( rng );
+			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			rng.trim_left( );
 			daw_json_assert_weak( rng.at_end_of_item( ), "Unexpectd value" );
 			return constructor_t{ }( result );
@@ -473,8 +470,8 @@ namespace daw::json::json_details {
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
 		// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
-		// not in a constant expression.  It does allow for construction of classes
-		// without move/copy special members
+		// not in a constant expression.  It does allow for construction of
+		// classes without move/copy special members
 		if constexpr( not KnownBounds ) {
 			auto const oe = daw::on_exit_success( [&] { rng.trim_left_checked( ); } );
 		}
