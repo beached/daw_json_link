@@ -346,7 +346,7 @@ namespace daw::json::json_details {
 	 * @return parsed value from JSON data
 	 */
 	template<typename JsonMember, std::size_t N, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_class_member( std::size_t member_position,
 	                    locations_info_t<N, Range> &locations, Range &rng ) {
 
@@ -377,7 +377,7 @@ namespace daw::json::json_details {
 
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
-	[[nodiscard]] static constexpr JsonClass
+	[[nodiscard]] constexpr JsonClass
 	parse_json_class( Range &rng, std::index_sequence<Is...> ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
@@ -452,7 +452,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename JsonClass, typename... JsonMembers, typename Range>
-	[[nodiscard]] static constexpr JsonClass
+	[[nodiscard]] constexpr JsonClass
 	parse_ordered_json_class( Range &rng ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
