@@ -7,8 +7,8 @@
 //
 #pragma once
 
-#include "daw_json_to_string.h"
 #include "daw_json_assert.h"
+#include "daw_json_to_string.h"
 
 namespace daw::json::json_details {
 	/***
@@ -26,7 +26,7 @@ namespace daw::json::json_details {
 	 */
 	template<typename... JsonMembers, typename OutputIterator, std::size_t... Is,
 	         typename Tuple, typename Value>
-	[[nodiscard]] constexpr OutputIterator
+	[[nodiscard]] inline constexpr OutputIterator
 	serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
 	                      Tuple const &args, Value const &value ) {
 
@@ -54,7 +54,7 @@ namespace daw::json::json_details {
 
 	template<typename... JsonMembers, typename OutputIterator, typename Tuple,
 	         typename Value, std::size_t... Is>
-	[[nodiscard]] constexpr OutputIterator
+	[[nodiscard]] inline constexpr OutputIterator
 	serialize_ordered_json_class( OutputIterator it, std::index_sequence<Is...>,
 	                              Tuple const &args, Value const &value ) {
 

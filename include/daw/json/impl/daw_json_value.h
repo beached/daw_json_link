@@ -202,7 +202,7 @@ namespace daw::json {
 		 * Construct from IteratorRange
 		 * @param rng string data where start is the start of our value
 		 */
-		constexpr basic_json_value( Range rng )
+		inline constexpr basic_json_value( Range rng )
 		  : m_rng( std::move( rng ) ) {
 			// Ensure we are at the actual value
 			m_rng.trim_left( );
@@ -211,14 +211,14 @@ namespace daw::json {
 		/***
 		 * Construct from std::string_view
 		 */
-		explicit constexpr basic_json_value( std::string_view sv )
+		explicit inline constexpr basic_json_value( std::string_view sv )
 		  : m_rng( sv.data( ), sv.data( ) + sv.size( ) ) {}
 
 		/***
 		 * Get a copy of the underlying range
 		 * @return IteratoRange containing values JSON data
 		 */
-		[[nodiscard]] constexpr Range get_range( ) const {
+		[[nodiscard]] inline constexpr Range get_range( ) const {
 			return m_rng;
 		}
 
@@ -227,7 +227,7 @@ namespace daw::json {
 		 * @pre type of value is class or array
 		 * @return basic_json_value_iterator to the first item/member
 		 */
-		[[nodiscard]] constexpr iterator begin( ) const {
+		[[nodiscard]] inline constexpr iterator begin( ) const {
 			Range rng = Range( m_rng.first, m_rng.last );
 			rng.remove_prefix( );
 			rng.trim_left( );
@@ -238,7 +238,7 @@ namespace daw::json {
 		 * End of range over class/arrays members/items
 		 * @return default constructed basic_json_value_iterator
 		 */
-		[[nodiscard]] constexpr iterator end( ) const {
+		[[nodiscard]] inline constexpr iterator end( ) const {
 			return basic_json_value_iterator<Range>( );
 		}
 
@@ -359,7 +359,7 @@ namespace daw::json {
 		 * Is the JSON value a string
 		 * @return true if the value is a string
 		 */
-		constexpr bool is_string( ) const {
+		inline constexpr bool is_string( ) const {
 			return m_rng.can_parse_more( ) and m_rng.front( ) == '"';
 		}
 
@@ -393,7 +393,7 @@ namespace daw::json {
 		 * ",[,{,0,1,2,3,4,5,6,7,8,9,-,t,f, or n and this does not
 		 * @return true if the parser is unsure what the data is
 		 */
-		constexpr bool is_unknown( ) const {
+		inline constexpr bool is_unknown( ) const {
 			return type( ) == JsonBaseParseTypes::None;
 		}
 	};
