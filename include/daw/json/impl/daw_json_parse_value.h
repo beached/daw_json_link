@@ -28,9 +28,12 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( rng.empty( ) or rng.front( ) != '"',
 			                      "Unexpected quote prior to number" );
 		} else if constexpr( literal_as_string == LiteralAsStringOpt::Always ) {
+			daw_json_assert_weak( rng.front( '"' ),
+			                      "Unexpected quote prior to number" );
 			rng.remove_prefix( );
 		} else {
-			if( rng.front( '"' ) ) {
+			daw_json_assert_weak( not rng.empty( ), "Unexpected end of stream" );
+			if( rng.front( ) == '"' ) {
 				rng.remove_prefix( );
 			}
 		}
