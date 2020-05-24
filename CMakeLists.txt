@@ -538,7 +538,6 @@ add_dependencies(full test_details_skip_number_bin)
 
 add_executable(json_benchmark_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/json_benchmark.cpp)
 add_dependencies(json_benchmark_bin dependency_stub)
-add_test(json_benchmark_test json_benchmark_bin)
 add_dependencies(full json_benchmark_bin)
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)

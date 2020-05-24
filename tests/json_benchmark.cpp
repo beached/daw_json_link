@@ -186,7 +186,7 @@ json_bench_result do_twitter_from_json_test( std::string_view json_data ) {
 
 json_bench_result do_citm_from_json_test( std::string_view json_data ) {
 	auto result = json_bench_result{
-	  "twitter from_json",
+	  "citm_catalog from_json",
 	  std::chrono::time_point_cast<std::chrono::milliseconds>(
 	    std::chrono::system_clock::now( ) ),
 	  json_data.size( ),
@@ -203,7 +203,7 @@ json_bench_result do_citm_from_json_test( std::string_view json_data ) {
 
 json_bench_result do_canada_from_json_test( std::string_view json_data ) {
 	auto result = json_bench_result{
-	  "twitter from_json",
+	  "canada from_json",
 	  std::chrono::time_point_cast<std::chrono::milliseconds>(
 	    std::chrono::system_clock::now( ) ),
 	  json_data.size( ),
@@ -223,7 +223,7 @@ do_nativejson_from_json_test( std::string_view json_data_twitter,
                               std::string_view json_data_citm,
                               std::string_view json_data_canada ) {
 	auto result = json_bench_result{
-	  "twitter from_json",
+	  "nativejson benchmark from_json",
 	  std::chrono::time_point_cast<std::chrono::milliseconds>(
 	    std::chrono::system_clock::now( ) ),
 	  json_data_twitter.size( ) + json_data_citm.size( ) +
