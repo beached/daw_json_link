@@ -60,7 +60,7 @@ namespace daw {
 		format_seconds( T t, size_t prec = 0 ) {
 			std::stringstream ss;
 			ss << std::setprecision( static_cast<int>( prec ) ) << std::fixed;
-			auto val = static_cast<double>( t ) * 1000000000000000.0;
+			auto val = static_cast<double>( t ) * 1'000'000'000'000'000.0;
 			if( val < 1000 ) {
 				ss << val << "fs";
 				return ss.str( );
@@ -200,7 +200,7 @@ namespace daw {
 		using result_t = daw::remove_cvref_t<decltype( daw::expected_from_code(
 		  test_callable, std::forward<Args>( args )... ) )>;
 
-		result_t result{};
+		result_t result{ };
 
 		double base_time = std::numeric_limits<double>::max( );
 		{
@@ -286,7 +286,7 @@ namespace daw {
 	                   Validator &&validator, Function &&func,
 	                   Args &&... args ) noexcept {
 		static_assert( Runs > 0 );
-		auto results = std::array<double, Runs>{};
+		auto results = std::array<double, Runs>{ };
 
 		double base_time = std::numeric_limits<double>::max( );
 		{
@@ -309,13 +309,12 @@ namespace daw {
 				}
 			}
 		}
-		double min_time = std::numeric_limits<double>::max( );
-		double max_time = std::numeric_limits<double>::min( );
-
 		auto const total_start = std::chrono::steady_clock::now( );
 		benchmark_impl::second_duration valid_time = std::chrono::seconds( 0 );
 		for( size_t n = 0; n < Runs; ++n ) {
-			std::chrono::time_point<std::chrono::steady_clock> start;
+			std::chrono::time_point<std::chrono::steady_clock,
+			                        std::chrono::nanoseconds>
+			  start;
 			using result_t = daw::remove_cvref_t<decltype( func( args... ) )>;
 			result_t result;
 			result = *daw::expected_from_code( func, args... );
@@ -332,43 +331,7 @@ namespace daw {
 			auto const duration =
 			  benchmark_impl::second_duration( finish - start ).count( );
 			results[n] = duration;
-			if( duration < min_time ) {
-				min_time = duration;
-			}
-			if( duration > max_time ) {
-				max_time = duration;
-			}
 		}
-		auto const total_finish = std::chrono::steady_clock::now( );
-		min_time -= base_time;
-		max_time -= base_time;
-		auto total_time = benchmark_impl::second_duration(
-		                    ( total_finish - total_start ) - valid_time )
-		                    .count( ) -
-		                  static_cast<double>( Runs ) * base_time;
-		auto const avg_time = [&]( ) {
-			if( Runs >= 10 ) {
-				auto result =
-				  ( total_time - max_time ) / static_cast<double>( Runs - 1 );
-				result -= base_time;
-				return result;
-			} else {
-				auto result = total_time / static_cast<double>( Runs );
-				result -= base_time;
-				return result;
-			}
-		}( );
-
-		std::cout << title << delem << "	runs: " << Runs << delem
-		          << "	total: " << utility::format_seconds( total_time, 2 )
-		          << delem << "	avg: " << utility::format_seconds( avg_time, 2 )
-		          << " -> " << utility::to_bytes_per_second( bytes, avg_time, 2 )
-		          << "/s" << delem
-		          << "	min: " << utility::format_seconds( min_time, 2 ) << " -> "
-		          << utility::to_bytes_per_second( bytes, min_time, 2 ) << "/s"
-		          << delem << "	max: " << utility::format_seconds( max_time, 2 )
-		          << " -> " << utility::to_bytes_per_second( bytes, max_time, 2 )
-		          << "/s" << '\n';
 		return results;
 	}
 
@@ -380,7 +343,7 @@ namespace daw {
 		using result_t = daw::remove_cvref_t<decltype(
 		  daw::expected_from_code( test_callable, args... ) )>;
 
-		result_t result{};
+		result_t result{ };
 
 		double base_time = std::numeric_limits<double>::max( );
 		{
@@ -408,8 +371,9 @@ namespace daw {
 
 		auto const total_start = std::chrono::steady_clock::now( );
 		for( size_t n = 0; n < Runs; ++n ) {
-			std::chrono::time_point<std::chrono::steady_clock> start =
-			  std::chrono::steady_clock::now( );
+			std::chrono::time_point<std::chrono::steady_clock,
+			                        std::chrono::nanoseconds>
+			  start = std::chrono::steady_clock::now( );
 			result = daw::expected_from_code( test_callable, args... );
 			auto const finish = std::chrono::steady_clock::now( );
 			daw::do_not_optimize( result );
@@ -444,6 +408,65 @@ namespace daw {
 		          << " -> " << utility::to_bytes_per_second( bytes, max_time, 2 )
 		          << "/s" << '\n';
 		return result;
+	}
+
+	/***
+	 *
+	 * @tparam Runs Number of runs
+	 * @tparam Validator Callable to validate results
+	 * @tparam Function Callable type to be timed
+	 * @tparam Args types to pass to callable
+	 * @param validator validatio object that takes func's result as arg
+	 * @param func Callable value to bench
+	 * @param args args values to pass to func
+	 * @return last result timing counts of runs
+	 */
+	template<size_t Runs, typename Validator, typename Function, typename... Args>
+	[[maybe_unused]] static std::vector<long long>
+	bench_n_test_silent( Validator &&validator, Function &&func,
+	                     Args &&... args ) noexcept {
+		static_assert( Runs > 0 );
+		std::vector<long long> results( Runs );
+
+		auto base_time = std::numeric_limits<long long>::max( );
+		{
+			for( size_t n = 0; n < 1000; ++n ) {
+				daw::do_not_optimize( args... );
+
+				int a = 0;
+				daw::do_not_optimize( a );
+				auto const start = std::chrono::steady_clock::now( );
+				auto r = daw::expected_from_code( [a]( ) mutable {
+					auto const b = a;
+					daw::do_not_optimize( a );
+					return a + b;
+				} );
+				auto const finish = std::chrono::steady_clock::now( );
+				daw::do_not_optimize( r );
+				auto const duration =
+				  std::chrono::nanoseconds( finish - start ).count( );
+				if( duration < base_time ) {
+					base_time = duration;
+				}
+			}
+		}
+		using result_t = daw::remove_cvref_t<decltype( func( args... ) )>;
+
+		for( size_t n = 0; n < Runs; ++n ) {
+			auto const start = std::chrono::steady_clock::now( );
+			result_t result = *daw::expected_from_code( func, args... );
+			auto const finish = std::chrono::steady_clock::now( );
+			daw::do_not_optimize( result );
+			if( not validator( result ) ) {
+				std::cerr << "Error validating result\n";
+				std::abort( );
+			}
+
+			auto const duration =
+			  std::chrono::nanoseconds( finish - start ).count( ) - base_time;
+			results[n] = duration;
+		}
+		return results;
 	}
 
 	namespace benchmark_impl {
@@ -522,7 +545,7 @@ namespace daw {
 	                          std::nullptr_t> = nullptr>
 	[[maybe_unused]] static void
 	expecting_exception( Expression &&expression,
-	                     Predicate &&pred = Predicate{} ) {
+	                     Predicate &&pred = Predicate{ } ) {
 		try {
 			(void)std::forward<Expression>( expression )( );
 		} catch( Exception const &ex ) {

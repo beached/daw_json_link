@@ -13,6 +13,18 @@ include_directories("./include")
 
 set(DAW_JSON_USE_SANITIZERS OFF CACHE STRING "Enable address and undefined behaviour sanitizers")
 
+cmake_host_system_information(RESULT _proc_desc QUERY PROCESSOR_DESCRIPTION)
+cmake_host_system_information(RESULT _os_name QUERY OS_NAME)
+cmake_host_system_information(RESULT _os_rel QUERY OS_RELEASE)
+cmake_host_system_information(RESULT _os_ver QUERY OS_VERSION)
+cmake_host_system_information(RESULT _os_plat QUERY OS_PLATFORM)
+add_definitions(-DPROCESSOR_DESCRIPTION="${_proc_desc}")
+add_definitions(-DOS_NAME="${_os_name}")
+add_definitions(-DOS_RELEASE="${_os_rel}")
+add_definitions(-DOS_VERSION="${_os_ver}")
+add_definitions(-DOS_PLATFORM="${_os_plat}")
+add_definitions(-DBUILD_TYPE="${CMAKE_BUILD_TYPE}")
+
 set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
 if( DAW_JSON_NO_CONST_EXPR )
     message("DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
@@ -47,11 +59,8 @@ else ()
     add_definitions(-DDAW_JSON_CHECK_ALWAYS=true)
 endif ()
 
-#if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
-#    set(DAW_ALLOW_SSE3 ON CACHE STRING "Allow SSE3 Modes")
-#else ()
 #Experimental
-set(DAW_ALLOW_SSE3 OFF CACHE STRING "Allow SSE3 Modes")
+set(DAW_ALLOW_SSE3 OFF CACHE STRING "Allow Experimental SSE3 Modes")
 #endif ()
 if (DAW_ALLOW_SSE3)
     message("DAW_ALLOW_SSE3=ON: Allow SSE3 Modes")
@@ -526,6 +535,11 @@ add_executable(test_details_skip_number_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${T
 add_dependencies(test_details_skip_number_bin dependency_stub)
 add_test(test_details_skip_number_test test_details_skip_number_bin)
 add_dependencies(full test_details_skip_number_bin)
+
+add_executable(json_benchmark_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/json_benchmark.cpp)
+add_dependencies(json_benchmark_bin dependency_stub)
+add_test(json_benchmark_test json_benchmark_bin)
+add_dependencies(full json_benchmark_bin)
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 install(DIRECTORY ${HEADER_FOLDER}/third_party/ DESTINATION include/third_party/)
