@@ -543,6 +543,7 @@ add_dependencies(full test_details_skip_number_bin)
 
 add_executable(json_benchmark_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/json_benchmark.cpp)
 add_dependencies(json_benchmark_bin dependency_stub)
+add_test(NAME json_benchmark_test COMMAND json_benchmark_bin ./apache_builds.json ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full json_benchmark_bin)
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)

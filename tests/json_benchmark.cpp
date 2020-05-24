@@ -22,8 +22,6 @@
 #include <limits>
 #include <string_view>
 
-inline constexpr std::size_t NUM_RUNS = 250;
-
 // These come from build system and must be defined
 #ifndef SOURCE_CONTROL_REVISION
 #error "SOURCE_CONTROL_REVSION must be defined"
@@ -43,6 +41,16 @@ inline constexpr std::size_t NUM_RUNS = 250;
 #ifndef OS_PLATFORM
 #error "OS_PLATFORM must be defined"
 #endif
+#ifndef BUILD_TYPE
+#error "BUILD_TYPE must be defined"
+#endif
+
+#ifdef NDEBUG
+inline constexpr std::size_t NUM_RUNS = 250;
+#else
+inline constexpr std::size_t NUM_RUNS = 25;
+#endif
+
 
 struct json_bench_result {
 	std::string name = "ERROR";
