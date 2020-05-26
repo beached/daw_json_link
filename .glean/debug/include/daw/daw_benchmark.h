@@ -422,13 +422,14 @@ namespace daw {
 	 * @return last result timing counts of runs
 	 */
 	template<size_t Runs, typename Validator, typename Function, typename... Args>
-	[[maybe_unused]] static std::vector<long long>
+	[[maybe_unused]] static std::vector<std::chrono::nanoseconds>
 	bench_n_test_silent( Validator &&validator, Function &&func,
 	                     Args &&... args ) noexcept {
 		static_assert( Runs > 0 );
-		std::vector<long long> results( Runs );
+		std::vector<std::chrono::nanoseconds> results( Runs );
 
-		auto base_time = std::numeric_limits<long long>::max( );
+		auto base_time =
+		  std::chrono::nanoseconds( std::numeric_limits<long long>::max( ) );
 		{
 			for( size_t n = 0; n < 1000; ++n ) {
 				daw::do_not_optimize( args... );
@@ -443,8 +444,7 @@ namespace daw {
 				} );
 				auto const finish = std::chrono::steady_clock::now( );
 				daw::do_not_optimize( r );
-				auto const duration =
-				  std::chrono::nanoseconds( finish - start ).count( );
+				auto const duration = std::chrono::nanoseconds( finish - start );
 				if( duration < base_time ) {
 					base_time = duration;
 				}
@@ -463,7 +463,7 @@ namespace daw {
 			}
 
 			auto const duration =
-			  std::chrono::nanoseconds( finish - start ).count( ) - base_time;
+			  std::chrono::nanoseconds( finish - start ) - base_time;
 			results[n] = duration;
 		}
 		return results;
