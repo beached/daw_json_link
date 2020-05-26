@@ -15,6 +15,12 @@
 #include <tuple>
 #include <vector>
 
+#ifdef __GNUC__
+#define DAW_HIDDEN __attribute__( ( visibility( "hidden" ) ) )
+#else
+#define DAW_HIDDEN
+#endif
+
 namespace apache_builds {
 	struct jobs_t {
 		std::string_view name;
@@ -45,7 +51,7 @@ namespace apache_builds {
 
 namespace daw::json {
 	template<>
-	struct json_data_contract<apache_builds::jobs_t> {
+	struct DAW_HIDDEN json_data_contract<apache_builds::jobs_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_string_raw<"name", std::string_view>,
 		                              json_string_raw<"url", std::string_view>,
@@ -65,7 +71,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<apache_builds::views_t> {
+	struct DAW_HIDDEN json_data_contract<apache_builds::views_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_string_raw<"name", std::string_view>,
 		                              json_string_raw<"url", std::string_view>>;
@@ -82,7 +88,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<apache_builds::apache_builds> {
+	struct DAW_HIDDEN json_data_contract<apache_builds::apache_builds> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string_raw<"mode", std::string_view>,

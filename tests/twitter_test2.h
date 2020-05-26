@@ -16,6 +16,12 @@
 
 #include <daw/json/daw_json_link.h>
 
+#ifdef __GNUC__
+#define DAW_HIDDEN __attribute__( ( visibility( "hidden" ) ) )
+#else
+#define DAW_HIDDEN
+#endif
+
 template<typename T>
 struct opt_construct_a {
 	constexpr std::optional<T> operator( )( ) const {
@@ -220,7 +226,7 @@ namespace daw::twitter {
 
 namespace daw::json {
 	template<>
-	struct json_data_contract<daw::twitter::metadata_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::metadata_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string_raw<"result_type", std::string_view>,
@@ -241,7 +247,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::urls_element_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::urls_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_string_raw<"url", std::string_view>,
@@ -267,7 +273,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::url_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::url_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_array<"urls", daw::twitter::urls_element_t>>;
@@ -283,7 +289,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::description_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::description_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_array<"urls", daw::twitter::urls_element_t>>;
@@ -299,7 +305,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::entities_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::entities_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class_null<"url", std::optional<daw::twitter::url_t>,
@@ -322,7 +328,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::user_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::user_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_custom<"id", std::string_view>,
@@ -482,7 +488,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::hashtags_element_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::hashtags_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_string_raw<"text", std::string_view>,
@@ -501,7 +507,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::statuses_element_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::statuses_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
@@ -597,7 +603,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::user_mentions_element_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::user_mentions_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_string_raw<"screen_name", std::string_view>,
@@ -626,7 +632,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::medium_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::medium_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_custom<"w", std::string_view>,
 		                              json_custom<"h", std::string_view>,
@@ -646,7 +652,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::small_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::small_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_custom<"w", std::string_view>,
 		                              json_custom<"h", std::string_view>,
@@ -666,7 +672,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::thumb_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::thumb_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_custom<"w", std::string_view>,
 		                              json_custom<"h", std::string_view>,
@@ -686,7 +692,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::large_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::large_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_custom<"w", std::string_view>,
 		                              json_custom<"h", std::string_view>,
@@ -706,7 +712,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::sizes_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::sizes_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_class<"medium", daw::twitter::medium_t>,
 		                              json_class<"small", daw::twitter::small_t>,
@@ -730,7 +736,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::media_element_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::media_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_custom<"id", std::string_view>,
@@ -776,7 +782,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::retweeted_status_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::retweeted_status_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
@@ -872,7 +878,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::search_metadata_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::search_metadata_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_custom<"completed_in", std::string_view>,
@@ -915,7 +921,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::twitter::twitter_object_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::twitter_object_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_array<"statuses", daw::twitter::statuses_element_t>,

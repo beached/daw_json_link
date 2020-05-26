@@ -48,202 +48,207 @@
 #error "BUILD_TYPE must be defined"
 #endif
 
+namespace {
 #ifdef NDEBUG
-inline constexpr std::size_t NUM_RUNS = 250;
+	inline constexpr std::size_t NUM_RUNS = 250;
 #else
-inline constexpr std::size_t NUM_RUNS = 25;
+	inline constexpr std::size_t NUM_RUNS = 25;
 #endif
-static_assert( NUM_RUNS > 1 );
+	static_assert( NUM_RUNS > 1 );
 
-daw::bench::bench_result
-make_bench_result( std::string const &name, std::size_t data_size,
-                   std::vector<std::chrono::nanoseconds> run_times ) {
-	return { std::move( name ),
-	         std::chrono::time_point_cast<std::chrono::milliseconds>(
-	           std::chrono::system_clock::now( ) ),
-	         data_size,
-	         std::move( run_times ),
-	         { },
-	         { },
-	         { },
-	         { },
-	         { },
-	         SOURCE_CONTROL_REVISION,
-	         PROCESSOR_DESCRIPTION,
-	         OS_NAME,
-	         OS_RELEASE,
-	         OS_VERSION,
-	         OS_PLATFORM,
-	         BUILD_TYPE,
-	         "daw_json_link",
-	         "json_benchmark" };
-}
+	daw::bench::bench_result
+	make_bench_result( std::string const &name, std::size_t data_size,
+	                   std::vector<std::chrono::nanoseconds> run_times ) {
+		return { std::move( name ),
+		         std::chrono::time_point_cast<std::chrono::milliseconds>(
+		           std::chrono::system_clock::now( ) ),
+		         data_size,
+		         std::move( run_times ),
+		         { },
+		         { },
+		         { },
+		         { },
+		         { },
+		         SOURCE_CONTROL_REVISION,
+		         PROCESSOR_DESCRIPTION,
+		         OS_NAME,
+		         OS_RELEASE,
+		         OS_VERSION,
+		         OS_PLATFORM,
+		         BUILD_TYPE,
+		         "daw_json_link",
+		         "json_benchmark" };
+	}
 
-std::ostream &operator<<( std::ostream &os, std::chrono::nanoseconds t ) {
-	auto const ae = daw::on_scope_exit(
-	  [&os, old_flags = std::ios_base::fmtflags( os.flags( ) )] {
-		  os.flags( old_flags );
-	  } );
+	std::ostream &operator<<( std::ostream &os, std::chrono::nanoseconds t ) {
+		auto const ae = daw::on_scope_exit(
+		  [&os, old_flags = std::ios_base::fmtflags( os.flags( ) )] {
+			  os.flags( old_flags );
+		  } );
 
-	os << std::setprecision( static_cast<int>( 2 ) ) << std::fixed;
-	auto val = static_cast<double>( t.count( ) );
-	if( val < 1000 ) {
-		os << val << "ns";
+		os << std::setprecision( static_cast<int>( 2 ) ) << std::fixed;
+		auto val = static_cast<double>( t.count( ) );
+		if( val < 1000 ) {
+			os << val << "ns";
+			return os;
+		}
+		val /= 1000.0;
+		if( val < 1000 ) {
+			os << val << "us";
+			return os;
+		}
+		val /= 1000.0;
+		if( val < 1000 ) {
+			os << val << "ms";
+			return os;
+		}
+		val /= 1000.0;
+		os << val << "s";
 		return os;
 	}
-	val /= 1000.0;
-	if( val < 1000 ) {
-		os << val << "us";
-		return os;
+
+	void show_result( daw::bench::bench_result const &result ) {
+		std::cout << "test name:" << result.name << '\n';
+		std::cout << "data size:"
+		          << daw::utility::to_bytes_per_second( result.data_size, 1.0, 2 )
+		          << '\n';
+		std::cout << "min duration: " << result.duration_min << '\n';
+		std::cout << "25th percentile duration: " << result.duration_25th_percentile
+		          << '\n';
+		std::cout << "50th percentile duration: " << result.duration_50th_percentile
+		          << '\n';
+		std::cout << "75th percentile duration: " << result.duration_75th_percentile
+		          << '\n';
+		std::cout << "max duration: " << result.duration_max << '\n';
+		std::cout << "build type: " << result.build_type << '\n';
 	}
-	val /= 1000.0;
-	if( val < 1000 ) {
-		os << val << "ms";
-		return os;
+
+	void process_results( daw::bench::bench_result &jr ) {
+
+		auto runs = jr.run_times;
+		std::sort( runs.begin( ), runs.end( ) );
+		std::size_t const bin_25 = runs.size( ) / 4U;
+		std::size_t const bin_50 = 2 * ( runs.size( ) / 4U );
+		std::size_t const bin_75 = ( runs.size( ) - 1U ) - bin_50;
+		jr.duration_min = runs.front( );
+		jr.duration_max = runs.back( );
+		jr.duration_25th_percentile = runs[bin_25];
+		jr.duration_50th_percentile = runs[bin_50];
+		jr.duration_75th_percentile = runs[bin_75];
 	}
-	val /= 1000.0;
-	os << val << "s";
-	return os;
-}
 
-void show_result( daw::bench::bench_result const &result ) {
-	std::cout << "test name:" << result.name << '\n';
-	std::cout << "data size:"
-	          << daw::utility::to_bytes_per_second( result.data_size, 1.0, 2 )
-	          << '\n';
-	std::cout << "min duration: " << result.duration_min << '\n';
-	std::cout << "25th percentile duration: " << result.duration_25th_percentile
-	          << '\n';
-	std::cout << "50th percentile duration: " << result.duration_50th_percentile
-	          << '\n';
-	std::cout << "75th percentile duration: " << result.duration_75th_percentile
-	          << '\n';
-	std::cout << "max duration: " << result.duration_max << '\n';
-	std::cout << "build type: " << result.build_type << '\n';
-}
+	daw::bench::bench_result
+	do_apache_builds_from_json_test( std::string_view json_data ) {
+		auto result = make_bench_result(
+		  "apache builds from_json", json_data.size( ),
+		  daw::bench_n_test_json<NUM_RUNS>(
+		    [&]( std::string_view jd ) {
+			    return daw::json::from_json_unchecked<apache_builds::apache_builds>(
+			      jd );
+		    },
+		    json_data ) );
 
-void process_results( daw::bench::bench_result &jr ) {
+		process_results( result );
+		return result;
+	}
 
-	auto runs = jr.run_times;
-	std::sort( runs.begin( ), runs.end( ) );
-	std::size_t const bin_25 = runs.size( ) / 4U;
-	std::size_t const bin_50 = 2 * ( runs.size( ) / 4U );
-	std::size_t const bin_75 = ( runs.size( ) - 1U ) - bin_50;
-	jr.duration_min = runs.front( );
-	jr.duration_max = runs.back( );
-	jr.duration_25th_percentile = runs[bin_25];
-	jr.duration_50th_percentile = runs[bin_50];
-	jr.duration_75th_percentile = runs[bin_75];
-}
+	daw::bench::bench_result
+	do_twitter_from_json_test( std::string_view json_data ) {
+		auto result = make_bench_result(
+		  "twitter from_json", json_data.size( ),
+		  daw::bench_n_test_json<NUM_RUNS>(
+		    [&]( std::string_view jd ) {
+			    return daw::json::from_json_unchecked<daw::twitter::twitter_object_t>(
+			      jd );
+		    },
+		    json_data ) );
 
-daw::bench::bench_result
-do_apache_builds_from_json_test( std::string_view json_data ) {
-	auto result = make_bench_result(
-	  "apache builds from_json", json_data.size( ),
-	  daw::bench_n_test_json<NUM_RUNS>(
-	    [&]( std::string_view jd ) {
-		    return daw::json::from_json_unchecked<apache_builds::apache_builds>(
-		      jd );
-	    },
-	    json_data ) );
+		process_results( result );
+		return result;
+	}
 
-	process_results( result );
-	return result;
-}
+	daw::bench::bench_result
+	do_citm_from_json_test( std::string_view json_data ) {
+		auto result = make_bench_result(
+		  "citm_catalog from_json", json_data.size( ),
+		  daw::bench_n_test_json<NUM_RUNS>(
+		    [&]( std::string_view jd ) {
+			    return daw::json::from_json_unchecked<daw::citm::citm_object_t>( jd );
+		    },
+		    json_data ) );
 
-daw::bench::bench_result
-do_twitter_from_json_test( std::string_view json_data ) {
-	auto result = make_bench_result(
-	  "twitter from_json", json_data.size( ),
-	  daw::bench_n_test_json<NUM_RUNS>(
-	    [&]( std::string_view jd ) {
-		    return daw::json::from_json_unchecked<daw::twitter::twitter_object_t>(
-		      jd );
-	    },
-	    json_data ) );
+		process_results( result );
+		return result;
+	}
 
-	process_results( result );
-	return result;
-}
+	daw::bench::bench_result
+	do_canada_from_json_test( std::string_view json_data ) {
+		auto result =
+		  make_bench_result( "canada from_json", json_data.size( ),
+		                     daw::bench_n_test_json<NUM_RUNS>(
+		                       [&]( std::string_view jd ) {
+			                       return daw::json::from_json_unchecked<
+			                         daw::geojson::FeatureCollection>( jd );
+		                       },
+		                       json_data ) );
 
-daw::bench::bench_result do_citm_from_json_test( std::string_view json_data ) {
-	auto result = make_bench_result(
-	  "citm_catalog from_json", json_data.size( ),
-	  daw::bench_n_test_json<NUM_RUNS>(
-	    [&]( std::string_view jd ) {
-		    return daw::json::from_json_unchecked<daw::citm::citm_object_t>( jd );
-	    },
-	    json_data ) );
+		process_results( result );
+		return result;
+	}
 
-	process_results( result );
-	return result;
-}
+	daw::bench::bench_result
+	do_nativejson_from_json_test( std::string_view json_data_twitter,
+	                              std::string_view json_data_citm,
+	                              std::string_view json_data_canada ) {
+		auto result = make_bench_result(
+		  "nativejson benchmark from_json",
+		  json_data_twitter.size( ) + json_data_citm.size( ) +
+		    json_data_canada.size( ),
+		  daw::bench_n_test_json<NUM_RUNS>(
+		    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
+			    auto const j1 =
+			      daw::json::from_json<daw::twitter::twitter_object_t>( tw );
+			    auto const j2 = daw::json::from_json<daw::citm::citm_object_t>( ci );
+			    auto const j3 =
+			      daw::json::from_json<daw::geojson::FeatureCollection>( ca );
+			    daw::do_not_optimize( j1 );
+			    daw::do_not_optimize( j2 );
+			    daw::do_not_optimize( j3 );
+		    },
+		    json_data_twitter, json_data_citm, json_data_canada ) );
 
-daw::bench::bench_result
-do_canada_from_json_test( std::string_view json_data ) {
-	auto result = make_bench_result(
-	  "canada from_json", json_data.size( ),
-	  daw::bench_n_test_json<NUM_RUNS>(
-	    [&]( std::string_view jd ) {
-		    return daw::json::from_json_unchecked<daw::geojson::FeatureCollection>(
-		      jd );
-	    },
-	    json_data ) );
+		process_results( result );
+		return result;
+	}
 
-	process_results( result );
-	return result;
-}
+	daw::bench::bench_result
+	do_nativejson_from_json_test_unchecked( std::string_view json_data_twitter,
+	                                        std::string_view json_data_citm,
+	                                        std::string_view json_data_canada ) {
+		auto result = make_bench_result(
+		  "nativejson unchecked benchmark from_json",
+		  json_data_twitter.size( ) + json_data_citm.size( ) +
+		    json_data_canada.size( ),
+		  daw::bench_n_test_json<NUM_RUNS>(
+		    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
+			    auto const j1 =
+			      daw::json::from_json_unchecked<daw::twitter::twitter_object_t>(
+			        tw );
+			    auto const j2 =
+			      daw::json::from_json_unchecked<daw::citm::citm_object_t>( ci );
+			    auto const j3 =
+			      daw::json::from_json_unchecked<daw::geojson::FeatureCollection>(
+			        ca );
+			    daw::do_not_optimize( j1 );
+			    daw::do_not_optimize( j2 );
+			    daw::do_not_optimize( j3 );
+		    },
+		    json_data_twitter, json_data_citm, json_data_canada ) );
 
-daw::bench::bench_result
-do_nativejson_from_json_test( std::string_view json_data_twitter,
-                              std::string_view json_data_citm,
-                              std::string_view json_data_canada ) {
-	auto result = make_bench_result(
-	  "nativejson benchmark from_json",
-	  json_data_twitter.size( ) + json_data_citm.size( ) +
-	    json_data_canada.size( ),
-	  daw::bench_n_test_json<NUM_RUNS>(
-	    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
-		    auto const j1 =
-		      daw::json::from_json<daw::twitter::twitter_object_t>( tw );
-		    auto const j2 = daw::json::from_json<daw::citm::citm_object_t>( ci );
-		    auto const j3 =
-		      daw::json::from_json<daw::geojson::FeatureCollection>( ca );
-		    daw::do_not_optimize( j1 );
-		    daw::do_not_optimize( j2 );
-		    daw::do_not_optimize( j3 );
-	    },
-	    json_data_twitter, json_data_citm, json_data_canada ) );
-
-	process_results( result );
-	return result;
-}
-
-daw::bench::bench_result
-do_nativejson_from_json_test_unchecked( std::string_view json_data_twitter,
-                                        std::string_view json_data_citm,
-                                        std::string_view json_data_canada ) {
-	auto result = make_bench_result(
-	  "nativejson unchecked benchmark from_json",
-	  json_data_twitter.size( ) + json_data_citm.size( ) +
-	    json_data_canada.size( ),
-	  daw::bench_n_test_json<NUM_RUNS>(
-	    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
-		    auto const j1 =
-		      daw::json::from_json_unchecked<daw::twitter::twitter_object_t>( tw );
-		    auto const j2 =
-		      daw::json::from_json_unchecked<daw::citm::citm_object_t>( ci );
-		    auto const j3 =
-		      daw::json::from_json_unchecked<daw::geojson::FeatureCollection>( ca );
-		    daw::do_not_optimize( j1 );
-		    daw::do_not_optimize( j2 );
-		    daw::do_not_optimize( j3 );
-	    },
-	    json_data_twitter, json_data_citm, json_data_canada ) );
-
-	process_results( result );
-	return result;
-}
+		process_results( result );
+		return result;
+	}
+} // namespace
 
 int main( int argc, char **argv ) {
 	if( argc < 5 ) {
