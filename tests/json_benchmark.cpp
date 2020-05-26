@@ -205,6 +205,31 @@ do_nativejson_from_json_test( std::string_view json_data_twitter,
 	  daw::bench_n_test_json<NUM_RUNS>(
 	    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
 		    auto const j1 =
+		      daw::json::from_json<daw::twitter::twitter_object_t>( tw );
+		    auto const j2 = daw::json::from_json<daw::citm::citm_object_t>( ci );
+		    auto const j3 =
+		      daw::json::from_json<daw::geojson::FeatureCollection>( ca );
+		    daw::do_not_optimize( j1 );
+		    daw::do_not_optimize( j2 );
+		    daw::do_not_optimize( j3 );
+	    },
+	    json_data_twitter, json_data_citm, json_data_canada ) );
+
+	process_results( result );
+	return result;
+}
+
+daw::bench::bench_result
+do_nativejson_from_json_test_unchecked( std::string_view json_data_twitter,
+                                        std::string_view json_data_citm,
+                                        std::string_view json_data_canada ) {
+	auto result = make_bench_result(
+	  "nativejson unchecked benchmark from_json",
+	  json_data_twitter.size( ) + json_data_citm.size( ) +
+	    json_data_canada.size( ),
+	  daw::bench_n_test_json<NUM_RUNS>(
+	    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
+		    auto const j1 =
 		      daw::json::from_json_unchecked<daw::twitter::twitter_object_t>( tw );
 		    auto const j2 =
 		      daw::json::from_json_unchecked<daw::citm::citm_object_t>( ci );
@@ -245,6 +270,8 @@ int main( int argc, char **argv ) {
 	  do_twitter_from_json_test( json_data_twitter ),
 	  do_citm_from_json_test( json_data_citm ),
 	  do_canada_from_json_test( json_data_canada ),
+	  do_nativejson_from_json_test_unchecked( json_data_twitter, json_data_citm,
+	                                          json_data_canada ),
 	  do_nativejson_from_json_test( json_data_twitter, json_data_citm,
 	                                json_data_canada ) };
 
