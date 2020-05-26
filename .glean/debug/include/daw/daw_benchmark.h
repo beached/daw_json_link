@@ -413,6 +413,58 @@ namespace daw {
 	/***
 	 *
 	 * @tparam Runs Number of runs
+	 * @tparam Function Callable type to be timed
+	 * @tparam Args types to pass to callable
+	 * @param validator validatio object that takes func's result as arg
+	 * @param func Callable value to bench
+	 * @param args args values to pass to func
+	 * @return last result timing counts of runs
+	 */
+	template<size_t Runs, typename Function, typename... Args>
+	[[maybe_unused]] static std::vector<std::chrono::nanoseconds>
+	bench_n_test_json( Function &&func, Args &&... args ) noexcept {
+		static_assert( Runs > 0 );
+		std::vector<std::chrono::nanoseconds> results( Runs );
+
+		auto base_time =
+		  std::chrono::nanoseconds( std::numeric_limits<long long>::max( ) );
+		{
+			for( size_t n = 0; n < 1000; ++n ) {
+				daw::do_not_optimize( args... );
+
+				int a = 0;
+				daw::do_not_optimize( a );
+				auto const start = std::chrono::steady_clock::now( );
+				auto r = daw::expected_from_code( [a]( ) mutable {
+					auto const b = a;
+					daw::do_not_optimize( a );
+					return a + b;
+				} );
+				auto const finish = std::chrono::steady_clock::now( );
+				daw::do_not_optimize( r );
+				auto const duration = std::chrono::nanoseconds( finish - start );
+				if( duration < base_time ) {
+					base_time = duration;
+				}
+			}
+		}
+		using result_t = daw::remove_cvref_t<decltype( func( args... ) )>;
+
+		for( size_t n = 0; n < Runs; ++n ) {
+			auto const start = std::chrono::steady_clock::now( );
+			func( args... );
+			auto const finish = std::chrono::steady_clock::now( );
+
+			auto const duration =
+			  std::chrono::nanoseconds( finish - start ) - base_time;
+			results[n] = duration;
+		}
+		return results;
+	}
+
+	/***
+	 *
+	 * @tparam Runs Number of runs
 	 * @tparam Validator Callable to validate results
 	 * @tparam Function Callable type to be timed
 	 * @tparam Args types to pass to callable
@@ -423,8 +475,8 @@ namespace daw {
 	 */
 	template<size_t Runs, typename Validator, typename Function, typename... Args>
 	[[maybe_unused]] static std::vector<std::chrono::nanoseconds>
-	bench_n_test_silent( Validator &&validator, Function &&func,
-	                     Args &&... args ) noexcept {
+	bench_n_test_json_val( Validator &&validator, Function &&func,
+	                       Args &&... args ) noexcept {
 		static_assert( Runs > 0 );
 		std::vector<std::chrono::nanoseconds> results( Runs );
 

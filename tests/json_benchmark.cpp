@@ -140,8 +140,7 @@ daw::bench::bench_result
 do_apache_builds_from_json_test( std::string_view json_data ) {
 	auto result = make_bench_result(
 	  "apache builds from_json", json_data.size( ),
-	  daw::bench_n_test_silent<NUM_RUNS>(
-	    []( auto const & ) { return true; },
+	  daw::bench_n_test_json<NUM_RUNS>(
 	    [&]( std::string_view jd ) {
 		    return daw::json::from_json_unchecked<apache_builds::apache_builds>(
 		      jd );
@@ -156,8 +155,7 @@ daw::bench::bench_result
 do_twitter_from_json_test( std::string_view json_data ) {
 	auto result = make_bench_result(
 	  "twitter from_json", json_data.size( ),
-	  daw::bench_n_test_silent<NUM_RUNS>(
-	    []( auto const & ) { return true; },
+	  daw::bench_n_test_json<NUM_RUNS>(
 	    [&]( std::string_view jd ) {
 		    return daw::json::from_json_unchecked<daw::twitter::twitter_object_t>(
 		      jd );
@@ -171,8 +169,7 @@ do_twitter_from_json_test( std::string_view json_data ) {
 daw::bench::bench_result do_citm_from_json_test( std::string_view json_data ) {
 	auto result = make_bench_result(
 	  "citm_catalog from_json", json_data.size( ),
-	  daw::bench_n_test_silent<NUM_RUNS>(
-	    []( auto const & ) { return true; },
+	  daw::bench_n_test_json<NUM_RUNS>(
 	    [&]( std::string_view jd ) {
 		    return daw::json::from_json_unchecked<daw::citm::citm_object_t>( jd );
 	    },
@@ -186,8 +183,7 @@ daw::bench::bench_result
 do_canada_from_json_test( std::string_view json_data ) {
 	auto result = make_bench_result(
 	  "canada from_json", json_data.size( ),
-	  daw::bench_n_test_silent<NUM_RUNS>(
-	    []( auto const & ) { return true; },
+	  daw::bench_n_test_json<NUM_RUNS>(
 	    [&]( std::string_view jd ) {
 		    return daw::json::from_json_unchecked<daw::geojson::FeatureCollection>(
 		      jd );
@@ -206,14 +202,17 @@ do_nativejson_from_json_test( std::string_view json_data_twitter,
 	  "nativejson benchmark from_json",
 	  json_data_twitter.size( ) + json_data_citm.size( ) +
 	    json_data_canada.size( ),
-	  daw::bench_n_test_silent<NUM_RUNS>(
-	    []( auto const & ) { return true; },
+	  daw::bench_n_test_json<NUM_RUNS>(
 	    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
-		    return std::tuple{
-		      daw::json::from_json_unchecked<daw::twitter::twitter_object_t>( tw ),
-		      daw::json::from_json_unchecked<daw::citm::citm_object_t>( ci ),
-		      daw::json::from_json_unchecked<daw::geojson::FeatureCollection>(
-		        ca ) };
+		    auto const j1 =
+		      daw::json::from_json_unchecked<daw::twitter::twitter_object_t>( tw );
+		    auto const j2 =
+		      daw::json::from_json_unchecked<daw::citm::citm_object_t>( ci );
+		    auto const j3 =
+		      daw::json::from_json_unchecked<daw::geojson::FeatureCollection>( ca );
+		    daw::do_not_optimize( j1 );
+		    daw::do_not_optimize( j2 );
+		    daw::do_not_optimize( j3 );
 	    },
 	    json_data_twitter, json_data_citm, json_data_canada ) );
 
