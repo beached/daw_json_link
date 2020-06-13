@@ -11,6 +11,10 @@
 #include <daw/json/daw_json_link.h>
 
 #include <chrono>
+#include <cstddef>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace daw::bench {
 	using timestamp_t = std::chrono::time_point<std::chrono::system_clock,

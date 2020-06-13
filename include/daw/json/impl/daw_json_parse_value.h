@@ -348,6 +348,15 @@ namespace daw::json::json_details {
 		app( enc1 );
 	}
 
+	template<typename... Args>
+	std::true_type is_string( std::basic_string<Args...> const & ) {
+		return { };
+	}
+	template<typename T>
+	std::false_type is_string( T const & ) {
+		return { };
+	}
+
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng ) {
@@ -357,6 +366,12 @@ namespace daw::json::json_details {
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 
 		auto result = constructor_t{ }( );
+		if constexpr( std::is_same_v<std::string, daw::remove_cvref_t<decltype(
+		                                            is_string( result ) )>> ) {
+			if( KnownBounds ) {
+				result.reserve( rng.size( ) );
+			}
+		}
 		auto app = [&] {
 			if constexpr( std::is_same_v<typename JsonMember::parse_to_t,
 			                             typename JsonMember::base_type> ) {
