@@ -505,93 +505,94 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		using appender_t = typename JsonMember::appender_t;
 
-		if constexpr( std::is_same_v<std::string, json_result<JsonMember>> ) {
-			if constexpr( std::is_same_v<appender_t, basic_appender<std::string>> ) {
-				auto rng2 = skip_string( rng );
-				return parse_string_known_stdstring<JsonMember, std::string>( rng2 );
-			}
-		}
-		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
-		auto result = constructor_t{ }( );
-		auto app = [&] {
-			if constexpr( std::is_same_v<typename JsonMember::parse_to_t,
-			                             typename JsonMember::base_type> ) {
-				return daw::construct_a<appender_t>( result );
-			} else {
-				return daw::construct_a<appender_t>( *result );
-			}
-		}( );
+		if constexpr( std::is_same_v<std::string, json_result<JsonMember>> and
+		              std::is_same_v<appender_t, basic_appender<std::string>> and
+		              std::is_same_v<constructor_t, construct_a_t<std::string>> ) {
+			auto rng2 = skip_string( rng );
+			return parse_string_known_stdstring<JsonMember, std::string>( rng2 );
+		} else {
+			constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
+			auto result = constructor_t{ }( );
+			auto app = [&] {
+				if constexpr( std::is_same_v<typename JsonMember::parse_to_t,
+				                             typename JsonMember::base_type> ) {
+					return daw::construct_a<appender_t>( result );
+				} else {
+					return daw::construct_a<appender_t>( *result );
+				}
+			}( );
 
-		bool const has_quote = rng.front( '"' );
-		if( has_quote ) {
-			rng.remove_prefix( );
-		}
-		daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
-		while( rng.front( ) != '"' ) {
-			while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
-				daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
-				app( rng.front( ) );
+			bool const has_quote = rng.front( '"' );
+			if( has_quote ) {
 				rng.remove_prefix( );
 			}
-			if( rng.front( ) == '\\' ) {
-				daw_json_assert_weak( rng.front( ) >= 0x20, "Invalid codepoint" );
-				rng.remove_prefix( );
-				switch( rng.front( ) ) {
-				case 'b':
-					app( '\b' );
-					rng.remove_prefix( );
-					break;
-				case 'f':
-					app( '\f' );
-					rng.remove_prefix( );
-					break;
-				case 'n':
-					app( '\n' );
-					rng.remove_prefix( );
-					break;
-				case 'r':
-					app( '\r' );
-					rng.remove_prefix( );
-					break;
-				case 't':
-					app( '\t' );
-					rng.remove_prefix( );
-					break;
-				case 'U': // Sometimes people put crap
-				case 'u':
-					decode_utf16( rng, app );
-					break;
-				case '\\':
-				case '/':
-				case '"':
-					app( rng.front( ) );
-					rng.remove_prefix( );
-					break;
-				default:
-					if constexpr( eight_bit_mode == EightBitModes::DisallowHigh ) {
-						daw_json_assert_weak(
-						  static_cast<unsigned>( rng.front( ) ) >= 0x20U and
-						    static_cast<unsigned>( rng.front( ) ) <= 0x7FU,
-						  "string support limited to 0x20 < chr <= 0x7F when "
-						  "DisallowHighEightBit is true" );
-					}
+			daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
+			while( rng.front( ) != '"' ) {
+				while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
+					daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
 					app( rng.front( ) );
 					rng.remove_prefix( );
 				}
-			} else {
-				daw_json_assert_weak( not has_quote or rng.front( '"' ),
-				                      "Unexpected end of string" );
+				if( rng.front( ) == '\\' ) {
+					daw_json_assert_weak( rng.front( ) >= 0x20, "Invalid codepoint" );
+					rng.remove_prefix( );
+					switch( rng.front( ) ) {
+					case 'b':
+						app( '\b' );
+						rng.remove_prefix( );
+						break;
+					case 'f':
+						app( '\f' );
+						rng.remove_prefix( );
+						break;
+					case 'n':
+						app( '\n' );
+						rng.remove_prefix( );
+						break;
+					case 'r':
+						app( '\r' );
+						rng.remove_prefix( );
+						break;
+					case 't':
+						app( '\t' );
+						rng.remove_prefix( );
+						break;
+					case 'U': // Sometimes people put crap
+					case 'u':
+						decode_utf16( rng, app );
+						break;
+					case '\\':
+					case '/':
+					case '"':
+						app( rng.front( ) );
+						rng.remove_prefix( );
+						break;
+					default:
+						if constexpr( eight_bit_mode == EightBitModes::DisallowHigh ) {
+							daw_json_assert_weak(
+							  static_cast<unsigned>( rng.front( ) ) >= 0x20U and
+							    static_cast<unsigned>( rng.front( ) ) <= 0x7FU,
+							  "string support limited to 0x20 < chr <= 0x7F when "
+							  "DisallowHighEightBit is true" );
+						}
+						app( rng.front( ) );
+						rng.remove_prefix( );
+					}
+				} else {
+					daw_json_assert_weak( not has_quote or rng.front( '"' ),
+					                      "Unexpected end of string" );
+				}
+				daw_json_assert_weak( not has_quote or rng.has_more( ),
+				                      "Unexpected end of data" );
 			}
-			daw_json_assert_weak( not has_quote or rng.has_more( ),
-			                      "Unexpected end of data" );
-		}
 
-		if constexpr( not KnownBounds ) {
-			daw_json_assert_weak( not has_quote or rng.front( '"' ),
-			                      "Unexpected state, no \"" );
-			rng.remove_prefix( );
+			if constexpr( not KnownBounds ) {
+				daw_json_assert_weak( not has_quote or rng.front( '"' ),
+				                      "Unexpected state, no \"" );
+				rng.remove_prefix( );
+			}
+			return result;
 		}
-		return result;
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>

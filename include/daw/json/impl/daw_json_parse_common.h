@@ -436,7 +436,7 @@ namespace daw::json {
 namespace daw::json::json_details {
 
 	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_string_nq( Range &rng ) {
+	[[nodiscard]] static inline constexpr Range skip_string_nq( Range &rng ) {
 		auto result = rng;
 		string_quote::string_quote_parser::parse_nq( rng );
 
@@ -448,7 +448,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_string( Range &rng ) {
+	[[nodiscard]] static inline constexpr Range skip_string( Range &rng ) {
 		if( rng.empty( ) ) {
 			auto result = rng;
 			return result;
