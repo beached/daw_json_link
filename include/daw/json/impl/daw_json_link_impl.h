@@ -51,7 +51,7 @@ namespace daw::json {
 		using result_type = std::chrono::time_point<std::chrono::system_clock,
 		                                            std::chrono::milliseconds>;
 
-		[[maybe_unused, nodiscard]] constexpr result_type
+		[[maybe_unused, nodiscard]] inline constexpr result_type
 		operator( )( char const *ptr, std::size_t sz ) const {
 			return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
 		}
@@ -63,11 +63,11 @@ namespace daw::json {
 		  std::optional<std::chrono::time_point<std::chrono::system_clock,
 		                                        std::chrono::milliseconds>>;
 
-		[[maybe_unused, nodiscard]] constexpr result_type operator( )( ) const {
+		[[maybe_unused, nodiscard]] inline constexpr result_type operator( )( ) const {
 			return { };
 		}
 
-		[[maybe_unused, nodiscard]] constexpr result_type
+		[[maybe_unused, nodiscard]] inline constexpr result_type
 		operator( )( char const *ptr, std::size_t sz ) const {
 			return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
 		}
@@ -75,7 +75,7 @@ namespace daw::json {
 
 	template<typename T>
 	struct custom_from_converter_t {
-		[[nodiscard]] constexpr decltype( auto ) operator( )( ) {
+		[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {
 			if constexpr( std::is_same_v<T, std::string_view> ) {
 				return std::string_view{ };
 			} else if constexpr( std::is_same_v<T,
@@ -86,7 +86,7 @@ namespace daw::json {
 			}
 		}
 
-		[[nodiscard]] constexpr decltype( auto )
+		[[nodiscard]] inline constexpr decltype( auto )
 		operator( )( std::string_view sv ) {
 			if constexpr( std::is_same_v<T, std::string_view> or
 			              std::is_same_v<T, std::optional<std::string_view>> ) {
@@ -126,7 +126,7 @@ namespace daw::json::json_details {
 	};
 
 	template<std::size_t N, typename string_t, typename... JsonMembers>
-	[[nodiscard]] constexpr kv_t<string_t> get_item( ) {
+	[[nodiscard]] inline constexpr kv_t<string_t> get_item( ) {
 		using type_t = traits::nth_type<N, JsonMembers...>;
 		return kv_t<string_t>( type_t::name, type_t::expected_type, N );
 	}
@@ -148,11 +148,11 @@ namespace daw::json::json_details {
 		  : name( Name ) {}
 #endif
 
-		[[maybe_unused, nodiscard]] constexpr bool missing( ) const {
+		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 			return location.is_null( );
 		}
 
-		[[nodiscard]] constexpr bool is_match( daw::string_view Name ) noexcept {
+		[[nodiscard]] inline constexpr bool is_match( daw::string_view Name ) noexcept {
 #ifndef _MSC_VER
 			uint32_t const h = daw::murmur3_32( Name );
 			if( hash_value != h ) {
@@ -202,7 +202,7 @@ namespace daw::json::json_details {
 			return N;
 		}
 
-		[[nodiscard]] constexpr std::size_t
+		[[nodiscard]] inline constexpr std::size_t
 		find_name( daw::string_view key ) const {
 #ifdef _MSC_VER
 			// Bug in MSVC is making the constexpr ptr/ptr string_view like classes
@@ -232,7 +232,7 @@ namespace daw::json::json_details {
 	 * @return IteratorRange with begin( ) being start of value
 	 */
 	template<typename JsonMember, std::size_t N, typename Range>
-	[[nodiscard]] constexpr Range
+	[[nodiscard]] inline constexpr Range
 	find_class_member( std::size_t pos, locations_info_t<N, Range> &locations,
 	                   Range &rng ) {
 
@@ -306,7 +306,7 @@ namespace daw::json::json_details {
 	 * @return A reified value of type JsonMember::parse_to_t
 	 */
 	template<typename JsonMember, typename Range>
-	[[nodiscard]] constexpr auto
+	[[nodiscard]] inline constexpr auto
 	parse_ordered_class_member( std::size_t &member_position, Range &rng ) {
 
 		/***
@@ -346,7 +346,7 @@ namespace daw::json::json_details {
 	 * @return parsed value from JSON data
 	 */
 	template<typename JsonMember, std::size_t N, typename Range>
-	[[nodiscard]] constexpr json_result<JsonMember>
+	[[nodiscard]] inline constexpr json_result<JsonMember>
 	parse_class_member( std::size_t member_position,
 	                    locations_info_t<N, Range> &locations, Range &rng ) {
 
@@ -377,7 +377,7 @@ namespace daw::json::json_details {
 
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
-	[[nodiscard]] constexpr JsonClass
+	[[nodiscard]] inline constexpr JsonClass
 	parse_json_class( Range &rng, std::index_sequence<Is...> ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
@@ -452,7 +452,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename JsonClass, typename... JsonMembers, typename Range>
-	[[nodiscard]] constexpr JsonClass
+	[[nodiscard]] inline constexpr JsonClass
 	parse_ordered_json_class( Range &rng ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
