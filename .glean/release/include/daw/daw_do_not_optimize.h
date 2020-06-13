@@ -22,6 +22,15 @@
 
 #pragma once
 
+#include <type_traits>
+#include <utility>
+#include <memory>
+
+#pragma once
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
+
 namespace daw {
 #ifndef _MSC_VER
 	template<typename Tp>
