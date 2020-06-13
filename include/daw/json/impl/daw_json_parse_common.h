@@ -547,7 +547,7 @@ namespace daw::json::json_details {
 	 */
 	template<char Left, char Right, typename Range>
 	[[nodiscard]] static constexpr Range skip_bracketed_item( Range &rng ) {
-		daw_json_assert_weak( rng.front( Left ), "Expected start bracket/brace" );
+		// Not checking for Left as it is required to be skipped already
 		std::size_t bracket_count = 1;
 		bool in_quotes = false;
 		auto result = rng;
