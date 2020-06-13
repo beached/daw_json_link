@@ -175,20 +175,20 @@ namespace daw::json::json_details {
 		using value_type = location_info_t<Range>;
 		std::array<value_type, N> names;
 
-		inline constexpr decltype( auto ) begin( ) const {
-			return names.begin( );
+		inline constexpr auto begin( ) const {
+			return names.data( );
 		}
 
-		inline constexpr decltype( auto ) begin( ) {
-			return names.begin( );
+		inline constexpr auto begin( ) {
+			return names.data( );
 		}
 
-		inline constexpr decltype( auto ) end( ) const {
-			return names.end( );
+		inline constexpr auto end( ) const {
+			return names.data( ) + N;
 		}
 
-		inline constexpr decltype( auto ) end( ) {
-			return names.end( );
+		inline constexpr auto end( ) {
+			return names.data( ) + N;
 		}
 
 		inline constexpr location_info_t<Range> const &
@@ -215,7 +215,7 @@ namespace daw::json::json_details {
 #else
 			return algorithm::find_index_of_if(
 			  begin( ), end( ),
-			  [&, hash = daw::murmur3_32( key )]( value_type const &loc ) {
+			  [key, hash = daw::murmur3_32( key )]( value_type const &loc ) {
 				  return loc.hash_value == hash and loc.name == key;
 			  } );
 #endif
@@ -285,10 +285,10 @@ namespace daw::json::json_details {
 		                                   std::size_t &current_position,
 		                                   std::size_t desired_position ) {
 
+			rng.clean_tail( );
 			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of range" );
 			daw_json_assert_weak( current_position <= desired_position,
 			                      "Order of ordered members must be ascending" );
-			rng.clean_tail( );
 			while( current_position < desired_position and rng.front( ) != ']' ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
@@ -377,18 +377,6 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename F, typename Tp, std::size_t... Is>
-	inline constexpr decltype( auto ) applier( F &&f, Tp &&tp,
-	                                           std::index_sequence<Is...> ) {
-		return f( std::get<Is>( std::move( tp ) )... );
-	}
-
-	template<typename F, typename... Args>
-	inline constexpr decltype( auto ) applier( F f, std::tuple<Args...> &&tp ) {
-		return applier( std::move( f ), std::move( tp ),
-		                std::index_sequence_for<Args...>{ } );
-	}
-
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
 	[[nodiscard]] inline constexpr JsonClass
@@ -450,15 +438,15 @@ namespace daw::json::json_details {
 			/*
 			 * Rather than call directly use apply/tuple to evaluate left->right
 			 */
-			return applier(
+			return std::apply(
 			  daw::construct_a<JsonClass>,
 			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng )... } );
 #else
-			JsonClass result =
-			  applier( daw::construct_a<JsonClass>,
-			           tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			             Is, known_locations, rng )... } );
+			JsonClass result = std::apply(
+			  daw::construct_a<JsonClass>,
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
 			cleanup_fn( );
 			return result;
 #endif
@@ -500,11 +488,11 @@ namespace daw::json::json_details {
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
 		auto const oe = daw::on_exit_success( cleanup_fn );
-		return applier(
+		return std::apply(
 		  daw::construct_a<JsonClass>,
 		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
 #else
-		JsonClass result = applier(
+		JsonClass result = std::apply(
 		  daw::construct_a<JsonClass>,
 		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
 

@@ -427,7 +427,7 @@ namespace daw::json::json_details {
 
 		auto result = String( );
 		result.resize( rng.size( ) );
-		char * it = result.data( );
+		char *it = result.data( );
 
 		bool const has_quote = rng.front( '"' );
 		if( has_quote ) {
@@ -513,13 +513,12 @@ namespace daw::json::json_details {
 		auto result = constructor_t{ }( );
 		if constexpr( std::is_same_v<std::string, daw::remove_cvref_t<decltype(
 		                                            is_string( result ) )>> ) {
-			if( KnownBounds ) {
-				if constexpr( std::is_same_v<appender_t,
-				                             basic_appender<std::string>> ) {
-					return parse_string_known_stdstring<JsonMember, std::string>( rng );
-				}
-				result.reserve( rng.size( ) );
+			auto rng2 = rng;
+			auto rng3 = skip_string( rng2 );
+			if constexpr( std::is_same_v<appender_t, basic_appender<std::string>> ) {
+				return parse_string_known_stdstring<JsonMember, std::string>( rng2 );
 			}
+			result.reserve( rng2.size( ) );
 		}
 		auto app = [&] {
 			if constexpr( std::is_same_v<typename JsonMember::parse_to_t,
