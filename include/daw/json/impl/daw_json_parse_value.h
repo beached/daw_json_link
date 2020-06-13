@@ -290,7 +290,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Range>
-	static constexpr void decode_utf16( Range &rng, char *it ) {
+	[[nodiscard]] static constexpr char * decode_utf16( Range &rng, char *it ) {
 		daw_json_assert_weak( rng.front( "uU" ), "Expected rng to start with a u" );
 		rng.remove_prefix( );
 		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
@@ -298,7 +298,7 @@ namespace daw::json::json_details {
 		cp |= static_cast<std::uint32_t>( byte_from_nibbles( rng ) );
 		if( cp <= 0x7FU ) {
 			*it++ = static_cast<char>( cp );
-			return;
+			return it;
 		}
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
@@ -327,7 +327,7 @@ namespace daw::json::json_details {
 			*it++ = enc1;
 			*it++ = enc2;
 			*it++ = enc3;
-			return;
+			return it;
 		}
 		if( cp >= 0x800U ) {
 			// 3 bytes
@@ -339,7 +339,7 @@ namespace daw::json::json_details {
 			*it++ = enc0;
 			*it++ = enc1;
 			*it++ = enc2;
-			return;
+			return it;
 		}
 		// cp >= 0x80U
 		// 2 bytes
@@ -347,6 +347,7 @@ namespace daw::json::json_details {
 		char const enc0 = static_cast<char>( ( cp >> 6U ) | 0b1100'0000U );
 		*it++ = enc0;
 		*it++ = enc1;
+		return it;
 	}
 
 	template<typename Range, typename Appender>
@@ -465,7 +466,7 @@ namespace daw::json::json_details {
 					break;
 				case 'U': // Sometimes people put crap
 				case 'u':
-					decode_utf16( rng, it );
+					it = decode_utf16( rng, it );
 					break;
 				case '\\':
 				case '/':
