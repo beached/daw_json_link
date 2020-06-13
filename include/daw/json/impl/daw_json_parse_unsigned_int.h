@@ -54,7 +54,7 @@ namespace daw::json::json_details::unsignedint {
 				  n <= std::numeric_limits<result_t>::max( ) and count >= 0,
 				  "Unsigned number outside of range of unsigned numbers" );
 			}
-			return {daw::construct_a<Unsigned>( n ), ptr};
+			return { daw::construct_a<Unsigned>( n ), ptr };
 		}
 
 #ifdef DAW_ALLOW_SSE3
@@ -147,7 +147,7 @@ namespace daw::json::json_details::unsignedint {
 				                              std::numeric_limits<Unsigned>::max( ) ),
 				                 "Parsed number is out of range" );
 			}
-			return {daw::construct_a<Unsigned>( result ), ptr};
+			return { daw::construct_a<Unsigned>( result ), ptr };
 		}
 #endif
 	};
@@ -190,9 +190,9 @@ namespace daw::json::json_details {
 		};
 
 		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
-			return result_t{daw::narrow_cast<Result>( v ), c};
+			return result_t{ daw::narrow_cast<Result>( v ), c };
 		} else {
-			return result_t{v, c};
+			return result_t{ v, c };
 		}
 	}
 

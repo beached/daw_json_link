@@ -348,7 +348,7 @@ namespace daw::json::json_details {
 	 * @return parsed value from JSON data
 	 */
 	template<typename JsonMember, std::size_t N, typename Range>
-	[[nodiscard]] inline constexpr json_result<JsonMember>
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr json_result<JsonMember>
 	parse_class_member( std::size_t member_position,
 	                    locations_info_t<N, Range> &locations, Range &rng ) {
 

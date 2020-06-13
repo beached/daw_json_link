@@ -44,7 +44,8 @@ namespace daw::json {
 	class json_array_iterator {
 
 		template<typename String>
-		static inline constexpr json_details::IteratorRange<char const *, IsUnCheckedInput>
+		static inline constexpr json_details::IteratorRange<char const *,
+		                                                    IsUnCheckedInput>
 		get_range( String &&data, std::string_view member_path ) {
 			auto [is_found, result] = json_details::find_range<IsUnCheckedInput>(
 			  std::forward<String>( data ),
@@ -81,8 +82,8 @@ namespace daw::json {
 		template<typename String,
 		         daw::enable_when_t<not std::is_same_v<
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
-		inline constexpr explicit json_array_iterator( String &&jd,
-		                                        std::string_view start_path = "" )
+		inline constexpr explicit json_array_iterator(
+		  String &&jd, std::string_view start_path = "" )
 		  : m_state( get_range( std::forward<String>( jd ), start_path ) ) {
 
 			static_assert(

@@ -290,7 +290,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Range>
-	[[nodiscard]] static constexpr char * decode_utf16( Range &rng, char *it ) {
+	[[nodiscard]] static constexpr char *decode_utf16( Range &rng, char *it ) {
 		daw_json_assert_weak( rng.front( "uU" ), "Expected rng to start with a u" );
 		rng.remove_prefix( );
 		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
@@ -509,8 +509,12 @@ namespace daw::json::json_details {
 		if constexpr( std::is_same_v<std::string, json_result<JsonMember>> and
 		              std::is_same_v<appender_t, basic_appender<std::string>> and
 		              std::is_same_v<constructor_t, construct_a_t<std::string>> ) {
-			auto rng2 = skip_string( rng );
-			return parse_string_known_stdstring<JsonMember, std::string>( rng2 );
+			if constexpr( KnownBounds ) {
+				return parse_string_known_stdstring<JsonMember, std::string>( rng );
+			} else {
+				auto rng2 = skip_string( rng );
+				return parse_string_known_stdstring<JsonMember, std::string>( rng2 );
+			}
 		} else {
 			constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 			auto result = constructor_t{ }( );

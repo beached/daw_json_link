@@ -24,7 +24,7 @@
 #include <vector>
 
 struct Number {
-	intmax_t a{};
+	intmax_t a{ };
 };
 namespace daw::json {
 	template<>
@@ -55,7 +55,7 @@ static std::string_view make_int_array_data( ) {
 		result.resize( result.size( ) + 256U );
 		return result;
 	}( );
-	return {json_data.data( ), json_data.size( )};
+	return { json_data.data( ), json_data.size( ) };
 }
 
 template<size_t NUMVALUES>

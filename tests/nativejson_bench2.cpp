@@ -58,9 +58,9 @@ int main( int argc, char **argv ) try {
 
 		std::cout << std::flush;
 
-		std::optional<daw::twitter::twitter_object_t> twitter_result{};
-		std::optional<daw::citm::citm_object_t> citm_result{};
-		std::optional<daw::geojson::Polygon> canada_result{};
+		std::optional<daw::twitter::twitter_object_t> twitter_result{ };
+		std::optional<daw::citm::citm_object_t> citm_result{ };
+		std::optional<daw::geojson::Polygon> canada_result{ };
 		daw::bench_n_test_mbs<NUMRUNS>(
 		  "nativejson_twitter bench", json_sv1.size( ),
 		  [&twitter_result]( auto f1 ) {

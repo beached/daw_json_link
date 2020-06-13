@@ -12,6 +12,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_do_n.h>
+#include <daw/daw_hide.h>
 
 #include <iterator>
 #include <type_traits>
@@ -276,7 +277,7 @@ namespace daw::json::json_details {
 			  static_cast<unsigned>( c <= 0x20 ) );
 		}
 
-		inline constexpr void clean_tail( ) {
+		DAW_ATTRIBUTE_FLATTEN inline constexpr void clean_tail( ) {
 			// trim_left_checked
 			while( has_more( ) and is_space( ) ) {
 				remove_prefix( );

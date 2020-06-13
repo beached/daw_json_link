@@ -41,7 +41,7 @@ namespace daw::json::json_details {
 
 namespace daw::json {
 	class json_exception {
-		std::string m_reason{};
+		std::string m_reason{ };
 
 	public:
 		[[maybe_unused]] json_exception( ) = default;
@@ -98,7 +98,7 @@ daw_json_error( daw::json::json_details::missing_member reason ) {
 #ifndef DAW_JSON_CHECK_DEBUG_ONLY
 template<typename Bool>
 static inline constexpr void daw_json_assert( Bool const &b,
-                                       std::string_view reason ) {
+                                              std::string_view reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
@@ -122,7 +122,7 @@ daw_json_assert( Bool const &b,
 #ifndef NDEBUG
 template<typename Bool>
 static inline constexpr void daw_json_assert( Bool const &b,
-                                       std::string_view reason ) {
+                                              std::string_view reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}

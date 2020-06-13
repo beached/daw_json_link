@@ -448,10 +448,10 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Range>
-	[[nodiscard]] static inline constexpr Range skip_string( Range &rng ) {
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
+	skip_string( Range &rng ) {
 		if( rng.empty( ) ) {
-			auto result = rng;
-			return result;
+			return rng;
 		}
 		if( *std::prev( rng.begin( ) ) != '"' ) {
 			if( rng.front( ) == '"' ) {

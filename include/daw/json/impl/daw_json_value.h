@@ -42,7 +42,7 @@ namespace daw::json {
 		using iterator_category = std::forward_iterator_tag;
 
 	private:
-		Range m_state{};
+		Range m_state{ };
 
 		constexpr basic_json_value_iterator( Range rng )
 		  : m_state( rng ) {}
@@ -58,7 +58,7 @@ namespace daw::json {
 		 */
 		constexpr std::optional<std::string_view> name( ) const {
 			if( is_array( ) ) {
-				return {};
+				return { };
 			}
 			auto rng = m_state;
 			auto result = parse_name( rng );
@@ -85,12 +85,12 @@ namespace daw::json {
 		 */
 		[[nodiscard]] constexpr basic_json_pair<Range> operator*( ) const {
 			if( is_array( ) ) {
-				return {{}, Range( m_state.first, m_state.last )};
+				return { { }, Range( m_state.first, m_state.last ) };
 			}
 			auto rng = m_state;
 			auto name = parse_name( rng );
-			return {std::string_view( name.data( ), name.size( ) ),
-			        Range( rng.first, rng.last )};
+			return { std::string_view( name.data( ), name.size( ) ),
+			         Range( rng.first, rng.last ) };
 		}
 
 		/***
@@ -100,7 +100,7 @@ namespace daw::json {
 		 * @return arrow_proxy object containing the result of operator*
 		 */
 		[[nodiscard]] constexpr pointer operator->( ) const {
-			return {operator*( )};
+			return { operator*( ) };
 		}
 
 		/***
@@ -193,7 +193,7 @@ namespace daw::json {
 	 */
 	template<typename Range>
 	class basic_json_value {
-		Range m_rng{};
+		Range m_rng{ };
 
 	public:
 		using iterator = basic_json_value_iterator<Range>;
@@ -306,7 +306,7 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return {result.first, result.size( )};
+			return { result.first, result.size( ) };
 		}
 
 		/***
@@ -320,7 +320,7 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return {result.first, result.size( )};
+			return { result.first, result.size( ) };
 		}
 
 		/***
