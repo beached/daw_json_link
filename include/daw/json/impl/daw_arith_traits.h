@@ -83,7 +83,10 @@ namespace daw {
 	static_assert( is_unsigned_v<unsigned> );
 
 	template<typename T>
-	using is_arithmetic = std::disjunction<is_number<T>, std::is_enum<T>>;
+	using is_arithmetic =
+	  std::disjunction<is_number<T>, std::is_enum<T>,
+	                   std::conditional_t<std::numeric_limits<T>::is_specialized,
+	                                      std::true_type, std::false_type>>;
 
 	template<typename T>
 	inline constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
