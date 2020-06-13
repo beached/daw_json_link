@@ -289,6 +289,66 @@ namespace daw::json::json_details {
 		return static_cast<std::uint16_t>( ( n0 << 4U ) | n1 );
 	}
 
+	template<typename Range>
+	static constexpr void decode_utf16( Range &rng, char *it ) {
+		daw_json_assert_weak( rng.front( "uU" ), "Expected rng to start with a u" );
+		rng.remove_prefix( );
+		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
+		                   << 8U;
+		cp |= static_cast<std::uint32_t>( byte_from_nibbles( rng ) );
+		if( cp <= 0x7FU ) {
+			*it++ = static_cast<char>( cp );
+			return;
+		}
+		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
+			cp = ( cp - 0xD800U ) * 0x400U;
+			rng.remove_prefix( );
+			daw_json_assert_weak( rng.front( "uU" ),
+			                      "Expected rng to start with a \\u" );
+			rng.remove_prefix( );
+			auto trailing = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
+			                << 8U;
+			trailing |= static_cast<std::uint32_t>( byte_from_nibbles( rng ) );
+			trailing = static_cast<std::uint32_t>( trailing - 0xDC00U );
+			cp += trailing;
+			cp += 0x10000;
+		}
+		// UTF32-> UTF8
+		if( cp >= 0x10000U ) {
+			// 4 bytes
+			char const enc3 =
+			  static_cast<char>( ( cp & 0b0011'1111U ) | 0b1000'0000U );
+			char const enc2 =
+			  static_cast<char>( ( ( cp >> 6U ) & 0b0011'1111U ) | 0b1000'0000U );
+			char const enc1 =
+			  static_cast<char>( ( ( cp >> 12U ) & 0b0011'1111U ) | 0b1000'0000U );
+			char const enc0 = static_cast<char>( ( cp >> 18U ) | 0b1111'0000U );
+			*it++ = enc0;
+			*it++ = enc1;
+			*it++ = enc2;
+			*it++ = enc3;
+			return;
+		}
+		if( cp >= 0x800U ) {
+			// 3 bytes
+			char const enc2 =
+			  static_cast<char>( ( cp & 0b0011'1111U ) | 0b1000'0000U );
+			char const enc1 =
+			  static_cast<char>( ( ( cp >> 6U ) & 0b0011'1111U ) | 0b1000'0000U );
+			char const enc0 = static_cast<char>( ( cp >> 12U ) | 0b1110'0000U );
+			*it++ = enc0;
+			*it++ = enc1;
+			*it++ = enc2;
+			return;
+		}
+		// cp >= 0x80U
+		// 2 bytes
+		char const enc1 = static_cast<char>( ( cp & 0b0011'1111U ) | 0b1000'0000U );
+		char const enc0 = static_cast<char>( ( cp >> 6U ) | 0b1100'0000U );
+		*it++ = enc0;
+		*it++ = enc1;
+	}
+
 	template<typename Range, typename Appender>
 	static constexpr void decode_utf16( Range &rng, Appender &app ) {
 		daw_json_assert_weak( rng.front( "uU" ), "Expected rng to start with a u" );
@@ -360,18 +420,14 @@ namespace daw::json::json_details {
 
 	// Fast path for parsing escaped strings to a std::string with the default
 	// appender
-	template<typename JsonMember, typename Range>
-	[[nodiscard, maybe_unused]] inline std::string
+	template<typename JsonMember, typename String, typename Range>
+	[[nodiscard, maybe_unused]] inline constexpr String
 	parse_string_known_stdstring( Range &rng ) {
-		static constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
+		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 
-		auto result = std::string( );
+		auto result = String( );
 		result.resize( rng.size( ) );
-		auto it = result.data( );
-		auto app = [&]( char c ) {
-			*it = c;
-			++it;
-		};
+		char * it = result.data( );
 
 		bool const has_quote = rng.front( '"' );
 		if( has_quote ) {
@@ -389,33 +445,33 @@ namespace daw::json::json_details {
 				rng.remove_prefix( );
 				switch( rng.front( ) ) {
 				case 'b':
-					app( '\b' );
+					*it++ = '\b';
 					rng.remove_prefix( );
 					break;
 				case 'f':
-					app( '\f' );
+					*it++ = '\f';
 					rng.remove_prefix( );
 					break;
 				case 'n':
-					app( '\n' );
+					*it++ = '\n';
 					rng.remove_prefix( );
 					break;
 				case 'r':
-					app( '\r' );
+					*it++ = '\r';
 					rng.remove_prefix( );
 					break;
 				case 't':
-					app( '\t' );
+					*it++ = '\t';
 					rng.remove_prefix( );
 					break;
 				case 'U': // Sometimes people put crap
 				case 'u':
-					decode_utf16( rng, app );
+					decode_utf16( rng, it );
 					break;
 				case '\\':
 				case '/':
 				case '"':
-					app( rng.front( ) );
+					*it++ = rng.front( );
 					rng.remove_prefix( );
 					break;
 				default:
@@ -426,7 +482,7 @@ namespace daw::json::json_details {
 						  "string support limited to 0x20 < chr <= 0x7F when "
 						  "DisallowHighEightBit is true" );
 					}
-					app( rng.front( ) );
+					*it++ = rng.front( );
 					rng.remove_prefix( );
 				}
 			} else {
@@ -447,7 +503,7 @@ namespace daw::json::json_details {
 
 	//**************************
 	template<typename JsonMember, bool KnownBounds, typename Range>
-	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
+	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng ) {
 
 		using constructor_t = typename JsonMember::constructor_t;
@@ -460,7 +516,7 @@ namespace daw::json::json_details {
 			if( KnownBounds ) {
 				if constexpr( std::is_same_v<appender_t,
 				                             basic_appender<std::string>> ) {
-					return parse_string_known_stdstring<JsonMember>( rng );
+					return parse_string_known_stdstring<JsonMember, std::string>( rng );
 				}
 				result.reserve( rng.size( ) );
 			}
