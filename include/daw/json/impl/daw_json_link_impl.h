@@ -63,7 +63,8 @@ namespace daw::json {
 		  std::optional<std::chrono::time_point<std::chrono::system_clock,
 		                                        std::chrono::milliseconds>>;
 
-		[[maybe_unused, nodiscard]] inline constexpr result_type operator( )( ) const {
+		[[maybe_unused, nodiscard]] inline constexpr result_type
+		operator( )( ) const {
 			return { };
 		}
 
@@ -152,7 +153,8 @@ namespace daw::json::json_details {
 			return location.is_null( );
 		}
 
-		[[nodiscard]] inline constexpr bool is_match( daw::string_view Name ) noexcept {
+		[[nodiscard]] inline constexpr bool
+		is_match( daw::string_view Name ) noexcept {
 #ifndef _MSC_VER
 			uint32_t const h = daw::murmur3_32( Name );
 			if( hash_value != h ) {
@@ -359,11 +361,11 @@ namespace daw::json::json_details {
 		auto loc = find_class_member<JsonMember>( member_position, locations, rng );
 
 		// If the member was found loc will have it's position
+		if( loc.begin( ) == rng.begin( ) ) {
+			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
+			                                rng );
+		}
 		if( not loc.is_null( ) ) {
-			if( loc.begin( ) == rng.begin( ) ) {
-				return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
-				                                rng );
-			}
 			return parse_value<JsonMember, true>(
 			  ParseTag<JsonMember::expected_type>{ }, loc );
 		}
