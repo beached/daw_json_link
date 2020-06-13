@@ -433,11 +433,10 @@ namespace daw::json::json_details {
 		if( has_quote ) {
 			rng.remove_prefix( );
 		}
-		daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
 		while( rng.front( ) != '"' ) {
 			while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
 				daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
-				app( rng.front( ) );
+				*it++ = rng.front( );
 				rng.remove_prefix( );
 			}
 			if( rng.front( ) == '\\' ) {
@@ -492,12 +491,10 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( not has_quote or rng.has_more( ),
 			                      "Unexpected end of data" );
 		}
-		daw_json_assert_weak(
-		  result.size( ) <
-		    static_cast<std::size_t>( std::distance( result.data( ), it ) ),
-		  "Unexpected string state" );
-		result.resize(
-		  static_cast<std::size_t>( std::distance( result.data( ), it ) ) );
+		auto const sz =
+		  static_cast<std::size_t>( std::distance( result.data( ), it ) );
+		daw_json_assert_weak( result.size( ) >= sz, "Unexpected string state" );
+		result.resize( sz );
 		return result;
 	}
 
@@ -505,21 +502,17 @@ namespace daw::json::json_details {
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng ) {
-
 		using constructor_t = typename JsonMember::constructor_t;
 		using appender_t = typename JsonMember::appender_t;
-		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 
-		auto result = constructor_t{ }( );
-		if constexpr( std::is_same_v<std::string, daw::remove_cvref_t<decltype(
-		                                            is_string( result ) )>> ) {
-			auto rng2 = rng;
-			auto rng3 = skip_string( rng2 );
+		if constexpr( std::is_same_v<std::string, json_result<JsonMember>> ) {
 			if constexpr( std::is_same_v<appender_t, basic_appender<std::string>> ) {
+				auto rng2 = skip_string( rng );
 				return parse_string_known_stdstring<JsonMember, std::string>( rng2 );
 			}
-			result.reserve( rng2.size( ) );
 		}
+		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
+		auto result = constructor_t{ }( );
 		auto app = [&] {
 			if constexpr( std::is_same_v<typename JsonMember::parse_to_t,
 			                             typename JsonMember::base_type> ) {
