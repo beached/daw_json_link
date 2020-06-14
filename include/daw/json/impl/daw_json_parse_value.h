@@ -422,7 +422,7 @@ namespace daw::json::json_details {
 	// Fast path for parsing escaped strings to a std::string with the default
 	// appender
 	template<typename JsonMember, typename String, typename Range>
-	[[nodiscard, maybe_unused]] inline constexpr String
+	[[nodiscard, maybe_unused]] DAW_ATTRIBUTE_FLATTEN inline constexpr String
 	parse_string_known_stdstring( Range &rng ) {
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 

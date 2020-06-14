@@ -35,7 +35,7 @@ namespace daw::json::json_details::name {
 		}
 
 		template<typename Range>
-		[[nodiscard, maybe_unused]] static constexpr daw::string_view
+		[[nodiscard, maybe_unused]] DAW_ATTRIBUTE_FLATTEN static inline constexpr daw::string_view
 		parse_nq( Range &rng ) {
 			auto ptr = rng.begin( );
 			while( rng.front( ) != '"' ) {

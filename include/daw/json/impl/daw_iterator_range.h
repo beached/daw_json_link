@@ -105,31 +105,37 @@ namespace daw::json::json_details {
 		  , class_first( f )
 		  , class_last( l ) {}
 
-		[[nodiscard]] inline constexpr bool empty( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool empty( ) const {
 			return first == last;
 		}
 
-		[[nodiscard]] inline constexpr bool has_more( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		has_more( ) const {
 			return first != last;
 		}
 
-		[[nodiscard]] inline constexpr bool can_parse_more( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		can_parse_more( ) const {
 			return not is_null( ) and has_more( );
 		}
 
-		[[nodiscard]] inline constexpr decltype( auto ) front( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr decltype( auto )
+		front( ) const {
 			return *first;
 		}
 
-		[[nodiscard]] inline constexpr bool front( char c ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		front( char c ) const {
 			return first != last and *first == c;
 		}
 
-		[[nodiscard]] inline constexpr std::size_t size( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr std::size_t
+		size( ) const {
 			return static_cast<std::size_t>( std::distance( first, last ) );
 		}
 
-		[[nodiscard]] inline constexpr bool is_number( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		is_number( ) const {
 			return static_cast<unsigned>( front( ) ) - static_cast<unsigned>( '0' ) <
 			       10U;
 		}
@@ -146,7 +152,7 @@ namespace daw::json::json_details {
 			return result;
 		}
 
-		[[nodiscard]] inline constexpr bool is_null( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool is_null( ) const {
 			if constexpr( std::is_pointer_v<iterator> ) {
 				return first == nullptr;
 			} else if constexpr( std::is_convertible_v<iterator, bool> ) {
@@ -156,15 +162,16 @@ namespace daw::json::json_details {
 			}
 		}
 
-		inline constexpr void remove_prefix( ) {
+		DAW_ATTRIBUTE_FLATTEN inline constexpr void remove_prefix( ) {
 			++first;
 		}
 
-		inline constexpr void remove_prefix( std::size_t n ) {
+		DAW_ATTRIBUTE_FLATTEN inline constexpr void remove_prefix( std::size_t n ) {
 			std::advance( first, static_cast<intmax_t>( n ) );
 		}
 
-		[[nodiscard]] inline constexpr bool is_space( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		is_space( ) const {
 			// Faster to be liberal here and accept <= 0x20
 			daw_json_assert_weak( has_more( ), "Unexpected end of stream" );
 			auto const c = *first;
@@ -202,19 +209,22 @@ namespace daw::json::json_details {
 			}
 		}
 
-		[[nodiscard]] inline constexpr iterator begin( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+		begin( ) const {
 			return first;
 		}
 
-		[[nodiscard]] inline constexpr iterator data( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+		data( ) const {
 			return first;
 		}
 
-		[[nodiscard]] inline constexpr iterator end( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator end( ) const {
 			return last;
 		}
 
-		[[nodiscard]] explicit inline constexpr operator bool( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN explicit inline constexpr
+		operator bool( ) const {
 			return not empty( );
 		}
 
@@ -239,7 +249,8 @@ namespace daw::json::json_details {
 			}
 		}
 
-		[[nodiscard]] inline constexpr bool in( char c ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		in( char c ) const {
 			daw_json_assert_weak( first != nullptr, "Empty or null InteratorRange" );
 			return *first == c;
 		}
@@ -288,7 +299,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		inline constexpr void set_class_position( ) {
+		DAW_ATTRIBUTE_FLATTEN inline constexpr void set_class_position( ) {
 			class_first = first;
 			class_last = last;
 		}

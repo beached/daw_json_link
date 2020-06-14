@@ -600,7 +600,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_value( Range &rng ) {
+	[[nodiscard]] static inline constexpr Range skip_value( Range &rng ) {
 		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range" );
 
 		switch( rng.front( ) ) {
