@@ -500,17 +500,28 @@ namespace daw::json::json_details {
 	}
 
 	//**************************
+	template<typename JsonMember>
+	using can_fast_path = std::conjunction<
+	  std::disjunction<
+	    std::is_same<std::string, json_result<JsonMember>>,
+	    std::is_same<std::optional<std::string>, json_result<JsonMember>>>,
+	  std::is_same<typename JsonMember::appender_t, basic_appender<std::string>>,
+	  std::disjunction<
+	    std::is_same<typename JsonMember::constructor_t,
+	                 daw::construct_a_t<std::string>>,
+	    std::is_same<typename JsonMember::constructor_t,
+	                 daw::construct_a_t<std::optional<std::string>>>>>;
+
+	template<typename JsonMember>
+	inline constexpr bool can_fast_path_v = can_fast_path<JsonMember>::value;
+
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng ) {
-		using constructor_t = typename JsonMember::constructor_t;
-		using appender_t = typename JsonMember::appender_t;
-
-		if constexpr( (std::is_same_v<std::string, json_result<JsonMember>> or
-		               std::is_same_v<std::optional<std::string>,
-		                              json_result<JsonMember>>)and std::
-		                is_same_v<appender_t, basic_appender<std::string>> and
-		              std::is_same_v<constructor_t, construct_a_t<std::string>> ) {
+		if constexpr( can_fast_path_v<JsonMember> ) {
+			// We know that we are constructing a std::string or std::optional<std::string>
+			// We can take advantage of this and reduce the allocator time by presizing the
+			// string up front and then using a pointer to the data( ).
 			if constexpr( KnownBounds ) {
 				return parse_string_known_stdstring<JsonMember, std::string>( rng );
 			} else {
@@ -518,7 +529,10 @@ namespace daw::json::json_details {
 				return parse_string_known_stdstring<JsonMember, std::string>( rng2 );
 			}
 		} else {
+			using constructor_t = typename JsonMember::constructor_t;
+			using appender_t = typename JsonMember::appender_t;
 			constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
+
 			auto result = constructor_t{ }( );
 			auto app = [&] {
 				if constexpr( std::is_same_v<typename JsonMember::parse_to_t,
