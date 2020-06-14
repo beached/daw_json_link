@@ -426,8 +426,16 @@ namespace daw::json::json_details {
 	parse_string_known_stdstring( Range &rng ) {
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 
-		auto result = String( );
+		auto result2 = String( );
+		auto &result = [&result2]( ) -> std::string & {
+			if constexpr( std::is_same_v<String, std::string> ) {
+				return result2;
+			} else {
+				return *result2;
+			}
+		}( );
 		result.resize( rng.size( ) );
+
 		char *it = result.data( );
 
 		bool const has_quote = rng.front( '"' );
@@ -496,7 +504,7 @@ namespace daw::json::json_details {
 		  static_cast<std::size_t>( std::distance( result.data( ), it ) );
 		daw_json_assert_weak( result.size( ) >= sz, "Unexpected string state" );
 		result.resize( sz );
-		return result;
+		return result2;
 	}
 
 	//**************************
@@ -519,14 +527,17 @@ namespace daw::json::json_details {
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng ) {
 		if constexpr( can_fast_path_v<JsonMember> ) {
-			// We know that we are constructing a std::string or std::optional<std::string>
-			// We can take advantage of this and reduce the allocator time by presizing the
-			// string up front and then using a pointer to the data( ).
+			// We know that we are constructing a std::string or
+			// std::optional<std::string> We can take advantage of this and reduce the
+			// allocator time by presizing the string up front and then using a
+			// pointer to the data( ).
 			if constexpr( KnownBounds ) {
-				return parse_string_known_stdstring<JsonMember, std::string>( rng );
+				return parse_string_known_stdstring<JsonMember,
+				                                    json_result<JsonMember>>( rng );
 			} else {
 				auto rng2 = skip_string( rng );
-				return parse_string_known_stdstring<JsonMember, std::string>( rng2 );
+				return parse_string_known_stdstring<JsonMember,
+				                                    json_result<JsonMember>>( rng2 );
 			}
 		} else {
 			using constructor_t = typename JsonMember::constructor_t;
