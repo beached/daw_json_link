@@ -35,6 +35,7 @@ constexpr bool operator==( T const &lhs, T const &rhs ) {
 }
 
 int main( int argc, char **argv ) try {
+	static constexpr std::size_t NUM_RUNS = 250;
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -51,7 +52,7 @@ int main( int argc, char **argv ) try {
 	          << '\n';
 
 	std::optional<daw::twitter::twitter_object_t> twitter_result;
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
@@ -67,7 +68,7 @@ int main( int argc, char **argv ) try {
 
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );

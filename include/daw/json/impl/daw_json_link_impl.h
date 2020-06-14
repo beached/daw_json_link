@@ -379,7 +379,7 @@ namespace daw::json::json_details {
 
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
-	[[nodiscard]] inline constexpr JsonClass
+	[[nodiscard]] constexpr JsonClass
 	parse_json_class( Range &rng, std::index_sequence<Is...> ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );

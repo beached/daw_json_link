@@ -436,7 +436,7 @@ namespace daw::json {
 namespace daw::json::json_details {
 
 	template<typename Range>
-	[[nodiscard]] static inline constexpr Range skip_string_nq( Range &rng ) {
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range skip_string_nq( Range &rng ) {
 		auto result = rng;
 		string_quote::string_quote_parser::parse_nq( rng );
 

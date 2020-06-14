@@ -6,13 +6,15 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#pragma once
+
+#include <daw/daw_hide.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
 #include <string>
 #include <string_view>
-
-#pragma once
 
 #if defined( __GNUC__ ) or defined( __clang__ )
 #define DAW_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )
@@ -77,7 +79,7 @@ template<bool ShouldThrow = use_daw_json_exceptions_v>
 }
 
 template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] inline void
+[[maybe_unused, noreturn]] void
 daw_json_error( daw::json::json_details::missing_member reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
@@ -97,14 +99,14 @@ daw_json_error( daw::json::json_details::missing_member reason ) {
 
 #ifndef DAW_JSON_CHECK_DEBUG_ONLY
 template<typename Bool>
-static inline constexpr void daw_json_assert( Bool const &b,
-                                              std::string_view reason ) {
+DAW_ATTRIBUTE_FLATTEN static inline constexpr void
+daw_json_assert( Bool const &b, std::string_view reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
 template<typename Bool>
-static inline constexpr void
+DAW_ATTRIBUTE_FLATTEN static inline constexpr void
 daw_json_assert( Bool const &b,
                  daw::json::json_details::missing_member reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
@@ -121,14 +123,14 @@ daw_json_assert( Bool const &b,
 #else // undef DAW_JSON_CHECK_DEBUG_ONLY
 #ifndef NDEBUG
 template<typename Bool>
-static inline constexpr void daw_json_assert( Bool const &b,
-                                              std::string_view reason ) {
+DAW_ATTRIBUTE_FLATTEN static inline constexpr void
+daw_json_assert( Bool const &b, std::string_view reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
 template<typename Bool>
-static inline constexpr void
+DAW_ATTRIBUTE_FLATTEN static inline constexpr void
 daw_json_assert( Bool const &b,
                  daw::json::json_details::missing_member reason ) {
 	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
