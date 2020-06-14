@@ -424,9 +424,8 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename String, typename Range>
 	[[nodiscard, maybe_unused]] DAW_ATTRIBUTE_FLATTEN inline constexpr String
 	parse_string_known_stdstring( Range &rng ) {
-		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
+		String result2 = std::string( rng.size( ), '\0' );
 
-		auto result2 = String( );
 		auto &result = [&result2]( ) -> std::string & {
 			if constexpr( std::is_same_v<String, std::string> ) {
 				return result2;
@@ -434,7 +433,6 @@ namespace daw::json::json_details {
 				return *result2;
 			}
 		}( );
-		result.resize( rng.size( ) );
 
 		char *it = result.data( );
 
@@ -483,7 +481,8 @@ namespace daw::json::json_details {
 					rng.remove_prefix( );
 					break;
 				default:
-					if constexpr( eight_bit_mode == EightBitModes::DisallowHigh ) {
+					if constexpr( JsonMember::eight_bit_mode ==
+					              EightBitModes::DisallowHigh ) {
 						daw_json_assert_weak(
 						  static_cast<unsigned>( rng.front( ) ) >= 0x20U and
 						    static_cast<unsigned>( rng.front( ) ) <= 0x7FU,
