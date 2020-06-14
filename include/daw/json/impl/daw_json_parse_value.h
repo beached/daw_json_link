@@ -506,8 +506,10 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		using appender_t = typename JsonMember::appender_t;
 
-		if constexpr( std::is_same_v<std::string, json_result<JsonMember>> and
-		              std::is_same_v<appender_t, basic_appender<std::string>> and
+		if constexpr( (std::is_same_v<std::string, json_result<JsonMember>> or
+		               std::is_same_v<std::optional<std::string>,
+		                              json_result<JsonMember>>)and std::
+		                is_same_v<appender_t, basic_appender<std::string>> and
 		              std::is_same_v<constructor_t, construct_a_t<std::string>> ) {
 			if constexpr( KnownBounds ) {
 				return parse_string_known_stdstring<JsonMember, std::string>( rng );
