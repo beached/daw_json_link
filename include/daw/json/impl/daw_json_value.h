@@ -42,7 +42,7 @@ namespace daw::json {
 		using iterator_category = std::forward_iterator_tag;
 
 	private:
-		Range m_state{ };
+		Range m_state{};
 
 		constexpr basic_json_value_iterator( Range rng )
 		  : m_state( rng ) {}
@@ -58,7 +58,7 @@ namespace daw::json {
 		 */
 		constexpr std::optional<std::string_view> name( ) const {
 			if( is_array( ) ) {
-				return { };
+				return {};
 			}
 			auto rng = m_state;
 			auto result = parse_name( rng );
@@ -85,12 +85,12 @@ namespace daw::json {
 		 */
 		[[nodiscard]] constexpr basic_json_pair<Range> operator*( ) const {
 			if( is_array( ) ) {
-				return { { }, Range( m_state.first, m_state.last ) };
+				return {{}, Range( m_state.first, m_state.last )};
 			}
 			auto rng = m_state;
 			auto name = parse_name( rng );
-			return { std::string_view( name.data( ), name.size( ) ),
-			         Range( rng.first, rng.last ) };
+			return {std::string_view( name.data( ), name.size( ) ),
+			        Range( rng.first, rng.last )};
 		}
 
 		/***
@@ -100,7 +100,7 @@ namespace daw::json {
 		 * @return arrow_proxy object containing the result of operator*
 		 */
 		[[nodiscard]] constexpr pointer operator->( ) const {
-			return { operator*( ) };
+			return {operator*( )};
 		}
 
 		/***
@@ -149,7 +149,15 @@ namespace daw::json {
 		 * @return True if safe to increment more
 		 */
 		constexpr bool good( ) const {
-			return m_state.can_parse_more( ) and not m_state.in( "]}" );
+			if( not m_state.can_parse_more( ) ) {
+				return false;
+			}
+			switch( m_state.front( ) ) {
+			case ']':
+			case '}':
+				return true;
+			}
+			return false;
 		}
 
 		/***
@@ -193,7 +201,7 @@ namespace daw::json {
 	 */
 	template<typename Range>
 	class basic_json_value {
-		Range m_rng{ };
+		Range m_rng{};
 
 	public:
 		using iterator = basic_json_value_iterator<Range>;
@@ -306,21 +314,24 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return { result.first, result.size( ) };
+			return {result.first, result.size( )};
 		}
 
 		/***
 		 * Get a copy of the JSON data
 		 * @return the JSON data as a std::string
 		 */
-		std::string get_string( ) const {
+		template<typename Allocator = std::allocator<char>,
+		         typename Traits = std::char_traits<char>>
+		std::basic_string<char, Traits, Allocator>
+		get_string( Allocator const &alloc = std::allocator<char>( ) ) const {
 			auto rng = m_rng;
 			auto result = json_details::skip_value( rng );
 			if( is_string( ) ) {
 				--result.first;
 				++result.last;
 			}
-			return { result.first, result.size( ) };
+			return {result.first, result.size( ), alloc};
 		}
 
 		/***
@@ -352,7 +363,25 @@ namespace daw::json {
 		 * @return true if the value is a number literal
 		 */
 		constexpr bool is_number( ) const {
-			return m_rng.can_parse_more( ) and m_rng.in( "0123456789+-" );
+			if( not m_rng.can_parse_more( ) ) {
+				return false;
+			}
+			switch( m_rng.front( ) ) {
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+			case '+':
+			case '-':
+				return true;
+			}
+			return false;
 		}
 
 		/***

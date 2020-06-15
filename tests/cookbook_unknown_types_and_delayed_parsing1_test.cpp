@@ -33,6 +33,7 @@ int main( int argc, char **argv ) try {
 		} else {
 			std::cout << "Array element is a ";
 		}
+		std::cout << member.value.is_number( );
 		std::cout << to_string( member.value.type( ) ) << " with a value of "
 		          << member.value.get_string_view( ) << '\n';
 	}

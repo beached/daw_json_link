@@ -36,8 +36,8 @@ namespace daw::json {
 			  : name( Name )
 			  , location( std::move( val ) ) {}
 #endif
-			[[nodiscard]] constexpr bool
-			is_match( daw::string_view Name ) const noexcept {
+			[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const
+			  noexcept {
 				return name == Name;
 			}
 
@@ -61,7 +61,7 @@ namespace daw::json {
 	template<typename Range>
 	class basic_stateful_json_value {
 		basic_json_value<Range> m_value;
-		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{ };
+		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{};
 
 		/***
 		 * Move parser until member name matches key if needed
@@ -193,7 +193,7 @@ namespace daw::json {
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
-			return { };
+			return {};
 		}
 
 		/***
@@ -260,7 +260,7 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					if( static_cast<std::size_t>( index ) >= sz ) {
-						return { };
+						return {};
 					}
 					sz -= static_cast<std::size_t>( index );
 					return std::string_view( m_locs[sz].name( ).data( ),
@@ -272,7 +272,7 @@ namespace daw::json {
 				return std::string_view( m_locs[pos].name( ).data( ),
 				                         m_locs[pos].name( ).size( ) );
 			}
-			return { };
+			return {};
 		}
 
 		/***
@@ -318,7 +318,7 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					if( static_cast<std::size_t>( index ) >= sz ) {
-						return { };
+						return {};
 					}
 					sz -= static_cast<std::size_t>( index );
 					return m_locs[sz].location->value;
@@ -328,7 +328,7 @@ namespace daw::json {
 			if( pos < m_locs.size( ) ) {
 				return m_locs[pos].location->value;
 			}
-			return { };
+			return {};
 		}
 
 		/***

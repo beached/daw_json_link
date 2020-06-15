@@ -202,7 +202,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		inline constexpr void trim_left_checked_raw( ) {
+		DAW_ATTRIBUTE_FLATTEN inline constexpr void trim_left_checked_raw( ) {
 			while( is_space( ) ) {
 				remove_prefix( );
 				daw_json_assert_weak( first != last, "Unexpected end of stream" );
@@ -265,19 +265,24 @@ namespace daw::json::json_details {
 		}
 
 		[[nodiscard]] inline constexpr bool is_real_number_part( ) const {
-			if constexpr( IsUnCheckedInput ) {
+			switch( *first ) {
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+			case 'e':
+			case 'E':
+			case '+':
+			case '-':
 				return true;
-			} else {
-				auto const c = *first;
-				auto const b0 = static_cast<unsigned>(
-				  ( static_cast<unsigned>( c ) - static_cast<unsigned>( '0' ) ) < 10U );
-				auto const b1 =
-				  static_cast<unsigned>( c == 'e' ) | static_cast<unsigned>( c == 'E' );
-				auto const b2 =
-				  static_cast<unsigned>( c == '+' ) | static_cast<unsigned>( c == '-' );
-				auto result = static_cast<bool>( b0 | b1 | b2 );
-				return result;
 			}
+			return false;
 		}
 
 		[[nodiscard]] inline constexpr bool at_end_of_item( ) const {

@@ -436,7 +436,8 @@ namespace daw::json {
 namespace daw::json::json_details {
 
 	template<typename Range>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range skip_string_nq( Range &rng ) {
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
+	skip_string_nq( Range &rng ) {
 		auto result = rng;
 		string_quote::string_quote_parser::parse_nq( rng );
 
@@ -540,6 +541,74 @@ namespace daw::json::json_details {
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
+	}
+
+	template<char Left, char Right, typename Range>
+	static constexpr void skip_to_end_of_bracketed_item( Range &rng ) {
+		// Not checking for Left as it is required to be skipped already
+		std::size_t bracket_count = 1;
+		bool in_quotes = false;
+		rng.clean_tail( );
+		if( not rng.empty( ) and bracket_count > 0 ) {
+			rng.trim_left_checked_raw( );
+			switch( rng.front( ) ) {
+			case '\\':
+				rng.remove_prefix( 1 );
+				break;
+			case '"':
+				in_quotes = not in_quotes;
+				break;
+			case Left:
+				if( not in_quotes ) {
+					++bracket_count;
+				}
+				break;
+			case Right:
+				if( not in_quotes ) {
+					--bracket_count;
+				}
+				break;
+#ifdef DAW_ALLOW_COMMENTS
+			case '#':
+				if( not in_quotes ) {
+					rng.trim_left_checked( );
+				}
+				break;
+#endif
+			}
+		}
+		while( not rng.empty( ) and bracket_count > 0 ) {
+			rng.remove_prefix( );
+			rng.trim_left_checked_raw( );
+			switch( rng.front( ) ) {
+			case '\\':
+				rng.remove_prefix( 1 );
+				break;
+			case '"':
+				in_quotes = not in_quotes;
+				break;
+			case Left:
+				if( not in_quotes ) {
+					++bracket_count;
+				}
+				break;
+			case Right:
+				if( not in_quotes ) {
+					--bracket_count;
+				}
+				break;
+#ifdef DAW_ALLOW_COMMENTS
+			case '#':
+				if( not in_quotes ) {
+					rng.trim_left_checked( );
+				}
+				break;
+#endif
+			}
+		}
+		daw_json_assert_weak( rng.front( Right ),
+		                      "Expected closing bracket/brace" );
+
 	}
 
 	/***

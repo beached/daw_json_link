@@ -665,21 +665,22 @@ namespace daw::json::json_details {
 		if constexpr( not KnownBounds ) {
 			auto const oe = daw::on_exit_success( [&] { rng.trim_left_checked( ); } );
 		}
-		return json_details::json_data_contract_trait_t<element_t>::template parse<
-		  element_t>( rng );
+		return json_data_contract_trait_t<element_t>::template parse<element_t>(
+		  rng );
 #else
 		if constexpr( KnownBounds ) {
-			return json_details::json_data_contract_trait_t<
-			  element_t>::template parse<element_t>( rng );
+			return json_data_contract_trait_t<element_t>::template parse<element_t>(
+			  rng );
 		} else {
-			auto result = json_details::json_data_contract_trait_t<
-			  element_t>::template parse<element_t>( rng );
+			auto result =
+			  json_data_contract_trait_t<element_t>::template parse<element_t>( rng );
 			// TODO: make trim_left
 			rng.trim_left_checked( );
 			return result;
 		}
 #endif
 	}
+
 	/**
 	 * Parse a key_value pair encoded as a json object where the keys are the
 	 * member names
@@ -763,8 +764,7 @@ namespace daw::json::json_details {
 			rng.move_to_next_of( "\"}" );
 			daw_json_assert_weak( rng.front( '"' ), "Expected name of key member" );
 			rng.remove_prefix( );
-			auto const key_name =
-			  daw::json::json_details::name::name_parser::parse_nq( rng );
+			auto const key_name = name::name_parser::parse_nq( rng );
 			(void)key_name;
 			daw_json_assert_weak( key_t::name == key_name,
 			                      "Expected value name to match" );
@@ -772,8 +772,7 @@ namespace daw::json::json_details {
 			rng.move_to_next_of( '"' ); // Next
 			daw_json_assert_weak( rng.front( '"' ), "Expected name of value member" );
 			rng.remove_prefix( );
-			auto const value_name =
-			  daw::json::json_details::name::name_parser::parse_nq( rng );
+			auto const value_name = name::name_parser::parse_nq( rng );
 			(void)value_name;
 			daw_json_assert_weak( value_t::name == value_name,
 			                      "Expected value name to match" );
