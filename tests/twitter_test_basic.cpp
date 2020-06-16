@@ -33,6 +33,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result.statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
+	std::cout << twitter_result.statuses.front( ).user.id << '\n';
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
