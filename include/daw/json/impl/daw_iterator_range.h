@@ -221,9 +221,7 @@ namespace daw::json {
 		}
 
 		inline constexpr void clean_tail( ) noexcept {
-			while( has_more( ) and is_space_unchecked( ) ) {
-				++first;
-			}
+			trim_left( );
 			if( *first == ',' ) {
 				++first;
 				trim_left( );
@@ -291,7 +289,7 @@ namespace daw::json {
 			                      "Expected closing bracket/brace" );
 			// We include the Right bracket in the range so that subsequent parsers
 			// have a terminator inside their range
-			result.last = first + 1;
+			result.last = first;
 			return result;
 		}
 	}; // namespace daw::json
@@ -383,9 +381,7 @@ namespace daw::json {
 		}
 
 		inline constexpr void clean_tail( ) noexcept( is_unchecked_input ) {
-			while( has_more( ) and is_space_unchecked( ) ) {
-				++first;
-			}
+			trim_left( );
 			if( *first == ',' ) {
 				++first;
 				trim_left( );
