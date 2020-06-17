@@ -83,7 +83,7 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
 		is_space( Iterator first, Iterator last ) {
 			return parse_policy_details::is_space(
-			  first, last, std::bool_constant<is_unchecked_input>{} );
+			  first, last, std::bool_constant<is_unchecked_input>{ } );
 		}
 
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
@@ -196,21 +196,20 @@ namespace daw::json {
 			}
 		}
 
-		template<char Left, char Right>
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr std::pair<
-		  Iterator, Iterator>
-		skip_bracketed_item( Iterator &first, Iterator const &last ) {
+		template<char Left, char Right, typename Range>
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
+		skip_bracketed_item( Range &rng ) {
 			// Not checking for Left as it is required to be skipped already
 			std::size_t bracket_count = 1;
 			bool in_quotes = false;
-			auto result = std::pair<Iterator, Iterator>( first, last );
-			while( parse_policy_details::has_more( first, last ) and
+			auto result = rng;
+			while( parse_policy_details::has_more( rng.first, rng.last ) and
 			       bracket_count > 0 ) {
-				++first;
-				trim_left_checked_raw( first, last );
-				switch( *first ) {
+				++rng.first;
+				trim_left_checked_raw( rng.first, rng.last );
+				switch( *rng.first ) {
 				case '\\':
-					++first;
+					++rng.first;
 					break;
 				case '"':
 					in_quotes = not in_quotes;
@@ -228,13 +227,14 @@ namespace daw::json {
 				}
 			}
 			if constexpr( not is_unchecked_input ) {
-				daw_json_assert( parse_policy_details::has_more( first, last ) and
-				                   *first == Right,
-				                 "Expected closing bracket/brace" );
+				daw_json_assert(
+				  parse_policy_details::has_more( rng.first, rng.last ) and
+				    *rng.first == Right,
+				  "Expected closing bracket/brace" );
 			}
 
-			++first;
-			result.second = first;
+			++rng.first;
+			result.last = rng.first;
 
 			return result;
 		}
@@ -288,7 +288,7 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
 		is_space( Iterator first, Iterator last ) {
 			return parse_policy_details::is_space(
-			  first, last, std::bool_constant<is_unchecked_input>{} );
+			  first, last, std::bool_constant<is_unchecked_input>{ } );
 		}
 
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
@@ -414,21 +414,20 @@ namespace daw::json {
 			}
 		}
 
-		template<char Left, char Right>
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr std::pair<
-		  Iterator, Iterator>
-		skip_bracketed_item( Iterator &first, Iterator const &last ) {
+		template<char Left, char Right, typename Range>
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
+		skip_bracketed_item( Range &rng ) {
 			// Not checking for Left as it is required to be skipped already
 			std::size_t bracket_count = 1;
 			bool in_quotes = false;
-			auto result = std::pair<Iterator, Iterator>( first, last );
-			while( parse_policy_details::has_more( first, last ) and
+			auto result = rng;
+			while( parse_policy_details::has_more( rng.first, rng.last ) and
 			       bracket_count > 0 ) {
-				++first;
-				trim_left_checked_raw( first, last );
-				switch( *first ) {
+				++rng.first;
+				trim_left_checked_raw( rng.first, rng.last );
+				switch( *rng.first ) {
 				case '\\':
-					++first;
+					++rng.first;
 					break;
 				case '"':
 					in_quotes = not in_quotes;
@@ -445,19 +444,20 @@ namespace daw::json {
 					break;
 				case '#':
 					if( not in_quotes ) {
-						trim_left_checked( first, last );
+						trim_left_checked( rng.first, rng.last );
 					}
 					break;
 				}
 			}
 			if constexpr( not is_unchecked_input ) {
-				daw_json_assert( parse_policy_details::has_more( first, last ) and
-				                   *first == Right,
-				                 "Expected closing bracket/brace" );
+				daw_json_assert(
+				  parse_policy_details::has_more( rng.first, rng.last ) and
+				    *rng.first == Right,
+				  "Expected closing bracket/brace" );
 			}
 
-			++first;
-			result.second = first;
+			++rng.first;
+			result.last = rng.first;
 
 			return result;
 		}
@@ -482,10 +482,10 @@ namespace daw::json::json_details {
 		                 typename std::iterator_traits<iterator>::iterator_category,
 		                 std::random_access_iterator_tag>,
 		               "Expecting a Random Contiguous Iterator" );
-		iterator first{};
-		iterator last{};
-		iterator class_first{};
-		iterator class_last{};
+		iterator first{ };
+		iterator last{ };
+		iterator class_first{ };
+		iterator class_last{ };
 		using Range = IteratorRange<IteratorRange>;
 
 		static inline constexpr bool is_unchecked_input =
@@ -689,16 +689,11 @@ namespace daw::json::json_details {
 
 		template<char Left, char Right>
 		[[nodiscard]] inline constexpr IteratorRange skip_bracketed_item( ) {
-			auto result = *this;
-			auto tmp =
-			  policy::template skip_bracketed_item<Left, Right>( first, last );
-			result.first = tmp.first;
-			result.last = tmp.second;
-			return result;
+			return policy::template skip_bracketed_item<Left, Right>( *this );
 		}
 	}; // namespace daw::json::json_details
 
 	template<typename CharT>
 	IteratorRange( CharT const *, CharT const * )
-	  ->IteratorRange<NoCommentSkippingPolicyChecked>;
+	  -> IteratorRange<NoCommentSkippingPolicyChecked>;
 } // namespace daw::json::json_details
