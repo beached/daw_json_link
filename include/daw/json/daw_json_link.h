@@ -551,14 +551,14 @@ namespace daw::json {
 	/***
 	 * An untypes JSON value
 	 */
-	using json_value =
-	  basic_json_value<json_details::IteratorRange<char const *, false>>;
+	using json_value = basic_json_value<
+	  json_details::IteratorRange<NoCommentSkippingPolicyChecked>>;
 
 	/***
 	 * A name/value pair of string_view/json_value
 	 */
-	using json_pair =
-	  basic_json_pair<json_details::IteratorRange<char const *, false>>;
+	using json_pair = basic_json_pair<
+	  json_details::IteratorRange<NoCommentSkippingPolicyChecked>>;
 
 	template<JSONNAMETYPE Name, JsonNullable Nullable = JsonNullable::Never>
 	struct json_delayed {
@@ -586,7 +586,8 @@ namespace daw::json {
 	 * @param json_data JSON string data
 	 * @return A reified T constructed from JSON data
 	 */
-	template<typename JsonClass>
+	template<typename JsonClass,
+	         typename ParsePolicy = NoCommentSkippingPolicyChecked>
 	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json( std::string_view json_data ) {
 		daw_json_assert( json_data.data( ) != nullptr,
@@ -594,7 +595,8 @@ namespace daw::json {
 		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
-		return json_details::from_json_member_impl<JsonClass, false>( json_data );
+		return json_details::from_json_member_impl<JsonClass, ParsePolicy>(
+		  json_data );
 	}
 
 	/***
@@ -606,49 +608,35 @@ namespace daw::json {
 	 * item
 	 * @return A value reified from the JSON data member
 	 */
-	template<typename JsonMember>
+	template<typename JsonMember,
+	         typename ParsePolicy = NoCommentSkippingPolicyChecked>
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( std::string_view json_data, std::string_view member_path ) {
 		daw_json_assert( json_data.data( ) != nullptr,
 		                 "Cannot parse null strings" );
 		daw_json_assert( member_path.data( ) != nullptr,
 		                 "Cannot parse null strings" );
-		return json_details::from_json_member_impl<JsonMember, false>(
+		return json_details::from_json_member_impl<JsonMember, ParsePolicy>(
 		  json_data, member_path );
 	}
 
-	/**
-	 * Parse JSON and construct a JsonClass as the result.  This method
-	 * does not perform most checks on validity of data
-	 * @tparam JsonClass type that has specialization of
-	 * daw::json::json_data_contract
-	 * @param json_data JSON string data
-	 * @return A reified JsonClass constructed from JSON data
-	 */
-	template<typename JsonClass>
-	[[maybe_unused, nodiscard]] constexpr JsonClass
-	from_json_unchecked( std::string_view json_data ) {
-		daw_json_assert( json_data.data( ) != nullptr,
-		                 "Cannot parse null strings" );
-		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
-		               "Expected a typed that has been mapped via specialization "
-		               "of daw::json::json_data_contract" );
-		return json_details::from_json_member_impl<JsonClass, true>( json_data );
-	}
-
-	template<typename JsonMember, typename Range>
+	template<typename JsonMember,
+	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
+	         typename Range>
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( basic_json_value<Range> value ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
-		return json_details::from_json_member_impl<json_member, false>(
+		return json_details::from_json_member_impl<json_member, ParsePolicy>(
 		  value.get_string_view( ) );
 	}
 
-	template<typename JsonMember, typename Range>
+	template<typename JsonMember,
+	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
+	         typename Range>
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( basic_json_value<Range> value, std::string_view member_path ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
-		return json_details::from_json_member_impl<json_member, false>(
+		return json_details::from_json_member_impl<json_member, ParsePolicy>(
 		  value.get_string_view( ), member_path );
 	}
 
@@ -667,24 +655,6 @@ namespace daw::json {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		return json_details::from_json_member_impl<json_member, true>(
 		  value.get_string_view( ), member_path );
-	}
-
-	/***
-	 * Parse a JSONMember from the json_data starting at member_path.  This method
-	 * performs less checking than the non-unchecked method
-	 * @tparam JsonMember The type of the item being parsed
-	 * @param json_data JSON string data
-	 * @param member_path A dot separated path of member names, default is the
-	 * root. Array indices are specified with square brackets e.g. [5] is the 6th
-	 * item.
-	 * @return A value reified from the JSON data member
-	 */
-	template<typename JsonMember>
-	[[maybe_unused, nodiscard]] constexpr auto
-	from_json_unchecked( std::string_view json_data,
-	                     std::string_view member_path ) {
-		return json_details::from_json_member_impl<JsonMember, true>( json_data,
-		                                                              member_path );
 	}
 
 	/**
@@ -736,42 +706,6 @@ namespace daw::json {
 		return result;
 	}
 
-	namespace json_details {
-
-		template<bool IsUnCheckedInput, typename JsonElement, typename Container,
-		         typename Constructor, typename Appender>
-		[[maybe_unused, nodiscard]] constexpr Container
-		from_json_array_impl( std::string_view json_data,
-		                      std::string_view member_path ) {
-			using parser_t =
-			  json_array<no_name, JsonElement, Container, Constructor, Appender>;
-
-			auto [is_found, rng] = json_details::find_range<IsUnCheckedInput>(
-			  json_data, {member_path.data( ), member_path.size( )} );
-
-			if constexpr( parser_t::expected_type == JsonParseTypes::Null ) {
-				if( not is_found ) {
-					return typename parser_t::constructor_t{}( );
-				}
-			} else {
-				daw_json_assert( is_found, "Could not find specified member" );
-			}
-			rng.trim_left_unchecked( );
-#ifdef _MSC_VER
-			// Work around MSVC ICE
-			daw_json_assert( rng.front( '[' ),
-			                 "Expected array class to being with a '['" );
-#else
-			using Range = daw::remove_cvref_t<decltype( rng )>;
-			daw_json_assert_weak( rng.front( '[' ),
-			                      "Expected array class to being with a '['" );
-#endif
-
-			return parse_value<parser_t>( ParseTag<JsonParseTypes::Array>{}, rng );
-		}
-
-	} // namespace json_details
-
 	/**
 	 * Parse JSON data where the root item is an array
 	 * @tparam JsonElement The type of each element in array.  Must be one of
@@ -789,6 +723,7 @@ namespace daw::json {
 	         typename Container =
 	           std::vector<typename json_details::unnamed_default_type_mapping<
 	             JsonElement>::parse_to_t>,
+	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         typename Appender = json_details::basic_appender<Container>>
 	[[maybe_unused, nodiscard]] constexpr Container
@@ -803,45 +738,32 @@ namespace daw::json {
 		static_assert( not std::is_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
 
-		return json_details::from_json_array_impl<false, element_type, Container,
-		                                          Constructor, Appender>(
-		  json_data, member_path );
-	}
+		using parser_t =
+		  json_array<no_name, JsonElement, Container, Constructor, Appender>;
 
-	/**
-	 * Parse JSON data where the root item is an array but do less checking
-	 * @tparam JsonElement The type of each element in array.  Must be one of
-	 * the above json_XXX classes.  This version isn't checked
-	 * @tparam Container Container to store values in
-	 * @tparam Constructor Callable to construct Container with no arguments
-	 * @tparam Appender Callable to call with JsonElement
-	 * @param json_data JSON string data containing array
-	 * @param member_path A dot separated path of member names to start parsing
-	 * from. Array indices are specified with square brackets e.g. [5] is the 6th
-	 * item
-	 * @return A Container containing parsed data from JSON string
-	 */
-	template<typename JsonElement,
-	         typename Container =
-	           std::vector<typename json_details::unnamed_default_type_mapping<
-	             JsonElement>::parse_to_t>,
-	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = json_details::basic_appender<Container>>
-	[[maybe_unused, nodiscard]] constexpr Container
-	from_json_array_unchecked( std::string_view json_data,
-	                           std::string_view member_path = "" ) {
-		daw_json_assert( json_data.data( ) != nullptr,
-		                 "Cannot parse null strings" );
-		daw_json_assert( member_path.data( ) != nullptr,
-		                 "Cannot parse null strings" );
-		using element_type =
-		  json_details::unnamed_default_type_mapping<JsonElement>;
-		static_assert( not std::is_same_v<element_type, void>,
-		               "Unknown JsonElement type." );
+		auto [is_found, rng] = json_details::find_range<ParsePolicy>(
+		  json_data, {member_path.data( ), member_path.size( )} );
 
-		return json_details::from_json_array_impl<true, element_type, Container,
-		                                          Constructor, Appender>(
-		  json_data, member_path );
+		if constexpr( parser_t::expected_type == JsonParseTypes::Null ) {
+			if( not is_found ) {
+				return typename parser_t::constructor_t{}( );
+			}
+		} else {
+			daw_json_assert( is_found, "Could not find specified member" );
+		}
+		rng.trim_left_unchecked( );
+#ifdef _MSC_VER
+		// Work around MSVC ICE
+		daw_json_assert( rng.front( '[' ),
+		                 "Expected array class to being with a '['" );
+#else
+		using Range = daw::remove_cvref_t<decltype( rng )>;
+		daw_json_assert_weak( rng.front( '[' ),
+		                      "Expected array class to being with a '['" );
+#endif
+
+		return json_details::parse_value<parser_t>(
+		  ParseTag<JsonParseTypes::Array>{}, rng );
 	}
 
 	struct auto_detect_array_element {};
@@ -902,6 +824,24 @@ namespace daw::json {
 		auto out_it = json_details::basic_appender<Result>( result );
 		to_json_array<JsonElement>( c, out_it );
 		return result;
+	}
+
+	template<typename Map>
+	struct is_json_map_function : std::false_type {};
+
+	template<typename Map>
+	inline constexpr bool is_json_map_function_v =
+	  is_json_map_function<Map>::value;
+
+	template<bool Minify = true,
+	         typename ParserPolicy = NoCommentSkippingPolicyChecked,
+	         typename OutputIterator, typename... Maps>
+	constexpr OutputIterator json_map( std::string_view json_document,
+	                                   OutputIterator out_it, Maps &&... maps ) {
+		static_assert( sizeof...( Maps ) > 0, "Must supply at least one map" );
+		static_assert(
+		  ( is_json_map_function_v<Maps> and ... ),
+		  "Maps types must be fullfill the json_map_function concept" );
 	}
 
 	namespace json_details {

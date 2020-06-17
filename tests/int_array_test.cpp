@@ -24,7 +24,7 @@
 #include <vector>
 
 struct Number {
-	intmax_t a{ };
+	intmax_t a{};
 };
 namespace daw::json {
 	template<>
@@ -55,7 +55,7 @@ static std::string_view make_int_array_data( ) {
 		result.resize( result.size( ) + 256U );
 		return result;
 	}( );
-	return { json_data.data( ), json_data.size( ) };
+	return {json_data.data( ), json_data.size( )};
 }
 
 template<size_t NUMVALUES>
@@ -91,14 +91,17 @@ void test_func( ) {
 		  "array of class with single intmax_t element: from_json_array",
 		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data = from_json_array_unchecked<Number>( sv );
+			  auto const data =
+			    from_json_array<Number, std::vector<Number>,
+			                    NoCommentSkippingPolicyUnchecked>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
-		using iterator_t = daw::json::json_array_iterator_unchecked<Number>;
+		using iterator_t =
+		  daw::json::json_array_iterator<Number, NoCommentSkippingPolicyUnchecked>;
 
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
@@ -121,14 +124,18 @@ void test_func( ) {
 		auto const count = *daw::bench_n_test_mbs<100>(
 		  "array of intmax_t: from_json_array", json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data = from_json_array_unchecked<intmax_t>( sv );
+			  auto const data =
+			    from_json_array<intmax_t, std::vector<intmax_t>,
+			                    NoCommentSkippingPolicyUnchecked>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv_intmax );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t = daw::json::json_array_iterator_unchecked<intmax_t>;
+		using iterator_t =
+		  daw::json::json_array_iterator<intmax_t,
+		                                 NoCommentSkippingPolicyUnchecked>;
 
 		auto data = std::vector<intmax_t>( );
 		data.resize( NUMVALUES );
@@ -231,7 +238,9 @@ void test_func( ) {
 	std::cout << "Unchecked unsigned\n";
 	{
 		// Unsigned
-		using iterator_t = daw::json::json_array_iterator_unchecked<uintmax_t>;
+		using iterator_t =
+		  daw::json::json_array_iterator<uintmax_t,
+		                                 NoCommentSkippingPolicyUnchecked>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -258,8 +267,9 @@ void test_func( ) {
 			auto const count4 = *daw::bench_n_test_mbs<100>(
 			  "p5. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto result = daw::json::from_json_array_unchecked<
-				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>>( sv );
+				  auto result = daw::json::from_json_array<
+				    int_type, daw::bounded_vector_t<int_type, NUMVALUES>,
+				    NoCommentSkippingPolicyUnchecked>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -321,8 +331,9 @@ void test_func( ) {
 			auto const count4 = *daw::bench_n_test_mbs<100>(
 			  "p5. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto result = daw::json::from_json_array_unchecked<
-				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>>( sv );
+				  auto result = daw::json::from_json_array<
+				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>,
+				    NoCommentSkippingPolicyUnchecked>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );

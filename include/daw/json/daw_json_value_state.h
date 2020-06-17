@@ -339,6 +339,6 @@ namespace daw::json {
 		}
 	};
 
-	using json_value_state =
-	  basic_stateful_json_value<json_details::IteratorRange<char const *, false>>;
+	using json_value_state = basic_stateful_json_value<
+	  json_details::IteratorRange<NoCommentSkippingPolicyChecked>>;
 } // namespace daw::json

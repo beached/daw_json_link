@@ -73,7 +73,8 @@ int main( int argc, char **argv ) try {
 	auto const json_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
-	using range_t = daw::json::json_array_range<coordinate_t, true>;
+	using range_t =
+	  daw::json::json_array_range<coordinate_t, NoCommentSkippingPolicyUnchecked>;
 
 	double x = 0.0;
 	double y = 0.0;

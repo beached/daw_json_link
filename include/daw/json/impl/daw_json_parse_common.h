@@ -179,19 +179,19 @@ namespace daw::json {
 	template<std::size_t N>
 	struct json_name {
 		static_assert( N > 0 );
-		char const m_data[N]{ };
+		char const m_data[N]{};
 
 	private:
 		template<std::size_t... Is>
 		constexpr json_name( char const ( &ptr )[N], std::index_sequence<Is...> )
-		  : m_data{ ptr[Is]... } {}
+		  : m_data{ptr[Is]...} {}
 
 	public:
 		inline constexpr json_name( char const ( &ptr )[N] )
-		  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
+		  : json_name( ptr, std::make_index_sequence<N>{} ) {}
 
 		inline constexpr operator daw::string_view( ) const {
-			return { m_data, N - 1 };
+			return {m_data, N - 1};
 		}
 
 		// Needed for copy_to_iterator
@@ -234,19 +234,19 @@ namespace daw::json {
 		}
 	};
 	template<typename... Chars>
-	json_name( Chars... ) -> json_name<sizeof...( Chars )>;
+	json_name( Chars... )->json_name<sizeof...( Chars )>;
 
 	template<std::size_t N>
-	json_name( char const ( & )[N] ) -> json_name<N>;
+	json_name( char const ( & )[N] )->json_name<N>;
 
 #define JSONNAMETYPE daw::json::json_name
 
 	// Convienience for array members that are required to be unnamed
-	inline constexpr JSONNAMETYPE no_name{ "" };
+	inline constexpr JSONNAMETYPE no_name{""};
 
 	namespace json_details {
-		inline constexpr JSONNAMETYPE default_key_name{ "key" };
-		inline constexpr JSONNAMETYPE default_value_name{ "value" };
+		inline constexpr JSONNAMETYPE default_key_name{"key"};
+		inline constexpr JSONNAMETYPE default_value_name{"value"};
 	} // namespace json_details
 
 	template<JSONNAMETYPE n>
@@ -355,7 +355,7 @@ namespace daw::json {
 
 		template<typename T>
 		[[maybe_unused]] auto dereffed_type_impl( daw::tag_t<T> )
-		  -> decltype( *( T{ } ) );
+		  -> decltype( *( T{} ) );
 
 		template<typename T>
 		using dereffed_type =
@@ -465,14 +465,6 @@ namespace daw::json::json_details {
 		return skip_string_nq( rng );
 	}
 
-	constexpr bool at_literal_end( char c ) {
-#ifndef DAW_ALLOW_COMMENTS
-		return c == '\0' or c == ',' or c == ']' or c == '}';
-#else
-		return c == '\0' or c == ',' or c == ']' or c == '}' or c == '#';
-#endif
-	}
-
 	template<typename Range>
 	[[nodiscard]] static constexpr Range skip_true( Range &rng ) {
 		auto result = rng;
@@ -532,7 +524,7 @@ namespace daw::json::json_details {
 	[[nodiscard]] static constexpr Range skip_number( Range &rng ) {
 		auto result = rng;
 		++rng.first;
-		while( not rng.is_space( ) and not at_literal_end( *rng.first ) ) {
+		while( not rng.is_space( ) and not rng.at_literal_end( ) ) {
 			++rng.first;
 		}
 		result.last = rng.first;
@@ -543,129 +535,14 @@ namespace daw::json::json_details {
 		return result;
 	}
 
-	template<char Left, char Right, typename Range>
-	static constexpr void skip_to_end_of_bracketed_item( Range &rng ) {
-		// Not checking for Left as it is required to be skipped already
-		std::size_t bracket_count = 1;
-		bool in_quotes = false;
-		rng.clean_tail( );
-		if( not rng.empty( ) and bracket_count > 0 ) {
-			rng.trim_left_checked_raw( );
-			switch( rng.front( ) ) {
-			case '\\':
-				rng.remove_prefix( 1 );
-				break;
-			case '"':
-				in_quotes = not in_quotes;
-				break;
-			case Left:
-				if( not in_quotes ) {
-					++bracket_count;
-				}
-				break;
-			case Right:
-				if( not in_quotes ) {
-					--bracket_count;
-				}
-				break;
-#ifdef DAW_ALLOW_COMMENTS
-			case '#':
-				if( not in_quotes ) {
-					rng.trim_left_checked( );
-				}
-				break;
-#endif
-			}
-		}
-		while( not rng.empty( ) and bracket_count > 0 ) {
-			rng.remove_prefix( );
-			rng.trim_left_checked_raw( );
-			switch( rng.front( ) ) {
-			case '\\':
-				rng.remove_prefix( 1 );
-				break;
-			case '"':
-				in_quotes = not in_quotes;
-				break;
-			case Left:
-				if( not in_quotes ) {
-					++bracket_count;
-				}
-				break;
-			case Right:
-				if( not in_quotes ) {
-					--bracket_count;
-				}
-				break;
-#ifdef DAW_ALLOW_COMMENTS
-			case '#':
-				if( not in_quotes ) {
-					rng.trim_left_checked( );
-				}
-				break;
-#endif
-			}
-		}
-		daw_json_assert_weak( rng.front( Right ),
-		                      "Expected closing bracket/brace" );
-
-	}
-
-	/***
-	 * used by skip_class/skip_array
-	 */
-	template<char Left, char Right, typename Range>
-	[[nodiscard]] static constexpr Range skip_bracketed_item( Range &rng ) {
-		// Not checking for Left as it is required to be skipped already
-		std::size_t bracket_count = 1;
-		bool in_quotes = false;
-		auto result = rng;
-		while( not rng.empty( ) and bracket_count > 0 ) {
-			rng.remove_prefix( );
-			rng.trim_left_checked_raw( );
-			switch( rng.front( ) ) {
-			case '\\':
-				rng.remove_prefix( 1 );
-				break;
-			case '"':
-				in_quotes = not in_quotes;
-				break;
-			case Left:
-				if( not in_quotes ) {
-					++bracket_count;
-				}
-				break;
-			case Right:
-				if( not in_quotes ) {
-					--bracket_count;
-				}
-				break;
-#ifdef DAW_ALLOW_COMMENTS
-			case '#':
-				if( not in_quotes ) {
-					rng.trim_left_checked( );
-				}
-				break;
-#endif
-			}
-		}
-		daw_json_assert_weak( rng.front( Right ),
-		                      "Expected closing bracket/brace" );
-
-		rng.remove_prefix( );
-		result.last = rng.begin( );
-
-		return result;
-	}
-
 	template<typename Range>
 	[[nodiscard]] static constexpr Range skip_class( Range &rng ) {
-		return skip_bracketed_item<'{', '}'>( rng );
+		return rng.template skip_bracketed_item<'{', '}'>( );
 	}
 
 	template<typename Range>
 	[[nodiscard]] static constexpr Range skip_array( Range &rng ) {
-		return skip_bracketed_item<'[', ']'>( rng );
+		return rng.template skip_bracketed_item<'[', ']'>( );
 	}
 
 	template<typename Range>

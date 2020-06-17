@@ -357,11 +357,11 @@ namespace daw::json {
 		  std::is_same<unnamed_default_type_mapping<T>,
 		               daw::json::missing_json_data_contract_for<T>>>;
 
-		template<typename JsonMember, bool IsUnCheckedInput>
+		template<typename JsonMember, typename ParsePolicy>
 		[[maybe_unused, nodiscard]] inline constexpr auto
 		from_json_member_impl( std::string_view json_data ) {
 			using json_member = unnamed_default_type_mapping<JsonMember>;
-			auto rng = IteratorRange<char const *, IsUnCheckedInput>(
+			auto rng = IteratorRange<ParsePolicy>(
 			  json_data.data( ),
 			  json_data.data( ) + static_cast<ptrdiff_t>( json_data.size( ) ) );
 
@@ -692,12 +692,12 @@ namespace daw::json {
 	                      JsonNullable::Nullable>;
 
 	namespace json_details {
-		template<typename JsonMember, bool IsUnCheckedInput>
+		template<typename JsonMember, typename ParsePolicy>
 		[[maybe_unused, nodiscard]] inline constexpr auto
 		from_json_member_impl( std::string_view json_data,
 		                       std::string_view member_path ) {
 			using json_member = unnamed_default_type_mapping<JsonMember>;
-			auto [is_found, rng] = json_details::find_range<IsUnCheckedInput>(
+			auto [is_found, rng] = json_details::find_range<ParsePolicy>(
 			  json_data, {member_path.data( ), member_path.size( )} );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {

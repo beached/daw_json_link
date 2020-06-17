@@ -21,11 +21,11 @@
 #include <vector>
 
 struct Number {
-	float a{ };
+	float a{};
 };
 
 struct Number2 {
-	float a{ };
+	float a{};
 };
 
 namespace daw::json {

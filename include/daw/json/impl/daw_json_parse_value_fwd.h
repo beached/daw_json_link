@@ -74,6 +74,6 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	constexpr basic_json_value<IteratorRange<char const *, false>>
+	constexpr basic_json_value<IteratorRange<typename Range::policy::as_checked>>
 	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng );
 } // namespace daw::json::json_details

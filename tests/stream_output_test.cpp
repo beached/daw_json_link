@@ -68,7 +68,7 @@ int main( int, char ** ) try {
 	daw_json_assert( cls.member_1 == 314159, "Unexpected value" );
 	daw_json_assert( cls.member_2 == true, "Unexpected value" );
 
-	std::stringstream ss{ };
+	std::stringstream ss{};
 	auto it = std::ostreambuf_iterator<char>( ss );
 
 	(void)daw::json::to_json( cls, it );

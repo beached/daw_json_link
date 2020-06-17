@@ -52,7 +52,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
 	                 "Incorrect value" );
 
-	std::string str{ };
+	std::string str{};
 	auto out_it = std::back_inserter( str );
 	str.reserve( json_sv1.size( ) );
 	daw::bench_n_test_mbs<100>(

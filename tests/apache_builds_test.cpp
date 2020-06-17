@@ -65,7 +65,7 @@ int main( int argc, char **argv ) try {
 	  },
 	  json_sv1 );
 
-	std::string str{ };
+	std::string str{};
 	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<100>(
 	  "apache_builds bench(to_json_string)", sz,

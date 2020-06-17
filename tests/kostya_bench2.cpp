@@ -18,7 +18,7 @@
 std::string read_file( std::string const &filename ) {
 	std::ifstream f( filename );
 	if( !f ) {
-		return { };
+		return {};
 	}
 	return std::string( std::istreambuf_iterator<char>( f ),
 	                    std::istreambuf_iterator<char>( ) );
@@ -33,15 +33,15 @@ int main( int, char ** ) {
 	int len = 0;
 
 	using namespace daw::json;
-	auto rng =
-	  from_json_unchecked<json_delayed<no_name>>( json_text, "coordinates" );
+	auto rng = from_json<json_delayed<no_name>, NoCommentSkippingPolicyUnchecked>(
+	  json_text, "coordinates" );
 
 	auto val = json_value_state( );
 	for( json_pair item : rng ) {
 		val.reset( item.value );
-		x += from_json_unchecked<double>( val["x"] );
-		y += from_json_unchecked<double>( val["y"] );
-		z += from_json_unchecked<double>( val["z"] );
+		x += from_json<double, NoCommentSkippingPolicyUnchecked>( val["x"] );
+		y += from_json<double, NoCommentSkippingPolicyUnchecked>( val["y"] );
+		z += from_json<double, NoCommentSkippingPolicyUnchecked>( val["z"] );
 		++len;
 	}
 	std::cout << x / len << '\n';

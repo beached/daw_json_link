@@ -23,7 +23,7 @@ bool empty_array_empty_json_array( ) {
 	constexpr std::string_view sv = "[]";
 	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_array<no_name, int>>(
-	  ParseTag<JsonParseTypes::Array>{ }, rng );
+	  ParseTag<JsonParseTypes::Array>{}, rng );
 	return v.empty( );
 }
 
@@ -35,7 +35,7 @@ bool int_array_json_string_array_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_array<no_name, int>>(
-	  ParseTag<JsonParseTypes::Array>{ }, rng );
+	  ParseTag<JsonParseTypes::Array>{}, rng );
 	daw::do_not_optimize( v );
 	return true;
 }

@@ -169,12 +169,12 @@ namespace daw::json::json_details {
 		return true;
 	}
 
-	template<bool IsUnCheckedInput, typename String>
-	[[nodiscard]] constexpr std::pair<
-	  bool, IteratorRange<char const *, IsUnCheckedInput>>
+	template<typename ParsePolicy, typename String>
+	[[nodiscard]] constexpr std::pair<bool, IteratorRange<ParsePolicy>>
 	find_range( String &&str, daw::string_view start_path ) {
-
-		auto rng = IteratorRange<char const *, IsUnCheckedInput>(
+		static_assert( std::is_same_v<char const *, typename ParsePolicy::iterator>,
+		               "Only char const * ranges are currently supported" );
+		auto rng = IteratorRange<ParsePolicy>(
 		  std::data( str ), std::data( str ) + std::size( str ) );
 		rng.trim_left_checked( );
 		if( rng.has_more( ) and not start_path.empty( ) ) {

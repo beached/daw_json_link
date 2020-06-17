@@ -38,16 +38,16 @@ namespace daw::json {
 	 * Iterator for iterating over JSON array's
 	 * @tparam JsonElement type under underlying element in array. If
 	 * heterogenous, a basic_json_value_iterator may be more appropriate
-	 * @tparam IsUnCheckedInput Skip most checking of JSON data
+	 * @tparam ParsePolicy Parsing policy type
 	 */
-	template<typename JsonElement, bool IsUnCheckedInput = false>
+	template<typename JsonElement,
+	         typename ParsePolicy = NoCommentSkippingPolicyChecked>
 	class json_array_iterator {
 
 		template<typename String>
-		static inline constexpr json_details::IteratorRange<char const *,
-		                                                    IsUnCheckedInput>
+		static inline constexpr json_details::IteratorRange<ParsePolicy>
 		get_range( String &&data, std::string_view member_path ) {
-			auto [is_found, result] = json_details::find_range<IsUnCheckedInput>(
+			auto [is_found, result] = json_details::find_range<ParsePolicy>(
 			  std::forward<String>( data ),
 			  {member_path.data( ), member_path.size( )} );
 			daw_json_assert( is_found, "Could not find path to member" );
@@ -68,7 +68,7 @@ namespace daw::json {
 		using iterator_category = std::input_iterator_tag;
 
 	private:
-		using Range = json_details::IteratorRange<char const *, IsUnCheckedInput>;
+		using Range = json_details::IteratorRange<ParsePolicy>;
 		Range m_state = Range( nullptr, nullptr );
 		/***
 		 * This lets us fastpath and just skip n characters as we have already
@@ -218,11 +218,12 @@ namespace daw::json {
 	/***
 	 * A range of json_array_iterators
 	 * @tparam JsonElement Type of each element in array
-	 * @tparam IsUnCheckedInput Skip most checking of JSON data
+	 * @tparam ParsePolicy parsing policy type
 	 */
-	template<typename JsonElement, bool IsUnCheckedInput = false>
+	template<typename JsonElement,
+	         typename ParsePolicy = NoCommentSkippingPolicyChecked>
 	struct json_array_range {
-		using iterator = json_array_iterator<JsonElement, IsUnCheckedInput>;
+		using iterator = json_array_iterator<JsonElement, ParsePolicy>;
 
 	private:
 		iterator m_first{};
@@ -260,10 +261,4 @@ namespace daw::json {
 			return m_first == m_last;
 		}
 	};
-
-	template<typename JsonElement>
-	using json_array_range_unchecked = json_array_range<JsonElement, true>;
-
-	template<typename JsonElement>
-	using json_array_iterator_unchecked = json_array_iterator<JsonElement, true>;
 } // namespace daw::json
