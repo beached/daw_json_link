@@ -443,7 +443,8 @@ namespace daw::json::json_details {
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
 	skip_string_nq( Range &rng ) {
 		auto result = rng;
-		string_quote::string_quote_parser::parse_nq( rng );
+		result.counter = static_cast<std::size_t>(
+		  string_quote::string_quote_parser::parse_nq( rng ) );
 
 		daw_json_assert_weak( rng.front( ) == '"',
 		                      "Expected trailing \" at the end of string" );
@@ -456,7 +457,8 @@ namespace daw::json::json_details {
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
 	skip_string( Range &rng ) {
 		if( rng.empty( ) ) {
-			return rng;
+			auto result = rng;
+			return result;
 		}
 		if( *std::prev( rng.begin( ) ) != '"' ) {
 			if( rng.front( ) == '"' ) {
@@ -480,7 +482,7 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 3 );
 		}
 		result.last = rng.first;
-		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
@@ -498,7 +500,7 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 4 );
 		}
 		result.last = rng.first;
-		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
@@ -514,7 +516,7 @@ namespace daw::json::json_details {
 			daw_json_assert( rng == "ull", "Expected null" );
 			rng.remove_prefix( 3 );
 		}
-		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
@@ -532,7 +534,7 @@ namespace daw::json::json_details {
 			++rng.first;
 		}
 		result.last = rng.first;
-		daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
@@ -553,6 +555,8 @@ namespace daw::json::json_details {
 	[[nodiscard]] static inline constexpr Range skip_value( Range &rng ) {
 		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range" );
 
+		// reset counter
+		rng.counter = 0;
 		switch( rng.front( ) ) {
 		case '"':
 			return skip_string( rng );

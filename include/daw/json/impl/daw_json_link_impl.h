@@ -227,7 +227,7 @@ namespace daw::json::json_details {
 
 		rng.trim_left_unchecked( );
 		while( locations[pos].missing( ) and rng.front( ) != '}' ) {
-			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 			auto const name = parse_name( rng );
 			auto const name_pos = locations.find_name( name );
 			if( name_pos >= locations.size( ) ) {
@@ -269,15 +269,14 @@ namespace daw::json::json_details {
 		                                   std::size_t desired_position ) {
 
 			rng.clean_tail( );
-			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of range" );
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
 			daw_json_assert_weak( current_position <= desired_position,
 			                      "Order of ordered members must be ascending" );
 			while( current_position < desired_position and rng.front( ) != ']' ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				++current_position;
-				daw_json_assert_weak( rng.can_parse_more( ),
-				                      "Unexpected end of range" );
+				daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
 			}
 		}
 	} // namespace pocm_details
@@ -382,13 +381,10 @@ namespace daw::json::json_details {
 			}
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
-			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of range" );
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
 			rng.move_to_next_of( "\"}" );
-			rng.template skip_to_end_of_bracketed_item<'{', '}'>( );
+			(void)skip_class( rng );
 
-			daw_json_assert_weak( rng.front( ) == '}',
-			                      "Expected class to end with '}'" );
-			rng.remove_prefix( );
 			rng.trim_left_checked( );
 		};
 
@@ -450,12 +446,11 @@ namespace daw::json::json_details {
 
 		auto const cleanup_fn = [&] {
 			rng.clean_tail( );
-			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of stream" );
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 			while( rng.front( ) != ']' ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
-				daw_json_assert_weak( rng.can_parse_more( ),
-				                      "Unexpected end of stream" );
+				daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 			}
 			daw_json_assert_weak( rng.front( ) == ']', "Expected a ']'" );
 			rng.remove_prefix( );

@@ -79,7 +79,7 @@ namespace daw::json::json_details {
 			  parse_policy_details::is_real_number_part( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 		} else {
-			daw_json_assert_weak( rng.can_parse_more( ), "Could not find value" );
+			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  parse_policy_details::is_real_number_part( rng.front( ) ),
@@ -155,7 +155,7 @@ namespace daw::json::json_details {
 			return parse_value<JsonMember, true>(
 			  ParseTag<JsonMember::base_expected_type>{ }, rng );
 		} else if constexpr( Range::is_unchecked_input ) {
-			if( not rng.can_parse_more( ) ) {
+			if( not rng.has_more( ) ) {
 				return constructor_t{ }( );
 			} else if( rng.front( ) == 'n' ) {
 				rng.remove_prefix( 4 );
@@ -166,7 +166,7 @@ namespace daw::json::json_details {
 			return parse_value<JsonMember>(
 			  ParseTag<JsonMember::base_expected_type>{ }, rng );
 		} else {
-			if( not rng.can_parse_more( ) ) {
+			if( not rng.has_more( ) ) {
 				return constructor_t{ }( );
 			} else if( rng == "null" ) {
 				rng.remove_prefix( 4 );
@@ -535,12 +535,28 @@ namespace daw::json::json_details {
 			// allocator time by presizing the string up front and then using a
 			// pointer to the data( ).
 			if constexpr( KnownBounds ) {
-				return parse_string_known_stdstring<JsonMember,
-				                                    json_result<JsonMember>>( rng );
+				if( static_cast<bool>( rng.counter ) ) {
+					return parse_string_known_stdstring<JsonMember,
+					                                    json_result<JsonMember>>( rng );
+				}
+				if constexpr( std::is_same_v<std::string, json_result<JsonMember>> ) {
+					return std::string( rng.first, rng.size( ) );
+				} else {
+					return std::optional<std::string>( std::in_place, rng.first,
+					                                   rng.size( ) );
+				}
 			} else {
 				auto rng2 = skip_string( rng );
-				return parse_string_known_stdstring<JsonMember,
-				                                    json_result<JsonMember>>( rng2 );
+				if( static_cast<bool>( rng.counter ) ) {
+					return parse_string_known_stdstring<JsonMember,
+					                                    json_result<JsonMember>>( rng2 );
+				}
+				if constexpr( std::is_same_v<std::string, json_result<JsonMember>> ) {
+					return std::string( rng2.first, rng2.size( ) );
+				} else {
+					return std::optional<std::string>( std::in_place, rng2.first,
+					                                   rng2.size( ) );
+				}
 			}
 		} else {
 			using constructor_t = typename JsonMember::constructor_t;
@@ -714,7 +730,7 @@ namespace daw::json::json_details {
 		using key_t = typename JsonMember::json_key_t;
 		using value_t = typename JsonMember::json_element_t;
 		while( rng.front( ) != '}' ) {
-			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of range" );
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
 			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{ }, rng );
 			name::name_parser::trim_end_of_name( rng );
 			container_appender(
@@ -804,7 +820,7 @@ namespace daw::json::json_details {
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Array>, Range &rng ) {
-
+		rng.trim_left( );
 		daw_json_assert_weak( rng.front( '[' ),
 		                      "Expected array to start with a '['" );
 
@@ -832,12 +848,8 @@ namespace daw::json::json_details {
 					result.insert( result.end( ), first, last );
 					return result;
 				} else {
-					auto rng2 = skip_array( rng );
-					auto first = iterator_t( rng2 );
-					auto result = std::vector<element_t>( );
-					result.reserve( rng2.counter );
-					result.insert( result.end( ), first, last );
-					return result;
+					auto first = iterator_t( rng );
+					return container_t( first, last );
 				}
 			} else {
 				auto first = iterator_t( rng );

@@ -42,7 +42,7 @@ namespace daw::json {
 		using iterator_category = std::forward_iterator_tag;
 
 	private:
-		Range m_state{};
+		Range m_state{ };
 
 		constexpr basic_json_value_iterator( Range rng )
 		  : m_state( rng ) {}
@@ -58,10 +58,10 @@ namespace daw::json {
 		 */
 		constexpr std::optional<std::string_view> name( ) const {
 			if( is_array( ) ) {
-				return {};
+				return { };
 			}
 			auto rng = m_state;
-			auto result = parse_name( rng );
+			auto result = json_details::parse_name( rng );
 			return std::string_view( result.data( ), result.size( ) );
 		}
 
@@ -75,7 +75,7 @@ namespace daw::json {
 				return Range( m_state );
 			}
 			auto rng = m_state;
-			(void)parse_name( rng );
+			(void)json_details::parse_name( rng );
 			return Range( rng.first, rng.last );
 		}
 
@@ -85,12 +85,12 @@ namespace daw::json {
 		 */
 		[[nodiscard]] constexpr basic_json_pair<Range> operator*( ) const {
 			if( is_array( ) ) {
-				return {{}, Range( m_state.first, m_state.last )};
+				return { { }, Range( m_state.first, m_state.last ) };
 			}
 			auto rng = m_state;
-			auto name = parse_name( rng );
-			return {std::string_view( name.data( ), name.size( ) ),
-			        Range( rng.first, rng.last )};
+			auto name = json_details::parse_name( rng );
+			return { std::string_view( name.data( ), name.size( ) ),
+			         Range( rng.first, rng.last ) };
 		}
 
 		/***
@@ -100,7 +100,7 @@ namespace daw::json {
 		 * @return arrow_proxy object containing the result of operator*
 		 */
 		[[nodiscard]] constexpr pointer operator->( ) const {
-			return {operator*( )};
+			return { operator*( ) };
 		}
 
 		/***
@@ -149,7 +149,7 @@ namespace daw::json {
 		 * @return True if safe to increment more
 		 */
 		constexpr bool good( ) const {
-			if( not m_state.can_parse_more( ) ) {
+			if( not m_state.has_more( ) ) {
 				return false;
 			}
 			switch( m_state.front( ) ) {
@@ -201,7 +201,7 @@ namespace daw::json {
 	 */
 	template<typename Range>
 	class basic_json_value {
-		Range m_rng{};
+		Range m_rng{ };
 
 	public:
 		using iterator = basic_json_value_iterator<Range>;
@@ -255,7 +255,7 @@ namespace daw::json {
 		 * @return a JSONBaseParseTypes enum value with the type of this JSON value
 		 */
 		[[nodiscard]] JsonBaseParseTypes type( ) const {
-			if( not m_rng.can_parse_more( ) ) {
+			if( not m_rng.has_more( ) ) {
 				return JsonBaseParseTypes::None;
 			}
 			switch( m_rng.front( ) ) {
@@ -314,7 +314,7 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return {result.first, result.size( )};
+			return { result.first, result.size( ) };
 		}
 
 		/***
@@ -331,7 +331,7 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return {result.first, result.size( ), alloc};
+			return { result.first, result.size( ), alloc };
 		}
 
 		/***
@@ -339,7 +339,7 @@ namespace daw::json {
 		 * @return true if the value is a null literal
 		 */
 		constexpr bool is_null( ) const {
-			return ( not m_rng.can_parse_more( ) ) or m_rng == "null";
+			return ( not m_rng.has_more( ) ) or m_rng == "null";
 		}
 
 		/***
@@ -347,7 +347,7 @@ namespace daw::json {
 		 * @return true if the value is a class
 		 */
 		constexpr bool is_class( ) const {
-			return m_rng.can_parse_more( ) and m_rng.front( ) == '{';
+			return m_rng.has_more( ) and m_rng.front( ) == '{';
 		}
 
 		/***
@@ -355,7 +355,7 @@ namespace daw::json {
 		 * @return true if the value is a array
 		 */
 		constexpr bool is_array( ) const {
-			return m_rng.can_parse_more( ) and m_rng.front( ) == '[';
+			return m_rng.has_more( ) and m_rng.front( ) == '[';
 		}
 
 		/***
@@ -363,7 +363,7 @@ namespace daw::json {
 		 * @return true if the value is a number literal
 		 */
 		constexpr bool is_number( ) const {
-			if( not m_rng.can_parse_more( ) ) {
+			if( not m_rng.has_more( ) ) {
 				return false;
 			}
 			switch( m_rng.front( ) ) {
@@ -389,7 +389,7 @@ namespace daw::json {
 		 * @return true if the value is a string
 		 */
 		inline constexpr bool is_string( ) const {
-			return m_rng.can_parse_more( ) and m_rng.front( ) == '"';
+			return m_rng.front( '"' );
 		}
 
 		/***
@@ -397,7 +397,7 @@ namespace daw::json {
 		 * @return true if the value is a boolean
 		 */
 		constexpr bool is_bool( ) const {
-			if( not m_rng.can_parse_more( ) ) {
+			if( not m_rng.has_more( ) ) {
 				return false;
 			}
 			switch( m_rng.front( ) ) {

@@ -45,11 +45,11 @@ namespace daw::json {
 	class json_array_iterator {
 
 		template<typename String>
-		static inline constexpr json_details::IteratorRange<ParsePolicy>
+		static inline constexpr ParsePolicy
 		get_range( String &&data, std::string_view member_path ) {
 			auto [is_found, result] = json_details::find_range<ParsePolicy>(
 			  std::forward<String>( data ),
-			  {member_path.data( ), member_path.size( )} );
+			  { member_path.data( ), member_path.size( ) } );
 			daw_json_assert( is_found, "Could not find path to member" );
 			daw_json_assert( result.front( ) == '[', "Member is not an array" );
 			return result;
@@ -68,7 +68,7 @@ namespace daw::json {
 		using iterator_category = std::input_iterator_tag;
 
 	private:
-		using Range = json_details::IteratorRange<ParsePolicy>;
+		using Range = ParsePolicy;
 		Range m_state = Range( nullptr, nullptr );
 		/***
 		 * This lets us fastpath and just skip n characters as we have already
@@ -103,8 +103,7 @@ namespace daw::json {
 		 * @return The parsed result of ParseElement
 		 */
 		[[nodiscard]] inline constexpr value_type operator*( ) const {
-			daw_json_assert_weak( m_state.has_more( ) and not m_state.in( ']' ),
-			                      "Unexpected end of stream" );
+			daw_json_assert_weak( m_state.front( ']' ), "Unexpected end of stream" );
 
 			auto tmp = m_state;
 
@@ -113,10 +112,10 @@ namespace daw::json {
 			auto const ae = daw::on_exit_success(
 			  [&] { m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) ); } );
 			return json_details::parse_value<element_type>(
-			  ParseTag<element_type::expected_type>{}, tmp );
+			  ParseTag<element_type::expected_type>{ }, tmp );
 #else
 			auto result = json_details::parse_value<element_type>(
-			  ParseTag<element_type::expected_type>{}, tmp );
+			  ParseTag<element_type::expected_type>{ }, tmp );
 
 			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
 			return result;
@@ -131,7 +130,7 @@ namespace daw::json {
 		 * @return an arrow_proxy of the operator* result
 		 */
 		[[nodiscard]] inline pointer operator->( ) const {
-			return pointer{operator*( )};
+			return pointer{ operator*( ) };
 		}
 
 		/***
@@ -148,7 +147,7 @@ namespace daw::json {
 				(void)json_details::skip_known_value<element_type>( m_state );
 			}
 			m_state.trim_left_checked( );
-			if( m_state.in( ',' ) ) {
+			if( m_state.front( ) == ',' ) {
 				m_state.remove_prefix( );
 				m_state.trim_left_checked( );
 			}
@@ -226,8 +225,8 @@ namespace daw::json {
 		using iterator = json_array_iterator<JsonElement, ParsePolicy>;
 
 	private:
-		iterator m_first{};
-		iterator m_last{};
+		iterator m_first{ };
+		iterator m_last{ };
 
 	public:
 		constexpr json_array_range( ) = default;

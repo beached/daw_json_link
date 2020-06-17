@@ -41,7 +41,7 @@ namespace daw::json::json_details {
 		}
 
 		inline constexpr value_type operator*( ) {
-			daw_json_assert_weak( rng and rng->can_parse_more( ),
+			daw_json_assert_weak( rng and rng->has_more( ),
 			                      "Expected data to parse" );
 			return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
 			                               *rng );

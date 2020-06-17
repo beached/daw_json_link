@@ -32,7 +32,7 @@ bool test_null_literal_known( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number_null<no_name, std::optional<int>>;
-	auto rng = IteratorRange<NoCommentSkippingPolicyChecked>( );
+	auto rng = IteratorRange( );
 	auto v =
 	  parse_value<my_number, true>( ParseTag<JsonParseTypes::Null>{}, rng );
 	return not v;
