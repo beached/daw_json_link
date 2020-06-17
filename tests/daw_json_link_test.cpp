@@ -417,6 +417,7 @@ int main( int, char ** ) try {
 		using namespace daw::json;
 		constexpr std::string_view very_big_int =
 		  "[340282366920938463463374607431768211455]";
+		std::cout << "Trying to parse large int '" << very_big_int << "'\n";
 		__int128 val =
 		  from_json_array<json_number<no_name, __int128>>( very_big_int )[0];
 		std::cout << "really big: " << static_cast<intmax_t>( val ) << '\n';

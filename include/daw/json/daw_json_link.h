@@ -725,8 +725,10 @@ namespace daw::json {
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data,
 	                 std::string_view member_path = "" ) {
-		daw_json_assert( not json_data.empty( ), "Cannot parse null strings" );
-		daw_json_assert( not member_path.empty( ), "Cannot parse null strings" );
+		daw_json_assert( not json_data.empty( ),
+		                 "Cannot parse empty or null strings" );
+		daw_json_assert( member_path.data( ) != nullptr,
+		                 "Cannot parse null strings" );
 		using element_type =
 		  json_details::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
