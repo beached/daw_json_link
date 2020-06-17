@@ -179,19 +179,19 @@ namespace daw::json {
 	template<std::size_t N>
 	struct json_name {
 		static_assert( N > 0 );
-		char const m_data[N]{};
+		char const m_data[N]{ };
 
 	private:
 		template<std::size_t... Is>
 		constexpr json_name( char const ( &ptr )[N], std::index_sequence<Is...> )
-		  : m_data{ptr[Is]...} {}
+		  : m_data{ ptr[Is]... } {}
 
 	public:
 		inline constexpr json_name( char const ( &ptr )[N] )
-		  : json_name( ptr, std::make_index_sequence<N>{} ) {}
+		  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
 
 		inline constexpr operator daw::string_view( ) const {
-			return {m_data, N - 1};
+			return { m_data, N - 1 };
 		}
 
 		// Needed for copy_to_iterator
@@ -234,19 +234,19 @@ namespace daw::json {
 		}
 	};
 	template<typename... Chars>
-	json_name( Chars... )->json_name<sizeof...( Chars )>;
+	json_name( Chars... ) -> json_name<sizeof...( Chars )>;
 
 	template<std::size_t N>
-	json_name( char const ( & )[N] )->json_name<N>;
+	json_name( char const ( & )[N] ) -> json_name<N>;
 
 #define JSONNAMETYPE daw::json::json_name
 
 	// Convienience for array members that are required to be unnamed
-	inline constexpr JSONNAMETYPE no_name{""};
+	inline constexpr JSONNAMETYPE no_name{ "" };
 
 	namespace json_details {
-		inline constexpr JSONNAMETYPE default_key_name{"key"};
-		inline constexpr JSONNAMETYPE default_value_name{"value"};
+		inline constexpr JSONNAMETYPE default_key_name{ "key" };
+		inline constexpr JSONNAMETYPE default_value_name{ "value" };
 	} // namespace json_details
 
 	template<JSONNAMETYPE n>
@@ -355,7 +355,7 @@ namespace daw::json {
 
 		template<typename T>
 		[[maybe_unused]] auto dereffed_type_impl( daw::tag_t<T> )
-		  -> decltype( *( T{} ) );
+		  -> decltype( *( T{ } ) );
 
 		template<typename T>
 		using dereffed_type =
@@ -422,6 +422,10 @@ namespace daw::json {
 		using pointer = T *;
 		using difference_type = std::ptrdiff_t;
 	};
+	static_assert(
+	  std::is_same_v<
+	    typename std::iterator_traits<TestInputIteratorType<int>>::value_type,
+	    int> );
 
 	template<typename Container, typename Value>
 	using is_range_constructible =
@@ -601,7 +605,7 @@ namespace daw::json::json_details {
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
 			daw_json_assert_weak( rng.front( '[' ),
 			                      "Expected start of array with '['" );
-			return json_details::skip_array( rng );
+			return json_details::skip_array( rng ).first;
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Class ) {
 			daw_json_assert_weak( rng.front( '{' ),
 			                      "Expected start of class with '{'" );

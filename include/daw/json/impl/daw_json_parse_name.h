@@ -67,9 +67,9 @@ namespace daw::json::json_details {
 	// memberA.memberB.member\.C has 3 parts['memberA', 'memberB', 'member.C']
 	[[nodiscard]] constexpr auto pop_json_path( daw::string_view &path ) {
 		struct pop_json_path_result {
-			daw::string_view current{};
+			daw::string_view current{ };
 			char found_char = 0;
-		} result{};
+		} result{ };
 		if( path.empty( ) ) {
 			return result;
 		}
@@ -170,18 +170,18 @@ namespace daw::json::json_details {
 	}
 
 	template<typename ParsePolicy, typename String>
-	[[nodiscard]] constexpr std::pair<bool, IteratorRange<ParsePolicy>>
+	[[nodiscard]] constexpr std::pair<bool, ParsePolicy>
 	find_range( String &&str, daw::string_view start_path ) {
 		static_assert( std::is_same_v<char const *, typename ParsePolicy::iterator>,
 		               "Only char const * ranges are currently supported" );
-		auto rng = IteratorRange<ParsePolicy>(
-		  std::data( str ), std::data( str ) + std::size( str ) );
+		auto rng =
+		  ParsePolicy( std::data( str ), std::data( str ) + std::size( str ) );
 		rng.trim_left_checked( );
 		if( rng.has_more( ) and not start_path.empty( ) ) {
 			if( not find_range2( rng, start_path ) ) {
-				return {false, rng};
+				return { false, rng };
 			}
 		}
-		return {true, rng};
+		return { true, rng };
 	}
 } // namespace daw::json::json_details

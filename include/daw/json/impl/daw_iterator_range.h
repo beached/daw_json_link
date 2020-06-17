@@ -111,56 +111,156 @@ namespace daw::json {
 
 		using as_unchecked = BasicNoCommentSkippingPolicy<Iterator, true>;
 		using as_checked = BasicNoCommentSkippingPolicy<Iterator, false>;
+		//*********************************************************
+		using policy = BasicNoCommentSkippingPolicy;
+		static_assert( std::is_convertible_v<
+		                 typename std::iterator_traits<iterator>::iterator_category,
+		                 std::random_access_iterator_tag>,
+		               "Expecting a Random Contiguous Iterator" );
+		iterator first{ };
+		iterator last{ };
+		iterator class_first{ };
+		iterator class_last{ };
+		std::size_t counter = 0;
+		using Range = BasicNoCommentSkippingPolicy;
 
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
-		at_literal_end( char c ) {
+		template<std::size_t N>
+		inline constexpr bool operator==( char const ( &rhs )[N] ) const {
+			if( size( ) < ( N - 1 ) ) {
+				return false;
+			}
+			bool result = true;
+			for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
+				result = result and ( first[n] == rhs[n] );
+			}
+			return result;
+		}
+
+		inline constexpr BasicNoCommentSkippingPolicy( ) = default;
+
+		inline constexpr BasicNoCommentSkippingPolicy( iterator f, iterator l )
+		  : first( f )
+		  , last( l )
+		  , class_first( f )
+		  , class_last( l ) {}
+
+		[[nodiscard]] inline constexpr bool empty( ) const {
+			return parse_policy_details::empty( first, last );
+		}
+
+		[[nodiscard]] inline constexpr bool has_more( ) const {
+			return parse_policy_details::has_more( first, last );
+		}
+
+		[[nodiscard]] inline constexpr bool can_parse_more( ) const {
+			return parse_policy_details::can_parse_more( first, last );
+		}
+
+		[[nodiscard]] inline constexpr decltype( auto ) front( ) const {
+			return *first;
+		}
+
+		[[nodiscard]] inline constexpr bool front( char c ) const {
+			return first != last and *first == c;
+		}
+
+		[[nodiscard]] inline constexpr std::size_t size( ) const {
+			return static_cast<std::size_t>( std::distance( first, last ) );
+		}
+
+		[[nodiscard]] inline constexpr bool is_number( ) const {
+			return static_cast<unsigned>( front( ) ) - static_cast<unsigned>( '0' ) <
+			       10U;
+		}
+
+		template<std::size_t N>
+		[[nodiscard]] inline constexpr bool front( char const ( &set )[N] ) const {
+			if( empty( ) ) {
+				return false;
+			}
+			bool result = false;
+			for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
+				result |= parse_policy_details::in( *first, set[n] );
+			}
+			return result;
+		}
+
+		[[nodiscard]] inline constexpr bool is_null( ) const {
+			return parse_policy_details::is_null( first );
+		}
+
+		inline constexpr void remove_prefix( ) {
+			++first;
+		}
+
+		inline constexpr void remove_prefix( std::size_t n ) {
+			std::advance( first, static_cast<intmax_t>( n ) );
+		}
+
+		[[nodiscard]] inline constexpr iterator begin( ) const {
+			return first;
+		}
+
+		[[nodiscard]] inline constexpr iterator data( ) const {
+			return first;
+		}
+
+		[[nodiscard]] inline constexpr iterator end( ) const {
+			return last;
+		}
+
+		[[nodiscard]] explicit inline constexpr operator bool( ) const {
+			return not empty( );
+		}
+
+		inline constexpr void set_class_position( ) {
+			class_first = first;
+			class_last = last;
+		}
+
+		//*********************************************************
+		inline constexpr bool at_literal_end( ) const noexcept {
+			char const c = *first;
 			return c == '\0' or c == ',' or c == ']' or c == '}';
 		}
 
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
-		is_space( Iterator first, Iterator last ) {
+		inline constexpr bool is_space( ) const noexcept {
 			return parse_policy_details::is_space(
 			  first, last, std::bool_constant<is_unchecked_input>{ } );
 		}
 
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		trim_left_checked( Iterator &first, Iterator last ) {
-			while( parse_policy_details::has_more( first, last ) and
-			       is_space( first, last ) ) {
+		inline constexpr void trim_left_checked( ) noexcept {
+			while( parse_policy_details::has_more( first, last ) and is_space( ) ) {
 				++first;
 			}
 		}
 
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		trim_left_unchecked( Iterator &first, Iterator last ) {
-			while( is_space( first, last ) ) {
+		inline constexpr void trim_left_unchecked( ) noexcept {
+			while( is_space( ) ) {
 				++first;
 			}
 		}
 
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		trim_left( Iterator &first, Iterator last ) {
+		inline constexpr void trim_left( ) {
 			if constexpr( is_unchecked_input ) {
-				trim_left_unchecked( first, last );
+				trim_left_unchecked( );
 			} else {
-				trim_left_checked( first, last );
+				trim_left_checked( );
 			}
 		}
 
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		clean_tail( Iterator &first, Iterator last ) {
-			while( parse_policy_details::has_more( first, last ) and
-			       is_space( first, last ) ) {
+		inline constexpr void clean_tail( ) noexcept {
+			while( parse_policy_details::has_more( first, last ) and is_space( ) ) {
 				++first;
 			}
 			if( *first == ',' ) {
 				++first;
-				trim_left( first, last );
+				trim_left( );
 			}
 		}
 
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		move_to_next_of( Iterator &first, Iterator last, char c ) {
+		inline constexpr void
+		move_to_next_of( char c ) noexcept( is_unchecked_input ) {
 			if constexpr( not is_unchecked_input ) {
 				daw_json_assert( parse_policy_details::has_more( first, last ),
 				                 "Unexpected end of data" );
@@ -175,8 +275,8 @@ namespace daw::json {
 		}
 
 		template<std::size_t N>
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		move_to_next_of( Iterator &first, Iterator last, char const ( &str )[N] ) {
+		inline constexpr void
+		move_to_next_of( char const ( &str )[N] ) noexcept( is_unchecked_input ) {
 			if constexpr( not is_unchecked_input ) {
 				daw_json_assert( parse_policy_details::has_more( first, last ),
 				                 "Unexpected end of data" );
@@ -191,16 +291,16 @@ namespace daw::json {
 		}
 
 		template<char Left, char Right>
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		skip_to_end_of_bracketed_item( Iterator &first, Iterator const &last ) {
+		inline constexpr void
+		skip_to_end_of_bracketed_item( ) noexcept( is_unchecked_input ) {
 			// Not checking for Left as it is required to be skipped already
 			std::size_t bracket_count = 1;
 			bool in_quotes = false;
-			clean_tail( first, last );
+			clean_tail( );
 			if( not parse_policy_details::empty( first, last ) and
 			    bracket_count > 0 ) {
 				if( not in_quotes ) {
-					trim_left( first, last );
+					trim_left( );
 				}
 				switch( *first ) {
 				case '\\':
@@ -225,7 +325,7 @@ namespace daw::json {
 			       bracket_count > 0 ) {
 				++first;
 				if( not in_quotes ) {
-					trim_left( first, last );
+					trim_left( );
 				}
 				switch( *first ) {
 				case '\\':
@@ -253,25 +353,31 @@ namespace daw::json {
 			}
 		}
 
-		template<char Left, char Right, typename Range>
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
-		skip_bracketed_item( Range &rng ) {
+		template<char Left, char Right>
+		[[nodiscard]] inline constexpr Range
+		skip_bracketed_item( ) noexcept( is_unchecked_input ) {
 			// Not checking for Left as it is required to be skipped already
 			std::size_t bracket_count = 1;
+			std::size_t comma_count = 0;
 			bool in_quotes = false;
-			auto result = rng;
-			while( parse_policy_details::has_more( rng.first, rng.last ) and
+			auto result = *this;
+			while( parse_policy_details::has_more( first, last ) and
 			       bracket_count > 0 ) {
-				++rng.first;
+				++first;
 				if( not in_quotes ) {
-					trim_left( rng.first, rng.last );
+					trim_left( );
 				}
-				switch( *rng.first ) {
+				switch( *first ) {
 				case '\\':
-					++rng.first;
+					++first;
 					break;
 				case '"':
 					in_quotes = not in_quotes;
+					break;
+				case ',':
+					if( not in_quotes and bracket_count == 1 ) {
+						++comma_count;
+					}
 					break;
 				case Left:
 					if( not in_quotes ) {
@@ -286,15 +392,14 @@ namespace daw::json {
 				}
 			}
 			if constexpr( not is_unchecked_input ) {
-				daw_json_assert(
-				  parse_policy_details::has_more( rng.first, rng.last ) and
-				    *rng.first == Right,
-				  "Expected closing bracket/brace" );
+				daw_json_assert( parse_policy_details::has_more( first, last ) and
+				                   *first == Right,
+				                 "Expected closing bracket/brace" );
 			}
 
-			++rng.first;
-			result.last = rng.first;
-
+			++first;
+			result.last = first;
+			result.counter = comma_count;
 			return result;
 		}
 	}; // namespace daw::json
@@ -513,6 +618,7 @@ namespace daw::json {
 			std::size_t bracket_count = 1;
 			bool in_quotes = false;
 			auto result = rng;
+			std::size_t comma_count = 0;
 			while( parse_policy_details::has_more( rng.first, rng.last ) and
 			       bracket_count > 0 ) {
 				++rng.first;
@@ -525,6 +631,11 @@ namespace daw::json {
 					break;
 				case '"':
 					in_quotes = not in_quotes;
+					break;
+				case ',':
+					if( not in_quotes and bracket_count == 1 ) {
+						++comma_count;
+					}
 					break;
 				case Left:
 					if( not in_quotes ) {
@@ -552,7 +663,7 @@ namespace daw::json {
 
 			++rng.first;
 			result.last = rng.first;
-
+			result.counter = comma_count;
 			return result;
 		}
 	};
@@ -565,186 +676,191 @@ namespace daw::json {
 	  BasicHashCommentSkippingPolicy<char const *, false>;
 	using HashCommentSkippingPolicyUnchecked =
 	  BasicHashCommentSkippingPolicy<char const *, true>;
+
 } // namespace daw::json
 
 namespace daw::json::json_details {
-	template<typename ParsePolicy>
-	struct IteratorRange {
-		using policy = ParsePolicy;
-		using iterator = typename ParsePolicy::iterator;
-		static_assert( std::is_convertible_v<
-		                 typename std::iterator_traits<iterator>::iterator_category,
-		                 std::random_access_iterator_tag>,
-		               "Expecting a Random Contiguous Iterator" );
-		iterator first{ };
-		iterator last{ };
-		iterator class_first{ };
-		iterator class_last{ };
-		using Range = IteratorRange<IteratorRange>;
+	using IteratorRange = NoCommentSkippingPolicyChecked;
+}
+/*
+  template<typename ParsePolicy>
+  struct IteratorRange {
+    using policy = ParsePolicy;
+    using iterator = typename ParsePolicy::iterator;
+    static_assert( std::is_convertible_v<
+                     typename std::iterator_traits<iterator>::iterator_category,
+                     std::random_access_iterator_tag>,
+                   "Expecting a Random Contiguous Iterator" );
+    iterator first{ };
+    iterator last{ };
+    iterator class_first{ };
+    iterator class_last{ };
+    std::size_t counter = 0;
+    using Range = IteratorRange<IteratorRange>;
 
-		static inline constexpr bool is_unchecked_input =
-		  policy::is_unchecked_input;
-		using CharT = typename policy::CharT;
+    static inline constexpr bool is_unchecked_input =
+      policy::is_unchecked_input;
+    using CharT = typename policy::CharT;
 
-		template<std::size_t N>
-		inline constexpr bool operator==( char const ( &rhs )[N] ) const {
-			if( size( ) < ( N - 1 ) ) {
-				return false;
-			}
-			bool result = true;
-			for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
-				result = result and ( first[n] == rhs[n] );
-			}
-			return result;
-		}
+    template<std::size_t N>
+    inline constexpr bool operator==( char const ( &rhs )[N] ) const {
+      if( size( ) < ( N - 1 ) ) {
+        return false;
+      }
+      bool result = true;
+      for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
+        result = result and ( first[n] == rhs[n] );
+      }
+      return result;
+    }
 
-		inline constexpr IteratorRange( ) = default;
+    inline constexpr IteratorRange( ) = default;
 
-		inline constexpr IteratorRange( iterator f, iterator l )
-		  : first( f )
-		  , last( l )
-		  , class_first( f )
-		  , class_last( l ) {}
+    inline constexpr IteratorRange( iterator f, iterator l )
+      : first( f )
+      , last( l )
+      , class_first( f )
+      , class_last( l ) {}
 
-		[[nodiscard]] inline constexpr bool empty( ) const {
-			return parse_policy_details::empty( first, last );
-		}
+    [[nodiscard]] inline constexpr bool empty( ) const {
+      return parse_policy_details::empty( first, last );
+    }
 
-		[[nodiscard]] inline constexpr bool has_more( ) const {
-			return parse_policy_details::has_more( first, last );
-		}
+    [[nodiscard]] inline constexpr bool has_more( ) const {
+      return parse_policy_details::has_more( first, last );
+    }
 
-		[[nodiscard]] inline constexpr bool can_parse_more( ) const {
-			return parse_policy_details::can_parse_more( first, last );
-		}
+    [[nodiscard]] inline constexpr bool can_parse_more( ) const {
+      return parse_policy_details::can_parse_more( first, last );
+    }
 
-		[[nodiscard]] inline constexpr decltype( auto ) front( ) const {
-			return *first;
-		}
+    [[nodiscard]] inline constexpr decltype( auto ) front( ) const {
+      return *first;
+    }
 
-		[[nodiscard]] inline constexpr bool front( char c ) const {
-			return first != last and *first == c;
-		}
+    [[nodiscard]] inline constexpr bool front( char c ) const {
+      return first != last and *first == c;
+    }
 
-		[[nodiscard]] inline constexpr std::size_t size( ) const {
-			return static_cast<std::size_t>( std::distance( first, last ) );
-		}
+    [[nodiscard]] inline constexpr std::size_t size( ) const {
+      return static_cast<std::size_t>( std::distance( first, last ) );
+    }
 
-		[[nodiscard]] inline constexpr bool is_number( ) const {
-			return static_cast<unsigned>( front( ) ) - static_cast<unsigned>( '0' ) <
-			       10U;
-		}
+    [[nodiscard]] inline constexpr bool is_number( ) const {
+      return static_cast<unsigned>( front( ) ) - static_cast<unsigned>( '0' ) <
+             10U;
+    }
 
-		template<std::size_t N>
-		[[nodiscard]] inline constexpr bool front( char const ( &set )[N] ) const {
-			if( empty( ) ) {
-				return false;
-			}
-			bool result = false;
-			for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
-				result |= in( set[n] );
-			}
-			return result;
-		}
+    template<std::size_t N>
+    [[nodiscard]] inline constexpr bool front( char const ( &set )[N] ) const {
+      if( empty( ) ) {
+        return false;
+      }
+      bool result = false;
+      for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
+        result |= in( set[n] );
+      }
+      return result;
+    }
 
-		[[nodiscard]] inline constexpr bool is_null( ) const {
-			return parse_policy_details::is_null( first );
-		}
+    [[nodiscard]] inline constexpr bool is_null( ) const {
+      return parse_policy_details::is_null( first );
+    }
 
-		inline constexpr void remove_prefix( ) {
-			++first;
-		}
+    inline constexpr void remove_prefix( ) {
+      ++first;
+    }
 
-		inline constexpr void remove_prefix( std::size_t n ) {
-			std::advance( first, static_cast<intmax_t>( n ) );
-		}
+    inline constexpr void remove_prefix( std::size_t n ) {
+      std::advance( first, static_cast<intmax_t>( n ) );
+    }
 
-		[[nodiscard]] inline constexpr bool is_space( ) const {
-			return policy::is_space( first, last );
-		}
+    [[nodiscard]] inline constexpr bool is_space( ) const {
+      return policy::is_space( first, last );
+    }
 
-		inline constexpr void trim_left( ) {
-			policy::trim_left( first, last );
-		}
+    inline constexpr void trim_left( ) {
+      policy::trim_left( first, last );
+    }
 
-		inline constexpr void trim_left_checked( ) {
-			policy::trim_left_checked( first, last );
-		}
+    inline constexpr void trim_left_checked( ) {
+      policy::trim_left_checked( first, last );
+    }
 
-		inline constexpr void trim_left_unchecked( ) {
-			policy::trim_left_unchecked( first, last );
-		}
+    inline constexpr void trim_left_unchecked( ) {
+      policy::trim_left_unchecked( first, last );
+    }
 
-		[[nodiscard]] inline constexpr iterator begin( ) const {
-			return first;
-		}
+    [[nodiscard]] inline constexpr iterator begin( ) const {
+      return first;
+    }
 
-		[[nodiscard]] inline constexpr iterator data( ) const {
-			return first;
-		}
+    [[nodiscard]] inline constexpr iterator data( ) const {
+      return first;
+    }
 
-		[[nodiscard]] inline constexpr iterator end( ) const {
-			return last;
-		}
+    [[nodiscard]] inline constexpr iterator end( ) const {
+      return last;
+    }
 
-		[[nodiscard]] explicit inline constexpr operator bool( ) const {
-			return not empty( );
-		}
+    [[nodiscard]] explicit inline constexpr operator bool( ) const {
+      return not empty( );
+    }
 
-		inline constexpr void set_class_position( ) {
-			class_first = first;
-			class_last = last;
-		}
+    inline constexpr void set_class_position( ) {
+      class_first = first;
+      class_last = last;
+    }
 
-		inline constexpr void move_to_next_of( char c ) {
-			policy::move_to_next_of( first, last, c );
-		}
+    inline constexpr void move_to_next_of( char c ) {
+      policy::move_to_next_of( first, last, c );
+    }
 
-		template<std::size_t N>
-		inline constexpr void move_to_next_of( char const ( &str )[N] ) {
-			policy::move_to_next_of( first, last, str );
-		}
+    template<std::size_t N>
+    inline constexpr void move_to_next_of( char const ( &str )[N] ) {
+      policy::move_to_next_of( first, last, str );
+    }
 
-		[[nodiscard]] inline constexpr bool in( char c ) const noexcept {
-			return parse_policy_details::in( *first, c );
-		}
+    [[nodiscard]] inline constexpr bool in( char c ) const noexcept {
+      return parse_policy_details::in( *first, c );
+    }
 
-		template<std::size_t N>
-		[[nodiscard]] inline constexpr bool
-		in( char const ( &set )[N] ) const noexcept {
-			return parse_policy_details::in( *first, set );
-		}
+    template<std::size_t N>
+    [[nodiscard]] inline constexpr bool
+    in( char const ( &set )[N] ) const noexcept {
+      return parse_policy_details::in( *first, set );
+    }
 
-		[[nodiscard]] inline constexpr bool at_end_of_item( ) const noexcept {
-			return parse_policy_details::at_end_of_item( *first );
-		}
+    [[nodiscard]] inline constexpr bool at_end_of_item( ) const noexcept {
+      return parse_policy_details::at_end_of_item( *first );
+    }
 
-		inline constexpr void clean_tail( ) {
-			policy::clean_tail( first, last );
-		}
+    inline constexpr void clean_tail( ) {
+      policy::clean_tail( first, last );
+    }
 
-		DAW_ATTRIBUTE_FLATTEN inline constexpr bool at_literal_end( ) const {
-			return policy::at_literal_end( *first );
-		}
+    DAW_ATTRIBUTE_FLATTEN inline constexpr bool at_literal_end( ) const {
+      return policy::at_literal_end( *first );
+    }
 
-		template<char Left, char Right>
-		inline constexpr void skip_to_end_of_bracketed_item( ) {
-			policy::template skip_to_end_of_bracketed_item<Left, Right>( first,
-			                                                             last );
-		}
+    template<char Left, char Right>
+    inline constexpr void skip_to_end_of_bracketed_item( ) {
+      policy::template skip_to_end_of_bracketed_item<Left, Right>( first,
+                                                                   last );
+    }
 
-		template<char Left, char Right>
-		[[nodiscard]] inline constexpr IteratorRange skip_bracketed_item( ) {
-			return policy::template skip_bracketed_item<Left, Right>( *this );
-		}
+    template<char Left, char Right>
+    [[nodiscard]] inline constexpr IteratorRange skip_bracketed_item( ) {
+      return policy::template skip_bracketed_item<Left, Right>( *this );
+    }
 
-		[[nodiscard]] inline constexpr bool is_real_number_part( ) const noexcept {
-			return parse_policy_details::is_real_number_part( *first );
-		}
+    [[nodiscard]] inline constexpr bool is_real_number_part( ) const noexcept {
+      return parse_policy_details::is_real_number_part( *first );
+    }
 
-	}; // namespace daw::json::json_details
+  }; // namespace daw::json::json_details
 
-	template<typename CharT>
-	IteratorRange( CharT const *, CharT const * )
-	  -> IteratorRange<NoCommentSkippingPolicyChecked>;
-} // namespace daw::json::json_details
+  template<typename CharT>
+  IteratorRange( CharT const *, CharT const * )
+    -> IteratorRange<NoCommentSkippingPolicyChecked>;
+ */

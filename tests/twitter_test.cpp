@@ -68,58 +68,59 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 
+	/*
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
-		  twitter_result =
-		    daw::json::from_json<daw::twitter::twitter_object_t,
-		                         daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
-		  daw::do_not_optimize( twitter_result );
+	    twitter_result =
+	      daw::json::from_json<daw::twitter::twitter_object_t,
+	                           daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
+	    daw::do_not_optimize( twitter_result );
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-									 "Missing value" );
+	                 "Missing value" );
 
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(comments)", sz,
 	  [&twitter_result]( auto f1 ) {
-		  twitter_result =
-		    daw::json::from_json<daw::twitter::twitter_object_t,
-		                         daw::json::HashCommentSkippingPolicyChecked>( f1 );
-		  daw::do_not_optimize( twitter_result );
+	    twitter_result =
+	      daw::json::from_json<daw::twitter::twitter_object_t,
+	                           daw::json::HashCommentSkippingPolicyChecked>( f1 );
+	    daw::do_not_optimize( twitter_result );
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-									 "Missing value" );
+	                 "Missing value" );
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(comments, unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
-		  twitter_result =
-		    daw::json::from_json<daw::twitter::twitter_object_t,
-		                         daw::json::HashCommentSkippingPolicyUnchecked>(
-		      f1 );
-		  daw::do_not_optimize( twitter_result );
+	    twitter_result =
+	      daw::json::from_json<daw::twitter::twitter_object_t,
+	                           daw::json::HashCommentSkippingPolicyUnchecked>(
+	        f1 );
+	    daw::do_not_optimize( twitter_result );
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-									 "Missing value" );
+	                 "Missing value" );
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
-		  str.clear( );
-		  daw::json::to_json( *tr, out_it );
-		  daw::do_not_optimize( str );
+	    str.clear( );
+	    daw::json::to_json( *tr, out_it );
+	    daw::do_not_optimize( str );
 	  },
 	  twitter_result );
 	daw_json_assert( not str.empty( ), "Expected a string value" );
@@ -127,10 +128,7 @@ int main( int argc, char **argv ) try {
 	auto const twitter_result2 =
 	  daw::json::from_json<daw::twitter::twitter_object_t>( str );
 	daw::do_not_optimize( twitter_result2 );
-	// Removing for now as it will do a float compare and fail
-
-	/*daw_json_assert( twitter_result == twitter_result2,
-	                 "Expected round trip to produce same result" );*/
+	 */
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

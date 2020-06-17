@@ -19,8 +19,10 @@ namespace daw::json::json_details {
 	         typename Range>
 	[[nodiscard]] inline constexpr Result parse_real( Range &rng ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
-		daw_json_assert_weak( rng.has_more( ) and rng.is_real_number_part( ),
-		                      "Expected a real number" );
+		daw_json_assert_weak(
+		  rng.has_more( ) and
+		    parse_policy_details::is_real_number_part( rng.front( ) ),
+		  "Expected a real number" );
 
 		int sign = 1;
 		if( rng.front( ) == '-' ) {

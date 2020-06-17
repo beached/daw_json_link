@@ -48,21 +48,21 @@ namespace daw::json::json_details {
 
 		if constexpr( KnownBounds ) {
 			daw_json_assert_weak(
-			  rng.is_real_number_part( ),
+			  parse_policy_details::is_real_number_part( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
-			return constructor_t{}(
+			return constructor_t{ }(
 			  parse_real<element_t, JsonMember::simd_mode>( rng ) );
 		} else {
 			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
-			  rng.is_real_number_part( ),
+			  parse_policy_details::is_real_number_part( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 			auto result =
-			  constructor_t{}( parse_real<element_t, JsonMember::simd_mode>( rng ) );
+			  constructor_t{ }( parse_real<element_t, JsonMember::simd_mode>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
-			  rng.at_end_of_item( ),
+			  parse_policy_details::at_end_of_item( rng.front( ) ),
 			  "Expected whitespace or one of \",}]\" at end of number" );
 			return result;
 		}
@@ -76,13 +76,13 @@ namespace daw::json::json_details {
 
 		if constexpr( KnownBounds ) {
 			daw_json_assert_weak(
-			  rng.is_real_number_part( ),
+			  parse_policy_details::is_real_number_part( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 		} else {
 			daw_json_assert_weak( rng.can_parse_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
-			  rng.is_real_number_part( ),
+			  parse_policy_details::is_real_number_part( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 		}
 
@@ -97,17 +97,17 @@ namespace daw::json::json_details {
 		}( );
 
 		if constexpr( KnownBounds ) {
-			return constructor_t{}(
+			return constructor_t{ }(
 			  sign * parse_unsigned_integer<element_t, JsonMember::range_check,
 			                                JsonMember::simd_mode>( rng ) );
 		} else {
-			auto result = constructor_t{}(
+			auto result = constructor_t{ }(
 			  sign * parse_unsigned_integer<element_t, JsonMember::range_check,
 			                                JsonMember::simd_mode>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			rng.trim_left( );
 			daw_json_assert_weak(
-			  rng.at_end_of_item( ),
+			  parse_policy_details::at_end_of_item( rng.front( ) ),
 			  "Expected whitespace or one of \",}]\" at end of number" );
 			return result;
 		}
@@ -121,23 +121,23 @@ namespace daw::json::json_details {
 
 		if constexpr( KnownBounds ) {
 			daw_json_assert_weak(
-			  rng.is_real_number_part( ),
+			  parse_policy_details::is_real_number_part( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
-			return constructor_t{}(
+			return constructor_t{ }(
 			  parse_unsigned_integer<element_t, JsonMember::range_check,
 			                         JsonMember::simd_mode>( rng ) );
 		} else {
 			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
-			  rng.is_real_number_part( ),
+			  parse_policy_details::is_real_number_part( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
-			auto result = constructor_t{}(
+			auto result = constructor_t{ }(
 			  parse_unsigned_integer<element_t, JsonMember::range_check,
 			                         JsonMember::simd_mode>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
-			  rng.at_end_of_item( ),
+			  parse_policy_details::at_end_of_item( rng.front( ) ),
 			  "Expected whitespace or one of \",}]\" at end of number" );
 			return result;
 		}
@@ -150,32 +150,34 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		if constexpr( KnownBounds ) {
 			if( rng.is_null( ) ) {
-				return constructor_t{}( );
+				return constructor_t{ }( );
 			}
 			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::base_expected_type>{}, rng );
+			  ParseTag<JsonMember::base_expected_type>{ }, rng );
 		} else if constexpr( Range::is_unchecked_input ) {
 			if( not rng.can_parse_more( ) ) {
-				return constructor_t{}( );
+				return constructor_t{ }( );
 			} else if( rng.front( ) == 'n' ) {
 				rng.remove_prefix( 4 );
 				rng.trim_left_unchecked( );
 				rng.remove_prefix( );
-				return constructor_t{}( );
+				return constructor_t{ }( );
 			}
 			return parse_value<JsonMember>(
-			  ParseTag<JsonMember::base_expected_type>{}, rng );
+			  ParseTag<JsonMember::base_expected_type>{ }, rng );
 		} else {
 			if( not rng.can_parse_more( ) ) {
-				return constructor_t{}( );
+				return constructor_t{ }( );
 			} else if( rng == "null" ) {
 				rng.remove_prefix( 4 );
-				daw_json_assert_weak( rng.at_end_of_item( ), "Unexpectd value" );
+				daw_json_assert_weak(
+				  parse_policy_details::at_end_of_item( rng.front( ) ),
+				  "Unexpectd value" );
 				rng.trim_left_checked( );
-				return constructor_t{}( );
+				return constructor_t{ }( );
 			}
 			return parse_value<JsonMember>(
-			  ParseTag<JsonMember::base_expected_type>{}, rng );
+			  ParseTag<JsonMember::base_expected_type>{ }, rng );
 		}
 	}
 
@@ -193,9 +195,9 @@ namespace daw::json::json_details {
 			} else {
 				switch( rng.front( ) ) {
 				case 't':
-					return constructor_t{}( true );
+					return constructor_t{ }( true );
 				case 'f':
-					return constructor_t{}( false );
+					return constructor_t{ }( false );
 				}
 				daw_json_error( "Expected a literal true or false" );
 			}
@@ -221,8 +223,10 @@ namespace daw::json::json_details {
 			}
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			rng.trim_left( );
-			daw_json_assert_weak( rng.at_end_of_item( ), "Unexpectd value" );
-			return constructor_t{}( result );
+			daw_json_assert_weak(
+			  parse_policy_details::at_end_of_item( rng.front( ) ),
+			  "Unexpectd value" );
+			return constructor_t{ }( result );
 		}
 	}
 
@@ -234,21 +238,21 @@ namespace daw::json::json_details {
 		if constexpr( KnownBounds ) {
 			if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
 				if( rng.empty( ) ) {
-					return constructor_t{}( );
+					return constructor_t{ }( );
 				}
-				return constructor_t{}( rng.begin( ), rng.size( ) );
+				return constructor_t{ }( rng.begin( ), rng.size( ) );
 			} else {
-				return constructor_t{}( rng.begin( ), rng.size( ) );
+				return constructor_t{ }( rng.begin( ), rng.size( ) );
 			}
 		} else {
 			auto const str = skip_string( rng );
 			if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
 				if( str.empty( ) ) {
-					return constructor_t{}( );
+					return constructor_t{ }( );
 				}
-				return constructor_t{}( str.begin( ), str.size( ) );
+				return constructor_t{ }( str.begin( ), str.size( ) );
 			} else {
-				return constructor_t{}( str.begin( ), str.size( ) );
+				return constructor_t{ }( str.begin( ), str.size( ) );
 			}
 		}
 	}
@@ -412,11 +416,11 @@ namespace daw::json::json_details {
 
 	template<typename... Args>
 	std::true_type is_string( std::basic_string<Args...> const & ) {
-		return {};
+		return { };
 	}
 	template<typename T>
 	std::false_type is_string( T const & ) {
-		return {};
+		return { };
 	}
 
 	// Fast path for parsing escaped strings to a std::string with the default
@@ -543,7 +547,7 @@ namespace daw::json::json_details {
 			using appender_t = typename JsonMember::appender_t;
 			constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 
-			auto result = constructor_t{}( );
+			auto result = constructor_t{ }( );
 			auto app = [&] {
 				if constexpr( std::is_same_v<typename JsonMember::parse_to_t,
 				                             typename JsonMember::base_type> ) {
@@ -633,7 +637,7 @@ namespace daw::json::json_details {
 		daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 		auto str = skip_string( rng );
 		using constructor_t = typename JsonMember::constructor_t;
-		return constructor_t{}( str.begin( ), str.size( ) );
+		return constructor_t{ }( str.begin( ), str.size( ) );
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
@@ -647,7 +651,7 @@ namespace daw::json::json_details {
 		auto const str = skip_value( rng );
 
 		using constructor_t = typename JsonMember::from_converter_t;
-		return constructor_t{}( std::string_view( str.begin( ), str.size( ) ) );
+		return constructor_t{ }( std::string_view( str.begin( ), str.size( ) ) );
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
@@ -703,7 +707,7 @@ namespace daw::json::json_details {
 		// We are inside a KV map, we can expected a quoted name next
 		rng.move_to_next_of( '"' );
 
-		auto array_container = typename JsonMember::constructor_t{}( );
+		auto array_container = typename JsonMember::constructor_t{ }( );
 		auto container_appender =
 		  typename JsonMember::appender_t( array_container );
 
@@ -711,11 +715,11 @@ namespace daw::json::json_details {
 		using value_t = typename JsonMember::json_element_t;
 		while( rng.front( ) != '}' ) {
 			daw_json_assert_weak( rng.can_parse_more( ), "Unexpected end of range" );
-			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{}, rng );
+			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{ }, rng );
 			name::name_parser::trim_end_of_name( rng );
 			container_appender(
 			  std::move( key ),
-			  parse_value<value_t>( ParseTag<value_t::expected_type>{}, rng ) );
+			  parse_value<value_t>( ParseTag<value_t::expected_type>{ }, rng ) );
 
 			rng.clean_tail( );
 			if constexpr( not KnownBounds ) {
@@ -751,7 +755,7 @@ namespace daw::json::json_details {
 
 		rng.remove_prefix( );
 
-		auto array_container = typename JsonMember::constructor_t{}( );
+		auto array_container = typename JsonMember::constructor_t{ }( );
 		auto container_appender =
 		  typename JsonMember::appender_t( array_container );
 
@@ -768,7 +772,7 @@ namespace daw::json::json_details {
 			(void)key_name;
 			daw_json_assert_weak( key_t::name == key_name,
 			                      "Expected value name to match" );
-			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{}, rng );
+			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{ }, rng );
 			rng.move_to_next_of( '"' ); // Next
 			daw_json_assert_weak( rng.front( '"' ), "Expected name of value member" );
 			rng.remove_prefix( );
@@ -778,7 +782,7 @@ namespace daw::json::json_details {
 			                      "Expected value name to match" );
 			container_appender(
 			  std::move( key ),
-			  parse_value<value_t>( ParseTag<value_t::expected_type>{}, rng ) );
+			  parse_value<value_t>( ParseTag<value_t::expected_type>{ }, rng ) );
 
 			rng.move_to_next_of( '}' );
 			rng.remove_prefix( );
@@ -807,24 +811,40 @@ namespace daw::json::json_details {
 		rng.remove_prefix( );
 		rng.trim_left_unchecked( );
 		using container_t = typename JsonMember::base_type;
+		using element_t = typename JsonMember::json_element_t::parse_to_t;
 		using iterator_t = json_parse_value_array_iterator<JsonMember, Range>;
 		iterator_t first = iterator_t( rng );
 		iterator_t const last = iterator_t( );
-		if constexpr( std::conjunction<
+		auto a = is_range_constructable_v<container_t, element_t>;
+		(void)a;
+		if constexpr( std::conjunction_v<
 		                std::is_same<typename JsonMember::appender_t,
 		                             basic_appender<container_t>>,
 		                std::is_same<typename JsonMember::constructor_t,
 		                             daw::construct_a_t<container_t>>,
-		                is_range_constructible<
-		                  container_t,
-		                  typename JsonMember::json_element_t>>::value ) {
+		                is_range_constructible<container_t, element_t>> ) {
 			// We are using the default constructor and appender.  This should allow
 			// for constructing the vector directly when it is constructable from a
 			// Iterator pair
-
-			return container_t( first, last );
+			if constexpr( daw::traits::is_vector_v<container_t> ) {
+				if constexpr( KnownBounds ) {
+					std::vector<element_t> result{ };
+					result.reserve( rng.counter );
+					result.insert( result.end( ), first, last );
+					return result;
+				} else {
+					auto rng2 = rng;
+					rng2 = skip_array( rng2 );
+					std::vector<element_t> result{ };
+					result.reserve( rng2.counter );
+					result.insert( result.end( ), first, last );
+					return result;
+				}
+			} else {
+				return container_t( first, last );
+			}
 		} else {
-			auto array_container = typename JsonMember::constructor_t{}( );
+			auto array_container = typename JsonMember::constructor_t{ }( );
 			auto container_appender =
 			  typename JsonMember::appender_t( array_container );
 
@@ -847,7 +867,7 @@ namespace daw::json::json_details {
 			using JsonMember =
 			  std::tuple_element_t<idx, typename element_t::element_map_t>;
 			return parse_value<JsonMember>(
-			  ParseTag<JsonMember::base_expected_type>{}, rng );
+			  ParseTag<JsonMember::base_expected_type>{ }, rng );
 		} else {
 			daw_json_error( "Unexpected JSON Variant type." );
 		}
@@ -889,8 +909,8 @@ namespace daw::json::json_details {
 	constexpr Result parse_visit( std::size_t idx, Range &rng ) {
 		if( idx == pos ) {
 			using JsonMember = std::tuple_element_t<pos, TypeList>;
-			return {
-			  parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{}, rng )};
+			return { parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
+			                                  rng ) };
 		}
 		if constexpr( pos + 1 < std::tuple_size_v<TypeList> ) {
 			return parse_visit<Result, TypeList, pos + 1>( idx, rng );
@@ -910,8 +930,8 @@ namespace daw::json::json_details {
 		  daw::string_view( as_cstr( tag_member::name ) ) );
 
 		daw_json_assert( is_found, "Tag Member is manditory" );
-		auto index = typename JsonMember::switcher{}(
-		  parse_value<tag_member>( ParseTag<tag_member::expected_type>{}, rng2 ) );
+		auto index = typename JsonMember::switcher{ }(
+		  parse_value<tag_member>( ParseTag<tag_member::expected_type>{ }, rng2 ) );
 
 		return parse_visit<json_result<JsonMember>,
 		                   typename JsonMember::json_elements::element_map_t>(
@@ -919,14 +939,14 @@ namespace daw::json::json_details {
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
-	constexpr basic_json_value<IteratorRange<typename Range::policy::as_checked>>
+	constexpr basic_json_value<typename Range::as_checked>
 	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng ) {
-		using result_rng = IteratorRange<typename Range::policy::as_checked>;
+		using result_rng = typename Range::as_checked;
 		if constexpr( KnownBounds ) {
-			return {result_rng( rng.first, rng.last )};
+			return { result_rng( rng.first, rng.last ) };
 		} else {
 			auto value_rng = skip_value( rng );
-			return {result_rng( value_rng.first, value_rng.last )};
+			return { result_rng( value_rng.first, value_rng.last ) };
 		}
 	}
 } // namespace daw::json::json_details

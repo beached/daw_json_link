@@ -8,19 +8,19 @@
 
 #pragma once
 
+#include "daw_arrow_proxy.h"
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_value_fwd.h"
 
 namespace daw::json::json_details {
-
 	template<typename JsonMember, typename Range>
 	struct json_parse_value_array_iterator {
 		using iterator_category = std::input_iterator_tag;
 		using element_t = typename JsonMember::json_element_t;
 		using value_type = typename element_t::parse_to_t;
-		using reference = void;
-		using pointer = void;
+		using reference = value_type;
+		using pointer = arrow_proxy<value_type>;
 		using difference_type = std::ptrdiff_t;
 		using iterator_range_t = Range;
 
@@ -43,8 +43,12 @@ namespace daw::json::json_details {
 		inline constexpr value_type operator*( ) {
 			daw_json_assert_weak( rng and rng->can_parse_more( ),
 			                      "Expected data to parse" );
-			return parse_value<element_t>( ParseTag<element_t::expected_type>{},
+			return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
 			                               *rng );
+		}
+
+		inline constexpr pointer operator->( ) {
+			return { operator*( ) };
 		}
 
 		inline constexpr json_parse_value_array_iterator &operator++( ) {
