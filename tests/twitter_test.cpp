@@ -68,7 +68,6 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 
-	/*
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
@@ -128,7 +127,6 @@ int main( int argc, char **argv ) try {
 	auto const twitter_result2 =
 	  daw::json::from_json<daw::twitter::twitter_object_t>( str );
 	daw::do_not_optimize( twitter_result2 );
-	 */
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

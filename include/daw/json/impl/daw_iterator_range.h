@@ -308,9 +308,9 @@ namespace daw::json {
 
 		inline constexpr void skip_comments( ) noexcept {
 			if constexpr( is_unchecked_input ) {
-				skip_comments_unchecked( first, last );
+				skip_comments_unchecked( );
 			} else {
-				skip_comments_checked( first, last );
+				skip_comments_checked( );
 			}
 		}
 
@@ -343,7 +343,8 @@ namespace daw::json {
 			}
 		}
 
-		inline constexpr bool at_literal_end( char c ) const noexcept {
+		inline constexpr bool at_literal_end( ) const noexcept {
+			char const c = *first;
 			return c == '\0' or c == ',' or c == ']' or c == '}' or c == '#';
 		}
 
@@ -464,11 +465,11 @@ namespace daw::json {
 			return first < last and *first == c;
 		}
 
-		[[nodiscard]] inline constexpr std::size_t size( ) const {
+		[[nodiscard]] inline constexpr std::size_t size( ) const noexcept {
 			return static_cast<std::size_t>( std::distance( first, last ) );
 		}
 
-		[[nodiscard]] inline constexpr bool is_number( ) const {
+		[[nodiscard]] inline constexpr bool is_number( ) const noexcept {
 			return static_cast<unsigned>( front( ) ) - static_cast<unsigned>( '0' ) <
 			       10U;
 		}
