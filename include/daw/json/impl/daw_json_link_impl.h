@@ -16,9 +16,7 @@
 #include "daw_json_parse_value.h"
 #include "daw_json_serialize_impl.h"
 #include "daw_json_to_string.h"
-#ifndef _MSC_VER
 #include "daw_murmur3.h"
-#endif
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_cxmath.h>
@@ -134,20 +132,13 @@ namespace daw::json::json_details {
 
 	template<typename Range>
 	struct location_info_t {
-		daw::string_view name{};
-#ifndef _MSC_VER
+		daw::string_view name;
 		std::uint32_t hash_value = 0;
-#endif
 		Range location{};
 
-#ifndef _MSC_VER
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
 		  : name( Name )
 		  , hash_value( daw::murmur3_32( Name ) ) {}
-#else
-		explicit constexpr location_info_t( daw::string_view Name ) noexcept
-		  : name( Name ) {}
-#endif
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 			return location.is_null( );
@@ -155,12 +146,10 @@ namespace daw::json::json_details {
 
 		[[nodiscard]] inline constexpr bool
 		is_match( daw::string_view Name ) noexcept {
-#ifndef _MSC_VER
 			uint32_t const h = daw::murmur3_32( Name );
 			if( hash_value != h ) {
 				return false;
 			}
-#endif
 			return name == Name;
 		}
 	};
@@ -173,7 +162,7 @@ namespace daw::json::json_details {
 	template<std::size_t N, typename Range>
 	struct locations_info_t {
 		using value_type = location_info_t<Range>;
-		std::array<value_type, N> names{};
+		std::array<value_type, N> names;
 
 		inline constexpr auto begin( ) const {
 			return names.data( );
@@ -206,19 +195,11 @@ namespace daw::json::json_details {
 
 		[[nodiscard]] inline constexpr std::size_t
 		find_name( daw::string_view key ) const {
-#if defined( _MSC_VER ) and not defined( __clang__ )
 			// Bug in MSVC is making the constexpr ptr/ptr string_view like classes
 			// break, along with the hashing
 			return algorithm::find_index_of_if(
 			  begin( ), end( ),
 			  [key]( value_type const &loc ) { return loc.name == key; } );
-#else
-			return algorithm::find_index_of_if(
-			  begin( ), end( ),
-			  [key, hash = daw::murmur3_32( key )]( value_type const &loc ) {
-				  return loc.hash_value == hash and loc.name == key;
-			  } );
-#endif
 		}
 	}; // namespace daw::json::json_details
 
@@ -409,39 +390,46 @@ namespace daw::json::json_details {
 			rng.trim_left_checked( );
 		};
 
-		constexpr auto known_locations_v =
-		  locations_info_t<sizeof...( JsonMembers ), Range>{
-		    location_info_t<Range>( JsonMembers::name )...};
+		if constexpr( sizeof...( JsonMembers ) == 0 ) {
+			// Clang-CL with MSVC has issues if we don't do empties this way
+			cleanup_fn( );
+			return daw::construct_a<JsonClass>( );
+		} else {
 
-		auto known_locations = known_locations_v;
+			constexpr auto known_locations_v =
+			  locations_info_t<sizeof...( JsonMembers ), Range>{
+			    location_info_t<Range>( JsonMembers::name )... };
 
-		using tp_t = std::tuple<decltype(
-		  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-		    Is, known_locations, rng ) )...>;
+			auto known_locations = known_locations_v;
+
+			using tp_t = std::tuple<decltype(
+			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng ) )...>;
 
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
-		// This relies on non-trivial dtor's being allowed.  So C++20 constexpr
-		// or not in a constant expression.  It does allow for construction of
-		// classes without move/copy special members
+			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr
+			// or not in a constant expression.  It does allow for construction of
+			// classes without move/copy special members
 
-		// Do this before we exit but after return
-		auto const oe = daw::on_exit_success( cleanup_fn );
-		/*
-		 * Rather than call directly use apply/tuple to evaluate left->right
-		 */
-		return std::apply(
-		  daw::construct_a<JsonClass>,
-		  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-		    Is, known_locations, rng )...} );
+			// Do this before we exit but after return
+			auto const oe = daw::on_exit_success( cleanup_fn );
+			/*
+			 * Rather than call directly use apply/tuple to evaluate left->right
+			 */
+			return std::apply(
+			  daw::construct_a<JsonClass>,
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
 #else
-		JsonClass result =
-		  std::apply( daw::construct_a<JsonClass>,
-		              tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-		                Is, known_locations, rng )...} );
-		cleanup_fn( );
-		return result;
+			JsonClass result = std::apply(
+			  daw::construct_a<JsonClass>,
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
+			cleanup_fn( );
+			return result;
 #endif
+		}
 	}
 
 	template<typename JsonClass, typename... JsonMembers, typename Range>
