@@ -69,7 +69,7 @@ namespace daw::json {
 
 	private:
 		using Range = ParsePolicy;
-		Range m_state = Range( nullptr, nullptr );
+		Range m_state = Range( );
 		/***
 		 * This lets us fastpath and just skip n characters as we have already
 		 * parsed them
