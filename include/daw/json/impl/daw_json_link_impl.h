@@ -162,7 +162,7 @@ namespace daw::json::json_details {
 	template<std::size_t N, typename Range>
 	struct locations_info_t {
 		using value_type = location_info_t<Range>;
-		std::array<value_type, N> names;
+		std::array<value_type, N> names{};
 
 		inline constexpr auto begin( ) const {
 			return names.data( );
@@ -395,10 +395,9 @@ namespace daw::json::json_details {
 			cleanup_fn( );
 			return daw::construct_a<JsonClass>( );
 		} else {
-
 			constexpr auto known_locations_v =
 			  locations_info_t<sizeof...( JsonMembers ), Range>{
-			    location_info_t<Range>( JsonMembers::name )... };
+			    location_info_t<Range>( JsonMembers::name )...};
 
 			auto known_locations = known_locations_v;
 
@@ -419,13 +418,13 @@ namespace daw::json::json_details {
 			 */
 			return std::apply(
 			  daw::construct_a<JsonClass>,
-			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )... } );
+			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )...} );
 #else
 			JsonClass result = std::apply(
 			  daw::construct_a<JsonClass>,
-			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )... } );
+			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )...} );
 			cleanup_fn( );
 			return result;
 #endif

@@ -83,7 +83,7 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
 		is_space( Iterator first, Iterator last ) {
 			return parse_policy_details::is_space(
-			  first, last, std::bool_constant<is_unchecked_input>{ } );
+			  first, last, std::bool_constant<is_unchecked_input>{} );
 		}
 
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
@@ -288,7 +288,7 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
 		is_space( Iterator first, Iterator last ) {
 			return parse_policy_details::is_space(
-			  first, last, std::bool_constant<is_unchecked_input>{ } );
+			  first, last, std::bool_constant<is_unchecked_input>{} );
 		}
 
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
@@ -482,10 +482,10 @@ namespace daw::json::json_details {
 		                 typename std::iterator_traits<iterator>::iterator_category,
 		                 std::random_access_iterator_tag>,
 		               "Expecting a Random Contiguous Iterator" );
-		iterator first{ };
-		iterator last{ };
-		iterator class_first{ };
-		iterator class_last{ };
+		iterator first{};
+		iterator last{};
+		iterator class_first{};
+		iterator class_last{};
 		using Range = IteratorRange<IteratorRange>;
 
 		static inline constexpr bool is_unchecked_input =
@@ -700,5 +700,5 @@ namespace daw::json::json_details {
 
 	template<typename CharT>
 	IteratorRange( CharT const *, CharT const * )
-	  -> IteratorRange<NoCommentSkippingPolicyChecked>;
+	  ->IteratorRange<NoCommentSkippingPolicyChecked>;
 } // namespace daw::json::json_details
