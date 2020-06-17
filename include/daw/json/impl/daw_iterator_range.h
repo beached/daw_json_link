@@ -690,8 +690,10 @@ namespace daw::json::json_details {
 		template<char Left, char Right>
 		[[nodiscard]] inline constexpr IteratorRange skip_bracketed_item( ) {
 			auto result = *this;
-			std::tie( result.first, result.last ) =
+			auto tmp =
 			  policy::template skip_bracketed_item<Left, Right>( first, last );
+			result.first = tmp.first;
+			result.last = tmp.second;
 			return result;
 		}
 	}; // namespace daw::json::json_details

@@ -71,13 +71,13 @@ struct test_001_t {
 	int i = 0;
 	double d = 0.0;
 	bool b = false;
-	std::string_view s{};
-	std::string_view s2{};
-	daw::bounded_vector_t<int, 10> y{};
-	std::optional<int> o{};
-	std::optional<int> o2{};
+	std::string_view s{ };
+	std::string_view s2{ };
+	daw::bounded_vector_t<int, 10> y{ };
+	std::optional<int> o{ };
+	std::optional<int> o2{ };
 	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>
-	  dte{};
+	  dte{ };
 
 	constexpr test_001_t( ) = default;
 
@@ -99,7 +99,7 @@ struct test_001_t {
 };
 
 struct test_002_t {
-	test_001_t a{};
+	test_001_t a{ };
 };
 
 struct test_003_t {
@@ -236,12 +236,16 @@ constexpr auto const test_001_t_json_data =
 			"dte": "2016-12-31T01:02:03.343Z"
 	  })";
 
-#if not defined( __GNUC__ ) or __GNUC__ > 8
-static_assert( daw::json::from_json<int>( test_001_t_json_data, "i" ) == 55,
-               "Unexpected value" );
-static_assert( daw::json::from_json_unchecked<int>( test_001_t_json_data,
-                                                    "i" ) == 55,
-               "Unexpected value" );
+#if( defined( __GNUC__ ) and __GNUC__ > 8 ) or defined( __clang__ ) or         \
+  defined( _MSC_VER )
+static_assert(
+  daw::json::from_json<int, daw::json::NoCommentSkippingPolicyUnchecked>(
+    test_001_t_json_data, "i" ) == 55,
+  "Unexpected value" );
+static_assert(
+  daw::json::from_json<int, daw::json::NoCommentSkippingPolicyUnchecked>(
+    test_001_t_json_data, "i" ) == 55,
+  "Unexpected value" );
 static_assert( daw::json::from_json<int>( test_001_t_json_data, "y[2]" ) == 3,
                "Unexpected value" );
 
@@ -326,7 +330,7 @@ namespace daw::json {
 		using type = json_member_list<>;
 
 		static constexpr auto to_json_data( EmptyClassTest const & ) {
-			return std::tuple<>{};
+			return std::tuple<>{ };
 		}
 	};
 } // namespace daw::json
@@ -337,10 +341,10 @@ static constexpr std::string_view empty_class_data = R"(
 }
 )";
 static_assert( daw::json::from_json<EmptyClassTest>( test_001_t_json_data ) ==
-               EmptyClassTest{} );
+               EmptyClassTest{ } );
 
 struct Empty2 {
-	EmptyClassTest b = EmptyClassTest{};
+	EmptyClassTest b = EmptyClassTest{ };
 	int c = 0;
 };
 
@@ -365,7 +369,7 @@ static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
 
 struct OptionalOrdered {
 	int a = 0;
-	std::optional<int> b{};
+	std::optional<int> b{ };
 };
 
 namespace daw::json {
@@ -445,14 +449,14 @@ int main( int, char ** ) try {
 	std::cout << "as array\n";
 	std::cout << to_json_array( ary ) << "\n\n";
 
-	auto t2 = test_002_t{data};
+	auto t2 = test_002_t{ data };
 	t2.a.o2 = std::nullopt;
 	std::cout << to_json( t2 ) << '\n';
 
-	test_003_t t3{data};
+	test_003_t t3{ data };
 	std::cout << to_json( t3 ) << '\n';
 
-	e_test_001_t t4{};
+	e_test_001_t t4{ };
 	auto e_test_001_str = to_json( t4 );
 	std::cout << e_test_001_str << '\n';
 	auto e_test_001_back = from_json<e_test_001_t>( e_test_001_str );
@@ -491,7 +495,7 @@ int main( int, char ** ) try {
 	}
 	std::cout << "sum2: " << sum << '\n';
 
-	std::vector<double> a = {1.1, 11.1};
+	std::vector<double> a = { 1.1, 11.1 };
 	std::cout << daw::json::to_json_array( a ) << '\n';
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
