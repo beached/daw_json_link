@@ -16,6 +16,7 @@
 #include "daw_json_parse_string_quote.h"
 #include "daw_json_parse_unsigned_int.h"
 #include "daw_json_parse_value_fwd.h"
+#include "daw_string_slow.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -535,7 +536,7 @@ namespace daw::json::json_details {
 			// allocator time by presizing the string up front and then using a
 			// pointer to the data( ).
 			if constexpr( KnownBounds ) {
-				if( static_cast<bool>( rng.counter ) ) {
+				if( needs_slow_path( rng.counter ) ) {
 					return parse_string_known_stdstring<JsonMember,
 					                                    json_result<JsonMember>>( rng );
 				}
@@ -547,7 +548,7 @@ namespace daw::json::json_details {
 				}
 			} else {
 				auto rng2 = skip_string( rng );
-				if( static_cast<bool>( rng.counter ) ) {
+				if( needs_slow_path( rng2.counter ) ) {
 					return parse_string_known_stdstring<JsonMember,
 					                                    json_result<JsonMember>>( rng2 );
 				}

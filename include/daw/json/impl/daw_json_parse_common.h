@@ -11,6 +11,7 @@
 #include "daw_arith_traits.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_string_quote.h"
+#include "daw_string_slow.h"
 
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_string_view.h>
@@ -443,8 +444,8 @@ namespace daw::json::json_details {
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
 	skip_string_nq( Range &rng ) {
 		auto result = rng;
-		result.counter = static_cast<std::size_t>(
-		  string_quote::string_quote_parser::parse_nq( rng ) );
+		result.counter =
+		  set_slow_path( string_quote::string_quote_parser::parse_nq( rng ) );
 
 		daw_json_assert_weak( rng.front( ) == '"',
 		                      "Expected trailing \" at the end of string" );

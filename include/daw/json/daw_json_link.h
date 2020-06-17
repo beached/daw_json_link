@@ -588,8 +588,8 @@ namespace daw::json {
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked>
 	[[maybe_unused, nodiscard]] constexpr JsonClass
 	from_json( std::string_view json_data ) {
-		daw_json_assert( json_data.data( ) != nullptr,
-		                 "Cannot parse null strings" );
+		daw_json_assert( not json_data.empty( ),
+		                 "Cannot parse null or empty strings" );
 		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
@@ -610,10 +610,8 @@ namespace daw::json {
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked>
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( std::string_view json_data, std::string_view member_path ) {
-		daw_json_assert( json_data.data( ) != nullptr,
-		                 "Cannot parse null strings" );
-		daw_json_assert( member_path.data( ) != nullptr,
-		                 "Cannot parse null strings" );
+		daw_json_assert( not json_data.empty( ), "Cannot parse null strings" );
+		daw_json_assert( not member_path.empty( ), "Cannot parse null strings" );
 		return json_details::from_json_member_impl<JsonMember, ParsePolicy>(
 		  json_data, member_path );
 	}
@@ -727,10 +725,8 @@ namespace daw::json {
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data,
 	                 std::string_view member_path = "" ) {
-		daw_json_assert( json_data.data( ) != nullptr,
-		                 "Cannot parse null strings" );
-		daw_json_assert( member_path.data( ) != nullptr,
-		                 "Cannot parse null strings" );
+		daw_json_assert( not json_data.empty( ), "Cannot parse null strings" );
+		daw_json_assert( not member_path.empty( ), "Cannot parse null strings" );
 		using element_type =
 		  json_details::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
