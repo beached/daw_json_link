@@ -19,6 +19,51 @@
 
 namespace daw::json {
 	namespace parse_policy_details {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		in( char lhs, char rhs ) noexcept {
+			return lhs == rhs;
+		}
+
+		template<std::size_t N>
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		in( char c, char const ( &set )[N] ) noexcept {
+			unsigned result = 0;
+			daw::algorithm::do_n_arg<N>( [&]( std::size_t n ) {
+				result |= static_cast<unsigned>( set[n] == c );
+			} );
+			return static_cast<bool>( result );
+		}
+
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		at_end_of_item( char c ) noexcept {
+			return static_cast<bool>(
+			  static_cast<unsigned>( c == ',' ) | static_cast<unsigned>( c == '}' ) |
+			  static_cast<unsigned>( c == ']' ) | static_cast<unsigned>( c == ':' ) |
+			  static_cast<unsigned>( c <= 0x20 ) );
+		}
+
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		is_real_number_part( char c ) noexcept {
+			switch( c ) {
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+			case 'e':
+			case 'E':
+			case '+':
+			case '-':
+				return true;
+			}
+			return false;
+		}
+
 		template<typename Iterator>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
 		empty( Iterator first, Iterator last ) {
@@ -67,14 +112,6 @@ namespace daw::json {
 		using as_unchecked = BasicNoCommentSkippingPolicy<Iterator, true>;
 		using as_checked = BasicNoCommentSkippingPolicy<Iterator, false>;
 
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		skip_comments( Iterator &, Iterator & ) noexcept {}
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		skip_comments_checked( Iterator &, Iterator & ) noexcept {}
-
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		skip_comments_unchecked( Iterator &, Iterator & ) noexcept {}
-
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
 		at_literal_end( char c ) {
 			return c == '\0' or c == ',' or c == ']' or c == '}';
@@ -98,10 +135,6 @@ namespace daw::json {
 		trim_left_unchecked( Iterator &first, Iterator last ) {
 			while( is_space( first, last ) ) {
 				++first;
-				if constexpr( not is_unchecked_input ) {
-					daw_json_assert( parse_policy_details::has_more( first, last ),
-					                 "Unexpected end of stream" );
-				}
 			}
 		}
 
@@ -111,17 +144,6 @@ namespace daw::json {
 				trim_left_unchecked( first, last );
 			} else {
 				trim_left_checked( first, last );
-			}
-		}
-
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		trim_left_checked_raw( Iterator &first, Iterator last ) {
-			while( is_space( first, last ) ) {
-				++first;
-				if constexpr( not is_unchecked_input ) {
-					daw_json_assert( parse_policy_details::has_more( first, last ),
-					                 "Unexpected end of stream" );
-				}
 			}
 		}
 
@@ -137,6 +159,37 @@ namespace daw::json {
 			}
 		}
 
+		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
+		move_to_next_of( Iterator &first, Iterator last, char c ) {
+			if constexpr( not is_unchecked_input ) {
+				daw_json_assert( parse_policy_details::has_more( first, last ),
+				                 "Unexpected end of data" );
+			}
+			while( *first != c ) {
+				++first;
+				if constexpr( not is_unchecked_input ) {
+					daw_json_assert( parse_policy_details::has_more( first, last ),
+					                 "Unexpected end of data" );
+				}
+			}
+		}
+
+		template<std::size_t N>
+		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
+		move_to_next_of( Iterator &first, Iterator last, char const ( &str )[N] ) {
+			if constexpr( not is_unchecked_input ) {
+				daw_json_assert( parse_policy_details::has_more( first, last ),
+				                 "Unexpected end of data" );
+			}
+			while( not parse_policy_details::in( *first, str ) ) {
+				++first;
+				if constexpr( not is_unchecked_input ) {
+					daw_json_assert( parse_policy_details::has_more( first, last ),
+					                 "Unexpected end of data" );
+				}
+			}
+		}
+
 		template<char Left, char Right>
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
 		skip_to_end_of_bracketed_item( Iterator &first, Iterator const &last ) {
@@ -146,7 +199,9 @@ namespace daw::json {
 			clean_tail( first, last );
 			if( not parse_policy_details::empty( first, last ) and
 			    bracket_count > 0 ) {
-				trim_left_checked_raw( first, last );
+				if( not in_quotes ) {
+					trim_left( first, last );
+				}
 				switch( *first ) {
 				case '\\':
 					++first;
@@ -169,7 +224,9 @@ namespace daw::json {
 			while( parse_policy_details::has_more( first, last ) and
 			       bracket_count > 0 ) {
 				++first;
-				trim_left_checked_raw( first, last );
+				if( not in_quotes ) {
+					trim_left( first, last );
+				}
 				switch( *first ) {
 				case '\\':
 					++first;
@@ -206,7 +263,9 @@ namespace daw::json {
 			while( parse_policy_details::has_more( rng.first, rng.last ) and
 			       bracket_count > 0 ) {
 				++rng.first;
-				trim_left_checked_raw( rng.first, rng.last );
+				if( not in_quotes ) {
+					trim_left( rng.first, rng.last );
+				}
 				switch( *rng.first ) {
 				case '\\':
 					++rng.first;
@@ -238,7 +297,7 @@ namespace daw::json {
 
 			return result;
 		}
-	};
+	}; // namespace daw::json
 	//*******************************************
 	template<typename Iterator, bool IsUncheckedInput>
 	struct BasicHashCommentSkippingPolicy {
@@ -265,7 +324,9 @@ namespace daw::json {
 				while( *first != '\n' ) {
 					++first;
 				}
-				++first;
+				if( *first == '\n' ) {
+					++first;
+				}
 			}
 		}
 
@@ -276,7 +337,9 @@ namespace daw::json {
 				while( first != last and *first != '\n' ) {
 					++first;
 				}
-				++first;
+				if( *first == '\n' ) {
+					++first;
+				}
 			}
 		}
 
@@ -323,17 +386,6 @@ namespace daw::json {
 		}
 
 		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-		trim_left_checked_raw( Iterator &first, Iterator last ) {
-			while( is_space( first, last ) ) {
-				++first;
-				if constexpr( not is_unchecked_input ) {
-					daw_json_assert( parse_policy_details::has_more( first, last ),
-					                 "Unexpected end of stream" );
-				}
-			}
-		}
-
-		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
 		clean_tail( Iterator &first, Iterator last ) {
 			while( parse_policy_details::has_more( first, last ) and
 			       is_space( first, last ) ) {
@@ -342,6 +394,42 @@ namespace daw::json {
 			if( *first == ',' ) {
 				++first;
 				trim_left( first, last );
+			}
+		}
+
+		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
+		move_to_next_of( Iterator &first, Iterator last, char c ) {
+			skip_comments( first, last );
+			if constexpr( not is_unchecked_input ) {
+				daw_json_assert( parse_policy_details::has_more( first, last ),
+				                 "Unexpected end of data" );
+			}
+			while( *first != c ) {
+				if constexpr( not is_unchecked_input ) {
+					daw_json_assert( parse_policy_details::has_more( first, last ),
+					                 "Unexpected end of data" );
+				}
+				++first;
+				skip_comments( first, last );
+			}
+		}
+
+		template<std::size_t N>
+		DAW_ATTRIBUTE_FLATTEN static inline constexpr void
+		move_to_next_of( Iterator &first, Iterator last, char const ( &str )[N] ) {
+			skip_comments( first, last );
+
+			if constexpr( not is_unchecked_input ) {
+				daw_json_assert( parse_policy_details::has_more( first, last ),
+				                 "Unexpected end of data" );
+			}
+			while( not parse_policy_details::in( *first, str ) ) {
+				if constexpr( not is_unchecked_input ) {
+					daw_json_assert( parse_policy_details::has_more( first, last ),
+					                 "Unexpected end of data" );
+				}
+				++first;
+				skip_comments( first, last );
 			}
 		}
 
@@ -354,7 +442,9 @@ namespace daw::json {
 			clean_tail( first, last );
 			if( not parse_policy_details::empty( first, last ) and
 			    bracket_count > 0 ) {
-				trim_left_checked_raw( first, last );
+				if( not in_quotes ) {
+					trim_left( first, last );
+				}
 				switch( *first ) {
 				case '\\':
 					++first;
@@ -382,7 +472,9 @@ namespace daw::json {
 			while( parse_policy_details::has_more( first, last ) and
 			       bracket_count > 0 ) {
 				++first;
-				trim_left_checked_raw( first, last );
+				if( not in_quotes ) {
+					trim_left( first, last );
+				}
 				switch( *first ) {
 				case '\\':
 					++first;
@@ -424,7 +516,9 @@ namespace daw::json {
 			while( parse_policy_details::has_more( rng.first, rng.last ) and
 			       bracket_count > 0 ) {
 				++rng.first;
-				trim_left_checked_raw( rng.first, rng.last );
+				if( not in_quotes ) {
+					trim_left( rng.first, rng.last );
+				}
 				switch( *rng.first ) {
 				case '\\':
 					++rng.first;
@@ -468,9 +562,9 @@ namespace daw::json {
 	using NoCommentSkippingPolicyUnchecked =
 	  BasicNoCommentSkippingPolicy<char const *, true>;
 	using HashCommentSkippingPolicyChecked =
-	  BasicNoCommentSkippingPolicy<char const *, false>;
+	  BasicHashCommentSkippingPolicy<char const *, false>;
 	using HashCommentSkippingPolicyUnchecked =
-	  BasicNoCommentSkippingPolicy<char const *, true>;
+	  BasicHashCommentSkippingPolicy<char const *, true>;
 } // namespace daw::json
 
 namespace daw::json::json_details {
@@ -581,13 +675,6 @@ namespace daw::json::json_details {
 			policy::trim_left_unchecked( first, last );
 		}
 
-		inline constexpr void trim_left_checked_raw( ) {
-			while( is_space( ) ) {
-				remove_prefix( );
-				daw_json_assert_weak( first != last, "Unexpected end of stream" );
-			}
-		}
-
 		[[nodiscard]] inline constexpr iterator begin( ) const {
 			return first;
 		}
@@ -604,77 +691,36 @@ namespace daw::json::json_details {
 			return not empty( );
 		}
 
+		inline constexpr void set_class_position( ) {
+			class_first = first;
+			class_last = last;
+		}
+
 		inline constexpr void move_to_next_of( char c ) {
-			policy::skip_comments( first, last );
-			daw_json_assert_weak( has_more( ), "Unexpected end of data" );
-			while( front( ) != c ) {
-				daw_json_assert_weak( has_more( ), "Unexpected end of data" );
-				remove_prefix( );
-				policy::skip_comments( first, last );
-			}
+			policy::move_to_next_of( first, last, c );
 		}
 
 		template<std::size_t N>
 		inline constexpr void move_to_next_of( char const ( &str )[N] ) {
-			policy::skip_comments( first, last );
-			daw_json_assert_weak( has_more( ), "Unexpected end of data" );
-			while( not in( str ) ) {
-				daw_json_assert_weak( has_more( ), "Unexpected end of data" );
-				remove_prefix( );
-				policy::skip_comments( first, last );
-			}
+			policy::move_to_next_of( first, last, str );
 		}
 
-		[[nodiscard]] inline constexpr bool in( char c ) const {
-			daw_json_assert_weak( first != nullptr, "Empty or null InteratorRange" );
-			return *first == c;
+		[[nodiscard]] inline constexpr bool in( char c ) const noexcept {
+			return parse_policy_details::in( *first, c );
 		}
 
 		template<std::size_t N>
-		[[nodiscard]] inline constexpr bool in( char const ( &set )[N] ) const {
-			unsigned result = 0;
-			daw::algorithm::do_n_arg<N>( [&]( std::size_t n ) {
-				result |= static_cast<unsigned>( set[n] == *first );
-			} );
-			return static_cast<bool>( result );
+		[[nodiscard]] inline constexpr bool
+		in( char const ( &set )[N] ) const noexcept {
+			return parse_policy_details::in( *first, set );
 		}
 
-		[[nodiscard]] inline constexpr bool is_real_number_part( ) const {
-			switch( *first ) {
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-			case 'e':
-			case 'E':
-			case '+':
-			case '-':
-				return true;
-			}
-			return false;
-		}
-
-		[[nodiscard]] inline constexpr bool at_end_of_item( ) const {
-			auto const c = front( );
-			return static_cast<bool>(
-			  static_cast<unsigned>( c == ',' ) | static_cast<unsigned>( c == '}' ) |
-			  static_cast<unsigned>( c == ']' ) | static_cast<unsigned>( c == ':' ) |
-			  static_cast<unsigned>( c <= 0x20 ) );
+		[[nodiscard]] inline constexpr bool at_end_of_item( ) const noexcept {
+			return parse_policy_details::at_end_of_item( *first );
 		}
 
 		inline constexpr void clean_tail( ) {
 			policy::clean_tail( first, last );
-		}
-
-		inline constexpr void set_class_position( ) {
-			class_first = first;
-			class_last = last;
 		}
 
 		DAW_ATTRIBUTE_FLATTEN inline constexpr bool at_literal_end( ) const {
@@ -691,6 +737,11 @@ namespace daw::json::json_details {
 		[[nodiscard]] inline constexpr IteratorRange skip_bracketed_item( ) {
 			return policy::template skip_bracketed_item<Left, Right>( *this );
 		}
+
+		[[nodiscard]] inline constexpr bool is_real_number_part( ) const noexcept {
+			return parse_policy_details::is_real_number_part( *first );
+		}
+
 	}; // namespace daw::json::json_details
 
 	template<typename CharT>
