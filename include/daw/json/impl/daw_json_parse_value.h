@@ -813,10 +813,8 @@ namespace daw::json::json_details {
 		using container_t = typename JsonMember::base_type;
 		using element_t = typename JsonMember::json_element_t::parse_to_t;
 		using iterator_t = json_parse_value_array_iterator<JsonMember, Range>;
-		iterator_t first = iterator_t( rng );
-		iterator_t const last = iterator_t( );
-		auto a = is_range_constructable_v<container_t, element_t>;
-		(void)a;
+		constexpr auto last = iterator_t( );
+
 		if constexpr( std::conjunction_v<
 		                std::is_same<typename JsonMember::appender_t,
 		                             basic_appender<container_t>>,
@@ -828,25 +826,28 @@ namespace daw::json::json_details {
 			// Iterator pair
 			if constexpr( daw::traits::is_vector_v<container_t> ) {
 				if constexpr( KnownBounds ) {
-					std::vector<element_t> result{ };
+					auto first = iterator_t( rng );
+					auto result = std::vector<element_t>( );
 					result.reserve( rng.counter );
 					result.insert( result.end( ), first, last );
 					return result;
 				} else {
-					auto rng2 = rng;
-					rng2 = skip_array( rng2 );
-					std::vector<element_t> result{ };
+					auto rng2 = skip_array( rng );
+					auto first = iterator_t( rng2 );
+					auto result = std::vector<element_t>( );
 					result.reserve( rng2.counter );
 					result.insert( result.end( ), first, last );
 					return result;
 				}
 			} else {
+				auto first = iterator_t( rng );
 				return container_t( first, last );
 			}
 		} else {
 			auto array_container = typename JsonMember::constructor_t{ }( );
 			auto container_appender =
 			  typename JsonMember::appender_t( array_container );
+			auto first = iterator_t( rng );
 
 			while( first != last ) {
 				container_appender( *first );

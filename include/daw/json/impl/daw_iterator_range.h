@@ -361,6 +361,9 @@ namespace daw::json {
 			std::size_t comma_count = 0;
 			bool in_quotes = false;
 			auto result = *this;
+			if( *first == Right ) {
+				return result;
+			}
 			while( parse_policy_details::has_more( first, last ) and
 			       bracket_count > 0 ) {
 				++first;
