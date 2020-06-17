@@ -103,7 +103,8 @@ namespace daw::json {
 		 * @return The parsed result of ParseElement
 		 */
 		[[nodiscard]] inline constexpr value_type operator*( ) const {
-			daw_json_assert_weak( m_state.front( ']' ), "Unexpected end of stream" );
+			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
+			                      "Unexpected end of stream" );
 
 			auto tmp = m_state;
 

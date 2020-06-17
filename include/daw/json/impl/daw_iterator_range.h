@@ -291,8 +291,7 @@ namespace daw::json {
 			                      "Expected closing bracket/brace" );
 			// We include the Right bracket in the range so that subsequent parsers
 			// have a terminator inside their range
-			++first;
-			result.last = first;
+			result.last = first + 1;
 			return result;
 		}
 	}; // namespace daw::json
@@ -562,8 +561,7 @@ namespace daw::json {
 			                      "Expected closing bracket/brace" );
 			// We include the Right bracket in the range so that subsequent parsers
 			// have a terminator inside their range
-			++first;
-			result.last = first;
+			result.last = first + 1;
 			return result;
 		}
 	};
