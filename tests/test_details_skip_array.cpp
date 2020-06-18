@@ -21,7 +21,7 @@ bool test_empty_quoted( ) {
 	constexpr std::string_view sv = "[]";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	return std::string_view( v.begin( ), v.size( ) ) == sv;
 }
 
@@ -29,7 +29,7 @@ bool test_extra_slash( ) {
 	constexpr std::string_view sv = "[\\]";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	daw::do_not_optimize( v );
 	return false;
 }
@@ -38,7 +38,7 @@ bool test_end_of_stream( ) {
 	constexpr std::string_view sv = "[";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	daw::do_not_optimize( v );
 	return false;
 }
@@ -47,7 +47,7 @@ bool test_trailing_comma( ) {
 	constexpr std::string_view sv = "[1,2,3,4,]";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	return std::string_view( v.begin( ), v.size( ) ) == sv;
 }
 
@@ -55,7 +55,7 @@ bool test_strings( ) {
 	constexpr std::string_view sv = "[\"1\",\"2\",\"3\",\"4\"]";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	return std::string_view( v.begin( ), v.size( ) ) == sv;
 }
 
@@ -63,7 +63,7 @@ bool test_bad_strings_001( ) {
 	constexpr std::string_view sv = "[\"1\",\"2\",\"3\",\"4]";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	daw::do_not_optimize( v );
 	return false;
 }
@@ -72,7 +72,7 @@ bool test_bad_strings_002( ) {
 	constexpr std::string_view sv = "[\"1\",\"2\",\"3\",\"4\\\"]";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	daw::do_not_optimize( v );
 	return false;
 }
@@ -81,7 +81,7 @@ bool test_classes_001( ) {
 	constexpr std::string_view sv = "[{},{},{},{},{},{}]";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	return std::string_view( v.begin( ), v.size( ) ) == sv;
 }
 
@@ -91,7 +91,7 @@ bool test_classes_002( ) {
 	  "\"\"}]";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	return std::string_view( v.begin( ), v.size( ) ) == sv;
 }
 
@@ -99,7 +99,7 @@ bool test_embedded_arrays( ) {
 	constexpr std::string_view sv = "[[[[[[{ },{ }],[]]]]]]";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	return std::string_view( v.begin( ), v.size( ) ) == sv;
 }
 
@@ -107,7 +107,7 @@ bool test_embedded_arrays_broken_001( ) {
 	constexpr std::string_view sv = "[[[[[[[{ },{ }],[]]]]]]";
 	auto rng = daw::json::json_details::IteratorRange( sv.data( ),
 	                                                   sv.data( ) + sv.size( ) );
-	auto v = skip_array( rng );
+	auto v = rng.skip_array( );
 	daw::do_not_optimize( v );
 	return false;
 }
