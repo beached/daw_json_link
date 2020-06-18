@@ -24,7 +24,7 @@
 #include <vector>
 
 struct Number {
-	intmax_t a{};
+	intmax_t a{ };
 };
 namespace daw::json {
 	template<>
@@ -37,6 +37,20 @@ namespace daw::json {
 #endif
 	};
 } // namespace daw::json
+
+template<size_t N, typename T>
+static std::vector<T> const &make_int_array( ) {
+	static std::vector<T> const data = [] {
+		auto result = std::vector<T>( );
+		result.reserve( N );
+		for( size_t n = 0; n < N; ++n ) {
+			result.push_back( daw::randint<T>( std::numeric_limits<T>::min( ),
+			                                   std::numeric_limits<T>::max( ) ) );
+		}
+		return result;
+	}( );
+	return data;
+}
 
 template<size_t N, typename T>
 static std::string_view make_int_array_data( ) {
@@ -55,7 +69,7 @@ static std::string_view make_int_array_data( ) {
 		result.resize( result.size( ) + 256U );
 		return result;
 	}( );
-	return {json_data.data( ), json_data.size( )};
+	return { json_data.data( ), json_data.size( ) };
 }
 
 template<size_t NUMVALUES>
@@ -151,6 +165,65 @@ void test_func( ) {
 		  json_sv_intmax );
 
 		std::cout << "element count: " << count2 << '\n';
+
+		{
+			auto to_json_str = std::string( );
+			to_json_str.resize(
+			  static_cast<std::size_t>( json_sv_intmax.size( ) * 1.5 ) );
+			auto result = daw::bench_n_test_mbs<100>(
+			  "array of intmax_t: to_json presized", data.size( ) * sizeof( data[0] ),
+			  [&]( std::vector<intmax_t> const &v ) noexcept {
+				  daw::json::to_json_array( v, to_json_str.data( ) );
+				  daw::do_not_optimize( to_json_str.data( ) );
+			  },
+			  data );
+
+			std::cout << "element count: " << data.size( ) << '\n';
+		}
+		{
+			auto to_json_str = std::string( );
+			to_json_str.resize( make_int_array_data<NUMVALUES, int32_t>( ).size( ) *
+			                    2 );
+			auto result = daw::bench_n_test_mbs<100>(
+			  "array of int32_t: to_json presized", ( NUMVALUES * sizeof( int32_t ) ),
+			  [&]( std::vector<int32_t> const &v ) noexcept {
+				  daw::json::to_json_array( v, to_json_str.data( ) );
+				  daw::do_not_optimize( to_json_str.data( ) );
+			  },
+			  make_int_array<NUMVALUES, int32_t>( ) );
+
+			std::cout << "element count: " << NUMVALUES << '\n';
+		}
+		{
+			auto to_json_str = std::string( );
+			to_json_str.resize( make_int_array_data<NUMVALUES, uint32_t>( ).size( ) *
+			                    2 );
+			auto result = daw::bench_n_test_mbs<100>(
+			  "array of uint32_t: to_json presized",
+			  ( NUMVALUES * sizeof( uint32_t ) ),
+			  [&]( std::vector<uint32_t> const &v ) noexcept {
+				  daw::json::to_json_array( v, to_json_str.data( ) );
+				  daw::do_not_optimize( to_json_str.data( ) );
+			  },
+			  make_int_array<NUMVALUES, uint32_t>( ) );
+
+			std::cout << "element count: " << NUMVALUES << '\n';
+		}
+		{
+			auto to_json_str = std::string( );
+			to_json_str.resize( make_int_array_data<NUMVALUES, uintmax_t>( ).size( ) *
+			                    2 );
+			auto result = daw::bench_n_test_mbs<100>(
+			  "array of uintmax_t: to_json presized",
+			  ( NUMVALUES * sizeof( uintmax_t ) ),
+			  [&]( std::vector<uintmax_t> const &v ) noexcept {
+				  daw::json::to_json_array( v, to_json_str.data( ) );
+				  daw::do_not_optimize( to_json_str.data( ) );
+			  },
+			  make_int_array<NUMVALUES, uintmax_t>( ) );
+
+			std::cout << "element count: " << NUMVALUES << '\n';
+		}
 	}
 
 	std::cout << "Checked\n";
