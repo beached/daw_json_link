@@ -505,7 +505,7 @@ namespace daw::json::json_details {
 
 	inline constexpr auto digits100 = [] {
 		std::array<char[2], 100> result{ };
-		for( size_t n = 10; n < 100; ++n ) {
+		for( size_t n = 0; n < 100; ++n ) {
 			result[n][0] = static_cast<char>( n % 10 ) + '0';
 			result[n][1] = static_cast<char>( n / 10 ) + '0';
 		}
@@ -550,12 +550,6 @@ namespace daw::json::json_details {
 					return it;
 				}
 			}
-			/*
-			do {
-				*ptr++ = '0' + static_cast<char>( v % 10 );
-				v /= 10;
-			} while( v > 0 );
-			 */
 			if( v == 0 ) {
 				*ptr++ ='0';
 			}
@@ -610,10 +604,19 @@ namespace daw::json::json_details {
 			  v >= 0, "Negative numbers are not supported for unsigned types" );
 			char buff[std::numeric_limits<under_type>::digits10 + 1]{ };
 			char *ptr = buff;
-			do {
-				*ptr++ = '0' + static_cast<char>( v % 10 );
-				v /= 10;
-			} while( v > 0 );
+			if( v == 0 ) {
+				*ptr++ ='0';
+			}
+			while( v >= 10 ) {
+				auto const tmp = static_cast<std::size_t>( v%100 );
+				v /= 100;
+				ptr[0] = digits100[tmp][0];
+				ptr[1] = digits100[tmp][1];
+				ptr += 2;
+			}
+			if( v > 0 ) {
+				*ptr++ = '0' + static_cast<char>( v );
+			}
 			--ptr;
 			*it++ = *ptr;
 			while( ptr != buff ) {
