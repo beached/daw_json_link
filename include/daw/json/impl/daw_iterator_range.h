@@ -220,7 +220,7 @@ namespace daw::json {
 			}
 		}
 
-		inline constexpr void clean_tail( ) noexcept {
+		inline constexpr void clean_tail( ) noexcept( is_unchecked_input ) {
 			trim_left( );
 			if( *first == ',' ) {
 				++first;
@@ -367,8 +367,6 @@ namespace daw::json {
 			skip_comments_unchecked( );
 			while( is_space_unchecked( ) ) {
 				++first;
-				// TODO: verify I can remove safely
-				daw_json_assert_weak( has_more( ), "Unexpected end of stream" );
 			}
 		}
 
