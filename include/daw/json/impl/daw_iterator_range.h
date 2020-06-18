@@ -272,19 +272,20 @@ namespace daw::json {
 			}
 		}
 
-		template<char Left, char Right>
+		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
-		skip_bracketed_item( ) noexcept( is_unchecked_input ) {
+		skip_bracketed_item_checked( ) noexcept( is_unchecked_input ) {
 			// Not checking for Left as it is required to be skipped already
-			std::size_t bracket_count = 1;
-			bool in_quotes = false;
 			auto result = *this;
 			result.counter = 0;
-			if( has_more( ) and *first == Left ) {
+			std::int_fast64_t prime_bracket_count = 1;
+			std::int_fast64_t second_bracket_count = 0;
+			bool in_quotes = false;
+			if( has_more( ) and *first == PrimLeft ) {
 				++first;
 			}
-
-			while( has_more( ) and bracket_count > 0 ) {
+			while( has_more( ) and prime_bracket_count > 0 and
+			       second_bracket_count >= 0 ) {
 				switch( *first ) {
 				case '\\':
 					++first;
@@ -293,29 +294,114 @@ namespace daw::json {
 					in_quotes = not in_quotes;
 					break;
 				case ',':
-					if( not in_quotes and bracket_count == 1 ) {
+					if( not in_quotes and prime_bracket_count == 1 and
+					    second_bracket_count == 0 ) {
 						++result.counter;
 					}
 					break;
-				case Left:
+				case PrimLeft:
 					if( not in_quotes ) {
-						++bracket_count;
+						++prime_bracket_count;
 					}
 					break;
-				case Right:
+				case PrimRight:
 					if( not in_quotes ) {
-						--bracket_count;
+						--prime_bracket_count;
+					}
+					break;
+				case SecLeft:
+					if( not in_quotes ) {
+						++second_bracket_count;
+					}
+					break;
+				case SecRight:
+					if( not in_quotes ) {
+						--second_bracket_count;
 					}
 					break;
 				}
 				++first;
 			}
-			daw_json_assert_weak( bracket_count == 0,
-			                      "Expected closing bracket/brace" );
-			// We include the Right bracket in the range so that subsequent parsers
-			// have a terminator inside their range
+			daw_json_assert_weak( prime_bracket_count == 0 and
+			                        second_bracket_count == 0,
+			                      "Unexpected bracketing" );
+			// We include the close primary bracket in the range so that subsequent
+			// parsers have a terminator inside their range
 			result.last = first;
 			return result;
+		}
+
+		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
+		skip_bracketed_item_unchecked( ) noexcept( is_unchecked_input ) {
+			// Not checking for Left as it is required to be skipped already
+			auto result = *this;
+			result.counter = 0;
+			std::int_fast64_t prime_bracket_count = 1;
+			std::int_fast64_t second_bracket_count = 0;
+			bool in_quotes = false;
+			if( *first == PrimLeft ) {
+				++first;
+			}
+			while( prime_bracket_count > 0 ) {
+				switch( *first ) {
+				case '\\':
+					++first;
+					break;
+				case '"':
+					in_quotes = not in_quotes;
+					break;
+				case ',':
+					if( not in_quotes and prime_bracket_count == 1 and
+					    second_bracket_count == 0 ) {
+						++result.counter;
+					}
+					break;
+				case PrimLeft:
+					if( not in_quotes ) {
+						++prime_bracket_count;
+					}
+					break;
+				case PrimRight:
+					if( not in_quotes ) {
+						--prime_bracket_count;
+					}
+					break;
+				case SecLeft:
+					if( not in_quotes ) {
+						++second_bracket_count;
+					}
+					break;
+				case SecRight:
+					if( not in_quotes ) {
+						--second_bracket_count;
+					}
+					break;
+				}
+				++first;
+			}
+			// We include the close primary bracket in the range so that subsequent
+			// parsers have a terminator inside their range
+			result.last = first;
+			return result;
+		}
+
+		[[nodiscard]] inline constexpr Range
+		skip_class( ) noexcept( is_unchecked_input ) {
+			if constexpr( is_unchecked_input ) {
+				return skip_bracketed_item_unchecked<'{', '}', '[', ']'>( );
+			} else {
+				return skip_bracketed_item_checked<'{', '}', '[', ']'>( );
+			}
+		}
+
+		[[nodiscard]] inline constexpr Range
+		skip_array( ) noexcept( is_unchecked_input ) {
+			if constexpr( is_unchecked_input ) {
+				return skip_bracketed_item_unchecked<'[', ']', '{', '}'>( );
+			} else {
+				return skip_bracketed_item_checked<'[', ']', '{', '}'>( );
+			}
 		}
 	}; // namespace daw::json
 	//*******************************************
@@ -538,19 +624,20 @@ namespace daw::json {
 			counter = 0;
 		}
 
-		template<char Left, char Right>
+		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
-		skip_bracketed_item( ) noexcept( is_unchecked_input ) {
+		skip_bracketed_item_checked( ) noexcept( is_unchecked_input ) {
 			// Not checking for Left as it is required to be skipped already
-			std::size_t bracket_count = 1;
-			bool in_quotes = false;
 			auto result = *this;
 			result.counter = 0;
-			if( has_more( ) and *first == Left ) {
+			std::int_fast64_t prime_bracket_count = 1;
+			std::int_fast64_t second_bracket_count = 0;
+			bool in_quotes = false;
+			if( has_more( ) and *first == PrimLeft ) {
 				++first;
 			}
-
-			while( has_more( ) and bracket_count > 0 ) {
+			while( has_more( ) and prime_bracket_count > 0 and
+			       second_bracket_count >= 0 ) {
 				switch( *first ) {
 				case '\\':
 					++first;
@@ -559,29 +646,131 @@ namespace daw::json {
 					in_quotes = not in_quotes;
 					break;
 				case ',':
-					if( not in_quotes and bracket_count == 1 ) {
+					if( not in_quotes and prime_bracket_count == 1 and
+					    second_bracket_count == 0 ) {
 						++result.counter;
 					}
 					break;
-				case Left:
+				case PrimLeft:
 					if( not in_quotes ) {
-						++bracket_count;
+						++prime_bracket_count;
 					}
 					break;
-				case Right:
+				case PrimRight:
 					if( not in_quotes ) {
-						--bracket_count;
+						--prime_bracket_count;
+					}
+					break;
+				case SecLeft:
+					if( not in_quotes ) {
+						++second_bracket_count;
+					}
+					break;
+				case SecRight:
+					if( not in_quotes ) {
+						--second_bracket_count;
+					}
+					break;
+				case '#':
+					if( not in_quotes ) {
+						while( has_more( ) and *first != '\n' ) {
+							++first;
+						}
+						if( not has_more( ) ) {
+							continue;
+						}
 					}
 					break;
 				}
 				++first;
 			}
-			daw_json_assert_weak( bracket_count == 0,
-			                      "Expected closing bracket/brace" );
-			// We include the Right bracket in the range so that subsequent parsers
-			// have a terminator inside their range
-			result.last = first + 1;
+			daw_json_assert_weak( prime_bracket_count == 0 and
+			                        second_bracket_count == 0,
+			                      "Unexpected bracketing" );
+			// We include the close primary bracket in the range so that subsequent
+			// parsers have a terminator inside their range
+			result.last = first;
 			return result;
+		}
+
+		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
+		skip_bracketed_item_unchecked( ) noexcept( is_unchecked_input ) {
+			// Not checking for Left as it is required to be skipped already
+			auto result = *this;
+			result.counter = 0;
+			std::int_fast64_t prime_bracket_count = 1;
+			std::int_fast64_t second_bracket_count = 0;
+			bool in_quotes = false;
+			if( *first == PrimLeft ) {
+				++first;
+			}
+			while( prime_bracket_count > 0 ) {
+				switch( *first ) {
+				case '\\':
+					++first;
+					break;
+				case '"':
+					in_quotes = not in_quotes;
+					break;
+				case ',':
+					if( not in_quotes and prime_bracket_count == 1 and
+					    second_bracket_count == 0 ) {
+						++result.counter;
+					}
+					break;
+				case PrimLeft:
+					if( not in_quotes ) {
+						++prime_bracket_count;
+					}
+					break;
+				case PrimRight:
+					if( not in_quotes ) {
+						--prime_bracket_count;
+					}
+					break;
+				case SecLeft:
+					if( not in_quotes ) {
+						++second_bracket_count;
+					}
+					break;
+				case SecRight:
+					if( not in_quotes ) {
+						--second_bracket_count;
+					}
+					break;
+				case '#':
+					if( not in_quotes ) {
+						while( *first != '\n' ) {
+							++first;
+						}
+					}
+					break;
+				}
+				++first;
+			}
+			// We include the close primary bracket in the range so that subsequent
+			// parsers have a terminator inside their range
+			result.last = first;
+			return result;
+		}
+
+		[[nodiscard]] inline constexpr Range
+		skip_class( ) noexcept( is_unchecked_input ) {
+			if constexpr( is_unchecked_input ) {
+				return skip_bracketed_item_unchecked<'{', '}', '[', ']'>( );
+			} else {
+				return skip_bracketed_item_checked<'{', '}', '[', ']'>( );
+			}
+		}
+
+		[[nodiscard]] inline constexpr Range
+		skip_array( ) noexcept( is_unchecked_input ) {
+			if constexpr( is_unchecked_input ) {
+				return skip_bracketed_item_unchecked<'[', ']', '{', '}'>( );
+			} else {
+				return skip_bracketed_item_checked<'[', ']', '{', '}'>( );
+			}
 		}
 	};
 

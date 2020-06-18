@@ -483,7 +483,6 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 3 );
 		}
 		result.last = rng.first;
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
@@ -501,7 +500,6 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 4 );
 		}
 		result.last = rng.first;
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
@@ -542,21 +540,10 @@ namespace daw::json::json_details {
 			}
 		}
 		result.last = rng.first;
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 		rng.trim_left( );
 		daw_json_assert_weak( rng.front( ",}]" ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
-	}
-
-	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_class( Range &rng ) {
-		return rng.template skip_bracketed_item<'{', '}'>( );
-	}
-
-	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_array( Range &rng ) {
-		return rng.template skip_bracketed_item<'[', ']'>( );
 	}
 
 	template<typename Range>
@@ -569,9 +556,9 @@ namespace daw::json::json_details {
 		case '"':
 			return skip_string( rng );
 		case '[':
-			return skip_array( rng );
+			return rng.skip_array( );
 		case '{':
-			return skip_class( rng );
+			return rng.skip_class( );
 		case 't':
 			return skip_true( rng );
 		case 'f':
@@ -617,11 +604,11 @@ namespace daw::json::json_details {
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
 			daw_json_assert_weak( rng.front( '[' ),
 			                      "Expected start of array with '['" );
-			return json_details::skip_array( rng ).first;
+			return rng.skip_array( );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Class ) {
 			daw_json_assert_weak( rng.front( '{' ),
 			                      "Expected start of class with '{'" );
-			return json_details::skip_class( rng );
+			return rng.skip_class( );
 		} else {
 			// Woah there
 			static_assert( JsonMember::expected_type == JsonParseTypes::Class,

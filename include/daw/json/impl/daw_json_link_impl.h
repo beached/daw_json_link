@@ -383,7 +383,7 @@ namespace daw::json::json_details {
 			// If we fullfill the contract before all values are parses
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
 			rng.move_to_next_of( "\"}" );
-			(void)skip_class( rng );
+			(void)rng.skip_class( );
 
 			rng.trim_left_checked( );
 		};
