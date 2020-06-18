@@ -18,11 +18,13 @@
 
 namespace daw::cookbook_numbers2 {
 	struct MyClass2 {
-		unsigned member_unsigned;
+		unsigned member_unsigned0;
+		unsigned member_unsigned1;
 		signed member_signed;
 
 		constexpr bool operator==( MyClass2 const &rhs ) const {
-			return member_unsigned == rhs.member_unsigned and
+			return member_unsigned0 == rhs.member_unsigned0 and
+			       member_unsigned1 == rhs.member_unsigned1 and
 			       member_signed == rhs.member_signed;
 		}
 	};
@@ -32,18 +34,21 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_numbers2::MyClass2> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_number<"member_unsigned", unsigned>,
+		using type = json_member_list<json_number<"member_unsigned0", unsigned>,
+		                              json_number<"member_unsigned1", unsigned>,
 		                              json_number<"member_signed", signed>>;
 #else
-		static constexpr char const member_unsigned[] = "member_unsigned";
+		static constexpr char const member_unsigned0[] = "member_unsigned0";
+		static constexpr char const member_unsigned1[] = "member_unsigned1";
 		static constexpr char const member_signed[] = "member_signed";
-		using type = json_member_list<json_number<member_unsigned, unsigned>,
+		using type = json_member_list<json_number<member_unsigned0, unsigned>,
+		                              json_number<member_unsigned1, unsigned>,
 		                              json_number<member_signed, signed>>;
 #endif
 		static inline auto
 		to_json_data( daw::cookbook_numbers2::MyClass2 const &value ) {
-			return std::forward_as_tuple( value.member_unsigned,
-			                              value.member_signed );
+			return std::forward_as_tuple(
+			  value.member_unsigned0, value.member_unsigned1, value.member_signed );
 		}
 	};
 } // namespace daw::json
@@ -59,7 +64,7 @@ int main( int argc, char **argv ) try {
 	  daw::json::from_json<daw::cookbook_numbers2::MyClass2>(
 	    std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.member_unsigned == 12345, "Unexpected value" );
+	daw_json_assert( cls.member_unsigned0 == 12345, "Unexpected value" );
 	daw_json_assert( cls.member_signed == -12345, "Unexpected value" );
 	std::string const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );

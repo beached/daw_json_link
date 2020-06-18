@@ -531,8 +531,15 @@ namespace daw::json::json_details {
 	[[nodiscard]] static constexpr Range skip_number( Range &rng ) {
 		auto result = rng;
 		++rng.first;
-		while( not rng.is_space( ) and not rng.at_literal_end( ) ) {
-			++rng.first;
+		if constexpr( Range::is_unchecked_input ) {
+			while( not rng.is_space_unchecked( ) and not rng.at_literal_end( ) ) {
+				++rng.first;
+			}
+		} else {
+			while( rng.has_more( ) and not rng.is_space( ) and
+			       not rng.at_literal_end( ) ) {
+				++rng.first;
+			}
 		}
 		result.last = rng.first;
 		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );

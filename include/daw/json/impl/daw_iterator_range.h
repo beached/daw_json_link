@@ -43,6 +43,31 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		is_number( char c ) noexcept {
+			return static_cast<unsigned>( c ) - static_cast<unsigned>( '0' ) < 10U;
+		}
+
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		is_signed_number_part( char c ) noexcept {
+			switch( c ) {
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+			case '+':
+			case '-':
+				return true;
+			}
+			return false;
+		}
+
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
 		is_real_number_part( char c ) noexcept {
 			switch( c ) {
 			case '0':

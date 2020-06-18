@@ -232,18 +232,25 @@ constexpr auto const test_001_t_json_data =
 			"dte": "2016-12-31T01:02:03.343Z"
 	  })";
 
+constexpr bool test_004( ) {
+	return daw::json::from_json<int, daw::json::NoCommentSkippingPolicyUnchecked>(
+	         test_001_t_json_data, "i" ) == 55;
+}
+
+constexpr bool test_005( ) {
+	return daw::json::from_json<int, daw::json::NoCommentSkippingPolicyUnchecked>(
+	         test_001_t_json_data, "i" ) == 55;
+}
+
+constexpr bool test_006( ) {
+	return daw::json::from_json<int>( test_001_t_json_data, "y[2]" ) == 3;
+}
+
 #if( defined( __GNUC__ ) and __GNUC__ > 8 ) or defined( __clang__ ) or         \
   defined( _MSC_VER )
-static_assert(
-  daw::json::from_json<int, daw::json::NoCommentSkippingPolicyUnchecked>(
-    test_001_t_json_data, "i" ) == 55,
-  "Unexpected value" );
-static_assert(
-  daw::json::from_json<int, daw::json::NoCommentSkippingPolicyUnchecked>(
-    test_001_t_json_data, "i" ) == 55,
-  "Unexpected value" );
-static_assert( daw::json::from_json<int>( test_001_t_json_data, "y[2]" ) == 3,
-               "Unexpected value" );
+static_assert( test_004( ), "Unexpected value" );
+static_assert( test_005( ), "Unexpected value" );
+static_assert( test_006( ), "Unexpected value" );
 
 #endif
 
@@ -388,6 +395,9 @@ static_assert(
 */
 
 int main( int, char ** ) try {
+	test_004( );
+	test_005( );
+	test_006( );
 	{
 		constexpr auto const v =
 		  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );

@@ -822,22 +822,24 @@ namespace daw::json {
 		return result;
 	}
 
-	template<typename Map>
-	struct is_json_map_function : std::false_type {};
+	template<typename>
+	struct is_json_transform_function : std::false_type {};
 
-	template<typename Map>
-	inline constexpr bool is_json_map_function_v =
-	  is_json_map_function<Map>::value;
+	template<typename Transformer>
+	inline constexpr bool is_json_transform_function_v =
+	  is_json_transform_function<Transformer>::value;
 
-	template<bool Minify = true,
+	template<typename JsonTransform,
 	         typename ParserPolicy = NoCommentSkippingPolicyChecked,
-	         typename OutputIterator, typename... Maps>
-	constexpr OutputIterator json_map( std::string_view json_document,
-	                                   OutputIterator out_it, Maps &&... maps ) {
-		static_assert( sizeof...( Maps ) > 0, "Must supply at least one map" );
-		static_assert(
-		  ( is_json_map_function_v<Maps> and ... ),
-		  "Maps types must be fullfill the json_map_function concept" );
+	         typename OutputIterator, typename... Transformers>
+	constexpr OutputIterator json_transform( std::string_view json_document,
+	                                         OutputIterator out_it ) {
+		//using Range = ParserPolicy;
+		// TODO: look at filling document if all transformers are nullable
+		daw_json_assert( not json_document.empty( ),
+		                 "Cannot parse an empty or null document" );
+		auto jv = basic_json_value<ParserPolicy>( ParserPolicy(
+		  json_document.data( ), json_document.data( ) + json_document.size( ) ) );
 	}
 
 	namespace json_details {
