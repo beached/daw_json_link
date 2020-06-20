@@ -36,7 +36,7 @@ bool empty_class_empty_json_class( ) {
 
 	std::string_view sv = "{}";
 	daw::do_not_optimize( sv );
-	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_class<no_name, Empty>>(
 	  ParseTag<JsonParseTypes::Class>{}, rng );
 	daw::do_not_optimize( v );
@@ -49,7 +49,7 @@ bool empty_class_nonempty_json_class( ) {
 
 	std::string_view sv = R"({ "a": 12345, "b": {} })";
 	daw::do_not_optimize( sv );
-	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_class<no_name, Empty>>(
 	  ParseTag<JsonParseTypes::Class>{}, rng );
 	daw::do_not_optimize( v );
@@ -84,7 +84,7 @@ bool missing_members_fail( ) {
 
 	std::string_view sv = "{}";
 	daw::do_not_optimize( sv );
-	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = InlineClass<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
@@ -99,7 +99,7 @@ bool wrong_member_type_fail( ) {
 
 	std::string_view sv = R"({ "member0": "this isn't a number" })";
 	daw::do_not_optimize( sv );
-	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = InlineClass<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
@@ -114,7 +114,7 @@ bool wrong_member_number_type_fail( ) {
 
 	std::string_view sv = R"({ "member0": -123 })";
 	daw::do_not_optimize( sv );
-	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
 	using class_t = InlineClass<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(

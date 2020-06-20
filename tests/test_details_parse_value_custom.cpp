@@ -27,7 +27,7 @@ bool empty_array_empty_json_array( ) {
 	using namespace daw::json::json_details;
 
 	constexpr std::string_view sv = R"({ "a": "20200130" })";
-	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	rng.remove_prefix( 7 );
 	auto v = parse_value<json_custom<no_name, std::string_view, NoOp>>(
 	  ParseTag<JsonParseTypes::Custom>{}, rng );

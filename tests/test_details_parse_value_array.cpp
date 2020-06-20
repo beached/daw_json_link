@@ -21,7 +21,7 @@ bool empty_array_empty_json_array( ) {
 	using namespace daw::json::json_details;
 
 	constexpr std::string_view sv = "[]";
-	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_array<no_name, int>>(
 	  ParseTag<JsonParseTypes::Array>{}, rng );
 	return v.empty( );
@@ -33,8 +33,43 @@ bool int_array_json_string_array_fail( ) {
 
 	std::string_view sv = R"([ "this is strange" ])";
 	daw::do_not_optimize( sv );
-	auto rng = IteratorRange( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_array<no_name, int>>(
+	  ParseTag<JsonParseTypes::Array>{}, rng );
+	daw::do_not_optimize( v );
+	return true;
+}
+
+template<typename... Members>
+struct InlineClass {
+	std::tuple<typename Members::parse_to_t...> members;
+
+	template<typename... Ts>
+	inline constexpr InlineClass( Ts &&... values )
+	  : members{std::forward<Ts>( values )...} {}
+};
+
+namespace daw::json {
+	template<typename... Members>
+	struct json_data_contract<InlineClass<Members...>> {
+		using type = json_member_list<Members...>;
+	};
+
+	template<typename... Members>
+	[[nodiscard, maybe_unused]] static inline auto const &
+	to_json_data( InlineClass<Members...> const &value ) {
+		return value.members;
+	}
+} // namespace daw::json
+
+bool array_with_closing_class_fail( ) {
+	using namespace daw::json;
+	using namespace daw::json::json_details;
+
+	std::string_view sv = R"([ {}}, ])";
+	daw::do_not_optimize( sv );
+	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto v = parse_value<json_array<no_name, InlineClass<>>>(
 	  ParseTag<JsonParseTypes::Array>{}, rng );
 	daw::do_not_optimize( v );
 	return true;
