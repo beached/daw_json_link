@@ -480,7 +480,8 @@ There are a few defines that affect how JSON Link operates
 
 ### Quickly pulling into a project.  
 
-Two other header only libraries are needed.  When making tests they are automatically pulled in.  However, having the include folder of the following two projects is needed
+Two other header only libraries are needed.  They exist in the `.glean` subfolder of the project already.  Alternatively 
+When making tests they are automatically pulled in.  However, having the include folder of the following two projects is needed
 * https://github.com/beached/header_libraries - `git clone --depth 1 https://github.com/beached/header_libraries.git`
 * https://github.com/beached/utf_range - `git clone --depth 1 https://github.com/beached/utf_range.git`
 
