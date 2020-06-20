@@ -39,16 +39,26 @@ namespace daw::json::json_details::name {
 		  maybe_unused]] DAW_ATTRIBUTE_FLATTEN static inline constexpr daw::
 		  string_view
 		  parse_nq( Range &rng ) {
+
 			auto ptr = rng.begin( );
-			while( rng.front( ) != '"' ) {
-				while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
-					rng.remove_prefix( );
+			if constexpr( Range::is_unchecked_input ) {
+				while( rng.front( ) != '"' ) {
+					rng.move_to_next_of_nc( "\"\\" );
+					if( rng.front( ) == '\\' ) {
+						rng.remove_prefix( 2 );
+					}
 				}
-				if( rng.front( ) == '\\' ) {
-					rng.remove_prefix( 2 );
+			} else {
+				while( rng.has_more( ) and rng.front( ) != '"' ) {
+					rng.move_to_next_of_nc( "\"\\" );
+					if( rng.front( '\\' ) ) {
+						if( rng.last - rng.first >= 2 ) {
+							rng.remove_prefix( 2 );
+						}
+					}
 				}
 			}
-			daw_json_assert_weak( rng.front( ) == '"',
+			daw_json_assert_weak( rng.front( '"' ),
 			                      "Expected a '\"' at the end of string" );
 			auto result =
 			  daw::string_view( ptr, static_cast<std::size_t>( rng.begin( ) - ptr ) );
@@ -67,9 +77,9 @@ namespace daw::json::json_details {
 	// memberA.memberB.member\.C has 3 parts['memberA', 'memberB', 'member.C']
 	[[nodiscard]] constexpr auto pop_json_path( daw::string_view &path ) {
 		struct pop_json_path_result {
-			daw::string_view current{};
+			daw::string_view current{ };
 			char found_char = 0;
-		} result{};
+		} result{ };
 		if( path.empty( ) ) {
 			return result;
 		}
@@ -179,9 +189,9 @@ namespace daw::json::json_details {
 		rng.trim_left_checked( );
 		if( rng.has_more( ) and not start_path.empty( ) ) {
 			if( not find_range2( rng, start_path ) ) {
-				return {false, rng};
+				return { false, rng };
 			}
 		}
-		return {true, rng};
+		return { true, rng };
 	}
 } // namespace daw::json::json_details

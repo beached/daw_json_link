@@ -42,6 +42,33 @@ namespace daw::json {
 			return first < last;
 		}
 
+		template<std::size_t N, std::size_t... Is>
+		inline constexpr void
+		move_to_next_of_nc_unchecked( char const ( &str )[N],
+		                              std::index_sequence<Is...> ) {
+			while( ( ( *first != str[Is] ) and ... ) ) {
+				++first;
+			}
+		}
+
+		template<std::size_t N, std::size_t... Is>
+		inline constexpr void
+		move_to_next_of_nc_checked( char const ( &str )[N],
+		                            std::index_sequence<Is...> ) {
+			while( has_more( ) and ( ( *first != str[Is] ) and ... ) ) {
+				++first;
+			}
+		}
+
+		template<std::size_t N>
+		inline constexpr void move_to_next_of_nc( char const ( &str )[N] ) {
+			if constexpr( is_unchecked_input ) {
+				move_to_next_of_nc_unchecked( str, std::make_index_sequence<N>{ } );
+			} else {
+				move_to_next_of_nc_checked( str, std::make_index_sequence<N>{ } );
+			}
+		}
+
 		DAW_ATTRIBUTE_FLATTEN inline constexpr void
 		move_to_next_of_unchecked( char c ) {
 			while( *first != c ) {

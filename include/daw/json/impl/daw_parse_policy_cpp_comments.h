@@ -79,7 +79,6 @@ namespace daw::json {
 			}
 		}
 
-
 		inline constexpr void skip_comments_checked( ) noexcept {
 			if( has_more( ) and *first == '/' ) {
 				++first;
@@ -167,10 +166,36 @@ namespace daw::json {
 			}
 		}
 
+		template<std::size_t N, std::size_t... Is>
+		inline constexpr void
+		move_to_next_of_nc_unchecked( char const ( &str )[N],
+		                              std::index_sequence<Is...> ) {
+			while( ( ( *first != str[Is] ) and ... ) ) {
+				++first;
+			}
+		}
+
+		template<std::size_t N, std::size_t... Is>
+		inline constexpr void
+		move_to_next_of_nc_checked( char const ( &str )[N],
+		                            std::index_sequence<Is...> ) {
+			while( has_more( ) and ( ( *first != str[Is] ) and ... ) ) {
+				++first;
+			}
+		}
+
+		template<std::size_t N>
+		inline constexpr void move_to_next_of_nc( char const ( &str )[N] ) {
+			if constexpr( is_unchecked_input ) {
+				move_to_next_of_nc_unchecked( str, std::make_index_sequence<N>{ } );
+			} else {
+				move_to_next_of_nc_checked( str, std::make_index_sequence<N>{ } );
+			}
+		}
+
 		template<std::size_t N>
 		inline constexpr void move_to_next_of( char const ( &str )[N] ) {
 			skip_comments( );
-
 			daw_json_assert_weak( has_more( ), "Unexpected end of data" );
 			while( not parse_policy_details::in( *first, str ) ) {
 				daw_json_assert_weak( has_more( ), "Unexpected end of data" );

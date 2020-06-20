@@ -34,10 +34,10 @@ namespace daw::json {
 		                 typename std::iterator_traits<iterator>::iterator_category,
 		                 std::random_access_iterator_tag>,
 		               "Expecting a Random Contiguous Iterator" );
-		iterator first{};
-		iterator last{};
-		iterator class_first{};
-		iterator class_last{};
+		iterator first{ };
+		iterator last{ };
+		iterator class_first{ };
+		iterator class_last{ };
 		std::size_t counter = 0;
 		using Range = BasicNoCommentSkippingPolicy;
 
@@ -64,8 +64,8 @@ namespace daw::json {
 			daw_json_assert( not is_null( ), "Unexpceted null start of range" );
 		}
 
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool empty( ) const
-		  noexcept {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		empty( ) const noexcept {
 			if constexpr( is_unchecked_input ) {
 				return first == last;
 			} else {
@@ -73,9 +73,50 @@ namespace daw::json {
 			}
 		}
 
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool has_more( ) const
-		  noexcept {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+		has_more( ) const noexcept {
 			return first < last;
+		}
+
+		DAW_ATTRIBUTE_FLATTEN inline constexpr void
+		move_to_next_of_unchecked( char c ) {
+			while( *first != c ) {
+				++first;
+			}
+		}
+
+		DAW_ATTRIBUTE_FLATTEN inline constexpr void
+		move_to_next_of_checked( char c ) {
+			while( has_more( ) and *first != c ) {
+				++first;
+			}
+		}
+
+		template<std::size_t N, std::size_t... Is>
+		inline constexpr void
+		move_to_next_of_nc_unchecked( char const ( &str )[N],
+		                              std::index_sequence<Is...> ) {
+			while( ( ( *first != str[Is] ) and ... ) ) {
+				++first;
+			}
+		}
+
+		template<std::size_t N, std::size_t... Is>
+		inline constexpr void
+		move_to_next_of_nc_checked( char const ( &str )[N],
+		                            std::index_sequence<Is...> ) {
+			while( has_more( ) and ( ( *first != str[Is] ) and ... ) ) {
+				++first;
+			}
+		}
+
+		template<std::size_t N>
+		inline constexpr void move_to_next_of_nc( char const ( &str )[N] ) {
+			if constexpr( is_unchecked_input ) {
+				move_to_next_of_nc_unchecked( str, std::make_index_sequence<N>{ } );
+			} else {
+				move_to_next_of_nc_checked( str, std::make_index_sequence<N>{ } );
+			}
 		}
 
 		[[nodiscard]] inline constexpr decltype( auto ) front( ) const noexcept {
@@ -146,7 +187,7 @@ namespace daw::json {
 			return c == '\0' or c == ',' or c == ']' or c == '}';
 		}
 
-		inline constexpr bool is_space( ) const noexcept( is_unchecked_input ) {
+		 inline constexpr bool is_space( ) const noexcept( is_unchecked_input ) {
 			daw_json_assert_weak( has_more( ), "Unexpected end" );
 			return *first <= 0x20;
 		}
