@@ -146,8 +146,7 @@ namespace daw::json::json_details {
 		}
 
 		[[nodiscard]] inline constexpr bool
-		is_match( daw::string_view Name ) noexcept {
-			uint32_t const h = daw::murmur3_32( Name );
+		is_match( uint32_t h, daw::string_view Name ) const noexcept {
 			if( hash_value != h ) {
 				return false;
 			}
@@ -196,11 +195,10 @@ namespace daw::json::json_details {
 
 		[[nodiscard]] inline constexpr std::size_t
 		find_name( daw::string_view key ) const {
-			// Bug in MSVC is making the constexpr ptr/ptr string_view like classes
-			// break, along with the hashing
+			uint32_t const hash = murmur3_32( key );
 			return algorithm::find_index_of_if(
 			  begin( ), end( ),
-			  [key]( value_type const &loc ) { return loc.name == key; } );
+			  [hash, key]( value_type const &loc ) { return loc.is_match( hash, key ); } );
 		}
 	}; // namespace daw::json::json_details
 

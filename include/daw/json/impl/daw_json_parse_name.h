@@ -40,7 +40,7 @@ namespace daw::json::json_details::name {
 		  string_view
 		  parse_nq( Range &rng ) {
 
-			auto ptr = rng.begin( );
+			char const *const ptr = rng.first;
 			if constexpr( Range::is_unchecked_input ) {
 				while( rng.front( ) != '"' ) {
 					rng.move_to_next_of_nc( "\"\\" );
@@ -60,14 +60,12 @@ namespace daw::json::json_details::name {
 			}
 			daw_json_assert_weak( rng.front( '"' ),
 			                      "Expected a '\"' at the end of string" );
-			auto result =
-			  daw::string_view( ptr, static_cast<std::size_t>( rng.begin( ) - ptr ) );
+			auto result = daw::string_view( ptr, rng.first );
 			rng.remove_prefix( );
 			trim_end_of_name( rng );
 			return result;
 		}
 	};
-
 } // namespace daw::json::json_details::name
 
 namespace daw::json::json_details {

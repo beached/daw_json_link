@@ -15,11 +15,11 @@
 
 namespace daw {
 	namespace murmur3_details {
-		static constexpr std::uint32_t to_u32( daw::string_view sv ) {
-			std::uint32_t const c0 = static_cast<unsigned char>( sv[3] );
-			std::uint32_t const c1 = static_cast<unsigned char>( sv[2] );
-			std::uint32_t const c2 = static_cast<unsigned char>( sv[1] );
-			std::uint32_t const c3 = static_cast<unsigned char>( sv[0] );
+		static constexpr std::uint32_t to_u32( char const *const ptr ) {
+			std::uint32_t const c0 = static_cast<unsigned char>( ptr[3] );
+			std::uint32_t const c1 = static_cast<unsigned char>( ptr[2] );
+			std::uint32_t const c2 = static_cast<unsigned char>( ptr[1] );
+			std::uint32_t const c3 = static_cast<unsigned char>( ptr[0] );
 			std::uint32_t result = ( c0 << 24U ) | ( c1 << 16U ) | ( c2 << 8U ) | c3;
 			return result;
 		}
@@ -37,23 +37,23 @@ namespace daw {
 		std::uint32_t h = seed;
 		std::uint32_t k = 0;
 		auto const len = static_cast<uint32_t>( key.size( ) );
-
-		auto chunk = key.pop_front( 4U );
-		while( chunk.size( ) >= 4U ) {
+		char const *first = key.data( );
+		char const *const last = key.data( ) + key.size( );
+		while( ( last - first ) >= 4U ) {
 			// Here is a source of differing results across endiannesses.
 			// A swap here has no effects on hash properties though.
-			k = murmur3_details::to_u32( chunk );
+			k = murmur3_details::to_u32( first );
 			h ^= murmur3_details::murmur3_32_scramble( k );
 			h = ( h << 13U ) | ( h >> 19U );
 			h = h * 5U + 0xe654'6b64ULL;
-			chunk = key.pop_front( 4U );
+			first += 4;
 		}
 
 		// Anything left over
 		k = 0U;
-		while( not chunk.empty( ) ) {
+		while( first != last ) {
 			k <<= 8U;
-			k |= static_cast<unsigned char>( chunk.pop_back( ) );
+			k |= static_cast<unsigned char>( *first++ );
 		}
 
 		h ^= murmur3_details::murmur3_32_scramble( k );
