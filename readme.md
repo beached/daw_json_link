@@ -407,13 +407,23 @@ Parsing can begin at a specific member.  An optional member path to `from_json_a
 The format is a dot separated list of member names and optionally an array index such as `member0.member1` or `member0[5].member1`.
 
 ## Comments
-Comments are optionally supported when `DAW_ALLOW_COMMENTS` is defined or set in the cmake build.  This allows the `#` symbol to comment to the end of line.
+Comments are supported when the parser policy for them is used.  Currently there are two forms of comment policies.  C++ style `//` and `\* *\/`
+
+* Hash style
 ```json
 { # This is a comment
     "a" #this is also a comment
       : "a's value"
 }
 ```
+
+* C++ style
+```json
+{ // This is a comment
+    "a" /*this is also a comment*/: "a's value"
+}
+```
+
 ## Serialization
 ###### [Top](#content)
 
@@ -455,7 +465,6 @@ There are a few defines that affect how JSON Link operates
 * `DAW_JSON_DONT_USE_EXCEPTIONS` - Controls if exceptions are allowed.  If they are not, an `abort()` on errors will occur
 * `DAW_JSON_CHECK_DEBUG_ONLY` - Most checks are disabled in release mode
 * `DAW_ALLOW_SSE3` - Allow experimental SSE3 mode
-* `DAW_ALLOW_COMMENTS` - Allow comments in JSON data.  This is of the form of a `#` and will comment the rest of the line
 * `DAW_JSON_NO_CONST_EXPR` - This can be used to allow classes without move/copy special members to be constructed from JSON data prior to C++ 20.  This mode does not work in a constant expression prior to C++20 when this flag is no longer needed. 
 
 ## Requirements
