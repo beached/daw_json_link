@@ -423,6 +423,7 @@ Comments are supported when the parser policy for them is used.  Currently there
     "a" /*this is also a comment*/: "a's value"
 }
 ```
+To change the parser policy, you add another argument to `from_json` and call like `from_json<MyType, CppCommentParsePolicy>( json_data )`
 
 ## Serialization
 ###### [Top](#content)
