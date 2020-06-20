@@ -21,13 +21,13 @@
 
 namespace daw::json {
 	template<typename Iterator, bool IsUncheckedInput>
-	struct BasicHashCommentSkippingPolicy {
+	struct BasicCppCommentSkippingPolicy {
 		using iterator = Iterator;
 		static inline constexpr bool is_unchecked_input = IsUncheckedInput;
 		using CharT = daw::remove_cvref_t<decltype( *std::declval<Iterator>( ) )>;
 
-		using as_unchecked = BasicHashCommentSkippingPolicy<Iterator, true>;
-		using as_checked = BasicHashCommentSkippingPolicy<Iterator, false>;
+		using as_unchecked = BasicCppCommentSkippingPolicy<Iterator, true>;
+		using as_checked = BasicCppCommentSkippingPolicy<Iterator, false>;
 
 		inline constexpr void skip_comments( ) noexcept {
 			if constexpr( is_unchecked_input ) {
@@ -57,19 +57,55 @@ namespace daw::json {
 		}
 
 		inline constexpr void skip_comments_unchecked( ) noexcept {
-			if( *first == '#' ) {
+			if( *first == '/' ) {
 				++first;
-				move_to_next_of_unchecked( '\n' );
-				++first;
+				switch( *first ) {
+				case '/':
+					move_to_next_of_unchecked( '\n' );
+					++first;
+					break;
+				case '*':
+					++first;
+					while( true ) {
+						move_to_next_of_unchecked( '*' );
+						++first;
+						if( *first == '/' ) {
+							break;
+						}
+						++first;
+					}
+					break;
+				}
 			}
 		}
 
+
 		inline constexpr void skip_comments_checked( ) noexcept {
-			if( has_more( ) and *first == '#' ) {
+			if( has_more( ) and *first == '/' ) {
 				++first;
-				move_to_next_of_checked( '\n' );
-				if( *first == '\n' ) {
+				if( not has_more( ) ) {
+					return;
+				}
+				switch( *first ) {
+				case '/':
+					move_to_next_of_checked( '\n' );
+					if( has_more( ) ) {
+						++first;
+					}
+					break;
+				case '*':
 					++first;
+					while( has_more( ) ) {
+						move_to_next_of_checked( '*' );
+						if( has_more( ) ) {
+							++first;
+						}
+						if( not has_more( ) or *first == '/' ) {
+							break;
+						}
+						++first;
+					}
+					break;
 				}
 			}
 		}
@@ -144,7 +180,7 @@ namespace daw::json {
 		}
 
 		//*********************************************************
-		using policy = BasicHashCommentSkippingPolicy;
+		using policy = BasicCppCommentSkippingPolicy;
 		static_assert( std::is_convertible_v<
 		                 typename std::iterator_traits<iterator>::iterator_category,
 		                 std::random_access_iterator_tag>,
@@ -154,7 +190,7 @@ namespace daw::json {
 		iterator class_first{ };
 		iterator class_last{ };
 		std::size_t counter = 0;
-		using Range = BasicHashCommentSkippingPolicy;
+		using Range = BasicCppCommentSkippingPolicy;
 
 		template<std::size_t N>
 		inline constexpr bool operator==( char const ( &rhs )[N] ) const {
@@ -168,9 +204,9 @@ namespace daw::json {
 			return result;
 		}
 
-		inline constexpr BasicHashCommentSkippingPolicy( ) = default;
+		inline constexpr BasicCppCommentSkippingPolicy( ) = default;
 
-		inline constexpr BasicHashCommentSkippingPolicy( iterator f, iterator l )
+		inline constexpr BasicCppCommentSkippingPolicy( iterator f, iterator l )
 		  : first( f )
 		  , last( l )
 		  , class_first( f )
@@ -395,10 +431,10 @@ namespace daw::json {
 				return skip_bracketed_item_checked<'[', ']', '{', '}'>( );
 			}
 		}
-	};
+	}; // namespace daw::json
 
-	using HashCommentSkippingPolicyChecked =
-	  BasicHashCommentSkippingPolicy<char const *, false>;
-	using HashCommentSkippingPolicyUnchecked =
-	  BasicHashCommentSkippingPolicy<char const *, true>;
+	using CppCommentSkippingPolicyChecked =
+	  BasicCppCommentSkippingPolicy<char const *, false>;
+	using CppCommentSkippingPolicyUnchecked =
+	  BasicCppCommentSkippingPolicy<char const *, true>;
 } // namespace daw::json

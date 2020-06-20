@@ -84,7 +84,37 @@ int main( int argc, char **argv ) try {
 	                 "Missing value" );
 
 	daw::bench_n_test_mbs<NUM_RUNS>(
-	  "twitter bench(comments)", sz,
+	  "twitter bench(cpp comments)", sz,
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result =
+		    daw::json::from_json<daw::twitter::twitter_object_t,
+		                         daw::json::CppCommentSkippingPolicyChecked>( f1 );
+		  daw::do_not_optimize( twitter_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+	daw::bench_n_test_mbs<NUM_RUNS>(
+	  "twitter bench(cpp comments, unchecked)", sz,
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result =
+		    daw::json::from_json<daw::twitter::twitter_object_t,
+		                         daw::json::CppCommentSkippingPolicyUnchecked>(
+		      f1 );
+		  daw::do_not_optimize( twitter_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+
+	daw::bench_n_test_mbs<NUM_RUNS>(
+	  "twitter bench(hash comments)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
 		    daw::json::from_json<daw::twitter::twitter_object_t,
@@ -98,7 +128,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 	daw::bench_n_test_mbs<NUM_RUNS>(
-	  "twitter bench(comments, unchecked)", sz,
+	  "twitter bench(hash comments, unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
 		    daw::json::from_json<daw::twitter::twitter_object_t,
@@ -113,7 +143,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 
-	std::string str{};
+	std::string str{ };
 	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(to_json_string)", sz,
