@@ -21,11 +21,11 @@
 #include <vector>
 
 struct Number {
-	float a{};
+	float a{ };
 };
 
 struct Number2 {
-	float a{};
+	float a{ };
 };
 
 namespace daw::json {
@@ -39,17 +39,15 @@ namespace daw::json {
 #endif
 	};
 
-#ifdef DAW_ALLOW_SSE3
 	template<>
 	struct json_data_contract<Number2> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_number_sse3<"a", float>>;
+		using type = json_member_list<json_number<"a", float>>;
 #else
 		static inline constexpr char const a[] = "a";
-		using type = json_member_list<json_number_sse3<a, float>>;
+		using type = json_member_list<json_number<a, float>>;
 #endif
 	};
-#endif
 } // namespace daw::json
 
 template<typename Float>
@@ -287,15 +285,19 @@ void test_func( ) {
 		auto const count = *daw::bench_n_test_mbs<100>(
 		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data = from_json_array<Number2>( sv );
+			  auto const data =
+			    from_json_array<Number2, std::vector<Number2>,
+			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+			      sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 		daw::do_not_optimize( count );
 		std::cout << "element count: " << count << '\n';
-		using iterator_t =
-		  daw::json::json_array_iterator<json_class<no_name, Number2>>;
+		using iterator_t = daw::json::json_array_iterator<
+		  json_class<no_name, Number2>,
+		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
 
 		auto data = std::vector<Number2>( );
 		data.reserve( NUMVALUES );
@@ -321,15 +323,18 @@ void test_func( ) {
 		  "float  sse3parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<json_number_sse3<no_name, float>>( sv );
+			    from_json_array<json_number<no_name, float>, std::vector<float>,
+			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+			      sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t =
-		  daw::json::json_array_iterator<json_number_sse3<no_name, float>>;
+		using iterator_t = daw::json::json_array_iterator<
+		  json_number<no_name, float>,
+		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -356,15 +361,19 @@ void test_func( ) {
 		auto const count = *daw::bench_n_test_mbs<100>(
 		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
-			  auto const data = from_json_array<Number2>( sv );
+			  auto const data =
+			    from_json_array<Number2, std::vector<Number2>,
+			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+			      sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t =
-		  daw::json::json_array_iterator<json_class<no_name, Number2>>;
+		using iterator_t = daw::json::json_array_iterator<
+		  json_class<no_name, Number2>,
+		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
 
 		auto data = std::vector<Number2>( );
 		data.reserve( NUMVALUES );
@@ -390,15 +399,19 @@ void test_func( ) {
 		  "float sse3 parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<json_checked_number_sse3<no_name, float>>( sv );
+			    from_json_array<json_checked_number<no_name, float>,
+			                    std::vector<float>,
+			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+			      sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
 		  json_sv );
 
 		std::cout << "element count: " << count << '\n';
-		using iterator_t =
-		  daw::json::json_array_iterator<json_checked_number_sse3<no_name, float>>;
+		using iterator_t = daw::json::json_array_iterator<
+		  json_checked_number<no_name, float>,
+		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -433,8 +446,9 @@ void test_func( ) {
 
 	std::cout << "double sse3 parsing\n";
 	{
-		using iterator_t =
-		  daw::json::json_array_iterator<json_number_sse3<no_name, double>>;
+		using iterator_t = daw::json::json_array_iterator<
+		  json_number<no_name, double>,
+		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
 
 		std::string json_data3 = [] {
 			std::string result = "[";

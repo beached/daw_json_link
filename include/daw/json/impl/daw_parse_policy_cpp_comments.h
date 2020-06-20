@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_json_assert.h"
+#include "daw_json_parse_common.h"
 #include "daw_parse_policy_policy_details.h"
 
 #include <daw/cpp_17.h>
@@ -20,14 +21,17 @@
 #include <type_traits>
 
 namespace daw::json {
-	template<typename Iterator, bool IsUncheckedInput>
+	template<typename Iterator, bool IsUncheckedInput, SIMDModes SIMDMode>
 	struct BasicCppCommentSkippingPolicy {
 		using iterator = Iterator;
 		static inline constexpr bool is_unchecked_input = IsUncheckedInput;
+		static inline constexpr SIMDModes simd_mode = SIMDMode;
 		using CharT = daw::remove_cvref_t<decltype( *std::declval<Iterator>( ) )>;
 
-		using as_unchecked = BasicCppCommentSkippingPolicy<Iterator, true>;
-		using as_checked = BasicCppCommentSkippingPolicy<Iterator, false>;
+		using as_unchecked =
+		  BasicCppCommentSkippingPolicy<Iterator, true, simd_mode>;
+		using as_checked =
+		  BasicCppCommentSkippingPolicy<Iterator, false, simd_mode>;
 
 		inline constexpr void skip_comments( ) noexcept {
 			if constexpr( is_unchecked_input ) {
@@ -204,7 +208,6 @@ namespace daw::json {
 			}
 		}
 
-		//*********************************************************
 		using policy = BasicCppCommentSkippingPolicy;
 		static_assert( std::is_convertible_v<
 		                 typename std::iterator_traits<iterator>::iterator_category,
@@ -459,7 +462,16 @@ namespace daw::json {
 	}; // namespace daw::json
 
 	using CppCommentSkippingPolicyChecked =
-	  BasicCppCommentSkippingPolicy<char const *, false>;
+	  BasicCppCommentSkippingPolicy<char const *, false, SIMDModes::None>;
+
 	using CppCommentSkippingPolicyUnchecked =
-	  BasicCppCommentSkippingPolicy<char const *, true>;
+	  BasicCppCommentSkippingPolicy<char const *, true, SIMDModes::None>;
+
+	template<SIMDModes mode>
+	using SIMDCppCommentSkippingPolicyChecked =
+	  BasicCppCommentSkippingPolicy<char const *, false, mode>;
+
+	template<SIMDModes mode>
+	using SIMDCppCommentSkippingPolicyUnchecked =
+	  BasicCppCommentSkippingPolicy<char const *, true, mode>;
 } // namespace daw::json

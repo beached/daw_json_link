@@ -32,7 +32,7 @@ namespace daw::json::json_details::unsignedint {
 	struct unsigned_parser {
 		template<JsonRangeCheck RangeChecked>
 		[[nodiscard]] static constexpr std::pair<Unsigned, char const *>
-		parse( char const *ptr ) {
+		parse( SIMDConst<SIMDModes::None>, char const *ptr ) {
 			using result_t =
 			  std::conditional_t<daw::is_integral_v<Unsigned> and
 			                       ( sizeof( Unsigned ) > sizeof( uintmax_t ) ),
@@ -54,7 +54,7 @@ namespace daw::json::json_details::unsignedint {
 				  n <= std::numeric_limits<result_t>::max( ) and count >= 0,
 				  "Unsigned number outside of range of unsigned numbers" );
 			}
-			return {daw::construct_a<Unsigned>( n ), ptr};
+			return { daw::construct_a<Unsigned>( n ), ptr };
 		}
 
 #ifdef DAW_ALLOW_SSE3
@@ -116,7 +116,7 @@ namespace daw::json::json_details::unsignedint {
 
 		template<JsonRangeCheck RangeChecked>
 		[[nodiscard]] static inline std::pair<Unsigned, char const *>
-		parse_sse3( char const *ptr ) {
+		parse( SIMDConst<SIMDModes::SSE3>, char const *ptr ) {
 			uintmax_t result = 0;
 			int count = std::numeric_limits<Unsigned>::digits10 + 1;
 			while( is_made_of_eight_digits_fast( ptr ) ) {
@@ -147,20 +147,27 @@ namespace daw::json::json_details::unsignedint {
 				                              std::numeric_limits<Unsigned>::max( ) ),
 				                 "Parsed number is out of range" );
 			}
-			return {daw::construct_a<Unsigned>( result ), ptr};
+			return { daw::construct_a<Unsigned>( result ), ptr };
+		}
+#else
+		template<JsonRangeCheck, typename CharT>
+		static void parse( SIMDConst<SIMDModes::SSE3>, CharT const * ) {
+			static_assert( std::is_same_v<CharT, void>,
+			               "DAW_ALLOW_SSE3 not defined" );
 		}
 #endif
 	};
 	static_assert( unsigned_parser<unsigned>::template parse<
-	                 JsonRangeCheck::CheckForNarrowing>( "12345" )
+	                 JsonRangeCheck::CheckForNarrowing>(
+	                 SIMDConst_v<SIMDModes::None>, "12345" )
 	                 .first == 12345 );
 
 } // namespace daw::json::json_details::unsignedint
 
 namespace daw::json::json_details {
 
-	template<typename Result, SIMDModes SIMDMode,
-	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never, typename Range>
+	template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
+	         typename Range>
 	[[nodiscard]] constexpr auto parse_unsigned_integer2( Range &rng ) {
 		daw_json_assert_weak( rng.is_number( ), "Expecting a digit as first item" );
 
@@ -168,19 +175,10 @@ namespace daw::json::json_details {
 		using iresult_t =
 		  std::conditional_t<RangeCheck == JsonRangeCheck::CheckForNarrowing,
 		                     std::uintmax_t, Result>;
-		auto [v, new_p] = [rng] {
-#ifdef DAW_ALLOW_SSE3
-			if constexpr( SIMDMode == SIMDModes::SSE3 ) {
-				return unsigned_parser<iresult_t>::template parse_sse3<RangeCheck>(
-				  rng.first );
-			} else {
-#endif
-				return unsigned_parser<iresult_t>::template parse<RangeCheck>(
-				  rng.first );
-#ifdef DAW_ALLOW_SSE3
-			}
-#endif
-		}( );
+
+		auto [v, new_p] = unsigned_parser<iresult_t>::template parse<RangeCheck>(
+		  SIMDConst_v<Range::simd_mode>, rng.first );
+
 		auto c = static_cast<std::uint_fast8_t>( new_p - rng.first );
 		rng.first = new_p;
 
@@ -190,14 +188,14 @@ namespace daw::json::json_details {
 		};
 
 		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
-			return result_t{daw::narrow_cast<Result>( v ), c};
+			return result_t{ daw::narrow_cast<Result>( v ), c };
 		} else {
-			return result_t{v, c};
+			return result_t{ v, c };
 		}
 	}
 
 	template<typename Result, JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-	         SIMDModes SimdMode = SIMDModes::None, typename Range>
+	         typename Range>
 	[[nodiscard]] constexpr Result parse_unsigned_integer( Range &rng ) {
 		daw_json_assert_weak( rng.is_number( ), "Expecting a digit as first item" );
 
@@ -208,22 +206,10 @@ namespace daw::json::json_details {
 		                       ( sizeof( Result ) > sizeof( uintmax_t ) ),
 		                     Result, std::uintmax_t>,
 		  Result>;
-		auto [result, ptr] = [&] {
-#ifdef DAW_ALLOW_SSE3
-			if constexpr( SimdMode == SIMDModes::SSE3 ) {
-				daw_json_assert_weak(
-				  rng.size( ) >= parse_space_needed_v<SimdMode>,
-				  "Insufficient space to parse number in SSE3 Mode" );
-				return unsigned_parser<result_t>::template parse_sse3<RangeCheck>(
-				  rng.first );
-			} else {
-#endif
-				return unsigned_parser<result_t>::template parse<RangeCheck>(
-				  rng.first );
-#ifdef DAW_ALLOW_SSE3
-			}
-#endif
-		}( );
+
+		auto [result, ptr] = unsigned_parser<result_t>::template parse<RangeCheck>(
+		  SIMDConst_v<Range::simd_mode>, rng.first );
+
 		rng.first = ptr;
 
 		if constexpr( RangeCheck == JsonRangeCheck::CheckForNarrowing ) {
@@ -231,5 +217,5 @@ namespace daw::json::json_details {
 		} else {
 			return static_cast<Result>( result );
 		}
-	}
+	} // namespace daw::json::json_details
 } // namespace daw::json::json_details

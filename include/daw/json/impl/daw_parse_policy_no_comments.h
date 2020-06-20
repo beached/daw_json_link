@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_json_assert.h"
+#include "daw_json_parse_common.h"
 #include "daw_parse_policy_policy_details.h"
 
 #include <daw/cpp_17.h>
@@ -20,15 +21,17 @@
 #include <type_traits>
 
 namespace daw::json {
-	template<typename Iterator, bool IsUncheckedInput>
+	template<typename Iterator, bool IsUncheckedInput, SIMDModes SIMDMode>
 	struct BasicNoCommentSkippingPolicy {
 		using iterator = Iterator;
 		static inline constexpr bool is_unchecked_input = IsUncheckedInput;
+		static inline constexpr SIMDModes simd_mode = SIMDMode;
 		using CharT = daw::remove_cvref_t<decltype( *std::declval<Iterator>( ) )>;
 
-		using as_unchecked = BasicNoCommentSkippingPolicy<Iterator, true>;
-		using as_checked = BasicNoCommentSkippingPolicy<Iterator, false>;
-		//*********************************************************
+		using as_unchecked =
+		  BasicNoCommentSkippingPolicy<Iterator, true, simd_mode>;
+		using as_checked = BasicNoCommentSkippingPolicy<Iterator, false, simd_mode>;
+
 		using policy = BasicNoCommentSkippingPolicy;
 		static_assert( std::is_convertible_v<
 		                 typename std::iterator_traits<iterator>::iterator_category,
@@ -181,13 +184,12 @@ namespace daw::json {
 			class_last = last;
 		}
 
-		//*********************************************************
 		inline constexpr bool at_literal_end( ) const noexcept {
 			char const c = *first;
 			return c == '\0' or c == ',' or c == ']' or c == '}';
 		}
 
-		 inline constexpr bool is_space( ) const noexcept( is_unchecked_input ) {
+		inline constexpr bool is_space( ) const noexcept( is_unchecked_input ) {
 			daw_json_assert_weak( has_more( ), "Unexpected end" );
 			return *first <= 0x20;
 		}
@@ -377,7 +379,17 @@ namespace daw::json {
 	};
 
 	using NoCommentSkippingPolicyChecked =
-	  BasicNoCommentSkippingPolicy<char const *, false>;
+	  BasicNoCommentSkippingPolicy<char const *, false, SIMDModes::None>;
+
 	using NoCommentSkippingPolicyUnchecked =
-	  BasicNoCommentSkippingPolicy<char const *, true>;
+	  BasicNoCommentSkippingPolicy<char const *, true, SIMDModes::None>;
+
+	template<SIMDModes mode>
+	using SIMDNoCommentSkippingPolicyChecked =
+	  BasicNoCommentSkippingPolicy<char const *, false, mode>;
+
+	template<SIMDModes mode>
+	using SIMDNoCommentSkippingPolicyUnchecked =
+	  BasicNoCommentSkippingPolicy<char const *, true, mode>;
+
 } // namespace daw::json

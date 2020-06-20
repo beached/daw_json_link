@@ -36,8 +36,7 @@ namespace daw::json {
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 	         typename Constructor = daw::construct_a_t<T>,
 	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-	         JsonNullable Nullable = JsonNullable::Never,
-	         SIMDModes SIMDMode = SIMDModes::None>
+	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_number;
 
 	/**
@@ -56,25 +55,6 @@ namespace daw::json {
 	using json_number_null = json_number<Name, T, LiteralAsString, Constructor,
 	                                     RangeCheck, JsonNullable::Nullable>;
 
-#ifdef DAW_ALLOW_SSE3
-	/**
-	 * The member is a nullable number.  Requires at least 16bytes padding after
-	 * any value
-	 * @tparam Name name of json member
-	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
-	 * Constructor
-	 * @tparam LiteralAsString Could this number be embedded in a string
-	 * @tparam Constructor Callable used to construct result
-	 * @tparam RangeCheck Check if the value will fit in the result
-	 */
-	template<JSONNAMETYPE Name, typename T = double,
-	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-	         typename Constructor = daw::construct_a_t<T>,
-	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-	         JsonNullable Nullable = JsonNullable::Never>
-	using json_number_sse3 = json_number<Name, T, LiteralAsString, Constructor,
-	                                     RangeCheck, Nullable, SIMDModes::SSE3>;
-#endif
 	/**
 	 * The member is a range checked number
 	 * @tparam Name name of json member
@@ -92,25 +72,6 @@ namespace daw::json {
 	  json_number<Name, T, LiteralAsString, Constructor,
 	              JsonRangeCheck::CheckForNarrowing, Nullable>;
 
-#ifdef DAW_ALLOW_SSE3
-	/**
-	 * The member is a range checked number Requires at least 16bytes padding
-	 * after any value
-	 * @tparam Name name of json member
-	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
-	 * Constructor
-	 * @tparam LiteralAsString Could this number be embedded in a string
-	 * @tparam Constructor Callable used to construct result
-	 * @tparam Nullable Can the member be missing or have a null value
-	 */
-	template<JSONNAMETYPE Name, typename T = double,
-	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-	         typename Constructor = daw::construct_a_t<T>,
-	         JsonNullable Nullable = JsonNullable::Never>
-	using json_checked_number_sse3 =
-	  json_number_sse3<Name, T, LiteralAsString, Constructor,
-	                   JsonRangeCheck::CheckForNarrowing, Nullable>;
-#endif
 	/**
 	 * The member is a nullable range checked number
 	 * @tparam Name name of json member
@@ -366,7 +327,7 @@ namespace daw::json {
 			                          static_cast<ptrdiff_t>( json_data.size( ) ) );
 
 			return json_details::parse_value<json_member>(
-			  ParseTag<json_member::expected_type>{}, rng );
+			  ParseTag<json_member::expected_type>{ }, rng );
 		}
 
 	} // namespace json_details
@@ -698,17 +659,17 @@ namespace daw::json {
 		                       std::string_view member_path ) {
 			using json_member = unnamed_default_type_mapping<JsonMember>;
 			auto [is_found, rng] = json_details::find_range<ParsePolicy>(
-			  json_data, {member_path.data( ), member_path.size( )} );
+			  json_data, { member_path.data( ), member_path.size( ) } );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
-					return typename json_member::constructor_t{}( );
+					return typename json_member::constructor_t{ }( );
 				}
 			} else {
 				daw_json_assert( is_found,
 				                 "Could not find member and type isn't Nullable" );
 			}
 			return json_details::parse_value<json_member>(
-			  ParseTag<json_member::expected_type>{}, rng );
+			  ParseTag<json_member::expected_type>{ }, rng );
 		}
 	} // namespace json_details
 } // namespace daw::json

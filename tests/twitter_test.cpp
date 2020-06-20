@@ -54,11 +54,14 @@ int main( int argc, char **argv ) try {
 
 	std::optional<daw::twitter::twitter_object_t> twitter_result;
 
+	// ******************************
+	// NoCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<NUM_RUNS>(
-	  "twitter bench", sz,
+	  "twitter bench(checked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
-		    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
+		    daw::json::from_json<daw::twitter::twitter_object_t,
+		                         daw::json::NoCommentSkippingPolicyChecked>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_sv1 );
@@ -68,6 +71,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 
+	// NoCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
@@ -83,6 +87,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 
+	// CppCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(cpp comments)", sz,
 	  [&twitter_result]( auto f1 ) {
@@ -97,6 +102,8 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
+
+	// CppCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(cpp comments, unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
@@ -113,6 +120,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 
+	// HashCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(hash comments)", sz,
 	  [&twitter_result]( auto f1 ) {
@@ -127,6 +135,8 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
+
+	// HashCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(hash comments, unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
@@ -142,6 +152,108 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
+
+#ifdef DAW_ALLOW_SSE3
+	// ******************************
+	// SIMDNoCommentSkippingPolicyChecked
+	daw::bench_n_test_mbs<NUM_RUNS>(
+	  "twitter bench(checked, SSE3)", sz,
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result = daw::json::from_json<
+		    daw::twitter::twitter_object_t,
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>( f1 );
+		  daw::do_not_optimize( twitter_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+
+	// SIMDNoCommentSkippingPolicyUnchecked
+	daw::bench_n_test_mbs<NUM_RUNS>(
+	  "twitter bench(unchecked, SSE3)", sz,
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result = daw::json::from_json<
+		    daw::twitter::twitter_object_t,
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>( f1 );
+		  daw::do_not_optimize( twitter_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+
+	// SIMDCppCommentSkippingPolicyChecked
+	daw::bench_n_test_mbs<NUM_RUNS>(
+	  "twitter bench(cpp comments SSE3)", sz,
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result = daw::json::from_json<
+		    daw::twitter::twitter_object_t,
+		    daw::json::SIMDCppCommentSkippingPolicyChecked<SIMDModes::SSE3>>( f1 );
+		  daw::do_not_optimize( twitter_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+
+	// SIMDCppCommentSkippingPolicyUnchecked
+	daw::bench_n_test_mbs<NUM_RUNS>(
+	  "twitter bench(cpp comments, unchecked, SSE3)", sz,
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result = daw::json::from_json<
+		    daw::twitter::twitter_object_t,
+		    daw::json::SIMDCppCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>(
+		    f1 );
+		  daw::do_not_optimize( twitter_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+
+	// SIMDHashCommentSkippingPolicyChecked
+	daw::bench_n_test_mbs<NUM_RUNS>(
+	  "twitter bench(hash comments, SSE3)", sz,
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result = daw::json::from_json<
+		    daw::twitter::twitter_object_t,
+		    daw::json::SIMDHashCommentSkippingPolicyChecked<SIMDModes::SSE3>>( f1 );
+		  daw::do_not_optimize( twitter_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+
+	// SIMDHashCommentSkippingPolicyUnchecked
+	daw::bench_n_test_mbs<NUM_RUNS>(
+	  "twitter bench(hash comments, unchecked, SSE3)", sz,
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result = daw::json::from_json<
+		    daw::twitter::twitter_object_t,
+		    daw::json::SIMDHashCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>(
+		    f1 );
+		  daw::do_not_optimize( twitter_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+	// ******************************
+#endif
 
 	std::string str{ };
 	auto out_it = std::back_inserter( str );

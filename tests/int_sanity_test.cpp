@@ -18,7 +18,7 @@
 
 template<typename T, size_t N>
 std::vector<T> make_random_data( ) {
-	std::vector<T> result{};
+	std::vector<T> result{ };
 	result.reserve( N );
 	for( size_t n = 0; n < N; ++n ) {
 		result.push_back( daw::randint<T>( std::numeric_limits<T>::min( ),
@@ -39,7 +39,9 @@ bool unsigned_test( ) {
 #ifdef DAW_ALLOW_SSE3
 	json_data += "        "; // so that SSE has enough room to safely parse
 	std::vector<unsigned> const parsed_2 =
-	  from_json_array<json_number_sse3<no_name, unsigned>>( json_data );
+	  from_json_array<json_number<no_name, unsigned>, std::vector<unsigned>,
+	                  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+	    json_data );
 	return parsed_1 == data and parsed_1 == parsed_2;
 #else
 	return parsed_1 == data;
@@ -58,7 +60,9 @@ bool signed_test( ) {
 #ifdef DAW_ALLOW_SSE3
 	json_data += "        "; // so that SSE has enough room to safely parse
 	std::vector<signed> const parsed_2 =
-	  from_json_array<json_number_sse3<no_name, signed>>( json_data );
+	  from_json_array<json_number<no_name, signed>, std::vector<signed>,
+	                  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+	    json_data );
 	return parsed_1 == data and parsed_1 == parsed_2;
 #else
 	return parsed_1 == data;

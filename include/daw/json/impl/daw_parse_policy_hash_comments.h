@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_json_assert.h"
+#include "daw_json_parse_common.h"
 #include "daw_parse_policy_policy_details.h"
 
 #include <daw/cpp_17.h>
@@ -20,14 +21,17 @@
 #include <type_traits>
 
 namespace daw::json {
-	template<typename Iterator, bool IsUncheckedInput>
+	template<typename Iterator, bool IsUncheckedInput, SIMDModes SIMDMode>
 	struct BasicHashCommentSkippingPolicy {
 		using iterator = Iterator;
 		static inline constexpr bool is_unchecked_input = IsUncheckedInput;
+		static inline constexpr SIMDModes simd_mode = SIMDMode;
 		using CharT = daw::remove_cvref_t<decltype( *std::declval<Iterator>( ) )>;
 
-		using as_unchecked = BasicHashCommentSkippingPolicy<Iterator, true>;
-		using as_checked = BasicHashCommentSkippingPolicy<Iterator, false>;
+		using as_unchecked =
+		  BasicHashCommentSkippingPolicy<Iterator, true, simd_mode>;
+		using as_checked =
+		  BasicHashCommentSkippingPolicy<Iterator, false, simd_mode>;
 
 		inline constexpr void skip_comments( ) noexcept {
 			if constexpr( is_unchecked_input ) {
@@ -170,7 +174,6 @@ namespace daw::json {
 			}
 		}
 
-		//*********************************************************
 		using policy = BasicHashCommentSkippingPolicy;
 		static_assert( std::is_convertible_v<
 		                 typename std::iterator_traits<iterator>::iterator_category,
@@ -425,7 +428,16 @@ namespace daw::json {
 	};
 
 	using HashCommentSkippingPolicyChecked =
-	  BasicHashCommentSkippingPolicy<char const *, false>;
+	  BasicHashCommentSkippingPolicy<char const *, false, SIMDModes::None>;
+
 	using HashCommentSkippingPolicyUnchecked =
-	  BasicHashCommentSkippingPolicy<char const *, true>;
+	  BasicHashCommentSkippingPolicy<char const *, true, SIMDModes::None>;
+
+	template<SIMDModes mode>
+	using SIMDHashCommentSkippingPolicyChecked =
+	  BasicHashCommentSkippingPolicy<char const *, false, mode>;
+
+	template<SIMDModes mode>
+	using SIMDHashCommentSkippingPolicyUnchecked =
+	  BasicHashCommentSkippingPolicy<char const *, true, mode>;
 } // namespace daw::json

@@ -24,7 +24,7 @@
 #include <vector>
 
 struct Number {
-	intmax_t a{};
+	intmax_t a{ };
 };
 namespace daw::json {
 	template<>
@@ -69,7 +69,7 @@ static std::string_view make_int_array_data( ) {
 		result.resize( result.size( ) + 256U );
 		return result;
 	}( );
-	return {json_data.data( ), json_data.size( )};
+	return { json_data.data( ), json_data.size( ) };
 }
 
 template<size_t NUMVALUES>
@@ -397,7 +397,7 @@ void test_func( ) {
 #ifdef DAW_ALLOW_SSE3
 	{
 		// Unsigned SSE3
-		using uint_type = json_number_sse3<no_name, uintmax_t>;
+		using uint_type = json_number<no_name, uintmax_t>;
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
 		{
@@ -406,7 +406,7 @@ void test_func( ) {
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
 				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>,
-				    NoCommentSkippingPolicyUnchecked>( sv );
+				    SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -419,8 +419,9 @@ void test_func( ) {
 	std::cout << "Checked unsigned sse3\n";
 	{
 		// Unsigned SSE3
-		using uint_type = json_number_sse3<no_name, uintmax_t>;
-		using iterator_t = daw::json::json_array_iterator<uint_type>;
+		using uint_type = json_number<no_name, uintmax_t>;
+		using iterator_t = daw::json::json_array_iterator<
+		  uint_type, SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -440,7 +441,7 @@ void test_func( ) {
 	}
 	{
 		// Unsigned SSE3
-		using uint_type = json_number_sse3<no_name, uint32_t>;
+		using uint_type = json_number<no_name, uint32_t>;
 		auto const json_sv = make_int_array_data<NUMVALUES, uint32_t>( );
 
 		{
@@ -448,7 +449,8 @@ void test_func( ) {
 			  "p5. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
-				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>>( sv );
+				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>,
+				    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
