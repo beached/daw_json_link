@@ -407,7 +407,7 @@ Parsing can begin at a specific member.  An optional member path to `from_json_a
 The format is a dot separated list of member names and optionally an array index such as `member0.member1` or `member0[5].member1`.
 
 ## Comments
-Comments are supported when the parser policy for them is used.  Currently there are two forms of comment policies.  C++ style `//` and `\* *\/`
+Comments are supported when the parser policy for them is used.  Currently there are two forms of comment policies.  C++ style `//` and `/* */`
 
 * Hash style
 ```json
