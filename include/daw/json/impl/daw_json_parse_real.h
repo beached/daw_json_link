@@ -23,7 +23,7 @@ namespace daw::json::json_details {
 		    parse_policy_details::is_real_number_part( rng.front( ) ),
 		  "Expected a real number" );
 
-		int sign = 1;
+		std::int32_t sign = 1;
 		if( rng.front( ) == '-' ) {
 			rng.remove_prefix( );
 			sign = -1;
@@ -32,8 +32,7 @@ namespace daw::json::json_details {
 		}
 		daw_json_assert_weak( rng.is_number( ), "Expected a number" );
 		auto const whole_part = static_cast<Result>(
-		  sign *
-		  parse_unsigned_integer<int64_t, JsonRangeCheck::Never>( rng ) );
+		  sign * parse_unsigned_integer<int64_t, JsonRangeCheck::Never>( rng ) );
 
 		Result fract_part = 0.0;
 		if( rng.front( ) == '.' ) {
@@ -47,17 +46,15 @@ namespace daw::json::json_details {
 		}
 
 		int32_t exp_part = 0;
-		if( auto const frnt = rng.front( ); frnt == 'e' or frnt == 'E' ) {
+		if( rng.front( ) == 'e' ) {
 			rng.remove_prefix( );
-			int32_t const exsign = [&]( ) -> int32_t {
-				if( rng.front( ) == '-' ) {
-					rng.remove_prefix( );
-					return -1;
-				} else if( rng.front( ) == '+' ) {
-					rng.remove_prefix( );
-				}
-				return 1;
-			}( );
+			int32_t exsign = 1;
+			if( rng.front( ) == '-' ) {
+				rng.remove_prefix( );
+				exsign = -1;
+			} else if( rng.front( ) == '+' ) {
+				rng.remove_prefix( );
+			}
 			exp_part =
 			  exsign * parse_unsigned_integer<
 			             int32_t, ( Range::is_unchecked_input
