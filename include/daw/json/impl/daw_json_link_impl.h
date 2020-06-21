@@ -133,7 +133,10 @@ namespace daw::json::json_details {
 	template<typename Range>
 	struct location_info_t {
 		daw::string_view name;
+		// hash checking causes ICE on MSVC
+#if not defined( _MSC_VER ) or defined( __clang__ )
 		std::uint32_t hash_value = 0;
+#endif
 		Range location{ };
 		std::size_t count = 0;
 
@@ -145,6 +148,7 @@ namespace daw::json::json_details {
 			return location.is_null( );
 		}
 
+#if not defined( _MSC_VER ) or defined( __clang__ )
 		[[nodiscard]] inline constexpr bool
 		is_match( uint32_t h, daw::string_view Name ) const noexcept {
 			if( hash_value != h ) {
@@ -158,6 +162,12 @@ namespace daw::json::json_details {
 			auto tmp = daw::exchange( l, std::move( r ) );
 			r = std::move( tmp );
 		}
+#else
+		[[nodiscard]] inline constexpr bool
+		is_match( daw::string_view Name ) const noexcept {
+			return name == Name;
+		}
+#endif
 	};
 
 	/***
@@ -169,6 +179,8 @@ namespace daw::json::json_details {
 	struct locations_info_t {
 		using value_type = location_info_t<Range>;
 		std::array<value_type, N> names{ };
+
+#if not defined( _MSC_VER ) or defined( __clang__ )
 		bool has_collisons = true;
 
 		template<typename... Locs>
@@ -185,6 +197,7 @@ namespace daw::json::json_details {
 				                  return l.hash_value == r.hash_value;
 			                  } ) != locations.end( );
 		}
+#endif
 
 		inline constexpr auto begin( ) const {
 			return names.data( );
@@ -215,6 +228,7 @@ namespace daw::json::json_details {
 			return N;
 		}
 
+#if not defined( _MSC_VER ) or defined( __clang__ )
 		[[nodiscard]] inline constexpr std::size_t
 		find_name( daw::string_view key ) const {
 			uint32_t const hash = murmur3_32( key );
@@ -228,6 +242,14 @@ namespace daw::json::json_details {
 			  begin( ), end( ),
 			  [hash]( value_type const &loc ) { return loc.is_match( hash, { } ); } );
 		}
+#else
+		[[nodiscard]] inline constexpr std::size_t
+		find_name( daw::string_view key ) const {
+			return algorithm::find_index_of_if(
+			  begin( ), end( ),
+			  [key]( value_type const &loc ) { return loc.is_match( key ); } );
+		}
+#endif
 	}; // namespace daw::json::json_details
 
 	/***
