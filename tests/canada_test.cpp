@@ -51,9 +51,10 @@ int main( int argc, char **argv ) try {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
+	//**************************
 	std::optional<daw::geojson::Polygon> canada_result;
 	daw::bench_n_test_mbs<100>(
-	  "canada bench", sz,
+	  "canada bench(checked)", sz,
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
 		    f1, "features[0].geometry" );
@@ -62,10 +63,44 @@ int main( int argc, char **argv ) try {
 	  json_sv1 );
 	daw::do_not_optimize( canada_result );
 	daw_json_assert( canada_result, "Missing value" );
-	/*	daw_json_assert( canada_result->statuses.size( ) > 0, "Expected values" );
-	  daw_json_assert( canada_result->statuses.front( ).user.id == 1186275104,
-	                   "Missing value" );
-	*/
+	//**************************
+	canada_result = std::nullopt;
+	daw::bench_n_test_mbs<100>(
+	  "canada bench(unchecked)", sz,
+	  [&canada_result]( auto f1 ) {
+		  canada_result = daw::json::from_json<daw::geojson::Polygon, NoCommentSkippingPolicyUnchecked>(
+		    f1, "features[0].geometry" );
+		  daw::do_not_optimize( canada_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( canada_result );
+	daw_json_assert( canada_result, "Missing value" );
+#ifdef DAW_ALLOW_SSE3
+	//**************************
+	canada_result = std::nullopt;
+	daw::bench_n_test_mbs<100>(
+	  "canada bench(checked, SSE3)", sz,
+	  [&canada_result]( auto f1 ) {
+		  canada_result = daw::json::from_json<daw::geojson::Polygon, SIMDNoCommentSkippingPolicyChecked<SIMD::SSE3>(
+		    f1, "features[0].geometry" );
+		  daw::do_not_optimize( canada_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( canada_result );
+	daw_json_assert( canada_result, "Missing value" );
+	//**************************
+	canada_result = std::nullopt;
+	daw::bench_n_test_mbs<100>(
+	  "canada bench(unchecked, SSE3)", sz,
+	  [&canada_result]( auto f1 ) {
+		  canada_result = daw::json::from_json<daw::geojson::Polygon, SIMDNoCommentSkippingPolicyUnhecked<SIMD::SSE3>(
+		    f1, "features[0].geometry" );
+		  daw::do_not_optimize( canada_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( canada_result );
+	daw_json_assert( canada_result, "Missing value" );
+#endif
 
 	std::string str{};
 	{
