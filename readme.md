@@ -7,7 +7,7 @@
 
 [![Build Status Windows](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows)
 
-[![Build Status Arm64 Linux](https://travis-ci.com/beached/daw_json_link.svg?branch=master)](https://travis-ci.com/beached/daw_json_link) - Arm64/PPC64LE/S390X Linux
+[![Build Status Arm64 Linux](https://travis-ci.com/beached/daw_json_link.svg?branch=release)](https://travis-ci.com/beached/daw_json_link) - Arm64/PPC64LE/S390X Linux
 
 This library provides serialization/deserialization of JSON documents with a known structure into a C++ typed structure.
 
