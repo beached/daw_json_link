@@ -368,7 +368,9 @@ namespace daw::json {
 		}
 	};
 } // namespace daw::json
+#if not defined( _MSV_VER ) or defined( __clang__ ) 
 static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
+#endif
 
 struct OptionalOrdered {
 	int a = 0;
@@ -416,7 +418,7 @@ int main( int, char ** ) try {
 
 #if defined( __GNUC__ ) and __GNUC__ <= 9
 #define CX
-#elif defined( _MSC_VER )
+#elif defined( _MSC_VER ) and not defined( __clang__ )
 #define CX constexpr
 #else
 #define CX constexpr

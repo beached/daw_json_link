@@ -390,13 +390,22 @@ namespace daw::json::json_details {
 			return daw::construct_a<JsonClass>( );
 		} else {
 
+			#if not defined( _MSC_VER ) or defined( __clang__ ) 
 			constexpr auto known_locations_v =
 			  locations_info_t<sizeof...( JsonMembers ), Range,
 			                   are_hashes_unique( JsonMembers::name... )>{
 			    location_info_t<Range>( JsonMembers::name )... };
 
 			auto known_locations = known_locations_v;
+			#else
+				// MSVC is doing the murmur3 hash at compile time incorrectly
+				// this puts it at runtime.
+				auto known_locations =
+			  locations_info_t<sizeof...( JsonMembers ), Range,
+			                   are_hashes_unique( JsonMembers::name... )>{
+			    location_info_t<Range>( JsonMembers::name )... };
 
+			#endif
 			using tp_t = std::tuple<decltype(
 			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng ) )...>;
