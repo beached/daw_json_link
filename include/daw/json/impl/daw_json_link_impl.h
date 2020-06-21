@@ -133,31 +133,24 @@ namespace daw::json::json_details {
 	template<typename Range>
 	struct location_info_t {
 		daw::string_view name;
-		// hash checking causes ICE on MSVC
-#if not defined( _MSC_VER ) or defined( __clang__ )
 		std::uint32_t hash_value = 0;
-#endif
 		Range location{ };
 		std::size_t count = 0;
 
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
 		  : name( Name )
-#if not defined( _MSC_VER ) or defined( __clang__ )
-		  , hash_value( daw::murmur3_32( Name ) )
-#endif
-		{}
+		  , hash_value( daw::murmur3_32( Name ) ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 			return location.is_null( );
 		}
 
-#if not defined( _MSC_VER ) or defined( __clang__ )
 		[[nodiscard]] inline constexpr bool
 		is_match( uint32_t h, daw::string_view Name ) const noexcept {
 			if( hash_value != h ) {
 				return false;
 			}
-			return Name.empty( ) or name == Name;
+			return name == Name;
 		}
 
 		friend constexpr void swap( location_info_t &l,
@@ -165,15 +158,8 @@ namespace daw::json::json_details {
 			auto tmp = daw::exchange( l, std::move( r ) );
 			r = std::move( tmp );
 		}
-#else
-		[[nodiscard]] inline constexpr bool
-		is_match( daw::string_view Name ) const noexcept {
-			return name == Name;
-		}
-#endif
 	};
 
-#if not defined( _MSC_VER ) or defined( __clang__ )
 	template<typename... MemberNames>
 	constexpr bool are_hashes_unique( MemberNames... member_names ) noexcept {
 		std::array<std::uint32_t, sizeof...( MemberNames )> hashes{
@@ -186,7 +172,6 @@ namespace daw::json::json_details {
 			         return l == r;
 		         } ) != hashes.end( );
 	}
-#endif
 
 	/***
 	 * Contains an array of member location_info mapped in a json_class
@@ -196,11 +181,8 @@ namespace daw::json::json_details {
 	template<std::size_t N, typename Range, bool HasCollions = true>
 	struct locations_info_t {
 		using value_type = location_info_t<Range>;
-		std::array<value_type, N> names{ };
-
-#if not defined( _MSC_VER ) or defined( __clang__ )
+		std::array<value_type, N> names;
 		static constexpr bool has_collisons = HasCollions;
-#endif
 
 		inline constexpr auto begin( ) const {
 			return names.data( );
@@ -231,30 +213,23 @@ namespace daw::json::json_details {
 			return N;
 		}
 
-#if not defined( _MSC_VER ) or defined( __clang__ )
 		[[nodiscard]] inline constexpr std::size_t
 		find_name( daw::string_view key ) const {
 			uint32_t const hash = murmur3_32( key );
-			if constexpr( has_collisons ) {
-				return algorithm::find_index_of_if(
-				  begin( ), end( ), [hash, key]( value_type const &loc ) {
-					  return loc.is_match( hash, key );
-				  } );
-			} else {
-				return algorithm::find_index_of_if( begin( ), end( ),
-				                                    [hash]( value_type const &loc ) {
-					                                    return loc.is_match( hash, { } );
-				                                    } );
+			std::size_t const sz = names.size( );
+			for( std::size_t n = 0; n < sz; ++n ) {
+				if constexpr( has_collisons ) {
+					if( names[n].is_match( hash, key ) ) {
+						return n;
+					}
+				} else {
+					if( names[n].hash_value == hash ) {
+						return n;
+					}
+				}
 			}
+			return sz;
 		}
-#else
-		[[nodiscard]] inline constexpr std::size_t
-		find_name( daw::string_view key ) const {
-			return algorithm::find_index_of_if(
-			  begin( ), end( ),
-			  [key]( value_type const &loc ) { return loc.is_match( key ); } );
-		}
-#endif
 	}; // namespace daw::json::json_details
 
 	/***
@@ -447,16 +422,11 @@ namespace daw::json::json_details {
 			return daw::construct_a<JsonClass>( );
 		} else {
 
-#if not defined( _MSC_VER ) or defined( __clang__ )
 			constexpr auto known_locations_v =
 			  locations_info_t<sizeof...( JsonMembers ), Range,
 			                   are_hashes_unique( JsonMembers::name... )>{
 			    location_info_t<Range>( JsonMembers::name )... };
-#else
-			constexpr auto known_locations_v =
-			  locations_info_t<sizeof...( JsonMembers ), Range>{
-			    location_info_t<Range>( JsonMembers::name )... };
-#endif
+
 			auto known_locations = known_locations_v;
 
 			using tp_t = std::tuple<decltype(
