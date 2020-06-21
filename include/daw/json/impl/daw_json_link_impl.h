@@ -170,33 +170,33 @@ namespace daw::json::json_details {
 #endif
 	};
 
+#if not defined( _MSC_VER ) or defined( __clang__ )
+	template<typename... MemberNames>
+	constexpr bool are_hashes_unique( MemberNames... member_names ) noexcept {
+		std::array<std::uint32_t, sizeof...( MemberNames )> hashes{
+		  murmur3_32( member_names )... };
+
+		daw::sort( hashes.begin( ), hashes.end( ) );
+		return daw::algorithm::adjacent_find(
+		         hashes.begin( ), hashes.end( ),
+		         []( std::uint32_t const &l, std::uint32_t const &r ) {
+			         return l == r;
+		         } ) != hashes.end( );
+	}
+#endif
+
 	/***
 	 * Contains an array of member location_info mapped in a json_class
 	 * @tparam N Number of mapped members from json_class
 	 * @tparam Range see IteratorRange
 	 */
-	template<std::size_t N, typename Range>
+	template<std::size_t N, typename Range, bool HasCollions = true>
 	struct locations_info_t {
 		using value_type = location_info_t<Range>;
 		std::array<value_type, N> names{ };
 
 #if not defined( _MSC_VER ) or defined( __clang__ )
-		bool has_collisons = true;
-
-		template<typename... Locs>
-		constexpr locations_info_t( Locs &&... locs )
-		  : names{ std::forward<Locs>( locs )... } {
-			auto locations = names;
-			daw::sort( locations.begin( ), locations.end( ),
-			           []( value_type const &l, value_type const &r ) {
-				           return l.hash_value < r.hash_value;
-			           } );
-			has_collisons = daw::algorithm::adjacent_find(
-			                  locations.begin( ), locations.end( ),
-			                  []( value_type const &l, value_type const &r ) {
-				                  return l.hash_value == r.hash_value;
-			                  } ) != locations.end( );
-		}
+		static constexpr bool has_collisons = HasCollions;
 #endif
 
 		inline constexpr auto begin( ) const {
@@ -232,15 +232,17 @@ namespace daw::json::json_details {
 		[[nodiscard]] inline constexpr std::size_t
 		find_name( daw::string_view key ) const {
 			uint32_t const hash = murmur3_32( key );
-			if( has_collisons ) {
+			if constexpr( has_collisons ) {
 				return algorithm::find_index_of_if(
 				  begin( ), end( ), [hash, key]( value_type const &loc ) {
 					  return loc.is_match( hash, key );
 				  } );
+			} else {
+				return algorithm::find_index_of_if( begin( ), end( ),
+				                                    [hash]( value_type const &loc ) {
+					                                    return loc.is_match( hash, { } );
+				                                    } );
 			}
-			return algorithm::find_index_of_if(
-			  begin( ), end( ),
-			  [hash]( value_type const &loc ) { return loc.is_match( hash, { } ); } );
 		}
 #else
 		[[nodiscard]] inline constexpr std::size_t
@@ -253,8 +255,8 @@ namespace daw::json::json_details {
 	}; // namespace daw::json::json_details
 
 	/***
-	 * Get the position from already seen JSON members or move the parser forward
-	 * until we reach the end of the class or the member.
+	 * Get the position from already seen JSON members or move the parser
+	 * forward until we reach the end of the class or the member.
 	 * @tparam JsonMember current member in json_class
 	 * @tparam N Number of members in json_class
 	 * @tparam Range see IteratorRange
@@ -263,9 +265,9 @@ namespace daw::json::json_details {
 	 * @param rng Current JSON data
 	 * @return IteratorRange with begin( ) being start of value
 	 */
-	template<typename JsonMember, std::size_t N, typename Range>
+	template<typename JsonMember, std::size_t N, typename Range, bool B>
 	[[nodiscard]] inline constexpr Range
-	find_class_member( std::size_t pos, locations_info_t<N, Range> &locations,
+	find_class_member( std::size_t pos, locations_info_t<N, Range, B> &locations,
 	                   Range &rng ) {
 
 		daw_json_assert_weak(
@@ -377,10 +379,10 @@ namespace daw::json::json_details {
 	 * @param rng JSON data
 	 * @return parsed value from JSON data
 	 */
-	template<typename JsonMember, std::size_t N, typename Range>
+	template<typename JsonMember, std::size_t N, typename Range, bool B>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr json_result<JsonMember>
 	parse_class_member( std::size_t member_position,
-	                    locations_info_t<N, Range> &locations, Range &rng ) {
+	                    locations_info_t<N, Range, B> &locations, Range &rng ) {
 
 		rng.clean_tail( );
 		static_assert( not is_no_name<JsonMember::name>,
@@ -441,10 +443,17 @@ namespace daw::json::json_details {
 			cleanup_fn( );
 			return daw::construct_a<JsonClass>( );
 		} else {
-			constexpr auto known_locations_v =
-			  locations_info_t<sizeof...( JsonMembers ), Range>(
-			    location_info_t<Range>( JsonMembers::name )... );
 
+#if not defined( _MSC_VER ) or defined( __clang__ )
+			constexpr auto known_locations_v =
+			  locations_info_t<sizeof...( JsonMembers ), Range,
+			                   are_hashes_unique( JsonMembers::name... )>{
+			    location_info_t<Range>( JsonMembers::name )... };
+#else
+			constexpr auto known_locations_v =
+			  locations_info_t<sizeof...( JsonMembers ), Range>{
+			    location_info_t<Range>( JsonMembers::name )... };
+#endif
 			auto known_locations = known_locations_v;
 
 			using tp_t = std::tuple<decltype(
