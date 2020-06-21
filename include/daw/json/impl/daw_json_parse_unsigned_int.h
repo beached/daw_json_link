@@ -132,30 +132,30 @@ namespace daw::json::json_details::unsignedint {
 
 		template<JsonRangeCheck RangeChecked>
 		[[nodiscard]] static inline std::pair<Unsigned, char const *>
-		parse( SIMDConst<SIMDModes::SSE3>, char const *ptr ) {
+		parse( SIMDConst<SIMDModes::SSE3>, char const *first, char const * const last ) {
 			uintmax_t result = 0;
 			int count = std::numeric_limits<Unsigned>::digits10 + 1;
-			while( is_made_of_eight_digits_fast( ptr ) ) {
+			while( (last-first) >= 8 and is_made_of_eight_digits_fast( first ) ) {
 				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 					count -= 8;
 				}
-				if( not is_made_of_eight_digits_fast( ptr + 8 ) ) {
+				if( (last-first) < 16 or not is_made_of_eight_digits_fast( first + 8 ) ) {
 					result *= 100'000'000ULL;
-					result += parse_eight_digits_unrolled( ptr );
-					ptr += 8;
+					result += parse_eight_digits_unrolled( first );
+					first += 8;
 					break;
 				}
 				result *= 10'000'000'000'000'000ULL;
-				result += parse_sixteen_digits_unrolled( ptr );
-				ptr += 16;
+				result += parse_sixteen_digits_unrolled( first );
+				first += 16;
 			}
 
-			auto dig = static_cast<unsigned>( *ptr - '0' );
+			auto dig = static_cast<unsigned>( *first - '0' );
 			while( dig < 10U ) {
 				result *= 10U;
 				result += dig;
-				++ptr;
-				dig = static_cast<unsigned>( *ptr - '0' );
+				++first;
+				dig = static_cast<unsigned>( *first - '0' );
 			}
 			if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 				daw_json_assert( count >= 0 or
@@ -163,7 +163,7 @@ namespace daw::json::json_details::unsignedint {
 				                              std::numeric_limits<Unsigned>::max( ) ),
 				                 "Parsed number is out of range" );
 			}
-			return { daw::construct_a<Unsigned>( result ), ptr };
+			return { daw::construct_a<Unsigned>( result ), first };
 		}
 #else
 		template<JsonRangeCheck, typename CharT>

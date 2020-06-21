@@ -68,7 +68,8 @@ int main( int argc, char **argv ) try {
 	daw::bench_n_test_mbs<100>(
 	  "canada bench(unchecked)", sz,
 	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<daw::geojson::Polygon, NoCommentSkippingPolicyUnchecked>(
+		  canada_result = daw::json::from_json<daw::geojson::Polygon,
+		                                       NoCommentSkippingPolicyUnchecked>(
 		    f1, "features[0].geometry" );
 		  daw::do_not_optimize( canada_result );
 	  },
@@ -81,7 +82,9 @@ int main( int argc, char **argv ) try {
 	daw::bench_n_test_mbs<100>(
 	  "canada bench(checked, SSE3)", sz,
 	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<daw::geojson::Polygon, SIMDNoCommentSkippingPolicyChecked<SIMD::SSE3>(
+		  canada_result = daw::json::from_json<
+		    daw::geojson::Polygon,
+		    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
 		    f1, "features[0].geometry" );
 		  daw::do_not_optimize( canada_result );
 	  },
@@ -93,7 +96,9 @@ int main( int argc, char **argv ) try {
 	daw::bench_n_test_mbs<100>(
 	  "canada bench(unchecked, SSE3)", sz,
 	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<daw::geojson::Polygon, SIMDNoCommentSkippingPolicyUnhecked<SIMD::SSE3>(
+		  canada_result = daw::json::from_json<
+		    daw::geojson::Polygon,
+		    SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>(
 		    f1, "features[0].geometry" );
 		  daw::do_not_optimize( canada_result );
 	  },
@@ -102,7 +107,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( canada_result, "Missing value" );
 #endif
 
-	std::string str{};
+	std::string str{ };
 	{
 		auto out_it = std::back_inserter( str );
 		str.reserve( json_sv1.size( ) );
