@@ -27,34 +27,64 @@
 #endif
 
 namespace daw::json::json_details::unsignedint {
+	[[nodiscard]] static inline constexpr bool
+	is_made_of_eight_digits_cx( const char *ptr ) noexcept {
+		// The copy to local buffer is to get the compiler to treat it like a
+		// reinterpret_cast
+		std::byte buff[8]{ };
+		for( std::size_t n = 0; n < 8; ++n ) {
+			buff[n] = static_cast<std::byte>( ptr[n] );
+		}
+		std::uint64_t val = 0;
+		for( std::size_t n = 0; n < 8; ++n ) {
+			val |= static_cast<std::uint64_t>( buff[n] ) << ( 8 * n );
+		}
+		return ( ( ( val & 0xF0F0F0F0F0F0F0F0U ) |
+		           ( ( ( val + 0x0606060606060606U ) & 0xF0F0F0F0F0F0F0F0U ) >>
+		             4U ) ) == 0x3333333333333333U );
+	}
 
 	template<typename Unsigned>
 	struct unsigned_parser {
 		template<JsonRangeCheck RangeChecked>
 		[[nodiscard]] static constexpr std::pair<Unsigned, char const *>
-		parse( SIMDConst<SIMDModes::None>, char const *ptr ) {
+		parse( SIMDConst<SIMDModes::None>, char const *first,
+		       char const *const last ) {
 			using result_t =
 			  std::conditional_t<daw::is_integral_v<Unsigned> and
 			                       ( sizeof( Unsigned ) > sizeof( uintmax_t ) ),
 			                     Unsigned, uintmax_t>;
-			result_t n = 0;
-			auto dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+			result_t result = 0;
+			while( ( last - first ) >= 8 and is_made_of_eight_digits_cx( first ) ) {
+				result_t r = static_cast<result_t>( first[0] - '0' ) * 10'000'000;
+				r += static_cast<result_t>( first[1] - '0' ) * 1'000'000;
+				r += static_cast<result_t>( first[2] - '0' ) * 100'000;
+				r += static_cast<result_t>( first[3] - '0' ) * 10'000;
+				r += static_cast<result_t>( first[4] - '0' ) * 1'000;
+				r += static_cast<result_t>( first[5] - '0' ) * 100;
+				r += static_cast<result_t>( first[6] - '0' ) * 10;
+				r += static_cast<result_t>( first[7] - '0' ) * 1;
+				result *= 100'000'000;
+				result += r;
+				first += 8;
+			}
+			auto dig = static_cast<unsigned>( *first ) - static_cast<unsigned>( '0' );
 			int count = std::numeric_limits<result_t>::digits10 + 1U;
 			while( dig < 10U ) {
 				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 					--count;
 				}
-				n *= 10U;
-				n += static_cast<result_t>( dig );
-				++ptr;
-				dig = static_cast<unsigned>( *ptr ) - static_cast<unsigned>( '0' );
+				result *= 10U;
+				result += static_cast<result_t>( dig );
+				++first;
+				dig = static_cast<unsigned>( *first ) - static_cast<unsigned>( '0' );
 			}
 			if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 				daw_json_assert(
-				  n <= std::numeric_limits<result_t>::max( ) and count >= 0,
+				  result <= std::numeric_limits<result_t>::max( ) and count >= 0,
 				  "Unsigned number outside of range of unsigned numbers" );
 			}
-			return { daw::construct_a<Unsigned>( n ), ptr };
+			return { daw::construct_a<Unsigned>( result ), first };
 		}
 
 #ifdef DAW_ALLOW_SSE3
@@ -157,9 +187,15 @@ namespace daw::json::json_details::unsignedint {
 		}
 #endif
 	};
+	namespace test {
+		namespace {
+			constexpr inline daw::string_view num_str = "12345";
+		}
+	} // namespace test
 	static_assert( unsigned_parser<unsigned>::template parse<
 	                 JsonRangeCheck::CheckForNarrowing>(
-	                 SIMDConst_v<SIMDModes::None>, "12345" )
+	                 SIMDConst_v<SIMDModes::None>, test::num_str.begin( ),
+	                 test::num_str.end( ) )
 	                 .first == 12345 );
 
 } // namespace daw::json::json_details::unsignedint
@@ -177,7 +213,7 @@ namespace daw::json::json_details {
 		                     std::uintmax_t, Result>;
 
 		auto [v, new_p] = unsigned_parser<iresult_t>::template parse<RangeCheck>(
-		  SIMDConst_v<Range::simd_mode>, rng.first );
+		  SIMDConst_v<Range::simd_mode>, rng.first, rng.last );
 
 		auto c = static_cast<std::uint_fast8_t>( new_p - rng.first );
 		rng.first = new_p;
@@ -208,7 +244,7 @@ namespace daw::json::json_details {
 		  Result>;
 
 		auto [result, ptr] = unsigned_parser<result_t>::template parse<RangeCheck>(
-		  SIMDConst_v<Range::simd_mode>, rng.first );
+		  SIMDConst_v<Range::simd_mode>, rng.first, rng.last );
 
 		rng.first = ptr;
 

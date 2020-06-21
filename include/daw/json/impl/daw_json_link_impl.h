@@ -132,31 +132,17 @@ namespace daw::json::json_details {
 
 	template<typename Range>
 	struct location_info_t {
-		daw::string_view name;
 		std::uint32_t hash_value = 0;
+		daw::string_view name;
 		Range location{ };
 		std::size_t count = 0;
 
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
-		  : name( Name )
-		  , hash_value( daw::murmur3_32( Name ) ) {}
+		  : hash_value( daw::murmur3_32( Name ) )
+		  , name( Name ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 			return location.is_null( );
-		}
-
-		[[nodiscard]] inline constexpr bool
-		is_match( uint32_t h, daw::string_view Name ) const noexcept {
-			if( hash_value != h ) {
-				return false;
-			}
-			return name == Name;
-		}
-
-		friend constexpr void swap( location_info_t &l,
-		                            location_info_t &r ) noexcept {
-			auto tmp = daw::exchange( l, std::move( r ) );
-			r = std::move( tmp );
 		}
 	};
 
@@ -181,24 +167,8 @@ namespace daw::json::json_details {
 	template<std::size_t N, typename Range, bool HasCollions = true>
 	struct locations_info_t {
 		using value_type = location_info_t<Range>;
-		std::array<value_type, N> names;
 		static constexpr bool has_collisons = HasCollions;
-
-		inline constexpr auto begin( ) const {
-			return names.data( );
-		}
-
-		inline constexpr auto begin( ) {
-			return names.data( );
-		}
-
-		inline constexpr auto end( ) const {
-			return names.data( ) + N;
-		}
-
-		inline constexpr auto end( ) {
-			return names.data( ) + N;
-		}
+		std::array<value_type, N> names;
 
 		inline constexpr location_info_t<Range> const &
 		operator[]( std::size_t idx ) const {
@@ -216,19 +186,17 @@ namespace daw::json::json_details {
 		[[nodiscard]] inline constexpr std::size_t
 		find_name( daw::string_view key ) const {
 			uint32_t const hash = murmur3_32( key );
-			std::size_t const sz = names.size( );
-			for( std::size_t n = 0; n < sz; ++n ) {
-				if constexpr( has_collisons ) {
-					if( names[n].is_match( hash, key ) ) {
-						return n;
+			for( std::size_t n = 0; n < N; ++n ) {
+				if( names[n].hash_value == hash ) {
+					if constexpr( has_collisons ) {
+						if( key != names[n].hash_value ) {
+							continue;
+						}
 					}
-				} else {
-					if( names[n].hash_value == hash ) {
-						return n;
-					}
+					return n;
 				}
 			}
-			return sz;
+			return N;
 		}
 	}; // namespace daw::json::json_details
 
