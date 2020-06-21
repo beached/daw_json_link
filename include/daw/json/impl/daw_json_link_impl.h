@@ -142,7 +142,10 @@ namespace daw::json::json_details {
 
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
 		  : name( Name )
-		  , hash_value( daw::murmur3_32( Name ) ) {}
+#if not defined( _MSC_VER ) or defined( __clang__ )
+		  , hash_value( daw::murmur3_32( Name ) )
+#endif
+		{}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 			return location.is_null( );
