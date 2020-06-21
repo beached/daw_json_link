@@ -55,31 +55,17 @@ namespace daw::json::json_details::unsignedint {
 			                       ( sizeof( Unsigned ) > sizeof( uintmax_t ) ),
 			                     Unsigned, uintmax_t>;
 			result_t result = 0;
-			while( ( last - first ) >= 8 and is_made_of_eight_digits_cx( first ) ) {
-				result_t r = static_cast<result_t>( first[0] - '0' ) * 10'000'000;
-				r += static_cast<result_t>( first[1] - '0' ) * 1'000'000;
-				r += static_cast<result_t>( first[2] - '0' ) * 100'000;
-				r += static_cast<result_t>( first[3] - '0' ) * 10'000;
-				r += static_cast<result_t>( first[4] - '0' ) * 1'000;
-				r += static_cast<result_t>( first[5] - '0' ) * 100;
-				r += static_cast<result_t>( first[6] - '0' ) * 10;
-				r += static_cast<result_t>( first[7] - '0' ) * 1;
-				result *= 100'000'000;
-				result += r;
-				first += 8;
-			}
 			auto dig = static_cast<unsigned>( *first ) - static_cast<unsigned>( '0' );
-			int count = std::numeric_limits<result_t>::digits10 + 1U;
+			char const *const orig_first = first;
 			while( dig < 10U ) {
-				if constexpr( RangeChecked != JsonRangeCheck::Never ) {
-					--count;
-				}
 				result *= 10U;
 				result += static_cast<result_t>( dig );
 				++first;
 				dig = static_cast<unsigned>( *first ) - static_cast<unsigned>( '0' );
 			}
 			if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+				auto const count = ( std::numeric_limits<result_t>::digits10 + 1U ) -
+				                  ( first - orig_first );
 				daw_json_assert(
 				  result <= std::numeric_limits<result_t>::max( ) and count >= 0,
 				  "Unsigned number outside of range of unsigned numbers" );
