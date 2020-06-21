@@ -63,7 +63,7 @@ namespace daw::json {
 
 		[[maybe_unused, nodiscard]] inline constexpr result_type
 		operator( )( ) const {
-			return {};
+			return { };
 		}
 
 		[[maybe_unused, nodiscard]] inline constexpr result_type
@@ -76,10 +76,10 @@ namespace daw::json {
 	struct custom_from_converter_t {
 		[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {
 			if constexpr( std::is_same_v<T, std::string_view> ) {
-				return std::string_view{};
+				return std::string_view{ };
 			} else if constexpr( std::is_same_v<T,
 			                                    std::optional<std::string_view>> ) {
-				return std::string_view{};
+				return std::string_view{ };
 			} else {
 				return from_string( daw::tag<T> );
 			}
@@ -134,7 +134,7 @@ namespace daw::json::json_details {
 	struct location_info_t {
 		daw::string_view name;
 		std::uint32_t hash_value = 0;
-		Range location{};
+		Range location{ };
 		std::size_t count = 0;
 
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
@@ -150,7 +150,13 @@ namespace daw::json::json_details {
 			if( hash_value != h ) {
 				return false;
 			}
-			return name == Name;
+			return Name.empty( ) or name == Name;
+		}
+
+		friend constexpr void swap( location_info_t &l,
+		                            location_info_t &r ) noexcept {
+			auto tmp = daw::exchange( l, std::move( r ) );
+			r = std::move( tmp );
 		}
 	};
 
@@ -162,7 +168,23 @@ namespace daw::json::json_details {
 	template<std::size_t N, typename Range>
 	struct locations_info_t {
 		using value_type = location_info_t<Range>;
-		std::array<value_type, N> names{};
+		std::array<value_type, N> names{ };
+		bool has_collisons = true;
+
+		template<typename... Locs>
+		constexpr locations_info_t( Locs &&... locs )
+		  : names{ std::forward<Locs>( locs )... } {
+			auto locations = names;
+			daw::sort( locations.begin( ), locations.end( ),
+			           []( value_type const &l, value_type const &r ) {
+				           return l.hash_value < r.hash_value;
+			           } );
+			has_collisons = daw::algorithm::adjacent_find(
+			                  locations.begin( ), locations.end( ),
+			                  []( value_type const &l, value_type const &r ) {
+				                  return l.hash_value == r.hash_value;
+			                  } ) != locations.end( );
+		}
 
 		inline constexpr auto begin( ) const {
 			return names.data( );
@@ -196,9 +218,15 @@ namespace daw::json::json_details {
 		[[nodiscard]] inline constexpr std::size_t
 		find_name( daw::string_view key ) const {
 			uint32_t const hash = murmur3_32( key );
+			if( has_collisons ) {
+				return algorithm::find_index_of_if(
+				  begin( ), end( ), [hash, key]( value_type const &loc ) {
+					  return loc.is_match( hash, key );
+				  } );
+			}
 			return algorithm::find_index_of_if(
 			  begin( ), end( ),
-			  [hash, key]( value_type const &loc ) { return loc.is_match( hash, key ); } );
+			  [hash]( value_type const &loc ) { return loc.is_match( hash, { } ); } );
 		}
 	}; // namespace daw::json::json_details
 
@@ -308,13 +336,13 @@ namespace daw::json::json_details {
 		if( rng.front( ) == ']' ) {
 			if constexpr( is_json_nullable_v<ordered_member_subtype_t<JsonMember>> ) {
 				using constructor_t = typename json_member_type::constructor_t;
-				return constructor_t{}( );
+				return constructor_t{ }( );
 			} else if constexpr( is_json_nullable_v<json_member_type> ) {
 				daw_json_error( missing_member( "ordered_class_member" ) );
 			}
 		}
 		return parse_value<json_member_type>(
-		  ParseTag<json_member_type::expected_type>{}, rng );
+		  ParseTag<json_member_type::expected_type>{ }, rng );
 	}
 
 	/***
@@ -342,16 +370,16 @@ namespace daw::json::json_details {
 
 		// If the member was found loc will have it's position
 		if( loc.begin( ) == rng.begin( ) ) {
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 			                                rng );
 		}
 		if( not loc.is_null( ) ) {
 			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::expected_type>{}, loc );
+			  ParseTag<JsonMember::expected_type>{ }, loc );
 		}
 		if constexpr( is_json_nullable_v<JsonMember> ) {
 			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::expected_type>{}, loc );
+			  ParseTag<JsonMember::expected_type>{ }, loc );
 		} else {
 			daw_json_error( missing_member( JsonMember::name ) );
 		}
@@ -392,8 +420,8 @@ namespace daw::json::json_details {
 			return daw::construct_a<JsonClass>( );
 		} else {
 			constexpr auto known_locations_v =
-			  locations_info_t<sizeof...( JsonMembers ), Range>{
-			    location_info_t<Range>( JsonMembers::name )...};
+			  locations_info_t<sizeof...( JsonMembers ), Range>(
+			    location_info_t<Range>( JsonMembers::name )... );
 
 			auto known_locations = known_locations_v;
 
@@ -414,13 +442,13 @@ namespace daw::json::json_details {
 			 */
 			return std::apply(
 			  daw::construct_a<JsonClass>,
-			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )...} );
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
 #else
 			JsonClass result = std::apply(
 			  daw::construct_a<JsonClass>,
-			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )...} );
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
 			cleanup_fn( );
 			return result;
 #endif
@@ -463,11 +491,11 @@ namespace daw::json::json_details {
 		auto const oe = daw::on_exit_success( cleanup_fn );
 		return std::apply(
 		  daw::construct_a<JsonClass>,
-		  tp_t{parse_ordered_class_member<JsonMembers>( current_idx, rng )...} );
+		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
 #else
 		JsonClass result = std::apply(
 		  daw::construct_a<JsonClass>,
-		  tp_t{parse_ordered_class_member<JsonMembers>( current_idx, rng )...} );
+		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
 
 		cleanup_fn( );
 		return result;

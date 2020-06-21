@@ -15,7 +15,7 @@
 
 namespace daw {
 	namespace murmur3_details {
-		static constexpr std::uint32_t to_u32( char const *const ptr ) {
+		inline constexpr std::uint32_t to_u32( char const *const ptr ) noexcept {
 			std::uint32_t const c0 = static_cast<unsigned char>( ptr[3] );
 			std::uint32_t const c1 = static_cast<unsigned char>( ptr[2] );
 			std::uint32_t const c2 = static_cast<unsigned char>( ptr[1] );
@@ -24,7 +24,7 @@ namespace daw {
 			return result;
 		}
 
-		static constexpr std::uint32_t murmur3_32_scramble( std::uint32_t k ) {
+		inline constexpr std::uint32_t murmur3_32_scramble( std::uint32_t k ) noexcept {
 			k *= 0xcc9e'2d51ULL;
 			k = ( k << 15U ) | ( k >> 17U );
 			k *= 0x1b87'3593ULL;
@@ -33,7 +33,7 @@ namespace daw {
 	} // namespace murmur3_details
 
 	constexpr std::uint32_t murmur3_32( daw::string_view key,
-	                                    std::uint32_t seed = 0 ) {
+	                                    std::uint32_t seed = 0 ) noexcept {
 		std::uint32_t h = seed;
 		std::uint32_t k = 0;
 		auto const len = static_cast<uint32_t>( key.size( ) );
@@ -51,9 +51,10 @@ namespace daw {
 
 		// Anything left over
 		k = 0U;
-		while( first != last ) {
+		for( auto d = ( last - first ); d > 0; --d ) {
 			k <<= 8U;
-			k |= static_cast<unsigned char>( *first++ );
+			char const c = *(first+(d-1));
+			k |= static_cast<unsigned char>( c );
 		}
 
 		h ^= murmur3_details::murmur3_32_scramble( k );
