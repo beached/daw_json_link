@@ -21,17 +21,18 @@
 #include <type_traits>
 
 namespace daw::json {
-	template<typename Iterator, bool IsUncheckedInput, SIMDModes SIMDMode>
+	template<bool IsUncheckedInput, SIMDModes SIMDMode, bool AllowEscapedNames>
 	struct BasicCppCommentSkippingPolicy {
-		using iterator = Iterator;
+		using iterator = char const *;
 		static inline constexpr bool is_unchecked_input = IsUncheckedInput;
 		static inline constexpr SIMDModes simd_mode = SIMDMode;
-		using CharT = daw::remove_cvref_t<decltype( *std::declval<Iterator>( ) )>;
+		static inline constexpr bool allow_escaped_names = AllowEscapedNames;
+		using CharT = char;
 
 		using as_unchecked =
-		  BasicCppCommentSkippingPolicy<Iterator, true, simd_mode>;
+		  BasicCppCommentSkippingPolicy<true, simd_mode, allow_escaped_names>;
 		using as_checked =
-		  BasicCppCommentSkippingPolicy<Iterator, false, simd_mode>;
+		  BasicCppCommentSkippingPolicy<false, simd_mode, allow_escaped_names>;
 
 		inline constexpr void skip_comments( ) noexcept {
 			if constexpr( is_unchecked_input ) {
@@ -209,10 +210,7 @@ namespace daw::json {
 		}
 
 		using policy = BasicCppCommentSkippingPolicy;
-		static_assert( std::is_convertible_v<
-		                 typename std::iterator_traits<iterator>::iterator_category,
-		                 std::random_access_iterator_tag>,
-		               "Expecting a Random Contiguous Iterator" );
+
 		iterator first{ };
 		iterator last{ };
 		iterator class_first{ };
@@ -462,16 +460,16 @@ namespace daw::json {
 	}; // namespace daw::json
 
 	using CppCommentSkippingPolicyChecked =
-	  BasicCppCommentSkippingPolicy<char const *, false, SIMDModes::None>;
+	  BasicCppCommentSkippingPolicy<false, SIMDModes::None, false>;
 
 	using CppCommentSkippingPolicyUnchecked =
-	  BasicCppCommentSkippingPolicy<char const *, true, SIMDModes::None>;
+	  BasicCppCommentSkippingPolicy<true, SIMDModes::None, false>;
 
 	template<SIMDModes mode>
 	using SIMDCppCommentSkippingPolicyChecked =
-	  BasicCppCommentSkippingPolicy<char const *, false, mode>;
+	  BasicCppCommentSkippingPolicy<false, mode, false>;
 
 	template<SIMDModes mode>
 	using SIMDCppCommentSkippingPolicyUnchecked =
-	  BasicCppCommentSkippingPolicy<char const *, true, mode>;
+	  BasicCppCommentSkippingPolicy<true, mode, false>;
 } // namespace daw::json

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_json_assert.h"
+#include "daw_parse_std_string.h"
 
 namespace daw::json::json_details::name {
 
@@ -24,14 +25,10 @@ namespace daw::json::json_details::name {
 		 */
 		template<typename Range>
 		[[maybe_unused]] static constexpr void trim_end_of_name( Range &rng ) {
-			while( rng.is_space( ) ) {
-				rng.remove_prefix( );
-			}
+			rng.trim_left( );
 			daw_json_assert_weak( rng.front( ) == ':', "Expected a ':'" );
 			rng.remove_prefix( );
-			while( rng.is_space( ) ) {
-				rng.remove_prefix( );
-			}
+			rng.trim_left( );
 		}
 
 		template<typename Range>
@@ -40,30 +37,25 @@ namespace daw::json::json_details::name {
 		  string_view
 		  parse_nq( Range &rng ) {
 
-			char const *const ptr = rng.first;
-			if constexpr( Range::is_unchecked_input ) {
-				while( rng.front( ) != '"' ) {
-					rng.move_to_next_of_nc( "\"\\" );
-					if( rng.front( ) == '\\' ) {
-						rng.remove_prefix( 2 );
-					}
-				}
+			if constexpr( Range::allow_escaped_names ) {
+				auto r = skip_string_nq( rng );
+				trim_end_of_name( rng );
+				return daw::string_view( r.data( ), r.size( ) );
 			} else {
-				while( rng.has_more( ) and rng.front( ) != '"' ) {
-					rng.move_to_next_of_nc( "\"\\" );
-					if( rng.front( '\\' ) ) {
-						if( rng.last - rng.first >= 2 ) {
-							rng.remove_prefix( 2 );
-						}
-					}
+				char const *const ptr = rng.first;
+				if constexpr( Range::is_unchecked_input ) {
+					rng.move_to_next_of_unchecked( '"' );
+				} else {
+					rng.move_to_next_of_checked( '"' );
 				}
+				daw_json_assert_weak( rng.front( '"' ) and
+				                        *std::prev( rng.first ) != '\\',
+				                      "Expected a '\"' at the end of string" );
+				auto result = daw::string_view( ptr, rng.first );
+				rng.remove_prefix( );
+				trim_end_of_name( rng );
+				return result;
 			}
-			daw_json_assert_weak( rng.front( '"' ),
-			                      "Expected a '\"' at the end of string" );
-			auto result = daw::string_view( ptr, rng.first );
-			rng.remove_prefix( );
-			trim_end_of_name( rng );
-			return result;
 		}
 	};
 } // namespace daw::json::json_details::name

@@ -255,6 +255,42 @@ int main( int argc, char **argv ) try {
 	// ******************************
 #endif
 
+	// ******************************
+	// NoCommentSkippingPolicyChecked Escaped Names
+	daw::bench_n_test_mbs<NUM_RUNS>(
+	  "twitter bench(checked, escaped names)", sz,
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result = daw::json::from_json<
+		    daw::twitter::twitter_object_t,
+		    daw::json::BasicNoCommentSkippingPolicy<false, SIMDModes::None, true>>(
+		    f1 );
+		  daw::do_not_optimize( twitter_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+
+	// NoCommentSkippingPolicyUnchecked Escaped Names
+	daw::bench_n_test_mbs<NUM_RUNS>(
+	  "twitter bench(unchecked, escaped names)", sz,
+	  [&twitter_result]( auto f1 ) {
+		  twitter_result = daw::json::from_json<
+		    daw::twitter::twitter_object_t,
+		    daw::json::BasicNoCommentSkippingPolicy<false, SIMDModes::None, true>>(
+		    f1 );
+		  daw::do_not_optimize( twitter_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+
+	// ******************************
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<NUM_RUNS>(

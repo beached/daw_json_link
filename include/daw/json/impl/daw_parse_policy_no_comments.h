@@ -21,22 +21,21 @@
 #include <type_traits>
 
 namespace daw::json {
-	template<typename Iterator, bool IsUncheckedInput, SIMDModes SIMDMode>
+	template<bool IsUncheckedInput, SIMDModes SIMDMode, bool AllowEscapedNames>
 	struct BasicNoCommentSkippingPolicy {
-		using iterator = Iterator;
+		using iterator = char const *;
 		static inline constexpr bool is_unchecked_input = IsUncheckedInput;
 		static inline constexpr SIMDModes simd_mode = SIMDMode;
-		using CharT = daw::remove_cvref_t<decltype( *std::declval<Iterator>( ) )>;
+		static inline constexpr bool allow_escaped_names = AllowEscapedNames;
+		using CharT = char;
 
 		using as_unchecked =
-		  BasicNoCommentSkippingPolicy<Iterator, true, simd_mode>;
-		using as_checked = BasicNoCommentSkippingPolicy<Iterator, false, simd_mode>;
+		  BasicNoCommentSkippingPolicy<true, simd_mode, allow_escaped_names>;
+		using as_checked =
+		  BasicNoCommentSkippingPolicy<false, simd_mode, allow_escaped_names>;
 
 		using policy = BasicNoCommentSkippingPolicy;
-		static_assert( std::is_convertible_v<
-		                 typename std::iterator_traits<iterator>::iterator_category,
-		                 std::random_access_iterator_tag>,
-		               "Expecting a Random Contiguous Iterator" );
+
 		iterator first{ };
 		iterator last{ };
 		iterator class_first{ };
@@ -379,17 +378,17 @@ namespace daw::json {
 	};
 
 	using NoCommentSkippingPolicyChecked =
-	  BasicNoCommentSkippingPolicy<char const *, false, SIMDModes::None>;
+	  BasicNoCommentSkippingPolicy<false, SIMDModes::None, false>;
 
 	using NoCommentSkippingPolicyUnchecked =
-	  BasicNoCommentSkippingPolicy<char const *, true, SIMDModes::None>;
+	  BasicNoCommentSkippingPolicy<true, SIMDModes::None, false>;
 
 	template<SIMDModes mode>
 	using SIMDNoCommentSkippingPolicyChecked =
-	  BasicNoCommentSkippingPolicy<char const *, false, mode>;
+	  BasicNoCommentSkippingPolicy<false, mode, false>;
 
 	template<SIMDModes mode>
 	using SIMDNoCommentSkippingPolicyUnchecked =
-	  BasicNoCommentSkippingPolicy<char const *, true, mode>;
+	  BasicNoCommentSkippingPolicy<true, mode, false>;
 
 } // namespace daw::json

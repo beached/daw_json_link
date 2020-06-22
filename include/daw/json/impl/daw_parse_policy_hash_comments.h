@@ -21,17 +21,21 @@
 #include <type_traits>
 
 namespace daw::json {
-	template<typename Iterator, bool IsUncheckedInput, SIMDModes SIMDMode>
+	template<bool IsUncheckedInput, SIMDModes SIMDMode,
+	         bool AllowEscapedNames>
 	struct BasicHashCommentSkippingPolicy {
-		using iterator = Iterator;
+		using iterator = char const *;
 		static inline constexpr bool is_unchecked_input = IsUncheckedInput;
 		static inline constexpr SIMDModes simd_mode = SIMDMode;
-		using CharT = daw::remove_cvref_t<decltype( *std::declval<Iterator>( ) )>;
+		static inline constexpr bool allow_escaped_names = AllowEscapedNames;
+		using CharT = char;
 
 		using as_unchecked =
-		  BasicHashCommentSkippingPolicy<Iterator, true, simd_mode>;
+		  BasicHashCommentSkippingPolicy<true, simd_mode,
+		                                 allow_escaped_names>;
 		using as_checked =
-		  BasicHashCommentSkippingPolicy<Iterator, false, simd_mode>;
+		  BasicHashCommentSkippingPolicy<false, simd_mode,
+		                                 allow_escaped_names>;
 
 		inline constexpr void skip_comments( ) noexcept {
 			if constexpr( is_unchecked_input ) {
@@ -175,10 +179,7 @@ namespace daw::json {
 		}
 
 		using policy = BasicHashCommentSkippingPolicy;
-		static_assert( std::is_convertible_v<
-		                 typename std::iterator_traits<iterator>::iterator_category,
-		                 std::random_access_iterator_tag>,
-		               "Expecting a Random Contiguous Iterator" );
+
 		iterator first{ };
 		iterator last{ };
 		iterator class_first{ };
@@ -428,16 +429,16 @@ namespace daw::json {
 	};
 
 	using HashCommentSkippingPolicyChecked =
-	  BasicHashCommentSkippingPolicy<char const *, false, SIMDModes::None>;
+	  BasicHashCommentSkippingPolicy<false, SIMDModes::None, false>;
 
 	using HashCommentSkippingPolicyUnchecked =
-	  BasicHashCommentSkippingPolicy<char const *, true, SIMDModes::None>;
+	  BasicHashCommentSkippingPolicy<true, SIMDModes::None, false>;
 
 	template<SIMDModes mode>
 	using SIMDHashCommentSkippingPolicyChecked =
-	  BasicHashCommentSkippingPolicy<char const *, false, mode>;
+	  BasicHashCommentSkippingPolicy<false, mode, false>;
 
 	template<SIMDModes mode>
 	using SIMDHashCommentSkippingPolicyUnchecked =
-	  BasicHashCommentSkippingPolicy<char const *, true, mode>;
+	  BasicHashCommentSkippingPolicy<true, mode, false>;
 } // namespace daw::json
