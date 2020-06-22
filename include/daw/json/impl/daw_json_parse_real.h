@@ -57,12 +57,14 @@ namespace daw::json::json_details {
 			} else if( rng.front( ) == '+' ) {
 				rng.remove_prefix( );
 			}
-			exp_part =
-			  exsign *
-			  unsigned_parser<int32_t, ( Range::is_unchecked_input
-			                               ? JsonRangeCheck::Never
-			                               : JsonRangeCheck::CheckForNarrowing )>(
-			    SIMDConst_v<Range::simd_mode>, rng );
+			if( rng.has_more( ) ) {
+				exp_part =
+				  exsign *
+				  unsigned_parser<int32_t, ( Range::is_unchecked_input
+				                               ? JsonRangeCheck::Never
+				                               : JsonRangeCheck::CheckForNarrowing )>(
+				    SIMDConst_v<Range::simd_mode>, rng );
+			}
 		}
 		if constexpr( std::is_same_v<Result, float> ) {
 			return ( whole_part + fract_part ) * daw::cxmath::fpow10( exp_part );
