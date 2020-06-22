@@ -74,7 +74,7 @@ namespace daw::json {
 		 * This lets us fastpath and just skip n characters as we have already
 		 * parsed them
 		 */
-		mutable difference_type m_can_skip = -1;
+		mutable char const *m_can_skip = nullptr;
 
 	public:
 		inline constexpr json_array_iterator( ) = default;
@@ -110,15 +110,14 @@ namespace daw::json {
 
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
-			auto const ae = daw::on_exit_success(
-			  [&] { m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) ); } );
+			auto const ae = daw::on_exit_success( [&] { m_can_skip = tmp.first; } );
 			return json_details::parse_value<element_type>(
 			  ParseTag<element_type::expected_type>{ }, tmp );
 #else
 			auto result = json_details::parse_value<element_type>(
 			  ParseTag<element_type::expected_type>{ }, tmp );
 
-			m_can_skip = std::distance( m_state.begin( ), tmp.begin( ) );
+			m_can_skip = tmp.first;
 			return result;
 #endif
 		}
@@ -141,9 +140,9 @@ namespace daw::json {
 		inline constexpr json_array_iterator &operator++( ) {
 			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 			                      "Unexpected end of stream" );
-			if( m_can_skip >= 0 ) {
-				m_state.first += m_can_skip;
-				m_can_skip = -1;
+			if( m_can_skip ) {
+				m_state.first = m_can_skip;
+				m_can_skip = nullptr;
 			} else {
 				(void)json_details::skip_known_value<element_type>( m_state );
 			}
