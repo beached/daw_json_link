@@ -130,7 +130,7 @@ namespace daw::json::json_details {
 		return kv_t<string_t>( type_t::name, type_t::expected_type, N );
 	}
 
-	template<typename Range>
+	template<bool HashesCollide, typename Range>
 	struct location_info_t {
 		std::uint32_t hash_value = 0;
 		daw::string_view name;
@@ -140,6 +140,20 @@ namespace daw::json::json_details {
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
 		  : hash_value( daw::murmur3_32( Name ) )
 		  , name( Name ) {}
+
+		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
+			return location.is_null( );
+		}
+	};
+
+	template<typename Range>
+	struct location_info_t<false, Range> {
+		std::uint32_t hash_value = 0;
+		Range location{ };
+		std::size_t count = 0;
+
+		explicit constexpr location_info_t( daw::string_view Name ) noexcept
+		  : hash_value( daw::murmur3_32( Name ) ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 			return location.is_null( );
@@ -164,18 +178,24 @@ namespace daw::json::json_details {
 	 * @tparam N Number of mapped members from json_class
 	 * @tparam Range see IteratorRange
 	 */
-	template<std::size_t N, typename Range, bool HasCollions = true>
-	struct locations_info_t {
-		using value_type = location_info_t<Range>;
-		static constexpr bool has_collisons = HasCollions;
+	template<std::size_t N, typename Range, bool HasCollisions = true>
+	class locations_info_t {
+		using value_type = location_info_t<HasCollisions, Range>;
+		static constexpr bool has_collisons = HasCollisions;
 		std::array<value_type, N> names;
 
-		inline constexpr location_info_t<Range> const &
+	public:
+		template<typename... Names>
+		constexpr locations_info_t( Names... member_names ) noexcept
+		  : names{ location_info_t<HasCollisions, Range>( member_names )... } {}
+
+		inline constexpr location_info_t<HasCollisions, Range> const &
 		operator[]( std::size_t idx ) const {
 			return names[idx];
 		}
 
-		inline constexpr location_info_t<Range> &operator[]( std::size_t idx ) {
+		inline constexpr location_info_t<HasCollisions, Range> &
+		operator[]( std::size_t idx ) {
 			return names[idx];
 		}
 
@@ -189,7 +209,7 @@ namespace daw::json::json_details {
 			for( std::size_t n = 0; n < N; ++n ) {
 				if( names[n].hash_value == hash ) {
 					if constexpr( has_collisons ) {
-						if( key != names[n].hash_value ) {
+						if( key != names[n].name ) {
 							continue;
 						}
 					}
@@ -390,22 +410,22 @@ namespace daw::json::json_details {
 			return daw::construct_a<JsonClass>( );
 		} else {
 
-			#if not defined( _MSC_VER ) or defined( __clang__ ) 
+#if not defined( _MSC_VER ) or defined( __clang__ )
 			constexpr auto known_locations_v =
 			  locations_info_t<sizeof...( JsonMembers ), Range,
-			                   are_hashes_unique( JsonMembers::name... )>{
-			    location_info_t<Range>( JsonMembers::name )... };
+			                   are_hashes_unique( JsonMembers::name... )>(
+			    JsonMembers::name... );
 
 			auto known_locations = known_locations_v;
-			#else
-				// MSVC is doing the murmur3 hash at compile time incorrectly
-				// this puts it at runtime.
-				auto known_locations =
+#else
+			// MSVC is doing the murmur3 hash at compile time incorrectly
+			// this puts it at runtime.
+			auto known_locations =
 			  locations_info_t<sizeof...( JsonMembers ), Range,
-			                   are_hashes_unique( JsonMembers::name... )>{
-			    location_info_t<Range>( JsonMembers::name )... };
+			                   are_hashes_unique( JsonMembers::name... )>(
+			    JsonMembers::name... );
 
-			#endif
+#endif
 			using tp_t = std::tuple<decltype(
 			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng ) )...>;

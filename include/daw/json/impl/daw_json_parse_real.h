@@ -48,7 +48,7 @@ namespace daw::json::json_details {
 		}
 
 		int32_t exp_part = 0;
-		if( rng.front( ) == 'e' ) {
+		if( parse_policy_details::in( rng.front( ), "eE" ) ) {
 			rng.remove_prefix( );
 			int32_t exsign = 1;
 			if( rng.front( ) == '-' ) {
