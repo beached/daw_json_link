@@ -21,8 +21,7 @@
 #include <type_traits>
 
 namespace daw::json {
-	template<bool IsUncheckedInput, SIMDModes SIMDMode,
-	         bool AllowEscapedNames>
+	template<bool IsUncheckedInput, SIMDModes SIMDMode, bool AllowEscapedNames>
 	struct BasicHashCommentSkippingPolicy {
 		using iterator = char const *;
 		static inline constexpr bool is_unchecked_input = IsUncheckedInput;
@@ -31,11 +30,9 @@ namespace daw::json {
 		using CharT = char;
 
 		using as_unchecked =
-		  BasicHashCommentSkippingPolicy<true, simd_mode,
-		                                 allow_escaped_names>;
+		  BasicHashCommentSkippingPolicy<true, simd_mode, allow_escaped_names>;
 		using as_checked =
-		  BasicHashCommentSkippingPolicy<false, simd_mode,
-		                                 allow_escaped_names>;
+		  BasicHashCommentSkippingPolicy<false, simd_mode, allow_escaped_names>;
 
 		inline constexpr void skip_comments( ) noexcept {
 			if constexpr( is_unchecked_input ) {
@@ -147,11 +144,27 @@ namespace daw::json {
 			}
 		}
 
-		inline constexpr void clean_tail( ) noexcept( is_unchecked_input ) {
-			trim_left( );
+		inline constexpr void clean_tail_unchecked( ) noexcept {
+			trim_left_unchecked( );
 			if( *first == ',' ) {
 				++first;
-				trim_left( );
+				trim_left_unchecked( );
+			}
+		}
+
+		inline constexpr void clean_tail_checked( ) {
+			trim_left_checked( );
+			if( front( ',' ) ) {
+				++first;
+				trim_left_checked( );
+			}
+		}
+
+		inline constexpr void clean_tail( ) noexcept( is_unchecked_input ) {
+			if constexpr( is_unchecked_input ) {
+				clean_tail_unchecked( );
+			} else {
+				clean_tail_unchecked( );
 			}
 		}
 

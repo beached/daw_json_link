@@ -181,7 +181,7 @@ namespace daw::json::json_details {
 	}
 #else
 	template<JsonRangeCheck, typename Range>
-	static void parse( SIMDConst<SIMDModes::SSE3>, Range const & ) {
+	[[maybe_unused]] static void parse( SIMDConst<SIMDModes::SSE3>, Range const & ) {
 		static_assert( std::is_same_v<Range, void>, "DAW_ALLOW_SSE3 not defined" );
 	}
 #endif

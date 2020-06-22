@@ -584,10 +584,11 @@ namespace daw::json::json_details {
 	}
 
 	/***
-	 * Used in json_array_iterator::operator++( )
+	 * Used in json_array_iterator::operator++( ) as we know the type we are
+	 * skipping
 	 */
 	template<typename JsonMember, typename Range>
-	[[nodiscard]] static constexpr Range skip_known_value( Range &rng ) {
+	[[nodiscard]] static inline constexpr Range skip_known_value( Range &rng ) {
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 		              JsonMember::expected_type == JsonParseTypes::StringRaw or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {

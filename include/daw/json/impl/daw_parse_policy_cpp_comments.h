@@ -152,11 +152,27 @@ namespace daw::json {
 			}
 		}
 
-		inline constexpr void clean_tail( ) noexcept( is_unchecked_input ) {
-			trim_left( );
+		inline constexpr void clean_tail_unchecked( ) noexcept {
+			trim_left_unchecked( );
 			if( *first == ',' ) {
 				++first;
-				trim_left( );
+				trim_left_unchecked( );
+			}
+		}
+
+		inline constexpr void clean_tail_checked( ) {
+			trim_left_checked( );
+			if( front( ',' ) ) {
+				++first;
+				trim_left_checked( );
+			}
+		}
+
+		inline constexpr void clean_tail( ) noexcept( is_unchecked_input ) {
+			if constexpr( is_unchecked_input ) {
+				clean_tail_unchecked( );
+			} else {
+				clean_tail_unchecked( );
 			}
 		}
 
