@@ -42,13 +42,13 @@ int main( int argc, char **argv ) try {
 		exit( 1 );
 	}
 
-	auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( argv[1] );
-	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
+  std::string const json_data = [argv] {
+    auto const mmf = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+    daw_json_assert( mmf.size( ) > 2, "Minimum json data size is 2 '{}'" );
+	  return std::string( mmf.data( ), mmf.size( ) );
+	}( );
 
-	auto const json_sv1 =
-	  std::string_view( json_data1.data( ), json_data1.size( ) );
-
-	auto const sz = json_sv1.size( );
+	auto const sz = json_data.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
@@ -64,7 +64,7 @@ int main( int argc, char **argv ) try {
 		                         daw::json::NoCommentSkippingPolicyChecked>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -80,7 +80,7 @@ int main( int argc, char **argv ) try {
 		                         daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -96,7 +96,7 @@ int main( int argc, char **argv ) try {
 		                         daw::json::CppCommentSkippingPolicyChecked>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -113,7 +113,7 @@ int main( int argc, char **argv ) try {
 		      f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -129,7 +129,7 @@ int main( int argc, char **argv ) try {
 		                         daw::json::HashCommentSkippingPolicyChecked>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -146,7 +146,7 @@ int main( int argc, char **argv ) try {
 		      f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -164,7 +164,7 @@ int main( int argc, char **argv ) try {
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -180,7 +180,7 @@ int main( int argc, char **argv ) try {
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -196,7 +196,7 @@ int main( int argc, char **argv ) try {
 		    daw::json::SIMDCppCommentSkippingPolicyChecked<SIMDModes::SSE3>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -213,7 +213,7 @@ int main( int argc, char **argv ) try {
 		    f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -229,7 +229,7 @@ int main( int argc, char **argv ) try {
 		    daw::json::SIMDHashCommentSkippingPolicyChecked<SIMDModes::SSE3>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -246,7 +246,7 @@ int main( int argc, char **argv ) try {
 		    f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -266,7 +266,7 @@ int main( int argc, char **argv ) try {
 		    f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -283,7 +283,7 @@ int main( int argc, char **argv ) try {
 		    f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
-	  json_sv1 );
+	  json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );

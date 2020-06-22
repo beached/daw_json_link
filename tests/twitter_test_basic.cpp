@@ -23,12 +23,13 @@ int main( int argc, char **argv ) try {
 		exit( 1 );
 	}
 	using namespace daw::json;
-	auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( argv[1] );
-	auto const json_sv1 =
-	  std::string_view( json_data1.data( ), json_data1.size( ) );
+	std::string const json_data = [argv] {
+    auto const mmf = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+    return std::string( mmf.data( ), mmf.size( ) );
+  }( );
 
 	auto const twitter_result =
-	  daw::json::from_json<daw::twitter::twitter_object_t>( json_sv1 );
+	  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result.statuses.front( ).user.id == 1186275104,
