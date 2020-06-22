@@ -73,7 +73,7 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::Signed>, Range &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
-
+		static_assert( daw::is_signed_v<element_t>, "Expected signed type" );
 		if constexpr( KnownBounds ) {
 			daw_json_assert_weak(
 			  parse_policy_details::is_real_number_part( rng.front( ) ),
@@ -85,16 +85,13 @@ namespace daw::json::json_details {
 			  parse_policy_details::is_real_number_part( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 		}
-
-		element_t sign = [&]( ) -> element_t {
-			if( rng.front( ) == '-' ) {
-				rng.remove_prefix( );
-				return -1;
-			} else if( rng.front( ) == '+' ) {
-				rng.remove_prefix( );
-			}
-			return 1;
-		}( );
+		element_t sign = 1;
+		if( rng.front( ) == '-' ) {
+			rng.remove_prefix( );
+			sign = -1;
+		} else if( rng.front( ) == '+' ) {
+			rng.remove_prefix( );
+		}
 
 		if constexpr( KnownBounds ) {
 			return constructor_t{ }(
@@ -256,7 +253,6 @@ namespace daw::json::json_details {
 			}
 		}
 	}
-
 
 	template<typename... Args>
 	std::true_type is_string( std::basic_string<Args...> const & ) {
