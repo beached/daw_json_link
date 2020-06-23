@@ -19,11 +19,11 @@
 #include <string>
 
 struct kv_t {
-	std::unordered_map<std::string, int> kv{};
+	std::unordered_map<std::string, int> kv{ };
 };
 
 struct kv2_t {
-	daw::bounded_hash_map<std::string, int, 5> kv{};
+	daw::bounded_hash_map<std::string, int, 5> kv{ };
 };
 
 namespace daw::json {

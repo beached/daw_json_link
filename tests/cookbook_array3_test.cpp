@@ -63,14 +63,14 @@ int main( int argc, char **argv ) try {
 	using namespace daw::json;
 
 	auto const my_array_class = from_json<daw::cookbook_array3::MyArrayClass1>(
-	  {data.data( ), data.size( )} );
+	  { data.data( ), data.size( ) } );
 
 	daw_json_assert( my_array_class.member1.size( ) == 5, "Expected 5 items" );
 	daw_json_assert( my_array_class.member2.size( ) == 2, "Expected 2 items" );
 	auto const str = to_json( my_array_class );
 	puts( str.c_str( ) );
 	auto const my_array_class2 = from_json<daw::cookbook_array3::MyArrayClass1>(
-	  {str.data( ), str.size( )} );
+	  { str.data( ), str.size( ) } );
 
 	daw_json_assert( my_array_class == my_array_class2, "Round trip failed" );
 } catch( daw::json::json_exception const &jex ) {

@@ -24,7 +24,8 @@ namespace daw {
 			return result;
 		}
 
-		inline constexpr std::uint32_t murmur3_32_scramble( std::uint32_t k ) noexcept {
+		inline constexpr std::uint32_t
+		murmur3_32_scramble( std::uint32_t k ) noexcept {
 			k *= 0xcc9e'2d51ULL;
 			k = ( k << 15U ) | ( k >> 17U );
 			k *= 0x1b87'3593ULL;
@@ -53,7 +54,7 @@ namespace daw {
 		k = 0U;
 		for( auto d = ( last - first ); d > 0; --d ) {
 			k <<= 8U;
-			char const c = *(first+(d-1));
+			char const c = *( first + ( d - 1 ) );
 			k |= static_cast<unsigned char>( c );
 		}
 

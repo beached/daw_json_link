@@ -42,10 +42,10 @@ int main( int argc, char **argv ) try {
 		exit( 1 );
 	}
 
-  std::string const json_data = [argv] {
-    auto const mmf = daw::filesystem::memory_mapped_file_t<>( argv[1] );
-    daw_json_assert( mmf.size( ) > 2, "Minimum json data size is 2 '{}'" );
-	  return std::string( mmf.data( ), mmf.size( ) );
+	std::string const json_data = [argv] {
+		auto const mmf = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+		daw_json_assert( mmf.size( ) > 2, "Minimum json data size is 2 '{}'" );
+		return std::string( mmf.data( ), mmf.size( ) );
 	}( );
 
 	auto const sz = json_data.size( );
