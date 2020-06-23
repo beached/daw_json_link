@@ -61,7 +61,8 @@ constexpr bool parse_unsigned_test( char const ( &str )[N],
 	auto tmp = daw::json::NoCommentSkippingPolicyUnchecked( str, str + N );
 	return daw::json::json_details::unsigned_parser<
 	         Unsigned, daw::json::JsonRangeCheck::CheckForNarrowing>(
-	         daw::json::SIMDConst_v<daw::json::SIMDModes::None>, tmp ) == expected;
+	         daw::json::SIMDConst_v<daw::json::SIMDModes::None>, tmp ) ==
+	       expected;
 }
 
 struct test_001_t {

@@ -15,6 +15,7 @@
 #include <daw/cpp_17.h>
 #include <daw/daw_hide.h>
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -220,6 +221,8 @@ namespace daw::json {
 		  , class_first( f )
 		  , class_last( l ) {
 
+			assert( f );
+			assert( l );
 			daw_json_assert( not is_null( ), "Unexpected null start of range" );
 		}
 
@@ -304,8 +307,7 @@ namespace daw::json {
 			if( ptr_first < ptr_last and *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
-			while( ptr_first < ptr_last and prime_bracket_count > 0 and
-			       second_bracket_count >= 0 ) {
+			while( ptr_first < ptr_last and prime_bracket_count > 0 ) {
 				switch( *ptr_first ) {
 				case '\\':
 					++ptr_first;

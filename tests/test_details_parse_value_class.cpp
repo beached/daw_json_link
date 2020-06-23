@@ -38,7 +38,7 @@ bool empty_class_empty_json_class( ) {
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_class<no_name, Empty>>(
-	  ParseTag<JsonParseTypes::Class>{}, rng );
+	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -51,7 +51,7 @@ bool empty_class_nonempty_json_class( ) {
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_class<no_name, Empty>>(
-	  ParseTag<JsonParseTypes::Class>{}, rng );
+	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -62,7 +62,7 @@ struct InlineClass {
 
 	template<typename... Ts>
 	inline constexpr InlineClass( Ts &&... values )
-	  : members{std::forward<Ts>( values )...} {}
+	  : members{ std::forward<Ts>( values )... } {}
 };
 
 namespace daw::json {
@@ -88,7 +88,7 @@ bool missing_members_fail( ) {
 	static constexpr char const member0[] = "member0";
 	using class_t = InlineClass<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
-	  ParseTag<JsonParseTypes::Class>{}, rng );
+	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -103,7 +103,7 @@ bool wrong_member_type_fail( ) {
 	static constexpr char const member0[] = "member0";
 	using class_t = InlineClass<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
-	  ParseTag<JsonParseTypes::Class>{}, rng );
+	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -118,7 +118,7 @@ bool wrong_member_number_type_fail( ) {
 	static constexpr char const member0[] = "member0";
 	using class_t = InlineClass<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
-	  ParseTag<JsonParseTypes::Class>{}, rng );
+	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
 	return true;
 }

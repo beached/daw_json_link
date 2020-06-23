@@ -71,7 +71,8 @@ int main( int argc, char **argv ) try {
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
-		    daw::json::from_json<daw::twitter::twitter_object_t, daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
+		    daw::json::from_json<daw::twitter::twitter_object_t,
+		                         daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_sv1 );
@@ -80,8 +81,6 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result->statuses.front( ).user.id == "1186275104",
 	                 "Missing value" );
-
-
 
 	std::string str = std::string( );
 	str.reserve( json_sv1.size( ) );
