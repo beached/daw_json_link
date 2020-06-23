@@ -310,11 +310,12 @@ namespace daw {
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
   defined( _CPPUNWIND )
 			try {
-				func( std::forward<Args>( args )... );
+				(void)func( std::forward<Args>( args )... );
 				return expected_details::ExpectedTag<expected_details::Void>( );
 			} catch( ... ) { return std::current_exception( ); }
 #else
-			func( std::forward<Args>( args )... );
+			(void)func( std::forward<Args>( args )... );
+			return expected_details::ExpectedTag<expected_details::Void>( );
 #endif
 		}
 
