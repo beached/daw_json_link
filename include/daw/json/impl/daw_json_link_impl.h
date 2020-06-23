@@ -400,7 +400,9 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
 			rng.move_to_next_of( "\"}" );
 			(void)rng.skip_class( );
-			rng.trim_left( );
+			// Yes this must be checked.  We maybe at the end of document.  After the
+			// 2nd try, give up
+			rng.trim_left_checked( );
 		};
 
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
