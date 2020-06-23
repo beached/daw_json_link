@@ -331,66 +331,80 @@ namespace daw::json {
 			// Not checking for Left as it is required to be skipped already
 			auto result = *this;
 			result.counter = 0;
-			std::int_fast64_t prime_bracket_count = 1;
-			std::int_fast64_t second_bracket_count = 0;
-			bool in_quotes = false;
-			if( has_more( ) and *first == PrimLeft ) {
-				++first;
+			std::uint32_t prime_bracket_count = 1;
+			std::uint32_t second_bracket_count = 0;
+			char const *ptr_first = first;
+			char const *const ptr_last = last;
+			if( ptr_first < ptr_last and *first == PrimLeft ) {
+				++ptr_first;
 			}
-			while( has_more( ) and prime_bracket_count > 0 and
+			while( ptr_first < ptr_last and prime_bracket_count > 0 and
 			       second_bracket_count >= 0 ) {
-				switch( *first ) {
+				switch( *ptr_first ) {
 				case '\\':
-					++first;
+					++ptr_first;
 					break;
 				case '"':
-					in_quotes = not in_quotes;
+					++ptr_first;
+					while( ptr_first < ptr_last and *ptr_first != '"' ) {
+						if( *ptr_first == '\\' ) {
+							++ptr_first;
+							if( ptr_first >= ptr_last ) {
+								break;
+							}
+						}
+						++ptr_first;
+					}
+					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
 					break;
 				case ',':
-					if( not in_quotes and prime_bracket_count == 1 and
-					    second_bracket_count == 0 ) {
+					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
 						++result.counter;
 					}
 					break;
 				case PrimLeft:
-					if( not in_quotes ) {
-						++prime_bracket_count;
-					}
+					++prime_bracket_count;
 					break;
 				case PrimRight:
-					if( not in_quotes ) {
-						--prime_bracket_count;
-					}
+					--prime_bracket_count;
 					break;
 				case SecLeft:
-					if( not in_quotes ) {
-						++second_bracket_count;
-					}
+					++second_bracket_count;
 					break;
 				case SecRight:
-					if( not in_quotes ) {
-						--second_bracket_count;
-					}
+					--second_bracket_count;
 					break;
-				case '#':
-					if( not in_quotes ) {
-						while( has_more( ) and *first != '\n' ) {
-							++first;
+				case '/':
+					++ptr_first;
+					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
+					switch( *ptr_first ) {
+					case '/':
+						++ptr_first;
+						while( ( ptr_last - ptr_first ) > 1 and *ptr_first != '\n' ) {
+							++ptr_first;
 						}
-						if( not has_more( ) ) {
-							continue;
+						break;
+					case '*':
+						++ptr_first;
+						while( ( ptr_last - ptr_first ) >= 3 and *ptr_first != '*' and
+						       *std::next( ptr_first ) != '/' ) {
+							++ptr_first;
 						}
+						break;
+					default:
+						daw_json_error( "Unexpected character in stream" );
 					}
 					break;
 				}
-				++first;
+				++ptr_first;
 			}
 			daw_json_assert_weak( prime_bracket_count == 0 and
 			                        second_bracket_count == 0,
 			                      "Unexpected bracketing" );
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
-			result.last = first;
+			result.last = ptr_first;
+			first = ptr_first;
 			return result;
 		}
 
@@ -400,59 +414,69 @@ namespace daw::json {
 			// Not checking for Left as it is required to be skipped already
 			auto result = *this;
 			result.counter = 0;
-			std::int_fast64_t prime_bracket_count = 1;
-			std::int_fast64_t second_bracket_count = 0;
-			bool in_quotes = false;
-			if( *first == PrimLeft ) {
-				++first;
+			std::uint32_t prime_bracket_count = 1;
+			std::uint32_t second_bracket_count = 0;
+			char const *ptr_first = first;
+			if( *ptr_first == PrimLeft ) {
+				++ptr_first;
 			}
 			while( prime_bracket_count > 0 ) {
-				switch( *first ) {
+				switch( *ptr_first ) {
 				case '\\':
-					++first;
+					++ptr_first;
 					break;
 				case '"':
-					in_quotes = not in_quotes;
+					++ptr_first;
+					while( *ptr_first != '"' ) {
+						if( *ptr_first == '\\' ) {
+							++ptr_first;
+						}
+						++ptr_first;
+					}
 					break;
 				case ',':
-					if( not in_quotes and prime_bracket_count == 1 and
-					    second_bracket_count == 0 ) {
+					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
 						++result.counter;
 					}
 					break;
 				case PrimLeft:
-					if( not in_quotes ) {
-						++prime_bracket_count;
-					}
+					++prime_bracket_count;
 					break;
 				case PrimRight:
-					if( not in_quotes ) {
-						--prime_bracket_count;
-					}
+					--prime_bracket_count;
 					break;
 				case SecLeft:
-					if( not in_quotes ) {
-						++second_bracket_count;
-					}
+					++second_bracket_count;
 					break;
 				case SecRight:
-					if( not in_quotes ) {
-						--second_bracket_count;
-					}
+					--second_bracket_count;
 					break;
-				case '#':
-					if( not in_quotes ) {
-						while( *first != '\n' ) {
-							++first;
+				case '/':
+					++ptr_first;
+					switch( *ptr_first ) {
+					case '/':
+						++ptr_first;
+						while( *ptr_first != '\n' ) {
+							++ptr_first;
 						}
+						break;
+					case '*':
+						++ptr_first;
+						while( *ptr_first != '*' and *std::next( ptr_first ) != '/' ) {
+							++ptr_first;
+						}
+						break;
+					default:
+						daw_json_error( "Unexpected character in stream" );
 					}
 					break;
 				}
-				++first;
+				++ptr_first;
 			}
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
-			result.last = first;
+			result.last = ptr_first;
+			first = ptr_first;
 			return result;
 		}
 

@@ -266,8 +266,8 @@ namespace daw::json {
 			// Not checking for Left as it is required to be skipped already
 			auto result = *this;
 			result.counter = 0;
-			std::int32_t prime_bracket_count = 1;
-			std::int32_t second_bracket_count = 0;
+			std::uint32_t prime_bracket_count = 1;
+			std::uint32_t second_bracket_count = 0;
 			char const *ptr_first = first;
 			char const *const ptr_last = last;
 			if( ptr_first < ptr_last and *ptr_first == PrimLeft ) {
