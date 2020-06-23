@@ -74,7 +74,7 @@ namespace daw::json {
 		 * This lets us fastpath and just skip n characters as we have already
 		 * parsed them
 		 */
-		char const *m_can_skip = nullptr;
+		mutable char const *m_can_skip = nullptr;
 
 	public:
 		inline constexpr json_array_iterator( ) = default;
@@ -102,7 +102,7 @@ namespace daw::json {
 		 * @pre good( ) returns true
 		 * @return The parsed result of ParseElement
 		 */
-		[[nodiscard]] inline constexpr value_type operator*( ) {
+		[[nodiscard]] inline constexpr value_type operator*( ) const {
 			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 			                      "Unexpected end of stream" );
 
