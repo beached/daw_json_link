@@ -49,28 +49,19 @@ namespace daw::json {
 		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
 #endif
 	};
-
-	template<>
-	struct json_data_contract<coordinates_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_array<"coordinates", coordinate_t>>;
-#else
-		constexpr inline static char const coordinates[] = "coordinates";
-		using type = json_member_list<json_array<coordinates, coordinate_t>>;
-#endif
-	};
 } // namespace daw::json
 
 int main( int argc, char **argv ) try {
 	using namespace daw::json;
 	std::ios_base::sync_with_stdio( false );
-
-	if( argc < 2 ) {
-		std::cerr << "Must supply a filename to open\n";
-		exit( 1 );
-	}
-
-	auto const json_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	/*
+	  if( argc < 2 ) {
+	    std::cerr << "Must supply a filename to open\n";
+	    exit( 1 );
+	  }
+	*/
+	auto const json_data =
+	  daw::filesystem::memory_mapped_file_t<>( "/tmp/1.json" );
 	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using range_t =
