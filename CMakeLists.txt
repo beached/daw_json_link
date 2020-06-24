@@ -540,6 +540,14 @@ target_compile_definitions(json_benchmark_bin PRIVATE -DOS_VERSION="${_os_ver}")
 target_compile_definitions(json_benchmark_bin PRIVATE -DOS_PLATFORM="${_os_plat}")
 target_compile_definitions(json_benchmark_bin PRIVATE -DBUILD_TYPE="${CMAKE_BUILD_TYPE}")
 
+add_executable(test_stateful_json_value_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/test_stateful_json_value.cpp)
+add_dependencies(test_stateful_json_value_bin dependency_stub)
+add_test(test_stateful_json_value_test test_stateful_json_value_bin)
+add_dependencies(full test_stateful_json_value_bin)
+
+
+
+
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 install(DIRECTORY ${HEADER_FOLDER}/third_party/ DESTINATION include/third_party/)
 

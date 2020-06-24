@@ -153,8 +153,9 @@ namespace daw::json {
 				return false;
 			}
 			switch( m_state.front( ) ) {
-			case ']':
-			case '}':
+			case '[':
+			case '{':
+			case '"':
 				return true;
 			}
 			return false;

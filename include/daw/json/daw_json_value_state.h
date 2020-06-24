@@ -94,7 +94,7 @@ namespace daw::json {
 				++res;
 				return res;
 			}( );
-			auto last = m_value.end( );
+			auto const last = m_value.end( );
 			while( it != last ) {
 				auto name = it.name( );
 				daw_json_assert_weak( name, "Expected a class member, not array item" );
@@ -157,7 +157,9 @@ namespace daw::json {
 		constexpr basic_stateful_json_value( )
 		  : basic_stateful_json_value( basic_json_value<Range>( "{}" ) ) {}
 
-		/***
+		constexpr basic_stateful_json_value( std::string_view json_data )
+		  : basic_stateful_json_value( basic_json_value<Range>( json_data ) ) {}
+		/**
 		 * Reuse state storage for another basic_json_value
 		 * @param val Value to contian state for
 		 */
