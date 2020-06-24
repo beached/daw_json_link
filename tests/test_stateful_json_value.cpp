@@ -6,8 +6,13 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include <daw/daw_do_not_optimize.h>
+#include <daw/daw_memory_mapped_file.h>
+
 #include <daw/json/daw_json_link.h>
 #include <daw/json/daw_json_value_state.h>
+
+#include <iostream>
 
 struct coordinate_t {
 	double x;
@@ -43,8 +48,15 @@ coordinate_t calc( std::string_view text ) {
 	return coordinate_t{ x / len, y / len, z / len };
 }
 
-int main( ) {
-	auto left = calc( "{\"coordinates\":[{\"x\":1.1,\"y\":2.2,\"z\":3.3}]}" );
-	auto right = coordinate_t{ 1.1, 2.2, 3.3 };
-	daw_json_assert( not( left != right ), "Unexpected value" );
+int main( int argc, char **argv ) {
+	if( argc <= 1 ) {
+		std::cout << "Must supply path to test_stateful_json_value.json file\n";
+		exit( EXIT_FAILURE );
+	}
+	auto const json_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	daw::do_not_optimize( json_data );
+	auto coords = calc( json_data );
+	daw::do_not_optimize( coords );
+	std::cout << "x: " << coords.x << " y: " << coords.y << " z: " << coords.z
+	          << '\n';
 }

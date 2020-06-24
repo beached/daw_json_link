@@ -542,10 +542,8 @@ target_compile_definitions(json_benchmark_bin PRIVATE -DBUILD_TYPE="${CMAKE_BUIL
 
 add_executable(test_stateful_json_value_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/test_stateful_json_value.cpp)
 add_dependencies(test_stateful_json_value_bin dependency_stub)
-add_test(test_stateful_json_value_test test_stateful_json_value_bin)
+add_test(NAME test_stateful_json_value_test COMMAND test_stateful_json_value_test_bin ./test_stateful_json_value.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full test_stateful_json_value_bin)
-
-
 
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
