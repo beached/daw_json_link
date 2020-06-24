@@ -32,9 +32,12 @@ coordinate_t calc( std::string_view text ) {
 	for( auto c : jv ) {
 		state.reset( c.value );
 		++len;
-		x += from_json<double>( state["x"] );
-		y += from_json<double>( state["y"] );
-		z += from_json<double>( state["z"] );
+		static constexpr auto mem_x = json_member_name( "x" );
+		static constexpr auto mem_y = json_member_name( "y" );
+		static constexpr auto mem_z = json_member_name( "z" );
+		x += from_json<double>( state[mem_x] );
+		y += from_json<double>( state[mem_y] );
+		z += from_json<double>( state[mem_z] );
 	}
 
 	return coordinate_t{ x / len, y / len, z / len };

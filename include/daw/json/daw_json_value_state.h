@@ -53,6 +53,15 @@ namespace daw::json {
 		};
 	} // namespace json_details
 
+	struct json_member_name {
+		daw::string_view name;
+		uint32_t hash_value;
+
+		constexpr json_member_name( std::string_view Name ) noexcept
+		  : name( Name.data( ), Name.size( ) )
+		  , hash_value( daw::murmur3_32( name ) ) {}
+	};
+
 	/**
 	 * Maintains the parse positions of a json_value so that you pay the lookup
 	 * costs once
@@ -65,27 +74,54 @@ namespace daw::json {
 
 		/***
 		 * Move parser until member name matches key if needed
+		 * @param member to move_to
+		 * @return position of member or size
+		 */
+		[[nodiscard]] constexpr std::size_t move_to( json_member_name member ) {
+			std::size_t pos = 0;
+			for( ; pos < m_locs.size( ); ++pos ) {
+				if( m_locs[pos].is_match( member.name, member.hash_value ) ) {
+					return pos;
+				}
+			}
+
+			auto it = [&] {
+				if( m_locs.empty( ) ) {
+					return m_value.begin( );
+				}
+				auto res = m_locs.back( ).location;
+				++res;
+				return res;
+			}( );
+			auto const last = m_value.end( );
+			while( it != last ) {
+				auto name = it.name( );
+				daw_json_assert_weak( name, "Expected a class member, not array item" );
+				auto const &new_loc = m_locs.emplace_back(
+				  daw::string_view( name->data( ), name->size( ) ), it );
+				if( new_loc.is_match( member.name ) ) {
+					return pos;
+				}
+				++pos;
+				++it;
+			}
+			return m_locs.size( );
+		}
+
+		/***
+		 * Move parser until member name matches key if needed
 		 * @param key name of member to move to
 		 * @return position of member or size
 		 */
 		[[nodiscard]] constexpr std::size_t move_to( daw::string_view key ) {
 			std::size_t pos = 0;
-#ifndef _MSC_VER
 			auto const h = daw::murmur3_32( key );
 			for( ; pos < m_locs.size( ); ++pos ) {
 				if( m_locs[pos].is_match( key, h ) ) {
 					return pos;
 				}
 			}
-#else
-			// FIX: Have not verified but using the hash causes errors in known
-			// locations coode in daw_json_link_impl
-			for( ; pos < m_locs.size( ); ++pos ) {
-				if( m_locs[pos].is_match( key ) ) {
-					return pos;
-				}
-			}
-#endif
+
 			auto it = [&] {
 				if( m_locs.empty( ) ) {
 					return m_value.begin( );
@@ -178,6 +214,19 @@ namespace daw::json {
 		operator[]( std::string_view key ) {
 			daw::string_view const k = daw::string_view( key.data( ), key.size( ) );
 			std::size_t pos = move_to( k );
+			daw_json_assert_weak( pos < m_locs.size( ), "Unknown member" );
+			return m_locs[pos].location->value;
+		}
+
+		/***
+		 * Create a basic_json_member for the named member
+		 * @pre name must be valid
+		 * @param member name of member
+		 * @return a new basic_json_member
+		 */
+		[[nodiscard]] constexpr basic_json_value<Range>
+		operator[]( json_member_name member ) {
+			std::size_t pos = move_to( member );
 			daw_json_assert_weak( pos < m_locs.size( ), "Unknown member" );
 			return m_locs[pos].location->value;
 		}
