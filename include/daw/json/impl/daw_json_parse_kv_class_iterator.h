@@ -14,22 +14,27 @@
 #include "daw_json_parse_value_fwd.h"
 
 namespace daw::json::json_details {
+	template<typename... Args>
+	[[maybe_unused]] void test_map( std::map<Args...> const & );
+
+	template<typename... Args>
+	[[maybe_unused]] void test_map( std::unordered_map<Args...> const & );
 	template<typename Range, bool>
-	struct json_parse_array_iterator_base {
+	struct json_parse_kv_class_iterator_base {
 		using iterator_category = std::input_iterator_tag;
 		using difference_type = std::ptrdiff_t;
 		Range *rng = nullptr;
 	};
 
 	template<typename Range>
-	struct json_parse_array_iterator_base<Range, true> {
+	struct json_parse_kv_class_iterator_base<Range, true> {
 		// We have to lie so that std::distance uses O(1) instead of O(N)
 		using iterator_category = std::random_access_iterator_tag;
 		using difference_type = std::ptrdiff_t;
 		Range *rng = nullptr;
 
 		constexpr difference_type
-		operator-( json_parse_array_iterator_base const &rhs ) const {
+		operator-( json_parse_kv_class_iterator_base const &rhs ) const {
 			if( rhs.rng ) {
 				return static_cast<difference_type>( rhs.rng->counter );
 			}
@@ -38,27 +43,34 @@ namespace daw::json::json_details {
 	};
 
 	template<typename JsonMember, typename Range, bool IsKnown>
-	struct json_parse_array_iterator
-	  : json_parse_array_iterator_base<Range, IsKnown> {
+	struct json_parse_kv_class_iterator
+	  : json_parse_kv_class_iterator_base<Range, IsKnown> {
 
-		using base = json_parse_array_iterator_base<Range, IsKnown>;
+		using base = json_parse_kv_class_iterator_base<Range, IsKnown>;
 		using iterator_category = typename base::iterator_category;
 		using element_t = typename JsonMember::json_element_t;
-		using value_type = typename element_t::parse_to_t;
+		using member_container_type = typename JsonMember::base_type;
+		using value_type = typename member_container_type::value_type;
 		using reference = value_type;
 		using pointer = arrow_proxy<value_type>;
 		using iterator_range_t = Range;
 		using difference_type = typename base::difference_type;
 
-		inline constexpr json_parse_array_iterator( ) = default;
+		using key_t = typename JsonMember::json_key_t;
+		using value_t = typename JsonMember::json_element_t;
 
-		inline constexpr explicit json_parse_array_iterator( iterator_range_t &r )
+		inline constexpr json_parse_kv_class_iterator( ) = default;
+
+		inline constexpr explicit json_parse_kv_class_iterator(
+		  iterator_range_t &r )
 		  : base{ &r } {
-			if( base::rng->front( ) == ']' ) {
+			if( base::rng->front( ) == '}' ) {
 				// Cleanup at end of value
-				base::rng->remove_prefix( );
-				base::rng->trim_left_checked( );
-				// Ensure we are equal to default
+				if( not IsKnown ) {
+					base::rng->remove_prefix( );
+					base::rng->trim_left_checked( );
+					// Ensure we are equal to default
+				}
 				base::rng = nullptr;
 			}
 		}
@@ -66,42 +78,48 @@ namespace daw::json::json_details {
 		inline constexpr value_type operator*( ) {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
 			                      "Expected data to parse" );
-			return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
-			                               *base::rng );
+			auto key =
+			  parse_value<key_t>( ParseTag<key_t::expected_type>{ }, *base::rng );
+			name::name_parser::trim_end_of_name( *base::rng );
+			return daw::construct_a<value_type>(
+			  std::move( key ), parse_value<value_t>(
+			                      ParseTag<value_t::expected_type>{ }, *base::rng ) );
 		}
 
 		inline constexpr pointer operator->( ) {
 			return { operator*( ) };
 		}
 
-		inline constexpr json_parse_array_iterator &operator++( ) {
+		inline constexpr json_parse_kv_class_iterator &operator++( ) {
 			daw_json_assert_weak( base::rng, "Unexpected increment" );
 			base::rng->clean_tail( );
 			daw_json_assert_weak( base::rng->has_more( ), "Unexpected end of data" );
-			if( base::rng->front( ) == ']' ) {
-				// Cleanup at end of value
-				base::rng->remove_prefix( );
-				base::rng->trim_left_checked( );
-				// Ensure we are equal to default
+			if( base::rng->front( ) == '}' ) {
+				if( not IsKnown ) {
+					// Cleanup at end of value
+					base::rng->remove_prefix( );
+					base::rng->trim_left_checked( );
+					// Ensure we are equal to default
+				}
 				base::rng = nullptr;
 			}
 			return *this;
 		}
 
-		inline constexpr json_parse_array_iterator operator++( int ) {
+		inline constexpr json_parse_kv_class_iterator operator++( int ) {
 			auto result = *this;
 			(void)this->operator++( );
 			return result;
 		}
 
 		inline constexpr bool
-		operator==( json_parse_array_iterator const &rhs ) const {
+		operator==( json_parse_kv_class_iterator const &rhs ) const {
 			// using identity as equality
 			return base::rng == rhs.base::rng;
 		}
 
 		inline constexpr bool
-		operator!=( json_parse_array_iterator const &rhs ) const {
+		operator!=( json_parse_kv_class_iterator const &rhs ) const {
 			// using identity as equality
 			return base::rng != rhs.base::rng;
 		}

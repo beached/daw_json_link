@@ -20,8 +20,6 @@
 #include <string>
 
 namespace daw::json {
-	// Forward Declaration for some literal types used in json_arrays
-
 	/**
 	 * The member is a number
 	 * @tparam Name name of json member
@@ -327,9 +325,8 @@ namespace daw::json {
 			                          static_cast<ptrdiff_t>( json_data.size( ) ) );
 
 			return json_details::parse_value<json_member>(
-			  ParseTag<json_member::expected_type>{ }, rng );
+			  ParseTag<json_member::expected_type>{}, rng );
 		}
-
 	} // namespace json_details
 
 	/***
@@ -659,17 +656,17 @@ namespace daw::json {
 		                       std::string_view member_path ) {
 			using json_member = unnamed_default_type_mapping<JsonMember>;
 			auto [is_found, rng] = json_details::find_range<ParsePolicy>(
-			  json_data, { member_path.data( ), member_path.size( ) } );
+			  json_data, {member_path.data( ), member_path.size( )} );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
-					return typename json_member::constructor_t{ }( );
+					return typename json_member::constructor_t{}( );
 				}
 			} else {
 				daw_json_assert( is_found,
 				                 "Could not find member and type isn't Nullable" );
 			}
 			return json_details::parse_value<json_member>(
-			  ParseTag<json_member::expected_type>{ }, rng );
+			  ParseTag<json_member::expected_type>{}, rng );
 		}
 	} // namespace json_details
 } // namespace daw::json

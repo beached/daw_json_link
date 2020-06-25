@@ -357,17 +357,17 @@ namespace daw::json {
 
 		template<typename T>
 		[[maybe_unused]] auto dereffed_type_impl( daw::tag_t<T> )
-		  -> decltype( *( T{ } ) );
+		  -> decltype( *( std::declval<T &>( ) ) );
 
 		template<typename T>
 		using dereffed_type =
 		  daw::remove_cvref_t<decltype( dereffed_type_impl( daw::tag<T> ) )>;
 
 		template<typename T, JsonNullable Nullable>
-		using unwrap_type =
-		  std::conditional_t<(Nullable == JsonNullable::Nullable and
-		                      daw::is_detected_v<dereffed_type, T>),
-		                     daw::detected_t<dereffed_type, T>, T>;
+		using unwrap_type = std::conditional_t<
+		  std::conjunction_v<std::bool_constant<Nullable == JsonNullable::Nullable>,
+		                     daw::is_detected<dereffed_type, T>>,
+		  daw::detected_t<dereffed_type, T>, T>;
 
 		template<typename T>
 		inline constexpr bool can_deref_v = daw::is_detected_v<dereffed_type, T>;
@@ -428,15 +428,6 @@ namespace daw::json {
 	  std::is_same_v<
 	    typename std::iterator_traits<TestInputIteratorType<int>>::value_type,
 	    int> );
-
-	template<typename Container, typename Value>
-	using is_range_constructible =
-	  std::is_constructible<Container, TestInputIteratorType<Value>,
-	                        TestInputIteratorType<Value>>;
-
-	template<typename Container, typename Value>
-	inline constexpr bool is_range_constructable_v =
-	  is_range_constructible<Container, Value>::value;
 } // namespace daw::json
 
 namespace daw::json::json_details {

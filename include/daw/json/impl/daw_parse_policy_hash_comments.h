@@ -43,8 +43,8 @@ namespace daw::json {
 			}
 		}
 
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-		has_more( ) const noexcept {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool has_more( ) const
+		  noexcept {
 			return first < last;
 		}
 
@@ -69,9 +69,9 @@ namespace daw::json {
 		template<std::size_t N>
 		inline constexpr void move_to_next_of_nc( char const ( &str )[N] ) {
 			if constexpr( is_unchecked_input ) {
-				move_to_next_of_nc_unchecked( str, std::make_index_sequence<N>{ } );
+				move_to_next_of_nc_unchecked( str, std::make_index_sequence<N>{} );
 			} else {
-				move_to_next_of_nc_checked( str, std::make_index_sequence<N>{ } );
+				move_to_next_of_nc_checked( str, std::make_index_sequence<N>{} );
 			}
 		}
 
@@ -194,10 +194,10 @@ namespace daw::json {
 
 		using policy = BasicHashCommentSkippingPolicy;
 
-		iterator first{ };
-		iterator last{ };
-		iterator class_first{ };
-		iterator class_last{ };
+		iterator first{};
+		iterator last{};
+		iterator class_first{};
+		iterator class_last{};
 		std::size_t counter = 0;
 		using Range = BasicHashCommentSkippingPolicy;
 
@@ -226,8 +226,8 @@ namespace daw::json {
 			daw_json_assert( not is_null( ), "Unexpected null start of range" );
 		}
 
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-		empty( ) const noexcept {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool empty( ) const
+		  noexcept {
 			return first == last;
 		}
 
@@ -299,7 +299,7 @@ namespace daw::json {
 		skip_bracketed_item_checked( ) noexcept( is_unchecked_input ) {
 			// Not checking for Left as it is required to be skipped already
 			auto result = *this;
-			result.counter = 0;
+			std::size_t cnt = 0;
 			std::uint32_t prime_bracket_count = 1;
 			std::uint32_t second_bracket_count = 0;
 			char const *ptr_first = first;
@@ -327,7 +327,7 @@ namespace daw::json {
 					break;
 				case ',':
 					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
-						++result.counter;
+						++cnt;
 					}
 					break;
 				case PrimLeft:
@@ -360,6 +360,7 @@ namespace daw::json {
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
+			result.counter = 0;
 			first = ptr_first;
 			return result;
 		}
@@ -369,7 +370,7 @@ namespace daw::json {
 		skip_bracketed_item_unchecked( ) noexcept( is_unchecked_input ) {
 			// Not checking for Left as it is required to be skipped already
 			auto result = *this;
-			result.counter = 0;
+			std::size_t cnt = 0;
 			std::uint32_t prime_bracket_count = 1;
 			std::uint32_t second_bracket_count = 0;
 			char const *ptr_first = first;
@@ -392,7 +393,7 @@ namespace daw::json {
 					break;
 				case ',':
 					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
-						++result.counter;
+						++cnt;
 					}
 					break;
 				case PrimLeft:
@@ -419,6 +420,7 @@ namespace daw::json {
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
+			result.counter = cnt;
 			first = ptr_first;
 			return result;
 		}

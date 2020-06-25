@@ -11,6 +11,7 @@
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_array_iterator.h"
+#include "daw_json_parse_kv_class_iterator.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_real.h"
 #include "daw_json_parse_string_quote.h"
@@ -456,6 +457,14 @@ namespace daw::json::json_details {
 #endif
 	}
 
+	template<typename Container>
+	using can_reserve_test =
+	  decltype( std::declval<Container &>( ).reserve( 1ULL ) );
+
+	template<typename Container>
+	inline constexpr bool can_reserve_v =
+	  daw::is_detected_v<can_reserve_test, Container>;
+
 	/**
 	 * Parse a key_value pair encoded as a json object where the keys are the
 	 * member names
@@ -478,32 +487,8 @@ namespace daw::json::json_details {
 		// We are inside a KV map, we can expected a quoted name next
 		rng.move_to_next_of( '"' );
 
-		auto array_container = typename JsonMember::constructor_t{ }( );
-		auto container_appender =
-		  typename JsonMember::appender_t( array_container );
-
-		using key_t = typename JsonMember::json_key_t;
-		using value_t = typename JsonMember::json_element_t;
-		while( rng.front( ) != '}' ) {
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
-			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{ }, rng );
-			name::name_parser::trim_end_of_name( rng );
-			container_appender(
-			  std::move( key ),
-			  parse_value<value_t>( ParseTag<value_t::expected_type>{ }, rng ) );
-
-			rng.clean_tail( );
-			if constexpr( not KnownBounds ) {
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
-			}
-		}
-		if constexpr( not KnownBounds ) {
-			daw_json_assert_weak( rng.front( '}' ),
-			                      "Expected keyvalue type to end with a '}'" );
-			rng.remove_prefix( );
-			rng.trim_left_checked( );
-		}
-		return array_container;
+		using iter_t = json_parse_kv_class_iterator<JsonMember, Range, KnownBounds>;
+		return typename JsonMember::constructor_t{ }( iter_t( rng ), iter_t( ) );
 	}
 
 	/**
@@ -578,51 +563,14 @@ namespace daw::json::json_details {
 		rng.trim_left( );
 		daw_json_assert_weak( rng.front( '[' ),
 		                      "Expected array to start with a '['" );
-
 		rng.remove_prefix( );
 		rng.trim_left_unchecked( );
-		using container_t = typename JsonMember::base_type;
-		using element_t = typename JsonMember::json_element_t::parse_to_t;
-		using iterator_t = json_parse_value_array_iterator<JsonMember, Range>;
-		constexpr auto last = iterator_t( );
 
-		if constexpr( std::conjunction_v<
-		                std::is_same<typename JsonMember::appender_t,
-		                             basic_appender<container_t>>,
-		                std::is_same<typename JsonMember::constructor_t,
-		                             daw::construct_a_t<container_t>>,
-		                is_range_constructible<container_t, element_t>> ) {
-			// We are using the default constructor and appender.  This should allow
-			// for constructing the vector directly when it is constructable from a
-			// Iterator pair
-			if constexpr( daw::traits::is_vector_v<container_t> ) {
-				if constexpr( KnownBounds ) {
-					auto first = iterator_t( rng );
-					auto result = std::vector<element_t>( );
-					result.reserve( rng.counter );
-					result.insert( result.end( ), first, last );
-					return result;
-				} else {
-					auto first = iterator_t( rng );
-					return container_t( first, last );
-				}
-			} else {
-				auto first = iterator_t( rng );
-				return container_t( first, last );
-			}
-		} else {
-			auto array_container = typename JsonMember::constructor_t{ }( );
-			auto container_appender =
-			  typename JsonMember::appender_t( array_container );
-			auto first = iterator_t( rng );
-
-			while( first != last ) {
-				container_appender( *first );
-				++first;
-			}
-			return array_container;
-		}
-	} // namespace daw::json::json_details
+		using iterator_t =
+		  json_parse_array_iterator<JsonMember, Range, KnownBounds>;
+		return
+		  typename JsonMember::constructor_t{ }( iterator_t( rng ), iterator_t( ) );
+	}
 
 	template<JsonBaseParseTypes BPT, typename JsonMembers, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMembers>

@@ -40,8 +40,9 @@ namespace daw::json::json_details {
 			rng.remove_prefix( );
 
 			char const *orig_first = rng.first;
-			fract_part = unsigned_parser<Result, JsonRangeCheck::Never>(
-			  SIMDConst_v<Range::simd_mode>, rng );
+			fract_part =
+			  static_cast<Result>( unsigned_parser<uint64_t, JsonRangeCheck::Never>(
+			    SIMDConst_v<Range::simd_mode>, rng ) );
 			fract_part *= static_cast<Result>( daw::cxmath::dpow10(
 			  -static_cast<int32_t>( rng.first - orig_first ) ) );
 			fract_part = daw::cxmath::copy_sign( fract_part, whole_part );

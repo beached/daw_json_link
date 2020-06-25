@@ -65,6 +65,12 @@ namespace daw {
 			daw::algorithm::copy_n( ptr, m_stack.begin( ), daw::min( count, N ) );
 		}
 
+		template<typename Iterator>
+		constexpr bounded_vector_t( Iterator first, Iterator last ) {
+			auto out = daw::algorithm::copy( first, last, m_stack.begin( ) );
+			m_index = std::distance( m_stack.begin( ), out );
+		}
+
 		constexpr bool empty( ) const noexcept {
 			return m_index == m_first;
 		}

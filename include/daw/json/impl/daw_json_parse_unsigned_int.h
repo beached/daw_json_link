@@ -31,7 +31,7 @@ namespace daw::json::json_details {
 	is_made_of_eight_digits_cx( const char *ptr ) noexcept {
 		// The copy to local buffer is to get the compiler to treat it like a
 		// reinterpret_cast
-		std::byte buff[8]{ };
+		std::byte buff[8]{};
 		for( std::size_t n = 0; n < 8; ++n ) {
 			buff[n] = static_cast<std::byte>( ptr[n] );
 		}

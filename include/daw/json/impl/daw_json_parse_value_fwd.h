@@ -12,7 +12,6 @@
 #include "daw_json_value.h"
 
 namespace daw::json::json_details {
-
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Real>, Range &rng );

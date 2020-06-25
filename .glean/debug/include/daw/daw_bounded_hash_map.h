@@ -379,6 +379,13 @@ namespace daw {
 			}
 		}
 
+		template<typename Iterator>
+		constexpr bounded_hash_map( Iterator first, Iterator last ) {
+			for( ; first != last; ++first ) {
+				insert( std::move( first->key ), std::move( first->value ) );
+			}
+		}
+
 		template<typename K, typename V,
 		         std::enable_if_t<
 		           daw::all_true_v<std::is_same_v<Key, daw::remove_cvref_t<K>>,
