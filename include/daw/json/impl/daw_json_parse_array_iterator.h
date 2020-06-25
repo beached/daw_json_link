@@ -55,10 +55,12 @@ namespace daw::json::json_details {
 		inline constexpr explicit json_parse_array_iterator( iterator_range_t &r )
 		  : base{ &r } {
 			if( base::rng->front( ) == ']' ) {
-				// Cleanup at end of value
-				base::rng->remove_prefix( );
-				base::rng->trim_left_checked( );
-				// Ensure we are equal to default
+				if constexpr( not IsKnown ) {
+					// Cleanup at end of value
+					base::rng->remove_prefix( );
+					base::rng->trim_left_checked( );
+					// Ensure we are equal to default
+				}
 				base::rng = nullptr;
 			}
 		}
@@ -79,10 +81,12 @@ namespace daw::json::json_details {
 			base::rng->clean_tail( );
 			daw_json_assert_weak( base::rng->has_more( ), "Unexpected end of data" );
 			if( base::rng->front( ) == ']' ) {
-				// Cleanup at end of value
-				base::rng->remove_prefix( );
-				base::rng->trim_left_checked( );
-				// Ensure we are equal to default
+				if constexpr( not IsKnown ) {
+					// Cleanup at end of value
+					base::rng->remove_prefix( );
+					base::rng->trim_left_checked( );
+					// Ensure we are equal to default
+				}
 				base::rng = nullptr;
 			}
 			return *this;
