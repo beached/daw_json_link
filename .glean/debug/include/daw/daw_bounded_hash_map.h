@@ -382,7 +382,9 @@ namespace daw {
 		template<typename Iterator>
 		constexpr bounded_hash_map( Iterator first, Iterator last ) {
 			for( ; first != last; ++first ) {
-				insert( std::move( first->key ), std::move( first->value ) );
+				auto && item = *first;
+        auto const index = find_index( item.key );
+				m_data[*index] = std::forward<decltype(item)>( item );
 			}
 		}
 
