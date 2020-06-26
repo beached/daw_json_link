@@ -463,6 +463,11 @@ target_link_libraries(nativejson_roundtrip_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE
 add_test(NAME nativejson_roundtrip COMMAND nativejson_roundtrip_bin ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_roundtrip_bin)
 
+add_executable(test_stateful_json_value_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/test_stateful_json_value.cpp)
+add_dependencies(test_stateful_json_value_bin dependency_stub)
+add_test(NAME test_stateful_json_value_test COMMAND test_stateful_json_value_bin ./test_stateful_json_value.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full test_stateful_json_value_bin)
+
 add_executable(test_details_skip_string_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/test_details_skip_string.cpp)
 add_dependencies(test_details_skip_string_bin dependency_stub)
 add_test(test_details_skip_string_test test_details_skip_string_bin)
@@ -539,12 +544,6 @@ target_compile_definitions(json_benchmark_bin PRIVATE -DOS_RELEASE="${_os_rel}")
 target_compile_definitions(json_benchmark_bin PRIVATE -DOS_VERSION="${_os_ver}")
 target_compile_definitions(json_benchmark_bin PRIVATE -DOS_PLATFORM="${_os_plat}")
 target_compile_definitions(json_benchmark_bin PRIVATE -DBUILD_TYPE="${CMAKE_BUILD_TYPE}")
-
-add_executable(test_stateful_json_value_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/test_stateful_json_value.cpp)
-add_dependencies(test_stateful_json_value_bin dependency_stub)
-add_test(NAME test_stateful_json_value_test COMMAND test_stateful_json_value_test_bin ./test_stateful_json_value.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
-add_dependencies(full test_stateful_json_value_bin)
-
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 install(DIRECTORY ${HEADER_FOLDER}/third_party/ DESTINATION include/third_party/)

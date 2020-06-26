@@ -29,6 +29,7 @@
 #endif
 #include <type_traits>
 
+#include "daw_string_view_fwd.h"
 #include "daw_traits.h"
 
 namespace daw {
@@ -65,13 +66,22 @@ namespace daw {
 		         std::enable_if_t<std::is_integral_v<
 		                            typename std::iterator_traits<Iterator1>::type>,
 		                          std::nullptr_t> = nullptr>
-		[[nodiscard]] constexpr size_t operator( )( Iterator1 first,
-		                                            Iterator2 const last ) const
-		  noexcept {
+		[[nodiscard]] constexpr size_t
+		operator( )( Iterator1 first, Iterator2 const last ) const noexcept {
 			auto hash = impl::fnv_offset( );
 			while( first != last ) {
 				hash = append_hash( hash, *first );
 				++first;
+			}
+			return hash;
+		}
+
+		template<typename CharT, typename BoundsType, ptrdiff_t Extent>
+		[[nodiscard]] constexpr size_t operator( )(
+		  daw::basic_string_view<CharT, BoundsType, Extent> sv ) const noexcept {
+			auto hash = impl::fnv_offset( );
+			for( char c : sv ) {
+				hash = append_hash( hash, c );
 			}
 			return hash;
 		}
@@ -87,13 +97,13 @@ namespace daw {
 
 		template<typename Integral, std::enable_if_t<std::is_integral_v<Integral>,
 		                                             std::nullptr_t> = nullptr>
-		[[nodiscard]] constexpr size_t operator( )( Integral const value ) const
-		  noexcept {
+		[[nodiscard]] constexpr size_t
+		operator( )( Integral const value ) const noexcept {
 			return append_hash( impl::fnv_offset( ), value );
 		}
 
-		[[nodiscard]] constexpr size_t operator( )( char const *ptr ) const
-		  noexcept {
+		[[nodiscard]] constexpr size_t
+		operator( )( char const *ptr ) const noexcept {
 			auto hash = impl::fnv_offset( );
 			while( *ptr != '\0' ) {
 				hash = hash ^ static_cast<size_t>( *ptr );
@@ -104,8 +114,8 @@ namespace daw {
 		}
 
 		template<typename T>
-		[[nodiscard]] constexpr size_t operator( )( T const *const ptr ) const
-		  noexcept {
+		[[nodiscard]] constexpr size_t
+		operator( )( T const *const ptr ) const noexcept {
 			auto hash = impl::fnv_offset( );
 			auto bptr = static_cast<uint8_t const *const>( ptr );
 			for( size_t n = 0; n < sizeof( T ); ++n ) {
@@ -119,7 +129,7 @@ namespace daw {
 	template<typename T,
 	         std::enable_if_t<std::is_integral_v<T>, std::nullptr_t> = nullptr>
 	[[nodiscard]] constexpr size_t fnv1a_hash( T const value ) noexcept {
-		return fnv1a_hash_t{}( value );
+		return fnv1a_hash_t{ }( value );
 	}
 
 	[[nodiscard]] constexpr size_t fnv1a_hash( char const *ptr ) noexcept {
