@@ -99,7 +99,6 @@ daw_json_error( daw::json::json_details::missing_member reason ) {
 #endif
 }
 
-#ifndef DAW_JSON_CHECK_DEBUG_ONLY
 template<typename Bool>
 DAW_ATTRIBUTE_FLATTEN static inline constexpr void
 daw_json_assert( Bool const &b, std::string_view reason ) {
@@ -122,39 +121,5 @@ daw_json_assert( Bool const &b,
 	}                                                                            \
 	while( false )
 
-#else // undef DAW_JSON_CHECK_DEBUG_ONLY
-#ifndef NDEBUG
-template<typename Bool>
-DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-daw_json_assert( Bool const &b, std::string_view reason ) {
-	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
-		daw_json_error( reason );
-	}
-}
-template<typename Bool>
-DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-daw_json_assert( Bool const &b,
-                 daw::json::json_details::missing_member reason ) {
-	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
-		daw_json_error( reason );
-	}
-}
-
-#define daw_json_assert_weak( ... )                                            \
-	if constexpr( not Range::is_unchecked_input ) {                              \
-		daw_json_assert( __VA_ARGS__ );                                            \
-	}                                                                            \
-	do {                                                                         \
-	} while( false )
-#else // NDEBUG set
-#define daw_json_assert( ... )                                                 \
-	do {                                                                         \
-	} while( false )
-
-#define daw_json_assert_weak( ... )                                            \
-	do {                                                                         \
-	} while( false )
-#endif
-#endif
 #undef DAW_UNLIKELY
 #undef DAW_LIKELY
