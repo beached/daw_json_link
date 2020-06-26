@@ -75,4 +75,14 @@ namespace daw::json::json_details {
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	constexpr basic_json_value<typename Range::as_checked>
 	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng );
+
+
+#if defined( NDEBUG ) and (defined( _MSC_VER ) and not defined( __clang__ ))
+	// Lying to MSVC about being a random iterator causes issues I have not found yet
+	template<bool>
+	inline constexpr bool can_random_v = false;
+#else
+	template<bool IsKnown>
+	inline constexpr bool can_random_v = IsKnown;
+#endif
 } // namespace daw::json::json_details

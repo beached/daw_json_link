@@ -39,9 +39,9 @@ namespace daw::json::json_details {
 
 	template<typename JsonMember, typename Range, bool IsKnown>
 	struct json_parse_array_iterator
-	  : json_parse_array_iterator_base<Range, IsKnown> {
+	  : json_parse_array_iterator_base<Range, can_random_v<IsKnown>> {
 
-		using base = json_parse_array_iterator_base<Range, IsKnown>;
+		using base = json_parse_array_iterator_base<Range, can_random_v<IsKnown>>;
 		using iterator_category = typename base::iterator_category;
 		using element_t = typename JsonMember::json_element_t;
 		using value_type = typename element_t::parse_to_t;
@@ -68,19 +68,29 @@ namespace daw::json::json_details {
 		inline constexpr value_type operator*( ) {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
 			                      "Expected data to parse" );
+
 			return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
 			                               *base::rng );
 		}
 
-		inline constexpr pointer operator->( ) {
-			return { operator*( ) };
+		/*
+		constexpr pointer operator->( ) {
+			auto result = pointer( operator*( ) );
+			return result;
 		}
+		*/
 
 		inline constexpr json_parse_array_iterator &operator++( ) {
 			daw_json_assert_weak( base::rng, "Unexpected increment" );
 			base::rng->clean_tail( );
 			daw_json_assert_weak( base::rng->has_more( ), "Unexpected end of data" );
 			if( base::rng->front( ) == ']' ) {
+			#ifndef NDEBUG
+			if constexpr( IsKnown ) {
+					daw_json_assert( base::rng->counter == 0, "Unexpected item count" );
+				}
+			}
+			#endif
 				if constexpr( not IsKnown ) {
 					// Cleanup at end of value
 					base::rng->remove_prefix( );
@@ -89,6 +99,14 @@ namespace daw::json::json_details {
 				}
 				base::rng = nullptr;
 			}
+			#ifndef NDEBUG
+			if constexpr( IsKnown ) {
+				if( base::rng ) {
+					daw_json_assert( base::rng->counter > 0, "Unexpected item count" );
+					base::rng->counter--;
+				}
+			}
+			#endif
 			return *this;
 		}
 
