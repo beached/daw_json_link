@@ -46,7 +46,8 @@ namespace daw::json::json_details {
 	struct json_parse_kv_class_iterator
 	  : json_parse_kv_class_iterator_base<Range, can_random_v<IsKnown>> {
 
-		using base = json_parse_kv_class_iterator_base<Range, can_random_v<IsKnown>>;
+		using base =
+		  json_parse_kv_class_iterator_base<Range, can_random_v<IsKnown>>;
 		using iterator_category = typename base::iterator_category;
 		using element_t = typename JsonMember::json_element_t;
 		using member_container_type = typename JsonMember::base_type;
@@ -88,7 +89,7 @@ namespace daw::json::json_details {
 
 		/*
 		inline constexpr pointer operator->( ) {
-			return { operator*( ) };
+		  return { operator*( ) };
 		}
 		*/
 
@@ -97,14 +98,14 @@ namespace daw::json::json_details {
 			base::rng->clean_tail( );
 			daw_json_assert_weak( base::rng->has_more( ), "Unexpected end of data" );
 			if( base::rng->front( ) == '}' ) {
-			#ifndef NDEBUG
-			if constexpr( IsKnown ) {
-				if( base::rng ) {
-					daw_json_assert( base::rng->counter > 0, "Unexpected item count" );
-					base::rng->counter--;
+#ifndef NDEBUG
+				if constexpr( IsKnown ) {
+					if( base::rng ) {
+						daw_json_assert( base::rng->counter > 0, "Unexpected item count" );
+						base::rng->counter--;
+					}
 				}
-			}
-			#endif
+#endif
 				if constexpr( not IsKnown ) {
 					// Cleanup at end of value
 					base::rng->remove_prefix( );
@@ -113,14 +114,14 @@ namespace daw::json::json_details {
 				}
 				base::rng = nullptr;
 			}
-			#ifndef NDEBUG
+#ifndef NDEBUG
 			if constexpr( IsKnown ) {
 				if( base::rng ) {
 					daw_json_assert( base::rng->counter > 0, "Unexpected item count" );
 					base::rng->counter--;
 				}
 			}
-			#endif
+#endif
 			return *this;
 		}
 

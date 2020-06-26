@@ -75,8 +75,8 @@ namespace daw::json::json_details {
 
 		/*
 		constexpr pointer operator->( ) {
-			auto result = pointer( operator*( ) );
-			return result;
+		  auto result = pointer( operator*( ) );
+		  return result;
 		}
 		*/
 
@@ -85,12 +85,11 @@ namespace daw::json::json_details {
 			base::rng->clean_tail( );
 			daw_json_assert_weak( base::rng->has_more( ), "Unexpected end of data" );
 			if( base::rng->front( ) == ']' ) {
-			#ifndef NDEBUG
-			if constexpr( IsKnown ) {
+#ifndef NDEBUG
+				if constexpr( IsKnown ) {
 					daw_json_assert( base::rng->counter == 0, "Unexpected item count" );
 				}
-			}
-			#endif
+#endif
 				if constexpr( not IsKnown ) {
 					// Cleanup at end of value
 					base::rng->remove_prefix( );
@@ -99,14 +98,14 @@ namespace daw::json::json_details {
 				}
 				base::rng = nullptr;
 			}
-			#ifndef NDEBUG
+#ifndef NDEBUG
 			if constexpr( IsKnown ) {
 				if( base::rng ) {
 					daw_json_assert( base::rng->counter > 0, "Unexpected item count" );
 					base::rng->counter--;
 				}
 			}
-			#endif
+#endif
 			return *this;
 		}
 
