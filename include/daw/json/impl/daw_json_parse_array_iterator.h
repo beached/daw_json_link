@@ -18,12 +18,8 @@ namespace daw::json::json_details {
 	struct json_parse_array_iterator_base {
 		using iterator_category = std::input_iterator_tag;
 		using difference_type = std::ptrdiff_t;
+		static constexpr bool has_counter = false;
 		Range *rng = nullptr;
-
-		constexpr json_parse_array_iterator_base( ) = default;
-
-		constexpr json_parse_array_iterator_base( Range &r ) noexcept
-		  : rng( &r ) {}
 	};
 
 	template<typename Range>
@@ -31,17 +27,15 @@ namespace daw::json::json_details {
 		// We have to lie so that std::distance uses O(1) instead of O(N)
 		using iterator_category = std::random_access_iterator_tag;
 		using difference_type = std::ptrdiff_t;
+		static constexpr bool has_counter = true;
 		Range *rng = nullptr;
-		difference_type counter = 0;
-
-		constexpr json_parse_array_iterator_base( ) = default;
-		constexpr json_parse_array_iterator_base( Range &r ) noexcept
-		  : rng( &r )
-		  , counter( static_cast<difference_type>( r.counter ) ) {}
 
 		constexpr difference_type
 		operator-( json_parse_array_iterator_base const &rhs ) const {
-			return static_cast<difference_type>( rhs.counter );
+			if( rhs.rng ) {
+				return static_cast<difference_type>( rhs.rng->counter );
+			}
+			return 0;
 		}
 	};
 
@@ -61,7 +55,7 @@ namespace daw::json::json_details {
 		inline constexpr json_parse_array_iterator( ) = default;
 
 		inline constexpr explicit json_parse_array_iterator( iterator_range_t &r )
-		  : base( r ) {
+		  : base{ &r } {
 			if( base::rng->front( ) == ']' ) {
 				if constexpr( not IsKnown ) {
 					// Cleanup at end of value
@@ -86,9 +80,12 @@ namespace daw::json::json_details {
 			base::rng->clean_tail( );
 			daw_json_assert_weak( base::rng->has_more( ), "Unexpected end of data" );
 			if( base::rng->front( ) == ']' ) {
-				if constexpr( IsKnown ) {
-					daw_json_assert_weak( base::counter == 0, "Unexpected item count" );
+#ifndef NDEBUG
+				if constexpr( base::has_counter ) {
+					daw_json_assert_weak( base::rng->counter == 0,
+					                      "Unexpected item count" );
 				}
+#endif
 				if constexpr( not IsKnown ) {
 					// Cleanup at end of value
 					base::rng->remove_prefix( );
@@ -97,12 +94,15 @@ namespace daw::json::json_details {
 				}
 				base::rng = nullptr;
 			}
-			if constexpr( IsKnown ) {
+#ifndef NDEBUG
+			if constexpr( base::has_counter ) {
 				if( base::rng ) {
-					daw_json_assert_weak( base::counter > 0, "Unexpected item count" );
-					base::counter--;
+					daw_json_assert_weak( base::rng->counter > 0,
+					                      "Unexpected item count" );
+					base::rng->counter--;
 				}
 			}
+#endif
 			return *this;
 		}
 
@@ -114,27 +114,11 @@ namespace daw::json::json_details {
 
 		inline constexpr bool
 		operator==( json_parse_array_iterator const &rhs ) const {
-			// using identity as equality
-			if constexpr( IsKnown ) {
-				if( base::rng ) {
-					return base::counter == 0;
-				} else if( rhs.rng ) {
-					return rhs.counter != 0;
-				}
-			}
 			return base::rng == rhs.base::rng;
 		}
 
 		inline constexpr bool
 		operator!=( json_parse_array_iterator const &rhs ) const {
-			// using identity as equality
-			if constexpr( IsKnown ) {
-				if( base::rng ) {
-					return base::counter != 0;
-				} else if( rhs.rng ) {
-					return rhs.counter != 0;
-				}
-			}
 			return base::rng != rhs.base::rng;
 		}
 	};
