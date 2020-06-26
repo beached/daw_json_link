@@ -87,12 +87,6 @@ namespace daw::json::json_details {
 			                      ParseTag<value_t::expected_type>{ }, *base::rng ) );
 		}
 
-		/*
-		inline constexpr pointer operator->( ) {
-		  return { operator*( ) };
-		}
-		*/
-
 		inline constexpr json_parse_kv_class_iterator &operator++( ) {
 			daw_json_assert_weak( base::rng, "Unexpected increment" );
 			base::rng->clean_tail( );
