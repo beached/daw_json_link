@@ -77,7 +77,7 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng );
 
 
-#if defined( NDEBUG ) and (defined( _MSC_VER ) and not defined( __clang__ ))
+#if (defined( _MSC_VER ) and not defined( __clang__ ))
 	// Lying to MSVC about being a random iterator causes issues I have not found yet
 	template<bool>
 	inline constexpr bool can_random_v = false;
