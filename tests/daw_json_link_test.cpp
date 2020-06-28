@@ -421,7 +421,7 @@ int main( int, char ** ) try {
 #if defined( __GNUC__ ) and __GNUC__ <= 9
 #define CX
 #elif defined( _MSC_VER ) and not defined( __clang__ )
-#define CX constexpr
+#define CX
 #else
 #define CX constexpr
 #endif
