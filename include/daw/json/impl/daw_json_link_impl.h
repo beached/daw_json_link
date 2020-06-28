@@ -403,7 +403,7 @@ namespace daw::json::json_details {
 			// this puts it at runtime.
 			auto known_locations =
 			  locations_info_t<sizeof...( JsonMembers ), Range,
-			                   are_hashes_unique( JsonMembers::name... )>(
+			                   do_hashes_collide( JsonMembers::name... )>(
 			    JsonMembers::name... );
 
 #endif
