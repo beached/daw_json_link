@@ -370,7 +370,7 @@ namespace daw::json {
 		}
 	};
 } // namespace daw::json
-#if not defined( _MSV_VER ) or defined( __clang__ )
+#if not defined( _MSC_VER ) or defined( __clang__ )
 static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
 #endif
 
