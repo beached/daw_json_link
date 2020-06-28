@@ -11,6 +11,7 @@
 #include "daw_iterator_range.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_array_iterator.h"
+#include "daw_json_parse_kv_array_iterator.h"
 #include "daw_json_parse_kv_class_iterator.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_real.h"
@@ -511,50 +512,8 @@ namespace daw::json::json_details {
 
 		rng.remove_prefix( );
 
-		auto array_container = typename JsonMember::constructor_t{ }( );
-		auto container_appender =
-		  typename JsonMember::appender_t( array_container );
-
-		using key_t = typename JsonMember::json_key_t;
-		using value_t = typename JsonMember::json_value_t;
-		while( rng.front( ) != ']' ) {
-			// We are in an object find {
-			rng.move_to_next_of( '{' );
-			rng.remove_prefix( );
-			rng.move_to_next_of( "\"}" );
-			daw_json_assert_weak( rng.front( '"' ), "Expected name of key member" );
-			rng.remove_prefix( );
-			auto const key_name = name::name_parser::parse_nq( rng );
-			(void)key_name;
-			daw_json_assert_weak( key_t::name == key_name,
-			                      "Expected value name to match" );
-			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{ }, rng );
-			rng.move_to_next_of( '"' ); // Next
-			daw_json_assert_weak( rng.front( '"' ), "Expected name of value member" );
-			rng.remove_prefix( );
-			auto const value_name = name::name_parser::parse_nq( rng );
-			(void)value_name;
-			daw_json_assert_weak( value_t::name == value_name,
-			                      "Expected value name to match" );
-			container_appender(
-			  std::move( key ),
-			  parse_value<value_t>( ParseTag<value_t::expected_type>{ }, rng ) );
-
-			rng.move_to_next_of( '}' );
-			rng.remove_prefix( );
-			rng.trim_left_checked( );
-			if constexpr( not KnownBounds ) {
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
-			}
-			// End of object }
-		}
-		if constexpr( not KnownBounds ) {
-			daw_json_assert_weak( rng.front( ']' ),
-			                      "Expected keyvalue type to end with a '}'" );
-			rng.remove_prefix( );
-			rng.trim_left_checked( );
-		}
-		return array_container;
+		using iter_t = json_parse_kv_array_iterator<JsonMember, Range, KnownBounds>;
+		return typename JsonMember::constructor_t{ }( iter_t( rng ), iter_t( ) );
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>

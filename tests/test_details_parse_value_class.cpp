@@ -56,28 +56,6 @@ bool empty_class_nonempty_json_class( ) {
 	return true;
 }
 
-template<typename... Members>
-struct InlineClass {
-	std::tuple<typename Members::parse_to_t...> members;
-
-	template<typename... Ts>
-	inline constexpr InlineClass( Ts &&... values )
-	  : members{ std::forward<Ts>( values )... } {}
-};
-
-namespace daw::json {
-	template<typename... Members>
-	struct json_data_contract<InlineClass<Members...>> {
-		using type = json_member_list<Members...>;
-	};
-
-	template<typename... Members>
-	[[nodiscard, maybe_unused]] static inline auto const &
-	to_json_data( InlineClass<Members...> const &value ) {
-		return value.members;
-	}
-} // namespace daw::json
-
 bool missing_members_fail( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
@@ -86,7 +64,7 @@ bool missing_members_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
-	using class_t = InlineClass<json_number<member0, unsigned>>;
+	using class_t = unnamed_json_mapping<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
 	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
@@ -101,7 +79,7 @@ bool wrong_member_type_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
-	using class_t = InlineClass<json_number<member0, unsigned>>;
+	using class_t = unnamed_json_mapping<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
 	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
@@ -116,7 +94,7 @@ bool wrong_member_number_type_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
-	using class_t = InlineClass<json_number<member0, unsigned>>;
+	using class_t = unnamed_json_mapping<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
 	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );

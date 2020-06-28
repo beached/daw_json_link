@@ -77,6 +77,16 @@ namespace daw::json {
 		}
 	};
 
+	template<typename... Members>
+	struct json_data_contract<unnamed_json_mapping<Members...>> {
+		using type = json_member_list<Members...>;
+
+		[[nodiscard, maybe_unused]] static inline auto const &
+		to_json_data( unnamed_json_mapping<Members...> const &value ) {
+			return value.members;
+		}
+	};
+
 	template<std::size_t Index, typename JsonMember>
 	struct ordered_json_member {
 		using i_am_an_ordered_member = void;
@@ -506,8 +516,7 @@ namespace daw::json {
 	};
 
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
-	         typename JsonKeyType, typename Constructor, typename Appender,
-	         JsonNullable Nullable>
+	         typename JsonKeyType, typename Constructor, JsonNullable Nullable>
 	struct json_key_value_array {
 		using i_am_a_json_type = void;
 		using constructor_t = Constructor;
@@ -515,7 +524,6 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
-		using appender_t = Appender;
 		using json_key_t = json_details::unnamed_default_type_mapping<
 		  JsonKeyType, json_details::default_key_name>;
 		static_assert( not std::is_same_v<json_key_t, void>,
@@ -525,6 +533,8 @@ namespace daw::json {
 		               "Must supply a valid key member name" );
 		using json_value_t = json_details::unnamed_default_type_mapping<
 		  JsonValueType, json_details::default_value_name>;
+
+		using json_class_t = json_class<no_name, unnamed_json_mapping<json_key_t, json_value_t>>;
 		static_assert( not std::is_same_v<json_value_t, void>,
 		               "Unknown JsonValueType type." );
 		static_assert( daw::string_view( json_value_t::name ) !=

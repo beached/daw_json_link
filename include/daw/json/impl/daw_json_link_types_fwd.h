@@ -427,13 +427,11 @@ namespace daw::json {
 	 * isn't specified, the key name defaults to "key"
 	 *  @tparam Constructor A callable used to make Container, default will use
 	 * the Containers constructor.  Both normal and aggregate are supported
-	 *  @tparam Appender A callable used to add elements to container.
 	 * @tparam Nullable Can the member be missing or have a null value
 	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType,
 	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = json_details::basic_kv_appender<Container>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_key_value_array;
 
@@ -450,15 +448,13 @@ namespace daw::json {
 	 * isn't specified, the key name defaults to "key"
 	 *  @tparam Constructor A callable used to make Container, default will use
 	 * the Containers constructor.  Both normal and aggregate are supported
-	 *  @tparam Appender A callable used to add elements to container.
 	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType,
-	         typename Constructor = daw::construct_a_t<Container>,
-	         typename Appender = json_details::basic_kv_appender<Container>>
+	         typename Constructor = daw::construct_a_t<Container>>
 	using json_key_value_array_null =
 	  json_key_value_array<Name, Container, JsonValueType, JsonKeyType,
-	                       Constructor, Appender, JsonNullable::Nullable>;
+	                       Constructor, JsonNullable::Nullable>;
 
 	/**
 	 * Allow parsing of a type that does not fit

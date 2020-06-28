@@ -22,6 +22,20 @@
 
 namespace daw::json {
 	/***
+	 *
+	 * Allows specifying an unnamed json mapping where the
+	 * result is a tuple
+	 */
+	template<typename... Members>
+	struct unnamed_json_mapping {
+		std::tuple<typename Members::parse_to_t...> members;
+
+		template<typename... Ts>
+		constexpr unnamed_json_mapping( Ts &&... values )
+		  : members{ std::forward<Ts>( values )... } {}
+	};
+
+	/***
 	 * Attempt to parse/serialize a type that has not yet been mapped
 	 */
 	template<typename>

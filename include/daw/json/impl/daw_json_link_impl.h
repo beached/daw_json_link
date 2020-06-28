@@ -106,48 +106,6 @@ namespace daw::json::json_details {
 	inline constexpr bool can_insert1_v =
 	  daw::is_detected_v<can_insert1_test, Container, Value>;
 
-	template<typename Container>
-	struct basic_kv_appender {
-		Container *m_container;
-
-		explicit constexpr basic_kv_appender( Container &container )
-		  : m_container( &container ) {}
-
-		template<typename Key, typename Value>
-		constexpr void operator( )( Key &&key, Value &&value ) {
-			// using hint so that it works on vector
-			if constexpr( can_insert1_v<Container, std::pair<Key const, Value>> ) {
-				m_container->insert( std::pair<Key, Value>(
-				  std::forward<Key>( key ), std::forward<Value>( value ) ) );
-			} else {
-				// Not using const key so that items like vector<pair<Key, Value>> will
-				// work.
-				m_container->insert(
-				  m_container->end( ),
-				  std::pair<Key, Value>( std::forward<Key>( key ),
-				                         std::forward<Value>( value ) ) );
-			}
-		}
-	};
-
-	template<typename string_t>
-	struct kv_t {
-		string_t name;
-		std::size_t pos;
-		JsonParseTypes expected_type;
-
-		constexpr kv_t( string_t Name, JsonParseTypes Expected, std::size_t Pos )
-		  : name( daw::move( Name ) )
-		  , pos( Pos )
-		  , expected_type( Expected ) {}
-	};
-
-	template<std::size_t N, typename string_t, typename... JsonMembers>
-	[[nodiscard]] inline constexpr kv_t<string_t> get_item( ) {
-		using type_t = traits::nth_type<N, JsonMembers...>;
-		return kv_t<string_t>( type_t::name, type_t::expected_type, N );
-	}
-
 	template<bool HashesCollide, typename Range>
 	struct location_info_t {
 		std::uint32_t hash_value = 0;
@@ -179,7 +137,10 @@ namespace daw::json::json_details {
 	};
 
 	template<typename... MemberNames>
-	constexpr bool are_hashes_unique( MemberNames... member_names ) noexcept {
+	constexpr bool do_hashes_collide( MemberNames... member_names ) noexcept {
+#ifndef NDEBUG
+		return true;
+#else
 		std::array<std::uint32_t, sizeof...( MemberNames )> hashes{
 		  murmur3_32( member_names )...};
 
@@ -189,6 +150,7 @@ namespace daw::json::json_details {
 		         []( std::uint32_t const &l, std::uint32_t const &r ) {
 			         return l == r;
 		         } ) != hashes.end( );
+#endif
 	}
 
 	/***
@@ -432,7 +394,7 @@ namespace daw::json::json_details {
 #if not defined( _MSC_VER ) or defined( __clang__ )
 			constexpr auto known_locations_v =
 			  locations_info_t<sizeof...( JsonMembers ), Range,
-			                   are_hashes_unique( JsonMembers::name... )>(
+			                   do_hashes_collide( JsonMembers::name... )>(
 			    JsonMembers::name... );
 
 			auto known_locations = known_locations_v;
