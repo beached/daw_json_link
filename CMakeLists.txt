@@ -164,6 +164,12 @@ if (NOT DEFINED MSVC)
     target_link_libraries(kostya_bench2_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
     #add_test( NAME kostya_bench2 COMMAND kostya_bench2_bin)
     add_dependencies(full kostya_bench2_bin)
+
+    add_executable(kostya_bench3_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/kostya_bench3.cpp)
+    add_dependencies(kostya_bench3_bin dependency_stub)
+    target_link_libraries(kostya_bench3_bin ${COMPILER_SPECIFIC_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+    #add_test( NAME kostya_bench3 COMMAND kostya_bench3_bin)
+    add_dependencies(full kostya_bench3_bin)
 endif ()
 
 add_executable(coords_test2_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/coords_test2.cpp)
