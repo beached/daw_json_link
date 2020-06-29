@@ -202,29 +202,29 @@ namespace daw::json {
 		  : m_data{ ptr[Is]... } {}
 
 	public:
-		inline constexpr json_name( char const ( &ptr )[N] )
+		constexpr json_name( char const ( &ptr )[N] )
 		  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
 
-		inline constexpr operator daw::string_view( ) const {
+		constexpr operator daw::string_view( ) const {
 			return { m_data, N - 1 };
 		}
 
 		// Needed for copy_to_iterator
-		[[nodiscard]] inline constexpr char const *begin( ) const {
+		[[nodiscard]] constexpr char const *begin( ) const {
 			return m_data;
 		}
 
 		// Needed for copy_to_iterator
-		[[nodiscard]] inline constexpr char const *end( ) const {
+		[[nodiscard]] constexpr char const *end( ) const {
 			return m_data + static_cast<ptrdiff_t>( size( ) );
 		}
 
-		[[nodiscard]] static inline constexpr std::size_t size( ) noexcept {
+		[[nodiscard]] static constexpr std::size_t size( ) noexcept {
 			return N - 1;
 		}
 
 		template<std::size_t M>
-		inline constexpr bool operator==( json_name<M> const &rhs ) const {
+		constexpr bool operator==( json_name<M> const &rhs ) const {
 			if( N != M ) {
 				return false;
 			}
@@ -236,15 +236,15 @@ namespace daw::json {
 			return true;
 		}
 
-		inline constexpr bool operator==( daw::string_view rhs ) const {
+		constexpr bool operator==( daw::string_view rhs ) const {
 			return daw::string_view( m_data, N - 1 ) == rhs;
 		}
 
-		inline constexpr bool operator==( std::string_view rhs ) const {
+		constexpr bool operator==( std::string_view rhs ) const {
 			return std::string_view( m_data, N - 1 ) == rhs;
 		}
 
-		inline constexpr operator std::string_view( ) const {
+		constexpr operator std::string_view( ) const {
 			return std::string_view( m_data, N - 1 );
 		}
 	};

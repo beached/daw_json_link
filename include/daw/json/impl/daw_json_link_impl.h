@@ -63,7 +63,7 @@ namespace daw::json {
 
 		[[maybe_unused, nodiscard]] inline constexpr result_type
 		operator( )( ) const {
-			return {};
+			return { };
 		}
 
 		[[maybe_unused, nodiscard]] inline constexpr result_type
@@ -76,10 +76,10 @@ namespace daw::json {
 	struct custom_from_converter_t {
 		[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {
 			if constexpr( std::is_same_v<T, std::string_view> ) {
-				return std::string_view{};
+				return std::string_view{ };
 			} else if constexpr( std::is_same_v<T,
 			                                    std::optional<std::string_view>> ) {
-				return std::string_view{};
+				return std::string_view{ };
 			} else {
 				return from_string( daw::tag<T> );
 			}
@@ -110,7 +110,7 @@ namespace daw::json::json_details {
 	struct location_info_t {
 		std::uint32_t hash_value = 0;
 		daw::string_view name;
-		Range location{};
+		Range location{ };
 		std::size_t count = 0;
 
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
@@ -125,7 +125,7 @@ namespace daw::json::json_details {
 	template<typename Range>
 	struct location_info_t<false, Range> {
 		std::uint32_t hash_value = 0;
-		Range location{};
+		Range location{ };
 		std::size_t count = 0;
 
 		explicit constexpr location_info_t( daw::string_view Name ) noexcept
@@ -137,13 +137,12 @@ namespace daw::json::json_details {
 	};
 
 	template<typename... MemberNames>
-	constexpr bool do_hashes_collide( MemberNames... member_names ) noexcept {
+	constexpr bool do_hashes_collide( ) noexcept {
 #ifndef NDEBUG
-		Unused( member_names...);
 		return true;
 #else
 		std::array<std::uint32_t, sizeof...( MemberNames )> hashes{
-		  murmur3_32( member_names )...};
+		  murmur3_32( MemberNames::name )... };
 
 		daw::sort( hashes.begin( ), hashes.end( ) );
 		return daw::algorithm::adjacent_find(
@@ -168,7 +167,7 @@ namespace daw::json::json_details {
 	public:
 		template<typename... Names>
 		constexpr locations_info_t( Names... member_names ) noexcept
-		  : names{location_info_t<HasCollisions, Range>( member_names )...} {}
+		  : names{ location_info_t<HasCollisions, Range>( member_names )... } {}
 
 		inline constexpr location_info_t<HasCollisions, Range> const &
 		operator[]( std::size_t idx ) const {
@@ -307,13 +306,13 @@ namespace daw::json::json_details {
 		if( rng.front( ) == ']' ) {
 			if constexpr( is_json_nullable_v<ordered_member_subtype_t<JsonMember>> ) {
 				using constructor_t = typename json_member_type::constructor_t;
-				return constructor_t{}( );
+				return constructor_t{ }( );
 			} else if constexpr( is_json_nullable_v<json_member_type> ) {
 				daw_json_error( missing_member( "ordered_class_member" ) );
 			}
 		}
 		return parse_value<json_member_type>(
-		  ParseTag<json_member_type::expected_type>{}, rng );
+		  ParseTag<json_member_type::expected_type>{ }, rng );
 	}
 
 	/***
@@ -341,16 +340,16 @@ namespace daw::json::json_details {
 
 		// If the member was found loc will have it's position
 		if( loc.begin( ) == rng.begin( ) ) {
-			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{},
+			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 			                                rng );
 		}
 		if( not loc.is_null( ) ) {
 			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::expected_type>{}, loc );
+			  ParseTag<JsonMember::expected_type>{ }, loc );
 		}
 		if constexpr( is_json_nullable_v<JsonMember> ) {
 			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::expected_type>{}, loc );
+			  ParseTag<JsonMember::expected_type>{ }, loc );
 		} else {
 			daw_json_error( missing_member( JsonMember::name ) );
 		}
@@ -395,7 +394,7 @@ namespace daw::json::json_details {
 #if not defined( _MSC_VER ) or defined( __clang__ )
 			constexpr auto known_locations_v =
 			  locations_info_t<sizeof...( JsonMembers ), Range,
-			                   do_hashes_collide( JsonMembers::name... )>(
+			                   do_hashes_collide<JsonMembers...>( )>(
 			    JsonMembers::name... );
 
 			auto known_locations = known_locations_v;
@@ -404,7 +403,7 @@ namespace daw::json::json_details {
 			// this puts it at runtime.
 			auto known_locations =
 			  locations_info_t<sizeof...( JsonMembers ), Range,
-			                   do_hashes_collide( JsonMembers::name... )>(
+			                   do_hashes_collide<JsonMembers...>( )>(
 			    JsonMembers::name... );
 
 #endif
@@ -425,13 +424,13 @@ namespace daw::json::json_details {
 			 */
 			return std::apply(
 			  daw::construct_a<JsonClass>,
-			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )...} );
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
 #else
 			JsonClass result = std::apply(
 			  daw::construct_a<JsonClass>,
-			  tp_t{parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )...} );
+			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... } );
 			cleanup_fn( );
 			return result;
 #endif
@@ -474,11 +473,11 @@ namespace daw::json::json_details {
 		auto const oe = daw::on_exit_success( cleanup_fn );
 		return std::apply(
 		  daw::construct_a<JsonClass>,
-		  tp_t{parse_ordered_class_member<JsonMembers>( current_idx, rng )...} );
+		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
 #else
 		JsonClass result = std::apply(
 		  daw::construct_a<JsonClass>,
-		  tp_t{parse_ordered_class_member<JsonMembers>( current_idx, rng )...} );
+		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
 
 		cleanup_fn( );
 		return result;
