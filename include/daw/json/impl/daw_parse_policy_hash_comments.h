@@ -51,17 +51,22 @@ namespace daw::json {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		move_to_next_of_unchecked( Range &rng, char c ) {
-			while( rng.front( ) != c ) {
-				rng.remove_prefix( );
+			char const *first = rng.first;
+			while( *first != c ) {
+				++first;
 			}
+			rng.first = first;
 		}
 
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		move_to_next_of_checked( Range &rng, char c ) {
-			while( rng.has_more( ) and rng.front( ) != c ) {
-				rng.remove_prefix( );
+			char const *first = rng.first;
+			char const *const last = rng.last;
+			while( first < last and *first != c ) {
+				++first;
 			}
+			rng.first = first;
 		}
 
 		template<typename Range>

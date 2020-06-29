@@ -81,4 +81,9 @@ namespace daw::json::parse_policy_details {
 		}
 		return false;
 	}
+
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+	is_space_unchecked( char c ) {
+		return c <= 0x20;
+	}
 } // namespace daw::json::parse_policy_details

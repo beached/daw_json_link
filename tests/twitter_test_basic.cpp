@@ -28,15 +28,17 @@ int main( int argc, char **argv ) try {
 		return std::string( mmf.data( ), mmf.size( ) );
 	}( );
 
+	daw::twitter::twitter_object_t twitter_result;
 	for( std::size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_data );
-		auto const twitter_result =
+		twitter_result =
 		  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
 		daw::do_not_optimize( twitter_result );
-		daw_json_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
-		daw_json_assert( twitter_result.statuses.front( ).user.id == 1186275104,
-		                 "Missing value" );
 	}
+	daw_json_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result.statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

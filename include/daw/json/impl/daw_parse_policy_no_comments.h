@@ -19,53 +19,70 @@ namespace daw::json {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_checked( Range &rng ) {
-			while( rng.has_more( ) and rng.is_space_unchecked( ) ) {
-				rng.remove_prefix( );
+			char const *first = rng.first;
+			char const *const last = rng.last;
+			while( first < last and
+			       parse_policy_details::is_space_unchecked( *first ) ) {
+				++first;
 			}
+			rng.first = first;
 		}
 
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_unchecked( Range &rng ) {
-			while( rng.is_space_unchecked( ) ) {
-				rng.remove_prefix( );
+			char const *first = rng.first;
+			while( parse_policy_details::is_space_unchecked( *first ) ) {
+				++first;
 			}
+			rng.first = first;
 		}
 
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		move_to_next_of_unchecked( Range &rng, char c ) {
-			while( rng.front( ) != c ) {
-				rng.remove_prefix( );
+			char const *first = rng.first;
+			while( *first != c ) {
+				++first;
 			}
+			rng.first = first;
 		}
 
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		move_to_next_of_checked( Range &rng, char c ) {
-			while( rng.has_more( ) and rng.front( ) != c ) {
-				rng.remove_prefix( );
+			char const *first = rng.first;
+			char const *const last = rng.last;
+			while( first < last and *first != c ) {
+				++first;
 			}
+			rng.first = first;
 		}
 
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng,
 		                                                             char c ) {
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
-			while( rng.front( ) != c ) {
-				rng.remove_prefix( );
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
+			char const *first = rng.first;
+			char const *const last = rng.last;
+			daw_json_assert_weak( first < last, "Unexpected end of data" );
+			while( *first != c ) {
+				++first;
+				daw_json_assert_weak( first < last, "Unexpected end of data" );
 			}
+			rng.first = first;
 		}
 
 		template<typename Range, std::size_t N>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		move_to_next_of( Range &rng, char const ( &str )[N] ) {
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
-			while( not parse_policy_details::in( rng.front( ), str ) ) {
-				rng.remove_prefix( );
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
+			char const *first = rng.first;
+			char const *const last = rng.last;
+			daw_json_assert_weak( first < last, "Unexpected end of data" );
+			while( not parse_policy_details::in( *first, str ) ) {
+				++first;
+				daw_json_assert_weak( first < last, "Unexpected end of data" );
 			}
+			rng.first = first;
 		}
 
 		DAW_ATTRIBUTE_FLATTEN static constexpr bool at_literal_end( char c ) {
@@ -189,6 +206,6 @@ namespace daw::json {
 			rng.first = ptr_first;
 			return result;
 		}
-	};
+	}; // namespace daw::json
 
 } // namespace daw::json

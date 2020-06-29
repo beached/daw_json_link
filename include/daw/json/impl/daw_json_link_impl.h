@@ -180,9 +180,6 @@ namespace daw::json::json_details {
 
 	template<typename... MemberNames>
 	constexpr bool do_hashes_collide( ) noexcept {
-#ifndef NDEBUG
-		return true;
-#else
 		std::array<std::uint32_t, sizeof...( MemberNames )> hashes{
 		  murmur3_32( MemberNames::name )... };
 
@@ -192,7 +189,6 @@ namespace daw::json::json_details {
 		         []( std::uint32_t const &l, std::uint32_t const &r ) {
 			         return l == r;
 		         } ) != hashes.end( );
-#endif
 	}
 
 	template<typename Range, typename... JsonMembers>
