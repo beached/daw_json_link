@@ -136,6 +136,48 @@ namespace daw::json::json_details {
 		}
 	};
 
+	/***
+	 * Contains an array of member location_info mapped in a json_class
+	 * @tparam N Number of mapped members from json_class
+	 * @tparam Range see IteratorRange
+	 */
+	template<std::size_t N, typename Range, bool HasCollisions = true>
+	struct locations_info_t {
+		using value_type = location_info_t<HasCollisions, Range>;
+		static constexpr bool has_collisons = HasCollisions;
+		std::array<value_type, N> names;
+
+		constexpr location_info_t<HasCollisions, Range> const &
+		operator[]( std::size_t idx ) const {
+			return names[idx];
+		}
+
+		constexpr location_info_t<HasCollisions, Range> &
+		operator[]( std::size_t idx ) {
+			return names[idx];
+		}
+
+		static constexpr std::size_t size( ) noexcept {
+			return N;
+		}
+
+		[[nodiscard]] constexpr std::size_t
+		find_name( daw::string_view key ) const {
+			uint32_t const hash = murmur3_32( key );
+			for( std::size_t n = 0; n < N; ++n ) {
+				if( names[n].hash_value == hash ) {
+					if constexpr( has_collisons ) {
+						if( key != names[n].name ) {
+							continue;
+						}
+					}
+					return n;
+				}
+			}
+			return N;
+		}
+	};
+
 	template<typename... MemberNames>
 	constexpr bool do_hashes_collide( ) noexcept {
 #ifndef NDEBUG
@@ -153,53 +195,12 @@ namespace daw::json::json_details {
 #endif
 	}
 
-	/***
-	 * Contains an array of member location_info mapped in a json_class
-	 * @tparam N Number of mapped members from json_class
-	 * @tparam Range see IteratorRange
-	 */
-	template<std::size_t N, typename Range, bool HasCollisions = true>
-	class locations_info_t {
-		using value_type = location_info_t<HasCollisions, Range>;
-		static constexpr bool has_collisons = HasCollisions;
-		std::array<value_type, N> names;
-
-	public:
-		template<typename... Names>
-		constexpr locations_info_t( Names... member_names ) noexcept
-		  : names{ location_info_t<HasCollisions, Range>( member_names )... } {}
-
-		inline constexpr location_info_t<HasCollisions, Range> const &
-		operator[]( std::size_t idx ) const {
-			return names[idx];
-		}
-
-		inline constexpr location_info_t<HasCollisions, Range> &
-		operator[]( std::size_t idx ) {
-			return names[idx];
-		}
-
-		static inline constexpr std::size_t size( ) noexcept {
-			return N;
-		}
-
-		[[nodiscard]] inline constexpr std::size_t
-		find_name( daw::string_view key ) const {
-			uint32_t const hash = murmur3_32( key );
-			for( std::size_t n = 0; n < N; ++n ) {
-				if( names[n].hash_value == hash ) {
-					if constexpr( has_collisons ) {
-						if( key != names[n].name ) {
-							continue;
-						}
-					}
-					return n;
-				}
-			}
-			return N;
-		}
-	}; // namespace daw::json::json_details
-
+	template<typename Range, typename... JsonMembers>
+	constexpr auto make_locations_info( ) {
+		constexpr bool hashes_collide = do_hashes_collide<JsonMembers...>( );
+		return locations_info_t<sizeof...( JsonMembers ), Range, hashes_collide>{
+		  location_info_t<hashes_collide, Range>{ JsonMembers::name }... };
+	}
 	/***
 	 * Get the position from already seen JSON members or move the parser
 	 * forward until we reach the end of the class or the member.
@@ -393,18 +394,13 @@ namespace daw::json::json_details {
 
 #if not defined( _MSC_VER ) or defined( __clang__ )
 			constexpr auto known_locations_v =
-			  locations_info_t<sizeof...( JsonMembers ), Range,
-			                   do_hashes_collide<JsonMembers...>( )>(
-			    JsonMembers::name... );
+			  make_locations_info<Range, JsonMembers...>( );
 
 			auto known_locations = known_locations_v;
 #else
 			// MSVC is doing the murmur3 hash at compile time incorrectly
 			// this puts it at runtime.
-			auto known_locations =
-			  locations_info_t<sizeof...( JsonMembers ), Range,
-			                   do_hashes_collide<JsonMembers...>( )>(
-			    JsonMembers::name... );
+			auto known_locations = make_locations_info<Range, JsonMembers...>( );
 
 #endif
 			using tp_t = std::tuple<decltype(
