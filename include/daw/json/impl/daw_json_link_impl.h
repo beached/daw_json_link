@@ -139,6 +139,7 @@ namespace daw::json::json_details {
 	template<typename... MemberNames>
 	constexpr bool do_hashes_collide( MemberNames... member_names ) noexcept {
 #ifndef NDEBUG
+		Unused( member_names...);
 		return true;
 #else
 		std::array<std::uint32_t, sizeof...( MemberNames )> hashes{

@@ -11,8 +11,8 @@ namespace daw::json {
 	};
 
 	struct abort_on_error_parse_policy {
-		[[noreturn]] static void handle_error( ErrorType err,
-		                                       std::string_view data ) {
+		[[noreturn]] static void handle_error( ErrorType,
+		                                       std::string_view ) {
 			std::abort( );
 		}
 	};

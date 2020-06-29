@@ -51,7 +51,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char ** ) try {
 	using namespace daw::json;
 	std::ios_base::sync_with_stdio( false );
 	/*
