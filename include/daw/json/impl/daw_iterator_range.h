@@ -8,9 +8,7 @@
 
 #pragma once
 
-#include "daw_parse_policy_cpp_comments.h"
-#include "daw_parse_policy_hash_comments.h"
-#include "daw_parse_policy_no_comments.h"
+#include "daw_parse_policy.h"
 
 namespace daw::json {
 	using DefaultParsePolicy = NoCommentSkippingPolicyChecked;

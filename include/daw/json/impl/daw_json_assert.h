@@ -44,17 +44,28 @@ namespace daw::json::json_details {
 } // namespace daw::json::json_details
 
 namespace daw::json {
+	enum class ErrorType { Unknown, MissingMember, UnexpectedCharacter };
+
 	class json_exception {
-		std::string m_reason{};
+		std::string m_reason{ };
+		ErrorType m_error_type = ErrorType::Unknown;
 
 	public:
-		[[maybe_unused]] json_exception( ) = default;
-		[[maybe_unused]] explicit inline json_exception(
-		  std::string_view reason ) noexcept
+		json_exception( ) = default;
+		explicit json_exception( std::string_view reason ) noexcept
 		  : m_reason( reason ) {}
 
-		[[nodiscard, maybe_unused]] std::string const &reason( ) const noexcept {
+		explicit json_exception( std::string_view reason,
+		                         ErrorType error_type ) noexcept
+		  : m_reason( reason )
+		  , m_error_type( error_type ) {}
+
+		[[nodiscard]] std::string const &reason( ) const {
 			return m_reason;
+		}
+
+		[[nodiscard]] ErrorType type( ) const {
+			return m_error_type;
 		}
 	};
 } // namespace daw::json

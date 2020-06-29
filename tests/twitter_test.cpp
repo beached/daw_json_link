@@ -34,10 +34,10 @@ constexpr bool operator==( T const &lhs, T const &rhs ) {
 	daw_json_error( "Expected that values would be equal" );
 }
 
-int main( int argc, char **argv ) 
+int main( int argc, char **argv )
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
   defined( _CPPUNWIND )
-	try 
+  try
 #endif
 {
 	static constexpr std::size_t NUM_RUNS = 250;
@@ -267,8 +267,8 @@ int main( int argc, char **argv )
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::BasicNoCommentSkippingPolicy<false, SIMDModes::None, true>>(
-		    f1 );
+		    daw::json::BasicParsePolicy<false, daw::json::NoCommentSkippingPolicy,
+		                                SIMDModes::None, true>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -284,8 +284,8 @@ int main( int argc, char **argv )
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::BasicNoCommentSkippingPolicy<false, SIMDModes::None, true>>(
-		    f1 );
+		    daw::json::BasicParsePolicy<false, daw::json::NoCommentSkippingPolicy,
+		                                SIMDModes::None, true>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -316,5 +316,5 @@ int main( int argc, char **argv )
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
-#endif	
+#endif
 }
