@@ -43,15 +43,15 @@ int main( int argc, char **argv ) try {
 #ifdef NDEBUG
 	std::cout << "non-debug run\n";
 	auto const sz = sv_twitter.size( ) + sv_citm.size( ) + sv_canada.size( );
-	daw::bench_n_test_mbs<250>(
+	daw::bench_n_test_mbs<2500>(
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  j1 = daw::json::from_json<daw::twitter::twitter_object_t,
-		                            NoCommentSkippingPolicyUnchecked>( f1 );
+		                            NoCommentSkippingPolicyChecked>( f1 );
 		  j2 = daw::json::from_json<daw::citm::citm_object_t,
-		                            NoCommentSkippingPolicyUnchecked>( f2 );
+		                            NoCommentSkippingPolicyChecked>( f2 );
 		  j3 = daw::json::from_json<daw::geojson::FeatureCollection,
-		                            NoCommentSkippingPolicyUnchecked>( f3 );
+		                            NoCommentSkippingPolicyChecked>( f3 );
 		  daw::do_not_optimize( sv_twitter );
 		  daw::do_not_optimize( sv_citm );
 		  daw::do_not_optimize( sv_canada );
@@ -63,11 +63,11 @@ int main( int argc, char **argv ) try {
 #else
 	for( size_t n = 0; n < 25; ++n ) {
 		j1 = daw::json::from_json<daw::twitter::twitter_object_t,
-		                          NoCommentSkippingPolicyUnchecked>( sv_twitter );
+		                          NoCommentSkippingPolicyChecked>( sv_twitter );
 		j2 = daw::json::from_json<daw::citm::citm_object_t,
-		                          NoCommentSkippingPolicyUnchecked>( sv_citm );
+		                          NoCommentSkippingPolicyChecked>( sv_citm );
 		j3 = daw::json::from_json<daw::geojson::FeatureCollection,
-		                          NoCommentSkippingPolicyUnchecked>( sv_canada );
+		                          NoCommentSkippingPolicyChecked>( sv_canada );
 		daw::do_not_optimize( sv_twitter );
 		daw::do_not_optimize( sv_citm );
 		daw::do_not_optimize( sv_canada );
