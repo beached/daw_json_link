@@ -1,3 +1,3 @@
 cd build
-ctest -C Debug -j5 -VV --timeout 300
+ctest -C %1 -j5 -VV --timeout 300
 

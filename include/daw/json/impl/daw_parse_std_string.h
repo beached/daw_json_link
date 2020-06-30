@@ -181,7 +181,7 @@ namespace daw::json::json_details {
 
 		char *it = result.data( );
 
-		bool const has_quote = rng.front( '"' );
+		bool const has_quote = rng.front( ) == '"';
 		if( has_quote ) {
 			rng.remove_prefix( );
 		}

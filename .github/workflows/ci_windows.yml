@@ -10,14 +10,23 @@ on:
       branches-ignore: dev
 
 jobs:
-  build:
+  debug:
     runs-on: [windows-latest]
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps.cmd
+        run: .\ci_scripts\ci_windows_deps.cmd Debug
       - name: Build
-        run: .\ci_scripts\ci_windows_build.cmd
+        run: .\ci_scripts\ci_windows_build.cmd Debug
       - name: Test
-        run: .\ci_scripts\ci_windows_test.cmd
-
+        run: .\ci_scripts\ci_windows_test.cmd Debug
+  release:
+    runs-on: [windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Dependencies
+        run: .\ci_scripts\ci_windows_deps.cmd Release
+      - name: Build
+        run: .\ci_scripts\ci_windows_build.cmd Release
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd Release
