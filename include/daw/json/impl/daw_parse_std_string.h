@@ -8,29 +8,18 @@
 
 namespace daw::json::json_details {
 	template<bool IsUncheckedInput>
-	struct RangeHelper {
-		static constexpr bool is_unchecked_input = IsUncheckedInput;
-	};
-
-	template<bool IsUncheckedInput>
 	[[nodiscard]] inline constexpr unsigned to_nibble( unsigned chr ) {
-		using Range = RangeHelper<IsUncheckedInput>;
 		auto const b = static_cast<int>( chr );
 		int const maskLetter = ( ( '9' - b ) >> 31 );
 		int const maskSmall = ( ( 'Z' - b ) >> 31 );
 		int const offset = '0' + ( maskLetter & int( 'A' - '0' - 10 ) ) +
 		                   ( maskSmall & int( 'a' - 'A' ) );
 		auto const result = static_cast<unsigned>( b - offset );
-		daw_json_assert_weak( result < 16U, "Expected a hex nibble" );
+		if constexpr( not IsUncheckedInput ) {
+			daw_json_assert( result < 16U, "Expected a hex nibble" );
+		}
 		return result;
 	}
-
-	static_assert( to_nibble<true>( static_cast<unsigned>( '0' ) ) == 0U );
-	static_assert( to_nibble<true>( static_cast<unsigned>( '9' ) ) == 9U );
-	static_assert( to_nibble<true>( static_cast<unsigned>( 'a' ) ) == 10U );
-	static_assert( to_nibble<true>( static_cast<unsigned>( 'A' ) ) == 10U );
-	static_assert( to_nibble<true>( static_cast<unsigned>( 'f' ) ) == 15U );
-	static_assert( to_nibble<true>( static_cast<unsigned>( 'F' ) ) == 15U );
 
 	template<typename Range>
 	[[nodiscard]] inline constexpr std::uint16_t byte_from_nibbles( Range &rng ) {
@@ -54,6 +43,7 @@ namespace daw::json::json_details {
 			*it++ = static_cast<char>( cp );
 			return it;
 		}
+		//******************************
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			rng.remove_prefix( );
@@ -83,6 +73,7 @@ namespace daw::json::json_details {
 			*it++ = enc3;
 			return it;
 		}
+		//******************************
 		if( cp >= 0x800U ) {
 			// 3 bytes
 			char const enc2 =
@@ -95,6 +86,7 @@ namespace daw::json::json_details {
 			*it++ = enc2;
 			return it;
 		}
+		//******************************
 		// cp >= 0x80U
 		// 2 bytes
 		char const enc1 = static_cast<char>( ( cp & 0b0011'1111U ) | 0b1000'0000U );

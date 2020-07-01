@@ -33,7 +33,7 @@ namespace daw::cookbook_dates3 {
 
 		MyClass3( std::string Title, unsigned Id, int64_t DateAdded,
 		          int64_t LastModified )
-		  : title( Title )
+		  : title( std::move( Title ) )
 		  , id( Id )
 		  , date_added( seconds_since_epoch_to_tp( DateAdded ) )
 		  , last_modified( seconds_since_epoch_to_tp( LastModified ) ) {}

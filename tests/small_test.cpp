@@ -44,7 +44,7 @@ int main( int argc, char **argv ) try {
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
-	daw::Data const cls = daw::json::from_json<daw::Data>(
+	auto const cls = daw::json::from_json<daw::Data>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
 	daw_json_assert( cls.a == 12345, "Unexpected value" );

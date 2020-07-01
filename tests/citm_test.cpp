@@ -46,7 +46,7 @@ int main( int argc, char **argv ) try {
 	  json_sv1 );
 	daw::do_not_optimize( citm_result );
 	daw_json_assert( citm_result, "Missing value" );
-	daw_json_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	daw_json_assert( not citm_result->areaNames.empty( ), "Expected values" );
 	daw_json_assert( citm_result->areaNames.count( 205706005 ) == 1,
 	                 "Expected value" );
 	daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
