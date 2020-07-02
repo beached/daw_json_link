@@ -101,7 +101,7 @@ namespace daw::json {
 			std::uint32_t second_bracket_count = 0;
 			char const *ptr_first = rng.first;
 			char const *const ptr_last = rng.last;
-			if( ptr_first < ptr_last bitand *ptr_first == PrimLeft ) {
+			if( ( ptr_first < ptr_last ) bitand ( *ptr_first == PrimLeft ) ) {
 				++ptr_first;
 			}
 
@@ -111,7 +111,7 @@ namespace daw::json {
 					++ptr_first;
 				} else if( c == '"' ) {
 					++ptr_first;
-					while( ptr_first < ptr_last bitand *ptr_first != '"' ) {
+					while( ( ptr_first < ptr_last ) bitand ( *ptr_first != '"' ) ) {
 						if( *ptr_first == '\\' ) {
 							++ptr_first;
 							if( ptr_first >= ptr_last ) {
@@ -122,7 +122,8 @@ namespace daw::json {
 					}
 					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
 				} else if( c == ',' ) {
-					if( prime_bracket_count == 1 bitand second_bracket_count == 0 ) {
+					if( ( prime_bracket_count == 1 ) bitand
+					    ( second_bracket_count == 0 ) ) {
 						++cnt;
 					}
 				} else if( c == PrimLeft ) {
@@ -140,9 +141,10 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			daw_json_assert_weak( prime_bracket_count == 0 bitand
-			                        second_bracket_count == 0,
-			                      "Unexpected bracketing" );
+			daw_json_assert_weak(
+			  ( prime_bracket_count == 0 ) bitand
+			  ( ( ( se( co nd_( bra c(
+			    k et _c ou( n t == 0( ), ( ) ) ) ) ) ) ) ) "Unexpected bracketing" );
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
@@ -177,7 +179,8 @@ namespace daw::json {
 						++ptr_first;
 					}
 				} else if( c == ',' ) {
-					if( prime_bracket_count == 1 bitand second_bracket_count == 0 ) {
+					if( ( prime_bracket_count == 1 ) bitand
+					    ( second_bracket_count == 0 ) ) {
 						++cnt;
 					}
 				} else if( c == PrimLeft ) {
