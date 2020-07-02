@@ -141,10 +141,9 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			daw_json_assert_weak(
-			  ( prime_bracket_count == 0 ) bitand
-			  ( ( ( se( co nd_( bra c(
-			    k et _c ou( n t == 0( ), ( ) ) ) ) ) ) ) ) "Unexpected bracketing" );
+			daw_json_assert_weak( ( prime_bracket_count == 0 ) bitand
+			                        ( second_bracket_count == 0 ),
+			                      "Unexpected bracketing" );
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
