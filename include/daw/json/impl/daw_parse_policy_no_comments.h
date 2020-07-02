@@ -12,6 +12,7 @@
 #include "daw_json_parse_common.h"
 #include "daw_parse_policy_policy_details.h"
 
+#include <daw/daw_function_table.h>
 #include <daw/daw_hide.h>
 
 namespace daw::json {
@@ -100,17 +101,17 @@ namespace daw::json {
 			std::uint32_t second_bracket_count = 0;
 			char const *ptr_first = rng.first;
 			char const *const ptr_last = rng.last;
-			if( ptr_first < ptr_last and *ptr_first == PrimLeft ) {
+			if( ptr_first < ptr_last bitand *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
-			while( ptr_first < ptr_last and prime_bracket_count > 0 ) {
-				switch( *ptr_first ) {
-				case '\\':
+
+			while( ptr_first < ptr_last ) {
+				char const c = *ptr_first;
+				if( c == '\\' ) {
 					++ptr_first;
-					break;
-				case '"':
+				} else if( c == '"' ) {
 					++ptr_first;
-					while( ptr_first < ptr_last and *ptr_first != '"' ) {
+					while( ptr_first < ptr_last bitand *ptr_first != '"' ) {
 						if( *ptr_first == '\\' ) {
 							++ptr_first;
 							if( ptr_first >= ptr_last ) {
@@ -120,28 +121,26 @@ namespace daw::json {
 						++ptr_first;
 					}
 					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
-					break;
-				case ',':
-					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
+				} else if( c == ',' ) {
+					if( prime_bracket_count == 1 bitand second_bracket_count == 0 ) {
 						++cnt;
 					}
-					break;
-				case PrimLeft:
+				} else if( c == PrimLeft ) {
 					++prime_bracket_count;
-					break;
-				case PrimRight:
+				} else if( c == PrimRight ) {
 					--prime_bracket_count;
-					break;
-				case SecLeft:
+					if( prime_bracket_count == 0 ) {
+						++ptr_first;
+						break;
+					}
+				} else if( c == SecLeft ) {
 					++second_bracket_count;
-					break;
-				case SecRight:
+				} else if( c == SecRight ) {
 					--second_bracket_count;
-					break;
 				}
 				++ptr_first;
 			}
-			daw_json_assert_weak( prime_bracket_count == 0 and
+			daw_json_assert_weak( prime_bracket_count == 0 bitand
 			                        second_bracket_count == 0,
 			                      "Unexpected bracketing" );
 			// We include the close primary bracket in the range so that subsequent
@@ -165,12 +164,11 @@ namespace daw::json {
 			if( *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
-			while( prime_bracket_count > 0 ) {
-				switch( *ptr_first ) {
-				case '\\':
+			while( true ) {
+				char const c = *ptr_first;
+				if( c == '\\' ) {
 					++ptr_first;
-					break;
-				case '"':
+				} else if( c == '"' ) {
 					++ptr_first;
 					while( *ptr_first != '"' ) {
 						if( *ptr_first == '\\' ) {
@@ -178,24 +176,22 @@ namespace daw::json {
 						}
 						++ptr_first;
 					}
-					break;
-				case ',':
-					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
+				} else if( c == ',' ) {
+					if( prime_bracket_count == 1 bitand second_bracket_count == 0 ) {
 						++cnt;
 					}
-					break;
-				case PrimLeft:
+				} else if( c == PrimLeft ) {
 					++prime_bracket_count;
-					break;
-				case PrimRight:
+				} else if( c == PrimRight ) {
 					--prime_bracket_count;
-					break;
-				case SecLeft:
+					if( prime_bracket_count == 0 ) {
+						++ptr_first;
+						break;
+					}
+				} else if( c == SecLeft ) {
 					++second_bracket_count;
-					break;
-				case SecRight:
+				} else if( c == SecRight ) {
 					--second_bracket_count;
-					break;
 				}
 				++ptr_first;
 			}
