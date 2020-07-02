@@ -21,7 +21,7 @@
 #include <string_view>
 
 #ifdef NDEBUG
-inline constexpr std::size_t NUMRUNS = 2500;
+inline constexpr std::size_t NUMRUNS = 1000;
 #else
 inline constexpr std::size_t NUMRUNS = 100;
 #endif
