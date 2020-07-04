@@ -21,7 +21,7 @@ namespace daw::json::parse_policy_details {
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
 	in( char c, char const ( &set )[N] ) noexcept {
 		unsigned result = 0;
-		daw::algorithm::do_n_arg<N>( [&]( std::size_t n ) {
+		daw::algorithm::do_n_arg<N-1>( [&]( std::size_t n ) {
 			result |= static_cast<unsigned>( set[n] == c );
 		} );
 		return static_cast<bool>( result );
