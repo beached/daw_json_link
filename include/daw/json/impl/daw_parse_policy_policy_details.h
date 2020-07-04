@@ -13,22 +13,33 @@
 
 namespace daw::json::parse_policy_details {
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	in( char lhs, char rhs ) noexcept {
+	in( char lhs, char rhs ) {
 		return lhs == rhs;
 	}
 
+	/*
 	template<std::size_t N>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	in( char c, char const ( &set )[N] ) noexcept {
+	in( char c, char const ( &set )[N] ) {
 		unsigned result = 0;
-		daw::algorithm::do_n_arg<N-1>( [&]( std::size_t n ) {
+		daw::algorithm::do_n_arg<N - 1>( [&]( std::size_t n ) {
+			result |= static_cast<unsigned>( set[n] == c );
+		} );
+		return static_cast<bool>( result );
+	}*/
+
+	template<JSONNAMETYPE Set>
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool in( char c ) {
+		constexpr daw::string_view set = Set;
+		unsigned result = 0;
+		daw::algorithm::do_n_arg<set.size( )>( [&]( std::size_t n ) {
 			result |= static_cast<unsigned>( set[n] == c );
 		} );
 		return static_cast<bool>( result );
 	}
 
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	at_end_of_item( char c ) noexcept {
+	at_end_of_item( char c ) {
 		return static_cast<bool>(
 		  static_cast<unsigned>( c == ',' ) | static_cast<unsigned>( c == '}' ) |
 		  static_cast<unsigned>( c == ']' ) | static_cast<unsigned>( c == ':' ) |
@@ -36,12 +47,12 @@ namespace daw::json::parse_policy_details {
 	}
 
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	is_number( char c ) noexcept {
+	is_number( char c ) {
 		return static_cast<unsigned>( c ) - static_cast<unsigned>( '0' ) < 10U;
 	}
 
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	is_signed_number_part( char c ) noexcept {
+	is_signed_number_part( char c ) {
 		switch( c ) {
 		case '0':
 		case '1':
@@ -61,7 +72,7 @@ namespace daw::json::parse_policy_details {
 	}
 
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	is_real_number_part( char c ) noexcept {
+	is_real_number_part( char c ) {
 		switch( c ) {
 		case '0':
 		case '1':

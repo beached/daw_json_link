@@ -15,6 +15,9 @@
 #include <daw/daw_cxmath.h>
 
 namespace daw::json::json_details {
+	namespace parse_tokens {
+		inline constexpr const char exponent_token[] = "eE";
+	}
 	template<typename Result, typename Range>
 	[[nodiscard]] inline constexpr Result parse_real( Range &rng ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
@@ -49,7 +52,8 @@ namespace daw::json::json_details {
 		}
 
 		int32_t exp_part = 0;
-		if( parse_policy_details::in( rng.front( ), "eE" ) ) {
+		if( parse_policy_details::template in<parse_tokens::exponent_token>(
+		      rng.front( ) ) ) {
 			rng.remove_prefix( );
 			int32_t exsign = 1;
 			if( rng.front( ) == '-' ) {

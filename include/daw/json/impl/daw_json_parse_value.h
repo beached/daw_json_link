@@ -486,7 +486,7 @@ namespace daw::json::json_details {
 
 		rng.remove_prefix( );
 		// We are inside a KV map, we can expected a quoted name next
-		rng.move_to_next_of( '"' );
+		rng.template move_to_next_char<'"'>( );
 
 		using iter_t = json_parse_kv_class_iterator<JsonMember, Range, KnownBounds>;
 		return typename JsonMember::constructor_t{ }( iter_t( rng ), iter_t( ) );

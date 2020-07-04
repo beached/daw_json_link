@@ -123,9 +123,8 @@ namespace daw::json {
 			}
 		}
 
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng,
-		                                                             char c ) {
+		template<char c, typename Range>
+		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_char( Range &rng ) {
 			skip_comments( rng );
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 			while( rng.front( ) != c ) {
@@ -135,12 +134,11 @@ namespace daw::json {
 			}
 		}
 
-		template<typename Range, std::size_t N>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		move_to_next_of( Range &rng, char const ( &str )[N] ) {
+		template<JSONNAMETYPE str, typename Range>
+		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
 			skip_comments( rng );
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
-			while( not parse_policy_details::in( rng.front( ), str ) ) {
+			while( not parse_policy_details::in<str>( rng.front( ) ) ) {
 				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 				rng.remove_prefix( );
 				skip_comments( rng );

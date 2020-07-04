@@ -352,6 +352,9 @@ namespace daw::json::json_details {
 		}
 	}
 
+	namespace parse_tokens {
+		inline constexpr char const next_member_token[] = "\"}";
+	}
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
 	[[nodiscard]] inline constexpr JsonClass
@@ -366,7 +369,7 @@ namespace daw::json::json_details {
 		daw_json_assert_weak( rng.front( '{' ), "Expected start of class" );
 		rng.set_class_position( );
 		rng.remove_prefix( );
-		rng.move_to_next_of( "\"}" );
+		rng.template move_to_next_of<parse_tokens::next_member_token>( );
 
 		auto const cleanup_fn = [&] {
 			if( not rng.has_more( ) ) {
@@ -375,7 +378,7 @@ namespace daw::json::json_details {
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
-			rng.move_to_next_of( "\"}" );
+			rng.template move_to_next_of<parse_tokens::next_member_token>( );
 			(void)rng.skip_class( );
 			// Yes this must be checked.  We maybe at the end of document.  After the
 			// 2nd try, give up

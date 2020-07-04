@@ -235,13 +235,14 @@ namespace daw::json {
 			}
 		}
 
-		constexpr void move_to_next_of( char c ) {
-			CommentPolicy::move_to_next_of( *this, c );
+		template<char c>
+		constexpr void move_to_next_char( ) {
+			CommentPolicy::template move_to_next_char<c>( *this );
 		}
 
-		template<std::size_t N>
-		constexpr void move_to_next_of( char const ( &str )[N] ) {
-			CommentPolicy::move_to_next_of( *this, str );
+		template<JSONNAMETYPE str>
+		constexpr void move_to_next_of( ) {
+			CommentPolicy::template move_to_next_of<str>( *this );
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
