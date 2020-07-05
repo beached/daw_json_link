@@ -23,7 +23,7 @@ bool empty_array_empty_json_array( ) {
 	constexpr std::string_view sv = "[]";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_array<no_name, int>>(
-	  ParseTag<JsonParseTypes::Array>{ }, rng );
+	  ParseTag<JsonParseTypes::Array>{}, rng );
 	return v.empty( );
 }
 
@@ -35,7 +35,7 @@ bool int_array_json_string_array_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_array<no_name, int>>(
-	  ParseTag<JsonParseTypes::Array>{ }, rng );
+	  ParseTag<JsonParseTypes::Array>{}, rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -46,7 +46,7 @@ struct InlineClass {
 
 	template<typename... Ts>
 	inline constexpr InlineClass( Ts &&... values )
-	  : members{ std::forward<Ts>( values )... } {}
+	  : members{std::forward<Ts>( values )...} {}
 };
 
 namespace daw::json {
@@ -70,7 +70,7 @@ bool array_with_closing_class_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_array<no_name, InlineClass<>>>(
-	  ParseTag<JsonParseTypes::Array>{ }, rng );
+	  ParseTag<JsonParseTypes::Array>{}, rng );
 	daw::do_not_optimize( v );
 	return true;
 }

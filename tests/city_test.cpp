@@ -161,7 +161,7 @@ int main( int argc, char **argv ) try {
 	auto mid_lat2 = *daw::bench_n_test_mbs<10>(
 	  "Calculate Middle Latitude2", json_data.size( ),
 	  []( auto const &jstr ) -> float {
-		  std::vector<float> lats{ };
+		  std::vector<float> lats{};
 		  daw::algorithm::transform( iterator_t( jstr ), iterator_t( ),
 		                             daw::back_inserter( lats ),
 		                             []( auto &&l ) { return l.lat; } );

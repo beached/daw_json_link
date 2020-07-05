@@ -117,12 +117,8 @@ namespace daw::json {
 			}
 		}
 
-		[[nodiscard]] constexpr decltype( auto ) front( ) const {
+		[[nodiscard]] constexpr char front( ) const {
 			return *first;
-		}
-
-		[[nodiscard]] constexpr bool front( char c ) const {
-			return first < last and *first == c;
 		}
 
 		[[nodiscard]] constexpr std::size_t size( ) const {
@@ -134,17 +130,13 @@ namespace daw::json {
 			       10U;
 		}
 
-		template<std::size_t N>
-		[[nodiscard]] constexpr bool front( char const ( &set )[N] ) const {
+		template<JSONNAMETYPE Set>
+		[[nodiscard]] constexpr bool in( ) const {
 			assert( first );
 			if( empty( ) ) {
 				return false;
 			}
-			bool result = false;
-			for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
-				result |= parse_policy_details::in( *first, set[n] );
-			}
-			return result;
+			return parse_policy_details::template in<Set>( *first );
 		}
 
 		[[nodiscard]] constexpr bool is_null( ) const {
@@ -180,27 +172,91 @@ namespace daw::json {
 			class_last = last;
 		}
 
-		constexpr bool at_literal_end( ) const {
-			return CommentPolicy::at_literal_end( *first );
-			char const c = *first;
-			return c == '\0' or c == ',' or c == ']' or c == '}';
-		}
-
-		constexpr bool is_space( ) const {
-			daw_json_assert_weak( has_more( ), "Unexpected end" );
-			return *first <= 0x20;
-		}
-
-		constexpr bool is_space_unchecked( ) const {
-			return *first <= 0x20;
-		}
-
 		constexpr void trim_left_checked( ) {
 			return CommentPolicy::trim_left_checked( *this );
 		}
 
 		constexpr void trim_left_unchecked( ) {
 			return CommentPolicy::trim_left_unchecked( *this );
+		}
+
+		[[nodiscard]] constexpr bool at_literal_end( ) const {
+			return CommentPolicy::at_literal_end( *first );
+			char const c = *first;
+			return c == '\0' or c == ',' or c == ']' or c == '}';
+		}
+
+		[[nodiscard]] constexpr bool is_space( ) const {
+			daw_json_assert_weak( has_more( ), "Unexpected end" );
+			return *first <= 0x20;
+		}
+
+		[[nodiscard]] constexpr bool is_space_unchecked( ) const {
+			return *first <= 0x20;
+		}
+
+		[[nodiscard]] constexpr bool is_opening_bracket_checked( ) const {
+			return first < last and *first == '[';
+		}
+
+		[[nodiscard]] constexpr bool is_opening_bracket_unchecked( ) const {
+			return *first == '[';
+		}
+
+		[[nodiscard]] constexpr bool is_opening_brace_checked( ) const {
+			return first < last and *first == '{';
+		}
+
+		[[nodiscard]] constexpr bool is_closing_brace_checked( ) const {
+			return first < last and *first == '}';
+		}
+
+		[[nodiscard]] constexpr bool is_closing_brace_unchecked( ) const {
+			return *first == '}';
+		}
+
+		[[nodiscard]] constexpr bool is_closing_bracket_checked( ) const {
+			return first < last and *first == ']';
+		}
+
+		[[nodiscard]] constexpr bool is_closing_bracket_unchecked( ) const {
+			return *first == ']';
+		}
+
+		[[nodiscard]] constexpr bool is_quotes_unchecked( ) const {
+			return *first == '"';
+		}
+
+		[[nodiscard]] constexpr bool is_quotes_checked( ) const {
+			return first < last and *first == '"';
+		}
+
+		[[nodiscard]] constexpr bool is_comma_checked( ) const {
+			return first < last and *first == ',';
+		}
+
+		[[nodiscard]] constexpr bool is_colon_unchecked( ) const {
+			return *first == ':';
+		}
+
+		[[nodiscard]] constexpr bool is_minus_unchecked( ) const {
+			return *first == '-';
+		}
+
+		[[nodiscard]] constexpr bool is_plus_unchecked( ) const {
+			return *first == '+';
+		}
+
+		[[nodiscard]] constexpr bool is_n_unchecked( ) const {
+			return *first == 'n';
+		}
+
+		[[nodiscard]] constexpr bool is_t_unchecked( ) const {
+			return *first == 't';
+		}
+
+		[[nodiscard]] constexpr bool is_escape_unchecked( ) const {
+			return *first == '\\';
 		}
 
 		constexpr void trim_left( ) {

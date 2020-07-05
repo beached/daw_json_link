@@ -26,7 +26,8 @@ namespace daw::json::json_details::name {
 		template<typename Range>
 		[[maybe_unused]] static constexpr void trim_end_of_name( Range &rng ) {
 			rng.trim_left( );
-			daw_json_assert_weak( rng.front( ) == ':', "Expected a ':'" );
+			// TODO: should we check for end
+			daw_json_assert_weak( rng.is_colon_unchecked( ), "Expected a ':'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 		}
@@ -48,7 +49,7 @@ namespace daw::json::json_details::name {
 				} else {
 					rng.move_to_next_of_checked( '"' );
 				}
-				daw_json_assert_weak( rng.front( '"' ) and
+				daw_json_assert_weak( rng.is_quotes_checked( ) and
 				                        *std::prev( rng.first ) != '\\',
 				                      "Expected a '\"' at the end of string" );
 				auto result = daw::string_view( ptr, rng.first );
@@ -67,9 +68,9 @@ namespace daw::json::json_details {
 	// memberA.memberB.member\.C has 3 parts['memberA', 'memberB', 'member.C']
 	[[nodiscard]] constexpr auto pop_json_path( daw::string_view &path ) {
 		struct pop_json_path_result {
-			daw::string_view current{};
+			daw::string_view current{ };
 			char found_char = 0;
-		} result{};
+		} result{ };
 		if( path.empty( ) ) {
 			return result;
 		}
@@ -122,7 +123,7 @@ namespace daw::json::json_details {
 	// value(e.g after the colon(:) and trimmed)
 	template<typename Range>
 	[[nodiscard]] constexpr daw::string_view parse_name( Range &rng ) {
-		daw_json_assert_weak( rng.front( '"' ),
+		daw_json_assert_weak( rng.is_quotes_checked( ),
 		                      "Expected name to start with a quote" );
 		rng.remove_prefix( );
 		return name::name_parser::parse_nq( rng );
@@ -135,7 +136,8 @@ namespace daw::json::json_details {
 		while( not pop_result.current.empty( ) ) {
 			if( pop_result.found_char == ']' ) {
 				// Array Index
-				daw_json_assert_weak( rng.front( '[' ), "Invalid Path Entry" );
+				daw_json_assert_weak( rng.is_opening_bracket_checked( ),
+				                      "Invalid Path Entry" );
 				rng.remove_prefix( );
 				rng.trim_left_unchecked( );
 				auto idx =
@@ -145,20 +147,21 @@ namespace daw::json::json_details {
 					--idx;
 					(void)skip_value( rng );
 					rng.trim_left_checked( );
-					if( idx > 0 and not rng.front( ',' ) ) {
+					if( idx > 0 and not rng.is_comma_checked( ) ) {
 						return false;
 					}
 					rng.clean_tail( );
 				}
 			} else {
-				daw_json_assert_weak( rng.front( '{' ), "Invalid Path Entry" );
+				daw_json_assert_weak( rng.is_opening_brace_checked( ),
+				                      "Invalid Path Entry" );
 				rng.remove_prefix( );
 				rng.trim_left_unchecked( );
 				auto name = parse_name( rng );
 				while( not json_path_compare( pop_result.current, name ) ) {
 					(void)skip_value( rng );
 					rng.clean_tail( );
-					if( rng.empty( ) or rng.front( ) != '"' ) {
+					if( rng.empty( ) or not rng.is_quotes_unchecked( ) ) {
 						return false;
 					}
 					name = parse_name( rng );
@@ -179,9 +182,9 @@ namespace daw::json::json_details {
 		rng.trim_left_checked( );
 		if( rng.has_more( ) and not start_path.empty( ) ) {
 			if( not find_range2( rng, start_path ) ) {
-				return {false, rng};
+				return { false, rng };
 			}
 		}
-		return {true, rng};
+		return { true, rng };
 	}
 } // namespace daw::json::json_details

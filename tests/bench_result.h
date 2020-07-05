@@ -23,7 +23,7 @@ namespace daw::bench {
 		std::string name;
 		timestamp_t test_time;
 		std::size_t data_size;
-		std::vector<std::chrono::nanoseconds> run_times{ };
+		std::vector<std::chrono::nanoseconds> run_times{};
 		std::chrono::nanoseconds duration_min;
 		std::chrono::nanoseconds duration_25th_percentile;
 		std::chrono::nanoseconds duration_50th_percentile;
@@ -48,7 +48,7 @@ struct JSONToNano {
 		return std::chrono::nanoseconds(
 		  daw::json::json_details::parse_value<
 		    daw::json::json_number<daw::json::no_name, long long>>(
-		    daw::json::ParseTag<daw::json::JsonParseTypes::Signed>{ }, rng ) );
+		    daw::json::ParseTag<daw::json::JsonParseTypes::Signed>{}, rng ) );
 	}
 
 	std::string operator( )( std::chrono::nanoseconds t ) const {

@@ -45,7 +45,7 @@ coordinate_t calc( std::string_view text ) {
 		z += from_json<double>( state[mem_z] );
 	}
 
-	return coordinate_t{ x / len, y / len, z / len };
+	return coordinate_t{x / len, y / len, z / len};
 }
 
 int main( int argc, char **argv ) {

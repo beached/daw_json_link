@@ -61,7 +61,8 @@ namespace daw::json {
 		}
 
 		template<char c, typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_char( Range &rng ) {
+		DAW_ATTRIBUTE_FLATTEN static constexpr void
+		move_to_next_char( Range &rng ) {
 			char const *first = rng.first;
 			char const *const last = rng.last;
 			daw_json_assert_weak( first < last, "Unexpected end of data" );

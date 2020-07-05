@@ -215,11 +215,13 @@ namespace daw::json::json_details {
 
 		daw_json_assert_weak(
 		  ( is_json_nullable_v<JsonMember> or not locations[pos].missing( ) or
-		    not rng.front( '}' ) ),
+		    not rng.is_closing_brace_checked( ) ),
 		  "Unexpected end of class.  Non-nullable members still not found" );
 
 		rng.trim_left_unchecked( );
-		while( locations[pos].missing( ) and rng.front( ) != '}' ) {
+		// TODO: should we check for end
+		while( locations[pos].missing( ) and
+		       not rng.is_closing_brace_unchecked( ) ) {
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 			auto const name = parse_name( rng );
 			auto const name_pos = locations.find_name( name );
@@ -265,7 +267,8 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
 			daw_json_assert_weak( current_position <= desired_position,
 			                      "Order of ordered members must be ascending" );
-			while( current_position < desired_position and rng.front( ) != ']' ) {
+			while( current_position < desired_position and
+			       not rng.is_closing_bracket_unchecked( ) ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				++current_position;
@@ -300,7 +303,7 @@ namespace daw::json::json_details {
 
 		// this is an out value, get position ready
 		++member_position;
-		if( rng.front( ) == ']' ) {
+		if( rng.is_closing_bracket_unchecked( ) ) {
 			if constexpr( is_json_nullable_v<ordered_member_subtype_t<JsonMember>> ) {
 				using constructor_t = typename json_member_type::constructor_t;
 				return constructor_t{ }( );
@@ -312,6 +315,9 @@ namespace daw::json::json_details {
 		  ParseTag<json_member_type::expected_type>{ }, rng );
 	}
 
+	namespace parse_tokens {
+		inline constexpr char const next_member_token[] = "\"}";
+	}
 	/***
 	 * Parse a member from a json_class
 	 * @tparam JsonMember type description of member to parse
@@ -331,7 +337,7 @@ namespace daw::json::json_details {
 		static_assert( not is_no_name<JsonMember::name>,
 		               "Array processing should never call parse_class_member" );
 
-		daw_json_assert_weak( rng.front( "\"}" ),
+		daw_json_assert_weak( rng.template in<parse_tokens::next_member_token>( ),
 		                      "Expected end of class or start of member" );
 		auto loc = find_class_member<JsonMember>( member_position, locations, rng );
 
@@ -352,9 +358,6 @@ namespace daw::json::json_details {
 		}
 	}
 
-	namespace parse_tokens {
-		inline constexpr char const next_member_token[] = "\"}";
-	}
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
 	[[nodiscard]] inline constexpr JsonClass
@@ -366,7 +369,8 @@ namespace daw::json::json_details {
 		  "Supplied types cannot be used for	construction of this type" );
 
 		rng.trim_left( );
-		daw_json_assert_weak( rng.front( '{' ), "Expected start of class" );
+		daw_json_assert_weak( rng.is_opening_brace_checked( ),
+		                      "Expected start of class" );
 		rng.set_class_position( );
 		rng.remove_prefix( );
 		rng.template move_to_next_of<parse_tokens::next_member_token>( );
@@ -442,7 +446,8 @@ namespace daw::json::json_details {
 		  "Supplied types cannot be used for	construction of this type" );
 
 		rng.trim_left( );
-		daw_json_assert_weak( rng.front( '[' ), "Expected start of array" );
+		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
+		                      "Expected start of array" );
 		rng.set_class_position( );
 		rng.remove_prefix( );
 		rng.trim_left( );
@@ -450,12 +455,14 @@ namespace daw::json::json_details {
 		auto const cleanup_fn = [&] {
 			rng.clean_tail( );
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
-			while( rng.front( ) != ']' ) {
+			while( not rng.is_closing_bracket_unchecked( ) ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 			}
-			daw_json_assert_weak( rng.front( ) == ']', "Expected a ']'" );
+			// TODO: should we check for end
+			daw_json_assert_weak( rng.is_closing_bracket_unchecked( ),
+			                      "Expected a ']'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 		};

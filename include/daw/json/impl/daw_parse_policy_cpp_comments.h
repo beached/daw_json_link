@@ -124,7 +124,8 @@ namespace daw::json {
 		}
 
 		template<char c, typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_char( Range &rng ) {
+		DAW_ATTRIBUTE_FLATTEN static constexpr void
+		move_to_next_char( Range &rng ) {
 			skip_comments( rng );
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 			while( rng.front( ) != c ) {

@@ -12,21 +12,10 @@
 #include <daw/daw_hide.h>
 
 namespace daw::json::parse_policy_details {
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	in( char lhs, char rhs ) {
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool in( char lhs,
+	                                                              char rhs ) {
 		return lhs == rhs;
 	}
-
-	/*
-	template<std::size_t N>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	in( char c, char const ( &set )[N] ) {
-		unsigned result = 0;
-		daw::algorithm::do_n_arg<N - 1>( [&]( std::size_t n ) {
-			result |= static_cast<unsigned>( set[n] == c );
-		} );
-		return static_cast<bool>( result );
-	}*/
 
 	template<JSONNAMETYPE Set>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool in( char c ) {

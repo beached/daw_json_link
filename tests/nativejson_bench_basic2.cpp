@@ -37,9 +37,9 @@ int main( int argc, char **argv ) try {
 	auto const sv_canada =
 	  std::string_view( mm_canada.data( ), mm_canada.size( ) );
 
-	std::optional<daw::twitter::twitter_object_t> j1{ };
-	std::optional<daw::citm::citm_object_t> j2{ };
-	std::optional<daw::geojson::FeatureCollection> j3{ };
+	std::optional<daw::twitter::twitter_object_t> j1{};
+	std::optional<daw::citm::citm_object_t> j2{};
+	std::optional<daw::geojson::FeatureCollection> j3{};
 #ifdef NDEBUG
 	std::cout << "non-debug run\n";
 	auto const sz = sv_twitter.size( ) + sv_citm.size( ) + sv_canada.size( );

@@ -55,7 +55,7 @@ namespace daw::json::json_details {
 		inline constexpr json_parse_array_iterator( ) = default;
 
 		inline constexpr explicit json_parse_array_iterator( iterator_range_t &r )
-		  : base{ &r } {
+		  : base{&r} {
 			if( base::rng->front( ) == ']' ) {
 				if constexpr( not IsKnown ) {
 					// Cleanup at end of value
@@ -71,7 +71,7 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
 			                      "Expected data to parse" );
 
-			return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
+			return parse_value<element_t>( ParseTag<element_t::expected_type>{},
 			                               *base::rng );
 		}
 

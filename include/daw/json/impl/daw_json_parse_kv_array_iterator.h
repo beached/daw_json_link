@@ -60,7 +60,7 @@ namespace daw::json::json_details {
 
 		inline constexpr explicit json_parse_kv_array_iterator(
 		  iterator_range_t &r )
-		  : base{ &r } {
+		  : base{&r} {
 			if( base::rng->front( ) == ']' ) {
 				if constexpr( not IsKnown ) {
 					// Cleanup at end of value
@@ -85,7 +85,7 @@ namespace daw::json::json_details {
 			                      "Expected data to parse" );
 
 			return get_pair( parse_value<json_class_type>(
-			  ParseTag<JsonParseTypes::Class>{ }, *base::rng ) );
+			  ParseTag<JsonParseTypes::Class>{}, *base::rng ) );
 		}
 
 		inline constexpr json_parse_kv_array_iterator &operator++( ) {

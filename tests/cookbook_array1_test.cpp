@@ -27,7 +27,7 @@ int main( int argc, char **argv ) try {
 	using namespace daw::json;
 
 	std::vector<int> const ve =
-	  from_json_array<int>( { data.data( ), data.size( ) } );
+	  from_json_array<int>( {data.data( ), data.size( )} );
 
 	int count = 1;
 	(void)count;

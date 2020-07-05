@@ -47,7 +47,7 @@ namespace daw::json {
 	enum class ErrorType { Unknown, MissingMember, UnexpectedCharacter };
 
 	class json_exception {
-		std::string m_reason{ };
+		std::string m_reason{};
 		ErrorType m_error_type = ErrorType::Unknown;
 
 	public:

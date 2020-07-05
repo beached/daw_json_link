@@ -30,16 +30,16 @@ namespace daw::json::json_details {
 	template<LiteralAsStringOpt literal_as_string, typename Range>
 	constexpr void skip_quote_when_literal_as_string( Range &rng ) {
 		if constexpr( literal_as_string == LiteralAsStringOpt::Always ) {
-			daw_json_assert_weak( rng.front( '"' ),
+			daw_json_assert_weak( rng.is_quotes_checked( ),
 			                      "Unexpected quote prior to number" );
 			rng.remove_prefix( );
 		} else if constexpr( literal_as_string == LiteralAsStringOpt::Maybe ) {
 			daw_json_assert_weak( not rng.empty( ), "Unexpected end of stream" );
-			if( rng.front( ) == '"' ) {
+			if( rng.is_quotes_unchecked( ) ) {
 				rng.remove_prefix( );
 			}
 		} else {
-			daw_json_assert_weak( rng.front( ) != '"',
+			daw_json_assert_weak( not rng.is_quotes_unchecked( ),
 			                      "Unexpected quote prior to number" );
 		}
 	}
@@ -88,10 +88,10 @@ namespace daw::json::json_details {
 			  "Expected number to start with on of \"0123456789eE+-\"" );
 		}
 		element_t sign = 1;
-		if( rng.front( ) == '-' ) {
+		if( rng.is_minus_unchecked( ) ) {
 			rng.remove_prefix( );
 			sign = -1;
-		} else if( rng.front( ) == '+' ) {
+		} else if( rng.is_plus_unchecked( ) ) {
 			rng.remove_prefix( );
 		}
 
@@ -156,7 +156,7 @@ namespace daw::json::json_details {
 		} else if constexpr( Range::is_unchecked_input ) {
 			if( not rng.has_more( ) ) {
 				return constructor_t{ }( );
-			} else if( rng.front( ) == 'n' ) {
+			} else if( rng.is_n_unchecked( ) ) {
 				rng.remove_prefix( 4 );
 				rng.trim_left_unchecked( );
 				rng.remove_prefix( );
@@ -190,7 +190,7 @@ namespace daw::json::json_details {
 		if constexpr( KnownBounds ) {
 			// We have already checked if it is a true/false
 			if constexpr( Range::is_unchecked_input ) {
-				return rng.front( ) == 't';
+				return rng.is_t_unchecked( );
 			} else {
 				switch( rng.front( ) ) {
 				case 't':
@@ -204,7 +204,7 @@ namespace daw::json::json_details {
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			bool result = false;
 			if constexpr( Range::is_unchecked_input ) {
-				if( rng.front( ) == 't' ) {
+				if( rng.is_t_unchecked( ) ) {
 					result = true;
 					rng.remove_prefix( 4 );
 				} else {
@@ -330,19 +330,21 @@ namespace daw::json::json_details {
 				}
 			}( );
 
-			bool const has_quote = rng.front( '"' );
+			bool const has_quote = rng.is_quotes_checked( );
 			if( has_quote ) {
 				rng.remove_prefix( );
 			}
 			daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
-			while( rng.front( ) != '"' ) {
-				while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
+			while( not rng.is_quotes_unchecked( ) ) {
+				// TODO look at move_to_next_of
+				while( not rng.template in<parse_tokens::escape_quotes>( ) ) {
 					daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
 					app( rng.front( ) );
 					rng.remove_prefix( );
 				}
-				if( rng.front( ) == '\\' ) {
-					daw_json_assert_weak( rng.front( ) >= 0x20, "Invalid codepoint" );
+				if( rng.is_escape_unchecked( ) ) {
+					daw_json_assert_weak( not rng.is_space_unchecked( ),
+					                      "Invalid codepoint" );
 					rng.remove_prefix( );
 					switch( rng.front( ) ) {
 					case 'b':
@@ -378,7 +380,7 @@ namespace daw::json::json_details {
 					default:
 						if constexpr( eight_bit_mode == EightBitModes::DisallowHigh ) {
 							daw_json_assert_weak(
-							  static_cast<unsigned>( rng.front( ) ) >= 0x20U and
+							  not rng.is_space_unchecked( ) and
 							    static_cast<unsigned>( rng.front( ) ) <= 0x7FU,
 							  "string support limited to 0x20 < chr <= 0x7F when "
 							  "DisallowHighEightBit is true" );
@@ -387,7 +389,7 @@ namespace daw::json::json_details {
 						rng.remove_prefix( );
 					}
 				} else {
-					daw_json_assert_weak( not has_quote or rng.front( '"' ),
+					daw_json_assert_weak( not has_quote or rng.is_quotes_checked( ),
 					                      "Unexpected end of string" );
 				}
 				daw_json_assert_weak( not has_quote or rng.has_more( ),
@@ -395,7 +397,7 @@ namespace daw::json::json_details {
 			}
 
 			if constexpr( not KnownBounds ) {
-				daw_json_assert_weak( not has_quote or rng.front( '"' ),
+				daw_json_assert_weak( not has_quote or rng.is_quotes_checked( ),
 				                      "Unexpected state, no \"" );
 				rng.remove_prefix( );
 			}
@@ -417,8 +419,8 @@ namespace daw::json::json_details {
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Custom>, Range &rng ) {
 
-		if( rng.front( ) != '"' and rng.class_first != nullptr and
-		    rng.begin( ) > rng.class_first and *std::prev( rng.begin( ) ) == '"' ) {
+		if( not rng.is_quotes_unchecked( ) and rng.class_first != nullptr and
+		    rng.first > rng.class_first and *std::prev( rng.first ) == '"' ) {
 			rng.first = std::prev( rng.first );
 		}
 		auto const str = skip_value( rng );
@@ -481,7 +483,7 @@ namespace daw::json::json_details {
 		static_assert( JsonMember::expected_type == JsonParseTypes::KeyValue,
 		               "Expected a json_key_value" );
 		daw_json_assert_weak(
-		  rng.front( '{' ),
+		  rng.is_opening_brace_checked( ),
 		  "Expected keyvalue type to be of class type and beging with '{'" );
 
 		rng.remove_prefix( );
@@ -507,7 +509,7 @@ namespace daw::json::json_details {
 		static_assert( JsonMember::expected_type == JsonParseTypes::KeyValueArray,
 		               "Expected a json_key_value" );
 		daw_json_assert_weak(
-		  rng.front( '[' ),
+		  rng.is_opening_bracket_checked( ),
 		  "Expected keyvalue type to be of class type and beging with '{'" );
 
 		rng.remove_prefix( );
@@ -520,7 +522,7 @@ namespace daw::json::json_details {
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Array>, Range &rng ) {
 		rng.trim_left( );
-		daw_json_assert_weak( rng.front( '[' ),
+		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
 		                      "Expected array to start with a '['" );
 		rng.remove_prefix( );
 		rng.trim_left_unchecked( );

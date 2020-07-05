@@ -17,17 +17,19 @@ namespace daw::json::json_details::string_quote {
 		                                          std::nullptr_t> = nullptr>
 		[[nodiscard]] static constexpr bool parse_nq( Range &rng ) {
 			bool need_slow_path = false;
-			while( *rng.first != '"' ) {
-				while( *rng.first != '"' and *rng.first != '\\' ) {
-					++rng.first;
+			char const *first = rng.first;
+			while( *first != '"' ) {
+				while( *first != '"' and *first != '\\' ) {
+					++first;
 				}
-				if( *rng.first == '\\' ) {
+				if( *first == '\\' ) {
 					need_slow_path = true;
-					++rng.first;
-					++rng.first;
+					++first;
+					++first;
 				}
 			}
-			daw_json_assert_weak( *rng.first == '"', "Expected a '\"'" );
+			daw_json_assert_weak( *first == '"', "Expected a '\"'" );
+			rng.first = first;
 			return need_slow_path;
 		}
 
@@ -35,21 +37,22 @@ namespace daw::json::json_details::string_quote {
 		                                          std::nullptr_t> = nullptr>
 		[[nodiscard]] static constexpr bool parse_nq( Range &rng ) {
 			bool need_slow_path = false;
-			while( rng.first != rng.last and *rng.first != '"' ) {
-				while( rng.first != rng.last and *rng.first != '"' and
-				       *rng.first != '\\' ) {
-					++rng.first;
+			char const *first = rng.first;
+			char const *const last = rng.last;
+			while( first != rng.last and *first != '"' ) {
+				while( first != rng.last and *first != '"' and *first != '\\' ) {
+					++first;
 				}
-				if( rng.first != rng.last and *rng.first == '\\' ) {
+				if( first != last and *first == '\\' ) {
 					need_slow_path = true;
-					++rng.first;
-					daw_json_assert_weak( rng.first != rng.last,
-					                      "Unexpected end of string" );
-					++rng.first;
+					++first;
+					daw_json_assert_weak( first != last, "Unexpected end of string" );
+					++first;
 				}
 			}
-			daw_json_assert_weak( rng.first != rng.class_last and *rng.first == '"',
+			daw_json_assert_weak( first != rng.class_last and *first == '"',
 			                      "Expected a '\"' at end of string" );
+			rng.first = first;
 			return need_slow_path;
 		}
 	};

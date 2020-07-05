@@ -49,9 +49,10 @@ namespace daw::json {
 		get_range( String &&data, std::string_view member_path ) {
 			auto [is_found, result] = json_details::find_range<ParsePolicy>(
 			  std::forward<String>( data ),
-			  {member_path.data( ), member_path.size( )} );
+			  { member_path.data( ), member_path.size( ) } );
 			daw_json_assert( is_found, "Could not find path to member" );
-			daw_json_assert( result.front( ) == '[', "Member is not an array" );
+			daw_json_assert( result.is_opening_bracket_unchecked( ),
+			                 "Member is not an array" );
 			return result;
 		}
 
@@ -90,7 +91,7 @@ namespace daw::json {
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
 			  "StringRaw must be like a string_view" );
 			m_state.trim_left_checked( );
-			daw_json_assert_weak( m_state.front( '[' ),
+			daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
 			                      "Arrays are expected to start with a [" );
 
 			m_state.remove_prefix( );
@@ -103,7 +104,8 @@ namespace daw::json {
 		 * @return The parsed result of ParseElement
 		 */
 		[[nodiscard]] inline constexpr value_type operator*( ) const {
-			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
+			daw_json_assert_weak( m_state.has_more( ) and
+			                        m_state.is_closing_bracket_unchecked( ),
 			                      "Unexpected end of stream" );
 
 			auto tmp = m_state;
@@ -112,10 +114,10 @@ namespace daw::json {
   defined( DAW_JSON_NO_CONST_EXPR )
 			auto const ae = daw::on_exit_success( [&] { m_can_skip = tmp.first; } );
 			return json_details::parse_value<element_type>(
-			  ParseTag<element_type::expected_type>{}, tmp );
+			  ParseTag<element_type::expected_type>{ }, tmp );
 #else
 			auto result = json_details::parse_value<element_type>(
-			  ParseTag<element_type::expected_type>{}, tmp );
+			  ParseTag<element_type::expected_type>{ }, tmp );
 
 			m_can_skip = tmp.first;
 			return result;
@@ -130,7 +132,7 @@ namespace daw::json {
 		 * @return an arrow_proxy of the operator* result
 		 */
 		[[nodiscard]] inline pointer operator->( ) const {
-			return pointer{operator*( )};
+			return pointer{ operator*( ) };
 		}
 
 		/***
@@ -138,7 +140,8 @@ namespace daw::json {
 		 * @return iterator after moving
 		 */
 		inline constexpr json_array_iterator &operator++( ) {
-			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
+			daw_json_assert_weak( m_state.has_more( ) and
+			                        m_state.is_closing_bracket_unchecked( ),
 			                      "Unexpected end of stream" );
 			if( m_can_skip ) {
 				m_state.first = m_can_skip;
@@ -166,7 +169,7 @@ namespace daw::json {
 		 */
 		[[nodiscard]] inline constexpr bool good( ) const {
 			return not m_state.is_null( ) and m_state.has_more( ) and
-			       m_state.front( ) != ']';
+			       m_state.is_closing_bracket_unchecked( );
 		}
 
 		/***
@@ -221,8 +224,8 @@ namespace daw::json {
 		using iterator = json_array_iterator<JsonElement, ParsePolicy>;
 
 	private:
-		iterator m_first{};
-		iterator m_last{};
+		iterator m_first{ };
+		iterator m_last{ };
 
 	public:
 		constexpr json_array_range( ) = default;

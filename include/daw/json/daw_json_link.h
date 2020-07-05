@@ -534,7 +534,8 @@ namespace daw::json {
 		using json_value_t = json_details::unnamed_default_type_mapping<
 		  JsonValueType, json_details::default_value_name>;
 
-		using json_class_t = json_class<no_name, unnamed_json_mapping<json_key_t, json_value_t>>;
+		using json_class_t =
+		  json_class<no_name, unnamed_json_mapping<json_key_t, json_value_t>>;
 		static_assert( not std::is_same_v<json_value_t, void>,
 		               "Unknown JsonValueType type." );
 		static_assert( daw::string_view( json_value_t::name ) !=
@@ -750,13 +751,13 @@ namespace daw::json {
 			daw_json_assert( is_found, "Could not find specified member" );
 		}
 		rng.trim_left_unchecked( );
-#ifdef _MSC_VER
+#if defined( _MSC_VER ) and not defined( __clang__ )
 		// Work around MSVC ICE
-		daw_json_assert( rng.front( '[' ),
+		daw_json_assert( rng.is_opening_bracket_checked( ),
 		                 "Expected array class to being with a '['" );
 #else
 		using Range = daw::remove_cvref_t<decltype( rng )>;
-		daw_json_assert_weak( rng.front( '[' ),
+		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
 		                      "Expected array class to being with a '['" );
 #endif
 
