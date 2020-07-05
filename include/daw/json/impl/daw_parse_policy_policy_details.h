@@ -61,7 +61,7 @@ namespace daw::json::parse_policy_details {
 	}
 
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	is_real_number_part( char c ) {
+	is_number_start( char c ) {
 		switch( c ) {
 		case '0':
 		case '1':
@@ -73,9 +73,6 @@ namespace daw::json::parse_policy_details {
 		case '7':
 		case '8':
 		case '9':
-		case 'e':
-		case 'E':
-		case '+':
 		case '-':
 			return true;
 		}

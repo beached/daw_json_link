@@ -251,8 +251,16 @@ namespace daw::json {
 			return *first == 'n';
 		}
 
+		[[nodiscard]] constexpr bool is_e_checked( ) const {
+			return first < last and *first == 'e';
+		}
+
 		[[nodiscard]] constexpr bool is_t_unchecked( ) const {
 			return *first == 't';
+		}
+
+		[[nodiscard]] constexpr bool is_u_unchecked( ) const {
+			return *first == 'u';
 		}
 
 		[[nodiscard]] constexpr bool is_escape_unchecked( ) const {

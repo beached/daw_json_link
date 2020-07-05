@@ -52,15 +52,15 @@ namespace daw::json::json_details {
 
 		if constexpr( KnownBounds ) {
 			daw_json_assert_weak(
-			  parse_policy_details::is_real_number_part( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789eE+-\"" );
+			  parse_policy_details::is_number_start( rng.front( ) ),
+			  "Expected number to start with on of \"0123456789-\"" );
 			return constructor_t{ }( parse_real<element_t>( rng ) );
 		} else {
 			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
-			  parse_policy_details::is_real_number_part( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789eE+-\"" );
+			  parse_policy_details::is_number_start( rng.front( ) ),
+			  "Expected number to start with on of \"0123456789-\"" );
 			auto result = constructor_t{ }( parse_real<element_t>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
@@ -78,14 +78,14 @@ namespace daw::json::json_details {
 		static_assert( daw::is_signed_v<element_t>, "Expected signed type" );
 		if constexpr( KnownBounds ) {
 			daw_json_assert_weak(
-			  parse_policy_details::is_real_number_part( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789eE+-\"" );
+			  parse_policy_details::is_number_start( rng.front( ) ),
+			  "Expected number to start with on of \"0123456789e+-\"" );
 		} else {
 			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
-			  parse_policy_details::is_real_number_part( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789eE+-\"" );
+			  parse_policy_details::is_number_start( rng.front( ) ),
+			  "Expected number to start with on of \"0123456789e+-\"" );
 		}
 		element_t sign = 1;
 		if( rng.is_minus_unchecked( ) ) {
@@ -120,8 +120,8 @@ namespace daw::json::json_details {
 
 		if constexpr( KnownBounds ) {
 			daw_json_assert_weak(
-			  parse_policy_details::is_real_number_part( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789eE+-\"" );
+			  rng.is_number( ),
+			  "Expected number to start with on of \"0123456789\"" );
 			return constructor_t{ }(
 			  unsigned_parser<element_t, JsonMember::range_check>(
 			    SIMDConst_v<Range::simd_mode>, rng ) );
@@ -129,8 +129,8 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
-			  parse_policy_details::is_real_number_part( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789eE+-\"" );
+			  rng.is_number( ),
+			  "Expected number to start with on of \"0123456789\"" );
 			auto result =
 			  constructor_t{ }( unsigned_parser<element_t, JsonMember::range_check>(
 			    SIMDConst_v<Range::simd_mode>, rng ) );
@@ -367,7 +367,6 @@ namespace daw::json::json_details {
 						app( '\t' );
 						rng.remove_prefix( );
 						break;
-					case 'U': // Sometimes people put crap
 					case 'u':
 						decode_utf16( rng, app );
 						break;

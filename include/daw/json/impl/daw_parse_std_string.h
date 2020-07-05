@@ -32,14 +32,10 @@ namespace daw::json::json_details {
 		return static_cast<std::uint16_t>( ( n0 << 4U ) | n1 );
 	}
 
-	namespace parse_tokens {
-		inline constexpr char const unicode_escape_token[] = "uU";
-	}
 	template<typename Range>
 	[[nodiscard]] static constexpr char *decode_utf16( Range &rng, char *it ) {
-		daw_json_assert_weak(
-		  rng.template in<parse_tokens::unicode_escape_token>( ),
-		  "Expected rng to start with a u" );
+		daw_json_assert_weak( rng.is_u_unchecked( ),
+		                      "Expected rng to start with a u" );
 		rng.remove_prefix( );
 		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
 		                   << 8U;
@@ -52,9 +48,8 @@ namespace daw::json::json_details {
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			rng.remove_prefix( );
-			daw_json_assert_weak(
-			  rng.template in<parse_tokens::unicode_escape_token>( ),
-			  "Expected rng to start with a \\u" );
+			daw_json_assert_weak( rng.is_u_unchecked( ),
+			                      "Expected rng to start with a \\u" );
 			rng.remove_prefix( );
 			auto trailing = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
 			                << 8U;
@@ -104,9 +99,8 @@ namespace daw::json::json_details {
 
 	template<typename Range, typename Appender>
 	static constexpr void decode_utf16( Range &rng, Appender &app ) {
-		daw_json_assert_weak(
-		  rng.template in<parse_tokens::unicode_escape_token>( ),
-		  "Expected rng to start with a \\u" );
+		daw_json_assert_weak( rng.is_u_unchecked( ),
+		                      "Expected rng to start with a \\u" );
 		rng.remove_prefix( );
 		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
 		                   << 8U;
@@ -118,9 +112,8 @@ namespace daw::json::json_details {
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			rng.remove_prefix( );
-			daw_json_assert_weak(
-			  rng.template in<parse_tokens::unicode_escape_token>( ),
-			  "Expected rng to start with a \\u" );
+			daw_json_assert_weak( rng.is_u_unchecked( ),
+			                      "Expected rng to start with a \\u" );
 			rng.remove_prefix( );
 			auto trailing = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
 			                << 8U;
@@ -223,7 +216,6 @@ namespace daw::json::json_details {
 					*it++ = '\t';
 					rng.remove_prefix( );
 					break;
-				case 'U': // Sometimes people put crap
 				case 'u':
 					it = decode_utf16( rng, it );
 					break;

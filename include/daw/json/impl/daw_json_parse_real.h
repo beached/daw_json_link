@@ -15,23 +15,17 @@
 #include <daw/daw_cxmath.h>
 
 namespace daw::json::json_details {
-	namespace parse_tokens {
-		inline constexpr const char exponent_token[] = "eE";
-	}
 	template<typename Result, typename Range>
 	[[nodiscard]] inline constexpr Result parse_real( Range &rng ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
-		  rng.has_more( ) and
-		    parse_policy_details::is_real_number_part( rng.front( ) ),
+		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
 		  "Expected a real number" );
 
 		std::int32_t sign = 1;
 		if( rng.front( ) == '-' ) {
 			rng.remove_prefix( );
 			sign = -1;
-		} else if( rng.front( ) == '+' ) {
-			rng.remove_prefix( );
 		}
 		daw_json_assert_weak( rng.is_number( ), "Expected a number" );
 		auto const whole_part = static_cast<Result>(
@@ -52,14 +46,14 @@ namespace daw::json::json_details {
 		}
 
 		int32_t exp_part = 0;
-		if( parse_policy_details::template in<parse_tokens::exponent_token>(
-		      rng.front( ) ) ) {
+		if( rng.is_e_checked( ) ) {
 			rng.remove_prefix( );
 			int32_t exsign = 1;
-			if( rng.front( ) == '-' ) {
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
+			if( rng.is_minus_unchecked( ) ) {
 				rng.remove_prefix( );
 				exsign = -1;
-			} else if( rng.front( ) == '+' ) {
+			} else if( rng.is_plus_unchecked( ) ) {
 				rng.remove_prefix( );
 			}
 			if( rng.has_more( ) ) {
