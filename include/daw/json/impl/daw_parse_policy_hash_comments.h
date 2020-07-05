@@ -100,12 +100,12 @@ namespace daw::json {
 			}
 		}
 
-		template<JSONNAMETYPE str, typename Range>
+		template<JSONNAMETYPE Set, typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
 			skip_comments( rng );
 
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
-			while( not parse_policy_details::in<str>( rng.front( ) ) ) {
+			while( not parse_policy_details::in<Set>( rng.front( ) ) ) {
 				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 				rng.remove_prefix( );
 				skip_comments( rng );

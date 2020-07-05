@@ -315,9 +315,6 @@ namespace daw::json::json_details {
 		  ParseTag<json_member_type::expected_type>{ }, rng );
 	}
 
-	namespace parse_tokens {
-		inline constexpr char const next_member_token[] = "\"}";
-	}
 	/***
 	 * Parse a member from a json_class
 	 * @tparam JsonMember type description of member to parse
@@ -337,7 +334,7 @@ namespace daw::json::json_details {
 		static_assert( not is_no_name<JsonMember::name>,
 		               "Array processing should never call parse_class_member" );
 
-		daw_json_assert_weak( rng.template in<parse_tokens::next_member_token>( ),
+		daw_json_assert_weak( rng.is_at_next_class_member( ),
 		                      "Expected end of class or start of member" );
 		auto loc = find_class_member<JsonMember>( member_position, locations, rng );
 
@@ -373,7 +370,7 @@ namespace daw::json::json_details {
 		                      "Expected start of class" );
 		rng.set_class_position( );
 		rng.remove_prefix( );
-		rng.template move_to_next_of<parse_tokens::next_member_token>( );
+		rng.move_to_next_class_member( );
 
 		auto const cleanup_fn = [&] {
 			if( not rng.has_more( ) ) {
@@ -382,7 +379,7 @@ namespace daw::json::json_details {
 			rng.clean_tail( );
 			// If we fullfill the contract before all values are parses
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
-			rng.template move_to_next_of<parse_tokens::next_member_token>( );
+			rng.move_to_next_class_member( );
 			(void)rng.skip_class( );
 			// Yes this must be checked.  We maybe at the end of document.  After the
 			// 2nd try, give up

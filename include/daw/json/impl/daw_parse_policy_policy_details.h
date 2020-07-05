@@ -12,19 +12,14 @@
 #include <daw/daw_hide.h>
 
 namespace daw::json::parse_policy_details {
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool in( char lhs,
-	                                                              char rhs ) {
-		return lhs == rhs;
-	}
-
 	template<JSONNAMETYPE Set>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool in( char c ) {
 		constexpr daw::string_view set = Set;
-		unsigned result = 0;
-		daw::algorithm::do_n_arg<set.size( )>( [&]( std::size_t n ) {
-			result |= static_cast<unsigned>( set[n] == c );
-		} );
-		return static_cast<bool>( result );
+		constexpr char const *ptr = std::data( set );
+		bool result = false;
+		daw::algorithm::do_n_arg<std::size( set )>(
+		  [&]( std::size_t n ) { result |= ptr[n] == c; } );
+		return result;
 	}
 
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
@@ -38,26 +33,6 @@ namespace daw::json::parse_policy_details {
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
 	is_number( char c ) {
 		return static_cast<unsigned>( c ) - static_cast<unsigned>( '0' ) < 10U;
-	}
-
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	is_signed_number_part( char c ) {
-		switch( c ) {
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-		case '+':
-		case '-':
-			return true;
-		}
-		return false;
 	}
 
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool

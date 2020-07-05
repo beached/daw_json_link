@@ -73,12 +73,12 @@ namespace daw::json {
 			rng.first = first;
 		}
 
-		template<JSONNAMETYPE str, typename Range>
+		template<JSONNAMETYPE Set, typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
 			char const *first = rng.first;
 			char const *const last = rng.last;
 			daw_json_assert_weak( first < last, "Unexpected end of data" );
-			while( not parse_policy_details::in<str>( *first ) ) {
+			while( not parse_policy_details::in<Set>( *first ) ) {
 				++first;
 				daw_json_assert_weak( first < last, "Unexpected end of data" );
 			}

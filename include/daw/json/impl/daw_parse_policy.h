@@ -130,14 +130,15 @@ namespace daw::json {
 			       10U;
 		}
 
+		/*
 		template<JSONNAMETYPE Set>
 		[[nodiscard]] constexpr bool in( ) const {
-			assert( first );
-			if( empty( ) ) {
-				return false;
-			}
-			return parse_policy_details::template in<Set>( *first );
-		}
+		  assert( first );
+		  if( empty( ) ) {
+		    return false;
+		  }
+		  return parse_policy_details::template in<Set>( *first );
+		}*/
 
 		[[nodiscard]] constexpr bool is_null( ) const {
 			return first == nullptr;
@@ -304,9 +305,22 @@ namespace daw::json {
 			CommentPolicy::template move_to_next_char<c>( *this );
 		}
 
-		template<JSONNAMETYPE str>
-		constexpr void move_to_next_of( ) {
-			CommentPolicy::template move_to_next_of<str>( *this );
+	private:
+		static constexpr char const next_class_member_tokens[] = "\"}";
+		static constexpr char const token_after_value[] = ",}]";
+
+	public:
+		constexpr void move_to_next_class_member( ) {
+			CommentPolicy::template move_to_next_of<next_class_member_tokens>(
+			  *this );
+		}
+
+		constexpr bool is_at_next_class_member( ) const {
+			return parse_policy_details::in<next_class_member_tokens>( *first );
+		}
+
+		constexpr bool is_at_token_after_value( ) const {
+			return parse_policy_details::in<token_after_value>( *first );
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>

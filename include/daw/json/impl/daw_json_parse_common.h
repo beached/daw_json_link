@@ -478,10 +478,6 @@ namespace daw::json::json_details {
 		return skip_string_nq( rng );
 	}
 
-	namespace parse_tokens {
-		inline constexpr char const end_of_value_token[] = ",}]";
-	}
-
 	template<typename Range>
 	[[nodiscard]] static constexpr Range skip_true( Range &rng ) {
 		auto result = rng;
@@ -494,7 +490,7 @@ namespace daw::json::json_details {
 		}
 		result.last = rng.first;
 		rng.trim_left( );
-		daw_json_assert_weak( rng.template in<parse_tokens::end_of_value_token>( ),
+		daw_json_assert_weak( rng.is_at_token_after_value( ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
 	}
@@ -511,7 +507,7 @@ namespace daw::json::json_details {
 		}
 		result.last = rng.first;
 		rng.trim_left( );
-		daw_json_assert_weak( rng.template in<parse_tokens::end_of_value_token>( ),
+		daw_json_assert_weak( rng.is_at_token_after_value( ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
 	}
@@ -527,7 +523,7 @@ namespace daw::json::json_details {
 		}
 		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 		rng.trim_left( );
-		daw_json_assert_weak( rng.template in<parse_tokens::end_of_value_token>( ),
+		daw_json_assert_weak( rng.is_at_token_after_value( ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		auto result = rng;
 		result.first = nullptr;
@@ -551,7 +547,7 @@ namespace daw::json::json_details {
 		}
 		result.last = rng.first;
 		rng.trim_left( );
-		daw_json_assert_weak( rng.template in<parse_tokens::end_of_value_token>( ),
+		daw_json_assert_weak( rng.is_at_token_after_value( ),
 		                      "Expected a ',', '}', ']' to trail literal" );
 		return result;
 	}
