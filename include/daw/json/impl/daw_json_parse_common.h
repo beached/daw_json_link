@@ -455,8 +455,8 @@ namespace daw::json::json_details {
 
 		daw_json_assert_weak( rng.is_quotes_unchecked( ),
 		                      "Expected trailing \" at the end of string" );
-		rng.remove_prefix( );
 		result.last = rng.first;
+		rng.remove_prefix( );
 		return result;
 	}
 

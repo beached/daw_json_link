@@ -66,10 +66,10 @@ int main( int, char ** ) try {
 	daw::do_not_optimize( kv_test );
 
 	constexpr kv2_t kv2_test = daw::json::from_json<kv2_t>( json_data3 );
-	static_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
-	static_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
-	static_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
-	static_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
+	daw_json_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
+	daw_json_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
+	daw_json_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
+	daw_json_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

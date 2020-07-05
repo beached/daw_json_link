@@ -189,9 +189,11 @@ namespace daw::json::json_details {
 		if( has_quote ) {
 			rng.remove_prefix( );
 		}
+		daw_json_assert(
+		  rng.last < rng.class_last,
+		  "Unabled to parse lone string, need space after to see \"" );
 		while( not rng.is_quotes_unchecked( ) ) {
-			while( not rng.template in<parse_tokens::escape_quotes>( ) ) {
-				// while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
+			while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
 				daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
 				*it++ = rng.front( );
 				rng.remove_prefix( );
