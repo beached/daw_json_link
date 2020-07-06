@@ -403,9 +403,14 @@ namespace daw::json::json_details {
 			auto known_locations = make_locations_info<Range, JsonMembers...>( );
 
 #endif
+			using tp_t = decltype( std::forward_as_tuple(
+			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... ) );
+			/*
 			using tp_t = std::tuple<decltype(
 			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng ) )...>;
+			    */
 
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
