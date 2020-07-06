@@ -33,6 +33,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
+#include <cstdint>
 
 #include "detail/defines.h"
 
@@ -277,10 +278,10 @@ namespace ryu::detail {
 			// performance. This expression is slightly faster than max(0,
 			// log10Pow2(e2) - 1).
 			const std::uint32_t q = log10Pow2( e2 ) - ( e2 > 3 );
-			e10 = (std::int32_t)q;
+			e10 = static_cast<std::int32_t>(q);
 			const std::int32_t k =
-			  DOUBLE_POW5_INV_BITCOUNT + pow5bits( (int32_t)q ) - 1;
-			const std::int32_t i = -e2 + (std::int32_t)q + k;
+			  DOUBLE_POW5_INV_BITCOUNT + pow5bits( static_cast<int32_t>(q) ) - 1;
+			const std::int32_t i = -e2 + static_cast<std::int32_t>(q) + k;
 #if defined( DAW_JSON_RYU_OPTIMIZE_SIZE )
 			uint64_t pow5[2];
 			double_computeInvPow5( q, pow5 );
@@ -293,7 +294,7 @@ namespace ryu::detail {
 				// values may still be safe, but it's more difficult to reason about
 				// them. Only one of mp, mv, and mm can be a multiple of 5, if any.
 				const std::uint32_t mvMod5 =
-				  ( (std::uint32_t)mv ) - 5 * ( (std::uint32_t)div5( mv ) );
+				  ( static_cast<std::uint32_t>(mv) ) - 5 * ( static_cast<std::uint32_t>(div5( mv )) );
 				if( mvMod5 == 0 ) {
 					vrIsTrailingZeros = multipleOfPowerOf5( mv, q );
 				} else if( acceptBounds ) {
@@ -309,10 +310,10 @@ namespace ryu::detail {
 		} else {
 			// This expression is slightly faster than max(0, log10Pow5(-e2) - 1).
 			const std::uint32_t q = log10Pow5( -e2 ) - ( -e2 > 1 );
-			e10 = (std::int32_t)q + e2;
-			const std::int32_t i = -e2 - (std::int32_t)q;
+			e10 = static_cast<std::int32_t>(q) + e2;
+			const std::int32_t i = -e2 - static_cast<std::int32_t>(q);
 			const std::int32_t k = pow5bits( i ) - DOUBLE_POW5_BITCOUNT;
-			const std::int32_t j = (std::int32_t)q - k;
+			const std::int32_t j = static_cast<std::int32_t>(q) - k;
 #if defined( DAW_JSON_RYU_OPTIMIZE_SIZE )
 			std::uint64_t pow5[2];
 			double_computePow5( i, pow5 );
@@ -357,13 +358,13 @@ namespace ryu::detail {
 				if( vpDiv10 <= vmDiv10 )
 					break;
 				const std::uint32_t vmMod10 =
-				  ( (std::uint32_t)vm ) - 10 * ( (std::uint32_t)vmDiv10 );
+				  ( static_cast<std::uint32_t>(vm) ) - 10 * ( static_cast<std::uint32_t>(vmDiv10) );
 				const std::uint64_t vrDiv10 = div10( vr );
 				const std::uint32_t vrMod10 =
-				  ( (std::uint32_t)vr ) - 10 * ( (std::uint32_t)vrDiv10 );
+				  ( static_cast<std::uint32_t>(vr) ) - 10 * ( static_cast<std::uint32_t>(vrDiv10) );
 				vmIsTrailingZeros &= vmMod10 == 0;
 				vrIsTrailingZeros &= lastRemovedDigit == 0;
-				lastRemovedDigit = (uint8_t)vrMod10;
+				lastRemovedDigit = static_cast<uint8_t>(vrMod10);
 				vr = vrDiv10;
 				vp = vpDiv10;
 				vm = vmDiv10;
@@ -374,15 +375,15 @@ namespace ryu::detail {
 				for( ;; ) {
 					const std::uint64_t vmDiv10 = div10( vm );
 					const std::uint32_t vmMod10 =
-					  ( (std::uint32_t)vm ) - 10 * ( (std::uint32_t)vmDiv10 );
+					  ( static_cast<std::uint32_t>(vm) ) - 10 * ( static_cast<std::uint32_t>(vmDiv10) );
 					if( vmMod10 != 0 )
 						break;
 					const std::uint64_t vpDiv10 = div10( vp );
 					const std::uint64_t vrDiv10 = div10( vr );
 					const std::uint32_t vrMod10 =
-					  ( (std::uint32_t)vr ) - 10 * ( (std::uint32_t)vrDiv10 );
+					  ( static_cast<std::uint32_t>(vr) ) - 10 * ( static_cast<std::uint32_t>(vrDiv10) );
 					vrIsTrailingZeros &= lastRemovedDigit == 0;
-					lastRemovedDigit = (uint8_t)vrMod10;
+					lastRemovedDigit = static_cast<uint8_t>(vrMod10);
 					vr = vrDiv10;
 					vp = vpDiv10;
 					vm = vmDiv10;
@@ -408,7 +409,7 @@ namespace ryu::detail {
 				// Optimization: remove two digits at a time (~86.2%).
 				const std::uint64_t vrDiv100 = div100( vr );
 				const std::uint32_t vrMod100 =
-				  ( (std::uint32_t)vr ) - 100 * ( (std::uint32_t)vrDiv100 );
+				  ( static_cast<std::uint32_t>(vr) ) - 100 * ( static_cast<std::uint32_t>(vrDiv100) );
 				roundUp = vrMod100 >= 50;
 				vr = vrDiv100;
 				vp = vpDiv100;
@@ -426,7 +427,7 @@ namespace ryu::detail {
 					break;
 				const std::uint64_t vrDiv10 = div10( vr );
 				const std::uint32_t vrMod10 =
-				  ( (std::uint32_t)vr ) - 10 * ( (std::uint32_t)vrDiv10 );
+				  ( static_cast<std::uint32_t>(vr) ) - 10 * ( static_cast<std::uint32_t>(vrDiv10) );
 				roundUp = vrMod10 >= 5;
 				vr = vrDiv10;
 				vp = vpDiv10;
@@ -473,7 +474,7 @@ namespace ryu::detail {
 			// Expensive 64-bit division.
 			std::uint64_t const q = div1e8( output );
 			std::uint32_t output2 =
-			  ( (std::uint32_t)output ) - 100000000 * ( (std::uint32_t)q );
+			  ( static_cast<std::uint32_t>(output) ) - 100000000 * ( static_cast<std::uint32_t>(q) );
 			output = q;
 
 			const std::uint32_t c = output2 % 10000;
@@ -489,7 +490,7 @@ namespace ryu::detail {
 			std::memcpy( result + index + olength - i - 7, DIGIT_TABLE + d1, 2 );
 			i += 8;
 		}
-		uint32_t output2 = (std::uint32_t)output;
+		uint32_t output2 = static_cast<std::uint32_t>(output);
 		while( output2 >= 10000 ) {
 #ifdef __clang__ // https://bugs.llvm.org/show_bug.cgi?id=38217
 			const uint32_t c = output2 - 10000 * ( output2 / 10000 );
@@ -529,7 +530,7 @@ namespace ryu::detail {
 
 		// Print the exponent.
 		result[index++] = 'E';
-		int32_t exp = v.exponent + (int32_t)olength - 1;
+		int32_t exp = v.exponent + static_cast<int32_t>(olength) - 1;
 		if( exp < 0 ) {
 			result[index++] = '-';
 			exp = -exp;
@@ -599,7 +600,7 @@ namespace ryu {
 		const std::uint64_t ieeeMantissa =
 		  bits & ( ( 1ull << DOUBLE_MANTISSA_BITS ) - 1 );
 		const std::uint32_t ieeeExponent =
-		  ( std::uint32_t )( ( bits >> DOUBLE_MANTISSA_BITS ) &
+		  static_cast< std::uint32_t>( ( bits >> DOUBLE_MANTISSA_BITS ) &
 		                     ( ( 1u << DOUBLE_EXPONENT_BITS ) - 1 ) );
 		// Case distinction; exit early for the easy cases.
 		if( ieeeExponent == ( ( 1u << DOUBLE_EXPONENT_BITS ) - 1u ) ||
@@ -619,7 +620,7 @@ namespace ryu {
 			for( ;; ) {
 				std::uint64_t const q = div10( v.mantissa );
 				std::uint32_t const r =
-				  (std::uint32_t)v.mantissa - 10 * (std::uint32_t)q;
+				  static_cast<std::uint32_t>(v.mantissa) - 10 * static_cast<std::uint32_t>(q);
 				if( r != 0 )
 					break;
 				v.mantissa = q;
