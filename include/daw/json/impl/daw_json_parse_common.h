@@ -11,6 +11,7 @@
 #include "daw_arith_traits.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_string_quote.h"
+#include "daw_json_traits.h"
 #include "daw_string_slow.h"
 
 #include <daw/daw_parser_helper_sv.h>
@@ -34,25 +35,9 @@ namespace daw::json {
 		constexpr unnamed_json_mapping( Ts &&... values )
 		  : members{ std::forward<Ts>( values )... } {}
 	};
-
-	/***
-	 * Attempt to parse/serialize a type that has not yet been mapped
-	 */
-	template<typename>
-	struct missing_json_data_contract_for {};
-
-	/***
-	 * Mapping class for JSON data structures to C++
-	 * @tparam T Class to map
-	 */
-	template<typename T>
-	struct json_data_contract {
-		using type = missing_json_data_contract_for<T>;
-	};
 } // namespace daw::json
 
 namespace daw::json::json_details {
-
 	template<typename T>
 	using json_type_t = typename T::i_am_a_json_type;
 
@@ -540,7 +525,7 @@ namespace daw::json::json_details {
 				++rng.first;
 			}
 		} else {
-			while( rng.has_more( ) and not rng.is_space( ) and
+			while( rng.has_more( ) and not rng.is_space_unchecked( ) and
 			       not rng.at_literal_end( ) ) {
 				++rng.first;
 			}

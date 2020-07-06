@@ -204,5 +204,4 @@ namespace daw::json {
 			return result;
 		}
 	}; // namespace daw::json
-
 } // namespace daw::json

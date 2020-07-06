@@ -21,7 +21,7 @@
 std::string read_file( std::string const &filename ) {
 	std::ifstream f( filename );
 	if( !f ) {
-		return {};
+		return { };
 	}
 	return std::string( std::istreambuf_iterator<char>( f ),
 	                    std::istreambuf_iterator<char>( ) );
@@ -66,6 +66,7 @@ int main( int argc, char *argv[] ) try {
 	auto const twitter_out2 = daw::json::to_json( twitter_obj2 );
 	auto const citm_out2 = daw::json::to_json( citm_obj2 );
 
+	std::cout << "Maybe say bad due to FP equality\n";
 	std::cout << "canada roundtrip: "
 	          << ( canada_out == canada_out2 ? "good" : "bad" ) << '\n';
 	std::cout << "twitter roundtrip: "

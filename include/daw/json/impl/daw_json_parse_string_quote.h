@@ -13,9 +13,9 @@
 namespace daw::json::json_details::string_quote {
 
 	struct string_quote_parser {
-		template<typename Range, std::enable_if_t<Range::is_unchecked_input,
-		                                          std::nullptr_t> = nullptr>
-		[[nodiscard]] static constexpr bool parse_nq( Range &rng ) {
+		template<typename Range>
+		[[nodiscard]] static constexpr auto parse_nq( Range &rng )
+		  -> std::enable_if_t<Range::is_unchecked_input, bool> {
 			bool need_slow_path = false;
 			char const *first = rng.first;
 			while( *first != '"' ) {
@@ -33,9 +33,9 @@ namespace daw::json::json_details::string_quote {
 			return need_slow_path;
 		}
 
-		template<typename Range, std::enable_if_t<not Range::is_unchecked_input,
-		                                          std::nullptr_t> = nullptr>
-		[[nodiscard]] static constexpr bool parse_nq( Range &rng ) {
+		template<typename Range>
+		[[nodiscard]] static constexpr auto parse_nq( Range &rng )
+		  -> std::enable_if_t<not Range::is_unchecked_input, bool> {
 			bool need_slow_path = false;
 			char const *first = rng.first;
 			char const *const last = rng.last;

@@ -265,34 +265,34 @@ namespace daw::json::json_details {
 		return { };
 	}
 
-	//**************************
+	/***
+	 * We know that we are constructing a std::string or
+	 * std::optional<std::string> We can take advantage of this and reduce the
+	 * allocator time by presizing the string up front and then using a
+	 * pointer to the data( ).
+	 */
 	template<typename JsonMember>
-	using can_fast_path = std::conjunction<
-	  std::disjunction<
-	    std::is_same<std::string, json_result<JsonMember>>,
-	    std::is_same<std::optional<std::string>, json_result<JsonMember>>>,
-	  std::is_same<typename JsonMember::appender_t, basic_appender<std::string>>,
-	  std::disjunction<
-	    std::is_same<typename JsonMember::constructor_t,
-	                 daw::construct_a_t<std::string>>,
-	    std::is_same<typename JsonMember::constructor_t,
-	                 daw::construct_a_t<std::optional<std::string>>>>>;
-
-	template<typename JsonMember>
-	inline constexpr bool can_fast_path_v = can_fast_path<JsonMember>::value;
+	struct can_parse_to_stdstring_fast
+	  : std::conjunction<
+	      std::disjunction<
+	        std::is_same<std::string, json_result<JsonMember>>,
+	        std::is_same<std::optional<std::string>, json_result<JsonMember>>>,
+	      std::is_same<typename JsonMember::appender_t,
+	                   basic_appender<std::string>>,
+	      std::disjunction<
+	        std::is_same<typename JsonMember::constructor_t,
+	                     daw::construct_a_t<std::string>>,
+	        std::is_same<typename JsonMember::constructor_t,
+	                     daw::construct_a_t<std::optional<std::string>>>>> {};
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng ) {
-		if constexpr( can_fast_path_v<JsonMember> ) {
-			// We know that we are constructing a std::string or
-			// std::optional<std::string> We can take advantage of this and reduce the
-			// allocator time by presizing the string up front and then using a
-			// pointer to the data( ).
+		if constexpr( can_parse_to_stdstring_fast<JsonMember>::value ) {
 			constexpr bool AllowHighEightbits =
 			  JsonMember::eight_bit_mode != EightBitModes::DisallowHigh;
 			if constexpr( KnownBounds ) {
-				if( needs_slow_path( rng.counter ) ) {
+				if( needs_slow_path( rng ) ) {
 					return parse_string_known_stdstring<AllowHighEightbits,
 					                                    json_result<JsonMember>>( rng );
 				}
@@ -304,7 +304,7 @@ namespace daw::json::json_details {
 				}
 			} else {
 				auto rng2 = skip_string( rng );
-				if( needs_slow_path( rng2.counter ) ) {
+				if( needs_slow_path( rng2 ) ) {
 					return parse_string_known_stdstring<AllowHighEightbits,
 					                                    json_result<JsonMember>>( rng2 );
 				}
@@ -321,7 +321,7 @@ namespace daw::json::json_details {
 			constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 
 			auto result = constructor_t{ }( );
-			auto app = [&] {
+			auto const app = [&] {
 				if constexpr( std::is_same_v<typename JsonMember::parse_to_t,
 				                             typename JsonMember::base_type> ) {
 					return daw::construct_a<appender_t>( result );
@@ -458,14 +458,6 @@ namespace daw::json::json_details {
 		}
 #endif
 	}
-
-	template<typename Container>
-	using can_reserve_test =
-	  decltype( std::declval<Container &>( ).reserve( 1ULL ) );
-
-	template<typename Container>
-	inline constexpr bool can_reserve_v =
-	  daw::is_detected_v<can_reserve_test, Container>;
 
 	/**
 	 * Parse a key_value pair encoded as a json object where the keys are the

@@ -2,32 +2,33 @@
 // https://github.com/miloyip/dtoa-benchmark/blob/master/src/milo/dtoa_milo.h
 #pragma once
 
+#include "daw/json/impl/daw_json_assert.h"
+
 #include <daw/cpp_17.h>
 
-#include <cassert>
 #include <cmath>
 
 #include <cstdint>
-#if defined( _MSC_VER )
+#if defined( _MSC_VER ) and not defined( __clang__ )
 #include <intrin.h>
 #endif
 
 namespace milo {
 	struct DiyFp {
-		uint64_t f = 0;
+		std::uint64_t f = 0;
 		int e = 0;
 
 		constexpr DiyFp( ) = default;
 
-		constexpr DiyFp( uint64_t F, int E )
+		constexpr DiyFp( std::uint64_t F, int E )
 		  : f( F )
 		  , e( E ) {}
 
 		explicit DiyFp( double d ) {
-			auto const u = daw::bit_cast<uint64_t>( d );
+			auto const u = daw::bit_cast<std::uint64_t>( d );
 
 			int const biased_e = ( u & kDpExponentMask ) >> kDpSignificandSize;
-			uint64_t const significand = ( u & kDpSignificandMask );
+			std::uint64_t const significand = ( u & kDpSignificandMask );
 			if( biased_e != 0 ) {
 				f = significand + kDpHiddenBit;
 				e = biased_e - kDpExponentBias;
@@ -39,16 +40,16 @@ namespace milo {
 
 		constexpr DiyFp operator-( DiyFp const &rhs ) const {
 			// TODO: use exceptions
-			assert( e == rhs.e );
-			assert( f >= rhs.f );
+			daw_json_assert( e == rhs.e, "Unsupported" );
+			daw_json_assert( f >= rhs.f, "Unsupported" );
 			return DiyFp( f - rhs.f, e );
 		}
 
 		DiyFp operator*( DiyFp const &rhs ) const {
-#if defined( _MSC_VER ) && defined( _M_AMD64 )
-			uint64_t h = 0;
-			uint64_t l = _umul128( f, rhs.f, &h );
-			if( l & ( uint64_t( 1 ) << 63 ) ) { // rounding
+#if not defined( __clang__ ) and defined( _MSC_VER ) and defined( _M_AMD64 )
+			std::uint64_t h = 0;
+			std::uint64_t l = _umul128( f, rhs.f, &h );
+			if( l & ( std::uint64_t( 1 ) << 63 ) ) { // rounding
 				h++;
 			}
 			return DiyFp( h, e + rhs.e + 64U );
@@ -59,24 +60,24 @@ namespace milo {
 #pragma GCC diagnostic ignored "-Wpedantic"
 			__uint128_t const p =
 			  static_cast<__uint128_t>( f ) * static_cast<__uint128_t>( rhs.f );
-			uint64_t h = p >> 64U;
-			uint64_t l = static_cast<uint64_t>( p );
-			if( l & ( uint64_t( 1 ) << 63U ) ) { // rounding
+			std::uint64_t h = p >> 64U;
+			std::uint64_t l = static_cast<std::uint64_t>( p );
+			if( l & ( std::uint64_t( 1 ) << 63U ) ) { // rounding
 				h++;
 			}
 			return DiyFp( h, e + rhs.e + 64 );
 #pragma GCC diagnostic pop
 #else
-			static constexpr uint64_t M32 = 0xFFFF'FFFFU;
-			uint64_t const a = f >> 32;
-			uint64_t const b = f & M32;
-			uint64_t const c = rhs.f >> 32U;
-			uint64_t const d = rhs.f & M32;
-			uint64_t const ac = a * c;
-			uint64_t const bc = b * c;
-			uint64_t const ad = a * d;
-			uint64_t const bd = b * d;
-			uint64_t tmp = ( bd >> 32U ) + ( ad & M32 ) + ( bc & M32 );
+			static constexpr std::uint64_t M32 = 0xFFFF'FFFFU;
+			std::uint64_t const a = f >> 32;
+			std::uint64_t const b = f & M32;
+			std::uint64_t const c = rhs.f >> 32U;
+			std::uint64_t const d = rhs.f & M32;
+			std::uint64_t const ac = a * c;
+			std::uint64_t const bc = b * c;
+			std::uint64_t const ad = a * d;
+			std::uint64_t const bd = b * d;
+			std::uint64_t tmp = ( bd >> 32U ) + ( ad & M32 ) + ( bc & M32 );
 			tmp += 1U << 31U; /// mult_round
 			return DiyFp( ac + ( ad >> 32U ) + ( bc >> 32U ) + ( tmp >> 32U ),
 			              e + rhs.e + 64 );
@@ -84,8 +85,8 @@ namespace milo {
 		}
 
 		[[nodiscard]] inline DiyFp Normalize( ) const {
-#if defined( _MSC_VER ) && defined( _M_AMD64 )
-			unsigned long index;
+#if not defined( __clang__ ) and defined( _MSC_VER ) and defined( _M_AMD64 )
+			unsigned long index = 0;
 			_BitScanReverse64( &index, f );
 			return DiyFp( f << ( 63U - index ), e - ( 63U - index ) );
 #elif defined( __GNUC__ ) or defined( __clang__ )
@@ -104,7 +105,7 @@ namespace milo {
 		}
 
 		[[nodiscard]] inline DiyFp NormalizeBoundary( ) const {
-#if defined( _MSC_VER ) && defined( _M_AMD64 )
+#if not defined( __clang__ ) and defined( _MSC_VER ) and defined( _M_AMD64 )
 			unsigned long index;
 			_BitScanReverse64( &index, f );
 			return DiyFp( f << ( 63U - index ), e - ( 63U - index ) );
@@ -134,14 +135,14 @@ namespace milo {
 		static constexpr int kDpSignificandSize = 52;
 		static constexpr int kDpExponentBias = 0x3FF + kDpSignificandSize;
 		static constexpr int kDpMinExponent = -kDpExponentBias;
-		static constexpr uint64_t kDpExponentMask = 0x7FF0000000000000U;
-		static constexpr uint64_t kDpSignificandMask = 0x000FFFFFFFFFFFFFU;
-		static constexpr uint64_t kDpHiddenBit = 0x0010000000000000U;
+		static constexpr std::uint64_t kDpExponentMask = 0x7FF0000000000000U;
+		static constexpr std::uint64_t kDpSignificandMask = 0x000FFFFFFFFFFFFFU;
+		static constexpr std::uint64_t kDpHiddenBit = 0x0010000000000000U;
 	};
 
-	inline DiyFp GetCachedPower( int e, int *K ) {
+	constexpr DiyFp GetCachedPower( int e, int *K ) {
 		// 10^-348, 10^-340, ..., 10^340
-		static constexpr uint64_t kCachedPowers_F[] = {
+		constexpr std::uint64_t kCachedPowers_F[] = {
 		  0xfa8fd5a0081c0288U, 0xbaaee17fa23ebf76U, 0x8b16fb203055ac76U,
 		  0xcf42894a5dce35eaU, 0x9a6bb0aa55653b2dU, 0xe61acf033d1a45dfU,
 		  0xab70fe17c79ac6caU, 0xff77b1fcbebcdc4fU, 0xbe5691ef416bd60cU,
@@ -172,7 +173,7 @@ namespace milo {
 		  0xbf21e44003acdd2dU, 0x8e679c2f5e44ff8fU, 0xd433179d9c8cb841U,
 		  0x9e19db92b4e31ba9U, 0xeb96bf6ebadf77d9U, 0xaf87023b9bf0ee6bU };
 
-		static constexpr int16_t kCachedPowers_E[] = {
+		constexpr int16_t kCachedPowers_E[] = {
 		  -1220, -1193, -1166, -1140, -1113, -1087, -1060, -1034, -1007, -980, -954,
 		  -927,  -901,  -874,  -847,  -821,  -794,  -768,  -741,  -715,  -688, -661,
 		  -635,  -608,  -582,  -555,  -529,  -502,  -475,  -449,  -422,  -396, -369,
@@ -194,13 +195,14 @@ namespace milo {
 		*K = -( -348 + static_cast<int>(
 		                 index << 3 ) ); // decimal exponent no need lookup table
 
-		assert( index < sizeof( kCachedPowers_F ) / sizeof( kCachedPowers_F[0] ) );
+		daw_json_assert(
+		  index < sizeof( kCachedPowers_F ) / sizeof( kCachedPowers_F[0] ), "" );
 		return DiyFp( kCachedPowers_F[index], kCachedPowers_E[index] );
 	}
 
-	constexpr void GrisuRound( char *buffer, int len, uint64_t delta,
-	                           uint64_t rest, uint64_t ten_kappa,
-	                           uint64_t wp_w ) {
+	constexpr void GrisuRound( char *buffer, int len, std::uint64_t delta,
+	                           std::uint64_t rest, std::uint64_t ten_kappa,
+	                           std::uint64_t wp_w ) {
 		while( rest < wp_w && delta - rest >= ten_kappa &&
 		       ( rest + ten_kappa < wp_w || /// closer
 		         wp_w - rest > rest + ten_kappa - wp_w ) ) {
@@ -209,47 +211,47 @@ namespace milo {
 		}
 	}
 
-	inline unsigned CountDecimalDigit32( uint32_t n ) {
+	constexpr unsigned CountDecimalDigit32( std::uint32_t n ) {
 		// Simple pure C++ implementation was faster than __builtin_clz version in
 		// this situation.
 		if( n < 10 )
 			return 1;
 		if( n < 100 )
 			return 2;
-		if( n < 1000 )
+		if( n < 1'000 )
 			return 3;
-		if( n < 10000 )
+		if( n < 10'000 )
 			return 4;
-		if( n < 100000 )
+		if( n < 100'000 )
 			return 5;
-		if( n < 1000000 )
+		if( n < 1'000'000 )
 			return 6;
-		if( n < 10000000 )
+		if( n < 10'000'000 )
 			return 7;
-		if( n < 100000000 )
+		if( n < 100'000'000 )
 			return 8;
-		if( n < 1000000000 )
+		if( n < 1'000'000'000 )
 			return 9;
 		return 10;
 	}
 
-	inline void DigitGen( DiyFp const &W, DiyFp const &Mp, uint64_t delta,
-	                      char *buffer, int *len, int *K ) {
-		static uint32_t const kPow10[] = { 1,         10,        100,     1000,
-		                                   10000,     100000,    1000000, 10000000,
-		                                   100000000, 1000000000 };
-		DiyFp const one( uint64_t( 1 ) << -Mp.e, Mp.e );
+	constexpr void DigitGen( DiyFp const &W, DiyFp const &Mp, std::uint64_t delta,
+	                         char *buffer, int *len, int *K ) {
+		constexpr std::uint32_t kPow10[] = {
+		  1,      10,      100,      1000,      10000,
+		  100000, 1000000, 10000000, 100000000, 1000000000 };
+		DiyFp const one( std::uint64_t( 1 ) << -Mp.e, Mp.e );
 		DiyFp const wp_w = Mp - W;
-		auto p1 = static_cast<uint32_t>( Mp.f >> -one.e );
-		uint64_t p2 = Mp.f & ( one.f - 1 );
+		auto p1 = static_cast<std::uint32_t>( Mp.f >> -one.e );
+		std::uint64_t p2 = Mp.f & ( one.f - 1 );
 		int kappa = static_cast<int>( CountDecimalDigit32( p1 ) );
 		*len = 0;
 
 		while( kappa > 0 ) {
-			uint32_t d;
+			std::uint32_t d = 0;
 			switch( kappa ) {
 			case 10:
-				d = p1 / 1000000000;
+				d = p1 / 1'000'000'000;
 				p1 %= 1000000000;
 				break;
 			case 9:
@@ -289,7 +291,7 @@ namespace milo {
 				p1 = 0;
 				break;
 			default:
-#if defined( _MSC_VER )
+#if defined( _MSC_VER ) and not defined( __clang__ )
 				__assume( 0 );
 #elif defined( __GNUC ) or defined( __clang__ )
 				__builtin_unreachable( );
@@ -297,14 +299,16 @@ namespace milo {
 				d = 0;
 #endif
 			}
-			if( d || *len )
+			if( d or *len ) {
 				buffer[( *len )++] = '0' + static_cast<char>( d );
+			}
 			kappa--;
-			uint64_t tmp = ( static_cast<uint64_t>( p1 ) << -one.e ) + p2;
+			std::uint64_t tmp = ( static_cast<std::uint64_t>( p1 ) << -one.e ) + p2;
 			if( tmp <= delta ) {
 				*K += kappa;
 				GrisuRound( buffer, *len, delta, tmp,
-				            static_cast<uint64_t>( kPow10[kappa] ) << -one.e, wp_w.f );
+				            static_cast<std::uint64_t>( kPow10[kappa] ) << -one.e,
+				            wp_w.f );
 				return;
 			}
 		}
@@ -418,8 +422,10 @@ namespace milo {
 
 	inline void dtoa_milo( double value, char *buffer ) {
 		// Not handling NaN and inf
-		assert( not std::isnan( value ) );
-		assert( not std::isinf( value ) );
+		daw_json_assert( not std::isnan( value ),
+		                 "NaN is an unsupported number in JSON" );
+		daw_json_assert( not std::isinf( value ),
+		                 "Inf is an unsupported number in JSON" );
 
 		if( value == 0 ) {
 			buffer[0] = '0';
