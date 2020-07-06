@@ -59,7 +59,7 @@ namespace {
 	daw::bench::bench_result
 	make_bench_result( std::string const &name, std::size_t data_size,
 	                   std::vector<std::chrono::nanoseconds> run_times ) {
-		return {std::move( name ),
+		return {name,
 		        std::chrono::time_point_cast<std::chrono::milliseconds>(
 		          std::chrono::system_clock::now( ) ),
 		        data_size,

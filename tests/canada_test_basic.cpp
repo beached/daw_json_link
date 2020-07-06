@@ -22,13 +22,18 @@ int main( int argc, char **argv ) try {
 		exit( 1 );
 	}
 	using namespace daw::json;
-	auto json_data = std::string(daw::filesystem::memory_mapped_file_t<>( argv[1] ) );
+	auto json_data =
+	  std::string( daw::filesystem::memory_mapped_file_t<>( argv[1] ) );
 
 	auto const canada_result =
 	  daw::json::from_json<daw::geojson::FeatureCollection>( json_data );
 	daw::do_not_optimize( canada_result );
 
-	auto const new_json_result = daw::json::to_json( canada_result );
+	auto new_json_result = std::string( );
+	new_json_result.resize( (json_data.size( ) * 15U)/10U );
+	auto last = daw::json::to_json( canada_result, new_json_result.data( ) );
+	(void)last;
+	//new_json_result.resize( std::distance( new_json_result.data( ), last ) );
 	daw::do_not_optimize( canada_result );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

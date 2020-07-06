@@ -46,7 +46,7 @@ namespace daw::json::json_details {
 		}
 
 		int32_t exp_part = 0;
-		if( rng.is_e_checked( ) ) {
+		if( rng.is_exponent_checked( ) ) {
 			rng.remove_prefix( );
 			int32_t exsign = 1;
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );

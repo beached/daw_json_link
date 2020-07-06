@@ -30,6 +30,12 @@ namespace daw::json {
 		using type = missing_json_data_contract_for<T>;
 	};
 
+	/***
+	 * This trait can be specialized such that when class being returned has
+	 * non-move/copyiable members the construction can be done with { } instead of
+	 * a callable.  This is a blunt object and probably should not be used
+	 * @tparam T type to specialize
+	 */
 	template<typename T>
 	struct force_aggregate_constrution : std::false_type {};
 
