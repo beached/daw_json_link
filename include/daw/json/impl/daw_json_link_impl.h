@@ -361,10 +361,6 @@ namespace daw::json::json_details {
 	parse_json_class( Range &rng, std::index_sequence<Is...> ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
-		static_assert(
-		  can_construct_a_v<JsonClass, typename JsonMembers::parse_to_t...>,
-		  "Supplied types cannot be used for	construction of this type" );
-
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_opening_brace_checked( ),
 		                      "Expected start of class" );
@@ -403,14 +399,6 @@ namespace daw::json::json_details {
 			auto known_locations = make_locations_info<Range, JsonMembers...>( );
 
 #endif
-			using tp_t = decltype( std::forward_as_tuple(
-			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )... ) );
-			/*
-			using tp_t = std::tuple<decltype(
-			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng ) )...>;
-			    */
 
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
@@ -423,20 +411,32 @@ namespace daw::json::json_details {
 			/*
 			 * Rather than call directly use apply/tuple to evaluate left->right
 			 */
-			return std::apply(
-			  daw::construct_a<JsonClass>,
-			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )... } );
+			if constexpr( daw::json::force_aggregate_constrution<JsonClass>::value ) {
+				return JsonClass{
+				  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+				    Is, known_locations, rng )... };
+			} else {
+				using tp_t = decltype( std::forward_as_tuple(
+				  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+				    Is, known_locations, rng )... ) );
+				return std::apply(
+				  daw::construct_a<JsonClass>,
+				  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+				    Is, known_locations, rng )... } );
+			}
 #else
-			JsonClass result = std::apply(
-			  daw::construct_a<JsonClass>,
-			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-			    Is, known_locations, rng )... } );
+			using tp_t = decltype( std::forward_as_tuple(
+			  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			    Is, known_locations, rng )... ) );
+			JsonClass result =
+			  std::apply( daw::construct_a<JsonClass>,
+			           tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
+			             Is, known_locations, rng )... } );
 			cleanup_fn( );
 			return result;
 #endif
 		}
-	}
+	} // namespace daw::json::json_details
 
 	template<typename JsonClass, typename... JsonMembers, typename Range>
 	[[nodiscard]] inline constexpr JsonClass

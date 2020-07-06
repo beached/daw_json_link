@@ -59,6 +59,9 @@ namespace daw::json {
 			return std::forward_as_tuple( v.a );
 		}
 	};
+
+	template<>
+	struct force_aggregate_constrution<B> : std::true_type {};
 } // namespace daw::json
 
 int main( int, char ** ) try {
@@ -69,14 +72,14 @@ int main( int, char ** ) try {
 	static_assert( daw::json::from_json<A>( json_data ).member == 1234 );
 #endif
 	// This does not work
-	/*
+
 	constexpr std::string_view json_data2 = R"({ "a": { "some_num": 1234 } } )";
 #if not defined( __cpp_constexpr_dynamic_alloc )
-	daw::expecting( daw::json::from_json<B>( json_data ).a.member == 1234 );
+	daw::expecting( daw::json::from_json<B>( json_data2 ).a.member == 1234 );
 #else
-	static_assert( daw::json::from_json<B>( json_data ).a.member == 1234 );
+	static_assert( daw::json::from_json<B>( json_data2 ).a.member == 1234 );
 #endif
-	 */
+
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

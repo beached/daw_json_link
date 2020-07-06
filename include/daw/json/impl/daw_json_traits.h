@@ -30,4 +30,7 @@ namespace daw::json {
 		using type = missing_json_data_contract_for<T>;
 	};
 
+	template<typename T>
+	struct force_aggregate_constrution : std::false_type {};
+
 } // namespace daw::json
