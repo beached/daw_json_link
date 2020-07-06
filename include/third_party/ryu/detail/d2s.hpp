@@ -21,6 +21,8 @@
 
 #include "common.hpp"
 
+#include <cstdint>
+
 // Only include the full table if we're not optimizing for size.
 #if not defined( DAW_JSON_RYU_OPTIMIZE_SIZE )
 #include "d2s_full_table.hpp"

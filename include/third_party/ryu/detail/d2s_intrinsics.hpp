@@ -25,6 +25,7 @@
 #if defined( DAW_JSON_RYU_HAS_64_BIT_INTRINSICS )
 #include <intrin.h>
 #endif
+#include <cstdint>
 
 namespace ryu::detail {
 
@@ -55,29 +56,29 @@ namespace ryu::detail {
 	                         uint64_t *const productHi ) {
 		// The casts here help MSVC to avoid calls to the __allmul library
 		// function.
-		const uint32_t aLo = (uint32_t)a;
-		const uint32_t aHi = ( uint32_t )( a >> 32 );
-		const uint32_t bLo = (uint32_t)b;
-		const uint32_t bHi = ( uint32_t )( b >> 32 );
+		const uint32_t aLo = static_cast<uint32_t>(a);
+		const uint32_t aHi = static_cast< uint32_t>( a >> 32 );
+		const uint32_t bLo = static_cast<uint32_t>(b);
+		const uint32_t bHi = static_cast< uint32_t>( b >> 32 );
 
-		const uint64_t b00 = (uint64_t)aLo * bLo;
-		const uint64_t b01 = (uint64_t)aLo * bHi;
-		const uint64_t b10 = (uint64_t)aHi * bLo;
-		const uint64_t b11 = (uint64_t)aHi * bHi;
+		const uint64_t b00 = static_cast<uint64_t>(aLo) * bLo;
+		const uint64_t b01 = static_cast<uint64_t>(aLo) * bHi;
+		const uint64_t b10 = static_cast<uint64_t>(aHi) * bLo;
+		const uint64_t b11 = static_cast<uint64_t>(aHi) * bHi;
 
-		const uint32_t b00Lo = (uint32_t)b00;
-		const uint32_t b00Hi = ( uint32_t )( b00 >> 32 );
+		const uint32_t b00Lo = static_cast<uint32_t>(b00);
+		const uint32_t b00Hi = static_cast< uint32_t>( b00 >> 32 );
 
 		const uint64_t mid1 = b10 + b00Hi;
-		const uint32_t mid1Lo = ( uint32_t )( mid1 );
-		const uint32_t mid1Hi = ( uint32_t )( mid1 >> 32 );
+		const uint32_t mid1Lo = static_cast< uint32_t>( mid1 );
+		const uint32_t mid1Hi = static_cast< uint32_t>( mid1 >> 32 );
 
 		const uint64_t mid2 = b01 + mid1Lo;
-		const uint32_t mid2Lo = ( uint32_t )( mid2 );
-		const uint32_t mid2Hi = ( uint32_t )( mid2 >> 32 );
+		const uint32_t mid2Lo = static_cast< uint32_t>( mid2 );
+		const uint32_t mid2Hi = static_cast< uint32_t>( mid2 >> 32 );
 
 		const uint64_t pHi = b11 + mid1Hi + mid2Hi;
-		const uint64_t pLo = ( (uint64_t)mid2Lo << 32 ) | b00Lo;
+		const uint64_t pLo = ( static_cast<uint64_t>(mid2Lo) << 32 ) | b00Lo;
 
 		*productHi = pHi;
 		return pLo;
@@ -183,7 +184,7 @@ namespace ryu::detail {
 	}
 
 	inline uint32_t mod1e9( const uint64_t x ) {
-		return ( uint32_t )( x - 1000000000 * div1e9( x ) );
+		return static_cast< uint32_t>( x - 1000000000 * div1e9( x ) );
 	}
 
 #endif // RYU_32_BIT_PLATFORM
@@ -193,7 +194,7 @@ namespace ryu::detail {
 		for( ;; ) {
 			assert( value != 0 );
 			const uint64_t q = div5( value );
-			const uint32_t r = ( (uint32_t)value ) - 5 * ( (uint32_t)q );
+			const uint32_t r = ( static_cast<uint32_t>(value) ) - 5 * ( static_cast<uint32_t>(q) );
 			if( r != 0 ) {
 				break;
 			}

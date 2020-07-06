@@ -253,7 +253,7 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] constexpr bool is_exponent_checked( ) const {
-			return first < last and ( *first == 'e' bitor *first == 'E' );
+			return first < last and ( (*first == 'e') bitor (*first == 'E') );
 		}
 
 		[[nodiscard]] constexpr bool is_t_unchecked( ) const {

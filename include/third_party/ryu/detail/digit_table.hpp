@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace ryu::detail {
 
 	// A table of all two-digit numbers. This is used to speed up decimal digit
