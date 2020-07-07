@@ -31,6 +31,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -92,11 +93,11 @@ namespace ryu::detail {
 		return static_cast<std::uint64_t>( ( ( b0 >> 64 ) + b2 ) >> ( j - 64 ) );
 	}
 
-	inline uint64_t mulShiftAll( const std::uint64_t m,
-	                             const std::uint64_t *const mul,
+	inline uint64_t mulShiftAll( std::uint64_t const m,
+	                             std::uint64_t const *const mul,
 	                             std::int32_t const j, std::uint64_t *const vp,
 	                             std::uint64_t *const vm,
-	                             const std::uint32_t mmShift ) noexcept {
+	                             std::uint32_t const mmShift ) noexcept {
 		//  m <<= 2;
 		//  uint128_t b0 = ((uint128_t) m) * mul[0]; // 0
 		//  uint128_t b2 = ((uint128_t) m) * mul[1]; // 64
@@ -116,9 +117,9 @@ namespace ryu::detail {
 
 #elif defined( DAW_JSON_RYU_HAS_64_BIT_INTRINSICS )
 
-	inline std::uint64_t mulShift( const std::uint64_t m,
-	                               const std::uint64_t *const mul,
-	                               const std::int32_t j ) noexcept {
+	inline std::uint64_t mulShift( std::uint64_t const m,
+	                               std::uint64_t const *const mul,
+	                               std::int32_t const j ) noexcept {
 		// m is maximum 55 bits
 		std::uint64_t high1;                                     // 128
 		std::uint64_t const low1 = umul128( m, mul[1], &high1 ); // 64
@@ -131,9 +132,9 @@ namespace ryu::detail {
 	}
 
 	inline std::uint64_t
-	mulShiftAll( const std::uint64_t m, const std::uint64_t *const mul,
-	             const std::int32_t j, std::uint64_t *const vp,
-	             std::uint64_t *const vm, const std::uint32_t mmShift ) noexcept {
+	mulShiftAll( std::uint64_t const m, std::uint64_t const *const mul,
+	             std::int32_t const j, std::uint64_t *const vp,
+	             std::uint64_t *const vm, std::uint32_t const mmShift ) noexcept {
 		*vp = mulShift( 4 * m + 2, mul, j );
 		*vm = mulShift( 4 * m - 1 - mmShift, mul, j );
 		return mulShift( 4 * m, mul, j );
@@ -143,9 +144,9 @@ namespace ryu::detail {
       // not defined(DAW_JSON_RYU_HAS_64_BIT_INTRINSICS)
 
 	inline std::uint64_t
-	mulShiftAll( std::uint64_t m, const std::uint64_t *const mul,
-	             const std::int32_t j, std::uint64_t *const vp,
-	             std::uint64_t *const vm, const std::uint32_t mmShift ) {
+	mulShiftAll( std::uint64_t m, std::uint64_t const *const mul,
+	             std::int32_t const j, std::uint64_t *const vp,
+	             std::uint64_t *const vm, std::uint32_t const mmShift ) {
 		m <<= 1;
 		// m is maximum 55 bits
 		std::uint64_t tmp;
@@ -154,23 +155,23 @@ namespace ryu::detail {
 		std::uint64_t const mid = tmp + umul128( m, mul[1], &hi );
 		hi += mid < tmp; // overflow into hi
 
-		const std::uint64_t lo2 = lo + mul[0];
-		const std::uint64_t mid2 = mid + mul[1] + ( lo2 < lo );
-		const std::uint64_t hi2 = hi + ( mid2 < mid );
+		std::uint64_t const lo2 = lo + mul[0];
+		std::uint64_t const mid2 = mid + mul[1] + ( lo2 < lo );
+		std::uint64_t const hi2 = hi + ( mid2 < mid );
 		*vp = shiftright128( mid2, hi2, ( std::uint32_t )( j - 64 - 1 ) );
 
 		if( mmShift == 1 ) {
-			const std::uint64_t lo3 = lo - mul[0];
-			const std::uint64_t mid3 = mid - mul[1] - ( lo3 > lo );
-			const std::uint64_t hi3 = hi - ( mid3 > mid );
+			std::uint64_t const lo3 = lo - mul[0];
+			std::uint64_t const mid3 = mid - mul[1] - ( lo3 > lo );
+			std::uint64_t const hi3 = hi - ( mid3 > mid );
 			*vm = shiftright128( mid3, hi3, ( std::uint32_t )( j - 64 - 1 ) );
 		} else {
-			const std::uint64_t lo3 = lo + lo;
-			const std::uint64_t mid3 = mid + mid + ( lo3 < lo );
-			const std::uint64_t hi3 = hi + hi + ( mid3 < mid );
-			const std::uint64_t lo4 = lo3 - mul[0];
-			const std::uint64_t mid4 = mid3 - mul[1] - ( lo4 > lo3 );
-			const std::uint64_t hi4 = hi3 - ( mid4 > mid3 );
+			std::uint64_t const lo3 = lo + lo;
+			std::uint64_t const mid3 = mid + mid + ( lo3 < lo );
+			std::uint64_t const hi3 = hi + hi + ( mid3 < mid );
+			std::uint64_t const lo4 = lo3 - mul[0];
+			std::uint64_t const mid4 = mid3 - mul[1] - ( lo4 > lo3 );
+			std::uint64_t const hi4 = hi3 - ( mid4 > mid3 );
 			*vm = shiftright128( mid4, hi4, ( std::uint32_t )( j - 64 ) );
 		}
 
@@ -179,7 +180,7 @@ namespace ryu::detail {
 
 #endif // DAW_JSON_RYU_HAS_64_BIT_INTRINSICS
 
-	inline std::uint32_t decimalLength17( const std::uint64_t v ) {
+	inline constexpr std::uint32_t decimalLength17( std::uint64_t const v ) {
 		// This is slightly faster than a loop.
 		// The average output length is 16.38 digits, so we check high-to-low.
 		// Function precondition: v is not an 18, 19, or 20-digit number.
@@ -244,8 +245,8 @@ namespace ryu::detail {
 		std::int32_t exponent;
 	};
 
-	inline floating_decimal_64 d2d( const std::uint64_t ieeeMantissa,
-	                                const std::uint32_t ieeeExponent ) {
+	inline floating_decimal_64 d2d( std::uint64_t const ieeeMantissa,
+	                                std::uint32_t const ieeeExponent ) {
 		std::int32_t e2;
 		std::uint64_t m2;
 		if( ieeeExponent == 0 ) {
@@ -261,9 +262,9 @@ namespace ryu::detail {
 		const bool acceptBounds = even;
 
 		// Step 2: Determine the interval of valid decimal representations.
-		const std::uint64_t mv = 4 * m2;
+		std::uint64_t const mv = 4 * m2;
 		// Implicit bool -> int conversion. True is 1, false is 0.
-		const std::uint32_t mmShift = ieeeMantissa != 0 || ieeeExponent <= 1;
+		std::uint32_t const mmShift = ieeeMantissa != 0 || ieeeExponent <= 1;
 		// We would compute mp and mm like this:
 		// uint64_t mp = 4 * m2 + 2;
 		// uint64_t mm = mv - 1 - mmShift;
@@ -277,11 +278,11 @@ namespace ryu::detail {
 			// I tried special-casing q == 0, but there was no effect on
 			// performance. This expression is slightly faster than max(0,
 			// log10Pow2(e2) - 1).
-			const std::uint32_t q = log10Pow2( e2 ) - ( e2 > 3 );
+			std::uint32_t const q = log10Pow2( e2 ) - ( e2 > 3 );
 			e10 = static_cast<std::int32_t>( q );
-			const std::int32_t k =
+			std::int32_t const k =
 			  DOUBLE_POW5_INV_BITCOUNT + pow5bits( static_cast<int32_t>( q ) ) - 1;
-			const std::int32_t i = -e2 + static_cast<std::int32_t>( q ) + k;
+			std::int32_t const i = -e2 + static_cast<std::int32_t>( q ) + k;
 #if defined( DAW_JSON_RYU_OPTIMIZE_SIZE )
 			uint64_t pow5[2];
 			double_computeInvPow5( q, pow5 );
@@ -293,7 +294,7 @@ namespace ryu::detail {
 				// This should use q <= 22, but I think 21 is also safe. Smaller
 				// values may still be safe, but it's more difficult to reason about
 				// them. Only one of mp, mv, and mm can be a multiple of 5, if any.
-				const std::uint32_t mvMod5 =
+				std::uint32_t const mvMod5 =
 				  ( static_cast<std::uint32_t>( mv ) ) -
 				  5 * ( static_cast<std::uint32_t>( div5( mv ) ) );
 				if( mvMod5 == 0 ) {
@@ -310,11 +311,11 @@ namespace ryu::detail {
 			}
 		} else {
 			// This expression is slightly faster than max(0, log10Pow5(-e2) - 1).
-			const std::uint32_t q = log10Pow5( -e2 ) - ( -e2 > 1 );
+			std::uint32_t const q = log10Pow5( -e2 ) - ( -e2 > 1 );
 			e10 = static_cast<std::int32_t>( q ) + e2;
-			const std::int32_t i = -e2 - static_cast<std::int32_t>( q );
-			const std::int32_t k = pow5bits( i ) - DOUBLE_POW5_BITCOUNT;
-			const std::int32_t j = static_cast<std::int32_t>( q ) - k;
+			std::int32_t const i = -e2 - static_cast<std::int32_t>( q );
+			std::int32_t const k = pow5bits( i ) - DOUBLE_POW5_BITCOUNT;
+			std::int32_t const j = static_cast<std::int32_t>( q ) - k;
 #if defined( DAW_JSON_RYU_OPTIMIZE_SIZE )
 			std::uint64_t pow5[2];
 			double_computePow5( i, pow5 );
@@ -354,15 +355,15 @@ namespace ryu::detail {
 		if( vmIsTrailingZeros || vrIsTrailingZeros ) {
 			// General case, which happens rarely (~0.7%).
 			for( ;; ) {
-				const std::uint64_t vpDiv10 = div10( vp );
-				const std::uint64_t vmDiv10 = div10( vm );
+				std::uint64_t const vpDiv10 = div10( vp );
+				std::uint64_t const vmDiv10 = div10( vm );
 				if( vpDiv10 <= vmDiv10 )
 					break;
-				const std::uint32_t vmMod10 =
+				std::uint32_t const vmMod10 =
 				  ( static_cast<std::uint32_t>( vm ) ) -
 				  10 * ( static_cast<std::uint32_t>( vmDiv10 ) );
-				const std::uint64_t vrDiv10 = div10( vr );
-				const std::uint32_t vrMod10 =
+				std::uint64_t const vrDiv10 = div10( vr );
+				std::uint32_t const vrMod10 =
 				  ( static_cast<std::uint32_t>( vr ) ) -
 				  10 * ( static_cast<std::uint32_t>( vrDiv10 ) );
 				vmIsTrailingZeros &= vmMod10 == 0;
@@ -376,15 +377,15 @@ namespace ryu::detail {
 
 			if( vmIsTrailingZeros ) {
 				for( ;; ) {
-					const std::uint64_t vmDiv10 = div10( vm );
-					const std::uint32_t vmMod10 =
+					std::uint64_t const vmDiv10 = div10( vm );
+					std::uint32_t const vmMod10 =
 					  ( static_cast<std::uint32_t>( vm ) ) -
 					  10 * ( static_cast<std::uint32_t>( vmDiv10 ) );
 					if( vmMod10 != 0 )
 						break;
-					const std::uint64_t vpDiv10 = div10( vp );
-					const std::uint64_t vrDiv10 = div10( vr );
-					const std::uint32_t vrMod10 =
+					std::uint64_t const vpDiv10 = div10( vp );
+					std::uint64_t const vrDiv10 = div10( vr );
+					std::uint32_t const vrMod10 =
 					  ( static_cast<std::uint32_t>( vr ) ) -
 					  10 * ( static_cast<std::uint32_t>( vrDiv10 ) );
 					vrIsTrailingZeros &= lastRemovedDigit == 0;
@@ -408,12 +409,12 @@ namespace ryu::detail {
 			// Specialized for the common case (~99.3%). Percentages below are
 			// relative to this.
 			bool roundUp = false;
-			const std::uint64_t vpDiv100 = div100( vp );
-			const std::uint64_t vmDiv100 = div100( vm );
+			std::uint64_t const vpDiv100 = div100( vp );
+			std::uint64_t const vmDiv100 = div100( vm );
 			if( vpDiv100 > vmDiv100 ) {
 				// Optimization: remove two digits at a time (~86.2%).
-				const std::uint64_t vrDiv100 = div100( vr );
-				const std::uint32_t vrMod100 =
+				std::uint64_t const vrDiv100 = div100( vr );
+				std::uint32_t const vrMod100 =
 				  ( static_cast<std::uint32_t>( vr ) ) -
 				  100 * ( static_cast<std::uint32_t>( vrDiv100 ) );
 				roundUp = vrMod100 >= 50;
@@ -427,12 +428,12 @@ namespace ryu::detail {
 			// Loop iterations below (approximately), with optimization above:
 			// 0: 70.6%, 1: 27.8%, 2: 1.40%, 3: 0.14%, 4+: 0.02%
 			for( ;; ) {
-				const std::uint64_t vpDiv10 = div10( vp );
-				const std::uint64_t vmDiv10 = div10( vm );
+				std::uint64_t const vpDiv10 = div10( vp );
+				std::uint64_t const vmDiv10 = div10( vm );
 				if( vpDiv10 <= vmDiv10 )
 					break;
-				const std::uint64_t vrDiv10 = div10( vr );
-				const std::uint32_t vrMod10 =
+				std::uint64_t const vrDiv10 = div10( vr );
+				std::uint32_t const vrMod10 =
 				  ( static_cast<std::uint32_t>( vr ) ) -
 				  10 * ( static_cast<std::uint32_t>( vrDiv10 ) );
 				roundUp = vrMod10 >= 5;
@@ -446,7 +447,7 @@ namespace ryu::detail {
 			// up.
 			output = vr + ( vr == vm || roundUp );
 		}
-		const std::int32_t exp = e10 + removed;
+		std::int32_t const exp = e10 + removed;
 
 		floating_decimal_64 fd;
 		fd.exponent = exp;
@@ -467,7 +468,7 @@ namespace ryu::detail {
 		// Print the decimal digits.
 		// The following code is equivalent to:
 		// for (uint32_t i = 0; i < olength - 1; ++i) {
-		//   const uint32_t c = output % 10; output /= 10;
+		//   std::uint32_t const c = output % 10; output /= 10;
 		//   result[index + olength - i] = (char) ('0' + c);
 		// }
 		// result[index] = '0' + output % 10;
@@ -484,13 +485,13 @@ namespace ryu::detail {
 			                        100000000 * ( static_cast<std::uint32_t>( q ) );
 			output = q;
 
-			const std::uint32_t c = output2 % 10000;
+			std::uint32_t const c = output2 % 10000;
 			output2 /= 10000;
-			const std::uint32_t d = output2 % 10000;
-			const std::uint32_t c0 = ( c % 100 ) << 1;
-			const std::uint32_t c1 = ( c / 100 ) << 1;
-			const std::uint32_t d0 = ( d % 100 ) << 1;
-			const std::uint32_t d1 = ( d / 100 ) << 1;
+			std::uint32_t const d = output2 % 10000;
+			std::uint32_t const c0 = ( c % 100 ) << 1;
+			std::uint32_t const c1 = ( c / 100 ) << 1;
+			std::uint32_t const d0 = ( d % 100 ) << 1;
+			std::uint32_t const d1 = ( d / 100 ) << 1;
 			std::memcpy( result + index + olength - i - 1, DIGIT_TABLE + c0, 2 );
 			std::memcpy( result + index + olength - i - 3, DIGIT_TABLE + c1, 2 );
 			std::memcpy( result + index + olength - i - 5, DIGIT_TABLE + d0, 2 );
@@ -500,51 +501,53 @@ namespace ryu::detail {
 		uint32_t output2 = static_cast<std::uint32_t>( output );
 		while( output2 >= 10000 ) {
 #ifdef __clang__ // https://bugs.llvm.org/show_bug.cgi?id=38217
-			const uint32_t c = output2 - 10000 * ( output2 / 10000 );
+			std::uint32_t const c = output2 - 10000 * ( output2 / 10000 );
 #else
-			const uint32_t c = output2 % 10000;
+			std::uint32_t const c = output2 % 10000;
 #endif
 			output2 /= 10000;
-			const uint32_t c0 = ( c % 100 ) << 1;
-			const uint32_t c1 = ( c / 100 ) << 1;
+			std::uint32_t const c0 = ( c % 100 ) << 1;
+			std::uint32_t const c1 = ( c / 100 ) << 1;
 			memcpy( result + index + olength - i - 1, DIGIT_TABLE + c0, 2 );
 			memcpy( result + index + olength - i - 3, DIGIT_TABLE + c1, 2 );
 			i += 4;
 		}
 		if( output2 >= 100 ) {
-			const uint32_t c = ( output2 % 100 ) << 1;
+			std::uint32_t const c = ( output2 % 100 ) << 1;
 			output2 /= 100;
 			memcpy( result + index + olength - i - 1, DIGIT_TABLE + c, 2 );
 			i += 2;
 		}
 		if( output2 >= 10 ) {
-			const uint32_t c = output2 << 1;
+			std::uint32_t const c = output2 << 1;
 			// We can't use memcpy here: the decimal dot goes between these two
 			// digits.
-			result[index + olength - i] = DIGIT_TABLE[c + 1];
-			result[index] = DIGIT_TABLE[c];
+			result[static_cast<std::size_t>( index ) + olength - i] =
+			  DIGIT_TABLE[c + 1];
+			result[static_cast<std::size_t>( index )] = DIGIT_TABLE[c];
 		} else {
-			result[index] = static_cast<char>( '0' + output2 );
+			result[static_cast<std::size_t>( index )] =
+			  static_cast<char>( '0' + output2 );
 		}
 
 		// Print decimal point if needed.
 		if( olength > 1 ) {
-			result[index + 1] = '.';
+			result[static_cast<std::size_t>( index + 1 )] = '.';
 			index += olength + 1;
 		} else {
 			++index;
 		}
 
 		// Print the exponent.
-		result[index++] = 'E';
+		result[static_cast<std::size_t>( index++ )] = 'E';
 		int32_t exp = v.exponent + static_cast<int32_t>( olength ) - 1;
 		if( exp < 0 ) {
-			result[index++] = '-';
+			result[static_cast<std::size_t>( index++ )] = '-';
 			exp = -exp;
 		}
 
 		if( exp >= 100 ) {
-			const int32_t c = exp % 10;
+			std::int32_t const c = exp % 10;
 			memcpy( result + index, DIGIT_TABLE + 2 * ( exp / 10 ), 2 );
 			result[index + 2] = static_cast<char>( '0' + c );
 			index += 3;
@@ -552,17 +555,18 @@ namespace ryu::detail {
 			memcpy( result + index, DIGIT_TABLE + 2 * exp, 2 );
 			index += 2;
 		} else {
-			result[index++] = static_cast<char>( '0' + exp );
+			result[static_cast<std::size_t>( index++ )] =
+			  static_cast<char>( '0' + exp );
 		}
 
 		return result + index;
 	}
 
-	static inline bool d2d_small_int( const uint64_t ieeeMantissa,
-	                                  const uint32_t ieeeExponent,
+	static inline bool d2d_small_int( std::uint64_t const ieeeMantissa,
+	                                  std::uint32_t const ieeeExponent,
 	                                  floating_decimal_64 *const v ) {
-		const uint64_t m2 = ( 1ull << DOUBLE_MANTISSA_BITS ) | ieeeMantissa;
-		const int32_t e2 =
+		std::uint64_t const m2 = ( 1ull << DOUBLE_MANTISSA_BITS ) | ieeeMantissa;
+		std::int32_t const e2 =
 		  static_cast<int32_t>( ieeeExponent ) - DOUBLE_BIAS - DOUBLE_MANTISSA_BITS;
 
 		if( e2 > 0 ) {
@@ -579,8 +583,8 @@ namespace ryu::detail {
 		// Since 2^52 <= m2 < 2^53 and 0 <= -e2 <= 52: 1 <= f = m2 / 2^-e2 < 2^53.
 		// Test if the lower -e2 bits of the significand are 0, i.e. whether the
 		// fraction is 0.
-		const uint64_t mask = ( 1ull << -e2 ) - 1;
-		const uint64_t fraction = m2 & mask;
+		std::uint64_t const mask = ( 1ull << -e2 ) - 1;
+		std::uint64_t const fraction = m2 & mask;
 		if( fraction != 0 ) {
 			return false;
 		}
@@ -604,9 +608,9 @@ namespace ryu {
 		// Decode bits into sign, mantissa, and exponent.
 		const bool ieeeSign =
 		  ( ( bits >> ( DOUBLE_MANTISSA_BITS + DOUBLE_EXPONENT_BITS ) ) & 1 ) != 0;
-		const std::uint64_t ieeeMantissa =
+		std::uint64_t const ieeeMantissa =
 		  bits & ( ( 1ull << DOUBLE_MANTISSA_BITS ) - 1 );
-		const std::uint32_t ieeeExponent =
+		std::uint32_t const ieeeExponent =
 		  static_cast<std::uint32_t>( ( bits >> DOUBLE_MANTISSA_BITS ) &
 		                              ( ( 1u << DOUBLE_EXPONENT_BITS ) - 1 ) );
 		// Case distinction; exit early for the easy cases.

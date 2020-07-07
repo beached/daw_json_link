@@ -35,7 +35,7 @@ namespace ryu::detail {
 #define DAW_JSON_RYU_32_BIT_PLATFORM
 #endif
 
-	inline uint32_t decimalLength9( const uint32_t v ) {
+	inline constexpr std::uint32_t decimalLength9( std::uint32_t const v ) {
 		// Function precondition: v is not a 10-digit number.
 		// (f2s: 9 digits are sufficient for round-tripping.)
 		// (d2fixed: We print 9-digit blocks.)
@@ -68,31 +68,32 @@ namespace ryu::detail {
 	}
 
 	// Returns e == 0 ? 1 : ceil(log_2(5^e)).
-	inline int32_t pow5bits( const int32_t e ) {
+	inline constexpr std::int32_t pow5bits( std::int32_t const e ) {
 		// This approximation works up to the point that the multiplication
 		// overflows at e = 3529. If the multiplication were done in 64 bits, it
 		// would fail at 5^4004 which is just greater than 2^9297.
 		assert( e >= 0 );
 		assert( e <= 3528 );
-		return static_cast< int32_t>( ( ( ( static_cast<uint32_t>(e) ) * 1217359 ) >> 19 ) + 1 );
+		return static_cast<int32_t>(
+		  ( ( ( static_cast<uint32_t>( e ) ) * 1217359 ) >> 19 ) + 1 );
 	}
 
 	// Returns floor(log_10(2^e)).
-	inline uint32_t log10Pow2( const int32_t e ) {
+	inline constexpr std::uint32_t log10Pow2( std::int32_t const e ) {
 		// The first value this approximation fails for is 2^1651 which is just
 		// greater than 10^297.
 		assert( e >= 0 );
 		assert( e <= 1650 );
-		return ( ( static_cast<uint32_t>(e) ) * 78913 ) >> 18;
+		return ( ( static_cast<uint32_t>( e ) ) * 78913 ) >> 18;
 	}
 
 	// Returns floor(log_10(5^e)).
-	inline uint32_t log10Pow5( const int32_t e ) {
+	inline constexpr std::uint32_t log10Pow5( std::int32_t const e ) {
 		// The first value this approximation fails for is 5^2621 which is just
 		// greater than 10^1832.
 		assert( e >= 0 );
 		assert( e <= 2620 );
-		return ( ( static_cast<uint32_t>(e) ) * 732923 ) >> 20;
+		return ( ( static_cast<uint32_t>( e ) ) * 732923 ) >> 20;
 	}
 
 	inline char *copy_special_str( char *const result, const bool sign,
@@ -112,16 +113,15 @@ namespace ryu::detail {
 		return result + sign + 3;
 	}
 
-	inline uint32_t float_to_bits( const float f ) {
+	inline std::uint32_t float_to_bits( const float f ) {
 		uint32_t bits = 0;
 		memcpy( &bits, &f, sizeof( float ) );
 		return bits;
 	}
 
-	inline uint64_t double_to_bits( const double d ) {
+	inline std::uint64_t double_to_bits( const double d ) {
 		uint64_t bits = 0;
 		memcpy( &bits, &d, sizeof( double ) );
 		return bits;
 	}
-
 } // namespace ryu::detail
