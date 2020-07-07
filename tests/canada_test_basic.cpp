@@ -30,10 +30,10 @@ int main( int argc, char **argv ) try {
 	daw::do_not_optimize( canada_result );
 
 	auto new_json_result = std::string( );
-	new_json_result.resize( (json_data.size( ) * 15U)/10U );
+	new_json_result.resize( ( json_data.size( ) * 15U ) / 10U );
 	auto last = daw::json::to_json( canada_result, new_json_result.data( ) );
 	(void)last;
-	//new_json_result.resize( std::distance( new_json_result.data( ), last ) );
+	// new_json_result.resize( std::distance( new_json_result.data( ), last ) );
 	daw::do_not_optimize( canada_result );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

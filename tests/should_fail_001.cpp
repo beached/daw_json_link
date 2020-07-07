@@ -206,7 +206,7 @@ namespace tests {
 
 #define expect_fail( Bool, Reason )                                            \
 	if( not static_cast<bool>( Bool ) ) {                                        \
-		std::cerr << "Fail: " << (Reason) << '\n';                                   \
+		std::cerr << "Fail: " << ( Reason ) << '\n';                               \
 	}                                                                            \
 	while( false )
 

@@ -40,10 +40,10 @@ namespace daw::json {
 		using as_checked =
 		  BasicParsePolicy<false, CommentPolicy, simd_mode, allow_escaped_names>;
 
-		iterator first{ };
-		iterator last{ };
-		iterator class_first{ };
-		iterator class_last{ };
+		iterator first{};
+		iterator last{};
+		iterator class_first{};
+		iterator class_last{};
 		std::size_t counter = 0;
 		using Range = BasicParsePolicy;
 
@@ -111,9 +111,9 @@ namespace daw::json {
 		template<std::size_t N>
 		constexpr void move_to_next_of_nc( char const ( &str )[N] ) {
 			if constexpr( is_unchecked_input ) {
-				move_to_next_of_nc_unchecked( str, std::make_index_sequence<N>{ } );
+				move_to_next_of_nc_unchecked( str, std::make_index_sequence<N>{} );
 			} else {
-				move_to_next_of_nc_checked( str, std::make_index_sequence<N>{ } );
+				move_to_next_of_nc_checked( str, std::make_index_sequence<N>{} );
 			}
 		}
 
@@ -253,7 +253,7 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] constexpr bool is_exponent_checked( ) const {
-			return first < last and ( (*first == 'e') bitor (*first == 'E') );
+			return first < last and ( ( *first == 'e' ) bitor ( *first == 'E' ) );
 		}
 
 		[[nodiscard]] constexpr bool is_t_unchecked( ) const {

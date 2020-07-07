@@ -49,7 +49,7 @@ namespace daw::json {
 		get_range( String &&data, std::string_view member_path ) {
 			auto [is_found, result] = json_details::find_range<ParsePolicy>(
 			  std::forward<String>( data ),
-			  { member_path.data( ), member_path.size( ) } );
+			  {member_path.data( ), member_path.size( )} );
 			daw_json_assert( is_found, "Could not find path to member" );
 			daw_json_assert( result.is_opening_bracket_unchecked( ),
 			                 "Member is not an array" );
@@ -114,10 +114,10 @@ namespace daw::json {
   defined( DAW_JSON_NO_CONST_EXPR )
 			auto const ae = daw::on_exit_success( [&] { m_can_skip = tmp.first; } );
 			return json_details::parse_value<element_type>(
-			  ParseTag<element_type::expected_type>{ }, tmp );
+			  ParseTag<element_type::expected_type>{}, tmp );
 #else
 			auto result = json_details::parse_value<element_type>(
-			  ParseTag<element_type::expected_type>{ }, tmp );
+			  ParseTag<element_type::expected_type>{}, tmp );
 
 			m_can_skip = tmp.first;
 			return result;
@@ -132,7 +132,7 @@ namespace daw::json {
 		 * @return an arrow_proxy of the operator* result
 		 */
 		[[nodiscard]] inline pointer operator->( ) const {
-			return pointer{ operator*( ) };
+			return pointer{operator*( )};
 		}
 
 		/***
@@ -224,8 +224,8 @@ namespace daw::json {
 		using iterator = json_array_iterator<JsonElement, ParsePolicy>;
 
 	private:
-		iterator m_first{ };
-		iterator m_last{ };
+		iterator m_first{};
+		iterator m_last{};
 
 	public:
 		constexpr json_array_range( ) = default;
