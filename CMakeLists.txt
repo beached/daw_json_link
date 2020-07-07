@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(daw_json_link_prj)
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 message("CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
 enable_testing()
