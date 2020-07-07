@@ -108,7 +108,7 @@ namespace daw::twitter {
 		std::vector<std::string_view> indices;
 	}; // hashtags_element_t
 
-	struct statuses_element_t {
+	struct tweet_object_t {
 		metadata_t metadata;
 		std::string_view created_at;
 		std::string_view id;
@@ -219,7 +219,7 @@ namespace daw::twitter {
 	}; // search_metadata_t
 
 	struct twitter_object_t {
-		std::vector<statuses_element_t> statuses;
+		std::vector<tweet_object_t> statuses;
 		search_metadata_t search_metadata;
 	}; // twitter_object_t
 } // namespace daw::twitter
@@ -507,7 +507,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::twitter::statuses_element_t> {
+	struct DAW_HIDDEN json_data_contract<daw::twitter::tweet_object_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
@@ -590,7 +590,7 @@ namespace daw::json {
 		  json_string_raw<lang, std::string_view>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::twitter::statuses_element_t const &value ) {
+		to_json_data( daw::twitter::tweet_object_t const &value ) {
 			return std::forward_as_tuple(
 			  value.metadata, value.created_at, value.id, value.id_str, value.text,
 			  value.source, value.truncated, value.in_reply_to_status_id,
@@ -924,13 +924,13 @@ namespace daw::json {
 	struct DAW_HIDDEN json_data_contract<daw::twitter::twitter_object_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
-		  json_array<"statuses", daw::twitter::statuses_element_t>,
+		  json_array<"statuses", daw::twitter::tweet_object_t>,
 		  json_class<"search_metadata", daw::twitter::search_metadata_t>>;
 #else
 		static inline constexpr char const statuses[] = "statuses";
 		static inline constexpr char const search_metadata[] = "search_metadata";
 		using type = json_member_list<
-		  json_array<statuses, daw::twitter::statuses_element_t>,
+		  json_array<statuses, daw::twitter::tweet_object_t>,
 		  json_class<search_metadata, daw::twitter::search_metadata_t>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
