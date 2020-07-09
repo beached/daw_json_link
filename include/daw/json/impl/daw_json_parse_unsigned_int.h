@@ -31,7 +31,7 @@ namespace daw::json::json_details {
 	is_made_of_eight_digits_cx( const char *ptr ) {
 		// The copy to local buffer is to get the compiler to treat it like a
 		// reinterpret_cast
-		std::byte buff[8]{};
+		std::byte buff[8]{ };
 		for( std::size_t n = 0; n < 8; ++n ) {
 			buff[n] = static_cast<std::byte>( ptr[n] );
 		}
@@ -50,21 +50,22 @@ namespace daw::json::json_details {
 	  std::conditional_t<(not static_cast<bool>( RangeCheck ) and
 	                      not std::is_enum_v<Unsigned>),
 	                     Unsigned,
-	                     std::conditional_t<std::is_integral_v<Unsigned>,
+	                     std::conditional_t<(std::is_integral_v<Unsigned> or
+	                                         std::is_enum_v<Unsigned>),
 	                                        MaxArithUnsigned, Unsigned>>;
 
 	inline constexpr std::uint32_t
 	parse_eight_digits_unrolled_cx( const char *first ) {
-		constexpr std::uint8_t ascii0[16] = {'0', '0', '0', '0', '0', '0',
-		                                     '0', '0', '0', '0', '0', '0',
-		                                     '0', '0', '0', '0'};
-		constexpr std::uint8_t mul_1_10[16] = {10, 1, 10, 1, 10, 1, 10, 1,
-		                                       10, 1, 10, 1, 10, 1, 10, 1};
+		constexpr std::uint8_t ascii0[16] = { '0', '0', '0', '0', '0', '0',
+		                                      '0', '0', '0', '0', '0', '0',
+		                                      '0', '0', '0', '0' };
+		constexpr std::uint8_t mul_1_10[16] = { 10, 1, 10, 1, 10, 1, 10, 1,
+		                                        10, 1, 10, 1, 10, 1, 10, 1 };
 
-		constexpr std::uint16_t mul_1_100[8] = {100, 1, 100, 1, 100, 1, 100, 1};
+		constexpr std::uint16_t mul_1_100[8] = { 100, 1, 100, 1, 100, 1, 100, 1 };
 
-		constexpr std::uint16_t mul_1_10000[8] = {10000, 1, 10000, 1,
-		                                          10000, 1, 10000, 1};
+		constexpr std::uint16_t mul_1_10000[8] = { 10000, 1, 10000, 1,
+		                                           10000, 1, 10000, 1 };
 
 		alignas( unsigned long long ) std::uint8_t const input[16] = {
 		  static_cast<std::uint8_t>( first[0] - ascii0[0] ),
@@ -74,7 +75,7 @@ namespace daw::json::json_details {
 		  static_cast<std::uint8_t>( first[4] - ascii0[4] ),
 		  static_cast<std::uint8_t>( first[5] - ascii0[5] ),
 		  static_cast<std::uint8_t>( first[6] - ascii0[6] ),
-		  static_cast<std::uint8_t>( first[7] - ascii0[7] )};
+		  static_cast<std::uint8_t>( first[7] - ascii0[7] ) };
 
 		alignas( unsigned long long ) std::uint16_t const t1[8] = {
 		  static_cast<std::uint16_t>( ( input[0] * mul_1_10[0] ) +
@@ -84,7 +85,7 @@ namespace daw::json::json_details {
 		  static_cast<std::uint16_t>( ( input[4] * mul_1_10[4] ) +
 		                              ( input[5] * mul_1_10[5] ) ),
 		  static_cast<std::uint16_t>( ( input[6] * mul_1_10[6] ) +
-		                              ( input[7] * mul_1_10[7] ) )};
+		                              ( input[7] * mul_1_10[7] ) ) };
 
 		alignas( unsigned long long ) std::uint32_t const t3[4] = {
 		  static_cast<std::uint32_t>( ( t1[0] * mul_1_100[0] ) +
@@ -94,7 +95,7 @@ namespace daw::json::json_details {
 		  static_cast<std::uint32_t>( ( t1[4] * mul_1_100[4] ) +
 		                              ( t1[5] * mul_1_100[5] ) ),
 		  static_cast<std::uint32_t>( ( t1[6] * mul_1_100[6] ) +
-		                              ( t1[7] * mul_1_100[7] ) )};
+		                              ( t1[7] * mul_1_100[7] ) ) };
 
 		return ( t3[0] * mul_1_10000[0] ) + ( t3[1] * mul_1_10000[1] );
 	}

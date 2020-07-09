@@ -66,7 +66,7 @@ bool test_null_number_untrusted_known( ) {
 
 	using my_number = json_number_null<no_name, std::optional<int>>;
 	constexpr std::string_view sv = "5,";
-	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
+	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) - 1 );
 	auto v =
 	  parse_value<my_number, true>( ParseTag<JsonParseTypes::Null>{}, rng );
 	return v and *v == 5;
@@ -91,7 +91,7 @@ bool test_null_number_untrusted_known( ) {
 		          << "" #__VA_ARGS__ << "'\n";                                     \
 	} while( false )
 
-int main( int, char ** ) try {
+int main( ) try {
 	do_test( test_null_literal_untrusted( ) );
 	do_test( test_null_literal_known( ) );
 	do_test( test_null_number_untrusted( ) );
