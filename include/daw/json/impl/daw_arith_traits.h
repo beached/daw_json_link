@@ -14,12 +14,159 @@
  * should work
  */
 
+#include <climits>
 #include <limits>
 #include <type_traits>
 
 namespace daw {
 	template<typename T>
-	using is_integral = std::bool_constant<std::numeric_limits<T>::is_integer>;
+	struct numeric_limits : std::numeric_limits<T> {};
+
+#if defined( __SIZEOF_INT128__ ) and not defined( _MSC_VER )
+	// numeric_limits cannot be relied on here.
+	template<>
+	struct numeric_limits<__int128> {
+		static constexpr bool is_specialized = true;
+		static constexpr bool is_signed = true;
+		static constexpr bool is_integer = true;
+		static constexpr bool is_exact = true;
+		static constexpr bool has_infinity = false;
+		static constexpr bool has_quiet_NaN = false;
+		static constexpr bool has_signaling_NaN = false;
+		static constexpr bool has_denorm = false;
+		static constexpr bool has_denorm_loss = false;
+		static constexpr std::float_round_style round_style =
+		  std::round_toward_zero;
+		static constexpr bool is_iec559 = false;
+		static constexpr bool is_bounded = true;
+		// Cannot reasonibly guess as it's imp defined for signed
+		// static constexpr bool is_modulo = true;
+		static constexpr int digits = CHAR_BIT * sizeof( __int128 );
+		static constexpr int digits10 =
+		  static_cast<int>( digits * 0.30102999566 ); /*log10(2)*/
+		static constexpr int max_digits10 = 0;
+		static constexpr int radix = 2;
+		static constexpr int min_exponent = 0;
+		static constexpr int min_exponent10 = 0;
+		static constexpr int max_exponent = 0;
+		static constexpr int max_exponent10 = 0;
+		// Cannot reasonibly define
+		// static constexpr bool traps = true;
+		static constexpr bool tinyness_before = false;
+
+		static constexpr __int128 min( ) noexcept {
+			return static_cast<__int128>(
+			  static_cast<__uint128_t>( 0x8000'0000'0000'0000ULL ) << 64U );
+		}
+
+		static constexpr __int128 lowest( ) noexcept {
+			return static_cast<__int128>(
+			  static_cast<__uint128_t>( 0x8000'0000'0000'0000ULL ) << 64U );
+		}
+
+		static constexpr __int128 max( ) noexcept {
+			return static_cast<__int128>(
+			  ( static_cast<__uint128_t>( 0x7FFF'FFFF'FFFF'FFFFULL ) << 64U ) |
+			  ( static_cast<__uint128_t>( 0xFFFF'FFFF'FFFF'FFFFULL ) ) );
+		}
+
+		static constexpr __int128 epsilon( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __int128 round_error( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __int128 infinity( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __int128 quiet_NaN( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __int128 signalling_NaN( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __int128 denorm_min( ) noexcept {
+			return 0;
+		}
+	};
+
+	template<>
+	struct numeric_limits<__uint128_t> {
+		static constexpr bool is_specialized = true;
+		static constexpr bool is_signed = false;
+		static constexpr bool is_integer = true;
+		static constexpr bool is_exact = true;
+		static constexpr bool has_infinity = false;
+		static constexpr bool has_quiet_NaN = false;
+		static constexpr bool has_signaling_NaN = false;
+		static constexpr bool has_denorm = false;
+		static constexpr bool has_denorm_loss = false;
+		static constexpr std::float_round_style round_style =
+		  std::round_toward_zero;
+		static constexpr bool is_iec559 = false;
+		static constexpr bool is_bounded = true;
+		static constexpr bool is_modulo = true;
+		static constexpr int digits = CHAR_BIT * sizeof( __uint128_t );
+		static constexpr int digits10 =
+		  static_cast<int>( digits * 0.30102999566 ); /*log10(2)*/
+		static constexpr int max_digits10 = 0;
+		static constexpr int radix = 2;
+		static constexpr int min_exponent = 0;
+		static constexpr int min_exponent10 = 0;
+		static constexpr int max_exponent = 0;
+		static constexpr int max_exponent10 = 0;
+		// Cannot reasonibly define
+		// static constexpr bool traps = true;
+		static constexpr bool tinyness_before = false;
+
+		static constexpr __uint128_t min( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __uint128_t lowest( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __uint128_t max( ) noexcept {
+			return static_cast<__uint128_t>(
+			  ( static_cast<__uint128_t>( 0xFFFF'FFFF'FFFF'FFFFULL ) << 64U ) |
+			  ( static_cast<__uint128_t>( 0xFFFF'FFFF'FFFF'FFFFULL ) ) );
+		}
+
+		static constexpr __uint128_t epsilon( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __uint128_t round_error( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __uint128_t infinity( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __uint128_t quiet_NaN( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __uint128_t signalling_NaN( ) noexcept {
+			return 0;
+		}
+
+		static constexpr __uint128_t denorm_min( ) noexcept {
+			return 0;
+		}
+	};
+#endif
+
+	template<typename T>
+	struct is_integral : std::bool_constant<daw::numeric_limits<T>::is_integer> {
+	};
 
 	template<typename T>
 	inline constexpr bool is_integral_v = is_integral<T>::value;
@@ -29,19 +176,21 @@ namespace daw {
 
 	namespace arith_traits_details {
 		template<typename T>
-		using limits_is_signed =
-		  std::bool_constant<std::numeric_limits<T>::is_signed>;
+		struct limits_is_signed
+		  : std::bool_constant<daw::numeric_limits<T>::is_signed> {};
 
 		template<typename T>
-		using limits_is_exact =
-		  std::bool_constant<std::numeric_limits<T>::is_exact>;
+		struct limits_is_exact
+		  : std::bool_constant<daw::numeric_limits<T>::is_exact> {};
+
 	} // namespace arith_traits_details
 
 	template<typename T>
-	using is_floating_point =
-	  std::conjunction<std::negation<is_integral<T>>,
-	                   arith_traits_details::limits_is_signed<T>,
-	                   std::negation<arith_traits_details::limits_is_exact<T>>>;
+	struct is_floating_point
+	  : std::conjunction<
+	      std::negation<is_integral<T>>,
+	      arith_traits_details::limits_is_signed<T>,
+	      std::negation<arith_traits_details::limits_is_exact<T>>> {};
 
 	template<typename T>
 	inline constexpr bool is_floating_point_v = is_floating_point<T>::value;
@@ -50,7 +199,7 @@ namespace daw {
 	static_assert( not is_floating_point_v<int> );
 
 	template<typename T>
-	using is_number = std::disjunction<is_integral<T>, is_floating_point<T>>;
+	struct is_number : std::disjunction<is_integral<T>, is_floating_point<T>> {};
 
 	template<typename T>
 	inline constexpr bool is_number_v = is_number<T>::value;
@@ -60,8 +209,9 @@ namespace daw {
 	static_assert( not is_number_v<is_integral<int>> );
 
 	template<typename T>
-	using is_signed =
-	  std::conjunction<is_number<T>, arith_traits_details::limits_is_signed<T>>;
+	struct is_signed
+	  : std::conjunction<is_number<T>,
+	                     arith_traits_details::limits_is_signed<T>> {};
 
 	template<typename T>
 	inline constexpr bool is_signed_v = is_signed<T>::value;
@@ -71,9 +221,10 @@ namespace daw {
 	static_assert( not is_signed_v<unsigned> );
 
 	template<typename T>
-	using is_unsigned =
-	  std::conjunction<is_integral<T>,
-	                   std::negation<arith_traits_details::limits_is_signed<T>>>;
+	struct is_unsigned
+	  : std::conjunction<
+	      is_integral<T>,
+	      std::negation<arith_traits_details::limits_is_signed<T>>> {};
 
 	template<typename T>
 	inline constexpr bool is_unsigned_v = is_unsigned<T>::value;
@@ -83,11 +234,13 @@ namespace daw {
 	static_assert( is_unsigned_v<unsigned> );
 
 	template<typename T>
-	using is_arithmetic =
-	  std::disjunction<is_number<T>, std::is_enum<T>,
-	                   std::conditional_t<std::numeric_limits<T>::is_specialized,
-	                                      std::true_type, std::false_type>>;
+	struct is_arithmetic
+	  : std::disjunction<
+	      is_number<T>, std::is_enum<T>,
+	      std::conditional_t<daw::numeric_limits<T>::is_specialized,
+	                         std::true_type, std::false_type>> {};
 
 	template<typename T>
 	inline constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
+
 } // namespace daw

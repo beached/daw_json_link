@@ -129,8 +129,8 @@ namespace daw::json::json_details {
 		}
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 			auto const count =
-			  ( std::numeric_limits<result_t>::digits10 + 1U ) - rng.size( );
-			daw_json_assert( result <= std::numeric_limits<result_t>::max( ) and
+			  ( daw::numeric_limits<result_t>::digits10 + 1U ) - rng.size( );
+			daw_json_assert( result <= daw::numeric_limits<result_t>::max( ) and
 			                   count >= 0,
 			                 "Unsigned number outside of range of unsigned numbers" );
 		}
@@ -166,9 +166,9 @@ namespace daw::json::json_details {
 			dig = static_cast<unsigned>( *first ) - static_cast<unsigned>( '0' );
 		}
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
-			auto const count = ( std::numeric_limits<result_t>::digits10 + 1U ) -
+			auto const count = ( daw::numeric_limits<result_t>::digits10 + 1U ) -
 			                   ( first - orig_first );
-			daw_json_assert( result <= std::numeric_limits<result_t>::max( ) and
+			daw_json_assert( result <= daw::numeric_limits<result_t>::max( ) and
 			                   count >= 0,
 			                 "Unsigned number outside of range of unsigned numbers" );
 		}
@@ -263,11 +263,10 @@ namespace daw::json::json_details {
 			dig = static_cast<unsigned>( *first - '0' );
 		}
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
-			auto const count = ( std::numeric_limits<Unsigned>::digits10 + 1 ) -
+			auto const count = ( daw::numeric_limits<Unsigned>::digits10 + 1 ) -
 			                   ( first - orig_first );
-			daw_json_assert( count >= 0 or
-			                   result > static_cast<uintmax_t>(
-			                              std::numeric_limits<Unsigned>::max( ) ),
+			daw_json_assert( count >= 0 or result > static_cast<uintmax_t>(
+			                                          daw::max_value_v<Unsigned> ),
 			                 "Parsed number is out of range" );
 		}
 		rng.first = first;

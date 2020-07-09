@@ -21,8 +21,8 @@ std::vector<T> make_random_data( ) {
 	std::vector<T> result{};
 	result.reserve( N );
 	for( size_t n = 0; n < N; ++n ) {
-		result.push_back( daw::randint<T>( std::numeric_limits<T>::min( ),
-		                                   std::numeric_limits<T>::max( ) ) );
+		result.push_back( daw::randint<T>( daw::numeric_limits<T>::min( ),
+		                                   daw::numeric_limits<T>::max( ) ) );
 	}
 	return result;
 }

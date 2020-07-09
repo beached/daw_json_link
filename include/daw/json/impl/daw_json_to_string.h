@@ -539,12 +539,12 @@ namespace daw::json::json_details {
 		              daw::is_integral_v<parse_to_t> ) {
 			auto v = static_cast<under_type>( value );
 
-			char buff[std::numeric_limits<under_type>::digits10 + 1]{};
+			char buff[daw::numeric_limits<under_type>::digits10 + 1]{};
 			char *ptr = buff;
 			if( v < 0 ) {
 				*it++ = '-';
 				// Do 1 round here just incase we are
-				// std::numeric_limits<intmax_t>::min( ) and cannot negate
+				// daw::numeric_limits<intmax_t>::min( ) and cannot negate
 				*ptr++ = '0' - static_cast<char>( v % 10 );
 				v /= -10;
 				if( v == 0 ) {
@@ -608,7 +608,7 @@ namespace daw::json::json_details {
 			auto v = static_cast<under_type>( value );
 			daw_json_assert(
 			  v >= 0, "Negative numbers are not supported for unsigned types" );
-			char buff[std::numeric_limits<under_type>::digits10 + 1]{};
+			char buff[daw::numeric_limits<under_type>::digits10 + 1]{};
 			char *ptr = buff;
 			if( v == 0 ) {
 				*ptr++ = '0';

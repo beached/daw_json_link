@@ -503,7 +503,7 @@ namespace daw::json {
 				}
 				++idx;
 			}
-			return std::numeric_limits<std::size_t>::max( );
+			return daw::numeric_limits<std::size_t>::max( );
 		}
 
 	} // namespace json_details

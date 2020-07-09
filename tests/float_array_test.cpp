@@ -52,14 +52,14 @@ namespace daw::json {
 
 template<typename Float>
 Float rand_float( ) {
-	auto f0 = daw::randint<intmax_t>( std::numeric_limits<intmax_t>::min( ),
-	                                  std::numeric_limits<intmax_t>::max( ) );
+	auto f0 = daw::randint<intmax_t>( daw::numeric_limits<intmax_t>::min( ),
+	                                  daw::numeric_limits<intmax_t>::max( ) );
 	if( f0 == 0 ) {
 		f0 = 1.0;
 	}
 	auto const f1 =
-	  daw::randint<intmax_t>( std::numeric_limits<intmax_t>::min( ),
-	                          std::numeric_limits<intmax_t>::max( ) );
+	  daw::randint<intmax_t>( daw::numeric_limits<intmax_t>::min( ),
+	                          daw::numeric_limits<intmax_t>::max( ) );
 
 	return static_cast<Float>( f1 ) / static_cast<Float>( f0 );
 }

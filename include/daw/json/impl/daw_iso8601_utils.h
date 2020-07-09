@@ -59,7 +59,7 @@ namespace daw::json::datetime {
 		         std::ptrdiff_t Ex>
 		constexpr Result
 		parse_number( daw::basic_string_view<CharT, Bounds, Ex> sv ) {
-			static_assert( std::numeric_limits<Result>::digits10 >= 4 );
+			static_assert( daw::numeric_limits<Result>::digits10 >= 4 );
 			if( sv.empty( ) ) {
 				daw_json_error( "Invalid number" );
 			}

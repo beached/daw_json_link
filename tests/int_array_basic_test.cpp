@@ -25,8 +25,8 @@ static std::string make_int_array_data( ) {
 		result.reserve( N * 23 + 8 );
 		for( size_t n = 0; n < N; ++n ) {
 			result +=
-			  std::to_string( daw::randint<T>( std::numeric_limits<T>::min( ),
-			                                   std::numeric_limits<T>::max( ) ) ) +
+			  std::to_string( daw::randint<T>( daw::numeric_limits<T>::min( ),
+			                                   daw::numeric_limits<T>::max( ) ) ) +
 			  ',';
 		}
 		result.back( ) = ']';

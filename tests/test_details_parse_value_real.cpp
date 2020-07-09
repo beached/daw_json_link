@@ -69,8 +69,8 @@ bool test_real_untrusted( ) {
 	constexpr std::string_view sv = "1.23,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{}, rng );
-	return v >= ( 1.23 - std::numeric_limits<double>::epsilon( ) ) and
-	       v <= ( 1.23 + std::numeric_limits<double>::epsilon( ) );
+	return v >= ( 1.23 - daw::numeric_limits<double>::epsilon( ) ) and
+	       v <= ( 1.23 + daw::numeric_limits<double>::epsilon( ) );
 }
 
 #define do_test( ... )                                                         \

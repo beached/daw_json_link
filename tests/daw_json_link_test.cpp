@@ -399,14 +399,14 @@ static_assert(
    not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) );
 */
 
-template<typename T, std::enable_if_t<daw::is_arithmetic_v<T>, std::nullptr_t> = nullptr>
+#if defined( __SIZEOF_INT128__ ) and not defined( _MSC_VER )
 void test128( ) {
 	using namespace daw::json;
 	constexpr std::string_view very_big_int =
 	  "[170141183460469231731687303715884105727]";
 	std::cout << "Trying to parse large int '" << very_big_int << "'\n";
-	auto vec = from_json_array<json_number<no_name, T>>( very_big_int );
-	T val = vec[0];
+	auto vec = from_json_array<json_number<no_name, __int128>>( very_big_int );
+	__int128 val = vec[0];
 	std::cout << "really big: " << std::hex
 	          << static_cast<std::uint64_t>( val >> 64U ) << ' '
 	          << static_cast<std::uint64_t>( val & 0xFFFF'FFFF'FFFF'FFFFULL )
@@ -415,20 +415,14 @@ void test128( ) {
 	  "[-170141183460469231731687303715884105728]";
 	std::cout << "Trying to parse large negative int '" << very_negative_int
 	          << "'\n";
-	vec = from_json_array<json_number<no_name, T>>( very_negative_int );
+	vec = from_json_array<json_number<no_name, __int128>>( very_negative_int );
 	val = vec[0];
 	std::cout << "really negative: " << std::hex
 	          << static_cast<std::uint64_t>( val >> 64U ) << ' '
 	          << static_cast<std::uint64_t>( val & 0xFFFF'FFFF'FFFF'FFFFULL )
 	          << '\n';
 }
-
-template<typename T, std::enable_if_t<not daw::is_arithmetic_v<T>, std::nullptr_t> = nullptr>
-void test128( ) {
-	std::cout << "__SIZEOF_INT128__ is defined but numeric_limits is not "
-	             "specialized for __int128.  This often means that the gnu "
-	             "extensions e.g. -std=gnu++17 are not enabled\n";
-}
+#endif
 
 int main( int, char ** ) try {
 	test_004( );
@@ -459,7 +453,7 @@ int main( int, char ** ) try {
 #endif
 
 #if defined( __SIZEOF_INT128__ ) and not defined( _MSC_VER )
-	test128<__int128>( );
+	test128( );
 #else
 	std::cout << "No 128bit int support detected\n";
 #endif

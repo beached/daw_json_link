@@ -44,8 +44,8 @@ static std::vector<T> const &make_int_array( ) {
 		auto result = std::vector<T>( );
 		result.reserve( N );
 		for( size_t n = 0; n < N; ++n ) {
-			result.push_back( daw::randint<T>( std::numeric_limits<T>::min( ),
-			                                   std::numeric_limits<T>::max( ) ) );
+			result.push_back( daw::randint<T>( daw::numeric_limits<T>::min( ),
+			                                   daw::numeric_limits<T>::max( ) ) );
 		}
 		return result;
 	}( );
@@ -59,8 +59,8 @@ static std::string_view make_int_array_data( ) {
 		result.reserve( N * 23 + 8 );
 		for( size_t n = 0; n < N; ++n ) {
 			result +=
-			  std::to_string( daw::randint<T>( std::numeric_limits<T>::min( ),
-			                                   std::numeric_limits<T>::max( ) ) ) +
+			  std::to_string( daw::randint<T>( daw::numeric_limits<T>::min( ),
+			                                   daw::numeric_limits<T>::max( ) ) ) +
 			  ',';
 		}
 		result.back( ) = ']';
@@ -88,8 +88,8 @@ void test_func( ) {
 		daw::algorithm::do_n( NUMVALUES, [&result] {
 			result += "{\"a\":" +
 			          std::to_string( daw::randint<intmax_t>(
-			            std::numeric_limits<intmax_t>::min( ),
-			            std::numeric_limits<intmax_t>::max( ) ) ) +
+			            daw::numeric_limits<intmax_t>::min( ),
+			            daw::numeric_limits<intmax_t>::max( ) ) ) +
 			          "},";
 		} );
 		result.back( ) = ']';
