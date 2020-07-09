@@ -403,11 +403,23 @@ template<bool HasInt128, std::enable_if_t<HasInt128, std::nullptr_t> = nullptr>
 void test128( ) {
 	using namespace daw::json;
 	constexpr std::string_view very_big_int =
-	  "[340282366920938463463374607431768211455]";
+	  "[170141183460469231731687303715884105727]";
 	std::cout << "Trying to parse large int '" << very_big_int << "'\n";
 	__int128 val =
 	  from_json_array<json_number<no_name, __int128>>( very_big_int )[0];
-	std::cout << "really big: " << static_cast<intmax_t>( val ) << '\n';
+	std::cout << "really big: " << std::hex
+	          << static_cast<std::uint64_t>( val >> 64U ) << ' '
+	          << static_cast<std::uint64_t>( val & 0xFFFF'FFFF'FFFF'FFFFULL )
+	          << '\n';
+	constexpr std::string_view very_negative_int =
+	  "[-170141183460469231731687303715884105728]";
+	std::cout << "Trying to parse large negative int '" << very_negative_int
+	          << "'\n";
+	val = from_json_array<json_number<no_name, __int128>>( very_negative_int )[0];
+	std::cout << "really negative: " << std::hex
+	          << static_cast<std::uint64_t>( val >> 64U ) << ' '
+	          << static_cast<std::uint64_t>( val & 0xFFFF'FFFF'FFFF'FFFFULL )
+	          << '\n';
 }
 
 template<bool HasInt128,
@@ -448,6 +460,8 @@ int main( int, char ** ) try {
 
 #if defined( __SIZEOF_INT128__ ) and not defined( _MSC_VER )
 	test128<daw::is_arithmetic_v<__int128>>( );
+#else
+	std::cout << "No 128bit int support detected\n";
 #endif
 
 	daw::do_not_optimize( test_001_t_json_data );
