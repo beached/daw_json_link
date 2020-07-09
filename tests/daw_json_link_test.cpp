@@ -405,8 +405,8 @@ void test128( ) {
 	constexpr std::string_view very_big_int =
 	  "[170141183460469231731687303715884105727]";
 	std::cout << "Trying to parse large int '" << very_big_int << "'\n";
-	__int128 val =
-	  from_json_array<json_number<no_name, __int128>>( very_big_int )[0];
+	auto vec = from_json_array<json_number<no_name, __int128>>( very_big_int );
+	__int128 val = vec[0];
 	std::cout << "really big: " << std::hex
 	          << static_cast<std::uint64_t>( val >> 64U ) << ' '
 	          << static_cast<std::uint64_t>( val & 0xFFFF'FFFF'FFFF'FFFFULL )
@@ -415,7 +415,8 @@ void test128( ) {
 	  "[-170141183460469231731687303715884105728]";
 	std::cout << "Trying to parse large negative int '" << very_negative_int
 	          << "'\n";
-	val = from_json_array<json_number<no_name, __int128>>( very_negative_int )[0];
+	vec = from_json_array<json_number<no_name, __int128>>( very_negative_int );
+	val = vec[0];
 	std::cout << "really negative: " << std::hex
 	          << static_cast<std::uint64_t>( val >> 64U ) << ' '
 	          << static_cast<std::uint64_t>( val & 0xFFFF'FFFF'FFFF'FFFFULL )
