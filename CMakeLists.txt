@@ -23,6 +23,12 @@ else ()
     message("DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
 endif ()
 
+set(DAW_JSON_FORCE_INT128 OFF CACHE STRING "Force support for 128bit int" )
+if (DAW_JSON_FORCE_INT128)
+    message( "Forcing support of int128" )
+    add_definitions(-DDAW_HAS_INT128)
+endif( )
+
 set(DAW_JSON_DONT_USE_EXCEPTIONS OFF CACHE STRING "Don't throw exceptions when json errors occur")
 if (DAW_JSON_DONT_USE_EXCEPTIONS)
     if (DAW_JSON_DONT_USE_EXCEPTIONS=OFF)

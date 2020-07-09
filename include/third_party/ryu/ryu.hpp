@@ -155,13 +155,14 @@ namespace ryu::detail {
 		std::uint64_t const lo2 = lo + mul[0];
 		std::uint64_t const mid2 = mid + mul[1] + ( lo2 < lo );
 		std::uint64_t const hi2 = hi + ( mid2 < mid );
-		*vp = shiftright128( mid2, hi2, ( std::uint32_t )( j - 64 - 1 ) );
+		*vp = shiftright128( mid2, hi2, static_cast<std::uint32_t>( j - 64 - 1 ) );
 
 		if( mmShift == 1 ) {
 			std::uint64_t const lo3 = lo - mul[0];
 			std::uint64_t const mid3 = mid - mul[1] - ( lo3 > lo );
 			std::uint64_t const hi3 = hi - ( mid3 > mid );
-			*vm = shiftright128( mid3, hi3, ( std::uint32_t )( j - 64 - 1 ) );
+			*vm =
+			  shiftright128( mid3, hi3, static_cast<std::uint32_t>( j - 64 - 1 ) );
 		} else {
 			std::uint64_t const lo3 = lo + lo;
 			std::uint64_t const mid3 = mid + mid + ( lo3 < lo );
@@ -169,10 +170,10 @@ namespace ryu::detail {
 			std::uint64_t const lo4 = lo3 - mul[0];
 			std::uint64_t const mid4 = mid3 - mul[1] - ( lo4 > lo3 );
 			std::uint64_t const hi4 = hi3 - ( mid4 > mid3 );
-			*vm = shiftright128( mid4, hi4, ( std::uint32_t )( j - 64 ) );
+			*vm = shiftright128( mid4, hi4, static_cast<std::uint32_t>( j - 64 ) );
 		}
 
-		return shiftright128( mid, hi, ( std::uint32_t )( j - 64 - 1 ) );
+		return shiftright128( mid, hi, static_cast<std::uint32_t>( j - 64 - 1 ) );
 	}
 
 #endif // DAW_JSON_RYU_HAS_64_BIT_INTRINSICS

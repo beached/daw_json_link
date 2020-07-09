@@ -400,6 +400,10 @@ static_assert(
 */
 
 #if defined( __SIZEOF_INT128__ ) and not defined( _MSC_VER )
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 void test128( ) {
 	using namespace daw::json;
 	constexpr std::string_view very_big_int =
@@ -422,6 +426,9 @@ void test128( ) {
 	          << static_cast<std::uint64_t>( val & 0xFFFF'FFFF'FFFF'FFFFULL )
 	          << '\n';
 }
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #endif
 
 int main( int, char ** ) try {
@@ -452,7 +459,7 @@ int main( int, char ** ) try {
 #define CX constexpr
 #endif
 
-#if defined( __SIZEOF_INT128__ ) and not defined( _MSC_VER )
+#if defined( DAW_HAS_INT128 )
 	test128( );
 #else
 	std::cout << "No 128bit int support detected\n";

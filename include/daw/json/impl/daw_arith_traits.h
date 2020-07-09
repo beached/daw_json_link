@@ -18,11 +18,33 @@
 #include <limits>
 #include <type_traits>
 
+// copied from ABSL but allowing the define to be forced
+#if defined( DAW_HAS_INT128 )
+#elif defined( __SIZEOF_INT128__ )
+#if( defined( __clang__ ) && !defined( _WIN32 ) ) ||                           \
+  ( defined( __CUDACC__ ) && __CUDACC_VER_MAJOR__ >= 9 ) ||                    \
+  ( defined( __GNUC__ ) && !defined( __clang__ ) && !defined( __CUDACC__ ) )
+#define DAW_HAS_INT128
+#elif defined( __CUDACC__ )
+// __CUDACC_VER__ is a full version number before CUDA 9, and is defined to a
+// string explaining that it has been removed starting with CUDA 9. We use
+// nested #ifs because there is no short-circuiting in the preprocessor.
+// NOTE: `__CUDACC__` could be undefined while `__CUDACC_VER__` is defined.
+#if __CUDACC_VER__ >= 70000
+#define DAW_HAS_INT128
+#endif // __CUDACC_VER__ >= 70000
+#endif // defined(__CUDACC__)
+#endif
+
 namespace daw {
 	template<typename T>
 	struct numeric_limits : std::numeric_limits<T> {};
 
-#if defined( __SIZEOF_INT128__ ) and not defined( _MSC_VER )
+#if defined( DAW_HAS_INT128 )
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 	// numeric_limits cannot be relied on here.
 	template<>
 	struct numeric_limits<__int128> {
@@ -41,9 +63,9 @@ namespace daw {
 		static constexpr bool is_bounded = true;
 		// Cannot reasonibly guess as it's imp defined for signed
 		// static constexpr bool is_modulo = true;
-		static constexpr int digits = CHAR_BIT * sizeof( __int128 );
-		static constexpr int digits10 =
-		  static_cast<int>( digits * 0.30102999566 ); /*log10(2)*/
+		static constexpr int digits =
+		  static_cast<int>( sizeof( __int128 ) * __CHAR_BIT__ - is_signed );
+		static constexpr int digits10 = digits * 3 / 10;
 		static constexpr int max_digits10 = 0;
 		static constexpr int radix = 2;
 		static constexpr int min_exponent = 0;
@@ -111,9 +133,9 @@ namespace daw {
 		static constexpr bool is_iec559 = false;
 		static constexpr bool is_bounded = true;
 		static constexpr bool is_modulo = true;
-		static constexpr int digits = CHAR_BIT * sizeof( __uint128_t );
-		static constexpr int digits10 =
-		  static_cast<int>( digits * 0.30102999566 ); /*log10(2)*/
+		static constexpr int digits =
+		  static_cast<int>( sizeof( __uint128_t ) * __CHAR_BIT__ - is_signed );
+		static constexpr int digits10 = digits * 3 / 10;
 		static constexpr int max_digits10 = 0;
 		static constexpr int radix = 2;
 		static constexpr int min_exponent = 0;
@@ -162,6 +184,9 @@ namespace daw {
 			return 0;
 		}
 	};
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #endif
 
 	template<typename T>
