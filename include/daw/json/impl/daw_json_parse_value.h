@@ -97,11 +97,11 @@ namespace daw::json::json_details {
 
 		if constexpr( KnownBounds ) {
 			return constructor_t{}(
-			  sign * unsigned_parser<element_t, JsonMember::range_check>(
+			  sign * unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 			           SIMDConst_v<Range::simd_mode>, rng ) );
 		} else {
 			auto result = constructor_t{}(
-			  sign * unsigned_parser<element_t, JsonMember::range_check>(
+			  sign * unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 			           SIMDConst_v<Range::simd_mode>, rng ) );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			rng.trim_left( );
@@ -123,7 +123,7 @@ namespace daw::json::json_details {
 			  rng.is_number( ),
 			  "Expected number to start with on of \"0123456789\"" );
 			return constructor_t{}(
-			  unsigned_parser<element_t, JsonMember::range_check>(
+			  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 			    SIMDConst_v<Range::simd_mode>, rng ) );
 		} else {
 			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
@@ -131,8 +131,8 @@ namespace daw::json::json_details {
 			daw_json_assert_weak(
 			  rng.is_number( ),
 			  "Expected number to start with on of \"0123456789\"" );
-			auto result =
-			  constructor_t{}( unsigned_parser<element_t, JsonMember::range_check>(
+			auto result = constructor_t{}(
+			  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 			    SIMDConst_v<Range::simd_mode>, rng ) );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(

@@ -28,7 +28,7 @@
 
 namespace daw::json::json_details {
 	[[nodiscard]] static inline constexpr bool
-	is_made_of_eight_digits_cx( const char *ptr ) noexcept {
+	is_made_of_eight_digits_cx( const char *ptr ) {
 		// The copy to local buffer is to get the compiler to treat it like a
 		// reinterpret_cast
 		std::byte buff[8]{};
@@ -44,17 +44,114 @@ namespace daw::json::json_details {
 		             4U ) ) == 0x3333333333333333U );
 	}
 
-	template<JsonRangeCheck RangeCheck, typename Lhs, typename Rhs>
-	using max_unsigned_t = std::conditional_t<
-	  (RangeCheck == JsonRangeCheck::Never and not std::is_enum_v<Lhs>), Lhs,
-	  std::conditional_t<( sizeof( Lhs ) > sizeof( Rhs ) ), Lhs, Rhs>>;
+	template<JsonRangeCheck RangeCheck, typename Unsigned,
+	         typename MaxArithUnsigned>
+	using max_unsigned_t =
+	  std::conditional_t<(not static_cast<bool>( RangeCheck ) and
+	                      not std::is_enum_v<Unsigned>),
+	                     Unsigned,
+	                     std::conditional_t<std::is_integral_v<Unsigned>,
+	                                        MaxArithUnsigned, Unsigned>>;
 
-	template<typename Unsigned, JsonRangeCheck RangeChecked, typename Range>
+	inline constexpr std::uint32_t
+	parse_eight_digits_unrolled_cx( const char *first ) {
+		constexpr std::uint8_t ascii0[16] = {'0', '0', '0', '0', '0', '0',
+		                                     '0', '0', '0', '0', '0', '0',
+		                                     '0', '0', '0', '0'};
+		constexpr std::uint8_t mul_1_10[16] = {10, 1, 10, 1, 10, 1, 10, 1,
+		                                       10, 1, 10, 1, 10, 1, 10, 1};
+
+		constexpr std::uint16_t mul_1_100[8] = {100, 1, 100, 1, 100, 1, 100, 1};
+
+		constexpr std::uint16_t mul_1_10000[8] = {10000, 1, 10000, 1,
+		                                          10000, 1, 10000, 1};
+
+		alignas( unsigned long long ) std::uint8_t const input[16] = {
+		  static_cast<std::uint8_t>( first[0] - ascii0[0] ),
+		  static_cast<std::uint8_t>( first[1] - ascii0[1] ),
+		  static_cast<std::uint8_t>( first[2] - ascii0[2] ),
+		  static_cast<std::uint8_t>( first[3] - ascii0[3] ),
+		  static_cast<std::uint8_t>( first[4] - ascii0[4] ),
+		  static_cast<std::uint8_t>( first[5] - ascii0[5] ),
+		  static_cast<std::uint8_t>( first[6] - ascii0[6] ),
+		  static_cast<std::uint8_t>( first[7] - ascii0[7] )};
+
+		alignas( unsigned long long ) std::uint16_t const t1[8] = {
+		  static_cast<std::uint16_t>( ( input[0] * mul_1_10[0] ) +
+		                              ( input[1] * mul_1_10[1] ) ),
+		  static_cast<std::uint16_t>( ( input[2] * mul_1_10[2] ) +
+		                              ( input[3] * mul_1_10[3] ) ),
+		  static_cast<std::uint16_t>( ( input[4] * mul_1_10[4] ) +
+		                              ( input[5] * mul_1_10[5] ) ),
+		  static_cast<std::uint16_t>( ( input[6] * mul_1_10[6] ) +
+		                              ( input[7] * mul_1_10[7] ) )};
+
+		alignas( unsigned long long ) std::uint32_t const t3[4] = {
+		  static_cast<std::uint32_t>( ( t1[0] * mul_1_100[0] ) +
+		                              ( t1[1] * mul_1_100[1] ) ),
+		  static_cast<std::uint32_t>( ( t1[2] * mul_1_100[2] ) +
+		                              ( t1[3] * mul_1_100[3] ) ),
+		  static_cast<std::uint32_t>( ( t1[4] * mul_1_100[4] ) +
+		                              ( t1[5] * mul_1_100[5] ) ),
+		  static_cast<std::uint32_t>( ( t1[6] * mul_1_100[6] ) +
+		                              ( t1[7] * mul_1_100[7] ) )};
+
+		return ( t3[0] * mul_1_10000[0] ) + ( t3[1] * mul_1_10000[1] );
+	}
+
+	template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
+	         typename Range,
+	         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
 	[[nodiscard]] static constexpr Unsigned
 	unsigned_parser( SIMDConst<SIMDModes::None>, Range &rng ) {
-
 		// If a uint128 is passed, it will be larger than a uintmax_t
 		using result_t = max_unsigned_t<RangeChecked, Unsigned, uintmax_t>;
+		static_assert( not static_cast<bool>( RangeChecked ) or
+		                 std::is_same_v<result_t, uintmax_t>,
+		               "Range checking is only supported for std integral types" );
+
+		char const *first = rng.first;
+		char const *const last = rng.last;
+		result_t result = 0;
+
+		while( last - first >= 8 ) {
+			result *= 100'000'000ULL;
+			result +=
+			  static_cast<result_t>( parse_eight_digits_unrolled_cx( first ) );
+			first += 8;
+		}
+		while( first < last ) {
+			auto dig = static_cast<unsigned>( *first ) - static_cast<unsigned>( '0' );
+			result *= 10U;
+			result += dig;
+			++first;
+		}
+		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+			auto const count =
+			  ( std::numeric_limits<result_t>::digits10 + 1U ) - rng.size( );
+			daw_json_assert( result <= std::numeric_limits<result_t>::max( ) and
+			                   count >= 0,
+			                 "Unsigned number outside of range of unsigned numbers" );
+		}
+		rng.first = first;
+		if constexpr( RangeChecked == JsonRangeCheck::Never ) {
+			return daw::construct_a<Unsigned>( static_cast<Unsigned>( result ) );
+		} else {
+			return daw::construct_a<Unsigned>( daw::narrow_cast<Unsigned>( result ) );
+		}
+	}
+
+	//**************************
+	template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
+	         typename Range,
+	         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
+	[[nodiscard]] static constexpr Unsigned
+	unsigned_parser( SIMDConst<SIMDModes::None>, Range &rng ) {
+		// If a uint128 is passed, it will be larger than a uintmax_t
+		using result_t = max_unsigned_t<RangeChecked, Unsigned, uintmax_t>;
+		static_assert( not static_cast<bool>( RangeChecked ) or
+		                 std::is_same_v<result_t, uintmax_t>,
+		               "Range checking is only supported for std integral types" );
 		daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range" );
 		char const *first = rng.first;
 		result_t result = 0;

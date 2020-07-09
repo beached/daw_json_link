@@ -48,10 +48,15 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
+template<typename Real, bool Trusted = false, std::size_t N>
+constexpr Real parse_real( char const ( &str )[N] ) {
+	auto rng = daw::json::NoCommentSkippingPolicyChecked( str, str + N );
+	return daw::json::json_details::parse_real<Real>( rng );
+}
+
 template<typename Real, bool Trusted = false, size_t N>
 constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
-	auto rng = daw::json::NoCommentSkippingPolicyChecked( str, str + N );
-	auto res = daw::json::json_details::parse_real<Real>( rng );
+	auto res = parse_real<Real, Trusted>( str );
 	return not( res < expected or res > expected );
 }
 
@@ -60,7 +65,7 @@ constexpr bool parse_unsigned_test( char const ( &str )[N],
                                     Unsigned expected ) {
 	auto tmp = daw::json::NoCommentSkippingPolicyUnchecked( str, str + N );
 	return daw::json::json_details::unsigned_parser<
-	         Unsigned, daw::json::JsonRangeCheck::CheckForNarrowing>(
+	         Unsigned, daw::json::JsonRangeCheck::CheckForNarrowing, false>(
 	         daw::json::SIMDConst_v<daw::json::SIMDModes::None>, tmp ) ==
 	       expected;
 }

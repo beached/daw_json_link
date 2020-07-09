@@ -29,7 +29,7 @@ namespace daw::json::json_details {
 		}
 		daw_json_assert_weak( rng.is_number( ), "Expected a number" );
 		auto const whole_part = static_cast<Result>(
-		  sign * unsigned_parser<int64_t, JsonRangeCheck::Never>(
+		  sign * unsigned_parser<int64_t, JsonRangeCheck::Never, false>(
 		           SIMDConst_v<Range::simd_mode>, rng ) );
 
 		Result fract_part = 0.0;
@@ -37,8 +37,8 @@ namespace daw::json::json_details {
 			rng.remove_prefix( );
 
 			char const *orig_first = rng.first;
-			fract_part =
-			  static_cast<Result>( unsigned_parser<uint64_t, JsonRangeCheck::Never>(
+			fract_part = static_cast<Result>(
+			  unsigned_parser<uint64_t, JsonRangeCheck::Never, false>(
 			    SIMDConst_v<Range::simd_mode>, rng ) );
 			fract_part *= static_cast<Result>( daw::cxmath::dpow10(
 			  -static_cast<int32_t>( rng.first - orig_first ) ) );
@@ -58,11 +58,11 @@ namespace daw::json::json_details {
 			}
 			if( rng.has_more( ) ) {
 				exp_part =
-				  exsign *
-				  unsigned_parser<int32_t, ( Range::is_unchecked_input
+				  exsign * unsigned_parser<int32_t,
+				                           ( Range::is_unchecked_input
 				                               ? JsonRangeCheck::Never
-				                               : JsonRangeCheck::CheckForNarrowing )>(
-				    SIMDConst_v<Range::simd_mode>, rng );
+				                               : JsonRangeCheck::CheckForNarrowing ),
+				                           false>( SIMDConst_v<Range::simd_mode>, rng );
 			}
 		}
 		if constexpr( std::is_same_v<Result, float> ) {

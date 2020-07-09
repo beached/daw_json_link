@@ -29,7 +29,6 @@
     This is a derivative work
 */
 #pragma once
-
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -85,19 +84,17 @@ namespace ryu::detail {
 #if defined( HAS_UINT128 )
 
 	// Best case: use 128-bit type.
-	inline std::uint64_t mulShift( std::uint64_t const m,
-	                               std::uint64_t const *const mul,
-	                               std::int32_t const j ) noexcept {
+	inline constexpr std::uint64_t
+	mulShift( std::uint64_t m, std::uint64_t const *mul, std::int32_t j ) {
 		uint128_t const b0 = static_cast<uint128_t>( m ) * mul[0];
 		uint128_t const b2 = static_cast<uint128_t>( m ) * mul[1];
 		return static_cast<std::uint64_t>( ( ( b0 >> 64 ) + b2 ) >> ( j - 64 ) );
 	}
 
-	inline uint64_t mulShiftAll( std::uint64_t const m,
-	                             std::uint64_t const *const mul,
-	                             std::int32_t const j, std::uint64_t *const vp,
-	                             std::uint64_t *const vm,
-	                             std::uint32_t const mmShift ) noexcept {
+	inline constexpr uint64_t
+	mulShiftAll( std::uint64_t const m, std::uint64_t const *const mul,
+	             std::int32_t const j, std::uint64_t *const vp,
+	             std::uint64_t *const vm, std::uint32_t const mmShift ) {
 		//  m <<= 2;
 		//  uint128_t b0 = ((uint128_t) m) * mul[0]; // 0
 		//  uint128_t b2 = ((uint128_t) m) * mul[1]; // 64
@@ -119,7 +116,7 @@ namespace ryu::detail {
 
 	inline std::uint64_t mulShift( std::uint64_t const m,
 	                               std::uint64_t const *const mul,
-	                               std::int32_t const j ) noexcept {
+	                               std::int32_t const j ) {
 		// m is maximum 55 bits
 		std::uint64_t high1;                                     // 128
 		std::uint64_t const low1 = umul128( m, mul[1], &high1 ); // 64
@@ -134,7 +131,7 @@ namespace ryu::detail {
 	inline std::uint64_t
 	mulShiftAll( std::uint64_t const m, std::uint64_t const *const mul,
 	             std::int32_t const j, std::uint64_t *const vp,
-	             std::uint64_t *const vm, std::uint32_t const mmShift ) noexcept {
+	             std::uint64_t *const vm, std::uint32_t const mmShift ) {
 		*vp = mulShift( 4 * m + 2, mul, j );
 		*vm = mulShift( 4 * m - 1 - mmShift, mul, j );
 		return mulShift( 4 * m, mul, j );
@@ -245,8 +242,8 @@ namespace ryu::detail {
 		std::int32_t exponent;
 	};
 
-	inline floating_decimal_64 d2d( std::uint64_t const ieeeMantissa,
-	                                std::uint32_t const ieeeExponent ) {
+	inline floating_decimal_64 d2d( std::uint64_t ieeeMantissa,
+	                                std::uint32_t ieeeExponent ) {
 		std::int32_t e2;
 		std::uint64_t m2;
 		if( ieeeExponent == 0 ) {
@@ -599,7 +596,7 @@ namespace ryu::detail {
 } // namespace ryu::detail
 
 namespace ryu {
-	char *d2s_buffered( double f, char *result ) noexcept {
+	char *d2s_buffered( double f, char *result ) {
 		using namespace detail;
 		// Step 1: Decode the floating-point number, and unify normalized and
 		// subnormal cases.

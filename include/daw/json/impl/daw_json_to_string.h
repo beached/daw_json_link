@@ -160,17 +160,19 @@ namespace daw::json::json_details {
 
 	template<typename OutputIterator>
 	constexpr OutputIterator output_hex( std::uint16_t c, OutputIterator it ) {
-		char const n0 = to_nibble_char( ( c >> 12U ) & 0xFU );
-		char const n1 = to_nibble_char( ( c >> 8U ) & 0xFU );
-		char const n2 = to_nibble_char( ( c >> 4U ) & 0xFU );
-		char const n3 = to_nibble_char( c & 0xFU );
+		char const nibbles[] = {'\\',
+		                        'u',
+		                        to_nibble_char( ( c >> 12U ) & 0xFU ),
+		                        to_nibble_char( ( c >> 8U ) & 0xFU ),
+		                        to_nibble_char( ( c >> 4U ) & 0xFU ),
+		                        to_nibble_char( c & 0xFU )};
 
-		*it++ = '\\';
-		*it++ = 'u';
-		*it++ = n0;
-		*it++ = n1;
-		*it++ = n2;
-		*it++ = n3;
+		*it++ = nibbles[0];
+		*it++ = nibbles[1];
+		*it++ = nibbles[2];
+		*it++ = nibbles[3];
+		*it++ = nibbles[4];
+		*it++ = nibbles[5];
 		return it;
 	}
 
