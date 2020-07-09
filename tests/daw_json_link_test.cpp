@@ -28,10 +28,6 @@
 
 static_assert( daw::is_arithmetic_v<int> );
 
-#if defined( __GNUC ) or defined( __clang__ ) and not defined( _MSC_VER )
-static_assert( daw::is_arithmetic_v<__int128> );
-#endif
-
 struct NumberX {
 	int x;
 };
@@ -74,13 +70,13 @@ struct test_001_t {
 	int i = 0;
 	double d = 0.0;
 	bool b = false;
-	std::string_view s{};
-	std::string_view s2{};
-	daw::bounded_vector_t<int, 10> y{};
-	std::optional<int> o{};
-	std::optional<int> o2{};
+	std::string_view s{ };
+	std::string_view s2{ };
+	daw::bounded_vector_t<int, 10> y{ };
+	std::optional<int> o{ };
+	std::optional<int> o2{ };
 	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>
-	  dte{};
+	  dte{ };
 
 	constexpr test_001_t( ) = default;
 
@@ -102,7 +98,7 @@ struct test_001_t {
 };
 
 struct test_002_t {
-	test_001_t a{};
+	test_001_t a{ };
 };
 
 struct test_003_t {
@@ -340,7 +336,7 @@ namespace daw::json {
 		using type = json_member_list<>;
 
 		static constexpr auto to_json_data( EmptyClassTest const & ) {
-			return std::tuple<>{};
+			return std::tuple<>{ };
 		}
 	};
 } // namespace daw::json
@@ -351,10 +347,10 @@ static constexpr std::string_view empty_class_data = R"(
 }
 )";
 static_assert( daw::json::from_json<EmptyClassTest>( test_001_t_json_data ) ==
-               EmptyClassTest{} );
+               EmptyClassTest{ } );
 
 struct Empty2 {
-	EmptyClassTest b = EmptyClassTest{};
+	EmptyClassTest b = EmptyClassTest{ };
 	int c = 0;
 };
 
@@ -381,7 +377,7 @@ static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
 
 struct OptionalOrdered {
 	int a = 0;
-	std::optional<int> b{};
+	std::optional<int> b{ };
 };
 
 namespace daw::json {
@@ -402,6 +398,25 @@ static_assert(
   static_cast<bool>(
    not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) );
 */
+
+template<bool HasInt128, std::enable_if_t<HasInt128, std::nullptr_t> = nullptr>
+void test128( ) {
+	using namespace daw::json;
+	constexpr std::string_view very_big_int =
+	  "[340282366920938463463374607431768211455]";
+	std::cout << "Trying to parse large int '" << very_big_int << "'\n";
+	__int128 val =
+	  from_json_array<json_number<no_name, __int128>>( very_big_int )[0];
+	std::cout << "really big: " << static_cast<intmax_t>( val ) << '\n';
+}
+
+template<bool HasInt128,
+         std::enable_if_t<not HasInt128, std::nullptr_t> = nullptr>
+void test128( ) {
+	std::cout << "__SIZEOF_INT128__ is defined but numeric_limits is not "
+	             "specialized for __int128.  This often means that the gnu "
+	             "extensions e.g. -std=gnuc++17 are not enabled\n";
+}
 
 int main( int, char ** ) try {
 	test_004( );
@@ -431,16 +446,8 @@ int main( int, char ** ) try {
 #define CX constexpr
 #endif
 
-#if defined( __GNUC ) or defined( __clang__ ) and not defined( _MSC_VER )
-	if constexpr( daw::is_arithmetic_v<__int128> ) {
-		using namespace daw::json;
-		constexpr std::string_view very_big_int =
-		  "[340282366920938463463374607431768211455]";
-		std::cout << "Trying to parse large int '" << very_big_int << "'\n";
-		__int128 val =
-		  from_json_array<json_number<no_name, __int128>>( very_big_int )[0];
-		std::cout << "really big: " << static_cast<intmax_t>( val ) << '\n';
-	}
+#if defined( __SIZEOF_INT128__ ) and not defined( _MSC_VER )
+	test128<daw::is_arithmetic_v<__int128>>( );
 #endif
 
 	daw::do_not_optimize( test_001_t_json_data );
@@ -465,14 +472,14 @@ int main( int, char ** ) try {
 	std::cout << "as array\n";
 	std::cout << to_json_array( ary ) << "\n\n";
 
-	auto t2 = test_002_t{data};
+	auto t2 = test_002_t{ data };
 	t2.a.o2 = std::nullopt;
 	std::cout << to_json( t2 ) << '\n';
 
-	test_003_t t3{data};
+	test_003_t t3{ data };
 	std::cout << to_json( t3 ) << '\n';
 
-	e_test_001_t t4{};
+	e_test_001_t t4{ };
 	auto e_test_001_str = to_json( t4 );
 	std::cout << e_test_001_str << '\n';
 	auto e_test_001_back = from_json<e_test_001_t>( e_test_001_str );
@@ -511,7 +518,7 @@ int main( int, char ** ) try {
 	}
 	std::cout << "sum2: " << sum << '\n';
 
-	std::vector<double> a = {1.1, 11.1};
+	std::vector<double> a = { 1.1, 11.1 };
 	std::cout << daw::json::to_json_array( a ) << '\n';
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
