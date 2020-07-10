@@ -54,51 +54,58 @@ namespace daw::json::json_details {
 	                                         std::is_enum_v<Unsigned>),
 	                                        MaxArithUnsigned, Unsigned>>;
 
-	inline constexpr std::uint32_t
-	parse_eight_digits_unrolled_cx( const char *first ) {
-		constexpr std::uint8_t ascii0[16] = { '0', '0', '0', '0', '0', '0',
-		                                      '0', '0', '0', '0', '0', '0',
-		                                      '0', '0', '0', '0' };
-		constexpr std::uint8_t mul_1_10[16] = { 10, 1, 10, 1, 10, 1, 10, 1,
-		                                        10, 1, 10, 1, 10, 1, 10, 1 };
+	// Constexpr'ified version from
+	// https://kholdstare.github.io/technical/2020/05/26/faster-integer-parsing.html
+	inline constexpr std::uint32_t parse_8_digits( const char *const str ) {
+		auto const p0 =
+		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[0] ) );
+		auto const p1 =
+		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[1] ) ) << 8U;
+		auto const p2 =
+		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[2] ) ) << 16U;
+		auto const p3 =
+		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[3] ) ) << 24U;
+		auto const p4 =
+		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[4] ) ) << 32U;
+		auto const p5 =
+		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[5] ) ) << 40U;
+		auto const p6 =
+		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[6] ) ) << 48U;
+		auto const p7 =
+		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[7] ) ) << 56U;
+		std::uint64_t chunk = p0 | p1 | p2 | p3 | p4 | p5 | p6 | p7;
+		// 1-byte mask trick (works on 4 pairs of single digits)
+		std::uint64_t const lower_digits =
+		  ( chunk & 0x0f'00'0f'00'0f'00'0f'00 ) >> 8;
+		std::uint64_t const upper_digits =
+		  ( chunk & 0x00'0f'00'0f'00'0f'00'0f ) * 10;
+		std::uint64_t const chunk2 = lower_digits + upper_digits;
 
-		constexpr std::uint16_t mul_1_100[8] = { 100, 1, 100, 1, 100, 1, 100, 1 };
+		// 2-byte mask trick (works on 2 pairs of two digits)
+		std::uint64_t const lower_digits2 =
+		  ( chunk2 & 0x00'ff'00'00'00'ff'00'00 ) >> 16;
+		std::uint64_t const upper_digits2 =
+		  ( chunk2 & 0x00'00'00'ff'00'00'00'ff ) * 100;
+		std::uint64_t const chunk3 = lower_digits2 + upper_digits2;
 
-		constexpr std::uint16_t mul_1_10000[8] = { 10000, 1, 10000, 1,
-		                                           10000, 1, 10000, 1 };
+		// 4-byte mask trick (works on pair of four digits)
+		std::uint64_t const lower_digits3 =
+		  ( chunk3 & 0x00'00'ff'ff'00'00'00'00 ) >> 32;
+		std::uint64_t const upper_digits3 =
+		  ( chunk3 & 0x00'00'00'00'00'00'ff'ff ) * 10000;
+		std::uint64_t const chunk4 = lower_digits3 + upper_digits3;
 
-		alignas( unsigned long long ) std::uint8_t const input[16] = {
-		  static_cast<std::uint8_t>( first[0] - ascii0[0] ),
-		  static_cast<std::uint8_t>( first[1] - ascii0[1] ),
-		  static_cast<std::uint8_t>( first[2] - ascii0[2] ),
-		  static_cast<std::uint8_t>( first[3] - ascii0[3] ),
-		  static_cast<std::uint8_t>( first[4] - ascii0[4] ),
-		  static_cast<std::uint8_t>( first[5] - ascii0[5] ),
-		  static_cast<std::uint8_t>( first[6] - ascii0[6] ),
-		  static_cast<std::uint8_t>( first[7] - ascii0[7] ) };
-
-		alignas( unsigned long long ) std::uint16_t const t1[8] = {
-		  static_cast<std::uint16_t>( ( input[0] * mul_1_10[0] ) +
-		                              ( input[1] * mul_1_10[1] ) ),
-		  static_cast<std::uint16_t>( ( input[2] * mul_1_10[2] ) +
-		                              ( input[3] * mul_1_10[3] ) ),
-		  static_cast<std::uint16_t>( ( input[4] * mul_1_10[4] ) +
-		                              ( input[5] * mul_1_10[5] ) ),
-		  static_cast<std::uint16_t>( ( input[6] * mul_1_10[6] ) +
-		                              ( input[7] * mul_1_10[7] ) ) };
-
-		alignas( unsigned long long ) std::uint32_t const t3[4] = {
-		  static_cast<std::uint32_t>( ( t1[0] * mul_1_100[0] ) +
-		                              ( t1[1] * mul_1_100[1] ) ),
-		  static_cast<std::uint32_t>( ( t1[2] * mul_1_100[2] ) +
-		                              ( t1[3] * mul_1_100[3] ) ),
-		  static_cast<std::uint32_t>( ( t1[4] * mul_1_100[4] ) +
-		                              ( t1[5] * mul_1_100[5] ) ),
-		  static_cast<std::uint32_t>( ( t1[6] * mul_1_100[6] ) +
-		                              ( t1[7] * mul_1_100[7] ) ) };
-
-		return ( t3[0] * mul_1_10000[0] ) + ( t3[1] * mul_1_10000[1] );
+		return static_cast<std::uint32_t>( chunk4 );
 	}
+	static_assert( parse_8_digits( "12345678" ) == 12345678,
+	               "8 digit parser does not work on this platform" );
+	inline constexpr std::uint64_t parse_16_digits( const char *const str ) {
+		auto const upper = static_cast<std::uint64_t>( parse_8_digits( str ) );
+		auto const lower = static_cast<std::uint64_t>( parse_8_digits( str + 8 ) );
+		return upper * 100'000'000ULL + lower;
+	}
+	static_assert( parse_16_digits( "1234567890123456" ) == 1234567890123456,
+	               "16 digit parser does not work on this platform" );
 
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
 	         typename Range,
@@ -115,10 +122,14 @@ namespace daw::json::json_details {
 		char const *const last = rng.last;
 		result_t result = 0;
 
+		while( last - first >= 16 ) {
+			result *= 10'000'000'000'000'000ULL;
+			result += static_cast<result_t>( parse_16_digits( first ) );
+			first += 16;
+		}
 		while( last - first >= 8 ) {
 			result *= 100'000'000ULL;
-			result +=
-			  static_cast<result_t>( parse_eight_digits_unrolled_cx( first ) );
+			result += static_cast<result_t>( parse_8_digits( first ) );
 			first += 8;
 		}
 		while( first < last ) {
