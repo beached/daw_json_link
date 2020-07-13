@@ -161,6 +161,7 @@ namespace daw::json::json_details {
 	namespace parse_tokens {
 		inline constexpr char const escape_quotes[] = "\\\"";
 	}
+
 	// Fast path for parsing escaped strings to a std::string with the default
 	// appender
 	template<bool AllowHighEight, typename Result, typename Range>
