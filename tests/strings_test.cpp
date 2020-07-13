@@ -6,6 +6,7 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
@@ -29,12 +30,15 @@ int main( int argc, char **argv ) try {
 	}( );
 	auto json_sv = static_cast<std::string_view>( json_data );
 	using namespace daw::json;
+	using String = std::string;
 	{
-		std::vector<std::string> ve;
+		std::vector<String> ve;
 		daw::bench_n_test_mbs<250>(
 		  "strings.json checked", json_sv.size( ),
 		  [&ve]( auto sv ) {
-			  ve = from_json_array<json_string_raw<no_name>>( sv );
+			  ve.clear( );
+			  auto range = json_array_range<String>( sv );
+			  ve.insert( ve.end( ), range.begin( ), range.end( ) );
 		  },
 		  json_sv );
 		daw::do_not_optimize( ve );
@@ -45,8 +49,10 @@ int main( int argc, char **argv ) try {
 		daw::bench_n_test_mbs<250>(
 		  "strings.json unchecked", json_sv.size( ),
 		  [&ve]( auto sv ) {
-			  ve = from_json_array<json_string_raw<no_name>, std::vector<std::string>,
-			                       NoCommentSkippingPolicyUnchecked>( sv );
+			  ve.clear( );
+			  auto range =
+			    json_array_range<String, NoCommentSkippingPolicyUnchecked>( sv );
+			  ve.insert( ve.end( ), range.begin( ), range.end( ) );
 		  },
 		  json_sv );
 

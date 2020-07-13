@@ -586,6 +586,7 @@ namespace daw::json::json_details {
 	[[nodiscard]] static inline constexpr Range skip_known_value( Range &rng ) {
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 		              JsonMember::expected_type == JsonParseTypes::StringRaw or
+		              JsonMember::expected_type == JsonParseTypes::StringEscaped or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
 			daw_json_assert_weak( rng.is_quotes_checked( ),
 			                      "Expected start of value to begin with '\"'" );
