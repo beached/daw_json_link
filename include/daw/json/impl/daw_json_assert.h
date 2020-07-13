@@ -17,13 +17,13 @@
 #include <string_view>
 
 #if defined( __GNUC__ ) or defined( __clang__ )
-#define DAW_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )
-#define DAW_UNLIKELY( Bool ) ( __builtin_expect( !!( Bool ), 0 ) )
-#define DAW_UNREACHABLE( ) ( __builtin_unreachable( ) )
+#define DAW_JSON_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )
+#define DAW_JSON_UNLIKELY( Bool ) ( __builtin_expect( !!( Bool ), 0 ) )
+#define DAW_JSON_UNREACHABLE( ) ( __builtin_unreachable( ) )
 #else
-#define DAW_LIKELY( Bool ) Bool
-#define DAW_UNLIKELY( Bool ) Bool
-#define DAW_UNREACHABLE( ) std::abort( )
+#define DAW_JSON_LIKELY( Bool ) Bool
+#define DAW_JSON_UNLIKELY( Bool ) Bool
+#define DAW_JSON_UNREACHABLE( ) std::abort( )
 #endif
 
 #if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
@@ -47,7 +47,7 @@ namespace daw::json {
 	enum class ErrorType { Unknown, MissingMember, UnexpectedCharacter };
 
 	class json_exception {
-		std::string m_reason{};
+		std::string m_reason{ };
 		ErrorType m_error_type = ErrorType::Unknown;
 
 	public:
@@ -111,17 +111,17 @@ daw_json_error( daw::json::json_details::missing_member reason ) {
 }
 
 template<typename Bool>
-DAW_ATTRIBUTE_FLATTEN static inline constexpr void
+DAW_ATTRIBUTE_FLATTEN inline constexpr void
 daw_json_assert( Bool const &b, std::string_view reason ) {
-	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
+	if( DAW_JSON_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
 template<typename Bool>
-DAW_ATTRIBUTE_FLATTEN static inline constexpr void
+DAW_ATTRIBUTE_FLATTEN inline constexpr void
 daw_json_assert( Bool const &b,
                  daw::json::json_details::missing_member reason ) {
-	if( DAW_UNLIKELY( not static_cast<bool>( b ) ) ) {
+	if( DAW_JSON_UNLIKELY( not static_cast<bool>( b ) ) ) {
 		daw_json_error( reason );
 	}
 }
@@ -131,6 +131,3 @@ daw_json_assert( Bool const &b,
 		daw_json_assert( __VA_ARGS__ );                                            \
 	}                                                                            \
 	while( false )
-
-#undef DAW_UNLIKELY
-#undef DAW_LIKELY

@@ -73,7 +73,7 @@ namespace daw::json::json_details {
 		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[6] ) ) << 48U;
 		auto const p7 =
 		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[7] ) ) << 56U;
-		std::uint64_t chunk = p0 | p1 | p2 | p3 | p4 | p5 | p6 | p7;
+		std::uint64_t const chunk = p0 | p1 | p2 | p3 | p4 | p5 | p6 | p7;
 		// 1-byte mask trick (works on 4 pairs of single digits)
 		std::uint64_t const lower_digits =
 		  ( chunk & 0x0f'00'0f'00'0f'00'0f'00 ) >> 8;
@@ -127,7 +127,7 @@ namespace daw::json::json_details {
 			result += static_cast<result_t>( parse_16_digits( first ) );
 			first += 16;
 		}
-		while( last - first >= 8 ) {
+		if( last - first >= 8 ) {
 			result *= 100'000'000ULL;
 			result += static_cast<result_t>( parse_8_digits( first ) );
 			first += 8;

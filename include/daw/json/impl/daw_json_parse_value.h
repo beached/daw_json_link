@@ -98,8 +98,6 @@ namespace daw::json::json_details {
 		if( rng.is_minus_unchecked( ) ) {
 			rng.remove_prefix( );
 			sign = -1;
-		} else if( rng.is_plus_unchecked( ) ) {
-			rng.remove_prefix( );
 		}
 
 		if constexpr( KnownBounds ) {
@@ -212,10 +210,10 @@ namespace daw::json::json_details {
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			bool result = false;
 			if constexpr( Range::is_unchecked_input ) {
-				if( rng.is_t_unchecked( ) ) {
+				if( rng.is_t_unchecked( ) ) /* true */ {
 					result = true;
 					rng.remove_prefix( 4 );
-				} else {
+				} else /* false */ {
 					rng.remove_prefix( 5 );
 				}
 			} else {
@@ -244,12 +242,9 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		if constexpr( KnownBounds ) {
 			if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
-				if( rng.empty( ) ) {
-					return constructor_t{ }( );
-				}
-				return constructor_t{ }( rng.begin( ), rng.size( ) );
+				return constructor_t{ }( rng.first, rng.size( ) );
 			} else {
-				return constructor_t{ }( rng.begin( ), rng.size( ) );
+				return constructor_t{ }( rng.first, rng.size( ) );
 			}
 		} else {
 			auto const str = skip_string( rng );
@@ -257,9 +252,9 @@ namespace daw::json::json_details {
 				if( str.empty( ) ) {
 					return constructor_t{ }( );
 				}
-				return constructor_t{ }( str.begin( ), str.size( ) );
+				return constructor_t{ }( str.first, str.size( ) );
 			} else {
-				return constructor_t{ }( str.begin( ), str.size( ) );
+				return constructor_t{ }( str.first, str.size( ) );
 			}
 		}
 	}

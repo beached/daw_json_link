@@ -186,11 +186,14 @@ namespace daw::json::json_details {
 		  rng.last < rng.class_last,
 		  "Unabled to parse lone string, need space after to see \"" );
 		while( not rng.is_quotes_unchecked( ) ) {
-			while( rng.front( ) != '"' and rng.front( ) != '\\' ) {
-				daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
-				*it++ = rng.front( );
-				rng.remove_prefix( );
+			char const * first = rng.first;
+			char const * const last = rng.last;
+			while( *first != '"' and *first != '\\' ) {
+				daw_json_assert_weak( first < last, "Unexpected end of data" );
+				++first;
 			}
+			it = std::copy( rng.first, first, it );
+			rng.first = first;
 			if( rng.is_escape_unchecked( ) ) {
 				daw_json_assert_weak( not rng.is_space_unchecked( ),
 				                      "Invalid codepoint" );
