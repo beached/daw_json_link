@@ -242,6 +242,9 @@ namespace daw::json::json_details {
 		using constructor_t = typename JsonMember::constructor_t;
 		if constexpr( KnownBounds ) {
 			if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
+				if( rng.empty( ) ) {
+					return constructor_t{ }( );
+				}
 				return constructor_t{ }( rng.first, rng.size( ) );
 			} else {
 				return constructor_t{ }( rng.first, rng.size( ) );

@@ -83,19 +83,37 @@ namespace daw::json {
 		template<typename String,
 		         daw::enable_when_t<not std::is_same_v<
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
-		inline constexpr explicit json_array_iterator(
-		  String &&jd, std::string_view start_path = "" )
+		inline constexpr explicit json_array_iterator( String &&jd )
+		  : m_state(
+		      ParsePolicy( std::data( jd ), std::data( jd ) + std::size( jd ) ) ) {
+
+			static_assert(
+			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
+			  "StringRaw must be like a string_view" );
+			m_state.trim_left( );
+			daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
+			                      "Arrays are expected to start with a [" );
+
+			m_state.remove_prefix( );
+			m_state.trim_left( );
+		}
+
+		template<typename String,
+		         daw::enable_when_t<not std::is_same_v<
+		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
+		inline constexpr explicit json_array_iterator( String &&jd,
+		                                               std::string_view start_path )
 		  : m_state( get_range( std::forward<String>( jd ), start_path ) ) {
 
 			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
 			  "StringRaw must be like a string_view" );
-			m_state.trim_left_checked( );
+			m_state.trim_left( );
 			daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
 			                      "Arrays are expected to start with a [" );
 
 			m_state.remove_prefix( );
-			m_state.trim_left_checked( );
+			m_state.trim_left( );
 		}
 
 		/***
@@ -233,8 +251,14 @@ namespace daw::json {
 		template<typename String,
 		         daw::enable_when_t<not std::is_same_v<
 		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
+		constexpr explicit json_array_range( String &&jd )
+		  : m_first( std::forward<String>( jd ) ) {}
+
+		template<typename String,
+		         daw::enable_when_t<not std::is_same_v<
+		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr explicit json_array_range( String &&jd,
-		                                     std::string_view start_path = "" )
+		                                     std::string_view start_path )
 		  : m_first( std::forward<String>( jd ), start_path ) {}
 
 		/***
