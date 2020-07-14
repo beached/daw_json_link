@@ -24,39 +24,34 @@ int main( int argc, char **argv ) try {
 		puts( "Must supply path to strings.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	std::string const json_data = [argv] {
+	std::string const json_string = [argv] {
 		auto const data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 		return std::string( data.data( ), data.size( ) );
 	}( );
-	auto json_sv = static_cast<std::string_view>( json_data );
+
+	auto const json_data = static_cast<std::string_view>( json_string );
 	using namespace daw::json;
 	using String = std::string;
-	std::vector<String> ve;
-	{
-		daw::bench_n_test_mbs<250>(
-		  "strings.json checked", json_sv.size( ),
-		  [&ve]( auto sv ) {
-			  ve.clear( );
-			  auto range = json_array_range<String>( sv );
-			  ve.insert( ve.end( ), range.begin( ), range.end( ) );
-		  },
-		  json_sv );
-		daw::do_not_optimize( ve );
-	}
+	daw::bench_n_test_mbs<250>(
+	  "strings.json checked", json_data.size( ),
+	  []( auto sv ) {
+		  auto range = json_array_range<String>( sv );
+		  for( auto v : range ) {
+			  daw::do_not_optimize( v );
+		  }
+	  },
+	  json_data );
 
-	{
-		daw::bench_n_test_mbs<250>(
-		  "strings.json unchecked", json_sv.size( ),
-		  [&ve]( auto sv ) {
-			  ve.clear( );
-			  auto range =
-			    json_array_range<String, NoCommentSkippingPolicyUnchecked>( sv );
-			  ve.insert( ve.end( ), range.begin( ), range.end( ) );
-		  },
-		  json_sv );
-
-		daw::do_not_optimize( ve );
-	}
+	daw::bench_n_test_mbs<250>(
+	  "strings.json unchecked", json_data.size( ),
+	  []( auto sv ) {
+		  auto range =
+		    json_array_range<String, NoCommentSkippingPolicyUnchecked>( sv );
+		  for( auto v : range ) {
+			  daw::do_not_optimize( v );
+		  }
+	  },
+	  json_data );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
