@@ -31,8 +31,8 @@ int main( int argc, char **argv ) try {
 
 	auto const json_data = static_cast<std::string_view>( json_string );
 	using namespace daw::json;
-	using String = daw::string_view;
-	daw::bench_n_test_mbs<250>(
+	using String = std::string_view;
+	daw::bench_n_test_mbs<1000>(
 	  "strings.json checked", json_data.size( ),
 	  []( auto sv ) {
 		  auto range = json_array_range<String>( sv );
@@ -42,7 +42,7 @@ int main( int argc, char **argv ) try {
 	  },
 	  json_data );
 
-	daw::bench_n_test_mbs<250>(
+	daw::bench_n_test_mbs<1000>(
 	  "strings.json unchecked", json_data.size( ),
 	  []( auto sv ) {
 		  auto range =
