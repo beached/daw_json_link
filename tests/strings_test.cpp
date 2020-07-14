@@ -31,8 +31,8 @@ int main( int argc, char **argv ) try {
 	auto json_sv = static_cast<std::string_view>( json_data );
 	using namespace daw::json;
 	using String = std::string;
+	std::vector<String> ve;
 	{
-		std::vector<String> ve;
 		daw::bench_n_test_mbs<250>(
 		  "strings.json checked", json_sv.size( ),
 		  [&ve]( auto sv ) {
@@ -45,7 +45,6 @@ int main( int argc, char **argv ) try {
 	}
 
 	{
-		std::vector<std::string> ve;
 		daw::bench_n_test_mbs<250>(
 		  "strings.json unchecked", json_sv.size( ),
 		  [&ve]( auto sv ) {
