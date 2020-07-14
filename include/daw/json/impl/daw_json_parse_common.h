@@ -522,102 +522,10 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_number_signed( Range &rng ) {
-		auto result = rng;
-		++rng.first;
-		if constexpr( Range::is_unchecked_input ) {
-			while( not rng.is_space_unchecked( ) and not rng.at_literal_end( ) ) {
-				++rng.first;
-			}
-		} else {
-			char const *first = rng.first;
-			char const *const last = rng.last;
-			daw_json_assert( first < last, "Unexpected end of stream" );
-			if( *first == '-' ) {
-				++first;
-			}
-			while( first < last and ( static_cast<unsigned>( *first ) -
-			                          static_cast<unsigned>( '0' ) ) < 10 ) {
-				++first;
-			}
-			daw_json_assert( first < last, "Unexpected end of stream" );
-			rng.first = first;
-		}
-		result.last = rng.first;
-		rng.trim_left( );
-		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      "Expected a ',', '}', ']' to trail literal" );
-		return result;
-	}
-
-	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_number_unsigned( Range &rng ) {
-		auto result = rng;
-		++rng.first;
-		if constexpr( Range::is_unchecked_input ) {
-			while( not rng.is_space_unchecked( ) and not rng.at_literal_end( ) ) {
-				++rng.first;
-			}
-		} else {
-			char const *first = rng.first;
-			char const *const last = rng.last;
-			while( first < last and ( static_cast<unsigned>( *first ) -
-			                          static_cast<unsigned>( '0' ) ) < 10 ) {
-				++first;
-			}
-			daw_json_assert( first < last, "Unexpected end of stream" );
-			rng.first = first;
-		}
-		result.last = rng.first;
-		rng.trim_left( );
-		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      "Expected a ',', '}', ']' to trail literal" );
-		return result;
-	}
-
-	template<typename Range>
 	[[nodiscard]] static constexpr Range skip_number( Range &rng ) {
 		auto result = rng;
 		++rng.first;
-		if constexpr( Range::is_unchecked_input ) {
-			while( not rng.is_space_unchecked( ) and not rng.at_literal_end( ) ) {
-				++rng.first;
-			}
-		} else {
-			char const *first = rng.first;
-			char const *const last = rng.last;
-			daw_json_assert( first < last, "Unexpected end of stream" );
-			if( *first == '-' ) {
-				++first;
-			}
-			while( first < last and ( static_cast<unsigned>( *first ) -
-			                          static_cast<unsigned>( '0' ) ) < 10 ) {
-				++first;
-			}
-			daw_json_assert( first < last, "Unexpected end of stream" );
-			if( *first == '.' ) {
-				++first;
-				while( first < last and ( static_cast<unsigned>( *first ) -
-				                          static_cast<unsigned>( '0' ) ) < 10 ) {
-					++first;
-				}
-			}
-			daw_json_assert( first < last, "Unexpected end of stream" );
-			if( *first == 'E' or *first == 'e' ) {
-				++first;
-				daw_json_assert( first < last, "Unexpected end of stream" );
-				if( *first == '-' or *first == '+' ) {
-					++first;
-				}
-				daw_json_assert( first < last, "Unexpected end of stream" );
-				while( first < last and ( static_cast<unsigned>( *first ) -
-				                          static_cast<unsigned>( '0' ) ) < 10 ) {
-					++first;
-				}
-			}
-			daw_json_assert( first < last, "Unexpected end of stream" );
-			rng.first = first;
-		}
+		rng.move_to_end_of_number( );
 		result.last = rng.first;
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_at_token_after_value( ),
@@ -685,13 +593,12 @@ namespace daw::json::json_details {
 			return json_details::skip_false( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Null ) {
 			return json_details::skip_null( rng );
-		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real ) {
-			return skip_number( rng );
-		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Signed ) {
-			return skip_number_signed( rng );
-		} else if constexpr( JsonMember::expected_type ==
-		                     JsonParseTypes::Unsigned ) {
-			return json_details::skip_number_unsigned( rng );
+		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
+		                     JsonMember::expected_type == JsonParseTypes::Signed or
+		                     JsonMember::expected_type ==
+		                       JsonParseTypes::Unsigned ) {
+
+			return json_details::skip_number( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
 			daw_json_assert_weak( rng.is_opening_bracket_checked( ),
 			                      "Expected start of array with '['" );

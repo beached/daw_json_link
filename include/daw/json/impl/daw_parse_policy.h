@@ -40,10 +40,10 @@ namespace daw::json {
 		using as_checked =
 		  BasicParsePolicy<false, CommentPolicy, simd_mode, allow_escaped_names>;
 
-		iterator first{};
-		iterator last{};
-		iterator class_first{};
-		iterator class_last{};
+		iterator first{ };
+		iterator last{ };
+		iterator class_first{ };
+		iterator class_last{ };
 		std::size_t counter = 0;
 		using Range = BasicParsePolicy;
 
@@ -111,9 +111,9 @@ namespace daw::json {
 		template<std::size_t N>
 		constexpr void move_to_next_of_nc( char const ( &str )[N] ) {
 			if constexpr( is_unchecked_input ) {
-				move_to_next_of_nc_unchecked( str, std::make_index_sequence<N>{} );
+				move_to_next_of_nc_unchecked( str, std::make_index_sequence<N>{ } );
 			} else {
-				move_to_next_of_nc_checked( str, std::make_index_sequence<N>{} );
+				move_to_next_of_nc_checked( str, std::make_index_sequence<N>{ } );
 			}
 		}
 
@@ -181,10 +181,23 @@ namespace daw::json {
 			return CommentPolicy::trim_left_unchecked( *this );
 		}
 
+		constexpr void move_to_end_of_number( ) {
+			if constexpr( IsUncheckedInput ) {
+				while(
+				  not( *first < 0x20 or CommentPolicy::at_literal_end( *first ) ) ) {
+					++first;
+				}
+			} else {
+				while(
+				  first < last and
+				  not( *first < 0x20 or CommentPolicy::at_literal_end( *first ) ) ) {
+					++first;
+				}
+			}
+		}
+
 		[[nodiscard]] constexpr bool at_literal_end( ) const {
 			return CommentPolicy::at_literal_end( *first );
-			char const c = *first;
-			return c == '\0' or c == ',' or c == ']' or c == '}';
 		}
 
 		[[nodiscard]] constexpr bool is_space( ) const {
@@ -352,7 +365,7 @@ namespace daw::json {
 				return skip_bracketed_item_checked<'[', ']', '{', '}'>( );
 			}
 		}
-	};
+	}; // namespace daw::json
 
 	using NoCommentSkippingPolicyChecked =
 	  BasicParsePolicy<false, NoCommentSkippingPolicy, SIMDModes::None, false>;
