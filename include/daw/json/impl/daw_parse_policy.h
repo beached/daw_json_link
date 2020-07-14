@@ -181,19 +181,20 @@ namespace daw::json {
 			return CommentPolicy::trim_left_unchecked( *this );
 		}
 
-		constexpr void move_to_end_of_number( ) {
+		constexpr void move_to_end_of_literal( ) {
+			char const *f = first;
+			char const *const l = last;
 			if constexpr( IsUncheckedInput ) {
-				while(
-				  not( *first < 0x20 or CommentPolicy::at_literal_end( *first ) ) ) {
-					++first;
+				while( not( *f <= 0x20 or CommentPolicy::at_literal_end( *f ) ) ) {
+					++f;
 				}
 			} else {
-				while(
-				  first < last and
-				  not( *first < 0x20 or CommentPolicy::at_literal_end( *first ) ) ) {
-					++first;
+				while( f < l and
+				       not( *f <= 0x20 or CommentPolicy::at_literal_end( *f ) ) ) {
+					++f;
 				}
 			}
+			first = f;
 		}
 
 		[[nodiscard]] constexpr bool at_literal_end( ) const {

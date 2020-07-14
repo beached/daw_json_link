@@ -525,7 +525,7 @@ namespace daw::json::json_details {
 	[[nodiscard]] static constexpr Range skip_number( Range &rng ) {
 		auto result = rng;
 		++rng.first;
-		rng.move_to_end_of_number( );
+		rng.move_to_end_of_literal( );
 		result.last = rng.first;
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_at_token_after_value( ),
@@ -586,18 +586,13 @@ namespace daw::json::json_details {
 			                      "Expected start of value to begin with '\"'" );
 			rng.remove_prefix( );
 			return json_details::skip_string_nq( rng );
-		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Bool ) {
-			if( rng.front( ) == 't' ) {
-				return json_details::skip_true( rng );
-			}
-			return json_details::skip_false( rng );
-		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Null ) {
-			return json_details::skip_null( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
 		                     JsonMember::expected_type == JsonParseTypes::Signed or
 		                     JsonMember::expected_type ==
-		                       JsonParseTypes::Unsigned ) {
-
+		                       JsonParseTypes::Unsigned or
+		                     JsonMember::expected_type == JsonParseTypes::Bool or
+		                     JsonMember::expected_type == JsonParseTypes::Null ) {
+			// All literals
 			return json_details::skip_number( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
 			daw_json_assert_weak( rng.is_opening_bracket_checked( ),
