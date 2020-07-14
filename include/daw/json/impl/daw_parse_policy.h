@@ -185,12 +185,12 @@ namespace daw::json {
 			char const *f = first;
 			char const *const l = last;
 			if constexpr( IsUncheckedInput ) {
-				while( *f > 0x20 and not CommentPolicy::is_literal_end( *f ) ) {
+				while( ( *f > 0x20 ) and not CommentPolicy::is_literal_end( *f ) ) {
 					++f;
 				}
 			} else {
-				while( f < l and
-				       not( *f > 0x20 and not CommentPolicy::is_literal_end( *f ) ) ) {
+				while( ( f < l ) and ( *f > 0x20 ) and
+				       not CommentPolicy::is_literal_end( *f ) ) {
 					++f;
 				}
 			}
