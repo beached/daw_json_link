@@ -34,7 +34,7 @@ namespace daw::json::json_details {
 		*it++ = '{';
 
 		auto visited_members =
-		  daw::bounded_vector_t<daw::string_view, sizeof...( JsonMembers ) * 2U>{};
+		  daw::bounded_vector_t<daw::string_view, sizeof...( JsonMembers ) * 2U>{ };
 		// Tag Members, if any.  Putting them ahead means we can parse this faster
 		// in the future
 		(void)( ( tags_to_json_str<Is,
@@ -64,7 +64,7 @@ namespace daw::json::json_details {
 		(void)std::array{
 		  ( to_json_ordered_str<Is, daw::traits::nth_element<Is, JsonMembers...>>(
 		      array_idx, it, args ),
-		    0 )...};
+		    0 )... };
 
 		*it++ = ']';
 		return it;

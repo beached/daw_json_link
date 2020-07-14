@@ -17,7 +17,7 @@ static void test( daw::string_view key, std::uint32_t seed,
 }
 
 int main( int, char ** ) {
-	constexpr char const t0_a[] = {0x01, 0x02, 0x03, 0x04, 0};
+	constexpr char const t0_a[] = { 0x01, 0x02, 0x03, 0x04, 0 };
 	constexpr std::uint32_t t0_b = daw::murmur3_details::to_u32( t0_a );
 	daw::expecting( t0_b == 0x04030201 );
 	test( "", 0, 0 );

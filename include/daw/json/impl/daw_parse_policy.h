@@ -185,20 +185,20 @@ namespace daw::json {
 			char const *f = first;
 			char const *const l = last;
 			if constexpr( IsUncheckedInput ) {
-				while( not( *f <= 0x20 or CommentPolicy::at_literal_end( *f ) ) ) {
+				while( *f > 0x20 and not CommentPolicy::is_literal_end( *f ) ) {
 					++f;
 				}
 			} else {
 				while( f < l and
-				       not( *f <= 0x20 or CommentPolicy::at_literal_end( *f ) ) ) {
+				       not( *f > 0x20 and not CommentPolicy::is_literal_end( *f ) ) ) {
 					++f;
 				}
 			}
 			first = f;
 		}
 
-		[[nodiscard]] constexpr bool at_literal_end( ) const {
-			return CommentPolicy::at_literal_end( *first );
+		[[nodiscard]] constexpr bool is_literal_end( ) const {
+			return CommentPolicy::is_literal_end( *first );
 		}
 
 		[[nodiscard]] constexpr bool is_space( ) const {

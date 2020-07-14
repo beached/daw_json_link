@@ -107,7 +107,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( canada_result, "Missing value" );
 #endif
 
-	std::string str{};
+	std::string str{ };
 	{
 		auto out_it = std::back_inserter( str );
 		str.reserve( json_sv1.size( ) );

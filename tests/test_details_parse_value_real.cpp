@@ -23,7 +23,7 @@ bool test_zero_untrusted( ) {
 	using my_number = json_number<no_name>;
 	constexpr std::string_view sv = "0,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{}, rng );
+	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
 	return v == 0;
 }
 
@@ -34,7 +34,7 @@ bool test_positive_zero_untrusted( ) {
 	using my_number = json_number<no_name>;
 	constexpr std::string_view sv = "+0,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{}, rng );
+	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
 	return v == 0;
 }
 
@@ -45,7 +45,7 @@ bool test_negative_zero_untrusted( ) {
 	using my_number = json_number<no_name>;
 	constexpr std::string_view sv = "-0,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{}, rng );
+	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
 	return v == 0;
 }
 
@@ -56,7 +56,7 @@ bool test_missing_untrusted( ) {
 	using my_number = json_number<no_name>;
 	constexpr std::string_view sv = " ,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{}, rng );
+	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
 	daw::do_not_optimize( v );
 	return false;
 }
@@ -68,7 +68,7 @@ bool test_real_untrusted( ) {
 	using my_number = json_number<no_name>;
 	constexpr std::string_view sv = "1.23,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{}, rng );
+	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
 	return v >= ( 1.23 - daw::numeric_limits<double>::epsilon( ) ) and
 	       v <= ( 1.23 + daw::numeric_limits<double>::epsilon( ) );
 }

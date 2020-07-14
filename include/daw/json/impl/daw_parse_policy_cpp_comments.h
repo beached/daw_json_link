@@ -146,7 +146,7 @@ namespace daw::json {
 			}
 		}
 
-		DAW_ATTRIBUTE_FLATTEN static constexpr bool at_literal_end( char c ) {
+		DAW_ATTRIBUTE_FLATTEN static constexpr bool is_literal_end( char c ) {
 			return c == '\0' or c == ',' or c == ']' or c == '}' or c == '#';
 		}
 

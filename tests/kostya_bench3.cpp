@@ -70,7 +70,7 @@ namespace daw::json {
 string read_file( const string &filename ) {
 	ifstream f( filename );
 	if( !f ) {
-		return {};
+		return { };
 	}
 	return string( istreambuf_iterator<char>( f ), istreambuf_iterator<char>( ) );
 }
@@ -91,12 +91,12 @@ coordinate_t calc( const string &text ) {
 		z += c.z;
 	}
 
-	return coordinate_t{x / len, y / len, z / len};
+	return coordinate_t{ x / len, y / len, z / len };
 }
 
 int main( ) {
 	auto left = calc( "{\"coordinates\":[{\"x\":1.1,\"y\":2.2,\"z\":3.3}]}" );
-	auto right = coordinate_t{1.1, 2.2, 3.3};
+	auto right = coordinate_t{ 1.1, 2.2, 3.3 };
 	if( left != right ) {
 		cerr << left << " != " << right << endl;
 		exit( EXIT_FAILURE );

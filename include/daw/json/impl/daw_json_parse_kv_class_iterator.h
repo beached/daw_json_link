@@ -64,7 +64,7 @@ namespace daw::json::json_details {
 
 		inline constexpr explicit json_parse_kv_class_iterator(
 		  iterator_range_t &r )
-		  : base{&r} {
+		  : base{ &r } {
 			if( base::rng->front( ) == '}' ) {
 				// Cleanup at end of value
 				if( not IsKnown ) {
@@ -80,11 +80,11 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
 			                      "Expected data to parse" );
 			auto key =
-			  parse_value<key_t>( ParseTag<key_t::expected_type>{}, *base::rng );
+			  parse_value<key_t>( ParseTag<key_t::expected_type>{ }, *base::rng );
 			name::name_parser::trim_end_of_name( *base::rng );
 			return daw::construct_a<value_type>(
 			  std::move( key ), parse_value<value_t>(
-			                      ParseTag<value_t::expected_type>{}, *base::rng ) );
+			                      ParseTag<value_t::expected_type>{ }, *base::rng ) );
 		}
 
 		inline constexpr json_parse_kv_class_iterator &operator++( ) {

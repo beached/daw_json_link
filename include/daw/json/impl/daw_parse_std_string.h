@@ -187,8 +187,8 @@ namespace daw::json::json_details {
 		  rng.last < rng.class_last,
 		  "Unabled to parse lone string, need space after to see \"" );
 		while( not rng.is_quotes_unchecked( ) ) {
-			char const * first = rng.first;
-			char const * const last = rng.last;
+			char const *first = rng.first;
+			char const *const last = rng.last;
 			while( *first != '"' and *first != '\\' ) {
 				daw_json_assert_weak( first < last, "Unexpected end of data" );
 				++first;

@@ -296,7 +296,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// ******************************
-	std::string str{};
+	std::string str{ };
 	auto out_it = std::back_inserter( str );
 	daw::bench_n_test_mbs<NUM_RUNS>(
 	  "twitter bench(to_json_string)", sz,
