@@ -33,6 +33,7 @@ namespace daw::json {
 		static constexpr bool is_unchecked_input = IsUncheckedInput;
 		static constexpr SIMDModes simd_mode = SIMDMode;
 		static constexpr bool allow_escaped_names = AllowEscapedNames;
+		static constexpr bool force_name_equal_check = false;
 		using CharT = char;
 
 		using as_unchecked =
@@ -201,7 +202,7 @@ namespace daw::json {
 			return CommentPolicy::is_literal_end( *first );
 		}
 
-		[[nodiscard]] constexpr bool is_space( ) const {
+		[[nodiscard]] constexpr bool is_space_checked( ) const {
 			daw_json_assert_weak( has_more( ), "Unexpected end" );
 			return *first <= 0x20;
 		}

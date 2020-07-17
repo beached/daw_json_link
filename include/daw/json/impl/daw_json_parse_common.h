@@ -272,9 +272,8 @@ namespace daw::json {
 
 	} // namespace json_details
 
-	template<JSONNAMETYPE n>
-	inline constexpr bool
-	  is_no_name = daw::string_view( n ) == daw::string_view( "" );
+	template<typename JsonMember>
+	inline constexpr bool is_no_name = JsonMember::name == std::string_view( "", 0 );
 
 	constexpr char const *as_cstr( JSONNAMETYPE ptr ) {
 		return ptr;

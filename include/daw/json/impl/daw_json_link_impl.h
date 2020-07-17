@@ -112,13 +112,13 @@ namespace daw::json::json_details {
 	template<bool HashesCollide, typename Range>
 	struct location_info_t {
 		std::uint32_t hash_value = 0;
-		daw::string_view name;
+		char const *name;
 		Range location{ };
 		std::size_t count = 0;
 
-		explicit constexpr location_info_t( daw::string_view Name ) noexcept
+		explicit constexpr location_info_t( std::string_view Name ) noexcept
 		  : hash_value( daw::murmur3_32( Name ) )
-		  , name( Name ) {}
+		  , name( Name.data( ) ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 			return location.is_null( );
@@ -131,7 +131,7 @@ namespace daw::json::json_details {
 		Range location{ };
 		std::size_t count = 0;
 
-		explicit constexpr location_info_t( daw::string_view Name ) noexcept
+		explicit constexpr location_info_t( std::string_view Name ) noexcept
 		  : hash_value( daw::murmur3_32( Name ) ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
@@ -164,13 +164,29 @@ namespace daw::json::json_details {
 			return N;
 		}
 
+		template<typename StringView>
+		static constexpr bool equal( StringView lhs, char const *rhs ) {
+			char const *lfirst = lhs.data( );
+			char const *const llast = lfirst + lhs.size( );
+			while( lfirst != llast bitand *rhs != '\0' ) {
+				if( *lfirst != *rhs ) {
+					return false;
+				}
+				++lfirst;
+				++rhs;
+			}
+			return lfirst == llast and *rhs == '\0';
+		}
+
+		template<typename StringView>
 		[[nodiscard]] constexpr std::size_t
-		find_name( daw::string_view key ) const {
-			uint32_t const hash = murmur3_32( key );
+		find_name( StringView key ) const {
+			auto const k = daw::string_view( key.data( ), key.size( ) );
+			uint32_t const hash = murmur3_32( k );
 			for( std::size_t n = 0; n < N; ++n ) {
 				if( names[n].hash_value == hash ) {
 					if constexpr( has_collisons ) {
-						if( DAW_JSON_UNLIKELY( key != names[n].name ) ) {
+						if( not equal( k, names[n].name ) ) {
 							continue;
 						}
 					}
@@ -196,9 +212,11 @@ namespace daw::json::json_details {
 
 	template<typename Range, typename... JsonMembers>
 	constexpr auto make_locations_info( ) {
-		constexpr bool hashes_collide = do_hashes_collide<JsonMembers...>( );
+		constexpr bool hashes_collide =
+		  Range::force_name_equal_check or do_hashes_collide<JsonMembers...>( );
 		return locations_info_t<sizeof...( JsonMembers ), Range, hashes_collide>{
-		  location_info_t<hashes_collide, Range>{ JsonMembers::name }... };
+		  location_info_t<hashes_collide, Range>{
+		    std::data( JsonMembers::name ) }... };
 	}
 	/***
 	 * Get the position from already seen JSON members or move the parser
@@ -334,7 +352,7 @@ namespace daw::json::json_details {
 	                    locations_info_t<N, Range, B> &locations, Range &rng ) {
 
 		rng.clean_tail( );
-		static_assert( not is_no_name<JsonMember::name>,
+		static_assert( not is_no_name<JsonMember>,
 		               "Array processing should never call parse_class_member" );
 
 		daw_json_assert_weak( rng.is_at_next_class_member( ),

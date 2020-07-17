@@ -981,7 +981,7 @@ namespace daw::json::json_details {
 	inline constexpr void to_json_str( bool &is_first, OutputIterator &it,
 	                                   std::tuple<Args...> const &tp,
 	                                   Value const &, Visited &visited_members ) {
-		constexpr auto json_member_name = daw::string_view( JsonMember::name );
+		constexpr auto json_member_name = daw::string_view( JsonMember::name.data( ), JsonMember::name.size( ) );
 		if( daw::algorithm::contains( visited_members.begin( ),
 		                              visited_members.end( ), json_member_name ) ) {
 			return;

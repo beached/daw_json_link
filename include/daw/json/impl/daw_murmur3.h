@@ -33,7 +33,8 @@ namespace daw {
 		}
 	} // namespace murmur3_details
 
-	constexpr std::uint32_t murmur3_32( daw::string_view key,
+	template<typename StringView>
+	constexpr std::uint32_t murmur3_32( StringView key,
 	                                    std::uint32_t seed = 0 ) noexcept {
 		std::uint32_t h = seed;
 		std::uint32_t k = 0;
