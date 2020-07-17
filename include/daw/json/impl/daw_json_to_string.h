@@ -958,7 +958,8 @@ namespace daw::json::json_details {
 	                                 Value const &v,
 	                                 VisitedMembers &visited_members ) {
 		using tag_member = tag_member_t<JsonMember>;
-		constexpr auto tag_member_name = daw::string_view( tag_member::name );
+		constexpr auto tag_member_name =
+		  daw::string_view( tag_member::name.data( ), tag_member::name.size( ) );
 		if( daw::algorithm::contains( visited_members.begin( ),
 		                              visited_members.end( ), tag_member_name ) ) {
 			return;
@@ -981,7 +982,8 @@ namespace daw::json::json_details {
 	inline constexpr void to_json_str( bool &is_first, OutputIterator &it,
 	                                   std::tuple<Args...> const &tp,
 	                                   Value const &, Visited &visited_members ) {
-		constexpr auto json_member_name = daw::string_view( JsonMember::name.data( ), JsonMember::name.size( ) );
+		constexpr auto json_member_name =
+		  daw::string_view( JsonMember::name.data( ), JsonMember::name.size( ) );
 		if( daw::algorithm::contains( visited_members.begin( ),
 		                              visited_members.end( ), json_member_name ) ) {
 			return;

@@ -112,13 +112,13 @@ namespace daw::json::json_details {
 	template<bool HashesCollide, typename Range>
 	struct location_info_t {
 		std::uint32_t hash_value = 0;
-		char const *name;
+		daw::string_view const *name;
 		Range location{ };
 		std::size_t count = 0;
 
-		explicit constexpr location_info_t( std::string_view Name ) noexcept
-		  : hash_value( daw::murmur3_32( Name ) )
-		  , name( Name.data( ) ) {}
+		explicit constexpr location_info_t( daw::string_view const *Name ) noexcept
+		  : hash_value( daw::murmur3_32( *Name ) )
+		  , name( Name ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 			return location.is_null( );
@@ -131,8 +131,8 @@ namespace daw::json::json_details {
 		Range location{ };
 		std::size_t count = 0;
 
-		explicit constexpr location_info_t( std::string_view Name ) noexcept
-		  : hash_value( daw::murmur3_32( Name ) ) {}
+		explicit constexpr location_info_t( daw::string_view const *Name ) noexcept
+		  : hash_value( daw::murmur3_32( *Name ) ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 			return location.is_null( );
@@ -164,29 +164,13 @@ namespace daw::json::json_details {
 			return N;
 		}
 
-		template<typename StringView>
-		static constexpr bool equal( StringView lhs, char const *rhs ) {
-			char const *lfirst = lhs.data( );
-			char const *const llast = lfirst + lhs.size( );
-			while( lfirst != llast bitand *rhs != '\0' ) {
-				if( *lfirst != *rhs ) {
-					return false;
-				}
-				++lfirst;
-				++rhs;
-			}
-			return lfirst == llast and *rhs == '\0';
-		}
-
-		template<typename StringView>
 		[[nodiscard]] constexpr std::size_t
-		find_name( StringView key ) const {
-			auto const k = daw::string_view( key.data( ), key.size( ) );
-			uint32_t const hash = murmur3_32( k );
+		find_name( daw::string_view key ) const {
+			uint32_t const hash = murmur3_32( key );
 			for( std::size_t n = 0; n < N; ++n ) {
 				if( names[n].hash_value == hash ) {
 					if constexpr( has_collisons ) {
-						if( not equal( k, names[n].name ) ) {
+						if( key != *names[n].name ) {
 							continue;
 						}
 					}
@@ -215,8 +199,7 @@ namespace daw::json::json_details {
 		constexpr bool hashes_collide =
 		  Range::force_name_equal_check or do_hashes_collide<JsonMembers...>( );
 		return locations_info_t<sizeof...( JsonMembers ), Range, hashes_collide>{
-		  location_info_t<hashes_collide, Range>{
-		    std::data( JsonMembers::name ) }... };
+		  location_info_t<hashes_collide, Range>( &JsonMembers::name )... };
 	}
 	/***
 	 * Get the position from already seen JSON members or move the parser
@@ -372,7 +355,8 @@ namespace daw::json::json_details {
 			return parse_value<JsonMember, true>(
 			  ParseTag<JsonMember::expected_type>{ }, loc );
 		} else {
-			daw_json_error( missing_member( JsonMember::name ) );
+			daw_json_error( missing_member( std::string_view(
+			  JsonMember::name.data( ), JsonMember::name.size( ) ) ) );
 		}
 	}
 

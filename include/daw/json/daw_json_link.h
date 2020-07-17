@@ -180,7 +180,7 @@ namespace daw::json {
 		    std::is_same_v<parse_to_t, std::invoke_result_t<Constructor>>,
 		  "Default ctor of constructor must match that of base" );
 		using constructor_t = Constructor;
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<json_details::number_parse_type_v<base_type>, Nullable>;
@@ -210,7 +210,7 @@ namespace daw::json {
 		  get_parse_type_v<JsonParseTypes::Bool, Nullable>;
 		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Bool;
 
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
 		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::Bool;
@@ -229,7 +229,7 @@ namespace daw::json {
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::StringRaw, Nullable>;
 		static constexpr JsonParseTypes base_expected_type =
@@ -254,7 +254,7 @@ namespace daw::json {
 		using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 		using appender_t = Appender;
 
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::StringEscaped, Nullable>;
 		static constexpr JsonParseTypes base_expected_type =
@@ -278,7 +278,7 @@ namespace daw::json {
 		using parse_to_t =
 		  std::invoke_result_t<Constructor, char const *, std::size_t>;
 
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Date, Nullable>;
 		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Date;
@@ -297,7 +297,7 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Class, Nullable>;
 		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Class;
@@ -350,7 +350,7 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Variant, Nullable>;
 		static constexpr JsonParseTypes base_expected_type =
@@ -383,7 +383,7 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::VariantTagged, Nullable>;
 		static constexpr JsonParseTypes base_expected_type =
@@ -415,7 +415,7 @@ namespace daw::json {
 		    std::is_invocable_r_v<char const *, ToJsonConverter, char const *,
 		                          parse_to_t>,
 		  "ToConverter must be callable with T or T and and OutputIterator" );
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Custom, Nullable>;
 		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Custom;
@@ -442,7 +442,7 @@ namespace daw::json {
 			static_assert( not std::is_same_v<void, base_type>,
 			               "Failed to detect base type" );
 			using parse_to_t = std::invoke_result_t<Constructor>;
-			static constexpr std::string_view name = Name;
+			static constexpr daw::string_view name = Name;
 			static constexpr JsonParseTypes expected_type =
 			  get_parse_type_v<JsonParseTypes::Array, Nullable>;
 			static constexpr JsonParseTypes base_expected_type =
@@ -472,7 +472,7 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::Array, Nullable>;
 		static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Array;
@@ -506,7 +506,7 @@ namespace daw::json {
 		static_assert( json_key_t::name == no_name,
 		               "Key member name must be the default no_name" );
 
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::KeyValue, Nullable>;
 		static constexpr JsonParseTypes base_expected_type =
@@ -545,7 +545,7 @@ namespace daw::json {
 		static_assert( daw::string_view( json_key_t::name ) !=
 		                 daw::string_view( json_value_t::name ),
 		               "Key and Value member names cannot be the same" );
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::KeyValueArray, Nullable>;
 		static constexpr JsonParseTypes base_expected_type =
@@ -572,7 +572,7 @@ namespace daw::json {
 		using base_type = json_value;
 		using parse_to_t = json_value;
 		using constructor_t = daw::construct_a_t<json_value>;
-		static constexpr std::string_view name = Name;
+		static constexpr daw::string_view name = Name;
 
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Unknown;
 		static constexpr JsonParseTypes base_expected_type =

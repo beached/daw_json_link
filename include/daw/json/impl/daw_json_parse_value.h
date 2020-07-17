@@ -599,9 +599,8 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng ) {
 
 		using tag_member = typename JsonMember::tag_member;
-		auto [is_found, rng2] =
-		  find_range<Range>( daw::string_view( rng.class_first, rng.last ),
-		                     daw::string_view( as_cstr( tag_member::name ) ) );
+		auto [is_found, rng2] = find_range<Range>(
+		  daw::string_view( rng.class_first, rng.last ), tag_member::name );
 
 		daw_json_assert( is_found, "Tag Member is manditory" );
 		auto index = typename JsonMember::switcher{ }(
