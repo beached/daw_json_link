@@ -254,13 +254,8 @@ namespace daw::json {
 		inline constexpr JSONNAMETYPE default_value_name{ "value" };
 	} // namespace json_details
 
-	template<JSONNAMETYPE n>
-	inline constexpr bool is_no_name = ( n == no_name );
-
-	template<typename Name>
-	constexpr char const *as_cstr( Name const &n ) {
-		return n.begin( );
-	}
+	template<typename JsonMember>
+	inline constexpr bool is_no_name = ( JsonMember::name == no_name );
 #else
 #define JSONNAMETYPE char const *
 	// Convienience for array members that are required to be unnamed
@@ -274,10 +269,6 @@ namespace daw::json {
 
 	template<typename JsonMember>
 	inline constexpr bool is_no_name = JsonMember::name == daw::string_view( "" );
-
-	constexpr char const *as_cstr( JSONNAMETYPE ptr ) {
-		return ptr;
-	}
 #endif
 
 	enum class JsonParseTypes : std::uint_fast8_t {
