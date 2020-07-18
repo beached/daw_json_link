@@ -22,6 +22,10 @@
 
 #pragma once
 
+#include <cstddef>
+#include <type_traits>
+#include <utility>
+
 #if defined( _MSC_VER ) and not defined( __clang__ )
 #include <intrin.h>
 #endif
