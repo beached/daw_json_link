@@ -1,4 +1,4 @@
-name: Windows
+name: Windows_ClangCl
 
 on:
   push:
