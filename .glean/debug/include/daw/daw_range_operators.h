@@ -35,7 +35,7 @@
 #include "daw_range_reference.h"
 #include "daw_traits.h"
 
-#ifndef WIN32 // internal compiler error on at least <= MSVC 2015.3
+#if not defined( _MSC_VER ) or defined( __clang__ ) // internal compiler error on at least <= MSVC 2015.3
 
 namespace daw {
 	namespace range {
@@ -189,4 +189,4 @@ DAW_RANGE_GENERATE_VCLAUSE( where )
 DAW_RANGE_GENERATE_VCLAUSE( for_each )
 
 #undef DAW_RANGE_GENERATE_VCLAUSE
-#endif //	WIN32
+#endif //	_MSC_VER

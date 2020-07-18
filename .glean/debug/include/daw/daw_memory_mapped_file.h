@@ -22,11 +22,12 @@
 
 #pragma once
 
-#include "daw_exchange.h"
-
 #include <cstddef>
 #include <cstdio>
-#ifndef WIN32
+#include <string_view>
+#include <utility>
+
+#if not defined( _MSC_VER )
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -39,13 +40,11 @@
 #include <tchar.h>
 #include <windows.h>
 #endif
-#include <string_view>
-#include <utility>
 
 namespace daw::filesystem {
 	enum class open_mode : bool { read, read_write };
 
-#ifndef WIN32
+#if not defined( _MSC_VER )
 	template<typename T = char>
 	struct memory_mapped_file_t {
 		using value_type = T;
@@ -165,15 +164,15 @@ namespace daw::filesystem {
 		memory_mapped_file_t &operator=( memory_mapped_file_t const & ) = delete;
 
 		memory_mapped_file_t( memory_mapped_file_t &&other ) noexcept
-		  : m_file( daw::exchange( other.m_file, -1 ) )
-		  , m_ptr( daw::exchange( other.m_ptr, nullptr ) )
-		  , m_size( daw::exchange( other.m_size, 0 ) ) {}
+		  : m_file( std::exchange( other.m_file, -1 ) )
+		  , m_ptr( std::exchange( other.m_ptr, nullptr ) )
+		  , m_size( std::exchange( other.m_size, 0 ) ) {}
 
 		memory_mapped_file_t &operator=( memory_mapped_file_t &&rhs ) noexcept {
 			if( this != &rhs ) {
-				m_file = daw::exchange( rhs.m_file, -1 );
-				m_ptr = daw::exchange( rhs.m_ptr, nullptr );
-				m_size = daw::exchange( rhs.m_size, 0 );
+				m_file = std::exchange( rhs.m_file, -1 );
+				m_ptr = std::exchange( rhs.m_ptr, nullptr );
+				m_size = std::exchange( rhs.m_size, 0 );
 			}
 			return *this;
 		}
@@ -182,12 +181,12 @@ namespace daw::filesystem {
 			cleanup( );
 		}
 
-		operator std::string_view( ) const {
-			return {data( ), size( )};
+		operator std::basic_string_view<T>( ) const {
+			return { data( ), size( ) };
 		}
 
-		operator std::string_view( ) {
-			return {data( ), size( )};
+		operator std::basic_string_view<T>( ) {
+			return { data( ), size( ) };
 		}
 	};
 #else
@@ -232,11 +231,11 @@ namespace daw::filesystem {
 
 		void cleanup( ) noexcept {
 			m_size = 0;
-			if( auto tmp = daw::exchange( m_ptr, nullptr ); tmp ) {
-				UnmapViewOfFile( static_cast<LPVOID>( tmp ) );
+			if( auto tmp = std::exchange( m_ptr, nullptr ); tmp ) {
+				::UnmapViewOfFile( static_cast<LPVOID>( tmp ) );
 			}
-			if( auto tmp = daw::exchange( m_handle, nullptr ); tmp ) {
-				CloseHandle( m_handle );
+			if( auto tmp = std::exchange( m_handle, nullptr ); tmp ) {
+				::CloseHandle( m_handle );
 			}
 		}
 
@@ -249,26 +248,70 @@ namespace daw::filesystem {
 			(void)open( file, mode );
 		}
 
+		memory_mapped_file_t( std::wstring_view file,
+		                      open_mode mode = open_mode::read ) noexcept {
+
+			(void)open( file, mode );
+		}
+
+		/***
+		 * file must be zero terminated
+		 */
 		[[nodiscard]] bool open( std::string_view file,
 		                         open_mode mode = open_mode::read ) noexcept {
 
 			{
-				HANDLE file_handle =
-				  CreateFile( file.data( ), mapfile_impl::CreateFileMode( mode ), 0,
-				              nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr );
+				HANDLE file_handle = ::CreateFileA(
+				  file.data( ), mapfile_impl::CreateFileMode( mode ), 0, nullptr,
+				  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr );
 				if( file_handle == INVALID_HANDLE_VALUE ) {
 					return false;
 				}
 				LARGE_INTEGER fsz;
-				if( not GetFileSizeEx( file_handle, &fsz ) or fsz.QuadPart <= 0 ) {
+				if( not ::GetFileSizeEx( file_handle, &fsz ) or fsz.QuadPart <= 0 ) {
 					cleanup( );
 					return false;
 				}
 				m_size = static_cast<size_t>( fsz.QuadPart );
-				m_handle = CreateFileMapping( file_handle, nullptr,
-				                              mapfile_impl::PageMode( mode ),
-				                              fsz.u.HighPart, fsz.u.LowPart, nullptr );
-				if( m_handle == NULL ) {
+				m_handle = ::CreateFileMapping(
+				  file_handle, nullptr, mapfile_impl::PageMode( mode ), fsz.u.HighPart,
+				  fsz.u.LowPart, nullptr );
+				if( m_handle == nullptr ) {
+					cleanup( );
+					return false;
+				}
+				CloseHandle( file_handle );
+			}
+			auto ptr =
+			  MapViewOfFile( m_handle, mapfile_impl::MapMode( mode ), 0, 0, 0 );
+			if( ptr == nullptr ) {
+				cleanup( );
+				return false;
+			}
+			m_ptr = static_cast<pointer>( ptr );
+			return true;
+		}
+
+		[[nodiscard]] bool open( std::wstring_view file,
+		                         open_mode mode = open_mode::read ) noexcept {
+
+			{
+				HANDLE file_handle = ::CreateFileW(
+				  file.data( ), mapfile_impl::CreateFileMode( mode ), 0, nullptr,
+				  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr );
+				if( file_handle == INVALID_HANDLE_VALUE ) {
+					return false;
+				}
+				LARGE_INTEGER fsz;
+				if( not ::GetFileSizeEx( file_handle, &fsz ) or fsz.QuadPart <= 0 ) {
+					cleanup( );
+					return false;
+				}
+				m_size = static_cast<size_t>( fsz.QuadPart );
+				m_handle = ::CreateFileMapping(
+				  file_handle, nullptr, mapfile_impl::PageMode( mode ), fsz.u.HighPart,
+				  fsz.u.LowPart, nullptr );
+				if( m_handle == nullptr ) {
 					cleanup( );
 					return false;
 				}
@@ -313,15 +356,15 @@ namespace daw::filesystem {
 		memory_mapped_file_t &operator=( memory_mapped_file_t const & ) = delete;
 
 		memory_mapped_file_t( memory_mapped_file_t &&other ) noexcept
-		  : m_handle( daw::exchange( other.m_handle, nullptr ) )
-		  , m_size( daw::exchange( other.m_size, 0 ) )
-		  , m_ptr( daw::exchange( other.m_ptr, nullptr ) ) {}
+		  : m_handle( std::exchange( other.m_handle, nullptr ) )
+		  , m_size( std::exchange( other.m_size, 0 ) )
+		  , m_ptr( std::exchange( other.m_ptr, nullptr ) ) {}
 
 		memory_mapped_file_t &operator=( memory_mapped_file_t &&rhs ) noexcept {
 			if( this != &rhs ) {
-				m_handle = daw::exchange( rhs.m_handle, nullptr );
-				m_size = daw::exchange( rhs.m_size, 0 );
-				m_ptr = daw::exchange( rhs.m_ptr, nullptr );
+				m_handle = std::exchange( rhs.m_handle, nullptr );
+				m_size = std::exchange( rhs.m_size, 0 );
+				m_ptr = std::exchange( rhs.m_ptr, nullptr );
 			}
 			return *this;
 		}
@@ -330,12 +373,12 @@ namespace daw::filesystem {
 			cleanup( );
 		}
 
-		operator std::string_view( ) const {
-			return {data( ), size( )};
+		operator std::basic_string_view<T>( ) const {
+			return { data( ), size( ) };
 		}
 
-		operator std::string_view( ) {
-			return {data( ), size( )};
+		operator std::basic_string_view<T>( ) {
+			return { data( ), size( ) };
 		}
 	};
 #endif

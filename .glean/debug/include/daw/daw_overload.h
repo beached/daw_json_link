@@ -22,24 +22,81 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include "cpp_17.h"
 #include "daw_traits.h"
+
+#include <type_traits>
 
 namespace daw {
 	// overload_t/overload create a callable with the overloads of operator( )
 	// provided
 	//
-	template<typename... Fs>
-	struct overload : Fs... {
+	namespace overload_details {
+		template<typename>
+		struct fp_wrapper_t;
 
-		constexpr overload( Fs... fs )
-		  : Fs{std::move( fs )}... {}
+		template<typename ReturnType, typename... Arguments>
+		struct fp_wrapper_t<ReturnType ( * )( Arguments... )> {
+			std::add_pointer_t<ReturnType( Arguments... )> fp;
 
-		using Fs::operator( )...;
+			template<typename... Args,
+			         std::enable_if_t<std::is_invocable_v<decltype( fp ), Args...>,
+			                          std::nullptr_t> = nullptr>
+			inline constexpr ReturnType operator( )( Args &&... args ) const {
+				return fp( std::forward<Args>( args )... );
+			}
+		};
+
+		template<typename ReturnType, typename... Arguments>
+		struct fp_wrapper_t<ReturnType ( & )( Arguments... )> {
+			std::add_pointer_t<ReturnType( Arguments... )> fp;
+
+			template<typename... Args,
+			         std::enable_if_t<std::is_invocable_v<decltype( fp ), Args...>,
+			                          std::nullptr_t> = nullptr>
+			inline constexpr ReturnType operator( )( Args &&... args ) const {
+				return fp( std::forward<Args>( args )... );
+			}
+		};
+
+		template<typename T>
+		using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
+
+		template<typename Func>
+		using fp_wrapper = std::conditional_t<std::is_class_v<remove_cvref_t<Func>>,
+		                                      Func, fp_wrapper_t<Func>>;
+
+		template<auto>
+		struct lift_t;
+
+		template<typename ReturnType, typename... Arguments,
+		         ReturnType ( *fp )( Arguments... )>
+		struct lift_t<fp> {
+			template<typename... Args,
+			         std::enable_if_t<std::is_invocable_v<decltype( fp ), Args...>,
+			                          std::nullptr_t> = nullptr>
+			inline constexpr ReturnType operator( )( Args &&... args ) const
+			  noexcept( noexcept( fp( std::forward<Args>( args )... ) ) ) {
+				return fp( std::forward<Args>( args )... );
+			}
+		};
+
+	} // namespace overload_details
+
+	template<auto fp>
+	inline constexpr overload_details::lift_t<fp> lift =
+	  overload_details::lift_t<fp>{};
+
+	template<typename... Funcs>
+	struct overload : overload_details::fp_wrapper<Funcs>... {
+		using overload_details::fp_wrapper<Funcs>::operator( )...;
+
+		constexpr overload( Funcs... fs )
+		  : overload_details::fp_wrapper<Funcs>{fs}... {}
 	};
 
-	template<typename... Fs>
-	overload( Fs... )->overload<Fs...>;
+	template<typename... Funcs>
+	overload( Funcs &&... )
+	  ->overload<std::conditional_t<std::is_class_v<remove_cvref_t<Funcs>>,
+	                                remove_cvref_t<Funcs>, Funcs>...>;
 } // namespace daw

@@ -22,17 +22,12 @@
 
 #pragma once
 
-#include <type_traits>
-#include <utility>
-#include <memory>
-
-#pragma once
-#ifdef _MSC_VER
+#if defined( _MSC_VER ) and not defined( __clang__ )
 #include <intrin.h>
 #endif
 
 namespace daw {
-#ifndef _MSC_VER
+#if not defined( _MSC_VER ) or defined( __clang__ )
 	template<typename Tp>
 	inline void do_not_optimize( Tp const &value ) {
 		asm volatile( "" : : "r,m"( value ) : "memory" );

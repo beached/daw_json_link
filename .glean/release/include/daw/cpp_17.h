@@ -325,7 +325,7 @@ namespace daw {
 		}
 	} // namespace cpp_17_details
 
-#ifndef _MSC_VER
+#if not defined( _MSC_VER ) or defined( __clang__ )
 	template<typename F, typename... Args,
 	         daw::enable_when_t<std::conjunction_v<
 	           not_trait<is_reference_wrapper<Args>>...>> = nullptr>

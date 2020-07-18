@@ -37,7 +37,7 @@ namespace daw {
 	  std::disjunction<std::is_same<T, StringViewBoundsPointer>,
 	                   std::is_same<T, StringViewBoundsSize>>;
 
-#ifdef _MSC_VER
+#if defined( _MSC_VER ) and not defined( __clang__ ) 
 	// MSVC has issues with the second item being a pointer
 	using default_string_view_bounds_type = StringViewBoundsSize;
 #else

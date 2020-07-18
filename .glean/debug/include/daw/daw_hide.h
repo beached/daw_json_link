@@ -22,7 +22,7 @@
 
 #pragma once
 
-#if not defined( DAW_NO_FLATTEN ) and not defined( _MSC_VER )
+#if not defined( DAW_NO_FLATTEN ) and (not defined( _MSC_VER ) or defined( __clang__ ))
 #define DAW_ATTRIBUTE_FLATTEN [[gnu::flatten, gnu::always_inline]]
 #define DAW_ATTRIBUTE_HIDDEN __attribute__( ( visibility( "hidden" ) ) )
 #else

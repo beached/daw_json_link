@@ -276,7 +276,7 @@ namespace daw::traits {
 #define GENERATE_IS_STD_CONTAINER1( ContainerName )                            \
 	template<typename T>                                                         \
 	constexpr bool is_##ContainerName##_v =                                      \
-	  std::is_same_v<T, std:: ContainerName <typename T::value_type>>;             \
+	  std::is_same_v<T, std::ContainerName<typename T::value_type>>;             \
 	template<typename T>                                                         \
 	using is_##ContainerName = std::bool_constant<is_##ContainerName##_v<T>>
 
@@ -285,8 +285,8 @@ namespace daw::traits {
 	GENERATE_IS_STD_CONTAINER1( set );
 	GENERATE_IS_STD_CONTAINER1( unordered_set );
 	GENERATE_IS_STD_CONTAINER1( deque );
-#undef GENERATE_IS_STD_CONTAINER1
 
+#undef GENERATE_IS_STD_CONTAINER1
 
 #define GENERATE_IS_STD_CONTAINER2( ContainerName )                            \
 	template<typename T>                                                         \
@@ -836,4 +836,16 @@ namespace daw::traits {
 	 */
 	template<typename T, typename... Ts>
 	using something_t = typename traits_details::make_something<T, Ts...>::type;
+
+	struct no_else {};
+
+	template<bool Bool, typename OnTrue, typename OnFalse = no_else>
+	constexpr decltype( auto ) cxif( OnTrue ot = OnTrue{},
+	                                 OnFalse of = OnFalse{} ) {
+		if constexpr( Bool ) {
+			return ot( );
+		} else {
+			return of( );
+		}
+	}
 } // namespace daw::traits

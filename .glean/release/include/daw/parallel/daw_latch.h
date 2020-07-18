@@ -262,7 +262,7 @@ namespace daw {
 
 		void set_latch( ) {
 			assert( latch );
-			latch->set_latch( );
+			latch->notify( );
 		}
 
 		void wait( ) const {

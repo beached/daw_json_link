@@ -67,5 +67,5 @@ namespace daw {
 	};
 
 	template<typename Container>
-	back_inserter( Container ) -> back_inserter<Container>;
+	back_inserter( Container )->back_inserter<Container>;
 } // namespace daw

@@ -26,6 +26,7 @@
 #include <functional>
 #include <iterator>
 
+#include "daw_algorithm.h"
 #include "daw_swap.h"
 #include "daw_traits.h"
 #include "iterator/daw_random_iterator.h"
@@ -41,7 +42,8 @@ namespace daw {
 			auto const f = std::next( first, Pos0 );
 			auto const l = std::next( first, Pos1 );
 			if( not comp( *f, *l ) ) {
-				daw::iter_swap( f, l );
+				daw::cswap( *f, *l );
+//				daw::iter_swap( f, l );
 			}
 		}
 		template<typename ForwardIterator, typename Compare>

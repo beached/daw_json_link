@@ -48,7 +48,7 @@
 #include "daw_traits.h"
 
 template<typename... Ts>
-constexpr void Unused( Ts &&... ) noexcept {}
+inline constexpr void Unused( Ts &&... ) noexcept {}
 
 namespace daw {
 	namespace utility_details {
@@ -109,17 +109,17 @@ namespace daw {
 			T m_value;
 
 		public:
-			constexpr EqualToImpl( T value ) noexcept(
+			inline constexpr EqualToImpl( T value ) noexcept(
 			  std::is_nothrow_copy_constructible_v<T> )
 			  : m_value( daw::move( value ) ) {}
 
-			[[nodiscard]] constexpr bool operator( )( T const &value ) noexcept {
+			[[nodiscard]] inline constexpr bool operator( )( T const &value ) noexcept {
 				return m_value == value;
 			}
 		}; // class EqualToImpl
 	}    // namespace utility_details
 	template<typename T>
-	constexpr utility_details::EqualToImpl<T> equal_to( T value ) {
+	inline constexpr utility_details::EqualToImpl<T> equal_to( T value ) {
 		return utility_details::EqualToImpl<T>( daw::move( value ) );
 	}
 
@@ -128,9 +128,9 @@ namespace daw {
 		T *m_value = nullptr;
 
 	public:
-		constexpr equal_to_last( ) noexcept = default;
+		inline constexpr equal_to_last( ) noexcept = default;
 
-		bool operator( )( T const &value ) noexcept {
+		inline bool operator( )( T const &value ) noexcept {
 			bool result = false;
 			if( m_value ) {
 				result = *m_value == value;
@@ -146,19 +146,19 @@ namespace daw {
 			Function m_function;
 
 		public:
-			constexpr NotImpl( Function func ) noexcept(
+			inline constexpr NotImpl( Function func ) noexcept(
 			  std::is_nothrow_move_constructible_v<Function> )
 			  : m_function( std::move( func ) ) {}
 
 			template<typename... Args>
-			[[nodiscard]] constexpr bool operator( )( Args &&... args ) {
+			[[nodiscard]] inline constexpr bool operator( )( Args &&... args ) {
 				return !m_function( std::forward<Args>( args )... );
 			}
 		}; // class NotImpl
 	}    // namespace utility_details
 
 	template<typename Function>
-	[[nodiscard]] utility_details::NotImpl<Function> Not( Function func ) {
+	[[nodiscard]] inline constexpr utility_details::NotImpl<Function> Not( Function func ) {
 		return utility_details::NotImpl<Function>( func );
 	}
 
@@ -757,7 +757,7 @@ namespace daw {
 	 See: https://youtu.be/nXaxk27zwlk?t=2441
 	*/
 
-#ifndef _MSC_VER
+#if not defined( _MSC_VER ) or defined( __clang__ )
 	template<typename T>
 	inline void force_evaluation( T const &value ) {
 		asm volatile( "" : : "r,m"( value ) : "memory" );

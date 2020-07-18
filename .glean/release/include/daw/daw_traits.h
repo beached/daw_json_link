@@ -836,4 +836,16 @@ namespace daw::traits {
 	 */
 	template<typename T, typename... Ts>
 	using something_t = typename traits_details::make_something<T, Ts...>::type;
+
+	struct no_else {};
+
+	template<bool Bool, typename OnTrue, typename OnFalse = no_else>
+	constexpr decltype( auto ) cxif( OnTrue ot = OnTrue{},
+	                                 OnFalse of = OnFalse{} ) {
+		if constexpr( Bool ) {
+			return ot( );
+		} else {
+			return of( );
+		}
+	}
 } // namespace daw::traits

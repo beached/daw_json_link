@@ -309,7 +309,7 @@ namespace daw {
 				}
 			}
 		}
-		auto const total_start = std::chrono::steady_clock::now( );
+		//auto const total_start = std::chrono::steady_clock::now( );
 		benchmark_impl::second_duration valid_time = std::chrono::seconds( 0 );
 		for( size_t n = 0; n < Runs; ++n ) {
 			std::chrono::time_point<std::chrono::steady_clock,
@@ -415,7 +415,6 @@ namespace daw {
 	 * @tparam Runs Number of runs
 	 * @tparam Function Callable type to be timed
 	 * @tparam Args types to pass to callable
-	 * @param validator validatio object that takes func's result as arg
 	 * @param func Callable value to bench
 	 * @param args args values to pass to func
 	 * @return last result timing counts of runs
@@ -448,7 +447,7 @@ namespace daw {
 				}
 			}
 		}
-		using result_t = daw::remove_cvref_t<decltype( func( args... ) )>;
+		//using result_t = daw::remove_cvref_t<decltype( func( args... ) )>;
 
 		for( size_t n = 0; n < Runs; ++n ) {
 			auto const start = std::chrono::steady_clock::now( );

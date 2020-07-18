@@ -81,9 +81,9 @@ namespace daw {
 		  : m_first( arr )
 		  , m_size( N ) {}
 
-		template<typename Container, std::enable_if_t<!is_daw_span_v<Container>,
+		template<typename Container, std::enable_if_t<not is_daw_span_v<Container>,
 		                                              std::nullptr_t> = nullptr>
-		explicit constexpr span( Container const &c ) noexcept
+		constexpr span( Container const &c ) noexcept
 		  : m_first( std::data( c ) )
 		  , m_size( std::size( c ) ) {}
 
@@ -223,7 +223,7 @@ namespace daw {
 
 	// non-const T span
 	template<typename T>
-	struct span<T, std::enable_if_t<!std::is_const_v<T>>> {
+	struct span<T, std::enable_if_t<not std::is_const_v<T>>> {
 		using value_type = daw::remove_cvref_t<T>;
 		using pointer = value_type *;
 		using const_pointer = value_type const *;
@@ -272,9 +272,9 @@ namespace daw {
 		  : m_first( arr )
 		  , m_size( N ) {}
 
-		template<typename Container, std::enable_if_t<!is_daw_span_v<Container>,
+		template<typename Container, std::enable_if_t<not is_daw_span_v<Container>,
 		                                              std::nullptr_t> = nullptr>
-		explicit constexpr span( Container &c ) noexcept
+		constexpr span( Container &c ) noexcept
 		  : m_first( std::data( c ) )
 		  , m_size( std::size( c ) ) {}
 

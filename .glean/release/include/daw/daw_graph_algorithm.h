@@ -35,6 +35,9 @@
 #include "daw_move.h"
 
 namespace daw {
+	struct UnorderedWalk {
+		// Defaul that specifies that a walk imposes no ordering on the children
+	};
 	namespace graph_alg_impl {
 		struct NoSort {};
 
@@ -43,7 +46,7 @@ namespace daw {
 			using node_t =
 			  std::remove_reference_t<decltype( graph.get_node( node.id( ) ) )>;
 
-			std::vector<node_t> result{};
+			std::vector<node_t> result{ };
 			for( auto m_id : node.outgoing_edges( ) ) {
 				result.push_back( graph.get_node( m_id ) );
 			}
@@ -53,7 +56,7 @@ namespace daw {
 		template<typename Node, typename T, typename Graph, typename Function,
 		         typename Compare>
 		void topological_sorted_walk( Graph &&graph, Function &&func,
-		                              Compare comp = Compare{} ) {
+		                              Compare comp = Compare{ } ) {
 
 			// Find all nodes that do not have incoming entries
 			std::vector<Node> root_nodes = [&] {
@@ -124,11 +127,11 @@ namespace daw {
 			}
 		}
 
-		template<typename T, typename Graph, typename Function>
-		void bfs_walk( Graph &&graph, daw::node_id_t start_node_id,
-		               Function &&func ) {
-			std::unordered_set<daw::node_id_t> visited{};
-			std::deque<daw::node_id_t> path{};
+		template<typename T, typename ChildOrder, typename Graph, typename Function>
+		void bfs_walk( Graph &&graph, daw::node_id_t start_node_id, Function &&func,
+		               ChildOrder ord ) {
+			std::unordered_set<daw::node_id_t> visited{ };
+			std::deque<daw::node_id_t> path{ };
 			path.push_back( start_node_id );
 
 			while( not path.empty( ) ) {
@@ -136,19 +139,37 @@ namespace daw {
 				path.pop_front( );
 				func( current_node );
 				visited.insert( current_node.id( ) );
-				std::copy_if( std::begin( current_node.outgoing_edges( ) ),
-				              std::end( current_node.outgoing_edges( ) ),
-				              std::back_inserter( path ), [&]( auto const &n_id ) {
-					              return visited.count( n_id ) == 0;
-				              } );
+				if constexpr( std::is_same_v<ChildOrder, UnorderedWalk> ) {
+					std::copy_if( std::begin( current_node.outgoing_edges( ) ),
+					              std::end( current_node.outgoing_edges( ) ),
+					              std::back_inserter( path ), [&]( auto const &n_id ) {
+						              return visited.count( n_id ) == 0;
+					              } );
+				} else {
+					auto children = std::vector<daw::node_id_t>( );
+
+					std::copy_if(
+					  std::begin( current_node.outgoing_edges( ) ),
+					  std::end( current_node.outgoing_edges( ) ),
+					  std::back_inserter( children ),
+					  [&]( auto const &n_id ) { return visited.count( n_id ) == 0; } );
+
+					std::sort( children.begin( ), children.end( ),
+					           [&]( daw::node_id_t left_id, daw::node_id_t right_id ) {
+						           return ord( graph.get_node( left_id ).value( ),
+						                       graph.get_node( right_id ).value( ) );
+					           } );
+					std::copy( children.begin( ), children.end( ),
+					           std::back_inserter( path ) );
+				}
 			}
 		}
 
-		template<typename T, typename Graph, typename Function>
-		void dfs_walk( Graph &&graph, daw::node_id_t start_node_id,
-		               Function &&func ) {
-			std::unordered_set<daw::node_id_t> visited{};
-			std::vector<daw::node_id_t> path{};
+		template<typename T, typename ChildOrder, typename Graph, typename Function>
+		void dfs_walk( Graph &&graph, daw::node_id_t start_node_id, Function &&func,
+		               ChildOrder ord ) {
+			std::unordered_set<daw::node_id_t> visited{ };
+			std::vector<daw::node_id_t> path{ };
 			path.push_back( start_node_id );
 
 			while( not path.empty( ) ) {
@@ -156,24 +177,42 @@ namespace daw {
 				path.pop_back( );
 				func( current_node );
 				visited.insert( current_node.id( ) );
-				std::copy_if( std::begin( current_node.outgoing_edges( ) ),
-				              std::end( current_node.outgoing_edges( ) ),
-				              std::back_inserter( path ), [&]( auto const &n_id ) {
-					              return visited.count( n_id ) == 0;
-				              } );
+				if constexpr( std::is_same_v<ChildOrder, UnorderedWalk> ) {
+					std::copy_if( std::begin( current_node.outgoing_edges( ) ),
+					              std::end( current_node.outgoing_edges( ) ),
+					              std::back_inserter( path ), [&]( auto const &n_id ) {
+						              return visited.count( n_id ) == 0;
+					              } );
+				} else {
+					auto children = std::vector<daw::node_id_t>( );
+					std::copy_if(
+					  std::begin( current_node.outgoing_edges( ) ),
+					  std::end( current_node.outgoing_edges( ) ),
+					  std::back_inserter( children ),
+					  [&]( auto const &n_id ) { return visited.count( n_id ) == 0; } );
+
+					std::sort( children.begin( ), children.end( ),
+					           [&]( daw::node_id_t left_id, daw::node_id_t right_id ) {
+						           return not ord( graph.get_node( left_id ).value( ),
+						                       graph.get_node( right_id ).value( ) );
+					           } );
+					path.reserve( path.size( ) + children.size( ) );
+					std::copy( children.begin( ), children.end( ),
+					           std::back_inserter( path ) );
+				}
 			}
 		}
 	} // namespace graph_alg_impl
 
 	// Minimum Spanning Tree
 	template<typename T, typename Compare = daw::graph_alg_impl::NoSort>
-	void mst( daw::graph_t<T> &graph, Compare /*TODO comp*/ = Compare{} ) {
+	void mst( daw::graph_t<T> &graph, Compare /*TODO comp*/ = Compare{ } ) {
 		auto root_ids = graph.find_roots( );
 		for( auto start_node_id : root_ids ) {
-			std::unordered_set<daw::node_id_t> visited{};
+			std::unordered_set<daw::node_id_t> visited{ };
 			std::vector<std::pair<std::optional<daw::node_id_t>, daw::node_id_t>>
-			  path{};
-			path.push_back( {std::nullopt, start_node_id} );
+			  path{ };
+			path.push_back( { std::nullopt, start_node_id } );
 
 			while( not path.empty( ) ) {
 				auto current_id = path.back( );
@@ -201,7 +240,7 @@ namespace daw {
 	template<typename T, typename Function,
 	         typename Compare = daw::graph_alg_impl::NoSort>
 	void topological_sorted_walk( daw::graph_t<T> const &graph, Function &&func,
-	                              Compare comp = Compare{} ) {
+	                              Compare comp = Compare{ } ) {
 
 		using Node = std::remove_reference_t<decltype(
 		  graph.get_node( std::declval<daw::node_id_t>( ) ) )>;
@@ -215,7 +254,7 @@ namespace daw {
 	template<typename T, typename Function,
 	         typename Compare = daw::graph_alg_impl::NoSort>
 	void topological_sorted_walk( daw::graph_t<T> &graph, Function &&func,
-	                              Compare comp = Compare{} ) {
+	                              Compare comp = Compare{ } ) {
 
 		using Node = std::remove_reference_t<decltype(
 		  graph.get_node( std::declval<daw::node_id_t>( ) ) )>;
@@ -257,13 +296,13 @@ namespace daw {
 		using const_reference = value_type const &;
 
 		topological_sorted_iterator( daw::remove_cvref_t<Graph> const &graph,
-		                             Compare comp = Compare{} )
+		                             Compare comp = Compare{ } )
 		  : m_nodes( std::make_shared<std::vector<Node>>(
 		      get_nodes( graph, std::move( comp ) ) ) )
 		  , m_iterator( m_nodes->begin( ) ) {}
 
 		topological_sorted_iterator( daw::remove_cvref_t<Graph> &graph,
-		                             Compare comp = Compare{} )
+		                             Compare comp = Compare{ } )
 		  : m_nodes( std::make_shared<std::vector<Node>>(
 		      get_nodes( graph, std::move( comp ) ) ) )
 		  , m_iterator( m_nodes->begin( ) ) {}
@@ -381,7 +420,7 @@ namespace daw {
 	};
 
 	template<typename Graph, typename Compare = daw::graph_alg_impl::NoSort>
-	auto make_topological_sorted_range( Graph &&g, Compare c = Compare{} ) {
+	auto make_topological_sorted_range( Graph &&g, Compare c = Compare{ } ) {
 		static_assert( not std::is_rvalue_reference_v<Graph>,
 		               "Temporaries are not supported" );
 		auto frst = topological_sorted_iterator<Graph, Compare>(
@@ -416,12 +455,12 @@ namespace daw {
 			}
 		};
 		auto l = frst.end( );
-		return result_t{std::move( frst ), std::move( l )};
+		return result_t{ std::move( frst ), std::move( l ) };
 	}
 
 	template<typename Graph, typename Compare = daw::graph_alg_impl::NoSort>
 	auto make_reverse_topological_sorted_range( Graph &&g,
-	                                            Compare c = Compare{} ) {
+	                                            Compare c = Compare{ } ) {
 		static_assert( not std::is_rvalue_reference_v<Graph>,
 		               "Temporaries are not supported" );
 		auto frst = topological_sorted_iterator<Graph, Compare>(
@@ -456,14 +495,14 @@ namespace daw {
 			}
 		};
 		auto l = frst.end( );
-		return result_t{std::move( frst ), std::move( l )};
+		return result_t{ std::move( frst ), std::move( l ) };
 	}
 
 	template<typename T, typename Func,
 	         typename Compare = daw::graph_alg_impl::NoSort>
 	void reverse_topological_sorted_walk( daw::graph_t<T> const &known_deps,
 	                                      Func visitor,
-	                                      Compare &&comp = Compare{} ) {
+	                                      Compare &&comp = Compare{ } ) {
 		auto nodes = std::vector<daw::node_id_t>( );
 		topological_sorted_walk(
 		  known_deps, [&]( auto const &n ) { nodes.push_back( n.id( ) ); },
@@ -480,7 +519,7 @@ namespace daw {
 	         typename Compare = daw::graph_alg_impl::NoSort>
 	void reverse_topological_sorted_walk( daw::graph_t<T> &known_deps,
 	                                      Func visitor,
-	                                      Compare &&comp = Compare{} ) {
+	                                      Compare &&comp = Compare{ } ) {
 		auto nodes = std::vector<daw::node_id_t>( );
 		topological_sorted_walk(
 		  known_deps, [&]( auto const &n ) { nodes.push_back( n.id( ) ); },
@@ -493,36 +532,36 @@ namespace daw {
 		}
 	}
 
-	template<typename T, typename Function>
+	template<typename ChildOrder = UnorderedWalk, typename T, typename Function>
 	void bfs_walk( daw::graph_t<T> const &graph, daw::node_id_t start_node_id,
-	               Function &&func ) {
+	               Function &&func, ChildOrder ord = ChildOrder{ } ) {
 
 		graph_alg_impl::bfs_walk<T>( graph, start_node_id,
-		                             std::forward<Function>( func ) );
+		                             std::forward<Function>( func ), ord );
 	}
 
-	template<typename T, typename Function>
+	template<typename ChildOrder = UnorderedWalk, typename T, typename Function>
 	void bfs_walk( daw::graph_t<T> &graph, daw::node_id_t start_node_id,
-	               Function &&func ) {
+	               Function &&func, ChildOrder ord = ChildOrder{ } ) {
 
 		graph_alg_impl::bfs_walk<T>( graph, start_node_id,
-		                             std::forward<Function>( func ) );
+		                             std::forward<Function>( func ), ord );
 	}
 
-	template<typename T, typename Function>
+	template<typename T, typename Function, typename ChildOrder = UnorderedWalk>
 	void dfs_walk( daw::graph_t<T> const &graph, daw::node_id_t start_node_id,
-	               Function &&func ) {
+	               Function &&func, ChildOrder ord = ChildOrder{ } ) {
 
 		graph_alg_impl::dfs_walk<T>( graph, start_node_id,
-		                             std::forward<Function>( func ) );
+		                             std::forward<Function>( func ), ord );
 	}
 
-	template<typename T, typename Function>
+	template<typename T, typename Function, typename ChildOrder = UnorderedWalk>
 	void dfs_walk( daw::graph_t<T> &graph, daw::node_id_t start_node_id,
-	               Function &&func ) {
+	               Function &&func, ChildOrder ord = ChildOrder{ } ) {
 
 		graph_alg_impl::dfs_walk<T>( graph, start_node_id,
-		                             std::forward<Function>( func ) );
+		                             std::forward<Function>( func ), ord );
 	}
 
 } // namespace daw
