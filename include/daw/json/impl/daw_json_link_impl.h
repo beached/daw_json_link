@@ -360,6 +360,32 @@ namespace daw::json::json_details {
 		}
 	}
 
+	template<typename Range>
+	DAW_ATTRIBUTE_FLATTEN inline constexpr void class_cleanup_now( Range &rng ) {
+		if( not rng.has_more( ) ) {
+			return;
+		}
+		rng.clean_tail( );
+		// If we fullfill the contract before all values are parses
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
+		rng.move_to_next_class_member( );
+		(void)rng.skip_class( );
+		// Yes this must be checked.  We maybe at the end of document.  After the
+		// 2nd try, give up
+		rng.trim_left_checked( );
+	}
+
+	template<typename Range>
+	struct ClassCleanupDtor {
+		Range *rng_ptr;
+		DAW_ATTRIBUTE_FLATTEN ~ClassCleanupDtor( ) {
+			daw_json_assert_weak( rng_ptr, "Unexpected null" );
+			class_cleanup_now( *rng_ptr );
+		}
+	};
+	template<typename Range>
+	ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
+
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
 	[[nodiscard]] inline constexpr JsonClass
@@ -373,23 +399,9 @@ namespace daw::json::json_details {
 		rng.remove_prefix( );
 		rng.move_to_next_class_member( );
 
-		auto const cleanup_fn = [&] {
-			if( not rng.has_more( ) ) {
-				return;
-			}
-			rng.clean_tail( );
-			// If we fullfill the contract before all values are parses
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
-			rng.move_to_next_class_member( );
-			(void)rng.skip_class( );
-			// Yes this must be checked.  We maybe at the end of document.  After the
-			// 2nd try, give up
-			rng.trim_left_checked( );
-		};
-
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
 			// Clang-CL with MSVC has issues if we don't do empties this way
-			cleanup_fn( );
+			class_cleanup_now( rng );
 			return daw::construct_a<JsonClass>( );
 		} else {
 
@@ -412,7 +424,7 @@ namespace daw::json::json_details {
 			// classes without move/copy special members
 
 			// Do this before we exit but after return
-			auto const oe = daw::on_exit_success( cleanup_fn );
+			auto const oe = ClassCleanupDtor{ &rng };
 			/*
 			 * Rather than call directly use apply/tuple to evaluate left->right
 			 */
@@ -437,7 +449,7 @@ namespace daw::json::json_details {
 			  daw::construct_a<JsonClass>,
 			  tp_t{ parse_class_member<traits::nth_type<Is, JsonMembers...>>(
 			    Is, known_locations, rng )... } );
-			cleanup_fn( );
+			class_cleanup_now( rng );
 			return result;
 #endif
 		}
