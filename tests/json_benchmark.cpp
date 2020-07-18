@@ -108,10 +108,19 @@ namespace {
 	}
 
 	void show_result( daw::bench::bench_result const &result ) {
+		auto const min_ts =
+		  static_cast<double>(
+		    std::min_element( result.run_times.begin( ), result.run_times.end( ) )
+		      ->count( ) ) /
+		  1'000'000'000.0;
 		std::cout << "test name:" << result.name << '\n';
-		std::cout << "data size:"
+		std::cout << "data size: "
 		          << daw::utility::to_bytes_per_second( result.data_size, 1.0, 2 )
 		          << '\n';
+		std::cout << "speed: "
+		          << daw::utility::to_bytes_per_second(
+		               static_cast<double>( result.data_size ) / min_ts, 1.0, 2 )
+		          << "/s\n";
 		std::cout << "min duration: " << result.duration_min << '\n';
 		std::cout << "25th percentile duration: " << result.duration_25th_percentile
 		          << '\n';
@@ -289,13 +298,13 @@ int main( int argc, char **argv ) {
 	  do_nativejson_from_json_test( json_data_twitter, json_data_citm,
 	                                json_data_canada ) };
 
-	if( argc < 6 ) {
 		for( auto const &r : results ) {
 			show_result( r );
 			std::cout << '\n';
 			std::cout << '\n';
 		}
 		// std::cout << daw::json::to_json_array( results ) << '\n';
+	if( argc < 6 ) {
 		return EXIT_SUCCESS;
 	}
 	std::string out_data{ };
