@@ -528,7 +528,7 @@ namespace daw::json::json_details {
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
 
-		auto const oe = OrderedClassCleanupDtor{ rng };
+		auto const oe = OrderedClassCleanupDtor{ &rng };
 		return std::apply(
 		  daw::construct_a<JsonClass>,
 		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
