@@ -1,6 +1,3 @@
-echo "Installing LLVM"
-REM choco install llvm
-
 echo "Making build directory"
 md build
 cd build
@@ -8,7 +5,6 @@ cd build
 REM ##############################
 REM Setting VCVars
 @call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
-REM SET PATH=%PATH%;C:\Program Files\LLVM\bin\
 
 REM ##############################
 REM Running cmake
