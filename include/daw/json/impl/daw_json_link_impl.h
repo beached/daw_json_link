@@ -384,7 +384,7 @@ namespace daw::json::json_details {
 	};
 	template<typename Range>
 	ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
-#elsif defined( DAW_JSON_NO_CONST_EXPR )
+#elif defined( DAW_JSON_NO_CONST_EXPR )
 	template<typename Range>
 	struct ClassCleanupDtor {
 		Range *rng_ptr;
@@ -493,7 +493,7 @@ namespace daw::json::json_details {
 	};
 	template<typename Range>
 	OrderedClassCleanupDtor( Range & ) -> OrderedClassCleanupDtor<Range>;
-#elsif defined( DAW_JSON_NO_CONST_EXPR )
+#elif defined( DAW_JSON_NO_CONST_EXPR )
 	template<typename Range>
 	struct OrderedClassCleanupDtor {
 		Range *rng_ptr;

@@ -9,7 +9,7 @@ REM ##############################
 REM Setting VCVars
 @call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
 REM SET PATH=%PATH%;C:\Program Files\LLVM\bin\
-SET PAHT=%PATH%;"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\Llvm\x64\bin"
+SET PATH=%PATH%;"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\Llvm\x64\bin"
 
 REM ##############################
 REM Running cmake
