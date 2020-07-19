@@ -483,8 +483,6 @@ namespace daw::json::json_details {
 	}
 #if defined( __cpp_constexpr_dynamic_alloc )
 	template<typename Range>
-	ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
-	template<typename Range>
 	struct OrderedClassCleanupDtor {
 		Range *rng_ptr;
 		inline constexpr ~OrderedClassCleanupDtor( ) {
@@ -492,7 +490,7 @@ namespace daw::json::json_details {
 		}
 	};
 	template<typename Range>
-	OrderedClassCleanupDtor( Range & ) -> OrderedClassCleanupDtor<Range>;
+	OrderedClassCleanupDtor( Range * ) -> OrderedClassCleanupDtor<Range>;
 #elif defined( DAW_JSON_NO_CONST_EXPR )
 	template<typename Range>
 	struct OrderedClassCleanupDtor {
@@ -502,7 +500,7 @@ namespace daw::json::json_details {
 		}
 	};
 	template<typename Range>
-	OrderedClassCleanupDtor( Range & ) -> OrderedClassCleanupDtor<Range>;
+	OrderedClassCleanupDtor( Range * ) -> OrderedClassCleanupDtor<Range>;
 #endif
 
 	template<typename JsonClass, typename... JsonMembers, typename Range>
