@@ -21,7 +21,6 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_parser_helper_sv.h>
-#include <daw/daw_scope_guard.h>
 #include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -375,16 +374,27 @@ namespace daw::json::json_details {
 		rng.trim_left_checked( );
 	}
 
+#if defined( __cpp_constexpr_dynamic_alloc )
 	template<typename Range>
 	struct ClassCleanupDtor {
 		Range *rng_ptr;
-		DAW_ATTRIBUTE_FLATTEN ~ClassCleanupDtor( ) {
-			daw_json_assert_weak( rng_ptr, "Unexpected null" );
+		inline constexpr ~ClassCleanupDtor( ) {
 			class_cleanup_now( *rng_ptr );
 		}
 	};
 	template<typename Range>
 	ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
+#elsif defined( DAW_JSON_NO_CONST_EXPR )
+	template<typename Range>
+	struct ClassCleanupDtor {
+		Range *rng_ptr;
+		inline ~ClassCleanupDtor( ) {
+			class_cleanup_now( *rng_ptr );
+		}
+	};
+	template<typename Range>
+	ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
+#endif
 
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
@@ -453,7 +463,47 @@ namespace daw::json::json_details {
 			return result;
 #endif
 		}
-	} // namespace daw::json::json_details
+	}
+
+	template<typename Range>
+	DAW_ATTRIBUTE_FLATTEN inline constexpr void
+	ordered_class_cleanup_now( Range &rng ) {
+		rng.clean_tail( );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
+		while( not rng.is_closing_bracket_unchecked( ) ) {
+			(void)skip_value( rng );
+			rng.clean_tail( );
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
+		}
+		// TODO: should we check for end
+		daw_json_assert_weak( rng.is_closing_bracket_unchecked( ),
+		                      "Expected a ']'" );
+		rng.remove_prefix( );
+		rng.trim_left( );
+	}
+#if defined( __cpp_constexpr_dynamic_alloc )
+	template<typename Range>
+	ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
+	template<typename Range>
+	struct OrderedClassCleanupDtor {
+		Range *rng_ptr;
+		inline constexpr ~OrderedClassCleanupDtor( ) {
+			ordered_class_cleanup_now( *rng_ptr );
+		}
+	};
+	template<typename Range>
+	OrderedClassCleanupDtor( Range & ) -> OrderedClassCleanupDtor<Range>;
+#elsif defined( DAW_JSON_NO_CONST_EXPR )
+	template<typename Range>
+	struct OrderedClassCleanupDtor {
+		Range *rng_ptr;
+		inline ~OrderedClassCleanupDtor( ) {
+			ordered_class_cleanup_now( *rng_ptr );
+		}
+	};
+	template<typename Range>
+	OrderedClassCleanupDtor( Range & ) -> OrderedClassCleanupDtor<Range>;
+#endif
 
 	template<typename JsonClass, typename... JsonMembers, typename Range>
 	[[nodiscard]] inline constexpr JsonClass
@@ -471,27 +521,14 @@ namespace daw::json::json_details {
 		rng.remove_prefix( );
 		rng.trim_left( );
 
-		auto const cleanup_fn = [&] {
-			rng.clean_tail( );
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
-			while( not rng.is_closing_bracket_unchecked( ) ) {
-				(void)skip_value( rng );
-				rng.clean_tail( );
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
-			}
-			// TODO: should we check for end
-			daw_json_assert_weak( rng.is_closing_bracket_unchecked( ),
-			                      "Expected a ']'" );
-			rng.remove_prefix( );
-			rng.trim_left( );
-		};
 		size_t current_idx = 0;
 		using tp_t = std::tuple<decltype(
 		  parse_ordered_class_member<JsonMembers>( current_idx, rng ) )...>;
 
 #if defined( __cpp_constexpr_dynamic_alloc ) or                                \
   defined( DAW_JSON_NO_CONST_EXPR )
-		auto const oe = daw::on_exit_success( cleanup_fn );
+
+		auto const oe = OrderedClassCleanupDtor{ rng };
 		return std::apply(
 		  daw::construct_a<JsonClass>,
 		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
@@ -500,8 +537,8 @@ namespace daw::json::json_details {
 		  daw::construct_a<JsonClass>,
 		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
 
-		cleanup_fn( );
+		ordered_class_cleanup_now( rng );
 		return result;
 #endif
-	}
+	} // namespace daw::json::json_details
 } // namespace daw::json::json_details
