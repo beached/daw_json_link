@@ -12,6 +12,7 @@
 #include "daw_json_assert.h"
 
 #include <daw/daw_cxmath.h>
+#include <daw/daw_uint_buffer.h>
 
 #include <cstddef>
 #include <utility>
@@ -37,7 +38,7 @@ namespace daw::json::json_details {
 		}
 		std::uint64_t val = 0;
 		for( std::size_t n = 0; n < 8; ++n ) {
-			val |= static_cast<std::uint64_t>( buff[n] ) << ( 8 * n );
+			val |= static_cast<std::uint64_t>( buff[n] << ( 8 * n ) );
 		}
 		return ( ( ( val & 0xF0F0F0F0F0F0F0F0U ) |
 		           ( ( ( val + 0x0606060606060606U ) & 0xF0F0F0F0F0F0F0F0U ) >>
@@ -57,42 +58,26 @@ namespace daw::json::json_details {
 	// Constexpr'ified version from
 	// https://kholdstare.github.io/technical/2020/05/26/faster-integer-parsing.html
 	inline constexpr std::uint32_t parse_8_digits( const char *const str ) {
-		auto const p0 =
-		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[0] ) );
-		auto const p1 =
-		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[1] ) ) << 8U;
-		auto const p2 =
-		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[2] ) ) << 16U;
-		auto const p3 =
-		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[3] ) ) << 24U;
-		auto const p4 =
-		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[4] ) ) << 32U;
-		auto const p5 =
-		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[5] ) ) << 40U;
-		auto const p6 =
-		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[6] ) ) << 48U;
-		auto const p7 =
-		  static_cast<std::uint64_t>( static_cast<unsigned char>( str[7] ) ) << 56U;
-		std::uint64_t const chunk = p0 | p1 | p2 | p3 | p4 | p5 | p6 | p7;
+		auto const chunk = daw::to_uint64_buffer( str );
 		// 1-byte mask trick (works on 4 pairs of single digits)
-		std::uint64_t const lower_digits =
-		  ( chunk & 0x0f'00'0f'00'0f'00'0f'00 ) >> 8;
-		std::uint64_t const upper_digits =
-		  ( chunk & 0x00'0f'00'0f'00'0f'00'0f ) * 10;
+		auto const lower_digits = static_cast<std::uint64_t>(
+		  ( chunk & 0x0f'00'0f'00'0f'00'0f'00U ) >> 8U );
+		auto const upper_digits =
+		  static_cast<std::uint64_t>( chunk & 0x00'0f'00'0f'00'0f'00'0fU ) * 10U;
 		std::uint64_t const chunk2 = lower_digits + upper_digits;
 
 		// 2-byte mask trick (works on 2 pairs of two digits)
 		std::uint64_t const lower_digits2 =
-		  ( chunk2 & 0x00'ff'00'00'00'ff'00'00 ) >> 16;
+		  ( chunk2 & 0x00'ff'00'00'00'ff'00'00U ) >> 16U;
 		std::uint64_t const upper_digits2 =
-		  ( chunk2 & 0x00'00'00'ff'00'00'00'ff ) * 100;
+		  ( chunk2 & 0x00'00'00'ff'00'00'00'ffU ) * 100U;
 		std::uint64_t const chunk3 = lower_digits2 + upper_digits2;
 
 		// 4-byte mask trick (works on pair of four digits)
 		std::uint64_t const lower_digits3 =
-		  ( chunk3 & 0x00'00'ff'ff'00'00'00'00 ) >> 32;
+		  ( chunk3 & 0x00'00'ff'ff'00'00'00'00U ) >> 32U;
 		std::uint64_t const upper_digits3 =
-		  ( chunk3 & 0x00'00'00'00'00'00'ff'ff ) * 10000;
+		  ( chunk3 & 0x00'00'00'00'00'00'ff'ffU ) * 10000U;
 		std::uint64_t const chunk4 = lower_digits3 + upper_digits3;
 
 		return static_cast<std::uint32_t>( chunk4 );
@@ -104,7 +89,7 @@ namespace daw::json::json_details {
 		auto const lower = static_cast<std::uint64_t>( parse_8_digits( str + 8 ) );
 		return upper * 100'000'000ULL + lower;
 	}
-	static_assert( parse_16_digits( "1234567890123456" ) == 1234567890123456,
+	static_assert( parse_16_digits( "1234567890123456" ) == 1234567890123456ULL,
 	               "16 digit parser does not work on this platform" );
 
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
