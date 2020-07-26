@@ -40,7 +40,7 @@ namespace daw::json::json_details::string_quote {
 			char const *first = rng.first;
 			char const *const last = rng.class_last;
 			while( first < last and *first != '"' ) {
-				while( first < last and *first != '"' and first != '\\' ) {
+				while( first < last and *first != '"' and *first != '\\' ) {
 					++first;
 				}
 				if( DAW_JSON_UNLIKELY( first < last and *first == '\\' ) ) {
@@ -50,8 +50,8 @@ namespace daw::json::json_details::string_quote {
 					break;
 				}
 			}
-			daw_json_assert_weak( first < last and *first == '"',
-			                      "Expected a '\"' at end of string" );
+			daw_json_assert( first < last and *first == '"',
+			                 "Expected a '\"' at end of string" );
 			rng.first = first;
 			return need_slow_path;
 		}
