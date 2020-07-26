@@ -30,7 +30,7 @@
 #include "daw_enable_if.h"
 
 namespace daw::cxmath {
-	[[nodiscard]] constexpr std::optional<int16_t>
+	[[nodiscard]] constexpr std::optional<std::int16_t>
 	fexp2( float const f ) noexcept;
 	constexpr float fpow2( int32_t exp ) noexcept;
 
@@ -45,8 +45,8 @@ namespace daw::cxmath {
 
 		// Based on code from
 		// https://graphics.stanford.edu/~seander/bithacks.html
-		[[nodiscard]] constexpr uint32_t
-		count_leading_zeroes( uint64_t v ) noexcept {
+		[[nodiscard]] constexpr std::uint32_t
+		count_leading_zeroes( std::uint64_t v ) noexcept {
 			char const bit_position[64] = {
 			  0,  1,  2,  7,  3,  13, 8,  19, 4,  25, 14, 28, 9,  34, 20, 40,
 			  5,  17, 26, 38, 15, 46, 29, 48, 10, 31, 35, 54, 21, 50, 41, 57,
@@ -62,7 +62,7 @@ namespace daw::cxmath {
 			v = ( v >> 1U ) + 1U;
 
 			return 63U -
-			       static_cast<uint32_t>(
+			       static_cast<std::uint32_t>(
 			         bit_position[( v * 0x021'8a39'2cd3'd5dbf ) >> 58U] ); // [3]
 		}
 
@@ -80,19 +80,19 @@ namespace daw::cxmath {
 		}
 
 		class float_parts_t {
-			uint32_t m_raw_value{};
+			std::uint32_t m_raw_value{};
 			float m_float_value{};
 
 		public:
-			static constexpr uint32_t const PosInf = 0x7F80'0000;
-			static constexpr uint32_t const NegInf = 0xFF80'0000;
-			static constexpr uint32_t const NaN = 0x7FC0'0000;
+			static constexpr std::uint32_t const PosInf = 0x7F80'0000;
+			static constexpr std::uint32_t const NegInf = 0xFF80'0000;
+			static constexpr std::uint32_t const NaN = 0x7FC0'0000;
 
-			constexpr float_parts_t( uint32_t i, float f ) noexcept
+			constexpr float_parts_t( std::uint32_t i, float f ) noexcept
 			  : m_raw_value( i )
 			  , m_float_value( f ) {}
 
-			[[nodiscard]] constexpr uint32_t raw_value( ) const noexcept {
+			[[nodiscard]] constexpr std::uint32_t raw_value( ) const noexcept {
 				return m_raw_value;
 			}
 
@@ -117,12 +117,12 @@ namespace daw::cxmath {
 				  ( 0b0111'1111'1000'0000'0000'0000'0000'0000 & m_raw_value ) >> 23U );
 			}
 
-			[[nodiscard]] constexpr int16_t exponent( ) const noexcept {
-				int16_t const bias = 127;
-				return static_cast<int16_t>( raw_exponent( ) ) - bias;
+			[[nodiscard]] constexpr std::int16_t exponent( ) const noexcept {
+				std::int16_t const bias = 127;
+				return static_cast<std::int16_t>( raw_exponent( ) ) - bias;
 			}
 
-			[[nodiscard]] constexpr uint32_t raw_significand( ) const noexcept {
+			[[nodiscard]] constexpr std::uint32_t raw_significand( ) const noexcept {
 				return 0b0000'0000'0111'1111'1111'1111'1111'1111 & m_raw_value;
 			}
 
@@ -179,7 +179,7 @@ namespace daw::cxmath {
 				exponent -= 41;
 			}
 
-			auto const a = static_cast<uint64_t>( abs_f * 0x1p-64f );
+			auto const a = static_cast<std::uint64_t>( abs_f * 0x1p-64f );
 			auto lz = static_cast<int32_t>( count_leading_zeroes( a ) );
 			exponent -= lz;
 
@@ -188,9 +188,9 @@ namespace daw::cxmath {
 				lz = 8 - 1;
 			}
 
-			uint32_t significand = ( a << ( lz + 1 ) ) >> ( 64 - 23 ); // [3]
-			return {( static_cast<uint32_t>( sign ? 1U : 0U ) << 31U ) |
-			          ( static_cast<uint32_t>( exponent ) << 23U ) | significand,
+			std::uint32_t significand = ( a << ( lz + 1 ) ) >> ( 64 - 23 ); // [3]
+			return {( static_cast<std::uint32_t>( sign ? 1U : 0U ) << 31U ) |
+			          ( static_cast<std::uint32_t>( exponent ) << 23U ) | significand,
 			        f};
 		}
 
@@ -331,8 +331,8 @@ namespace daw::cxmath {
 			}
 		};
 
-		[[nodiscard]] constexpr float fexp3( float X, int16_t exponent,
-		                                     int16_t old_exponent ) noexcept {
+		[[nodiscard]] constexpr float fexp3( float X, std::int16_t exponent,
+		                                     std::int16_t old_exponent ) noexcept {
 			auto const exp_diff = exponent - old_exponent;
 			if( exp_diff > 0 ) {
 				return fpow2( exp_diff ) * X;
@@ -376,7 +376,7 @@ namespace daw::cxmath {
 		return cxmath_impl::pow10_t<uintmax_t>::get( exp );
 	}
 
-	[[nodiscard]] constexpr float fexp2( float X, int16_t exponent ) noexcept {
+	[[nodiscard]] constexpr float fexp2( float X, std::int16_t exponent ) noexcept {
 		auto const exp_diff = exponent - *fexp2( X );
 		if( exp_diff > 0 ) {
 			return fpow2( exp_diff ) * X;
@@ -384,11 +384,11 @@ namespace daw::cxmath {
 		return X / fpow2( -exp_diff );
 	}
 
-	[[nodiscard]] constexpr std::optional<int16_t>
+	[[nodiscard]] constexpr std::optional<std::int16_t>
 	fexp2( float const f ) noexcept {
 		// Once c++20 use bit_cast
 		if( f == 0.0f ) {
-			return 0;
+			return static_cast<std::int16_t>( 0 );
 		}
 		if( f > std::numeric_limits<float>::max( ) ) {
 			// inf
@@ -410,12 +410,12 @@ namespace daw::cxmath {
 			exponent -= 41;
 		}
 
-		auto const a = static_cast<uint64_t>( abs_f * 0x1p-64f );
+		auto const a = static_cast<std::uint64_t>( abs_f * 0x1p-64f );
 		auto lz = static_cast<int32_t>( cxmath_impl::count_leading_zeroes( a ) );
 		exponent -= lz;
 
 		if( exponent >= 0 ) {
-			return exponent - 127;
+			return static_cast<std::int16_t>( exponent - 127 );
 		}
 		// return -127;
 		return std::nullopt;
@@ -424,13 +424,13 @@ namespace daw::cxmath {
 	template<typename Integer,
 	         daw::enable_when_t<std::is_integral_v<Integer>> = nullptr>
 	[[nodiscard]] constexpr bool is_odd( Integer i ) noexcept {
-		return ( static_cast<uint32_t>( i ) & 1U ) == 1U;
+		return ( static_cast<std::uint32_t>( i ) & 1U ) == 1U;
 	}
 
 	template<typename Integer,
 	         daw::enable_when_t<std::is_integral_v<Integer>> = nullptr>
 	[[nodiscard]] constexpr bool is_even( Integer i ) noexcept {
-		return ( static_cast<uint32_t>( i ) & 1U ) == 0U;
+		return ( static_cast<std::uint32_t>( i ) & 1U ) == 0U;
 	}
 
 	template<typename Float,
@@ -446,7 +446,7 @@ namespace daw::cxmath {
 		if( x < 0.0f ) {
 			return std::numeric_limits<float>::quiet_NaN( );
 		}
-		// TODO: use bit_cast to get uint32_t of float, extract exponent,
+		// TODO: use bit_cast to get std::uint32_t of float, extract exponent,
 		// set it to zero and bit_cast back to a float
 		auto const exp = fexp2( x );
 		if( !exp ) {
