@@ -169,7 +169,7 @@ void test_func( ) {
 		{
 			auto to_json_str = std::string( );
 			to_json_str.resize(
-			  static_cast<std::size_t>( json_sv_intmax.size( ) * 1.5 ) );
+			  static_cast<std::size_t>( ( json_sv_intmax.size( ) * 15 ) ) / 10 );
 			auto result = daw::bench_n_test_mbs<100>(
 			  "array of intmax_t: to_json presized", data.size( ) * sizeof( data[0] ),
 			  [&]( std::vector<intmax_t> const &v ) noexcept {
