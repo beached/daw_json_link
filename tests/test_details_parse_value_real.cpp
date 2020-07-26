@@ -94,7 +94,7 @@ bool test_real_untrusted( ) {
 
 int main( int, char ** ) try {
 	do_test( test_zero_untrusted( ) );
-	do_test( test_positive_zero_untrusted( ) );
+	do_fail_test( test_positive_zero_untrusted( ) );
 	do_test( test_negative_zero_untrusted( ) );
 	do_fail_test( test_missing_untrusted( ) );
 	do_test( test_real_untrusted( ) );
