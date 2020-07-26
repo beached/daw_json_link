@@ -149,7 +149,21 @@ namespace {
 	daw::bench::bench_result
 	do_apache_builds_from_json_test( std::string_view json_data ) {
 		auto result = make_bench_result(
-		  "apache builds from_json", json_data.size( ),
+		  "apache builds from_json(checked)", json_data.size( ),
+		  daw::bench_n_test_json<NUM_RUNS>(
+		    [&]( std::string_view jd ) {
+			    return daw::json::from_json<apache_builds::apache_builds>( jd );
+		    },
+		    json_data ) );
+
+		process_results( result );
+		return result;
+	}
+
+	daw::bench::bench_result
+	do_apache_builds_from_json_test_unchecked( std::string_view json_data ) {
+		auto result = make_bench_result(
+		  "apache builds from_json(unchecked)", json_data.size( ),
 		  daw::bench_n_test_json<NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<
@@ -165,7 +179,21 @@ namespace {
 	daw::bench::bench_result
 	do_twitter_from_json_test( std::string_view json_data ) {
 		auto result = make_bench_result(
-		  "twitter from_json", json_data.size( ),
+		  "twitter from_json(checked)", json_data.size( ),
+		  daw::bench_n_test_json<NUM_RUNS>(
+		    [&]( std::string_view jd ) {
+			    return daw::json::from_json<daw::twitter::twitter_object_t>( jd );
+		    },
+		    json_data ) );
+
+		process_results( result );
+		return result;
+	}
+
+	daw::bench::bench_result
+	do_twitter_from_json_test_unchecked( std::string_view json_data ) {
+		auto result = make_bench_result(
+		  "twitter from_json(unchecked)", json_data.size( ),
 		  daw::bench_n_test_json<NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<
@@ -181,7 +209,21 @@ namespace {
 	daw::bench::bench_result
 	do_citm_from_json_test( std::string_view json_data ) {
 		auto result = make_bench_result(
-		  "citm_catalog from_json", json_data.size( ),
+		  "citm_catalog from_json(checked)", json_data.size( ),
+		  daw::bench_n_test_json<NUM_RUNS>(
+		    [&]( std::string_view jd ) {
+			    return daw::json::from_json<daw::citm::citm_object_t>( jd );
+		    },
+		    json_data ) );
+
+		process_results( result );
+		return result;
+	}
+
+	daw::bench::bench_result
+	do_citm_from_json_test_unchecked( std::string_view json_data ) {
+		auto result = make_bench_result(
+		  "citm_catalog from_json(unchecked)", json_data.size( ),
 		  daw::bench_n_test_json<NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<
@@ -197,7 +239,21 @@ namespace {
 	daw::bench::bench_result
 	do_canada_from_json_test( std::string_view json_data ) {
 		auto result = make_bench_result(
-		  "canada from_json", json_data.size( ),
+		  "canada from_json(checked)", json_data.size( ),
+		  daw::bench_n_test_json<NUM_RUNS>(
+		    [&]( std::string_view jd ) {
+			    return daw::json::from_json<daw::geojson::FeatureCollection>( jd );
+		    },
+		    json_data ) );
+
+		process_results( result );
+		return result;
+	}
+
+	daw::bench::bench_result
+	do_canada_from_json_test_unchecked( std::string_view json_data ) {
+		auto result = make_bench_result(
+		  "canada from_json(unchecked)", json_data.size( ),
 		  daw::bench_n_test_json<NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<
@@ -215,7 +271,7 @@ namespace {
 	                              std::string_view json_data_citm,
 	                              std::string_view json_data_canada ) {
 		auto result = make_bench_result(
-		  "nativejson benchmark from_json",
+		  "nativejson benchmark from_json(checked)",
 		  json_data_twitter.size( ) + json_data_citm.size( ) +
 		    json_data_canada.size( ),
 		  daw::bench_n_test_json<NUM_RUNS>(
@@ -240,7 +296,7 @@ namespace {
 	                                        std::string_view json_data_citm,
 	                                        std::string_view json_data_canada ) {
 		auto result = make_bench_result(
-		  "nativejson unchecked benchmark from_json",
+		  "nativejson benchmark from_json(unchecked)",
 		  json_data_twitter.size( ) + json_data_citm.size( ) +
 		    json_data_canada.size( ),
 		  daw::bench_n_test_json<NUM_RUNS>(
@@ -290,20 +346,24 @@ int main( int argc, char **argv ) {
 
 	auto const results = std::vector<daw::bench::bench_result>{
 	  do_apache_builds_from_json_test( json_data_apache ),
+	  do_apache_builds_from_json_test_unchecked( json_data_apache ),
 	  do_twitter_from_json_test( json_data_twitter ),
+	  do_twitter_from_json_test_unchecked( json_data_twitter ),
 	  do_citm_from_json_test( json_data_citm ),
+	  do_citm_from_json_test_unchecked( json_data_citm ),
 	  do_canada_from_json_test( json_data_canada ),
-	  do_nativejson_from_json_test_unchecked( json_data_twitter, json_data_citm,
-	                                          json_data_canada ),
+	  do_canada_from_json_test_unchecked( json_data_canada ),
 	  do_nativejson_from_json_test( json_data_twitter, json_data_citm,
-	                                json_data_canada ) };
+	                                json_data_canada ),
+	  do_nativejson_from_json_test_unchecked( json_data_twitter, json_data_citm,
+	                                          json_data_canada ) };
 
-		for( auto const &r : results ) {
-			show_result( r );
-			std::cout << '\n';
-			std::cout << '\n';
-		}
-		// std::cout << daw::json::to_json_array( results ) << '\n';
+	for( auto const &r : results ) {
+		show_result( r );
+		std::cout << '\n';
+		std::cout << '\n';
+	}
+	// std::cout << daw::json::to_json_array( results ) << '\n';
 	if( argc < 6 ) {
 		return EXIT_SUCCESS;
 	}
