@@ -19,12 +19,12 @@ namespace daw::json::json_details::string_quote {
 			bool need_slow_path = false;
 			char const *first = rng.first;
 			while( *first != '"' ) {
-				while( *first != '"' ) {
+				while( *first != '"' and *first != '\\' ) {
 					++first;
 				}
-				if( DAW_JSON_UNLIKELY( *std::prev( first ) == '\\' ) ) {
+				if( DAW_JSON_UNLIKELY( *first == '\\' ) ) {
 					need_slow_path = true;
-					++first;
+					first += 2;
 				} else {
 					break;
 				}
@@ -40,13 +40,12 @@ namespace daw::json::json_details::string_quote {
 			char const *first = rng.first;
 			char const *const last = rng.class_last;
 			while( first < last and *first != '"' ) {
-				while( first < last and *first != '"' ) {
+				while( first < last and *first != '"' and first != '\\' ) {
 					++first;
 				}
-				if( DAW_JSON_UNLIKELY( first < last and
-				                       *std::prev( first ) == '\\' ) ) {
+				if( DAW_JSON_UNLIKELY( first < last and *first == '\\' ) ) {
 					need_slow_path = true;
-					++first;
+					first += 2;
 				} else {
 					break;
 				}
