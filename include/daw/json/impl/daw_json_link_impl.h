@@ -191,7 +191,7 @@ namespace daw::json::json_details {
 		std::array<std::uint32_t, sizeof...( MemberNames )> hashes{
 		  murmur3_32( MemberNames::name )... };
 
-		daw::sort( hashes.begin( ), hashes.end( ) );
+		daw::sort( hashes.data( ), hashes.data( ) + hashes.size( ) );
 		return daw::algorithm::adjacent_find(
 		         hashes.begin( ), hashes.end( ),
 		         []( std::uint32_t const &l, std::uint32_t const &r ) {
