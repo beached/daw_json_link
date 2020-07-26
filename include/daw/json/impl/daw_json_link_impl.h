@@ -167,7 +167,12 @@ namespace daw::json::json_details {
 		[[nodiscard]] constexpr std::size_t
 		find_name( daw::string_view key ) const {
 			uint32_t const hash = murmur3_32( key );
+#if defined( _MSC_VER ) and not defined( __clang__ )
+			// MSVC has a bug where pack expansion to a tuple isn't left->right
+			for( std::size_t n = 0; n < N; ++n ) {
+#else
 			for( std::size_t n = start_pos; n < N; ++n ) {
+#endif
 				if( names[n].hash_value == hash ) {
 					if constexpr( has_collisons ) {
 						if( DAW_JSON_UNLIKELY( key != *names[n].name ) ) {

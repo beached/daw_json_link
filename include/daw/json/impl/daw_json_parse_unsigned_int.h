@@ -108,7 +108,7 @@ namespace daw::json::json_details {
 		result_t result = 0;
 
 		while( last - first >= 16 ) {
-			result *= 10'000'000'000'000'000ULL;
+			result *= static_cast<result_t>(10'000'000'000'000'000ULL);
 			result += static_cast<result_t>( parse_16_digits( first ) );
 			first += 16;
 		}
