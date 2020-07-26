@@ -168,7 +168,7 @@ namespace daw::json::json_details {
 		find_name( daw::string_view key ) const {
 			uint32_t const hash = murmur3_32( key );
 #if defined( _MSC_VER ) and not defined( __clang__ )
-			// MSVC has a bug where pack expansion to a tuple isn't left->right
+			// MSVC has a bug where the list initialization isn't sequenced in order of appearance.
 			for( std::size_t n = 0; n < N; ++n ) {
 #else
 			for( std::size_t n = start_pos; n < N; ++n ) {
