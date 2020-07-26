@@ -22,7 +22,7 @@ namespace daw::json::json_details::string_quote {
 				while( *first != '"' ) {
 					++first;
 				}
-				if( *std::prev( first ) == '\\' ) {
+				if( DAW_JSON_UNLIKELY( *std::prev( first ) == '\\' ) ) {
 					need_slow_path = true;
 					++first;
 				} else {
@@ -43,7 +43,8 @@ namespace daw::json::json_details::string_quote {
 				while( first < last and *first != '"' ) {
 					++first;
 				}
-				if( first < last and *std::prev( first ) == '\\' ) {
+				if( DAW_JSON_UNLIKELY( first < last and
+				                       *std::prev( first ) == '\\' ) ) {
 					need_slow_path = true;
 					++first;
 				} else {
