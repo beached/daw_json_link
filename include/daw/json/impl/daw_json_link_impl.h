@@ -442,8 +442,8 @@ namespace daw::json::json_details {
 			 */
 			if constexpr( daw::json::force_aggregate_constrution<JsonClass>::value ) {
 				return JsonClass{
-				  parse_class_member<traits::nth_type<Is, JsonMembers...>>(
-				    Is, known_locations, rng )... };
+				  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
+				    known_locations, rng )... };
 			} else {
 				using tp_t = decltype( std::forward_as_tuple(
 				  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
