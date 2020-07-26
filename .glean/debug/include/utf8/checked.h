@@ -176,7 +176,7 @@ namespace utf8 {
 		case internal::utf_error::INVALID_LEAD:
 		case internal::utf_error::INCOMPLETE_SEQUENCE:
 		case internal::utf_error::OVERLONG_SEQUENCE:
-			daw::exception::daw_throw<invalid_utf8>( *it );
+			daw::exception::daw_throw<invalid_utf8>( static_cast<uint8_t>( *it ) );
 		case internal::utf_error::INVALID_CODE_POINT:
 			daw::exception::daw_throw<invalid_code_point>( cp );
 		}
