@@ -19,16 +19,16 @@ namespace daw::json::json_details::string_quote {
 			bool need_slow_path = false;
 			char const *first = rng.first;
 			while( *first != '"' ) {
-				while( *first != '"' and *first != '\\' ) {
+				while( *first != '"' ) {
 					++first;
 				}
-				if( *first == '\\' ) {
+				if( *std::prev( first ) == '\\' ) {
 					need_slow_path = true;
 					++first;
-					++first;
+				} else {
+					break;
 				}
 			}
-			daw_json_assert_weak( *first == '"', "Expected a '\"'" );
 			rng.first = first;
 			return need_slow_path;
 		}
@@ -38,19 +38,19 @@ namespace daw::json::json_details::string_quote {
 		  -> std::enable_if_t<not Range::is_unchecked_input, bool> {
 			bool need_slow_path = false;
 			char const *first = rng.first;
-			char const *const last = rng.last;
-			while( first != rng.last and *first != '"' ) {
-				while( first != rng.last and *first != '"' and *first != '\\' ) {
+			char const *const last = rng.class_last;
+			while( first < last and *first != '"' ) {
+				while( first < last and *first != '"' ) {
 					++first;
 				}
-				if( first != last and *first == '\\' ) {
+				if( first < last and *std::prev( first ) == '\\' ) {
 					need_slow_path = true;
 					++first;
-					daw_json_assert_weak( first != last, "Unexpected end of string" );
-					++first;
+				} else {
+					break;
 				}
 			}
-			daw_json_assert_weak( first != rng.class_last and *first == '"',
+			daw_json_assert_weak( first < last and *first == '"',
 			                      "Expected a '\"' at end of string" );
 			rng.first = first;
 			return need_slow_path;
