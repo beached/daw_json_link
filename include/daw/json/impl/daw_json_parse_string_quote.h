@@ -78,10 +78,11 @@ namespace daw::json::json_details::string_quote {
 			char const *first = rng.first;
 			if( char const *const last = rng.last; last - first >= 8 ) {
 				skip_to_first8( first, last );
-			} else {
+				first -= static_cast<int>( not( *( first - 1 ) - '\\' ) );
+			} else if( last - first >= 4 ) {
+				first -= static_cast<int>( not( *( first - 1 ) - '\\' ) );
 				skip_to_first4( first, last );
 			}
-			first -= static_cast<int>( not( *( first - 1 ) - '\\' ) );
 			while( *first != '"' ) {
 				while( *first != '"' and *first != '\\' ) {
 					++first;
@@ -103,12 +104,13 @@ namespace daw::json::json_details::string_quote {
 			bool need_slow_path = false;
 			char const *first = rng.first;
 			char const *const last = rng.class_last;
-			if( rng.last - first >= 8 ) {
-				skip_to_first8( first, rng.last );
-			} else {
-				skip_to_first4( first, rng.last );
+			if( char const *const l = rng.last; l - first >= 8 ) {
+				skip_to_first8( first, l );
+				first -= static_cast<int>( not( *( first - 1 ) - '\\' ) );
+			} else if( l - first >= 4 ) {
+				skip_to_first4( first, l );
+				first -= static_cast<int>( not( *( first - 1 ) - '\\' ) );
 			}
-			first -= static_cast<int>( not( *( first - 1 ) - '\\' ) );
 			while( first < last and *first != '"' ) {
 				while( first < last and *first != '"' and *first != '\\' ) {
 					++first;
