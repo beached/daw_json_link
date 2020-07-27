@@ -11,6 +11,7 @@
 #undef DAW_JSON_NO_CONST_EXPR
 #endif
 
+#include "daw/json/impl/daw_arith_traits.h"
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 #include "daw/json/impl/daw_json_assert.h"
@@ -399,7 +400,7 @@ static_assert(
    not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) );
 */
 
-#if defined( __SIZEOF_INT128__ ) and not defined( _MSC_VER )
+#if not defined( DAW_JSON_NO_INT128 ) and defined( __SIZEOF_INT128__ ) and (not defined( _MSC_VER ))
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
@@ -459,7 +460,7 @@ int main( int, char ** ) try {
 #define CX constexpr
 #endif
 
-#if defined( DAW_HAS_INT128 )
+#if not defined( DAW_JSON_NO_INT128 ) and defined( DAW_HAS_INT128 )
 	test128( );
 #else
 	std::cout << "No 128bit int support detected\n";

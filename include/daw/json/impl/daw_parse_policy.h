@@ -301,7 +301,7 @@ namespace daw::json {
 
 		constexpr void clean_tail_checked( ) {
 			trim_left_checked( );
-			if( front( ',' ) ) {
+			if( first < last and *first == ',' ) {
 				++first;
 				trim_left_checked( );
 			}
@@ -311,7 +311,7 @@ namespace daw::json {
 			if constexpr( is_unchecked_input ) {
 				clean_tail_unchecked( );
 			} else {
-				clean_tail_unchecked( );
+				clean_tail_checked( );
 			}
 		}
 

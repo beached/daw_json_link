@@ -19,7 +19,11 @@
 #include <type_traits>
 
 // copied from ABSL but allowing the define to be forced
+#if defined( DAW_JSON_NO_INT128 )
 #if defined( DAW_HAS_INT128 )
+#undef DAW_HAS_INT128
+#endif
+#elif defined( DAW_HAS_INT128 )
 #elif defined( __SIZEOF_INT128__ )
 #if( defined( __clang__ ) && !defined( _WIN32 ) ) ||                           \
   ( defined( __CUDACC__ ) && __CUDACC_VER_MAJOR__ >= 9 ) ||                    \

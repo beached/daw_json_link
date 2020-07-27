@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(daw_json_link_prj)
+
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -8,12 +9,19 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 message("CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
 enable_testing()
 
+set(DAW_JSON_USE_SANITIZERS OFF CACHE STRING "Enable address and undefined behaviour sanitizers")
+if( DAW_JSON_USE_SANITIZERS )
+    message ( "DAW_JSON_USE_SANITIZERS=ON: compiler sanitizers enabled" )
+    add_definitions(-DDAW_JSON_NO_INT128)
+else( )
+    message ( "DAW_JSON_USE_SANITIZERS=OFF: compiler sanitizers disabled" )
+endif( )
+
 include("${CMAKE_SOURCE_DIR}/dependent_projects/CMakeListsCompiler.txt")
 
 include_directories("./include")
 #set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-set(DAW_JSON_USE_SANITIZERS OFF CACHE STRING "Enable address and undefined behaviour sanitizers")
 
 set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
 if (DAW_JSON_NO_CONST_EXPR)
@@ -25,8 +33,11 @@ endif ()
 
 set(DAW_JSON_FORCE_INT128 OFF CACHE STRING "Force support for 128bit int")
 if (DAW_JSON_FORCE_INT128)
-    message("Forcing support of int128")
-    add_definitions(-DDAW_HAS_INT128)
+    if( DAW_JSON_NO_INT128 )
+    else( )
+        message("Forcing support of int128")
+        add_definitions(-DDAW_HAS_INT128)
+    endif( )
 endif ()
 
 set(DAW_JSON_DONT_USE_EXCEPTIONS OFF CACHE STRING "Don't throw exceptions when json errors occur")
