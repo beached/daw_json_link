@@ -81,7 +81,7 @@ namespace daw::json::json_details::string_quote {
 			} else {
 				skip_to_first4( first, last );
 			}
-			first -= static_cast<int>( static_cast<bool>( *( first - 1 ) - '"' ) );
+			first -= static_cast<int>( not( *( first - 1 ) - '\\' ) );
 			while( *first != '"' ) {
 				while( *first != '"' and *first != '\\' ) {
 					++first;
@@ -108,7 +108,7 @@ namespace daw::json::json_details::string_quote {
 			} else {
 				skip_to_first4( first, rng.last );
 			}
-			first -= static_cast<int>( static_cast<bool>( *( first - 1 ) - '"' ) );
+			first -= static_cast<int>( not( *( first - 1 ) - '\\' ) );
 			while( first < last and *first != '"' ) {
 				while( first < last and *first != '"' and *first != '\\' ) {
 					++first;
