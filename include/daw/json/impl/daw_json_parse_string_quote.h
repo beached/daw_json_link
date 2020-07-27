@@ -10,7 +10,68 @@
 
 #include "daw_json_assert.h"
 
+#include <daw/daw_uint_buffer.h>
+
 namespace daw::json::json_details::string_quote {
+	template<std::size_t N>
+	inline constexpr bool test_at_byte( UInt64Buffer b, char c ) {
+		auto const lhs = static_cast<std::uint64_t>( b ) & (static_cast<std::uint64_t>(0xFF) << (N*8U));
+		auto const rhs = static_cast<std::uint64_t>( static_cast<unsigned char>( c ) )
+		       << ( N * 8U );
+		return not( lhs - rhs );
+	}
+
+	inline constexpr void skip_to_first8( char const *&first,
+	                                     char const *const last ) {
+		bool keep_going = last - first >= 8;
+		while( keep_going ) {
+			auto buff = daw::to_uint64_buffer( first );
+			auto const q7 = test_at_byte<7U>( buff, '"' );
+      auto const q6 = test_at_byte<6U>( buff, '"' );
+      auto const q5 = test_at_byte<5U>( buff, '"' );
+      auto const q4 = test_at_byte<4U>( buff, '"' );
+      auto const q3 = test_at_byte<3U>( buff, '"' );
+      auto const q2 = test_at_byte<2U>( buff, '"' );
+      auto const q1 = test_at_byte<1U>( buff, '"' );
+      auto const q0 = test_at_byte<0U>( buff, '"' );
+      auto const s7 = test_at_byte<7U>( buff, '\\' );
+      auto const s6 = test_at_byte<6U>( buff, '\\' );
+      auto const s5 = test_at_byte<5U>( buff, '\\' );
+      auto const s4 = test_at_byte<4U>( buff, '\\' );
+      auto const s3 = test_at_byte<3U>( buff, '\\' );
+      auto const s2 = test_at_byte<2U>( buff, '\\' );
+      auto const s1 = test_at_byte<1U>( buff, '\\' );
+      auto const s0 = test_at_byte<0U>( buff, '\\' );
+			keep_going =  not( q0 | q1 | q2 | q3 | q4 | q5 | q6 | q7 |
+			                  s0 | s1 | s2 | s3 | s4 | s5 | s6 | s7 );
+			if( keep_going ) {
+				keep_going = last - ( first + 8 ) >= 8;
+			}
+			first += static_cast<int>( keep_going ) * 8;
+		}
+	}
+
+  inline constexpr void skip_to_first4( char const *&first,
+                                        char const *const last ) {
+    bool keep_going = last - first >= 4;
+    while( keep_going ) {
+      auto buff = daw::to_uint64_buffer( first );
+      auto const q3 = test_at_byte<3U>( buff, '"' );
+      auto const q2 = test_at_byte<2U>( buff, '"' );
+      auto const q1 = test_at_byte<1U>( buff, '"' );
+      auto const q0 = test_at_byte<0U>( buff, '"' );
+      auto const s3 = test_at_byte<3U>( buff, '\\' );
+      auto const s2 = test_at_byte<2U>( buff, '\\' );
+      auto const s1 = test_at_byte<1U>( buff, '\\' );
+      auto const s0 = test_at_byte<0U>( buff, '\\' );
+      keep_going =  not( q0 | q1 | q2 | q3 |
+                         s0 | s1 | s2 | s3 );
+      if( keep_going ) {
+        keep_going = last - ( first + 4 ) >= 4;
+      }
+      first += static_cast<int>( keep_going ) * 4;
+    }
+  }
 
 	struct string_quote_parser {
 		template<typename Range>
@@ -18,6 +79,13 @@ namespace daw::json::json_details::string_quote {
 		  -> std::enable_if_t<Range::is_unchecked_input, bool> {
 			bool need_slow_path = false;
 			char const *first = rng.first;
+			char const * const last = rng.last;
+			if( last - first >= 8 ) {
+				skip_to_first8( first, last );
+			} else {
+				skip_to_first4( first, last );
+			}
+			first -= static_cast<int>(static_cast<bool>(*(first-1) - '\\'));
 			while( *first != '"' ) {
 				while( *first != '"' and *first != '\\' ) {
 					++first;
@@ -39,6 +107,12 @@ namespace daw::json::json_details::string_quote {
 			bool need_slow_path = false;
 			char const *first = rng.first;
 			char const *const last = rng.class_last;
+      if( last - first >= 8 ) {
+        skip_to_first8( first, last );
+      } else {
+        skip_to_first4( first, last );
+      }
+      first -= static_cast<int>(static_cast<bool>(*(first-1) - '\\'));
 			while( first < last and *first != '"' ) {
 				while( first < last and *first != '"' and *first != '\\' ) {
 					++first;
