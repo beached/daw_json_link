@@ -49,12 +49,12 @@
 #endif
 
 namespace {
-#ifdef NDEBUG
+#if defined( NDEBUG ) or not defined( DEBUG )
 	inline constexpr std::size_t NUM_RUNS = 250;
 #else
-	inline constexpr std::size_t NUM_RUNS = 25;
+	inline constexpr std::size_t NUM_RUNS = 1;
 #endif
-	static_assert( NUM_RUNS > 1 );
+	static_assert( NUM_RUNS > 0 );
 
 	daw::bench::bench_result
 	make_bench_result( std::string const &name, std::size_t data_size,

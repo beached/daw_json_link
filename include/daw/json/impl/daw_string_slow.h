@@ -11,15 +11,11 @@
 #include <cstddef>
 
 namespace daw::json::json_details {
-	constexpr inline std::size_t set_slow_path( bool b ) noexcept {
-		return static_cast<std::size_t>( b );
-	}
-
 	/***
 	 * When skip_string encounters escaping, it will note this as a non-zero value
 	 */
 	template<typename Range>
 	constexpr inline bool needs_slow_path( Range const &rng ) noexcept {
-		return static_cast<bool>( rng.counter );
+		return static_cast<std::ptrdiff_t>( rng.counter ) >= 0;
 	}
 } // namespace daw::json::json_details
