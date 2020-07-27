@@ -184,8 +184,8 @@ namespace daw::json::json_details {
 			rng.remove_prefix( );
 		}
 
-		if( auto const first_slash = static_cast<std::ptrdiff_t>( rng.counter );
-		    first_slash > 0 ) {
+		if( auto const first_slash = static_cast<std::ptrdiff_t>( rng.counter ) - 1;
+		    first_slash > 1 ) {
 			it = std::copy_n( rng.first, first_slash, it );
 			rng.first += first_slash;
 		}

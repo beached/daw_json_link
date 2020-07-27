@@ -86,7 +86,7 @@ namespace daw::json::json_details::string_quote {
 	struct string_quote_parser {
 		template<typename Range>
 		[[nodiscard]] static constexpr auto parse_nq( Range &rng )
-		  -> std::enable_if_t<Range::is_unchecked_input, void> {
+		  -> std::enable_if_t<Range::is_unchecked_input, std::size_t> {
 			std::ptrdiff_t need_slow_path = -1;
 			char const *first = rng.first;
 			if( char const *const last = rng.last; last - first >= 8 ) {
@@ -99,7 +99,7 @@ namespace daw::json::json_details::string_quote {
 					++first;
 				}
 				if( DAW_JSON_UNLIKELY( *first == '\\' ) ) {
-					if( not need_slow_path ) {
+					if( need_slow_path < 0 ) {
 						need_slow_path = first - rng.first;
 					}
 					first += 2;
@@ -108,12 +108,12 @@ namespace daw::json::json_details::string_quote {
 				}
 			}
 			rng.first = first;
-			rng.counter = static_cast<std::size_t>( need_slow_path );
+			return static_cast<std::size_t>( need_slow_path );
 		}
 
 		template<typename Range>
 		[[nodiscard]] static constexpr auto parse_nq( Range &rng )
-		  -> std::enable_if_t<not Range::is_unchecked_input, void> {
+		  -> std::enable_if_t<not Range::is_unchecked_input, std::size_t> {
 			std::ptrdiff_t need_slow_path = -1;
 			char const *first = rng.first;
 			char const *const last = rng.class_last;
@@ -127,7 +127,7 @@ namespace daw::json::json_details::string_quote {
 					++first;
 				}
 				if( DAW_JSON_UNLIKELY( first < last and *first == '\\' ) ) {
-					if( not need_slow_path ) {
+					if( need_slow_path < 0 ) {
 						need_slow_path = first - rng.first;
 					}
 					first += 2;
@@ -138,7 +138,7 @@ namespace daw::json::json_details::string_quote {
 			daw_json_assert( first < last and *first == '"',
 			                 "Expected a '\"' at end of string" );
 			rng.first = first;
-			rng.counter = static_cast<std::size_t>( need_slow_path );
+			return static_cast<std::size_t>( need_slow_path );
 		}
 	};
 } // namespace daw::json::json_details::string_quote

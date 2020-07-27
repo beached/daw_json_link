@@ -430,7 +430,7 @@ namespace daw::json::json_details {
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
 	skip_string_nq( Range &rng ) {
 		auto result = rng;
-		string_quote::string_quote_parser::parse_nq( rng );
+		result.counter = string_quote::string_quote_parser::parse_nq( rng );
 
 		daw_json_assert_weak( rng.is_quotes_unchecked( ),
 		                      "Expected trailing \" at the end of string" );
