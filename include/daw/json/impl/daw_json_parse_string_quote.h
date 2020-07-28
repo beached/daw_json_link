@@ -15,8 +15,7 @@
 namespace daw::json::json_details::string_quote {
 	template<std::size_t N>
 	inline constexpr bool test_at_byte( UInt64Buffer b, char c ) {
-		auto const lhs = static_cast<std::uint64_t>( b ) &
-		                 ( static_cast<std::uint64_t>( 0xFF ) << ( N * 8U ) );
+		auto const lhs = b & ( static_cast<std::uint64_t>( 0xFF ) << ( N * 8U ) );
 		auto const rhs =
 		  static_cast<std::uint64_t>( static_cast<unsigned char>( c ) )
 		  << ( N * 8U );
@@ -25,8 +24,7 @@ namespace daw::json::json_details::string_quote {
 
 	template<std::size_t N>
 	inline constexpr bool test_at_byte( UInt32Buffer b, char c ) {
-		auto const lhs = static_cast<std::uint32_t>( b ) &
-		                 ( static_cast<std::uint32_t>( 0xFF ) << ( N * 8U ) );
+		auto const lhs = b & ( static_cast<std::uint32_t>( 0xFF ) << ( N * 8U ) );
 		auto const rhs =
 		  static_cast<std::uint32_t>( static_cast<unsigned char>( c ) )
 		  << ( N * 8U );
