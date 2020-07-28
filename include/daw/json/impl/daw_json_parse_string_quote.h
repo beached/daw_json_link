@@ -13,8 +13,8 @@
 #include <daw/daw_uint_buffer.h>
 
 namespace daw::json::json_details::string_quote {
-	template<std::size_t N>
-	inline constexpr bool test_at_byte( UInt64Buffer b, char c ) {
+	template<std::size_t N, char c>
+	inline constexpr bool test_at_byte( UInt64Buffer b ) {
 		auto const lhs = b & ( static_cast<std::uint64_t>( 0xFF ) << ( N * 8U ) );
 		auto const rhs =
 		  static_cast<std::uint64_t>( static_cast<unsigned char>( c ) )
@@ -22,8 +22,8 @@ namespace daw::json::json_details::string_quote {
 		return not( lhs - rhs );
 	}
 
-	template<std::size_t N>
-	inline constexpr bool test_at_byte( UInt32Buffer b, char c ) {
+	template<std::size_t N, char c>
+	inline constexpr bool test_at_byte( UInt32Buffer b ) {
 		auto const lhs = b & ( static_cast<std::uint32_t>( 0xFF ) << ( N * 8U ) );
 		auto const rhs =
 		  static_cast<std::uint32_t>( static_cast<unsigned char>( c ) )
@@ -36,22 +36,22 @@ namespace daw::json::json_details::string_quote {
 		bool keep_going = last - first >= 8;
 		while( keep_going ) {
 			auto buff = daw::to_uint64_buffer( first );
-			auto const q7 = test_at_byte<7U>( buff, '"' );
-			auto const q6 = test_at_byte<6U>( buff, '"' );
-			auto const q5 = test_at_byte<5U>( buff, '"' );
-			auto const q4 = test_at_byte<4U>( buff, '"' );
-			auto const q3 = test_at_byte<3U>( buff, '"' );
-			auto const q2 = test_at_byte<2U>( buff, '"' );
-			auto const q1 = test_at_byte<1U>( buff, '"' );
-			auto const q0 = test_at_byte<0U>( buff, '"' );
-			auto const s7 = test_at_byte<7U>( buff, '\\' );
-			auto const s6 = test_at_byte<6U>( buff, '\\' );
-			auto const s5 = test_at_byte<5U>( buff, '\\' );
-			auto const s4 = test_at_byte<4U>( buff, '\\' );
-			auto const s3 = test_at_byte<3U>( buff, '\\' );
-			auto const s2 = test_at_byte<2U>( buff, '\\' );
-			auto const s1 = test_at_byte<1U>( buff, '\\' );
-			auto const s0 = test_at_byte<0U>( buff, '\\' );
+			auto const q7 = test_at_byte<7U, '"'>( buff );
+			auto const q6 = test_at_byte<6U, '"'>( buff );
+			auto const q5 = test_at_byte<5U, '"'>( buff );
+			auto const q4 = test_at_byte<4U, '"'>( buff );
+			auto const q3 = test_at_byte<3U, '"'>( buff );
+			auto const q2 = test_at_byte<2U, '"'>( buff );
+			auto const q1 = test_at_byte<1U, '"'>( buff );
+			auto const q0 = test_at_byte<0U, '"'>( buff );
+			auto const s7 = test_at_byte<7U, '\\'>( buff );
+			auto const s6 = test_at_byte<6U, '\\'>( buff );
+			auto const s5 = test_at_byte<5U, '\\'>( buff );
+			auto const s4 = test_at_byte<4U, '\\'>( buff );
+			auto const s3 = test_at_byte<3U, '\\'>( buff );
+			auto const s2 = test_at_byte<2U, '\\'>( buff );
+			auto const s1 = test_at_byte<1U, '\\'>( buff );
+			auto const s0 = test_at_byte<0U, '\\'>( buff );
 			keep_going = not( q0 | q1 | q2 | q3 | q4 | q5 | q6 | q7 | s0 | s1 | s2 |
 			                  s3 | s4 | s5 | s6 | s7 );
 			keep_going = keep_going & static_cast<bool>( last - ( first + 8 ) >= 8 );
@@ -66,14 +66,14 @@ namespace daw::json::json_details::string_quote {
 		while( keep_going ) {
 			// Need to look for escapes as this is fast path
 			auto buff = daw::to_uint32_buffer( first );
-			auto const q3 = test_at_byte<3U>( buff, '"' );
-			auto const q2 = test_at_byte<2U>( buff, '"' );
-			auto const q1 = test_at_byte<1U>( buff, '"' );
-			auto const q0 = test_at_byte<0U>( buff, '"' );
-			auto const s3 = test_at_byte<3U>( buff, '\\' );
-			auto const s2 = test_at_byte<2U>( buff, '\\' );
-			auto const s1 = test_at_byte<1U>( buff, '\\' );
-			auto const s0 = test_at_byte<0U>( buff, '\\' );
+			auto const q3 = test_at_byte<3U, '"'>( buff );
+			auto const q2 = test_at_byte<2U, '"'>( buff );
+			auto const q1 = test_at_byte<1U, '"'>( buff );
+			auto const q0 = test_at_byte<0U, '"'>( buff );
+			auto const s3 = test_at_byte<3U, '\\'>( buff );
+			auto const s2 = test_at_byte<2U, '\\'>( buff );
+			auto const s1 = test_at_byte<1U, '\\'>( buff );
+			auto const s0 = test_at_byte<0U, '\\'>( buff );
 			keep_going = not( q0 | q1 | q2 | q3 | s0 | s1 | s2 | s3 );
 			keep_going = keep_going & static_cast<bool>( last - ( first + 4 ) >= 4 );
 			first += static_cast<int>( keep_going ) * 4;
