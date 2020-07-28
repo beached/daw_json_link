@@ -13,7 +13,7 @@
 
 #include <daw/json/daw_json_link.h>
 
-//#include <iostream>
+#include <iostream>
 #include <optional>
 #include <string_view>
 
