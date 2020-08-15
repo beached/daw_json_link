@@ -70,7 +70,7 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 
 int main( int argc, char **argv ) try {
 	if( argc <= 1 ) {
-		puts( "Must supply path to cookbook_variant2.json file\n" );
+		puts( "Must supply path to cookbook_variant3.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
