@@ -112,3 +112,69 @@ struct daw::json::json_data_contract<MyClass> {
 ```
 
 In the above example, two members are mapped to construct MyClass, `"name"` and `"value"`.  The variant uses the JSON `"type"` member to determine the index of the parser to use for the variant value.
+
+Extending the previous example, it auto detected the `std::string`, `int`, and `bool` types and supplied the parser descriptions for them.  Lets do it manually.
+
+ Below is a JSON array, containing a variant element where the `"type"` member determines the type of the `"value"` member.  In many JSON documents, the discriminator will be a string.
+ ```json
+ [
+   {
+     "type": 0,
+     "name": "string value",
+     "value": "hello"
+   },
+   {
+     "type": 1,
+     "name": "int value",
+     "value": 5
+   },
+   {
+     "type": 2,
+     "name": "bool value",
+     "value": false
+   }
+ ]
+ ```
+ 
+ A member name and a callable are needed to tell the parser which type will parsed.
+ 
+ Too see a working example using this code, refer to [cookbook_variant3_test.cpp](../tests/cookbook_variant3_test.cpp) 
+ ```c++
+ struct MyClass {
+   std::string name;
+   std::variant<std::string, int, bool> value;  
+ };
+ 
+ struct MyClassSwitcher {
+   // Convert JSON tag member to type index
+   constexpr size_t operator( )( int type ) const {
+     return (size_t)type;
+   }     
+   // Get value for Tag from class value
+   int operator( )( MyClass const & v ) const {
+     return (int)v.index( );
+   }
+ };
+ 
+ template<>
+ struct daw::json::json_data_contract<MyClass> {
+   using type = json_member_list<
+     json_string<"name">,
+     json_tagged_variant<
+       "value", 
+       std::variant<std::string, int, bool>,
+       json_number<"type", int>,
+       MyClassSwitcher,
+       json_tagged_variant_type_list<
+         json_string<no_name>,
+         json_number<no_name, int>,
+         json_bool<no_name>    
+       >
+     >
+   >;
+ 
+   static constexpr to_json_data( MyClass const & v ) {
+     return std::forward_as_tuple( v.name, v.value );
+   }
+ };
+ ```
