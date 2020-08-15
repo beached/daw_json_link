@@ -166,7 +166,7 @@ Extending the previous example, it auto detected the `std::string`, `int`, and `
        json_number<"type", int>,
        MyClassSwitcher,
        json_tagged_variant_type_list<
-         json_string<no_name>,
+			   std::string,
          json_number<no_name, int>,
          json_bool<no_name>    
        >
@@ -178,3 +178,4 @@ Extending the previous example, it auto detected the `std::string`, `int`, and `
    }
  };
  ```
+ As you can see, the json_tagged_variant_type_list can use terse type names for some, or the full names.

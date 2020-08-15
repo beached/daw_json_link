@@ -48,8 +48,8 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 	  json_tagged_variant<
 	    "value", std::variant<std::string, int, bool>, json_number<"type", int>,
 	    daw::cookbook_variant2::MyClassSwitcher,
-	    json_tagged_variant_type_list<
-	      json_string<no_name>, json_number<no_name, int>, json_bool<no_name>>>>;
+	    json_tagged_variant_type_list<std::string, json_number<no_name, int>,
+	                                  json_bool<no_name>>>>;
 #else
 	static inline constexpr char const type_mem[] = "type";
 	static inline constexpr char const name[] = "name";
@@ -59,8 +59,8 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 	  json_tagged_variant<
 	    value, std::variant<std::string, int, bool>, json_number<type_mem, int>,
 	    daw::cookbook_variant2::MyClassSwitcher,
-	    json_tagged_variant_type_list<
-	      json_string<no_name>, json_number<no_name, int>, json_bool<no_name>>>>;
+	    json_tagged_variant_type_list<std::string, json_number<no_name, int>,
+	                                  json_bool<no_name>>>>;
 #endif
 	static constexpr inline auto
 	to_json_data( daw::cookbook_variant2::MyClass const &v ) {
