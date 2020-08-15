@@ -166,7 +166,7 @@ Extending the previous example, it auto detected the `std::string`, `int`, and `
        json_number<"type", int>,
        MyClassSwitcher,
        json_tagged_variant_type_list<
-			   std::string,
+         std::string,
          json_number<no_name, int>,
          json_bool<no_name>    
        >
