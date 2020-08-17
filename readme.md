@@ -68,6 +68,7 @@ json_value val = json_value( json_string );
 * [Build Configuration Points](#build-configuration-points)
 * [Requirements](#requirements)
   * [For building tests](#for-building-tests)
+* [Limitations](#limitations)
 
 ## Intro 
 ###### [Top](#content)
@@ -489,3 +490,6 @@ When making tests they are automatically pulled in.  However, having the include
 #### Contact
 Darrell Wright
 json_link@dawdevel.ca
+
+# Limitations
+* When parsing classes, the first member with a mapped name will be used.  If you want to parse a class that can have more than one of any member by name, either parse as a `json_value` or as a `json_key_value` that is mapped to a `std::multimap` or a `std::vector` with a pair of key type(`string`) and value type(s).  If a `json_key_value` is used and the mapped data type does not support duplicate keys, it will insert for each key.  This may result in the last item being the value reflected after serializing.  If the duplicate member is the tag type in a `json_tagged_variant`, it is undefined what the behaviour for parsing is.
