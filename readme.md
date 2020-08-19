@@ -21,7 +21,7 @@ or for array documents
 ```c++
 std::vector<MyThing> things = from_json_array<MyThing>( json_string2 );
 ```
-If the structure of the JSON document is unknown, one can construt a `json_value` that acts as a container and allows iteration and parsing on demand.  The following is an example
+If the structure of the JSON document is unknown, one can construct a `json_value` that acts as a container and allows iteration and parsing on demand.  The following is an example
 ```c++
 json_value val = json_value( json_string );
 ```
@@ -45,7 +45,8 @@ json_value val = json_value( json_string );
   * [Key Values](cookbook/key_values.md) - Map and Dictionary like things
   * [Numbers](cookbook/numbers.md)
   * [Optional/Nullable Values](cookbook/optional_values.md)
-  * [Parsing Invidual Members](cookbook/parsing_idividual_members.md)
+  * [Parsing Individual Members](cookbook/parsing_individual_members.md)
+  * [Parser Policies](cookbook/parser_policies.md)
   * [Strings](cookbook/strings.md)
   * [Unknown JSON and Delayed Parsing](cookbook/unknown_types_and_delayed_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
   * [Variant](cookbook/variant.md)
@@ -411,7 +412,7 @@ The format is a dot separated list of member names and optionally an array index
 Comments are supported when the parser policy for them is used.  Currently there are two forms of comment policies.  C++ style `//` and `/* */`.  Comments can be placed anywhere there is whitespace allowed
 
 * Hash style
-```json
+```
 { # This is a comment
     "a" #this is also a comment
       : "a's value"
@@ -419,7 +420,7 @@ Comments are supported when the parser policy for them is used.  Currently there
 ```
 
 * C++ style
-```json
+```
 { // This is a comment
     "a" /*this is also a comment*/: "a's value"
 }
@@ -492,4 +493,4 @@ Darrell Wright
 json_link@dawdevel.ca
 
 # Limitations
-* When parsing classes, the first member with a mapped name will be used.  If you want to parse a class that can have more than one of any member by name, either parse as a `json_value` or as a `json_key_value` that is mapped to a `std::multimap` or a `std::vector` with a pair of key type(`string`) and value type(s).  If a `json_key_value` is used and the mapped data type does not support duplicate keys, it will insert for each key.  This may result in the last item being the value reflected after serializing.  If the duplicate member is the tag type in a `json_tagged_variant`, it is undefined what the behaviour for parsing is.
+* When parsing classes, the first member with a mapped name will be used.  If you want to parse a class that can have more than one of any member by name, either parse as a `json_value` see or as a `json_key_value` that is mapped to a `std::multimap` or a `std::vector` with a pair of key type(`string`) and value type(s). [Cookbook Key Values](cookbook/key_values.md) demonstrates these methods. If a `json_key_value` is used and the mapped data type does not support duplicate keys, it will insert for each key.  This may result in the last item being the value reflected after serializing.  If the duplicate member is the tag type in a `json_tagged_variant`, it is undefined what the behaviour for parsing is.
