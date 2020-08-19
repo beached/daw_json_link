@@ -196,6 +196,20 @@ namespace daw::json {
 		}
 	};
 
+	template<typename Range>
+	struct basic_json_value_iterator_range {
+		using iterator = basic_json_value_iterator<Range>;
+		iterator first;
+		iterator last;
+
+		constexpr iterator begin( ) { return first; }
+		constexpr iterator end( ) { return last; }
+	};
+	template<typename Range>
+	basic_json_value_iterator_range( basic_json_value_iterator<Range>,
+	                                 basic_json_value_iterator<Range> )
+	  -> basic_json_value_iterator_range<Range>;
+
 	/***
 	 * A container for arbutrary JSON values
 	 * @tparam Range see IteratorRange

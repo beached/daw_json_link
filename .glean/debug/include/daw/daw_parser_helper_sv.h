@@ -64,7 +64,7 @@ namespace daw {
 		template<typename CharT>
 		constexpr daw::basic_string_view<CharT>
 		trim_right( daw::basic_string_view<CharT> str ) noexcept {
-			while( !str.empty( ) and is_unicode_whitespace( str.back( ) ) ) {
+			while( not str.empty( ) and is_unicode_whitespace( str.back( ) ) ) {
 				str.remove_suffix( );
 			}
 			return str;

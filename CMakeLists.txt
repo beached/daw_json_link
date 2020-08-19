@@ -20,7 +20,7 @@ endif( )
 include("${CMAKE_SOURCE_DIR}/dependent_projects/CMakeListsCompiler.txt")
 
 include_directories("./include")
-#set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 
 set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
@@ -53,6 +53,11 @@ else ()
     add_definitions(-DDAW_USE_JSON_EXCEPTIONS=true)
 endif ()
 
+set(DAW_NO_FLATTEN OFF CACHE STRING "Disable function flattening optimization")
+if( DAW_NO_FLATTEN )
+	message( "DAW_NO_FLATTEN=ON: Disabling function flattening optimization" )
+	add_definitions(-DDAW_NO_FLATTEN=true)
+endif( )	
 #if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
 #	set(DAW_ALLOW_SSE3 ON CACHE STRING "Allow SSE3 Modes")
 #else( )
@@ -284,6 +289,16 @@ add_dependencies(cookbook_kv2_test_bin dependency_stub)
 add_test(NAME cookbook_kv2_test COMMAND cookbook_kv2_test_bin ./cookbook_kv2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_kv2_test_bin)
 
+add_executable(cookbook_kv3_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_kv3_test.cpp)
+add_dependencies(cookbook_kv3_test_bin dependency_stub)
+add_test(NAME cookbook_kv3_test COMMAND cookbook_kv3_test_bin ./cookbook_kv3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_kv3_test_bin)
+
+add_executable(cookbook_kv4_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_kv4_test.cpp)
+add_dependencies(cookbook_kv4_test_bin dependency_stub)
+add_test(NAME cookbook_kv4_test COMMAND cookbook_kv4_test_bin ./cookbook_kv4.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_kv4_test_bin)
+
 add_executable(cookbook_class1_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_class1_test.cpp)
 add_dependencies(cookbook_class1_test_bin dependency_stub)
 add_test(NAME cookbook_class1_test COMMAND cookbook_class1_test_bin ./cookbook_class1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
@@ -387,6 +402,11 @@ add_executable(cookbook_variant2_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TES
 add_dependencies(cookbook_variant2_test_bin dependency_stub)
 add_test(NAME cookbook_variant2_test COMMAND cookbook_variant2_test_bin ./cookbook_variant2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_variant2_test_bin)
+
+add_executable(cookbook_variant3_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/cookbook_variant3_test.cpp)
+add_dependencies(cookbook_variant3_test_bin dependency_stub)
+add_test(NAME cookbook_variant3_test COMMAND cookbook_variant3_test_bin ./cookbook_variant3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_variant3_test_bin)
 
 add_executable(optional_tagged_variant_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/optional_tagged_variant_test.cpp)
 add_dependencies(optional_tagged_variant_test_bin dependency_stub)

@@ -643,23 +643,6 @@ namespace daw::json {
 		  value.get_string_view( ), member_path );
 	}
 
-	template<typename JsonMember, typename Range>
-	[[maybe_unused, nodiscard]] constexpr auto
-	from_json_unchecked( basic_json_value<Range> value ) {
-		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
-		return json_details::from_json_member_impl<json_member, true>(
-		  value.get_string_view( ) );
-	}
-
-	template<typename JsonMember, typename Range>
-	[[maybe_unused, nodiscard]] constexpr auto
-	from_json_unchecked( basic_json_value<Range> value,
-	                     std::string_view member_path ) {
-		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
-		return json_details::from_json_member_impl<json_member, true>(
-		  value.get_string_view( ), member_path );
-	}
-
 	/**
 	 *
 	 * @tparam OutputIterator Iterator to character data to
@@ -824,26 +807,6 @@ namespace daw::json {
 		auto out_it = json_details::basic_appender<Result>( result );
 		to_json_array<JsonElement>( c, out_it );
 		return result;
-	}
-
-	template<typename>
-	struct is_json_transform_function : std::false_type {};
-
-	template<typename Transformer>
-	inline constexpr bool is_json_transform_function_v =
-	  is_json_transform_function<Transformer>::value;
-
-	template<typename JsonTransform,
-	         typename ParserPolicy = NoCommentSkippingPolicyChecked,
-	         typename OutputIterator, typename... Transformers>
-	constexpr OutputIterator json_transform( std::string_view json_document,
-	                                         OutputIterator out_it ) {
-		// using Range = ParserPolicy;
-		// TODO: look at filling document if all transformers are nullable
-		daw_json_assert( not json_document.empty( ),
-		                 "Cannot parse an empty or null document" );
-		auto jv = basic_json_value<ParserPolicy>( ParserPolicy(
-		  json_document.data( ), json_document.data( ) + json_document.size( ) ) );
 	}
 
 	namespace json_details {

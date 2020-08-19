@@ -74,10 +74,8 @@ namespace daw::json {
 	template<typename T>
 	struct custom_from_converter_t {
 		[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {
-			if constexpr( std::is_same_v<T, std::string_view> ) {
-				return std::string_view{ };
-			} else if constexpr( std::is_same_v<T,
-			                                    std::optional<std::string_view>> ) {
+			if constexpr( std::is_same_v<T, std::string_view> or
+			              std::is_same_v<T, std::optional<std::string_view>> ) {
 				return std::string_view{ };
 			} else {
 				return from_string( daw::tag<T> );
@@ -207,6 +205,7 @@ namespace daw::json::json_details {
 		return locations_info_t<sizeof...( JsonMembers ), Range, hashes_collide>{
 		  location_info_t<hashes_collide, Range>( &JsonMembers::name )... };
 	}
+
 	/***
 	 * Get the position from already seen JSON members or move the parser
 	 * forward until we reach the end of the class or the member.
@@ -489,6 +488,7 @@ namespace daw::json::json_details {
 		rng.remove_prefix( );
 		rng.trim_left( );
 	}
+
 #if defined( __cpp_constexpr_dynamic_alloc )
 	template<typename Range>
 	struct OrderedClassCleanupDtor {

@@ -312,9 +312,7 @@ namespace daw {
 		//auto const total_start = std::chrono::steady_clock::now( );
 		benchmark_impl::second_duration valid_time = std::chrono::seconds( 0 );
 		for( size_t n = 0; n < Runs; ++n ) {
-			std::chrono::time_point<std::chrono::steady_clock,
-			                        std::chrono::nanoseconds>
-			  start;
+			auto const start = std::chrono::steady_clock::now( );
 			using result_t = daw::remove_cvref_t<decltype( func( args... ) )>;
 			result_t result;
 			result = *daw::expected_from_code( func, args... );
