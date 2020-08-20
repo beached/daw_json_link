@@ -39,7 +39,7 @@ namespace daw::json {
 		                   json_string_raw<text, std::string_view>,
 		                   json_string_raw<created_at, std::string_view>,
 		                   json_number_null<in_reply_to_status_id, std::uint64_t>,
-		                   json_number<retweet_count, std::uint64_t>,
-		                   json_number_null<favorite_count, std::uint64_t>>;
+		                   json_number<retweet_count, std::uint32_t>,
+		                   json_number_null<favorite_count, std::uint32_t>>;
 	};
 } // namespace daw::json
