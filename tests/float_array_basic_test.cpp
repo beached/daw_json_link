@@ -43,16 +43,11 @@ json_data_contract_for( Number ) noexcept {
 
 template<typename Float>
 Float rand_float( ) {
-	auto f0 = daw::randint<intmax_t>( daw::numeric_limits<intmax_t>::min( ),
-	                                  daw::numeric_limits<intmax_t>::max( ) );
-	if( f0 == 0 ) {
-		f0 = 1;
-	}
-	auto const f1 =
-	  daw::randint<intmax_t>( daw::numeric_limits<intmax_t>::min( ),
-	                          daw::numeric_limits<intmax_t>::max( ) );
-
-	return static_cast<Float>( f1 ) / static_cast<Float>( f0 );
+	static constexpr Float fmin = 0;
+	static constexpr Float fmax = 1;
+	static auto e = std::default_random_engine( );
+	static auto dis = std::uniform_real_distribution<Float>( fmin, fmax );
+	return dis( e );
 }
 
 template<size_t NUMVALUES>
