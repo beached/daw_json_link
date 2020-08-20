@@ -297,29 +297,18 @@ namespace daw::json::json_details {
 		if constexpr( can_parse_to_stdstring_fast<JsonMember>::value ) {
 			constexpr bool AllowHighEightbits =
 			  JsonMember::eight_bit_mode != EightBitModes::DisallowHigh;
-			if constexpr( KnownBounds ) {
-				if( needs_slow_path( rng ) ) {
-					return parse_string_known_stdstring<AllowHighEightbits,
-					                                    json_result<JsonMember>>( rng );
-				}
-				if constexpr( std::is_same_v<std::string, json_result<JsonMember>> ) {
-					return std::string( rng.first, rng.size( ) );
-				} else {
-					return std::optional<std::string>( std::in_place, rng.first,
-					                                   rng.size( ) );
-				}
+			auto rng2 = KnownBounds ? rng : skip_string( rng );
+			if( needs_slow_path( rng2 ) ) {
+				// There are escapes in the string
+				return parse_string_known_stdstring<AllowHighEightbits,
+				                                    json_result<JsonMember>>( rng2 );
+			}
+			// There are no escapes in the string, we can just use the ptr/size ctor
+			if constexpr( std::is_same_v<std::string, json_result<JsonMember>> ) {
+				return std::string( rng2.first, rng2.size( ) );
 			} else {
-				auto rng2 = skip_string( rng );
-				if( needs_slow_path( rng2 ) ) {
-					return parse_string_known_stdstring<AllowHighEightbits,
-					                                    json_result<JsonMember>>( rng2 );
-				}
-				if constexpr( std::is_same_v<std::string, json_result<JsonMember>> ) {
-					return std::string( rng2.first, rng2.size( ) );
-				} else {
-					return std::optional<std::string>( std::in_place, rng2.first,
-					                                   rng2.size( ) );
-				}
+				return std::optional<std::string>( std::in_place, rng2.first,
+				                                   rng2.size( ) );
 			}
 		} else {
 			using constructor_t = typename JsonMember::constructor_t;
