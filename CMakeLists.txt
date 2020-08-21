@@ -562,7 +562,7 @@ add_dependencies(full test_details_skip_number_bin)
 
 add_executable(strings_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/strings_test.cpp)
 add_dependencies(strings_test_bin dependency_stub)
-add_test(NAME strings_test COMMAND strings_test_bin ./string.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_test(NAME strings_test COMMAND strings_test_bin ./strings.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full strings_test_bin)
 
 add_executable(json_benchmark_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/json_benchmark.cpp)
