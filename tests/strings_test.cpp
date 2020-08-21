@@ -64,7 +64,7 @@ std::size_t test( std::string_view json_data ) {
 	  },
 	  json_data, values2.data( ) );
 	daw::do_not_optimize( json_data );
-	daw::do_not_optimize( values );
+	daw::do_not_optimize( values2 );
 	auto const h1 = std::accumulate(
 	  values2.begin( ), values2.end( ), 0ULL, []( auto old, auto current ) {
 		  return old +=
@@ -72,7 +72,7 @@ std::size_t test( std::string_view json_data ) {
 	  } );
 	daw_json_assert( values == values2, "Parses don't match" );
 	daw_json_assert( h0 == h1, "Hashes don't match" );
-	return h0;
+	return h1;
 }
 
 int main( int argc, char **argv ) try {

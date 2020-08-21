@@ -95,8 +95,20 @@ namespace daw::json::json_details::string_quote {
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
 				first = sse3_skip_string( first, last );
-			}
-			if( *first != '"' ) {
+				while( *first != '"' ) {
+					while( *first != '"' and *first != '\\' ) {
+						++first;
+					}
+					if( DAW_JSON_UNLIKELY( *first == '\\' ) ) {
+						if( need_slow_path < 0 ) {
+							need_slow_path = first - rng.first;
+						}
+						first += 2;
+					} else {
+						break;
+					}
+				}
+			} else {
 #endif
 				if( last - first >= 8 ) {
 					skip_to_first8( first, last );
@@ -132,8 +144,20 @@ namespace daw::json::json_details::string_quote {
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
 				first = sse3_skip_string( first, rng.last );
-			}
-			if( *first != '"' ) {
+				while( first < last and *first != '"' ) {
+					while( first < last and *first != '"' and *first != '\\' ) {
+						++first;
+					}
+					if( DAW_JSON_UNLIKELY( first < last and *first == '\\' ) ) {
+						if( need_slow_path < 0 ) {
+							need_slow_path = first - rng.first;
+						}
+						first += 2;
+					} else {
+						break;
+					}
+				}
+			} else {
 #endif
 				if( char const *const l = rng.last; l - first >= 8 ) {
 					skip_to_first8( first, l );
