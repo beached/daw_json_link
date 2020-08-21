@@ -52,50 +52,5 @@ namespace daw::json {
 		}
 		return first;
 	}
-
-	template<typename Range>
-	static inline void sse3_skip_ws( Range &rng ) {
-		char const *first = rng.first;
-		char const *const last = rng.last;
-		alignas( 16 ) static constexpr char const whitespace_str[] =
-		  "                ";
-		__m128i const whitespace =
-		  _mm_loadu_si128( reinterpret_cast<__m128i const *>( whitespace_str ) );
-
-		alignas( 16 ) static constexpr char const ones_str[] =
-		  "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
-		__m128i const ones =
-		  _mm_loadu_si128( reinterpret_cast<__m128i const *>( ones_str ) );
-		while( last - first >= 16U ) {
-			__m128i const cur_set =
-			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
-			__m128i const is_ws = _mm_max_epu8( cur_set, whitespace );
-			__m128i const has_ws = _mm_cmpeq_epi8( is_ws, whitespace );
-			__m128i const not_ws = _mm_xor_si128( has_ws, ones );
-			int const any_set = _mm_movemask_epi8( not_ws );
-			if( any_set != 0 ) {
-				// Find out which is the first character
-#if defined( __GNUC__ ) or defined( __clang__ )
-				first += __builtin_ffs( any_set ) - 1;
-#elif defined( _MSC_VER )
-				unsigned long idx;
-				_BitScanForward( &idx, any_set );
-				first += idx;
-#endif
-				break;
-			}
-			first += 16;
-		}
-		if constexpr( Range::is_unchecked_input ) {
-			while( *first <= 0x20 ) {
-				++first;
-			}
-		} else {
-			while( first != last and *first <= 0x20 ) {
-				++first;
-			}
-		}
-		rng.first = first;
-	}
 } // namespace daw::json
 #endif
