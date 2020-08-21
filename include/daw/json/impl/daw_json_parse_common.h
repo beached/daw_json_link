@@ -447,7 +447,7 @@ namespace daw::json::json_details {
 				daw_json_error( "Attempt to parse a non-string as string" );
 			}
 		}
-		daw_json_assert( rng.has_more( ), "Unexpected end of string" );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of string" );
 		return skip_string_nq( rng );
 	}
 

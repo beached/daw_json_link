@@ -50,10 +50,12 @@ namespace daw::json::json_details::name {
 					rng.first = sse3_skip_string( rng.first, rng.last );
 				}
 #endif
-				if constexpr( Range::is_unchecked_input ) {
-					rng.move_to_next_of_unchecked( '"' );
-				} else {
-					rng.move_to_next_of_checked( '"' );
+				if( *rng.first != '"' ) {
+					if constexpr( Range::is_unchecked_input ) {
+						rng.move_to_next_of_unchecked( '"' );
+					} else {
+						rng.move_to_next_of_checked( '"' );
+					}
 				}
 				daw_json_assert_weak( rng.is_quotes_checked( ) and
 				                        *std::prev( rng.first ) != '\\',

@@ -33,14 +33,6 @@ namespace daw::json {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_unchecked( Range &rng ) {
-			/*
-#if defined( DAW_ALLOW_SSE3 )
-			if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-				sse3_skip_ws( rng );
-				return;
-			}
-#endif
-			 */
 			char const *first = rng.first;
 			while( parse_policy_details::is_space_unchecked( *first ) ) {
 				++first;

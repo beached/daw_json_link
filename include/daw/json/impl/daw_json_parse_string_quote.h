@@ -94,7 +94,7 @@ namespace daw::json::json_details::string_quote {
 			// daw_json_assert_weak( first != '"', "Unexpected quote" );
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
-				first = sse3_skip_string( first, rng.last );
+				first = sse3_skip_string( first, last );
 			}
 #endif
 			if( *first != '"' ) {
@@ -127,25 +127,32 @@ namespace daw::json::json_details::string_quote {
 			std::ptrdiff_t need_slow_path = -1;
 			char const *first = rng.first;
 			char const *const last = rng.class_last;
-			if( char const *const l = rng.last; l - first >= 8 ) {
-				skip_to_first8( first, l );
-			} else if( last - first >= 4 ) {
-				skip_to_first4( first, l );
+#if defined( DAW_ALLOW_SSE3 )
+			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
+				first = sse3_skip_string( first, rng.last );
 			}
-			while( first < last and *first != '"' ) {
-				while( first < last and *first != '"' and *first != '\\' ) {
-					++first;
+#endif
+			if( *first != '"' ) {
+				if( char const *const l = rng.last; l - first >= 8 ) {
+					skip_to_first8( first, l );
+				} else if( last - first >= 4 ) {
+					skip_to_first4( first, l );
 				}
-				if( DAW_JSON_UNLIKELY( first < last and *first == '\\' ) ) {
-					if( need_slow_path < 0 ) {
-						need_slow_path = first - rng.first;
+				while( first < last and *first != '"' ) {
+					while( first < last and *first != '"' and *first != '\\' ) {
+						++first;
 					}
-					first += 2;
-				} else {
-					break;
+					if( DAW_JSON_UNLIKELY( first < last and *first == '\\' ) ) {
+						if( need_slow_path < 0 ) {
+							need_slow_path = first - rng.first;
+						}
+						first += 2;
+					} else {
+						break;
+					}
 				}
 			}
-			daw_json_assert( first < last and *first == '"',
+			daw_json_assert_weak( first < last and *first == '"',
 			                 "Expected a '\"' at end of string" );
 			rng.first = first;
 			return static_cast<std::size_t>( need_slow_path );
