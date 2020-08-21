@@ -93,9 +93,6 @@ namespace daw::json {
 				first = sse3_skip_until<Range::is_unchecked_input,c>( first, last );
 			}
 #endif
-			while( *first != c ) {
-				++first;
-			}
 		}
 
 		DAW_ATTRIBUTE_FLATTEN constexpr void
@@ -113,9 +110,6 @@ namespace daw::json {
 				first = sse3_skip_until<Range::is_unchecked_input,c>( first, last );
 			}
 #endif
-			while( first < last and *first != c ) {
-				++first;
-			}
 		}
 
 		DAW_ATTRIBUTE_FLATTEN constexpr void

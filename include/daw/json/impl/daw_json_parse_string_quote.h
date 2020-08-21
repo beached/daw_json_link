@@ -94,9 +94,8 @@ namespace daw::json::json_details::string_quote {
 			// daw_json_assert_weak( first != '"', "Unexpected quote" );
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
-				while( first < last and *first != '"' ) {
-					first =
-					  sse3_skip_until<Range::is_unchecked_input, '"'>( first, last );
+				while( *first != '"' ) {
+					first = sse3_skip_until<true, '"'>( first, last );
 
 					if( DAW_JSON_LIKELY( *( first - 1 ) != '\\' ) ) {
 						break;
@@ -142,19 +141,17 @@ namespace daw::json::json_details::string_quote {
 			char const *const last = rng.class_last;
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
-				first = sse3_skip_string<Range::is_unchecked_input>( first, rng.last );
 				while( first < last and *first != '"' ) {
-					while( first < last and *first != '"' and *first != '\\' ) {
-						++first;
-					}
-					if( DAW_JSON_UNLIKELY( first < last and *first == '\\' ) ) {
-						if( need_slow_path < 0 ) {
-							need_slow_path = first - rng.first;
-						}
-						first += 2;
-					} else {
+					first = sse3_skip_until<false, '"'>( first, last );
+
+					if( DAW_JSON_LIKELY( *( first - 1 ) != '\\' ) ) {
 						break;
 					}
+					// We are at a backslash
+					if( need_slow_path < 0 ) {
+						need_slow_path = first - rng.first;
+					}
+					first += 2;
 				}
 			} else {
 #endif
