@@ -24,13 +24,13 @@ namespace daw::json {
 				rng.remove_prefix( );
 				switch( rng.front( ) ) {
 				case '/':
-					move_to_next_of_unchecked( rng, '\n' );
+					rng.template move_to_next_of_unchecked<'\n'>( );
 					rng.remove_prefix( );
 					break;
 				case '*':
 					rng.remove_prefix( );
 					while( true ) {
-						move_to_next_of_unchecked( rng, '*' );
+						rng.template move_to_next_of_unchecked<'*'>( );
 						rng.remove_prefix( );
 						if( rng.front( ) == '/' ) {
 							break;
@@ -52,7 +52,7 @@ namespace daw::json {
 				}
 				switch( rng.front( ) ) {
 				case '/':
-					move_to_next_of_checked( rng, '\n' );
+					rng.template move_to_next_of_checked<'\n'>( );
 					if( rng.has_more( ) ) {
 						rng.remove_prefix( );
 					}
@@ -60,7 +60,7 @@ namespace daw::json {
 				case '*':
 					rng.remove_prefix( );
 					while( rng.has_more( ) ) {
-						move_to_next_of_checked( rng, '*' );
+						rng.template move_to_next_of_checked<'*'>( );
 						if( rng.has_more( ) ) {
 							rng.remove_prefix( );
 						}
@@ -84,27 +84,6 @@ namespace daw::json {
 		}
 
 	public:
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		move_to_next_of_unchecked( Range &rng, char c ) {
-			char const *first = rng.first;
-			while( *first != c ) {
-				++first;
-			}
-			rng.first = first;
-		}
-
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		move_to_next_of_checked( Range &rng, char c ) {
-			char const *first = rng.first;
-			char const *const last = rng.last;
-			while( first < last and *first != c ) {
-				++first;
-			}
-			rng.first = first;
-		}
-
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_checked( Range &rng ) {
@@ -174,7 +153,7 @@ namespace daw::json {
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = sse3_skip_string( ptr_first, rng.last );
+						ptr_first = sse3_skip_string<Range::is_unchecked_input>( ptr_first, rng.last );
 					}
 #endif
 					while( ptr_first < ptr_last and *ptr_first != '"' ) {
@@ -262,7 +241,7 @@ namespace daw::json {
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = sse3_skip_string( ptr_first, rng.last );
+						ptr_first = sse3_skip_string<Range::is_unchecked_input>( ptr_first, rng.last );
 					}
 #endif
 					while( *ptr_first != '"' ) {

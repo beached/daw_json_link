@@ -47,14 +47,13 @@ namespace daw::json::json_details::name {
 				char const *const ptr = rng.first;
 #if defined( DAW_ALLOW_SSE3 )
 				if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
-					rng.first = sse3_skip_string( rng.first, rng.last );
-				}
-				if( *rng.first != '"' ) {
+					rng.first = sse3_skip_until<Range::is_unchecked_input,'"'>( rng.first, rng.last );
+				} else {
 #endif
 					if constexpr( Range::is_unchecked_input ) {
-						rng.move_to_next_of_unchecked( '"' );
+						rng.template move_to_next_of_unchecked<'"'>( );
 					} else {
-						rng.move_to_next_of_checked( '"' );
+						rng.template move_to_next_of_checked<'"'>( );
 					}
 #if defined( DAW_ALLOW_SSE3 )
 				}

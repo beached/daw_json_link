@@ -22,7 +22,7 @@ namespace daw::json {
 		skip_comments_unchecked( Range &rng ) {
 			if( rng.front( ) == '#' ) {
 				rng.remove_prefix( );
-				move_to_next_of_unchecked( rng, '\n' );
+				rng.template move_to_next_of_unchecked<'\n'>( );
 				rng.remove_prefix( );
 			}
 		}
@@ -32,7 +32,7 @@ namespace daw::json {
 		skip_comments_checked( Range &rng ) {
 			if( rng.has_more( ) and rng.front( ) == '#' ) {
 				rng.remove_prefix( );
-				move_to_next_of_checked( rng, '\n' );
+				rng.template move_to_next_of_checked<'\n'>( );
 				if( rng.front( ) == '\n' ) {
 					rng.remove_prefix( );
 				}
@@ -49,27 +49,6 @@ namespace daw::json {
 		}
 
 	public:
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		move_to_next_of_unchecked( Range &rng, char c ) {
-			char const *first = rng.first;
-			while( *first != c ) {
-				++first;
-			}
-			rng.first = first;
-		}
-
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		move_to_next_of_checked( Range &rng, char c ) {
-			char const *first = rng.first;
-			char const *const last = rng.last;
-			while( first < last and *first != c ) {
-				++first;
-			}
-			rng.first = first;
-		}
-
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_checked( Range &rng ) {
@@ -140,7 +119,7 @@ namespace daw::json {
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = sse3_skip_string( ptr_first, rng.last );
+						ptr_first = sse3_skip_string<Range::is_unchecked_input>( ptr_first, rng.last );
 					}
 #endif
 					while( ptr_first < ptr_last and *ptr_first != '"' ) {
@@ -216,7 +195,7 @@ namespace daw::json {
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = sse3_skip_string( ptr_first, rng.last );
+						ptr_first = sse3_skip_string<Range::is_unchecked_input>( ptr_first, rng.last );
 					}
 #endif
 					while( *ptr_first != '"' ) {

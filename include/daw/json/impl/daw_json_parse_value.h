@@ -177,7 +177,7 @@ namespace daw::json::json_details {
 				rng.remove_prefix( 4 );
 				daw_json_assert_weak(
 				  parse_policy_details::at_end_of_item( rng.front( ) ),
-				  "Unexpectd value" );
+				  "Unexpected value" );
 				rng.trim_left_checked( );
 				return constructor_t{ }( );
 			}

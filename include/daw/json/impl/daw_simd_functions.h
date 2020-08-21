@@ -22,23 +22,20 @@
 #endif
 
 namespace daw::json {
-	static inline char const *
-	sse3_skip_string( char const *first, char const *const last ) {
-		alignas( 16 ) static constexpr char const quote_str[] =
-		  R"("""""""""""""""")";
-		alignas( 16 ) static constexpr char const back_slash_str[] =
-		  R"(\\\\\\\\\\\\\\\\)";
-		__m128i const quotes =
-		  _mm_load_si128( reinterpret_cast<__m128i const *>( quote_str ) );
-		__m128i const back_slash =
-		  _mm_load_si128( reinterpret_cast<__m128i const *>( back_slash_str ) );
+	template<bool is_unchecked_input, char... keys>
+	static inline char const *sse3_skip_until( char const *first,
+	                                           char const *const last ) {
+		static_assert( sizeof...( keys ) > 0 );
 		while( last - first >= 16 ) {
 			__m128i const cur_set =
 			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
-			__m128i const has_quotes = _mm_cmpeq_epi8( cur_set, quotes );
-			__m128i const has_backslashes = _mm_cmpeq_epi8( cur_set, back_slash );
-			__m128i const has_either = _mm_or_si128( has_quotes, has_backslashes );
-			int const any_set = _mm_movemask_epi8( has_either );
+			auto const found =
+			  std::array{ _mm_cmpeq_epi8( cur_set, _mm_set1_epi8( keys ) )... };
+			__m128i are_found = found[0];
+			for( std::size_t n = 1; n < ( sizeof...( keys ) ); ++n ) {
+				are_found = _mm_or_si128( are_found, found[n] );
+			}
+			int const any_set = _mm_movemask_epi8( are_found );
 			if( any_set != 0 ) {
 				// Find out which is the first character
 #if defined( __GNUC__ ) or defined( __clang__ )
@@ -52,7 +49,32 @@ namespace daw::json {
 			}
 			first += 16;
 		}
+		if( last - first < 16 ) {
+			if constexpr( is_unchecked_input ) {
+				char c = *first;
+				bool test = not( ( c == keys ) | ... );
+				while( test ) {
+					++first;
+					c = *first;
+					test = not( ( c == keys ) | ... );
+				}
+			} else {
+				char c = *first;
+				bool test = first < last and not( ( c == keys ) | ... );
+				while( test ) {
+					++first;
+					test =
+					  first < last and not( ( c = *first ), ( ( c == keys ) | ... ) );
+				}
+			}
+		}
 		return first;
+	}
+
+	template<bool is_unchecked_input>
+	static inline char const *sse3_skip_string( char const *first,
+	                                            char const *const last ) {
+		return sse3_skip_until<is_unchecked_input, '"', '\\'>( first, last );
 	}
 } // namespace daw::json
 #endif

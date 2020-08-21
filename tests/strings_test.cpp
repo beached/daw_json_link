@@ -84,7 +84,6 @@ int main( int argc, char **argv ) try {
 		auto const data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 		return std::string( data.data( ), data.size( ) );
 	}( );
-
 	auto const h0 = test<daw::json::SIMDModes::None>( json_string );
 	(void)h0;
 #if defined( DAW_ALLOW_SSE3 )
