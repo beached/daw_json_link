@@ -96,8 +96,8 @@ namespace daw::json::json_details::string_quote {
 			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
 				first = sse3_skip_string( first, last );
 			}
-#endif
 			if( *first != '"' ) {
+#endif
 				if( last - first >= 8 ) {
 					skip_to_first8( first, last );
 				} else if( last - first >= 4 ) {
@@ -116,7 +116,9 @@ namespace daw::json::json_details::string_quote {
 						break;
 					}
 				}
+#if defined( DAW_ALLOW_SSE3 )
 			}
+#endif
 			rng.first = first;
 			return static_cast<std::size_t>( need_slow_path );
 		}
@@ -131,8 +133,8 @@ namespace daw::json::json_details::string_quote {
 			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
 				first = sse3_skip_string( first, rng.last );
 			}
-#endif
 			if( *first != '"' ) {
+#endif
 				if( char const *const l = rng.last; l - first >= 8 ) {
 					skip_to_first8( first, l );
 				} else if( last - first >= 4 ) {
@@ -151,9 +153,11 @@ namespace daw::json::json_details::string_quote {
 						break;
 					}
 				}
+#if defined( DAW_ALLOW_SSE3 )
 			}
+#endif
 			daw_json_assert_weak( first < last and *first == '"',
-			                 "Expected a '\"' at end of string" );
+			                      "Expected a '\"' at end of string" );
 			rng.first = first;
 			return static_cast<std::size_t>( need_slow_path );
 		}

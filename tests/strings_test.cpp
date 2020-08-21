@@ -90,7 +90,7 @@ int main( int argc, char **argv ) try {
 #if defined( DAW_ALLOW_SSE3 )
 	std::cout << "SSE3\n**************************\n";
 	auto const h1 = test<daw::json::SIMDModes::SSE3>( json_string );
-	daw_json_assert( h0 == h1, "SSE/non-SSE hashes do not match");
+	daw_json_assert( h0 == h1, "SSE/non-SSE hashes do not match" );
 #endif
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

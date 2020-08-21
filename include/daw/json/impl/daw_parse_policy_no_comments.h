@@ -113,7 +113,7 @@ namespace daw::json {
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = sse3_skip_string( ptr_first, rng.last );
+						ptr_first = sse3_skip_string( ptr_first, ptr_last );
 					}
 #endif
 					while( ( ptr_first < ptr_last ) bitand ( *ptr_first != '"' ) ) {

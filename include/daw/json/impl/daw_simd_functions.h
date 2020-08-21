@@ -10,6 +10,8 @@
 
 #include "daw_simd_modes.h"
 
+#include <daw/daw_hide.h>
+
 #if defined( DAW_ALLOW_SSE3 )
 #include <emmintrin.h>
 #include <smmintrin.h>
@@ -20,8 +22,8 @@
 #endif
 
 namespace daw::json {
-	static inline char const *sse3_skip_string( char const *first,
-	                                            char const *const last ) {
+	static inline char const *
+	sse3_skip_string( char const *first, char const *const last ) {
 		alignas( 16 ) static constexpr char const quote_str[] =
 		  R"("""""""""""""""")";
 		alignas( 16 ) static constexpr char const back_slash_str[] =
@@ -30,7 +32,7 @@ namespace daw::json {
 		  _mm_load_si128( reinterpret_cast<__m128i const *>( quote_str ) );
 		__m128i const back_slash =
 		  _mm_load_si128( reinterpret_cast<__m128i const *>( back_slash_str ) );
-		while( last - first >= 16U ) {
+		while( last - first >= 16 ) {
 			__m128i const cur_set =
 			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
 			__m128i const has_quotes = _mm_cmpeq_epi8( cur_set, quotes );
