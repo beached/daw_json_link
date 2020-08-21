@@ -12,6 +12,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_string_quote.h"
 #include "daw_json_traits.h"
+#include "daw_simd_modes.h"
 #include "daw_string_slow.h"
 
 #include <daw/daw_parser_helper_sv.h>
@@ -324,13 +325,6 @@ namespace daw::json {
 	enum class JsonRangeCheck { Never = false, CheckForNarrowing = true };
 	enum class EightBitModes { DisallowHigh = false, AllowFull = true };
 	enum class CustomJsonTypes { Literal, String, Either };
-	enum class SIMDModes { None, SSE3 };
-
-	template<SIMDModes mode>
-	using SIMDConst = std::integral_constant<SIMDModes, mode>;
-
-	template<SIMDModes mode>
-	inline constexpr auto SIMDConst_v = SIMDConst<mode>{ };
 
 	template<JsonParseTypes ParseType, JsonNullable Nullable>
 	inline constexpr JsonParseTypes get_parse_type_v =
@@ -453,7 +447,7 @@ namespace daw::json::json_details {
 				daw_json_error( "Attempt to parse a non-string as string" );
 			}
 		}
-		daw_json_assert( rng.has_more( ), "Unexpect end of string" );
+		daw_json_assert( rng.has_more( ), "Unexpected end of string" );
 		return skip_string_nq( rng );
 	}
 

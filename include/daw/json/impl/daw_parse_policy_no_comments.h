@@ -11,6 +11,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_parse_policy_policy_details.h"
+#include "daw_simd_functions.h"
 
 #include <daw/daw_function_table.h>
 #include <daw/daw_hide.h>
@@ -32,6 +33,14 @@ namespace daw::json {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_unchecked( Range &rng ) {
+			/*
+#if defined( DAW_ALLOW_SSE3 )
+			if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
+				sse3_skip_ws( rng );
+				return;
+			}
+#endif
+			 */
 			char const *first = rng.first;
 			while( parse_policy_details::is_space_unchecked( *first ) ) {
 				++first;
@@ -110,6 +119,11 @@ namespace daw::json {
 					++ptr_first;
 				} else if( c == '"' ) {
 					++ptr_first;
+#if defined( DAW_ALLOW_SSE3 )
+					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
+						ptr_first = sse3_skip_string( ptr_first, rng.last );
+					}
+#endif
 					while( ( ptr_first < ptr_last ) bitand ( *ptr_first != '"' ) ) {
 						if( *ptr_first == '\\' ) {
 							++ptr_first;
@@ -170,6 +184,11 @@ namespace daw::json {
 					++ptr_first;
 				} else if( c == '"' ) {
 					++ptr_first;
+#if defined( DAW_ALLOW_SSE3 )
+					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
+						ptr_first = sse3_skip_string( ptr_first, rng.last );
+					}
+#endif
 					while( *ptr_first != '"' ) {
 						if( *ptr_first == '\\' ) {
 							++ptr_first;

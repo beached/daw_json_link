@@ -12,9 +12,7 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_do_n.h>
 #include <daw/daw_random.h>
-#include <daw/iterator/daw_back_inserter.h>
 
-#include <fstream>
 #include <iostream>
 #include <streambuf>
 #include <string_view>
@@ -119,8 +117,7 @@ void test_func( ) {
 		  "float parsing 2", json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy_n( iterator_t( sv ), NUMVALUES, daw::back_inserter( data ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -146,14 +143,12 @@ void test_func( ) {
 		  daw::json::json_array_iterator<json_number<no_name, float>>;
 
 		auto data = std::vector<float>( );
-		data.reserve( NUMVALUES );
+		data.resize( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<100>(
 		  "p2. float parsing 2", json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
-			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy_n( iterator_t( sv ), NUMVALUES, data.data( ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -181,14 +176,12 @@ void test_func( ) {
 		  daw::json::json_array_iterator<json_class<no_name, Number>>;
 
 		auto data = std::vector<Number>( );
-		data.reserve( NUMVALUES );
+		data.resize( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<100>(
 		  "float parsing 2", json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
-			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy_n( iterator_t( sv ), NUMVALUES, data.data( ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -215,14 +208,12 @@ void test_func( ) {
 		  daw::json::json_array_iterator<json_checked_number<no_name, float>>;
 
 		auto data = std::vector<float>( );
-		data.reserve( NUMVALUES );
+		data.resize( NUMVALUES );
 
 		auto const count2 = *daw::bench_n_test_mbs<100>(
 		  "p2. float parsing 2", json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
-			  data.clear( );
-			  std::copy( iterator_t( sv ), iterator_t( ),
-			             daw::back_inserter( data ) );
+			  std::copy_n( iterator_t( sv ), NUMVALUES, data.data( ) );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -235,7 +226,7 @@ void test_func( ) {
 			auto const count3 = *daw::bench_n_test_mbs<100>(
 			  "p3. float parsing 3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
+				  auto ptr = std::copy_n( iterator_t( sv ), NUMVALUES, data2.get( ) );
 				  daw::do_not_optimize( data2 );
 				  return ptr - data2.get( );
 			  },
@@ -246,7 +237,7 @@ void test_func( ) {
 	}
 
 	{
-		std::cout << "double parsing\n";
+		std::cout << "double parsing\n**********************\n";
 		using iterator_t = daw::json::json_array_iterator<double>;
 
 		std::string json_data3 = [] {
@@ -266,7 +257,7 @@ void test_func( ) {
 			auto const count3 = *daw::bench_n_test_mbs<100>(
 			  "p4. parsing", json_sv3.size( ),
 			  [&]( auto &&sv ) noexcept {
-				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
+				  auto ptr = std::copy_n( iterator_t( sv ), NUMVALUES, data2.get( ) );
 				  daw::do_not_optimize( data2 );
 				  return ptr - data2.get( );
 			  },

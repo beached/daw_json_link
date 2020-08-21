@@ -11,6 +11,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_parse_policy_policy_details.h"
+#include "daw_simd_functions.h"
 
 #include <daw/daw_hide.h>
 
@@ -137,6 +138,11 @@ namespace daw::json {
 					break;
 				case '"':
 					++ptr_first;
+#if defined( DAW_ALLOW_SSE3 )
+					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
+						ptr_first = sse3_skip_string( ptr_first, rng.last );
+					}
+#endif
 					while( ptr_first < ptr_last and *ptr_first != '"' ) {
 						if( *ptr_first == '\\' ) {
 							++ptr_first;
@@ -208,6 +214,11 @@ namespace daw::json {
 					break;
 				case '"':
 					++ptr_first;
+#if defined( DAW_ALLOW_SSE3 )
+					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
+						ptr_first = sse3_skip_string( ptr_first, rng.last );
+					}
+#endif
 					while( *ptr_first != '"' ) {
 						if( *ptr_first == '\\' ) {
 							++ptr_first;

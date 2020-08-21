@@ -63,6 +63,7 @@ int main( int argc, char **argv ) try {
 	  json_sv1 );
 	daw::do_not_optimize( canada_result );
 	daw_json_assert( canada_result, "Missing value" );
+	canada_result = std::nullopt;
 	//**************************
 	canada_result = std::nullopt;
 	daw::bench_n_test_mbs<100>(

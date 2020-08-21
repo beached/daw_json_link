@@ -9,6 +9,8 @@
 #pragma once
 
 #include "daw_json_assert.h"
+#include "daw_json_parse_common.h"
+#include "daw_simd_functions.h"
 
 #include <daw/daw_uint_buffer.h>
 
@@ -87,22 +89,32 @@ namespace daw::json::json_details::string_quote {
 		  -> std::enable_if_t<Range::is_unchecked_input, std::size_t> {
 			std::ptrdiff_t need_slow_path = -1;
 			char const *first = rng.first;
-			if( char const *const last = rng.last; last - first >= 8 ) {
-				skip_to_first8( first, last );
-			} else if( last - first >= 4 ) {
-				skip_to_first4( first, last );
+			char const *const last = rng.last;
+			// This is a logic error to happen.
+			// daw_json_assert_weak( first != '"', "Unexpected quote" );
+#if defined( DAW_ALLOW_SSE3 )
+			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
+				first = sse3_skip_string( first, rng.last );
 			}
-			while( *first != '"' ) {
-				while( *first != '"' and *first != '\\' ) {
-					++first;
+#endif
+			if( *first != '"' ) {
+				if( last - first >= 8 ) {
+					skip_to_first8( first, last );
+				} else if( last - first >= 4 ) {
+					skip_to_first4( first, last );
 				}
-				if( DAW_JSON_UNLIKELY( *first == '\\' ) ) {
-					if( need_slow_path < 0 ) {
-						need_slow_path = first - rng.first;
+				while( *first != '"' ) {
+					while( *first != '"' and *first != '\\' ) {
+						++first;
 					}
-					first += 2;
-				} else {
-					break;
+					if( DAW_JSON_UNLIKELY( *first == '\\' ) ) {
+						if( need_slow_path < 0 ) {
+							need_slow_path = first - rng.first;
+						}
+						first += 2;
+					} else {
+						break;
+					}
 				}
 			}
 			rng.first = first;

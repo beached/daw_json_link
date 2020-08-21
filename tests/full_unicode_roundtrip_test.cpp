@@ -6,6 +6,7 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
@@ -79,6 +80,26 @@ int main( int argc, char **argv ) try {
 	  unicode_test.begin( ), unicode_test.end( ), unicode_test2.begin( ) );
 	daw_json_assert( mismatch_pos2.first == unicode_test.end( ),
 	                 "Should be the same after parsing" );
+	using range_t = daw::json::json_array_range<unicode_data>;
+	daw::bench_n_test_mbs<100>(
+	  "full unicode bench", json_str.size( ),
+	  []( auto rng ) {
+		  auto first = rng.begin( );
+		  auto const last = rng.end( );
+			auto result = std::distance( first, last );
+			daw::do_not_optimize( result );
+	  },
+	  range_t( std::string_view( json_str ) ) );
+	daw::bench_n_test_mbs<100>(
+	  "full unicode all escaped bench", json_str.size( ),
+	  []( auto rng ) {
+		  auto first = rng.begin( );
+		  auto const last = rng.end( );
+		  auto result = std::distance( first, last );
+		  daw::do_not_optimize( result );
+	  },
+	  range_t( std::string_view( json_str_escaped ) ) );
+
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

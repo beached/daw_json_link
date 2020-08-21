@@ -139,6 +139,16 @@ namespace tests {
 		return false;
 	}
 
+	bool invalid_strings2( ) {
+		std::string data =
+		  R"({"uris": [ "http://www.ex\u4"\"ample.com", "http://www.example.com/missing_quote ] })";
+		try {
+			UriList ul = daw::json::from_json<tests::UriList>( data );
+			(void)ul;
+		} catch( daw::json::json_exception const & ) { return true; }
+		return false;
+	}
+
 	bool missing_array_element( ) {
 		std::string data = "[1,2,,3]";
 		try {
@@ -217,6 +227,7 @@ int main( int, char ** ) try {
 	             "Failed to find a bool when a number was expected" );
 	expect_fail( tests::invalid_numbers( ), "Failed to find an invalid number" );
 	expect_fail( tests::invalid_strings( ), "Failed to find missing quote" );
+	expect_fail( tests::invalid_strings2( ), "Failed to find missing quote" );
 
 	expect_fail( tests::missing_array_element( ),
 	             "Failed to catch an empty array element e.g(1,,2)" );

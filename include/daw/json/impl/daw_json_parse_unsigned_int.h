@@ -230,7 +230,7 @@ namespace daw::json::json_details {
 		             4U ) ) == 0x3333333333333333U );
 	}
 
-	template<typename Unsigned, JsonRangeCheck RangeChecked, typename Range>
+	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>
 	[[nodiscard]] static inline Unsigned
 	unsigned_parser( SIMDConst<SIMDModes::SSE3>, Range &rng ) {
 		daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range" );
@@ -261,8 +261,9 @@ namespace daw::json::json_details {
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 			auto const count = ( daw::numeric_limits<Unsigned>::digits10 + 1 ) -
 			                   ( first - orig_first );
-			daw_json_assert( count >= 0 or result > static_cast<uintmax_t>(
-			                                          daw::max_value_v<Unsigned> ),
+			daw_json_assert( count >= 0 or
+			                   result > static_cast<uintmax_t>(
+			                              daw::numeric_limits<Unsigned>::max( ) ),
 			                 "Parsed number is out of range" );
 		}
 		rng.first = first;

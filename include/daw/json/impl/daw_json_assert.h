@@ -23,7 +23,7 @@
 #else
 #define DAW_JSON_LIKELY( Bool ) Bool
 #define DAW_JSON_UNLIKELY( Bool ) Bool
-#define DAW_JSON_UNREACHABLE( ) std::abort( )
+#define DAW_JSON_UNREACHABLE( ) std::terminate( )
 #endif
 
 #if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
@@ -85,7 +85,7 @@ template<bool ShouldThrow = use_daw_json_exceptions_v>
 #endif
 		(void)ShouldThrow;
 		(void)reason;
-		std::abort( );
+		std::terminate( );
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	}
 #endif
@@ -104,7 +104,7 @@ daw_json_error( daw::json::json_details::missing_member reason ) {
 #endif
 		(void)ShouldThrow;
 		(void)reason;
-		std::abort( );
+		std::terminate( );
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	}
 #endif
