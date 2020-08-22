@@ -116,6 +116,8 @@ int main( int argc, char **argv ) try {
 	}
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( not twitter_result.empty( ), "Unexpected empty array" );
+
+#if defined( DAW_ALLOW_SSE3 )
 	{
 		using range_t = daw::json::json_array_range<
 		  daw::twitter::tweet, daw::json::SIMDNoCommentSkippingPolicyUnchecked<
@@ -141,6 +143,7 @@ int main( int argc, char **argv ) try {
 			daw_json_error( "Exception while parsing: res.get_exception_message()" );
 		}
 	}
+#endif
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
