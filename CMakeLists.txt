@@ -5,6 +5,7 @@ project(daw_json_link_prj)
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 message("CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
 enable_testing()
@@ -31,7 +32,6 @@ endif ()
 include("${CMAKE_SOURCE_DIR}/dependent_projects/CMakeListsCompiler.txt")
 
 include_directories("./include")
-#set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 
 set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")

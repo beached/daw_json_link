@@ -85,11 +85,12 @@ int main( int argc, char **argv ) try {
 		return std::string( data.data( ), data.size( ) );
 	}( );
 	auto const h0 = test<daw::json::SIMDModes::None>( json_string );
-	(void)h0;
 #if defined( DAW_ALLOW_SSE3 )
 	std::cout << "SSE3\n**************************\n";
 	auto const h1 = test<daw::json::SIMDModes::SSE3>( json_string );
 	daw_json_assert( h0 == h1, "SSE/non-SSE hashes do not match" );
+#else
+	(void)h0;
 #endif
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

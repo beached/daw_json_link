@@ -89,7 +89,8 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_unchecked( ) {
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( simd_mode == SIMDModes::SSE3 ) {
-				first = json_details::sse3_skip_until<Range::is_unchecked_input, c>( first, last );
+				first = json_details::sse3_skip_until<Range::is_unchecked_input, c>(
+				  first, last );
 			} else {
 #endif
 				while( *first != c ) {
@@ -104,7 +105,8 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_checked( ) {
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( simd_mode == SIMDModes::SSE3 ) {
-				first = json_details::sse3_skip_until<Range::is_unchecked_input, c>( first, last );
+				first = json_details::sse3_skip_until<Range::is_unchecked_input, c>(
+				  first, last );
 			} else {
 #endif
 				while( first < last and *first != c ) {
@@ -113,6 +115,15 @@ namespace daw::json {
 #if defined( DAW_ALLOW_SSE3 )
 			}
 #endif
+		}
+
+		template<char c>
+		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of( ) {
+			if( is_unchecked_input ) {
+				move_to_next_of_unchecked<c>( );
+			} else {
+				move_to_next_of_checked<c>( );
+			}
 		}
 
 		template<std::size_t N, std::size_t... Is>
