@@ -34,24 +34,14 @@ constexpr bool operator==( T const &lhs, T const &rhs ) {
 	daw_json_error( "Expected that values would be equal" );
 }
 
-int main( int argc, char **argv ) try {
-	using namespace daw::json;
-	if( argc < 2 ) {
-		std::cerr << "Must supply a path to apache_builds.json\n";
-		exit( 1 );
-	}
-	auto fname = argv[1];
-	auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( fname );
-	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
-	auto const json_sv1 =
-	  std::string_view( json_data1.data( ), json_data1.size( ) );
-
+template<typename ParsePolicy>
+void test( daw::string_view json_sv1 ) {
 	auto const sz = json_sv1.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
 	auto apache_builds_result =
-	  daw::json::from_json<apache_builds::apache_builds>( json_sv1 );
+	  daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( json_sv1 );
 	daw_json_assert( apache_builds_result.jobs.size( ) > 0,
 	                 "Bad value for jobs.size( )" );
 	daw_json_assert( apache_builds_result.numExecutors == 0,
@@ -60,7 +50,8 @@ int main( int argc, char **argv ) try {
 	daw::bench_n_test_mbs<100>(
 	  "apache_builds bench", sz,
 	  []( auto f1 ) {
-		  auto r = daw::json::from_json<apache_builds::apache_builds>( f1 );
+		  auto r =
+		    daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( f1 );
 		  daw::do_not_optimize( r );
 	  },
 	  json_sv1 );
@@ -80,13 +71,35 @@ int main( int argc, char **argv ) try {
 
 	daw::do_not_optimize( str );
 	auto const apache_builds_result2 =
-	  daw::json::from_json<apache_builds::apache_builds>( str );
+	  daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( str );
 	daw::do_not_optimize( apache_builds_result2 );
 	// Removing for now as it will do a float compare and fail
 	/*
 	daw_json_assert( apache_builds_result == apache_builds_result2,
 	                 "Expected round trip to produce same result" );
 	                 */
+}
+
+int main( int argc, char **argv ) try {
+	using namespace daw::json;
+	if( argc < 2 ) {
+		std::cerr << "Must supply a path to apache_builds.json\n";
+		exit( 1 );
+	}
+	auto fname = argv[1];
+	auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( fname );
+	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
+	auto const json_sv1 =
+	  std::string_view( json_data1.data( ), json_data1.size( ) );
+	test<
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::None>>(
+	  json_sv1 );
+#if defined( DAW_ALLOW_SSE3 )
+	std::cout << "SSE3\n********************\n";
+	test<
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE3>>(
+	  json_sv1 );
+#endif
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
