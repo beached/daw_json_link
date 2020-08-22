@@ -238,8 +238,10 @@ int main( int argc, char **argv ) try {
 			exit( 1 );
 		}
 		test<daw::json::SIMDModes::None>( argv );
+#if defined( DAW_ALLOW_SSE3 )
 		std::cout << "With SSE3\n************************************\n";
 		test<daw::json::SIMDModes::SSE3>( argv );
+#endif
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
