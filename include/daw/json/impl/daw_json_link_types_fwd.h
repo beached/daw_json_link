@@ -124,12 +124,15 @@ namespace daw::json {
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
 	 * arguments
 	 * @tparam Nullable Can the member be missing or have a null value
+	 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
+	 * data
 	 */
 	template<JSONNAMETYPE Name, typename String = std::string,
 	         typename Constructor = daw::construct_a_t<String>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
-	         JsonNullable Nullable = JsonNullable::Never>
+	         JsonNullable Nullable = JsonNullable::Never,
+	         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
 	struct json_string_raw;
 
 	/**
@@ -143,14 +146,17 @@ namespace daw::json {
 	 * arguments
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
 	 * arguments
+	 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
+	 * data
 	 */
 	template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
 	         typename Constructor = daw::construct_a_t<String>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
-	         EightBitModes EightBitMode = EightBitModes::AllowFull>
+	         EightBitModes EightBitMode = EightBitModes::AllowFull,
+	         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Never>
 	using json_string_raw_null =
 	  json_string_raw<Name, String, Constructor, EmptyStringNull, EightBitMode,
-	                  JsonNullable::Nullable>;
+	                  JsonNullable::Nullable, AllowEscape>;
 
 	/**
 	 * Member is an escaped string and requires unescaping and escaping of string

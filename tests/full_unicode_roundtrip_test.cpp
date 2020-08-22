@@ -40,28 +40,13 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
-	using namespace daw::json;
-#if defined( NDEBUG ) and not defined( DEBUG )
-	std::cout << "release run\n";
-#else
-	std::cout << "debug run\n";
-#endif
-	if( argc < 3 ) {
-		std::cerr << "Must supply filenames to open\n";
-		std::cerr << "full_unicode.json full_unicode_escaped.json\n";
-		exit( 1 );
-	}
-
-	auto const json_str = daw::filesystem::memory_mapped_file_t<>( argv[1] );
-	auto const json_str_escaped =
-	  daw::filesystem::memory_mapped_file_t<>( argv[2] );
-
+template<typename Policy, typename MMF>
+void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	std::vector<unicode_data> const unicode_test =
-	  daw::json::from_json_array<unicode_data>(
+	  daw::json::from_json_array<unicode_data, std::vector<unicode_data>, Policy>(
 	    std::string_view( json_str.data( ), json_str.size( ) ) );
 	std::vector<unicode_data> const unicode_test_from_escaped =
-	  daw::json::from_json_array<unicode_data>(
+	  daw::json::from_json_array<unicode_data, std::vector<unicode_data>, Policy>(
 	    std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
 
 	daw_json_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
@@ -80,14 +65,14 @@ int main( int argc, char **argv ) try {
 	  unicode_test.begin( ), unicode_test.end( ), unicode_test2.begin( ) );
 	daw_json_assert( mismatch_pos2.first == unicode_test.end( ),
 	                 "Should be the same after parsing" );
-	using range_t = daw::json::json_array_range<unicode_data>;
+	using range_t = daw::json::json_array_range<unicode_data, Policy>;
 	daw::bench_n_test_mbs<100>(
 	  "full unicode bench", json_str.size( ),
 	  []( auto rng ) {
 		  auto first = rng.begin( );
 		  auto const last = rng.end( );
-			auto result = std::distance( first, last );
-			daw::do_not_optimize( result );
+		  auto result = std::distance( first, last );
+		  daw::do_not_optimize( result );
 	  },
 	  range_t( std::string_view( json_str ) ) );
 	daw::bench_n_test_mbs<100>(
@@ -99,7 +84,34 @@ int main( int argc, char **argv ) try {
 		  daw::do_not_optimize( result );
 	  },
 	  range_t( std::string_view( json_str_escaped ) ) );
+}
 
+int main( int argc, char **argv ) try {
+	using namespace daw::json;
+#if defined( NDEBUG ) and not defined( DEBUG )
+	std::cout << "release run\n";
+#else
+	std::cout << "debug run\n";
+#endif
+	if( argc < 3 ) {
+		std::cerr << "Must supply filenames to open\n";
+		std::cerr << "full_unicode.json full_unicode_escaped.json\n";
+		exit( 1 );
+	}
+
+	auto const json_str = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const json_str_escaped =
+	  daw::filesystem::memory_mapped_file_t<>( argv[2] );
+
+	test<
+	  daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::SIMDModes::None>>(
+	  json_str, json_str_escaped );
+#if defined( DAW_ALLOW_SSE3 )
+	std::cout << "SS3\n********************\n";
+	test<
+	  daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE3>>(
+	  json_str, json_str_escaped );
+#endif
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

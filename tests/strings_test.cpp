@@ -22,8 +22,14 @@
 template<daw::json::SIMDModes simd_mode>
 std::size_t test( std::string_view json_data ) {
 	using namespace daw::json;
+	using JString =
+	  json_string_raw<no_name, std::string_view,
+	                  daw::construct_a_t<std::string_view>, JsonNullable::Never,
+	                  EightBitModes::AllowFull, JsonNullable::Never,
+	                  AllowEscapeCharacter::Never>;
+
 	std::vector<std::string_view> values =
-	  from_json_array<std::string_view, std::vector<std::string_view>,
+	  from_json_array<JString, std::vector<std::string_view>,
 	                  daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>(
 	    json_data );
 	daw::do_not_optimize( values );
@@ -31,8 +37,8 @@ std::size_t test( std::string_view json_data ) {
 	  "strings.json checked", json_data.size( ),
 	  []( auto sv, auto ptr ) {
 		  auto range = json_array_range<
-		    std::string_view,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>( sv );
+		    JString, daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>(
+		    sv );
 		  for( auto v : range ) {
 			  daw::do_not_optimize( v );
 			  *ptr++ = v;
@@ -47,7 +53,7 @@ std::size_t test( std::string_view json_data ) {
 	  } );
 	daw::do_not_optimize( json_data );
 	std::vector<std::string_view> values2 =
-	  from_json_array<std::string_view, std::vector<std::string_view>,
+	  from_json_array<JString, std::vector<std::string_view>,
 	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>(
 	    json_data );
 
@@ -55,8 +61,8 @@ std::size_t test( std::string_view json_data ) {
 	  "strings.json unchecked", json_data.size( ),
 	  []( auto sv, auto ptr ) mutable {
 		  auto range = json_array_range<
-		    std::string_view,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>( sv );
+		    JString, daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>(
+		    sv );
 		  for( auto v : range ) {
 			  daw::do_not_optimize( v );
 			  *ptr++ = v;

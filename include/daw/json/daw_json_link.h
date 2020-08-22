@@ -219,7 +219,7 @@ namespace daw::json {
 
 	template<JSONNAMETYPE Name, typename String, typename Constructor,
 	         JsonNullable EmptyStringNull, EightBitModes EightBitMode,
-	         JsonNullable Nullable>
+	         JsonNullable Nullable, AllowEscapeCharacter AllowEscape>
 	struct json_string_raw {
 		using i_am_a_json_type = void;
 		using constructor_t = Constructor;
@@ -239,6 +239,7 @@ namespace daw::json {
 		static constexpr JsonBaseParseTypes underlying_json_type =
 		  JsonBaseParseTypes::String;
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+		static constexpr AllowEscapeCharacter allow_escape_character = AllowEscape;
 	};
 
 	template<JSONNAMETYPE Name, typename String, typename Constructor,

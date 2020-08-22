@@ -32,7 +32,7 @@
 #endif
 
 template<daw::json::SIMDModes simd_mode>
-void test( int argc, char **argv ) {
+void test( char **argv ) {
 	auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 	auto const json_data2 = daw::filesystem::memory_mapped_file_t<>( argv[2] );
 	auto const json_data3 = daw::filesystem::memory_mapped_file_t<>( argv[3] );
@@ -238,9 +238,9 @@ int main( int argc, char **argv ) try {
 			std::cerr << "twitter citm canada\n";
 			exit( 1 );
 		}
-		test<daw::json::SIMDModes::None>( argc, argv );
+		test<daw::json::SIMDModes::None>( argv );
 		std::cout << "With SSE3\n************************************\n";
-		test<daw::json::SIMDModes::SSE3>( argc, argv );
+		test<daw::json::SIMDModes::SSE3>( argv );
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );

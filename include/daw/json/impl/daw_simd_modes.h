@@ -9,7 +9,12 @@
 #pragma once
 
 namespace daw::json {
-	enum class SIMDModes { None, SSE3 };
+	enum class SIMDModes {
+		None,
+#ifdef DAW_ALLOW_SSE3
+		SSE3
+#endif
+	};
 
 	template<SIMDModes mode>
 	using SIMDConst = std::integral_constant<SIMDModes, mode>;

@@ -250,14 +250,31 @@ namespace daw::json::json_details {
 				return constructor_t{ }( rng.first, rng.size( ) );
 			}
 		} else {
-			auto const str = skip_string( rng );
-			if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
-				if( str.empty( ) ) {
-					return constructor_t{ }( );
+			if constexpr( JsonMember::allow_escape_character ==
+			              AllowEscapeCharacter::Allow ) {
+				auto const str = skip_string( rng );
+				if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
+					if( str.empty( ) ) {
+						return constructor_t{ }( );
+					}
+					return constructor_t{ }( str.first, str.size( ) );
+				} else {
+					return constructor_t{ }( str.first, str.size( ) );
 				}
-				return constructor_t{ }( str.first, str.size( ) );
 			} else {
-				return constructor_t{ }( str.first, str.size( ) );
+				rng.remove_prefix( );
+				char const *const first = rng.first;
+				rng.template move_to_next_of<'"'>( );
+				char const *const last = rng.first;
+				rng.remove_prefix( );
+				if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
+					if( first == last ) {
+						return constructor_t{ }( );
+					}
+					return constructor_t{ }( first, last - first );
+				} else {
+					return constructor_t{ }( first, last - first );
+				}
 			}
 		}
 	}
