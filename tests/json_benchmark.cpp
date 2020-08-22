@@ -325,6 +325,11 @@ namespace {
 } // namespace
 
 int main( int argc, char **argv ) {
+#if defined( NDEBUG ) or not defined( DEBUG )
+	std::cout << "Release build\n";
+#else
+	std::cout << "Debug build\n";
+#endif
 	if( argc < 5 ) {
 		std::cerr << "Must supply a path to apache_builds.json, twitter.json, "
 		             "citm_catalog.json, and canada.json\n";

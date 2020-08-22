@@ -17,13 +17,14 @@
 #include <iostream>
 #include <streambuf>
 
+int main( int argc, char **argv ) try {
 #if defined( NDEBUG ) and not defined( DEBUG )
 #define NUMRUNS 250
+	std::cout << "Release build\n";
 #else
 #define NUMRUNS 10
+	std::cout << "Debug build\n";
 #endif
-
-int main( int argc, char **argv ) try {
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
