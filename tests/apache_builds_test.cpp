@@ -35,7 +35,7 @@ constexpr bool operator==( T const &lhs, T const &rhs ) {
 }
 
 template<typename ParsePolicy>
-void test( daw::string_view json_sv1 ) {
+void test( std::string_view json_sv1 ) {
 	auto const sz = json_sv1.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
