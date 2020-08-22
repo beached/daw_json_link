@@ -45,19 +45,11 @@ namespace daw::json::json_details::name {
 				return daw::string_view( r.data( ), r.size( ) );
 			} else {
 				char const *const ptr = rng.first;
-#if defined( DAW_ALLOW_SSE3 )
-				if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
-					rng.first = sse3_skip_until<Range::is_unchecked_input,'"'>( rng.first, rng.last );
+				if constexpr( Range::is_unchecked_input ) {
+					rng.template move_to_next_of_unchecked<'"'>( );
 				} else {
-#endif
-					if constexpr( Range::is_unchecked_input ) {
-						rng.template move_to_next_of_unchecked<'"'>( );
-					} else {
-						rng.template move_to_next_of_checked<'"'>( );
-					}
-#if defined( DAW_ALLOW_SSE3 )
+					rng.template move_to_next_of_checked<'"'>( );
 				}
-#endif
 				daw_json_assert_weak( rng.is_quotes_checked( ) and
 				                        *std::prev( rng.first ) != '\\',
 				                      "Expected a '\"' at the end of string" );

@@ -92,18 +92,22 @@ namespace daw::json {
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = sse3_skip_string<Range::is_unchecked_input>( ptr_first, ptr_last );
+						ptr_first = json_details::sse3_skip_until_end_of_string<false>(
+						  ptr_first, rng.last );
+					} else {
+#endif
+						while( ptr_first < ptr_last and *ptr_first != '"' ) {
+							if( *ptr_first == '\\' ) {
+								++ptr_first;
+								if( ptr_first >= ptr_last ) {
+									break;
+								}
+							}
+							++ptr_first;
+						}
+#if defined( DAW_ALLOW_SSE3 )
 					}
 #endif
-					while( ( ptr_first < ptr_last ) bitand ( *ptr_first != '"' ) ) {
-						if( *ptr_first == '\\' ) {
-							++ptr_first;
-							if( ptr_first >= ptr_last ) {
-								break;
-							}
-						}
-						++ptr_first;
-					}
 					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
 				} else if( c == ',' ) {
 					if( ( prime_bracket_count == 1 ) bitand
@@ -157,15 +161,29 @@ namespace daw::json {
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = sse3_skip_string<Range::is_unchecked_input>( ptr_first, rng.last );
-					}
+						ptr_first = json_details::sse3_skip_until_end_of_string<true>(
+						  ptr_first, rng.last );
+						/*
+						while( true ) {
+						  ptr_first = sse3_skip_until<true, '"'>( ptr_first, rng.last );
+
+						  if( DAW_JSON_LIKELY( *( ptr_first - 1 ) != '\\' ) ) {
+						    break;
+						  }
+						  ptr_first += 2;
+						}
+						 */
+					} else {
 #endif
-					while( *ptr_first != '"' ) {
-						if( *ptr_first == '\\' ) {
+						while( *ptr_first != '"' ) {
+							if( *ptr_first == '\\' ) {
+								++ptr_first;
+							}
 							++ptr_first;
 						}
-						++ptr_first;
+#if defined( DAW_ALLOW_SSE3 )
 					}
+#endif
 				} else if( c == ',' ) {
 					if( ( prime_bracket_count == 1 ) bitand
 					    ( second_bracket_count == 0 ) ) {

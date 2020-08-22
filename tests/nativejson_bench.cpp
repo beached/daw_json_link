@@ -28,7 +28,7 @@
 #if defined( NDEBUG ) and not defined( DEBUG )
 #define NUMRUNS 250
 #else
-#define NUMRUNS 10
+#define NUMRUNS 1
 #endif
 
 template<daw::json::SIMDModes simd_mode>
@@ -238,7 +238,7 @@ int main( int argc, char **argv ) try {
 			std::cerr << "twitter citm canada\n";
 			exit( 1 );
 		}
-		test<daw::json::SIMDModes::None>( argc, argv );
+		//test<daw::json::SIMDModes::None>( argc, argv );
 		std::cout << "With SSE3\n************************************\n";
 		test<daw::json::SIMDModes::SSE3>( argc, argv );
 	} catch( daw::json::json_exception const &je ) {

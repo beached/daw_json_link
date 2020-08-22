@@ -339,7 +339,6 @@ namespace daw::json::json_details {
 	         typename Range, bool B>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr json_result<JsonMember>
 	parse_class_member( locations_info_t<N, Range, B> &locations, Range &rng ) {
-
 		rng.clean_tail( );
 		static_assert( not is_no_name<JsonMember>,
 		               "Array processing should never call parse_class_member" );

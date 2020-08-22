@@ -86,42 +86,39 @@ namespace daw::json {
 		}
 
 		template<char c>
-		DAW_ATTRIBUTE_FLATTEN constexpr void
-		move_to_next_of_unchecked( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_unchecked( ) {
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( simd_mode == SIMDModes::SSE3 ) {
-				first = sse3_skip_until<Range::is_unchecked_input,c>( first, last );
+				first = json_details::sse3_skip_until<Range::is_unchecked_input, c>( first, last );
+			} else {
+#endif
+				while( *first != c ) {
+					++first;
+				}
+#if defined( DAW_ALLOW_SSE3 )
 			}
 #endif
-		}
-
-		DAW_ATTRIBUTE_FLATTEN constexpr void
-		move_to_next_of_unchecked( char c ) {
-			while( *first != c ) {
-				++first;
-			}
 		}
 
 		template<char c>
-		DAW_ATTRIBUTE_FLATTEN constexpr void
-		move_to_next_of_checked( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_checked( ) {
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( simd_mode == SIMDModes::SSE3 ) {
-				first = sse3_skip_until<Range::is_unchecked_input,c>( first, last );
+				first = json_details::sse3_skip_until<Range::is_unchecked_input, c>( first, last );
+			} else {
+#endif
+				while( first < last and *first != c ) {
+					++first;
+				}
+#if defined( DAW_ALLOW_SSE3 )
 			}
 #endif
-		}
-
-		DAW_ATTRIBUTE_FLATTEN constexpr void
-		move_to_next_of_checked( char c ) {
-			while( first < last and *first != c ) {
-				++first;
-			}
 		}
 
 		template<std::size_t N, std::size_t... Is>
 		constexpr void move_to_next_of_nc_unchecked( char const ( &str )[N],
 		                                             std::index_sequence<Is...> ) {
+			// TODO simdify
 			while( ( ( *first != str[Is] ) and ... ) ) {
 				++first;
 			}
@@ -130,6 +127,7 @@ namespace daw::json {
 		template<std::size_t N, std::size_t... Is>
 		constexpr void move_to_next_of_nc_checked( char const ( &str )[N],
 		                                           std::index_sequence<Is...> ) {
+			// TODO simdify
 			while( has_more( ) and ( ( *first != str[Is] ) and ... ) ) {
 				++first;
 			}

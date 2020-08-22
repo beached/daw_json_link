@@ -111,6 +111,7 @@ namespace daw::json {
 				++ptr_first;
 			}
 			while( ptr_first < ptr_last and prime_bracket_count > 0 ) {
+				// TODO: use if/else if or put switch into IILE
 				switch( *ptr_first ) {
 				case '\\':
 					++ptr_first;
@@ -119,18 +120,28 @@ namespace daw::json {
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = sse3_skip_string<Range::is_unchecked_input>( ptr_first, rng.last );
-					}
-#endif
-					while( ptr_first < ptr_last and *ptr_first != '"' ) {
-						if( *ptr_first == '\\' ) {
-							++ptr_first;
-							if( ptr_first >= ptr_last ) {
+						while( ptr_first < rng.last ) {
+							ptr_first = json_details::sse3_skip_until<true, '"'>( ptr_first, rng.last );
+
+							if( DAW_JSON_LIKELY( *( ptr_first - 1 ) != '\\' ) ) {
 								break;
 							}
+							ptr_first += 2;
 						}
-						++ptr_first;
+					} else {
+#endif
+						while( ptr_first < ptr_last and *ptr_first != '"' ) {
+							if( *ptr_first == '\\' ) {
+								++ptr_first;
+								if( ptr_first >= ptr_last ) {
+									break;
+								}
+							}
+							++ptr_first;
+						}
+#if defined( DAW_ALLOW_SSE3 )
 					}
+#endif
 					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
 					break;
 				case ',':
@@ -195,15 +206,25 @@ namespace daw::json {
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = sse3_skip_string<Range::is_unchecked_input>( ptr_first, rng.last );
-					}
+						while( true ) {
+							ptr_first = json_details::sse3_skip_until<true, '"'>( ptr_first, rng.last );
+
+							if( DAW_JSON_LIKELY( *( ptr_first - 1 ) != '\\' ) ) {
+								break;
+							}
+							ptr_first += 2;
+						}
+					} else {
 #endif
-					while( *ptr_first != '"' ) {
-						if( *ptr_first == '\\' ) {
+						while( *ptr_first != '"' ) {
+							if( *ptr_first == '\\' ) {
+								++ptr_first;
+							}
 							++ptr_first;
 						}
-						++ptr_first;
+#if defined( DAW_ALLOW_SSE3 )
 					}
+#endif
 					break;
 				case ',':
 					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {

@@ -97,14 +97,14 @@ namespace daw::json::json_details::string_quote {
 				while( *first != '"' ) {
 					first = sse3_skip_until<true, '"'>( first, last );
 
-					if( DAW_JSON_LIKELY( *( first - 1 ) != '\\' ) ) {
+					if( DAW_JSON_LIKELY( not is_escaped( first, rng.class_first ) ) ) {
 						break;
 					}
 					// We are at a backslash
 					if( need_slow_path < 0 ) {
 						need_slow_path = first - rng.first;
 					}
-					first += 2;
+					++first;
 				}
 			} else {
 #endif
@@ -144,14 +144,14 @@ namespace daw::json::json_details::string_quote {
 				while( first < last and *first != '"' ) {
 					first = sse3_skip_until<false, '"'>( first, last );
 
-					if( DAW_JSON_LIKELY( *( first - 1 ) != '\\' ) ) {
+					if( DAW_JSON_LIKELY( not is_escaped( first, rng.class_first ) ) ) {
 						break;
 					}
 					// We are at a backslash
 					if( need_slow_path < 0 ) {
 						need_slow_path = first - rng.first;
 					}
-					first += 2;
+					++first;
 				}
 			} else {
 #endif
@@ -164,6 +164,7 @@ namespace daw::json::json_details::string_quote {
 					while( first < last and *first != '"' and *first != '\\' ) {
 						++first;
 					}
+
 					if( DAW_JSON_UNLIKELY( first < last and *first == '\\' ) ) {
 						if( need_slow_path < 0 ) {
 							need_slow_path = first - rng.first;
