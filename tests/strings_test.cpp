@@ -21,6 +21,14 @@
 #include <string>
 #include <vector>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 1000;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 template<daw::json::SIMDModes simd_mode>
 std::size_t test( std::string_view json_data ) {
 	using namespace daw::json;
@@ -35,7 +43,7 @@ std::size_t test( std::string_view json_data ) {
 	                  daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>(
 	    json_data );
 	daw::do_not_optimize( values );
-	daw::bench_n_test_mbs<1000>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "strings.json checked", json_data.size( ),
 	  []( auto sv, auto ptr ) {
 		  auto range = json_array_range<
@@ -59,7 +67,7 @@ std::size_t test( std::string_view json_data ) {
 	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>(
 	    json_data );
 
-	daw::bench_n_test_mbs<1000>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "strings.json unchecked", json_data.size( ),
 	  []( auto sv, auto ptr ) mutable {
 		  auto range = json_array_range<

@@ -50,14 +50,15 @@
 #error "BUILD_TYPE must be defined"
 #endif
 
-namespace {
-#if not defined( DEBUG ) or defined( NDEBUG )
-	static inline constexpr std::size_t NUM_RUNS = 250;
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
 #else
-	static inline constexpr std::size_t NUM_RUNS = 1;
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 #endif
-	static_assert( NUM_RUNS > 0 );
+static_assert( DAW_NUM_RUNS > 0 );
 
+namespace {
 	daw::bench::bench_result
 	make_bench_result( std::string const &name, std::size_t data_size,
 	                   std::vector<std::chrono::nanoseconds> run_times ) {
@@ -152,7 +153,7 @@ namespace {
 	do_apache_builds_from_json_test( std::string_view json_data ) {
 		auto result = make_bench_result(
 		  "apache builds from_json(checked)", json_data.size( ),
-		  daw::bench_n_test_json<NUM_RUNS>(
+		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<apache_builds::apache_builds>( jd );
 		    },
@@ -166,7 +167,7 @@ namespace {
 	do_apache_builds_from_json_test_unchecked( std::string_view json_data ) {
 		auto result = make_bench_result(
 		  "apache builds from_json(unchecked)", json_data.size( ),
-		  daw::bench_n_test_json<NUM_RUNS>(
+		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<
 			      apache_builds::apache_builds,
@@ -182,7 +183,7 @@ namespace {
 	do_twitter_from_json_test( std::string_view json_data ) {
 		auto result = make_bench_result(
 		  "twitter from_json(checked)", json_data.size( ),
-		  daw::bench_n_test_json<NUM_RUNS>(
+		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<daw::twitter::twitter_object_t>( jd );
 		    },
@@ -196,7 +197,7 @@ namespace {
 	do_twitter_from_json_test_unchecked( std::string_view json_data ) {
 		auto result = make_bench_result(
 		  "twitter from_json(unchecked)", json_data.size( ),
-		  daw::bench_n_test_json<NUM_RUNS>(
+		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<
 			      daw::twitter::twitter_object_t,
@@ -212,7 +213,7 @@ namespace {
 	do_citm_from_json_test( std::string_view json_data ) {
 		auto result = make_bench_result(
 		  "citm_catalog from_json(checked)", json_data.size( ),
-		  daw::bench_n_test_json<NUM_RUNS>(
+		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<daw::citm::citm_object_t>( jd );
 		    },
@@ -226,7 +227,7 @@ namespace {
 	do_citm_from_json_test_unchecked( std::string_view json_data ) {
 		auto result = make_bench_result(
 		  "citm_catalog from_json(unchecked)", json_data.size( ),
-		  daw::bench_n_test_json<NUM_RUNS>(
+		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<
 			      daw::citm::citm_object_t,
@@ -242,7 +243,7 @@ namespace {
 	do_canada_from_json_test( std::string_view json_data ) {
 		auto result = make_bench_result(
 		  "canada from_json(checked)", json_data.size( ),
-		  daw::bench_n_test_json<NUM_RUNS>(
+		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<daw::geojson::FeatureCollection>( jd );
 		    },
@@ -256,7 +257,7 @@ namespace {
 	do_canada_from_json_test_unchecked( std::string_view json_data ) {
 		auto result = make_bench_result(
 		  "canada from_json(unchecked)", json_data.size( ),
-		  daw::bench_n_test_json<NUM_RUNS>(
+		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
 			    return daw::json::from_json<
 			      daw::geojson::FeatureCollection,
@@ -276,7 +277,7 @@ namespace {
 		  "nativejson benchmark from_json(checked)",
 		  json_data_twitter.size( ) + json_data_citm.size( ) +
 		    json_data_canada.size( ),
-		  daw::bench_n_test_json<NUM_RUNS>(
+		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
 			    auto const j1 =
 			      daw::json::from_json<daw::twitter::twitter_object_t>( tw );
@@ -301,7 +302,7 @@ namespace {
 		  "nativejson benchmark from_json(unchecked)",
 		  json_data_twitter.size( ) + json_data_citm.size( ) +
 		    json_data_canada.size( ),
-		  daw::bench_n_test_json<NUM_RUNS>(
+		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
 			    auto const j1 =
 			      daw::json::from_json<daw::twitter::twitter_object_t,

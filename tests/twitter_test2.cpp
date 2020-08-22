@@ -20,6 +20,14 @@
 #include <iostream>
 #include <streambuf>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 1000;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 template<typename T>
 using is_to_json_data_able = decltype( to_json_data( std::declval<T>( ) ) );
 
@@ -54,7 +62,7 @@ int main( int argc, char **argv ) try {
 	          << '\n';
 
 	std::optional<daw::twitter::twitter_object_t> twitter_result;
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
@@ -69,7 +77,7 @@ int main( int argc, char **argv ) try {
 	                 "Missing value" );
 
 	twitter_result = std::nullopt;
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
@@ -87,7 +95,7 @@ int main( int argc, char **argv ) try {
 	std::string str = std::string( );
 	str.reserve( json_sv1.size( ) );
 	auto out_it = std::back_inserter( str );
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter_catalog bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );

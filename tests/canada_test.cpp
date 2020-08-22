@@ -21,6 +21,14 @@
 #include <iostream>
 #include <streambuf>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 template<typename T>
 using is_to_json_data_able = decltype( to_json_data( std::declval<T>( ) ) );
 
@@ -55,7 +63,7 @@ int main( int argc, char **argv ) try {
 
 	//**************************
 	std::optional<daw::geojson::Polygon> canada_result;
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(checked)", sz,
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
@@ -68,7 +76,7 @@ int main( int argc, char **argv ) try {
 	canada_result = std::nullopt;
 	//**************************
 	canada_result = std::nullopt;
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(unchecked)", sz,
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<daw::geojson::Polygon,
@@ -82,7 +90,7 @@ int main( int argc, char **argv ) try {
 #ifdef DAW_ALLOW_SSE3
 	//**************************
 	canada_result = std::nullopt;
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(checked, SSE3)", sz,
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<
@@ -96,7 +104,7 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( canada_result, "Missing value" );
 	//**************************
 	canada_result = std::nullopt;
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(unchecked, SSE3)", sz,
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<
@@ -114,7 +122,7 @@ int main( int argc, char **argv ) try {
 	{
 		auto out_it = std::back_inserter( str );
 		str.reserve( json_sv1.size( ) );
-		daw::bench_n_test_mbs<100>(
+		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "canada bench(to_json_string)", sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
@@ -132,7 +140,7 @@ int main( int argc, char **argv ) try {
 		auto const str_sz = str.size( );
 		str.clear( );
 		str.resize( str_sz * 2 );
-		daw::bench_n_test_mbs<100>(
+		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "canada bench(to_json_string2)", sz,
 		  [&]( auto const &tr ) {
 			  auto out_it = str.data( );

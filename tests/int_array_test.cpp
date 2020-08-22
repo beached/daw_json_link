@@ -22,6 +22,14 @@
 #include <string_view>
 #include <vector>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 struct Number {
 	intmax_t a{ };
 };
@@ -100,7 +108,7 @@ void test_func( ) {
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
-		auto const count = *daw::bench_n_test_mbs<100>(
+		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "array of class with single intmax_t element: from_json_array",
 		  json_sv.size( ),
 		  []( auto &&sv ) noexcept {
@@ -119,7 +127,7 @@ void test_func( ) {
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
 
-		auto const count2 = *daw::bench_n_test_mbs<100>(
+		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "array of class with single intmax_t element: json_array_iterator",
 		  json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
@@ -134,7 +142,7 @@ void test_func( ) {
 		std::cout << "element count: " << count2 << '\n';
 	}
 	{ // just ints
-		auto const count = *daw::bench_n_test_mbs<100>(
+		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "array of intmax_t: from_json_array", json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
@@ -153,7 +161,7 @@ void test_func( ) {
 		auto data = std::vector<intmax_t>( );
 		data.resize( NUMVALUES );
 
-		auto const count2 = *daw::bench_n_test_mbs<100>(
+		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "array of intmax_t: json_array_iterator copy to presized vector",
 		  json_sv_intmax.size( ),
 		  [&]( std::string_view sv ) noexcept {
@@ -169,7 +177,7 @@ void test_func( ) {
 			auto to_json_str = std::string( );
 			to_json_str.resize(
 			  static_cast<std::size_t>( ( json_sv_intmax.size( ) * 15 ) ) / 10 );
-			auto result = daw::bench_n_test_mbs<100>(
+			auto result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "array of intmax_t: to_json presized", data.size( ) * sizeof( data[0] ),
 			  [&]( std::vector<intmax_t> const &v ) noexcept {
 				  daw::json::to_json_array( v, to_json_str.data( ) );
@@ -183,7 +191,7 @@ void test_func( ) {
 			auto to_json_str = std::string( );
 			to_json_str.resize( make_int_array_data<NUMVALUES, int32_t>( ).size( ) *
 			                    2 );
-			auto result = daw::bench_n_test_mbs<100>(
+			auto result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "array of int32_t: to_json presized", ( NUMVALUES * sizeof( int32_t ) ),
 			  [&]( std::vector<int32_t> const &v ) noexcept {
 				  daw::json::to_json_array( v, to_json_str.data( ) );
@@ -197,7 +205,7 @@ void test_func( ) {
 			auto to_json_str = std::string( );
 			to_json_str.resize( make_int_array_data<NUMVALUES, uint32_t>( ).size( ) *
 			                    2 );
-			auto result = daw::bench_n_test_mbs<100>(
+			auto result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "array of uint32_t: to_json presized",
 			  ( NUMVALUES * sizeof( uint32_t ) ),
 			  [&]( std::vector<uint32_t> const &v ) noexcept {
@@ -212,7 +220,7 @@ void test_func( ) {
 			auto to_json_str = std::string( );
 			to_json_str.resize( make_int_array_data<NUMVALUES, uintmax_t>( ).size( ) *
 			                    2 );
-			auto result = daw::bench_n_test_mbs<100>(
+			auto result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "array of uintmax_t: to_json presized",
 			  ( NUMVALUES * sizeof( uintmax_t ) ),
 			  [&]( std::vector<uintmax_t> const &v ) noexcept {
@@ -230,7 +238,7 @@ void test_func( ) {
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv.size( ) ) << '\n';
-		auto const count = *daw::bench_n_test_mbs<100>(
+		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "int parsing 1", json_sv.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data = from_json_array<Number>( sv );
@@ -245,7 +253,7 @@ void test_func( ) {
 		auto data = std::vector<Number>( );
 		data.reserve( NUMVALUES );
 
-		auto const count2 = *daw::bench_n_test_mbs<100>(
+		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "int parsing 2", json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
@@ -262,7 +270,7 @@ void test_func( ) {
 		std::cout << "p2. Processing " << json_sv_intmax.size( ) << " bytes "
 		          << daw::utility::to_bytes_per_second( json_sv_intmax.size( ) )
 		          << '\n';
-		auto const count = *daw::bench_n_test_mbs<100>(
+		auto const count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "int parsing 1", json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
@@ -279,7 +287,7 @@ void test_func( ) {
 		auto data = std::vector<intmax_t>( );
 		data.reserve( NUMVALUES );
 
-		auto const count2 = *daw::bench_n_test_mbs<100>(
+		auto const count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "p2. int parsing 2", json_sv_intmax.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  data.clear( );
@@ -294,7 +302,7 @@ void test_func( ) {
 
 		{
 			auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
-			auto const count3 = *daw::bench_n_test_mbs<100>(
+			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p3. int parsing 3", json_sv_intmax.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
@@ -318,7 +326,7 @@ void test_func( ) {
 
 		auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
 		{
-			auto const count3 = *daw::bench_n_test_mbs<100>(
+			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p4. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
@@ -336,7 +344,7 @@ void test_func( ) {
 		auto const json_sv = make_int_array_data<NUMVALUES, int_type>( );
 
 		{
-			auto const count4 = *daw::bench_n_test_mbs<100>(
+			auto const count4 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p5. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
@@ -360,7 +368,7 @@ void test_func( ) {
 
 		auto data2 = std::unique_ptr<intmax_t[]>( new intmax_t[NUMVALUES] );
 		{
-			auto const count3 = *daw::bench_n_test_mbs<100>(
+			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p4. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
@@ -378,7 +386,7 @@ void test_func( ) {
 		auto const json_sv = make_int_array_data<NUMVALUES, int_type>( );
 
 		{
-			auto const count4 = *daw::bench_n_test_mbs<100>(
+			auto const count4 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p5. parsing", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
@@ -400,7 +408,7 @@ void test_func( ) {
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
 		{
-			auto const count4 = *daw::bench_n_test_mbs<100>(
+			auto const count4 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p5. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
@@ -426,7 +434,7 @@ void test_func( ) {
 
 		auto data2 = std::unique_ptr<uintmax_t[]>( new uintmax_t[NUMVALUES] );
 		{
-			auto const count3 = *daw::bench_n_test_mbs<100>(
+			auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p4. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
@@ -444,7 +452,7 @@ void test_func( ) {
 		auto const json_sv = make_int_array_data<NUMVALUES, uint32_t>( );
 
 		{
-			auto const count4 = *daw::bench_n_test_mbs<100>(
+			auto const count4 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 			  "p5. parsing sse3", json_sv.size( ),
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<

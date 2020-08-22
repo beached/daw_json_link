@@ -16,6 +16,14 @@
 
 #include <iostream>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 struct unicode_data {
 	std::string escaped;
 	std::string unicode;
@@ -68,7 +76,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	daw_json_assert( mismatch_pos2.first == unicode_test.end( ),
 	                 "Should be the same after parsing" );
 	using range_t = daw::json::json_array_range<unicode_data, Policy>;
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "full unicode bench", json_str.size( ),
 	  []( auto rng ) {
 		  auto first = rng.begin( );
@@ -77,7 +85,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 		  daw::do_not_optimize( result );
 	  },
 	  range_t( std::string_view( json_str ) ) );
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "full unicode all escaped bench", json_str.size( ),
 	  []( auto rng ) {
 		  auto first = rng.begin( );

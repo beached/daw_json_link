@@ -20,6 +20,14 @@
 #include <iostream>
 #include <streambuf>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 template<typename T>
 using is_to_json_data_able = decltype( to_json_data( std::declval<T>( ) ) );
 
@@ -42,11 +50,7 @@ int main( int argc, char **argv )
   try
 #endif
 {
-#if not defined( DEBUG ) or defined( NDEBUG )
-	static inline constexpr std::size_t NUM_RUNS = 250;
-#else 
-	static inline constexpr std::size_t NUM_RUNS = 1;
-#endif
+
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -67,7 +71,7 @@ int main( int argc, char **argv )
 
 	// ******************************
 	// NoCommentSkippingPolicyChecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
@@ -83,7 +87,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// NoCommentSkippingPolicyUnchecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
@@ -99,7 +103,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// CppCommentSkippingPolicyChecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(cpp comments)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
@@ -115,7 +119,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// CppCommentSkippingPolicyUnchecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(cpp comments, unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
@@ -132,7 +136,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// HashCommentSkippingPolicyChecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(hash comments)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
@@ -148,7 +152,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// HashCommentSkippingPolicyUnchecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(hash comments, unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
@@ -167,7 +171,7 @@ int main( int argc, char **argv )
 #ifdef DAW_ALLOW_SSE3
 	// ******************************
 	// SIMDNoCommentSkippingPolicyChecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked, SSE3)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
@@ -183,7 +187,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// SIMDNoCommentSkippingPolicyUnchecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked, SSE3)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
@@ -199,7 +203,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// SIMDCppCommentSkippingPolicyChecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(cpp comments SSE3)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
@@ -215,7 +219,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// SIMDCppCommentSkippingPolicyUnchecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(cpp comments, unchecked, SSE3)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
@@ -232,7 +236,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// SIMDHashCommentSkippingPolicyChecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(hash comments, SSE3)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
@@ -248,7 +252,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// SIMDHashCommentSkippingPolicyUnchecked
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(hash comments, unchecked, SSE3)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
@@ -268,7 +272,7 @@ int main( int argc, char **argv )
 
 	// ******************************
 	// NoCommentSkippingPolicyChecked Escaped Names
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked, escaped names)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
@@ -285,7 +289,7 @@ int main( int argc, char **argv )
 	                 "Missing value" );
 
 	// NoCommentSkippingPolicyUnchecked Escaped Names
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked, escaped names)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
@@ -304,7 +308,7 @@ int main( int argc, char **argv )
 	// ******************************
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
-	daw::bench_n_test_mbs<NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );

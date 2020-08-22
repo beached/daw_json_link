@@ -19,14 +19,15 @@
 #include <iostream>
 #include <streambuf>
 
-int main( int argc, char **argv ) try {
-#if defined( NDEBUG ) and not defined( DEBUG )
-#define NUMRUNS 250
-	std::cout << "Release build\n";
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
 #else
-#define NUMRUNS 10
-	std::cout << "Debug build\n";
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 #endif
+static_assert( DAW_NUM_RUNS > 0 );
+
+int main( int argc, char **argv ) try {
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -41,7 +42,7 @@ int main( int argc, char **argv ) try {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	auto citm_result = daw::bench_n_test_mbs<NUMRUNS>(
+	auto citm_result = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "citm_catalog bench", sz,
 	  []( auto f1 ) {
 		  return daw::json::from_json<daw::citm::citm_object_t>( f1 );
@@ -56,7 +57,7 @@ int main( int argc, char **argv ) try {
 	                 "Incorrect value" );
 #if defined( DAW_ALLOW_SSE3 )
 	{
-		auto citm_result2 = daw::bench_n_test_mbs<NUMRUNS>(
+		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "citm_catalog bench(SSE3)", sz,
 		  []( auto f1 ) {
 			  return daw::json::from_json<
@@ -78,7 +79,7 @@ int main( int argc, char **argv ) try {
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
 	str.reserve( json_sv1.size( ) );
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "citm bench(to_json_string)", sz,
 
 	  [&]( daw::citm::citm_object_t const &tr ) {

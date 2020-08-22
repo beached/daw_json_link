@@ -21,6 +21,14 @@
 #include <iostream>
 #include <streambuf>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 2500;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 int main( int argc, char **argv ) try {
 
 	using namespace daw::json;
@@ -46,7 +54,7 @@ int main( int argc, char **argv ) try {
 	}
 	{
 		using range_t = daw::json::json_array_range<daw::twitter::tweet>;
-		auto res = daw::bench_n_test_mbs<2500>(
+		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(checked)", sz,
 		  [&]( auto rng ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
@@ -62,7 +70,7 @@ int main( int argc, char **argv ) try {
 		  daw::json::json_array_range<daw::twitter::tweet,
 		                              daw::json::SIMDNoCommentSkippingPolicyChecked<
 		                                daw::json::SIMDModes::SSE3>>;
-		auto res = daw::bench_n_test_mbs<2500>(
+		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(checked, sse3)", sz,
 		  [&]( auto rng ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
@@ -77,7 +85,7 @@ int main( int argc, char **argv ) try {
 		  daw::json::json_array_range<daw::twitter::tweet,
 		                              daw::json::SIMDNoCommentSkippingPolicyChecked<
 		                                daw::json::SIMDModes::SSE3>>;
-		auto res = daw::bench_n_test_mbs<2500>(
+		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(checked, sse3, nostore)", sz,
 		  [&]( auto rng ) {
 			  for( auto v : rng ) {
@@ -95,7 +103,7 @@ int main( int argc, char **argv ) try {
 		using range_t =
 		  daw::json::json_array_range<daw::twitter::tweet,
 		                              daw::json::NoCommentSkippingPolicyUnchecked>;
-		auto res = daw::bench_n_test_mbs<2000>(
+		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(unchecked)", sz,
 		  [&]( auto rng ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
@@ -111,7 +119,7 @@ int main( int argc, char **argv ) try {
 		using range_t = daw::json::json_array_range<
 		  daw::twitter::tweet, daw::json::SIMDNoCommentSkippingPolicyUnchecked<
 		                         daw::json::SIMDModes::SSE3>>;
-		auto res = daw::bench_n_test_mbs<2000>(
+		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(unchecked, sse3)", sz,
 		  [&]( auto rng ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
@@ -120,7 +128,7 @@ int main( int argc, char **argv ) try {
 		if( not res.has_value( ) ) {
 			daw_json_error( "Exception while parsing: res.get_exception_message()" );
 		}
-		auto res2 = daw::bench_n_test_mbs<2000>(
+		auto res2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(unchecked, sse3, nostore)", sz,
 		  [&]( auto rng ) {
 			  for( auto v : rng ) {

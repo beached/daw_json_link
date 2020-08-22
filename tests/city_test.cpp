@@ -21,6 +21,14 @@
 #include <string_view>
 #include <vector>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 struct City {
 	std::string country;
 	std::string name;
@@ -65,7 +73,7 @@ int main( int argc, char **argv ) try {
 	std::cout << "File size(B): " << json_data.size( ) << " "
 	          << daw::utility::to_bytes_per_second( json_data.size( ) ) << '\n';
 
-	auto count = *daw::bench_n_test_mbs<10>(
+	auto count = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "cities parsing 1", json_data.size( ),
 	  []( auto sv ) {
 		  std::vector<City> data = daw::json::from_json_array<City>( sv );
@@ -80,7 +88,7 @@ int main( int argc, char **argv ) try {
 
 	auto data = std::vector<City>( );
 
-	auto count2 = *daw::bench_n_test_mbs<10>(
+	auto count2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "cities parsing 2", json_data.size( ),
 	  [&]( auto const &sv ) {
 		  data.clear( );
@@ -91,7 +99,7 @@ int main( int argc, char **argv ) try {
 	  json_data );
 
 	std::cout << "element count 2: " << count2 << '\n';
-	auto count3 = *daw::bench_n_test_mbs<10>(
+	auto count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "cities parsing 3", json_data.size( ),
 	  []( auto const &sv ) {
 		  return static_cast<size_t>(
@@ -101,7 +109,7 @@ int main( int argc, char **argv ) try {
 
 	std::cout << "element count 3: " << count3 << '\n';
 
-	auto has_toronto = *daw::bench_n_test_mbs<10>(
+	auto has_toronto = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "Find Toronto", json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
@@ -118,7 +126,7 @@ int main( int argc, char **argv ) try {
 		std::cout << " found at " << daw::json::to_json( *has_toronto );
 	}
 	std::cout << '\n';
-	auto has_chitungwiza = *daw::bench_n_test_mbs<10>(
+	auto has_chitungwiza = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "Find Chitungwiza(last item)", json_data.size( ),
 	  []( auto &&sv ) -> std::optional<City> {
 		  auto pos =
@@ -144,7 +152,7 @@ int main( int argc, char **argv ) try {
 	std::cout << sv.substr( 0, 100 ) << "...	" << sv.substr( sv.size( ) - 100 )
 	          << '\n';
 
-	auto mid_lat = *daw::bench_n_test_mbs<10>(
+	auto mid_lat = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "Calculate Middle Latitude", json_data.size( ),
 	  []( auto const &jstr ) -> float {
 		  uint32_t tot = 0;
@@ -160,7 +168,7 @@ int main( int argc, char **argv ) try {
 
 	std::cout << "mid_lat of all is: " << mid_lat << '\n';
 
-	auto mid_lat2 = *daw::bench_n_test_mbs<10>(
+	auto mid_lat2 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "Calculate Middle Latitude2", json_data.size( ),
 	  []( auto const &jstr ) -> float {
 		  std::vector<float> lats{ };

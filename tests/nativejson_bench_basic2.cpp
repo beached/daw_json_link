@@ -22,6 +22,14 @@
 #include <streambuf>
 #include <string_view>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 int main( int argc, char **argv ) try {
 	using namespace daw::json;
 	if( argc < 4 ) {
@@ -45,7 +53,7 @@ int main( int argc, char **argv ) try {
 #ifdef NDEBUG
 	std::cout << "non-debug run\n";
 	auto const sz = sv_twitter.size( ) + sv_citm.size( ) + sv_canada.size( );
-	daw::bench_n_test_mbs<250>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  j1 =
@@ -66,7 +74,7 @@ int main( int argc, char **argv ) try {
 	  },
 	  sv_twitter, sv_citm, sv_canada );
 #else
-	for( size_t n = 0; n < 25; ++n ) {
+	for( size_t n = 0; n < DAW_NUM_RUNS; ++n ) {
 		j1 = daw::json::from_json<daw::twitter::twitter_object_t,
 		                          daw::json::NoCommentSkippingPolicyUnchecked>(
 		  sv_twitter );

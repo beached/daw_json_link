@@ -19,6 +19,14 @@
 #include <streambuf>
 #include <string_view>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 struct Number {
 	float a{ };
 };
@@ -67,7 +75,7 @@ void test_func( ) {
 	daw::string_view json_sv{ json_data3.data( ), json_data3.size( ) };
 	auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
 	{
-		auto const count3 = *daw::bench_n_test_mbs<100>(
+		auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "float", json_sv.size( ),
 		  [&]( auto &&sv ) noexcept {
 			  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );

@@ -20,6 +20,14 @@
 #include <string_view>
 #include <vector>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 struct coordinate_t {
 	double x;
 	double y;
@@ -72,7 +80,7 @@ int main( int argc, char **argv ) try {
 	auto first = iterator_t( json_sv, "coordinates" );
 	auto last = iterator_t( );
 
-	auto const [x, y, z, sz] = *daw::bench_n_test_mbs<10>(
+	auto const [x, y, z, sz] = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "coords bench", json_sv.size( ),
 	  [&]( iterator_t f, iterator_t l ) noexcept {
 		  double x1 = 0.0;

@@ -20,6 +20,14 @@
 #include <iostream>
 #include <streambuf>
 
+#if not defined( DAW_NUM_RUNS ) and                                            \
+  ( not defined( DEBUG ) or defined( NDEBUG ) )
+static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
 template<typename T>
 using is_to_json_data_able = decltype( to_json_data( std::declval<T>( ) ) );
 
@@ -49,7 +57,7 @@ void test( std::string_view json_sv1 ) {
 	daw_json_assert( apache_builds_result.numExecutors == 0,
 	                 "Bad value for numExecutors" );
 
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "apache_builds bench", sz,
 	  []( auto f1 ) {
 		  auto r =
@@ -60,7 +68,7 @@ void test( std::string_view json_sv1 ) {
 
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
-	daw::bench_n_test_mbs<100>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "apache_builds bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
