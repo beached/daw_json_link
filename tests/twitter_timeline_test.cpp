@@ -70,6 +70,21 @@ int main( int argc, char **argv ) try {
 			daw_json_error( "Exception while parsing: res.get_exception_message()" );
 		}
 	}
+	{
+		using range_t =
+		  daw::json::json_array_range<daw::twitter::tweet,
+		                              daw::json::SIMDNoCommentSkippingPolicyChecked<
+		                                daw::json::SIMDModes::SSE3>>;
+		auto res = daw::bench_n_test_mbs<2500>(
+		  "twitter timeline bench(checked, sse3, nostore)", sz,
+		  [&]( auto rng ) {
+			  for( auto v : rng ) {
+				  daw::do_not_optimize( v );
+			  }
+		  },
+		  range_t( json_sv1 ) );
+	}
+
 #endif
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( not twitter_result.empty( ), "Unexpected empty array" );
@@ -98,6 +113,17 @@ int main( int argc, char **argv ) try {
 		  "twitter timeline bench(unchecked, sse3)", sz,
 		  [&]( auto rng ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
+		  },
+		  range_t( json_sv1 ) );
+		if( not res.has_value( ) ) {
+			daw_json_error( "Exception while parsing: res.get_exception_message()" );
+		}
+		auto res2 = daw::bench_n_test_mbs<2000>(
+		  "twitter timeline bench(unchecked, sse3, nostore)", sz,
+		  [&]( auto rng ) {
+			  for( auto v : rng ) {
+				  daw::do_not_optimize( v );
+			  }
 		  },
 		  range_t( json_sv1 ) );
 		if( not res.has_value( ) ) {
