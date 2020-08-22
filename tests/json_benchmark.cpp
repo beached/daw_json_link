@@ -51,10 +51,10 @@
 #endif
 
 namespace {
-#if defined( NDEBUG ) or not defined( DEBUG )
-	inline DAW_CONSTEXPR std::size_t NUM_RUNS = 250;
+#if not defined( DEBUG ) or defined( NDEBUG )
+	static inline constexpr std::size_t NUM_RUNS = 250;
 #else
-	inline DAW_CONSTEXPR std::size_t NUM_RUNS = 1;
+	static inline constexpr std::size_t NUM_RUNS = 1;
 #endif
 	static_assert( NUM_RUNS > 0 );
 

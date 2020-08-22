@@ -42,7 +42,11 @@ int main( int argc, char **argv )
   try
 #endif
 {
-	static DAW_CONSTEXPR std::size_t NUM_RUNS = 250;
+#if not defined( DEBUG ) or defined( NDEBUG )
+	static inline constexpr std::size_t NUM_RUNS = 250;
+#else 
+	static inline constexpr std::size_t NUM_RUNS = 1;
+#endif
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";

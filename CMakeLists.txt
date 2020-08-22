@@ -565,9 +565,14 @@ add_dependencies(strings_test_bin dependency_stub)
 add_test(NAME strings_test COMMAND strings_test_bin ./strings.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full strings_test_bin)
 
+# **************************************************
+# JSON Benchmark
+# **************************************************
 add_executable(json_benchmark_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/json_benchmark.cpp)
 add_dependencies(json_benchmark_bin dependency_stub)
+if (NOT DEFINED MSVC)
 add_test(NAME json_benchmark_test COMMAND json_benchmark_bin ./apache_builds.json ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+endif( )
 add_dependencies(full json_benchmark_bin)
 
 cmake_host_system_information(RESULT _proc_desc QUERY PROCESSOR_DESCRIPTION)
@@ -586,6 +591,7 @@ target_compile_definitions(json_benchmark_bin PRIVATE -DOS_RELEASE="${_os_rel}")
 target_compile_definitions(json_benchmark_bin PRIVATE -DOS_VERSION="${_os_ver}")
 target_compile_definitions(json_benchmark_bin PRIVATE -DOS_PLATFORM="${_os_plat}")
 target_compile_definitions(json_benchmark_bin PRIVATE -DBUILD_TYPE="${CMAKE_BUILD_TYPE}")
+# **************************************************
 
 install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
 install(DIRECTORY ${HEADER_FOLDER}/third_party/ DESTINATION include/third_party/)

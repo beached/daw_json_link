@@ -22,10 +22,10 @@
 #include <streambuf>
 #include <string_view>
 
-#ifdef NDEBUG
-inline DAW_CONSTEXPR std::size_t NUMRUNS = 1000;
+#if not defined( DEBUG ) or defined( NDEBUG )
+static inline constexpr std::size_t NUMRUNS = 1000;
 #else
-inline DAW_CONSTEXPR std::size_t NUMRUNS = 100;
+static inline constexpr std::size_t NUMRUNS = 1;
 #endif
 
 int main( int argc, char **argv ) try {
