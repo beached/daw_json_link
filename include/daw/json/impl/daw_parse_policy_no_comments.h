@@ -163,16 +163,6 @@ namespace daw::json {
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
 						ptr_first = json_details::sse3_skip_until_end_of_string<true>(
 						  ptr_first, rng.last );
-						/*
-						while( true ) {
-						  ptr_first = sse3_skip_until<true, '"'>( ptr_first, rng.last );
-
-						  if( DAW_JSON_LIKELY( *( ptr_first - 1 ) != '\\' ) ) {
-						    break;
-						  }
-						  ptr_first += 2;
-						}
-						 */
 					} else {
 #endif
 						while( *ptr_first != '"' ) {

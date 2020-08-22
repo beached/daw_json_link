@@ -263,6 +263,7 @@ namespace daw::json::json_details {
 				}
 			} else {
 				rng.remove_prefix( );
+
 				char const *const first = rng.first;
 				rng.template move_to_next_of<'"'>( );
 				char const *const last = rng.first;

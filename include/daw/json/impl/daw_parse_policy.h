@@ -89,8 +89,8 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_unchecked( ) {
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( simd_mode == SIMDModes::SSE3 ) {
-				first = json_details::sse3_skip_until<Range::is_unchecked_input, c>(
-				  first, last );
+				first = reinterpret_cast<char const *>( std::memchr(
+				  first, c, static_cast<std::size_t>( class_last - first ) ) );
 			} else {
 #endif
 				while( *first != c ) {
@@ -105,8 +105,9 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_checked( ) {
 #if defined( DAW_ALLOW_SSE3 )
 			if constexpr( simd_mode == SIMDModes::SSE3 ) {
-				first = json_details::sse3_skip_until<Range::is_unchecked_input, c>(
-				  first, last );
+				first = reinterpret_cast<char const *>( std::memchr(
+					first, c, static_cast<std::size_t>( class_last - first ) ) );
+				daw_json_assert( first != nullptr, "Expected token missing" );
 			} else {
 #endif
 				while( first < last and *first != c ) {
