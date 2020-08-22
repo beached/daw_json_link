@@ -50,6 +50,18 @@
 #error "BUILD_TYPE must be defined"
 #endif
 
+#if defined( DAW_ALLOW_SSE3 )
+using CheckedPolicy =
+  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE3>;
+using UncheckedPolicy =
+  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::SIMDModes::SSE3>;
+#else
+using CheckedPolicy =
+  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::None>;
+using UncheckedPolicy =
+  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::SIMDModes::None>;
+#endif
+
 #if not defined( DAW_NUM_RUNS ) and                                            \
   ( not defined( DEBUG ) or defined( NDEBUG ) )
 static inline constexpr std::size_t DAW_NUM_RUNS = 250;
@@ -155,7 +167,8 @@ namespace {
 		  "apache builds from_json(checked)", json_data.size( ),
 		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<apache_builds::apache_builds>( jd );
+			    return daw::json::from_json<apache_builds::apache_builds,
+			                                CheckedPolicy>( jd );
 		    },
 		    json_data ) );
 
@@ -169,9 +182,8 @@ namespace {
 		  "apache builds from_json(unchecked)", json_data.size( ),
 		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<
-			      apache_builds::apache_builds,
-			      daw::json::NoCommentSkippingPolicyUnchecked>( jd );
+			    return daw::json::from_json<apache_builds::apache_builds,
+			                                UncheckedPolicy>( jd );
 		    },
 		    json_data ) );
 
@@ -185,7 +197,8 @@ namespace {
 		  "twitter from_json(checked)", json_data.size( ),
 		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<daw::twitter::twitter_object_t>( jd );
+			    return daw::json::from_json<daw::twitter::twitter_object_t,
+			                                CheckedPolicy>( jd );
 		    },
 		    json_data ) );
 
@@ -199,9 +212,8 @@ namespace {
 		  "twitter from_json(unchecked)", json_data.size( ),
 		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<
-			      daw::twitter::twitter_object_t,
-			      daw::json::NoCommentSkippingPolicyUnchecked>( jd );
+			    return daw::json::from_json<daw::twitter::twitter_object_t,
+			                                UncheckedPolicy>( jd );
 		    },
 		    json_data ) );
 
@@ -215,7 +227,8 @@ namespace {
 		  "citm_catalog from_json(checked)", json_data.size( ),
 		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<daw::citm::citm_object_t>( jd );
+			    return daw::json::from_json<daw::citm::citm_object_t, CheckedPolicy>(
+			      jd );
 		    },
 		    json_data ) );
 
@@ -229,9 +242,8 @@ namespace {
 		  "citm_catalog from_json(unchecked)", json_data.size( ),
 		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<
-			      daw::citm::citm_object_t,
-			      daw::json::NoCommentSkippingPolicyUnchecked>( jd );
+			    return daw::json::from_json<daw::citm::citm_object_t,
+			                                UncheckedPolicy>( jd );
 		    },
 		    json_data ) );
 
@@ -245,7 +257,8 @@ namespace {
 		  "canada from_json(checked)", json_data.size( ),
 		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<daw::geojson::FeatureCollection>( jd );
+			    return daw::json::from_json<daw::geojson::FeatureCollection,
+			                                CheckedPolicy>( jd );
 		    },
 		    json_data ) );
 
@@ -259,9 +272,8 @@ namespace {
 		  "canada from_json(unchecked)", json_data.size( ),
 		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<
-			      daw::geojson::FeatureCollection,
-			      daw::json::NoCommentSkippingPolicyUnchecked>( jd );
+			    return daw::json::from_json<daw::geojson::FeatureCollection,
+			                                UncheckedPolicy>( jd );
 		    },
 		    json_data ) );
 
@@ -280,10 +292,12 @@ namespace {
 		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
 			    auto const j1 =
-			      daw::json::from_json<daw::twitter::twitter_object_t>( tw );
-			    auto const j2 = daw::json::from_json<daw::citm::citm_object_t>( ci );
-			    auto const j3 =
-			      daw::json::from_json<daw::geojson::FeatureCollection>( ca );
+			      daw::json::from_json<daw::twitter::twitter_object_t, CheckedPolicy>(
+			        tw );
+			    auto const j2 =
+			      daw::json::from_json<daw::citm::citm_object_t, CheckedPolicy>( ci );
+			    auto const j3 = daw::json::from_json<daw::geojson::FeatureCollection,
+			                                         CheckedPolicy>( ca );
 			    daw::do_not_optimize( j1 );
 			    daw::do_not_optimize( j2 );
 			    daw::do_not_optimize( j3 );
@@ -304,18 +318,13 @@ namespace {
 		    json_data_canada.size( ),
 		  daw::bench_n_test_json<DAW_NUM_RUNS>(
 		    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
-			    auto const j1 =
-			      daw::json::from_json<daw::twitter::twitter_object_t,
-			                           daw::json::NoCommentSkippingPolicyUnchecked>(
-			        tw );
+			    auto const j1 = daw::json::from_json<daw::twitter::twitter_object_t,
+			                                         UncheckedPolicy>( tw );
 			    auto const j2 =
-			      daw::json::from_json<daw::citm::citm_object_t,
-			                           daw::json::NoCommentSkippingPolicyUnchecked>(
+			      daw::json::from_json<daw::citm::citm_object_t, UncheckedPolicy>(
 			        ci );
-			    auto const j3 =
-			      daw::json::from_json<daw::geojson::FeatureCollection,
-			                           daw::json::NoCommentSkippingPolicyUnchecked>(
-			        ca );
+			    auto const j3 = daw::json::from_json<daw::geojson::FeatureCollection,
+			                                         UncheckedPolicy>( ca );
 			    daw::do_not_optimize( j1 );
 			    daw::do_not_optimize( j2 );
 			    daw::do_not_optimize( j3 );
