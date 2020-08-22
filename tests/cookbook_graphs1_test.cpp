@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
@@ -45,9 +47,9 @@ namespace daw::json {
 		using type = json_member_list<json_number<"member0", int>,
 		                              json_string<"member1">, json_bool<"member2">>;
 #else
-		static inline constexpr char const member0[] = "member0";
-		static inline constexpr char const member1[] = "member1";
-		static inline constexpr char const member2[] = "member2";
+		static constexpr char const member0[] = "member0";
+		static constexpr char const member1[] = "member1";
+		static constexpr char const member2[] = "member2";
 		using type = json_member_list<json_number<member0, int>,
 		                              json_string<member1>, json_bool<member2>>;
 #endif
@@ -60,8 +62,8 @@ namespace daw::json {
 		  json_member_list<json_number<"id", size_t, LiteralAsStringOpt::Always>,
 		                   json_class<"metadata", daw::cookbook_graphs1::Metadata>>;
 #else
-		static inline constexpr char const id[] = "id";
-		static inline constexpr char const metadata[] = "metadata";
+		static constexpr char const id[] = "id";
+		static constexpr char const metadata[] = "metadata";
 		using type =
 		  json_member_list<json_number<id, size_t, LiteralAsStringOpt::Always>,
 		                   json_class<metadata, daw::cookbook_graphs1::Metadata>>;
@@ -75,8 +77,8 @@ namespace daw::json {
 		  json_number<"source", size_t, LiteralAsStringOpt::Always>,
 		  json_number<"target", size_t, LiteralAsStringOpt::Always>>;
 #else
-		static inline constexpr char const source[] = "source";
-		static inline constexpr char const target[] = "target";
+		static constexpr char const source[] = "source";
+		static constexpr char const target[] = "target";
 		using type =
 		  json_member_list<json_number<source, size_t, LiteralAsStringOpt::Always>,
 		                   json_number<target, size_t, LiteralAsStringOpt::Always>>;

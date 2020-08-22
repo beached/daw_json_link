@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/impl/daw_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
@@ -15,8 +17,8 @@
 #include <string_view>
 
 bool test_empty( ) {
-	constexpr std::string_view sv = "  ";
-	constexpr std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv = "  ";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
@@ -25,7 +27,7 @@ bool test_empty( ) {
 }
 
 bool test_quoted_number( ) {
-	constexpr std::string_view sv = R"( "1234")";
+	DAW_CONSTEXPR std::string_view sv = R"( "1234")";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ) + 1, sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
@@ -34,8 +36,8 @@ bool test_quoted_number( ) {
 }
 
 bool test_empty_quoted( ) {
-	constexpr std::string_view sv = R"( "")";
-	constexpr std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv = R"( "")";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
@@ -44,19 +46,19 @@ bool test_empty_quoted( ) {
 }
 
 bool test_embeded_quotes( ) {
-	constexpr std::string_view sv = R"( "\"  \\ ")";
-	constexpr std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv = R"( "\"  \\ ")";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
-	constexpr std::string_view ans = R"(\"  \\ )";
+	DAW_CONSTEXPR std::string_view ans = R"(\"  \\ )";
 	return std::string_view( v.data( ), v.size( ) ) == ans;
 }
 
 bool test_missing_quotes_001( ) {
-	constexpr std::string_view sv = R"( ")";
-	constexpr std::string_view sv2 = sv.substr( 1 );
+	DAW_CONSTEXPR std::string_view sv = R"( ")";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
@@ -66,8 +68,8 @@ bool test_missing_quotes_001( ) {
 }
 
 bool test_missing_quotes_002( ) {
-	constexpr std::string_view sv = R"( "\")";
-	constexpr std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv = R"( "\")";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
@@ -77,8 +79,8 @@ bool test_missing_quotes_002( ) {
 }
 
 bool test_missing_quotes_003( ) {
-	constexpr std::string_view sv = R"( "\"]})";
-	constexpr std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv = R"( "\"]})";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;

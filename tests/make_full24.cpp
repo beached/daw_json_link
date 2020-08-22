@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <utf8/checked.h>
 
 #include <array>
@@ -330,7 +332,7 @@ std::vector<code> get_codes( ) {
 }
 
 template<typename Char>
-constexpr char to_nibble_char( Char c ) noexcept {
+DAW_CONSTEXPR char to_nibble_char( Char c ) noexcept {
 	if( c < 10 ) {
 		return static_cast<char>( c + '0' );
 	} else {

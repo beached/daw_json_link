@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 /**************
  * OLD BENCH
  */
@@ -42,9 +44,9 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
 #else
-		constexpr inline static char const x[] = "x";
-		constexpr inline static char const y[] = "y";
-		constexpr inline static char const z[] = "z";
+		DAW_CONSTEXPR inline static char const x[] = "x";
+		DAW_CONSTEXPR inline static char const y[] = "y";
+		DAW_CONSTEXPR inline static char const z[] = "z";
 		using type =
 		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
 #endif

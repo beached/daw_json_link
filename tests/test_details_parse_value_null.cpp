@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
@@ -21,7 +23,7 @@ bool test_null_literal_untrusted( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number_null<no_name, std::optional<int>>;
-	constexpr std::string_view sv = "null,";
+	DAW_CONSTEXPR std::string_view sv = "null,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
 	return not v;
@@ -43,7 +45,7 @@ bool test_null_number_untrusted( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number_null<no_name, std::optional<int>>;
-	constexpr std::string_view sv = "5,";
+	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
 	return v and *v == 5;
@@ -54,7 +56,7 @@ bool test_null_number_trusted( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number_null<no_name, std::optional<int>>;
-	constexpr std::string_view sv = "5,";
+	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Null>{ }, rng );
 	return v and *v == 5;
@@ -65,7 +67,7 @@ bool test_null_number_untrusted_known( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number_null<no_name, std::optional<int>>;
-	constexpr std::string_view sv = "5,";
+	DAW_CONSTEXPR std::string_view sv = "5,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) - 1 );
 	auto v =
 	  parse_value<my_number, true>( ParseTag<JsonParseTypes::Null>{ }, rng );

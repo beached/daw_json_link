@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
@@ -17,7 +19,7 @@
 #include <string_view>
 
 struct NoOp {
-	constexpr std::string_view operator( )( std::string_view rng ) const {
+	DAW_CONSTEXPR std::string_view operator( )( std::string_view rng ) const {
 		return rng;
 	}
 };
@@ -26,7 +28,7 @@ bool empty_array_empty_json_array( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	constexpr std::string_view sv = R"({ "a": "20200130" })";
+	DAW_CONSTEXPR std::string_view sv = R"({ "a": "20200130" })";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	rng.remove_prefix( 7 );
 	auto v = parse_value<json_custom<no_name, std::string_view, NoOp>>(

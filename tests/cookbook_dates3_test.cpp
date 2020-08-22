@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/daw_memory_mapped_file.h>
 
 #include "daw/json/daw_json_link.h"
@@ -54,10 +56,10 @@ namespace daw::json {
 		  json_number<"dateAdded", int64_t, LiteralAsStringOpt::Always>,
 		  json_number<"lastModified", int64_t>>;
 #else
-		static inline constexpr char const title[] = "title";
-		static inline constexpr char const id[] = "id";
-		static inline constexpr char const dateAdded[] = "dateAdded";
-		static inline constexpr char const lastModified[] = "lastModified";
+		static constexpr char const title[] = "title";
+		static constexpr char const id[] = "id";
+		static constexpr char const dateAdded[] = "dateAdded";
+		static constexpr char const lastModified[] = "lastModified";
 		using type = json_member_list<
 		  json_string<title>, json_number<id, unsigned>,
 		  json_number<dateAdded, int64_t, LiteralAsStringOpt::Always>,

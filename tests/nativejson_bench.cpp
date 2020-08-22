@@ -6,10 +6,7 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#if not defined( __cpp_constexpr_dynamic_alloc )
-// constexpr dtor's are not available prior to c++20
-#define DAW_JSON_NO_CONST_EXPR
-#endif
+#include "defines.h"
 
 #include "citm_test.h"
 #include "geojson.h"

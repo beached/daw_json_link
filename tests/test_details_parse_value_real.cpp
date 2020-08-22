@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
@@ -21,7 +23,7 @@ bool test_zero_untrusted( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number<no_name>;
-	constexpr std::string_view sv = "0,";
+	DAW_CONSTEXPR std::string_view sv = "0,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
 	return v == 0;
@@ -32,7 +34,7 @@ bool test_positive_zero_untrusted( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number<no_name>;
-	constexpr std::string_view sv = "+0,";
+	DAW_CONSTEXPR std::string_view sv = "+0,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
 	return v == 0;
@@ -43,7 +45,7 @@ bool test_negative_zero_untrusted( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number<no_name>;
-	constexpr std::string_view sv = "-0,";
+	DAW_CONSTEXPR std::string_view sv = "-0,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
 	return v == 0;
@@ -54,7 +56,7 @@ bool test_missing_untrusted( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number<no_name>;
-	constexpr std::string_view sv = " ,";
+	DAW_CONSTEXPR std::string_view sv = " ,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
 	daw::do_not_optimize( v );
@@ -66,7 +68,7 @@ bool test_real_untrusted( ) {
 	using namespace daw::json::json_details;
 
 	using my_number = json_number<no_name>;
-	constexpr std::string_view sv = "1.23,";
+	DAW_CONSTEXPR std::string_view sv = "1.23,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( ParseTag<JsonParseTypes::Real>{ }, rng );
 	return v >= ( 1.23 - daw::numeric_limits<double>::epsilon( ) ) and

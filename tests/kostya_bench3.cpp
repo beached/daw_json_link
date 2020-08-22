@@ -6,6 +6,8 @@
 // of this software and associated documentation files( the "Software" ), to
 // deal in the Software without restriction, including without limitation the
 // rights to use, copy, modify, merge, publish, distribute, sublicense, and / or
+#include "defines.h"
+
 // sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
@@ -58,9 +60,9 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
 #else
-		constexpr inline static char const x[] = "x";
-		constexpr inline static char const y[] = "y";
-		constexpr inline static char const z[] = "z";
+		DAW_CONSTEXPR inline static char const x[] = "x";
+		DAW_CONSTEXPR inline static char const y[] = "y";
+		DAW_CONSTEXPR inline static char const z[] = "z";
 		using type =
 		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
 #endif

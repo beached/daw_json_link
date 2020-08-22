@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "twitter_test.h"
 
 #include <daw/daw_benchmark.h>

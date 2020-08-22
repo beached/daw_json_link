@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "apache_builds.h"
 #include "bench_result.h"
 #include "citm_test.h"
@@ -50,9 +52,9 @@
 
 namespace {
 #if defined( NDEBUG ) or not defined( DEBUG )
-	inline constexpr std::size_t NUM_RUNS = 250;
+	inline DAW_CONSTEXPR std::size_t NUM_RUNS = 250;
 #else
-	inline constexpr std::size_t NUM_RUNS = 1;
+	inline DAW_CONSTEXPR std::size_t NUM_RUNS = 1;
 #endif
 	static_assert( NUM_RUNS > 0 );
 

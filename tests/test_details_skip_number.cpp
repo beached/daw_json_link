@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/impl/daw_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
@@ -15,8 +17,8 @@
 #include <string_view>
 
 bool test_number_in_class( ) {
-	constexpr std::string_view sv = R"({"a":1234})";
-	constexpr std::string_view sv2 = sv.substr( 5 );
+	DAW_CONSTEXPR std::string_view sv = R"({"a":1234})";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 5 );
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
@@ -25,7 +27,7 @@ bool test_number_in_class( ) {
 }
 
 bool test_number( ) {
-	constexpr std::string_view sv = "12345,";
+	DAW_CONSTEXPR std::string_view sv = "12345,";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
@@ -34,7 +36,7 @@ bool test_number( ) {
 }
 
 bool test_number_space( ) {
-	constexpr std::string_view sv = "12345         ,";
+	DAW_CONSTEXPR std::string_view sv = "12345         ,";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;

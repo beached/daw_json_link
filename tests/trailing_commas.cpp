@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/daw_benchmark.h>
 #include <daw/json/daw_json_link.h>
 
@@ -26,14 +28,14 @@ struct daw::json::json_data_contract<string_trail> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<json_string<"a">>;
 #else
-	static inline constexpr char const a[] = "a";
+	static constexpr char const a[] = "a";
 	using type = json_member_list<json_string<a>>;
 #endif
 };
 
 bool test_string_trail( ) {
 	try {
-		static constexpr std::string_view json_data =
+		static DAW_CONSTEXPR std::string_view json_data =
 		  R"({"b": 5, "c": true, "a": "hello", } )";
 		string_trail const result = daw::json::from_json<string_trail>( json_data );
 		daw_json_assert( result.a == "hello", "Unexpected result" );
@@ -53,13 +55,13 @@ struct daw::json::json_data_contract<string_raw_trail> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<json_string_raw<"a", std::string_view>>;
 #else
-	static inline constexpr char const a[] = "a";
+	static constexpr char const a[] = "a";
 	using type = json_member_list<json_string_raw<a, std::string_view>>;
 #endif
 };
 
-constexpr bool test_string_raw_trail( ) {
-	constexpr std::string_view json_data =
+DAW_CONSTEXPR bool test_string_raw_trail( ) {
+	DAW_CONSTEXPR std::string_view json_data =
 	  R"({"b": 5, "c": true, "a": "hello", } )";
 
 	string_raw_trail const result =
@@ -79,13 +81,14 @@ struct daw::json::json_data_contract<int_trail> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<json_number<"a", int>>;
 #else
-	static inline constexpr char const a[] = "a";
+	static constexpr char const a[] = "a";
 	using type = json_member_list<json_number<a, int>>;
 #endif
 };
 
-constexpr bool test_int_trail( ) {
-	constexpr std::string_view json_data = R"({"b": 5, "c": true, "a": -5, } )";
+DAW_CONSTEXPR bool test_int_trail( ) {
+	DAW_CONSTEXPR std::string_view json_data =
+	  R"({"b": 5, "c": true, "a": -5, } )";
 
 	int_trail const result = daw::json::from_json<int_trail>( json_data );
 
@@ -103,13 +106,14 @@ struct daw::json::json_data_contract<unsigned_trail> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<json_number<"a", unsigned>>;
 #else
-	static inline constexpr char const a[] = "a";
+	static constexpr char const a[] = "a";
 	using type = json_member_list<json_number<a, unsigned>>;
 #endif
 };
 
-constexpr bool test_unsigned_trail( ) {
-	constexpr std::string_view json_data = R"({"b": 5, "c": true, "a": 5, } )";
+DAW_CONSTEXPR bool test_unsigned_trail( ) {
+	DAW_CONSTEXPR std::string_view json_data =
+	  R"({"b": 5, "c": true, "a": 5, } )";
 
 	unsigned_trail const result =
 	  daw::json::from_json<unsigned_trail>( json_data );
@@ -127,13 +131,14 @@ struct daw::json::json_data_contract<bool_trail> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<json_bool<"a">>;
 #else
-	static inline constexpr char const a[] = "a";
+	static constexpr char const a[] = "a";
 	using type = json_member_list<json_bool<a>>;
 #endif
 };
 
-constexpr bool test_bool_trail( ) {
-	constexpr std::string_view json_data = R"({"b": 5, "c": true, "a": true, } )";
+DAW_CONSTEXPR bool test_bool_trail( ) {
+	DAW_CONSTEXPR std::string_view json_data =
+	  R"({"b": 5, "c": true, "a": true, } )";
 
 	bool_trail const result = daw::json::from_json<bool_trail>( json_data );
 
@@ -151,13 +156,13 @@ struct daw::json::json_data_contract<object_trail> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<json_class<"a", int_trail>>;
 #else
-	static inline constexpr char const a[] = "a";
+	static constexpr char const a[] = "a";
 	using type = json_member_list<json_class<a, int_trail>>;
 #endif
 };
 
-constexpr bool test_object_trail( ) {
-	constexpr std::string_view json_data =
+DAW_CONSTEXPR bool test_object_trail( ) {
+	DAW_CONSTEXPR std::string_view json_data =
 	  R"({"b": 5, "c": true, "a": { "b": true, "c": 1.234, "a": 5, }, } )";
 
 	object_trail const result = daw::json::from_json<object_trail>( json_data );
@@ -176,13 +181,13 @@ struct daw::json::json_data_contract<array_member_trail> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<json_array<"a", int>>;
 #else
-	static inline constexpr char const a[] = "a";
+	static constexpr char const a[] = "a";
 	using type = json_member_list<json_array<a, int>>;
 #endif
 };
 
 bool test_array_member_trail( ) {
-	static constexpr std::string_view json_data =
+	static DAW_CONSTEXPR std::string_view json_data =
 	  R"({"b": 5, "c": true, "a": [1,2,3,4], } )";
 	try {
 		array_member_trail const result =
@@ -197,7 +202,7 @@ bool test_array_member_trail( ) {
 }
 
 bool test_array_trail( ) {
-	static constexpr std::string_view json_data = "[1,2,3,4,5,]";
+	static DAW_CONSTEXPR std::string_view json_data = "[1,2,3,4,5,]";
 	try {
 		std::vector<int> const result =
 		  daw::json::from_json_array<int>( json_data );

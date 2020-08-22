@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_link.h"
 
 #include <cstdint>
@@ -36,9 +38,9 @@ namespace daw::json {
 		  json_member_list<json_string<"member0">, json_number<"member1", int>,
 		                   json_bool<"member2">>;
 #else
-		static inline constexpr char const member0[] = "member0";
-		static inline constexpr char const member1[] = "member1";
-		static inline constexpr char const member2[] = "member2";
+		static constexpr char const member0[] = "member0";
+		static constexpr char const member1[] = "member1";
+		static constexpr char const member2[] = "member2";
 		using type =
 		  json_member_list<json_string<member0>, json_number<member1, int>,
 		                   json_bool<member2>>;

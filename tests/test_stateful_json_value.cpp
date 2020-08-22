@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/daw_do_not_optimize.h>
 #include <daw/daw_memory_mapped_file.h>
 
@@ -19,7 +21,7 @@ struct coordinate_t {
 	double y;
 	double z;
 
-	constexpr bool operator!=( const coordinate_t &r ) const {
+	DAW_CONSTEXPR bool operator!=( const coordinate_t &r ) const {
 		return x != r.x and y != r.y and z != r.z;
 	}
 };
@@ -37,9 +39,9 @@ coordinate_t calc( std::string_view text ) {
 	for( auto c : jv ) {
 		state.reset( c.value );
 		++len;
-		static constexpr auto mem_x = json_member_name( "x" );
-		static constexpr auto mem_y = json_member_name( "y" );
-		static constexpr auto mem_z = json_member_name( "z" );
+		static DAW_CONSTEXPR auto mem_x = json_member_name( "x" );
+		static DAW_CONSTEXPR auto mem_y = json_member_name( "y" );
+		static DAW_CONSTEXPR auto mem_z = json_member_name( "z" );
 		x += from_json<double>( state[mem_x] );
 		y += from_json<double>( state[mem_y] );
 		z += from_json<double>( state[mem_z] );

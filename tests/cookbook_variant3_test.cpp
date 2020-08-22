@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
@@ -30,7 +32,7 @@ namespace daw::cookbook_variant2 {
 
 	struct MyClassSwitcher {
 		// Convert JSON tag member to type index
-		constexpr size_t operator( )( int type ) const {
+		DAW_CONSTEXPR size_t operator( )( int type ) const {
 			return static_cast<size_t>( type );
 		}
 		// Get value for Tag from class value
@@ -51,9 +53,9 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 	    json_tagged_variant_type_list<std::string, json_number<no_name, int>,
 	                                  json_bool<no_name>>>>;
 #else
-	static inline constexpr char const type_mem[] = "type";
-	static inline constexpr char const name[] = "name";
-	static inline constexpr char const value[] = "value";
+	static constexpr char const type_mem[] = "type";
+	static constexpr char const name[] = "name";
+	static constexpr char const value[] = "value";
 	using type = json_member_list<
 	  json_string<name>,
 	  json_tagged_variant<
@@ -62,7 +64,7 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 	    json_tagged_variant_type_list<std::string, json_number<no_name, int>,
 	                                  json_bool<no_name>>>>;
 #endif
-	static constexpr inline auto
+	static DAW_CONSTEXPR inline auto
 	to_json_data( daw::cookbook_variant2::MyClass const &v ) {
 		return std::forward_as_tuple( v.name, v.value );
 	}

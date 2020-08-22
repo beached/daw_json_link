@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/daw_json_link.h>
 #include <daw/json/impl/daw_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
@@ -20,7 +22,7 @@ bool empty_array_empty_json_array( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	constexpr std::string_view sv = "[]";
+	DAW_CONSTEXPR std::string_view sv = "[]";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<json_array<no_name, int>>(
 	  ParseTag<JsonParseTypes::Array>{ }, rng );
@@ -45,7 +47,7 @@ struct InlineClass {
 	std::tuple<typename Members::parse_to_t...> members;
 
 	template<typename... Ts>
-	inline constexpr InlineClass( Ts &&... values )
+	inline DAW_CONSTEXPR InlineClass( Ts &&... values )
 	  : members{ std::forward<Ts>( values )... } {}
 };
 

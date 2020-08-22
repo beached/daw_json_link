@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/daw_memory_mapped_file.h>
 
 #include "daw/json/daw_json_link.h"

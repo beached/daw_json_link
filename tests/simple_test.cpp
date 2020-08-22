@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
@@ -30,17 +32,17 @@ namespace daw::json {
 		                   json_number<"lat", float, LiteralAsStringOpt::Always>,
 		                   json_number<"lng", float, LiteralAsStringOpt::Always>>;
 #else
-		static inline constexpr char const country[] = "country";
-		static inline constexpr char const name[] = "name";
-		static inline constexpr char const lat[] = "lat";
-		static inline constexpr char const lng[] = "lng";
+		static constexpr char const country[] = "country";
+		static constexpr char const name[] = "name";
+		static constexpr char const lat[] = "lat";
+		static constexpr char const lng[] = "lng";
 		using type =
 		  json_member_list<json_string_raw<country, std::string_view>,
 		                   json_string_raw<name, std::string_view>,
 		                   json_number<lat, float, LiteralAsStringOpt::Always>,
 		                   json_number<lng, float, LiteralAsStringOpt::Always>>;
 #endif
-		static constexpr auto to_json_data( City const &c ) {
+		static DAW_CONSTEXPR auto to_json_data( City const &c ) {
 			return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );
 		}
 	};

@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "citm_test.h"
 #include "geojson.h"
 #include "twitter_test.h"
@@ -21,9 +23,9 @@
 #include <string_view>
 
 #ifdef NDEBUG
-inline constexpr std::size_t NUMRUNS = 1000;
+inline DAW_CONSTEXPR std::size_t NUMRUNS = 1000;
 #else
-inline constexpr std::size_t NUMRUNS = 100;
+inline DAW_CONSTEXPR std::size_t NUMRUNS = 100;
 #endif
 
 int main( int argc, char **argv ) try {

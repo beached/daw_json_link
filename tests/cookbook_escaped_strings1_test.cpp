@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_memory_mapped_file.h>
@@ -33,7 +35,7 @@ namespace daw::json {
 #if defined( __cpp_nontype_template_parameter_class )
 		using type = json_member_list<json_array<"uris", std::string>>;
 #else
-		static inline constexpr char const uris[] = "uris";
+		static constexpr char const uris[] = "uris";
 		using type = json_member_list<json_array<uris, std::string>>;
 #endif
 		static inline auto

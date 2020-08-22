@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
 
@@ -35,9 +37,9 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
 #else
-		constexpr inline static char const x[] = "x";
-		constexpr inline static char const y[] = "y";
-		constexpr inline static char const z[] = "z";
+		DAW_CONSTEXPR inline static char const x[] = "x";
+		DAW_CONSTEXPR inline static char const y[] = "y";
+		DAW_CONSTEXPR inline static char const z[] = "z";
 		using type =
 		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
 #endif
@@ -48,7 +50,7 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_array<"coordinates", coordinate_t>>;
 #else
-		constexpr inline static char const coordinates[] = "coordinates";
+		DAW_CONSTEXPR inline static char const coordinates[] = "coordinates";
 		using type = json_member_list<json_array<coordinates, coordinate_t>>;
 #endif
 	};

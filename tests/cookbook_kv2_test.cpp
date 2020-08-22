@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_memory_mapped_file.h>
@@ -35,8 +37,8 @@ namespace daw::json {
 		  json_key_value_array<"kv", std::unordered_map<intmax_t, std::string>,
 		                       json_string_raw<"value">, intmax_t>>;
 #else
-		static inline constexpr char const kv[] = "kv";
-		static inline constexpr char const value[] = "value";
+		static constexpr char const kv[] = "kv";
+		static constexpr char const value[] = "value";
 		using type = json_member_list<
 		  json_key_value_array<kv, std::unordered_map<intmax_t, std::string>,
 		                       json_string_raw<value>, intmax_t>>;

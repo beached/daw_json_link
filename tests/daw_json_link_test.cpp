@@ -6,10 +6,7 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#ifdef DAW_JSON_NO_CONST_EXPR
-// Need to test constexpr and this will prevent it
-#undef DAW_JSON_NO_CONST_EXPR
-#endif
+#include "defines.h"
 
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
@@ -47,20 +44,20 @@ namespace daw::json {
 } // namespace daw::json
 
 template<typename Real, bool Trusted = false, std::size_t N>
-constexpr Real parse_real( char const ( &str )[N] ) {
+DAW_CONSTEXPR Real parse_real( char const ( &str )[N] ) {
 	auto rng = daw::json::NoCommentSkippingPolicyChecked( str, str + N );
 	return daw::json::json_details::parse_real<Real>( rng );
 }
 
 template<typename Real, bool Trusted = false, size_t N>
-constexpr bool parse_real_test( char const ( &str )[N], Real expected ) {
+DAW_CONSTEXPR bool parse_real_test( char const ( &str )[N], Real expected ) {
 	auto res = parse_real<Real, Trusted>( str );
 	return not( res < expected or res > expected );
 }
 
 template<typename Unsigned, bool Trusted = false, size_t N>
-constexpr bool parse_unsigned_test( char const ( &str )[N],
-                                    Unsigned expected ) {
+DAW_CONSTEXPR bool parse_unsigned_test( char const ( &str )[N],
+                                        Unsigned expected ) {
 	auto tmp = daw::json::NoCommentSkippingPolicyUnchecked( str, str + N );
 	return daw::json::json_details::unsigned_parser<
 	         Unsigned, daw::json::JsonRangeCheck::CheckForNarrowing, false>(
@@ -80,14 +77,15 @@ struct test_001_t {
 	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>
 	  dte{ };
 
-	constexpr test_001_t( ) = default;
+	DAW_CONSTEXPR test_001_t( ) = default;
 
-	constexpr test_001_t( int Int, double Double, bool Bool, std::string_view S,
-	                      std::string_view S2, daw::bounded_vector_t<int, 10> Y,
-	                      std::optional<int> O, std::optional<int> O2,
-	                      std::chrono::time_point<std::chrono::system_clock,
-	                                              std::chrono::milliseconds>
-	                        D ) noexcept
+	DAW_CONSTEXPR test_001_t( int Int, double Double, bool Bool,
+	                          std::string_view S, std::string_view S2,
+	                          daw::bounded_vector_t<int, 10> Y,
+	                          std::optional<int> O, std::optional<int> O2,
+	                          std::chrono::time_point<std::chrono::system_clock,
+	                                                  std::chrono::milliseconds>
+	                            D ) noexcept
 	  : i( Int )
 	  , d( Double )
 	  , b( Bool )
@@ -121,8 +119,8 @@ std::string to_string( blah_t e ) noexcept {
 	std::abort( );
 }
 
-constexpr blah_t from_string( daw::tag_t<blah_t>,
-                              std::string_view sv ) noexcept {
+DAW_CONSTEXPR blah_t from_string( daw::tag_t<blah_t>,
+                                  std::string_view sv ) noexcept {
 	if( sv.empty( ) ) {
 		daw_json_error( "Unexpected empty string_view" );
 	}
@@ -156,15 +154,15 @@ namespace daw::json {
 		                   json_date<"dte">>;
 
 #else
-		static inline constexpr char const i[] = "i";
-		static inline constexpr char const d[] = "d";
-		static inline constexpr char const b[] = "b";
-		static inline constexpr char const s[] = "s";
-		static inline constexpr char const s2[] = "s2";
-		static inline constexpr char const y[] = "y";
-		static inline constexpr char const o[] = "o";
-		static inline constexpr char const o2[] = "o2";
-		static inline constexpr char const dte[] = "dte";
+		static constexpr char const i[] = "i";
+		static constexpr char const d[] = "d";
+		static constexpr char const b[] = "b";
+		static constexpr char const s[] = "s";
+		static constexpr char const s2[] = "s2";
+		static constexpr char const y[] = "y";
+		static constexpr char const o[] = "o";
+		static constexpr char const o2[] = "o2";
+		static constexpr char const dte[] = "dte";
 		using type =
 		  json_member_list<json_number<i, int>, json_number<d>, json_bool<b>,
 		                   json_string_raw<s, std::string_view>,
@@ -174,7 +172,7 @@ namespace daw::json {
 		                   json_number_null<o2, std::optional<int>>,
 		                   json_date<dte>>;
 #endif
-		static constexpr auto to_json_data( test_001_t const &v ) {
+		static DAW_CONSTEXPR auto to_json_data( test_001_t const &v ) {
 			return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.s2, v.y, v.o, v.o2,
 			                              v.dte );
 		}
@@ -185,10 +183,10 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_class<"a", test_001_t>>;
 #else
-		static inline constexpr char const a[] = "a";
+		static constexpr char const a[] = "a";
 		using type = json_member_list<json_class<a, test_001_t>>;
 #endif
-		static constexpr auto to_json_data( test_002_t const &v ) {
+		static DAW_CONSTEXPR auto to_json_data( test_002_t const &v ) {
 			return std::forward_as_tuple( v.a );
 		}
 	};
@@ -199,11 +197,11 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_class_null<"a", std::optional<test_001_t>>>;
 #else
-		static inline constexpr char const a[] = "a";
+		static constexpr char const a[] = "a";
 		using type =
 		  json_member_list<json_class_null<a, std::optional<test_001_t>>>;
 #endif
-		static constexpr auto to_json_data( test_003_t const &v ) {
+		static DAW_CONSTEXPR auto to_json_data( test_003_t const &v ) {
 			return std::forward_as_tuple( v.a );
 		}
 	};
@@ -213,16 +211,16 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_custom<"a", blah_t>>;
 #else
-		static inline constexpr char const a[] = "a";
+		static constexpr char const a[] = "a";
 		using type = json_member_list<json_custom<a, blah_t>>;
 #endif
-		static constexpr auto to_json_data( e_test_001_t const &v ) {
+		static DAW_CONSTEXPR auto to_json_data( e_test_001_t const &v ) {
 			return std::forward_as_tuple( v.a );
 		}
 	}; // namespace daw::json
 } // namespace daw::json
 
-constexpr auto const test_001_t_json_data =
+DAW_CONSTEXPR auto const test_001_t_json_data =
   R"({
 	    "d": -1.234e+3,
 	    "i": 55,
@@ -237,29 +235,30 @@ constexpr auto const test_001_t_json_data =
 			"dte": "2016-12-31T01:02:03.343Z"
 	  })";
 
-constexpr bool test_004( ) {
+DAW_CONSTEXPR bool test_004( ) {
 	return daw::json::from_json<int, daw::json::NoCommentSkippingPolicyUnchecked>(
 	         test_001_t_json_data, "i" ) == 55;
 }
 
-constexpr bool test_005( ) {
+DAW_CONSTEXPR bool test_005( ) {
 	return daw::json::from_json<int, daw::json::NoCommentSkippingPolicyUnchecked>(
 	         test_001_t_json_data, "i" ) == 55;
 }
 
-constexpr bool test_006( ) {
+DAW_CONSTEXPR bool test_006( ) {
 	return daw::json::from_json<int>( test_001_t_json_data, "y[2]" ) == 3;
 }
 
-#if( defined( __GNUC__ ) and __GNUC__ > 8 ) or defined( __clang__ ) or         \
-  defined( _MSC_VER )
+#if not defined( DAW_JSON_NO_CONST_EXPR ) and                                  \
+  ( ( defined( __GNUC__ ) and __GNUC__ > 8 ) or defined( __clang__ ) or        \
+    defined( _MSC_VER ) )
 static_assert( test_004( ), "Unexpected value" );
 static_assert( test_005( ), "Unexpected value" );
 static_assert( test_006( ), "Unexpected value" );
 
 #endif
 
-constexpr char const json_data_array[] =
+DAW_CONSTEXPR char const json_data_array[] =
   R"([
 			{
 	    "i": 55,
@@ -328,7 +327,8 @@ constexpr char const json_data_array[] =
 struct EmptyClassTest {
 	int a = 0;
 };
-constexpr bool operator==( EmptyClassTest const &l, EmptyClassTest const &r ) {
+DAW_CONSTEXPR bool operator==( EmptyClassTest const &l,
+                               EmptyClassTest const &r ) {
 	return l.a == r.a;
 }
 
@@ -337,11 +337,12 @@ namespace daw::json {
 	struct json_data_contract<EmptyClassTest> {
 		using type = json_member_list<>;
 
-		static constexpr auto to_json_data( EmptyClassTest const & ) {
+		static DAW_CONSTEXPR auto to_json_data( EmptyClassTest const & ) {
 			return std::tuple<>{ };
 		}
 	};
 } // namespace daw::json
+#if not defined( DAW_JSON_NO_CONST_EXPR )
 static constexpr std::string_view empty_class_data = R"(
 {
 	"b": { "a":[1,2,3,4], "b": true, "dfd": null },
@@ -350,6 +351,7 @@ static constexpr std::string_view empty_class_data = R"(
 )";
 static_assert( daw::json::from_json<EmptyClassTest>( test_001_t_json_data ) ==
                EmptyClassTest{ } );
+#endif
 
 struct Empty2 {
 	EmptyClassTest b = EmptyClassTest{ };
@@ -368,12 +370,13 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_class<b, EmptyClassTest>, json_number<c, int>>;
 #endif
-		static constexpr auto to_json_data( Empty2 const &v ) {
+		static DAW_CONSTEXPR auto to_json_data( Empty2 const &v ) {
 			return std::forward_as_tuple( v.b );
 		}
 	};
 } // namespace daw::json
-#if not defined( _MSC_VER ) or defined( __clang__ )
+#if not defined( DAW_JSON_NO_CONST_EXPR ) and                                  \
+  ( not defined( _MSC_VER ) or defined( __clang__ ) )
 static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
 #endif
 
@@ -389,7 +392,7 @@ namespace daw::json {
 		  json_ordered_member_list<int,
 		                           json_number_null<no_name, std::optional<int>>>;
 
-		static constexpr auto to_json_data( OptionalOrdered const &v ) {
+		static DAW_CONSTEXPR auto to_json_data( OptionalOrdered const &v ) {
 			return std::forward_as_tuple( v.a, v.b );
 		}
 	};
@@ -409,7 +412,7 @@ static_assert(
 #endif
 void test128( ) {
 	using namespace daw::json;
-	constexpr std::string_view very_big_int =
+	DAW_CONSTEXPR std::string_view very_big_int =
 	  "[170141183460469231731687303715884105727]";
 	std::cout << "Trying to parse large int '" << very_big_int << "'\n";
 	auto vec = from_json_array<json_number<no_name, __int128>>( very_big_int );
@@ -418,7 +421,7 @@ void test128( ) {
 	          << static_cast<std::uint64_t>( val >> 64U ) << ' '
 	          << static_cast<std::uint64_t>( val & 0xFFFF'FFFF'FFFF'FFFFULL )
 	          << '\n';
-	constexpr std::string_view very_negative_int =
+	DAW_CONSTEXPR std::string_view very_negative_int =
 	  "[-170141183460469231731687303715884105728]";
 	std::cout << "Trying to parse large negative int '" << very_negative_int
 	          << "'\n";
@@ -439,7 +442,7 @@ int main( int, char ** ) try {
 	test_005( );
 	test_006( );
 	{
-		constexpr auto const v =
+		DAW_CONSTEXPR auto const v =
 		  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
 		daw::expecting( not v.b );
 	}
@@ -459,7 +462,7 @@ int main( int, char ** ) try {
 #elif defined( _MSC_VER ) and not defined( __clang__ )
 #define CX
 #else
-#define CX constexpr
+#define CX DAW_CONSTEXPR
 #endif
 
 #if not defined( DAW_JSON_NO_INT128 ) and defined( DAW_HAS_INT128 )
@@ -503,7 +506,7 @@ int main( int, char ** ) try {
 	auto e_test_001_back = from_json<e_test_001_t>( e_test_001_str );
 	daw::do_not_optimize( e_test_001_back );
 
-	constexpr std::string_view const json_data2 =
+	DAW_CONSTEXPR std::string_view const json_data2 =
 	  R"({
 	"a": {
 		"b.hi": {
@@ -520,7 +523,7 @@ int main( int, char ** ) try {
 	}
 	std::cout << "sum: " << sum << '\n';
 
-	constexpr std::string_view const json_data3 =
+	DAW_CONSTEXPR std::string_view const json_data3 =
 	  R"({
 	"a": {
 		"b.hi": {

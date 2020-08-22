@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
@@ -33,7 +35,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
 #else
-		constexpr inline static char const kv[] = "kv";
+		DAW_CONSTEXPR inline static char const kv[] = "kv";
 		using type = json_member_list<
 		  json_key_value<kv, std::unordered_map<std::string, int>, int>>;
 #endif
@@ -46,7 +48,7 @@ namespace daw::json {
 		  "kv", daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
 		  int, daw::string_view>>;
 #else
-		constexpr inline static char const kv[] = "kv";
+		DAW_CONSTEXPR inline static char const kv[] = "kv";
 		using type = json_member_list<json_key_value<
 		  kv, daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
 		  int, daw::string_view>>;
@@ -55,7 +57,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int, char ** ) try {
-	constexpr std::string_view const json_data3 =
+	DAW_CONSTEXPR std::string_view const json_data3 =
 	  R"( {"kv": {
 				"key0": 0,
 				"key1": 1,
@@ -65,7 +67,7 @@ int main( int, char ** ) try {
 	kv_t kv_test = daw::json::from_json<kv_t>( json_data3 );
 	daw::do_not_optimize( kv_test );
 
-	constexpr kv2_t kv2_test = daw::json::from_json<kv2_t>( json_data3 );
+	DAW_CONSTEXPR kv2_t kv2_test = daw::json::from_json<kv2_t>( json_data3 );
 	daw_json_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
 	daw_json_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
 	daw_json_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );

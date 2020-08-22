@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/daw_memory_mapped_file.h>
 
 #include "daw/json/daw_json_link.h"
@@ -31,8 +33,8 @@ namespace daw::cookbook_dates2 {
 	}
 
 	struct TimestampConverter {
-		constexpr std::chrono::time_point<std::chrono::system_clock,
-		                                  std::chrono::milliseconds>
+		DAW_CONSTEXPR std::chrono::time_point<std::chrono::system_clock,
+		                                      std::chrono::milliseconds>
 		operator( )( std::string_view sv ) const {
 			daw_json_assert( sv.size( ) >= 26,
 			                 "Date format is always 26 characters long" );
@@ -81,11 +83,10 @@ namespace daw::cookbook_dates2 {
 		}
 
 		template<typename OutputIterator>
-		constexpr OutputIterator
-		operator( )( OutputIterator it,
-		             std::chrono::time_point<std::chrono::system_clock,
-		                                     std::chrono::milliseconds>
-		               tp ) const {
+		DAW_CONSTEXPR OutputIterator operator( )(
+		  OutputIterator it, std::chrono::time_point<std::chrono::system_clock,
+		                                             std::chrono::milliseconds>
+		                       tp ) const {
 
 			auto const &[yr, mo, dy, hr, mn, se, ms] =
 			  daw::json::datetime::time_point_to_civil( tp );
@@ -135,8 +136,8 @@ namespace daw::json {
 		  json_member_list<json_string<"name">,
 		                   daw::cookbook_dates2::json_timestamp<"timestamp">>;
 #else
-		static inline constexpr char const name[] = "name";
-		static inline constexpr char const timestamp[] = "timestamp";
+		static constexpr char const name[] = "name";
+		static constexpr char const timestamp[] = "timestamp";
 		using type =
 		  json_member_list<json_string<name>,
 		                   daw::cookbook_dates2::json_timestamp<timestamp>>;

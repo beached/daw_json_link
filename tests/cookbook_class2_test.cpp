@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_memory_mapped_file.h>
@@ -47,9 +49,9 @@ namespace daw::json {
 		  json_member_list<json_string<"member0">, json_number<"member1", int>,
 		                   json_bool<"member2">>;
 #else
-		static inline constexpr char const member0[] = "member0";
-		static inline constexpr char const member1[] = "member1";
-		static inline constexpr char const member2[] = "member2";
+		static constexpr char const member0[] = "member0";
+		static constexpr char const member1[] = "member1";
+		static constexpr char const member2[] = "member2";
 		using type =
 		  json_member_list<json_string<member0>, json_number<member1, int>,
 		                   json_bool<member2>>;
@@ -68,8 +70,8 @@ namespace daw::json {
 		  json_member_list<json_class<"a", daw::cookbook_class2::MyClass1>,
 		                   json_number<"b", unsigned>>;
 #else
-		static inline constexpr char const a[] = "a";
-		static inline constexpr char const b[] = "b";
+		static constexpr char const a[] = "a";
+		static constexpr char const b[] = "b";
 		using type = json_member_list<json_class<a, daw::cookbook_class2::MyClass1>,
 		                              json_number<b, unsigned>>;
 #endif

@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/daw_memory_mapped_file.h>
 
 #include "daw/json/daw_json_link.h"
@@ -37,8 +39,8 @@ namespace daw::json {
 #if defined( __cpp_nontype_template_parameter_class )
 		using type = json_member_list<json_string<"name">, json_date<"timestamp">>;
 #else
-		static inline constexpr char const name[] = "name";
-		static inline constexpr char const timestamp[] = "timestamp";
+		static constexpr char const name[] = "name";
+		static constexpr char const timestamp[] = "timestamp";
 		using type = json_member_list<json_string<name>, json_date<timestamp>>;
 #endif
 		static inline auto

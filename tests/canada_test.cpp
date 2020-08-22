@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "geojson.h"
 
 #include "daw/json/daw_json_link.h"
@@ -23,12 +25,12 @@ template<typename T>
 using is_to_json_data_able = decltype( to_json_data( std::declval<T>( ) ) );
 
 template<typename T>
-inline bool constexpr is_to_json_data_able_v =
+inline bool DAW_CONSTEXPR is_to_json_data_able_v =
   daw::is_detected_v<is_to_json_data_able, T>;
 
 template<typename T,
          std::enable_if_t<is_to_json_data_able_v<T>, std::nullptr_t> = nullptr>
-constexpr bool operator==( T const &lhs, T const &rhs ) {
+DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	if( to_json_data( lhs ) == to_json_data( rhs ) ) {
 		return true;
 	}

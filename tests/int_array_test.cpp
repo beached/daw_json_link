@@ -6,9 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#if not defined( __cpp_constexpr_dynamic_alloc )
-#define DAW_JSON_NO_CONST_EXPR
-#endif
+#include "defines.h"
+
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
@@ -32,7 +31,7 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"a", intmax_t>>;
 #else
-		static inline constexpr char const a[] = "a";
+		static constexpr char const a[] = "a";
 		using type = json_member_list<json_number<a, intmax_t>>;
 #endif
 	};

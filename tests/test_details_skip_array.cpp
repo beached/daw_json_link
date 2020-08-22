@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/json/impl/daw_iterator_range.h>
 #include <daw/json/impl/daw_json_parse_common.h>
 
@@ -18,7 +20,7 @@ using namespace daw::json;
 using namespace daw::json::json_details;
 
 bool test_empty_quoted( ) {
-	constexpr std::string_view sv = "[]";
+	DAW_CONSTEXPR std::string_view sv = "[]";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
@@ -26,7 +28,7 @@ bool test_empty_quoted( ) {
 }
 
 bool test_extra_slash( ) {
-	constexpr std::string_view sv = "[\\]";
+	DAW_CONSTEXPR std::string_view sv = "[\\]";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
@@ -35,7 +37,7 @@ bool test_extra_slash( ) {
 }
 
 bool test_end_of_stream( ) {
-	constexpr std::string_view sv = "[";
+	DAW_CONSTEXPR std::string_view sv = "[";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
@@ -44,7 +46,7 @@ bool test_end_of_stream( ) {
 }
 
 bool test_trailing_comma( ) {
-	constexpr std::string_view sv = "[1,2,3,4,]";
+	DAW_CONSTEXPR std::string_view sv = "[1,2,3,4,]";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
@@ -52,7 +54,7 @@ bool test_trailing_comma( ) {
 }
 
 bool test_strings( ) {
-	constexpr std::string_view sv = "[\"1\",\"2\",\"3\",\"4\"]";
+	DAW_CONSTEXPR std::string_view sv = "[\"1\",\"2\",\"3\",\"4\"]";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
@@ -60,7 +62,7 @@ bool test_strings( ) {
 }
 
 bool test_bad_strings_001( ) {
-	constexpr std::string_view sv = "[\"1\",\"2\",\"3\",\"4]";
+	DAW_CONSTEXPR std::string_view sv = "[\"1\",\"2\",\"3\",\"4]";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
@@ -69,7 +71,7 @@ bool test_bad_strings_001( ) {
 }
 
 bool test_bad_strings_002( ) {
-	constexpr std::string_view sv = "[\"1\",\"2\",\"3\",\"4\\\"]";
+	DAW_CONSTEXPR std::string_view sv = "[\"1\",\"2\",\"3\",\"4\\\"]";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
@@ -78,7 +80,7 @@ bool test_bad_strings_002( ) {
 }
 
 bool test_classes_001( ) {
-	constexpr std::string_view sv = "[{},{},{},{},{},{}]";
+	DAW_CONSTEXPR std::string_view sv = "[{},{},{},{},{},{}]";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
@@ -86,7 +88,7 @@ bool test_classes_001( ) {
 }
 
 bool test_classes_002( ) {
-	constexpr std::string_view sv =
+	DAW_CONSTEXPR std::string_view sv =
 	  "[{\"a\":\"\"},{\"a\":\"\"},{\"a\":\"\"},{\"a\":\"\"},{\"a\":\"\"},{\"a\":"
 	  "\"\"}]";
 	auto rng =
@@ -96,7 +98,7 @@ bool test_classes_002( ) {
 }
 
 bool test_embedded_arrays( ) {
-	constexpr std::string_view sv = "[[[[[[{ },{ }],[]]]]]]";
+	DAW_CONSTEXPR std::string_view sv = "[[[[[[{ },{ }],[]]]]]]";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
@@ -104,7 +106,7 @@ bool test_embedded_arrays( ) {
 }
 
 bool test_embedded_arrays_broken_001( ) {
-	constexpr std::string_view sv = "[[[[[[[{ },{ }],[]]]]]]";
+	DAW_CONSTEXPR std::string_view sv = "[[[[[[[{ },{ }],[]]]]]]";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );

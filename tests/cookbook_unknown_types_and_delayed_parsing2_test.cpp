@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/daw_memory_mapped_file.h>
 
 #include "daw/json/daw_json_link.h"
@@ -50,7 +52,7 @@ struct MyDelayedClass {
 	int a;
 	bool b;
 
-	constexpr bool operator==( MyDelayedClass const &rhs ) const {
+	DAW_CONSTEXPR bool operator==( MyDelayedClass const &rhs ) const {
 		return a == rhs.a and b == rhs.b;
 	}
 };

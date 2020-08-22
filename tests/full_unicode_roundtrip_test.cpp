@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
@@ -30,8 +32,8 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_string<"escaped">, json_string<"unicode">>;
 #else
-		constexpr inline static char const escaped[] = "escaped";
-		constexpr inline static char const unicode[] = "unicode";
+		DAW_CONSTEXPR inline static char const escaped[] = "escaped";
+		DAW_CONSTEXPR inline static char const unicode[] = "unicode";
 		using type = json_member_list<json_string<escaped>, json_string<unicode>>;
 #endif
 		static inline auto to_json_data( unicode_data const &value ) {

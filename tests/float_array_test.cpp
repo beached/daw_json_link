@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
@@ -32,7 +34,7 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"a", float>>;
 #else
-		static inline constexpr char const a[] = "a";
+		static constexpr char const a[] = "a";
 		using type = json_member_list<json_number<a, float>>;
 #endif
 	};
@@ -42,7 +44,7 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"a", float>>;
 #else
-		static inline constexpr char const a[] = "a";
+		static constexpr char const a[] = "a";
 		using type = json_member_list<json_number<a, float>>;
 #endif
 	};
@@ -50,8 +52,8 @@ namespace daw::json {
 
 template<typename Float>
 Float rand_float( ) {
-	static constexpr Float fmin = 0;
-	static constexpr Float fmax = 1;
+	static DAW_CONSTEXPR Float fmin = 0;
+	static DAW_CONSTEXPR Float fmax = 1;
 	static auto e = std::default_random_engine( );
 	static auto dis = std::uniform_real_distribution<Float>( fmin, fmax );
 	return dis( e );
@@ -72,7 +74,7 @@ void test_func( ) {
 		} );
 		result.back( ) = ']';
 		result.resize( result.size( ) + 16U );
-		if constexpr( NUMVALUES < 1500 ) {
+		if DAW_CONSTEXPR( NUMVALUES < 1500 ) {
 			std::cout << "Class data: " << result << '\n';
 		}
 		return result;
@@ -86,7 +88,7 @@ void test_func( ) {
 		} );
 		result.back( ) = ']';
 		result.resize( result.size( ) + 16U );
-		if constexpr( NUMVALUES < 1500 ) {
+		if DAW_CONSTEXPR( NUMVALUES < 1500 ) {
 			std::cout << "Class data: " << result << '\n';
 		}
 		return result;

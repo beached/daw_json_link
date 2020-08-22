@@ -154,7 +154,8 @@ namespace daw::json {
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
 						while( ptr_first < rng.last ) {
-							ptr_first = json_details::sse3_skip_until<true, '"'>( ptr_first, rng.last );
+							ptr_first =
+							  json_details::sse3_skip_until<true, '"'>( ptr_first, rng.last );
 
 							if( DAW_JSON_LIKELY( *( ptr_first - 1 ) != '\\' ) ) {
 								break;
@@ -252,7 +253,8 @@ namespace daw::json {
 #if defined( DAW_ALLOW_SSE3 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
 						while( true ) {
-							ptr_first = json_details::sse3_skip_until<true, '"'>( ptr_first, rng.last );
+							ptr_first =
+							  json_details::sse3_skip_until<true, '"'>( ptr_first, rng.last );
 
 							if( DAW_JSON_LIKELY( *( ptr_first - 1 ) != '\\' ) ) {
 								break;

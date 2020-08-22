@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 // Ensure that we are always checking
 #ifdef DAW_JSON_CHECK_DEBUG_ONLY
 #undef DAW_JSON_CHECK_DEBUG_ONLY
@@ -35,9 +37,9 @@ struct daw::json::json_data_contract<tests::Coordinate> {
 	using type = json_member_list<json_number<"lat">, json_number<"lng">,
 	                              json_string<"name">>;
 #else
-	static inline constexpr char const lat[] = "lat";
-	static inline constexpr char const lng[] = "lng";
-	static inline constexpr char const name[] = "name";
+	static constexpr char const lat[] = "lat";
+	static constexpr char const lng[] = "lng";
+	static constexpr char const name[] = "name";
 	using type =
 	  json_member_list<json_number<lat>, json_number<lng>, json_string<name>>;
 #endif
@@ -48,14 +50,14 @@ struct daw::json::json_data_contract<tests::UriList> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<json_array<"uris", std::string>>;
 #else
-	static inline constexpr char const uris[] = "uris";
+	static constexpr char const uris[] = "uris";
 	using type = json_member_list<json_array<uris, std::string>>;
 #endif
 };
 
 namespace tests {
 	bool quotes_in_numbers( ) {
-		static constexpr std::string_view data =
+		static DAW_CONSTEXPR std::string_view data =
 		  R"({"lat": "55.55", "lng": "12.34" })";
 		try {
 			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
@@ -65,7 +67,8 @@ namespace tests {
 	}
 
 	bool bool_in_numbers( ) {
-		static constexpr std::string_view data = R"({"lat": true, "lng": false })";
+		static DAW_CONSTEXPR std::string_view data =
+		  R"({"lat": true, "lng": false })";
 		try {
 			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
@@ -74,7 +77,7 @@ namespace tests {
 	}
 
 	bool invalid_numbers( ) {
-		static constexpr std::string_view data =
+		static DAW_CONSTEXPR std::string_view data =
 		  R"({"lat": 1.23b34, "lng": 1234.4 })";
 		try {
 			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
@@ -84,7 +87,7 @@ namespace tests {
 	}
 
 	bool missing_value_001( ) {
-		static constexpr std::string_view data = R"({"lat": 1.23, "lng": })";
+		static DAW_CONSTEXPR std::string_view data = R"({"lat": 1.23, "lng": })";
 		try {
 			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
@@ -93,7 +96,7 @@ namespace tests {
 	}
 
 	bool missing_value_002( ) {
-		static constexpr std::string_view data = R"({"lat": , "lng": 1.23 })";
+		static DAW_CONSTEXPR std::string_view data = R"({"lat": , "lng": 1.23 })";
 		try {
 			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
@@ -102,7 +105,7 @@ namespace tests {
 	}
 
 	bool missing_value_003( ) {
-		static constexpr std::string_view data =
+		static DAW_CONSTEXPR std::string_view data =
 		  R"({"name": "lat": 1.23, "lng": 1.34 })";
 		try {
 			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
@@ -112,7 +115,7 @@ namespace tests {
 	}
 
 	bool missing_member( ) {
-		static constexpr std::string_view data = R"({"lng": 1.23 })";
+		static DAW_CONSTEXPR std::string_view data = R"({"lng": 1.23 })";
 		try {
 			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
@@ -121,7 +124,8 @@ namespace tests {
 	}
 
 	bool missing_closing_brace( ) {
-		static constexpr std::string_view data = R"({"lng": 1.23, "lat": 1.22 )";
+		static DAW_CONSTEXPR std::string_view data =
+		  R"({"lng": 1.23, "lat": 1.22 )";
 		try {
 			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;

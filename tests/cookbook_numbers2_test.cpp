@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/daw_memory_mapped_file.h>
 
 #include "daw/json/daw_json_link.h"
@@ -22,7 +24,7 @@ namespace daw::cookbook_numbers2 {
 		unsigned member_unsigned1;
 		signed member_signed;
 
-		constexpr bool operator==( MyClass2 const &rhs ) const {
+		DAW_CONSTEXPR bool operator==( MyClass2 const &rhs ) const {
 			return member_unsigned0 == rhs.member_unsigned0 and
 			       member_unsigned1 == rhs.member_unsigned1 and
 			       member_signed == rhs.member_signed;

@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
@@ -45,9 +47,9 @@ namespace daw::json {
 		  json_bool_null<"member2", std::unique_ptr<bool>,
 		                 LiteralAsStringOpt::Never, UniquePtrConstructor<bool>>>;
 #else
-		static inline constexpr char const member0[] = "member0";
-		static inline constexpr char const member1[] = "member1";
-		static inline constexpr char const member2[] = "member2";
+		static constexpr char const member0[] = "member0";
+		static constexpr char const member1[] = "member1";
+		static constexpr char const member2[] = "member2";
 		using type = json_member_list<
 		  json_number_null<member0, std::optional<int>>, json_string<member1>,
 		  json_bool_null<member2, std::unique_ptr<bool>, LiteralAsStringOpt::Never,

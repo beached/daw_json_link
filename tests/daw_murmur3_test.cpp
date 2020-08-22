@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/impl/daw_murmur3.h"
 
 #include <daw/daw_benchmark.h>
@@ -17,8 +19,8 @@ static void test( daw::string_view key, std::uint32_t seed,
 }
 
 int main( int, char ** ) {
-	constexpr char const t0_a[] = { 0x01, 0x02, 0x03, 0x04, 0 };
-	constexpr std::uint32_t t0_b = daw::murmur3_details::to_u32( t0_a );
+	DAW_CONSTEXPR char const t0_a[] = { 0x01, 0x02, 0x03, 0x04, 0 };
+	DAW_CONSTEXPR std::uint32_t t0_b = daw::murmur3_details::to_u32( t0_a );
 	daw::expecting( t0_b == 0x04030201 );
 	test( "", 0, 0 );
 	test( "", 1, 0x514E'28B7ULL );

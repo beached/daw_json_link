@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_memory_mapped_file.h>
@@ -20,7 +22,7 @@
 namespace daw::cookbook_enums1 {
 	enum class Colours : uint8_t { red, green, blue, black };
 
-	constexpr std::string_view to_string( Colours c ) {
+	DAW_CONSTEXPR std::string_view to_string( Colours c ) {
 		switch( c ) {
 		case Colours::red:
 			return "red";
@@ -34,7 +36,8 @@ namespace daw::cookbook_enums1 {
 		std::abort( );
 	}
 
-	constexpr Colours from_string( daw::tag_t<Colours>, std::string_view sv ) {
+	DAW_CONSTEXPR Colours from_string( daw::tag_t<Colours>,
+	                                   std::string_view sv ) {
 		if( sv == "red" ) {
 			return Colours::red;
 		}
@@ -66,7 +69,7 @@ namespace daw::json {
 		using type = json_member_list<json_array<
 		  "member0", json_custom<no_name, daw::cookbook_enums1::Colours>>>;
 #else
-		static constexpr inline char const member0[] = "member0";
+		static DAW_CONSTEXPR inline char const member0[] = "member0";
 		using type = json_member_list<
 		  json_array<member0, json_custom<no_name, daw::cookbook_enums1::Colours>>>;
 #endif

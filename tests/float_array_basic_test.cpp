@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
@@ -21,17 +23,17 @@ struct Number {
 	float a{ };
 };
 #ifdef __cpp_nontype_template_parameter_class
-[[maybe_unused]] static constexpr auto
+[[maybe_unused]] static DAW_CONSTEXPR auto
 json_data_contract_for( Number ) noexcept {
 	using namespace daw::json;
 	return json_member_list<json_number<"a", float>>{ };
 }
 #else
 namespace symbols_Number {
-	static inline constexpr char const a[] = "a";
+	static constexpr char const a[] = "a";
 }
 
-[[maybe_unused]] static constexpr auto
+[[maybe_unused]] static DAW_CONSTEXPR auto
 json_data_contract_for( Number ) noexcept {
 	using namespace daw::json;
 	return json_member_list<json_number<symbols_Number::a, float>>{ };
@@ -40,8 +42,8 @@ json_data_contract_for( Number ) noexcept {
 
 template<typename Float>
 Float rand_float( ) {
-	static constexpr Float fmin = 0;
-	static constexpr Float fmax = 1;
+	static DAW_CONSTEXPR Float fmin = 0;
+	static DAW_CONSTEXPR Float fmax = 1;
 	static auto e = std::default_random_engine( );
 	static auto dis = std::uniform_real_distribution<Float>( fmin, fmax );
 	return dis( e );

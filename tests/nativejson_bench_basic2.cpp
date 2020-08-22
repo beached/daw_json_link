@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include "citm_test.h"
 #include "geojson.h"
 #include "twitter_test2.h"

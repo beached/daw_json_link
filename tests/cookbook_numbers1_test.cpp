@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "defines.h"
+
 #include <daw/daw_memory_mapped_file.h>
 
 #include "daw/json/daw_json_link.h"
@@ -23,7 +25,7 @@ namespace daw::cookbook_numbers1 {
 		double member2;
 		double member3;
 
-		constexpr bool operator==( MyClass1 const &rhs ) const {
+		DAW_CONSTEXPR bool operator==( MyClass1 const &rhs ) const {
 			return member0 == rhs.member0 and member1 == rhs.member1 and
 			       member2 == rhs.member2 and member3 == rhs.member3;
 		}
