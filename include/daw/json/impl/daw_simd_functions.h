@@ -14,6 +14,7 @@
 
 #if defined( DAW_ALLOW_SSE3 )
 #include <emmintrin.h>
+#include <nmmintrin.h>
 #include <smmintrin.h>
 #include <tmmintrin.h>
 #include <xmmintrin.h>
@@ -71,12 +72,6 @@ namespace daw::json::json_details {
 		return first;
 	}
 
-	template<bool is_unchecked_input>
-	static inline char const *sse3_skip_string( char const *first,
-	                                            char const *const last ) {
-		return sse3_skip_until<is_unchecked_input, '"', '\\'>( first, last );
-	}
-
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
 	is_escaped( char const *ptr, char const *min_ptr ) {
 		if( *( ptr - 1 ) != '\\' ) {
@@ -86,6 +81,61 @@ namespace daw::json::json_details {
 			return false;
 		}
 		return *( ptr - 2 ) != '\\';
+	}
+
+	template<bool is_unchecked_input>
+	DAW_ATTRIBUTE_FLATTEN static inline char const *
+	find_double_quote_or_slash( char const *first, char const *last ) {
+		__m128i const keys =
+		  _mm_set_epi8( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '\\', '"' );
+		static constexpr int keys_len = 2;
+
+		static constexpr int compare_mode = _SIDD_SBYTE_OPS | _SIDD_CMP_EQUAL_ANY;
+
+		// while( last - first >= 16 ) {
+		while( last - first >= 16 ) {
+			__m128i const a =
+			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
+			int const a_len =
+			  last - first >= 16 ? 16 : static_cast<int>( last - first );
+			int result = _mm_cmpestri( keys, keys_len, a, a_len, compare_mode );
+			first += result;
+			if( result < 16 ) {
+				return first;
+			}
+		}
+
+		if constexpr( is_unchecked_input ) {
+			char const *const result = reinterpret_cast<char const *>(
+			  memchr( first, '"', static_cast<std::size_t>( last - first ) ) );
+			char const *const result2 = reinterpret_cast<char const *>( memchr(
+			  first, '"',
+			  static_cast<std::size_t>( result ? result - first : last - first ) ) );
+			if( result2 ) {
+				return result2;
+			}
+			return result;
+		} else {
+			char const *const result = reinterpret_cast<char const *>(
+			  memchr( first, '"', static_cast<std::size_t>( last - first ) ) );
+			char const *const result2 = reinterpret_cast<char const *>( memchr(
+			  first, '"',
+			  static_cast<std::size_t>( result ? result - first : last - first ) ) );
+			if( result2 ) {
+				return result2;
+			}
+			if( result ) {
+				return result;
+			}
+			return last;
+		}
+	}
+
+	template<bool is_unchecked_input>
+	static inline char const *sse3_skip_string( char const *first,
+	                                            char const *const last ) {
+		//return sse3_skip_until<is_unchecked_input, '"', '\\'>( first, last );
+		return find_double_quote_or_slash<is_unchecked_input>( first, last );
 	}
 
 	template<bool is_unchecked_input>

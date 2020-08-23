@@ -64,7 +64,7 @@ using UncheckedPolicy =
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG ) 
-static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+static inline constexpr std::size_t DAW_NUM_RUNS = 1000;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 #endif
