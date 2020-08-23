@@ -105,10 +105,10 @@ int main( int argc, char **argv ) try {
 	test<
 	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::None>>(
 	  json_sv1 );
-#if defined( DAW_ALLOW_SSE3 )
-	std::cout << "SSE3\n********************\n";
+#if defined( DAW_ALLOW_SSE42 )
+	std::cout << "SSE42\n********************\n";
 	test<
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE3>>(
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE42>>(
 	  json_sv1 );
 #endif
 } catch( daw::json::json_exception const &jex ) {

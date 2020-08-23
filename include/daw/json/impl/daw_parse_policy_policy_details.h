@@ -11,15 +11,10 @@
 #include <daw/daw_hide.h>
 
 namespace daw::json::parse_policy_details {
-	template<JSONNAMETYPE Set>
+	template<char... keys>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool in( char c ) {
-		bool result = false;
-		char const * ptr = &Set[0];
-		while( *ptr ) {
-			result |= *ptr == c;
-			++ptr;
-		}
-		return result;
+		auto const eq = [c]( char k ) { return c == k; };
+		return ( eq( keys ) | ... );
 	}
 
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool

@@ -38,11 +38,11 @@ bool unsigned_test( ) {
 
 	std::vector<unsigned> const parsed_1 = from_json_array<unsigned>( json_data );
 
-#ifdef DAW_ALLOW_SSE3
+#ifdef DAW_ALLOW_SSE42
 	json_data += "        "; // so that SSE has enough room to safely parse
 	std::vector<unsigned> const parsed_2 =
 	  from_json_array<json_number<no_name, unsigned>, std::vector<unsigned>,
-	                  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+	                  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
 	    json_data );
 	return parsed_1 == data and parsed_1 == parsed_2;
 #else
@@ -59,11 +59,11 @@ bool signed_test( ) {
 
 	std::vector<signed> const parsed_1 = from_json_array<signed>( json_data );
 
-#ifdef DAW_ALLOW_SSE3
+#ifdef DAW_ALLOW_SSE42
 	json_data += "        "; // so that SSE has enough room to safely parse
 	std::vector<signed> const parsed_2 =
 	  from_json_array<json_number<no_name, signed>, std::vector<signed>,
-	                  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+	                  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
 	    json_data );
 	return parsed_1 == data and parsed_1 == parsed_2;
 #else

@@ -56,15 +56,15 @@ int main( int argc, char **argv ) try {
 	                 "Expected value" );
 	daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
 	                 "Incorrect value" );
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 	{
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "citm_catalog bench(SSE3)", sz,
+		  "citm_catalog bench(SSE42)", sz,
 		  []( auto f1 ) {
 			  return daw::json::from_json<
 			    daw::citm::citm_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyChecked<
-			      daw::json::SIMDModes::SSE3>>( f1 );
+			      daw::json::SIMDModes::SSE42>>( f1 );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( citm_result2 );

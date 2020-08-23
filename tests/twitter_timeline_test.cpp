@@ -65,12 +65,12 @@ int main( int argc, char **argv ) try {
 			daw_json_error( "Exception while parsing: res.get_exception_message()" );
 		}
 	}
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 	{
 		using range_t =
 		  daw::json::json_array_range<daw::twitter::tweet,
 		                              daw::json::SIMDNoCommentSkippingPolicyChecked<
-		                                daw::json::SIMDModes::SSE3>>;
+		                                daw::json::SIMDModes::SSE42>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(checked, sse3)", sz,
 		  [&]( auto rng ) {
@@ -85,7 +85,7 @@ int main( int argc, char **argv ) try {
 		using range_t =
 		  daw::json::json_array_range<daw::twitter::tweet,
 		                              daw::json::SIMDNoCommentSkippingPolicyChecked<
-		                                daw::json::SIMDModes::SSE3>>;
+		                                daw::json::SIMDModes::SSE42>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(checked, sse3, nostore)", sz,
 		  [&]( auto rng ) {
@@ -117,11 +117,11 @@ int main( int argc, char **argv ) try {
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( not twitter_result.empty( ), "Unexpected empty array" );
 
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 	{
 		using range_t = daw::json::json_array_range<
 		  daw::twitter::tweet, daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-		                         daw::json::SIMDModes::SSE3>>;
+		                         daw::json::SIMDModes::SSE42>>;
 		auto res = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter timeline bench(unchecked, sse3)", sz,
 		  [&]( auto rng ) {

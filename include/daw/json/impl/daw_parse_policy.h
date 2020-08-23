@@ -87,8 +87,8 @@ namespace daw::json {
 
 		template<char c>
 		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_unchecked( ) {
-#if defined( DAW_ALLOW_SSE3 )
-			if constexpr( simd_mode == SIMDModes::SSE3 ) {
+#if defined( DAW_ALLOW_SSE42 )
+			if constexpr( simd_mode == SIMDModes::SSE42 ) {
 				first = reinterpret_cast<char const *>( std::memchr(
 				  first, c, static_cast<std::size_t>( class_last - first ) ) );
 			} else {
@@ -96,24 +96,24 @@ namespace daw::json {
 				while( *first != c ) {
 					++first;
 				}
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 			}
 #endif
 		}
 
 		template<char c>
 		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_checked( ) {
-#if defined( DAW_ALLOW_SSE3 )
-			if constexpr( simd_mode == SIMDModes::SSE3 ) {
+#if defined( DAW_ALLOW_SSE42 )
+			if constexpr( simd_mode == SIMDModes::SSE42 ) {
 				first = reinterpret_cast<char const *>( std::memchr(
-					first, c, static_cast<std::size_t>( class_last - first ) ) );
+				  first, c, static_cast<std::size_t>( class_last - first ) ) );
 				daw_json_assert( first != nullptr, "Expected token missing" );
 			} else {
 #endif
 				while( first < last and *first != c ) {
 					++first;
 				}
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 			}
 #endif
 		}
@@ -124,33 +124,6 @@ namespace daw::json {
 				move_to_next_of_unchecked<c>( );
 			} else {
 				move_to_next_of_checked<c>( );
-			}
-		}
-
-		template<std::size_t N, std::size_t... Is>
-		constexpr void move_to_next_of_nc_unchecked( char const ( &str )[N],
-		                                             std::index_sequence<Is...> ) {
-			// TODO simdify
-			while( ( ( *first != str[Is] ) and ... ) ) {
-				++first;
-			}
-		}
-
-		template<std::size_t N, std::size_t... Is>
-		constexpr void move_to_next_of_nc_checked( char const ( &str )[N],
-		                                           std::index_sequence<Is...> ) {
-			// TODO simdify
-			while( has_more( ) and ( ( *first != str[Is] ) and ... ) ) {
-				++first;
-			}
-		}
-
-		template<std::size_t N>
-		constexpr void move_to_next_of_nc( char const ( &str )[N] ) {
-			if constexpr( is_unchecked_input ) {
-				move_to_next_of_nc_unchecked( str, std::make_index_sequence<N>{ } );
-			} else {
-				move_to_next_of_nc_checked( str, std::make_index_sequence<N>{ } );
 			}
 		}
 
@@ -166,16 +139,6 @@ namespace daw::json {
 			return static_cast<unsigned>( front( ) ) - static_cast<unsigned>( '0' ) <
 			       10U;
 		}
-
-		/*
-		template<JSONNAMETYPE Set>
-		[[nodiscard]] constexpr bool in( ) const {
-		  assert( first );
-		  if( empty( ) ) {
-		    return false;
-		  }
-		  return parse_policy_details::template in<Set>( *first );
-		}*/
 
 		[[nodiscard]] constexpr bool is_null( ) const {
 			return first == nullptr;
@@ -351,27 +314,16 @@ namespace daw::json {
 			}
 		}
 
-		template<char c>
-		constexpr void move_to_next_char( ) {
-			CommentPolicy::template move_to_next_char<c>( *this );
-		}
-
-	private:
-		static constexpr char const next_class_member_tokens[] = "\"}";
-		static constexpr char const token_after_value[] = ",}]";
-
-	public:
 		constexpr void move_to_next_class_member( ) {
-			CommentPolicy::template move_to_next_of<next_class_member_tokens>(
-			  *this );
+			CommentPolicy::template move_to_next_of<'"', '}'>( *this );
 		}
 
 		constexpr bool is_at_next_class_member( ) const {
-			return parse_policy_details::in<next_class_member_tokens>( *first );
+			return parse_policy_details::in<'"', '}'>( *first );
 		}
 
 		constexpr bool is_at_token_after_value( ) const {
-			return parse_policy_details::in<token_after_value>( *first );
+			return parse_policy_details::in<',', '}', ']'>( *first );
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>

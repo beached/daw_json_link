@@ -277,10 +277,10 @@ void test_func( ) {
 			std::cout << "double parse count: " << count3 << '\n';
 		}
 	}
-#ifdef DAW_ALLOW_SSE3
+#ifdef DAW_ALLOW_SSE42
 	// ***********************************************
-	// SSE3
-	std::cout << "**********************\nSSE3 Processing\n";
+	// SSE42
+	std::cout << "**********************\nSSE42 Processing\n";
 	{
 		auto json_sv = std::string_view( json_data );
 		std::cout << "Processing " << json_sv.size( ) << " bytes "
@@ -290,7 +290,7 @@ void test_func( ) {
 		  []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<Number2, std::vector<Number2>,
-			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
 			      sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
@@ -300,7 +300,7 @@ void test_func( ) {
 		std::cout << "element count: " << count << '\n';
 		using iterator_t = daw::json::json_array_iterator<
 		  json_class<no_name, Number2>,
-		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
+		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>;
 
 		auto data = std::vector<Number2>( );
 		data.reserve( NUMVALUES );
@@ -327,7 +327,7 @@ void test_func( ) {
 		  []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<json_number<no_name, float>, std::vector<float>,
-			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
 			      sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
@@ -337,7 +337,7 @@ void test_func( ) {
 		std::cout << "element count: " << count << '\n';
 		using iterator_t = daw::json::json_array_iterator<
 		  json_number<no_name, float>,
-		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
+		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -366,7 +366,7 @@ void test_func( ) {
 		  []( auto &&sv ) noexcept {
 			  auto const data =
 			    from_json_array<Number2, std::vector<Number2>,
-			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
 			      sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
@@ -376,7 +376,7 @@ void test_func( ) {
 		std::cout << "element count: " << count << '\n';
 		using iterator_t = daw::json::json_array_iterator<
 		  json_class<no_name, Number2>,
-		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
+		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>;
 
 		auto data = std::vector<Number2>( );
 		data.reserve( NUMVALUES );
@@ -404,7 +404,7 @@ void test_func( ) {
 			  auto const data =
 			    from_json_array<json_checked_number<no_name, float>,
 			                    std::vector<float>,
-			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+			                    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
 			      sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
@@ -414,7 +414,7 @@ void test_func( ) {
 		std::cout << "element count: " << count << '\n';
 		using iterator_t = daw::json::json_array_iterator<
 		  json_checked_number<no_name, float>,
-		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
+		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>;
 
 		auto data = std::vector<float>( );
 		data.reserve( NUMVALUES );
@@ -451,7 +451,7 @@ void test_func( ) {
 	{
 		using iterator_t = daw::json::json_array_iterator<
 		  json_number<no_name, double>,
-		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
+		  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>;
 
 		std::string json_data3 = [] {
 			std::string result = "[";

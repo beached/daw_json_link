@@ -10,8 +10,8 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
+#include "daw_not_const_ex_functions.h"
 #include "daw_parse_policy_policy_details.h"
-#include "daw_simd_functions.h"
 
 #include <daw/daw_hide.h>
 
@@ -103,23 +103,11 @@ namespace daw::json {
 			}
 		}
 
-		template<char c, typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		move_to_next_char( Range &rng ) {
-			skip_comments( rng );
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
-			while( rng.front( ) != c ) {
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
-				rng.remove_prefix( );
-				skip_comments( rng );
-			}
-		}
-
-		template<JSONNAMETYPE Set, typename Range>
+		template<char... keys, typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
 			skip_comments( rng );
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
-			while( not parse_policy_details::in<Set>( rng.front( ) ) ) {
+			while( not parse_policy_details::in<keys...>( rng.front( ) ) ) {
 				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 				rng.remove_prefix( );
 				skip_comments( rng );
@@ -151,10 +139,11 @@ namespace daw::json {
 					break;
 				case '"':
 					++ptr_first;
-#if defined( DAW_ALLOW_SSE3 )
-					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = json_details::sse3_skip_until_end_of_string<false>(
+#if defined( DAW_ALLOW_SSE42 )
+					if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
+						ptr_first = json_details::sse42_skip_until_end_of_string<false>(
 						  ptr_first, rng.last );
+						++ptr_first;
 					} else {
 #endif
 						while( ptr_first < ptr_last and *ptr_first != '"' ) {
@@ -166,7 +155,7 @@ namespace daw::json {
 							}
 							++ptr_first;
 						}
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 					}
 #endif
 					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
@@ -243,10 +232,11 @@ namespace daw::json {
 					break;
 				case '"':
 					++ptr_first;
-#if defined( DAW_ALLOW_SSE3 )
-					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = json_details::sse3_skip_until_end_of_string<true>(
+#if defined( DAW_ALLOW_SSE42 )
+					if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
+						ptr_first = json_details::sse42_skip_until_end_of_string<true>(
 						  ptr_first, rng.last );
+						++ptr_first;
 					} else {
 #endif
 						while( *ptr_first != '"' ) {
@@ -255,7 +245,7 @@ namespace daw::json {
 							}
 							++ptr_first;
 						}
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 					}
 #endif
 					break;

@@ -117,10 +117,10 @@ int main( int argc, char **argv ) try {
 	test<
 	  daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::SIMDModes::None>>(
 	  json_str, json_str_escaped );
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 	std::cout << "SS3\n********************\n";
 	test<
-	  daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE3>>(
+	  daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE42>>(
 	  json_str, json_str_escaped );
 #endif
 } catch( daw::json::json_exception const &jex ) {

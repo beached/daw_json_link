@@ -88,15 +88,15 @@ int main( int argc, char **argv ) try {
 	  json_sv1 );
 	daw::do_not_optimize( canada_result );
 	daw_json_assert( canada_result, "Missing value" );
-#ifdef DAW_ALLOW_SSE3
+#ifdef DAW_ALLOW_SSE42
 	//**************************
 	canada_result = std::nullopt;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(checked, SSE3)", sz,
+	  "canada bench(checked, SSE42)", sz,
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
-		    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>(
+		    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
 		    f1, "features[0].geometry" );
 		  daw::do_not_optimize( canada_result );
 	  },
@@ -106,11 +106,11 @@ int main( int argc, char **argv ) try {
 	//**************************
 	canada_result = std::nullopt;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(unchecked, SSE3)", sz,
+	  "canada bench(unchecked, SSE42)", sz,
 	  [&canada_result]( auto f1 ) {
 		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
-		    SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>(
+		    SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE42>>(
 		    f1, "features[0].geometry" );
 		  daw::do_not_optimize( canada_result );
 	  },

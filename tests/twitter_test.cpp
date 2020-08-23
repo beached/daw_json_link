@@ -169,15 +169,15 @@ int main( int argc, char **argv )
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 
-#ifdef DAW_ALLOW_SSE3
+#ifdef DAW_ALLOW_SSE42
 	// ******************************
 	// SIMDNoCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(checked, SSE3)", sz,
+	  "twitter bench(checked, SSE42)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>( f1 );
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -189,11 +189,11 @@ int main( int argc, char **argv )
 
 	// SIMDNoCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(unchecked, SSE3)", sz,
+	  "twitter bench(unchecked, SSE42)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>( f1 );
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE42>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -205,11 +205,11 @@ int main( int argc, char **argv )
 
 	// SIMDCppCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(cpp comments SSE3)", sz,
+	  "twitter bench(cpp comments SSE42)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDCppCommentSkippingPolicyChecked<SIMDModes::SSE3>>( f1 );
+		    daw::json::SIMDCppCommentSkippingPolicyChecked<SIMDModes::SSE42>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -221,11 +221,11 @@ int main( int argc, char **argv )
 
 	// SIMDCppCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(cpp comments, unchecked, SSE3)", sz,
+	  "twitter bench(cpp comments, unchecked, SSE42)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDCppCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>(
+		    daw::json::SIMDCppCommentSkippingPolicyUnchecked<SIMDModes::SSE42>>(
 		    f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
@@ -238,11 +238,11 @@ int main( int argc, char **argv )
 
 	// SIMDHashCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(hash comments, SSE3)", sz,
+	  "twitter bench(hash comments, SSE42)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDHashCommentSkippingPolicyChecked<SIMDModes::SSE3>>( f1 );
+		    daw::json::SIMDHashCommentSkippingPolicyChecked<SIMDModes::SSE42>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -254,11 +254,11 @@ int main( int argc, char **argv )
 
 	// SIMDHashCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(hash comments, unchecked, SSE3)", sz,
+	  "twitter bench(hash comments, unchecked, SSE42)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDHashCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>(
+		    daw::json::SIMDHashCommentSkippingPolicyUnchecked<SIMDModes::SSE42>>(
 		    f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },

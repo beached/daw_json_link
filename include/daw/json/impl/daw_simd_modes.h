@@ -11,8 +11,8 @@
 namespace daw::json {
 	enum class SIMDModes {
 		None,
-#ifdef DAW_ALLOW_SSE3
-		SSE3
+#ifdef DAW_ALLOW_SSE42
+		SSE42
 #endif
 	};
 

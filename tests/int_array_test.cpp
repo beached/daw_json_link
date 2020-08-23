@@ -402,9 +402,9 @@ void test_func( ) {
 		}
 	}
 
-#ifdef DAW_ALLOW_SSE3
+#ifdef DAW_ALLOW_SSE42
 	{
-		// Unsigned SSE3
+		// Unsigned SSE42
 		using uint_type = json_number<no_name, uintmax_t>;
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -414,7 +414,7 @@ void test_func( ) {
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
 				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>,
-				    SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE3>>( sv );
+				    SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE42>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -426,10 +426,10 @@ void test_func( ) {
 	}
 	std::cout << "Checked unsigned sse3\n";
 	{
-		// Unsigned SSE3
+		// Unsigned SSE42
 		using uint_type = json_number<no_name, uintmax_t>;
 		using iterator_t = daw::json::json_array_iterator<
-		  uint_type, SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>;
+		  uint_type, SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -448,7 +448,7 @@ void test_func( ) {
 		}
 	}
 	{
-		// Unsigned SSE3
+		// Unsigned SSE42
 		using uint_type = json_number<no_name, uint32_t>;
 		auto const json_sv = make_int_array_data<NUMVALUES, uint32_t>( );
 
@@ -458,7 +458,7 @@ void test_func( ) {
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
 				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>,
-				    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE3>>( sv );
+				    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );

@@ -335,9 +335,9 @@ namespace daw::json {
 		template<SIMDModes>
 		inline constexpr std::size_t parse_space_needed_v = 1U;
 
-#ifdef DAW_ALLOW_SSE3
+#ifdef DAW_ALLOW_SSE42
 		template<>
-		inline constexpr std::size_t parse_space_needed_v<SIMDModes::SSE3> = 16U;
+		inline constexpr std::size_t parse_space_needed_v<SIMDModes::SSE42> = 16U;
 #endif
 
 		template<typename JsonType>

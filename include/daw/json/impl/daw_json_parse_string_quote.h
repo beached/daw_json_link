@@ -10,7 +10,7 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
-#include "daw_simd_functions.h"
+#include "daw_not_const_ex_functions.h"
 
 #include <daw/daw_uint_buffer.h>
 
@@ -92,10 +92,10 @@ namespace daw::json::json_details::string_quote {
 			char const *const last = rng.last;
 			// This is a logic error to happen.
 			// daw_json_assert_weak( first != '"', "Unexpected quote" );
-#if defined( DAW_ALLOW_SSE3 )
-			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
+#if defined( DAW_ALLOW_SSE42 )
+			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE42 ) {
 				while( true ) {
-					first = sse3_skip_string<true>( first, last );
+					first = sse42_skip_string<true>( first, last );
 
 					if( DAW_JSON_LIKELY( *first == '"' ) ) {
 						break;
@@ -126,7 +126,7 @@ namespace daw::json::json_details::string_quote {
 						break;
 					}
 				}
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 			}
 #endif
 			rng.first = first;
@@ -139,10 +139,10 @@ namespace daw::json::json_details::string_quote {
 			std::ptrdiff_t need_slow_path = -1;
 			char const *first = rng.first;
 			char const *const last = rng.class_last;
-#if defined( DAW_ALLOW_SSE3 )
-			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE3 ) {
+#if defined( DAW_ALLOW_SSE42 )
+			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE42 ) {
 				while( first < last ) {
-					first = sse3_skip_string<false>( first, last );
+					first = sse42_skip_string<false>( first, last );
 
 					if( DAW_JSON_LIKELY( first < last and *first == '"' ) ) {
 						break;
@@ -174,7 +174,7 @@ namespace daw::json::json_details::string_quote {
 						break;
 					}
 				}
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 			}
 #endif
 			daw_json_assert_weak( first < last and *first == '"',

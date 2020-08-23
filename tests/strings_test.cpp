@@ -102,9 +102,9 @@ int main( int argc, char **argv ) try {
 		return std::string( data.data( ), data.size( ) );
 	}( );
 	auto const h0 = test<daw::json::SIMDModes::None>( json_string );
-#if defined( DAW_ALLOW_SSE3 )
-	std::cout << "SSE3\n**************************\n";
-	auto const h1 = test<daw::json::SIMDModes::SSE3>( json_string );
+#if defined( DAW_ALLOW_SSE42 )
+	std::cout << "SSE42\n**************************\n";
+	auto const h1 = test<daw::json::SIMDModes::SSE42>( json_string );
 	daw_json_assert( h0 == h1, "SSE/non-SSE hashes do not match" );
 #else
 	(void)h0;

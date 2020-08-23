@@ -9,8 +9,8 @@
 #pragma once
 
 #include "daw_json_assert.h"
+#include "daw_not_const_ex_functions.h"
 #include "daw_parse_std_string.h"
-#include "daw_simd_functions.h"
 
 namespace daw::json::json_details::name {
 

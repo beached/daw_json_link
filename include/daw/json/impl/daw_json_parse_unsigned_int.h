@@ -17,7 +17,7 @@
 #include <cstddef>
 #include <utility>
 
-#ifdef DAW_ALLOW_SSE3
+#ifdef DAW_ALLOW_SSE42
 #include <emmintrin.h>
 #include <smmintrin.h>
 #include <tmmintrin.h>
@@ -176,7 +176,7 @@ namespace daw::json::json_details {
 		}
 	}
 
-#ifdef DAW_ALLOW_SSE3
+#ifdef DAW_ALLOW_SSE42
 	// Adapted from
 	// https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
 	static inline std::uint32_t parse_eight_digits_unrolled( const char *ptr ) {
@@ -232,7 +232,7 @@ namespace daw::json::json_details {
 
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>
 	[[nodiscard]] static inline Unsigned
-	unsigned_parser( SIMDConst<SIMDModes::SSE3>, Range &rng ) {
+	unsigned_parser( SIMDConst<SIMDModes::SSE42>, Range &rng ) {
 		daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range" );
 		uintmax_t result = 0;
 		char const *first = rng.first;

@@ -10,8 +10,8 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
+#include "daw_not_const_ex_functions.h"
 #include "daw_parse_policy_policy_details.h"
-#include "daw_simd_functions.h"
 
 #include <daw/daw_function_table.h>
 #include <daw/daw_hide.h>
@@ -21,6 +21,7 @@ namespace daw::json {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_checked( Range &rng ) {
+			// SIMD here was much slower
 			char const *first = rng.first;
 			char const *const last = rng.last;
 			while( first < last and
@@ -40,29 +41,28 @@ namespace daw::json {
 			rng.first = first;
 		}
 
-		template<char c, typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		move_to_next_char( Range &rng ) {
-			char const *first = rng.first;
-			char const *const last = rng.last;
-			daw_json_assert_weak( first < last, "Unexpected end of data" );
-			while( *first != c ) {
-				++first;
-				daw_json_assert_weak( first < last, "Unexpected end of data" );
-			}
-			rng.first = first;
-		}
-
-		template<JSONNAMETYPE Set, typename Range>
+		template<char... keys, typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
-			char const *first = rng.first;
-			char const *const last = rng.last;
-			daw_json_assert_weak( first < last, "Unexpected end of data" );
-			while( not parse_policy_details::in<Set>( *first ) ) {
-				++first;
+			static_assert( sizeof...( keys ) <= 16 );
+#if defined( DAW_ALLOW_SSE42 )
+			if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
+				rng.first =
+				  json_details::sse42_move_to_next_of<Range::is_unchecked_input,
+				                                      sizeof...( keys ), keys...>(
+				    rng.first, rng.last );
+			} else {
+#endif
+				char const *first = rng.first;
+				char const *const last = rng.last;
 				daw_json_assert_weak( first < last, "Unexpected end of data" );
+				while( not parse_policy_details::in<keys...>( *first ) ) {
+					++first;
+					daw_json_assert_weak( first < last, "Unexpected end of data" );
+				}
+				rng.first = first;
+#if defined( DAW_ALLOW_SSE42 )
 			}
-			rng.first = first;
+#endif
 		}
 
 		DAW_ATTRIBUTE_FLATTEN static constexpr bool is_literal_end( char c ) {
@@ -90,10 +90,11 @@ namespace daw::json {
 					++ptr_first;
 				} else if( c == '"' ) {
 					++ptr_first;
-#if defined( DAW_ALLOW_SSE3 )
-					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = json_details::sse3_skip_until_end_of_string<false>(
+#if defined( DAW_ALLOW_SSE42 )
+					if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
+						ptr_first = json_details::sse42_skip_until_end_of_string<false>(
 						  ptr_first, rng.last );
+						++ptr_first;
 					} else {
 #endif
 						while( ptr_first < ptr_last and *ptr_first != '"' ) {
@@ -105,7 +106,7 @@ namespace daw::json {
 							}
 							++ptr_first;
 						}
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 					}
 #endif
 					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
@@ -159,10 +160,11 @@ namespace daw::json {
 					++ptr_first;
 				} else if( c == '"' ) {
 					++ptr_first;
-#if defined( DAW_ALLOW_SSE3 )
-					if constexpr( Range::simd_mode == SIMDModes::SSE3 ) {
-						ptr_first = json_details::sse3_skip_until_end_of_string<true>(
+#if defined( DAW_ALLOW_SSE42 )
+					if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
+						ptr_first = json_details::sse42_skip_until_end_of_string<true>(
 						  ptr_first, rng.last );
+						++ptr_first;
 					} else {
 #endif
 						while( *ptr_first != '"' ) {
@@ -171,7 +173,7 @@ namespace daw::json {
 							}
 							++ptr_first;
 						}
-#if defined( DAW_ALLOW_SSE3 )
+#if defined( DAW_ALLOW_SSE42 )
 					}
 #endif
 				} else if( c == ',' ) {
@@ -201,5 +203,5 @@ namespace daw::json {
 			rng.first = ptr_first;
 			return result;
 		}
-	}; // namespace daw::json
+	};
 } // namespace daw::json
