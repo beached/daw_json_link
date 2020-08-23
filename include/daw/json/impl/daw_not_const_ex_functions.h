@@ -79,6 +79,48 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input, char... keys>
 	DAW_ATTRIBUTE_FLATTEN static inline char const *
+	sse42_find_substr( char const *first, char const *last ) {
+		static constexpr int keys_len = static_cast<int>( sizeof...( keys ) );
+		static_assert( keys_len <= 16 );
+		__m128i const a = set_reverse( keys... );
+		static constexpr int compare_mode =
+		  _SIDD_SBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED;
+
+		while( last - first >= 16 ) {
+			__m128i const b =
+			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
+			int const b_len =
+			  last - first >= 16 ? 16 : static_cast<int>( last - first );
+			int result = _mm_cmpestri( a, keys_len, b, b_len, compare_mode );
+			first += result;
+			if( result < 16 ) {
+				return first;
+			}
+		}
+		static constexpr auto is_eq = []( char const *ptr ) {
+			static constexpr auto check = []( char const *&p, char c ) {
+				return *p++ == c;
+			};
+			return ( check( ptr, keys ) and ... );
+		};
+		// TODO look into std::search and perf, this is a tail end of document when
+		// there are <16 characters left.  This is also primarily for end of comment finding
+		if constexpr( is_unchecked_input ) {
+			while( not is_eq( first ) ) {
+				++first;
+			}
+		} else {
+			while(
+			  ( last - first > static_cast<std::ptrdiff_t>( sizeof...( keys ) ) ) and
+			  not is_eq( first ) ) {
+				++first;
+			}
+		}
+		return first + sizeof...( keys );
+	}
+
+	template<bool is_unchecked_input, char... keys>
+	DAW_ATTRIBUTE_FLATTEN static inline char const *
 	sse42_move_to_next_not_of( char const *first, char const *last ) {
 		static constexpr int keys_len = static_cast<int>( sizeof...( keys ) );
 		static_assert( keys_len <= 16 );

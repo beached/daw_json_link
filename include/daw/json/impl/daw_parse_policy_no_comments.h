@@ -52,14 +52,14 @@ namespace daw::json {
 				    rng.first, rng.last );
 			} else {
 #endif
-				char const *first = rng.first;
-				char const *const last = rng.last;
+			char const *first = rng.first;
+			char const *const last = rng.last;
+			daw_json_assert_weak( first < last, "Unexpected end of data" );
+			while( not parse_policy_details::in<keys...>( *first ) ) {
+				++first;
 				daw_json_assert_weak( first < last, "Unexpected end of data" );
-				while( not parse_policy_details::in<keys...>( *first ) ) {
-					++first;
-					daw_json_assert_weak( first < last, "Unexpected end of data" );
-				}
-				rng.first = first;
+			}
+			rng.first = first;
 #if defined( DAW_ALLOW_SSE42 )
 			}
 #endif
@@ -73,61 +73,68 @@ namespace daw::json {
 		         typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr Range
 		skip_bracketed_item_checked( Range &rng ) {
-			// Not checking for Left as it is required to be skipped already
 			auto result = rng;
 			std::size_t cnt = 0;
 			std::uint32_t prime_bracket_count = 1;
 			std::uint32_t second_bracket_count = 0;
 			char const *ptr_first = rng.first;
 			char const *const ptr_last = rng.last;
-			if( ( ptr_first < ptr_last ) bitand ( *ptr_first == PrimLeft ) ) {
+			if( ptr_first < ptr_last and *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
-
-			while( ptr_first < ptr_last ) {
-				char const c = *ptr_first;
-				if( c == '\\' ) {
+			while( ptr_first < ptr_last and [&] {
+				switch( *ptr_first ) {
+				case '\\':
 					++ptr_first;
-				} else if( c == '"' ) {
+					return ptr_first < ptr_last;
+				case '"':
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE42 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
 						ptr_first = json_details::sse42_skip_until_end_of_string<false>(
 						  ptr_first, rng.last );
-						++ptr_first;
 					} else {
 #endif
-						while( ptr_first < ptr_last and *ptr_first != '"' ) {
-							if( *ptr_first == '\\' ) {
-								++ptr_first;
-								if( ptr_first >= ptr_last ) {
-									break;
-								}
-							}
+					while( ptr_first < ptr_last and *ptr_first != '"' ) {
+						if( *ptr_first == '\\' ) {
 							++ptr_first;
+							if( DAW_JSON_UNLIKELY( ptr_first >= ptr_last ) ) {
+								break;
+							}
 						}
+						++ptr_first;
+					}
 #if defined( DAW_ALLOW_SSE42 )
 					}
 #endif
 					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
-				} else if( c == ',' ) {
+					return true;
+				case ',':
 					if( ( prime_bracket_count == 1 ) bitand
 					    ( second_bracket_count == 0 ) ) {
 						++cnt;
 					}
-				} else if( c == PrimLeft ) {
+					return true;
+				case PrimLeft:
 					++prime_bracket_count;
-				} else if( c == PrimRight ) {
+					return true;
+				case PrimRight:
 					--prime_bracket_count;
 					if( prime_bracket_count == 0 ) {
 						++ptr_first;
-						break;
+						return false;
 					}
-				} else if( c == SecLeft ) {
+					return true;
+				case SecLeft:
 					++second_bracket_count;
-				} else if( c == SecRight ) {
+					return true;
+				case SecRight:
 					--second_bracket_count;
+					return true;
+				default:
+					return true;
 				}
+			}( ) ) {
 				++ptr_first;
 			}
 			daw_json_assert_weak( ( prime_bracket_count == 0 ) bitand
@@ -145,7 +152,6 @@ namespace daw::json {
 		         typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr Range
 		skip_bracketed_item_unchecked( Range &rng ) {
-			// Not checking for Left as it is required to be skipped already
 			auto result = rng;
 			std::size_t cnt = 0;
 			std::uint32_t prime_bracket_count = 1;
@@ -154,17 +160,17 @@ namespace daw::json {
 			if( *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
-			while( true ) {
-				char const c = *ptr_first;
-				if( c == '\\' ) {
+			while( [&] {
+				switch( *ptr_first ) {
+				case '\\':
 					++ptr_first;
-				} else if( c == '"' ) {
+					return true;
+				case '"':
 					++ptr_first;
 #if defined( DAW_ALLOW_SSE42 )
 					if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
 						ptr_first = json_details::sse42_skip_until_end_of_string<true>(
 						  ptr_first, rng.last );
-						++ptr_first;
 					} else {
 #endif
 						while( *ptr_first != '"' ) {
@@ -175,25 +181,34 @@ namespace daw::json {
 						}
 #if defined( DAW_ALLOW_SSE42 )
 					}
+					return true;
 #endif
-				} else if( c == ',' ) {
+				case ',':
 					if( ( prime_bracket_count == 1 ) bitand
 					    ( second_bracket_count == 0 ) ) {
 						++cnt;
 					}
-				} else if( c == PrimLeft ) {
+					return true;
+				case PrimLeft:
 					++prime_bracket_count;
-				} else if( c == PrimRight ) {
+					return true;
+				case PrimRight:
 					--prime_bracket_count;
 					if( prime_bracket_count == 0 ) {
 						++ptr_first;
-						break;
+						return false;
 					}
-				} else if( c == SecLeft ) {
+					return true;
+				case SecLeft:
 					++second_bracket_count;
-				} else if( c == SecRight ) {
+					return true;
+				case SecRight:
 					--second_bracket_count;
+					return true;
+				default:
+					return true;
 				}
+			}( ) ) {
 				++ptr_first;
 			}
 			// We include the close primary bracket in the range so that subsequent

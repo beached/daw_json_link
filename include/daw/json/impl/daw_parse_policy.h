@@ -90,7 +90,7 @@ namespace daw::json {
 #if defined( DAW_ALLOW_SSE42 )
 			if constexpr( simd_mode == SIMDModes::SSE42 ) {
 				first = reinterpret_cast<char const *>( std::memchr(
-				  first, c, static_cast<std::size_t>( class_last - first ) ) );
+				  first, c, static_cast<std::size_t>( last - first ) ) );
 			} else {
 #endif
 				while( *first != c ) {
@@ -105,9 +105,10 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_checked( ) {
 #if defined( DAW_ALLOW_SSE42 )
 			if constexpr( simd_mode == SIMDModes::SSE42 ) {
-				first = reinterpret_cast<char const *>( std::memchr(
-				  first, c, static_cast<std::size_t>( class_last - first ) ) );
-				daw_json_assert( first != nullptr, "Expected token missing" );
+				char const * ptr = reinterpret_cast<char const *>( std::memchr(
+				  first, c, static_cast<std::size_t>( last - first ) ) );
+				daw_json_assert( ptr != nullptr, "Expected token missing" );
+				first = ptr;
 			} else {
 #endif
 				while( first < last and *first != c ) {
