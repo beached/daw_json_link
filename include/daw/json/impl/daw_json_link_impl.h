@@ -278,7 +278,7 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( current_position <= desired_position,
 			                      "Order of ordered members must be ascending" );
 			while( current_position < desired_position and
-			       not rng.is_closing_bracket_unchecked( ) ) {
+			       not rng.is_array_end_unchecked( ) ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				++current_position;
@@ -313,7 +313,7 @@ namespace daw::json::json_details {
 
 		// this is an out value, get position ready
 		++member_position;
-		if( DAW_JSON_UNLIKELY( rng.is_closing_bracket_unchecked( ) ) ) {
+		if( DAW_JSON_UNLIKELY( rng.is_array_end_unchecked( ) ) ) {
 			if constexpr( is_json_nullable_v<ordered_member_subtype_t<JsonMember>> ) {
 				using constructor_t = typename json_member_type::constructor_t;
 				return constructor_t{ }( );
@@ -476,13 +476,13 @@ namespace daw::json::json_details {
 	ordered_class_cleanup_now( Range &rng ) {
 		rng.clean_tail( );
 		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
-		while( not rng.is_closing_bracket_unchecked( ) ) {
+		while( not rng.is_array_end_unchecked( ) ) {
 			(void)skip_value( rng );
 			rng.clean_tail( );
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 		}
 		// TODO: should we check for end
-		daw_json_assert_weak( rng.is_closing_bracket_unchecked( ),
+		daw_json_assert_weak( rng.is_array_end_unchecked( ),
 		                      "Expected a ']'" );
 		rng.remove_prefix( );
 		rng.trim_left( );

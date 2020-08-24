@@ -99,168 +99,232 @@ namespace daw::json {
 			first = json_details::mem_chr<false>( exec_tag, first, last, c );
 		}
 
-		template<char c>
-		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of( ) {
-			first =
-			  json_details::mem_chr<is_unchecked_input>( exec_tag, first, last, c );
-		}
-
-		[[nodiscard]] constexpr char front( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr char front( ) const {
 			return *first;
 		}
 
-		[[nodiscard]] constexpr std::size_t size( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr std::size_t size( ) const {
 			return static_cast<std::size_t>( std::distance( first, last ) );
 		}
 
-		[[nodiscard]] constexpr bool is_number( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool is_number( ) const {
 			return static_cast<unsigned>( front( ) ) - static_cast<unsigned>( '0' ) <
 			       10U;
 		}
 
-		[[nodiscard]] constexpr bool is_null( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool is_null( ) const {
 			return first == nullptr;
 		}
 
-		constexpr void remove_prefix( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void remove_prefix( ) {
 			++first;
 		}
 
-		constexpr void remove_prefix( std::size_t n ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void remove_prefix( std::size_t n ) {
 			first += static_cast<intmax_t>( n );
 		}
 
-		[[nodiscard]] constexpr iterator begin( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr iterator begin( ) const {
 			return first;
 		}
 
-		[[nodiscard]] constexpr iterator data( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr iterator data( ) const {
 			return first;
 		}
 
-		[[nodiscard]] constexpr iterator end( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr iterator end( ) const {
 			return last;
 		}
 
-		[[nodiscard]] explicit constexpr operator bool( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN explicit constexpr
+		operator bool( ) const {
 			return not empty( );
 		}
 
-		constexpr void set_class_position( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void set_class_position( ) {
 			class_first = first;
 			class_last = last;
 		}
 
-		constexpr void trim_left_checked( ) {
-			return CommentPolicy::trim_left_checked( *this );
-		}
-
-		constexpr void trim_left_unchecked( ) {
-			return CommentPolicy::trim_left_unchecked( *this );
-		}
-
-		constexpr void move_to_end_of_literal( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_end_of_literal( ) {
 			char const *f = first;
 			char const *const l = last;
 			if constexpr( IsUncheckedInput ) {
-				while( ( *f > 0x20 ) and not CommentPolicy::is_literal_end( *f ) ) {
+				while( ( *f > 0x20 ) and not is_literal_end( *f ) ) {
 					++f;
 				}
 			} else {
-				while( ( f < l ) and ( *f > 0x20 ) and
-				       not CommentPolicy::is_literal_end( *f ) ) {
+				while( ( f < l ) and ( *f > 0x20 ) and not is_literal_end( *f ) ) {
 					++f;
 				}
 			}
 			first = f;
 		}
 
-		[[nodiscard]] constexpr bool is_literal_end( ) const {
-			return CommentPolicy::is_literal_end( *first );
+		DAW_ATTRIBUTE_FLATTEN constexpr void trim_left_checked( ) {
+			if constexpr( CommentPolicy::has_alternate_parse_tokens ) {
+				first =
+				  CommentPolicy::skip_alternate_token_checked( exec_tag, first, last );
+				while( first < last and is_space_unchecked( ) ) {
+					++first;
+					first = CommentPolicy::skip_alternate_token_checked( exec_tag, first,
+					                                                     last );
+				}
+			} else {
+				// SIMD here was much slower
+				while( first < last and
+				       parse_policy_details::is_space_unchecked( *first ) ) {
+					++first;
+				}
+			}
 		}
 
-		[[nodiscard]] constexpr bool is_space_checked( ) const {
+		DAW_ATTRIBUTE_FLATTEN constexpr void trim_left_unchecked( ) {
+			if constexpr( CommentPolicy::has_alternate_parse_tokens ) {
+				first = CommentPolicy::skip_alternate_token_unchecked( exec_tag, first,
+				                                                       last );
+				while( is_space_unchecked( ) ) {
+					++first;
+					first = CommentPolicy::skip_alternate_token_unchecked( exec_tag,
+					                                                       first, last );
+				}
+			} else {
+				while( parse_policy_details::is_space_unchecked( *first ) ) {
+					++first;
+				}
+			}
+		}
+
+		template<char... keys>
+		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of( ) {
+			static_assert( sizeof...( keys ) <= 16 );
+			if constexpr( CommentPolicy::has_alternate_parse_tokens ) {
+				first =
+				  CommentPolicy::template skip_alternate_token<is_unchecked_input>(
+				    exec_tag, first, last );
+				while( not parse_policy_details::in<keys...>( *first ) ) {
+					daw_json_assert_weak( first < last, "Unexpected end of data" );
+					++first;
+					first =
+					  CommentPolicy::template skip_alternate_token<is_unchecked_input>(
+					    exec_tag, first, last );
+				}
+			} else {
+				first = json_details::mem_move_to_next_of<Range::is_unchecked_input,
+				                                          sizeof...( keys ), keys...>(
+				  Range::exec_tag, first, last );
+			}
+		}
+
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static constexpr bool
+		is_literal_end( char c ) {
+			if constexpr( CommentPolicy::has_alternate_parse_tokens ) {
+				return c == '\0' or c == ',' or c == ']' or c == '}' or
+				       CommentPolicy::is_alternate_token( c );
+			} else {
+				return c == '\0' or c == ',' or c == ']' or c == '}';
+			}
+		}
+
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_space_checked( ) const {
 			daw_json_assert_weak( has_more( ), "Unexpected end" );
 			return *first <= 0x20;
 		}
 
-		[[nodiscard]] constexpr bool is_space_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_space_unchecked( ) const {
 			return *first <= 0x20;
 		}
 
-		[[nodiscard]] constexpr bool is_opening_bracket_checked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_opening_bracket_checked( ) const {
 			return first < last and *first == '[';
 		}
 
-		[[nodiscard]] constexpr bool is_opening_bracket_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_opening_bracket_unchecked( ) const {
 			return *first == '[';
 		}
 
-		[[nodiscard]] constexpr bool is_opening_brace_checked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_opening_brace_checked( ) const {
 			return first < last and *first == '{';
 		}
 
-		[[nodiscard]] constexpr bool is_closing_brace_checked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_closing_brace_checked( ) const {
 			return first < last and *first == '}';
 		}
 
-		[[nodiscard]] constexpr bool is_closing_brace_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_closing_brace_unchecked( ) const {
 			return *first == '}';
 		}
 
-		[[nodiscard]] constexpr bool is_closing_bracket_checked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_array_end_checked( ) const {
 			return first < last and *first == ']';
 		}
 
-		[[nodiscard]] constexpr bool is_closing_bracket_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_array_end_unchecked( ) const {
 			return *first == ']';
 		}
 
-		[[nodiscard]] constexpr bool is_quotes_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_quotes_unchecked( ) const {
 			return *first == '"';
 		}
 
-		[[nodiscard]] constexpr bool is_quotes_checked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_quotes_checked( ) const {
 			return first < last and *first == '"';
 		}
 
-		[[nodiscard]] constexpr bool is_comma_checked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_comma_checked( ) const {
 			return first < last and *first == ',';
 		}
 
-		[[nodiscard]] constexpr bool is_colon_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_colon_unchecked( ) const {
 			return *first == ':';
 		}
 
-		[[nodiscard]] constexpr bool is_minus_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_minus_unchecked( ) const {
 			return *first == '-';
 		}
 
-		[[nodiscard]] constexpr bool is_plus_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_plus_unchecked( ) const {
 			return *first == '+';
 		}
 
-		[[nodiscard]] constexpr bool is_n_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool is_n_unchecked( ) const {
 			return *first == 'n';
 		}
 
-		[[nodiscard]] constexpr bool is_exponent_checked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_exponent_checked( ) const {
 			return first < last and ( ( *first == 'e' ) bitor ( *first == 'E' ) );
 		}
 
-		[[nodiscard]] constexpr bool is_t_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool is_t_unchecked( ) const {
 			return *first == 't';
 		}
 
-		[[nodiscard]] constexpr bool is_u_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool is_u_unchecked( ) const {
 			return *first == 'u';
 		}
 
-		[[nodiscard]] constexpr bool is_escape_unchecked( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
+		is_escape_unchecked( ) const {
 			return *first == '\\';
 		}
 
-		constexpr void trim_left( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void trim_left( ) {
 			if constexpr( is_unchecked_input ) {
 				trim_left_unchecked( );
 			} else {
@@ -268,7 +332,7 @@ namespace daw::json {
 			}
 		}
 
-		constexpr void clean_tail_unchecked( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void clean_tail_unchecked( ) {
 			trim_left_unchecked( );
 			if( *first == ',' ) {
 				++first;
@@ -276,7 +340,7 @@ namespace daw::json {
 			}
 		}
 
-		constexpr void clean_tail_checked( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void clean_tail_checked( ) {
 			trim_left_checked( );
 			if( first < last and *first == ',' ) {
 				++first;
@@ -284,7 +348,7 @@ namespace daw::json {
 			}
 		}
 
-		constexpr void clean_tail( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void clean_tail( ) {
 			if constexpr( is_unchecked_input ) {
 				clean_tail_unchecked( );
 			} else {
@@ -292,33 +356,147 @@ namespace daw::json {
 			}
 		}
 
-		constexpr void move_to_next_class_member( ) {
-			CommentPolicy::template move_to_next_of<'"', '}'>( *this );
+		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_class_member( ) {
+			move_to_next_of<'"', '}'>( );
 		}
 
-		constexpr bool is_at_next_class_member( ) const {
+		DAW_ATTRIBUTE_FLATTEN constexpr bool is_at_next_class_member( ) const {
 			return parse_policy_details::in<'"', '}'>( *first );
 		}
 
-		constexpr bool is_at_token_after_value( ) const {
+		DAW_ATTRIBUTE_FLATTEN constexpr bool is_at_token_after_value( ) const {
 			return parse_policy_details::in<',', '}', ']'>( *first );
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr Range
+		constexpr BasicParsePolicy
 		skip_bracketed_item_checked( ) {
-			return CommentPolicy::template skip_bracketed_item_checked<
-			  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
+			auto result = *this;
+			std::size_t cnt = 0;
+			std::uint32_t prime_bracket_count = 1;
+			std::uint32_t second_bracket_count = 0;
+			char const *ptr_first = first;
+			char const *const ptr_last = last;
+			if( ptr_first < ptr_last and *ptr_first == PrimLeft ) {
+				++ptr_first;
+			}
+			while( ptr_first < ptr_last and [&] {
+				switch( *ptr_first ) {
+				case '\\':
+					++ptr_first;
+					return ptr_first < ptr_last;
+				case '"':
+					++ptr_first;
+					ptr_first = json_details::mem_skip_until_end_of_string<false>(
+					  exec_tag, ptr_first, last );
+					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
+					return true;
+				case ',':
+					if( ( prime_bracket_count == 1 ) bitand
+					    ( second_bracket_count == 0 ) ) {
+						++cnt;
+					}
+					return true;
+				case PrimLeft:
+					++prime_bracket_count;
+					return true;
+				case PrimRight:
+					--prime_bracket_count;
+					if( prime_bracket_count == 0 ) {
+						++ptr_first;
+						return false;
+					}
+					return true;
+				case SecLeft:
+					++second_bracket_count;
+					return true;
+				case SecRight:
+					--second_bracket_count;
+					return true;
+				default:
+					if constexpr( CommentPolicy::has_alternate_parse_tokens ) {
+						ptr_first = CommentPolicy::skip_alternate_token_checked(
+						  exec_tag, ptr_first, last );
+					}
+					return true;
+				}
+			}( ) ) {
+				++ptr_first;
+			}
+			daw_json_assert_weak( ( prime_bracket_count == 0 ) bitand
+			                        ( second_bracket_count == 0 ),
+			                      "Unexpected bracketing" );
+			// We include the close primary bracket in the range so that subsequent
+			// parsers have a terminator inside their range
+			result.last = ptr_first;
+			result.counter = cnt;
+			first = ptr_first;
+			return result;
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr Range
+		constexpr BasicParsePolicy
 		skip_bracketed_item_unchecked( ) {
-			return CommentPolicy::template skip_bracketed_item_unchecked<
-			  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
+			auto result = *this;
+			std::size_t cnt = 0;
+			std::uint32_t prime_bracket_count = 1;
+			std::uint32_t second_bracket_count = 0;
+			char const *ptr_first = first;
+			if( *ptr_first == PrimLeft ) {
+				++ptr_first;
+			}
+			while( [&] {
+				switch( *ptr_first ) {
+				case '\\':
+					++ptr_first;
+					return true;
+				case '"':
+					++ptr_first;
+					ptr_first = json_details::mem_skip_until_end_of_string<true>(
+					  exec_tag, ptr_first, last );
+					return true;
+				case ',':
+					if( ( prime_bracket_count == 1 ) bitand
+					    ( second_bracket_count == 0 ) ) {
+						++cnt;
+					}
+					return true;
+				case PrimLeft:
+					++prime_bracket_count;
+					return true;
+				case PrimRight:
+					--prime_bracket_count;
+					if( prime_bracket_count == 0 ) {
+						++ptr_first;
+						return false;
+					}
+					return true;
+				case SecLeft:
+					++second_bracket_count;
+					return true;
+				case SecRight:
+					--second_bracket_count;
+					return true;
+				default:
+					if constexpr( CommentPolicy::has_alternate_parse_tokens ) {
+						ptr_first = CommentPolicy::skip_alternate_token_unchecked(
+						  exec_tag, ptr_first, last );
+					}
+					return true;
+				}
+			}( ) ) {
+				++ptr_first;
+			}
+			// We include the close primary bracket in the range so that subsequent
+			// parsers have a terminator inside their range
+			result.last = ptr_first;
+			result.counter = cnt;
+			first = ptr_first;
+			return result;
 		}
 
-		[[nodiscard]] constexpr Range skip_class( ) {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr BasicParsePolicy
+		skip_class( ) {
 			if constexpr( is_unchecked_input ) {
 				return skip_bracketed_item_unchecked<'{', '}', '[', ']'>( );
 			} else {
@@ -326,14 +504,15 @@ namespace daw::json {
 			}
 		}
 
-		[[nodiscard]] constexpr Range skip_array( ) {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr BasicParsePolicy
+		skip_array( ) {
 			if constexpr( is_unchecked_input ) {
 				return skip_bracketed_item_unchecked<'[', ']', '{', '}'>( );
 			} else {
 				return skip_bracketed_item_checked<'[', ']', '{', '}'>( );
 			}
 		}
-	}; // namespace daw::json
+	};
 
 	using NoCommentSkippingPolicyChecked =
 	  BasicParsePolicy<false, NoCommentSkippingPolicy, constexpr_exec_tag, false>;
