@@ -158,6 +158,9 @@ namespace daw::json {
 					}
 #endif
 					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
+#if not defined( NDEBUG )
+					daw_json_assert( *ptr_first == '"', "Unexpected end of stream" );
+#endif
 					return true;
 				case ',':
 					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
@@ -198,13 +201,16 @@ namespace daw::json {
 #if defined( DAW_ALLOW_SSE42 )
 						}
 #endif
+#if not defined( NDEBUG )
+						daw_json_assert( *ptr_first == '\n', "Unexpected end of stream" );
+#endif
 						break;
 					case '*':
 						++ptr_first;
 #if defined( DAW_ALLOW_SSE42 )
 						if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
-							ptr_first = json_details::sse42_find_substr<false, '*', '/'>( ptr_first,
-							                                                       ptr_last );
+							ptr_first = json_details::sse42_find_substr<false, '*', '/'>(
+							  ptr_first, ptr_last );
 						} else {
 #endif
 							while( ( ptr_last - ptr_first ) >= 3 and *ptr_first != '*' and
@@ -213,6 +219,9 @@ namespace daw::json {
 							}
 #if defined( DAW_ALLOW_SSE42 )
 						}
+#endif
+#if not defined( NDEBUG )
+						daw_json_assert( *ptr_first == '/', "Unexpected end of stream" );
 #endif
 						break;
 					default:

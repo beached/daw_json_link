@@ -115,12 +115,12 @@ int main( int argc, char **argv ) try {
 	  daw::filesystem::memory_mapped_file_t<>( argv[2] );
 
 	test<
-	  daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::SIMDModes::None>>(
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::None>>(
 	  json_str, json_str_escaped );
 #if defined( DAW_ALLOW_SSE42 )
 	std::cout << "SS3\n********************\n";
 	test<
-	  daw::json::SIMDCppCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE42>>(
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE42>>(
 	  json_str, json_str_escaped );
 #endif
 } catch( daw::json::json_exception const &jex ) {

@@ -397,14 +397,13 @@ namespace daw {
 		avg_time -= base_time;
 		std::cout << title << delem << "	runs: " << Runs << delem
 		          << "	total: " << utility::format_seconds( total_time, 2 )
+		          << delem << "	min: " << utility::format_seconds( min_time, 2 ) << " -> "
+		          << utility::to_bytes_per_second( bytes, min_time, 2 ) << "/s"
 		          << delem << "	avg: " << utility::format_seconds( avg_time, 2 )
 		          << " -> " << utility::to_bytes_per_second( bytes, avg_time, 2 )
-		          << "/s" << delem
-		          << "	min: " << utility::format_seconds( min_time, 2 ) << " -> "
-		          << utility::to_bytes_per_second( bytes, min_time, 2 ) << "/s"
-		          << delem << "	max: " << utility::format_seconds( max_time, 2 )
+		          << "/s" << delem << "	max: " << utility::format_seconds( max_time, 2 )
 		          << " -> " << utility::to_bytes_per_second( bytes, max_time, 2 )
-		          << "/s" << '\n';
+		          << "/s" << delem << "	runs/second: " << (1.0/min_time) << '\n';
 		return result;
 	}
 
