@@ -325,7 +325,7 @@ namespace daw::json {
 	enum class JsonRangeCheck { Never = false, CheckForNarrowing = true };
 	enum class EightBitModes { DisallowHigh = false, AllowFull = true };
 	enum class CustomJsonTypes { Literal, String, Either };
-	enum class AllowEscapeCharacter { Allow, Never };
+	enum class AllowEscapeCharacter { Allow, NotBeforeDblQuote };
 
 	template<JsonParseTypes ParseType, JsonNullable Nullable>
 	inline constexpr JsonParseTypes get_parse_type_v =

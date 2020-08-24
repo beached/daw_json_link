@@ -153,7 +153,7 @@ namespace daw::json {
 	         typename Constructor = daw::construct_a_t<String>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
-	         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Never>
+	         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::NotBeforeDblQuote>
 	using json_string_raw_null =
 	  json_string_raw<Name, String, Constructor, EmptyStringNull, EightBitMode,
 	                  JsonNullable::Nullable, AllowEscape>;

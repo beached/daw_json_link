@@ -102,26 +102,26 @@ namespace daw {
 			}
 			val /= 1024.0;
 			if( val < 1024.0 ) {
-				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "KB";
+				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "KiB";
 				return ss.str( );
 			}
 			val /= 1024.0;
 			if( val < 1024.0 ) {
-				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "MB";
+				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "MiB";
 				return ss.str( );
 			}
 			val /= 1024.0;
 			if( val < 1024.0 ) {
-				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "GB";
+				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "GiB";
 				return ss.str( );
 			}
 			val /= 1024.0;
 			if( val < 1024.0 ) {
-				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "TB";
+				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "TiB";
 				return ss.str( );
 			}
 			val /= 1024.0;
-			ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "PB";
+			ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "PiB";
 			return ss.str( );
 		}
 	} // namespace utility
@@ -257,10 +257,10 @@ namespace daw {
 		             : total_time / static_cast<double>( Runs );
 		avg_time -= base_time;
 		std::cout << title << delem << "	runs: " << Runs << delem
-		          << "	total: " << utility::format_seconds( total_time, 2 )
-		          << delem << "	avg: " << utility::format_seconds( avg_time, 2 )
-		          << delem << "	min: " << utility::format_seconds( min_time, 2 )
-		          << delem << "	max: " << utility::format_seconds( max_time, 2 )
+		          <<          "	total: " << utility::format_seconds( total_time, 2 )
+		          << delem << "	avg:   " << utility::format_seconds( avg_time, 2 )
+		          << delem << "	min:   " << utility::format_seconds( min_time, 2 )
+		          << delem << "	max:   " << utility::format_seconds( max_time, 2 )
 		          << '\n';
 		return result;
 	}
@@ -395,15 +395,18 @@ namespace daw {
 		  Runs >= 10 ? ( total_time - max_time ) / static_cast<double>( Runs - 1 )
 		             : total_time / static_cast<double>( Runs );
 		avg_time -= base_time;
-		std::cout << title << delem << "	runs: " << Runs << delem
-		          << "	total: " << utility::format_seconds( total_time, 2 )
-		          << delem << "	min: " << utility::format_seconds( min_time, 2 ) << " -> "
-		          << utility::to_bytes_per_second( bytes, min_time, 2 ) << "/s"
-		          << delem << "	avg: " << utility::format_seconds( avg_time, 2 )
+		std::cout << title << delem
+		          << "	runs:        " << Runs << delem
+		          << "	total:       " << utility::format_seconds( total_time, 2 ) << delem
+		          << "	min:         " << utility::format_seconds( min_time, 2 ) << " -> "
+		          << utility::to_bytes_per_second( bytes, min_time, 2 ) << "/s" << delem
+		          << "	avg:         " << utility::format_seconds( avg_time, 2 )
 		          << " -> " << utility::to_bytes_per_second( bytes, avg_time, 2 )
-		          << "/s" << delem << "	max: " << utility::format_seconds( max_time, 2 )
+		          << "/s" << delem
+		          << "	max:         " << utility::format_seconds( max_time, 2 )
 		          << " -> " << utility::to_bytes_per_second( bytes, max_time, 2 )
-		          << "/s" << delem << "	runs/second: " << (1.0/min_time) << '\n';
+		          << "/s" << delem
+		          << "	runs/second: " << (1.0/min_time) << '\n';
 		return result;
 	}
 

@@ -36,7 +36,7 @@ namespace daw::json {
       json_bool_null<
         "member2", 
         std::unique_ptr<bool>, 
-        LiteralAsStringOpt::Never, 
+        LiteralAsStringOpt::NotBeforeDblQuote, 
         UniquePtrConstructor<bool>
       >
     >;

@@ -45,7 +45,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_number_null<"member0", std::optional<int>>, json_string<"member1">,
 		  json_bool_null<"member2", std::unique_ptr<bool>,
-		                 LiteralAsStringOpt::Never, UniquePtrConstructor<bool>>>;
+		                 LiteralAsStringOpt::NotBeforeDblQuote, UniquePtrConstructor<bool>>>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";

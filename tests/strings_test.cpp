@@ -37,7 +37,7 @@ std::size_t test( std::string_view json_data ) {
 	  json_string_raw<no_name, std::string_view,
 	                  daw::construct_a_t<std::string_view>, JsonNullable::Never,
 	                  EightBitModes::AllowFull, JsonNullable::Never,
-	                  AllowEscapeCharacter::Never>;
+	                  AllowEscapeCharacter::NotBeforeDblQuote>;
 
 	std::vector<std::string_view> values =
 	  from_json_array<JString, std::vector<std::string_view>,

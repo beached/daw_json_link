@@ -63,7 +63,7 @@ using UncheckedPolicy =
 #endif
 
 #if not defined( DAW_NUM_RUNS )
-#if not defined( DEBUG ) or defined( NDEBUG ) 
+#if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 1000;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
@@ -123,29 +123,36 @@ namespace {
 		return os;
 	}
 
+	constexpr double to_fract( std::chrono::nanoseconds ns ) {
+		using dest_t = std::chrono::duration<double>;
+		return std::chrono::duration_cast<dest_t>( ns ).count( );
+	}
+
 	void show_result( daw::bench::bench_result const &result ) {
 		auto const min_ts =
 		  static_cast<double>(
 		    std::min_element( result.run_times.begin( ), result.run_times.end( ) )
 		      ->count( ) ) /
 		  1'000'000'000.0;
-		std::cout << "test name:" << result.name << '\n';
-		std::cout << "data size: "
+		std::cout << "test name:                " << result.name << '\n';
+		std::cout << "data size:                "
 		          << daw::utility::to_bytes_per_second( result.data_size, 1.0, 2 )
 		          << '\n';
-		std::cout << "speed: "
+		std::cout << "speed:                    "
 		          << daw::utility::to_bytes_per_second(
 		               static_cast<double>( result.data_size ) / min_ts, 1.0, 2 )
 		          << "/s\n";
-		std::cout << "min duration: " << result.duration_min << '\n';
+		std::cout << "runs/second:              " << std::fixed
+		          << ( 1.0 / to_fract( result.duration_min ) ) << '\n';
+		std::cout << "min duration:             " << result.duration_min << '\n';
 		std::cout << "25th percentile duration: " << result.duration_25th_percentile
 		          << '\n';
 		std::cout << "50th percentile duration: " << result.duration_50th_percentile
 		          << '\n';
 		std::cout << "75th percentile duration: " << result.duration_75th_percentile
 		          << '\n';
-		std::cout << "max duration: " << result.duration_max << '\n';
-		std::cout << "build type: " << result.build_type << '\n';
+		std::cout << "max duration:             " << result.duration_max << '\n';
+		std::cout << "build type:               " << result.build_type << '\n';
 	}
 
 	void process_results( daw::bench::bench_result &jr ) {

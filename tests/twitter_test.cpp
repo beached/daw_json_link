@@ -21,7 +21,7 @@
 #include <streambuf>
 
 #if not defined( DAW_NUM_RUNS )
-#if not defined( DEBUG ) or defined( NDEBUG ) 
+#if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 250;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
@@ -186,17 +186,45 @@ int main( int argc, char **argv )
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
-
-	// SIMDNoCommentSkippingPolicyUnchecked
+	// ******************************
+	// SIMDNoCommentSkippingPolicyChecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "twitter bench(unchecked, SSE42)", sz,
+	  "twitter bench(checked, SSE42)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE42>>( f1 );
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
+	daw::do_not_optimize( twitter_result );
+	daw_json_assert( twitter_result, "Missing value" );
+	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	                 "Missing value" );
+
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "twitter bench(checked, SSE42, unstored)", sz,
+	  []( auto f1 ) {
+		  daw::twitter::twitter_object_t const r = daw::json::from_json<
+		    daw::twitter::twitter_object_t,
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>( f1 );
+		  daw_json_assert( not r.statuses.empty( ), "Expected a value" );
+	  },
+	  json_data );
+
+	// SIMDNoCommentSkippingPolicyUnchecked
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "twitter bench(unchecked, SSE42, nostore)", sz,
+	  []( auto f1 ) {
+		  daw::twitter::twitter_object_t const r = daw::json::from_json<
+		    daw::twitter::twitter_object_t,
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE42>>(
+		    f1 );
+		  daw_json_assert( not r.statuses.empty( ), "Expected a value" );
+	  },
+	  json_data );
+
 	daw::do_not_optimize( twitter_result );
 	daw_json_assert( twitter_result, "Missing value" );
 	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
@@ -242,7 +270,8 @@ int main( int argc, char **argv )
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDHashCommentSkippingPolicyChecked<SIMDModes::SSE42>>( f1 );
+		    daw::json::SIMDHashCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
+		    f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_data );
@@ -324,7 +353,8 @@ int main( int argc, char **argv )
 	daw::do_not_optimize( twitter_result2 );
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
   defined( _CPPUNWIND )
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 #endif
