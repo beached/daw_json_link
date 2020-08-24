@@ -93,7 +93,9 @@ namespace daw::json::json_details {
 			static constexpr auto check = []( char const *&p, char c ) {
 				return *p++ == c;
 			};
-			return ( check( ptr, keys ) and ... );
+			bool const r[]{ check( ptr, keys )... };
+			bool const *bp = r;
+			return ( ( (void)keys, ( *bp++ ) ) & ... );
 		};
 		// TODO look into std::search and perf, this is a tail end of document when
 		// there are <16 characters left.  This is also primarily for end of comment

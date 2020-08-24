@@ -389,7 +389,6 @@ namespace daw::json {
 					++ptr_first;
 					ptr_first = json_details::mem_skip_until_end_of_string<false>(
 					  exec_tag, ptr_first, last );
-					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
 					return true;
 				case ',':
 					if( ( prime_bracket_count == 1 ) bitand
@@ -423,7 +422,8 @@ namespace daw::json {
 			}( ) ) {
 				++ptr_first;
 			}
-			daw_json_assert_weak( ( prime_bracket_count == 0 ) bitand
+			daw_json_assert( first <= last, "Unexpected end of stream" );
+			daw_json_assert( ( prime_bracket_count == 0 ) bitand
 			                        ( second_bracket_count == 0 ),
 			                      "Unexpected bracketing" );
 			// We include the close primary bracket in the range so that subsequent
