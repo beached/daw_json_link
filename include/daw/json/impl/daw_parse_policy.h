@@ -29,7 +29,7 @@
 namespace daw::json {
 	template<bool IsUncheckedInput, typename CommentPolicy, typename ExecTag,
 	         bool AllowEscapedNames>
-	struct BasicParsePolicy final {
+	struct BasicParsePolicy {
 		using iterator = char const *;
 		static constexpr bool is_unchecked_input = IsUncheckedInput;
 		static_assert( std::is_base_of_v<constexpr_exec_tag, ExecTag>,

@@ -384,24 +384,20 @@ namespace daw::json::json_details {
 
 #if defined( __cpp_constexpr_dynamic_alloc )
 		template<typename Range>
-		struct ClassCleanupDtor {
+		struct end_of_class_cleanup {
 			Range *rng_ptr;
-			DAW_ATTRIBUTE_FLATTEN inline constexpr ~ClassCleanupDtor( ) {
+			DAW_ATTRIBUTE_FLATTEN inline constexpr ~end_of_class_cleanup( ) {
 				class_cleanup_now( *rng_ptr );
 			}
 		};
-		template<typename Range>
-		ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
 #else
 		template<typename Range>
-		struct ClassCleanupDtor {
+		struct end_of_class_cleanup {
 			Range *rng_ptr;
-			DAW_ATTRIBUTE_FLATTEN inline ~ClassCleanupDtor( ) {
+			DAW_ATTRIBUTE_FLATTEN inline ~end_of_class_cleanup( ) {
 				class_cleanup_now( *rng_ptr );
 			}
 		};
-		template<typename Range>
-		ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
 #endif
 	} // namespace
 
@@ -442,7 +438,7 @@ namespace daw::json::json_details {
 				// classes without move/copy special members
 
 				// Do this before we exit but after return
-				auto const oe = ClassCleanupDtor{ &rng };
+				auto const oe = end_of_class_cleanup<Range>{ &rng };
 				/*
 				 * Rather than call directly use apply/tuple to evaluate left->right
 				 */
@@ -499,10 +495,7 @@ namespace daw::json::json_details {
 				ordered_class_cleanup_now( *rng_ptr );
 			}
 		};
-		template<typename Range>
-		cleanup_end_of_ordered_class( Range * )
-		  -> cleanup_end_of_ordered_class<Range>;
-#elif defined( DAW_JSON_NO_CONST_EXPR )
+#else
 		template<typename Range>
 		struct cleanup_end_of_ordered_class {
 			Range *rng_ptr;
@@ -510,9 +503,6 @@ namespace daw::json::json_details {
 				ordered_class_cleanup_now( *rng_ptr );
 			}
 		};
-		template<typename Range>
-		cleanup_end_of_ordered_class( Range * )
-		  -> cleanup_end_of_ordered_class<Range>;
 #endif
 	} // namespace
 
@@ -536,20 +526,19 @@ namespace daw::json::json_details {
 		using tp_t = std::tuple<decltype(
 		  parse_ordered_class_member<JsonMembers>( current_idx, rng ) )...>;
 
-#if defined( __cpp_constexpr_dynamic_alloc ) or                                \
-  defined( DAW_JSON_NO_CONST_EXPR )
+		if constexpr( Range::exec_tag_t::always_rvo ) {
+			auto const oe = cleanup_end_of_ordered_class<Range>{ &rng };
+			return std::apply( daw::construct_a<JsonClass>,
+			                   tp_t{ parse_ordered_class_member<JsonMembers>(
+			                     current_idx, rng )... } );
+		} else {
+			JsonClass result =
+			  std::apply( daw::construct_a<JsonClass>,
+			              tp_t{ parse_ordered_class_member<JsonMembers>( current_idx,
+			                                                             rng )... } );
 
-		auto const oe = cleanup_end_of_ordered_class{ &rng };
-		return std::apply(
-		  daw::construct_a<JsonClass>,
-		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
-#else
-		JsonClass result = std::apply(
-		  daw::construct_a<JsonClass>,
-		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
-
-		ordered_class_cleanup_now( rng );
-		return result;
-#endif
+			ordered_class_cleanup_now( rng );
+			return result;
+		}
 	} // namespace daw::json::json_details
 } // namespace daw::json::json_details

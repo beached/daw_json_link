@@ -15,119 +15,31 @@
 #include <daw/daw_uint_buffer.h>
 
 namespace daw::json::json_details::string_quote {
-	template<std::size_t N, char c>
-	inline constexpr bool test_at_byte( UInt64Buffer b ) {
-		auto const lhs = b & ( static_cast<std::uint64_t>( 0xFF ) << ( N * 8U ) );
-		auto const rhs =
-		  static_cast<std::uint64_t>( static_cast<unsigned char>( c ) )
-		  << ( N * 8U );
-		return not( lhs - rhs );
-	}
-
-	template<std::size_t N, char c>
-	inline constexpr bool test_at_byte( UInt32Buffer b ) {
-		auto const lhs = b & ( static_cast<std::uint32_t>( 0xFF ) << ( N * 8U ) );
-		auto const rhs =
-		  static_cast<std::uint32_t>( static_cast<unsigned char>( c ) )
-		  << ( N * 8U );
-		return not( lhs - rhs );
-	}
-
-	inline constexpr void skip_to_first8( char const *&first,
-	                                      char const *const last ) {
-		bool keep_going = last - first >= 8;
-		while( keep_going ) {
-			auto buff = daw::to_uint64_buffer( first );
-			auto const q7 = test_at_byte<7U, '"'>( buff );
-			auto const q6 = test_at_byte<6U, '"'>( buff );
-			auto const q5 = test_at_byte<5U, '"'>( buff );
-			auto const q4 = test_at_byte<4U, '"'>( buff );
-			auto const q3 = test_at_byte<3U, '"'>( buff );
-			auto const q2 = test_at_byte<2U, '"'>( buff );
-			auto const q1 = test_at_byte<1U, '"'>( buff );
-			auto const q0 = test_at_byte<0U, '"'>( buff );
-			auto const s7 = test_at_byte<7U, '\\'>( buff );
-			auto const s6 = test_at_byte<6U, '\\'>( buff );
-			auto const s5 = test_at_byte<5U, '\\'>( buff );
-			auto const s4 = test_at_byte<4U, '\\'>( buff );
-			auto const s3 = test_at_byte<3U, '\\'>( buff );
-			auto const s2 = test_at_byte<2U, '\\'>( buff );
-			auto const s1 = test_at_byte<1U, '\\'>( buff );
-			auto const s0 = test_at_byte<0U, '\\'>( buff );
-			keep_going = not( q0 | q1 | q2 | q3 | q4 | q5 | q6 | q7 | s0 | s1 | s2 |
-			                  s3 | s4 | s5 | s6 | s7 );
-			keep_going = keep_going & static_cast<bool>( last - ( first + 8 ) >= 8 );
-			first += static_cast<int>( keep_going ) * 8;
-		}
-		first -= *( first - 1 ) == '\\' ? 1 : 0;
-	}
-
-	inline constexpr void skip_to_first4( char const *&first,
-	                                      char const *const last ) {
-		bool keep_going = last - first >= 4;
-		while( keep_going ) {
-			// Need to look for escapes as this is fast path
-			auto buff = daw::to_uint32_buffer( first );
-			auto const q3 = test_at_byte<3U, '"'>( buff );
-			auto const q2 = test_at_byte<2U, '"'>( buff );
-			auto const q1 = test_at_byte<1U, '"'>( buff );
-			auto const q0 = test_at_byte<0U, '"'>( buff );
-			auto const s3 = test_at_byte<3U, '\\'>( buff );
-			auto const s2 = test_at_byte<2U, '\\'>( buff );
-			auto const s1 = test_at_byte<1U, '\\'>( buff );
-			auto const s0 = test_at_byte<0U, '\\'>( buff );
-			keep_going = not( q0 | q1 | q2 | q3 | s0 | s1 | s2 | s3 );
-			keep_going = keep_going & static_cast<bool>( last - ( first + 4 ) >= 4 );
-			first += static_cast<int>( keep_going ) * 4;
-		}
-		first -= *( first - 1 ) == '\\' ? 1 : 0;
-	}
-
 	struct string_quote_parser {
 		template<typename Range>
-		[[nodiscard]] static constexpr auto parse_nq( Range &rng )
-		  -> std::enable_if_t<Range::is_unchecked_input, std::size_t> {
+		[[nodiscard]] static constexpr std::size_t parse_nq( Range &rng ) {
 			std::ptrdiff_t need_slow_path = -1;
-			char const *first = rng.first;
-			char const *const last = rng.last;
-			// This is a logic error to happen.
-			// daw_json_assert_weak( first != '"', "Unexpected quote" );
-			while( true ) {
-				first = json_details::mem_skip_string<true>( Range::exec_tag, first, last );
-				if( DAW_JSON_LIKELY( *first == '"' ) ) {
-					break;
+			char const *const first = rng.first;
+			while( rng.has_more( ) ) {
+				json_details::mem_skip_string( Range::exec_tag, rng );
+
+				if constexpr( Range::is_unchecked_input ) {
+					if( DAW_JSON_LIKELY( *rng.first == '"' ) ) {
+						break;
+					}
+				} else {
+					if( DAW_JSON_LIKELY( rng.has_more( ) and *rng.first == '"' ) ) {
+						break;
+					}
 				}
 				// We are at a backslash
 				if( need_slow_path < 0 ) {
-					need_slow_path = first - rng.first;
+					need_slow_path = rng.first - first;
 				}
-				first += 2;
+				rng.first += 2;
 			}
-			rng.first = first;
-			return static_cast<std::size_t>( need_slow_path );
-		}
-
-		template<typename Range>
-		[[nodiscard]] static constexpr auto parse_nq( Range &rng )
-		  -> std::enable_if_t<not Range::is_unchecked_input, std::size_t> {
-			std::ptrdiff_t need_slow_path = -1;
-			char const *first = rng.first;
-			char const *const last = rng.class_last;
-			while( first < last ) {
-				first = json_details::mem_skip_string<false>( Range::exec_tag, first, last );
-
-				if( DAW_JSON_LIKELY( first < last and *first == '"' ) ) {
-					break;
-				}
-				// We are at a backslash
-				if( need_slow_path < 0 ) {
-					need_slow_path = first - rng.first;
-				}
-				first += 2;
-			}
-			daw_json_assert_weak( first < last and *first == '"',
+			daw_json_assert_weak( rng.has_more( ) and *rng.first == '"',
 			                      "Expected a '\"' at end of string" );
-			rng.first = first;
 			return static_cast<std::size_t>( need_slow_path );
 		}
 	};
