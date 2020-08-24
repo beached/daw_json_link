@@ -27,10 +27,15 @@
 #endif
 
 #if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
-         defined( _CPPUNWIND ) )
+         defined( _CPPUNWIND ) ) or                                            \
+  defined( DAW_DONT_USE_JSON_EXCEPTIONS )
 // account for no exceptions -fno-exceptions
 #ifdef DAW_USE_JSON_EXCEPTIONS
 #undef DAW_USE_JSON_EXCEPTIONS
+#endif
+#else
+#ifndef DAW_USE_JSON_EXCEPTIONS
+#define DAW_USE_JSON_EXCEPTIONS
 #endif
 #endif
 
