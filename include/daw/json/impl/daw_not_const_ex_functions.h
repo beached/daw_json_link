@@ -157,7 +157,7 @@ namespace daw::json::json_details {
 	template<bool is_unchecked_input>
 	DAW_ATTRIBUTE_FLATTEN static inline char const *
 	sse42_skip_string( char const *first, char const *const last ) {
-		return sse42_move_to_next_of<is_unchecked_input, 2, '"', '\\'>( first,
+		return sse42_move_to_next_of<is_unchecked_input, '"', '\\'>( first,
 		                                                                last );
 	}
 
