@@ -146,9 +146,9 @@ int main( int argc, char **argv ) try {
 
 	test<daw::json::constexpr_exec_tag>( json_str, json_str_escaped );
 	test<daw::json::runtime_exec_tag>( json_str, json_str_escaped );
-	if constexpr( not std::is_same_v<daw::json::fast_exec_tag,
+	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::fast_exec_tag>( json_str, json_str_escaped );
+		test<daw::json::simd_exec_tag>( json_str, json_str_escaped );
 	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

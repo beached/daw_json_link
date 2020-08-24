@@ -241,11 +241,11 @@ int main( int argc, char **argv ) try {
 			exit( 1 );
 		}
 		test<daw::json::constexpr_exec_tag>( argv );
-		if constexpr( not std::is_same_v<daw::json::fast_exec_tag,
+		if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 		                                 daw::json::runtime_exec_tag> ) {
 			test<daw::json::runtime_exec_tag>( argv );
 		}
-		test<daw::json::fast_exec_tag>( argv );
+		test<daw::json::simd_exec_tag>( argv );
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );

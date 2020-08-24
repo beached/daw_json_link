@@ -51,9 +51,9 @@
 #endif
 
 using CheckedPolicy =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::fast_exec_tag>;
+  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
 using UncheckedPolicy =
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::fast_exec_tag>;
+  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>;
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )

@@ -93,7 +93,7 @@ namespace daw::json::json_details::string_quote {
 			// This is a logic error to happen.
 			// daw_json_assert_weak( first != '"', "Unexpected quote" );
 			while( true ) {
-				first = mem_skip_string<true>( Range::exec_tag, first, last );
+				first = json_details::mem_skip_string<true>( Range::exec_tag, first, last );
 				if( DAW_JSON_LIKELY( *first == '"' ) ) {
 					break;
 				}
@@ -114,7 +114,7 @@ namespace daw::json::json_details::string_quote {
 			char const *first = rng.first;
 			char const *const last = rng.class_last;
 			while( first < last ) {
-				first = mem_skip_string<false>( Range::exec_tag, first, last );
+				first = json_details::mem_skip_string<false>( Range::exec_tag, first, last );
 
 				if( DAW_JSON_LIKELY( first < last and *first == '"' ) ) {
 					break;

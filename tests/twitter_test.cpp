@@ -206,8 +206,8 @@ int main( int argc, char **argv )
 	          << '\n';
 	test<constexpr_exec_tag>( json_data );
 	test<runtime_exec_tag>( json_data );
-	if constexpr( not std::is_same_v<runtime_exec_tag, fast_exec_tag> ) {
-		test<fast_exec_tag>( json_data );
+	if constexpr( not std::is_same_v<runtime_exec_tag, simd_exec_tag> ) {
+		test<simd_exec_tag>( json_data );
 	}
 
 	// ******************************

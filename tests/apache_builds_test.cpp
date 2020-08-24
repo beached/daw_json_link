@@ -112,12 +112,12 @@ int main( int argc, char **argv ) try {
 	test<
 	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
 	  json_sv1 );
-	if constexpr( not std::is_same_v<daw::json::fast_exec_tag,
+	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		std::cout << "Using " << daw::json::fast_exec_tag::name
+		std::cout << "Using " << daw::json::simd_exec_tag::name
 		          << " exec model\n*********************************************\n";
 		test<
-		  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::fast_exec_tag>>(
+		  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
 		  json_sv1 );
 	}
 } catch( daw::json::json_exception const &jex ) {

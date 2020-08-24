@@ -106,9 +106,9 @@ int main( int argc, char **argv ) try {
 	auto const h1 = test<daw::json::runtime_exec_tag>( json_string );
 	daw_json_assert( h0 == h1,
 	                 "constexpr/runtime exec model hashes do not match" );
-	if constexpr( not std::is_same_v<daw::json::fast_exec_tag,
+	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		auto const h2 = test<daw::json::fast_exec_tag>( json_string );
+		auto const h2 = test<daw::json::simd_exec_tag>( json_string );
 		daw_json_assert( h0 == h2,
 		                 "constexpr/fast exec model hashes do not match" );
 	}
