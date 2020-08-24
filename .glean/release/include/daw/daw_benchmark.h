@@ -257,7 +257,7 @@ namespace daw {
 		             : total_time / static_cast<double>( Runs );
 		avg_time -= base_time;
 		std::cout << title << delem << "	runs: " << Runs << delem
-		          <<          "	total: " << utility::format_seconds( total_time, 2 )
+		          << "	total: " << utility::format_seconds( total_time, 2 )
 		          << delem << "	avg:   " << utility::format_seconds( avg_time, 2 )
 		          << delem << "	min:   " << utility::format_seconds( min_time, 2 )
 		          << delem << "	max:   " << utility::format_seconds( max_time, 2 )
@@ -309,7 +309,7 @@ namespace daw {
 				}
 			}
 		}
-		//auto const total_start = std::chrono::steady_clock::now( );
+		// auto const total_start = std::chrono::steady_clock::now( );
 		benchmark_impl::second_duration valid_time = std::chrono::seconds( 0 );
 		for( size_t n = 0; n < Runs; ++n ) {
 			auto const start = std::chrono::steady_clock::now( );
@@ -383,6 +383,9 @@ namespace daw {
 			if( duration > max_time ) {
 				max_time = duration;
 			}
+			if( not result.has_value( ) ) {
+				break;
+			}
 		}
 		auto const total_finish = std::chrono::steady_clock::now( );
 		min_time -= base_time;
@@ -395,18 +398,23 @@ namespace daw {
 		  Runs >= 10 ? ( total_time - max_time ) / static_cast<double>( Runs - 1 )
 		             : total_time / static_cast<double>( Runs );
 		avg_time -= base_time;
-		std::cout << title << delem
-		          << "	runs:        " << Runs << delem
-		          << "	total:       " << utility::format_seconds( total_time, 2 ) << delem
-		          << "	min:         " << utility::format_seconds( min_time, 2 ) << " -> "
-		          << utility::to_bytes_per_second( bytes, min_time, 2 ) << "/s" << delem
+		std::cout << title << delem;
+		if( not result.has_value( ) ) {
+			return result;
+		}
+		std::cout << "	runs:        " << Runs << delem
+		          << "	total:       " << utility::format_seconds( total_time, 2 )
+		          << delem
+		          << "	min:         " << utility::format_seconds( min_time, 2 )
+		          << " -> " << utility::to_bytes_per_second( bytes, min_time, 2 )
+		          << "/s" << delem
 		          << "	avg:         " << utility::format_seconds( avg_time, 2 )
 		          << " -> " << utility::to_bytes_per_second( bytes, avg_time, 2 )
 		          << "/s" << delem
 		          << "	max:         " << utility::format_seconds( max_time, 2 )
 		          << " -> " << utility::to_bytes_per_second( bytes, max_time, 2 )
-		          << "/s" << delem
-		          << "	runs/second: " << (1.0/min_time) << '\n';
+		          << "/s" << delem << "	runs/second: " << ( 1.0 / min_time )
+		          << '\n';
 		return result;
 	}
 
@@ -447,7 +455,7 @@ namespace daw {
 				}
 			}
 		}
-		//using result_t = daw::remove_cvref_t<decltype( func( args... ) )>;
+		// using result_t = daw::remove_cvref_t<decltype( func( args... ) )>;
 
 		for( size_t n = 0; n < Runs; ++n ) {
 			auto const start = std::chrono::steady_clock::now( );

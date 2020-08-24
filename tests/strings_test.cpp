@@ -22,7 +22,7 @@
 #include <vector>
 
 #if not defined( DAW_NUM_RUNS )
-#if not defined( DEBUG ) or defined( NDEBUG ) 
+#if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 2500;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
@@ -30,8 +30,10 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-template<daw::json::SIMDModes simd_mode>
+template<typename ExecTag>
 std::size_t test( std::string_view json_data ) {
+	std::cout << "Using " << ExecTag::name
+	          << " exec model\n*********************************************\n";
 	using namespace daw::json;
 	using JString =
 	  json_string_raw<no_name, std::string_view,
@@ -41,15 +43,14 @@ std::size_t test( std::string_view json_data ) {
 
 	std::vector<std::string_view> values =
 	  from_json_array<JString, std::vector<std::string_view>,
-	                  daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>(
+	                  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	    json_data );
 	daw::do_not_optimize( values );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "strings.json checked", json_data.size( ),
 	  []( auto sv, auto ptr ) {
 		  auto range = json_array_range<
-		    JString, daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>(
-		    sv );
+		    JString, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( sv );
 		  for( auto v : range ) {
 			  daw::do_not_optimize( v );
 			  *ptr++ = v;
@@ -65,14 +66,14 @@ std::size_t test( std::string_view json_data ) {
 	daw::do_not_optimize( json_data );
 	std::vector<std::string_view> values2 =
 	  from_json_array<JString, std::vector<std::string_view>,
-	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>(
+	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
 	    json_data );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "strings.json unchecked", json_data.size( ),
 	  []( auto sv, auto ptr ) mutable {
 		  auto range = json_array_range<
-		    JString, daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>(
+		    JString, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
 		    sv );
 		  for( auto v : range ) {
 			  daw::do_not_optimize( v );
@@ -101,14 +102,16 @@ int main( int argc, char **argv ) try {
 		auto const data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 		return std::string( data.data( ), data.size( ) );
 	}( );
-	auto const h0 = test<daw::json::SIMDModes::None>( json_string );
-#if defined( DAW_ALLOW_SSE42 )
-	std::cout << "SSE42\n**************************\n";
-	auto const h1 = test<daw::json::SIMDModes::SSE42>( json_string );
-	daw_json_assert( h0 == h1, "SSE/non-SSE hashes do not match" );
-#else
-	(void)h0;
-#endif
+	auto const h0 = test<daw::json::constexpr_exec_tag>( json_string );
+	auto const h1 = test<daw::json::runtime_exec_tag>( json_string );
+	daw_json_assert( h0 == h1,
+	                 "constexpr/runtime exec model hashes do not match" );
+	if constexpr( not std::is_same_v<daw::json::fast_exec_tag,
+	                                 daw::json::runtime_exec_tag> ) {
+		auto const h2 = test<daw::json::fast_exec_tag>( json_string );
+		daw_json_assert( h0 == h2,
+		                 "constexpr/fast exec model hashes do not match" );
+	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

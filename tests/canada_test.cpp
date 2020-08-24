@@ -22,7 +22,7 @@
 #include <streambuf>
 
 #if not defined( DAW_NUM_RUNS )
-#if not defined( DEBUG ) or defined( NDEBUG ) 
+#if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 250;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
@@ -46,6 +46,42 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	daw_json_error( "Expected that values would be equal" );
 }
 
+template<typename ExecTag>
+void test( std::string_view json_sv1 ) {
+	std::cout << "Using " << ExecTag::name
+	          << " exec model\n*********************************************\n";
+	auto const sz = json_sv1.size( );
+	//**************************
+	std::optional<daw::geojson::Polygon> canada_result;
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "canada bench(checked)", sz,
+	  [&canada_result]( auto f1 ) {
+		  canada_result = daw::json::from_json<
+		    daw::geojson::Polygon,
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+		    f1, "features[0].geometry" );
+		  daw::do_not_optimize( canada_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( canada_result );
+	daw_json_assert( canada_result, "Missing value" );
+	canada_result = std::nullopt;
+	//**************************
+	canada_result = std::nullopt;
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "canada bench(unchecked)", sz,
+	  [&canada_result]( auto f1 ) {
+		  canada_result = daw::json::from_json<
+		    daw::geojson::Polygon,
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		    f1, "features[0].geometry" );
+		  daw::do_not_optimize( canada_result );
+	  },
+	  json_sv1 );
+	daw::do_not_optimize( canada_result );
+	daw_json_assert( canada_result, "Missing value" );
+}
+
 int main( int argc, char **argv ) try {
 	using namespace daw::json;
 	if( argc < 2 ) {
@@ -62,63 +98,16 @@ int main( int argc, char **argv ) try {
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	//**************************
-	std::optional<daw::geojson::Polygon> canada_result;
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(checked)", sz,
-	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<daw::geojson::Polygon>(
-		    f1, "features[0].geometry" );
-		  daw::do_not_optimize( canada_result );
-	  },
-	  json_sv1 );
-	daw::do_not_optimize( canada_result );
-	daw_json_assert( canada_result, "Missing value" );
-	canada_result = std::nullopt;
-	//**************************
-	canada_result = std::nullopt;
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(unchecked)", sz,
-	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<daw::geojson::Polygon,
-		                                       NoCommentSkippingPolicyUnchecked>(
-		    f1, "features[0].geometry" );
-		  daw::do_not_optimize( canada_result );
-	  },
-	  json_sv1 );
-	daw::do_not_optimize( canada_result );
-	daw_json_assert( canada_result, "Missing value" );
-#ifdef DAW_ALLOW_SSE42
-	//**************************
-	canada_result = std::nullopt;
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(checked, SSE42)", sz,
-	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
-		    f1, "features[0].geometry" );
-		  daw::do_not_optimize( canada_result );
-	  },
-	  json_sv1 );
-	daw::do_not_optimize( canada_result );
-	daw_json_assert( canada_result, "Missing value" );
-	//**************************
-	canada_result = std::nullopt;
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "canada bench(unchecked, SSE42)", sz,
-	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE42>>(
-		    f1, "features[0].geometry" );
-		  daw::do_not_optimize( canada_result );
-	  },
-	  json_sv1 );
-	daw::do_not_optimize( canada_result );
-	daw_json_assert( canada_result, "Missing value" );
-#endif
+	test<daw::json::constexpr_exec_tag>( json_sv1 );
+	test<daw::json::runtime_exec_tag>( json_sv1 );
+	if constexpr( not std::is_same_v<daw::json::fast_exec_tag,
+	                                 daw::json::runtime_exec_tag> ) {
+		test<daw::json::fast_exec_tag>( json_sv1 );
+	}
 
+	std::cout << "to_json testing\n*********************************************\n";
+	auto const canada_result =
+	  daw::json::from_json<daw::geojson::Polygon>( json_sv1, "features[0].geometry"  );
 	std::string str{ };
 	{
 		auto out_it = std::back_inserter( str );
@@ -127,7 +116,7 @@ int main( int argc, char **argv ) try {
 		  "canada bench(to_json_string)", sz,
 		  [&]( auto const &tr ) {
 			  str.clear( );
-			  daw::json::to_json( *tr, out_it );
+			  daw::json::to_json( tr, out_it );
 			  daw::do_not_optimize( str );
 		  },
 		  canada_result );
@@ -145,7 +134,7 @@ int main( int argc, char **argv ) try {
 		  "canada bench(to_json_string2)", sz,
 		  [&]( auto const &tr ) {
 			  auto out_it = str.data( );
-			  daw::json::to_json( *tr, out_it );
+			  daw::json::to_json( tr, out_it );
 			  daw::do_not_optimize( str );
 		  },
 		  canada_result );

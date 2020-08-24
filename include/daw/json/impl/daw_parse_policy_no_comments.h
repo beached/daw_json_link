@@ -10,7 +10,7 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
-#include "daw_not_const_ex_functions.h"
+#include "daw_mem_functions.h"
 #include "daw_parse_policy_policy_details.h"
 
 #include <daw/daw_function_table.h>
@@ -44,25 +44,9 @@ namespace daw::json {
 		template<char... keys, typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
 			static_assert( sizeof...( keys ) <= 16 );
-#if defined( DAW_ALLOW_SSE42 )
-			if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
-				rng.first =
-				  json_details::sse42_move_to_next_of<Range::is_unchecked_input,
-				                                      sizeof...( keys ), keys...>(
-				    rng.first, rng.last );
-			} else {
-#endif
-			char const *first = rng.first;
-			char const *const last = rng.last;
-			daw_json_assert_weak( first < last, "Unexpected end of data" );
-			while( not parse_policy_details::in<keys...>( *first ) ) {
-				++first;
-				daw_json_assert_weak( first < last, "Unexpected end of data" );
-			}
-			rng.first = first;
-#if defined( DAW_ALLOW_SSE42 )
-			}
-#endif
+			rng.first = json_details::mem_move_to_next_of<Range::is_unchecked_input,
+			                                              sizeof...( keys ), keys...>(
+			  Range::exec_tag, rng.first, rng.last );
 		}
 
 		DAW_ATTRIBUTE_FLATTEN static constexpr bool is_literal_end( char c ) {
@@ -89,24 +73,8 @@ namespace daw::json {
 					return ptr_first < ptr_last;
 				case '"':
 					++ptr_first;
-#if defined( DAW_ALLOW_SSE42 )
-					if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
-						ptr_first = json_details::sse42_skip_until_end_of_string<false>(
-						  ptr_first, rng.last );
-					} else {
-#endif
-					while( ptr_first < ptr_last and *ptr_first != '"' ) {
-						if( *ptr_first == '\\' ) {
-							++ptr_first;
-							if( DAW_JSON_UNLIKELY( ptr_first >= ptr_last ) ) {
-								break;
-							}
-						}
-						++ptr_first;
-					}
-#if defined( DAW_ALLOW_SSE42 )
-					}
-#endif
+					ptr_first = json_details::mem_skip_until_end_of_string<false>(
+					  Range::exec_tag, ptr_first, rng.last );
 					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
 					return true;
 				case ',':
@@ -167,22 +135,9 @@ namespace daw::json {
 					return true;
 				case '"':
 					++ptr_first;
-#if defined( DAW_ALLOW_SSE42 )
-					if constexpr( Range::simd_mode == SIMDModes::SSE42 ) {
-						ptr_first = json_details::sse42_skip_until_end_of_string<true>(
-						  ptr_first, rng.last );
-					} else {
-#endif
-						while( *ptr_first != '"' ) {
-							if( *ptr_first == '\\' ) {
-								++ptr_first;
-							}
-							++ptr_first;
-						}
-#if defined( DAW_ALLOW_SSE42 )
-					}
+					ptr_first = json_details::mem_skip_until_end_of_string<true>(
+					  Range::exec_tag, ptr_first, rng.last );
 					return true;
-#endif
 				case ',':
 					if( ( prime_bracket_count == 1 ) bitand
 					    ( second_bracket_count == 0 ) ) {

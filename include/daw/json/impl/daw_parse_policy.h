@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "daw_exec_modes.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_parse_policy_cpp_comments.h"
@@ -26,20 +27,22 @@
 #include <type_traits>
 
 namespace daw::json {
-	template<bool IsUncheckedInput, typename CommentPolicy, SIMDModes SIMDMode,
+	template<bool IsUncheckedInput, typename CommentPolicy, typename ExecTag,
 	         bool AllowEscapedNames>
 	struct BasicParsePolicy final {
 		using iterator = char const *;
 		static constexpr bool is_unchecked_input = IsUncheckedInput;
-		static constexpr SIMDModes simd_mode = SIMDMode;
+		static_assert( std::is_base_of_v<constexpr_exec_tag, ExecTag>,
+		               "Unexpected exec tag" );
+		static constexpr ExecTag exec_tag = ExecTag{ };
 		static constexpr bool allow_escaped_names = AllowEscapedNames;
 		static constexpr bool force_name_equal_check = false;
 		using CharT = char;
 
 		using as_unchecked =
-		  BasicParsePolicy<true, CommentPolicy, simd_mode, allow_escaped_names>;
+		  BasicParsePolicy<true, CommentPolicy, ExecTag, allow_escaped_names>;
 		using as_checked =
-		  BasicParsePolicy<false, CommentPolicy, simd_mode, allow_escaped_names>;
+		  BasicParsePolicy<false, CommentPolicy, ExecTag, allow_escaped_names>;
 
 		iterator first{ };
 		iterator last{ };
@@ -87,45 +90,18 @@ namespace daw::json {
 
 		template<char c>
 		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_unchecked( ) {
-#if defined( DAW_ALLOW_SSE42 )
-			if constexpr( simd_mode == SIMDModes::SSE42 ) {
-				first = reinterpret_cast<char const *>( std::memchr(
-				  first, c, static_cast<std::size_t>( last - first ) ) );
-			} else {
-#endif
-				while( *first != c ) {
-					++first;
-				}
-#if defined( DAW_ALLOW_SSE42 )
-			}
-#endif
+			first = json_details::mem_chr<true>( exec_tag, first, last, c );
 		}
 
 		template<char c>
 		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of_checked( ) {
-#if defined( DAW_ALLOW_SSE42 )
-			if constexpr( simd_mode == SIMDModes::SSE42 ) {
-				char const * ptr = reinterpret_cast<char const *>( std::memchr(
-				  first, c, static_cast<std::size_t>( last - first ) ) );
-				daw_json_assert( ptr != nullptr, "Expected token missing" );
-				first = ptr;
-			} else {
-#endif
-				while( first < last and *first != c ) {
-					++first;
-				}
-#if defined( DAW_ALLOW_SSE42 )
-			}
-#endif
+			first = json_details::mem_chr<false>( exec_tag, first, last, c );
 		}
 
 		template<char c>
 		DAW_ATTRIBUTE_FLATTEN constexpr void move_to_next_of( ) {
-			if( is_unchecked_input ) {
-				move_to_next_of_unchecked<c>( );
-			} else {
-				move_to_next_of_checked<c>( );
-			}
+			first =
+			  json_details::mem_chr<is_unchecked_input>( exec_tag, first, last, c );
 		}
 
 		[[nodiscard]] constexpr char front( ) const {
@@ -359,44 +335,52 @@ namespace daw::json {
 	}; // namespace daw::json
 
 	using NoCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, NoCommentSkippingPolicy, SIMDModes::None, false>;
+	  BasicParsePolicy<false, NoCommentSkippingPolicy, constexpr_exec_tag, false>;
 
 	using NoCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, NoCommentSkippingPolicy, SIMDModes::None, false>;
+	  BasicParsePolicy<true, NoCommentSkippingPolicy, constexpr_exec_tag, false>;
 
-	template<SIMDModes mode>
+	template<typename ExecTag, bool AllowEscapedNames = false>
 	using SIMDNoCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, NoCommentSkippingPolicy, mode, false>;
+	  BasicParsePolicy<false, NoCommentSkippingPolicy, ExecTag,
+	                   AllowEscapedNames>;
 
-	template<SIMDModes mode>
+	template<typename ExecTag, bool AllowEscapedNames = false>
 	using SIMDNoCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, NoCommentSkippingPolicy, mode, false>;
+	  BasicParsePolicy<true, NoCommentSkippingPolicy, ExecTag, AllowEscapedNames>;
 
 	using HashCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, HashCommentSkippingPolicy, SIMDModes::None, false>;
+	  BasicParsePolicy<false, HashCommentSkippingPolicy, constexpr_exec_tag,
+	                   false>;
 
 	using HashCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, HashCommentSkippingPolicy, SIMDModes::None, false>;
+	  BasicParsePolicy<true, HashCommentSkippingPolicy, constexpr_exec_tag,
+	                   false>;
 
-	template<SIMDModes mode>
+	template<typename ExecTag, bool AllowEscapedNames = false>
 	using SIMDHashCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, HashCommentSkippingPolicy, mode, false>;
+	  BasicParsePolicy<false, HashCommentSkippingPolicy, ExecTag,
+	                   AllowEscapedNames>;
 
-	template<SIMDModes mode>
+	template<typename ExecTag, bool AllowEscapedNames = false>
 	using SIMDHashCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, HashCommentSkippingPolicy, mode, false>;
+	  BasicParsePolicy<true, HashCommentSkippingPolicy, ExecTag,
+	                   AllowEscapedNames>;
 
 	using CppCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, CppCommentSkippingPolicy, SIMDModes::None, false>;
+	  BasicParsePolicy<false, CppCommentSkippingPolicy, constexpr_exec_tag,
+	                   false>;
 
 	using CppCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, CppCommentSkippingPolicy, SIMDModes::None, false>;
+	  BasicParsePolicy<true, CppCommentSkippingPolicy, constexpr_exec_tag, false>;
 
-	template<SIMDModes mode>
+	template<typename ExecTag, bool AllowEscapedNames = false>
 	using SIMDCppCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, CppCommentSkippingPolicy, mode, false>;
+	  BasicParsePolicy<false, CppCommentSkippingPolicy, ExecTag,
+	                   AllowEscapedNames>;
 
-	template<SIMDModes mode>
+	template<typename ExecTag, bool AllowEscapedNames = false>
 	using SIMDCppCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, CppCommentSkippingPolicy, mode, false>;
+	  BasicParsePolicy<true, CppCommentSkippingPolicy, ExecTag,
+	                   AllowEscapedNames>;
 } // namespace daw::json

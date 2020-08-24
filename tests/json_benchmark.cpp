@@ -50,17 +50,10 @@
 #error "BUILD_TYPE must be defined"
 #endif
 
-#if defined( DAW_ALLOW_SSE42 )
 using CheckedPolicy =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE42>;
+  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::fast_exec_tag>;
 using UncheckedPolicy =
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::SIMDModes::SSE42>;
-#else
-using CheckedPolicy =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::None>;
-using UncheckedPolicy =
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::SIMDModes::None>;
-#endif
+  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::fast_exec_tag>;
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )

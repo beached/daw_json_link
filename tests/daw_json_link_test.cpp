@@ -11,6 +11,7 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 #include "daw/json/impl/daw_arith_traits.h"
+#include "daw/json/impl/daw_exec_modes.h"
 #include "daw/json/impl/daw_json_assert.h"
 
 #include <daw/daw_benchmark.h>
@@ -61,8 +62,7 @@ DAW_CONSTEXPR bool parse_unsigned_test( char const ( &str )[N],
 	auto tmp = daw::json::NoCommentSkippingPolicyUnchecked( str, str + N );
 	return daw::json::json_details::unsigned_parser<
 	         Unsigned, daw::json::JsonRangeCheck::CheckForNarrowing, false>(
-	         daw::json::SIMDConst_v<daw::json::SIMDModes::None>, tmp ) ==
-	       expected;
+	         daw::json::constexpr_exec_tag{ }, tmp ) == expected;
 }
 
 struct test_001_t {

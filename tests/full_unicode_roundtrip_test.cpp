@@ -17,8 +17,8 @@
 #include <iostream>
 
 #if not defined( DAW_NUM_RUNS )
-#if not defined( DEBUG ) or defined( NDEBUG ) 
-static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+#if not defined( DEBUG ) or defined( NDEBUG )
+static inline constexpr std::size_t DAW_NUM_RUNS = 200;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 #endif
@@ -51,13 +51,18 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-template<typename Policy, typename MMF>
+template<typename ExecTag, typename MMF>
 void test( MMF const &json_str, MMF const &json_str_escaped ) {
-	std::vector<unicode_data> const unicode_test =
-	  daw::json::from_json_array<unicode_data, std::vector<unicode_data>, Policy>(
-	    std::string_view( json_str.data( ), json_str.size( ) ) );
+	std::cout << "Using " << ExecTag::name
+	          << " exec model\n*********************************************\n";
+	std::vector<unicode_data> const unicode_test = daw::json::from_json_array<
+	  unicode_data, std::vector<unicode_data>,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
+	  std::string_view( json_str.data( ), json_str.size( ) ) );
 	std::vector<unicode_data> const unicode_test_from_escaped =
-	  daw::json::from_json_array<unicode_data, std::vector<unicode_data>, Policy>(
+	  daw::json::from_json_array<
+	    unicode_data, std::vector<unicode_data>,
+	    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	    std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
 
 	daw_json_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
@@ -76,25 +81,50 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	  unicode_test.begin( ), unicode_test.end( ), unicode_test2.begin( ) );
 	daw_json_assert( mismatch_pos2.first == unicode_test.end( ),
 	                 "Should be the same after parsing" );
-	using range_t = daw::json::json_array_range<unicode_data, Policy>;
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "full unicode bench", json_str.size( ),
-	  []( auto rng ) {
-		  auto first = rng.begin( );
-		  auto const last = rng.end( );
-		  auto result = std::distance( first, last );
-		  daw::do_not_optimize( result );
-	  },
-	  range_t( std::string_view( json_str ) ) );
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "full unicode all escaped bench", json_str.size( ),
-	  []( auto rng ) {
-		  auto first = rng.begin( );
-		  auto const last = rng.end( );
-		  auto result = std::distance( first, last );
-		  daw::do_not_optimize( result );
-	  },
-	  range_t( std::string_view( json_str_escaped ) ) );
+	{
+		using range_t = daw::json::json_array_range<
+		  unicode_data, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
+		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		  "full unicode bench(checked)", json_str.size( ),
+		  []( auto rng ) {
+			  auto first = rng.begin( );
+			  auto const last = rng.end( );
+			  auto result = std::distance( first, last );
+			  daw::do_not_optimize( result );
+		  },
+		  range_t( std::string_view( json_str ) ) ).get( );
+		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		  "full unicode all escaped bench(checked)", json_str.size( ),
+		  []( auto rng ) {
+			  auto first = rng.begin( );
+			  auto const last = rng.end( );
+			  auto result = std::distance( first, last );
+			  daw::do_not_optimize( result );
+		  },
+		  range_t( std::string_view( json_str_escaped ) ) ).get( );
+	}
+	{
+		using range_t = daw::json::json_array_range<
+		  unicode_data, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>;
+		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		  "full unicode bench(unchecked)", json_str.size( ),
+		  []( auto rng ) {
+			  auto first = rng.begin( );
+			  auto const last = rng.end( );
+			  auto result = std::distance( first, last );
+			  daw::do_not_optimize( result );
+		  },
+		  range_t( std::string_view( json_str ) ) ).get( );
+		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+		  "full unicode all escaped bench(unchecked)", json_str.size( ),
+		  []( auto rng ) {
+			  auto first = rng.begin( );
+			  auto const last = rng.end( );
+			  auto result = std::distance( first, last );
+			  daw::do_not_optimize( result );
+		  },
+		  range_t( std::string_view( json_str_escaped ) ) ).get( );
+	}
 }
 
 int main( int argc, char **argv ) try {
@@ -114,15 +144,12 @@ int main( int argc, char **argv ) try {
 	auto const json_str_escaped =
 	  daw::filesystem::memory_mapped_file_t<>( argv[2] );
 
-	test<
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::None>>(
-	  json_str, json_str_escaped );
-#if defined( DAW_ALLOW_SSE42 )
-	std::cout << "SS3\n********************\n";
-	test<
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE42>>(
-	  json_str, json_str_escaped );
-#endif
+	test<daw::json::constexpr_exec_tag>( json_str, json_str_escaped );
+	test<daw::json::runtime_exec_tag>( json_str, json_str_escaped );
+	if constexpr( not std::is_same_v<daw::json::fast_exec_tag,
+	                                 daw::json::runtime_exec_tag> ) {
+		test<daw::json::fast_exec_tag>( json_str, json_str_escaped );
+	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

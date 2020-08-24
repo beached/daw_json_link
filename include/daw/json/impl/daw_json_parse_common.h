@@ -9,10 +9,10 @@
 #pragma once
 
 #include "daw_arith_traits.h"
+#include "daw_exec_modes.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_string_quote.h"
 #include "daw_json_traits.h"
-#include "daw_simd_modes.h"
 #include "daw_string_slow.h"
 
 #include <daw/daw_parser_helper_sv.h>
@@ -332,12 +332,12 @@ namespace daw::json {
 	  Nullable == JsonNullable::Never ? ParseType : JsonParseTypes::Null;
 
 	namespace json_details {
-		template<SIMDModes>
+		template<typename>
 		inline constexpr std::size_t parse_space_needed_v = 1U;
 
 #ifdef DAW_ALLOW_SSE42
 		template<>
-		inline constexpr std::size_t parse_space_needed_v<SIMDModes::SSE42> = 16U;
+		inline constexpr std::size_t parse_space_needed_v<sse42_exec_tag> = 16U;
 #endif
 
 		template<typename JsonType>

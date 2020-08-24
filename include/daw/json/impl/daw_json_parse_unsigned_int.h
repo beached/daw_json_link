@@ -96,7 +96,7 @@ namespace daw::json::json_details {
 	         typename Range,
 	         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
 	[[nodiscard]] static constexpr Unsigned
-	unsigned_parser( SIMDConst<SIMDModes::None>, Range &rng ) {
+	unsigned_parser( constexpr_exec_tag const &, Range &rng ) {
 		// If a uint128 is passed, it will be larger than a uintmax_t
 		using result_t = max_unsigned_t<RangeChecked, Unsigned, uintmax_t>;
 		static_assert( not static_cast<bool>( RangeChecked ) or
@@ -143,7 +143,7 @@ namespace daw::json::json_details {
 	         typename Range,
 	         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
 	[[nodiscard]] static constexpr Unsigned
-	unsigned_parser( SIMDConst<SIMDModes::None>, Range &rng ) {
+	unsigned_parser( constexpr_exec_tag const &, Range &rng ) {
 		// If a uint128 is passed, it will be larger than a uintmax_t
 		using result_t = max_unsigned_t<RangeChecked, Unsigned, uintmax_t>;
 		static_assert( not static_cast<bool>( RangeChecked ) or
@@ -231,8 +231,8 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>
-	[[nodiscard]] static inline Unsigned
-	unsigned_parser( SIMDConst<SIMDModes::SSE42>, Range &rng ) {
+	[[nodiscard]] static inline Unsigned unsigned_parser( sse42_exec_tag const &,
+	                                                      Range &rng ) {
 		daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range" );
 		uintmax_t result = 0;
 		char const *first = rng.first;

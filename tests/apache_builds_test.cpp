@@ -21,7 +21,7 @@
 #include <streambuf>
 
 #if not defined( DAW_NUM_RUNS )
-#if not defined( DEBUG ) or defined( NDEBUG ) 
+#if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 250;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
@@ -102,15 +102,24 @@ int main( int argc, char **argv ) try {
 	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 	auto const json_sv1 =
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
+
+	std::cout << "Using " << daw::json::constexpr_exec_tag::name
+	          << " exec model\n*********************************************\n";
+	test<daw::json::SIMDNoCommentSkippingPolicyChecked<
+	  daw::json::constexpr_exec_tag>>( json_sv1 );
+	std::cout << "Using " << daw::json::runtime_exec_tag::name
+	          << " exec model\n*********************************************\n";
 	test<
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::None>>(
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
 	  json_sv1 );
-#if defined( DAW_ALLOW_SSE42 )
-	std::cout << "SSE42\n********************\n";
-	test<
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::SIMDModes::SSE42>>(
-	  json_sv1 );
-#endif
+	if constexpr( not std::is_same_v<daw::json::fast_exec_tag,
+	                                 daw::json::runtime_exec_tag> ) {
+		std::cout << "Using " << daw::json::fast_exec_tag::name
+		          << " exec model\n*********************************************\n";
+		test<
+		  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::fast_exec_tag>>(
+		  json_sv1 );
+	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

@@ -23,7 +23,7 @@
 #include <vector>
 
 #if not defined( DAW_NUM_RUNS )
-#if not defined( DEBUG ) or defined( NDEBUG ) 
+#if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 250;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
@@ -414,7 +414,7 @@ void test_func( ) {
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
 				    uint_type, daw::bounded_vector_t<uintmax_t, NUMVALUES>,
-				    SIMDNoCommentSkippingPolicyUnchecked<SIMDModes::SSE42>>( sv );
+				    SIMDNoCommentSkippingPolicyUnchecked<sse42_exec_tag>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );
@@ -429,7 +429,7 @@ void test_func( ) {
 		// Unsigned SSE42
 		using uint_type = json_number<no_name, uintmax_t>;
 		using iterator_t = daw::json::json_array_iterator<
-		  uint_type, SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>;
+		  uint_type, SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
 
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
@@ -458,7 +458,7 @@ void test_func( ) {
 			  [&]( auto &&sv ) noexcept {
 				  auto result = daw::json::from_json_array<
 				    uint_type, daw::bounded_vector_t<uint32_t, NUMVALUES>,
-				    SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>( sv );
+				    SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>( sv );
 
 				  daw::do_not_optimize( result );
 				  return result.size( );

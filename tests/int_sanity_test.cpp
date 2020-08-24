@@ -29,51 +29,49 @@ std::vector<T> make_random_data( ) {
 	return result;
 }
 
-template<size_t N>
-bool unsigned_test( ) {
-	using namespace daw::json;
-	std::vector<unsigned> const data = make_random_data<unsigned, N>( );
+template<typename ExecTag, size_t N>
+void test( ) {
+	std::cout << "Using " << ExecTag::name
+	          << " exec model\n*********************************************\n";
+	{
+		std::cout << "unsigned test\n";
+		using namespace daw::json;
+		std::vector<unsigned> const data = make_random_data<unsigned, N>( );
 
-	std::string json_data = to_json_array( data );
+		std::string json_data = to_json_array( data );
 
-	std::vector<unsigned> const parsed_1 = from_json_array<unsigned>( json_data );
+		json_data += "                "; // Ensure SIMD has enough rooom to go full
+		std::vector<unsigned> const parsed_1 =
+		  from_json_array<json_number<no_name, unsigned>, std::vector<unsigned>,
+		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
+		daw_json_assert( parsed_1 == data, "Failure to parse unsigned" );
+	}
 
-#ifdef DAW_ALLOW_SSE42
-	json_data += "        "; // so that SSE has enough room to safely parse
-	std::vector<unsigned> const parsed_2 =
-	  from_json_array<json_number<no_name, unsigned>, std::vector<unsigned>,
-	                  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
-	    json_data );
-	return parsed_1 == data and parsed_1 == parsed_2;
-#else
-	return parsed_1 == data;
-#endif
+	{
+		std::cout << "signed test\n";
+		using namespace daw::json;
+		std::vector<signed> const data = make_random_data<signed, N>( );
+
+		std::string json_data = to_json_array( data );
+
+		json_data += "        "; // so that SSE has enough room to safely parse
+		std::vector<signed> const parsed_1 =
+		  from_json_array<json_number<no_name, signed>, std::vector<signed>,
+		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
+		daw_json_assert( parsed_1 == data, "Failure to parse signed" );
+	}
 }
 
-template<size_t N>
-bool signed_test( ) {
-	using namespace daw::json;
-	std::vector<signed> const data = make_random_data<signed, N>( );
-
-	std::string json_data = to_json_array( data );
-
-	std::vector<signed> const parsed_1 = from_json_array<signed>( json_data );
-
-#ifdef DAW_ALLOW_SSE42
-	json_data += "        "; // so that SSE has enough room to safely parse
-	std::vector<signed> const parsed_2 =
-	  from_json_array<json_number<no_name, signed>, std::vector<signed>,
-	                  SIMDNoCommentSkippingPolicyChecked<SIMDModes::SSE42>>(
-	    json_data );
-	return parsed_1 == data and parsed_1 == parsed_2;
-#else
-	return parsed_1 == data;
-#endif
-}
+template<typename ExecTag, size_t N>
+bool signed_test( ) {}
 
 int main( int, char ** ) try {
-	daw::expecting( unsigned_test<1000>( ) );
-	daw::expecting( signed_test<1000>( ) );
+	test<daw::json::constexpr_exec_tag, 1000>( );
+	test<daw::json::runtime_exec_tag, 1000>( );
+	if constexpr( not std::is_same_v<daw::json::fast_exec_tag,
+	                                 daw::json::runtime_exec_tag> ) {
+		test<daw::json::fast_exec_tag, 1000>( );
+	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

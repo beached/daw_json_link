@@ -23,7 +23,7 @@
 #include <string>
 
 #if not defined( DAW_NUM_RUNS )
-#if not defined( DEBUG ) or defined( NDEBUG ) 
+#if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 250;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
@@ -31,7 +31,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-template<daw::json::SIMDModes simd_mode>
+template<typename ExecTag>
 void test( char **argv ) {
 	auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 	auto const json_data2 = daw::filesystem::memory_mapped_file_t<>( argv[2] );
@@ -40,6 +40,8 @@ void test( char **argv ) {
 	auto json_sv2 = std::string_view( json_data2.data( ), json_data2.size( ) );
 	auto json_sv3 = std::string_view( json_data3.data( ), json_data3.size( ) );
 
+	std::cout << "Using " << ExecTag::name
+	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( ) + json_sv2.size( ) + json_sv3.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
@@ -54,7 +56,7 @@ void test( char **argv ) {
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>( f1 );
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
@@ -75,7 +77,7 @@ void test( char **argv ) {
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>( f1 );
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
@@ -92,7 +94,7 @@ void test( char **argv ) {
 	  [&citm_result]( auto f2 ) {
 		  citm_result = daw::json::from_json<
 		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>( f2 );
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2 );
 	  },
 	  json_sv2 );
 	daw::do_not_optimize( citm_result );
@@ -111,7 +113,7 @@ void test( char **argv ) {
 	  [&citm_result]( auto f2 ) {
 		  citm_result = daw::json::from_json<
 		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>( f2 );
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2 );
 	  },
 	  json_sv2 );
 	daw_json_assert( citm_result, "Missing value" );
@@ -129,7 +131,7 @@ void test( char **argv ) {
 	  [&canada_result]( auto f3 ) {
 		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>(
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 		    f3, "features[0].geometry" );
 	  },
 	  json_sv3 );
@@ -144,7 +146,7 @@ void test( char **argv ) {
 	  [&canada_result]( auto f3 ) {
 		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>(
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
 		    f3, "features[0].geometry" );
 	  },
 	  json_sv3 );
@@ -159,13 +161,13 @@ void test( char **argv ) {
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>( f1 );
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
 		  citm_result = daw::json::from_json<
 		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>( f2 );
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2 );
 		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<simd_mode>>(
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 		    f3, "features[0].geometry" );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
@@ -195,13 +197,13 @@ void test( char **argv ) {
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>( f1 );
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
 		  citm_result = daw::json::from_json<
 		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>( f2 );
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2 );
 		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<simd_mode>>(
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
 		    f3, "features[0].geometry" );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
@@ -238,11 +240,12 @@ int main( int argc, char **argv ) try {
 			std::cerr << "twitter citm canada\n";
 			exit( 1 );
 		}
-		test<daw::json::SIMDModes::None>( argv );
-#if defined( DAW_ALLOW_SSE42 )
-		std::cout << "With SSE42\n************************************\n";
-		test<daw::json::SIMDModes::SSE42>( argv );
-#endif
+		test<daw::json::constexpr_exec_tag>( argv );
+		if constexpr( not std::is_same_v<daw::json::fast_exec_tag,
+		                                 daw::json::runtime_exec_tag> ) {
+			test<daw::json::runtime_exec_tag>( argv );
+		}
+		test<daw::json::fast_exec_tag>( argv );
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );

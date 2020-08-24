@@ -10,7 +10,7 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
-#include "daw_not_const_ex_functions.h"
+#include "daw_mem_functions.h"
 
 #include <daw/daw_uint_buffer.h>
 
@@ -92,43 +92,17 @@ namespace daw::json::json_details::string_quote {
 			char const *const last = rng.last;
 			// This is a logic error to happen.
 			// daw_json_assert_weak( first != '"', "Unexpected quote" );
-#if defined( DAW_ALLOW_SSE42 )
-			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE42 ) {
-				while( true ) {
-					first = sse42_skip_string<true>( first, last );
-
-					if( DAW_JSON_LIKELY( *first == '"' ) ) {
-						break;
-					}
-					// We are at a backslash
-					if( need_slow_path < 0 ) {
-						need_slow_path = first - rng.first;
-					}
-					first += 2;
+			while( true ) {
+				first = mem_skip_string<true>( Range::exec_tag, first, last );
+				if( DAW_JSON_LIKELY( *first == '"' ) ) {
+					break;
 				}
-			} else {
-#endif
-				if( last - first >= 8 ) {
-					skip_to_first8( first, last );
-				} else if( last - first >= 4 ) {
-					skip_to_first4( first, last );
+				// We are at a backslash
+				if( need_slow_path < 0 ) {
+					need_slow_path = first - rng.first;
 				}
-				while( *first != '"' ) {
-					while( *first != '"' and *first != '\\' ) {
-						++first;
-					}
-					if( DAW_JSON_UNLIKELY( *first == '\\' ) ) {
-						if( need_slow_path < 0 ) {
-							need_slow_path = first - rng.first;
-						}
-						first += 2;
-					} else {
-						break;
-					}
-				}
-#if defined( DAW_ALLOW_SSE42 )
+				first += 2;
 			}
-#endif
 			rng.first = first;
 			return static_cast<std::size_t>( need_slow_path );
 		}
@@ -139,44 +113,18 @@ namespace daw::json::json_details::string_quote {
 			std::ptrdiff_t need_slow_path = -1;
 			char const *first = rng.first;
 			char const *const last = rng.class_last;
-#if defined( DAW_ALLOW_SSE42 )
-			if constexpr( Range::simd_mode == daw::json::SIMDModes::SSE42 ) {
-				while( first < last ) {
-					first = sse42_skip_string<false>( first, last );
+			while( first < last ) {
+				first = mem_skip_string<false>( Range::exec_tag, first, last );
 
-					if( DAW_JSON_LIKELY( first < last and *first == '"' ) ) {
-						break;
-					}
-					// We are at a backslash
-					if( need_slow_path < 0 ) {
-						need_slow_path = first - rng.first;
-					}
-					first += 2;
+				if( DAW_JSON_LIKELY( first < last and *first == '"' ) ) {
+					break;
 				}
-			} else {
-#endif
-				if( char const *const l = rng.last; l - first >= 8 ) {
-					skip_to_first8( first, l );
-				} else if( last - first >= 4 ) {
-					skip_to_first4( first, l );
+				// We are at a backslash
+				if( need_slow_path < 0 ) {
+					need_slow_path = first - rng.first;
 				}
-				while( first < last and *first != '"' ) {
-					while( first < last and *first != '"' and *first != '\\' ) {
-						++first;
-					}
-
-					if( DAW_JSON_UNLIKELY( first < last and *first == '\\' ) ) {
-						if( need_slow_path < 0 ) {
-							need_slow_path = first - rng.first;
-						}
-						first += 2;
-					} else {
-						break;
-					}
-				}
-#if defined( DAW_ALLOW_SSE42 )
+				first += 2;
 			}
-#endif
 			daw_json_assert_weak( first < last and *first == '"',
 			                      "Expected a '\"' at end of string" );
 			rng.first = first;
