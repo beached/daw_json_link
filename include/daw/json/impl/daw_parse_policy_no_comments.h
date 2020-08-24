@@ -26,7 +26,7 @@ namespace daw::json {
 			char const *const last = rng.last;
 			while( first < last and
 			       parse_policy_details::is_space_unchecked( *first ) ) {
-				++first;
+			  ++first;
 			}
 			rng.first = first;
 		}

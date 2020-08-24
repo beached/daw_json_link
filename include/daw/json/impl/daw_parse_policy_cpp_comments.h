@@ -16,101 +16,105 @@
 #include <daw/daw_hide.h>
 
 namespace daw::json {
-	class CppCommentSkippingPolicy final {
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		skip_comments_unchecked( Range &rng ) {
-			if( rng.front( ) == '/' ) {
-				rng.remove_prefix( );
-				switch( rng.front( ) ) {
+	namespace json_details {
+		template<typename ExecTag>
+		DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
+		skip_cpp_comments_checked( ExecTag const &tag, char const *first,
+		                           char const *last ) {
+			if( first < last and *first == '/' ) {
+				++first;
+				daw_json_assert( first < last, "Unexpected end of stream" );
+				switch( *first ) {
 				case '/':
-					rng.template move_to_next_of_unchecked<'\n'>( );
-					rng.remove_prefix( );
+					++first;
+					first =
+					  json_details::mem_move_to_next_of<false, '\n'>( tag, first, last );
 					break;
 				case '*':
-					rng.remove_prefix( );
-					while( true ) {
-						rng.template move_to_next_of_unchecked<'*'>( );
-						rng.remove_prefix( );
-						if( rng.front( ) == '/' ) {
-							break;
-						}
-						rng.remove_prefix( );
-					}
+					++first;
+					first =
+					  json_details::mem_find_substr<false, '*', '/'>( tag, first, last );
 					break;
+				default:
+					daw_json_error( "Unexpected character in stream" );
 				}
+				++first;
 			}
+			return first;
 		}
 
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		skip_comments_checked( Range &rng ) {
-			if( rng.has_more( ) and rng.front( ) == '/' ) {
-				rng.remove_prefix( );
-				if( not rng.has_more( ) ) {
-					return;
-				}
-				switch( rng.front( ) ) {
+		template<typename ExecTag>
+		DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
+		skip_cpp_comments_unchecked( ExecTag const &tag, char const *first,
+		                             char const *last ) {
+			if( *first == '/' ) {
+				++first;
+				switch( *first ) {
 				case '/':
-					rng.template move_to_next_of_checked<'\n'>( );
-					if( rng.has_more( ) ) {
-						rng.remove_prefix( );
-					}
+					++first;
+					first =
+					  json_details::mem_move_to_next_of<true, '\n'>( tag, first, last );
 					break;
 				case '*':
-					rng.remove_prefix( );
-					while( rng.has_more( ) ) {
-						rng.template move_to_next_of_checked<'*'>( );
-						if( rng.has_more( ) ) {
-							rng.remove_prefix( );
-						}
-						if( not rng.has_more( ) or rng.front( ) == '/' ) {
-							break;
-						}
-						rng.remove_prefix( );
-					}
+					++first;
+					first =
+					  json_details::mem_find_substr<true, '*', '/'>( tag, first, last );
 					break;
+				default:
+					daw_json_error( "Unexpected character in stream" );
 				}
+				++first;
 			}
+			return first;
 		}
 
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void skip_comments( Range &rng ) {
-			if constexpr( Range::is_unchecked_input ) {
-				skip_comments_unchecked( rng );
+		template<bool is_unchecked_input, typename ExecTag>
+		DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
+		skip_cpp_comments( ExecTag const &tag, char const *first,
+		                   char const *last ) {
+			if constexpr( is_unchecked_input ) {
+				return skip_cpp_comments_unchecked( tag, first, last );
 			} else {
-				skip_comments_checked( rng );
+				return skip_cpp_comments_checked( tag, first, last );
 			}
 		}
+	} // namespace json_details
 
-	public:
+	struct CppCommentSkippingPolicy {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_checked( Range &rng ) {
-			skip_comments_checked( rng );
+			rng.first = json_details::skip_cpp_comments_checked(
+			  Range::exec_tag, rng.first, rng.last );
 			while( rng.has_more( ) and rng.is_space_unchecked( ) ) {
 				rng.remove_prefix( );
-				skip_comments_checked( rng );
+				rng.first = json_details::skip_cpp_comments_checked(
+				  Range::exec_tag, rng.first, rng.last );
 			}
 		}
 
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_unchecked( Range &rng ) {
-			skip_comments_unchecked( rng );
+			rng.first = json_details::skip_cpp_comments_unchecked(
+			  Range::exec_tag, rng.first, rng.last );
 			while( rng.is_space_unchecked( ) ) {
 				rng.remove_prefix( );
+				rng.first = json_details::skip_cpp_comments_unchecked(
+				  Range::exec_tag, rng.first, rng.last );
 			}
 		}
 
 		template<char... keys, typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
-			skip_comments( rng );
+			rng.first = json_details::skip_cpp_comments<Range::is_unchecked_input>(
+			  Range::exec_tag, rng.first, rng.last );
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 			while( not parse_policy_details::in<keys...>( rng.front( ) ) ) {
 				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 				rng.remove_prefix( );
-				skip_comments( rng );
+				rng.first = json_details::skip_cpp_comments<Range::is_unchecked_input>(
+				  Range::exec_tag, rng.first, rng.last );
 			}
 		}
 
@@ -165,22 +169,8 @@ namespace daw::json {
 					--second_bracket_count;
 					return true;
 				case '/':
-					++ptr_first;
-					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
-					switch( *ptr_first ) {
-					case '/':
-						++ptr_first;
-						ptr_first = json_details::mem_move_to_next_of<false, '\n'>(
-						  Range::exec_tag, ptr_first, rng.last );
-						break;
-					case '*':
-						++ptr_first;
-						ptr_first = json_details::mem_find_substr<false, '*', '/'>(
-						  Range::exec_tag, ptr_first, ptr_last );
-						break;
-					default:
-						daw_json_error( "Unexpected character in stream" );
-					}
+					ptr_first = json_details::skip_cpp_comments_checked(
+					  Range::exec_tag, ptr_first, ptr_last );
 					return true;
 				default:
 					return true;
@@ -244,22 +234,8 @@ namespace daw::json {
 					--second_bracket_count;
 					return true;
 				case '/':
-					++ptr_first;
-					switch( *ptr_first ) {
-					case '/':
-						++ptr_first;
-						ptr_first = json_details::mem_move_to_next_of<true, '\n'>(
-						  Range::exec_tag, ptr_first, rng.last );
-						break;
-					case '*':
-						++ptr_first;
-						while( *ptr_first != '*' and *std::next( ptr_first ) != '/' ) {
-							++ptr_first;
-						}
-						break;
-					default:
-						daw_json_error( "Unexpected character in stream" );
-					}
+					ptr_first = json_details::skip_cpp_comments_unchecked(
+					  Range::exec_tag, ptr_first, rng.last );
 					return true;
 				default:
 					return true;

@@ -34,6 +34,23 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input, char... keys>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
+	mem_move_to_next_not_of( constexpr_exec_tag const &, char const *first,
+											 char const *last ) {
+		constexpr auto is_eq = []( char c ) { return ( ( c == keys ) | ... ); };
+		if constexpr( is_unchecked_input ) {
+			while( is_eq( *first ) ) {
+				++first;
+			}
+		} else {
+			while( first < last and is_eq( *first ) ) {
+				++first;
+			}
+		}
+		return first;
+	}
+
+	template<bool is_unchecked_input, char... keys>
+	DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
 	mem_find_substr( constexpr_exec_tag const &, char const *first,
 	                 char const *last ) {
 

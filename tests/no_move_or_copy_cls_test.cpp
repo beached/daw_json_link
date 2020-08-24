@@ -20,7 +20,7 @@
 struct A {
 	int member;
 
-	DAW_CONSTEXPR A( int a )
+	constexpr A( int a )
 	  : member( a ) {}
 	~A( ) = default;
 	A( A const & ) = delete;
@@ -67,7 +67,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int, char ** ) try {
-	DAW_CONSTEXPR std::string_view json_data = R"({ "some_num": 1234 } )";
+	constexpr std::string_view json_data = R"({ "some_num": 1234 } )";
 #if not defined( __cpp_DAW_CONSTEXPR_dynamic_alloc )
 	daw::expecting( daw::json::from_json<A>( json_data ).member == 1234 );
 #else
@@ -75,8 +75,7 @@ int main( int, char ** ) try {
 #endif
 	// This does not work
 
-	DAW_CONSTEXPR std::string_view json_data2 =
-	  R"({ "a": { "some_num": 1234 } } )";
+	constexpr std::string_view json_data2 = R"({ "a": { "some_num": 1234 } } )";
 #if not defined( __cpp_DAW_CONSTEXPR_dynamic_alloc )
 	daw::expecting( daw::json::from_json<B>( json_data2 ).a.member == 1234 );
 #else

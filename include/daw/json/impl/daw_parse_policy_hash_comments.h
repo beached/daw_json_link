@@ -16,67 +16,81 @@
 #include <daw/daw_hide.h>
 
 namespace daw::json {
-	class HashCommentSkippingPolicy final {
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		skip_comments_unchecked( Range &rng ) {
-			if( rng.front( ) == '#' ) {
-				rng.remove_prefix( );
-				rng.template move_to_next_of_unchecked<'\n'>( );
-				rng.remove_prefix( );
+	namespace json_details {
+		template<typename ExecTag>
+		DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
+		skip_hash_comments_checked( ExecTag const &tag, char const *first,
+		                            char const *last ) {
+			if( first < last and *first == '#' ) {
+				++first;
+				daw_json_assert( first < last, "Unexpected end of stream" );
+				first =
+				  json_details::mem_move_to_next_of<false, '\n'>( tag, first, last );
+				++first;
 			}
+			return first;
 		}
 
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void
-		skip_comments_checked( Range &rng ) {
-			if( rng.has_more( ) and rng.front( ) == '#' ) {
-				rng.remove_prefix( );
-				rng.template move_to_next_of_checked<'\n'>( );
-				if( rng.front( ) == '\n' ) {
-					rng.remove_prefix( );
-				}
+		template<typename ExecTag>
+		DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
+		skip_hash_comments_unchecked( ExecTag const &tag, char const *first,
+		                              char const *last ) {
+			if( *first == '#' ) {
+				++first;
+				first =
+				  json_details::mem_move_to_next_of<true, '\n'>( tag, first, last );
+				++first;
 			}
+			return first;
 		}
 
-		template<typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr void skip_comments( Range &rng ) {
-			if constexpr( Range::is_unchecked_input ) {
-				skip_comments_unchecked( rng );
+		template<bool is_unchecked_input, typename ExecTag>
+		DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
+		skip_hash_comments( ExecTag const &tag, char const *first,
+		                    char const *last ) {
+			if constexpr( is_unchecked_input ) {
+				return skip_hash_comments_unchecked( tag, first, last );
 			} else {
-				skip_comments_checked( rng );
+				return skip_hash_comments_checked( tag, first, last );
 			}
 		}
+	} // namespace json_details
 
-	public:
+	struct HashCommentSkippingPolicy {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_checked( Range &rng ) {
-			skip_comments_checked( rng );
+			rng.first = json_details::skip_cpp_comments_checked(
+			  Range::exec_tag, rng.first, rng.last );
 			while( rng.has_more( ) and rng.is_space_unchecked( ) ) {
 				rng.remove_prefix( );
-				skip_comments_checked( rng );
+				rng.first = json_details::skip_cpp_comments_checked(
+				  Range::exec_tag, rng.first, rng.last );
 			}
 		}
 
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_unchecked( Range &rng ) {
-			skip_comments_unchecked( rng );
+			rng.first = json_details::skip_cpp_comments_unchecked(
+			  Range::exec_tag, rng.first, rng.last );
 			while( rng.is_space_unchecked( ) ) {
 				rng.remove_prefix( );
+				rng.first = json_details::skip_cpp_comments_unchecked(
+				  Range::exec_tag, rng.first, rng.last );
 			}
 		}
 
 		template<char... keys, typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
-			skip_comments( rng );
-
+			rng.first = json_details::skip_cpp_comments<Range::is_unchecked_input>(
+			  Range::exec_tag, rng.first, rng.last );
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 			while( not parse_policy_details::in<keys...>( rng.front( ) ) ) {
 				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 				rng.remove_prefix( );
-				skip_comments( rng );
+				rng.first = json_details::skip_cpp_comments<Range::is_unchecked_input>(
+				  Range::exec_tag, rng.first, rng.last );
 			}
 		}
 

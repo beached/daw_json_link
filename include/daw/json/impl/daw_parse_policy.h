@@ -34,6 +34,7 @@ namespace daw::json {
 		static constexpr bool is_unchecked_input = IsUncheckedInput;
 		static_assert( std::is_base_of_v<constexpr_exec_tag, ExecTag>,
 		               "Unexpected exec tag" );
+		using exec_tag_t = ExecTag;
 		static constexpr ExecTag exec_tag = ExecTag{ };
 		static constexpr bool allow_escaped_names = AllowEscapedNames;
 		static constexpr bool force_name_equal_check = false;

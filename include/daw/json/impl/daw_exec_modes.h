@@ -13,13 +13,24 @@
 namespace daw::json {
 	struct constexpr_exec_tag {
 		static constexpr std::string_view name = "constexpr";
+#if defined( __cpp_constexpr_dynamic_alloc ) or                                \
+  defined( DAW_JSON_NO_CONST_EXPR )
+		static constexpr bool always_rvo = true;
+#else
+		static constexpr bool always_rvo = false;
+#endif
+		static constexpr bool can_constexpr = true;
 	};
 	struct runtime_exec_tag : constexpr_exec_tag {
 		static constexpr std::string_view name = "runtime";
+		static constexpr bool always_rvo = true;
+		static constexpr bool can_constexpr = false;
 	};
 #if defined( DAW_ALLOW_SSE42 )
 	struct sse42_exec_tag : runtime_exec_tag {
 		static constexpr std::string_view name = "sse4.2";
+		static constexpr bool always_rvo = true;
+		static constexpr bool can_constexpr = false;
 	};
 	using simd_exec_tag = sse42_exec_tag;
 #elif defined( DAW_ALLOW_NEON )

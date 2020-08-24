@@ -36,7 +36,7 @@ namespace daw::json::json_details {
 	}
 
 	template<bool is_unchecked_input, typename Tag>
-	DAW_ATTRIBUTE_FLATTEN static inline char const *
+	DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
 	mem_skip_until_end_of_string( Tag const &tag, char const *first,
 	                              char const *const last ) {
 		while( first < last ) {
