@@ -550,6 +550,7 @@ namespace daw::json::json_details {
 		case '9':
 			return skip_number( rng );
 		}
+		DAW_JSON_UNREACHABLE2();
 		daw_json_error( "Unknown value type" );
 	}
 

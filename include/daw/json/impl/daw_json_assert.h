@@ -20,10 +20,12 @@
 #define DAW_JSON_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )
 #define DAW_JSON_UNLIKELY( Bool ) ( __builtin_expect( !!( Bool ), 0 ) )
 #define DAW_JSON_UNREACHABLE( ) ( __builtin_unreachable( ) )
+#define DAW_JSON_UNREACHABLE2( ) ( __builtin_unreachable( ) )
 #else
 #define DAW_JSON_LIKELY( Bool ) Bool
 #define DAW_JSON_UNLIKELY( Bool ) Bool
 #define DAW_JSON_UNREACHABLE( ) std::terminate( )
+#define DAW_JSON_UNREACHABLE2( )
 #endif
 
 #if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
