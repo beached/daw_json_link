@@ -17,7 +17,8 @@
 namespace daw::json::json_details::string_quote {
 	struct string_quote_parser {
 		template<typename Range>
-		[[nodiscard]] static constexpr std::size_t parse_nq( Range &rng ) {
+		[[nodiscard]] static constexpr std::size_t
+		parse_escaped_string_no_init_quote( Range &rng ) {
 			std::ptrdiff_t need_slow_path = -1;
 			char const *const first = rng.first;
 			while( rng.has_more( ) ) {
@@ -28,7 +29,7 @@ namespace daw::json::json_details::string_quote {
 						break;
 					}
 				} else {
-					if( DAW_JSON_LIKELY( rng.has_more( ) and *rng.first == '"' ) ) {
+					if( DAW_JSON_LIKELY( not rng.has_more( ) or *rng.first == '"' ) ) {
 						break;
 					}
 				}
@@ -38,7 +39,7 @@ namespace daw::json::json_details::string_quote {
 				}
 				rng.first += 2;
 			}
-			daw_json_assert_weak( rng.has_more( ) and *rng.first == '"',
+			daw_json_assert_weak( rng.has_more( ) or *rng.first == '"',
 			                      "Expected a '\"' at end of string" );
 			return static_cast<std::size_t>( need_slow_path );
 		}

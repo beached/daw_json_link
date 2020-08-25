@@ -37,10 +37,10 @@ namespace daw::json::json_details::name {
 		[[nodiscard,
 		  maybe_unused]] DAW_ATTRIBUTE_FLATTEN static inline constexpr daw::
 		  string_view
-		  parse_nq( Range &rng ) {
+		  parse_name_no_init_quote( Range &rng ) {
 
 			if constexpr( Range::allow_escaped_names ) {
-				auto r = skip_string_nq( rng );
+				auto r = skip_string_no_init_quote( rng );
 				trim_end_of_name( rng );
 				return daw::string_view( r.data( ), r.size( ) );
 			} else {
@@ -127,7 +127,7 @@ namespace daw::json::json_details {
 		daw_json_assert_weak( rng.is_quotes_checked( ),
 		                      "Expected name to start with a quote" );
 		rng.remove_prefix( );
-		return name::name_parser::parse_nq( rng );
+		return name::name_parser::parse_name_no_init_quote( rng );
 	}
 
 	template<typename Range>
@@ -162,7 +162,7 @@ namespace daw::json::json_details {
 				while( not json_path_compare( pop_result.current, name ) ) {
 					(void)skip_value( rng );
 					rng.clean_tail( );
-					if( rng.empty( ) or not rng.is_quotes_unchecked( ) ) {
+					if( rng.empty( ) or rng.front( ) != '"' ) {
 						return false;
 					}
 					name = parse_name( rng );

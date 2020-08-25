@@ -98,12 +98,12 @@ namespace daw {
 
 			[[maybe_unused]] explicit constexpr not_fn_t( Function &&func ) noexcept(
 			  std::is_nothrow_move_constructible_v<Function> )
-			  : m_function{daw::move( func )} {}
+			  : m_function{ daw::move( func ) } {}
 
 			[[maybe_unused]] explicit constexpr not_fn_t(
 			  Function const
 			    &func ) noexcept( std::is_nothrow_copy_constructible_v<Function> )
-			  : m_function{func} {}
+			  : m_function{ func } {}
 
 			template<typename... Args>
 			[[nodiscard, maybe_unused]] constexpr decltype( auto )
@@ -359,7 +359,7 @@ namespace daw {
 	namespace cpp_17_details {
 		template<typename F, typename Tuple, std::size_t... I>
 		[[nodiscard, maybe_unused]] constexpr decltype( auto )
-		cpp_17_details( F &&f, Tuple &&t, std::index_sequence<I...> ) {
+		apply_details( F &&f, Tuple &&t, std::index_sequence<I...> ) {
 			return daw::invoke( std::forward<F>( f ),
 			                    std::get<I>( std::forward<Tuple>( t ) )... );
 		}
@@ -372,20 +372,38 @@ namespace daw {
 
 		template<typename T>
 		inline constexpr bool is_tuple_v = is_tuple<T>::value;
+
+		template<typename F, typename Tuple, std::size_t... Is>
+		[[nodiscard]] inline constexpr decltype( auto )
+		apply_impl2( F &&f, Tuple &&t, std::index_sequence<Is...> ) {
+			return std::forward<F>( f )(
+			  std::get<Is>( std::forward<Tuple>( t ) )... );
+		}
 	} // namespace cpp_17_details
 
-	template<typename F, typename Tuple>
-	[[nodiscard, maybe_unused]] constexpr decltype( auto ) apply( F &&f,
+	template<bool use_invoke = true, typename F, typename Tuple>
+	[[nodiscard, maybe_unused]] inline constexpr decltype( auto ) apply( F &&f,
 	                                                              Tuple &&t ) {
 		static_assert( cpp_17_details::is_tuple_v<Tuple>,
 		               "Attempt to call apply with invalid arguments.  The "
 		               "arguments must be a std::tuple" );
-		if constexpr( std::tuple_size_v<Tuple> == 0 ) {
-			return daw::invoke( std::forward<F>( f ) );
+		if constexpr( use_invoke ) {
+			if constexpr( std::tuple_size_v<Tuple> == 0 ) {
+				return daw::invoke( std::forward<F>( f ) );
+			} else {
+				return cpp_17_details::apply_details(
+				  std::forward<F>( f ), std::forward<Tuple>( t ),
+				  std::make_index_sequence<std::tuple_size_v<std::decay_t<Tuple>>>{ } );
+			}
 		} else {
-			return cpp_17_details::cpp_17_details(
-			  std::forward<F>( f ), std::forward<Tuple>( t ),
-			  std::make_index_sequence<std::tuple_size_v<std::decay_t<Tuple>>>{} );
+			constexpr std::size_t tp_size = std::tuple_size_v<Tuple>;
+			if constexpr( tp_size == 0 ) {
+				return std::forward<F>( f )( );
+			} else {
+				return cpp_17_details::apply_impl2(
+				  std::forward<F>( f ), std::forward<Tuple>( t ),
+				  std::make_index_sequence<tp_size>{ } );
+			}
 		}
 	}
 
@@ -461,10 +479,10 @@ namespace daw {
 		}
 
 		template<typename Iterator, typename Distance>
-		[[maybe_unused]] constexpr void
-		advance( Iterator &first, Distance n,
-		         std::bidirectional_iterator_tag ) noexcept( noexcept( ++first ) and
-		                                                     noexcept( --first ) ) {
+		[[maybe_unused]] constexpr void advance(
+		  Iterator &first, Distance n,
+		  std::bidirectional_iterator_tag ) noexcept( noexcept( ++first )
+		                                                and noexcept( --first ) ) {
 
 			if( n >= 0 ) {
 				while( n-- > 0 ) {
@@ -501,10 +519,10 @@ namespace daw {
 	distance( Iterator first, Iterator second ) noexcept(
 	  noexcept( cpp_17_details::distance_impl(
 	    first, second,
-	    typename std::iterator_traits<Iterator>::iterator_category{} ) ) ) {
+	    typename std::iterator_traits<Iterator>::iterator_category{ } ) ) ) {
 		return cpp_17_details::distance_impl(
 		  first, second,
-		  typename std::iterator_traits<Iterator>::iterator_category{} );
+		  typename std::iterator_traits<Iterator>::iterator_category{ } );
 	}
 
 	/// @brief Advance iterator n steps
@@ -516,7 +534,7 @@ namespace daw {
 	[[maybe_unused]] constexpr void advance( Iterator &it, Distance n ) {
 		cpp_17_details::advance(
 		  it, static_cast<ptrdiff_t>( n ),
-		  typename std::iterator_traits<Iterator>::iterator_category{} );
+		  typename std::iterator_traits<Iterator>::iterator_category{ } );
 	}
 
 	/// @brief Move iterator forward n steps, if n < 0 it is only defined for
@@ -530,7 +548,7 @@ namespace daw {
 	next( Iterator it, ptrdiff_t n = 1 ) noexcept {
 
 		cpp_17_details::advance(
-		  it, n, typename std::iterator_traits<Iterator>::iterator_category{} );
+		  it, n, typename std::iterator_traits<Iterator>::iterator_category{ } );
 		return daw::move( it );
 	}
 
@@ -545,7 +563,7 @@ namespace daw {
 	prev( Iterator it, ptrdiff_t n = 1 ) noexcept {
 
 		cpp_17_details::advance(
-		  it, -n, typename std::iterator_traits<Iterator>::iterator_category{} );
+		  it, -n, typename std::iterator_traits<Iterator>::iterator_category{ } );
 		return daw::move( it );
 	}
 
@@ -562,7 +580,7 @@ namespace daw {
 		static_assert( std::is_default_constructible_v<To>,
 		               "To type must be default constructible" );
 
-		auto result = std::aligned_storage_t<sizeof( To ), alignof( To )>{};
+		auto result = std::aligned_storage_t<sizeof( To ), alignof( To )>{ };
 		return *static_cast<To *>( memcpy( &result, &from, sizeof( To ) ) );
 	}
 
@@ -711,5 +729,5 @@ namespace daw {
 	};
 
 	template<typename Function, typename... Params>
-	bind_front( Function, Params... )->bind_front<Function, Params...>;
+	bind_front( Function, Params... ) -> bind_front<Function, Params...>;
 } // namespace daw

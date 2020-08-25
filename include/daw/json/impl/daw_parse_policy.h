@@ -45,10 +45,10 @@ namespace daw::json {
 		using as_checked =
 		  BasicParsePolicy<false, CommentPolicy, ExecTag, allow_escaped_names>;
 
-		iterator first{ };
-		iterator last{ };
-		iterator class_first{ };
-		iterator class_last{ };
+		iterator first = nullptr;
+		iterator last = nullptr;
+		iterator class_first = nullptr;
+		iterator class_last = nullptr;
 		std::size_t counter = 0;
 		using Range = BasicParsePolicy;
 
@@ -72,9 +72,8 @@ namespace daw::json {
 		  , class_first( f )
 		  , class_last( l ) {
 
-			assert( f );
-			assert( l );
-			daw_json_assert( not is_null( ), "Unexpceted null start of range" );
+			daw_json_assert_weak( f != nullptr & l != nullptr,
+			                      "Unexpected null pointer" );
 		}
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool empty( ) const {
@@ -263,21 +262,6 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
-		is_array_end_checked( ) const {
-			return first < last and *first == ']';
-		}
-
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
-		is_array_end_unchecked( ) const {
-			return *first == ']';
-		}
-
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
-		is_quotes_unchecked( ) const {
-			return *first == '"';
-		}
-
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool
 		is_quotes_checked( ) const {
 			return first < last and *first == '"';
 		}
@@ -369,8 +353,7 @@ namespace daw::json {
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-		constexpr BasicParsePolicy
-		skip_bracketed_item_checked( ) {
+		constexpr BasicParsePolicy skip_bracketed_item_checked( ) {
 			auto result = *this;
 			std::size_t cnt = 0;
 			std::uint32_t prime_bracket_count = 1;
@@ -380,63 +363,68 @@ namespace daw::json {
 			if( ptr_first < ptr_last and *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
-			while( ptr_first < ptr_last and [&] {
+			auto const before_return = [&] {
+				// We include the close primary bracket in the range so that
+				// subsequent parsers have a terminator inside their range
+				daw_json_assert( first <= last, "Unexpected end of stream" );
+				daw_json_assert( ( prime_bracket_count == 0 ) bitand
+				                   ( second_bracket_count == 0 ),
+				                 "Unexpected bracketing" );
+				result.last = ptr_first;
+				result.counter = cnt;
+				first = ptr_first;
+			};
+			while( ptr_first < ptr_last ) {
 				switch( *ptr_first ) {
 				case '\\':
 					++ptr_first;
-					return ptr_first < ptr_last;
+					if( ptr_first < ptr_last ) {
+						break;
+					}
+					continue;
 				case '"':
 					++ptr_first;
 					ptr_first = json_details::mem_skip_until_end_of_string<false>(
 					  exec_tag, ptr_first, last );
-					return true;
+					break;
 				case ',':
 					if( ( prime_bracket_count == 1 ) bitand
 					    ( second_bracket_count == 0 ) ) {
 						++cnt;
 					}
-					return true;
+					break;
 				case PrimLeft:
 					++prime_bracket_count;
-					return true;
+					break;
 				case PrimRight:
 					--prime_bracket_count;
 					if( prime_bracket_count == 0 ) {
 						++ptr_first;
-						return false;
+						before_return( );
+						return result;
 					}
-					return true;
+					break;
 				case SecLeft:
 					++second_bracket_count;
-					return true;
+					break;
 				case SecRight:
 					--second_bracket_count;
-					return true;
+					break;
 				default:
 					if constexpr( CommentPolicy::has_alternate_parse_tokens ) {
 						ptr_first = CommentPolicy::skip_alternate_token_checked(
 						  exec_tag, ptr_first, last );
 					}
-					return true;
+					break;
 				}
-			}( ) ) {
 				++ptr_first;
 			}
-			daw_json_assert( first <= last, "Unexpected end of stream" );
-			daw_json_assert( ( prime_bracket_count == 0 ) bitand
-			                        ( second_bracket_count == 0 ),
-			                      "Unexpected bracketing" );
-			// We include the close primary bracket in the range so that subsequent
-			// parsers have a terminator inside their range
-			result.last = ptr_first;
-			result.counter = cnt;
-			first = ptr_first;
+			before_return( );
 			return result;
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-		constexpr BasicParsePolicy
-		skip_bracketed_item_unchecked( ) {
+		constexpr BasicParsePolicy skip_bracketed_item_unchecked( ) {
 			auto result = *this;
 			std::size_t cnt = 0;
 			std::uint32_t prime_bracket_count = 1;
@@ -445,54 +433,53 @@ namespace daw::json {
 			if( *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
-			while( [&] {
+
+			while( true ) {
 				switch( *ptr_first ) {
 				case '\\':
 					++ptr_first;
-					return true;
+					break;
 				case '"':
 					++ptr_first;
 					ptr_first = json_details::mem_skip_until_end_of_string<true>(
 					  exec_tag, ptr_first, last );
-					return true;
+					break;
 				case ',':
 					if( ( prime_bracket_count == 1 ) bitand
 					    ( second_bracket_count == 0 ) ) {
 						++cnt;
 					}
-					return true;
+					break;
 				case PrimLeft:
 					++prime_bracket_count;
-					return true;
+					break;
 				case PrimRight:
 					--prime_bracket_count;
 					if( prime_bracket_count == 0 ) {
 						++ptr_first;
-						return false;
+						// We include the close primary bracket in the range so that
+						// subsequent parsers have a terminator inside their range
+						result.last = ptr_first;
+						result.counter = cnt;
+						first = ptr_first;
+						return result;
 					}
-					return true;
+					break;
 				case SecLeft:
 					++second_bracket_count;
-					return true;
+					break;
 				case SecRight:
 					--second_bracket_count;
-					return true;
+					break;
 				default:
 					if constexpr( CommentPolicy::has_alternate_parse_tokens ) {
 						ptr_first = CommentPolicy::skip_alternate_token_unchecked(
 						  exec_tag, ptr_first, last );
 					}
-					return true;
+					break;
 				}
-			}( ) ) {
 				++ptr_first;
 			}
-			// We include the close primary bracket in the range so that subsequent
-			// parsers have a terminator inside their range
-			result.last = ptr_first;
-			result.counter = cnt;
-			first = ptr_first;
-			return result;
 		}
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr BasicParsePolicy

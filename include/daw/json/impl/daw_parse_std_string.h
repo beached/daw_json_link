@@ -179,7 +179,7 @@ namespace daw::json::json_details {
 
 		char *it = result.data( );
 
-		bool const has_quote = rng.is_quotes_unchecked( );
+		bool const has_quote = rng.front( ) == '"';
 		if( has_quote ) {
 			rng.remove_prefix( );
 		}
@@ -192,7 +192,7 @@ namespace daw::json::json_details {
 		daw_json_assert(
 		  rng.last < rng.class_last,
 		  "Unabled to parse lone string, need space after to see \"" );
-		while( not rng.is_quotes_unchecked( ) ) {
+		while( rng.front( ) != '"' ) {
 			{
 				char const *first = rng.first;
 				char const *const last = rng.last;

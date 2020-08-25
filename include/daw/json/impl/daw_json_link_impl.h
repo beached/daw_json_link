@@ -277,8 +277,7 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
 			daw_json_assert_weak( current_position <= desired_position,
 			                      "Order of ordered members must be ascending" );
-			while( current_position < desired_position and
-			       not rng.is_array_end_unchecked( ) ) {
+			while( current_position < desired_position and rng.front( ) != ']' ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				++current_position;
@@ -313,7 +312,7 @@ namespace daw::json::json_details {
 
 		// this is an out value, get position ready
 		++member_position;
-		if( DAW_JSON_UNLIKELY( rng.is_array_end_unchecked( ) ) ) {
+		if( DAW_JSON_UNLIKELY( rng.front( ) == ']' ) ) {
 			if constexpr( is_json_nullable_v<ordered_member_subtype_t<JsonMember>> ) {
 				using constructor_t = typename json_member_type::constructor_t;
 				return constructor_t{ }( );
@@ -451,7 +450,7 @@ namespace daw::json::json_details {
 					using tp_t = decltype( std::forward_as_tuple(
 					  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... ) );
-					return std::apply(
+					return daw::apply<false>(
 					  daw::construct_a<JsonClass>,
 					  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... } );
@@ -460,7 +459,7 @@ namespace daw::json::json_details {
 				using tp_t = decltype( std::forward_as_tuple(
 				  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 				    known_locations, rng )... ) );
-				JsonClass result = std::apply(
+				JsonClass result = daw::apply<false>(
 				  daw::construct_a<JsonClass>,
 				  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 				    known_locations, rng )... } );
@@ -476,13 +475,13 @@ namespace daw::json::json_details {
 		ordered_class_cleanup_now( Range &rng ) {
 			rng.clean_tail( );
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
-			while( not rng.is_array_end_unchecked( ) ) {
+			while( rng.front( ) != ']' ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 			}
 			// TODO: should we check for end
-			daw_json_assert_weak( rng.is_array_end_unchecked( ), "Expected a ']'" );
+			daw_json_assert_weak( rng.front( ) == ']', "Expected a ']'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 		}
@@ -528,12 +527,12 @@ namespace daw::json::json_details {
 
 		if constexpr( Range::exec_tag_t::always_rvo ) {
 			auto const oe = cleanup_end_of_ordered_class<Range>{ &rng };
-			return std::apply( daw::construct_a<JsonClass>,
+			return daw::apply<false>( daw::construct_a<JsonClass>,
 			                   tp_t{ parse_ordered_class_member<JsonMembers>(
 			                     current_idx, rng )... } );
 		} else {
 			JsonClass result =
-			  std::apply( daw::construct_a<JsonClass>,
+			  daw::apply<false>( daw::construct_a<JsonClass>,
 			              tp_t{ parse_ordered_class_member<JsonMembers>( current_idx,
 			                                                             rng )... } );
 

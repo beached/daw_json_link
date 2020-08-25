@@ -58,7 +58,7 @@ namespace daw::json::json_details {
 			constexpr auto check = []( char const *&p, char c ) { return *p++ == c; };
 			bool const r[]{ check( ptr, keys )... };
 			bool const *bp = r;
-			return ( ( (void)keys, ( *bp++ ) ) & ... );
+			return ( ( (void)keys, ( *bp++ ) ) and ... );
 		};
 		if constexpr( is_unchecked_input ) {
 			while( not is_eq( first ) ) {

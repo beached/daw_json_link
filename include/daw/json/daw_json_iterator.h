@@ -122,8 +122,7 @@ namespace daw::json {
 		 * @return The parsed result of ParseElement
 		 */
 		[[nodiscard]] inline constexpr value_type operator*( ) const {
-			daw_json_assert_weak( m_state.has_more( ) and
-			                        not m_state.is_array_end_unchecked( ),
+			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 			                      "Unexpected end of stream" );
 
 			auto tmp = m_state;
@@ -159,7 +158,7 @@ namespace daw::json {
 		 */
 		inline constexpr json_array_iterator &operator++( ) {
 			daw_json_assert_weak( m_state.has_more( ) and
-			                        not m_state.is_array_end_unchecked( ),
+			                        m_state.front( ) != ']',
 			                      "Unexpected end of stream" );
 			if( m_can_skip ) {
 				m_state.first = m_can_skip;
@@ -186,8 +185,8 @@ namespace daw::json {
 		 * @return true when there is parse data available
 		 */
 		[[nodiscard]] inline constexpr bool good( ) const {
-			return not m_state.is_null( ) and m_state.has_more( ) and
-			       not m_state.is_array_end_unchecked( );
+			return m_state.is_null( ) and m_state.has_more( ) and
+			       m_state.front( ) != ']';
 		}
 
 		/***

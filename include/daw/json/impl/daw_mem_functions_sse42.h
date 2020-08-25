@@ -37,10 +37,10 @@ namespace daw::json::json_details {
 	DAW_ATTRIBUTE_FLATTEN static inline char const *
 	mem_move_to_next_of( sse42_exec_tag const &, char const *first,
 	                     char const *last ) {
-		static constexpr int keys_len = static_cast<int>( sizeof...( keys ) );
+		constexpr int keys_len = static_cast<int>( sizeof...( keys ) );
 		static_assert( keys_len <= 16 );
 		__m128i const a = set_epi8_reverse( keys... );
-		static constexpr int compare_mode = _SIDD_SBYTE_OPS | _SIDD_CMP_EQUAL_ANY;
+		constexpr int compare_mode = _SIDD_SBYTE_OPS | _SIDD_CMP_EQUAL_ANY;
 
 		while( last - first >= 16 ) {
 			__m128i const b =
@@ -95,7 +95,7 @@ namespace daw::json::json_details {
 			};
 			bool const r[]{ check( ptr, keys )... };
 			bool const *bp = r;
-			return ( ( (void)keys, ( *bp++ ) ) & ... );
+			return ( ( (void)keys, ( *bp++ ) ) and ... );
 		};
 		// TODO look into std::search and perf, this is a tail end of document when
 		// there are <16 characters left.  This is also primarily for end of comment

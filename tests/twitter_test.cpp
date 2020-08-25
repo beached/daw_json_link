@@ -204,15 +204,15 @@ int main( int argc, char **argv )
 	auto const sz = json_data.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
-	test<constexpr_exec_tag>( json_data );
-	test<runtime_exec_tag>( json_data );
-	if constexpr( not std::is_same_v<runtime_exec_tag, simd_exec_tag> ) {
+	//test<constexpr_exec_tag>( json_data );
+	//test<runtime_exec_tag>( json_data );
+	//if constexpr( not std::is_same_v<runtime_exec_tag, simd_exec_tag> ) {
 		test<simd_exec_tag>( json_data );
-	}
+	//}
 
 	// ******************************
 	// Test serialization
-	std::optional<daw::twitter::twitter_object_t> twitter_result =
+	/*std::optional<daw::twitter::twitter_object_t> twitter_result =
 	  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
 	std::string str{ };
 	auto out_it = std::back_inserter( str );
@@ -228,7 +228,7 @@ int main( int argc, char **argv )
 	daw::do_not_optimize( str );
 	auto const twitter_result2 =
 	  daw::json::from_json<daw::twitter::twitter_object_t>( str );
-	daw::do_not_optimize( twitter_result2 );
+	daw::do_not_optimize( twitter_result2 );*/
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
   defined( _CPPUNWIND )
 }
