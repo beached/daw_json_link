@@ -77,7 +77,7 @@ namespace daw::json {
 			std::uint32_t second_bracket_count = 0;
 			char const *ptr_first = rng.first;
 			char const *const ptr_last = rng.last;
-			if( ( ptr_first < ptr_last ) bitand ( *ptr_first == PrimLeft ) ) {
+			if( ( ptr_first < ptr_last ) and ( *ptr_first == PrimLeft ) ) {
 				++ptr_first;
 			}
 
@@ -148,6 +148,7 @@ namespace daw::json {
 			std::uint32_t prime_bracket_count = 1;
 			std::uint32_t second_bracket_count = 0;
 			char const *ptr_first = rng.first;
+
 			if( *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}

@@ -21,6 +21,7 @@
 #ifdef _MSC_VER
 #include <intrin.h>
 #endif
+#endif
 
 namespace daw::json::json_details {
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
@@ -34,6 +35,7 @@ namespace daw::json::json_details {
 		return *( ptr - 2 ) != '\\';
 	}
 
+#if defined( DAW_ALLOW_SSE42 )
 	DAW_ATTRIBUTE_FLATTEN static inline __m128i
 	set_reverse( char c0, char c1 = 0, char c2 = 0, char c3 = 0, char c4 = 0,
 	             char c5 = 0, char c6 = 0, char c7 = 0, char c8 = 0, char c9 = 0,
@@ -80,31 +82,6 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input, char... keys>
 	DAW_ATTRIBUTE_FLATTEN static inline char const *
-	mem_move_to_next_of( runtime_exec_tag const &, char const *first,
-	                     char const *last ) {
-
-		if( sizeof...( keys ) == 1 ) {
-			char const key[]{ keys... };
-			char const *ptr = reinterpret_cast<char const *>( std::memchr(
-			  first, key[0], static_cast<std::size_t>( last - first ) ) );
-			if( ptr == nullptr ) {
-				ptr = last;
-			}
-			return ptr;
-		} else {
-			while( is_unchecked_input or first < last ) {
-				char const c = *first;
-				if( ( ( c == keys ) | ... ) ) {
-					return first;
-				}
-				++first;
-			}
-			return first;
-		}
-	}
-
-	template<bool is_unchecked_input, char... keys>
-	DAW_ATTRIBUTE_FLATTEN static inline char const *
 	mem_move_to_next_not_of( sse42_exec_tag const &, char const *first,
 	                         char const *last ) {
 		static constexpr int keys_len = static_cast<int>( sizeof...( keys ) );
@@ -137,6 +114,31 @@ namespace daw::json::json_details {
 			}
 		}
 		return first;
+	}
+#endif
+	template<bool is_unchecked_input, char... keys>
+	DAW_ATTRIBUTE_FLATTEN static inline char const *
+	mem_move_to_next_of( runtime_exec_tag const &, char const *first,
+	                     char const *last ) {
+
+		if( sizeof...( keys ) == 1 ) {
+			char const key[]{ keys... };
+			char const *ptr = reinterpret_cast<char const *>( std::memchr(
+			  first, key[0], static_cast<std::size_t>( last - first ) ) );
+			if( ptr == nullptr ) {
+				ptr = last;
+			}
+			return ptr;
+		} else {
+			while( is_unchecked_input or first < last ) {
+				char const c = *first;
+				if( ( ( c == keys ) | ... ) ) {
+					return first;
+				}
+				++first;
+			}
+			return first;
+		}
 	}
 
 	template<bool is_unchecked_input, typename ExecTag,
@@ -173,10 +175,9 @@ namespace daw::json::json_details {
 				break;
 			}
 			++first;
-			first = mem_move_to_next_of<is_unchecked_input, '\\', '"'>(
-			  tag, first , last );
+			first =
+			  mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first, last );
 		}
 		return first;
 	}
 } // namespace daw::json::json_details
-#endif
