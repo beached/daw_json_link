@@ -106,11 +106,10 @@ namespace daw::json {
 					break;
 				case '"':
 					++ptr_first;
-					if constexpr( not std::is_same_v<typename Range::exec_tag_t,
-					                                 constexpr_exec_tag> ) {
+					if constexpr( std::is_same_v<typename Range::exec_tag_t,
+					                                 sse42_exec_tag> ) {
 						ptr_first = json_details::sse42_skip_until_end_of_string<false>(
 						  ptr_first, rng.last );
-						++ptr_first;
 					} else {
 						while( ptr_first < ptr_last and *ptr_first != '"' ) {
 							if( *ptr_first == '\\' ) {
@@ -184,11 +183,10 @@ namespace daw::json {
 					break;
 				case '"':
 					++ptr_first;
-					if constexpr( false and std::is_same_v<typename Range::exec_tag_t,
+					if constexpr( std::is_same_v<typename Range::exec_tag_t,
 					                                 sse42_exec_tag> ) {
 						ptr_first = json_details::sse42_skip_until_end_of_string<true>(
 						  ptr_first, rng.last );
-						++ptr_first;
 					} else {
 						while( *ptr_first != '"' ) {
 							if( *ptr_first == '\\' ) {
