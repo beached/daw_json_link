@@ -95,7 +95,7 @@ namespace daw::json::json_details::string_quote {
 			if constexpr( not std::is_same_v<typename Range::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
 				while( true ) {
-					first = sse42_skip_string<true>( first, last );
+					first = mem_skip_string<true>( Range::exec_tag, first, last );
 
 					if( DAW_JSON_LIKELY( *first == '"' ) ) {
 						break;
@@ -139,7 +139,7 @@ namespace daw::json::json_details::string_quote {
 			if constexpr( not std::is_same_v<typename Range::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
 				while( first < last ) {
-					first = sse42_skip_string<false>( first, last );
+					first = mem_skip_string<false>( Range::exec_tag, first, last );
 
 					if( DAW_JSON_LIKELY( first < last and *first == '"' ) ) {
 						break;

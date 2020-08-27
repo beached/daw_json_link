@@ -48,9 +48,8 @@ namespace daw::json {
 			if constexpr( not std::is_same_v<typename Range::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
 				rng.first =
-				  json_details::sse42_move_to_next_of<Range::is_unchecked_input,
-				                                      sizeof...( keys ), keys...>(
-				    rng.first, rng.last );
+				  json_details::mem_move_to_next_of<Range::is_unchecked_input, keys...>(
+				    Range::exec_tag, rng.first, rng.last );
 			} else {
 				char const *first = rng.first;
 				char const *const last = rng.last;
@@ -88,22 +87,26 @@ namespace daw::json {
 					++ptr_first;
 				} else if( c == '"' ) {
 					++ptr_first;
-					if constexpr( std::is_same_v<typename Range::exec_tag_t,
-					                             sse42_exec_tag> ) {
-						ptr_first = json_details::sse42_skip_until_end_of_string<false>(
-						  ptr_first, rng.last );
+					if constexpr( not std::is_same_v<typename Range::exec_tag_t,
+					                                 constexpr_exec_tag> ) {
+						ptr_first = json_details::mem_skip_until_end_of_string<
+						  Range::is_unchecked_input>( Range::exec_tag, ptr_first,
+						                              rng.last );
 					} else {
 						while( ptr_first < ptr_last and *ptr_first != '"' ) {
 							if( *ptr_first == '\\' ) {
-								++ptr_first;
-								if( ptr_first >= ptr_last ) {
+								if( ptr_first + 1 < ptr_last ) {
+									ptr_first += 2;
+									continue;
+								} else {
+									ptr_first = ptr_last;
 									break;
 								}
 							}
 							++ptr_first;
 						}
 					}
-					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
+					daw_json_assert( ptr_first < ptr_last and *ptr_first == '"', "Unexpected end of stream" );
 				} else if( c == ',' ) {
 					if( ( prime_bracket_count == 1 ) bitand
 					    ( second_bracket_count == 0 ) ) {
@@ -154,10 +157,11 @@ namespace daw::json {
 					++ptr_first;
 				} else if( c == '"' ) {
 					++ptr_first;
-					if constexpr( std::is_same_v<typename Range::exec_tag_t,
-					                             sse42_exec_tag> ) {
-						ptr_first = json_details::sse42_skip_until_end_of_string<true>(
-						  ptr_first, rng.last );
+					if constexpr( not std::is_same_v<typename Range::exec_tag_t,
+					                                 constexpr_exec_tag> ) {
+						ptr_first = json_details::mem_skip_until_end_of_string<
+						  Range::is_unchecked_input>( Range::exec_tag, ptr_first,
+						                              rng.last );
 					} else {
 						while( *ptr_first != '"' ) {
 							if( *ptr_first == '\\' ) {

@@ -158,8 +158,7 @@ namespace daw::json {
 		 * @return iterator after moving
 		 */
 		inline constexpr json_array_iterator &operator++( ) {
-			daw_json_assert_weak( m_state.has_more( ) and
-			                        not m_state.is_closing_bracket_unchecked( ),
+			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
 			                      "Unexpected end of stream" );
 			if( m_can_skip ) {
 				m_state.first = m_can_skip;
