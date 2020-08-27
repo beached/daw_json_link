@@ -335,10 +335,8 @@ namespace daw::json {
 		template<typename>
 		inline constexpr std::size_t parse_space_needed_v = 1U;
 
-#ifdef DAW_ALLOW_SSE42
 		template<>
-		inline constexpr std::size_t parse_space_needed_v<sse42_exec_tag> = 16U;
-#endif
+		inline constexpr std::size_t parse_space_needed_v<simd_exec_tag> = 16U;
 
 		template<typename JsonType>
 		static inline constexpr bool is_json_nullable_v =
@@ -423,13 +421,11 @@ namespace daw::json::json_details {
 
 	template<typename Range>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
-	skip_string_no_init_quote( Range &rng ) {
+	skip_string_nq( Range &rng ) {
 		auto result = rng;
-		result.counter =
-		  string_quote::string_quote_parser::parse_escaped_string_no_init_quote(
-		    rng );
+		result.counter = string_quote::string_quote_parser::parse_nq( rng );
 
-		daw_json_assert_weak( rng.front( ) == '"',
+		daw_json_assert_weak( rng.is_quotes_unchecked( ),
 		                      "Expected trailing \" at the end of string" );
 		result.last = rng.first;
 		rng.remove_prefix( );
@@ -444,14 +440,14 @@ namespace daw::json::json_details {
 			return result;
 		}
 		if( *std::prev( rng.begin( ) ) != '"' ) {
-			if( rng.front( ) == '"' ) {
+			if( rng.is_quotes_unchecked( ) ) {
 				rng.remove_prefix( );
 			} else {
 				daw_json_error( "Attempt to parse a non-string as string" );
 			}
 		}
 		daw_json_assert_weak( rng.has_more( ), "Unexpected end of string" );
-		return skip_string_no_init_quote( rng );
+		return skip_string_nq( rng );
 	}
 
 	template<typename Range>
@@ -552,7 +548,6 @@ namespace daw::json::json_details {
 		case '9':
 			return skip_number( rng );
 		}
-		DAW_JSON_UNREACHABLE2();
 		daw_json_error( "Unknown value type" );
 	}
 
@@ -569,10 +564,10 @@ namespace daw::json::json_details {
 		              JsonMember::expected_type == JsonParseTypes::StringEscaped or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
 			// json string encodings
-			daw_json_assert_weak( rng.front( ) == '"',
+			daw_json_assert_weak( rng.is_quotes_unchecked( ),
 			                      "Expected start of value to begin with '\"'" );
 			rng.remove_prefix( );
-			return json_details::skip_string_no_init_quote( rng );
+			return json_details::skip_string_nq( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
 		                     JsonMember::expected_type == JsonParseTypes::Signed or
 		                     JsonMember::expected_type ==

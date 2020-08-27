@@ -39,14 +39,14 @@ namespace daw::json::json_details {
 			}
 		} else if constexpr( literal_as_string == LiteralAsStringOpt::Maybe ) {
 			daw_json_assert_weak( not rng.empty( ), "Unexpected end of stream" );
-			if( rng.front( ) == '"' ) {
+			if( rng.is_quotes_unchecked( ) ) {
 				rng.remove_prefix( );
 				if constexpr( KnownBounds ) {
 					rng.last = std::prev( rng.last );
 				}
 			}
 		} else {
-			daw_json_assert_weak( rng.front( ) != '"',
+			daw_json_assert_weak( not rng.is_quotes_unchecked( ),
 			                      "Unexpected quote prior to number" );
 		}
 	}
@@ -348,7 +348,7 @@ namespace daw::json::json_details {
 				rng.remove_prefix( );
 			}
 			daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
-			while( rng.front( ) != '"' ) {
+			while( not rng.is_quotes_unchecked( ) ) {
 				// TODO look at move_to_next_of
 				while( not rng.template in<parse_tokens::escape_quotes>( ) ) {
 					daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
@@ -431,7 +431,7 @@ namespace daw::json::json_details {
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Custom>, Range &rng ) {
 
-		if( rng.front( ) != '"' and rng.class_first != nullptr and
+		if( not rng.is_quotes_unchecked( ) and rng.class_first != nullptr and
 		    rng.first > rng.class_first and *std::prev( rng.first ) == '"' ) {
 			rng.first = std::prev( rng.first );
 		}

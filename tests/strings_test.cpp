@@ -30,6 +30,13 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
+template<typename Container>
+constexpr void clear( Container & c ) {
+	for( auto & v : c ) {
+		v = {};
+	}
+}
+
 template<typename ExecTag>
 std::size_t test( std::string_view json_data ) {
 	std::cout << "Using " << ExecTag::name
@@ -46,6 +53,9 @@ std::size_t test( std::string_view json_data ) {
 	                  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	    json_data );
 	daw::do_not_optimize( values );
+	auto const v2 = values;
+	clear( values );
+	daw::do_not_optimize( values );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "strings.json checked", json_data.size( ),
 	  []( auto sv, auto ptr ) {
@@ -58,6 +68,7 @@ std::size_t test( std::string_view json_data ) {
 	  },
 	  json_data, values.data( ) );
 	daw::do_not_optimize( values );
+	daw_json_assert( v2 == values, "Expected them to parse the same" );
 	auto const h0 = std::accumulate(
 	  values.begin( ), values.end( ), 0ULL, []( auto old, auto current ) {
 		  return old +=

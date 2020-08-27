@@ -231,8 +231,8 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>
-	[[nodiscard]] static inline Unsigned unsigned_parser( sse42_exec_tag const &,
-	                                                      Range &rng ) {
+	[[nodiscard]] static inline Unsigned
+	unsigned_parser( sse42_exec_tag const &, Range &rng ) {
 		daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range" );
 		uintmax_t result = 0;
 		char const *first = rng.first;
