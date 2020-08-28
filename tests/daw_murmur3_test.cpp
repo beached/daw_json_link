@@ -14,18 +14,20 @@
 
 static void test( daw::string_view key, std::uint32_t seed,
                   std::uint32_t expected ) {
-	std::uint32_t answer = daw::murmur3_32( key, seed );
+	daw::UInt32 answer = daw::murmur3_32( key, seed );
 	daw::expecting( answer == expected );
 }
 
 int main( int, char ** ) {
 	DAW_CONSTEXPR char const t0_a[] = { 0x01, 0x02, 0x03, 0x04, 0 };
-	DAW_CONSTEXPR std::uint32_t t0_b = daw::murmur3_details::to_u32( t0_a );
+	DAW_CONSTEXPR daw::UInt32 t0_b = daw::to_uint32_buffer( t0_a );
 	daw::expecting( t0_b == 0x04030201 );
 	test( "", 0, 0 );
 	test( "", 1, 0x514E'28B7ULL );
-	test( "", 0xFFFF'FFFF, 0x81F1'6F39ULL ); // make sure your seed uses unsigned 32-bit math
-	test( "\xFF\xFF\xFF\xFF", 0, 0x7629'3B50ULL ); // make sure 4-byte chunks use unsigned math
+	test( "", 0xFFFF'FFFF,
+	      0x81F1'6F39ULL ); // make sure your seed uses unsigned 32-bit math
+	test( "\xFF\xFF\xFF\xFF", 0,
+	      0x7629'3B50ULL ); // make sure 4-byte chunks use unsigned math
 	test( "\x21\x43\x65\x87", 0, 0xF55B'516BULL );
 	test( "\x21\x43\x65\x87", 0x5082'EDEE, 0x2362'F9DE );
 

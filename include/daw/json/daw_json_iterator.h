@@ -24,7 +24,6 @@
 
 #include <array>
 #include <chrono>
-#include <cstdint>
 #include <cstdlib>
 #include <iterator>
 #include <limits>

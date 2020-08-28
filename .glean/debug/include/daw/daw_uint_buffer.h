@@ -27,1624 +27,1525 @@
 #include <utility>
 
 namespace daw {
-	enum class UInt64Buffer : std::uint64_t {};
-	enum class UInt32Buffer : std::uint32_t {};
-	enum class UInt16Buffer : std::uint16_t {};
-	enum class UInt8Buffer : std::uint8_t {};
+	struct InvalidUIntSize;
+	enum class UInt64 : std::uint64_t {};
+	enum class UInt32 : std::uint32_t {};
+	enum class UInt16 : std::uint16_t {};
+	enum class UInt8 : std::uint8_t {};
 
-	constexpr UInt64Buffer &operator<<=( UInt64Buffer &b,
-	                                     std::uint64_t shift ) noexcept {
+	template<unsigned Bits>
+	using UInt = std::conditional_t<
+	  ( Bits == 8 ), UInt8,
+	  std::conditional_t<
+	    ( Bits == 16 ), UInt16,
+	    std::conditional_t<
+	      ( Bits == 32 ), UInt32,
+	      std::conditional_t<( Bits == 64 ), UInt64, InvalidUIntSize>>>>;
+
+	constexpr UInt64 &operator<<=( UInt64 &b, std::uint64_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp <<= static_cast<std::uint64_t>( shift );
-		b = static_cast<UInt64Buffer>( tmp );
+		b = static_cast<UInt64>( tmp );
 		return b;
 	}
 
-	constexpr UInt64Buffer &operator<<=( UInt64Buffer &b,
-	                                     UInt64Buffer shift ) noexcept {
+	constexpr UInt64 &operator<<=( UInt64 &b, UInt64 shift ) noexcept {
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp <<= static_cast<std::uint64_t>( shift );
-		b = static_cast<UInt64Buffer>( tmp );
+		b = static_cast<UInt64>( tmp );
 		return b;
 	}
 
-	constexpr UInt64Buffer &operator>>=( UInt64Buffer &b,
-	                                     std::uint64_t shift ) noexcept {
+	constexpr UInt64 &operator>>=( UInt64 &b, std::uint64_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp >>= static_cast<std::uint64_t>( shift );
-		b = static_cast<UInt64Buffer>( tmp );
+		b = static_cast<UInt64>( tmp );
 		return b;
 	}
 
-	constexpr UInt64Buffer &operator>>=( UInt64Buffer &b,
-	                                     UInt64Buffer shift ) noexcept {
+	constexpr UInt64 &operator>>=( UInt64 &b, UInt64 shift ) noexcept {
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp >>= static_cast<std::uint64_t>( shift );
-		b = static_cast<UInt64Buffer>( tmp );
+		b = static_cast<UInt64>( tmp );
 		return b;
 	}
 
-	constexpr UInt64Buffer operator<<( UInt64Buffer b,
-	                                   std::uint64_t shift ) noexcept {
+	constexpr UInt64 operator<<( UInt64 b, std::uint64_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp <<= static_cast<std::uint64_t>( shift );
-		return static_cast<UInt64Buffer>( tmp );
+		return static_cast<UInt64>( tmp );
 	}
 
-	constexpr UInt64Buffer operator<<( UInt64Buffer b,
-	                                   UInt64Buffer shift ) noexcept {
+	constexpr UInt64 operator<<( UInt64 b, UInt64 shift ) noexcept {
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp <<= static_cast<std::uint64_t>( shift );
-		return static_cast<UInt64Buffer>( tmp );
+		return static_cast<UInt64>( tmp );
 	}
 
-	constexpr std::uint64_t operator<<( std::uint64_t b,
-	                                    UInt64Buffer shift ) noexcept {
+	constexpr std::uint64_t operator<<( std::uint64_t b, UInt64 shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		b <<= static_cast<std::uint64_t>( shift );
 		return b;
 	}
 
-	constexpr UInt64Buffer operator>>( UInt64Buffer b,
-	                                   std::uint64_t shift ) noexcept {
+	constexpr UInt64 operator>>( UInt64 b, std::uint64_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp >>= static_cast<std::uint64_t>( shift );
-		return static_cast<UInt64Buffer>( tmp );
+		return static_cast<UInt64>( tmp );
 	}
 
-	constexpr UInt64Buffer operator>>( UInt64Buffer b,
-	                                   UInt64Buffer shift ) noexcept {
+	constexpr UInt64 operator>>( UInt64 b, UInt64 shift ) noexcept {
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp >>= static_cast<std::uint64_t>( shift );
-		return static_cast<UInt64Buffer>( tmp );
+		return static_cast<UInt64>( tmp );
 	}
 
-	constexpr std::uint64_t operator>>( std::uint64_t b,
-	                                    UInt64Buffer shift ) noexcept {
+	constexpr std::uint64_t operator>>( std::uint64_t b, UInt64 shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		b >>= static_cast<std::uint64_t>( shift );
 		return b;
 	}
 
-	constexpr UInt64Buffer &operator|=( UInt64Buffer &lhs,
-	                                    std::uint64_t rhs ) noexcept {
+	constexpr UInt64 &operator|=( UInt64 &lhs, std::uint64_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( lhs );
 		tmp |= static_cast<std::uint64_t>( rhs );
-		lhs = static_cast<UInt64Buffer>( tmp );
+		lhs = static_cast<UInt64>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer &operator|=( UInt64Buffer &lhs,
-	                                    UInt64Buffer rhs ) noexcept {
+	constexpr UInt64 &operator|=( UInt64 &lhs, UInt64 rhs ) noexcept {
 		auto tmp = static_cast<std::uint64_t>( lhs );
 		tmp |= static_cast<std::uint64_t>( rhs );
-		lhs = static_cast<UInt64Buffer>( tmp );
+		lhs = static_cast<UInt64>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer &operator&=( UInt64Buffer &lhs,
-	                                    std::uint64_t rhs ) noexcept {
+	constexpr UInt64 &operator&=( UInt64 &lhs, std::uint64_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( lhs );
 		tmp &= static_cast<std::uint64_t>( rhs );
-		lhs = static_cast<UInt64Buffer>( tmp );
+		lhs = static_cast<UInt64>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer &operator&=( UInt64Buffer &lhs,
-	                                    UInt64Buffer rhs ) noexcept {
+	constexpr UInt64 &operator&=( UInt64 &lhs, UInt64 rhs ) noexcept {
 		auto tmp = static_cast<std::uint64_t>( lhs );
 		tmp &= static_cast<std::uint64_t>( rhs );
-		lhs = static_cast<UInt64Buffer>( tmp );
+		lhs = static_cast<UInt64>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer &operator^=( UInt64Buffer &lhs,
-	                                    std::uint64_t rhs ) noexcept {
+	constexpr UInt64 &operator^=( UInt64 &lhs, std::uint64_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( lhs );
 		tmp ^= static_cast<std::uint64_t>( rhs );
-		lhs = static_cast<UInt64Buffer>( tmp );
+		lhs = static_cast<UInt64>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer &operator^=( UInt64Buffer &lhs,
-	                                    UInt64Buffer rhs ) noexcept {
+	constexpr UInt64 &operator^=( UInt64 &lhs, UInt64 rhs ) noexcept {
 		auto tmp = static_cast<std::uint64_t>( lhs );
 		tmp ^= static_cast<std::uint64_t>( rhs );
-		lhs = static_cast<UInt64Buffer>( tmp );
+		lhs = static_cast<UInt64>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator|( UInt64Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
+	constexpr UInt64 operator|( UInt64 lhs, std::uint64_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
-		return static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) |
-		                                  static_cast<std::uint64_t>( rhs ) );
+		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) |
+		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
-	constexpr UInt64Buffer operator|( std::uint64_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt64 operator|( std::uint64_t lhs, UInt64 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
-		return static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) |
-		                                  static_cast<std::uint64_t>( rhs ) );
+		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) |
+		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
-	constexpr UInt64Buffer operator&( UInt64Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
+	constexpr UInt64 operator&( UInt64 lhs, std::uint64_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
-		return static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) &
-		                                  static_cast<std::uint64_t>( rhs ) );
+		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) &
+		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
-	constexpr UInt64Buffer operator&( std::uint64_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt64 operator&( std::uint64_t lhs, UInt64 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
-		return static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) &
-		                                  static_cast<std::uint64_t>( rhs ) );
+		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) &
+		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
-	constexpr UInt64Buffer operator^( UInt64Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
+	constexpr UInt64 operator^( UInt64 lhs, std::uint64_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
-		return static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) ^
-		                                  static_cast<std::uint64_t>( rhs ) );
+		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) ^
+		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
-	constexpr UInt64Buffer operator^( std::uint64_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt64 operator^( std::uint64_t lhs, UInt64 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
-		return static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) ^
-		                                  static_cast<std::uint64_t>( rhs ) );
+		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) ^
+		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
-	constexpr bool operator==( UInt64Buffer lhs, std::uint64_t rhs ) noexcept {
+	constexpr bool operator==( UInt64 lhs, std::uint64_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) ==
 		       static_cast<std::uint64_t>( rhs );
 	}
 
-	constexpr bool operator==( std::uint64_t lhs, UInt64Buffer rhs ) noexcept {
+	constexpr bool operator==( std::uint64_t lhs, UInt64 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) ==
 		       static_cast<std::uint64_t>( rhs );
 	}
 
-	constexpr bool operator!=( UInt64Buffer lhs, std::uint64_t rhs ) noexcept {
+	constexpr bool operator!=( UInt64 lhs, std::uint64_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) !=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
-	constexpr bool operator!=( std::uint64_t lhs, UInt64Buffer rhs ) noexcept {
+	constexpr bool operator!=( std::uint64_t lhs, UInt64 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) !=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
-	constexpr UInt64Buffer operator|( UInt64Buffer lhs,
-	                                  UInt64Buffer rhs ) noexcept {
-		return static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) |
-		                                  static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 operator|( UInt64 lhs, UInt64 rhs ) noexcept {
+		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) |
+		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
-	constexpr UInt64Buffer operator&( UInt64Buffer lhs,
-	                                  UInt64Buffer rhs ) noexcept {
-		return static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) &
-		                                  static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 operator&( UInt64 lhs, UInt64 rhs ) noexcept {
+		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) &
+		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
-	constexpr UInt64Buffer operator^( UInt64Buffer lhs,
-	                                  UInt64Buffer rhs ) noexcept {
-		return static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) ^
-		                                  static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 operator^( UInt64 lhs, UInt64 rhs ) noexcept {
+		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) ^
+		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
-	constexpr UInt32Buffer &operator<<=( UInt32Buffer &b,
-	                                     std::uint32_t shift ) noexcept {
+	template<unsigned bits>
+	constexpr UInt64 rotate_left( UInt64 value ) {
+		static_assert( bits <= 64 );
+		return ( value << bits ) | ( value >> ( 64U - bits ) );
+	}
+
+	constexpr UInt64 rotate_left( UInt64 value, unsigned bits ) {
+		return ( value << bits ) | ( value >> ( 64U - bits ) );
+	}
+
+	template<unsigned bits>
+	constexpr UInt64 rotate_right( UInt64 value ) {
+		static_assert( bits <= 64 );
+		return ( value >> bits ) | ( value << ( 64U - bits ) );
+	}
+
+	constexpr UInt64 rotate_right( UInt64 value, unsigned bits ) {
+		return ( value >> bits ) | ( value << ( 64U - bits ) );
+	}
+
+	constexpr UInt32 &operator<<=( UInt32 &b, std::uint32_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp <<= static_cast<std::uint32_t>( shift );
-		b = static_cast<UInt32Buffer>( tmp );
+		b = static_cast<UInt32>( tmp );
 		return b;
 	}
 
-	constexpr UInt32Buffer &operator<<=( UInt32Buffer &b,
-	                                     UInt32Buffer shift ) noexcept {
+	constexpr UInt32 &operator<<=( UInt32 &b, UInt32 shift ) noexcept {
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp <<= static_cast<std::uint32_t>( shift );
-		b = static_cast<UInt32Buffer>( tmp );
+		b = static_cast<UInt32>( tmp );
 		return b;
 	}
 
-	constexpr UInt32Buffer &operator>>=( UInt32Buffer &b,
-	                                     std::uint32_t shift ) noexcept {
+	constexpr UInt32 &operator>>=( UInt32 &b, std::uint32_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp >>= static_cast<std::uint32_t>( shift );
-		b = static_cast<UInt32Buffer>( tmp );
+		b = static_cast<UInt32>( tmp );
 		return b;
 	}
 
-	constexpr UInt32Buffer &operator>>=( UInt32Buffer &b,
-	                                     UInt32Buffer shift ) noexcept {
+	constexpr UInt32 &operator>>=( UInt32 &b, UInt32 shift ) noexcept {
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp >>= static_cast<std::uint32_t>( shift );
-		b = static_cast<UInt32Buffer>( tmp );
+		b = static_cast<UInt32>( tmp );
 		return b;
 	}
 
-	constexpr UInt32Buffer operator<<( UInt32Buffer b,
-	                                   std::uint32_t shift ) noexcept {
+	constexpr UInt32 operator<<( UInt32 b, std::uint32_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp <<= static_cast<std::uint32_t>( shift );
-		return static_cast<UInt32Buffer>( tmp );
+		return static_cast<UInt32>( tmp );
 	}
 
-	constexpr UInt32Buffer operator<<( UInt32Buffer b,
-	                                   UInt32Buffer shift ) noexcept {
+	constexpr UInt32 operator<<( UInt32 b, UInt32 shift ) noexcept {
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp <<= static_cast<std::uint32_t>( shift );
-		return static_cast<UInt32Buffer>( tmp );
+		return static_cast<UInt32>( tmp );
 	}
 
-	constexpr std::uint32_t operator<<( std::uint32_t b,
-	                                    UInt32Buffer shift ) noexcept {
+	constexpr std::uint32_t operator<<( std::uint32_t b, UInt32 shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		b <<= static_cast<std::uint32_t>( shift );
 		return b;
 	}
 
-	constexpr UInt32Buffer operator>>( UInt32Buffer b,
-	                                   std::uint32_t shift ) noexcept {
+	constexpr UInt32 operator>>( UInt32 b, std::uint32_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp >>= static_cast<std::uint32_t>( shift );
-		return static_cast<UInt32Buffer>( tmp );
+		return static_cast<UInt32>( tmp );
 	}
 
-	constexpr UInt32Buffer operator>>( UInt32Buffer b,
-	                                   UInt32Buffer shift ) noexcept {
+	constexpr UInt32 operator>>( UInt32 b, UInt32 shift ) noexcept {
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp >>= static_cast<std::uint32_t>( shift );
-		return static_cast<UInt32Buffer>( tmp );
+		return static_cast<UInt32>( tmp );
 	}
 
-	constexpr std::uint32_t operator>>( std::uint32_t b,
-	                                    UInt32Buffer shift ) noexcept {
+	constexpr std::uint32_t operator>>( std::uint32_t b, UInt32 shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		b >>= static_cast<std::uint32_t>( shift );
 		return b;
 	}
 
-	constexpr UInt32Buffer &operator|=( UInt32Buffer &lhs,
-	                                    std::uint32_t rhs ) noexcept {
+	constexpr UInt32 &operator|=( UInt32 &lhs, std::uint32_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp |= static_cast<std::uint32_t>( rhs );
-		lhs = static_cast<UInt32Buffer>( tmp );
+		lhs = static_cast<UInt32>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer &operator|=( UInt32Buffer &lhs,
-	                                    UInt32Buffer rhs ) noexcept {
+	constexpr UInt32 &operator|=( UInt32 &lhs, UInt32 rhs ) noexcept {
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp |= static_cast<std::uint32_t>( rhs );
-		lhs = static_cast<UInt32Buffer>( tmp );
+		lhs = static_cast<UInt32>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer &operator&=( UInt32Buffer &lhs,
-	                                    std::uint32_t rhs ) noexcept {
+	constexpr UInt32 &operator&=( UInt32 &lhs, std::uint32_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp &= static_cast<std::uint32_t>( rhs );
-		lhs = static_cast<UInt32Buffer>( tmp );
+		lhs = static_cast<UInt32>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer &operator&=( UInt32Buffer &lhs,
-	                                    UInt32Buffer rhs ) noexcept {
+	constexpr UInt32 &operator&=( UInt32 &lhs, UInt32 rhs ) noexcept {
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp &= static_cast<std::uint32_t>( rhs );
-		lhs = static_cast<UInt32Buffer>( tmp );
+		lhs = static_cast<UInt32>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer &operator^=( UInt32Buffer &lhs,
-	                                    std::uint32_t rhs ) noexcept {
+	constexpr UInt32 &operator^=( UInt32 &lhs, std::uint32_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp ^= static_cast<std::uint32_t>( rhs );
-		lhs = static_cast<UInt32Buffer>( tmp );
+		lhs = static_cast<UInt32>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer &operator^=( UInt32Buffer &lhs,
-	                                    UInt32Buffer rhs ) noexcept {
+	constexpr UInt32 &operator^=( UInt32 &lhs, UInt32 rhs ) noexcept {
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp ^= static_cast<std::uint32_t>( rhs );
-		lhs = static_cast<UInt32Buffer>( tmp );
+		lhs = static_cast<UInt32>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator|( UInt32Buffer lhs,
-	                                  std::uint32_t rhs ) noexcept {
+	constexpr UInt32 operator|( UInt32 lhs, std::uint32_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
-		return static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) |
-		                                  static_cast<std::uint32_t>( rhs ) );
+		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) |
+		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
-	constexpr UInt32Buffer operator|( std::uint32_t lhs,
-	                                  UInt32Buffer rhs ) noexcept {
+	constexpr UInt32 operator|( std::uint32_t lhs, UInt32 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
-		return static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) |
-		                                  static_cast<std::uint32_t>( rhs ) );
+		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) |
+		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
-	constexpr UInt32Buffer operator&( UInt32Buffer lhs,
-	                                  std::uint32_t rhs ) noexcept {
+	constexpr UInt32 operator&( UInt32 lhs, std::uint32_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
-		return static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) &
-		                                  static_cast<std::uint32_t>( rhs ) );
+		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) &
+		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
-	constexpr UInt32Buffer operator&( std::uint32_t lhs,
-	                                  UInt32Buffer rhs ) noexcept {
+	constexpr UInt32 operator&( std::uint32_t lhs, UInt32 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
-		return static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) &
-		                                  static_cast<std::uint32_t>( rhs ) );
+		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) &
+		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
-	constexpr UInt32Buffer operator^( UInt32Buffer lhs,
-	                                  std::uint32_t rhs ) noexcept {
+	constexpr UInt32 operator^( UInt32 lhs, std::uint32_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
-		return static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) ^
-		                                  static_cast<std::uint32_t>( rhs ) );
+		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) ^
+		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
-	constexpr UInt32Buffer operator^( std::uint32_t lhs,
-	                                  UInt32Buffer rhs ) noexcept {
+	constexpr UInt32 operator^( std::uint32_t lhs, UInt32 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
-		return static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) ^
-		                                  static_cast<std::uint32_t>( rhs ) );
+		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) ^
+		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
-	constexpr bool operator==( UInt32Buffer lhs, std::uint32_t rhs ) noexcept {
+	constexpr bool operator==( UInt32 lhs, std::uint32_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		return static_cast<std::uint32_t>( lhs ) ==
 		       static_cast<std::uint32_t>( rhs );
 	}
 
-	constexpr bool operator==( std::uint32_t lhs, UInt32Buffer rhs ) noexcept {
+	constexpr bool operator==( std::uint32_t lhs, UInt32 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		return static_cast<std::uint32_t>( lhs ) ==
 		       static_cast<std::uint32_t>( rhs );
 	}
 
-	constexpr bool operator!=( UInt32Buffer lhs, std::uint32_t rhs ) noexcept {
+	constexpr bool operator!=( UInt32 lhs, std::uint32_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		return static_cast<std::uint32_t>( lhs ) !=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
-	constexpr bool operator!=( std::uint32_t lhs, UInt32Buffer rhs ) noexcept {
+	constexpr bool operator!=( std::uint32_t lhs, UInt32 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint32_t> );
 		return static_cast<std::uint32_t>( lhs ) !=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
-	constexpr UInt32Buffer operator|( UInt32Buffer lhs,
-	                                  UInt32Buffer rhs ) noexcept {
-		return static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) |
-		                                  static_cast<std::uint32_t>( rhs ) );
+	constexpr UInt32 operator|( UInt32 lhs, UInt32 rhs ) noexcept {
+		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) |
+		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
-	constexpr UInt32Buffer operator&( UInt32Buffer lhs,
-	                                  UInt32Buffer rhs ) noexcept {
-		return static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) &
-		                                  static_cast<std::uint32_t>( rhs ) );
+	constexpr UInt32 operator&( UInt32 lhs, UInt32 rhs ) noexcept {
+		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) &
+		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
-	constexpr UInt32Buffer operator^( UInt32Buffer lhs,
-	                                  UInt32Buffer rhs ) noexcept {
-		return static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) ^
-		                                  static_cast<std::uint32_t>( rhs ) );
+	constexpr UInt32 operator^( UInt32 lhs, UInt32 rhs ) noexcept {
+		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) ^
+		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
-	constexpr UInt16Buffer &operator<<=( UInt16Buffer &b,
-	                                     std::uint16_t shift ) noexcept {
+	template<unsigned bits>
+	constexpr UInt32 rotate_left( UInt32 value ) {
+		static_assert( bits <= 32 );
+		return ( value << bits ) | ( value >> ( 32U - bits ) );
+	}
+
+	constexpr UInt32 rotate_left( UInt32 value, unsigned bits ) {
+		return ( value << bits ) | ( value >> ( 32U - bits ) );
+	}
+
+	template<unsigned bits>
+	constexpr UInt32 rotate_right( UInt32 value ) {
+		static_assert( bits <= 32 );
+		return ( value >> bits ) | ( value << ( 32U - bits ) );
+	}
+
+	constexpr UInt32 rotate_right( UInt32 value, unsigned bits ) {
+		return ( value >> bits ) | ( value << ( 32U - bits ) );
+	}
+
+	constexpr UInt16 &operator<<=( UInt16 &b, std::uint16_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		auto tmp = static_cast<std::uint16_t>( b );
 		tmp <<= static_cast<std::uint16_t>( shift );
-		b = static_cast<UInt16Buffer>( tmp );
+		b = static_cast<UInt16>( tmp );
 		return b;
 	}
 
-	constexpr UInt16Buffer &operator<<=( UInt16Buffer &b,
-	                                     UInt16Buffer shift ) noexcept {
+	constexpr UInt16 &operator<<=( UInt16 &b, UInt16 shift ) noexcept {
 		auto tmp = static_cast<std::uint16_t>( b );
 		tmp <<= static_cast<std::uint16_t>( shift );
-		b = static_cast<UInt16Buffer>( tmp );
+		b = static_cast<UInt16>( tmp );
 		return b;
 	}
 
-	constexpr UInt16Buffer &operator>>=( UInt16Buffer &b,
-	                                     std::uint16_t shift ) noexcept {
+	constexpr UInt16 &operator>>=( UInt16 &b, std::uint16_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		auto tmp = static_cast<std::uint16_t>( b );
 		tmp >>= static_cast<std::uint16_t>( shift );
-		b = static_cast<UInt16Buffer>( tmp );
+		b = static_cast<UInt16>( tmp );
 		return b;
 	}
 
-	constexpr UInt16Buffer &operator>>=( UInt16Buffer &b,
-	                                     UInt16Buffer shift ) noexcept {
+	constexpr UInt16 &operator>>=( UInt16 &b, UInt16 shift ) noexcept {
 		auto tmp = static_cast<std::uint16_t>( b );
 		tmp >>= static_cast<std::uint16_t>( shift );
-		b = static_cast<UInt16Buffer>( tmp );
+		b = static_cast<UInt16>( tmp );
 		return b;
 	}
 
-	constexpr UInt16Buffer operator<<( UInt16Buffer b,
-	                                   std::uint16_t shift ) noexcept {
+	constexpr UInt16 operator<<( UInt16 b, std::uint16_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		auto tmp = static_cast<std::uint16_t>( b );
 		tmp <<= static_cast<std::uint16_t>( shift );
-		return static_cast<UInt16Buffer>( tmp );
+		return static_cast<UInt16>( tmp );
 	}
 
-	constexpr UInt16Buffer operator<<( UInt16Buffer b,
-	                                   UInt16Buffer shift ) noexcept {
+	constexpr UInt16 operator<<( UInt16 b, UInt16 shift ) noexcept {
 		auto tmp = static_cast<std::uint16_t>( b );
 		tmp <<= static_cast<std::uint16_t>( shift );
-		return static_cast<UInt16Buffer>( tmp );
+		return static_cast<UInt16>( tmp );
 	}
 
-	constexpr std::uint16_t operator<<( std::uint16_t b,
-	                                    UInt16Buffer shift ) noexcept {
+	constexpr std::uint16_t operator<<( std::uint16_t b, UInt16 shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		b <<= static_cast<std::uint16_t>( shift );
 		return b;
 	}
 
-	constexpr UInt16Buffer operator>>( UInt16Buffer b,
-	                                   std::uint16_t shift ) noexcept {
+	constexpr UInt16 operator>>( UInt16 b, std::uint16_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		auto tmp = static_cast<std::uint16_t>( b );
 		tmp >>= static_cast<std::uint16_t>( shift );
-		return static_cast<UInt16Buffer>( tmp );
+		return static_cast<UInt16>( tmp );
 	}
 
-	constexpr UInt16Buffer operator>>( UInt16Buffer b,
-	                                   UInt16Buffer shift ) noexcept {
+	constexpr UInt16 operator>>( UInt16 b, UInt16 shift ) noexcept {
 		auto tmp = static_cast<std::uint16_t>( b );
 		tmp >>= static_cast<std::uint16_t>( shift );
-		return static_cast<UInt16Buffer>( tmp );
+		return static_cast<UInt16>( tmp );
 	}
 
-	constexpr std::uint16_t operator>>( std::uint16_t b,
-	                                    UInt16Buffer shift ) noexcept {
+	constexpr std::uint16_t operator>>( std::uint16_t b, UInt16 shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		b >>= static_cast<std::uint16_t>( shift );
 		return b;
 	}
 
-	constexpr UInt16Buffer &operator|=( UInt16Buffer &lhs,
-	                                    std::uint16_t rhs ) noexcept {
+	constexpr UInt16 &operator|=( UInt16 &lhs, std::uint16_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		auto tmp = static_cast<std::uint16_t>( lhs );
 		tmp |= static_cast<std::uint16_t>( rhs );
-		lhs = static_cast<UInt16Buffer>( tmp );
+		lhs = static_cast<UInt16>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer &operator|=( UInt16Buffer &lhs,
-	                                    UInt16Buffer rhs ) noexcept {
+	constexpr UInt16 &operator|=( UInt16 &lhs, UInt16 rhs ) noexcept {
 		auto tmp = static_cast<std::uint16_t>( lhs );
 		tmp |= static_cast<std::uint16_t>( rhs );
-		lhs = static_cast<UInt16Buffer>( tmp );
+		lhs = static_cast<UInt16>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer &operator&=( UInt16Buffer &lhs,
-	                                    std::uint16_t rhs ) noexcept {
+	constexpr UInt16 &operator&=( UInt16 &lhs, std::uint16_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		auto tmp = static_cast<std::uint16_t>( lhs );
 		tmp &= static_cast<std::uint16_t>( rhs );
-		lhs = static_cast<UInt16Buffer>( tmp );
+		lhs = static_cast<UInt16>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer &operator&=( UInt16Buffer &lhs,
-	                                    UInt16Buffer rhs ) noexcept {
+	constexpr UInt16 &operator&=( UInt16 &lhs, UInt16 rhs ) noexcept {
 		auto tmp = static_cast<std::uint16_t>( lhs );
 		tmp &= static_cast<std::uint16_t>( rhs );
-		lhs = static_cast<UInt16Buffer>( tmp );
+		lhs = static_cast<UInt16>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer &operator^=( UInt16Buffer &lhs,
-	                                    std::uint16_t rhs ) noexcept {
+	constexpr UInt16 &operator^=( UInt16 &lhs, std::uint16_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		auto tmp = static_cast<std::uint16_t>( lhs );
 		tmp ^= static_cast<std::uint16_t>( rhs );
-		lhs = static_cast<UInt16Buffer>( tmp );
+		lhs = static_cast<UInt16>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer &operator^=( UInt16Buffer &lhs,
-	                                    UInt16Buffer rhs ) noexcept {
+	constexpr UInt16 &operator^=( UInt16 &lhs, UInt16 rhs ) noexcept {
 		auto tmp = static_cast<std::uint16_t>( lhs );
 		tmp ^= static_cast<std::uint16_t>( rhs );
-		lhs = static_cast<UInt16Buffer>( tmp );
+		lhs = static_cast<UInt16>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator|( UInt16Buffer lhs,
-	                                  std::uint16_t rhs ) noexcept {
+	constexpr UInt16 operator|( UInt16 lhs, std::uint16_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
-		return static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) |
-		                                  static_cast<std::uint16_t>( rhs ) );
+		return static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) |
+		                            static_cast<std::uint16_t>( rhs ) );
 	}
 
-	constexpr UInt16Buffer operator|( std::uint16_t lhs,
-	                                  UInt16Buffer rhs ) noexcept {
+	constexpr UInt16 operator|( std::uint16_t lhs, UInt16 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
-		return static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) |
-		                                  static_cast<std::uint16_t>( rhs ) );
+		return static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) |
+		                            static_cast<std::uint16_t>( rhs ) );
 	}
 
-	constexpr UInt16Buffer operator&( UInt16Buffer lhs,
-	                                  std::uint16_t rhs ) noexcept {
+	constexpr UInt16 operator&( UInt16 lhs, std::uint16_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
-		return static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) &
-		                                  static_cast<std::uint16_t>( rhs ) );
+		return static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) &
+		                            static_cast<std::uint16_t>( rhs ) );
 	}
 
-	constexpr UInt16Buffer operator&( std::uint16_t lhs,
-	                                  UInt16Buffer rhs ) noexcept {
+	constexpr UInt16 operator&( std::uint16_t lhs, UInt16 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
-		return static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) &
-		                                  static_cast<std::uint16_t>( rhs ) );
+		return static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) &
+		                            static_cast<std::uint16_t>( rhs ) );
 	}
 
-	constexpr UInt16Buffer operator^( UInt16Buffer lhs,
-	                                  std::uint16_t rhs ) noexcept {
+	constexpr UInt16 operator^( UInt16 lhs, std::uint16_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
-		return static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) ^
-		                                  static_cast<std::uint16_t>( rhs ) );
+		return static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) ^
+		                            static_cast<std::uint16_t>( rhs ) );
 	}
 
-	constexpr UInt16Buffer operator^( std::uint16_t lhs,
-	                                  UInt16Buffer rhs ) noexcept {
+	constexpr UInt16 operator^( std::uint16_t lhs, UInt16 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
-		return static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) ^
-		                                  static_cast<std::uint16_t>( rhs ) );
+		return static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) ^
+		                            static_cast<std::uint16_t>( rhs ) );
 	}
 
-	constexpr bool operator==( UInt16Buffer lhs, std::uint16_t rhs ) noexcept {
+	constexpr bool operator==( UInt16 lhs, std::uint16_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		return static_cast<std::uint16_t>( lhs ) ==
 		       static_cast<std::uint16_t>( rhs );
 	}
 
-	constexpr bool operator==( std::uint16_t lhs, UInt16Buffer rhs ) noexcept {
+	constexpr bool operator==( std::uint16_t lhs, UInt16 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		return static_cast<std::uint16_t>( lhs ) ==
 		       static_cast<std::uint16_t>( rhs );
 	}
 
-	constexpr bool operator!=( UInt16Buffer lhs, std::uint16_t rhs ) noexcept {
+	constexpr bool operator!=( UInt16 lhs, std::uint16_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		return static_cast<std::uint16_t>( lhs ) !=
 		       static_cast<std::uint16_t>( rhs );
 	}
 
-	constexpr bool operator!=( std::uint16_t lhs, UInt16Buffer rhs ) noexcept {
+	constexpr bool operator!=( std::uint16_t lhs, UInt16 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint16_t> );
 		return static_cast<std::uint16_t>( lhs ) !=
 		       static_cast<std::uint16_t>( rhs );
 	}
 
-	constexpr UInt16Buffer operator|( UInt16Buffer lhs,
-	                                  UInt16Buffer rhs ) noexcept {
-		return static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) |
-		                                  static_cast<std::uint16_t>( rhs ) );
+	constexpr UInt16 operator|( UInt16 lhs, UInt16 rhs ) noexcept {
+		return static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) |
+		                            static_cast<std::uint16_t>( rhs ) );
 	}
 
-	constexpr UInt16Buffer operator&( UInt16Buffer lhs,
-	                                  UInt16Buffer rhs ) noexcept {
-		return static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) &
-		                                  static_cast<std::uint16_t>( rhs ) );
+	constexpr UInt16 operator&( UInt16 lhs, UInt16 rhs ) noexcept {
+		return static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) &
+		                            static_cast<std::uint16_t>( rhs ) );
 	}
 
-	constexpr UInt16Buffer operator^( UInt16Buffer lhs,
-	                                  UInt16Buffer rhs ) noexcept {
-		return static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) ^
-		                                  static_cast<std::uint16_t>( rhs ) );
+	constexpr UInt16 operator^( UInt16 lhs, UInt16 rhs ) noexcept {
+		return static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) ^
+		                            static_cast<std::uint16_t>( rhs ) );
 	}
 	//*********
-	constexpr UInt64Buffer &operator+=( UInt64Buffer &lhs,
-	                                    UInt64Buffer rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) +
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 &operator+=( UInt64 &lhs, UInt64 rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) +
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer &operator+=( UInt64Buffer &lhs,
-	                                    std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) + rhs );
+	constexpr UInt64 &operator+=( UInt64 &lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) + rhs );
 		return lhs;
 	}
 
 	constexpr std::uint64_t &operator+=( std::uint64_t &lhs,
-	                                     UInt64Buffer rhs ) noexcept {
+	                                     UInt64 rhs ) noexcept {
 		lhs += static_cast<std::uint64_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator+( UInt64Buffer lhs,
-	                                  UInt64Buffer rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) +
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 operator+( UInt64 lhs, UInt64 rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) +
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator+( UInt64Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) + rhs );
+	constexpr UInt64 operator+( UInt64 lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) + rhs );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator+( std::uint64_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt64 operator+( std::uint64_t lhs, UInt64 rhs ) noexcept {
 		lhs += static_cast<std::uint64_t>( rhs );
-		return static_cast<UInt64Buffer>( lhs );
+		return static_cast<UInt64>( lhs );
 	}
 
-	constexpr UInt64Buffer &operator-=( UInt64Buffer &lhs,
-	                                    UInt64Buffer rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) -
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 &operator-=( UInt64 &lhs, UInt64 rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) -
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer &operator-=( UInt64Buffer &lhs,
-	                                    std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) - rhs );
+	constexpr UInt64 &operator-=( UInt64 &lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) - rhs );
 		return lhs;
 	}
 
 	constexpr std::uint64_t &operator-=( std::uint64_t &lhs,
-	                                     UInt64Buffer rhs ) noexcept {
+	                                     UInt64 rhs ) noexcept {
 		lhs -= static_cast<std::uint64_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator-( UInt64Buffer lhs,
-	                                  UInt64Buffer rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) -
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 operator-( UInt64 lhs, UInt64 rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) -
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator-( UInt64Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) - rhs );
+	constexpr UInt64 operator-( UInt64 lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) - rhs );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator-( std::uint64_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt64 operator-( std::uint64_t lhs, UInt64 rhs ) noexcept {
 		lhs -= static_cast<std::uint64_t>( rhs );
-		return static_cast<UInt64Buffer>( lhs );
+		return static_cast<UInt64>( lhs );
 	}
 
-	constexpr UInt64Buffer &operator*=( UInt64Buffer &lhs,
-	                                    UInt64Buffer rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) *
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 &operator*=( UInt64 &lhs, UInt64 rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) *
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer &operator*=( UInt64Buffer &lhs,
-	                                    std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) * rhs );
+	constexpr UInt64 &operator*=( UInt64 &lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) * rhs );
 		return lhs;
 	}
 
 	constexpr std::uint64_t &operator*=( std::uint64_t &lhs,
-	                                     UInt64Buffer rhs ) noexcept {
+	                                     UInt64 rhs ) noexcept {
 		lhs *= static_cast<std::uint64_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator*( UInt64Buffer lhs,
-	                                  UInt64Buffer rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) *
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 operator*( UInt64 lhs, UInt64 rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) *
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator*( UInt64Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) * rhs );
+	constexpr UInt64 operator*( UInt64 lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) * rhs );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator*( std::uint64_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt64 operator*( std::uint64_t lhs, UInt64 rhs ) noexcept {
 		lhs *= static_cast<std::uint64_t>( rhs );
-		return static_cast<UInt64Buffer>( lhs );
+		return static_cast<UInt64>( lhs );
 	}
 
-	constexpr UInt64Buffer &operator/=( UInt64Buffer &lhs,
-	                                    UInt64Buffer rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) /
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 &operator/=( UInt64 &lhs, UInt64 rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) /
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer &operator/=( UInt64Buffer &lhs,
-	                                    std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) / rhs );
+	constexpr UInt64 &operator/=( UInt64 &lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) / rhs );
 		return lhs;
 	}
 
 	constexpr std::uint64_t &operator/=( std::uint64_t &lhs,
-	                                     UInt64Buffer rhs ) noexcept {
+	                                     UInt64 rhs ) noexcept {
 		lhs /= static_cast<std::uint64_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator/( UInt64Buffer lhs,
-	                                  UInt64Buffer rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) /
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt64 operator/( UInt64 lhs, UInt64 rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) /
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator/( UInt64Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt64Buffer>( static_cast<std::uint64_t>( lhs ) / rhs );
+	constexpr UInt64 operator/( UInt64 lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) / rhs );
 		return lhs;
 	}
 
-	constexpr UInt64Buffer operator/( std::uint64_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt64 operator/( std::uint64_t lhs, UInt64 rhs ) noexcept {
 		lhs /= static_cast<std::uint64_t>( rhs );
-		return static_cast<UInt64Buffer>( lhs );
+		return static_cast<UInt64>( lhs );
 	}
 
-	constexpr bool operator!( UInt64Buffer value ) {
+	constexpr bool operator!( UInt64 value ) {
 		return !static_cast<std::uint64_t>( value );
 	}
 
-	constexpr UInt64Buffer operator+( UInt64Buffer value ) {
+	constexpr UInt64 operator+( UInt64 value ) {
 		return value;
 	}
 
-	constexpr UInt64Buffer operator-( UInt64Buffer value ) {
-		return static_cast<UInt64Buffer>( -static_cast<std::uint64_t>( value ) );
+	constexpr UInt64 operator-( UInt64 value ) {
+		return static_cast<UInt64>( -static_cast<std::uint64_t>( value ) );
 	}
 
-	constexpr UInt64Buffer &operator++( UInt64Buffer &value ) {
-		value =
-		  static_cast<UInt64Buffer>( static_cast<std::uint64_t>( value ) + 1 );
+	constexpr UInt64 &operator++( UInt64 &value ) {
+		value = static_cast<UInt64>( static_cast<std::uint64_t>( value ) + 1 );
 		return value;
 	}
 
-	constexpr UInt64Buffer operator++( UInt64Buffer &value, int ) {
+	constexpr UInt64 operator++( UInt64 &value, int ) {
 		auto result = value;
-		value =
-		  static_cast<UInt64Buffer>( static_cast<std::uint64_t>( value ) + 1 );
+		value = static_cast<UInt64>( static_cast<std::uint64_t>( value ) + 1 );
 		return result;
 	}
 
-	constexpr UInt64Buffer &operator--( UInt64Buffer &value ) {
-		value =
-		  static_cast<UInt64Buffer>( static_cast<std::uint64_t>( value ) - 1 );
+	constexpr UInt64 &operator--( UInt64 &value ) {
+		value = static_cast<UInt64>( static_cast<std::uint64_t>( value ) - 1 );
 		return value;
 	}
 
-	constexpr UInt64Buffer operator--( UInt64Buffer &value, int ) {
+	constexpr UInt64 operator--( UInt64 &value, int ) {
 		auto result = value;
-		value =
-		  static_cast<UInt64Buffer>( static_cast<std::uint64_t>( value ) - 1 );
+		value = static_cast<UInt64>( static_cast<std::uint64_t>( value ) - 1 );
 		return result;
 	}
 
-	constexpr UInt64Buffer operator~( UInt64Buffer value ) {
-		return static_cast<UInt64Buffer>( ~static_cast<std::uint64_t>( value ) );
+	constexpr UInt64 operator~( UInt64 value ) {
+		return static_cast<UInt64>( ~static_cast<std::uint64_t>( value ) );
 	}
 	//*********
-	constexpr UInt32Buffer &operator+=( UInt32Buffer &lhs,
-	                                    UInt32Buffer rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) +
-		                                 static_cast<std::uint32_t>( rhs ) );
+	constexpr UInt32 &operator+=( UInt32 &lhs, UInt32 rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) +
+		                           static_cast<std::uint32_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer &operator+=( UInt32Buffer &lhs,
-	                                    std::uint32_t rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) + rhs );
+	constexpr UInt32 &operator+=( UInt32 &lhs, std::uint32_t rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) + rhs );
 		return lhs;
 	}
 
 	constexpr std::uint32_t &operator+=( std::uint32_t &lhs,
-	                                     UInt32Buffer rhs ) noexcept {
+	                                     UInt32 rhs ) noexcept {
 		lhs += static_cast<std::uint32_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator+( UInt32Buffer lhs,
-	                                  UInt32Buffer rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) +
-		                                 static_cast<std::uint32_t>( rhs ) );
+	constexpr UInt32 operator+( UInt32 lhs, UInt32 rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) +
+		                           static_cast<std::uint32_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator+( UInt32Buffer lhs,
-	                                  std::uint32_t rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) + rhs );
+	constexpr UInt32 operator+( UInt32 lhs, std::uint32_t rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) + rhs );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator+( std::uint32_t lhs,
-	                                  UInt32Buffer rhs ) noexcept {
+	constexpr UInt32 operator+( std::uint32_t lhs, UInt32 rhs ) noexcept {
 		lhs += static_cast<std::uint32_t>( rhs );
-		return static_cast<UInt32Buffer>( lhs );
+		return static_cast<UInt32>( lhs );
 	}
 
-	constexpr UInt32Buffer &operator-=( UInt32Buffer &lhs,
-	                                    UInt32Buffer rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) -
-		                                 static_cast<std::uint32_t>( rhs ) );
+	constexpr UInt32 &operator-=( UInt32 &lhs, UInt32 rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) -
+		                           static_cast<std::uint32_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer &operator-=( UInt32Buffer &lhs,
-	                                    std::uint32_t rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) - rhs );
+	constexpr UInt32 &operator-=( UInt32 &lhs, std::uint32_t rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) - rhs );
 		return lhs;
 	}
 
 	constexpr std::uint32_t &operator-=( std::uint32_t &lhs,
-	                                     UInt32Buffer rhs ) noexcept {
+	                                     UInt32 rhs ) noexcept {
 		lhs -= static_cast<std::uint32_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator-( UInt32Buffer lhs,
-	                                  UInt32Buffer rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) -
-		                                 static_cast<std::uint32_t>( rhs ) );
+	constexpr UInt32 operator-( UInt32 lhs, UInt32 rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) -
+		                           static_cast<std::uint32_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator-( UInt32Buffer lhs,
-	                                  std::uint32_t rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) - rhs );
+	constexpr UInt32 operator-( UInt32 lhs, std::uint32_t rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) - rhs );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator-( std::uint32_t lhs,
-	                                  UInt32Buffer rhs ) noexcept {
+	constexpr UInt32 operator-( std::uint32_t lhs, UInt32 rhs ) noexcept {
 		lhs -= static_cast<std::uint32_t>( rhs );
-		return static_cast<UInt32Buffer>( lhs );
+		return static_cast<UInt32>( lhs );
 	}
 
-	constexpr UInt32Buffer &operator*=( UInt32Buffer &lhs,
-	                                    UInt32Buffer rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) *
-		                                 static_cast<std::uint32_t>( rhs ) );
+	constexpr UInt32 &operator*=( UInt32 &lhs, UInt32 rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) *
+		                           static_cast<std::uint32_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer &operator*=( UInt32Buffer &lhs,
-	                                    std::uint32_t rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) * rhs );
+	constexpr UInt32 &operator*=( UInt32 &lhs, std::uint32_t rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) * rhs );
 		return lhs;
 	}
 
 	constexpr std::uint32_t &operator*=( std::uint32_t &lhs,
-	                                     UInt32Buffer rhs ) noexcept {
+	                                     UInt32 rhs ) noexcept {
 		lhs *= static_cast<std::uint32_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator*( UInt32Buffer lhs,
-	                                  UInt32Buffer rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) *
-		                                 static_cast<std::uint32_t>( rhs ) );
+	constexpr UInt32 operator*( UInt32 lhs, UInt32 rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) *
+		                           static_cast<std::uint32_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator*( UInt32Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) * rhs );
+	constexpr UInt32 operator*( UInt32 lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) * rhs );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator*( std::uint32_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt32 operator*( std::uint32_t lhs, UInt64 rhs ) noexcept {
 		lhs *= static_cast<std::uint32_t>( rhs );
-		return static_cast<UInt32Buffer>( lhs );
+		return static_cast<UInt32>( lhs );
 	}
 
-	constexpr UInt32Buffer &operator/=( UInt32Buffer &lhs,
-	                                    UInt32Buffer rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) /
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt32 &operator/=( UInt32 &lhs, UInt32 rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) /
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer &operator/=( UInt32Buffer &lhs,
-	                                    std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) / rhs );
+	constexpr UInt32 &operator/=( UInt32 &lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) / rhs );
 		return lhs;
 	}
 
 	constexpr std::uint32_t &operator/=( std::uint32_t &lhs,
-	                                     UInt64Buffer rhs ) noexcept {
+	                                     UInt64 rhs ) noexcept {
 		lhs /= static_cast<std::uint32_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator/( UInt32Buffer lhs,
-	                                  UInt32Buffer rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) /
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt32 operator/( UInt32 lhs, UInt32 rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) /
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator/( UInt32Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt32Buffer>( static_cast<std::uint32_t>( lhs ) / rhs );
+	constexpr UInt32 operator/( UInt32 lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) / rhs );
 		return lhs;
 	}
 
-	constexpr UInt32Buffer operator/( std::uint32_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt32 operator/( std::uint32_t lhs, UInt64 rhs ) noexcept {
 		lhs /= static_cast<std::uint32_t>( rhs );
-		return static_cast<UInt32Buffer>( lhs );
+		return static_cast<UInt32>( lhs );
 	}
 
-	constexpr bool operator!( UInt32Buffer value ) {
+	constexpr bool operator!( UInt32 value ) {
 		return !static_cast<std::uint32_t>( value );
 	}
 
-	constexpr UInt32Buffer operator+( UInt32Buffer value ) {
+	constexpr UInt32 operator+( UInt32 value ) {
 		return value;
 	}
 
-	constexpr UInt32Buffer operator-( UInt32Buffer value ) {
-		return static_cast<UInt32Buffer>( -static_cast<std::uint32_t>( value ) );
+	constexpr UInt32 operator-( UInt32 value ) {
+		return static_cast<UInt32>( -static_cast<std::uint32_t>( value ) );
 	}
 
-	constexpr UInt32Buffer &operator++( UInt32Buffer &value ) {
-		value =
-		  static_cast<UInt32Buffer>( static_cast<std::uint32_t>( value ) + 1 );
+	constexpr UInt32 &operator++( UInt32 &value ) {
+		value = static_cast<UInt32>( static_cast<std::uint32_t>( value ) + 1 );
 		return value;
 	}
 
-	constexpr UInt32Buffer operator++( UInt32Buffer &value, int ) {
+	constexpr UInt32 operator++( UInt32 &value, int ) {
 		auto result = value;
-		value =
-		  static_cast<UInt32Buffer>( static_cast<std::uint32_t>( value ) + 1 );
+		value = static_cast<UInt32>( static_cast<std::uint32_t>( value ) + 1 );
 		return result;
 	}
 
-	constexpr UInt32Buffer &operator--( UInt32Buffer &value ) {
-		value =
-		  static_cast<UInt32Buffer>( static_cast<std::uint32_t>( value ) - 1 );
+	constexpr UInt32 &operator--( UInt32 &value ) {
+		value = static_cast<UInt32>( static_cast<std::uint32_t>( value ) - 1 );
 		return value;
 	}
 
-	constexpr UInt32Buffer operator--( UInt32Buffer &value, int ) {
+	constexpr UInt32 operator--( UInt32 &value, int ) {
 		auto result = value;
-		value =
-		  static_cast<UInt32Buffer>( static_cast<std::uint32_t>( value ) - 1 );
+		value = static_cast<UInt32>( static_cast<std::uint32_t>( value ) - 1 );
 		return result;
 	}
 
-	constexpr UInt32Buffer operator~( UInt32Buffer value ) {
-		return static_cast<UInt32Buffer>( ~static_cast<std::uint32_t>( value ) );
+	constexpr UInt32 operator~( UInt32 value ) {
+		return static_cast<UInt32>( ~static_cast<std::uint32_t>( value ) );
 	}
 	//*********
-	constexpr UInt16Buffer &operator+=( UInt16Buffer &lhs,
-	                                    UInt16Buffer rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) +
-		                                 static_cast<std::uint16_t>( rhs ) );
+	constexpr UInt16 &operator+=( UInt16 &lhs, UInt16 rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) +
+		                           static_cast<std::uint16_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer &operator+=( UInt16Buffer &lhs,
-	                                    std::uint16_t rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) + rhs );
+	constexpr UInt16 &operator+=( UInt16 &lhs, std::uint16_t rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) + rhs );
 		return lhs;
 	}
 
 	constexpr std::uint16_t &operator+=( std::uint16_t &lhs,
-	                                     UInt16Buffer rhs ) noexcept {
+	                                     UInt16 rhs ) noexcept {
 		lhs += static_cast<std::uint16_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator+( UInt16Buffer lhs,
-	                                  UInt16Buffer rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) +
-		                                 static_cast<std::uint16_t>( rhs ) );
+	constexpr UInt16 operator+( UInt16 lhs, UInt16 rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) +
+		                           static_cast<std::uint16_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator+( UInt16Buffer lhs,
-	                                  std::uint16_t rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) + rhs );
+	constexpr UInt16 operator+( UInt16 lhs, std::uint16_t rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) + rhs );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator+( std::uint16_t lhs,
-	                                  UInt16Buffer rhs ) noexcept {
+	constexpr UInt16 operator+( std::uint16_t lhs, UInt16 rhs ) noexcept {
 		lhs += static_cast<std::uint16_t>( rhs );
-		return static_cast<UInt16Buffer>( lhs );
+		return static_cast<UInt16>( lhs );
 	}
 
-	constexpr UInt16Buffer &operator-=( UInt16Buffer &lhs,
-	                                    UInt16Buffer rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) -
-		                                 static_cast<std::uint16_t>( rhs ) );
+	constexpr UInt16 &operator-=( UInt16 &lhs, UInt16 rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) -
+		                           static_cast<std::uint16_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer &operator-=( UInt16Buffer &lhs,
-	                                    std::uint16_t rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) - rhs );
+	constexpr UInt16 &operator-=( UInt16 &lhs, std::uint16_t rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) - rhs );
 		return lhs;
 	}
 
 	constexpr std::uint16_t &operator-=( std::uint16_t &lhs,
-	                                     UInt16Buffer rhs ) noexcept {
+	                                     UInt16 rhs ) noexcept {
 		lhs -= static_cast<std::uint16_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator-( UInt16Buffer lhs,
-	                                  UInt16Buffer rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) -
-		                                 static_cast<std::uint16_t>( rhs ) );
+	constexpr UInt16 operator-( UInt16 lhs, UInt16 rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) -
+		                           static_cast<std::uint16_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator-( UInt16Buffer lhs,
-	                                  std::uint16_t rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) - rhs );
+	constexpr UInt16 operator-( UInt16 lhs, std::uint16_t rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) - rhs );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator-( std::uint16_t lhs,
-	                                  UInt16Buffer rhs ) noexcept {
+	constexpr UInt16 operator-( std::uint16_t lhs, UInt16 rhs ) noexcept {
 		lhs -= static_cast<std::uint16_t>( rhs );
-		return static_cast<UInt16Buffer>( lhs );
+		return static_cast<UInt16>( lhs );
 	}
 
-	constexpr UInt16Buffer &operator*=( UInt16Buffer &lhs,
-	                                    UInt16Buffer rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) *
-		                                 static_cast<std::uint16_t>( rhs ) );
+	constexpr UInt16 &operator*=( UInt16 &lhs, UInt16 rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) *
+		                           static_cast<std::uint16_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer &operator*=( UInt16Buffer &lhs,
-	                                    std::uint16_t rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) * rhs );
+	constexpr UInt16 &operator*=( UInt16 &lhs, std::uint16_t rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) * rhs );
 		return lhs;
 	}
 
 	constexpr std::uint16_t &operator*=( std::uint16_t &lhs,
-	                                     UInt16Buffer rhs ) noexcept {
+	                                     UInt16 rhs ) noexcept {
 		lhs *= static_cast<std::uint16_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator*( UInt16Buffer lhs,
-	                                  UInt16Buffer rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) *
-		                                 static_cast<std::uint16_t>( rhs ) );
+	constexpr UInt16 operator*( UInt16 lhs, UInt16 rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) *
+		                           static_cast<std::uint16_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator*( UInt16Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) * rhs );
+	constexpr UInt16 operator*( UInt16 lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) * rhs );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator*( std::uint16_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt16 operator*( std::uint16_t lhs, UInt64 rhs ) noexcept {
 		lhs *= static_cast<std::uint16_t>( rhs );
-		return static_cast<UInt16Buffer>( lhs );
+		return static_cast<UInt16>( lhs );
 	}
 
-	constexpr UInt16Buffer &operator/=( UInt16Buffer &lhs,
-	                                    UInt16Buffer rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) /
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt16 &operator/=( UInt16 &lhs, UInt16 rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) /
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer &operator/=( UInt16Buffer &lhs,
-	                                    std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) / rhs );
+	constexpr UInt16 &operator/=( UInt16 &lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) / rhs );
 		return lhs;
 	}
 
 	constexpr std::uint16_t &operator/=( std::uint16_t &lhs,
-	                                     UInt64Buffer rhs ) noexcept {
+	                                     UInt64 rhs ) noexcept {
 		lhs /= static_cast<std::uint16_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator/( UInt16Buffer lhs,
-	                                  UInt16Buffer rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) /
-		                                 static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt16 operator/( UInt16 lhs, UInt16 rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) /
+		                           static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator/( UInt16Buffer lhs,
-	                                  std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt16Buffer>( static_cast<std::uint16_t>( lhs ) / rhs );
+	constexpr UInt16 operator/( UInt16 lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt16>( static_cast<std::uint16_t>( lhs ) / rhs );
 		return lhs;
 	}
 
-	constexpr UInt16Buffer operator/( std::uint16_t lhs,
-	                                  UInt64Buffer rhs ) noexcept {
+	constexpr UInt16 operator/( std::uint16_t lhs, UInt64 rhs ) noexcept {
 		lhs /= static_cast<std::uint16_t>( rhs );
-		return static_cast<UInt16Buffer>( lhs );
+		return static_cast<UInt16>( lhs );
 	}
 
-	constexpr bool operator!( UInt16Buffer value ) {
+	constexpr bool operator!( UInt16 value ) {
 		return !static_cast<std::uint16_t>( value );
 	}
 
-	constexpr UInt16Buffer operator+( UInt16Buffer value ) {
+	constexpr UInt16 operator+( UInt16 value ) {
 		return value;
 	}
 
-	constexpr UInt16Buffer operator-( UInt16Buffer value ) {
-		return static_cast<UInt16Buffer>( -static_cast<std::uint16_t>( value ) );
+	constexpr UInt16 operator-( UInt16 value ) {
+		return static_cast<UInt16>( -static_cast<std::uint16_t>( value ) );
 	}
 
-	constexpr UInt16Buffer &operator++( UInt16Buffer &value ) {
-		value =
-		  static_cast<UInt16Buffer>( static_cast<std::uint16_t>( value ) + 1 );
+	constexpr UInt16 &operator++( UInt16 &value ) {
+		value = static_cast<UInt16>( static_cast<std::uint16_t>( value ) + 1 );
 		return value;
 	}
 
-	constexpr UInt16Buffer operator++( UInt16Buffer &value, int ) {
+	constexpr UInt16 operator++( UInt16 &value, int ) {
 		auto result = value;
-		value =
-		  static_cast<UInt16Buffer>( static_cast<std::uint16_t>( value ) + 1 );
+		value = static_cast<UInt16>( static_cast<std::uint16_t>( value ) + 1 );
 		return result;
 	}
 
-	constexpr UInt16Buffer &operator--( UInt16Buffer &value ) {
-		value =
-		  static_cast<UInt16Buffer>( static_cast<std::uint16_t>( value ) - 1 );
+	constexpr UInt16 &operator--( UInt16 &value ) {
+		value = static_cast<UInt16>( static_cast<std::uint16_t>( value ) - 1 );
 		return value;
 	}
 
-	constexpr UInt16Buffer operator--( UInt16Buffer &value, int ) {
+	constexpr UInt16 operator--( UInt16 &value, int ) {
 		auto result = value;
-		value =
-		  static_cast<UInt16Buffer>( static_cast<std::uint16_t>( value ) - 1 );
+		value = static_cast<UInt16>( static_cast<std::uint16_t>( value ) - 1 );
 		return result;
 	}
 
-	constexpr UInt16Buffer operator~( UInt16Buffer value ) {
-		return static_cast<UInt16Buffer>( ~static_cast<std::uint16_t>( value ) );
+	constexpr UInt16 operator~( UInt16 value ) {
+		return static_cast<UInt16>( ~static_cast<std::uint16_t>( value ) );
 	}
-	//*********
-	constexpr UInt8Buffer &operator+=( UInt8Buffer &lhs,
-	                                   UInt8Buffer rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) +
-		                                static_cast<std::uint8_t>( rhs ) );
+
+	template<unsigned bits>
+	constexpr UInt16 rotate_left( UInt16 value ) {
+		static_assert( bits <= 16 );
+		return ( value << bits ) | ( value >> ( 16U - bits ) );
+	}
+
+	constexpr UInt16 rotate_left( UInt16 value, unsigned bits ) {
+		return ( value << bits ) | ( value >> ( 16U - bits ) );
+	}
+
+	template<unsigned bits>
+	constexpr UInt16 rotate_right( UInt16 value ) {
+		static_assert( bits <= 16 );
+		return ( value >> bits ) | ( value << ( 16U - bits ) );
+	}
+
+	constexpr UInt16 rotate_right( UInt16 value, unsigned bits ) {
+		return ( value >> bits ) | ( value << ( 16U - bits ) );
+	}
+
+	constexpr UInt8 &operator+=( UInt8 &lhs, UInt8 rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) +
+		                          static_cast<std::uint8_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer &operator+=( UInt8Buffer &lhs,
-	                                   std::uint8_t rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) + rhs );
+	constexpr UInt8 &operator+=( UInt8 &lhs, std::uint8_t rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) + rhs );
 		return lhs;
 	}
 
-	constexpr std::uint8_t &operator+=( std::uint8_t &lhs,
-	                                    UInt8Buffer rhs ) noexcept {
+	constexpr std::uint8_t &operator+=( std::uint8_t &lhs, UInt8 rhs ) noexcept {
 		lhs += static_cast<std::uint8_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator+( UInt8Buffer lhs, UInt8Buffer rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) +
-		                                static_cast<std::uint8_t>( rhs ) );
+	constexpr UInt8 operator+( UInt8 lhs, UInt8 rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) +
+		                          static_cast<std::uint8_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator+( UInt8Buffer lhs,
-	                                 std::uint8_t rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) + rhs );
+	constexpr UInt8 operator+( UInt8 lhs, std::uint8_t rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) + rhs );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator+( std::uint8_t lhs,
-	                                 UInt8Buffer rhs ) noexcept {
+	constexpr UInt8 operator+( std::uint8_t lhs, UInt8 rhs ) noexcept {
 		lhs += static_cast<std::uint8_t>( rhs );
-		return static_cast<UInt8Buffer>( lhs );
+		return static_cast<UInt8>( lhs );
 	}
 
-	constexpr UInt8Buffer &operator-=( UInt8Buffer &lhs,
-	                                   UInt8Buffer rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) -
-		                                static_cast<std::uint8_t>( rhs ) );
+	constexpr UInt8 &operator-=( UInt8 &lhs, UInt8 rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) -
+		                          static_cast<std::uint8_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer &operator-=( UInt8Buffer &lhs,
-	                                   std::uint8_t rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) - rhs );
+	constexpr UInt8 &operator-=( UInt8 &lhs, std::uint8_t rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) - rhs );
 		return lhs;
 	}
 
-	constexpr std::uint8_t &operator-=( std::uint8_t &lhs,
-	                                    UInt8Buffer rhs ) noexcept {
+	constexpr std::uint8_t &operator-=( std::uint8_t &lhs, UInt8 rhs ) noexcept {
 		lhs -= static_cast<std::uint8_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator-( UInt8Buffer lhs, UInt8Buffer rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) -
-		                                static_cast<std::uint8_t>( rhs ) );
+	constexpr UInt8 operator-( UInt8 lhs, UInt8 rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) -
+		                          static_cast<std::uint8_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator-( UInt8Buffer lhs,
-	                                 std::uint8_t rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) - rhs );
+	constexpr UInt8 operator-( UInt8 lhs, std::uint8_t rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) - rhs );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator-( std::uint8_t lhs,
-	                                 UInt8Buffer rhs ) noexcept {
+	constexpr UInt8 operator-( std::uint8_t lhs, UInt8 rhs ) noexcept {
 		lhs -= static_cast<std::uint8_t>( rhs );
-		return static_cast<UInt8Buffer>( lhs );
+		return static_cast<UInt8>( lhs );
 	}
 
-	constexpr UInt8Buffer &operator*=( UInt8Buffer &lhs,
-	                                   UInt8Buffer rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) *
-		                                static_cast<std::uint8_t>( rhs ) );
+	constexpr UInt8 &operator*=( UInt8 &lhs, UInt8 rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) *
+		                          static_cast<std::uint8_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer &operator*=( UInt8Buffer &lhs,
-	                                   std::uint8_t rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) * rhs );
+	constexpr UInt8 &operator*=( UInt8 &lhs, std::uint8_t rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) * rhs );
 		return lhs;
 	}
 
-	constexpr std::uint8_t &operator*=( std::uint8_t &lhs,
-	                                    UInt8Buffer rhs ) noexcept {
+	constexpr std::uint8_t &operator*=( std::uint8_t &lhs, UInt8 rhs ) noexcept {
 		lhs *= static_cast<std::uint8_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator*( UInt8Buffer lhs, UInt8Buffer rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) *
-		                                static_cast<std::uint8_t>( rhs ) );
+	constexpr UInt8 operator*( UInt8 lhs, UInt8 rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) *
+		                          static_cast<std::uint8_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator*( UInt8Buffer lhs,
-	                                 std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) * rhs );
+	constexpr UInt8 operator*( UInt8 lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) * rhs );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator*( std::uint8_t lhs,
-	                                 UInt64Buffer rhs ) noexcept {
+	constexpr UInt8 operator*( std::uint8_t lhs, UInt64 rhs ) noexcept {
 		lhs *= static_cast<std::uint8_t>( rhs );
-		return static_cast<UInt8Buffer>( lhs );
+		return static_cast<UInt8>( lhs );
 	}
 
-	constexpr UInt8Buffer &operator/=( UInt8Buffer &lhs,
-	                                   UInt8Buffer rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) /
-		                                static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt8 &operator/=( UInt8 &lhs, UInt8 rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) /
+		                          static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer &operator/=( UInt8Buffer &lhs,
-	                                   std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) / rhs );
+	constexpr UInt8 &operator/=( UInt8 &lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) / rhs );
 		return lhs;
 	}
 
-	constexpr std::uint8_t &operator/=( std::uint8_t &lhs,
-	                                    UInt64Buffer rhs ) noexcept {
+	constexpr std::uint8_t &operator/=( std::uint8_t &lhs, UInt64 rhs ) noexcept {
 		lhs /= static_cast<std::uint8_t>( rhs );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator/( UInt8Buffer lhs, UInt8Buffer rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) /
-		                                static_cast<std::uint64_t>( rhs ) );
+	constexpr UInt8 operator/( UInt8 lhs, UInt8 rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) /
+		                          static_cast<std::uint64_t>( rhs ) );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator/( UInt8Buffer lhs,
-	                                 std::uint64_t rhs ) noexcept {
-		lhs = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) / rhs );
+	constexpr UInt8 operator/( UInt8 lhs, std::uint64_t rhs ) noexcept {
+		lhs = static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) / rhs );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator/( std::uint8_t lhs,
-	                                 UInt64Buffer rhs ) noexcept {
+	constexpr UInt8 operator/( std::uint8_t lhs, UInt64 rhs ) noexcept {
 		lhs /= static_cast<std::uint8_t>( rhs );
-		return static_cast<UInt8Buffer>( lhs );
+		return static_cast<UInt8>( lhs );
 	}
 
-	constexpr bool operator!( UInt8Buffer value ) {
+	constexpr bool operator!( UInt8 value ) {
 		return !static_cast<std::uint8_t>( value );
 	}
 
-	constexpr UInt8Buffer operator+( UInt8Buffer value ) {
+	constexpr UInt8 operator+( UInt8 value ) {
 		return value;
 	}
 
-	constexpr UInt8Buffer operator-( UInt8Buffer value ) {
-		return static_cast<UInt8Buffer>( -static_cast<std::uint8_t>( value ) );
+	constexpr UInt8 operator-( UInt8 value ) {
+		return static_cast<UInt8>( -static_cast<std::uint8_t>( value ) );
 	}
 
-	constexpr UInt8Buffer &operator++( UInt8Buffer &value ) {
-		value = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( value ) + 1 );
+	constexpr UInt8 &operator++( UInt8 &value ) {
+		value = static_cast<UInt8>( static_cast<std::uint8_t>( value ) + 1 );
 		return value;
 	}
 
-	constexpr UInt8Buffer operator++( UInt8Buffer &value, int ) {
+	constexpr UInt8 operator++( UInt8 &value, int ) {
 		auto result = value;
-		value = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( value ) + 1 );
+		value = static_cast<UInt8>( static_cast<std::uint8_t>( value ) + 1 );
 		return result;
 	}
 
-	constexpr UInt8Buffer &operator--( UInt8Buffer &value ) {
-		value = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( value ) - 1 );
+	constexpr UInt8 &operator--( UInt8 &value ) {
+		value = static_cast<UInt8>( static_cast<std::uint8_t>( value ) - 1 );
 		return value;
 	}
 
-	constexpr UInt8Buffer operator--( UInt8Buffer &value, int ) {
+	constexpr UInt8 operator--( UInt8 &value, int ) {
 		auto result = value;
-		value = static_cast<UInt8Buffer>( static_cast<std::uint8_t>( value ) - 1 );
+		value = static_cast<UInt8>( static_cast<std::uint8_t>( value ) - 1 );
 		return result;
 	}
 
-	constexpr UInt8Buffer operator~( UInt8Buffer value ) {
-		return static_cast<UInt8Buffer>( ~static_cast<std::uint8_t>( value ) );
+	constexpr UInt8 operator~( UInt8 value ) {
+		return static_cast<UInt8>( ~static_cast<std::uint8_t>( value ) );
 	}
-	constexpr UInt8Buffer &operator<<=( UInt8Buffer &b,
-	                                    std::uint8_t shift ) noexcept {
+	constexpr UInt8 &operator<<=( UInt8 &b, std::uint8_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		auto tmp = static_cast<std::uint8_t>( b );
 		tmp <<= static_cast<std::uint8_t>( shift );
-		b = static_cast<UInt8Buffer>( tmp );
+		b = static_cast<UInt8>( tmp );
 		return b;
 	}
 
-	constexpr UInt8Buffer &operator<<=( UInt8Buffer &b,
-	                                    UInt8Buffer shift ) noexcept {
+	constexpr UInt8 &operator<<=( UInt8 &b, UInt8 shift ) noexcept {
 		auto tmp = static_cast<std::uint8_t>( b );
 		tmp <<= static_cast<std::uint8_t>( shift );
-		b = static_cast<UInt8Buffer>( tmp );
+		b = static_cast<UInt8>( tmp );
 		return b;
 	}
 
-	constexpr UInt8Buffer &operator>>=( UInt8Buffer &b,
-	                                    std::uint8_t shift ) noexcept {
+	constexpr UInt8 &operator>>=( UInt8 &b, std::uint8_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		auto tmp = static_cast<std::uint8_t>( b );
 		tmp >>= static_cast<std::uint8_t>( shift );
-		b = static_cast<UInt8Buffer>( tmp );
+		b = static_cast<UInt8>( tmp );
 		return b;
 	}
 
-	constexpr UInt8Buffer &operator>>=( UInt8Buffer &b,
-	                                    UInt8Buffer shift ) noexcept {
+	constexpr UInt8 &operator>>=( UInt8 &b, UInt8 shift ) noexcept {
 		auto tmp = static_cast<std::uint8_t>( b );
 		tmp >>= static_cast<std::uint8_t>( shift );
-		b = static_cast<UInt8Buffer>( tmp );
+		b = static_cast<UInt8>( tmp );
 		return b;
 	}
 
-	constexpr UInt8Buffer operator<<( UInt8Buffer b,
-	                                  std::uint8_t shift ) noexcept {
+	constexpr UInt8 operator<<( UInt8 b, std::uint8_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		auto tmp = static_cast<std::uint8_t>( b );
 		tmp <<= static_cast<std::uint8_t>( shift );
-		return static_cast<UInt8Buffer>( tmp );
+		return static_cast<UInt8>( tmp );
 	}
 
-	constexpr UInt8Buffer operator<<( UInt8Buffer b,
-	                                  UInt8Buffer shift ) noexcept {
+	constexpr UInt8 operator<<( UInt8 b, UInt8 shift ) noexcept {
 		auto tmp = static_cast<std::uint8_t>( b );
 		tmp <<= static_cast<std::uint8_t>( shift );
-		return static_cast<UInt8Buffer>( tmp );
+		return static_cast<UInt8>( tmp );
 	}
 
-	constexpr std::uint8_t operator<<( std::uint8_t b,
-	                                   UInt8Buffer shift ) noexcept {
+	constexpr std::uint8_t operator<<( std::uint8_t b, UInt8 shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		b <<= static_cast<std::uint8_t>( shift );
 		return b;
 	}
 
-	constexpr UInt8Buffer operator>>( UInt8Buffer b,
-	                                  std::uint8_t shift ) noexcept {
+	constexpr UInt8 operator>>( UInt8 b, std::uint8_t shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		auto tmp = static_cast<std::uint8_t>( b );
 		tmp >>= static_cast<std::uint8_t>( shift );
-		return static_cast<UInt8Buffer>( tmp );
+		return static_cast<UInt8>( tmp );
 	}
 
-	constexpr UInt8Buffer operator>>( UInt8Buffer b,
-	                                  UInt8Buffer shift ) noexcept {
+	constexpr UInt8 operator>>( UInt8 b, UInt8 shift ) noexcept {
 		auto tmp = static_cast<std::uint8_t>( b );
 		tmp >>= static_cast<std::uint8_t>( shift );
-		return static_cast<UInt8Buffer>( tmp );
+		return static_cast<UInt8>( tmp );
 	}
 
-	constexpr std::uint8_t operator>>( std::uint8_t b,
-	                                   UInt8Buffer shift ) noexcept {
+	constexpr std::uint8_t operator>>( std::uint8_t b, UInt8 shift ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		b >>= static_cast<std::uint8_t>( shift );
 		return b;
 	}
 
-	constexpr UInt8Buffer &operator|=( UInt8Buffer &lhs,
-	                                   std::uint8_t rhs ) noexcept {
+	constexpr UInt8 &operator|=( UInt8 &lhs, std::uint8_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		auto tmp = static_cast<std::uint8_t>( lhs );
 		tmp |= static_cast<std::uint8_t>( rhs );
-		lhs = static_cast<UInt8Buffer>( tmp );
+		lhs = static_cast<UInt8>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer &operator|=( UInt8Buffer &lhs,
-	                                   UInt8Buffer rhs ) noexcept {
+	constexpr UInt8 &operator|=( UInt8 &lhs, UInt8 rhs ) noexcept {
 		auto tmp = static_cast<std::uint8_t>( lhs );
 		tmp |= static_cast<std::uint8_t>( rhs );
-		lhs = static_cast<UInt8Buffer>( tmp );
+		lhs = static_cast<UInt8>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer &operator&=( UInt8Buffer &lhs,
-	                                   std::uint8_t rhs ) noexcept {
+	constexpr UInt8 &operator&=( UInt8 &lhs, std::uint8_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		auto tmp = static_cast<std::uint8_t>( lhs );
 		tmp &= static_cast<std::uint8_t>( rhs );
-		lhs = static_cast<UInt8Buffer>( tmp );
+		lhs = static_cast<UInt8>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer &operator&=( UInt8Buffer &lhs,
-	                                   UInt8Buffer rhs ) noexcept {
+	constexpr UInt8 &operator&=( UInt8 &lhs, UInt8 rhs ) noexcept {
 		auto tmp = static_cast<std::uint8_t>( lhs );
 		tmp &= static_cast<std::uint8_t>( rhs );
-		lhs = static_cast<UInt8Buffer>( tmp );
+		lhs = static_cast<UInt8>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer &operator^=( UInt8Buffer &lhs,
-	                                   std::uint8_t rhs ) noexcept {
+	constexpr UInt8 &operator^=( UInt8 &lhs, std::uint8_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		auto tmp = static_cast<std::uint8_t>( lhs );
 		tmp ^= static_cast<std::uint8_t>( rhs );
-		lhs = static_cast<UInt8Buffer>( tmp );
+		lhs = static_cast<UInt8>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer &operator^=( UInt8Buffer &lhs,
-	                                   UInt8Buffer rhs ) noexcept {
+	constexpr UInt8 &operator^=( UInt8 &lhs, UInt8 rhs ) noexcept {
 		auto tmp = static_cast<std::uint8_t>( lhs );
 		tmp ^= static_cast<std::uint8_t>( rhs );
-		lhs = static_cast<UInt8Buffer>( tmp );
+		lhs = static_cast<UInt8>( tmp );
 		return lhs;
 	}
 
-	constexpr UInt8Buffer operator|( UInt8Buffer lhs,
-	                                 std::uint8_t rhs ) noexcept {
+	constexpr UInt8 operator|( UInt8 lhs, std::uint8_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
-		return static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) |
-		                                 static_cast<std::uint8_t>( rhs ) );
+		return static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) |
+		                           static_cast<std::uint8_t>( rhs ) );
 	}
 
-	constexpr UInt8Buffer operator|( std::uint8_t lhs,
-	                                 UInt8Buffer rhs ) noexcept {
+	constexpr UInt8 operator|( std::uint8_t lhs, UInt8 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
-		return static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) |
-		                                 static_cast<std::uint8_t>( rhs ) );
+		return static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) |
+		                           static_cast<std::uint8_t>( rhs ) );
 	}
 
-	constexpr UInt8Buffer operator&( UInt8Buffer lhs,
-	                                 std::uint8_t rhs ) noexcept {
+	constexpr UInt8 operator&( UInt8 lhs, std::uint8_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
-		return static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) &
-		                                 static_cast<std::uint8_t>( rhs ) );
+		return static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) &
+		                           static_cast<std::uint8_t>( rhs ) );
 	}
 
-	constexpr UInt8Buffer operator&( std::uint8_t lhs,
-	                                 UInt8Buffer rhs ) noexcept {
+	constexpr UInt8 operator&( std::uint8_t lhs, UInt8 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
-		return static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) &
-		                                 static_cast<std::uint8_t>( rhs ) );
+		return static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) &
+		                           static_cast<std::uint8_t>( rhs ) );
 	}
 
-	constexpr UInt8Buffer operator^( UInt8Buffer lhs,
-	                                 std::uint8_t rhs ) noexcept {
+	constexpr UInt8 operator^( UInt8 lhs, std::uint8_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
-		return static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) ^
-		                                 static_cast<std::uint8_t>( rhs ) );
+		return static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) ^
+		                           static_cast<std::uint8_t>( rhs ) );
 	}
 
-	constexpr UInt8Buffer operator^( std::uint8_t lhs,
-	                                 UInt8Buffer rhs ) noexcept {
+	constexpr UInt8 operator^( std::uint8_t lhs, UInt8 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
-		return static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) ^
-		                                 static_cast<std::uint8_t>( rhs ) );
+		return static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) ^
+		                           static_cast<std::uint8_t>( rhs ) );
 	}
 
-	constexpr bool operator==( UInt8Buffer lhs, std::uint8_t rhs ) noexcept {
+	constexpr bool operator==( UInt8 lhs, std::uint8_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		return static_cast<std::uint8_t>( lhs ) == static_cast<std::uint8_t>( rhs );
 	}
 
-	constexpr bool operator==( std::uint8_t lhs, UInt8Buffer rhs ) noexcept {
+	constexpr bool operator==( std::uint8_t lhs, UInt8 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		return static_cast<std::uint8_t>( lhs ) == static_cast<std::uint8_t>( rhs );
 	}
 
-	constexpr bool operator!=( UInt8Buffer lhs, std::uint8_t rhs ) noexcept {
+	constexpr bool operator!=( UInt8 lhs, std::uint8_t rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		return static_cast<std::uint8_t>( lhs ) != static_cast<std::uint8_t>( rhs );
 	}
 
-	constexpr bool operator!=( std::uint8_t lhs, UInt8Buffer rhs ) noexcept {
+	constexpr bool operator!=( std::uint8_t lhs, UInt8 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint8_t> );
 		return static_cast<std::uint8_t>( lhs ) != static_cast<std::uint8_t>( rhs );
 	}
 
-	constexpr UInt8Buffer operator|( UInt8Buffer lhs, UInt8Buffer rhs ) noexcept {
-		return static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) |
-		                                 static_cast<std::uint8_t>( rhs ) );
+	constexpr UInt8 operator|( UInt8 lhs, UInt8 rhs ) noexcept {
+		return static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) |
+		                           static_cast<std::uint8_t>( rhs ) );
 	}
 
-	constexpr UInt8Buffer operator&( UInt8Buffer lhs, UInt8Buffer rhs ) noexcept {
-		return static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) &
-		                                 static_cast<std::uint8_t>( rhs ) );
+	constexpr UInt8 operator&( UInt8 lhs, UInt8 rhs ) noexcept {
+		return static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) &
+		                           static_cast<std::uint8_t>( rhs ) );
 	}
 
-	constexpr UInt8Buffer operator^( UInt8Buffer lhs, UInt8Buffer rhs ) noexcept {
-		return static_cast<UInt8Buffer>( static_cast<std::uint8_t>( lhs ) ^
-		                                 static_cast<std::uint8_t>( rhs ) );
+	constexpr UInt8 operator^( UInt8 lhs, UInt8 rhs ) noexcept {
+		return static_cast<UInt8>( static_cast<std::uint8_t>( lhs ) ^
+		                           static_cast<std::uint8_t>( rhs ) );
 	}
 
-	constexpr UInt64Buffer to_uint64_buffer( char const *ptr ) noexcept {
+	template<unsigned bits>
+	constexpr UInt8 rotate_left( UInt8 value ) {
+		static_assert( bits <= 8 );
+		return ( value << bits ) | ( value >> ( 8U - bits ) );
+	}
+
+	constexpr UInt8 rotate_left( UInt8 value, unsigned bits ) {
+		return ( value << bits ) | ( value >> ( 8U - bits ) );
+	}
+
+	template<unsigned bits>
+	constexpr UInt8 rotate_right( UInt8 value ) {
+		static_assert( bits <= 8 );
+		return ( value >> bits ) | ( value << ( 8U - bits ) );
+	}
+
+	constexpr UInt8 rotate_right( UInt8 value, unsigned bits ) {
+		return ( value >> bits ) | ( value << ( 8U - bits ) );
+	}
+
+	constexpr UInt64 to_uint64_buffer( char const *ptr ) noexcept {
 		std::uint64_t result = 0;
 		result |= static_cast<std::uint64_t>( static_cast<unsigned char>( ptr[7] ) )
 		          << 56U;
@@ -1662,10 +1563,10 @@ namespace daw {
 		          << 8U;
 		result |=
 		  static_cast<std::uint64_t>( static_cast<unsigned char>( ptr[0] ) );
-		return static_cast<UInt64Buffer>( result );
+		return static_cast<UInt64>( result );
 	}
 
-	constexpr UInt32Buffer to_uint32_buffer( char const *ptr ) noexcept {
+	constexpr UInt32 to_uint32_buffer( char const *ptr ) noexcept {
 		std::uint32_t result = 0;
 		result |= static_cast<std::uint32_t>( static_cast<unsigned char>( ptr[3] ) )
 		          << 24U;
@@ -1675,15 +1576,285 @@ namespace daw {
 		          << 8U;
 		result |=
 		  static_cast<std::uint32_t>( static_cast<unsigned char>( ptr[0] ) );
-		return static_cast<UInt32Buffer>( result );
+		return static_cast<UInt32>( result );
 	}
 
-	constexpr UInt16Buffer to_uint16_buffer( char const *ptr ) noexcept {
+	constexpr UInt16 to_uint16_buffer( char const *ptr ) noexcept {
 		std::uint16_t result = 0;
 		result |= static_cast<std::uint16_t>( static_cast<unsigned char>( ptr[1] ) )
 		          << 8U;
 		result |=
 		  static_cast<std::uint16_t>( static_cast<unsigned char>( ptr[0] ) );
-		return static_cast<UInt16Buffer>( result );
+		return static_cast<UInt16>( result );
 	}
 } // namespace daw
+
+namespace std {
+	template<>
+	struct numeric_limits<daw::UInt64> {
+		static constexpr bool is_specialized = true;
+		static constexpr bool is_signed = false;
+		static constexpr bool is_integer = true;
+		static constexpr bool is_exact = true;
+		static constexpr bool has_infinity = false;
+		static constexpr bool has_quiet_NaN = false;
+		static constexpr bool has_signaling_NaN = false;
+		static constexpr bool has_denorm = false;
+		static constexpr bool has_denorm_loss = false;
+		static constexpr std::float_round_style round_style =
+		  std::round_toward_zero;
+		static constexpr bool is_iec559 = false;
+		static constexpr bool is_bounded = true;
+		static constexpr bool is_modulo = true;
+		static constexpr int digits =
+		  static_cast<int>( sizeof( std::uint64_t ) * __CHAR_BIT__ - is_signed );
+		static constexpr int digits10 = digits * 3 / 10;
+		static constexpr int max_digits10 = 0;
+		static constexpr int radix = 2;
+		static constexpr int min_exponent = 0;
+		static constexpr int min_exponent10 = 0;
+		static constexpr int max_exponent = 0;
+		static constexpr int max_exponent10 = 0;
+		// Cannot reasonibly define
+		// static constexpr bool traps = true;
+		static constexpr bool tinyness_before = false;
+
+		static constexpr daw::UInt64 min( ) noexcept {
+			return daw::UInt64( );
+		}
+
+		static constexpr daw::UInt64 lowest( ) noexcept {
+			return daw::UInt64( );
+		}
+
+		static constexpr daw::UInt64 max( ) noexcept {
+			return static_cast<daw::UInt64>(
+			  std::numeric_limits<std::uint64_t>::max( ) );
+		}
+
+		static constexpr daw::UInt64 epsilon( ) noexcept {
+			return daw::UInt64( );
+		}
+
+		static constexpr daw::UInt64 round_error( ) noexcept {
+			return daw::UInt64( );
+		}
+
+		static constexpr daw::UInt64 infinity( ) noexcept {
+			return daw::UInt64( );
+		}
+
+		static constexpr daw::UInt64 quiet_NaN( ) noexcept {
+			return daw::UInt64( );
+		}
+
+		static constexpr daw::UInt64 signalling_NaN( ) noexcept {
+			return daw::UInt64( );
+		}
+
+		static constexpr daw::UInt64 denorm_min( ) noexcept {
+			return daw::UInt64( );
+		}
+	};
+
+	template<>
+	struct numeric_limits<daw::UInt32> {
+		static constexpr bool is_specialized = true;
+		static constexpr bool is_signed = false;
+		static constexpr bool is_integer = true;
+		static constexpr bool is_exact = true;
+		static constexpr bool has_infinity = false;
+		static constexpr bool has_quiet_NaN = false;
+		static constexpr bool has_signaling_NaN = false;
+		static constexpr bool has_denorm = false;
+		static constexpr bool has_denorm_loss = false;
+		static constexpr std::float_round_style round_style =
+		  std::round_toward_zero;
+		static constexpr bool is_iec559 = false;
+		static constexpr bool is_bounded = true;
+		static constexpr bool is_modulo = true;
+		static constexpr int digits =
+		  static_cast<int>( sizeof( std::uint32_t ) * __CHAR_BIT__ - is_signed );
+		static constexpr int digits10 = digits * 3 / 10;
+		static constexpr int max_digits10 = 0;
+		static constexpr int radix = 2;
+		static constexpr int min_exponent = 0;
+		static constexpr int min_exponent10 = 0;
+		static constexpr int max_exponent = 0;
+		static constexpr int max_exponent10 = 0;
+		// Cannot reasonibly define
+		// static constexpr bool traps = true;
+		static constexpr bool tinyness_before = false;
+
+		static constexpr daw::UInt32 min( ) noexcept {
+			return daw::UInt32( );
+		}
+
+		static constexpr daw::UInt32 lowest( ) noexcept {
+			return daw::UInt32( );
+		}
+
+		static constexpr daw::UInt32 max( ) noexcept {
+			return static_cast<daw::UInt32>(
+			  std::numeric_limits<std::uint32_t>::max( ) );
+		}
+
+		static constexpr daw::UInt32 epsilon( ) noexcept {
+			return daw::UInt32( );
+		}
+
+		static constexpr daw::UInt32 round_error( ) noexcept {
+			return daw::UInt32( );
+		}
+
+		static constexpr daw::UInt32 infinity( ) noexcept {
+			return daw::UInt32( );
+		}
+
+		static constexpr daw::UInt32 quiet_NaN( ) noexcept {
+			return daw::UInt32( );
+		}
+
+		static constexpr daw::UInt32 signalling_NaN( ) noexcept {
+			return daw::UInt32( );
+		}
+
+		static constexpr daw::UInt32 denorm_min( ) noexcept {
+			return daw::UInt32( );
+		}
+	};
+
+	template<>
+	struct numeric_limits<daw::UInt16> {
+		static constexpr bool is_specialized = true;
+		static constexpr bool is_signed = false;
+		static constexpr bool is_integer = true;
+		static constexpr bool is_exact = true;
+		static constexpr bool has_infinity = false;
+		static constexpr bool has_quiet_NaN = false;
+		static constexpr bool has_signaling_NaN = false;
+		static constexpr bool has_denorm = false;
+		static constexpr bool has_denorm_loss = false;
+		static constexpr std::float_round_style round_style =
+		  std::round_toward_zero;
+		static constexpr bool is_iec559 = false;
+		static constexpr bool is_bounded = true;
+		static constexpr bool is_modulo = true;
+		static constexpr int digits =
+		  static_cast<int>( sizeof( std::uint16_t ) * __CHAR_BIT__ - is_signed );
+		static constexpr int digits10 = digits * 3 / 10;
+		static constexpr int max_digits10 = 0;
+		static constexpr int radix = 2;
+		static constexpr int min_exponent = 0;
+		static constexpr int min_exponent10 = 0;
+		static constexpr int max_exponent = 0;
+		static constexpr int max_exponent10 = 0;
+		// Cannot reasonibly define
+		// static constexpr bool traps = true;
+		static constexpr bool tinyness_before = false;
+
+		static constexpr daw::UInt16 min( ) noexcept {
+			return daw::UInt16( );
+		}
+
+		static constexpr daw::UInt16 lowest( ) noexcept {
+			return daw::UInt16( );
+		}
+
+		static constexpr daw::UInt16 max( ) noexcept {
+			return static_cast<daw::UInt16>(
+			  std::numeric_limits<std::uint16_t>::max( ) );
+		}
+
+		static constexpr daw::UInt16 epsilon( ) noexcept {
+			return daw::UInt16( );
+		}
+
+		static constexpr daw::UInt16 round_error( ) noexcept {
+			return daw::UInt16( );
+		}
+
+		static constexpr daw::UInt16 infinity( ) noexcept {
+			return daw::UInt16( );
+		}
+
+		static constexpr daw::UInt16 quiet_NaN( ) noexcept {
+			return daw::UInt16( );
+		}
+
+		static constexpr daw::UInt16 signalling_NaN( ) noexcept {
+			return daw::UInt16( );
+		}
+
+		static constexpr daw::UInt16 denorm_min( ) noexcept {
+			return daw::UInt16( );
+		}
+	};
+
+	template<>
+	struct numeric_limits<daw::UInt8> {
+		static constexpr bool is_specialized = true;
+		static constexpr bool is_signed = false;
+		static constexpr bool is_integer = true;
+		static constexpr bool is_exact = true;
+		static constexpr bool has_infinity = false;
+		static constexpr bool has_quiet_NaN = false;
+		static constexpr bool has_signaling_NaN = false;
+		static constexpr bool has_denorm = false;
+		static constexpr bool has_denorm_loss = false;
+		static constexpr std::float_round_style round_style =
+		  std::round_toward_zero;
+		static constexpr bool is_iec559 = false;
+		static constexpr bool is_bounded = true;
+		static constexpr bool is_modulo = true;
+		static constexpr int digits =
+		  static_cast<int>( sizeof( std::uint8_t ) * __CHAR_BIT__ - is_signed );
+		static constexpr int digits10 = digits * 3 / 10;
+		static constexpr int max_digits10 = 0;
+		static constexpr int radix = 2;
+		static constexpr int min_exponent = 0;
+		static constexpr int min_exponent10 = 0;
+		static constexpr int max_exponent = 0;
+		static constexpr int max_exponent10 = 0;
+		// Cannot reasonibly define
+		// static constexpr bool traps = true;
+		static constexpr bool tinyness_before = false;
+
+		static constexpr daw::UInt8 min( ) noexcept {
+			return daw::UInt8( );
+		}
+
+		static constexpr daw::UInt8 lowest( ) noexcept {
+			return daw::UInt8( );
+		}
+
+		static constexpr daw::UInt8 max( ) noexcept {
+			return static_cast<daw::UInt8>(
+			  std::numeric_limits<std::uint8_t>::max( ) );
+		}
+
+		static constexpr daw::UInt8 epsilon( ) noexcept {
+			return daw::UInt8( );
+		}
+
+		static constexpr daw::UInt8 round_error( ) noexcept {
+			return daw::UInt8( );
+		}
+
+		static constexpr daw::UInt8 infinity( ) noexcept {
+			return daw::UInt8( );
+		}
+
+		static constexpr daw::UInt8 quiet_NaN( ) noexcept {
+			return daw::UInt8( );
+		}
+
+		static constexpr daw::UInt8 signalling_NaN( ) noexcept {
+			return daw::UInt8( );
+		}
+
+		static constexpr daw::UInt8 denorm_min( ) noexcept {
+			return daw::UInt8( );
+		}
+	};
+} // namespace std

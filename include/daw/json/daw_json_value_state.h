@@ -14,12 +14,14 @@
 #include "impl/daw_json_value.h"
 #include "impl/daw_murmur3.h"
 
+#include <daw/daw_uint_buffer.h>
+
 namespace daw::json {
 	namespace json_details {
 		template<typename Range>
 		struct basic_stateful_json_value_state {
 			daw::string_view name;
-			std::uint32_t hash_value;
+			daw::UInt32 hash_value;
 			basic_json_value_iterator<Range> location;
 
 			explicit constexpr basic_stateful_json_value_state(
@@ -34,7 +36,7 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] constexpr bool is_match( daw::string_view Name,
-			                                       uint32_t hash ) const noexcept {
+			                                       daw::UInt32 hash ) const noexcept {
 				if( hash != hash_value ) {
 					return false;
 				}
@@ -45,7 +47,7 @@ namespace daw::json {
 
 	struct json_member_name {
 		daw::string_view name;
-		uint32_t hash_value;
+		daw::UInt32 hash_value;
 
 		constexpr json_member_name( std::string_view Name ) noexcept
 		  : name( Name.data( ), Name.size( ) )

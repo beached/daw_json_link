@@ -10,65 +10,49 @@
 
 #include <daw/daw_endian.h>
 #include <daw/daw_string_view.h>
+#include <daw/daw_uint_buffer.h>
 
 #include <cstdint>
 
 namespace daw {
 	namespace murmur3_details {
-		inline constexpr std::uint32_t to_u32( char const *const ptr ) noexcept {
-			std::uint32_t const c0 = static_cast<unsigned char>( ptr[3] );
-			std::uint32_t const c1 = static_cast<unsigned char>( ptr[2] );
-			std::uint32_t const c2 = static_cast<unsigned char>( ptr[1] );
-			std::uint32_t const c3 = static_cast<unsigned char>( ptr[0] );
-			std::uint32_t result = ( c0 << 24U ) | ( c1 << 16U ) | ( c2 << 8U ) | c3;
-			return result;
-		}
-
-		template<unsigned r>
-		DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr uint32_t
-		rotl( std::uint32_t n ) {
-			return ( n << r ) | ( n >> r );
-		}
-
-		[[nodiscard]] inline constexpr std::uint32_t
-		murmur3_32_scramble( std::uint32_t k ) noexcept {
+		[[nodiscard]] inline constexpr daw::UInt32
+		murmur3_32_scramble( daw::UInt32 k ) noexcept {
 			k *= 0xcc9e'2d51ULL;
-			k = rotl<15>( k );
+			k = rotate_left<15>( k );
 			k *= 0x1b87'3593ULL;
 			return k;
 		}
 	} // namespace murmur3_details
 
-	template<typename String>
-	[[nodiscard]] constexpr std::uint32_t
-	murmur3_32( String const &key, std::uint32_t seed = 0 ) noexcept {
+	template<typename StringView>
+	[[nodiscard]] constexpr daw::UInt32
+	murmur3_32( StringView key, std::uint32_t seed = 0 ) noexcept {
 
-		std::uint32_t h = seed;
-		std::uint32_t const len = static_cast<uint32_t>( key.size( ) );
-		char const *first = key.data( );
-		char const *const last = key.data( ) + len;
-		std::uint32_t k = 0U;
+		daw::UInt32 h = static_cast<daw::UInt32>( seed );
+		daw::UInt32 k = daw::UInt32( );
+		char const *first = std::data( key );
+		char const *const last = std::data( key ) + std::size( key );
 		while( ( last - first ) >= 4U ) {
 			// Here is a source of differing results across endiannesses.
 			// A swap here has no effects on hash properties though.
-			k = murmur3_details::to_u32( first );
-			h ^= murmur3_details::murmur3_32_scramble( k );
-			h = murmur3_details::rotl<13>( h );
-			h = h * 5U + 0xe654'6b64ULL;
+			k = daw::to_uint32_buffer( first );
 			first += 4;
+			h ^= murmur3_details::murmur3_32_scramble( k );
+			h = rotate_left<13>( h );
+			h = h * 5U + 0xe654'6b64ULL;
 		}
 
 		// Anything left over
-		k = 0;
-		for( auto d = ( last - first ); d > 0; --d ) {
+		k = static_cast<daw::UInt32>( 0 );
+		for( auto i = ( last - first ); i > 0; --i ) {
 			k <<= 8U;
-			char const c = *( first + ( d - 1 ) );
-			k |= static_cast<unsigned char>( c );
+			k |= static_cast<unsigned char>( first[i - 1] );
 		}
 
 		h ^= murmur3_details::murmur3_32_scramble( k );
 
-		h ^= len;
+		h ^= static_cast<daw::UInt32>( std::size( key ) );
 		h ^= h >> 16U;
 		h *= 0x85eb'ca6bULL;
 		h ^= h >> 13U;

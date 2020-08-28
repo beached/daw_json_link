@@ -108,7 +108,7 @@ namespace daw::json::json_details {
 
 	template<bool HashesCollide, typename Range>
 	struct location_info_t {
-		std::uint32_t hash_value = 0;
+		daw::UInt32 hash_value = daw::UInt32( );
 		daw::string_view const *name;
 		Range location{ };
 		std::size_t count = 0;
@@ -124,7 +124,7 @@ namespace daw::json::json_details {
 
 	template<typename Range>
 	struct location_info_t<false, Range> {
-		std::uint32_t hash_value = 0;
+		daw::UInt32 hash_value = daw::UInt32( );
 		Range location{ };
 		std::size_t count = 0;
 
@@ -164,7 +164,7 @@ namespace daw::json::json_details {
 		template<std::size_t start_pos>
 		[[nodiscard]] constexpr std::size_t
 		find_name( daw::string_view key ) const {
-			uint32_t const hash = murmur3_32( key );
+			daw::UInt32 const hash = murmur3_32( key );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 			// MSVC has a bug where the list initialization isn't sequenced in order
 			// of appearance.
@@ -187,13 +187,13 @@ namespace daw::json::json_details {
 
 	template<typename... MemberNames>
 	constexpr bool do_hashes_collide( ) noexcept {
-		std::array<std::uint32_t, sizeof...( MemberNames )> hashes{
+		std::array<daw::UInt32, sizeof...( MemberNames )> hashes{
 		  murmur3_32( MemberNames::name )... };
 
 		daw::sort( hashes.data( ), hashes.data( ) + hashes.size( ) );
 		return daw::algorithm::adjacent_find(
 		         hashes.begin( ), hashes.end( ),
-		         []( std::uint32_t const &l, std::uint32_t const &r ) {
+		         []( daw::UInt32 l, daw::UInt32 r ) {
 			         return l == r;
 		         } ) != hashes.end( );
 	}
