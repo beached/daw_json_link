@@ -68,7 +68,7 @@ namespace daw {
 		// Cannot reasonibly guess as it's imp defined for signed
 		// static constexpr bool is_modulo = true;
 		static constexpr int digits =
-		  static_cast<int>( sizeof( __int128 ) * __CHAR_BIT__ - is_signed );
+		  static_cast<int>( sizeof( __int128 ) * CHAR_BIT - is_signed );
 		static constexpr int digits10 = digits * 3 / 10;
 		static constexpr int max_digits10 = 0;
 		static constexpr int radix = 2;
@@ -138,7 +138,7 @@ namespace daw {
 		static constexpr bool is_bounded = true;
 		static constexpr bool is_modulo = true;
 		static constexpr int digits =
-		  static_cast<int>( sizeof( __uint128_t ) * __CHAR_BIT__ - is_signed );
+		  static_cast<int>( sizeof( __uint128_t ) * CHAR_BIT - is_signed );
 		static constexpr int digits10 = digits * 3 / 10;
 		static constexpr int max_digits10 = 0;
 		static constexpr int radix = 2;

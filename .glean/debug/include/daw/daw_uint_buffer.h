@@ -1611,7 +1611,7 @@ namespace std {
 		static constexpr bool is_bounded = true;
 		static constexpr bool is_modulo = true;
 		static constexpr int digits =
-		  static_cast<int>( sizeof( std::uint64_t ) * __CHAR_BIT__ - is_signed );
+		  static_cast<int>( sizeof( std::uint64_t ) * CHAR_BIT - is_signed );
 		static constexpr int digits10 = digits * 3 / 10;
 		static constexpr int max_digits10 = 0;
 		static constexpr int radix = 2;
@@ -1678,7 +1678,7 @@ namespace std {
 		static constexpr bool is_bounded = true;
 		static constexpr bool is_modulo = true;
 		static constexpr int digits =
-		  static_cast<int>( sizeof( std::uint32_t ) * __CHAR_BIT__ - is_signed );
+		  static_cast<int>( sizeof( std::uint32_t ) * CHAR_BIT - is_signed );
 		static constexpr int digits10 = digits * 3 / 10;
 		static constexpr int max_digits10 = 0;
 		static constexpr int radix = 2;
@@ -1745,7 +1745,7 @@ namespace std {
 		static constexpr bool is_bounded = true;
 		static constexpr bool is_modulo = true;
 		static constexpr int digits =
-		  static_cast<int>( sizeof( std::uint16_t ) * __CHAR_BIT__ - is_signed );
+		  static_cast<int>( sizeof( std::uint16_t ) * CHAR_BIT - is_signed );
 		static constexpr int digits10 = digits * 3 / 10;
 		static constexpr int max_digits10 = 0;
 		static constexpr int radix = 2;
@@ -1812,7 +1812,7 @@ namespace std {
 		static constexpr bool is_bounded = true;
 		static constexpr bool is_modulo = true;
 		static constexpr int digits =
-		  static_cast<int>( sizeof( std::uint8_t ) * __CHAR_BIT__ - is_signed );
+		  static_cast<int>( sizeof( std::uint8_t ) * CHAR_BIT - is_signed );
 		static constexpr int digits10 = digits * 3 / 10;
 		static constexpr int max_digits10 = 0;
 		static constexpr int radix = 2;
