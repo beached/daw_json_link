@@ -36,14 +36,14 @@ namespace daw::json::json_details {
 		for( std::size_t n = 0; n < 8; ++n ) {
 			buff[n] = static_cast<std::byte>( ptr[n] );
 		}
-		UInt64 val = static_cast<UInt64>( 0 );
+		UInt64 val = UInt64( );
 
 		for( std::size_t n = 0; n < 8; ++n ) {
 			val |= static_cast<UInt64>( buff[n] ) << ( 8 * n );
 		}
-		return ( ( ( val & 0xF0F0F0F0F0F0F0F0U ) |
-		           ( ( ( val + 0x0606060606060606U ) & 0xF0F0F0F0F0F0F0F0U ) >>
-		             4U ) ) == 0x3333333333333333U );
+		return ( ( ( val & 0xF0F0F0F0F0F0F0F0ULL ) |
+		           ( ( ( val + 0x0606060606060606ULL ) & 0xF0F0F0F0F0F0F0F0ULL ) >>
+		             4U ) ) == 0x3333333333333333ULL );
 	}
 
 	template<JsonRangeCheck RangeCheck, typename Unsigned,

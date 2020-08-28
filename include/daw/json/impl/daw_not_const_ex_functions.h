@@ -23,6 +23,8 @@
 #endif
 #endif
 
+#include <cstring>
+
 namespace daw::json::json_details {
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
 	is_escaped( char const *ptr, char const *min_ptr ) {
