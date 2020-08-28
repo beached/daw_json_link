@@ -24,39 +24,42 @@ namespace daw {
 			return result;
 		}
 
-		static inline constexpr uint32_t rotl( std::uint32_t n, unsigned c ) {
-			constexpr unsigned mask = ( CHAR_BIT * sizeof( n ) - 1 );
-			c &= mask;
-			return ( n << c ) | ( n >> ( ( -c ) & mask ) );
+		template<unsigned r>
+		DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr uint32_t
+		rotl( std::uint32_t n ) {
+			return ( n << r ) | ( n >> r );
 		}
 
-		inline constexpr std::uint32_t
+		[[nodiscard]] inline constexpr std::uint32_t
 		murmur3_32_scramble( std::uint32_t k ) noexcept {
 			k *= 0xcc9e'2d51ULL;
-			rotl( k, 15 );
+			k = rotl<15>( k );
 			k *= 0x1b87'3593ULL;
 			return k;
 		}
 	} // namespace murmur3_details
 
 	template<typename String>
-	constexpr std::uint32_t murmur3_32( String const &key ) noexcept {
-		std::uint32_t h = 0; // seed
-		auto const len = static_cast<uint32_t>( key.size( ) );
+	[[nodiscard]] constexpr std::uint32_t
+	murmur3_32( String const &key, std::uint32_t seed = 0 ) noexcept {
+
+		std::uint32_t h = seed;
+		std::uint32_t const len = static_cast<uint32_t>( key.size( ) );
 		char const *first = key.data( );
 		char const *const last = key.data( ) + len;
+		std::uint32_t k = 0U;
 		while( ( last - first ) >= 4U ) {
 			// Here is a source of differing results across endiannesses.
 			// A swap here has no effects on hash properties though.
-			std::uint32_t k = murmur3_details::to_u32( first );
+			k = murmur3_details::to_u32( first );
 			h ^= murmur3_details::murmur3_32_scramble( k );
-			h = murmur3_details::rotl( h, 13 );
+			h = murmur3_details::rotl<13>( h );
 			h = h * 5U + 0xe654'6b64ULL;
 			first += 4;
 		}
 
 		// Anything left over
-		std::uint32_t k = 0U;
+		k = 0;
 		for( auto d = ( last - first ); d > 0; --d ) {
 			k <<= 8U;
 			char const c = *( first + ( d - 1 ) );

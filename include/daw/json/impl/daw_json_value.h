@@ -11,6 +11,8 @@
 #include "daw_arrow_proxy.h"
 #include "daw_json_parse_name.h"
 
+#include <tuple>
+
 namespace daw::json {
 	template<typename Range>
 	class basic_json_value;
@@ -25,6 +27,56 @@ namespace daw::json {
 		basic_json_value<Range> value;
 	};
 
+	template<std::size_t Idx, typename Range>
+	constexpr decltype( auto ) get( basic_json_pair<Range> const & rng ) {
+		static_assert( Idx < 2 );
+		if constexpr( Idx == 0 ) {
+			return rng.name;
+		} else {
+			return rng.value;
+		}
+	}
+
+	template<std::size_t Idx, typename Range>
+	constexpr decltype( auto ) get( basic_json_pair<Range> & rng ) {
+		static_assert( Idx < 2 );
+		if constexpr( Idx == 0 ) {
+			return rng.name;
+		} else {
+			return rng.value;
+		}
+	}
+
+	template<std::size_t Idx, typename Range>
+	constexpr decltype( auto ) get( basic_json_pair<Range> && rng ) {
+		static_assert( Idx < 2 );
+		if constexpr( Idx == 0 ) {
+			return std::move( rng.name );
+		} else {
+			return std::move( rng.value );
+		}
+	}
+} // namespace daw::json
+
+namespace std {
+	template<typename Range>
+	class tuple_element<0, daw::json::basic_json_pair<Range>> {
+	public:
+		using type = std::optional<std::string_view>;
+	};
+
+	template<typename Range>
+	class tuple_element<1, daw::json::basic_json_pair<Range>> {
+	public:
+		using type = daw::json::basic_json_value<Range>;
+	};
+
+	template<typename Range>
+	class std::tuple_size<daw::json::basic_json_pair<Range>>
+	  : public std::integral_constant<std::size_t, 2> {};
+} // namespace std
+
+namespace daw::json {
 	/***
 	 * Iterator for iterating over arbutrary JSON members and array elements
 	 * @tparam Range see IteratorRange
