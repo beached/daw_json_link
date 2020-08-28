@@ -72,7 +72,7 @@ namespace std {
 	};
 
 	template<typename Range>
-	class std::tuple_size<daw::json::basic_json_pair<Range>>
+	class tuple_size<daw::json::basic_json_pair<Range>>
 	  : public std::integral_constant<std::size_t, 2> {};
 } // namespace std
 
