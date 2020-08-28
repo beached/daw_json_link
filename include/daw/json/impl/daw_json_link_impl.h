@@ -191,11 +191,10 @@ namespace daw::json::json_details {
 		  murmur3_32( MemberNames::name )... };
 
 		daw::sort( hashes.data( ), hashes.data( ) + hashes.size( ) );
-		return daw::algorithm::adjacent_find(
-		         hashes.begin( ), hashes.end( ),
-		         []( daw::UInt32 l, daw::UInt32 r ) {
-			         return l == r;
-		         } ) != hashes.end( );
+		return daw::algorithm::adjacent_find( hashes.begin( ), hashes.end( ),
+		                                      []( daw::UInt32 l, daw::UInt32 r ) {
+			                                      return l == r;
+		                                      } ) != hashes.end( );
 	}
 
 	template<typename Range, typename... JsonMembers>

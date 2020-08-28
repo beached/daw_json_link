@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include "daw_arith_traits.h"
-
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_string_view.h>
 
 #include <chrono>

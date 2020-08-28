@@ -28,7 +28,7 @@ namespace daw::json {
 	};
 
 	template<std::size_t Idx, typename Range>
-	constexpr decltype( auto ) get( basic_json_pair<Range> const & rng ) {
+	constexpr decltype( auto ) get( basic_json_pair<Range> const &rng ) {
 		static_assert( Idx < 2 );
 		if constexpr( Idx == 0 ) {
 			return rng.name;
@@ -38,7 +38,7 @@ namespace daw::json {
 	}
 
 	template<std::size_t Idx, typename Range>
-	constexpr decltype( auto ) get( basic_json_pair<Range> & rng ) {
+	constexpr decltype( auto ) get( basic_json_pair<Range> &rng ) {
 		static_assert( Idx < 2 );
 		if constexpr( Idx == 0 ) {
 			return rng.name;
@@ -48,7 +48,7 @@ namespace daw::json {
 	}
 
 	template<std::size_t Idx, typename Range>
-	constexpr decltype( auto ) get( basic_json_pair<Range> && rng ) {
+	constexpr decltype( auto ) get( basic_json_pair<Range> &&rng ) {
 		static_assert( Idx < 2 );
 		if constexpr( Idx == 0 ) {
 			return std::move( rng.name );

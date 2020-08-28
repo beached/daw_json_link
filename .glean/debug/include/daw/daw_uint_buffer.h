@@ -22,9 +22,13 @@
 
 #pragma once
 
+#include <climits>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 #include <utility>
+
+#include <daw/daw_arith_traits.h>
 
 namespace daw {
 	struct InvalidUIntSize;

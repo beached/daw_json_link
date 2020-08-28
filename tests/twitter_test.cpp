@@ -68,7 +68,6 @@ void test( std::string_view json_data ) {
 	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 
-
 	// NoCommentSkippingPolicyUnchecked
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(unchecked)", sz,
@@ -232,8 +231,7 @@ int main( int argc, char **argv )
 	daw::do_not_optimize( twitter_result2 );
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
   defined( _CPPUNWIND )
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 #endif

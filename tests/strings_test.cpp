@@ -31,9 +31,9 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 static_assert( DAW_NUM_RUNS > 0 );
 
 template<typename Container>
-constexpr void clear( Container & c ) {
-	for( auto & v : c ) {
-		v = {};
+constexpr void clear( Container &c ) {
+	for( auto &v : c ) {
+		v = { };
 	}
 }
 

@@ -92,7 +92,8 @@ int main( int argc, char **argv ) try {
 
 	std::cout
 	  << "to_json testing\n*********************************************\n";
-	auto const citm_result = daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
+	auto const citm_result =
+	  daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
 
 	std::string str{ };
 	auto out_it = std::back_inserter( str );

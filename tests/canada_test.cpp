@@ -105,9 +105,10 @@ int main( int argc, char **argv ) try {
 		test<daw::json::simd_exec_tag>( json_sv1 );
 	}
 
-	std::cout << "to_json testing\n*********************************************\n";
-	auto const canada_result =
-	  daw::json::from_json<daw::geojson::Polygon>( json_sv1, "features[0].geometry"  );
+	std::cout
+	  << "to_json testing\n*********************************************\n";
+	auto const canada_result = daw::json::from_json<daw::geojson::Polygon>(
+	  json_sv1, "features[0].geometry" );
 	std::string str{ };
 	{
 		auto out_it = std::back_inserter( str );

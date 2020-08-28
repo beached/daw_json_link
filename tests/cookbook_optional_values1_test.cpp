@@ -42,10 +42,12 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_optional_values1::MyOptionalStuff1> {
 #if defined( __cpp_nontype_template_parameter_class )
-		using type = json_member_list<
-		  json_number_null<"member0", std::optional<int>>, json_string<"member1">,
-		  json_bool_null<"member2", std::unique_ptr<bool>,
-		                 LiteralAsStringOpt::NotBeforeDblQuote, UniquePtrConstructor<bool>>>;
+		using type =
+		  json_member_list<json_number_null<"member0", std::optional<int>>,
+		                   json_string<"member1">,
+		                   json_bool_null<"member2", std::unique_ptr<bool>,
+		                                  LiteralAsStringOpt::NotBeforeDblQuote,
+		                                  UniquePtrConstructor<bool>>>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";

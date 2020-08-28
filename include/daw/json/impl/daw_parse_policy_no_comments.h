@@ -106,7 +106,8 @@ namespace daw::json {
 							++ptr_first;
 						}
 					}
-					daw_json_assert( ptr_first < ptr_last and *ptr_first == '"', "Unexpected end of stream" );
+					daw_json_assert( ptr_first < ptr_last and *ptr_first == '"',
+					                 "Unexpected end of stream" );
 				} else if( c == ',' ) {
 					if( ( prime_bracket_count == 1 ) bitand
 					    ( second_bracket_count == 0 ) ) {

@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "daw_arith_traits.h"
 #include "daw_json_assert.h"
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_uint_buffer.h>
 
@@ -179,14 +179,15 @@ namespace daw::json::json_details {
 	// https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
 	static inline UInt64 parse_eight_digits_unrolled( const char *ptr ) {
 		// this actually computes *16* values so we are being wasteful.
-		__m128i const ascii0 = _mm_set1_epi8( '0' );
+		static __m128i const ascii0 = _mm_set1_epi8( '0' );
 
-		__m128i const mul_1_10 =
+		static __m128i const mul_1_10 =
 		  _mm_setr_epi8( 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1 );
 
-		__m128i const mul_1_100 = _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );
+		static __m128i const mul_1_100 =
+		  _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );
 
-		__m128i const mul_1_10000 =
+		static __m128i const mul_1_10000 =
 		  _mm_setr_epi16( 10000, 1, 10000, 1, 10000, 1, 10000, 1 );
 
 		__m128i const input = _mm_sub_epi8(
@@ -200,14 +201,15 @@ namespace daw::json::json_details {
 	}
 
 	static inline UInt64 parse_sixteen_digits_unrolled( const char *ptr ) {
-		__m128i const ascii0 = _mm_set1_epi8( '0' );
+		static __m128i const ascii0 = _mm_set1_epi8( '0' );
 
-		__m128i const mul_1_10 =
+		static __m128i const mul_1_10 =
 		  _mm_setr_epi8( 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1 );
 
-		__m128i const mul_1_100 = _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );
+		static __m128i const mul_1_100 =
+		  _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );
 
-		__m128i const mul_1_10000 =
+		static __m128i const mul_1_10000 =
 		  _mm_setr_epi16( 10000, 1, 10000, 1, 10000, 1, 10000, 1 );
 
 		__m128i const input = _mm_sub_epi8(
