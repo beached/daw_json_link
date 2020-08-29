@@ -27,7 +27,8 @@ namespace daw::json::parse_policy_details {
 
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
 	is_number( char c ) {
-		return static_cast<unsigned>( c ) - static_cast<unsigned>( '0' ) < 10U;
+		return static_cast<unsigned>( static_cast<unsigned char>( c ) -
+		                              static_cast<unsigned char>( '0' ) ) < 10U;
 	}
 
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
@@ -47,10 +48,5 @@ namespace daw::json::parse_policy_details {
 			return true;
 		}
 		return false;
-	}
-
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-	is_space_unchecked( char c ) {
-		return c <= 0x20;
 	}
 } // namespace daw::json::parse_policy_details

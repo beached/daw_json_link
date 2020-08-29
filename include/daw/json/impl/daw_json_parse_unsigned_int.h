@@ -39,7 +39,7 @@ namespace daw::json::json_details {
 		UInt64 val = UInt64( );
 
 		for( std::size_t n = 0; n < 8; ++n ) {
-			val |= static_cast<UInt64>( buff[n] ) << ( 8 * n );
+			val |= to_uint64( buff[n] ) << ( 8 * n );
 		}
 		return ( ( ( val & 0xF0F0F0F0F0F0F0F0ULL ) |
 		           ( ( ( val + 0x0606060606060606ULL ) & 0xF0F0F0F0F0F0F0F0ULL ) >>
@@ -196,7 +196,7 @@ namespace daw::json::json_details {
 		__m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );
 		__m128i const t3 = _mm_packus_epi32( t2, t2 );
 		__m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
-		return static_cast<UInt64>( static_cast<std::uint32_t>( _mm_cvtsi128_si32(
+		return to_uint64( static_cast<std::uint32_t>( _mm_cvtsi128_si32(
 		  t4 ) ) ); // only captures the sum of the first 8 digits, drop the rest
 	}
 
@@ -218,7 +218,7 @@ namespace daw::json::json_details {
 		__m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );
 		__m128i const t3 = _mm_packus_epi32( t2, t2 );
 		__m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
-		return static_cast<UInt64>( _mm_cvtsi128_si64( t4 ) );
+		return to_uint64( _mm_cvtsi128_si64( t4 ) );
 	}
 
 	[[nodiscard]] static inline bool

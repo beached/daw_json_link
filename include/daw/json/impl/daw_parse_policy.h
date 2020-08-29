@@ -21,7 +21,6 @@
 
 #include <cassert>
 #include <cstddef>
-#include <cstdint>
 #include <iterator>
 #include <type_traits>
 
@@ -49,41 +48,32 @@ namespace daw::json {
 		std::size_t counter = 0;
 		using Range = BasicParsePolicy;
 
-		template<std::size_t N>
-		constexpr bool operator==( char const ( &rhs )[N] ) const {
-			if( size( ) < ( N - 1 ) ) {
-				return false;
-			}
-			bool result = true;
-			for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
-				result = result and ( first[n] == rhs[n] );
-			}
-			return result;
-		}
-
 		constexpr BasicParsePolicy( ) = default;
 
 		constexpr BasicParsePolicy( iterator f, iterator l )
 		  : first( f )
 		  , last( l )
 		  , class_first( f )
-		  , class_last( l ) {
-
-			assert( f );
-			assert( l );
-			daw_json_assert( not is_null( ), "Unexpceted null start of range" );
-		}
+		  , class_last( l ) {}
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool empty( ) const {
-			if constexpr( is_unchecked_input ) {
-				return first == last;
-			} else {
-				return first != nullptr and first == last;
-			}
+			return first >= last;
 		}
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool has_more( ) const {
 			return first < last;
+		}
+
+		template<std::size_t N>
+		constexpr bool starts_with( char const ( &rhs )[N] ) const {
+			if( size( ) < ( N - 1 ) ) {
+				return false;
+			}
+			bool result = true;
+			for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
+				result = result & ( first[n] == rhs[n] );
+			}
+			return result;
 		}
 
 		template<char c>
@@ -124,45 +114,24 @@ namespace daw::json {
 			}
 		}
 
-		[[nodiscard]] constexpr char front( ) const {
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr char front( ) const {
 			return *first;
 		}
 
 		[[nodiscard]] constexpr std::size_t size( ) const {
-			return static_cast<std::size_t>( std::distance( first, last ) );
-		}
-
-		[[nodiscard]] constexpr bool is_number( ) const {
-			return static_cast<unsigned>( front( ) ) - static_cast<unsigned>( '0' ) <
-			       10U;
+			return static_cast<std::size_t>( last - first );
 		}
 
 		[[nodiscard]] constexpr bool is_null( ) const {
 			return first == nullptr;
 		}
 
-		constexpr void remove_prefix( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void remove_prefix( ) {
 			++first;
 		}
 
-		constexpr void remove_prefix( std::size_t n ) {
-			first += static_cast<intmax_t>( n );
-		}
-
-		[[nodiscard]] constexpr iterator begin( ) const {
-			return first;
-		}
-
-		[[nodiscard]] constexpr iterator data( ) const {
-			return first;
-		}
-
-		[[nodiscard]] constexpr iterator end( ) const {
-			return last;
-		}
-
-		[[nodiscard]] explicit constexpr operator bool( ) const {
-			return not empty( );
+		DAW_ATTRIBUTE_FLATTEN constexpr void remove_prefix( std::size_t n ) {
+			first += static_cast<std::ptrdiff_t>( n );
 		}
 
 		constexpr void set_class_position( ) {
@@ -182,12 +151,13 @@ namespace daw::json {
 			char const *f = first;
 			char const *const l = last;
 			if constexpr( IsUncheckedInput ) {
-				while( ( *f > 0x20 ) and not CommentPolicy::is_literal_end( *f ) ) {
+				while( ( static_cast<unsigned char>( *f ) > 0x20U ) &
+				       not CommentPolicy::is_literal_end( *f ) ) {
 					++f;
 				}
 			} else {
-				while( ( f < l ) and ( *f > 0x20 ) and
-				       not CommentPolicy::is_literal_end( *f ) ) {
+				while( ( f < l ) and ( ( static_cast<unsigned char>( *f ) > 0x20 ) &
+				                       not CommentPolicy::is_literal_end( *f ) ) ) {
 					++f;
 				}
 			}
@@ -198,21 +168,19 @@ namespace daw::json {
 			return CommentPolicy::is_literal_end( *first );
 		}
 
-		[[nodiscard]] constexpr bool is_space_checked( ) const {
+		DAW_ATTRIBUTE_FLATTEN [[nodiscard]] constexpr bool
+		is_space_checked( ) const {
 			daw_json_assert_weak( has_more( ), "Unexpected end" );
-			return *first <= 0x20;
+			return static_cast<unsigned char>( *first ) <= 0x20U;
 		}
 
-		[[nodiscard]] constexpr bool is_space_unchecked( ) const {
-			return *first <= 0x20;
+		DAW_ATTRIBUTE_FLATTEN [[nodiscard]] constexpr bool
+		is_space_unchecked( ) const {
+			return static_cast<unsigned char>( *first ) <= 0x20U;
 		}
 
 		[[nodiscard]] constexpr bool is_opening_bracket_checked( ) const {
 			return first < last and *first == '[';
-		}
-
-		[[nodiscard]] constexpr bool is_opening_bracket_unchecked( ) const {
-			return *first == '[';
 		}
 
 		[[nodiscard]] constexpr bool is_opening_brace_checked( ) const {
@@ -223,60 +191,12 @@ namespace daw::json {
 			return first < last and *first == '}';
 		}
 
-		[[nodiscard]] constexpr bool is_closing_brace_unchecked( ) const {
-			return *first == '}';
-		}
-
-		[[nodiscard]] constexpr bool is_closing_bracket_checked( ) const {
-			return first < last and *first == ']';
-		}
-
-		[[nodiscard]] constexpr bool is_closing_bracket_unchecked( ) const {
-			return *first == ']';
-		}
-
-		[[nodiscard]] constexpr bool is_quotes_unchecked( ) const {
-			return *first == '"';
-		}
-
 		[[nodiscard]] constexpr bool is_quotes_checked( ) const {
 			return first < last and *first == '"';
 		}
 
-		[[nodiscard]] constexpr bool is_comma_checked( ) const {
-			return first < last and *first == ',';
-		}
-
-		[[nodiscard]] constexpr bool is_colon_unchecked( ) const {
-			return *first == ':';
-		}
-
-		[[nodiscard]] constexpr bool is_minus_unchecked( ) const {
-			return *first == '-';
-		}
-
-		[[nodiscard]] constexpr bool is_plus_unchecked( ) const {
-			return *first == '+';
-		}
-
-		[[nodiscard]] constexpr bool is_n_unchecked( ) const {
-			return *first == 'n';
-		}
-
 		[[nodiscard]] constexpr bool is_exponent_checked( ) const {
 			return first < last and ( ( *first == 'e' ) bitor ( *first == 'E' ) );
-		}
-
-		[[nodiscard]] constexpr bool is_t_unchecked( ) const {
-			return *first == 't';
-		}
-
-		[[nodiscard]] constexpr bool is_u_unchecked( ) const {
-			return *first == 'u';
-		}
-
-		[[nodiscard]] constexpr bool is_escape_unchecked( ) const {
-			return *first == '\\';
 		}
 
 		constexpr void trim_left( ) {

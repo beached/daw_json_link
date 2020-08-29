@@ -27,7 +27,9 @@ namespace daw::json::json_details {
 			rng.remove_prefix( );
 			sign = -1;
 		}
-		daw_json_assert_weak( rng.is_number( ), "Expected a number" );
+		daw_json_assert_weak( parse_policy_details::is_number( rng.front( ) ),
+		                      "Expected a number" );
+
 		auto const whole_part = static_cast<Result>(
 		  sign * unsigned_parser<int64_t, JsonRangeCheck::Never, false>(
 		           Range::exec_tag, rng ) );
@@ -50,10 +52,10 @@ namespace daw::json::json_details {
 			rng.remove_prefix( );
 			int32_t exsign = 1;
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
-			if( rng.is_minus_unchecked( ) ) {
+			if( rng.front( ) == '-' ) {
 				rng.remove_prefix( );
 				exsign = -1;
-			} else if( rng.is_plus_unchecked( ) ) {
+			} else if( rng.front( ) == '+' ) {
 				rng.remove_prefix( );
 			}
 			if( rng.has_more( ) ) {

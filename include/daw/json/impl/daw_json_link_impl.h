@@ -114,7 +114,7 @@ namespace daw::json::json_details {
 		std::size_t count = 0;
 
 		explicit constexpr location_info_t( daw::string_view const *Name ) noexcept
-		  : hash_value( daw::murmur3_32( *Name ) )
+		  : hash_value( daw::name_hash( *Name ) )
 		  , name( Name ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
@@ -129,7 +129,7 @@ namespace daw::json::json_details {
 		std::size_t count = 0;
 
 		explicit constexpr location_info_t( daw::string_view const *Name ) noexcept
-		  : hash_value( daw::murmur3_32( *Name ) ) {}
+		  : hash_value( daw::name_hash( *Name ) ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 			return location.is_null( );
@@ -164,7 +164,7 @@ namespace daw::json::json_details {
 		template<std::size_t start_pos>
 		[[nodiscard]] constexpr std::size_t
 		find_name( daw::string_view key ) const {
-			daw::UInt32 const hash = murmur3_32( key );
+			daw::UInt32 const hash = name_hash( key );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 			// MSVC has a bug where the list initialization isn't sequenced in order
 			// of appearance.
@@ -188,7 +188,7 @@ namespace daw::json::json_details {
 	template<typename... MemberNames>
 	constexpr bool do_hashes_collide( ) noexcept {
 		std::array<daw::UInt32, sizeof...( MemberNames )> hashes{
-		  murmur3_32( MemberNames::name )... };
+		  name_hash( MemberNames::name )... };
 
 		daw::sort( hashes.data( ), hashes.data( ) + hashes.size( ) );
 		return daw::algorithm::adjacent_find( hashes.begin( ), hashes.end( ),
@@ -228,8 +228,7 @@ namespace daw::json::json_details {
 
 		rng.trim_left_unchecked( );
 		// TODO: should we check for end
-		while( locations[pos].missing( ) and
-		       not rng.is_closing_brace_unchecked( ) ) {
+		while( locations[pos].missing( ) & rng.front( ) != '}' ) {
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 			auto const name = parse_name( rng );
 			auto const name_pos = locations.template find_name<pos>( name );
@@ -276,8 +275,7 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
 			daw_json_assert_weak( current_position <= desired_position,
 			                      "Order of ordered members must be ascending" );
-			while( current_position < desired_position and
-			       not rng.is_closing_bracket_unchecked( ) ) {
+			while( current_position < desired_position and rng.front( ) != ']' ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				++current_position;
@@ -312,7 +310,7 @@ namespace daw::json::json_details {
 
 		// this is an out value, get position ready
 		++member_position;
-		if( DAW_JSON_UNLIKELY( rng.is_closing_bracket_unchecked( ) ) ) {
+		if( DAW_JSON_UNLIKELY( rng.front( ) == ']' ) ) {
 			if constexpr( is_json_nullable_v<ordered_member_subtype_t<JsonMember>> ) {
 				using constructor_t = typename json_member_type::constructor_t;
 				return constructor_t{ }( );
@@ -347,7 +345,7 @@ namespace daw::json::json_details {
 		auto loc = find_class_member<member_position, JsonMember>( locations, rng );
 
 		// If the member was found loc will have it's position
-		if( loc.begin( ) == rng.begin( ) ) {
+		if( loc.first == rng.first ) {
 			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 			                                rng );
 		}
@@ -475,14 +473,13 @@ namespace daw::json::json_details {
 	ordered_class_cleanup_now( Range &rng ) {
 		rng.clean_tail( );
 		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
-		while( not rng.is_closing_bracket_unchecked( ) ) {
+		while( rng.front( ) != ']' ) {
 			(void)skip_value( rng );
 			rng.clean_tail( );
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 		}
 		// TODO: should we check for end
-		daw_json_assert_weak( rng.is_closing_bracket_unchecked( ),
-		                      "Expected a ']'" );
+		daw_json_assert_weak( rng.front( ) == ']', "Expected a ']'" );
 		rng.remove_prefix( );
 		rng.trim_left( );
 	}

@@ -32,7 +32,7 @@ bool test_quoted_number( ) {
 	  daw::json::DefaultParsePolicy( sv.data( ) + 1, sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
-	return std::string_view( v.data( ), v.size( ) ) == "1234";
+	return std::string_view( v.first, v.size( ) ) == "1234";
 }
 
 bool test_empty_quoted( ) {
@@ -53,7 +53,7 @@ bool test_embeded_quotes( ) {
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	DAW_CONSTEXPR std::string_view ans = R"(\"  \\ )";
-	return std::string_view( v.data( ), v.size( ) ) == ans;
+	return std::string_view( v.first, v.size( ) ) == ans;
 }
 
 bool test_missing_quotes_001( ) {

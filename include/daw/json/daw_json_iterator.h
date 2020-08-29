@@ -50,7 +50,7 @@ namespace daw::json {
 			  std::forward<String>( data ),
 			  { member_path.data( ), member_path.size( ) } );
 			daw_json_assert( is_found, "Could not find path to member" );
-			daw_json_assert( result.is_opening_bracket_unchecked( ),
+			daw_json_assert( result.front( ) == '[',
 			                 "Member is not an array" );
 			return result;
 		}
@@ -122,7 +122,7 @@ namespace daw::json {
 		 */
 		[[nodiscard]] inline constexpr value_type operator*( ) const {
 			daw_json_assert_weak( m_state.has_more( ) and
-			                        not m_state.is_closing_bracket_unchecked( ),
+			                        m_state.front( ) != ']',
 			                      "Unexpected end of stream" );
 
 			auto tmp = m_state;
@@ -185,7 +185,7 @@ namespace daw::json {
 		 */
 		[[nodiscard]] inline constexpr bool good( ) const {
 			return not m_state.is_null( ) and m_state.has_more( ) and
-			       not m_state.is_closing_bracket_unchecked( );
+			       m_state.front( ) != ']';
 		}
 
 		/***
@@ -209,7 +209,7 @@ namespace daw::json {
 			if( not rhs ) {
 				return false;
 			}
-			return ( m_state.begin( ) == rhs.m_state.begin( ) );
+			return ( m_state.first == rhs.m_state.first );
 		}
 
 		/***
@@ -225,7 +225,7 @@ namespace daw::json {
 			if( not rhs ) {
 				return true;
 			}
-			return m_state.begin( ) != rhs.m_state.begin( );
+			return m_state.first != rhs.m_state.first;
 		}
 	};
 

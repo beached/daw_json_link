@@ -34,7 +34,7 @@ namespace daw::json::json_details {
 
 	template<typename Range>
 	[[nodiscard]] static constexpr char *decode_utf16( Range &rng, char *it ) {
-		daw_json_assert_weak( rng.is_u_unchecked( ),
+		daw_json_assert_weak( rng.front( ) == 'u',
 		                      "Expected rng to start with a u" );
 		rng.remove_prefix( );
 		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
@@ -48,7 +48,7 @@ namespace daw::json::json_details {
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			rng.remove_prefix( );
-			daw_json_assert_weak( rng.is_u_unchecked( ),
+			daw_json_assert_weak( rng.front( ) == 'u',
 			                      "Expected rng to start with a \\u" );
 			rng.remove_prefix( );
 			auto trailing = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
@@ -99,7 +99,7 @@ namespace daw::json::json_details {
 
 	template<typename Range, typename Appender>
 	static constexpr void decode_utf16( Range &rng, Appender &app ) {
-		daw_json_assert_weak( rng.is_u_unchecked( ),
+		daw_json_assert_weak( rng.front( ) == 'u',
 		                      "Expected rng to start with a \\u" );
 		rng.remove_prefix( );
 		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
@@ -112,7 +112,7 @@ namespace daw::json::json_details {
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			rng.remove_prefix( );
-			daw_json_assert_weak( rng.is_u_unchecked( ),
+			daw_json_assert_weak( rng.front( ) == 'u',
 			                      "Expected rng to start with a \\u" );
 			rng.remove_prefix( );
 			auto trailing = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
@@ -179,7 +179,7 @@ namespace daw::json::json_details {
 
 		char *it = result.data( );
 
-		bool const has_quote = rng.is_quotes_unchecked( );
+		bool const has_quote = rng.front( ) == '"';
 		if( has_quote ) {
 			rng.remove_prefix( );
 		}
@@ -192,7 +192,7 @@ namespace daw::json::json_details {
 		daw_json_assert(
 		  rng.last < rng.class_last,
 		  "Unabled to parse lone string, need space after to see \"" );
-		while( not rng.is_quotes_unchecked( ) ) {
+		while( rng.front( ) != '"' ) {
 			{
 				char const *first = rng.first;
 				char const *const last = rng.last;
@@ -203,7 +203,7 @@ namespace daw::json::json_details {
 				it = std::copy( rng.first, first, it );
 				rng.first = first;
 			}
-			if( rng.is_escape_unchecked( ) ) {
+			if( rng.front( ) == '\\' ) {
 				daw_json_assert_weak( not rng.is_space_unchecked( ),
 				                      "Invalid codepoint" );
 				rng.remove_prefix( );

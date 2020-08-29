@@ -21,11 +21,10 @@ namespace daw::json {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_checked( Range &rng ) {
-			// SIMD here was much slower
+			// SIMD here was much slower, most JSON has very minimal whitespace
 			char const *first = rng.first;
 			char const *const last = rng.last;
-			while( first < last and
-			       parse_policy_details::is_space_unchecked( *first ) ) {
+			while( first < last and static_cast<unsigned char>( *first ) <= 0x20U ) {
 				++first;
 			}
 			rng.first = first;
@@ -35,7 +34,7 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_unchecked( Range &rng ) {
 			char const *first = rng.first;
-			while( parse_policy_details::is_space_unchecked( *first ) ) {
+			while( static_cast<unsigned char>( *first ) <= 0x20 ) {
 				++first;
 			}
 			rng.first = first;

@@ -28,7 +28,7 @@ namespace daw::json::json_details::name {
 		[[maybe_unused]] static constexpr void trim_end_of_name( Range &rng ) {
 			rng.trim_left( );
 			// TODO: should we check for end
-			daw_json_assert_weak( rng.is_colon_unchecked( ), "Expected a ':'" );
+			daw_json_assert_weak( rng.front( ) == ':', "Expected a ':'" );
 			rng.remove_prefix( );
 			rng.trim_left( );
 		}
@@ -148,7 +148,7 @@ namespace daw::json::json_details {
 					--idx;
 					(void)skip_value( rng );
 					rng.trim_left_checked( );
-					if( idx > 0 and not rng.is_comma_checked( ) ) {
+					if( (idx > 0) & ( rng.has_more( ) and ( rng.front( ) != ',' ) ) ) {
 						return false;
 					}
 					rng.clean_tail( );
@@ -162,7 +162,7 @@ namespace daw::json::json_details {
 				while( not json_path_compare( pop_result.current, name ) ) {
 					(void)skip_value( rng );
 					rng.clean_tail( );
-					if( rng.empty( ) or not rng.is_quotes_unchecked( ) ) {
+					if( rng.empty( ) or rng.front( ) != '"' ) {
 						return false;
 					}
 					name = parse_name( rng );

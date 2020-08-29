@@ -230,7 +230,7 @@ namespace daw::json {
 		operator==( basic_json_value_iterator<Range> const &rhs ) const {
 			if( good( ) ) {
 				if( rhs.good( ) ) {
-					return m_state.begin( ) == rhs.m_state.begin( );
+					return m_state.first == rhs.m_state.first;
 				}
 				return false;
 			}
@@ -336,7 +336,6 @@ namespace daw::json {
 				return JsonBaseParseTypes::Class;
 			case '[':
 				return JsonBaseParseTypes::Array;
-			case '+':
 			case '-':
 			case '0':
 			case '1':
@@ -351,7 +350,7 @@ namespace daw::json {
 				return JsonBaseParseTypes::Number;
 			case 't':
 				if constexpr( not Range::is_unchecked_input ) {
-					if( m_rng == "true" ) {
+					if( m_rng.starts_with( "true" ) ) {
 						return JsonBaseParseTypes::Bool;
 					}
 					return JsonBaseParseTypes::None;
@@ -360,7 +359,7 @@ namespace daw::json {
 				}
 			case 'f':
 				if constexpr( not Range::is_unchecked_input ) {
-					if( m_rng == "false" ) {
+					if( m_rng.starts_with( "false" ) ) {
 						return JsonBaseParseTypes::Bool;
 					}
 					return JsonBaseParseTypes::None;
@@ -368,7 +367,7 @@ namespace daw::json {
 					return JsonBaseParseTypes::Bool;
 				}
 			case 'n':
-				daw_json_assert_weak( m_rng == "null", "Expected a null" );
+				daw_json_assert_weak( m_rng.starts_with( "null" ), "Expected a null" );
 				return JsonBaseParseTypes::Null;
 			}
 			return JsonBaseParseTypes::None;
@@ -410,7 +409,7 @@ namespace daw::json {
 		 * @return true if the value is a null literal
 		 */
 		constexpr bool is_null( ) const {
-			return ( not m_rng.has_more( ) ) or m_rng == "null";
+			return ( m_rng.starts_with( "null" ) );
 		}
 
 		/***

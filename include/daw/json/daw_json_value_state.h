@@ -27,7 +27,7 @@ namespace daw::json {
 			explicit constexpr basic_stateful_json_value_state(
 			  daw::string_view Name, basic_json_value_iterator<Range> val ) noexcept
 			  : name( Name )
-			  , hash_value( daw::murmur3_32( Name ) )
+			  , hash_value( daw::name_hash( Name ) )
 			  , location( std::move( val ) ) {}
 
 			[[nodiscard]] constexpr bool
@@ -51,7 +51,7 @@ namespace daw::json {
 
 		constexpr json_member_name( std::string_view Name ) noexcept
 		  : name( Name.data( ), Name.size( ) )
-		  , hash_value( daw::murmur3_32( name ) ) {}
+		  , hash_value( daw::name_hash( name ) ) {}
 	};
 
 	/**

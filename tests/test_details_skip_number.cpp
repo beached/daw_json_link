@@ -23,7 +23,7 @@ bool test_number_in_class( ) {
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_number( rng );
-	return std::string_view( v.data( ), v.size( ) ) == "1234";
+	return std::string_view( v.first, v.size( ) ) == "1234";
 }
 
 bool test_number( ) {
@@ -32,7 +32,7 @@ bool test_number( ) {
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_number( rng );
-	return std::string_view( v.data( ), v.size( ) ) == "12345";
+	return std::string_view( v.first, v.size( ) ) == "12345";
 }
 
 bool test_number_space( ) {
@@ -41,7 +41,7 @@ bool test_number_space( ) {
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_number( rng );
-	return std::string_view( v.data( ), v.size( ) ) == "12345";
+	return std::string_view( v.first, v.size( ) ) == "12345";
 }
 
 #define do_test( ... )                                                         \

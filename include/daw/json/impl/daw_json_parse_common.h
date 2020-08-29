@@ -433,7 +433,7 @@ namespace daw::json::json_details {
 		auto result = rng;
 		result.counter = string_quote::string_quote_parser::parse_nq( rng );
 
-		daw_json_assert_weak( rng.is_quotes_unchecked( ),
+		daw_json_assert_weak( rng.front( ) == '"',
 		                      "Expected trailing \" at the end of string" );
 		result.last = rng.first;
 		rng.remove_prefix( );
@@ -447,8 +447,8 @@ namespace daw::json::json_details {
 			auto result = rng;
 			return result;
 		}
-		if( *std::prev( rng.begin( ) ) != '"' ) {
-			if( rng.is_quotes_unchecked( ) ) {
+		if( *std::prev( rng.first ) != '"' ) {
+			if( rng.front( ) == '"' ) {
 				rng.remove_prefix( );
 			} else {
 				daw_json_error( "Attempt to parse a non-string as string" );
@@ -465,7 +465,7 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 4 );
 		} else {
 			rng.remove_prefix( );
-			daw_json_assert( rng == "rue", "Expected true" );
+			daw_json_assert( rng.starts_with( "rue" ), "Expected true" );
 			rng.remove_prefix( 3 );
 		}
 		result.last = rng.first;
@@ -482,7 +482,7 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 5 );
 		} else {
 			rng.remove_prefix( );
-			daw_json_assert( rng == "alse", "Expected false" );
+			daw_json_assert( rng.starts_with( "alse" ), "Expected false" );
 			rng.remove_prefix( 4 );
 		}
 		result.last = rng.first;
@@ -498,7 +498,7 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 4 );
 		} else {
 			rng.remove_prefix( );
-			daw_json_assert( rng == "ull", "Expected null" );
+			daw_json_assert( rng.starts_with( "ull" ), "Expected null" );
 			rng.remove_prefix( 3 );
 		}
 		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
@@ -572,7 +572,7 @@ namespace daw::json::json_details {
 		              JsonMember::expected_type == JsonParseTypes::StringEscaped or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
 			// json string encodings
-			daw_json_assert_weak( rng.is_quotes_unchecked( ),
+			daw_json_assert_weak( rng.front( ) == '"',
 			                      "Expected start of value to begin with '\"'" );
 			rng.remove_prefix( );
 			return json_details::skip_string_nq( rng );

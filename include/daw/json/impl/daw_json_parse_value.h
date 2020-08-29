@@ -39,14 +39,14 @@ namespace daw::json::json_details {
 			}
 		} else if constexpr( literal_as_string == LiteralAsStringOpt::Maybe ) {
 			daw_json_assert_weak( not rng.empty( ), "Unexpected end of stream" );
-			if( rng.is_quotes_unchecked( ) ) {
+			if( rng.front( ) == '"' ) {
 				rng.remove_prefix( );
 				if constexpr( KnownBounds ) {
 					rng.last = std::prev( rng.last );
 				}
 			}
 		} else {
-			daw_json_assert_weak( not rng.is_quotes_unchecked( ),
+			daw_json_assert_weak( rng.front( ) != '"',
 			                      "Unexpected quote prior to number" );
 		}
 	}
@@ -95,7 +95,7 @@ namespace daw::json::json_details {
 			  "Expected number to start with on of \"0123456789e+-\"" );
 		}
 		element_t sign = 1;
-		if( rng.is_minus_unchecked( ) ) {
+		if( rng.front( ) == '-' ) {
 			rng.remove_prefix( );
 			sign = -1;
 		}
@@ -126,7 +126,7 @@ namespace daw::json::json_details {
 		if constexpr( KnownBounds ) {
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
-			  rng.is_number( ),
+			  parse_policy_details::is_number( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789\"" );
 			return constructor_t{ }(
 			  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
@@ -135,7 +135,7 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
-			  rng.is_number( ),
+			  parse_policy_details::is_number( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789\"" );
 			auto result = constructor_t{ }(
 			  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
@@ -162,7 +162,7 @@ namespace daw::json::json_details {
 		} else if constexpr( Range::is_unchecked_input ) {
 			if( not rng.has_more( ) ) {
 				return constructor_t{ }( );
-			} else if( rng.is_n_unchecked( ) ) {
+			} else if( rng.front( ) == 'n' ) {
 				rng.remove_prefix( 4 );
 				rng.trim_left_unchecked( );
 				rng.remove_prefix( );
@@ -171,9 +171,9 @@ namespace daw::json::json_details {
 			return parse_value<JsonMember>(
 			  ParseTag<JsonMember::base_expected_type>{ }, rng );
 		} else {
-			if( not rng.has_more( ) ) {
+			if( rng.empty( ) ) {
 				return constructor_t{ }( );
-			} else if( rng == "null" ) {
+			} else if( rng.starts_with( "null" ) ) {
 				rng.remove_prefix( 4 );
 				daw_json_assert_weak(
 				  parse_policy_details::at_end_of_item( rng.front( ) ),
@@ -196,7 +196,7 @@ namespace daw::json::json_details {
 		if constexpr( KnownBounds ) {
 			// We have already checked if it is a true/false
 			if constexpr( Range::is_unchecked_input ) {
-				return rng.is_t_unchecked( );
+				return rng.front( ) == 't';
 			} else {
 				switch( rng.front( ) ) {
 				case 't':
@@ -210,17 +210,17 @@ namespace daw::json::json_details {
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			bool result = false;
 			if constexpr( Range::is_unchecked_input ) {
-				if( rng.is_t_unchecked( ) ) /* true */ {
+				if( rng.front( ) == 't' ) /* true */ {
 					result = true;
 					rng.remove_prefix( 4 );
 				} else /* false */ {
 					rng.remove_prefix( 5 );
 				}
 			} else {
-				if( rng == "true" ) {
+				if( rng.starts_with( "true" ) ) {
 					rng.remove_prefix( 4 );
 					result = true;
-				} else if( rng == "false" ) {
+				} else if( rng.starts_with( "false" ) ) {
 					rng.remove_prefix( 5 );
 				} else {
 					daw_json_error( "Invalid boolean value, expected true or false" );
@@ -348,14 +348,14 @@ namespace daw::json::json_details {
 				rng.remove_prefix( );
 			}
 			daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
-			while( not rng.is_quotes_unchecked( ) ) {
+			while( rng.front( ) != '"' ) {
 				// TODO look at move_to_next_of
 				while( not rng.template in<parse_tokens::escape_quotes>( ) ) {
 					daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
 					app( rng.front( ) );
 					rng.remove_prefix( );
 				}
-				if( rng.is_escape_unchecked( ) ) {
+				if( rng.front( ) == '\\' ) {
 					daw_json_assert_weak( not rng.is_space_unchecked( ),
 					                      "Invalid codepoint" );
 					rng.remove_prefix( );
@@ -424,21 +424,21 @@ namespace daw::json::json_details {
 		daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 		auto str = skip_string( rng );
 		using constructor_t = typename JsonMember::constructor_t;
-		return constructor_t{ }( str.begin( ), str.size( ) );
+		return constructor_t{ }( str.first, str.size( ) );
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Custom>, Range &rng ) {
 
-		if( not rng.is_quotes_unchecked( ) and rng.class_first != nullptr and
-		    rng.first > rng.class_first and *std::prev( rng.first ) == '"' ) {
+		if( ( rng.front( ) != '"' & rng.class_first != nullptr ) &
+		    ( rng.first > rng.class_first and *std::prev( rng.first ) == '"' ) ) {
 			rng.first = std::prev( rng.first );
 		}
 		auto const str = skip_value( rng );
 
 		using constructor_t = typename JsonMember::from_converter_t;
-		return constructor_t{ }( std::string_view( str.begin( ), str.size( ) ) );
+		return constructor_t{ }( std::string_view( str.first, str.size( ) ) );
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
@@ -488,7 +488,7 @@ namespace daw::json::json_details {
 		               "Expected a json_key_value" );
 		daw_json_assert_weak(
 		  rng.is_opening_brace_checked( ),
-		  "Expected keyvalue type to be of class type and beging with '{'" );
+		  "Expected keyvalue type to be of class type and beginning with '{'" );
 
 		rng.remove_prefix( );
 		// We are inside a KV map, we can expected a quoted name next
@@ -514,7 +514,7 @@ namespace daw::json::json_details {
 		               "Expected a json_key_value" );
 		daw_json_assert_weak(
 		  rng.is_opening_bracket_checked( ),
-		  "Expected keyvalue type to be of class type and beging with '{'" );
+		  "Expected key/value type to be of class type and beginning with '{'" );
 
 		rng.remove_prefix( );
 

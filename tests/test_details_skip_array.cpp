@@ -24,7 +24,7 @@ bool test_empty_quoted( ) {
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
-	return std::string_view( v.begin( ), v.size( ) ) == sv;
+	return std::string_view( v.first, v.size( ) ) == sv;
 }
 
 bool test_extra_slash( ) {
@@ -50,7 +50,7 @@ bool test_trailing_comma( ) {
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
-	return std::string_view( v.begin( ), v.size( ) ) == sv;
+	return std::string_view( v.first, v.size( ) ) == sv;
 }
 
 bool test_strings( ) {
@@ -58,7 +58,7 @@ bool test_strings( ) {
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
-	return std::string_view( v.begin( ), v.size( ) ) == sv;
+	return std::string_view( v.first, v.size( ) ) == sv;
 }
 
 bool test_bad_strings_001( ) {
@@ -84,7 +84,7 @@ bool test_classes_001( ) {
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
-	return std::string_view( v.begin( ), v.size( ) ) == sv;
+	return std::string_view( v.first, v.size( ) ) == sv;
 }
 
 bool test_classes_002( ) {
@@ -94,7 +94,7 @@ bool test_classes_002( ) {
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
-	return std::string_view( v.begin( ), v.size( ) ) == sv;
+	return std::string_view( v.first, v.size( ) ) == sv;
 }
 
 bool test_embedded_arrays( ) {
@@ -102,7 +102,7 @@ bool test_embedded_arrays( ) {
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_array( );
-	return std::string_view( v.begin( ), v.size( ) ) == sv;
+	return std::string_view( v.first, v.size( ) ) == sv;
 }
 
 bool test_embedded_arrays_broken_001( ) {

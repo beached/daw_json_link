@@ -17,17 +17,15 @@
 namespace daw::json::json_details::string_quote {
 	template<std::size_t N, char c>
 	inline constexpr bool test_at_byte( UInt64 b ) {
-		auto const lhs = b & ( static_cast<UInt64>( 0xFF ) << ( N * 8U ) );
-		auto const rhs = static_cast<UInt64>( static_cast<unsigned char>( c ) )
-		                 << ( N * 8U );
+		auto const lhs = b & ( to_uint64( 0xFF ) << ( N * 8U ) );
+		auto const rhs = to_uint64( static_cast<unsigned char>( c ) ) << ( N * 8U );
 		return not( lhs - rhs );
 	}
 
 	template<std::size_t N, char c>
 	inline constexpr bool test_at_byte( UInt32 b ) {
-		auto const lhs = b & ( static_cast<UInt32>( 0xFF ) << ( N * 8U ) );
-		auto const rhs = static_cast<UInt32>( static_cast<unsigned char>( c ) )
-		                 << ( N * 8U );
+		auto const lhs = b & ( to_uint32( 0xFF ) << ( N * 8U ) );
+		auto const rhs = to_uint32( static_cast<unsigned char>( c ) ) << ( N * 8U );
 		return not( lhs - rhs );
 	}
 
@@ -155,7 +153,7 @@ namespace daw::json::json_details::string_quote {
 					skip_to_first4( first, l );
 				}
 				while( first < last and *first != '"' ) {
-					while( first < last and (*first != '"' & *first != '\\') ) {
+					while( first < last and ( *first != '"' & *first != '\\' ) ) {
 						++first;
 					}
 
