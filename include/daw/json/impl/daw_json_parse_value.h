@@ -607,9 +607,11 @@ namespace daw::json::json_details {
 
 		using tag_member = typename JsonMember::tag_member;
 		auto [is_found, rng2] = find_range<Range>(
-		  daw::string_view( rng.class_first, rng.last ), tag_member::name );
+		  daw::string_view( rng.class_first, static_cast<std::size_t>(
+		                                       rng.last - rng.class_first ) ),
+		  tag_member::name );
 
-		daw_json_assert( is_found, "Tag Member is manditory" );
+		daw_json_assert( is_found, "Tag Member is mandatory" );
 		auto index = typename JsonMember::switcher{ }(
 		  parse_value<tag_member>( ParseTag<tag_member::expected_type>{ }, rng2 ) );
 

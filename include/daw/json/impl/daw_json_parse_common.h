@@ -325,7 +325,15 @@ namespace daw::json {
 	enum class JsonRangeCheck { Never = false, CheckForNarrowing = true };
 	enum class EightBitModes { DisallowHigh = false, AllowFull = true };
 	enum class CustomJsonTypes { Literal, String, Either };
-	enum class AllowEscapeCharacter { Allow, NotBeforeDblQuote };
+
+	/***
+	 * In RAW String processing, if we know that there are no escaped double
+	 * quotes \" we can stop at the first double quote
+	 */
+	enum class AllowEscapeCharacter {
+		/*Full string processing to skip escaped characters*/ Allow,
+		/*There will never be a \" sequence inside the string*/ NotBeforeDblQuote
+	};
 
 	template<JsonParseTypes ParseType, JsonNullable Nullable>
 	inline constexpr JsonParseTypes get_parse_type_v =
