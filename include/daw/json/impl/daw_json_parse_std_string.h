@@ -8,7 +8,7 @@
 
 namespace daw::json::json_details {
 	template<bool IsUncheckedInput>
-	[[nodiscard]] inline constexpr unsigned to_nibble( unsigned chr ) {
+	[[nodiscard]] inline constexpr UInt8 to_nibble( unsigned char chr ) {
 		auto const b = static_cast<int>( chr );
 		int const maskLetter = ( ( '9' - b ) >> 31 );
 		int const maskSmall = ( ( 'Z' - b ) >> 31 );
@@ -18,18 +18,18 @@ namespace daw::json::json_details {
 		if constexpr( not IsUncheckedInput ) {
 			daw_json_assert( result < 16U, "Expected a hex nibble" );
 		}
-		return result;
+		return to_uint8( result );
 	}
 
 	template<typename Range>
-	[[nodiscard]] inline constexpr std::uint16_t byte_from_nibbles( Range &rng ) {
+	[[nodiscard]] inline constexpr UInt16 byte_from_nibbles( Range &rng ) {
 		auto const n0 = to_nibble<Range::is_unchecked_input>(
-		  static_cast<unsigned>( rng.front( ) ) );
+		  static_cast<unsigned char>( rng.front( ) ) );
 		rng.remove_prefix( );
 		auto const n1 = to_nibble<Range::is_unchecked_input>(
-		  static_cast<unsigned>( rng.front( ) ) );
+		  static_cast<unsigned char>( rng.front( ) ) );
 		rng.remove_prefix( );
-		return static_cast<std::uint16_t>( ( n0 << 4U ) | n1 );
+		return to_uint16( ( n0 << 4U ) | n1 );
 	}
 
 	template<typename Range>
@@ -37,9 +37,8 @@ namespace daw::json::json_details {
 		daw_json_assert_weak( rng.front( ) == 'u',
 		                      "Expected rng to start with a u" );
 		rng.remove_prefix( );
-		std::uint32_t cp = static_cast<std::uint32_t>( byte_from_nibbles( rng ) )
-		                   << 8U;
-		cp |= static_cast<std::uint32_t>( byte_from_nibbles( rng ) );
+		UInt32 cp = to_uint32( byte_from_nibbles( rng ) ) << 8U;
+		cp |= to_uint32( byte_from_nibbles( rng ) );
 		if( cp <= 0x7FU ) {
 			*it++ = static_cast<char>( cp );
 			return it;
@@ -240,8 +239,8 @@ namespace daw::json::json_details {
 				default:
 					if constexpr( not AllowHighEight ) {
 						daw_json_assert_weak(
-						  ( not rng.is_space_unchecked( ) ) bitand
-						    ( static_cast<unsigned>( rng.front( ) ) <= 0x7FU ),
+						  ( not rng.is_space_unchecked( ) ) &
+						    ( static_cast<unsigned char>( rng.front( ) ) <= 0x7FU ),
 						  "string support limited to 0x20 < chr <= 0x7F when "
 						  "DisallowHighEightBit is true" );
 					}

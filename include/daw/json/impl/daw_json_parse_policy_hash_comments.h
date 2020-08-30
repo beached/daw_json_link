@@ -10,66 +10,31 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
+#include "daw_json_parse_policy_policy_details.h"
 #include "daw_not_const_ex_functions.h"
-#include "daw_parse_policy_policy_details.h"
 
 #include <daw/daw_hide.h>
 
 namespace daw::json {
-	class CppCommentSkippingPolicy final {
+	class HashCommentSkippingPolicy final {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		skip_comments_unchecked( Range &rng ) {
-			if( rng.front( ) == '/' ) {
+			if( rng.front( ) == '#' ) {
 				rng.remove_prefix( );
-				switch( rng.front( ) ) {
-				case '/':
-					rng.template move_to_next_of_unchecked<'\n'>( );
-					rng.remove_prefix( );
-					break;
-				case '*':
-					rng.remove_prefix( );
-					while( true ) {
-						rng.template move_to_next_of_unchecked<'*'>( );
-						rng.remove_prefix( );
-						if( rng.front( ) == '/' ) {
-							break;
-						}
-						rng.remove_prefix( );
-					}
-					break;
-				}
+				rng.template move_to_next_of_unchecked<'\n'>( );
+				rng.remove_prefix( );
 			}
 		}
 
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		skip_comments_checked( Range &rng ) {
-			if( rng.has_more( ) and rng.front( ) == '/' ) {
+			if( rng.has_more( ) and rng.front( ) == '#' ) {
 				rng.remove_prefix( );
-				if( not rng.has_more( ) ) {
-					return;
-				}
-				switch( rng.front( ) ) {
-				case '/':
-					rng.template move_to_next_of_checked<'\n'>( );
-					if( rng.has_more( ) ) {
-						rng.remove_prefix( );
-					}
-					break;
-				case '*':
+				rng.template move_to_next_of_checked<'\n'>( );
+				if( rng.front( ) == '\n' ) {
 					rng.remove_prefix( );
-					while( rng.has_more( ) ) {
-						rng.template move_to_next_of_checked<'*'>( );
-						if( rng.has_more( ) ) {
-							rng.remove_prefix( );
-						}
-						if( not rng.has_more( ) or rng.front( ) == '/' ) {
-							break;
-						}
-						rng.remove_prefix( );
-					}
-					break;
 				}
 			}
 		}
@@ -106,6 +71,7 @@ namespace daw::json {
 		template<char... keys, typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
 			skip_comments( rng );
+
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
 			while( not parse_policy_details::in<keys...>( rng.front( ) ) ) {
 				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data" );
@@ -129,10 +95,11 @@ namespace daw::json {
 			std::uint32_t second_bracket_count = 0;
 			char const *ptr_first = rng.first;
 			char const *const ptr_last = rng.last;
-			if( ptr_first < ptr_last and rng.front( ) == PrimLeft ) {
+			if( ptr_first < ptr_last and *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
 			while( ptr_first < ptr_last and prime_bracket_count > 0 ) {
+				// TODO: use if/else if or put switch into IILE
 				switch( *ptr_first ) {
 				case '\\':
 					++ptr_first;
@@ -174,25 +141,13 @@ namespace daw::json {
 				case SecRight:
 					--second_bracket_count;
 					break;
-				case '/':
+				case '#':
 					++ptr_first;
-					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream" );
-					switch( *ptr_first ) {
-					case '/':
+					while( ptr_first < ptr_last and *ptr_first != '\n' ) {
 						++ptr_first;
-						while( ( ptr_last - ptr_first ) > 1 and *ptr_first != '\n' ) {
-							++ptr_first;
-						}
-						break;
-					case '*':
-						++ptr_first;
-						while( ( ptr_last - ptr_first ) >= 3 and *ptr_first != '*' and
-						       *std::next( ptr_first ) != '/' ) {
-							++ptr_first;
-						}
-						break;
-					default:
-						daw_json_error( "Unexpected character in stream" );
+					}
+					if( ptr_first < ptr_last ) {
+						continue;
 					}
 					break;
 				}
@@ -204,7 +159,7 @@ namespace daw::json {
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
-			result.counter = cnt;
+			result.counter = 0;
 			rng.first = ptr_first;
 			return result;
 		}
@@ -260,23 +215,10 @@ namespace daw::json {
 				case SecRight:
 					--second_bracket_count;
 					break;
-				case '/':
+				case '#':
 					++ptr_first;
-					switch( *ptr_first ) {
-					case '/':
+					while( *ptr_first != '\n' ) {
 						++ptr_first;
-						while( *ptr_first != '\n' ) {
-							++ptr_first;
-						}
-						break;
-					case '*':
-						++ptr_first;
-						while( *ptr_first != '*' and *std::next( ptr_first ) != '/' ) {
-							++ptr_first;
-						}
-						break;
-					default:
-						daw_json_error( "Unexpected character in stream" );
 					}
 					break;
 				}
@@ -289,5 +231,5 @@ namespace daw::json {
 			rng.first = ptr_first;
 			return result;
 		}
-	}; // namespace daw::json
+	};
 } // namespace daw::json

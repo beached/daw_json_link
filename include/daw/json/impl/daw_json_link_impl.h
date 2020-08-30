@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "daw_arrow_proxy.h"
-#include "daw_iso8601_utils.h"
-#include "daw_iterator_range.h"
+#include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
+#include "daw_json_iterator_range.h"
 #include "daw_json_parse_common.h"
+#include "daw_json_parse_iso8601_utils.h"
 #include "daw_json_parse_value.h"
 #include "daw_json_serialize_impl.h"
 #include "daw_json_to_string.h"
@@ -228,7 +228,7 @@ namespace daw::json::json_details {
 
 		rng.trim_left_unchecked( );
 		// TODO: should we check for end
-		while( locations[pos].missing( ) & rng.front( ) != '}' ) {
+		while( locations[pos].missing( ) & (rng.front( ) != '}') ) {
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 			auto const name = parse_name( rng );
 			auto const name_pos = locations.template find_name<pos>( name );

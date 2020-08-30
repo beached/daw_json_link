@@ -8,18 +8,18 @@
 
 #pragma once
 
-#include "daw_iterator_range.h"
 #include "daw_json_assert.h"
+#include "daw_json_iterator_range.h"
 #include "daw_json_parse_array_iterator.h"
 #include "daw_json_parse_kv_array_iterator.h"
 #include "daw_json_parse_kv_class_iterator.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_real.h"
+#include "daw_json_parse_std_string.h"
+#include "daw_json_parse_string_need_slow.h"
 #include "daw_json_parse_string_quote.h"
 #include "daw_json_parse_unsigned_int.h"
 #include "daw_json_parse_value_fwd.h"
-#include "daw_parse_std_string.h"
-#include "daw_string_slow.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -431,8 +431,9 @@ namespace daw::json::json_details {
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Custom>, Range &rng ) {
 
-		if( ( rng.front( ) != '"' & rng.class_first != nullptr ) &
-		    ( rng.first > rng.class_first and *std::prev( rng.first ) == '"' ) ) {
+		if( ( ( rng.front( ) != '"' ) & ( rng.class_first != nullptr ) ) &
+		    ( ( rng.first > rng.class_first ) and
+		      ( *std::prev( rng.first ) == '"' ) ) ) {
 			rng.first = std::prev( rng.first );
 		}
 		auto const str = skip_value( rng );

@@ -10,11 +10,11 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
-#include "daw_parse_policy_cpp_comments.h"
-#include "daw_parse_policy_error.h"
-#include "daw_parse_policy_hash_comments.h"
-#include "daw_parse_policy_no_comments.h"
-#include "daw_parse_policy_policy_details.h"
+#include "daw_json_parse_policy_cpp_comments.h"
+#include "daw_json_parse_policy_error.h"
+#include "daw_json_parse_policy_hash_comments.h"
+#include "daw_json_parse_policy_no_comments.h"
+#include "daw_json_parse_policy_policy_details.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_hide.h>

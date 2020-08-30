@@ -10,8 +10,8 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
+#include "daw_json_parse_policy_policy_details.h"
 #include "daw_not_const_ex_functions.h"
-#include "daw_parse_policy_policy_details.h"
 
 #include <daw/daw_function_table.h>
 #include <daw/daw_hide.h>
@@ -108,8 +108,7 @@ namespace daw::json {
 					daw_json_assert( ptr_first < ptr_last and *ptr_first == '"',
 					                 "Unexpected end of stream" );
 				} else if( c == ',' ) {
-					if( ( prime_bracket_count == 1 ) bitand
-					    ( second_bracket_count == 0 ) ) {
+					if( ( prime_bracket_count == 1 ) & ( second_bracket_count == 0 ) ) {
 						++cnt;
 					}
 				} else if( c == PrimLeft ) {
@@ -127,7 +126,7 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			daw_json_assert_weak( ( prime_bracket_count == 0 ) bitand
+			daw_json_assert_weak( ( prime_bracket_count == 0 ) &
 			                        ( second_bracket_count == 0 ),
 			                      "Unexpected bracketing" );
 			// We include the close primary bracket in the range so that subsequent
@@ -172,8 +171,7 @@ namespace daw::json {
 						}
 					}
 				} else if( c == ',' ) {
-					if( ( prime_bracket_count == 1 ) bitand
-					    ( second_bracket_count == 0 ) ) {
+					if( ( prime_bracket_count == 1 ) & ( second_bracket_count == 0 ) ) {
 						++cnt;
 					}
 				} else if( c == PrimLeft ) {

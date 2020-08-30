@@ -62,9 +62,6 @@ void test( ) {
 	}
 }
 
-template<typename ExecTag, size_t N>
-bool signed_test( ) {}
-
 int main( int, char ** ) try {
 	test<daw::json::constexpr_exec_tag, 1000>( );
 	test<daw::json::runtime_exec_tag, 1000>( );

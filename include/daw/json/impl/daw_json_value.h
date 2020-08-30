@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "daw_arrow_proxy.h"
+#include "daw_json_arrow_proxy.h"
 #include "daw_json_parse_name.h"
 
 #include <tuple>

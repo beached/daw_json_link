@@ -109,7 +109,7 @@ namespace daw::json::json_details::string_quote {
 					skip_to_first4( first, last );
 				}
 				while( *first != '"' ) {
-					while( *first != '"' & *first != '\\' ) {
+					while( ( *first != '"' ) & ( *first != '\\' ) ) {
 						++first;
 					}
 					if( DAW_JSON_UNLIKELY( *first == '\\' ) ) {
@@ -153,7 +153,8 @@ namespace daw::json::json_details::string_quote {
 					skip_to_first4( first, l );
 				}
 				while( first < last and *first != '"' ) {
-					while( first < last and ( *first != '"' & *first != '\\' ) ) {
+					while( ( first < last ) and
+					       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
 						++first;
 					}
 
