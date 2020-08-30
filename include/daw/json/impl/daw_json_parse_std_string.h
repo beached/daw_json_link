@@ -32,7 +32,7 @@ namespace daw::json::json_details {
 
 	constexpr char u32toC( UInt32 value ) {
 		return static_cast<char>( static_cast<unsigned char>( value ) );
-	};
+	}
 
 	template<typename Range>
 	[[nodiscard]] static constexpr char *decode_utf16( Range &rng, char *it ) {
