@@ -113,22 +113,41 @@ set(SOURCE_FOLDER "src")
 include_directories(${HEADER_FOLDER})
 
 set(HEADER_FILES
-        ${HEADER_FOLDER}/daw/json/daw_json_link.h
-        ${HEADER_FOLDER}/daw/json/daw_json_iterator.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_iterator_range.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_assert.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_iso8601_utils.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_link_types_fwd.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_array_iterator.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_common.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_name.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_real.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_string_quote.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_unsigned_int.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value_fwd.h
-        ${HEADER_FOLDER}/daw/json/impl/daw_json_to_string.h
-        )
+  ${HEADER_FOLDER}/daw/json/daw_json_iterator.h
+  ${HEADER_FOLDER}/daw/json/daw_json_link.h
+  ${HEADER_FOLDER}/daw/json/daw_json_value_state.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_arrow_proxy.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_assert.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_exec_modes.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_iterator_range.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_link_impl.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_link_types_fwd.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_array_iterator.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_common.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_iso8601_utils.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_kv_array_iterator.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_kv_class_iterator.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_name.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_policy.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_policy_cpp_comments.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_policy_error.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_policy_hash_comments.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_policy_no_comments.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_policy_policy_details.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_real.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_std_string.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_string_need_slow.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_string_quote.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_unsigned_int.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_parse_value_fwd.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_serialize_impl.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_to_string.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_traits.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_json_value.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_murmur3.h
+  ${HEADER_FOLDER}/daw/json/impl/daw_not_const_ex_functions.h
+)
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 add_custom_target(full)
