@@ -39,36 +39,38 @@ int main( int argc, char **argv ) try {
 	  std::string_view( mm_numbers.data( ), mm_numbers.size( ) );
 
 	std::cout << "non-debug run\n";
-
 	using range_t = daw::json::json_array_range<
 	  double,
 	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>;
-	double sum = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+
+	std::vector<double> results = [&] {
+		auto rng = range_t( sv_numbers );
+		return std::vector<double>( rng.begin( ), rng.end( ) );
+	}( );
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "numbers bench (checked)", sv_numbers.size( ),
-	  []( auto rng ) {
-		  double s = 0;
+	  [&]( auto rng ) {
+		  double *ptr = results.data( );
 		  for( double d : rng ) {
-			  s += d;
+			  *ptr++ += d;
 		  }
-		  return s;
 	  },
 	  range_t( sv_numbers ) );
-	daw::do_not_optimize( sum );
+	daw::do_not_optimize( results );
 	using range2_t = daw::json::json_array_range<
 	  double,
 	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>;
-	sum = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "numbers bench (unchecked)", sv_numbers.size( ),
-	  []( auto rng ) {
-		  double s = 0;
+	  [&]( auto rng ) {
+		  double *ptr = results.data( );
 		  for( double d : rng ) {
-			  s += d;
+			  *ptr++ += d;
 		  }
-		  return s;
 	  },
 	  range2_t( sv_numbers ) );
 
-	std::cout << "sum is " << sum << '\n';
+	daw::do_not_optimize( results );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
