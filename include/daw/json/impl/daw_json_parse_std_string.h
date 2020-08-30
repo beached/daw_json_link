@@ -40,7 +40,7 @@ namespace daw::json::json_details {
 		                      "Expected rng to start with a u" );
 		rng.remove_prefix( );
 		UInt32 cp = to_uint32( byte_from_nibbles( rng ) ) << 8U;
-		cp |= to_uint32( byte_from_nibbles( rng ) );
+		cp |= byte_from_nibbles( rng );
 		if( cp <= 0x7FU ) {
 			*it++ = static_cast<char>( static_cast<unsigned char>( cp ) );
 			return it;
@@ -54,7 +54,7 @@ namespace daw::json::json_details {
 			                      "Expected rng to start with a \\u" );
 			rng.remove_prefix( );
 			auto trailing = to_uint32( byte_from_nibbles( rng ) ) << 8U;
-			trailing |= to_uint32( byte_from_nibbles( rng ) );
+			trailing |= byte_from_nibbles( rng );
 			trailing -= 0xDC00U;
 			cp += trailing;
 			cp += 0x10000;
@@ -102,7 +102,7 @@ namespace daw::json::json_details {
 		                      "Expected rng to start with a \\u" );
 		rng.remove_prefix( );
 		UInt32 cp = to_uint32( byte_from_nibbles( rng ) ) << 8U;
-		cp |= to_uint32( byte_from_nibbles( rng ) );
+		cp |= byte_from_nibbles( rng );
 		if( cp <= 0x7FU ) {
 			app( u32toC( cp ) );
 			return;
@@ -114,7 +114,7 @@ namespace daw::json::json_details {
 			                      "Expected rng to start with a \\u" );
 			rng.remove_prefix( );
 			auto trailing = to_uint32( byte_from_nibbles( rng ) ) << 8U;
-			trailing |= to_uint32( byte_from_nibbles( rng ) );
+			trailing |= byte_from_nibbles( rng );
 			trailing -= 0xDC00U;
 			cp += trailing;
 			cp += 0x10000;

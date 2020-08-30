@@ -27,9 +27,6 @@ namespace daw::json::json_details {
 			rng.remove_prefix( );
 			sign = -1;
 		}
-		daw_json_assert_weak( parse_policy_details::is_number( rng.front( ) ),
-		                      "Expected a number" );
-
 		auto const whole_part = static_cast<Result>(
 		  sign * unsigned_parser<int64_t, JsonRangeCheck::Never, false>(
 		           Range::exec_tag, rng ) );

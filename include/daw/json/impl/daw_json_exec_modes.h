@@ -33,13 +33,6 @@ namespace daw::json {
 		static constexpr bool can_constexpr = false;
 	};
 	using simd_exec_tag = sse42_exec_tag;
-#elif defined( DAW_ALLOW_NEON )
-	struct neon_exec_tag : runtime_exec_tag {
-		static constexpr std::string_view name = "neon";
-		static constexpr bool always_rvo = true;
-		static constexpr bool can_constexpr = false;
-	};
-	using simd_exec_tag = neon_exec_tag;
 #else
 	using simd_exec_tag = runtime_exec_tag;
 #endif

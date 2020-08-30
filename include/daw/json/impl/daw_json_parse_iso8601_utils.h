@@ -15,37 +15,43 @@
 #include <cstdint>
 
 namespace daw::json::parse_utils {
-	template<typename Result, typename CharT>
-	constexpr Result to_integer( CharT const c ) {
-		return static_cast<Result>( c - static_cast<CharT>( '0' ) );
+	template<typename Result>
+	constexpr Result to_integer( char const c ) {
+		return static_cast<Result>( static_cast<unsigned char>( c ) -
+		                            static_cast<unsigned char>( '0' ) );
 	}
 
-	template<typename Result, std::size_t count, typename CharT>
-	constexpr Result parse_unsigned( CharT const *digit_str ) {
-		std::uintmax_t result = 0;
+	template<typename Result, std::size_t count>
+	constexpr Result parse_unsigned( char const *digit_str ) {
+		UInt64 result = UInt64( );
 		for( std::size_t n = 0; n < count; ++n ) {
 			result *= 10U;
-			result += static_cast<unsigned char>( digit_str[n] - '0' );
+			result +=
+			  static_cast<unsigned>( static_cast<unsigned char>( digit_str[n] ) -
+			                         static_cast<unsigned char>( '0' ) );
 		}
 		return static_cast<Result>( result );
 	}
 
-	template<typename Result, typename CharT>
-	constexpr Result parse_unsigned2( const CharT *digit_str ) {
-		std::uintmax_t result = 0;
-		auto dig = static_cast<unsigned char>( *digit_str - '0' );
+	template<typename Result>
+	constexpr Result parse_unsigned2( char const *digit_str ) {
+		UInt64 result = UInt64( );
+		unsigned dig =
+		  static_cast<unsigned>( static_cast<unsigned char>( *digit_str ) -
+		                         static_cast<unsigned char>( '0' ) );
 		while( dig < 10 ) {
 			result *= 10U;
 			result += dig;
 			++digit_str;
-			dig = static_cast<unsigned char>( *digit_str - '0' );
+			dig = static_cast<unsigned>( static_cast<unsigned char>( *digit_str ) -
+			                             static_cast<unsigned char>( '0' ) );
 		}
 		return static_cast<Result>( result );
 	}
 
-	template<typename CharT>
-	constexpr bool is_number( CharT c ) {
-		auto const dig = static_cast<unsigned>( c - static_cast<CharT>( '0' ) );
+	constexpr bool is_number( char c ) {
+		auto const dig = static_cast<unsigned>( static_cast<unsigned char>( c ) -
+		                                        static_cast<unsigned char>( '0' ) );
 		return dig < 10U;
 	}
 } // namespace daw::json::parse_utils
@@ -53,14 +59,11 @@ namespace daw::json::parse_utils {
 namespace daw::json::datetime {
 	namespace datetime_details {
 
-		template<typename Result, typename CharT, typename Bounds,
-		         std::ptrdiff_t Ex>
+		template<typename Result, typename Bounds, std::ptrdiff_t Ex>
 		constexpr Result
-		parse_number( daw::basic_string_view<CharT, Bounds, Ex> sv ) {
+		parse_number( daw::basic_string_view<char, Bounds, Ex> sv ) {
 			static_assert( daw::numeric_limits<Result>::digits10 >= 4 );
-			if( sv.empty( ) ) {
-				daw_json_error( "Invalid number" );
-			}
+			daw_json_assert( not sv.empty( ), "Invalid number" );
 			Result result = 0;
 			Result sign = 1;
 			if( sv.front( ) == '-' ) {
@@ -68,12 +71,13 @@ namespace daw::json::datetime {
 					sign = -1;
 				}
 				sv.remove_prefix( );
-			} else if( sv.front( ) == static_cast<CharT>( '+' ) ) {
+			} else if( sv.front( ) == '+' ) {
 				sv.remove_prefix( );
 			}
 			while( not sv.empty( ) ) {
 				auto const dig =
-				  static_cast<unsigned>( sv.pop_front( ) - static_cast<CharT>( '0' ) );
+				  static_cast<unsigned>( static_cast<unsigned char>( sv.pop_front( ) ) -
+				                         static_cast<unsigned char>( '0' ) );
 				daw_json_assert( dig < 10U, "Invalid digit" );
 				result *= 10;
 				result += static_cast<Result>( dig );
@@ -153,9 +157,9 @@ namespace daw::json::datetime {
 		uint_least32_t day;
 	};
 
-	template<typename CharT, typename Bounds, std::ptrdiff_t Ex>
+	template<typename Bounds, std::ptrdiff_t Ex>
 	constexpr date_parts parse_iso_8601_date(
-	  daw::basic_string_view<CharT, Bounds, Ex> timestamp_str ) {
+	  daw::basic_string_view<char, Bounds, Ex> timestamp_str ) {
 		auto result = date_parts{ 0, 0, 0 };
 		result.day = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 		  timestamp_str.pop_back( 2U ).data( ) );
@@ -179,9 +183,9 @@ namespace daw::json::datetime {
 		uint_least32_t millisecond;
 	};
 
-	template<typename CharT, typename Bounds, std::ptrdiff_t Ex>
+	template<typename Bounds, std::ptrdiff_t Ex>
 	constexpr time_parts parse_iso_8601_time(
-	  daw::basic_string_view<CharT, Bounds, Ex> timestamp_str ) {
+	  daw::basic_string_view<char, Bounds, Ex> timestamp_str ) {
 		auto result = time_parts{ 0, 0, 0, 0 };
 		result.hour = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
 		  timestamp_str.pop_front( 2 ).data( ) );
@@ -209,32 +213,30 @@ namespace daw::json::datetime {
 		return result;
 	}
 
-	template<typename CharT, typename Bounds, std::ptrdiff_t Ex>
+	template<typename Bounds, std::ptrdiff_t Ex>
 	constexpr std::chrono::time_point<std::chrono::system_clock,
 	                                  std::chrono::milliseconds>
-	parse_iso8601_timestamp( daw::basic_string_view<CharT, Bounds, Ex> ts ) {
-		constexpr CharT t_str[2] = { static_cast<CharT>( 'T' ), 0 };
+	parse_iso8601_timestamp( daw::basic_string_view<char, Bounds, Ex> ts ) {
+		constexpr daw::string_view t_str = "T";
 		auto const date_str = ts.pop_front( t_str );
 		if( ts.empty( ) ) {
 			daw_json_error( "Invalid timestamp, missing T separator" );
 		}
 		date_parts const ymd = parse_iso_8601_date( date_str );
-		auto time_str = ts.pop_front( []( CharT c ) {
-			return not( parse_utils::is_number( c ) or
-			            c == static_cast<CharT>( ':' ) or
-			            c == static_cast<CharT>( '.' ) );
+		auto time_str = ts.pop_front( []( char c ) {
+			return not( parse_utils::is_number( c ) | (c == ':') | (c == '.') );
 		} );
 		// TODO: verify or parse timezone
 		time_parts hms = parse_iso_8601_time( time_str );
-		if( not( ts.empty( ) or ts.front( ) == static_cast<CharT>( 'Z' ) ) ) {
+		if( not( ts.empty( ) or ts.front( ) == 'Z' ) ) {
 			daw_json_assert( ts.size( ) == 5 or ts.size( ) == 6,
 			                 "Invalid timezone offset" );
 			// The format will be (+|-)hh[:]mm
-			bool const sign = ts.front( ) == static_cast<CharT>( '+' );
+			bool const sign = ts.front( ) == '+';
 			ts.remove_prefix( );
 			auto hr_offset =
 			  parse_utils::parse_unsigned<std::uint_least32_t, 2>( ts.data( ) );
-			if( ts.front( ) == static_cast<CharT>( ':' ) ) {
+			if( ts.front( ) == ':' ) {
 				ts.remove_prefix( );
 			}
 			auto mn_offset =
