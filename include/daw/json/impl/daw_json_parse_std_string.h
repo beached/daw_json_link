@@ -196,7 +196,7 @@ namespace daw::json::json_details {
 			{
 				char const *first = rng.first;
 				char const *const last = rng.last;
-				while( *first != '"' & *first != '\\' ) {
+				while( (*first != '"') & (*first != '\\') ) {
 					daw_json_assert_weak( first < last, "Unexpected end of data" );
 					++first;
 				}
