@@ -83,9 +83,11 @@ void test_func( ) {
 		} );
 		result.back( ) = ']';
 		result.resize( result.size( ) + 16U );
-		if DAW_CONSTEXPR( NUMVALUES < 1500 ) {
+		/*
+		if constexpr( NUMVALUES < 1500 ) {
 			std::cout << "Class data: " << result << '\n';
 		}
+		*/
 		return result;
 	}( );
 
@@ -97,9 +99,11 @@ void test_func( ) {
 		} );
 		result.back( ) = ']';
 		result.resize( result.size( ) + 16U );
-		if DAW_CONSTEXPR( NUMVALUES < 1500 ) {
+		/*
+		if constexpr( NUMVALUES < 1500 ) {
 			std::cout << "Class data: " << result << '\n';
 		}
+		*/
 		return result;
 	}( );
 
