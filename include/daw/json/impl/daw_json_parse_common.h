@@ -549,7 +549,7 @@ namespace daw::json::json_details {
 		char const *exp = nullptr;
 		if( ( Range::is_unchecked_input or ( first < last ) ) and
 		    ( ( *first == 'e' ) | ( *first == 'E' ) ) ) {
-			exp = std::prev( first );
+			exp = first;
 			++first;
 			if( ( Range::is_unchecked_input or ( first < last ) ) and
 			    ( ( *first == '+' ) | ( *first == '-' ) ) ) {

@@ -47,7 +47,7 @@ namespace daw::json {
 template<typename Real, bool Trusted = false, std::size_t N>
 DAW_CONSTEXPR Real parse_real( char const ( &str )[N] ) {
 	auto rng = daw::json::NoCommentSkippingPolicyChecked( str, str + N );
-	return daw::json::json_details::parse_real<Real>( rng );
+	return daw::json::json_details::parse_real<Real, false>( rng );
 }
 
 template<typename Real, bool Trusted = false, size_t N>
