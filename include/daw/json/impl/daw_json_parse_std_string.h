@@ -7,7 +7,6 @@
 #include <type_traits>
 
 namespace daw::json::json_details {
-	template<typename Range>
 	[[nodiscard]] inline constexpr UInt8 to_nibble( unsigned char chr ) {
 		int const b = static_cast<int>( chr );
 		int const maskLetter = ( ( '9' - b ) >> 31 );
@@ -15,18 +14,17 @@ namespace daw::json::json_details {
 		int const offset = '0' + ( maskLetter & int( 'A' - '0' - 10 ) ) +
 		                   ( maskSmall & int( 'a' - 'A' ) );
 		auto const result = static_cast<unsigned>( b - offset );
-		daw_json_assert_weak( result < 16U, "Expected a hex nibble" );
 		return to_uint8( result );
 	}
 
-	template<typename Range>
-	[[nodiscard]] inline constexpr UInt16 byte_from_nibbles( Range &rng ) {
-		auto const n0 =
-		  to_nibble<Range>( static_cast<unsigned char>( rng.front( ) ) );
-		rng.remove_prefix( );
-		auto const n1 =
-		  to_nibble<Range>( static_cast<unsigned char>( rng.front( ) ) );
-		rng.remove_prefix( );
+	template<bool is_unchecked_input>
+	[[nodiscard]] inline constexpr UInt16
+	byte_from_nibbles( char const *&first ) {
+		auto const n0 = to_nibble( static_cast<unsigned char>( *first++ ) );
+		auto const n1 = to_nibble( static_cast<unsigned char>( *first++ ) );
+		if constexpr( is_unchecked_input ) {
+			daw_json_assert( n0 < 16 and n1 < 16, "Expected hex nibbles" );
+		}
 		return to_uint16( ( n0 << 4U ) | n1 );
 	}
 
@@ -36,25 +34,27 @@ namespace daw::json::json_details {
 
 	template<typename Range>
 	[[nodiscard]] static constexpr char *decode_utf16( Range &rng, char *it ) {
-		daw_json_assert_weak( rng.front( ) == 'u',
-		                      "Expected rng to start with a u" );
-		rng.remove_prefix( );
-		UInt32 cp = to_uint32( byte_from_nibbles( rng ) ) << 8U;
-		cp |= byte_from_nibbles( rng );
+		constexpr bool is_unchecked_input = Range::is_unchecked_input;
+		char const *first = rng.first;
+		++first;
+		UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) )
+		            << 8U;
+		cp |= byte_from_nibbles<is_unchecked_input>( first );
 		if( cp <= 0x7FU ) {
 			*it++ = static_cast<char>( static_cast<unsigned char>( cp ) );
+			rng.first = first;
 			return it;
 		}
 
 		//******************************
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
-			rng.remove_prefix( );
-			daw_json_assert_weak( rng.front( ) == 'u',
-			                      "Expected rng to start with a \\u" );
-			rng.remove_prefix( );
-			auto trailing = to_uint32( byte_from_nibbles( rng ) ) << 8U;
-			trailing |= byte_from_nibbles( rng );
+			++first;
+			daw_json_assert_weak( *first == 'u', "Expected rng to start with a \\u" );
+			++first;
+			auto trailing =
+			  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
+			trailing |= byte_from_nibbles<is_unchecked_input>( first );
 			trailing -= 0xDC00U;
 			cp += trailing;
 			cp += 0x10000;
@@ -72,6 +72,7 @@ namespace daw::json::json_details {
 			*it++ = enc1;
 			*it++ = enc2;
 			*it++ = enc3;
+			rng.first = first;
 			return it;
 		}
 		//******************************
@@ -84,6 +85,7 @@ namespace daw::json::json_details {
 			*it++ = enc0;
 			*it++ = enc1;
 			*it++ = enc2;
+			rng.first = first;
 			return it;
 		}
 		//******************************
@@ -93,28 +95,31 @@ namespace daw::json::json_details {
 		char const enc0 = u32toC( ( cp >> 6U ) | 0b1100'0000U );
 		*it++ = enc0;
 		*it++ = enc1;
+		rng.first = first;
 		return it;
 	}
 
 	template<typename Range, typename Appender>
 	static constexpr void decode_utf16( Range &rng, Appender &app ) {
-		daw_json_assert_weak( rng.front( ) == 'u',
-		                      "Expected rng to start with a \\u" );
-		rng.remove_prefix( );
-		UInt32 cp = to_uint32( byte_from_nibbles( rng ) ) << 8U;
-		cp |= byte_from_nibbles( rng );
+		constexpr bool is_unchecked_input = Range::is_unchecked_input;
+		char const *first = rng.first;
+		++first;
+		UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) )
+		            << 8U;
+		cp |= byte_from_nibbles<is_unchecked_input>( first );
 		if( cp <= 0x7FU ) {
 			app( u32toC( cp ) );
+			rng.first = first;
 			return;
 		}
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
-			rng.remove_prefix( );
-			daw_json_assert_weak( rng.front( ) == 'u',
-			                      "Expected rng to start with a \\u" );
-			rng.remove_prefix( );
-			auto trailing = to_uint32( byte_from_nibbles( rng ) ) << 8U;
-			trailing |= byte_from_nibbles( rng );
+			++first;
+			daw_json_assert_weak( *first == 'u', "Expected rng to start with a \\u" );
+			++first;
+			auto trailing =
+			  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
+			trailing |= byte_from_nibbles<is_unchecked_input>( first );
 			trailing -= 0xDC00U;
 			cp += trailing;
 			cp += 0x10000;
@@ -132,6 +137,7 @@ namespace daw::json::json_details {
 			app( enc1 );
 			app( enc2 );
 			app( enc3 );
+			rng.first = first;
 			return;
 		}
 		if( cp >= 0x800U ) {
@@ -143,6 +149,7 @@ namespace daw::json::json_details {
 			app( enc0 );
 			app( enc1 );
 			app( enc2 );
+			rng.first = first;
 			return;
 		}
 		// cp >= 0x80U
@@ -151,6 +158,7 @@ namespace daw::json::json_details {
 		char const enc0 = u32toC( ( cp >> 6U ) | 0b1100'0000U );
 		app( enc0 );
 		app( enc1 );
+		rng.first = first;
 	}
 
 	namespace parse_tokens {
@@ -184,14 +192,11 @@ namespace daw::json::json_details {
 			it = std::copy_n( rng.first, first_slash, it );
 			rng.first += first_slash;
 		}
-		daw_json_assert(
-		  rng.last < rng.class_last,
-		  "Unabled to parse lone string, need space after to see \"" );
 		while( rng.front( ) != '"' ) {
 			{
 				char const *first = rng.first;
 				char const *const last = rng.last;
-				while( *first != '"' and *first != '\\' ) {
+				while( *first != '"' & *first != '\\' ) {
 					daw_json_assert_weak( first < last, "Unexpected end of data" );
 					++first;
 				}

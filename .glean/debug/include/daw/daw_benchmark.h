@@ -96,32 +96,32 @@ namespace daw {
 			std::stringstream ss;
 			ss << std::setprecision( static_cast<int>( prec ) ) << std::fixed;
 			auto val = static_cast<double>( bytes ) / static_cast<double>( t );
-			if( val < 1024.0 ) {
+			if( val < 1000.0 ) {
 				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "bytes";
 				return ss.str( );
 			}
-			val /= 1024.0;
-			if( val < 1024.0 ) {
-				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "KiB";
+			val /= 1000.0;
+			if( val < 1000.0 ) {
+				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "KB";
 				return ss.str( );
 			}
-			val /= 1024.0;
-			if( val < 1024.0 ) {
-				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "MiB";
+			val /= 1000.0;
+			if( val < 1000.0 ) {
+				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "MB";
 				return ss.str( );
 			}
-			val /= 1024.0;
-			if( val < 1024.0 ) {
-				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "GiB";
+			val /= 1000.0;
+			if( val < 1000.0 ) {
+				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "GB";
 				return ss.str( );
 			}
-			val /= 1024.0;
-			if( val < 1024.0 ) {
-				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "TiB";
+			val /= 1000.0;
+			if( val < 1000.0 ) {
+				ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "TB";
 				return ss.str( );
 			}
-			val /= 1024.0;
-			ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "PiB";
+			val /= 1000.0;
+			ss << ( static_cast<double>( val * 100.0 ) / 100 ) << "PB";
 			return ss.str( );
 		}
 	} // namespace utility

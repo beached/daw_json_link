@@ -594,24 +594,6 @@ namespace daw {
 		       static_cast<std::uint64_t>( rhs );
 	}
 
-	constexpr bool operator<( UInt32 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
-		return static_cast<std::uint64_t>( lhs ) <
-		       static_cast<std::uint64_t>( rhs );
-	}
-
-	constexpr bool operator<( UInt16 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
-		return static_cast<std::uint64_t>( lhs ) <
-		       static_cast<std::uint64_t>( rhs );
-	}
-
-	constexpr bool operator<( UInt8 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
-		return static_cast<std::uint64_t>( lhs ) <
-		       static_cast<std::uint64_t>( rhs );
-	}
-
 	constexpr bool operator<( std::uint64_t lhs, UInt64 rhs ) noexcept {
 		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <
