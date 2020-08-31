@@ -164,44 +164,81 @@ namespace {
 
 	daw::bench::bench_result
 	do_apache_builds_from_json_test( std::string_view json_data ) {
-		auto result = make_bench_result(
-		  "apache builds from_json(checked)", json_data.size( ),
-		  daw::bench_n_test_json<DAW_NUM_RUNS>(
-		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<apache_builds::apache_builds,
-			                                CheckedPolicy>( jd );
-		    },
-		    json_data ) );
+		auto const tst = [json_data]( auto e ) {
+			return make_bench_result(
+			  "apache builds from_json(checked)", json_data.size( ),
+			  daw::bench_n_test_json<DAW_NUM_RUNS>(
+			    []( std::string_view jd ) {
+				    return daw::json::from_json<
+				      apache_builds::apache_builds,
+				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
+				      jd );
+			    },
+			    json_data ) );
+		};
 
+		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
+		                                    tst( daw::json::runtime_exec_tag{ } ),
+		                                    tst( daw::json::simd_exec_tag{ } ) };
+
+		auto &result =
+		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
+			  return lhs.duration_min < rhs.duration_min;
+		  } );
 		process_results( result );
 		return result;
 	}
 
 	daw::bench::bench_result
 	do_apache_builds_from_json_test_unchecked( std::string_view json_data ) {
-		auto result = make_bench_result(
-		  "apache builds from_json(unchecked)", json_data.size( ),
-		  daw::bench_n_test_json<DAW_NUM_RUNS>(
-		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<apache_builds::apache_builds,
-			                                UncheckedPolicy>( jd );
-		    },
-		    json_data ) );
+		auto const tst = [json_data]( auto e ) {
+			return make_bench_result(
+			  "apache builds from_json(unchecked)", json_data.size( ),
+			  daw::bench_n_test_json<DAW_NUM_RUNS>(
+			    []( std::string_view jd ) {
+				    return daw::json::from_json<
+				      apache_builds::apache_builds,
+				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
+				      jd );
+			    },
+			    json_data ) );
+		};
 
+		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
+		                                    tst( daw::json::runtime_exec_tag{ } ),
+		                                    tst( daw::json::simd_exec_tag{ } ) };
+
+		auto &result =
+		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
+			  return lhs.duration_min < rhs.duration_min;
+		  } );
 		process_results( result );
 		return result;
 	}
 
 	daw::bench::bench_result
 	do_twitter_from_json_test( std::string_view json_data ) {
-		auto result = make_bench_result(
-		  "twitter from_json(checked)", json_data.size( ),
-		  daw::bench_n_test_json<DAW_NUM_RUNS>(
-		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<daw::twitter::twitter_object_t,
-			                                CheckedPolicy>( jd );
-		    },
-		    json_data ) );
+		auto const tst = [json_data]( auto e ) {
+			return make_bench_result(
+			  "twitter from_json(checked)", json_data.size( ),
+			  daw::bench_n_test_json<DAW_NUM_RUNS>(
+			    []( std::string_view jd ) {
+				    return daw::json::from_json<
+				      daw::twitter::twitter_object_t,
+				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
+				      jd );
+			    },
+			    json_data ) );
+		};
+
+		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
+		                                    tst( daw::json::runtime_exec_tag{ } ),
+		                                    tst( daw::json::simd_exec_tag{ } ) };
+
+		auto &result =
+		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
+			  return lhs.duration_min < rhs.duration_min;
+		  } );
 
 		process_results( result );
 		return result;
@@ -209,14 +246,27 @@ namespace {
 
 	daw::bench::bench_result
 	do_twitter_from_json_test_unchecked( std::string_view json_data ) {
-		auto result = make_bench_result(
-		  "twitter from_json(unchecked)", json_data.size( ),
-		  daw::bench_n_test_json<DAW_NUM_RUNS>(
-		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<daw::twitter::twitter_object_t,
-			                                UncheckedPolicy>( jd );
-		    },
-		    json_data ) );
+		auto const tst = [json_data]( auto e ) {
+			return make_bench_result(
+			  "twitter from_json(unchecked)", json_data.size( ),
+			  daw::bench_n_test_json<DAW_NUM_RUNS>(
+			    []( std::string_view jd ) {
+				    return daw::json::from_json<
+				      daw::twitter::twitter_object_t,
+				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
+				      jd );
+			    },
+			    json_data ) );
+		};
+
+		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
+		                                    tst( daw::json::runtime_exec_tag{ } ),
+		                                    tst( daw::json::simd_exec_tag{ } ) };
+
+		auto &result =
+		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
+			  return lhs.duration_min < rhs.duration_min;
+		  } );
 
 		process_results( result );
 		return result;
@@ -224,14 +274,27 @@ namespace {
 
 	daw::bench::bench_result
 	do_citm_from_json_test( std::string_view json_data ) {
-		auto result = make_bench_result(
-		  "citm_catalog from_json(checked)", json_data.size( ),
-		  daw::bench_n_test_json<DAW_NUM_RUNS>(
-		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<daw::citm::citm_object_t, CheckedPolicy>(
-			      jd );
-		    },
-		    json_data ) );
+		auto const tst = [json_data]( auto e ) {
+			return make_bench_result(
+			  "citm catalog from_json(checked)", json_data.size( ),
+			  daw::bench_n_test_json<DAW_NUM_RUNS>(
+			    []( std::string_view jd ) {
+				    return daw::json::from_json<
+				      daw::citm::citm_object_t,
+				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
+				      jd );
+			    },
+			    json_data ) );
+		};
+
+		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
+		                                    tst( daw::json::runtime_exec_tag{ } ),
+		                                    tst( daw::json::simd_exec_tag{ } ) };
+
+		auto &result =
+		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
+			  return lhs.duration_min < rhs.duration_min;
+		  } );
 
 		process_results( result );
 		return result;
@@ -239,14 +302,27 @@ namespace {
 
 	daw::bench::bench_result
 	do_citm_from_json_test_unchecked( std::string_view json_data ) {
-		auto result = make_bench_result(
-		  "citm_catalog from_json(unchecked)", json_data.size( ),
-		  daw::bench_n_test_json<DAW_NUM_RUNS>(
-		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<daw::citm::citm_object_t,
-			                                UncheckedPolicy>( jd );
-		    },
-		    json_data ) );
+		auto const tst = [json_data]( auto e ) {
+			return make_bench_result(
+			  "citm catalog from_json(unchecked)", json_data.size( ),
+			  daw::bench_n_test_json<DAW_NUM_RUNS>(
+			    []( std::string_view jd ) {
+				    return daw::json::from_json<
+				      daw::citm::citm_object_t,
+				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
+				      jd );
+			    },
+			    json_data ) );
+		};
+
+		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
+		                                    tst( daw::json::runtime_exec_tag{ } ),
+		                                    tst( daw::json::simd_exec_tag{ } ) };
+
+		auto &result =
+		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
+			  return lhs.duration_min < rhs.duration_min;
+		  } );
 
 		process_results( result );
 		return result;
@@ -254,14 +330,27 @@ namespace {
 
 	daw::bench::bench_result
 	do_canada_from_json_test( std::string_view json_data ) {
-		auto result = make_bench_result(
-		  "canada from_json(checked)", json_data.size( ),
-		  daw::bench_n_test_json<DAW_NUM_RUNS>(
-		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<daw::geojson::FeatureCollection,
-			                                CheckedPolicy>( jd );
-		    },
-		    json_data ) );
+		auto const tst = [json_data]( auto e ) {
+			return make_bench_result(
+			  "canada from_json(checked)", json_data.size( ),
+			  daw::bench_n_test_json<DAW_NUM_RUNS>(
+			    []( std::string_view jd ) {
+				    return daw::json::from_json<
+				      daw::geojson::FeatureCollection,
+				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
+				      jd );
+			    },
+			    json_data ) );
+		};
+
+		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
+		                                    tst( daw::json::runtime_exec_tag{ } ),
+		                                    tst( daw::json::simd_exec_tag{ } ) };
+
+		auto &result =
+		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
+			  return lhs.duration_min < rhs.duration_min;
+		  } );
 
 		process_results( result );
 		return result;
@@ -269,14 +358,27 @@ namespace {
 
 	daw::bench::bench_result
 	do_canada_from_json_test_unchecked( std::string_view json_data ) {
-		auto result = make_bench_result(
-		  "canada from_json(unchecked)", json_data.size( ),
-		  daw::bench_n_test_json<DAW_NUM_RUNS>(
-		    [&]( std::string_view jd ) {
-			    return daw::json::from_json<daw::geojson::FeatureCollection,
-			                                UncheckedPolicy>( jd );
-		    },
-		    json_data ) );
+		auto const tst = [json_data]( auto e ) {
+			return make_bench_result(
+			  "canada from_json(unchecked)", json_data.size( ),
+			  daw::bench_n_test_json<DAW_NUM_RUNS>(
+			    []( std::string_view jd ) {
+				    return daw::json::from_json<
+				      daw::geojson::FeatureCollection,
+				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
+				      jd );
+			    },
+			    json_data ) );
+		};
+
+		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
+		                                    tst( daw::json::runtime_exec_tag{ } ),
+		                                    tst( daw::json::simd_exec_tag{ } ) };
+
+		auto &result =
+		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
+			  return lhs.duration_min < rhs.duration_min;
+		  } );
 
 		process_results( result );
 		return result;
@@ -286,24 +388,41 @@ namespace {
 	do_nativejson_from_json_test( std::string_view json_data_twitter,
 	                              std::string_view json_data_citm,
 	                              std::string_view json_data_canada ) {
-		auto result = make_bench_result(
-		  "nativejson benchmark from_json(checked)",
-		  json_data_twitter.size( ) + json_data_citm.size( ) +
-		    json_data_canada.size( ),
-		  daw::bench_n_test_json<DAW_NUM_RUNS>(
-		    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
-			    auto const j1 =
-			      daw::json::from_json<daw::twitter::twitter_object_t, CheckedPolicy>(
-			        tw );
-			    auto const j2 =
-			      daw::json::from_json<daw::citm::citm_object_t, CheckedPolicy>( ci );
-			    auto const j3 = daw::json::from_json<daw::geojson::FeatureCollection,
-			                                         CheckedPolicy>( ca );
-			    daw::do_not_optimize( j1 );
-			    daw::do_not_optimize( j2 );
-			    daw::do_not_optimize( j3 );
-		    },
-		    json_data_twitter, json_data_citm, json_data_canada ) );
+		auto const tst = [json_data_twitter, json_data_citm,
+		                  json_data_canada]( auto e ) {
+			return make_bench_result(
+			  "nativejson benchmark from_json(checked)",
+			  json_data_twitter.size( ) + json_data_citm.size( ) +
+			    json_data_canada.size( ),
+			  daw::bench_n_test_json<DAW_NUM_RUNS>(
+			    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
+				    auto const j1 = daw::json::from_json<
+				      daw::twitter::twitter_object_t,
+				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
+				      tw );
+				    auto const j2 = daw::json::from_json<
+				      daw::citm::citm_object_t,
+				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
+				      ci );
+				    auto const j3 = daw::json::from_json<
+				      daw::geojson::FeatureCollection,
+				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
+				      ca );
+				    daw::do_not_optimize( j1 );
+				    daw::do_not_optimize( j2 );
+				    daw::do_not_optimize( j3 );
+			    },
+			    json_data_twitter, json_data_citm, json_data_canada ) );
+		};
+
+		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
+		                                    tst( daw::json::runtime_exec_tag{ } ),
+		                                    tst( daw::json::simd_exec_tag{ } ) };
+
+		auto &result =
+		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
+			  return lhs.duration_min < rhs.duration_min;
+		  } );
 
 		process_results( result );
 		return result;
@@ -313,24 +432,41 @@ namespace {
 	do_nativejson_from_json_test_unchecked( std::string_view json_data_twitter,
 	                                        std::string_view json_data_citm,
 	                                        std::string_view json_data_canada ) {
-		auto result = make_bench_result(
-		  "nativejson benchmark from_json(unchecked)",
-		  json_data_twitter.size( ) + json_data_citm.size( ) +
-		    json_data_canada.size( ),
-		  daw::bench_n_test_json<DAW_NUM_RUNS>(
-		    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
-			    auto const j1 = daw::json::from_json<daw::twitter::twitter_object_t,
-			                                         UncheckedPolicy>( tw );
-			    auto const j2 =
-			      daw::json::from_json<daw::citm::citm_object_t, UncheckedPolicy>(
-			        ci );
-			    auto const j3 = daw::json::from_json<daw::geojson::FeatureCollection,
-			                                         UncheckedPolicy>( ca );
-			    daw::do_not_optimize( j1 );
-			    daw::do_not_optimize( j2 );
-			    daw::do_not_optimize( j3 );
-		    },
-		    json_data_twitter, json_data_citm, json_data_canada ) );
+		auto const tst = [json_data_twitter, json_data_citm,
+		                  json_data_canada]( auto e ) {
+			return make_bench_result(
+			  "nativejson benchmark from_json(unchecked)",
+			  json_data_twitter.size( ) + json_data_citm.size( ) +
+			    json_data_canada.size( ),
+			  daw::bench_n_test_json<DAW_NUM_RUNS>(
+			    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
+				    auto const j1 = daw::json::from_json<
+				      daw::twitter::twitter_object_t,
+				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
+				      tw );
+				    auto const j2 = daw::json::from_json<
+				      daw::citm::citm_object_t,
+				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
+				      ci );
+				    auto const j3 = daw::json::from_json<
+				      daw::geojson::FeatureCollection,
+				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
+				      ca );
+				    daw::do_not_optimize( j1 );
+				    daw::do_not_optimize( j2 );
+				    daw::do_not_optimize( j3 );
+			    },
+			    json_data_twitter, json_data_citm, json_data_canada ) );
+		};
+
+		daw::bench::bench_result res[3] = { tst( daw::json::constexpr_exec_tag{ } ),
+		                                    tst( daw::json::runtime_exec_tag{ } ),
+		                                    tst( daw::json::simd_exec_tag{ } ) };
+
+		auto &result =
+		  *std::min_element( res, res + 3, []( auto const &lhs, auto const &rhs ) {
+			  return lhs.duration_min < rhs.duration_min;
+		  } );
 
 		process_results( result );
 		return result;
