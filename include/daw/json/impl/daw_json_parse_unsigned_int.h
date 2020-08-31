@@ -41,9 +41,10 @@ namespace daw::json::json_details {
 		for( std::size_t n = 0; n < 8; ++n ) {
 			val |= to_uint64( buff[n] ) << ( 8 * n );
 		}
-		return ( ( ( val & 0xF0F0F0F0F0F0F0F0ULL ) |
-		           ( ( ( val + 0x0606060606060606ULL ) & 0xF0F0F0F0F0F0F0F0ULL ) >>
-		             4U ) ) == 0x3333333333333333ULL );
+		return (
+		  ( ( val & 0xF0F0'F0F0'F0F0'F0F0ULL ) |
+		    ( ( ( val + 0x0606'0606'0606'0606ULL ) & 0xF0F0'F0F0'F0F0'F0F0ULL ) >>
+		      4U ) ) == 0x3333'3333'3333'3333ULL );
 	}
 
 	template<JsonRangeCheck RangeCheck, typename Unsigned,
@@ -90,7 +91,7 @@ namespace daw::json::json_details {
 	         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
 	[[nodiscard]] static constexpr Unsigned
 	unsigned_parser( constexpr_exec_tag const &, Range &rng ) {
-		// If a uint128 is passed, it will be larger than a uintmax_t
+		// We know how many digits are in the number
 		using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 		static_assert( not static_cast<bool>( RangeChecked ) or
 		                 std::is_same_v<result_t, UInt64>,
@@ -137,7 +138,7 @@ namespace daw::json::json_details {
 	         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
 	[[nodiscard]] static constexpr Unsigned
 	unsigned_parser( constexpr_exec_tag const &, Range &rng ) {
-		// If a uint128 is passed, it will be larger than a uintmax_t
+		// We do not know how long the string is
 		using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 		static_assert( not static_cast<bool>( RangeChecked ) or
 		                 std::is_same_v<result_t, UInt64>,
@@ -175,107 +176,115 @@ namespace daw::json::json_details {
 	}
 
 #ifdef DAW_ALLOW_SSE42
+/*
 	// Adapted from
-	// https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
+	//
+	https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
 	static inline UInt64 parse_eight_digits_unrolled( const char *ptr ) {
-		// this actually computes *16* values so we are being wasteful.
-		static __m128i const ascii0 = _mm_set1_epi8( '0' );
+	  // this actually computes *16* values so we are being wasteful.
+	  static __m128i const ascii0 = _mm_set1_epi8( '0' );
 
-		static __m128i const mul_1_10 =
-		  _mm_setr_epi8( 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1 );
+	  static __m128i const mul_1_10 =
+	    _mm_setr_epi8( 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1 );
 
-		static __m128i const mul_1_100 =
-		  _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );
+	  static __m128i const mul_1_100 =
+	    _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );
 
-		static __m128i const mul_1_10000 =
-		  _mm_setr_epi16( 10000, 1, 10000, 1, 10000, 1, 10000, 1 );
+	  static __m128i const mul_1_10000 =
+	    _mm_setr_epi16( 10000, 1, 10000, 1, 10000, 1, 10000, 1 );
 
-		__m128i const input = _mm_sub_epi8(
-		  _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) ), ascii0 );
-		__m128i const t1 = _mm_maddubs_epi16( input, mul_1_10 );
-		__m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );
-		__m128i const t3 = _mm_packus_epi32( t2, t2 );
-		__m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
-		return to_uint64( static_cast<std::uint32_t>( _mm_cvtsi128_si32(
-		  t4 ) ) ); // only captures the sum of the first 8 digits, drop the rest
+	  __m128i const input = _mm_sub_epi8(
+	    _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) ), ascii0 );
+	  __m128i const t1 = _mm_maddubs_epi16( input, mul_1_10 );
+	  __m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );
+	  __m128i const t3 = _mm_packus_epi32( t2, t2 );
+	  __m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
+	  return to_uint64( static_cast<std::uint32_t>( _mm_cvtsi128_si32(
+	    t4 ) ) ); // only captures the sum of the first 8 digits, drop the rest
 	}
 
 	static inline UInt64 parse_sixteen_digits_unrolled( const char *ptr ) {
-		static __m128i const ascii0 = _mm_set1_epi8( '0' );
+	  static __m128i const ascii0 = _mm_set1_epi8( '0' );
 
-		static __m128i const mul_1_10 =
-		  _mm_setr_epi8( 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1 );
+	  static __m128i const mul_1_10 =
+	    _mm_setr_epi8( 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1 );
 
-		static __m128i const mul_1_100 =
-		  _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );
+	  static __m128i const mul_1_100 =
+	    _mm_setr_epi16( 100, 1, 100, 1, 100, 1, 100, 1 );
 
-		static __m128i const mul_1_10000 =
-		  _mm_setr_epi16( 10000, 1, 10000, 1, 10000, 1, 10000, 1 );
+	  static __m128i const mul_1_10000 =
+	    _mm_setr_epi16( 10000, 1, 10000, 1, 10000, 1, 10000, 1 );
 
-		__m128i const input = _mm_sub_epi8(
-		  _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) ), ascii0 );
-		__m128i const t1 = _mm_maddubs_epi16( input, mul_1_10 );
-		__m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );
-		__m128i const t3 = _mm_packus_epi32( t2, t2 );
-		__m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
-		return to_uint64( _mm_cvtsi128_si64( t4 ) );
+	  __m128i const input = _mm_sub_epi8(
+	    _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) ), ascii0 );
+	  __m128i const t1 = _mm_maddubs_epi16( input, mul_1_10 );
+	  __m128i const t2 = _mm_madd_epi16( t1, mul_1_100 );
+	  __m128i const t3 = _mm_packus_epi32( t2, t2 );
+	  __m128i const t4 = _mm_madd_epi16( t3, mul_1_10000 );
+	  return to_uint64( _mm_cvtsi128_si64( t4 ) );
 	}
 
 	[[nodiscard]] static inline bool
 	is_made_of_eight_digits_fast( const char *ptr ) {
-		UInt64 val;
-		memcpy( &val, ptr, sizeof( std::uint64_t ) );
-		return ( ( ( val & 0xF0F0F0F0F0F0F0F0ULL ) |
-		           ( ( ( val + 0x0606060606060606ULL ) & 0xF0F0F0F0F0F0F0F0ULL ) >>
-		             4ULL ) ) == 0x3333333333333333ULL );
+	  UInt64 val;
+	  memcpy( &val, ptr, sizeof( std::uint64_t ) );
+	  return ( ( ( val & 0xF0F0F0F0F0F0F0F0ULL ) |
+	             ( ( ( val + 0x0606060606060606ULL ) & 0xF0F0F0F0F0F0F0F0ULL ) >>
+	               4ULL ) ) == 0x3333333333333333ULL );
 	}
 
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>
-	[[nodiscard]] static inline Unsigned unsigned_parser( /*sse42_exec_tag*/ std::string  const &,
-	                                                      Range &rng ) {
-		daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range" );
-		using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
-		result_t result = result_t( );
-		char const *first = rng.first;
-		char const *const last = rng.last;
-		char const *const orig_first = first;
-		while( ( last - first ) >= 8 and is_made_of_eight_digits_fast( first ) ) {
-			if( ( last - first ) < 16 or
-			    not is_made_of_eight_digits_fast( first + 8 ) ) {
-				result *= 100'000'000ULL;
-				result += static_cast<result_t>( parse_eight_digits_unrolled( first ) );
-				first += 8;
-				break;
-			}
-			result *= 10'000'000'000'000'000ULL;
-			result += static_cast<result_t>( parse_sixteen_digits_unrolled( first ) );
-			first += 16;
-		}
+	[[nodiscard]] static inline Unsigned
+	unsigned_parser( sse42_exec_tag const &, Range &rng ) {
+	  daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range" );
+	  using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
+	  result_t result = result_t( );
+	  char const *first = rng.first;
+	  char const *const last = rng.last;
+	  char const *const orig_first = first;
+	  {
+	    auto sz = last - first;
+	    while( ( sz >= 8 ) & is_made_of_eight_digits_fast( first ) ) {
+	      if( ( sz < 16 ) | ( not is_made_of_eight_digits_fast( first + 8 ) ) ) {
+	        result *= 100'000'000ULL;
+	        result +=
+	          static_cast<result_t>( parse_eight_digits_unrolled( first ) );
+	        first += 8;
+	        break;
+	      }
+	      result *= 10'000'000'000'000'000ULL;
+	      result +=
+	        static_cast<result_t>( parse_sixteen_digits_unrolled( first ) );
+	      sz -= 16;
+	      first += 16;
+	    }
+	  }
 
-		auto dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-		                                  static_cast<unsigned char>( '0' ) );
-		while( dig < 10U ) {
-			result *= 10U;
-			result += dig;
-			++first;
-			dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-			                             static_cast<unsigned char>( '0' ) );
-		}
-		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
-			auto const count =
-			  static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 ) -
-			  ( first - orig_first );
-			daw_json_assert( count >= 0 and
-			                   result <= static_cast<result_t>(
-			                               daw::numeric_limits<Unsigned>::max( ) ),
-			                 "Parsed number is out of range" );
-		}
-		rng.first = first;
-		if constexpr( RangeChecked == JsonRangeCheck::Never ) {
-			return daw::construct_a<Unsigned>( static_cast<Unsigned>( result ) );
-		} else {
-			return daw::construct_a<Unsigned>( daw::narrow_cast<Unsigned>( result ) );
-		}
+	  auto dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
+	                                    static_cast<unsigned char>( '0' ) );
+	  while( dig < 10U ) {
+	    result *= 10U;
+	    result += dig;
+	    ++first;
+	    dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
+	                                 static_cast<unsigned char>( '0' ) );
+	  }
+	  if constexpr( RangeChecked != JsonRangeCheck::Never ) {
+	    auto const count =
+	      static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 ) -
+	      ( first - orig_first );
+	    daw_json_assert( count >= 0 and
+	                       result <= static_cast<result_t>(
+	                                   daw::numeric_limits<Unsigned>::max( ) ),
+	                     "Parsed number is out of range" );
+	  }
+	  rng.first = first;
+	  if constexpr( RangeChecked == JsonRangeCheck::Never ) {
+	    return daw::construct_a<Unsigned>( static_cast<Unsigned>( result ) );
+	  } else {
+	    return daw::construct_a<Unsigned>( daw::narrow_cast<Unsigned>( result ) );
+	  }
 	}
+	 */
 #endif
 } // namespace daw::json::json_details

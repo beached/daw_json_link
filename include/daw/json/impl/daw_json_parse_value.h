@@ -61,14 +61,14 @@ namespace daw::json::json_details {
 			daw_json_assert_weak(
 			  parse_policy_details::is_number_start( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789-\"" );
-			return constructor_t{ }( parse_real<element_t>( rng ) );
+			return constructor_t{ }( parse_real<element_t, true>( rng ) );
 		} else {
 			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  parse_policy_details::is_number_start( rng.front( ) ),
 			  "Expected number to start with on of \"0123456789-\"" );
-			auto result = constructor_t{ }( parse_real<element_t>( rng ) );
+			auto result = constructor_t{ }( parse_real<element_t, false>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  parse_policy_details::at_end_of_item( rng.front( ) ),

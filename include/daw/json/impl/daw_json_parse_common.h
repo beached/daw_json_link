@@ -514,12 +514,72 @@ namespace daw::json::json_details {
 	template<typename Range>
 	[[nodiscard]] static constexpr Range skip_number( Range &rng ) {
 		auto result = rng;
-		++rng.first;
+		char const *first = rng.first;
+		char const *const last = rng.last;
+		if( ( Range::is_unchecked_input or first < last ) and *first == '-' ) {
+			++first;
+		}
+		unsigned dig = 0;
+		while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
+			dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
+			                             static_cast<unsigned char>( '0' ) );
+			++first;
+		}
+		if constexpr( Range::is_unchecked_input ) {
+			first -= static_cast<int>( first < last );
+		} else {
+			--first;
+		}
+		char const *decimal = nullptr;
+		if( ( Range::is_unchecked_input or ( first < last ) ) and *first == '.' ) {
+			decimal = first;
+			++first;
+			dig = 0;
+			while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
+				dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
+				                             static_cast<unsigned char>( '0' ) );
+				++first;
+			}
+			if constexpr( Range::is_unchecked_input ) {
+				first -= static_cast<int>( first < last );
+			} else {
+				--first;
+			}
+		}
+		char const *exp = nullptr;
+		if( ( Range::is_unchecked_input or ( first < last ) ) and
+		    ( ( *first == 'e' ) | ( *first == 'E' ) ) ) {
+			exp = std::prev( first );
+			++first;
+			if( ( Range::is_unchecked_input or ( first < last ) ) and
+			    ( ( *first == '+' ) | ( *first == '-' ) ) ) {
+				++first;
+			}
+			dig = 0;
+			while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
+				dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
+				                             static_cast<unsigned char>( '0' ) );
+				++first;
+			}
+			if constexpr( Range::is_unchecked_input ) {
+				first -= static_cast<int>( first < last );
+			} else {
+				--first;
+			}
+		}
+
+		rng.first = first;
+		result.last = first;
+		result.class_first = decimal;
+		result.class_last = exp;
+		/*
+		  ++rng.first;
 		rng.move_to_end_of_literal( );
 		result.last = rng.first;
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_at_token_after_value( ),
 		                      "Expected a ',', '}', ']' to trail literal" );
+		                      */
 		return result;
 	}
 
@@ -543,7 +603,6 @@ namespace daw::json::json_details {
 		case 'n':
 			return skip_null( rng );
 		case '-':
-		case '+':
 		case '0':
 		case '1':
 		case '2':
