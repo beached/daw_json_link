@@ -353,9 +353,10 @@ namespace daw::json::json_details {
 			}
 			return ptr;
 		} else {
+			constexpr auto eq = []( char l, char r ) { return l == r; };
 			while( is_unchecked_input or first < last ) {
 				char const c = *first;
-				if( ( ( c == keys ) | ... ) ) {
+				if( ( eq( c, keys ) | ... ) ) {
 					return first;
 				}
 				++first;
