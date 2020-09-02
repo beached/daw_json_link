@@ -161,277 +161,279 @@ namespace daw::json::json_details {
 			  static_cast<unsigned long long>( value2 ),
 			  reinterpret_cast<unsigned long long *>( &result ) );
 		}
-	}
 #else
 		return _addcarry_u32( 0, static_cast<std::uint32_t>( value1 ),
 		                      static_cast<std::uint32_t>( value2 ),
 		                      reinterpret_cast<std::uint32_t *>( &result ) );
 #endif
-}
+	}
 
-template<char k>
-DAW_ATTRIBUTE_FLATTEN static inline UInt32 find_eq_sse42( __m128i block ) {
-	__m128i const keys = _mm_set1_epi8( k );
-	__m128i const found = _mm_cmpeq_epi8( block, keys );
-	return to_uint32( _mm_movemask_epi8( found ) );
-}
+	template<char k>
+	DAW_ATTRIBUTE_FLATTEN static inline UInt32 find_eq_sse42( __m128i block ) {
+		__m128i const keys = _mm_set1_epi8( k );
+		__m128i const found = _mm_cmpeq_epi8( block, keys );
+		return to_uint32( _mm_movemask_epi8( found ) );
+	}
 
-// Adapted from
-// https://github.com/simdjson/simdjson/blob/master/src/generic/stage1/json_string_scanner.h#L79
-DAW_ATTRIBUTE_FLATTEN static inline UInt32
-find_escaped_branchless( UInt32 &prev_escaped, UInt32 backslashes ) {
-	backslashes &= ~prev_escaped;
-	UInt32 follow_escape = ( backslashes << 1 ) | prev_escaped;
-	static constexpr UInt32 even_bits = to_uint32( 0x5555'5555ULL );
+	// Adapted from
+	// https://github.com/simdjson/simdjson/blob/master/src/generic/stage1/json_string_scanner.h#L79
+	DAW_ATTRIBUTE_FLATTEN static inline UInt32
+	find_escaped_branchless( UInt32 &prev_escaped, UInt32 backslashes ) {
+		backslashes &= ~prev_escaped;
+		UInt32 follow_escape = ( backslashes << 1 ) | prev_escaped;
+		static constexpr UInt32 even_bits = to_uint32( 0x5555'5555ULL );
 
-	UInt32 const odd_seq_start =
-	  backslashes & ( ~even_bits ) & ( ~follow_escape );
-	UInt32 seq_start_on_even_bits;
-	prev_escaped = [&] {
-		auto r = odd_seq_start + backslashes;
-		seq_start_on_even_bits = 0x0000'FFFF & r;
-		r >>= 16;
-		return r;
-	}( );
-	UInt32 invert_mask = seq_start_on_even_bits << 1;
+		UInt32 const odd_seq_start =
+		  backslashes & ( ~even_bits ) & ( ~follow_escape );
+		UInt32 seq_start_on_even_bits;
+		prev_escaped = [&] {
+			auto r = odd_seq_start + backslashes;
+			seq_start_on_even_bits = 0x0000'FFFF & r;
+			r >>= 16;
+			return r;
+		}( );
+		UInt32 invert_mask = seq_start_on_even_bits << 1;
 
-	return ( even_bits ^ invert_mask ) & follow_escape;
-}
+		return ( even_bits ^ invert_mask ) & follow_escape;
+	}
 
-DAW_ATTRIBUTE_FLATTEN static inline UInt32 prefix_xor( UInt32 bitmask ) {
-	/*__m128i const all_ones =
-	  _mm_set_epi8( 0, 0, 0, 0, 0, 0, 0, 0, '\xFF', '\xFF', '\xFF', '\xFF',
-	                '\xFF', '\xFF', '\xFF', '\xFF' );
-	                */
-	__m128i const all_ones = _mm_set1_epi8( '\xFF' );
-	__m128i const result = _mm_clmulepi64_si128(
-	  _mm_set_epi32( 0, 0, 0, static_cast<std::int32_t>( bitmask ) ), all_ones,
-	  0 );
-	return to_uint32( _mm_cvtsi128_si32( result ) );
-}
+	DAW_ATTRIBUTE_FLATTEN static inline UInt32 prefix_xor( UInt32 bitmask ) {
+		/*__m128i const all_ones =
+		  _mm_set_epi8( 0, 0, 0, 0, 0, 0, 0, 0, '\xFF', '\xFF', '\xFF', '\xFF',
+		                '\xFF', '\xFF', '\xFF', '\xFF' );
+		                */
+		__m128i const all_ones = _mm_set1_epi8( '\xFF' );
+		__m128i const result = _mm_clmulepi64_si128(
+		  _mm_set_epi32( 0, 0, 0, static_cast<std::int32_t>( bitmask ) ), all_ones,
+		  0 );
+		return to_uint32( _mm_cvtsi128_si32( result ) );
+	}
 
-template<bool is_unchecked_input>
-static inline char const *
-mem_skip_until_end_of_string( sse42_exec_tag const &tag, char const *first,
-                              char const *const last ) {
-	UInt32 prev_escapes = UInt32( );
-	while( last - first >= 16 ) {
-		__m128i const val0 =
-		  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
-		UInt32 const backslashes = find_eq_sse42<'\\'>( val0 );
-		UInt32 const escaped = find_escaped_branchless( prev_escapes, backslashes );
-		UInt32 const quotes = find_eq_sse42<'"'>( val0 ) & ( ~escaped );
-		UInt32 const in_string = prefix_xor( quotes );
-		if( in_string != 0 ) {
+	template<bool is_unchecked_input>
+	static inline char const *
+	mem_skip_until_end_of_string( sse42_exec_tag const &tag, char const *first,
+	                              char const *const last ) {
+		UInt32 prev_escapes = UInt32( );
+		while( last - first >= 16 ) {
+			__m128i const val0 =
+			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
+			UInt32 const backslashes = find_eq_sse42<'\\'>( val0 );
+			UInt32 const escaped =
+			  find_escaped_branchless( prev_escapes, backslashes );
+			UInt32 const quotes = find_eq_sse42<'"'>( val0 ) & ( ~escaped );
+			// UInt32 const in_string = prefix_xor( quotes );
+			if( quotes /*in_string*/ != 0 ) {
 #if defined( __GNUC__ ) or defined( __clang__ )
-			first += __builtin_ffs( static_cast<int>( in_string ) ) - 1;
+				first += __builtin_ffs( static_cast<int>( quotes /*in_string*/ ) ) - 1;
 #else
 				{
 					unsigned long index;
-					first += static_cast<int>(
-					  _BitScanForward( &index, static_cast<int>( in_string ) ) );
+					first += static_cast<int>( _BitScanForward(
+					  &index, static_cast<int>( quotes /*in_string*/ ) ) );
 				}
 #endif
-			return first;
-		}
-		first += 16;
-	}
-	if constexpr( is_unchecked_input ) {
-		while( *first != '"' ) {
-			while( not key_table<'"', '\\'>[*first] ) {
-				++first;
-			}
-			if( *first == '"' ) {
 				return first;
 			}
-			first += 2;
+			first += 16;
 		}
-	} else {
-		while( DAW_JSON_LIKELY( first < last ) and *first != '"' ) {
-			while( DAW_JSON_LIKELY( first < last ) and
-			       not key_table<'"', '\\'>[*first] ) {
-				++first;
+		if constexpr( is_unchecked_input ) {
+			while( *first != '"' ) {
+				while( not key_table<'"', '\\'>[*first] ) {
+					++first;
+				}
+				if( *first == '"' ) {
+					return first;
+				}
+				first += 2;
 			}
-			if( first >= last ) {
-				return last;
+		} else {
+			while( DAW_JSON_LIKELY( first < last ) and *first != '"' ) {
+				while( DAW_JSON_LIKELY( first < last ) and
+				       not key_table<'"', '\\'>[*first] ) {
+					++first;
+				}
+				if( first >= last ) {
+					return last;
+				}
+				if( *first == '"' ) {
+					return first;
+				}
+				first += 2;
 			}
-			if( *first == '"' ) {
-				return first;
-			}
-			first += 2;
 		}
+		return ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) ? first
+		                                                                 : last;
 	}
-	return ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) ? first
-	                                                                 : last;
-}
 
-template<bool is_unchecked_input>
-static inline char const *
-mem_skip_until_end_of_string( sse42_exec_tag const &tag, char const *first,
-                              char const *const last,
-                              std::ptrdiff_t &first_escape ) {
-	char const *const first_first = first;
-	UInt32 prev_escapes = UInt32( );
-	while( last - first >= 16 ) {
-		__m128i const val0 =
-		  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
-		UInt32 const backslashes = find_eq_sse42<'\\'>( val0 );
-		if( ( backslashes > 0 ) & ( first_escape < 0 ) ) {
+	template<bool is_unchecked_input>
+	static inline char const *
+	mem_skip_until_end_of_string( sse42_exec_tag const &tag, char const *first,
+	                              char const *const last,
+	                              std::ptrdiff_t &first_escape ) {
+		char const *const first_first = first;
+		UInt32 prev_escapes = UInt32( );
+		while( last - first >= 16 ) {
+			__m128i const val0 =
+			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
+			UInt32 const backslashes = find_eq_sse42<'\\'>( val0 );
+			if( ( backslashes > 0 ) & ( first_escape < 0 ) ) {
 #if defined( __GNUC__ ) or defined( __clang__ )
-			first_escape = __builtin_ffs( static_cast<int>( backslashes ) ) - 1;
+				first_escape = __builtin_ffs( static_cast<int>( backslashes ) ) - 1;
 #else
 				unsigned long index;
 				first_escape = static_cast<int>(
-				  _BitScanForward( &index, static_cast<int>( in_string ) ) );
+				  _BitScanForward( &index, static_cast<int>( backslashes ) ) );
 #endif
-		}
-		UInt32 const escaped = find_escaped_branchless( prev_escapes, backslashes );
-		UInt32 const quotes = find_eq_sse42<'"'>( val0 ) & ( ~escaped );
-		UInt32 const in_string = prefix_xor( quotes );
-		if( in_string != 0 ) {
+			}
+			UInt32 const escaped =
+			  find_escaped_branchless( prev_escapes, backslashes );
+			UInt32 const quotes = find_eq_sse42<'"'>( val0 ) & ( ~escaped );
+			//		UInt32 const in_string = prefix_xor( quotes );
+			if( quotes /*in_string*/ != 0 ) {
 #if defined( __GNUC__ ) or defined( __clang__ )
-			first += __builtin_ffs( static_cast<int>( in_string ) ) - 1;
+				first += __builtin_ffs( static_cast<int>( quotes /*in_string*/ ) ) - 1;
 #else
 				{
 					unsigned long index;
-					first += static_cast<int>(
-					  _BitScanForward( &index, static_cast<int>( in_string ) ) );
+					first += static_cast<int>( _BitScanForward(
+					  &index, static_cast<int>( quotes /*in_string*/ ) ) );
 				}
 #endif
-			return first;
-		}
-		first += 16;
-	}
-	if constexpr( is_unchecked_input ) {
-		while( *first != '"' ) {
-			while( not key_table<'"', '\\'>[*first] ) {
-				++first;
-			}
-			if( *first == '"' ) {
 				return first;
 			}
-			if( first_escape < 0 ) {
-				first_escape = first_first - first;
-			}
-			first += 2;
+			first += 16;
 		}
-	} else {
-		while( DAW_JSON_LIKELY( first < last ) and *first != '"' ) {
-			while( DAW_JSON_LIKELY( first < last ) and
-			       not key_table<'"', '\\'>[*first] ) {
-				++first;
+		if constexpr( is_unchecked_input ) {
+			while( *first != '"' ) {
+				while( not key_table<'"', '\\'>[*first] ) {
+					++first;
+				}
+				if( *first == '"' ) {
+					return first;
+				}
+				if( first_escape < 0 ) {
+					first_escape = first_first - first;
+				}
+				first += 2;
 			}
-			if( first >= last ) {
-				return last;
+		} else {
+			while( DAW_JSON_LIKELY( first < last ) and *first != '"' ) {
+				while( DAW_JSON_LIKELY( first < last ) and
+				       not key_table<'"', '\\'>[*first] ) {
+					++first;
+				}
+				if( first >= last ) {
+					return last;
+				}
+				if( *first == '"' ) {
+					return first;
+				}
+				if( first_escape < 0 ) {
+					first_escape = first_first - first;
+				}
+				first += 2;
 			}
-			if( *first == '"' ) {
-				return first;
-			}
-			if( first_escape < 0 ) {
-				first_escape = first_first - first;
-			}
-			first += 2;
 		}
+		return ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) ? first
+		                                                                 : last;
 	}
-	return ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) ? first
-	                                                                 : last;
-}
 
 #endif
-template<bool is_unchecked_input, char... keys>
-DAW_ATTRIBUTE_FLATTEN static inline char const *
-mem_move_to_next_of( runtime_exec_tag const &, char const *first,
-                     char const *last ) {
+	template<bool is_unchecked_input, char... keys>
+	DAW_ATTRIBUTE_FLATTEN static inline char const *
+	mem_move_to_next_of( runtime_exec_tag const &, char const *first,
+	                     char const *last ) {
 
-	if( sizeof...( keys ) == 1 ) {
-		char const key[]{ keys... };
-		char const *ptr = reinterpret_cast<char const *>(
-		  std::memchr( first, key[0], static_cast<std::size_t>( last - first ) ) );
-		if( ptr == nullptr ) {
-			ptr = last;
+		if( sizeof...( keys ) == 1 ) {
+			char const key[]{ keys... };
+			char const *ptr = reinterpret_cast<char const *>( std::memchr(
+			  first, key[0], static_cast<std::size_t>( last - first ) ) );
+			if( ptr == nullptr ) {
+				ptr = last;
+			}
+			return ptr;
+		} else {
+			while( is_unchecked_input or first < last ) {
+				char const c = *first;
+				if( ( ( c == keys ) | ... ) ) {
+					return first;
+				}
+				++first;
+			}
+			return first;
 		}
-		return ptr;
-	} else {
+	}
+
+	template<bool is_unchecked_input, typename ExecTag,
+	         std::enable_if_t<std::is_base_of_v<runtime_exec_tag, ExecTag>,
+	                          std::nullptr_t> = nullptr>
+	DAW_ATTRIBUTE_FLATTEN static inline char const *
+	mem_skip_string( ExecTag const &tag, char const *first,
+	                 char const *const last ) {
+		return mem_move_to_next_of<is_unchecked_input, '"', '\\'>( tag, first,
+		                                                           last );
+	}
+
+	template<bool is_unchecked_input, typename ExecTag,
+	         std::enable_if_t<std::is_base_of_v<runtime_exec_tag, ExecTag>,
+	                          std::nullptr_t> = nullptr>
+	DAW_ATTRIBUTE_FLATTEN static inline char const *
+	mem_skip_until_end_of_string( ExecTag const &tag, char const *first,
+	                              char const *const last ) {
+		if constexpr( not is_unchecked_input ) {
+			daw_json_assert( first < last, "Unexpected end of stream" );
+		}
+		first =
+		  mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first, last );
 		while( is_unchecked_input or first < last ) {
-			char const c = *first;
-			if( ( ( c == keys ) | ... ) ) {
+			switch( *first ) {
+			case '"':
 				return first;
+			case '\\':
+				if constexpr( is_unchecked_input ) {
+					++first;
+				} else {
+					first += static_cast<int>( static_cast<bool>( last - first ) );
+				}
+				break;
 			}
 			++first;
+			first =
+			  mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first, last );
 		}
 		return first;
 	}
-}
 
-template<bool is_unchecked_input, typename ExecTag,
-         std::enable_if_t<std::is_base_of_v<runtime_exec_tag, ExecTag>,
-                          std::nullptr_t> = nullptr>
-DAW_ATTRIBUTE_FLATTEN static inline char const *
-mem_skip_string( ExecTag const &tag, char const *first,
-                 char const *const last ) {
-	return mem_move_to_next_of<is_unchecked_input, '"', '\\'>( tag, first, last );
-}
-
-template<bool is_unchecked_input, typename ExecTag,
-         std::enable_if_t<std::is_base_of_v<runtime_exec_tag, ExecTag>,
-                          std::nullptr_t> = nullptr>
-DAW_ATTRIBUTE_FLATTEN static inline char const *
-mem_skip_until_end_of_string( ExecTag const &tag, char const *first,
-                              char const *const last ) {
-	if constexpr( not is_unchecked_input ) {
-		daw_json_assert( first < last, "Unexpected end of stream" );
-	}
-	first =
-	  mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first, last );
-	while( is_unchecked_input or first < last ) {
-		switch( *first ) {
-		case '"':
-			return first;
-		case '\\':
-			if constexpr( is_unchecked_input ) {
-				++first;
-			} else {
-				first += static_cast<int>( static_cast<bool>( last - first ) );
-			}
-			break;
+	template<bool is_unchecked_input>
+	DAW_ATTRIBUTE_FLATTEN static inline char const *
+	mem_skip_until_end_of_string( runtime_exec_tag const &tag, char const *first,
+	                              char const *const last,
+	                              std::ptrdiff_t &first_escape ) {
+		char const *const first_first = first;
+		if constexpr( not is_unchecked_input ) {
+			daw_json_assert( first < last, "Unexpected end of stream" );
 		}
-		++first;
 		first =
 		  mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first, last );
-	}
-	return first;
-}
-
-template<bool is_unchecked_input>
-DAW_ATTRIBUTE_FLATTEN static inline char const *
-mem_skip_until_end_of_string( runtime_exec_tag const &tag, char const *first,
-                              char const *const last,
-                              std::ptrdiff_t &first_escape ) {
-	char const *const first_first = first;
-	if constexpr( not is_unchecked_input ) {
-		daw_json_assert( first < last, "Unexpected end of stream" );
-	}
-	first =
-	  mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first, last );
-	while( is_unchecked_input or first < last ) {
-		switch( *first ) {
-		case '"':
-			return first;
-		case '\\':
-			if( first_escape < 0 ) {
-				first_escape = first_first - first;
+		while( is_unchecked_input or first < last ) {
+			switch( *first ) {
+			case '"':
+				return first;
+			case '\\':
+				if( first_escape < 0 ) {
+					first_escape = first_first - first;
+				}
+				if constexpr( is_unchecked_input ) {
+					++first;
+				} else {
+					first += static_cast<int>( static_cast<bool>( last - first ) );
+				}
+				break;
 			}
-			if constexpr( is_unchecked_input ) {
-				++first;
-			} else {
-				first += static_cast<int>( static_cast<bool>( last - first ) );
-			}
-			break;
+			++first;
+			first =
+			  mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first, last );
 		}
-		++first;
-		first =
-		  mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first, last );
+		return first;
 	}
-	return first;
-}
 } // namespace daw::json::json_details
