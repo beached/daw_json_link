@@ -91,16 +91,17 @@ bool test_missing_quotes_003( ) {
 
 template<typename ExecTag>
 bool test_escaped_quote_001( ) {
-	DAW_CONSTEXPR std::string_view sv =
+	std::string_view sv =
 	  R"( "abcdefghijklmnop\"qrstuvwxyz"                                        )";
-	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	std::string_view sv2 = sv.substr( 2 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
 	  sv2.data( ), sv2.data( ) + sv2.size( ) );
 	auto v = skip_string( rng );
 	daw::do_not_optimize( v );
-	return v.size( ) == 28;
+	auto r = v.size( ) == 28;
+	return r;
 }
 
 template<typename ExecTag>
@@ -177,7 +178,7 @@ int main( int, char ** ) try {
 	do_test( test_escaped_quote_002<daw::json::runtime_exec_tag>( ) );
 	do_test( test_escaped_quote_003<daw::json::runtime_exec_tag>( ) );
 	do_test( test_escaped_quote_004<daw::json::runtime_exec_tag>( ) );
-#if DAW_ALLOW_SSE42
+#if defined( DAW_ALLOW_SSE42 )
 	do_test( test_escaped_quote_001<daw::json::sse42_exec_tag>( ) );
 	do_test( test_escaped_quote_002<daw::json::sse42_exec_tag>( ) );
 	do_test( test_escaped_quote_003<daw::json::sse42_exec_tag>( ) );

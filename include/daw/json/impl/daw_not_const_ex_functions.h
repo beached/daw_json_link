@@ -221,15 +221,15 @@ namespace daw::json::json_details {
 			UInt32 const escaped =
 			  find_escaped_branchless( prev_escapes, backslashes );
 			UInt32 const quotes = find_eq_sse42<'"'>( val0 ) & ( ~escaped );
-			// UInt32 const in_string = prefix_xor( quotes );
-			if( quotes /*in_string*/ != 0 ) {
+			UInt32 const in_string = prefix_xor( quotes );
+			if( in_string != 0 ) {
 #if defined( __GNUC__ ) or defined( __clang__ )
-				first += __builtin_ffs( static_cast<int>( quotes /*in_string*/ ) ) - 1;
+				first += __builtin_ffs( static_cast<int>( in_string ) ) - 1;
 #else
 				{
 					unsigned long index;
-					first += static_cast<int>( _BitScanForward(
-					  &index, static_cast<int>( quotes /*in_string*/ ) ) );
+					first += static_cast<int>(
+					  _BitScanForward( &index, static_cast<int>( in_string ) ) );
 				}
 #endif
 				return first;
@@ -267,7 +267,7 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input>
 	static inline char const *
-	mem_skip_until_end_of_string( sse42_exec_tag const &tag, char const *first,
+	mem_skip_until_end_of_string( sse42_exec_tag const &, char const *first,
 	                              char const *const last,
 	                              std::ptrdiff_t &first_escape ) {
 		char const *const first_first = first;
@@ -288,15 +288,15 @@ namespace daw::json::json_details {
 			UInt32 const escaped =
 			  find_escaped_branchless( prev_escapes, backslashes );
 			UInt32 const quotes = find_eq_sse42<'"'>( val0 ) & ( ~escaped );
-			//		UInt32 const in_string = prefix_xor( quotes );
-			if( quotes /*in_string*/ != 0 ) {
+			UInt32 const in_string = prefix_xor( quotes );
+			if( in_string != 0 ) {
 #if defined( __GNUC__ ) or defined( __clang__ )
-				first += __builtin_ffs( static_cast<int>( quotes /*in_string*/ ) ) - 1;
+				first += __builtin_ffs( static_cast<int>( in_string ) ) - 1;
 #else
 				{
 					unsigned long index;
-					first += static_cast<int>( _BitScanForward(
-					  &index, static_cast<int>( quotes /*in_string*/ ) ) );
+					first += static_cast<int>(
+					  _BitScanForward( &index, static_cast<int>( in_string ) ) );
 				}
 #endif
 				return first;
