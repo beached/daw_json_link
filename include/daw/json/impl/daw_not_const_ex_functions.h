@@ -211,7 +211,7 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input>
 	static inline char const *
-	mem_skip_until_end_of_string( sse42_exec_tag const &tag, char const *first,
+	mem_skip_until_end_of_string( sse42_exec_tag const &, char const *first,
 	                              char const *const last ) {
 		UInt32 prev_escapes = UInt32( );
 		while( last - first >= 16 ) {
