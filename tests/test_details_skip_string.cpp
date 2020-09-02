@@ -89,6 +89,62 @@ bool test_missing_quotes_003( ) {
 	return false;
 }
 
+template<typename ExecTag>
+bool test_escaped_quote_001( ) {
+	DAW_CONSTEXPR std::string_view sv =
+	  R"( "abcdefghijklmnop\"qrstuvwxyz"                                        )";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	using namespace daw::json;
+	using namespace daw::json::json_details;
+	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
+	  sv2.data( ), sv2.data( ) + sv2.size( ) );
+	auto v = skip_string( rng );
+	daw::do_not_optimize( v );
+	return v.size( ) == 28;
+}
+
+template<typename ExecTag>
+bool test_escaped_quote_002( ) {
+	DAW_CONSTEXPR std::string_view sv =
+	  R"( "abcdefghijklmnop\"qrstuvwxy\\"                                        )";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	using namespace daw::json;
+	using namespace daw::json::json_details;
+	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
+	  sv2.data( ), sv2.data( ) + sv2.size( ) );
+	auto v = skip_string( rng );
+	daw::do_not_optimize( v );
+	return v.size( ) == 29;
+}
+
+template<typename ExecTag>
+bool test_escaped_quote_003( ) {
+	DAW_CONSTEXPR std::string_view sv =
+	  R"( "abcdefghijklmn\\\"qrstuvwxy\\"                                        )";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	using namespace daw::json;
+	using namespace daw::json::json_details;
+	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
+	  sv2.data( ), sv2.data( ) + sv2.size( ) );
+	auto v = skip_string( rng );
+	daw::do_not_optimize( v );
+	return v.size( ) == 29;
+}
+
+template<typename ExecTag>
+bool test_escaped_quote_004( ) {
+	DAW_CONSTEXPR std::string_view sv =
+	  R"( "<a href=\"http://twittbot.net/\" rel=\"nofollow\">twittbot.net</a>"                                 )";
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	using namespace daw::json;
+	using namespace daw::json::json_details;
+	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
+	  sv2.data( ), sv2.data( ) + sv2.size( ) );
+	auto v = skip_string( rng );
+	daw::do_not_optimize( v );
+	return v.size( ) == 66;
+}
+
 #define do_test( ... )                                                         \
 	try {                                                                        \
 		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                    \
@@ -113,6 +169,20 @@ int main( int, char ** ) try {
 	do_test( test_quoted_number( ) );
 	do_test( test_empty_quoted( ) );
 	do_test( test_embeded_quotes( ) );
+	do_test( test_escaped_quote_001<daw::json::constexpr_exec_tag>( ) );
+	do_test( test_escaped_quote_002<daw::json::constexpr_exec_tag>( ) );
+	do_test( test_escaped_quote_003<daw::json::constexpr_exec_tag>( ) );
+	do_test( test_escaped_quote_004<daw::json::constexpr_exec_tag>( ) );
+	do_test( test_escaped_quote_001<daw::json::runtime_exec_tag>( ) );
+	do_test( test_escaped_quote_002<daw::json::runtime_exec_tag>( ) );
+	do_test( test_escaped_quote_003<daw::json::runtime_exec_tag>( ) );
+	do_test( test_escaped_quote_004<daw::json::runtime_exec_tag>( ) );
+#if DAW_ALLOW_SSE42
+	do_test( test_escaped_quote_001<daw::json::sse42_exec_tag>( ) );
+	do_test( test_escaped_quote_002<daw::json::sse42_exec_tag>( ) );
+	do_test( test_escaped_quote_003<daw::json::sse42_exec_tag>( ) );
+	do_test( test_escaped_quote_004<daw::json::sse42_exec_tag>( ) );
+#endif
 	do_fail_test( test_missing_quotes_001( ) );
 	do_fail_test( test_missing_quotes_002( ) );
 	do_fail_test( test_missing_quotes_003( ) );

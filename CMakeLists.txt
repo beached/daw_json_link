@@ -584,11 +584,15 @@ add_dependencies(strings_test_bin dependency_stub)
 add_test(NAME strings_test COMMAND strings_test_bin ./strings.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full strings_test_bin)
 
+add_executable(strings_escaped_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/strings_escaped_test.cpp)
+add_dependencies(strings_escaped_test_bin dependency_stub)
+add_test(NAME strings_escaped_test COMMAND strings_escaped_test_bin ./strings_escaped.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full strings_escaped_test_bin)
+
 add_executable(numbers_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/numbers_test.cpp)
 add_dependencies(numbers_test_bin dependency_stub)
 add_test(NAME numbers_test COMMAND numbers_test_bin ./numbers.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full numbers_test_bin)
-
 
 
 # **************************************************

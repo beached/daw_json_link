@@ -99,7 +99,7 @@ namespace daw::json {
 				  first, c, static_cast<std::size_t>( class_last - first ) ) );
 				daw_json_assert( first != nullptr, "Expected token missing" );
 			} else {
-				while( first < last and *first != c ) {
+				while( DAW_JSON_LIKELY( first < last ) and *first != c ) {
 					++first;
 				}
 			}
@@ -180,23 +180,24 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] constexpr bool is_opening_bracket_checked( ) const {
-			return first < last and *first == '[';
+			return DAW_JSON_LIKELY( first < last ) and *first == '[';
 		}
 
 		[[nodiscard]] constexpr bool is_opening_brace_checked( ) const {
-			return first < last and *first == '{';
+			return DAW_JSON_LIKELY( first < last ) and *first == '{';
 		}
 
 		[[nodiscard]] constexpr bool is_closing_brace_checked( ) const {
-			return first < last and *first == '}';
+			return DAW_JSON_LIKELY( first < last ) and *first == '}';
 		}
 
 		[[nodiscard]] constexpr bool is_quotes_checked( ) const {
-			return first < last and *first == '"';
+			return DAW_JSON_LIKELY( first < last ) and *first == '"';
 		}
 
 		[[nodiscard]] constexpr bool is_exponent_checked( ) const {
-			return first < last and ( ( *first == 'e' ) bitor ( *first == 'E' ) );
+			return DAW_JSON_LIKELY( first < last ) and
+			       ( ( *first == 'e' ) bitor ( *first == 'E' ) );
 		}
 
 		constexpr void trim_left( ) {
@@ -217,7 +218,7 @@ namespace daw::json {
 
 		constexpr void clean_tail_checked( ) {
 			trim_left_checked( );
-			if( first < last and *first == ',' ) {
+			if( DAW_JSON_LIKELY( first < last ) and *first == ',' ) {
 				++first;
 				trim_left_checked( );
 			}

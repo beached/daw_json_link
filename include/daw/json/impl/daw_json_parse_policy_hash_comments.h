@@ -95,10 +95,13 @@ namespace daw::json {
 			std::uint32_t second_bracket_count = 0;
 			char const *ptr_first = rng.first;
 			char const *const ptr_last = rng.last;
-			if( ptr_first < ptr_last and *ptr_first == PrimLeft ) {
+			if( DAW_JSON_UNLIKELY( ptr_first >= ptr_last ) ) {
+				return result;
+			}
+			if( *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
-			while( ptr_first < ptr_last and prime_bracket_count > 0 ) {
+			while( DAW_JSON_LIKELY( ptr_first < ptr_last ) ) {
 				// TODO: use if/else if or put switch into IILE
 				switch( *ptr_first ) {
 				case '\\':
@@ -112,7 +115,8 @@ namespace daw::json {
 						  Range::is_unchecked_input>( Range::exec_tag, ptr_first,
 						                              rng.last );
 					} else {
-						while( ptr_first < ptr_last and *ptr_first != '"' ) {
+						while( DAW_JSON_LIKELY( ptr_first < ptr_last ) and
+						       *ptr_first != '"' ) {
 							if( *ptr_first == '\\' ) {
 								++ptr_first;
 								if( ptr_first >= ptr_last ) {
@@ -134,6 +138,17 @@ namespace daw::json {
 					break;
 				case PrimRight:
 					--prime_bracket_count;
+					if( prime_bracket_count == 0 ) {
+						daw_json_assert( second_bracket_count == 0,
+						                 "Unexpected bracketing" );
+						++ptr_first;
+						// We include the close primary bracket in the range so that
+						// subsequent parsers have a terminator inside their range
+						result.last = ptr_first;
+						result.counter = cnt;
+						rng.first = ptr_first;
+						return result;
+					}
 					break;
 				case SecLeft:
 					++second_bracket_count;
@@ -153,9 +168,8 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			daw_json_assert_weak( prime_bracket_count == 0 and
-			                        second_bracket_count == 0,
-			                      "Unexpected bracketing" );
+			daw_json_assert( prime_bracket_count == 0 and second_bracket_count == 0,
+			                 "Unexpected bracketing" );
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
@@ -177,7 +191,7 @@ namespace daw::json {
 			if( *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
-			while( prime_bracket_count > 0 ) {
+			while( true ) {
 				switch( *ptr_first ) {
 				case '\\':
 					++ptr_first;
@@ -208,6 +222,15 @@ namespace daw::json {
 					break;
 				case PrimRight:
 					--prime_bracket_count;
+					if( prime_bracket_count == 0 ) {
+						++ptr_first;
+						// We include the close primary bracket in the range so that
+						// subsequent parsers have a terminator inside their range
+						result.last = ptr_first;
+						result.counter = cnt;
+						rng.first = ptr_first;
+						return result;
+					}
 					break;
 				case SecLeft:
 					++second_bracket_count;
@@ -224,12 +247,7 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			// We include the close primary bracket in the range so that subsequent
-			// parsers have a terminator inside their range
-			result.last = ptr_first;
-			result.counter = cnt;
-			rng.first = ptr_first;
-			return result;
+			DAW_JSON_UNREACHABLE( );
 		}
 	};
 } // namespace daw::json

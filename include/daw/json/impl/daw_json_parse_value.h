@@ -316,10 +316,10 @@ namespace daw::json::json_details {
 			constexpr bool AllowHighEightbits =
 			  JsonMember::eight_bit_mode != EightBitModes::DisallowHigh;
 			auto rng2 = KnownBounds ? rng : skip_string( rng );
-			if( needs_slow_path( rng2 ) ) {
+			if( not AllowHighEightbits or needs_slow_path( rng2 ) ) {
 				// There are escapes in the string
-				return parse_string_known_stdstring<AllowHighEightbits,
-				                                    json_result<JsonMember>>( rng2 );
+				return parse_string_known_stdstring<
+				  AllowHighEightbits, json_result<JsonMember>, true>( rng2 );
 			}
 			// There are no escapes in the string, we can just use the ptr/size ctor
 			if constexpr( std::is_same_v<std::string, json_result<JsonMember>> ) {

@@ -167,7 +167,8 @@ namespace daw::json::json_details {
 
 	// Fast path for parsing escaped strings to a std::string with the default
 	// appender
-	template<bool AllowHighEight, typename Result, typename Range>
+	template<bool AllowHighEight, typename Result, bool KnownBounds,
+	         typename Range>
 	[[nodiscard, maybe_unused]] constexpr Result
 	parse_string_known_stdstring( Range &rng ) {
 		Result result2 = std::string( rng.size( ), '\0' );
@@ -192,13 +193,21 @@ namespace daw::json::json_details {
 			it = std::copy_n( rng.first, first_slash, it );
 			rng.first += first_slash;
 		}
-		while( rng.front( ) != '"' ) {
+		while( ( Range::is_unchecked_input or
+		         DAW_JSON_LIKELY( rng.has_more( ) ) ) and
+		       rng.front( ) != '"' ) {
 			{
 				char const *first = rng.first;
 				char const *const last = rng.last;
-				while( (*first != '"') & (*first != '\\') ) {
-					daw_json_assert_weak( first < last, "Unexpected end of data" );
-					++first;
+				if constexpr( std::is_same_v<typename Range::exec_tag_t, constexpr_exec_tag> ) {
+					while( not key_table<'"', '\\'>[*first] ) {
+						++first;
+						daw_json_assert_weak( KnownBounds or first < last,
+						                      "Unexpected end of data" );
+					}
+				} else {
+					first = mem_move_to_next_of<Range::is_unchecked_input, '"', '\\'>(
+					  Range::exec_tag, first, last );
 				}
 				it = std::copy( rng.first, first, it );
 				rng.first = first;

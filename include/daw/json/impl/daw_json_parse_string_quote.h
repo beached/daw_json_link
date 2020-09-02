@@ -90,18 +90,8 @@ namespace daw::json::json_details::string_quote {
 			// daw_json_assert_weak( first != '"', "Unexpected quote" );
 			if constexpr( not std::is_same_v<typename Range::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
-				while( true ) {
-					first = mem_skip_string<true>( Range::exec_tag, first, last );
-
-					if( DAW_JSON_LIKELY( *first == '"' ) ) {
-						break;
-					}
-					// We are at a backslash
-					if( need_slow_path < 0 ) {
-						need_slow_path = first - rng.first;
-					}
-					first += 2;
-				}
+				first = mem_skip_until_end_of_string<true>( Range::exec_tag, first,
+				                                            last, need_slow_path );
 			} else {
 				if( last - first >= 8 ) {
 					skip_to_first8( first, last );
@@ -134,26 +124,16 @@ namespace daw::json::json_details::string_quote {
 			char const *const last = rng.class_last;
 			if constexpr( not std::is_same_v<typename Range::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
-				while( first < last ) {
-					first = mem_skip_string<false>( Range::exec_tag, first, last );
-
-					if( DAW_JSON_LIKELY( first < last and *first == '"' ) ) {
-						break;
-					}
-					// We are at a backslash
-					if( need_slow_path < 0 ) {
-						need_slow_path = first - rng.first;
-					}
-					first += 2;
-				}
+				first = mem_skip_until_end_of_string<false>( Range::exec_tag, first,
+				                                             last, need_slow_path );
 			} else {
 				if( char const *const l = rng.last; l - first >= 8 ) {
 					skip_to_first8( first, l );
 				} else if( last - first >= 4 ) {
 					skip_to_first4( first, l );
 				}
-				while( first < last and *first != '"' ) {
-					while( ( first < last ) and
+				while( DAW_JSON_LIKELY( first < last ) and *first != '"' ) {
+					while( DAW_JSON_LIKELY( first < last ) and
 					       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
 						++first;
 					}

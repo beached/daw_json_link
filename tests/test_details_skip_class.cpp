@@ -177,7 +177,7 @@ bool test_class_close_mid_array_without_open( ) {
 	} while( false )
 
 int main( int, char ** ) try {
-	do_test( test_empty_quoted( ) );
+	/*do_test( test_empty_quoted( ) );
 	do_fail_test( test_end_of_stream( ) );
 	do_fail_test( test_extra_slash( ) );
 	do_test( test_trailing_comma( ) );
@@ -188,7 +188,7 @@ int main( int, char ** ) try {
 	do_test( test_classes_001( ) );
 	do_test( test_classes_002( ) );
 	do_test( test_embedded_class( ) );
-	do_fail_test( test_embedded_class_broken_001( ) );
+	do_fail_test( test_embedded_class_broken_001( ) );*/
 	do_fail_test( test_class_close_mid_array_without_open( ) );
 } catch( json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
