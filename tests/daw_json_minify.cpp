@@ -28,8 +28,6 @@ int main( int argc, char **argv ) try {
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
-	constexpr bool VerifyValues = true;
-
 	std::optional<std::ofstream> out_file =
 	  [&]( ) -> std::optional<std::ofstream> {
 		if( argc > 2 ) {
@@ -51,6 +49,8 @@ int main( int argc, char **argv ) try {
 		return std::cout;
 	}( );
 
+	constexpr bool VerifyValues = true;
+
 	using ParsePolicy =
 	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
 
@@ -61,7 +61,7 @@ int main( int argc, char **argv ) try {
 		std::pair<iterator, iterator> value;
 		bool is_first = true;
 	};
-	using min_stack_t = std::stack<stack_value_t, std::vector<stack_value_t>>;
+	using min_stack_t = std::stack<stack_value_t>;
 
 	auto parent_stack = min_stack_t( );
 
