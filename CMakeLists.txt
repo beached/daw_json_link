@@ -596,7 +596,7 @@ add_dependencies(full numbers_test_bin)
 
 add_executable(daw_json_minify_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_minify.cpp)
 add_dependencies(daw_json_minify_bin dependency_stub)
-add_dependencies(full daw_json_minify_bin)
+#add_dependencies(full daw_json_minify_bin)
 
 # **************************************************
 # JSON Benchmark
