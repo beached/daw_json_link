@@ -444,8 +444,7 @@ namespace daw::json::json_details {
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
 	skip_string( Range &rng ) {
 		if( rng.empty( ) ) {
-			auto result = rng;
-			return result;
+			return rng;
 		}
 		if( *std::prev( rng.first ) != '"' ) {
 			if( rng.front( ) == '"' ) {

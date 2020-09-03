@@ -2923,6 +2923,57 @@ namespace daw {
 		                           static_cast<std::uint32_t>( rhs ) );
 	}
 
+	template<unsigned N>
+	inline constexpr void set_bit( UInt64 &value, bool state ) {
+		static_assert( N <= 64 );
+		value =
+		  ( value & ( ~( 1U << N ) ) ) | ( static_cast<UInt64>( state ) << N );
+	}
+
+	template<unsigned N>
+	inline constexpr UInt64 get_bit( UInt64 value ) {
+		static_assert( N <= 64 );
+		return ( value >> N ) & 1U;
+	}
+
+	template<unsigned N>
+	inline constexpr void set_bit( UInt32 &value, bool state ) {
+		static_assert( N <= 32 );
+		value =
+		  ( value & ( ~( 1U << N ) ) ) | ( static_cast<UInt32>( state ) << N );
+	}
+
+	template<unsigned N>
+	inline constexpr UInt32 get_bit( UInt32 value ) {
+		static_assert( N <= 32 );
+		return ( value >> N ) & 1U;
+	}
+
+	template<unsigned N>
+	inline constexpr void set_bit( UInt16 &value, bool state ) {
+		static_assert( N <= 16 );
+		value =
+		  ( value & ( ~( 1U << N ) ) ) | ( static_cast<UInt16>( state ) << N );
+	}
+
+	template<unsigned N>
+	inline constexpr UInt16 get_bit( UInt16 value ) {
+		static_assert( N <= 16 );
+		return ( value >> N ) & 1U;
+	}
+
+	template<unsigned N>
+	inline constexpr void set_bit( UInt8 &value, bool state ) {
+		static_assert( N <= 8 );
+		value = ( value & ( ~( 1U << N ) ) ) | ( static_cast<UInt8>( state ) << N );
+	}
+
+	template<unsigned N>
+	inline constexpr UInt8 get_bit( UInt8 value ) {
+		static_assert( N <= 8 );
+		return ( value >> N ) & 1U;
+	}
+
 	template<unsigned bits>
 	constexpr UInt8 rotate_left( UInt8 value ) {
 		static_assert( bits <= 8 );
@@ -2942,6 +2993,50 @@ namespace daw {
 	constexpr UInt8 rotate_right( UInt8 value, unsigned bits ) {
 		return ( value >> bits ) | ( value << ( 8U - bits ) );
 	}
+
+	template<unsigned N>
+	inline constexpr UInt64 mask_from_lsb64 = [] {
+		static_assert( N <= 64 );
+		if constexpr( N == 0 ) {
+			return UInt64( );
+		} else {
+			auto const One = ~to_uint64( 1U );
+			return ~( One << ( N - 1 ) );
+		}
+	}( );
+
+	template<unsigned N>
+	inline constexpr UInt32 mask_from_lsb32 = [] {
+		static_assert( N <= 32 );
+		if constexpr( N == 0 ) {
+			return UInt32( );
+		} else {
+			auto const One = ~to_uint32( 1U );
+			return ~( One << ( N - 1 ) );
+		}
+	}( );
+
+	template<unsigned N>
+	inline constexpr UInt16 mask_from_lsb16 = [] {
+		static_assert( N <= 16 );
+		if constexpr( N == 0 ) {
+			return UInt16( );
+		} else {
+			auto const One = ~to_uint16( 1U );
+			return ~( One << ( N - 1 ) );
+		}
+	}( );
+
+	template<unsigned N>
+	inline constexpr UInt8 mask_from_lsb8 = [] {
+		static_assert( N <= 8 );
+		if constexpr( N == 0 ) {
+			return UInt8( );
+		} else {
+			auto const One = ~to_uint8( 1U );
+			return ~( One << ( N - 1 ) );
+		}
+	}( );
 
 	constexpr UInt64 to_uint64_buffer( char const *ptr ) noexcept {
 		std::uint64_t result = 0;

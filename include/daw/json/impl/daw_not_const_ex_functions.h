@@ -55,6 +55,17 @@ namespace daw::json::json_details {
 		return result;
 	}( );
 
+	static inline std::ptrdiff_t find_lsb_set( runtime_exec_tag const &,
+	                                           UInt32 value ) {
+#if defined( __GNUC__ ) or defined( __clang__ )
+		return __builtin_ffs( static_cast<int>( value ) ) - 1;
+#else
+		unsigned long index;
+		_BitScanForward( &index, static_cast<int>( value ) );
+		return static_cast<std::ptrdiff_t>( index );
+#endif
+	}
+
 #if defined( DAW_ALLOW_SSE42 )
 	DAW_ATTRIBUTE_FLATTEN static inline __m128i
 	set_reverse( char c0, char c1 = 0, char c2 = 0, char c3 = 0, char c4 = 0,
@@ -65,48 +76,94 @@ namespace daw::json::json_details {
 		                     c3, c2, c1, c0 );
 	}
 
-	template<bool is_unchecked_input, char key0, char key1>
-	DAW_ATTRIBUTE_FLATTEN static inline char const *
-	mem_move_to_next_of( sse42_exec_tag const &, char const *first,
-	                     char const *const last ) {
-		__m128i const k0 = _mm_set1_epi8( key0 );
-		__m128i const k1 = _mm_set1_epi8( key1 );
-		while( last - first >= 16 ) {
-			__m128i const val0 =
-			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
-			__m128i const check_key0 = _mm_cmpeq_epi8( val0, k0 );
-			__m128i const check_key1 = _mm_cmpeq_epi8( val0, k1 );
-			__m128i const has_key0_or_key1 = _mm_or_si128( check_key0, check_key1 );
+	DAW_ATTRIBUTE_FLATTEN static inline __m128i
+	uload16_char_data( sse42_exec_tag const &, char const *ptr ) {
+		return _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) );
+	}
 
-			int pos = _mm_movemask_epi8( has_key0_or_key1 );
-			if( pos != 0 ) {
-#if defined( __GNUC__ ) or defined( __clang__ )
-				pos = __builtin_ffs( pos );
-				return first + ( pos - 1 );
-#else
-				unsigned long index;
-				_BitScanForward( &index, pos );
-				return first + static_cast<int>( index );
-#endif
-			}
-			first += 16;
-		}
-		if( is_unchecked_input ) {
-			while( not key_table<key0, key1>[*first] ) {
-				++first;
-			}
-		} else {
-			while( DAW_JSON_LIKELY( first < last ) and
-			       not key_table<key0, key1>[*first] ) {
-				++first;
-			}
-		}
-		return first;
+	template<char k>
+	DAW_ATTRIBUTE_FLATTEN static inline UInt32
+	mem_find_eq( sse42_exec_tag const &, __m128i block ) {
+		static __m128i const keys = _mm_set1_epi8( k );
+		__m128i const found = _mm_cmpeq_epi8( block, keys );
+		return to_uint32( _mm_movemask_epi8( found ) );
+	}
+
+	template<unsigned char k>
+	DAW_ATTRIBUTE_FLATTEN static inline UInt32
+	mem_find_gt( sse42_exec_tag const &, __m128i block ) {
+		static __m128i const keys = _mm_set1_epi8( k );
+		__m128i const found = _mm_cmpgt_epi8( block, keys );
+		return to_uint32( _mm_movemask_epi8( found ) );
 	}
 
 	template<bool is_unchecked_input, char... keys>
 	DAW_ATTRIBUTE_FLATTEN static inline char const *
-	mem_move_to_next_not_of( sse42_exec_tag const &, char const *first,
+	mem_move_to_next_of( sse42_exec_tag const &tag, char const *first,
+	                     char const *const last ) {
+
+		while( last - first >= 16 ) {
+			auto const val0 = uload16_char_data( tag, first );
+			auto const key_positions = ( mem_find_eq<keys>( tag, val0 ) | ... );
+			if( key_positions != 0 ) {
+				return first + find_lsb_set( tag, key_positions );
+			}
+			first += 16;
+		}
+		if( last - first >= 8 ) {
+			char const buff[16]{ first[0], first[1], first[2], first[3],
+			                     first[4], first[5], first[6], first[7] };
+			auto const val0 = uload16_char_data( tag, buff );
+			auto const key_positions =
+			  ( mem_find_eq<keys>( tag, val0 ) | ... ) & mask_from_lsb32<8>;
+			if( key_positions != 0 ) {
+				return first + find_lsb_set( tag, key_positions );
+			}
+			first += 8;
+		}
+		if( last - first >= 4 ) {
+			char const buff[16]{ first[0], first[1], first[2], first[3] };
+			auto const val0 = uload16_char_data( tag, buff );
+			auto const key_positions =
+			  ( mem_find_eq<keys>( tag, val0 ) | ... ) & mask_from_lsb32<4>;
+			if( key_positions != 0 ) {
+				return first + find_lsb_set( tag, key_positions );
+			}
+			first += 4;
+		}
+		switch( last - first ) {
+		case 0:
+			return first;
+		case 1:
+			return first +
+			       static_cast<std::ptrdiff_t>( not key_table<keys...>[*first] );
+		case 2: {
+			char const buff[16]{ first[0], first[1] };
+			auto const val0 = uload16_char_data( tag, buff );
+			auto const key_positions =
+			  ( mem_find_eq<keys>( tag, val0 ) | ... ) & mask_from_lsb32<2>;
+			if( key_positions != 0 ) {
+				return first + find_lsb_set( tag, key_positions );
+			}
+			return last;
+		}
+		case 3: {
+			char const buff[16]{ first[0], first[1], first[2] };
+			auto const val0 = uload16_char_data( tag, buff );
+			auto const key_positions =
+			  ( mem_find_eq<keys>( tag, val0 ) | ... ) & mask_from_lsb32<3>;
+			if( key_positions != 0 ) {
+				return first + find_lsb_set( tag, key_positions );
+			}
+			return last;
+		}
+		}
+		DAW_JSON_UNREACHABLE( );
+	}
+
+	template<bool is_unchecked_input, char... keys>
+	DAW_ATTRIBUTE_FLATTEN static inline char const *
+	mem_move_to_next_not_of( sse42_exec_tag const &tag, char const *first,
 	                         char const *last ) {
 		static constexpr int keys_len = static_cast<int>( sizeof...( keys ) );
 		static_assert( keys_len <= 16 );
@@ -115,8 +172,7 @@ namespace daw::json::json_details {
 		  _SIDD_SBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_NEGATIVE_POLARITY;
 
 		while( last - first >= 16 ) {
-			__m128i const b =
-			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
+			auto const b = uload16_char_data( tag, first );
 			int const b_len =
 			  last - first >= 16 ? 16 : static_cast<int>( last - first );
 			int result = _mm_cmpestri( a, keys_len, b, b_len, compare_mode );
@@ -168,24 +224,18 @@ namespace daw::json::json_details {
 #endif
 	}
 
-	template<char k>
-	DAW_ATTRIBUTE_FLATTEN static inline UInt32 find_eq_sse42( __m128i block ) {
-		__m128i const keys = _mm_set1_epi8( k );
-		__m128i const found = _mm_cmpeq_epi8( block, keys );
-		return to_uint32( _mm_movemask_epi8( found ) );
-	}
-
 	// Adapted from
 	// https://github.com/simdjson/simdjson/blob/master/src/generic/stage1/json_string_scanner.h#L79
-	DAW_ATTRIBUTE_FLATTEN static inline UInt32
-	find_escaped_branchless( UInt32 &prev_escaped, UInt32 backslashes ) {
+	DAW_ATTRIBUTE_FLATTEN static inline constexpr UInt32
+	find_escaped_branchless( constexpr_exec_tag const &, UInt32 &prev_escaped,
+	                         UInt32 backslashes ) {
 		backslashes &= ~prev_escaped;
 		UInt32 follow_escape = ( backslashes << 1 ) | prev_escaped;
-		static constexpr UInt32 even_bits = to_uint32( 0x5555'5555ULL );
+		constexpr UInt32 even_bits = to_uint32( 0x5555'5555ULL );
 
 		UInt32 const odd_seq_start =
 		  backslashes & ( ~even_bits ) & ( ~follow_escape );
-		UInt32 seq_start_on_even_bits;
+		UInt32 seq_start_on_even_bits = UInt32( );
 		prev_escaped = [&] {
 			auto r = odd_seq_start + backslashes;
 			seq_start_on_even_bits = 0x0000'FFFF & r;
@@ -197,11 +247,8 @@ namespace daw::json::json_details {
 		return ( even_bits ^ invert_mask ) & follow_escape;
 	}
 
-	DAW_ATTRIBUTE_FLATTEN static inline UInt32 prefix_xor( UInt32 bitmask ) {
-		/*__m128i const all_ones =
-		  _mm_set_epi8( 0, 0, 0, 0, 0, 0, 0, 0, '\xFF', '\xFF', '\xFF', '\xFF',
-		                '\xFF', '\xFF', '\xFF', '\xFF' );
-		                */
+	DAW_ATTRIBUTE_FLATTEN static inline UInt32 prefix_xor( sse42_exec_tag const &,
+	                                                       UInt32 bitmask ) {
 		__m128i const all_ones = _mm_set1_epi8( '\xFF' );
 		__m128i const result = _mm_clmulepi64_si128(
 		  _mm_set_epi32( 0, 0, 0, static_cast<std::int32_t>( bitmask ) ), all_ones,
@@ -211,27 +258,18 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input>
 	static inline char const *
-	mem_skip_until_end_of_string( sse42_exec_tag const &, char const *first,
+	mem_skip_until_end_of_string( simd_exec_tag const &tag, char const *first,
 	                              char const *const last ) {
 		UInt32 prev_escapes = UInt32( );
 		while( last - first >= 16 ) {
-			__m128i const val0 =
-			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
-			UInt32 const backslashes = find_eq_sse42<'\\'>( val0 );
+			auto const val0 = uload16_char_data( tag, first );
+			UInt32 const backslashes = mem_find_eq<'\\'>( tag, val0 );
 			UInt32 const escaped =
-			  find_escaped_branchless( prev_escapes, backslashes );
-			UInt32 const quotes = find_eq_sse42<'"'>( val0 ) & ( ~escaped );
-			UInt32 const in_string = prefix_xor( quotes );
+			  find_escaped_branchless( tag, prev_escapes, backslashes );
+			UInt32 const quotes = mem_find_eq<'"'>( tag, val0 ) & ( ~escaped );
+			UInt32 const in_string = prefix_xor( tag, quotes );
 			if( in_string != 0 ) {
-#if defined( __GNUC__ ) or defined( __clang__ )
-				first += __builtin_ffs( static_cast<int>( in_string ) ) - 1;
-#else
-				{
-					unsigned long index;
-					first += static_cast<int>(
-					  _BitScanForward( &index, static_cast<int>( in_string ) ) );
-				}
-#endif
+				first += find_lsb_set( tag, in_string );
 				return first;
 			}
 			first += 16;
@@ -267,38 +305,23 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input>
 	static inline char const *
-	mem_skip_until_end_of_string( sse42_exec_tag const &, char const *first,
+	mem_skip_until_end_of_string( simd_exec_tag const &tag, char const *first,
 	                              char const *const last,
 	                              std::ptrdiff_t &first_escape ) {
 		char const *const first_first = first;
 		UInt32 prev_escapes = UInt32( );
 		while( last - first >= 16 ) {
-			__m128i const val0 =
-			  _mm_loadu_si128( reinterpret_cast<__m128i const *>( first ) );
-			UInt32 const backslashes = find_eq_sse42<'\\'>( val0 );
-			if( ( backslashes > 0 ) & ( first_escape < 0 ) ) {
-#if defined( __GNUC__ ) or defined( __clang__ )
-				first_escape = __builtin_ffs( static_cast<int>( backslashes ) ) - 1;
-#else
-				unsigned long index;
-				first_escape = static_cast<int>(
-				  _BitScanForward( &index, static_cast<int>( backslashes ) ) );
-#endif
+			auto const val0 = uload16_char_data( tag, first );
+			UInt32 const backslashes = mem_find_eq<'\\'>( tag, val0 );
+			if( ( backslashes != 0 ) & ( first_escape < 0 ) ) {
+				first_escape = find_lsb_set( tag, backslashes );
 			}
 			UInt32 const escaped =
-			  find_escaped_branchless( prev_escapes, backslashes );
-			UInt32 const quotes = find_eq_sse42<'"'>( val0 ) & ( ~escaped );
-			UInt32 const in_string = prefix_xor( quotes );
+			  find_escaped_branchless( tag, prev_escapes, backslashes );
+			UInt32 const quotes = mem_find_eq<'"'>( tag, val0 ) & ( ~escaped );
+			UInt32 const in_string = prefix_xor( tag, quotes );
 			if( in_string != 0 ) {
-#if defined( __GNUC__ ) or defined( __clang__ )
-				first += __builtin_ffs( static_cast<int>( in_string ) ) - 1;
-#else
-				{
-					unsigned long index;
-					first += static_cast<int>(
-					  _BitScanForward( &index, static_cast<int>( in_string ) ) );
-				}
-#endif
+				first += find_lsb_set( tag, in_string );
 				return first;
 			}
 			first += 16;
