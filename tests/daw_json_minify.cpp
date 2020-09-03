@@ -15,49 +15,13 @@
 #include <iostream>
 #include <stack>
 
-template<typename ExecTag, typename OutIt>
-constexpr void minify( std::string_view json_data, OutIt out_it ) {}
-
-int main( int argc, char **argv ) try {
-	std::ios::sync_with_stdio( false );
-	if( argc <= 1 ) {
-		std::cerr << "Must supply path to json document followed optionally by the "
-		             "output file\n";
-		std::cerr << argv[0] << " json_in.json [json_out.json]\n";
-		exit( EXIT_FAILURE );
-	}
-	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
-
-	std::optional<std::ofstream> out_file =
-	  [&]( ) -> std::optional<std::ofstream> {
-		if( argc > 2 ) {
-			auto result =
-			  std::ofstream( argv[2], std::ios::binary | std::ios::trunc );
-			if( not result ) {
-				std::cerr << "Could not open " << argv[2] << " for writing\n";
-				exit( 1 );
-			}
-			return result;
-		}
-		return { };
-	}( );
-
-	std::ostream &outs = [&]( ) -> std::ostream & {
-		if( out_file ) {
-			return *out_file;
-		}
-		return std::cout;
-	}( );
-
-	constexpr bool VerifyValues = true;
-
-	using ParsePolicy =
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
-
+template<bool VerifyValues, typename ParsePolicy>
+constexpr void minify( std::string_view json_data, std::ostream &outs ) {
 	using iterator = daw::json::basic_json_value_iterator<ParsePolicy>;
 	using json_value_t = daw::json::basic_json_pair<ParsePolicy>;
+	enum class RangeType { Class, Array };
 	struct stack_value_t {
-		daw::json::JsonBaseParseTypes type;
+		RangeType type;
 		std::pair<iterator, iterator> value;
 		bool is_first = true;
 	};
@@ -73,15 +37,13 @@ int main( int argc, char **argv ) try {
 		switch( jv.type( ) ) {
 		case daw::json::JsonBaseParseTypes::Array:
 			outs << '[';
-			parent_stack.push(
-			  { daw::json::JsonBaseParseTypes::Array,
-			    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
+			parent_stack.push( { RangeType::Array, std::pair<iterator, iterator>(
+			                                         jv.begin( ), jv.end( ) ) } );
 			break;
 		case daw::json::JsonBaseParseTypes::Class: {
 			outs << '{';
-			parent_stack.push(
-			  { daw::json::JsonBaseParseTypes::Class,
-			    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
+			parent_stack.push( { RangeType::Class, std::pair<iterator, iterator>(
+			                                         jv.begin( ), jv.end( ) ) } );
 			break;
 		case daw::json::JsonBaseParseTypes::Number:
 			if constexpr( VerifyValues ) {
@@ -134,32 +96,61 @@ int main( int argc, char **argv ) try {
 			}
 		} else {
 			switch( v.type ) {
-			case daw::json::JsonBaseParseTypes::Class:
+			case RangeType::Class:
 				outs << '}';
 				break;
-			case daw::json::JsonBaseParseTypes::Array:
+			case RangeType::Array:
 				outs << ']';
 				break;
-			case daw::json::JsonBaseParseTypes::Number:
-			case daw::json::JsonBaseParseTypes::Bool:
-			case daw::json::JsonBaseParseTypes::String:
-			case daw::json::JsonBaseParseTypes::Null:
-			case daw::json::JsonBaseParseTypes::None:
-			default:
-				std::cerr << "Logic error\n";
-				std::terminate( );
 			}
 		}
 	};
 
 	process_value(
-	  { std::nullopt, daw::json::basic_json_value<ParsePolicy>(
-	                    std::string_view( data.data( ), data.size( ) ) ) } );
+	  { std::nullopt, daw::json::basic_json_value<ParsePolicy>( json_data ) } );
 
 	while( not parent_stack.empty( ) ) {
 		auto v = std::move( parent_stack.top( ) );
 		parent_stack.pop( );
 		process_range( v );
+	}
+}
+
+int main( int argc, char **argv ) try {
+	std::ios::sync_with_stdio( false );
+	if( argc <= 1 ) {
+		std::cerr << "Must supply path to json document followed optionally by the "
+		             "output file\n";
+		std::cerr << argv[0] << " json_in.json [json_out.json]\n";
+		exit( EXIT_FAILURE );
+	}
+	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+
+	auto out_file = std::ofstream( );
+	if( argc > 2 ) {
+		out_file.open( argv[2], std::ios::binary | std::ios::trunc );
+		if( not out_file ) {
+			std::cerr << "Could not open " << argv[2] << " for writing\n";
+			exit( 1 );
+		}
+	}
+
+	std::ostream &outs = [&out_file]( ) -> std::ostream & {
+		if( out_file ) {
+			return out_file;
+		}
+		return std::cout;
+	}( );
+
+	using ParsePolicy =
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
+
+	if( argc > 3 and ( std::string_view( argv[3] ) == "fast" ) ) {
+		minify<false, ParsePolicy>( std::string_view( data.data( ), data.size( ) ),
+		                            outs );
+	} else {
+		minify<true, ParsePolicy>( std::string_view( data.data( ), data.size( ) ),
+		                           outs );
 	}
 	if( not out_file ) {
 		outs << '\n';
