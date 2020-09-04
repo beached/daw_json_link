@@ -25,9 +25,10 @@ constexpr void minify( std::string_view json_data, std::ostream &outs ) {
 		std::pair<iterator, iterator> value;
 		bool is_first = true;
 	};
-	using min_stack_t = std::stack<stack_value_t>;
+	using min_stack_t = std::vector<stack_value_t>;
 
 	auto parent_stack = min_stack_t( );
+	parent_stack.reserve( 15 );
 
 	auto const process_value = [&]( json_value_t p ) {
 		auto &jv = p.value;
@@ -37,13 +38,15 @@ constexpr void minify( std::string_view json_data, std::ostream &outs ) {
 		switch( jv.type( ) ) {
 		case daw::json::JsonBaseParseTypes::Array:
 			outs << '[';
-			parent_stack.push( { RangeType::Array, std::pair<iterator, iterator>(
-			                                         jv.begin( ), jv.end( ) ) } );
+			parent_stack.push_back(
+			  { RangeType::Array,
+			    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
 			break;
 		case daw::json::JsonBaseParseTypes::Class: {
 			outs << '{';
-			parent_stack.push( { RangeType::Class, std::pair<iterator, iterator>(
-			                                         jv.begin( ), jv.end( ) ) } );
+			parent_stack.push_back(
+			  { RangeType::Class,
+			    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
 			break;
 		case daw::json::JsonBaseParseTypes::Number:
 			if constexpr( VerifyValues ) {
@@ -90,7 +93,7 @@ constexpr void minify( std::string_view json_data, std::ostream &outs ) {
 				}
 			}
 			v.value.first++;
-			parent_stack.push( std::move( v ) );
+			parent_stack.push_back( std::move( v ) );
 			if( not jv.value.is_null( ) ) {
 				process_value( std::move( jv ) );
 			}
@@ -110,8 +113,8 @@ constexpr void minify( std::string_view json_data, std::ostream &outs ) {
 	  { std::nullopt, daw::json::basic_json_value<ParsePolicy>( json_data ) } );
 
 	while( not parent_stack.empty( ) ) {
-		auto v = std::move( parent_stack.top( ) );
-		parent_stack.pop( );
+		auto v = std::move( parent_stack.back( ) );
+		parent_stack.pop_back( );
 		process_range( v );
 	}
 }

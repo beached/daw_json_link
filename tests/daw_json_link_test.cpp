@@ -523,7 +523,7 @@ int main( int, char ** ) try {
 	}
 	std::cout << "sum: " << sum << '\n';
 
-	DAW_CONSTEXPR std::string_view const json_data3 =
+	constexpr std::string_view const json_data3 =
 	  R"({
 	"a": {
 		"b.hi": {

@@ -463,6 +463,42 @@ std::vector<AggData> values = //...;
 std::string json_array_data = to_json_array( values );
 ```
 
+Alternatively there is an optional `iostreams` interface.  In you types `json_data_constract`
+add a type alias named `opt_into_iostreams` the type it aliases doesn't matter, and include `daw_json_iostream.h` .  For example  
+```c++
+#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_json_iostream.h>
+#include <tuple>
+
+struct AggClass {
+  int a{};
+  double b{};
+};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<AggClass> {
+    using opt_into_iostreams = void;
+    using type = json_member_list<
+      json_number<"a", int>,
+      json_number<"b">
+    >;
+
+    static inline auto to_json_data( AggClass const & value ) {
+      return std::forward_as_tuple( value.a, value.b );
+    }
+  };
+}
+//...
+AggData value = //...;
+std::cout << value << '\n';
+
+// or
+std::vector<AggData> values = //...;
+std::cout << values << '\n';
+```
+A working example can be found at [daw_json_iostream_test.cpp](tests/daw_json_iostream_test.cpp) 
+
 ## Build configuration points
 There are a few defines that affect how JSON Link operates
 * `DAW_JSON_DONT_USE_EXCEPTIONS` - Controls if exceptions are allowed.  If they are not, an `abort()` on errors will occur
