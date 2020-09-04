@@ -14,25 +14,24 @@
 
 #include <iostream>
 
-namespace daw::json {
-	namespace json_details {
-		template<typename T>
-		using is_opted_into_json_iostreams =
-		  typename json_data_contract<T>::opt_into_iostreams;
+namespace daw::json::json_details {
+	template<typename T>
+	using is_opted_into_json_iostreams =
+	  typename json_data_contract<T>::opt_into_iostreams;
 
-		template<typename Container>
-		using is_container_opted_into_json_iostreams =
-		  is_opted_into_json_iostreams<typename Container::value_type>;
+	template<typename Container>
+	using is_container_opted_into_json_iostreams =
+	  is_opted_into_json_iostreams<typename Container::value_type>;
 
-		template<typename T>
-		inline constexpr bool is_opted_into_json_iostreams_v =
-		  daw::is_detected_v<is_opted_into_json_iostreams, T>;
+	template<typename T>
+	inline constexpr bool is_opted_into_json_iostreams_v =
+	  daw::is_detected_v<is_opted_into_json_iostreams, T>;
 
-		template<typename T>
-		inline constexpr bool is_container_opted_into_json_iostreams_v =
-		  daw::is_detected_v<is_container_opted_into_json_iostreams, T>;
-	} // namespace json_details
-} // namespace daw::json
+	template<typename T>
+	inline constexpr bool is_container_opted_into_json_iostreams_v =
+	  daw::is_detected_v<is_container_opted_into_json_iostreams, T>;
+} // namespace daw::json::json_details
+
 template<
   typename T,
   std::enable_if_t<daw::json::json_details::is_opted_into_json_iostreams_v<T>,

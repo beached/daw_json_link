@@ -115,6 +115,8 @@ include_directories(${HEADER_FOLDER})
 set(HEADER_FILES
   ${HEADER_FOLDER}/daw/json/daw_json_iterator.h
   ${HEADER_FOLDER}/daw/json/daw_json_link.h
+  ${HEADER_FOLDER}/daw/json/daw_json_event_parser.h
+  ${HEADER_FOLDER}/daw/json/daw_json_iostream.h
   ${HEADER_FOLDER}/daw/json/daw_json_value_state.h
   ${HEADER_FOLDER}/daw/json/impl/daw_json_arrow_proxy.h
   ${HEADER_FOLDER}/daw/json/impl/daw_json_assert.h
@@ -601,7 +603,11 @@ add_dependencies(full daw_json_iostream_test_bin)
 
 add_executable(daw_json_minify_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_minify.cpp)
 add_dependencies(daw_json_minify_bin dependency_stub)
-#add_dependencies(full daw_json_minify_bin)
+add_dependencies(full daw_json_minify_bin)
+
+add_executable(daw_json_event_parser_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/daw_json_event_parser.cpp)
+add_dependencies(daw_json_event_parser_bin dependency_stub)
+#add_dependencies(full daw_json_event_parser_bin)
 
 # **************************************************
 # JSON Benchmark

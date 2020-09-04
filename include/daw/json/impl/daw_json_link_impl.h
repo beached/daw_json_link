@@ -108,7 +108,7 @@ namespace daw::json::json_details {
 
 	template<bool HashesCollide, typename Range>
 	struct location_info_t {
-		daw::UInt32 hash_value = daw::UInt32( );
+		UInt32 hash_value = 0_u32;
 		daw::string_view const *name;
 		Range location{ };
 		std::size_t count = 0;
@@ -124,7 +124,7 @@ namespace daw::json::json_details {
 
 	template<typename Range>
 	struct location_info_t<false, Range> {
-		daw::UInt32 hash_value = daw::UInt32( );
+		UInt32 hash_value = 0_u32;
 		Range location{ };
 		std::size_t count = 0;
 
@@ -164,7 +164,7 @@ namespace daw::json::json_details {
 		template<std::size_t start_pos>
 		[[nodiscard]] constexpr std::size_t
 		find_name( daw::string_view key ) const {
-			daw::UInt32 const hash = name_hash( key );
+			UInt32 const hash = name_hash( key );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 			// MSVC has a bug where the list initialization isn't sequenced in order
 			// of appearance.
@@ -187,14 +187,13 @@ namespace daw::json::json_details {
 
 	template<typename... MemberNames>
 	constexpr bool do_hashes_collide( ) noexcept {
-		std::array<daw::UInt32, sizeof...( MemberNames )> hashes{
+		std::array<UInt32, sizeof...( MemberNames )> hashes{
 		  name_hash( MemberNames::name )... };
 
 		daw::sort( hashes.data( ), hashes.data( ) + hashes.size( ) );
-		return daw::algorithm::adjacent_find( hashes.begin( ), hashes.end( ),
-		                                      []( daw::UInt32 l, daw::UInt32 r ) {
-			                                      return l == r;
-		                                      } ) != hashes.end( );
+		return daw::algorithm::adjacent_find(
+		         hashes.begin( ), hashes.end( ),
+		         []( UInt32 l, UInt32 r ) { return l == r; } ) != hashes.end( );
 	}
 
 	template<typename Range, typename... JsonMembers>
@@ -228,7 +227,7 @@ namespace daw::json::json_details {
 
 		rng.trim_left_unchecked( );
 		// TODO: should we check for end
-		while( locations[pos].missing( ) & (rng.front( ) != '}') ) {
+		while( locations[pos].missing( ) & ( rng.front( ) != '}' ) ) {
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
 			auto const name = parse_name( rng );
 			auto const name_pos = locations.template find_name<pos>( name );

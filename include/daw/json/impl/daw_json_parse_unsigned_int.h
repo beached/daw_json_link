@@ -42,9 +42,9 @@ namespace daw::json::json_details {
 			val |= to_uint64( buff[n] ) << ( 8 * n );
 		}
 		return (
-		  ( ( val & 0xF0F0'F0F0'F0F0'F0F0ULL ) |
-		    ( ( ( val + 0x0606'0606'0606'0606ULL ) & 0xF0F0'F0F0'F0F0'F0F0ULL ) >>
-		      4U ) ) == 0x3333'3333'3333'3333ULL );
+		  ( ( val & 0xF0F0'F0F0'F0F0'F0F0_u64 ) |
+		    ( ( ( val + 0x0606'0606'0606'0606_u64 ) & 0xF0F0'F0F0'F0F0'F0F0_u64 ) >>
+		      4U ) ) == 0x3333'3333'3333'3333_u64 );
 	}
 
 	template<JsonRangeCheck RangeCheck, typename Unsigned,
@@ -60,30 +60,34 @@ namespace daw::json::json_details {
 	inline constexpr UInt64 parse_8_digits( const char *const str ) {
 		auto const chunk = daw::to_uint64_buffer( str );
 		// 1-byte mask trick (works on 4 pairs of single digits)
-		auto const lower_digits = ( chunk & 0x0f'00'0f'00'0f'00'0f'00U ) >> 8U;
-		auto const upper_digits = ( chunk & 0x00'0f'00'0f'00'0f'00'0fU ) * 10U;
+		auto const lower_digits = ( chunk & 0x0f'00'0f'00'0f'00'0f'00_u64 ) >> 8U;
+		auto const upper_digits = ( chunk & 0x00'0f'00'0f'00'0f'00'0f_u64 ) * 10U;
 		auto const chunk2 = lower_digits + upper_digits;
 
 		// 2-byte mask trick (works on 2 pairs of two digits)
-		auto const lower_digits2 = ( chunk2 & 0x00'ff'00'00'00'ff'00'00U ) >> 16U;
-		auto const upper_digits2 = ( chunk2 & 0x00'00'00'ff'00'00'00'ffU ) * 100U;
+		auto const lower_digits2 =
+		  ( chunk2 & 0x00'ff'00'00'00'ff'00'00_u64 ) >> 16U;
+		auto const upper_digits2 =
+		  ( chunk2 & 0x00'00'00'ff'00'00'00'ff_u64 ) * 100U;
 		auto const chunk3 = lower_digits2 + upper_digits2;
 
 		// 4-byte mask trick (works on pair of four digits)
-		auto const lower_digits3 = ( chunk3 & 0x00'00'ff'ff'00'00'00'00U ) >> 32U;
-		auto const upper_digits3 = ( chunk3 & 0x00'00'00'00'00'00'ff'ffU ) * 10000U;
+		auto const lower_digits3 =
+		  ( chunk3 & 0x00'00'ff'ff'00'00'00'00_u64 ) >> 32U;
+		auto const upper_digits3 =
+		  ( chunk3 & 0x00'00'00'00'00'00'ff'ff_u64 ) * 10000U;
 		auto const chunk4 = lower_digits3 + upper_digits3;
 
-		return chunk4 & 0xFFFF'FFFFULL;
+		return chunk4 & 0xFFFF'FFFF_u64;
 	}
-	static_assert( parse_8_digits( "12345678" ) == 12345678,
+	static_assert( parse_8_digits( "12345678" ) == 1234'5678_u64,
 	               "8 digit parser does not work on this platform" );
 	inline constexpr UInt64 parse_16_digits( const char *const str ) {
 		auto const upper = parse_8_digits( str );
 		auto const lower = parse_8_digits( str + 8 );
-		return upper * 100'000'000ULL + lower;
+		return upper * 100'000'000_u64 + lower;
 	}
-	static_assert( parse_16_digits( "1234567890123456" ) == 1234567890123456ULL,
+	static_assert( parse_16_digits( "1234567890123456" ) == 1234567890123456_u64,
 	               "16 digit parser does not work on this platform" );
 
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
@@ -102,12 +106,12 @@ namespace daw::json::json_details {
 		result_t result = result_t( );
 
 		while( last - first >= 16 ) {
-			result *= 10'000'000'000'000'000ULL;
+			result *= 10'000'000'000'000'000_u64;
 			result += static_cast<result_t>( parse_16_digits( first ) );
 			first += 16;
 		}
 		if( last - first >= 8 ) {
-			result *= 100'000'000ULL;
+			result *= 100'000'000_u64;
 			result += static_cast<result_t>( parse_8_digits( first ) );
 			first += 8;
 		}
@@ -228,9 +232,9 @@ namespace daw::json::json_details {
 	is_made_of_eight_digits_fast( const char *ptr ) {
 	  UInt64 val;
 	  memcpy( &val, ptr, sizeof( std::uint64_t ) );
-	  return ( ( ( val & 0xF0F0F0F0F0F0F0F0ULL ) |
-	             ( ( ( val + 0x0606060606060606ULL ) & 0xF0F0F0F0F0F0F0F0ULL ) >>
-	               4ULL ) ) == 0x3333333333333333ULL );
+	  return ( ( ( val & 0xF0F0F0F0F0F0F0F0_u64 ) |
+	             ( ( ( val + 0x0606060606060606_u64 ) & 0xF0F0F0F0F0F0F0F0_u64 ) >>
+	               4_u64 ) ) == 0x3333333333333333_u64 );
 	}
 
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>
@@ -246,13 +250,13 @@ namespace daw::json::json_details {
 	    auto sz = last - first;
 	    while( ( sz >= 8 ) & is_made_of_eight_digits_fast( first ) ) {
 	      if( ( sz < 16 ) | ( not is_made_of_eight_digits_fast( first + 8 ) ) ) {
-	        result *= 100'000'000ULL;
+	        result *= 100'000'000_u64;
 	        result +=
 	          static_cast<result_t>( parse_eight_digits_unrolled( first ) );
 	        first += 8;
 	        break;
 	      }
-	      result *= 10'000'000'000'000'000ULL;
+	      result *= 10'000'000'000'000'000_u64;
 	      result +=
 	        static_cast<result_t>( parse_sixteen_digits_unrolled( first ) );
 	      sz -= 16;

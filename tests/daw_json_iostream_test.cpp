@@ -2,6 +2,8 @@
 
 #include <daw/json/daw_json_iostream.h>
 
+#include <deque>
+#include <list>
 #include <vector>
 
 struct NumberX {
@@ -31,9 +33,22 @@ static_assert(
     std::vector<NumberX>> );
 
 int main( ) {
-	constexpr std::string_view const json_data3 = R"([{"x":1},{"x":2},{"x":3}])";
+	constexpr std::string_view single_numberx = R"({"x":123})";
+	constexpr NumberX nx = daw::json::from_json<NumberX>( single_numberx );
 
-	std::vector<NumberX> nx = daw::json::from_json_array<NumberX>( json_data3 );
+	constexpr std::string_view const numberx_in_json_array =
+	  R"([{"x":1},{"x":2},{"x":3}])";
+	std::vector<NumberX> vec_nx =
+	  daw::json::from_json_array<NumberX>( numberx_in_json_array );
+	std::deque<NumberX> deq_nx =
+	  daw::json::from_json_array<NumberX, std::deque<NumberX>>(
+	    numberx_in_json_array );
+	std::list<NumberX> lst_nx =
+	  daw::json::from_json_array<NumberX, std::list<NumberX>>(
+	    numberx_in_json_array );
 
 	std::cout << nx << '\n';
+	std::cout << vec_nx << '\n';
+	std::cout << deq_nx << '\n';
+	std::cout << lst_nx << '\n';
 }

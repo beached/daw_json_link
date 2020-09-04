@@ -231,18 +231,18 @@ namespace daw::json::json_details {
 	                         UInt32 backslashes ) {
 		backslashes &= ~prev_escaped;
 		UInt32 follow_escape = ( backslashes << 1 ) | prev_escaped;
-		constexpr UInt32 even_bits = to_uint32( 0x5555'5555ULL );
+		constexpr UInt32 even_bits = 0x5555'5555_u32;
 
 		UInt32 const odd_seq_start =
 		  backslashes & ( ~even_bits ) & ( ~follow_escape );
-		UInt32 seq_start_on_even_bits = UInt32( );
+		UInt32 seq_start_on_even_bits = 0_u32;
 		prev_escaped = [&] {
 			auto r = odd_seq_start + backslashes;
-			seq_start_on_even_bits = 0x0000'FFFF & r;
-			r >>= 16;
+			seq_start_on_even_bits = 0x0000'FFFF_u32 & r;
+			r >>= 16U;
 			return r;
 		}( );
-		UInt32 invert_mask = seq_start_on_even_bits << 1;
+		UInt32 invert_mask = seq_start_on_even_bits << 1U;
 
 		return ( even_bits ^ invert_mask ) & follow_escape;
 	}
@@ -260,7 +260,7 @@ namespace daw::json::json_details {
 	static inline char const *
 	mem_skip_until_end_of_string( simd_exec_tag const &tag, char const *first,
 	                              char const *const last ) {
-		UInt32 prev_escapes = UInt32( );
+		UInt32 prev_escapes = 0_u32;
 		while( last - first >= 16 ) {
 			auto const val0 = uload16_char_data( tag, first );
 			UInt32 const backslashes = mem_find_eq<'\\'>( tag, val0 );
@@ -309,7 +309,7 @@ namespace daw::json::json_details {
 	                              char const *const last,
 	                              std::ptrdiff_t &first_escape ) {
 		char const *const first_first = first;
-		UInt32 prev_escapes = UInt32( );
+		UInt32 prev_escapes = 0_u32;
 		while( last - first >= 16 ) {
 			auto const val0 = uload16_char_data( tag, first );
 			UInt32 const backslashes = mem_find_eq<'\\'>( tag, val0 );
