@@ -141,7 +141,7 @@ namespace daw::json {
 		template<typename Handler>
 		handler_result handle_on_array_end( Handler &&handler ) {
 			if constexpr( hnd_checks::has_on_array_end_handler_v<Handler> ) {
-				return handler.handle_on_array_start( );
+				return handler.handle_on_array_end( );
 			} else {
 				return handler_result{ };
 			}
@@ -161,7 +161,7 @@ namespace daw::json {
 		template<typename Handler>
 		handler_result handle_on_class_end( Handler &&handler ) {
 			if constexpr( hnd_checks::has_on_class_end_handler_v<Handler> ) {
-				return handler.handle_on_class_start( );
+				return handler.handle_on_class_end( );
 			} else {
 				return handler_result{ };
 			}

@@ -201,7 +201,7 @@ namespace daw::json {
 		 * @return True if safe to increment more
 		 */
 		constexpr bool good( ) const {
-			if( not m_state.has_more( ) ) {
+			if( not m_state.has_more( ) or m_state.is_null( ) ) {
 				return false;
 			}
 			switch( m_state.front( ) ) {

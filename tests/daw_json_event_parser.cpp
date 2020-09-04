@@ -7,6 +7,7 @@
 //
 
 #include "daw/json/daw_json_event_parser.h"
+#include "daw/json/daw_json_link.h"
 
 #include <daw/daw_memory_mapped_file.h>
 
@@ -16,28 +17,53 @@
 #include <stack>
 
 struct StringLenHandler {
-	std::size_t name_count = 0;
-	std::size_t name_total = 0;
-	std::size_t string_count = 0;
-	std::size_t string_total = 0;
+	std::vector<std::size_t> member_count = { 0 };
 
-	constexpr StringLenHandler( ) = default;
+	StringLenHandler( ) = default;
 
 	template<typename ParsePolicy>
 	bool handle_on_next_value( daw::json::basic_json_pair<ParsePolicy> p ) {
-		if( p.name ) {
-			++name_count;
-			name_total += p.name->size( );
+		daw::json::JsonBaseParseTypes const v_type = p.value.type( );
+		if( v_type == daw::json::JsonBaseParseTypes::Null ) {
+			return true;
 		}
+		if( member_count.back( )++ > 0 ) {
+			std::cout << ',';
+		}
+		if( p.name ) {
+			std::cout << '"' << *p.name << "\":";
+		}
+		if( ( v_type == daw::json::JsonBaseParseTypes::Class ) |
+		    ( v_type == daw::json::JsonBaseParseTypes::Array ) ) {
+			return true;
+		}
+		std::cout << p.value.get_string_view( );
 		return true;
 	}
 
-	template<typename Range>
-	bool handle_on_string( daw::json::basic_json_value<Range> jv ) {
-		if( jv.is_string( ) ) {
-			++string_count;
-			string_total += jv.get_string_view( ).size( );
-		}
+	template<typename ParsePolicy>
+	bool handle_on_array_start( daw::json::basic_json_value<ParsePolicy> ) {
+		member_count.emplace_back( 0 );
+		std::cout << '[';
+		return true;
+	}
+
+	bool handle_on_array_end( ) {
+		member_count.pop_back( );
+		std::cout << ']';
+		return true;
+	}
+
+	template<typename ParsePolicy>
+	bool handle_on_class_start( daw::json::basic_json_value<ParsePolicy> ) {
+		member_count.emplace_back( 0 );
+		std::cout << '{';
+		return true;
+	}
+
+	bool handle_on_class_end( ) {
+		member_count.pop_back( );
+		std::cout << '}';
 		return true;
 	}
 };
@@ -51,29 +77,8 @@ int main( int argc, char **argv ) try {
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
-	using ParsePolicy =
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
-
 	auto handler = StringLenHandler( );
 	daw::json::json_event_parser( data, handler );
-	std::cout << "total member names: " << handler.name_count << '\n';
-	std::cout << "total string members: " << handler.string_count << '\n';
-	if( handler.name_count != 0 ) {
-		std::cout << "average name length:"
-		          << ( handler.name_total / handler.name_count ) << '\n';
-	}
-	if( handler.string_count != 0 ) {
-		std::cout << "average string length:"
-		          << ( handler.string_total / handler.string_count ) << '\n';
-	}
-	if( handler.string_count + handler.name_count != 0 ) {
-		if( handler.string_count != 0 ) {
-			std::cout << "average of both:"
-			          << ( ( handler.string_total + handler.name_total ) /
-			               ( handler.string_count + handler.name_count ) )
-			          << '\n';
-		}
-	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
