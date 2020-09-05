@@ -67,6 +67,11 @@ namespace daw::json::json_details {
 		Result fract_part = 0.0;
 		if( fract_rng.first != nullptr ) {
 			fract_rng.remove_prefix( );
+			if( fract_rng.last - fract_rng.first >
+			    daw::numeric_limits<Result>::digits10 ) {
+				fract_rng.last =
+				  fract_rng.first + std::numeric_limits<Result>::digits10;
+			}
 			auto const fract_pow = power10<Result>(
 			  Range::exec_tag,
 			  -static_cast<std::int32_t>( fract_rng.last - fract_rng.first ) );
@@ -121,12 +126,22 @@ namespace daw::json::json_details {
 		if( rng.front( ) == '.' ) {
 			rng.remove_prefix( );
 
-			char const *orig_first = rng.first;
+			auto rng2 = rng;
+			while(
+			  ( Range::is_unchecked_input or DAW_JSON_LIKELY( rng.has_more( ) ) ) and
+			  parse_policy_details::is_number( rng.front( ) ) ) {
+				rng.remove_prefix( );
+			}
+			rng2.last = rng.first;
+			if( rng2.last - rng2.first > std::numeric_limits<Result>::digits10 ) {
+				rng2.last = rng2.first + std::numeric_limits<Result>::digits10;
+			}
+			auto const sz = rng2.last - rng2.first;
 			fract_part = static_cast<Result>(
-			  unsigned_parser<uint64_t, JsonRangeCheck::Never, false>(
-			    Range::exec_tag, rng ) );
+			  unsigned_parser<std::uint64_t, JsonRangeCheck::Never, true>(
+			    Range::exec_tag, rng2 ) );
 			fract_part *= static_cast<Result>( power10<Result>(
-			  Range::exec_tag, -static_cast<int32_t>( rng.first - orig_first ) ) );
+			  Range::exec_tag, -static_cast<int32_t>( sz ) ) );
 			fract_part = copy_sign( Range::exec_tag, fract_part, whole_part );
 		}
 

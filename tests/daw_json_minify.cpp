@@ -75,12 +75,26 @@ public:
 			// We need to re-escape them and copy_to_iterator will do that
 			using namespace daw::json;
 			auto rng = p.value.get_range( );
-			out_it =
-			  utils::copy_to_iterator<true, daw::json::EightBitModes::AllowFull>(
-			    out_it,
-			    json_details::parse_string_known_stdstring<true, std::string, false>(
-			      rng ) );
+			out_it = utils::copy_to_iterator<true, EightBitModes::AllowFull>(
+			  out_it,
+			  json_details::parse_string_known_stdstring<true, std::string, false>(
+			    rng ) );
 			write_chr( '"' );
+		} else if( v_type == daw::json::JsonBaseParseTypes::Number ) {
+			using namespace daw::json;
+			std::string_view sv = p.value.get_string_view( );
+			constexpr std::string_view tokens = ".eE";
+			if( sv.find_first_of( tokens ) != std::string_view::npos ) {
+				auto rng = p.value.get_range( );
+				rng.first = sv.data( );
+				rng.last = sv.data( ) + sv.size( );
+				out_it = json_details::to_string<json_number<no_name>>(
+				  ParseTag<JsonParseTypes::Real>{ }, out_it,
+				  json_details::parse_value<json_number<no_name>>(
+				    ParseTag<JsonParseTypes::Real>{ }, rng ) );
+			} else {
+				write_str( p.value.get_string_view( ) );
+			}
 		} else {
 			write_str( p.value.get_string_view( ) );
 		}
@@ -102,7 +116,7 @@ public:
 
 	template<typename ParsePolicy>
 	bool handle_on_class_start( daw::json::basic_json_value<ParsePolicy> ) {
-		member_count_stack.emplace_back( false );
+		member_count_stack.emplace_back( true );
 		write_chr( '{' );
 		return true;
 	}
@@ -133,9 +147,12 @@ int main( int argc, char **argv ) try {
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
 	auto handler = JSONMinifyHandler(
-	  std::ostreambuf_iterator<char>( out_file ? *out_file : std::cerr ) );
+	  std::ostreambuf_iterator<char>( out_file ? *out_file : std::cout ) );
 
 	daw::json::json_event_parser( data, handler );
+	if( argc < 3 ) {
+		std::cout << '\n';
+	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
