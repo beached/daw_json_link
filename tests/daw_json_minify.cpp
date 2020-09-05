@@ -138,6 +138,7 @@ int main( int argc, char **argv ) try {
 		auto handler =
 		  JSONMinifyHandler( std::ostreambuf_iterator<char>( std::cout ) );
 		daw::json::json_event_parser( data, handler );
+		std::cout << '\n';
 	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

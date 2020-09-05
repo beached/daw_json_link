@@ -250,19 +250,21 @@ namespace daw::json::utils {
 					*it++ = 't';
 					break;
 				default:
+					if( cp < 0x20U | cp == '"' ) {
+						it =
+						  json_details::output_hex( static_cast<std::uint16_t>( cp ), it );
+						break;
+					}
 					if constexpr( EightBitMode == EightBitModes::DisallowHigh ) {
-						if( cp < 0x20U ) {
-							it = output_hex( static_cast<std::uint16_t>( cp ), it );
-							break;
-						}
 						if( cp >= 0x7FU and cp <= 0xFFFFU ) {
-							it = output_hex( static_cast<std::uint16_t>( cp ), it );
+							it = json_details::output_hex( static_cast<std::uint16_t>( cp ),
+							                               it );
 							break;
 						}
 						if( cp > 0xFFFFU ) {
-							it = output_hex(
+							it = json_details::output_hex(
 							  static_cast<std::uint16_t>( 0xD7C0U + ( cp >> 10U ) ), it );
-							it = output_hex(
+							it = json_details::output_hex(
 							  static_cast<std::uint16_t>( 0xDC00U + ( cp & 0x3FFU ) ), it );
 							break;
 						}
@@ -328,12 +330,12 @@ namespace daw::json::utils {
 					*it++ = 't';
 					break;
 				default:
+					if( cp < 0x20U | cp == '"' ) {
+						it =
+						  json_details::output_hex( static_cast<std::uint16_t>( cp ), it );
+						break;
+					}
 					if constexpr( EightBitMode == EightBitModes::DisallowHigh ) {
-						if( cp < 0x20U ) {
-							it = json_details::output_hex( static_cast<std::uint16_t>( cp ),
-							                               it );
-							break;
-						}
 						if( cp >= 0x7FU and cp <= 0xFFFFU ) {
 							it = json_details::output_hex( static_cast<std::uint16_t>( cp ),
 							                               it );
