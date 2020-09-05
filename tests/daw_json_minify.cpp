@@ -80,21 +80,6 @@ public:
 			  json_details::parse_string_known_stdstring<true, std::string, false>(
 			    rng ) );
 			write_chr( '"' );
-		} else if( v_type == daw::json::JsonBaseParseTypes::Number ) {
-			using namespace daw::json;
-			std::string_view sv = p.value.get_string_view( );
-			constexpr std::string_view tokens = ".eE";
-			if( sv.find_first_of( tokens ) != std::string_view::npos ) {
-				auto rng = p.value.get_range( );
-				rng.first = sv.data( );
-				rng.last = sv.data( ) + sv.size( );
-				out_it = json_details::to_string<json_number<no_name>>(
-				  ParseTag<JsonParseTypes::Real>{ }, out_it,
-				  json_details::parse_value<json_number<no_name>>(
-				    ParseTag<JsonParseTypes::Real>{ }, rng ) );
-			} else {
-				write_str( p.value.get_string_view( ) );
-			}
 		} else {
 			write_str( p.value.get_string_view( ) );
 		}
@@ -135,23 +120,24 @@ template<typename OutputIterator>
 JSONMinifyHandler( OutputIterator ) -> JSONMinifyHandler<OutputIterator>;
 
 int main( int argc, char **argv ) try {
+	std::ios::sync_with_stdio( false );
 	if( argc < 2 ) {
 		std::cerr << "Must supply path to json document followed optionally by the "
 		             "output file\n";
 		std::cerr << argv[0] << " json_in.json [json_out.json]\n";
 		exit( EXIT_FAILURE );
 	}
-	std::optional<std::ofstream> out_file =
-	  argc >= 3 ? std::ofstream( argv[2], std::ios::trunc | std::ios::binary )
-	            : std::optional<std::ofstream>( );
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
-
-	auto handler = JSONMinifyHandler(
-	  std::ostreambuf_iterator<char>( out_file ? *out_file : std::cout ) );
-
-	daw::json::json_event_parser( data, handler );
-	if( argc < 3 ) {
-		std::cout << '\n';
+	daw_json_assert( data.size( ) > 0, "Invalid JSON document" );
+	if( argc >= 3 ) {
+		auto ofile = std::ofstream( argv[2], std::ios::trunc | std::ios::binary );
+		daw_json_assert( ofile, "Unable to output file" );
+		auto handler = JSONMinifyHandler( std::ostreambuf_iterator<char>( ofile ) );
+		daw::json::json_event_parser( data, handler );
+	} else {
+		auto handler =
+		  JSONMinifyHandler( std::ostreambuf_iterator<char>( std::cout ) );
+		daw::json::json_event_parser( data, handler );
 	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
