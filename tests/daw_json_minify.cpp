@@ -18,7 +18,14 @@
 
 template<typename OutputIterator>
 class JSONMinifyHandler {
-	std::vector<std::pair<bool, std::uint8_t>> member_count_stack;
+	struct stack_value {
+		bool is_class;
+		bool is_first = true;
+
+		constexpr stack_value( bool isClass )
+		  : is_class( isClass ) {}
+	};
+	std::vector<stack_value> member_count_stack{ };
 	OutputIterator out_it;
 
 	void write_chr( char c ) {
@@ -46,14 +53,14 @@ public:
 			return true;
 		}
 		if( member_count_stack.empty( ) ) {
-			member_count_stack.emplace_back( p.value.is_class( ), 0 );
+			member_count_stack.emplace_back( p.value.is_class( ) );
 		}
-		if( member_count_stack.back( ).second == 0 ) {
-			member_count_stack.back( ).second = 1;
+		if( member_count_stack.back( ).is_first ) {
+			member_count_stack.back( ).is_first = false;
 		} else {
 			write_chr( ',' );
 		}
-		if( p.name and member_count_stack.back( ).first ) {
+		if( p.name and member_count_stack.back( ).is_class ) {
 			write_chr( '"' );
 			write_str( *p.name );
 			write_str( "\":" );
@@ -66,10 +73,13 @@ public:
 			write_chr( '"' );
 			// Parsing to string will unescape it, including code points <= 0x20
 			// We need to re-escape them and copy_to_iterator will do that
+			using namespace daw::json;
+			auto rng = p.value.get_range( );
 			out_it =
-			  daw::json::utils::copy_to_iterator<true,
-			                                     daw::json::EightBitModes::AllowFull>(
-			    out_it, daw::json::from_json<std::string, ParsePolicy>( p.value ) );
+			  utils::copy_to_iterator<true, daw::json::EightBitModes::AllowFull>(
+			    out_it,
+			    json_details::parse_string_known_stdstring<true, std::string, false>(
+			      rng ) );
 			write_chr( '"' );
 		} else {
 			write_str( p.value.get_string_view( ) );
@@ -79,7 +89,7 @@ public:
 
 	template<typename ParsePolicy>
 	bool handle_on_array_start( daw::json::basic_json_value<ParsePolicy> ) {
-		member_count_stack.emplace_back( false, 0 );
+		member_count_stack.emplace_back( false );
 		write_chr( '[' );
 		return true;
 	}
@@ -92,7 +102,7 @@ public:
 
 	template<typename ParsePolicy>
 	bool handle_on_class_start( daw::json::basic_json_value<ParsePolicy> ) {
-		member_count_stack.emplace_back( true, 0 );
+		member_count_stack.emplace_back( false );
 		write_chr( '{' );
 		return true;
 	}
@@ -117,17 +127,15 @@ int main( int argc, char **argv ) try {
 		std::cerr << argv[0] << " json_in.json [json_out.json]\n";
 		exit( EXIT_FAILURE );
 	}
-	std::ofstream out_file =
+	std::optional<std::ofstream> out_file =
 	  argc >= 3 ? std::ofstream( argv[2], std::ios::trunc | std::ios::binary )
-	            : std::ofstream( );
+	            : std::optional<std::ofstream>( );
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
-	std::ostream &outs = out_file ? out_file : std::cout;
-
-	auto handler = JSONMinifyHandler( std::ostreambuf_iterator<char>( outs ) );
+	auto handler = JSONMinifyHandler(
+	  std::ostreambuf_iterator<char>( out_file ? *out_file : std::cerr ) );
 
 	daw::json::json_event_parser( data, handler );
-
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

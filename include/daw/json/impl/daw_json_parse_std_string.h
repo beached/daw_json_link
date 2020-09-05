@@ -240,8 +240,11 @@ namespace daw::json::json_details {
 				case 'u':
 					it = decode_utf16( rng, it );
 					break;
-				case '\\':
 				case '/':
+					*it++ = rng.front( );
+					rng.remove_prefix( );
+					break;
+				case '\\':
 				case '"':
 					*it++ = rng.front( );
 					rng.remove_prefix( );
