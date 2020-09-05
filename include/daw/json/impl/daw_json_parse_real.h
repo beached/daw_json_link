@@ -67,8 +67,9 @@ namespace daw::json::json_details {
 		Result fract_part = 0.0;
 		if( fract_rng.first != nullptr ) {
 			fract_rng.remove_prefix( );
-			if( fract_rng.last - fract_rng.first >
-			    daw::numeric_limits<Result>::digits10 ) {
+			if( not Range::is_unchecked_input and
+			    ( fract_rng.last - fract_rng.first >
+			      daw::numeric_limits<Result>::digits10 ) ) {
 				fract_rng.last =
 				  fract_rng.first + std::numeric_limits<Result>::digits10;
 			}
@@ -126,23 +127,33 @@ namespace daw::json::json_details {
 		if( rng.front( ) == '.' ) {
 			rng.remove_prefix( );
 
-			auto rng2 = rng;
-			while(
-			  ( Range::is_unchecked_input or DAW_JSON_LIKELY( rng.has_more( ) ) ) and
-			  parse_policy_details::is_number( rng.front( ) ) ) {
-				rng.remove_prefix( );
+			if constexpr( Range::is_unchecked_input ) {
+				char const *orig_first = rng.first;
+				fract_part = static_cast<Result>(
+				  unsigned_parser<uint64_t, JsonRangeCheck::Never, false>(
+				    Range::exec_tag, rng ) );
+				fract_part *= static_cast<Result>( power10<Result>(
+				  Range::exec_tag, -static_cast<int32_t>( rng.first - orig_first ) ) );
+				fract_part = copy_sign( Range::exec_tag, fract_part, whole_part );
+			} else {
+				auto rng2 = rng;
+				while( ( Range::is_unchecked_input or
+				         DAW_JSON_LIKELY( rng.has_more( ) ) ) and
+				       parse_policy_details::is_number( rng.front( ) ) ) {
+					rng.remove_prefix( );
+				}
+				rng2.last = rng.first;
+				if( rng2.last - rng2.first > std::numeric_limits<Result>::digits10 ) {
+					rng2.last = rng2.first + std::numeric_limits<Result>::digits10;
+				}
+				auto const sz = rng2.last - rng2.first;
+				fract_part = static_cast<Result>(
+				  unsigned_parser<std::uint64_t, JsonRangeCheck::Never, true>(
+				    Range::exec_tag, rng2 ) );
+				fract_part *= static_cast<Result>(
+				  power10<Result>( Range::exec_tag, -static_cast<int32_t>( sz ) ) );
+				fract_part = copy_sign( Range::exec_tag, fract_part, whole_part );
 			}
-			rng2.last = rng.first;
-			if( rng2.last - rng2.first > std::numeric_limits<Result>::digits10 ) {
-				rng2.last = rng2.first + std::numeric_limits<Result>::digits10;
-			}
-			auto const sz = rng2.last - rng2.first;
-			fract_part = static_cast<Result>(
-			  unsigned_parser<std::uint64_t, JsonRangeCheck::Never, true>(
-			    Range::exec_tag, rng2 ) );
-			fract_part *= static_cast<Result>( power10<Result>(
-			  Range::exec_tag, -static_cast<int32_t>( sz ) ) );
-			fract_part = copy_sign( Range::exec_tag, fract_part, whole_part );
 		}
 
 		int32_t exp_part = 0;
