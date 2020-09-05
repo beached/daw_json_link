@@ -20,10 +20,11 @@ struct StringLenHandler {
 	StringLenHandler( ) = default;
 
 	template<typename ParsePolicy>
-	bool handle_on_next_value( daw::json::basic_json_pair<ParsePolicy> p ) {
+	daw::json::json_parse_handler_result
+	handle_on_next_value( daw::json::basic_json_pair<ParsePolicy> p ) {
 		daw::json::JsonBaseParseTypes const v_type = p.value.type( );
 		if( v_type == daw::json::JsonBaseParseTypes::Null ) {
-			return true;
+			return daw::json::json_parse_handler_result::Continue;
 		}
 		if( member_count.back( )++ > 0 ) {
 			std::cout << ',';
@@ -33,10 +34,10 @@ struct StringLenHandler {
 		}
 		if( ( v_type == daw::json::JsonBaseParseTypes::Class ) |
 		    ( v_type == daw::json::JsonBaseParseTypes::Array ) ) {
-			return true;
+			return daw::json::json_parse_handler_result::Continue;
 		}
 		std::cout << p.value.get_string_view( );
-		return true;
+		return daw::json::json_parse_handler_result::Continue;
 	}
 
 	template<typename ParsePolicy>
