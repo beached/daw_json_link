@@ -9,12 +9,21 @@
 #include "daw/json/daw_json_link.h"
 
 namespace daw::json {
-	struct handler_result {
-		constexpr handler_result( ) = default;
-		constexpr handler_result( bool ) {}
-	};
-
+	enum json_parse_handler_result { Continue, SkipClassArray, Complete };
 	namespace json_details {
+		struct handler_result_holder {
+			json_parse_handler_result value = json_parse_handler_result::Continue;
+			constexpr handler_result_holder( ) = default;
+			constexpr handler_result_holder( bool b )
+			  : value( b ? Continue : Complete ) {}
+			constexpr handler_result_holder( json_parse_handler_result r )
+			  : value( r ) {}
+
+			constexpr explicit operator bool( ) const {
+				return value == json_parse_handler_result::Continue;
+			}
+		};
+
 		namespace hnd_checks {
 			// On Next Value
 			template<typename Handler, typename ParsePolicy>
@@ -116,104 +125,107 @@ namespace daw::json {
 		} // namespace hnd_checks
 
 		template<typename Handler, typename ParsePolicy>
-		handler_result
+		handler_result_holder
 		handle_on_next_value( Handler &&handler,
 		                      daw::json::basic_json_pair<ParsePolicy> p ) {
 			if constexpr( hnd_checks::has_on_next_value_handler_v<Handler,
 			                                                      ParsePolicy> ) {
 				return handler.handle_on_next_value( std::move( p ) );
 			} else {
-				return handler_result{ };
+				return handler_result_holder{ };
 			}
 		}
 
 		template<typename Handler, typename Range>
-		handler_result
+		handler_result_holder
 		handle_on_array_start( Handler &&handler,
 		                       daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_array_start_handler_v<Handler, Range> ) {
 				return handler.handle_on_array_start( std::move( jv ) );
 			} else {
-				return handler_result{ };
+				return handler_result_holder{ };
 			}
 		}
 
 		template<typename Handler>
-		handler_result handle_on_array_end( Handler &&handler ) {
+		handler_result_holder handle_on_array_end( Handler &&handler ) {
 			if constexpr( hnd_checks::has_on_array_end_handler_v<Handler> ) {
 				return handler.handle_on_array_end( );
 			} else {
-				return handler_result{ };
+				return handler_result_holder{ };
 			}
 		}
 
 		template<typename Handler, typename Range>
-		handler_result
+		handler_result_holder
 		handle_on_class_start( Handler &&handler,
 		                       daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_class_start_handler_v<Handler, Range> ) {
 				return handler.handle_on_class_start( std::move( jv ) );
 			} else {
-				return handler_result{ };
+				return handler_result_holder{ };
 			}
 		}
 
 		template<typename Handler>
-		handler_result handle_on_class_end( Handler &&handler ) {
+		handler_result_holder handle_on_class_end( Handler &&handler ) {
 			if constexpr( hnd_checks::has_on_class_end_handler_v<Handler> ) {
 				return handler.handle_on_class_end( );
 			} else {
-				return handler_result{ };
+				return handler_result_holder{ };
 			}
 		}
 
 		template<typename Handler, typename Range>
-		handler_result handle_on_number( Handler &&handler,
-		                                 daw::json::basic_json_value<Range> jv ) {
+		handler_result_holder
+		handle_on_number( Handler &&handler,
+		                  daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_number_handler_v<Handler, Range> ) {
 				return handler.handle_on_number( std::move( jv ) );
 			} else {
-				return handler_result{ };
+				return handler_result_holder{ };
 			}
 		}
 
 		template<typename Handler, typename Range>
-		handler_result handle_on_bool( Handler &&handler,
-		                               daw::json::basic_json_value<Range> jv ) {
+		handler_result_holder
+		handle_on_bool( Handler &&handler, daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_bool_handler_v<Handler, Range> ) {
 				return handler.handle_on_bool( std::move( jv ) );
 			} else {
-				return handler_result{ };
+				return handler_result_holder{ };
 			}
 		}
 
 		template<typename Handler, typename Range>
-		handler_result handle_on_string( Handler &&handler,
-		                                 daw::json::basic_json_value<Range> jv ) {
+		handler_result_holder
+		handle_on_string( Handler &&handler,
+		                  daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_string_handler_v<Handler, Range> ) {
 				return handler.handle_on_string( std::move( jv ) );
 			} else {
-				return handler_result{ };
+				return handler_result_holder{ };
 			}
 		}
 
 		template<typename Handler, typename Range>
-		handler_result handle_on_null( Handler &&handler,
-		                               daw::json::basic_json_value<Range> jv ) {
+		handler_result_holder
+		handle_on_null( Handler &&handler, daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_null_handler_v<Handler, Range> ) {
 				return handler.handle_on_null( std::move( jv ) );
 			} else {
-				return handler_result{ };
+				return handler_result_holder{ };
 			}
 		}
 
 		template<typename Handler, typename Range>
-		handler_result handle_on_error( Handler &&handler,
-		                                daw::json::basic_json_value<Range> jv ) {
+		handler_result_holder
+		handle_on_error( Handler &&handler,
+		                 daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_error_handler_v<Handler, Range> ) {
 				return handler.handle_on_error( std::move( jv ) );
 			} else {
-				return handler_result{ };
+				return handler_result_holder{ };
 			}
 		}
 	} // namespace json_details
@@ -233,53 +245,126 @@ namespace daw::json {
 
 		auto parent_stack = min_stack_t( );
 
+		auto const move_to_last = [&]( ) {
+			parent_stack.back( ).value.first = parent_stack.back( ).value.second;
+		};
+
 		auto const process_value = [&]( json_value_t p ) {
-			auto h_result = json_details::handle_on_next_value( handler, p );
-			// TODO: handler result
-			(void)h_result;
+			{
+				auto result = json_details::handle_on_next_value( handler, p );
+				switch( result.value ) {
+				case json_parse_handler_result::Complete:
+					parent_stack.clear( );
+					return;
+				case json_parse_handler_result::SkipClassArray:
+					move_to_last( );
+					return;
+				case json_parse_handler_result::Continue:
+					break;
+				}
+			}
+
 			auto &jv = p.value;
 			switch( jv.type( ) ) {
 			case daw::json::JsonBaseParseTypes::Array: {
-				auto result = json_details::handle_on_array_start( handler, jv );
-				// TODO: handler result
-				(void)result;
+				if( auto result = json_details::handle_on_array_start( handler, jv );
+				    not result ) {
+					switch( result.value ) {
+					case json_parse_handler_result::Complete:
+						parent_stack.clear( );
+						return;
+					case json_parse_handler_result::SkipClassArray:
+						move_to_last( );
+						return;
+					case json_parse_handler_result::Continue:
+						break;
+					}
+				}
 				parent_stack.push_back(
 				  { RangeType::Array,
 				    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
 			} break;
 			case daw::json::JsonBaseParseTypes::Class: {
 				auto result = json_details::handle_on_class_start( handler, jv );
-				// TODO: handler result
-				(void)result;
+				switch( result.value ) {
+				case json_parse_handler_result::Complete:
+					parent_stack.clear( );
+					return;
+				case json_parse_handler_result::SkipClassArray:
+					move_to_last( );
+					return;
+				case json_parse_handler_result::Continue:
+					break;
+				}
 				parent_stack.push_back(
 				  { RangeType::Class,
 				    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
 			} break;
 			case daw::json::JsonBaseParseTypes::Number: {
 				auto result = json_details::handle_on_number( handler, jv );
-				// TODO: handler result
-				(void)result;
+				switch( result.value ) {
+				case json_parse_handler_result::Complete:
+					parent_stack.clear( );
+					return;
+				case json_parse_handler_result::SkipClassArray:
+					move_to_last( );
+					return;
+				case json_parse_handler_result::Continue:
+					break;
+				}
 			} break;
 			case daw::json::JsonBaseParseTypes::Bool: {
 				auto result = json_details::handle_on_bool( handler, jv );
-				// TODO: handler result
-				(void)result;
+				switch( result.value ) {
+				case json_parse_handler_result::Complete:
+					parent_stack.clear( );
+					return;
+				case json_parse_handler_result::SkipClassArray:
+					move_to_last( );
+					return;
+				case json_parse_handler_result::Continue:
+					break;
+				}
 			} break;
 			case daw::json::JsonBaseParseTypes::String: {
 				auto result = json_details::handle_on_string( handler, jv );
-				// TODO: handler result
-				(void)result;
+				switch( result.value ) {
+				case json_parse_handler_result::Complete:
+					parent_stack.clear( );
+					return;
+				case json_parse_handler_result::SkipClassArray:
+					move_to_last( );
+					return;
+				case json_parse_handler_result::Continue:
+					break;
+				}
 			} break;
 			case daw::json::JsonBaseParseTypes::Null: {
 				auto result = json_details::handle_on_null( handler, jv );
-				// TODO: handler result
-				(void)result;
+				switch( result.value ) {
+				case json_parse_handler_result::Complete:
+					parent_stack.clear( );
+					return;
+				case json_parse_handler_result::SkipClassArray:
+					move_to_last( );
+					return;
+				case json_parse_handler_result::Continue:
+					break;
+				}
 			} break;
 			case daw::json::JsonBaseParseTypes::None:
 			default: {
 				auto result = json_details::handle_on_error( handler, jv );
-				// TODO: handler result
-				(void)result;
+				switch( result.value ) {
+				case json_parse_handler_result::Complete:
+					parent_stack.clear( );
+					return;
+				case json_parse_handler_result::SkipClassArray:
+					move_to_last( );
+					return;
+				case json_parse_handler_result::Continue:
+					break;
+				}
 			} break;
 			}
 		};
@@ -294,13 +379,25 @@ namespace daw::json {
 				switch( v.type ) {
 				case RangeType::Class: {
 					auto result = json_details::handle_on_class_end( handler );
-					// TODO: handler result
-					(void)result;
+					switch( result.value ) {
+					case json_parse_handler_result::Complete:
+						parent_stack.clear( );
+						return;
+					case json_parse_handler_result::SkipClassArray:
+					case json_parse_handler_result::Continue:
+						break;
+					}
 				} break;
 				case RangeType::Array: {
 					auto result = json_details::handle_on_array_end( handler );
-					// TODO: handler result
-					(void)result;
+					switch( result.value ) {
+					case json_parse_handler_result::Complete:
+						parent_stack.clear( );
+						return;
+					case json_parse_handler_result::SkipClassArray:
+					case json_parse_handler_result::Continue:
+						break;
+					}
 				} break;
 				}
 			}

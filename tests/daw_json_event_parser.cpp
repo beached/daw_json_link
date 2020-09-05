@@ -12,9 +12,7 @@
 #include <daw/daw_memory_mapped_file.h>
 
 #include <cstdlib>
-#include <fstream>
 #include <iostream>
-#include <stack>
 
 struct StringLenHandler {
 	std::vector<std::size_t> member_count = { 0 };
