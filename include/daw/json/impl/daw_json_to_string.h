@@ -250,7 +250,7 @@ namespace daw::json::utils {
 					*it++ = 't';
 					break;
 				default:
-					if( cp < 0x20U | cp == '"' ) {
+					if( cp < 0x20U ) {
 						it =
 						  json_details::output_hex( static_cast<std::uint16_t>( cp ), it );
 						break;
@@ -330,7 +330,7 @@ namespace daw::json::utils {
 					*it++ = 't';
 					break;
 				default:
-					if( cp < 0x20U | cp == '"' ) {
+					if( cp < 0x20U ) {
 						it =
 						  json_details::output_hex( static_cast<std::uint16_t>( cp ), it );
 						break;
