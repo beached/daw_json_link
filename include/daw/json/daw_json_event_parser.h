@@ -131,6 +131,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_value_handler_v<Handler, ParsePolicy> ) {
 				return handler.handle_on_value( std::move( p ) );
 			} else {
+				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -142,6 +143,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_array_start_handler_v<Handler, Range> ) {
 				return handler.handle_on_array_start( std::move( jv ) );
 			} else {
+				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -152,6 +154,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_array_end_handler_v<Handler> ) {
 				return handler.handle_on_array_end( );
 			} else {
+				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -163,6 +166,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_class_start_handler_v<Handler, Range> ) {
 				return handler.handle_on_class_start( std::move( jv ) );
 			} else {
+				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -173,6 +177,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_class_end_handler_v<Handler> ) {
 				return handler.handle_on_class_end( );
 			} else {
+				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -184,6 +189,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_number_handler_v<Handler> ) {
 				return handler.handle_on_number( from_json<double>( jv ) );
 			} else {
+				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -194,6 +200,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_bool_handler_v<Handler> ) {
 				return handler.handle_on_bool( from_json<bool>( jv ) );
 			} else {
+				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -205,6 +212,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_string_handler_v<Handler> ) {
 				return handler.handle_on_string( jv.get_string( ) );
 			} else {
+				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -214,6 +222,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_null_handler_v<Handler> ) {
 				return handler.handle_on_null( );
 			} else {
+				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -225,6 +234,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_error_handler_v<Handler, Range> ) {
 				return handler.handle_on_error( std::move( jv ) );
 			} else {
+				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
