@@ -509,5 +509,13 @@ namespace daw::json {
 		inline constexpr bool is_unknown( ) const {
 			return type( ) == JsonBaseParseTypes::None;
 		}
+
+		template<typename NewRange>
+		explicit inline constexpr operator basic_json_value<NewRange>( ) const {
+			auto new_range = NewRange( m_rng.first, m_rng.last );
+			new_range.class_first = m_rng.class_first;
+			new_range.class_last = m_rng.class_last;
+			return basic_json_value<NewRange>( std::move( new_range ) );
+		}
 	};
 } // namespace daw::json
