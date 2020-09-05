@@ -33,7 +33,7 @@ namespace daw::json::json_details {
 		constexpr difference_type
 		operator-( json_parse_array_iterator_base const &rhs ) const {
 			if( rhs.rng ) {
-				return static_cast<difference_type>( rhs.rng->counter );
+				return static_cast<difference_type>( rhs.rng->counter ) + 1;
 			}
 			return 0;
 		}
@@ -70,7 +70,6 @@ namespace daw::json::json_details {
 		inline constexpr value_type operator*( ) {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
 			                      "Expected data to parse" );
-
 			return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
 			                               *base::rng );
 		}
@@ -104,12 +103,6 @@ namespace daw::json::json_details {
 			}
 #endif
 			return *this;
-		}
-
-		inline constexpr json_parse_array_iterator operator++( int ) {
-			auto result = *this;
-			(void)this->operator++( );
-			return result;
 		}
 
 		inline constexpr bool

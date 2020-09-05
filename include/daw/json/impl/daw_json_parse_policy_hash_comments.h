@@ -173,7 +173,7 @@ namespace daw::json {
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
-			result.counter = 0;
+			result.counter = cnt;
 			rng.first = ptr_first;
 			return result;
 		}

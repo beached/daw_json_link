@@ -17,28 +17,37 @@
 #include <daw/daw_hide.h>
 
 namespace daw::json {
-	struct NoCommentSkippingPolicy final {
+	template<bool DocumentIsMinified>
+	struct BasicNoCommentSkippingPolicy final {
+		/***
+		 * The document has no whitespace between members(minified)
+		 */
+		static constexpr bool document_is_minified = DocumentIsMinified;
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_checked( Range &rng ) {
-			// SIMD here was much slower, most JSON has very minimal whitespace
-			char const *first = rng.first;
-			char const *const last = rng.last;
-			while( DAW_JSON_LIKELY( first < last ) and
-			       static_cast<unsigned char>( *first ) <= 0x20U ) {
-				++first;
+			if constexpr( not document_is_minified ) {
+				// SIMD here was much slower, most JSON has very minimal whitespace
+				char const *first = rng.first;
+				char const *const last = rng.last;
+				while( DAW_JSON_LIKELY( first < last ) and
+				       static_cast<unsigned char>( *first ) <= 0x20U ) {
+					++first;
+				}
+				rng.first = first;
 			}
-			rng.first = first;
 		}
 
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		trim_left_unchecked( Range &rng ) {
-			char const *first = rng.first;
-			while( static_cast<unsigned char>( *first ) <= 0x20 ) {
-				++first;
+			if constexpr( not document_is_minified ) {
+				char const *first = rng.first;
+				while( static_cast<unsigned char>( *first ) <= 0x20 ) {
+					++first;
+				}
+				rng.first = first;
 			}
-			rng.first = first;
 		}
 
 		template<char... keys, typename Range>
@@ -223,4 +232,6 @@ namespace daw::json {
 			DAW_JSON_UNREACHABLE( );
 		}
 	};
+
+	using NoCommentSkippingPolicy = BasicNoCommentSkippingPolicy<false>;
 } // namespace daw::json

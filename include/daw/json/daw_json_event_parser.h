@@ -13,9 +13,12 @@ namespace daw::json {
 	namespace json_details {
 		struct handler_result_holder {
 			json_parse_handler_result value = json_parse_handler_result::Continue;
+
 			constexpr handler_result_holder( ) = default;
+
 			constexpr handler_result_holder( bool b )
 			  : value( b ? Continue : Complete ) {}
+
 			constexpr handler_result_holder( json_parse_handler_result r )
 			  : value( r ) {}
 
@@ -27,13 +30,13 @@ namespace daw::json {
 		namespace hnd_checks {
 			// On Next Value
 			template<typename Handler, typename ParsePolicy>
-			using has_on_next_value_handler_detect =
-			  decltype( std::declval<Handler>( ).handle_on_next_value(
+			using has_on_value_handler_detect =
+			  decltype( std::declval<Handler>( ).handle_on_value(
 			    std::declval<daw::json::basic_json_pair<ParsePolicy>>( ) ) );
 
 			template<typename Handler, typename Range>
-			inline constexpr bool has_on_next_value_handler_v =
-			  daw::is_detected_v<has_on_next_value_handler_detect, Handler, Range>;
+			inline constexpr bool has_on_value_handler_v =
+			  daw::is_detected_v<has_on_value_handler_detect, Handler, Range>;
 
 			// On Array Start
 			template<typename Handler, typename Range>
@@ -123,11 +126,10 @@ namespace daw::json {
 
 		template<typename Handler, typename ParsePolicy>
 		inline constexpr handler_result_holder
-		handle_on_next_value( Handler &&handler,
-		                      daw::json::basic_json_pair<ParsePolicy> p ) {
-			if constexpr( hnd_checks::has_on_next_value_handler_v<Handler,
-			                                                      ParsePolicy> ) {
-				return handler.handle_on_next_value( std::move( p ) );
+		handle_on_value( Handler &&handler,
+		                 daw::json::basic_json_pair<ParsePolicy> p ) {
+			if constexpr( hnd_checks::has_on_value_handler_v<Handler, ParsePolicy> ) {
+				return handler.handle_on_value( std::move( p ) );
 			} else {
 				return handler_result_holder{ };
 			}
@@ -226,23 +228,62 @@ namespace daw::json {
 				return handler_result_holder{ };
 			}
 		}
+
 	} // namespace json_details
+	enum class StackRangeType { Class, Array };
+
+	template<typename ParsePolicy>
+	struct JsonEventParserStackValue {
+		using iterator = daw::json::basic_json_value_iterator<ParsePolicy>;
+		StackRangeType type;
+		std::pair<iterator, iterator> value;
+	};
+
+	template<typename StackValue>
+	class DefaultJsonEventParserStackPolicy {
+		std::vector<StackValue> m_stack{ };
+
+	public:
+		using value_type = StackValue;
+		using reference = StackValue &;
+		using size_type = std::size_t;
+		using difference_type = std::ptrdiff_t;
+
+		CPP20CONSTEXPR DefaultJsonEventParserStackPolicy( ) = default;
+
+		CPP20CONSTEXPR inline void push_back( value_type &&v ) {
+			m_stack.push_back( std::move( v ) );
+		}
+
+		CPP20CONSTEXPR inline reference back( ) {
+			return m_stack.back( );
+		}
+
+		CPP20CONSTEXPR inline void clear( ) {
+			m_stack.clear( );
+		}
+
+		CPP20CONSTEXPR inline void pop_back( ) {
+			m_stack.pop_back( );
+		}
+
+		CPP20CONSTEXPR inline bool empty( ) const {
+			return m_stack.empty( );
+		}
+	};
 
 	template<typename ParsePolicy = NoCommentSkippingPolicyChecked,
+	         typename StackContainerPolicy = DefaultJsonEventParserStackPolicy<
+	           JsonEventParserStackValue<ParsePolicy>>,
 	         typename Handler>
-	inline void
+	inline constexpr void
 	json_event_parser( daw::json::basic_json_value<ParsePolicy> jvalue,
 	                   Handler &&handler ) {
 		using iterator = daw::json::basic_json_value_iterator<ParsePolicy>;
 		using json_value_t = daw::json::basic_json_pair<ParsePolicy>;
-		enum class RangeType { Class, Array };
-		struct stack_value_t {
-			RangeType type;
-			std::pair<iterator, iterator> value;
-		};
-		using min_stack_t = std::vector<stack_value_t>;
+		using stack_value_t = JsonEventParserStackValue<ParsePolicy>;
 
-		auto parent_stack = min_stack_t( );
+		auto parent_stack = StackContainerPolicy( );
 
 		auto const move_to_last = [&]( ) {
 			parent_stack.back( ).value.first = parent_stack.back( ).value.second;
@@ -250,7 +291,7 @@ namespace daw::json {
 
 		auto const process_value = [&]( json_value_t p ) {
 			{
-				auto result = json_details::handle_on_next_value( handler, p );
+				auto result = json_details::handle_on_value( handler, p );
 				switch( result.value ) {
 				case json_parse_handler_result::Complete:
 					parent_stack.clear( );
@@ -266,21 +307,19 @@ namespace daw::json {
 			auto &jv = p.value;
 			switch( jv.type( ) ) {
 			case daw::json::JsonBaseParseTypes::Array: {
-				if( auto result = json_details::handle_on_array_start( handler, jv );
-				    not result ) {
-					switch( result.value ) {
-					case json_parse_handler_result::Complete:
-						parent_stack.clear( );
-						return;
-					case json_parse_handler_result::SkipClassArray:
-						move_to_last( );
-						return;
-					case json_parse_handler_result::Continue:
-						break;
-					}
+				auto result = json_details::handle_on_array_start( handler, jv );
+				switch( result.value ) {
+				case json_parse_handler_result::Complete:
+					parent_stack.clear( );
+					return;
+				case json_parse_handler_result::SkipClassArray:
+					move_to_last( );
+					return;
+				case json_parse_handler_result::Continue:
+					break;
 				}
 				parent_stack.push_back(
-				  { RangeType::Array,
+				  { StackRangeType::Array,
 				    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
 			} break;
 			case daw::json::JsonBaseParseTypes::Class: {
@@ -296,7 +335,7 @@ namespace daw::json {
 					break;
 				}
 				parent_stack.push_back(
-				  { RangeType::Class,
+				  { StackRangeType::Class,
 				    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
 			} break;
 			case daw::json::JsonBaseParseTypes::Number: {
@@ -376,7 +415,7 @@ namespace daw::json {
 				process_value( std::move( jv ) );
 			} else {
 				switch( v.type ) {
-				case RangeType::Class: {
+				case StackRangeType::Class: {
 					auto result = json_details::handle_on_class_end( handler );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
@@ -387,7 +426,7 @@ namespace daw::json {
 						break;
 					}
 				} break;
-				case RangeType::Array: {
+				case StackRangeType::Array: {
 					auto result = json_details::handle_on_array_end( handler );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:

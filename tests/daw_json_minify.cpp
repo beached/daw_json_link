@@ -6,158 +6,128 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#include "daw/json/daw_json_event_parser.h"
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_memory_mapped_file.h>
 
 #include <cstdlib>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
-#include <stack>
 
-template<bool VerifyValues, typename ParsePolicy>
-constexpr void minify( std::string_view json_data, std::ostream &outs ) {
-	using iterator = daw::json::basic_json_value_iterator<ParsePolicy>;
-	using json_value_t = daw::json::basic_json_pair<ParsePolicy>;
-	enum class RangeType { Class, Array };
-	struct stack_value_t {
-		RangeType type;
-		std::pair<iterator, iterator> value;
-		bool is_first = true;
-	};
-	using min_stack_t = std::vector<stack_value_t>;
+template<typename OutputIterator>
+class JSONMinifyHandler {
+	std::vector<std::pair<bool, std::uint8_t>> member_count_stack;
+	OutputIterator out_it;
 
-	auto parent_stack = min_stack_t( );
-	parent_stack.reserve( 15 );
-
-	auto const process_value = [&]( json_value_t p ) {
-		auto &jv = p.value;
-		if( p.name and not p.name->empty( ) ) {
-			outs << '"' << *p.name << "\":";
-		}
-		switch( jv.type( ) ) {
-		case daw::json::JsonBaseParseTypes::Array:
-			outs << '[';
-			parent_stack.push_back(
-			  { RangeType::Array,
-			    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
-			break;
-		case daw::json::JsonBaseParseTypes::Class: {
-			outs << '{';
-			parent_stack.push_back(
-			  { RangeType::Class,
-			    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
-			break;
-		case daw::json::JsonBaseParseTypes::Number:
-			if constexpr( VerifyValues ) {
-				auto v = jv;
-				(void)daw::json::from_json<daw::json::json_number<daw::json::no_name>,
-				                           ParsePolicy>( v );
-			}
-			outs << jv.get_string_view( );
-			break;
-		case daw::json::JsonBaseParseTypes::Bool:
-			if constexpr( VerifyValues ) {
-				auto v = jv;
-				(void)daw::json::from_json<daw::json::json_bool<daw::json::no_name>,
-				                           ParsePolicy>( v );
-			}
-			outs << jv.get_string_view( );
-			break;
-		case daw::json::JsonBaseParseTypes::String:
-			outs << jv.get_string_view( );
-			break;
-		case daw::json::JsonBaseParseTypes::Null:
-			if constexpr( VerifyValues ) {
-				auto v = jv;
-				(void)daw::json::from_json<
-				  daw::json::json_number_null<daw::json::no_name>, ParsePolicy>( v );
-			}
-			break;
-		case daw::json::JsonBaseParseTypes::None:
-		default:
-			std::cerr << "Unexpected type\n";
-			std::terminate( );
-		}
-		}
-	};
-
-	auto const process_range = [&]( stack_value_t v ) {
-		if( v.value.first != v.value.second ) {
-			auto jv = *v.value.first;
-			if( not jv.value.is_null( ) ) {
-				if( v.is_first ) {
-					v.is_first = false;
-				} else {
-					outs << ',';
-				}
-			}
-			v.value.first++;
-			parent_stack.push_back( std::move( v ) );
-			if( not jv.value.is_null( ) ) {
-				process_value( std::move( jv ) );
-			}
-		} else {
-			switch( v.type ) {
-			case RangeType::Class:
-				outs << '}';
-				break;
-			case RangeType::Array:
-				outs << ']';
-				break;
-			}
-		}
-	};
-
-	process_value(
-	  { std::nullopt, daw::json::basic_json_value<ParsePolicy>( json_data ) } );
-
-	while( not parent_stack.empty( ) ) {
-		auto v = std::move( parent_stack.back( ) );
-		parent_stack.pop_back( );
-		process_range( v );
+	void write_chr( char c ) {
+		*out_it++ = c;
 	}
-}
+
+	void write_str( std::string_view s ) {
+		out_it = std::copy_n( s.data( ), s.size( ), out_it );
+	}
+
+	template<std::size_t N>
+	void write_str( char const ( &str )[N] ) {
+		out_it = std::copy_n( str, N - 1, out_it );
+	}
+
+public:
+	JSONMinifyHandler( OutputIterator it )
+	  : out_it( std::move( it ) ) {}
+
+	template<typename ParsePolicy>
+	bool handle_on_value( daw::json::basic_json_pair<ParsePolicy> p ) {
+		daw::json::JsonBaseParseTypes const v_type = p.value.type( );
+		if( v_type == daw::json::JsonBaseParseTypes::Null ) {
+			// We are minifying, do no output Null values
+			return true;
+		}
+		if( member_count_stack.empty( ) ) {
+			member_count_stack.emplace_back( p.value.is_class( ), 0 );
+		}
+		if( member_count_stack.back( ).second == 0 ) {
+			member_count_stack.back( ).second = 1;
+		} else {
+			write_chr( ',' );
+		}
+		if( p.name and member_count_stack.back( ).first ) {
+			write_chr( '"' );
+			write_str( *p.name );
+			write_str( "\":" );
+		}
+		if( ( v_type == daw::json::JsonBaseParseTypes::Class ) |
+		    ( v_type == daw::json::JsonBaseParseTypes::Array ) ) {
+			return true;
+		}
+		if( v_type == daw::json::JsonBaseParseTypes::String ) {
+			write_chr( '"' );
+			// Parsing to string will unescape it, including code points <= 0x20
+			// We need to re-escape them and copy_to_iterator will do that
+			out_it =
+			  daw::json::utils::copy_to_iterator<true,
+			                                     daw::json::EightBitModes::AllowFull>(
+			    out_it, daw::json::from_json<std::string, ParsePolicy>( p.value ) );
+			write_chr( '"' );
+		} else {
+			write_str( p.value.get_string_view( ) );
+		}
+		return true;
+	}
+
+	template<typename ParsePolicy>
+	bool handle_on_array_start( daw::json::basic_json_value<ParsePolicy> ) {
+		member_count_stack.emplace_back( false, 0 );
+		write_chr( '[' );
+		return true;
+	}
+
+	bool handle_on_array_end( ) {
+		member_count_stack.pop_back( );
+		write_chr( ']' );
+		return true;
+	}
+
+	template<typename ParsePolicy>
+	bool handle_on_class_start( daw::json::basic_json_value<ParsePolicy> ) {
+		member_count_stack.emplace_back( true, 0 );
+		write_chr( '{' );
+		return true;
+	}
+
+	bool handle_on_class_end( ) {
+		member_count_stack.pop_back( );
+		write_chr( '}' );
+		return true;
+	}
+
+	OutputIterator get_iterator( ) {
+		return out_it;
+	}
+};
+template<typename OutputIterator>
+JSONMinifyHandler( OutputIterator ) -> JSONMinifyHandler<OutputIterator>;
 
 int main( int argc, char **argv ) try {
-	std::ios::sync_with_stdio( false );
-	if( argc <= 1 ) {
+	if( argc < 2 ) {
 		std::cerr << "Must supply path to json document followed optionally by the "
 		             "output file\n";
 		std::cerr << argv[0] << " json_in.json [json_out.json]\n";
 		exit( EXIT_FAILURE );
 	}
+	std::ofstream out_file =
+	  argc >= 3 ? std::ofstream( argv[2], std::ios::trunc | std::ios::binary )
+	            : std::ofstream( );
 	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
 
-	auto out_file = std::ofstream( );
-	if( argc > 2 ) {
-		out_file.open( argv[2], std::ios::binary | std::ios::trunc );
-		if( not out_file ) {
-			std::cerr << "Could not open " << argv[2] << " for writing\n";
-			exit( 1 );
-		}
-	}
+	std::ostream &outs = out_file ? out_file : std::cout;
 
-	std::ostream &outs = [&out_file]( ) -> std::ostream & {
-		if( out_file ) {
-			return out_file;
-		}
-		return std::cout;
-	}( );
+	auto handler = JSONMinifyHandler( std::ostreambuf_iterator<char>( outs ) );
 
-	using ParsePolicy =
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>;
+	daw::json::json_event_parser( data, handler );
 
-	if( argc > 3 and ( std::string_view( argv[3] ) == "fast" ) ) {
-		minify<false, ParsePolicy>( std::string_view( data.data( ), data.size( ) ),
-		                            outs );
-	} else {
-		minify<true, ParsePolicy>( std::string_view( data.data( ), data.size( ) ),
-		                           outs );
-	}
-	if( not out_file ) {
-		outs << '\n';
-	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
