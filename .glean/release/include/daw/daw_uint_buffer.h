@@ -697,7 +697,7 @@ namespace daw {
 	}
 
 	constexpr UInt32 &operator<<=( UInt32 &b, std::uint32_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp <<= static_cast<std::uint32_t>( shift );
 		b = static_cast<UInt32>( tmp );
@@ -726,7 +726,7 @@ namespace daw {
 	}
 
 	constexpr UInt32 &operator>>=( UInt32 &b, std::uint32_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp >>= static_cast<std::uint32_t>( shift );
 		b = static_cast<UInt32>( tmp );
@@ -755,7 +755,7 @@ namespace daw {
 	}
 
 	constexpr UInt32 operator<<( UInt32 b, std::uint32_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp <<= static_cast<std::uint32_t>( shift );
 		return static_cast<UInt32>( tmp );
@@ -780,13 +780,13 @@ namespace daw {
 	}
 
 	constexpr std::uint32_t operator<<( std::uint32_t b, UInt32 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		b <<= static_cast<std::uint32_t>( shift );
 		return b;
 	}
 
 	constexpr UInt32 operator>>( UInt32 b, std::uint32_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp >>= static_cast<std::uint32_t>( shift );
 		return static_cast<UInt32>( tmp );
@@ -809,25 +809,25 @@ namespace daw {
 	}
 
 	constexpr std::uint32_t operator>>( std::uint32_t b, UInt32 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		b >>= static_cast<std::uint32_t>( shift );
 		return b;
 	}
 
 	constexpr std::uint32_t operator>>( std::uint32_t b, UInt16 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		b >>= static_cast<std::uint32_t>( shift );
 		return b;
 	}
 
 	constexpr std::uint32_t operator>>( std::uint32_t b, UInt8 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		b >>= static_cast<std::uint32_t>( shift );
 		return b;
 	}
 
 	constexpr UInt32 &operator|=( UInt32 &lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp |= static_cast<std::uint32_t>( rhs );
 		lhs = static_cast<UInt32>( tmp );
@@ -856,7 +856,7 @@ namespace daw {
 	}
 
 	constexpr UInt32 &operator&=( UInt32 &lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp &= static_cast<std::uint32_t>( rhs );
 		lhs = static_cast<UInt32>( tmp );
@@ -885,7 +885,7 @@ namespace daw {
 	}
 
 	constexpr UInt32 &operator^=( UInt32 &lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp ^= static_cast<std::uint32_t>( rhs );
 		lhs = static_cast<UInt32>( tmp );
@@ -914,97 +914,97 @@ namespace daw {
 	}
 
 	constexpr bool operator>=( UInt32 lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<std::uint32_t>( lhs ) >=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator>=( std::uint32_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<std::uint32_t>( lhs ) >=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<( UInt32 lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<( std::uint32_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<=( UInt32 lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<=( std::uint32_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr UInt32 operator|( UInt32 lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) |
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt32 operator|( std::uint32_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) |
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt32 operator&( UInt32 lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) &
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt32 operator&( std::uint32_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) &
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt32 operator^( UInt32 lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) ^
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt32 operator^( std::uint32_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<UInt32>( static_cast<std::uint32_t>( lhs ) ^
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr bool operator==( UInt32 lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<std::uint32_t>( lhs ) ==
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator==( std::uint32_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<std::uint32_t>( lhs ) ==
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator!=( UInt32 lhs, std::uint32_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<std::uint32_t>( lhs ) !=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator!=( std::uint32_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint32_t> );
+
 		return static_cast<std::uint32_t>( lhs ) !=
 		       static_cast<std::uint32_t>( rhs );
 	}
@@ -1105,7 +1105,7 @@ namespace daw {
 	}
 
 	constexpr UInt16 &operator<<=( UInt16 &b, std::uint16_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp <<= static_cast<std::uint32_t>( shift );
 		b = static_cast<UInt16>( tmp );
@@ -1127,7 +1127,7 @@ namespace daw {
 	}
 
 	constexpr UInt16 &operator>>=( UInt16 &b, std::uint16_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp >>= static_cast<std::uint32_t>( shift );
 		b = static_cast<UInt16>( tmp );
@@ -1149,7 +1149,7 @@ namespace daw {
 	}
 
 	constexpr UInt16 operator<<( UInt16 b, std::uint16_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp <<= static_cast<std::uint32_t>( shift );
 		return static_cast<UInt16>( tmp );
@@ -1168,13 +1168,13 @@ namespace daw {
 	}
 
 	constexpr std::uint16_t operator<<( std::uint16_t b, UInt16 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		b <<= static_cast<std::uint32_t>( shift );
 		return b;
 	}
 
 	constexpr UInt16 operator>>( UInt16 b, std::uint16_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp >>= static_cast<std::uint32_t>( shift );
 		return static_cast<UInt16>( tmp );
@@ -1187,13 +1187,13 @@ namespace daw {
 	}
 
 	constexpr std::uint16_t operator>>( std::uint16_t b, UInt16 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		b >>= static_cast<std::uint32_t>( shift );
 		return b;
 	}
 
 	constexpr UInt16 &operator|=( UInt16 &lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp |= static_cast<std::uint32_t>( rhs );
 		lhs = static_cast<UInt16>( tmp );
@@ -1215,7 +1215,7 @@ namespace daw {
 	}
 
 	constexpr UInt16 &operator&=( UInt16 &lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp &= static_cast<std::uint32_t>( rhs );
 		lhs = static_cast<UInt16>( tmp );
@@ -1237,7 +1237,7 @@ namespace daw {
 	}
 
 	constexpr UInt16 &operator^=( UInt16 &lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp ^= static_cast<std::uint32_t>( rhs );
 		lhs = static_cast<UInt16>( tmp );
@@ -1259,109 +1259,109 @@ namespace daw {
 	}
 
 	constexpr UInt16 operator|( UInt16 lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<UInt16>( static_cast<std::uint32_t>( lhs ) |
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt16 operator|( std::uint16_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<UInt16>( static_cast<std::uint32_t>( lhs ) |
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt16 operator&( UInt16 lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<UInt16>( static_cast<std::uint32_t>( lhs ) &
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt16 operator&( std::uint16_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<UInt16>( static_cast<std::uint32_t>( lhs ) &
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt16 operator^( UInt16 lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<UInt16>( static_cast<std::uint32_t>( lhs ) ^
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt16 operator^( std::uint16_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<UInt16>( static_cast<std::uint32_t>( lhs ) ^
 		                            static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr bool operator==( UInt16 lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) ==
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator==( std::uint16_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) ==
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator!=( UInt16 lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) !=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator!=( std::uint16_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) !=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator>( UInt16 lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) >
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator>( std::uint16_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) >
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator>=( UInt16 lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) >=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator>=( std::uint16_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) >=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<( UInt16 lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<( std::uint16_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<=( UInt16 lhs, std::uint16_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<=( std::uint16_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint16_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <=
 		       static_cast<std::uint32_t>( rhs );
 	}
@@ -2629,7 +2629,7 @@ namespace daw {
 		return static_cast<UInt8>( ~static_cast<std::uint32_t>( value ) );
 	}
 	constexpr UInt8 &operator<<=( UInt8 &b, std::uint8_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp <<= static_cast<std::uint32_t>( shift );
 		b = static_cast<UInt8>( tmp );
@@ -2644,7 +2644,7 @@ namespace daw {
 	}
 
 	constexpr UInt8 &operator>>=( UInt8 &b, std::uint8_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp >>= static_cast<std::uint32_t>( shift );
 		b = static_cast<UInt8>( tmp );
@@ -2659,7 +2659,7 @@ namespace daw {
 	}
 
 	constexpr UInt8 operator<<( UInt8 b, std::uint8_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp <<= static_cast<std::uint32_t>( shift );
 		return static_cast<UInt8>( tmp );
@@ -2672,13 +2672,13 @@ namespace daw {
 	}
 
 	constexpr std::uint8_t operator<<( std::uint8_t b, UInt8 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		b <<= static_cast<std::uint32_t>( shift );
 		return b;
 	}
 
 	constexpr UInt8 operator>>( UInt8 b, std::uint8_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		auto tmp = static_cast<std::uint32_t>( b );
 		tmp >>= static_cast<std::uint32_t>( shift );
 		return static_cast<UInt8>( tmp );
@@ -2691,13 +2691,13 @@ namespace daw {
 	}
 
 	constexpr std::uint8_t operator>>( std::uint8_t b, UInt8 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		b >>= static_cast<std::uint32_t>( shift );
 		return b;
 	}
 
 	constexpr UInt8 &operator|=( UInt8 &lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp |= static_cast<std::uint32_t>( rhs );
 		lhs = static_cast<UInt8>( tmp );
@@ -2712,7 +2712,7 @@ namespace daw {
 	}
 
 	constexpr UInt8 &operator&=( UInt8 &lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp &= static_cast<std::uint32_t>( rhs );
 		lhs = static_cast<UInt8>( tmp );
@@ -2727,7 +2727,7 @@ namespace daw {
 	}
 
 	constexpr UInt8 &operator^=( UInt8 &lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		auto tmp = static_cast<std::uint32_t>( lhs );
 		tmp ^= static_cast<std::uint32_t>( rhs );
 		lhs = static_cast<UInt8>( tmp );
@@ -2742,109 +2742,109 @@ namespace daw {
 	}
 
 	constexpr bool operator>( UInt8 lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) >
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator>( std::uint8_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) >
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator>=( UInt8 lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) >=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator>=( std::uint8_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) >=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<( UInt8 lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<( std::uint8_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<=( UInt8 lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator<=( std::uint8_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) <=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr UInt8 operator|( UInt8 lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<UInt8>( static_cast<std::uint32_t>( lhs ) |
 		                           static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt8 operator|( std::uint8_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<UInt8>( static_cast<std::uint32_t>( lhs ) |
 		                           static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt8 operator&( UInt8 lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<UInt8>( static_cast<std::uint32_t>( lhs ) &
 		                           static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt8 operator&( std::uint8_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<UInt8>( static_cast<std::uint32_t>( lhs ) &
 		                           static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt8 operator^( UInt8 lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<UInt8>( static_cast<std::uint32_t>( lhs ) ^
 		                           static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr UInt8 operator^( std::uint8_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<UInt8>( static_cast<std::uint32_t>( lhs ) ^
 		                           static_cast<std::uint32_t>( rhs ) );
 	}
 
 	constexpr bool operator==( UInt8 lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) ==
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator==( std::uint8_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) ==
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator!=( UInt8 lhs, std::uint8_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) !=
 		       static_cast<std::uint32_t>( rhs );
 	}
 
 	constexpr bool operator!=( std::uint8_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint8_t> );
+
 		return static_cast<std::uint32_t>( lhs ) !=
 		       static_cast<std::uint32_t>( rhs );
 	}
