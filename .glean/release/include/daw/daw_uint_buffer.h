@@ -72,7 +72,6 @@ namespace daw {
 	      std::conditional_t<( Bits == 64 ), UInt64, InvalidUIntSize>>>>;
 
 	constexpr UInt64 &operator<<=( UInt64 &b, std::uint64_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp <<= static_cast<std::uint64_t>( shift );
 		b = static_cast<UInt64>( tmp );
@@ -108,7 +107,6 @@ namespace daw {
 	}
 
 	constexpr UInt64 &operator>>=( UInt64 &b, std::uint64_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp >>= static_cast<std::uint64_t>( shift );
 		b = static_cast<UInt64>( tmp );
@@ -144,7 +142,6 @@ namespace daw {
 	}
 
 	constexpr UInt64 operator<<( UInt64 b, std::uint64_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp <<= static_cast<std::uint64_t>( shift );
 		return static_cast<UInt64>( tmp );
@@ -175,31 +172,26 @@ namespace daw {
 	}
 
 	constexpr std::uint64_t operator<<( std::uint64_t b, UInt64 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		b <<= static_cast<std::uint64_t>( shift );
 		return b;
 	}
 
 	constexpr std::uint64_t operator<<( std::uint64_t b, UInt32 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		b <<= static_cast<std::uint64_t>( shift );
 		return b;
 	}
 
 	constexpr std::uint64_t operator<<( std::uint64_t b, UInt16 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		b <<= static_cast<std::uint64_t>( shift );
 		return b;
 	}
 
 	constexpr std::uint64_t operator<<( std::uint64_t b, UInt8 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		b <<= static_cast<std::uint64_t>( shift );
 		return b;
 	}
 
 	constexpr UInt64 operator>>( UInt64 b, std::uint64_t shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( b );
 		tmp >>= static_cast<std::uint64_t>( shift );
 		return static_cast<UInt64>( tmp );
@@ -230,31 +222,26 @@ namespace daw {
 	}
 
 	constexpr std::uint64_t operator>>( std::uint64_t b, UInt64 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		b >>= static_cast<std::uint64_t>( shift );
 		return b;
 	}
 
 	constexpr std::uint64_t operator>>( std::uint64_t b, UInt32 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		b >>= static_cast<std::uint64_t>( shift );
 		return b;
 	}
 
 	constexpr std::uint64_t operator>>( std::uint64_t b, UInt16 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		b >>= static_cast<std::uint64_t>( shift );
 		return b;
 	}
 
 	constexpr std::uint64_t operator>>( std::uint64_t b, UInt8 shift ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		b >>= static_cast<std::uint64_t>( shift );
 		return b;
 	}
 
 	constexpr UInt64 &operator|=( UInt64 &lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( lhs );
 		tmp |= static_cast<std::uint64_t>( rhs );
 		lhs = static_cast<UInt64>( tmp );
@@ -290,7 +277,6 @@ namespace daw {
 	}
 
 	constexpr UInt64 &operator&=( UInt64 &lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( lhs );
 		tmp &= static_cast<std::uint64_t>( rhs );
 		lhs = static_cast<UInt64>( tmp );
@@ -326,7 +312,6 @@ namespace daw {
 	}
 
 	constexpr UInt64 &operator^=( UInt64 &lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		auto tmp = static_cast<std::uint64_t>( lhs );
 		tmp ^= static_cast<std::uint64_t>( rhs );
 		lhs = static_cast<UInt64>( tmp );
@@ -362,271 +347,226 @@ namespace daw {
 	}
 
 	constexpr UInt64 operator|( UInt64 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) |
 		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
 	constexpr UInt64 operator|( std::uint64_t lhs, UInt64 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) |
 		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
 	constexpr UInt64 operator&( UInt64 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) &
 		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
 	constexpr UInt64 operator&( std::uint64_t lhs, UInt64 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) &
 		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
 	constexpr UInt64 operator^( UInt64 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) ^
 		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
 	constexpr UInt64 operator^( std::uint64_t lhs, UInt64 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<UInt64>( static_cast<std::uint64_t>( lhs ) ^
 		                            static_cast<std::uint64_t>( rhs ) );
 	}
 
 	constexpr bool operator==( UInt64 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) ==
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator==( UInt64 lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) ==
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator==( UInt64 lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) ==
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator==( UInt64 lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) ==
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator==( std::uint64_t lhs, UInt64 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) ==
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator==( std::uint64_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) ==
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator==( std::uint64_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) ==
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator==( std::uint64_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) ==
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator!=( UInt64 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) !=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator!=( std::uint64_t lhs, UInt64 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) !=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>( UInt64 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>( UInt32 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>( UInt16 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>( UInt8 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>( std::uint64_t lhs, UInt64 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>( std::uint64_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>( std::uint64_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>( std::uint64_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>=( UInt64 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>=( UInt32 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>=( UInt16 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>=( UInt8 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>=( std::uint64_t lhs, UInt64 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>=( std::uint64_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>=( std::uint64_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator>=( std::uint64_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) >=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<( UInt64 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<( std::uint64_t lhs, UInt64 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<( std::uint64_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<( std::uint64_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<( std::uint64_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<=( UInt64 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<=( UInt32 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<=( UInt16 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<=( UInt8 lhs, std::uint64_t rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<=( std::uint64_t lhs, UInt64 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<=( std::uint64_t lhs, UInt32 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<=( std::uint64_t lhs, UInt16 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <=
 		       static_cast<std::uint64_t>( rhs );
 	}
 
 	constexpr bool operator<=( std::uint64_t lhs, UInt8 rhs ) noexcept {
-		static_assert( std::is_unsigned_v<std::uint64_t> );
 		return static_cast<std::uint64_t>( lhs ) <=
 		       static_cast<std::uint64_t>( rhs );
 	}
