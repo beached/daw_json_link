@@ -51,7 +51,7 @@ namespace daw {
 		UInt32 k = 0_u32;
 		char const *first = std::data( key );
 		char const *const last = std::data( key ) + std::size( key );
-		while( ( last - first ) >= 4U ) {
+		while( ( last - first ) >= 4 ) {
 			// Here is a source of differing results across endiannesses.
 			// A swap here has no effects on hash properties though.
 			k = daw::to_uint32_buffer( first );
