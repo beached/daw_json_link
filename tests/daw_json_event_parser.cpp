@@ -24,6 +24,7 @@ struct StringLenHandler {
 	handle_on_next_value( daw::json::basic_json_pair<ParsePolicy> p ) {
 		daw::json::JsonBaseParseTypes const v_type = p.value.type( );
 		if( v_type == daw::json::JsonBaseParseTypes::Null ) {
+			// We are minifying, do no output Null values
 			return daw::json::json_parse_handler_result::Continue;
 		}
 		if( member_count.back( )++ > 0 ) {
