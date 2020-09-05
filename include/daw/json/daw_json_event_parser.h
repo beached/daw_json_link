@@ -131,7 +131,7 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_value_handler_v<Handler, ParsePolicy> ) {
 				return handler.handle_on_value( std::move( p ) );
 			} else {
-				(void)jv;
+				(void)p;
 				return handler_result_holder{ };
 			}
 		}
@@ -154,7 +154,6 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_array_end_handler_v<Handler> ) {
 				return handler.handle_on_array_end( );
 			} else {
-				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -177,7 +176,6 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_class_end_handler_v<Handler> ) {
 				return handler.handle_on_class_end( );
 			} else {
-				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
@@ -222,7 +220,6 @@ namespace daw::json {
 			if constexpr( hnd_checks::has_on_null_handler_v<Handler> ) {
 				return handler.handle_on_null( );
 			} else {
-				(void)jv;
 				return handler_result_holder{ };
 			}
 		}
