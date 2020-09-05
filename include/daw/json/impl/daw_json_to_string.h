@@ -307,10 +307,6 @@ namespace daw::json::utils {
 					*it++ = '\\';
 					*it++ = '\\';
 					break;
-				case '/':
-					*it++ = '\\';
-					*it++ = '/';
-					break;
 				case '\b':
 					*it++ = '\\';
 					*it++ = 'b';
