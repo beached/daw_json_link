@@ -9,6 +9,7 @@
 #include "daw/json/daw_json_event_parser.h"
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_benchmark.h>
 #include <daw/daw_memory_mapped_file.h>
 
 #include <cstdlib>
@@ -133,7 +134,14 @@ int main( int argc, char **argv ) try {
 		auto ofile = std::ofstream( argv[2], std::ios::trunc | std::ios::binary );
 		daw_json_assert( ofile, "Unable to output file" );
 		auto handler = JSONMinifyHandler( std::ostreambuf_iterator<char>( ofile ) );
-		daw::json::json_event_parser( data, handler );
+		auto const time =
+		  daw::benchmark( [&] { daw::json::json_event_parser( data, handler ); } );
+		std::cout << "minified "
+		          << daw::utility::to_bytes_per_second( data.size( ), 2 ) << " in "
+		          << daw::utility::format_seconds( time, 2 ) << " at "
+		          << daw::utility::to_bytes_per_second(
+		               static_cast<double>( data.size( ) ) / time, 2 )
+		          << "/s\n";
 	} else {
 		auto handler =
 		  JSONMinifyHandler( std::ostreambuf_iterator<char>( std::cout ) );
