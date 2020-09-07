@@ -76,9 +76,10 @@ public:
 			// We need to re-escape them and copy_to_iterator will do that
 			using namespace daw::json;
 			auto rng = p.value.get_range( );
+			rng = daw::json::json_details::skip_string( rng );
 			out_it = utils::copy_to_iterator<true, EightBitModes::AllowFull>(
 			  out_it,
-			  json_details::parse_string_known_stdstring<true, std::string, false>(
+			  json_details::parse_string_known_stdstring<true, std::string, true>(
 			    rng ) );
 			write_chr( '"' );
 		} else {
