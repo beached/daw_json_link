@@ -318,8 +318,9 @@ namespace daw::json::json_details {
 			auto rng2 = KnownBounds ? rng : skip_string( rng );
 			if( not AllowHighEightbits or needs_slow_path( rng2 ) ) {
 				// There are escapes in the string
-				return parse_string_known_stdstring<
-				  AllowHighEightbits, json_result<JsonMember>, true>( rng2 );
+				return parse_string_known_stdstring<AllowHighEightbits,
+				                                    json_result<JsonMember>, true>(
+				  rng2 );
 			}
 			// There are no escapes in the string, we can just use the ptr/size ctor
 			if constexpr( std::is_same_v<std::string, json_result<JsonMember>> ) {
@@ -449,28 +450,29 @@ namespace daw::json::json_details {
 		using element_t = typename JsonMember::base_type;
 		daw_json_assert_weak( rng.has_more( ), "Attempt to parse empty string" );
 
-#if defined( __cpp_constexpr_dynamic_alloc ) or                                \
-  defined( DAW_JSON_NO_CONST_EXPR )
-		// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
-		// not in a constant expression.  It does allow for construction of
-		// classes without move/copy special members
-		if constexpr( not KnownBounds ) {
-			auto const oe = daw::on_exit_success( [&] { rng.trim_left_checked( ); } );
-		}
-		return json_data_contract_trait_t<element_t>::template parse<element_t>(
-		  rng );
-#else
-		if constexpr( KnownBounds ) {
+		if constexpr( is_guaranteed_rvo_v<Range> ) {
+			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
+			// not in a constant expression.  It does allow for construction of
+			// classes without move/copy special members
+			if constexpr( not KnownBounds ) {
+				auto const oe =
+				  daw::on_exit_success( [&] { rng.trim_left_checked( ); } );
+			}
 			return json_data_contract_trait_t<element_t>::template parse<element_t>(
 			  rng );
 		} else {
-			auto result =
-			  json_data_contract_trait_t<element_t>::template parse<element_t>( rng );
-			// TODO: make trim_left
-			rng.trim_left_checked( );
-			return result;
+			if constexpr( KnownBounds ) {
+				return json_data_contract_trait_t<element_t>::template parse<element_t>(
+				  rng );
+			} else {
+				auto result =
+				  json_data_contract_trait_t<element_t>::template parse<element_t>(
+				    rng );
+				// TODO: make trim_left
+				rng.trim_left_checked( );
+				return result;
+			}
 		}
-#endif
 	}
 
 	/**

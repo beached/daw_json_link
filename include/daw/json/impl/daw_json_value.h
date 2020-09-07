@@ -135,7 +135,7 @@ namespace daw::json {
 		 * Get the name/value pair of the currently referenced element
 		 * @return a json_pair with the name, if any, and json_value
 		 */
-		[[nodiscard]] constexpr basic_json_pair<Range> operator*( ) const {
+		[[nodiscard]] constexpr basic_json_pair<Range> operator*( ) {
 			if( is_array( ) ) {
 				return { { }, Range( m_state.first, m_state.last ) };
 			}
@@ -148,7 +148,7 @@ namespace daw::json {
 		/***
 		 * Return an arrow_proxy object containing the result of operator*
 		 * Should not use this method unless you must(std algorithms), it is here
-		 * for Iterator compatability
+		 * for Iterator compatibility
 		 * @return arrow_proxy object containing the result of operator*
 		 */
 		[[nodiscard]] constexpr pointer operator->( ) const {

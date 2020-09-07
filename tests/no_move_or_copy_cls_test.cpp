@@ -6,10 +6,6 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#if not defined( __cpp_constexpr_dynamic_alloc )
-// constexpr dtor's are not available prior to c++20
-#define DAW_JSON_NO_CONST_EXPR
-#endif
 #include "defines.h"
 
 #include <daw/daw_benchmark.h>
@@ -68,19 +64,16 @@ namespace daw::json {
 
 int main( int, char ** ) try {
 	constexpr std::string_view json_data = R"({ "some_num": 1234 } )";
-#if not defined( __cpp_DAW_CONSTEXPR_dynamic_alloc )
-	daw::expecting( daw::json::from_json<A>( json_data ).member == 1234 );
-#else
-	static_assert( daw::json::from_json<A>( json_data ).member == 1234 );
-#endif
-	// This does not work
+	daw::expecting(
+	  daw::json::from_json<A, daw::json::SIMDNoCommentSkippingPolicyChecked<
+	                            daw::json::runtime_exec_tag>>( json_data )
+	    .member == 1234 );
 
 	constexpr std::string_view json_data2 = R"({ "a": { "some_num": 1234 } } )";
-#if not defined( __cpp_DAW_CONSTEXPR_dynamic_alloc )
-	daw::expecting( daw::json::from_json<B>( json_data2 ).a.member == 1234 );
-#else
-	static_assert( daw::json::from_json<B>( json_data2 ).a.member == 1234 );
-#endif
+	daw::expecting(
+	  daw::json::from_json<B, daw::json::SIMDNoCommentSkippingPolicyChecked<
+	                            daw::json::runtime_exec_tag>>( json_data2 )
+	    .a.member == 1234 );
 
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

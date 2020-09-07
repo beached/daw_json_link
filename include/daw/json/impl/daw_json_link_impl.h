@@ -386,7 +386,7 @@ namespace daw::json::json_details {
 	};
 	template<typename Range>
 	ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
-#elif defined( DAW_JSON_NO_CONST_EXPR )
+#else
 	template<typename Range>
 	struct ClassCleanupDtor {
 		Range *rng_ptr;
@@ -428,42 +428,41 @@ namespace daw::json::json_details {
 			auto known_locations = make_locations_info<Range, JsonMembers...>( );
 
 #endif
+			if constexpr( is_guaranteed_rvo_v<Range> ) {
+				// This relies on non-trivial dtor's being allowed.  So C++20 constexpr
+				// or not in a constant expression.  It does allow for construction of
+				// classes without move/copy special members
 
-#if defined( __cpp_constexpr_dynamic_alloc ) or                                \
-  defined( DAW_JSON_NO_CONST_EXPR )
-			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr
-			// or not in a constant expression.  It does allow for construction of
-			// classes without move/copy special members
-
-			// Do this before we exit but after return
-			auto const oe = ClassCleanupDtor{ &rng };
-			/*
-			 * Rather than call directly use apply/tuple to evaluate left->right
-			 */
-			if constexpr( daw::json::force_aggregate_constrution<JsonClass>::value ) {
-				return JsonClass{
-				  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
-				    known_locations, rng )... };
+				// Do this before we exit but after return
+				auto const oe = ClassCleanupDtor{ &rng };
+				/*
+				 * Rather than call directly use apply/tuple to evaluate left->right
+				 */
+				if constexpr( daw::json::force_aggregate_constrution<
+				                JsonClass>::value ) {
+					return JsonClass{
+					  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
+					    known_locations, rng )... };
+				} else {
+					using tp_t = decltype( std::forward_as_tuple(
+					  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
+					    known_locations, rng )... ) );
+					return std::apply(
+					  daw::construct_a<JsonClass>,
+					  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
+					    known_locations, rng )... } );
+				}
 			} else {
 				using tp_t = decltype( std::forward_as_tuple(
 				  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 				    known_locations, rng )... ) );
-				return std::apply(
+				JsonClass result = std::apply(
 				  daw::construct_a<JsonClass>,
 				  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 				    known_locations, rng )... } );
+				class_cleanup_now( rng );
+				return result;
 			}
-#else
-			using tp_t = decltype( std::forward_as_tuple(
-			  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
-			    known_locations, rng )... ) );
-			JsonClass result = std::apply(
-			  daw::construct_a<JsonClass>,
-			  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
-			    known_locations, rng )... } );
-			class_cleanup_now( rng );
-			return result;
-#endif
 		}
 	}
 
@@ -493,7 +492,7 @@ namespace daw::json::json_details {
 	};
 	template<typename Range>
 	OrderedClassCleanupDtor( Range * ) -> OrderedClassCleanupDtor<Range>;
-#elif defined( DAW_JSON_NO_CONST_EXPR )
+#else
 	template<typename Range>
 	struct OrderedClassCleanupDtor {
 		Range *rng_ptr;
@@ -525,20 +524,20 @@ namespace daw::json::json_details {
 		using tp_t = std::tuple<decltype(
 		  parse_ordered_class_member<JsonMembers>( current_idx, rng ) )...>;
 
-#if defined( __cpp_constexpr_dynamic_alloc ) or                                \
-  defined( DAW_JSON_NO_CONST_EXPR )
+		if constexpr( is_guaranteed_rvo_v<Range> ) {
 
-		auto const oe = OrderedClassCleanupDtor{ &rng };
-		return std::apply(
-		  daw::construct_a<JsonClass>,
-		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
-#else
-		JsonClass result = std::apply(
-		  daw::construct_a<JsonClass>,
-		  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
+			auto const oe = OrderedClassCleanupDtor{ &rng };
+			return std::apply( daw::construct_a<JsonClass>,
+			                   tp_t{ parse_ordered_class_member<JsonMembers>(
+			                     current_idx, rng )... } );
+		} else {
+			JsonClass result =
+			  std::apply( daw::construct_a<JsonClass>,
+			              tp_t{ parse_ordered_class_member<JsonMembers>( current_idx,
+			                                                             rng )... } );
 
-		ordered_class_cleanup_now( rng );
-		return result;
-#endif
+			ordered_class_cleanup_now( rng );
+			return result;
+		}
 	} // namespace daw::json::json_details
 } // namespace daw::json::json_details

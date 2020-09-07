@@ -438,6 +438,7 @@ void test128( ) {
 #endif
 
 int main( int, char ** ) try {
+	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
 	test_004( );
 	test_005( );
 	test_006( );

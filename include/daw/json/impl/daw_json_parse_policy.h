@@ -56,6 +56,14 @@ namespace daw::json {
 		  , class_first( f )
 		  , class_last( l ) {}
 
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr iterator begin( ) const {
+			return first;
+		}
+
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr iterator end( ) const {
+			return last;
+		}
+
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr bool empty( ) const {
 			return first >= last;
 		}
@@ -316,4 +324,9 @@ namespace daw::json {
 	template<typename ExecTag>
 	using SIMDCppCommentSkippingPolicyUnchecked =
 	  BasicParsePolicy<true, CppCommentSkippingPolicy, ExecTag, false>;
+
+	namespace json_details {
+		template<typename ParsePolicy>
+		inline constexpr bool is_guaranteed_rvo_v = ParsePolicy::exec_tag_t::always_rvo;
+	}
 } // namespace daw::json

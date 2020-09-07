@@ -49,6 +49,7 @@ namespace daw::json {
 	class json_exception {
 		std::string m_reason{ };
 		ErrorType m_error_type = ErrorType::Unknown;
+		char const *m_location = nullptr;
 
 	public:
 		json_exception( ) = default;
@@ -60,8 +61,18 @@ namespace daw::json {
 		  : m_reason( reason )
 		  , m_error_type( error_type ) {}
 
+		explicit json_exception( std::string_view reason, ErrorType error_type,
+		                         char const *loc ) noexcept
+		  : m_reason( reason )
+		  , m_error_type( error_type )
+		  , m_location( loc ) {}
+
 		[[nodiscard]] std::string const &reason( ) const {
 			return m_reason;
+		}
+
+		[[nodiscard]] char const *location( ) const {
+			return m_location;
 		}
 
 		[[nodiscard]] ErrorType type( ) const {

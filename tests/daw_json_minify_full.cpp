@@ -49,27 +49,54 @@ public:
 
 	template<typename ParsePolicy>
 	bool handle_on_value( daw::json::basic_json_pair<ParsePolicy> p ) {
-		daw::json::JsonBaseParseTypes const v_type = p.value.type( );
 		if( member_count_stack.empty( ) ) {
 			member_count_stack.emplace_back( p.value.is_class( ) );
 		}
 		auto &parent = member_count_stack.back( );
-		if( parent.is_first ) {
-			parent.is_first = false;
-		} else {
-			write_chr( ',' );
-		}
-		if( parent.is_class and p.name ) {
+		auto const member_preamble = [&] {
+			if( parent.is_first ) {
+				parent.is_first = false;
+			} else {
+				write_chr( ',' );
+			}
+			if( parent.is_class and p.name ) {
+				write_chr( '"' );
+				write_str( *p.name );
+				write_str( "\":" );
+			}
+		};
+		switch( p.value.type( ) ) {
+		case daw::json::JsonBaseParseTypes::Null:
+			return true;
+		case daw::json::JsonBaseParseTypes::String: {
+			member_preamble( );
+			auto rng = p.value.get_range( );
+			rng = daw::json::json_details::skip_string( rng );
+			std::string unescaped =
+			  daw::json::json_details::parse_string_known_stdstring<true, std::string,
+			                                                        true>( rng );
 			write_chr( '"' );
-			write_str( *p.name );
-			write_str( "\":" );
-		}
-		if( ( v_type == daw::json::JsonBaseParseTypes::Class ) |
-		    ( v_type == daw::json::JsonBaseParseTypes::Array ) ) {
+			out_it = daw::json::utils::copy_to_iterator<true>( out_it, unescaped );
+			write_chr( '"' );
 			return true;
 		}
-		write_str( p.value.get_string_view( ) );
-		return true;
+		case daw::json::JsonBaseParseTypes::Class:
+		case daw::json::JsonBaseParseTypes::Array:
+			member_preamble( );
+			return true;
+		case daw::json::JsonBaseParseTypes::Number:
+		case daw::json::JsonBaseParseTypes::Bool:
+		case daw::json::JsonBaseParseTypes::None:
+			member_preamble( );
+			write_str( p.value.get_string_view( ) );
+			return true;
+		default: {
+			auto rng = p.value.get_range( );
+			auto sv = daw::string_view( rng.first, rng.size( ) ).pop_front( 10 );
+			std::cerr << "Unknown JSON value type near\n" << sv << "\n\n";
+			std::terminate( );
+		}
+		}
 	}
 
 	template<typename ParsePolicy>
