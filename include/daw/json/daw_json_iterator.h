@@ -49,8 +49,9 @@ namespace daw::json {
 			auto [is_found, result] = json_details::find_range<ParsePolicy>(
 			  std::forward<String>( data ),
 			  { member_path.data( ), member_path.size( ) } );
-			daw_json_assert( is_found, "Could not find path to member" );
-			daw_json_assert( result.front( ) == '[', "Member is not an array" );
+			daw_json_assert( is_found, "Could not find path to member", result );
+			daw_json_assert( result.front( ) == '[', "Member is not an array",
+			                 result );
 			return result;
 		}
 
@@ -90,7 +91,7 @@ namespace daw::json {
 			  "StringRaw must be like a string_view" );
 			m_state.trim_left( );
 			daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-			                      "Arrays are expected to start with a [" );
+			                      "Arrays are expected to start with a [", m_state );
 
 			m_state.remove_prefix( );
 			m_state.trim_left( );
@@ -108,7 +109,7 @@ namespace daw::json {
 			  "StringRaw must be like a string_view" );
 			m_state.trim_left( );
 			daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-			                      "Arrays are expected to start with a [" );
+			                      "Arrays are expected to start with a [", m_state );
 
 			m_state.remove_prefix( );
 			m_state.trim_left( );
@@ -121,7 +122,7 @@ namespace daw::json {
 		 */
 		[[nodiscard]] inline constexpr value_type operator*( ) const {
 			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-			                      "Unexpected end of stream" );
+			                      "Unexpected end of stream", m_state );
 
 			auto tmp = m_state;
 
@@ -155,7 +156,7 @@ namespace daw::json {
 		 */
 		inline constexpr json_array_iterator &operator++( ) {
 			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-			                      "Unexpected end of stream" );
+			                      "Unexpected end of stream", m_state );
 			if( m_can_skip ) {
 				m_state.first = m_can_skip;
 				m_can_skip = nullptr;

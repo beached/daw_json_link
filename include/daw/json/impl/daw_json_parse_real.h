@@ -40,7 +40,7 @@ namespace daw::json::json_details {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
 		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
-		  "Expected a real number" );
+		  "Expected a real number", rng );
 
 		auto whole_rng = Range( rng.first, rng.class_first );
 		auto fract_rng = Range( rng.class_first, rng.class_last );
@@ -87,14 +87,14 @@ namespace daw::json::json_details {
 		if( exp_rng.first != nullptr ) {
 			exp_rng.remove_prefix( );
 			int32_t exsign = 1;
-			daw_json_assert_weak( exp_rng.has_more( ), "Unexpected end of stream" );
+			daw_json_assert_weak( exp_rng.has_more( ), "Unexpected end of stream", rng );
 			if( exp_rng.front( ) == '-' ) {
 				exp_rng.remove_prefix( );
 				exsign = -1;
 			} else if( exp_rng.front( ) == '+' ) {
 				exp_rng.remove_prefix( );
 			}
-			daw_json_assert_weak( exp_rng.has_more( ), "Unexpected end of stream" );
+			daw_json_assert_weak( exp_rng.has_more( ), "Unexpected end of stream", rng );
 			exp_part =
 			  exsign * unsigned_parser<int32_t,
 			                           ( Range::is_unchecked_input
@@ -112,7 +112,7 @@ namespace daw::json::json_details {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
 		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
-		  "Expected a real number" );
+		  "Expected a real number", rng );
 
 		std::int32_t sign = 1;
 		if( rng.front( ) == '-' ) {
@@ -160,7 +160,7 @@ namespace daw::json::json_details {
 		if( rng.is_exponent_checked( ) ) {
 			rng.remove_prefix( );
 			int32_t exsign = 1;
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
 			if( rng.front( ) == '-' ) {
 				rng.remove_prefix( );
 				exsign = -1;

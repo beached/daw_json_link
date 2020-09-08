@@ -653,7 +653,7 @@ namespace daw::json {
 				}
 			} else {
 				daw_json_assert( is_found,
-				                 "Could not find member and type isn't Nullable" );
+				                 "Could not find member and type isn't Nullable", rng );
 			}
 			return json_details::parse_value<json_member>(
 			  ParseTag<json_member::expected_type>{ }, rng );

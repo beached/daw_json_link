@@ -32,13 +32,13 @@ namespace daw::json::json_details {
 	constexpr void skip_quote_when_literal_as_string( Range &rng ) {
 		if constexpr( literal_as_string == LiteralAsStringOpt::Always ) {
 			daw_json_assert_weak( rng.is_quotes_checked( ),
-			                      "Unexpected quote prior to number" );
+			                      "Unexpected quote prior to number", rng );
 			rng.remove_prefix( );
 			if constexpr( KnownBounds ) {
 				rng.last = std::prev( rng.last );
 			}
 		} else if constexpr( literal_as_string == LiteralAsStringOpt::Maybe ) {
-			daw_json_assert_weak( not rng.empty( ), "Unexpected end of stream" );
+			daw_json_assert_weak( not rng.empty( ), "Unexpected end of stream", rng );
 			if( rng.front( ) == '"' ) {
 				rng.remove_prefix( );
 				if constexpr( KnownBounds ) {
@@ -47,7 +47,7 @@ namespace daw::json::json_details {
 			}
 		} else {
 			daw_json_assert_weak( rng.front( ) != '"',
-			                      "Unexpected quote prior to number" );
+			                      "Unexpected quote prior to number", rng );
 		}
 	}
 
@@ -60,19 +60,19 @@ namespace daw::json::json_details {
 		if constexpr( KnownBounds ) {
 			daw_json_assert_weak(
 			  parse_policy_details::is_number_start( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789-\"" );
+			  "Expected number to start with on of \"0123456789-\"", rng );
 			return constructor_t{ }( parse_real<element_t, true>( rng ) );
 		} else {
-			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
+			daw_json_assert_weak( rng.has_more( ), "Could not find value", rng );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  parse_policy_details::is_number_start( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789-\"" );
+			  "Expected number to start with on of \"0123456789-\"", rng );
 			auto result = constructor_t{ }( parse_real<element_t, false>( rng ) );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  parse_policy_details::at_end_of_item( rng.front( ) ),
-			  "Expected whitespace or one of \",}]\" at end of number" );
+			  "Expected whitespace or one of \",}]\" at end of number", rng );
 			return result;
 		}
 	}
@@ -92,7 +92,7 @@ namespace daw::json::json_details {
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  parse_policy_details::is_number_start( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789e+-\"" );
+			  "Expected number to start with on of \"0123456789e+-\"", rng );
 		}
 		element_t sign = 1;
 		if( rng.front( ) == '-' ) {
@@ -112,7 +112,7 @@ namespace daw::json::json_details {
 			rng.trim_left( );
 			daw_json_assert_weak(
 			  parse_policy_details::at_end_of_item( rng.front( ) ),
-			  "Expected whitespace or one of \",}]\" at end of number" );
+			  "Expected whitespace or one of \",}]\" at end of number", rng );
 			return result;
 		}
 	}
@@ -127,23 +127,23 @@ namespace daw::json::json_details {
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  parse_policy_details::is_number( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789\"" );
+			  "Expected number to start with on of \"0123456789\"", rng );
 			return constructor_t{ }(
 			  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 			    Range::exec_tag, rng ) );
 		} else {
-			daw_json_assert_weak( rng.has_more( ), "Could not find value" );
+			daw_json_assert_weak( rng.has_more( ), "Could not find value", rng );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  parse_policy_details::is_number( rng.front( ) ),
-			  "Expected number to start with on of \"0123456789\"" );
+			  "Expected number to start with on of \"0123456789\"", rng );
 			auto result = constructor_t{ }(
 			  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 			    Range::exec_tag, rng ) );
 			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
 			daw_json_assert_weak(
 			  parse_policy_details::at_end_of_item( rng.front( ) ),
-			  "Expected whitespace or one of \",}]\" at end of number" );
+			  "Expected whitespace or one of \",}]\" at end of number", rng );
 			return result;
 		}
 	}
@@ -177,7 +177,7 @@ namespace daw::json::json_details {
 				rng.remove_prefix( 4 );
 				daw_json_assert_weak(
 				  parse_policy_details::at_end_of_item( rng.front( ) ),
-				  "Unexpected value" );
+				  "Unexpected value", rng );
 				rng.trim_left_checked( );
 				return constructor_t{ }( );
 			}
@@ -189,7 +189,7 @@ namespace daw::json::json_details {
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Bool>, Range &rng ) {
-		daw_json_assert_weak( rng.size( ) >= 4, "Range to small to be a bool" );
+		daw_json_assert_weak( rng.size( ) >= 4, "Range to small to be a bool", rng );
 
 		using constructor_t = typename JsonMember::constructor_t;
 
@@ -230,7 +230,7 @@ namespace daw::json::json_details {
 			rng.trim_left( );
 			daw_json_assert_weak(
 			  parse_policy_details::at_end_of_item( rng.front( ) ),
-			  "Unexpectd value" );
+			  "Unexpected value", rng );
 			return constructor_t{ }( result );
 		}
 	}
@@ -348,17 +348,17 @@ namespace daw::json::json_details {
 			if( has_quote ) {
 				rng.remove_prefix( );
 			}
-			daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
+			daw_json_assert_weak( not rng.empty( ), "Unexpected end of data", rng );
 			while( rng.front( ) != '"' ) {
 				// TODO look at move_to_next_of
 				while( not rng.template in<parse_tokens::escape_quotes>( ) ) {
-					daw_json_assert_weak( not rng.empty( ), "Unexpected end of data" );
+					daw_json_assert_weak( not rng.empty( ), "Unexpected end of data", rng );
 					app( rng.front( ) );
 					rng.remove_prefix( );
 				}
 				if( rng.front( ) == '\\' ) {
 					daw_json_assert_weak( not rng.is_space_unchecked( ),
-					                      "Invalid codepoint" );
+					                      "Invalid codepoint", rng );
 					rng.remove_prefix( );
 					switch( rng.front( ) ) {
 					case 'b':
@@ -396,22 +396,22 @@ namespace daw::json::json_details {
 							  not rng.is_space_unchecked( ) and
 							    static_cast<unsigned>( rng.front( ) ) <= 0x7FU,
 							  "string support limited to 0x20 < chr <= 0x7F when "
-							  "DisallowHighEightBit is true" );
+							  "DisallowHighEightBit is true", rng );
 						}
 						app( rng.front( ) );
 						rng.remove_prefix( );
 					}
 				} else {
 					daw_json_assert_weak( not has_quote or rng.is_quotes_checked( ),
-					                      "Unexpected end of string" );
+					                      "Unexpected end of string", rng );
 				}
 				daw_json_assert_weak( not has_quote or rng.has_more( ),
-				                      "Unexpected end of data" );
+				                      "Unexpected end of data", rng );
 			}
 
 			if constexpr( not KnownBounds ) {
 				daw_json_assert_weak( not has_quote or rng.is_quotes_checked( ),
-				                      "Unexpected state, no \"" );
+				                      "Unexpected state, no \"", rng );
 				rng.remove_prefix( );
 			}
 			return result;
@@ -422,7 +422,7 @@ namespace daw::json::json_details {
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Date>, Range &rng ) {
 
-		daw_json_assert_weak( rng.has_more( ), "Could not find value" );
+		daw_json_assert_weak( rng.has_more( ), "Could not find value", rng );
 		auto str = skip_string( rng );
 		using constructor_t = typename JsonMember::constructor_t;
 		return constructor_t{ }( str.first, str.size( ) );
@@ -448,7 +448,7 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::Class>, Range &rng ) {
 
 		using element_t = typename JsonMember::base_type;
-		daw_json_assert_weak( rng.has_more( ), "Attempt to parse empty string" );
+		daw_json_assert_weak( rng.has_more( ), "Attempt to parse empty string", rng );
 
 		if constexpr( is_guaranteed_rvo_v<Range> ) {
 			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
@@ -491,7 +491,7 @@ namespace daw::json::json_details {
 		               "Expected a json_key_value" );
 		daw_json_assert_weak(
 		  rng.is_opening_brace_checked( ),
-		  "Expected keyvalue type to be of class type and beginning with '{'" );
+		  "Expected keyvalue type to be of class type and beginning with '{'", rng );
 
 		rng.remove_prefix( );
 		// We are inside a KV map, we can expected a quoted name next
@@ -517,7 +517,7 @@ namespace daw::json::json_details {
 		               "Expected a json_key_value" );
 		daw_json_assert_weak(
 		  rng.is_opening_bracket_checked( ),
-		  "Expected key/value type to be of class type and beginning with '{'" );
+		  "Expected key/value type to be of class type and beginning with '{'", rng );
 
 		rng.remove_prefix( );
 
@@ -530,7 +530,7 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::Array>, Range &rng ) {
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-		                      "Expected array to start with a '['" );
+		                      "Expected array to start with a '['", rng );
 		rng.remove_prefix( );
 		rng.trim_left_unchecked( );
 
@@ -614,7 +614,7 @@ namespace daw::json::json_details {
 		                                       rng.last - rng.class_first ) ),
 		  tag_member::name );
 
-		daw_json_assert( is_found, "Tag Member is mandatory" );
+		daw_json_assert( is_found, "Tag Member is mandatory", rng );
 		auto index = typename JsonMember::switcher{ }(
 		  parse_value<tag_member>( ParseTag<tag_member::expected_type>{ }, rng2 ) );
 

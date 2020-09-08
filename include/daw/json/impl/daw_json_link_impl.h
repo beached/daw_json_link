@@ -223,12 +223,12 @@ namespace daw::json::json_details {
 		daw_json_assert_weak(
 		  ( is_json_nullable_v<JsonMember> or not locations[pos].missing( ) or
 		    not rng.is_closing_brace_checked( ) ),
-		  "Unexpected end of class.  Non-nullable members still not found" );
+		  "Unexpected end of class.  Non-nullable members still not found", rng );
 
 		rng.trim_left_unchecked( );
 		// TODO: should we check for end
 		while( locations[pos].missing( ) & ( rng.front( ) != '}' ) ) {
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
 			auto const name = parse_name( rng );
 			auto const name_pos = locations.template find_name<pos>( name );
 			if( name_pos >= locations.size( ) ) {
@@ -271,14 +271,14 @@ namespace daw::json::json_details {
 		                                   std::size_t desired_position ) {
 
 			rng.clean_tail( );
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range", rng );
 			daw_json_assert_weak( current_position <= desired_position,
-			                      "Order of ordered members must be ascending" );
+			                      "Order of ordered members must be ascending", rng );
 			while( current_position < desired_position and rng.front( ) != ']' ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				++current_position;
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
+				daw_json_assert_weak( rng.has_more( ), "Unexpected end of range", rng );
 			}
 		}
 	} // namespace pocm_details
@@ -340,7 +340,7 @@ namespace daw::json::json_details {
 		               "Array processing should never call parse_class_member" );
 
 		daw_json_assert_weak( rng.is_at_next_class_member( ),
-		                      "Expected end of class or start of member" );
+		                      "Expected end of class or start of member", rng );
 		auto loc = find_class_member<member_position, JsonMember>( locations, rng );
 
 		// If the member was found loc will have it's position
@@ -368,7 +368,7 @@ namespace daw::json::json_details {
 		}
 		rng.clean_tail( );
 		// If we fullfill the contract before all values are parses
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of range" );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of range", rng );
 		rng.move_to_next_class_member( );
 		(void)rng.skip_class( );
 		// Yes this must be checked.  We maybe at the end of document.  After the
@@ -406,7 +406,7 @@ namespace daw::json::json_details {
 		               "Unexpected type" );
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_opening_brace_checked( ),
-		                      "Expected start of class" );
+		                      "Expected start of class", rng );
 		rng.set_class_position( );
 		rng.remove_prefix( );
 		rng.move_to_next_class_member( );
@@ -470,14 +470,14 @@ namespace daw::json::json_details {
 	DAW_ATTRIBUTE_FLATTEN inline constexpr void
 	ordered_class_cleanup_now( Range &rng ) {
 		rng.clean_tail( );
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
 		while( rng.front( ) != ']' ) {
 			(void)skip_value( rng );
 			rng.clean_tail( );
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
+			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
 		}
 		// TODO: should we check for end
-		daw_json_assert_weak( rng.front( ) == ']', "Expected a ']'" );
+		daw_json_assert_weak( rng.front( ) == ']', "Expected a ']'", rng );
 		rng.remove_prefix( );
 		rng.trim_left( );
 	}
@@ -515,7 +515,7 @@ namespace daw::json::json_details {
 
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-		                      "Expected start of array" );
+		                      "Expected start of array", rng );
 		rng.set_class_position( );
 		rng.remove_prefix( );
 		rng.trim_left( );

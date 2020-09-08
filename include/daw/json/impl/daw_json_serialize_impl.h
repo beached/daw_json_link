@@ -7,7 +7,6 @@
 //
 #pragma once
 
-#include "daw_json_assert.h"
 #include "daw_json_to_string.h"
 
 namespace daw::json::json_details {

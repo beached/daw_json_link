@@ -28,7 +28,7 @@ namespace daw::json::json_details::name {
 		[[maybe_unused]] static constexpr void trim_end_of_name( Range &rng ) {
 			rng.trim_left( );
 			// TODO: should we check for end
-			daw_json_assert_weak( rng.front( ) == ':', "Expected a ':'" );
+			daw_json_assert_weak( rng.front( ) == ':', "Expected a ':'", rng );
 			rng.remove_prefix( );
 			rng.trim_left( );
 		}
@@ -52,7 +52,7 @@ namespace daw::json::json_details::name {
 				}
 				daw_json_assert_weak( rng.is_quotes_checked( ) and
 				                        *std::prev( rng.first ) != '\\',
-				                      "Expected a '\"' at the end of string" );
+				                      "Expected a '\"' at the end of string", rng );
 				auto result = daw::string_view( ptr, rng.first );
 				rng.remove_prefix( );
 				trim_end_of_name( rng );
@@ -125,7 +125,7 @@ namespace daw::json::json_details {
 	template<typename Range>
 	[[nodiscard]] constexpr daw::string_view parse_name( Range &rng ) {
 		daw_json_assert_weak( rng.is_quotes_checked( ),
-		                      "Expected name to start with a quote" );
+		                      "Expected name to start with a quote", rng );
 		rng.remove_prefix( );
 		return name::name_parser::parse_nq( rng );
 	}
@@ -138,7 +138,7 @@ namespace daw::json::json_details {
 			if( pop_result.found_char == ']' ) {
 				// Array Index
 				daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-				                      "Invalid Path Entry" );
+				                      "Invalid Path Entry", rng );
 				rng.remove_prefix( );
 				rng.trim_left_unchecked( );
 				auto idx =
@@ -148,14 +148,14 @@ namespace daw::json::json_details {
 					--idx;
 					(void)skip_value( rng );
 					rng.trim_left_checked( );
-					if( (idx > 0) & ( rng.has_more( ) and ( rng.front( ) != ',' ) ) ) {
+					if( ( idx > 0 ) & ( rng.has_more( ) and ( rng.front( ) != ',' ) ) ) {
 						return false;
 					}
 					rng.clean_tail( );
 				}
 			} else {
 				daw_json_assert_weak( rng.is_opening_brace_checked( ),
-				                      "Invalid Path Entry" );
+				                      "Invalid Path Entry", rng );
 				rng.remove_prefix( );
 				rng.trim_left_unchecked( );
 				auto name = parse_name( rng );

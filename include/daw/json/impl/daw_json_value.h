@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_json_arrow_proxy.h"
+#include "daw_json_assert.h"
 #include "daw_json_parse_name.h"
 
 #include <tuple>
@@ -151,7 +152,7 @@ namespace daw::json {
 		 * for Iterator compatibility
 		 * @return arrow_proxy object containing the result of operator*
 		 */
-		[[nodiscard]] constexpr pointer operator->( ) const {
+		[[nodiscard]] constexpr pointer operator->( ) {
 			return { operator*( ) };
 		}
 
@@ -381,7 +382,8 @@ namespace daw::json {
 					return JsonBaseParseTypes::Bool;
 				}
 			case 'n':
-				daw_json_assert_weak( m_rng.starts_with( "null" ), "Expected a null" );
+				daw_json_assert_weak( m_rng.starts_with( "null" ), "Expected a null",
+				                      m_rng );
 				return JsonBaseParseTypes::Null;
 			}
 			return JsonBaseParseTypes::None;

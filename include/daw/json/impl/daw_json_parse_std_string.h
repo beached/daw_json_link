@@ -50,7 +50,7 @@ namespace daw::json::json_details {
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			++first;
-			daw_json_assert_weak( *first == 'u', "Expected rng to start with a \\u" );
+			daw_json_assert_weak( *first == 'u', "Expected rng to start with a \\u", rng );
 			++first;
 			auto trailing =
 			  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
@@ -115,7 +115,7 @@ namespace daw::json::json_details {
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			++first;
-			daw_json_assert_weak( *first == 'u', "Expected rng to start with a \\u" );
+			daw_json_assert_weak( *first == 'u', "Expected rng to start with a \\u", rng );
 			++first;
 			auto trailing =
 			  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
@@ -203,7 +203,7 @@ namespace daw::json::json_details {
 					while( not key_table<'"', '\\'>[*first] ) {
 						++first;
 						daw_json_assert_weak( KnownBounds or first < last,
-						                      "Unexpected end of data" );
+						                      "Unexpected end of data", rng );
 					}
 				} else {
 					first = mem_move_to_next_of<Range::is_unchecked_input, '"', '\\'>(
@@ -214,7 +214,7 @@ namespace daw::json::json_details {
 			}
 			if( rng.front( ) == '\\' ) {
 				daw_json_assert_weak( not rng.is_space_unchecked( ),
-				                      "Invalid codepoint" );
+				                      "Invalid codepoint", rng );
 				rng.remove_prefix( );
 				switch( rng.front( ) ) {
 				case 'b':
@@ -255,21 +255,21 @@ namespace daw::json::json_details {
 						  ( not rng.is_space_unchecked( ) ) &
 						    ( static_cast<unsigned char>( rng.front( ) ) <= 0x7FU ),
 						  "string support limited to 0x20 < chr <= 0x7F when "
-						  "DisallowHighEightBit is true" );
+						  "DisallowHighEightBit is true", rng );
 					}
 					*it++ = rng.front( );
 					rng.remove_prefix( );
 				}
 			} else {
 				daw_json_assert_weak( not has_quote or rng.is_quotes_checked( ),
-				                      "Unexpected end of string" );
+				                      "Unexpected end of string", rng );
 			}
 			daw_json_assert_weak( not has_quote or rng.has_more( ),
-			                      "Unexpected end of data" );
+			                      "Unexpected end of data", rng );
 		}
 		auto const sz =
 		  static_cast<std::size_t>( std::distance( result.data( ), it ) );
-		daw_json_assert_weak( result.size( ) >= sz, "Unexpected string state" );
+		daw_json_assert_weak( result.size( ) >= sz, "Unexpected string state", rng );
 		result.resize( sz );
 		return result2;
 	} // namespace daw::json::json_details

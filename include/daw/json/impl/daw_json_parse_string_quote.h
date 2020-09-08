@@ -87,7 +87,7 @@ namespace daw::json::json_details::string_quote {
 			char const *first = rng.first;
 			char const *const last = rng.last;
 			// This is a logic error to happen.
-			// daw_json_assert_weak( first != '"', "Unexpected quote" );
+			// daw_json_assert_weak( first != '"', "Unexpected quote", rng );
 			if constexpr( not std::is_same_v<typename Range::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
 				first = mem_skip_until_end_of_string<true>( Range::exec_tag, first,
@@ -149,7 +149,7 @@ namespace daw::json::json_details::string_quote {
 				}
 			}
 			daw_json_assert_weak( first < last and *first == '"',
-			                      "Expected a '\"' at end of string" );
+			                      "Expected a '\"' at end of string", rng );
 			rng.first = first;
 			return static_cast<std::size_t>( need_slow_path );
 		}

@@ -126,7 +126,7 @@ namespace daw::json::json_details {
 			  ( daw::numeric_limits<result_t>::digits10 + 1U ) - rng.size( );
 			daw_json_assert( result <= daw::numeric_limits<result_t>::max( ) and
 			                   count >= 0,
-			                 "Unsigned number outside of range of unsigned numbers" );
+			                 "Unsigned number outside of range of unsigned numbers", rng );
 		}
 		rng.first = first;
 		if constexpr( RangeChecked == JsonRangeCheck::Never ) {
@@ -147,7 +147,7 @@ namespace daw::json::json_details {
 		static_assert( not static_cast<bool>( RangeChecked ) or
 		                 std::is_same_v<result_t, UInt64>,
 		               "Range checking is only supported for std integral types" );
-		daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range" );
+		daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range", rng );
 		char const *first = rng.first;
 		result_t result = result_t( );
 
@@ -168,7 +168,7 @@ namespace daw::json::json_details {
 			daw_json_assert( count >= 0 and
 			                   result <= static_cast<result_t>(
 			                               daw::numeric_limits<Unsigned>::max( ) ),
-			                 "Parsed number is out of range" );
+			                 "Parsed number is out of range", rng );
 		}
 
 		rng.first = first;
@@ -240,7 +240,7 @@ namespace daw::json::json_details {
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>
 	[[nodiscard]] static inline Unsigned
 	unsigned_parser( sse42_exec_tag const &, Range &rng ) {
-	  daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range" );
+	  daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range", rng );
 	  using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 	  result_t result = result_t( );
 	  char const *first = rng.first;
@@ -280,7 +280,7 @@ namespace daw::json::json_details {
 	    daw_json_assert( count >= 0 and
 	                       result <= static_cast<result_t>(
 	                                   daw::numeric_limits<Unsigned>::max( ) ),
-	                     "Parsed number is out of range" );
+	                     "Parsed number is out of range", rng );
 	  }
 	  rng.first = first;
 	  if constexpr( RangeChecked == JsonRangeCheck::Never ) {

@@ -82,7 +82,7 @@ namespace daw::json::json_details {
 	public:
 		constexpr value_type operator*( ) {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
-			                      "Expected data to parse" );
+			                      "Expected data to parse", *base::rng );
 
 			return get_pair( parse_value<json_class_type>(
 			  ParseTag<JsonParseTypes::Class>{ }, *base::rng ) );

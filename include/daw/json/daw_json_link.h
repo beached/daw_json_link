@@ -733,17 +733,17 @@ namespace daw::json {
 				return typename parser_t::constructor_t{ }( );
 			}
 		} else {
-			daw_json_assert( is_found, "Could not find specified member" );
+			daw_json_assert( is_found, "Could not find specified member", rng );
 		}
 		rng.trim_left_unchecked( );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 		// Work around MSVC ICE
 		daw_json_assert( rng.is_opening_bracket_checked( ),
-		                 "Expected array class to being with a '['" );
+		                 "Expected array class to being with a '['", rng );
 #else
 		using Range = daw::remove_cvref_t<decltype( rng )>;
 		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-		                      "Expected array class to being with a '['" );
+		                      "Expected array class to being with a '['", rng );
 #endif
 
 		return json_details::parse_value<parser_t>(

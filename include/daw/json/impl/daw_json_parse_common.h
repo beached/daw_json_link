@@ -440,7 +440,7 @@ namespace daw::json::json_details {
 		result.counter = string_quote::string_quote_parser::parse_nq( rng );
 
 		daw_json_assert_weak( rng.front( ) == '"',
-		                      "Expected trailing \" at the end of string" );
+		                      "Expected trailing \" at the end of string", rng );
 		result.last = rng.first;
 		rng.remove_prefix( );
 		return result;
@@ -459,7 +459,7 @@ namespace daw::json::json_details {
 				daw_json_error( "Attempt to parse a non-string as string" );
 			}
 		}
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of string" );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of string", rng );
 		return skip_string_nq( rng );
 	}
 
@@ -470,13 +470,13 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 4 );
 		} else {
 			rng.remove_prefix( );
-			daw_json_assert( rng.starts_with( "rue" ), "Expected true" );
+			daw_json_assert( rng.starts_with( "rue" ), "Expected true", rng );
 			rng.remove_prefix( 3 );
 		}
 		result.last = rng.first;
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      "Expected a ',', '}', ']' to trail literal" );
+		                      "Expected a ',', '}', ']' to trail literal", rng );
 		return result;
 	}
 
@@ -487,13 +487,13 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 5 );
 		} else {
 			rng.remove_prefix( );
-			daw_json_assert( rng.starts_with( "alse" ), "Expected false" );
+			daw_json_assert( rng.starts_with( "alse" ), "Expected false", rng );
 			rng.remove_prefix( 4 );
 		}
 		result.last = rng.first;
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      "Expected a ',', '}', ']' to trail literal" );
+		                      "Expected a ',', '}', ']' to trail literal", rng );
 		return result;
 	}
 
@@ -503,13 +503,13 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 4 );
 		} else {
 			rng.remove_prefix( );
-			daw_json_assert( rng.starts_with( "ull" ), "Expected null" );
+			daw_json_assert( rng.starts_with( "ull" ), "Expected null", rng );
 			rng.remove_prefix( 3 );
 		}
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      "Expected a ',', '}', ']' to trail literal" );
+		                      "Expected a ',', '}', ']' to trail literal", rng );
 		auto result = rng;
 		result.first = nullptr;
 		result.last = nullptr;
@@ -583,14 +583,14 @@ namespace daw::json::json_details {
 		result.last = rng.first;
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      "Expected a ',', '}', ']' to trail literal" );
+		                      "Expected a ',', '}', ']' to trail literal", rng );
 		                      */
 		return result;
 	}
 
 	template<typename Range>
 	[[nodiscard]] static inline constexpr Range skip_value( Range &rng ) {
-		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range" );
+		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range", rng );
 
 		// reset counter
 		rng.counter = 0;
@@ -630,14 +630,14 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename Range>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
 	skip_known_value( Range &rng ) {
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream" );
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 		              JsonMember::expected_type == JsonParseTypes::StringRaw or
 		              JsonMember::expected_type == JsonParseTypes::StringEscaped or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
 			// json string encodings
 			daw_json_assert_weak( rng.front( ) == '"',
-			                      "Expected start of value to begin with '\"'" );
+			                      "Expected start of value to begin with '\"'", rng );
 			rng.remove_prefix( );
 			return json_details::skip_string_nq( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
@@ -650,11 +650,11 @@ namespace daw::json::json_details {
 			return json_details::skip_number( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
 			daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-			                      "Expected start of array with '['" );
+			                      "Expected start of array with '['", rng );
 			return rng.skip_array( );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Class ) {
 			daw_json_assert_weak( rng.is_opening_brace_checked( ),
-			                      "Expected start of class with '{'" );
+			                      "Expected start of class with '{'", rng );
 			return rng.skip_class( );
 		} else {
 			// Woah there
