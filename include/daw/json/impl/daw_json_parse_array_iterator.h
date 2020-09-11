@@ -75,7 +75,7 @@ namespace daw::json::json_details {
 		}
 
 		inline constexpr json_parse_array_iterator &operator++( ) {
-			daw_json_assert_weak( base::rng, "Unexpected increment", *base::rng );
+			//daw_json_assert_weak( base::rng, "Unexpected increment", *base::rng );
 			base::rng->clean_tail( );
 			daw_json_assert_weak( base::rng->has_more( ), "Unexpected end of data", *base::rng );
 			if( base::rng->front( ) == ']' ) {

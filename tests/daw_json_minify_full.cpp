@@ -182,6 +182,7 @@ int main( int argc, char **argv ) try {
 		minify( args, data, std::ostreambuf_iterator<char>( std::cout ) );
 	}
 } catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser\n" << to_string( jex ) << std::endl;
+	std::cerr << "Exception thrown by parser\n"
+	          << to_formatted_string( jex ) << std::endl;
 	exit( 1 );
 }

@@ -32,6 +32,32 @@
 #include "daw_traits.h"
 
 namespace daw {
+	namespace get_nt_details {
+		namespace gi_test {
+			using namespace std;
+			template<typename T>
+			using get_if_test = decltype( get_if<0>( std::declval<T>( ) ) );
+		} // namespace gi_test
+		template<typename T>
+		inline constexpr bool has_get_if_v =
+		  daw::is_detected_v<gi_test::get_if_test, T>;
+	} // namespace get_nt_details
+
+	template<std::size_t Idx, typename Variant>
+	constexpr decltype( auto ) get_nt( Variant &&var ) {
+		if constexpr( get_nt_details::has_get_if_v<Variant> ) {
+			auto *ptr = std::get_if<Idx>( &var );
+			if constexpr( std::is_rvalue_reference_v<Variant> ) {
+				return std::move( *ptr );
+			} else {
+				return *ptr;
+			}
+		} else {
+			using namespace std;
+			return get<Idx>( std::forward<Variant>( var ) );
+		}
+	}
+
 	namespace visit_details {
 		namespace test {
 			struct Tst {
@@ -45,14 +71,15 @@ namespace daw {
 			using Fs::operator( )...;
 		};
 		template<typename... Fs>
-		overload_t( Fs... )->overload_t<Fs...>;
+		overload_t( Fs... ) -> overload_t<Fs...>;
 
 		template<typename F, typename... Fs>
 		[[nodiscard, maybe_unused]] constexpr decltype( auto )
 		overload( F &&f, Fs &&... fs ) noexcept {
 			if constexpr( sizeof...( Fs ) > 0 ) {
-				return overload_t{daw::traits::lift_func( std::forward<F>( f ) ),
-				                  daw::traits::lift_func( std::forward<Fs>( fs ) )...};
+				return overload_t{
+				  daw::traits::lift_func( std::forward<F>( f ) ),
+				  daw::traits::lift_func( std::forward<Fs>( fs ) )... };
 			} else {
 				if constexpr( std::is_function_v<daw::remove_cvref_t<F>> ) {
 					static_assert(
@@ -65,25 +92,24 @@ namespace daw {
 
 		template<size_t N, typename R, typename Variant, typename Visitor>
 		[[nodiscard]] constexpr R visit_nt( Variant &&var, Visitor &&vis ) {
-			using std::get;
 			if constexpr( N == 0 ) {
 				// If this check isnt there the compiler will generate
 				// exception code, this stops that
 				if( N != var.index( ) or
-				    not std::is_invocable_v<Visitor, decltype( get<N>( var ) )> ) {
+				    not std::is_invocable_v<Visitor, decltype( get_nt<N>( var ) )> ) {
 					std::abort( );
 				}
 				return std::forward<Visitor>( vis )(
-				  get<N>( std::forward<Variant>( var ) ) );
+				  get_nt<N>( std::forward<Variant>( var ) ) );
 			} else {
 				if( var.index( ) == N ) {
-					if( not std::is_invocable_v<Visitor, decltype( get<N>( var ) )> ) {
+					if( not std::is_invocable_v<Visitor, decltype( get_nt<N>( var ) )> ) {
 						std::abort( );
 					}
 					// If this check isnt there the compiler will generate
 					// exception code, this stops that
 					return std::forward<Visitor>( vis )(
-					  get<N>( std::forward<Variant>( var ) ) );
+					  get_nt<N>( std::forward<Variant>( var ) ) );
 				}
 				return visit_nt<N - 1, R>( std::forward<Variant>( var ),
 				                           std::forward<Visitor>( vis ) );
@@ -107,17 +133,16 @@ namespace daw {
 
 	// Singe visitation visit.  Expects that variant is valid and not empty
 	// The return type assumes that all the visitors have a result convertable
-	// to that of visitor( get<0>( variant ) ) 's result
+	// to that of visitor( get_nt<0>( variant ) ) 's result
 	template<typename Variant, typename... Visitors>
 	[[nodiscard, maybe_unused]] constexpr decltype( auto )
 	visit_nt( Variant &&var, Visitors &&... visitors ) {
 
 		constexpr size_t var_sz = daw::visit_details::get_var_size_v<Variant>;
 		static_assert( var_sz > 0 );
-		using std::get;
 		using result_t =
 		  decltype( daw::visit_details::overload( std::forward<Visitors>(
-		    visitors )... )( get<0>( std::forward<Variant>( var ) ) ) );
+		    visitors )... )( get_nt<0>( std::forward<Variant>( var ) ) ) );
 
 		return daw::visit_details::visit_nt<var_sz - 1, result_t>(
 		  std::forward<Variant>( var ),

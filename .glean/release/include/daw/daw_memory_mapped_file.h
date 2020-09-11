@@ -22,6 +22,9 @@
 
 #pragma once
 
+#include "daw_string_view.h"
+#include "daw_traits.h"
+
 #include <cstddef>
 #include <cstdio>
 #include <string_view>
@@ -74,12 +77,22 @@ namespace daw::filesystem {
 		}
 
 	public:
-		constexpr memory_mapped_file_t( ) noexcept = default;
+		constexpr explicit memory_mapped_file_t( ) noexcept = default;
 
-		explicit memory_mapped_file_t( std::string_view file,
+		template<typename StringView,
+		         std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
+		                          std::nullptr_t> = nullptr>
+		explicit memory_mapped_file_t( StringView file,
 		                               open_mode mode = open_mode::read ) noexcept {
 
-			(void)open( file, mode );
+			(void)open( std::string_view( std::data( file ), std::size( file ) ),
+			            mode );
+		}
+
+		explicit memory_mapped_file_t( char const *file,
+		                               open_mode mode = open_mode::read ) noexcept {
+
+			(void)open( std::string_view( file ), mode );
 		}
 
 		[[nodiscard]] bool open( std::string_view file,
@@ -181,11 +194,8 @@ namespace daw::filesystem {
 			cleanup( );
 		}
 
-		operator std::basic_string_view<T>( ) const {
-			return { data( ), size( ) };
-		}
-
-		operator std::basic_string_view<T>( ) {
+		template<typename Traits>
+		operator std::basic_string_view<T, Traits>( ) const {
 			return { data( ), size( ) };
 		}
 	};

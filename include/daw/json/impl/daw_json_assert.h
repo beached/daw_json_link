@@ -63,10 +63,8 @@ namespace daw::json {
 		explicit json_exception( std::string_view reason,
 		                         std::string_view location ) noexcept
 		  : m_reason( reason )
-		  , m_location(
-		      location.data( ),
-		      std::min( location.size( ), static_cast<std::size_t>( 79U ) ) )
-		  , m_parse_loc( location.data( ) + location.size( ) ) {}
+		  , m_location( location )
+		  , m_parse_loc( location.data( ) ) {}
 
 		explicit json_exception( std::string_view reason,
 		                         ErrorType error_type ) noexcept
@@ -77,10 +75,8 @@ namespace daw::json {
 		                         std::string_view location ) noexcept
 		  : m_reason( reason )
 		  , m_error_type( error_type )
-		  , m_location(
-		      location.data( ),
-		      std::min( location.size( ), static_cast<std::size_t>( 10U ) ) )
-		  , m_parse_loc( location.data( ) + location.size( ) ) {}
+		  , m_location( location )
+		  , m_parse_loc( location.data( ) ) {}
 
 		[[nodiscard]] std::string const &reason( ) const {
 			return m_reason;
@@ -93,19 +89,32 @@ namespace daw::json {
 		[[nodiscard]] ErrorType type( ) const {
 			return m_error_type;
 		}
+
+		[[nodiscard]] char const *parse_location( ) const {
+			return m_parse_loc;
+		}
 	};
 
-	std::string to_string( json_exception const &je ) {
+	std::string to_formatted_string( json_exception const &je ) {
 		using namespace std::string_literals;
-		auto loc = std::accumulate(
-		  je.location( ).begin( ), je.location( ).end( ), std::string{ },
-		  []( std::string r, char c ) -> std::string {
-			  if( static_cast<unsigned char>( c ) >= 0x20 ) {
-				  r += c;
-			  }
-			  return r;
-		  } );
-		std::string result = "reason: "s + je.reason( ) + "\nlocation: "s + loc;
+		std::string result = "reason: "s + je.reason( );
+		if( not je.location( ).empty( ) ) {
+			result += "\nlocation: "s;
+#ifndef _WIN32
+			result += "\x1b[1m";
+#endif
+			result += std::accumulate(
+			  je.location( ).begin( ), je.location( ).end( ), std::string{ },
+			  []( std::string r, char c ) -> std::string {
+				  if( static_cast<unsigned char>( c ) >= 0x20 ) {
+					  r += c;
+				  }
+				  return r;
+			  } );
+#ifndef _WIN32
+			result += "\x1b[0m\n";
+#endif
+		}
 		return result;
 	}
 } // namespace daw::json
@@ -126,12 +135,21 @@ daw_json_error( std::string_view reason, Range const &location = nullptr ) {
 			(void)location;
 			throw daw::json::json_exception( reason );
 		} else {
-			if( location.class_first and location.first ) {
-				auto loc =
-				  std::string_view( location.class_first,
-				                    static_cast<std::size_t>( ( location.first + 1 ) -
-				                                              location.class_first ) );
-				throw daw::json::json_exception( reason, loc );
+			if( location.first ) {
+				if( location.class_first ) {
+					auto const len =
+					  static_cast<std::size_t>( location.first - location.class_first );
+					auto loc = std::string_view( location.class_first, len );
+					throw daw::json::json_exception( reason, loc );
+				}
+				if( location.last ) {
+					auto const len =
+					  static_cast<std::size_t>( location.last - location.first );
+					auto loc = std::string_view( location.first, len );
+					throw daw::json::json_exception( reason, loc );
+				}
+				throw daw::json::json_exception(
+				  reason, std::string_view( location.first, 0 ) );
 			} else {
 				throw daw::json::json_exception( reason );
 			}
