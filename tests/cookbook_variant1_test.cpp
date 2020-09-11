@@ -69,10 +69,10 @@ int main( int argc, char **argv ) try {
 	  daw::json::from_json_array<daw::cookbook_variant1::MyVariantStuff1>( data );
 	daw_json_assert( stuff.size( ) == 2, "Unexpected size" );
 	daw_json_assert( stuff.front( ).member0.index( ) == 0, "Unexpected value" );
-	daw_json_assert( std::get<0>( stuff.front( ).member0 ) == 5,
+	daw_json_assert( (std::get<0>( stuff.front( ).member0 ) == 5),
 	                 "Unexpected value" );
 	daw_json_assert( stuff.front( ).member1.index( ) == 0, "Unexpected value" );
-	daw_json_assert( std::get<0>( stuff.front( ).member1 ) == "hello",
+	daw_json_assert( (std::get<0>( stuff.front( ).member1 ) == "hello"),
 	                 "Unexpected value" );
 
 	auto const str = daw::json::to_json_array( stuff );

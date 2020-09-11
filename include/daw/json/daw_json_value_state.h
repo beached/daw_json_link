@@ -296,7 +296,7 @@ namespace daw::json {
 				if( index < 0 ) {
 					index = -index;
 					auto sz = size( );
-					daw_json_assert_weak( static_cast<std::size_t>( index ) < sz,
+					daw_json_assert_weak( ( static_cast<std::size_t>( index ) < sz ),
 					                      "Unknown member" );
 					sz -= static_cast<std::size_t>( index );
 					return m_locs[sz].location->value;

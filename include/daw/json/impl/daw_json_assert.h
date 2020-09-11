@@ -198,41 +198,24 @@ daw_json_error( daw::json::json_details::missing_member reason,
 #endif
 }
 
-template<typename Bool>
-DAW_ATTRIBUTE_FLATTEN inline constexpr void
-daw_json_assert( Bool const &b, std::string_view reason ) {
-	if( DAW_JSON_UNLIKELY( not static_cast<bool>( b ) ) ) {
-		daw_json_error( reason );
-	}
-}
-template<typename Bool, typename Range>
-DAW_ATTRIBUTE_FLATTEN inline constexpr void
-daw_json_assert( Bool const &b, std::string_view reason,
-                 Range const &location ) {
-	if( DAW_JSON_UNLIKELY( not static_cast<bool>( b ) ) ) {
-		daw_json_error( reason, location );
-	}
-}
-template<typename Bool>
-DAW_ATTRIBUTE_FLATTEN inline constexpr void
-daw_json_assert_strong( Bool const &b,
-                        daw::json::json_details::missing_member reason ) {
-	if( DAW_JSON_UNLIKELY( not static_cast<bool>( b ) ) ) {
-		daw_json_error( reason );
-	}
-}
-template<typename Bool, typename Range>
-DAW_ATTRIBUTE_FLATTEN inline constexpr void
-daw_json_assert_strong( Bool const &b,
-                        daw::json::json_details::missing_member reason,
-                        Range const &location ) {
-	if( DAW_JSON_UNLIKELY( not static_cast<bool>( b ) ) ) {
-		daw_json_error( reason, location );
-	}
-}
+/***
+ * Ensure that Bool is true
+ * If false pass rest of args to daw_json_error
+ */
+#define daw_json_assert( Bool, ... )                                           \
+	if( DAW_JSON_UNLIKELY( not static_cast<bool>( Bool ) ) ) {                   \
+		daw_json_error( __VA_ARGS__ );                                             \
+	}                                                                            \
+	while( false )
 
-#define daw_json_assert_weak( ... )                                            \
+/***
+ * Ensure that Bool is true when in Checked Input mode
+ * If false pass rest of args to daw_json_error
+ */
+#define daw_json_assert_weak( Bool, ... )                                      \
 	if constexpr( not Range::is_unchecked_input ) {                              \
-		daw_json_assert( __VA_ARGS__ );                                            \
+		if( DAW_JSON_UNLIKELY( not static_cast<bool>( Bool ) ) ) {                 \
+			daw_json_error( __VA_ARGS__ );                                           \
+		}                                                                          \
 	}                                                                            \
 	while( false )
