@@ -366,6 +366,11 @@ target_link_libraries(cookbook_dates3_test json_test)
 add_test(NAME cookbook_dates3_test COMMAND cookbook_dates3_test ./cookbook_dates3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_dates3_test)
 
+add_executable(cookbook_dates4_test src/cookbook_dates4_test.cpp)
+target_link_libraries(cookbook_dates4_test json_test)
+add_test(NAME cookbook_dates4_test COMMAND cookbook_dates4_test ./cookbook_dates4.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_dates4_test)
+
 add_executable(no_move_or_copy_cls_test src/no_move_or_copy_cls_test.cpp)
 target_link_libraries(no_move_or_copy_cls_test json_test)
 add_test(NAME no_move_or_copy_cls_test COMMAND no_move_or_copy_cls_test)

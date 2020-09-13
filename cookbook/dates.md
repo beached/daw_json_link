@@ -75,7 +75,7 @@ struct MyClass2 {
 
 namespace daw::json {
   template<>
-  struct json_data_contract<MyClass> {
+  struct json_data_contract<MyClass2> {
     using type = json_member_list<
       json_string<"name">,
       json_custom<"timestamp", 
@@ -85,7 +85,7 @@ namespace daw::json {
       >
     >;
 
-    static inline auto to_json_data( MyClass const & v ) {
+    static inline auto to_json_data( MyClass2 const & v ) {
       return std::forward_as_tuple( v.name, v.timestamp );
     }   
   };
@@ -106,6 +106,8 @@ A time_point can be encoded into JSON a the number of seconds since epoch(Jan 1,
 ```
 
 This example will use the constructor of the class to construct the `time_point` from the integer.  Otherwise, a `json_custom` type could be used here too.  It demonstrates using a constructor to do the data conversions, along with `to_json_data` to reverse the conversion.  Another alternative is to use the `Constructor` template argument to do the conversion of the integer to the `time_point`.  The `dateAdded` member shows parsing strings into numbers.  This is often done as numbers in JSON are double and can only hold integers as large as 2^53.
+
+Too see a working example using this code, refer to [cookbook_dates3_test.cpp](../tests/cookbook_dates3_test.cpp) 
 
 ```c++
 using my_timepoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
@@ -134,7 +136,7 @@ bool operator==( MyClass3 const &lhs, MyClass3 const &rhs ) {
 
 namespace daw::json {
   template<>
-  struct json_data_contract<daw::cookbook_dates3::MyClass3> {
+  struct json_data_contract<MyClass3> {
     using type = json_member_list<
       json_string<"title">, 
       json_number<"id", unsigned>,
@@ -157,7 +159,8 @@ In some older MS implementations of AJAX, dates were encoded like
 ```
 where the first number is the number of seconds since UNIX epoch, and then, optionally, followed by an offset.
 
-Taking the first example, modified the time to use the MS AJAX format 
+Taking the first example, modified the time to use the MS AJAX format, the timestamp only has 1s resolution and is a number.
+
 ```json
 {
   "name": "Toronto",
@@ -165,3 +168,54 @@ Taking the first example, modified the time to use the MS AJAX format
 }
 ```
 
+When parsing the `timestamp` member we need to skip the first 6 characters, optionally verifying it says `"/DATE(`. Then parse the number and add it to a `std::chrono` timestamp with the time of Unix Epoc, Midight January 1, 1970.
+ 
+Too see a working example using this code, refer to [cookbook_dates4_test.cpp](../tests/cookbook_dates4_test.cpp) 
+
+```c++
+using timepoint_t = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
+struct TimestampConverter {
+ timepoint_t operator( )( std::string_view sv ) const {
+    auto sv2 = daw::string_view( sv.data( ), sv.size( ) );
+    daw::string_view const prefix = "/DATE(";
+    daw::string_view const suffix = ")/";
+    daw_json_assert( sv2.starts_with( prefix ), "Unexpected date format" );
+    daw_json_assert( sv2.ends_with( suffix ), "Unexpected date format" );
+    sv2.remove_prefix( prefix.size( ) );
+    sv2.remove_suffix( suffix.size( ) );
+
+    int64_t val =
+      daw::json::from_json<int64_t, daw::json::NoCommentSkippingPolicyChecked,
+                           true>( sv2 );
+    const auto epoch =
+      daw::json::datetime::civil_to_time_point( 1970, 1, 1, 0, 0, 0, 0 );
+
+    return epoch + std::chrono::seconds( val );
+}
+
+// Same class as above, but the JSON encoding differs
+struct MyClass4 {
+  std::string name;
+  timepoint_t timestamp;
+};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<MyClass4> {
+    using type = json_member_list<
+      json_string<"name">,
+      json_custom<"timestamp", 
+        timepoint_t, 
+        TimestampConverter, 
+        TimestampConverter
+      >
+    >;
+
+    static inline auto to_json_data( MyClass4 const & v ) {
+      return std::forward_as_tuple( v.name, v.timestamp );
+    }   
+  };
+}
+// ...
+timepoint_t my_timepoint = daw::json::from_json<MyClass4>( json_document );
+```

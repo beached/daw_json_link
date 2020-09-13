@@ -592,17 +592,20 @@ namespace daw::json {
 	 * @param json_data JSON string data
 	 * @return A reified T constructed from JSON data
 	 */
-	template<typename JsonClass,
-	         typename ParsePolicy = NoCommentSkippingPolicyChecked>
-	[[maybe_unused, nodiscard]] constexpr JsonClass
+	template<typename JsonMember,
+	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
+	         bool KnownBounds = false>
+	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( std::string_view json_data ) {
 		daw_json_assert( not json_data.empty( ),
 		                 "Cannot parse null or empty strings" );
-		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
-		               "Expected a typed that has been mapped via specialization "
-		               "of daw::json::json_data_contract" );
-		return json_details::from_json_member_impl<JsonClass, ParsePolicy>(
-		  json_data );
+		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
+		auto rng = ParsePolicy( json_data.data( ),
+		                        json_data.data( ) +
+		                          static_cast<ptrdiff_t>( json_data.size( ) ) );
+
+		return json_details::parse_value<json_member, KnownBounds>(
+		  ParseTag<json_member::expected_type>{ }, rng );
 	}
 
 	/***
@@ -620,6 +623,10 @@ namespace daw::json {
 	from_json( std::string_view json_data, std::string_view member_path ) {
 		daw_json_assert( not json_data.empty( ), "Cannot parse null strings" );
 		daw_json_assert( not member_path.empty( ), "Cannot parse null strings" );
+		static_assert(
+		  json_details::has_unnamed_default_type_mapping<JsonMember>::value,
+		  "Expected a typed that has been mapped via specialization "
+		  "of daw::json::json_data_contract or a basic type(eg integral, string)" );
 		return json_details::from_json_member_impl<JsonMember, ParsePolicy>(
 		  json_data, member_path );
 	}
