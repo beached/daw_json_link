@@ -1,0 +1,29 @@
+arch:
+  - arm64
+  - ppc64le
+  - s390x
+os: linux
+language: cpp
+dist: focal 
+
+env:
+  - BUILD_TYPE=Debug CC=gcc-9 CXX=g++-9
+  - BUILD_TYPE=Release CC=gcc-9 CXX=g++-9
+
+before_install:
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+  - sudo apt-get update -qq
+install:
+  - sudo apt-get install g++-9 git build-essential cmake
+  - cmake --version  
+
+
+script:
+  - mkdir build && cd build
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDAW_JSON_NO_CONST_EXPR=ON -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On
+  - cmake --build . --config ${BUILD_TYPE} --target full -- -k
+  - ctest -C ${BUILD_TYPE} -j2 -VV --timeout 600 
+
+notifications:
+  email: false
+
