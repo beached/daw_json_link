@@ -19,7 +19,7 @@
 #include <iostream>
 #include <streambuf>
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv ) {
 	if( argc < 2 ) {
 		std::cerr << "Must supply a file name\n";
 		exit( 1 );
@@ -36,11 +36,13 @@ int main( int argc, char **argv ) try {
 		daw_json_assert( twitter_result.statuses.front( ).user.id == "1186275104",
 		                 "Missing value" );
 	} catch( daw::json::json_exception const &jex ) {
-		std::cerr << "Exception thrown by parser: " << to_formatted_string( jex ) << '\n';
-		if( jex.parse_location() ) {
-			std::cerr << "Error happened around " << (jex.parse_location() - json_sv1.data( ) ) << " bytes into file\n";
+		std::cerr << "Exception thrown by parser: " << to_formatted_string( jex )
+		          << '\n';
+		if( jex.parse_location( ) ) {
+			std::cerr << "Error happened around "
+			          << ( jex.parse_location( ) - json_sv1.data( ) )
+			          << " bytes into file\n";
 		}
 		exit( 1 );
 	}
 }
-
