@@ -11,7 +11,6 @@ cmake_minimum_required( VERSION 3.10 )
 project( "json_link"
 	VERSION "1.9.0" 
 	DESCRIPTION "Static JSON parsing in C++"
-	HOMEPAGE_URL "http://github.com/beached/daw_json_link"
 	LANGUAGES C CXX)
 
 set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
