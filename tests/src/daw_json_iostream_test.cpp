@@ -1,5 +1,7 @@
 
 
+#include "defines.h"
+
 #include <daw/json/daw_json_iostream.h>
 
 #include <deque>
@@ -20,7 +22,7 @@ namespace daw::json {
 		static constexpr char const x[] = "x";
 		using type = json_member_list<json_number<x, int>>;
 #endif
-		static inline auto to_json_data( NumberX const &v ) {
+		static constexpr auto to_json_data( NumberX const &v ) {
 			return std::forward_as_tuple( v.x );
 		}
 	};
@@ -33,10 +35,10 @@ static_assert(
     std::vector<NumberX>> );
 
 int main( ) {
-	constexpr std::string_view single_numberx = R"({"x":123})";
-	constexpr NumberX nx = daw::json::from_json<NumberX>( single_numberx );
+	DAW_CONSTEXPR std::string_view const single_numberx = R"({"x":123})";
+	DAW_CONSTEXPR NumberX const nx = daw::json::from_json<NumberX>( single_numberx );
 
-	constexpr std::string_view const numberx_in_json_array =
+	DAW_CONSTEXPR std::string_view const numberx_in_json_array =
 	  R"([{"x":1},{"x":2},{"x":3}])";
 	std::vector<NumberX> vec_nx =
 	  daw::json::from_json_array<NumberX>( numberx_in_json_array );
