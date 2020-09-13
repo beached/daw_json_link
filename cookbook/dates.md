@@ -148,3 +148,20 @@ namespace daw::json {
   };
 } // namespace daw::json
 ```
+
+### Microsoft AJAX DateTime.
+
+In some older MS implementations of AJAX, dates were encoded like 
+```json
+"/Date(725842800000+0100)/"
+```
+where the first number is the number of seconds since UNIX epoch, and then, optionally, followed by an offset.
+
+Taking the first example, modified the time to use the MS AJAX format 
+```json
+{
+  "name": "Toronto",
+  "timestamp": "/DATE(1577928874)/"
+}
+```
+
