@@ -168,12 +168,10 @@ bool test_escaped_quote_004( ) {
 	} while( false )
 
 int main( int, char ** ) try {
-	/*
 	do_test( test_empty( ) );
 	do_test( test_quoted_number( ) );
 	do_test( test_empty_quoted( ) );
 	do_test( test_embeded_quotes( ) );
-	 */
 	do_test( test_escaped_quote_001<daw::json::constexpr_exec_tag>( ) );
 	do_test( test_escaped_quote_002<daw::json::constexpr_exec_tag>( ) );
 	do_test( test_escaped_quote_003<daw::json::constexpr_exec_tag>( ) );
@@ -192,6 +190,7 @@ int main( int, char ** ) try {
 	do_fail_test( test_missing_quotes_002( ) );
 	do_fail_test( test_missing_quotes_003( ) );
 } catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << to_formatted_string( jex )
+	          << '\n';
 	exit( 1 );
 }
