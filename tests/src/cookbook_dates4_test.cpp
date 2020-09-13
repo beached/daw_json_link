@@ -20,11 +20,11 @@
 #include <string>
 
 namespace daw::cookbook_dates4 {
+	using timepoint_t = std::chrono::time_point<std::chrono::system_clock,
+	                                            std::chrono::milliseconds>;
 	struct MyClass4 {
 		std::string name;
-		std::chrono::time_point<std::chrono::system_clock,
-		                        std::chrono::milliseconds>
-		  timestamp;
+		timepoint_t timestamp;
 	};
 
 	bool operator==( MyClass4 const &lhs, MyClass4 const &rhs ) {
@@ -33,20 +33,17 @@ namespace daw::cookbook_dates4 {
 	}
 
 	struct TimestampConverter {
-		DAW_CONSTEXPR std::chrono::time_point<std::chrono::system_clock,
-		                                      std::chrono::milliseconds>
-		operator( )( std::string_view sv ) const {
+		DAW_CONSTEXPR timepoint_t operator( )( std::string_view sv ) const {
 			auto sv2 = daw::string_view( sv.data( ), sv.size( ) );
-			DAW_CONSTEXPR daw::string_view prefix = "/DATE(";
+			DAW_CONSTEXPR daw::string_view prefix = "/Date(";
 			DAW_CONSTEXPR daw::string_view suffix = ")/";
 			daw_json_assert( sv2.starts_with( prefix ), "Unexpected date format" );
 			daw_json_assert( sv2.ends_with( suffix ), "Unexpected date format" );
 			sv2.remove_prefix( prefix.size( ) );
 			sv2.remove_suffix( suffix.size( ) );
 
-			int64_t val =
-			  daw::json::from_json<int64_t, daw::json::NoCommentSkippingPolicyChecked,
-			                       true>( sv2 );
+			std::int64_t val = daw::json::from_json<
+			  std::int64_t, daw::json::NoCommentSkippingPolicyChecked, true>( sv2 );
 			DAW_CONSTEXPR const auto epoch =
 			  daw::json::datetime::civil_to_time_point( 1970, 1, 1, 0, 0, 0, 0 );
 
@@ -54,49 +51,25 @@ namespace daw::cookbook_dates4 {
 		}
 
 		template<typename OutputIterator>
-		DAW_CONSTEXPR OutputIterator operator( )(
-		  OutputIterator it, std::chrono::time_point<std::chrono::system_clock,
-		                                             std::chrono::milliseconds>
-		                       tp ) const {
+		DAW_CONSTEXPR OutputIterator operator( )( OutputIterator it,
+		                                          timepoint_t tp ) const {
 
-			auto const &[yr, mo, dy, hr, mn, se, ms] =
-			  daw::json::datetime::time_point_to_civil( tp );
-			// Day of Week
-			it = daw::json::utils::copy_to_iterator(
-			  it, daw::json::datetime::short_day_of_week( tp ) );
-			*it++ = ' ';
-			// Month
-			it = daw::json::utils::copy_to_iterator(
-			  it, daw::json::datetime::month_short_name( mo ) );
-			*it++ = ' ';
-			it = daw::json::utils::integer_to_string( it, dy );
-			*it++ = ' ';
-			if( hr < 10 ) {
-				*it++ = '0';
-			}
-			it = daw::json::utils::integer_to_string( it, hr );
-			*it++ = ':';
-			if( mn < 10 ) {
-				*it++ = '0';
-			}
-			it = daw::json::utils::integer_to_string( it, mn );
-			*it++ = ':';
-			if( se < 10 ) {
-				*it++ = '0';
-			}
-			it = daw::json::utils::integer_to_string( it, se );
-			it = daw::json::utils::copy_to_iterator( it, " +0000 " );
-			it = daw::json::utils::integer_to_string( it, yr );
+			DAW_CONSTEXPR const auto epoch =
+			  daw::json::datetime::civil_to_time_point( 1970, 1, 1, 0, 0, 0, 0 );
+
+			// We divide by 1000 because the storage is in milliseconds
+			std::int64_t const seconds_since_epoch = ( tp - epoch ).count( ) / 1000;
+			it = daw::json::utils::copy_to_iterator( it, "/Date(");
+			it = daw::json::utils::integer_to_string( it, seconds_since_epoch );
+			it = daw::json::utils::copy_to_iterator( it, ")/");
 			return it;
 		}
 	};
 
 	template<JSONNAMETYPE name>
 	using json_timestamp =
-	  daw::json::json_custom<name,
-	                         std::chrono::time_point<std::chrono::system_clock,
-	                                                 std::chrono::milliseconds>,
-	                         TimestampConverter, TimestampConverter>;
+	  daw::json::json_custom<name, timepoint_t, TimestampConverter,
+	                         TimestampConverter>;
 } // namespace daw::cookbook_dates4
 
 namespace daw::json {
