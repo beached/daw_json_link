@@ -151,7 +151,9 @@ bool test_escaped_quote_004( ) {
 		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                    \
 	} catch( daw::json::json_exception const &jex ) {                            \
 		std::cerr << "Unexpected exception thrown by parser in test '"             \
-		          << "" #__VA_ARGS__ << "': " << jex.reason( ) << std::endl;       \
+		          << "" #__VA_ARGS__ << "': " << to_formatted_string( jex )        \
+		          << '\n';                                                         \
+		exit( 1 );                                                                 \
 	}                                                                            \
 	do {                                                                         \
 	} while( false )
