@@ -15,6 +15,7 @@ before_install:
   - sudo apt-get update -qq
 install:
   - sudo apt-get install g++-9 git build-essential cmake
+  - cmake --version  
 
 
 script:
