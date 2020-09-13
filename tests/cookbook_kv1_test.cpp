@@ -22,7 +22,6 @@
 namespace daw::cookbook_kv1 {
 	struct MyKeyValue1 {
 		std::unordered_map<std::string, int> kv;
-		std::map<std::string, int> kv2;
 	};
 
 	bool operator==( MyKeyValue1 const &lhs, MyKeyValue1 const &rhs ) {

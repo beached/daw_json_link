@@ -272,9 +272,9 @@ namespace daw::json::json_details {
 					if( first == last ) {
 						return constructor_t{ }( );
 					}
-					return constructor_t{ }( first, last - first );
+					return constructor_t{ }( first, static_cast<std::size_t>( last - first ) );
 				} else {
-					return constructor_t{ }( first, last - first );
+					return constructor_t{ }( first, static_cast<std::size_t>( last - first ) );
 				}
 			}
 		}

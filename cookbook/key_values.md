@@ -3,7 +3,7 @@
 Dictionaries and Maps are not directly represented in JSON.  There are several ways that they are commonly encoded.
 
 ## As Class
-Keys are stored as member names and Values as their value.  This is very common, but limits the Key type to strings in JSON.  However, numbers and other literals are encodable as strings.
+Keys are stored as member names and Values as their value.  This is very common, but limits the Key type to strings in JSON.  However, numbers and other literals are able to be encoded as strings.
 
 ```json
 { 

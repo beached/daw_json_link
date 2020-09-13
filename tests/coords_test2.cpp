@@ -33,7 +33,6 @@ struct coordinate_t {
 	double x;
 	double y;
 	double z;
-	std::string name;
 };
 
 struct coordinates_t {
