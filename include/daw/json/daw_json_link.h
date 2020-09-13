@@ -587,7 +587,7 @@ namespace daw::json {
 	/**
 	 * Parse JSON and construct a T as the result.  This method
 	 * provides checked json
-	 * @tparam JsonClass type that has specialization of
+	 * @tparam JsonMember type that has specialization of
 	 * daw::json::json_data_contract
 	 * @param json_data JSON string data
 	 * @return A reified T constructed from JSON data

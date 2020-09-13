@@ -31,19 +31,25 @@ namespace daw::cookbook_dates4 {
 		return std::tie( lhs.name, lhs.timestamp ) ==
 		       std::tie( rhs.name, rhs.timestamp );
 	}
+	static DAW_CONSTEXPR std::string_view const prefix = "/Date(";
+	static DAW_CONSTEXPR std::string_view const suffix = ")/";
 
 	struct TimestampConverter {
 		DAW_CONSTEXPR timepoint_t operator( )( std::string_view sv ) const {
-			auto sv2 = daw::string_view( sv.data( ), sv.size( ) );
-			DAW_CONSTEXPR daw::string_view prefix = "/Date(";
-			DAW_CONSTEXPR daw::string_view suffix = ")/";
-			daw_json_assert( sv2.starts_with( prefix ), "Unexpected date format" );
-			daw_json_assert( sv2.ends_with( suffix ), "Unexpected date format" );
-			sv2.remove_prefix( prefix.size( ) );
-			sv2.remove_suffix( suffix.size( ) );
+			daw::string_view s;
+			daw_json_assert( sv.size( ) > ( prefix.size( ) + suffix.size( ) ),
+			                 "Unexpected date size" );
+			auto const sv_prefix = sv.substr( 0, prefix.size( ) );
+			daw_json_assert( sv_prefix == prefix,
+			                 "Unexpected date format" );
+			sv.remove_prefix( prefix.size( ) );
+			auto const sv_suffix = sv.substr( sv.size( ) - suffix.size( ), suffix.size( ) );
+			daw_json_assert( sv_suffix == suffix,
+											 "Unexpected date format" );
+			sv.remove_suffix( suffix.size( ) );
 
 			std::int64_t val = daw::json::from_json<
-			  std::int64_t, daw::json::NoCommentSkippingPolicyChecked, true>( sv2 );
+			  std::int64_t, daw::json::NoCommentSkippingPolicyChecked, true>( sv );
 			DAW_CONSTEXPR const auto epoch =
 			  daw::json::datetime::civil_to_time_point( 1970, 1, 1, 0, 0, 0, 0 );
 
@@ -59,9 +65,9 @@ namespace daw::cookbook_dates4 {
 
 			// We divide by 1000 because the storage is in milliseconds
 			std::int64_t const seconds_since_epoch = ( tp - epoch ).count( ) / 1000;
-			it = daw::json::utils::copy_to_iterator( it, "/Date(");
+			it = daw::json::utils::copy_to_iterator( it, "/Date(" );
 			it = daw::json::utils::integer_to_string( it, seconds_since_epoch );
-			it = daw::json::utils::copy_to_iterator( it, ")/");
+			it = daw::json::utils::copy_to_iterator( it, ")/" );
 			return it;
 		}
 	};
