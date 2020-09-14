@@ -36,7 +36,6 @@ namespace daw::cookbook_dates4 {
 
 	struct TimestampConverter {
 		DAW_CONSTEXPR timepoint_t operator( )( std::string_view sv ) const {
-			daw::string_view s;
 			daw_json_assert( sv.size( ) > ( prefix.size( ) + suffix.size( ) ),
 			                 "Unexpected date size" );
 			auto const sv_prefix = sv.substr( 0, prefix.size( ) );

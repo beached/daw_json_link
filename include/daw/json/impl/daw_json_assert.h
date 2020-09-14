@@ -132,7 +132,6 @@ daw_json_error( std::string_view reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
 		throw daw::json::json_exception( reason );
-
 	} else {
 #endif
 		(void)ShouldThrow;

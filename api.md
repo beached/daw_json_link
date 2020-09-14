@@ -209,7 +209,7 @@ struct json_custom
 - ```FromJsonConverter``` A class who's `operator( )` take a `std::string_view` and returns an instance of `T`;  The default calls `from_string( daw::tag_t<T>, T )`.
 - ```ToJsonConverter``` A class who's `operator( )` is takes an instance of `T`  value and returns a string like type.  The default uses `to_string( T )`.
 - ```CustomJsonType``` - The JSON data will be a literal or a string.  Values are `CustomJsonTypes::Literal`, and `CustomJsonTypes::StringRaw`
-- ```Nullable``` is the value optional/nullable.  Valules are ```JsonNullable::NotBeforeDblQuote```, and ```JsonNullable::Nullable``` 
+- ```Nullable``` is the value optional/nullable.  Values are ```JsonNullable::NotBeforeDblQuote```, and ```JsonNullable::Nullable``` 
 
 As above but without the Nullable option, it is set to Nullable, is the ```json_custom_null``` alias.
 

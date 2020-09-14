@@ -590,6 +590,8 @@ namespace daw::json {
 	 * @tparam JsonMember type that has specialization of
 	 * daw::json::json_data_contract
 	 * @param json_data JSON string data
+	 * @tparam KnownBounds The bounds of the json_data are known to contain the
+	 * whole value
 	 * @return A reified T constructed from JSON data
 	 */
 	template<typename JsonMember,
@@ -615,46 +617,73 @@ namespace daw::json {
 	 * @param member_path A dot separated path of member names, default is the
 	 * root.  Array indices are specified with square brackets e.g. [5] is the 6th
 	 * item
+	 * @tparam KnownBounds The bounds of the json_data are known to contain the
+	 * whole value
 	 * @return A value reified from the JSON data member
 	 */
 	template<typename JsonMember,
-	         typename ParsePolicy = NoCommentSkippingPolicyChecked>
+	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
+	         bool KnownBounds = false>
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( std::string_view json_data, std::string_view member_path ) {
 		daw_json_assert( not json_data.empty( ), "Cannot parse null strings" );
 		daw_json_assert( not member_path.empty( ), "Cannot parse null strings" );
-		static_assert(
-		  json_details::has_unnamed_default_type_mapping<JsonMember>::value,
-		  "Expected a typed that has been mapped via specialization "
-		  "of daw::json::json_data_contract or a basic type(eg integral, string)" );
-		return json_details::from_json_member_impl<JsonMember, ParsePolicy>(
-		  json_data, member_path );
+		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
+		auto [is_found, rng] = json_details::find_range<ParsePolicy>(
+		  json_data, { std::data( member_path ), std::size( member_path ) } );
+		if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
+			if( not is_found ) {
+				return typename json_member::constructor_t{ }( );
+			}
+		} else {
+			daw_json_assert( is_found,
+			                 "Could not find member and type isn't Nullable", rng );
+		}
+		return json_details::parse_value<json_member, KnownBounds>(
+		  ParseTag<json_member::expected_type>{ }, rng );
 	}
 
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
-	         typename Range>
+	         bool KnownBounds = false, typename Range>
 	[[maybe_unused, nodiscard]] inline constexpr auto
 	from_json( basic_json_value<Range> value ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
-		return json_details::from_json_member_impl<json_member, ParsePolicy>(
-		  value.get_string_view( ) );
+		auto const json_data = value.get_string_view( );
+		auto rng = ParsePolicy( json_data.data( ),
+		                        json_data.data( ) +
+		                          static_cast<ptrdiff_t>( json_data.size( ) ) );
+
+		return json_details::parse_value<json_member, KnownBounds>(
+		  ParseTag<json_member::expected_type>{ }, rng );
 	}
 
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
-	         typename Range>
+	         bool KnownBounds = false, typename Range>
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( basic_json_value<Range> value, std::string_view member_path ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
-		return json_details::from_json_member_impl<json_member, ParsePolicy>(
-		  value.get_string_view( ), member_path );
+		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
+		auto const json_data = value.get_string_view( );
+		auto [is_found, rng] = json_details::find_range<ParsePolicy>(
+		  json_data, { std::data( member_path ), std::size( member_path ) } );
+		if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
+			if( not is_found ) {
+				return typename json_member::constructor_t{ }( );
+			}
+		} else {
+			daw_json_assert( is_found,
+			                 "Could not find member and type isn't Nullable", rng );
+		}
+		return json_details::parse_value<json_member, KnownBounds>(
+		  ParseTag<json_member::expected_type>{ }, rng );
 	}
 
 	/**
 	 *
 	 * @tparam OutputIterator Iterator to character data to
-	 * @tparam JsonClass Type that has json_parser_desription and to_json_data
+	 * @tparam JsonClass Type that has json_parser_description and to_json_data
 	 * function overloads
 	 * @param value  value to serialize
 	 * @param out_it result to serialize to
@@ -710,6 +739,8 @@ namespace daw::json {
 	 * @param member_path A dot separated path of member names to start parsing
 	 * from. Array indices are specified with square brackets e.g. [5] is the 6th
 	 * item
+	 * @tparam KnownBounds The bounds of the json_data are known to contain the
+	 * whole value
 	 * @return A Container containing parsed data from JSON string
 	 */
 	template<typename JsonElement,
@@ -717,7 +748,8 @@ namespace daw::json {
 	           std::vector<typename json_details::unnamed_default_type_mapping<
 	             JsonElement>::parse_to_t>,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
-	         typename Constructor = daw::construct_a_t<Container>>
+	         typename Constructor = daw::construct_a_t<Container>,
+	         bool KnownBounds = false>
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data,
 	                 std::string_view member_path = "" ) {
@@ -753,7 +785,7 @@ namespace daw::json {
 		                      "Expected array class to being with a '['", rng );
 #endif
 
-		return json_details::parse_value<parser_t>(
+		return json_details::parse_value<parser_t, KnownBounds>(
 		  ParseTag<JsonParseTypes::Array>{ }, rng );
 	}
 

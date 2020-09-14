@@ -45,7 +45,7 @@ bool test_empty_quoted( ) {
 	return v.empty( );
 }
 
-bool test_embeded_quotes( ) {
+bool test_embedded_quotes( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "\"  \\ ")";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
 	auto rng =
@@ -63,7 +63,7 @@ bool test_missing_quotes_001( ) {
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
-	daw::do_not_optimize( v );
+	(void)v;
 	return false;
 }
 
@@ -74,7 +74,7 @@ bool test_missing_quotes_002( ) {
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
-	daw::do_not_optimize( v );
+	(void)v;
 	return false;
 }
 
@@ -85,7 +85,7 @@ bool test_missing_quotes_003( ) {
 	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
-	daw::do_not_optimize( v );
+	(void)v;
 	return false;
 }
 
@@ -99,9 +99,8 @@ bool test_escaped_quote_001( ) {
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
 	  sv2.data( ), sv2.data( ) + sv2.size( ) );
 	auto v = skip_string( rng );
-	daw::do_not_optimize( v );
-	auto r = v.size( ) == 28;
-	return r;
+	auto const sz = v.size( );
+	return sz == 28;
 }
 
 template<typename ExecTag>
@@ -114,7 +113,6 @@ bool test_escaped_quote_002( ) {
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
 	  sv2.data( ), sv2.data( ) + sv2.size( ) );
 	auto v = skip_string( rng );
-	daw::do_not_optimize( v );
 	return v.size( ) == 29;
 }
 
@@ -128,7 +126,6 @@ bool test_escaped_quote_003( ) {
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
 	  sv2.data( ), sv2.data( ) + sv2.size( ) );
 	auto v = skip_string( rng );
-	daw::do_not_optimize( v );
 	return v.size( ) == 29;
 }
 
@@ -142,13 +139,12 @@ bool test_escaped_quote_004( ) {
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
 	  sv2.data( ), sv2.data( ) + sv2.size( ) );
 	auto v = skip_string( rng );
-	daw::do_not_optimize( v );
 	return v.size( ) == 66;
 }
 
 #define do_test( ... )                                                         \
 	try {                                                                        \
-		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                    \
+		daw_json_assert( __VA_ARGS__, "" #__VA_ARGS__ );                    \
 	} catch( daw::json::json_exception const &jex ) {                            \
 		std::cerr << "Unexpected exception thrown by parser in test '"             \
 		          << "" #__VA_ARGS__ << "': " << to_formatted_string( jex )        \
@@ -171,7 +167,7 @@ int main( int, char ** ) try {
 	do_test( test_empty( ) );
 	do_test( test_quoted_number( ) );
 	do_test( test_empty_quoted( ) );
-	do_test( test_embeded_quotes( ) );
+	do_test( test_embedded_quotes( ) );
 	do_test( test_escaped_quote_001<daw::json::constexpr_exec_tag>( ) );
 	do_test( test_escaped_quote_002<daw::json::constexpr_exec_tag>( ) );
 	do_test( test_escaped_quote_003<daw::json::constexpr_exec_tag>( ) );
