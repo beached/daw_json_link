@@ -34,7 +34,7 @@ json_value val = json_value( json_string );
 ## Content 
 * [Intro](#intro)
   * [Default Mapping of Types](#default-mapping-of-types)
-* [API](api.md) - Member mapping classes
+* [API Documentation](docs/html/index.html) - Member mapping classes
 * [Cookbook](cookbook/readme.md) Get cooking and putting it all together 
   * [Arrays](cookbook/array.md)
   * [Classes](cookbook/class.md)
