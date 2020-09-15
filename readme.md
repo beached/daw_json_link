@@ -5,11 +5,13 @@
 
 [![Build Status Ubuntu](https://github.com/beached/daw_json_link/workflows/Ubuntu/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AUbuntu)
 
-[![Build Status Windows](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows)
+[![Build Status Windows - MSVC](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows)
+
+[![Build Status Windows - ClangCL](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows_ClangCl)
 
 [![Build Status Arm64 Linux](https://travis-ci.com/beached/daw_json_link.svg?branch=release)](https://travis-ci.com/beached/daw_json_link) - Arm64/PPC64LE/S390X Linux
 
-This library provides serialization/deserialization of JSON documents with a known structure into a C++ object.   In addition, it supports iterating and browsing the document or delayed loading of members.
+This library provides serialization/deserialization of JSON documents with a known structure into a C++ object, or exploration of the structure with generic and custom parsers.   In addition, it supports iterating and browsing the document or delayed loading of members.
 
 The library is using the [BSL](LICENSE) licensed
 
