@@ -959,7 +959,7 @@ EXCLUDE_PATTERNS       =
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories use the pattern */test/*
 
-EXCLUDE_SYMBOLS        = daw::json::json_details daw::json::murmur3_details daw::json::utils::utils_details std daw::json::parse_policy_details
+EXCLUDE_SYMBOLS        = daw::json::json_details daw::murmur3_details daw::json::utils::utils_details std daw::json::parse_policy_details daw::json::datetime::datetime_details
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
 # that contain example code fragments that are included (see the \include

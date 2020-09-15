@@ -37,7 +37,7 @@ namespace daw::json {
 	template<typename... Members>
 	struct tuple_json_mapping {
 		std::tuple<typename Members::parse_to_t...> members;
-		
+
 		template<typename... Ts>
 		constexpr tuple_json_mapping( Ts &&... values )
 		  : members{ std::forward<Ts>( values )... } {}
@@ -433,6 +433,9 @@ namespace daw::json {
 
 namespace daw::json::json_details {
 
+	/***
+	 * Skip a string, after the initial quote has been skipped already
+	 */
 	template<typename Range>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
 	skip_string_nq( Range &rng ) {
@@ -446,6 +449,9 @@ namespace daw::json::json_details {
 		return result;
 	}
 
+	/***
+	 * Skip a string and store the first escaped element's position, if any
+	 */
 	template<typename Range>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
 	skip_string( Range &rng ) {
@@ -516,6 +522,10 @@ namespace daw::json::json_details {
 		return result;
 	}
 
+	/***
+	 * Skip a number and store the position of it's components in the returned
+	 * Range
+	 */
 	template<typename Range>
 	[[nodiscard]] static constexpr Range skip_number( Range &rng ) {
 		auto result = rng;
@@ -577,20 +587,19 @@ namespace daw::json::json_details {
 		result.last = first;
 		result.class_first = decimal;
 		result.class_last = exp;
-		/*
-		  ++rng.first;
-		rng.move_to_end_of_literal( );
-		result.last = rng.first;
-		rng.trim_left( );
-		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      "Expected a ',', '}', ']' to trail literal", rng );
-		                      */
 		return result;
 	}
 
+	/***
+	 * When we don't know ahead of time what we are skipping switch on the first
+	 * value and call that types specific skipper
+	 * TODO: Investigate if there is a difference for the times we know what the
+	 * member should be if that can increase performance
+	 */
 	template<typename Range>
 	[[nodiscard]] static inline constexpr Range skip_value( Range &rng ) {
-		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range", rng );
+		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range",
+		                      rng );
 
 		// reset counter
 		rng.counter = 0;
