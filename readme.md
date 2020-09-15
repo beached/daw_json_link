@@ -34,7 +34,7 @@ json_value val = json_value( json_string );
 ## Content 
 * [Intro](#intro)
   * [Default Mapping of Types](#default-mapping-of-types)
-* [API Documentation](docs/html/index.html) - Member mapping classes
+* [API Documentation](https://beached.github.io/daw_json_link/html/) - Member mapping classes and methods
 * [Cookbook](cookbook/readme.md) Get cooking and putting it all together 
   * [Arrays](cookbook/array.md)
   * [Classes](cookbook/class.md)
