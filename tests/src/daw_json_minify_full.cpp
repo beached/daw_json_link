@@ -74,9 +74,7 @@ public:
 			  daw::json::from_json<std::string, ParsePolicy, true>(
 			    p.value.get_string_view( ) );
 
-			write_chr( '"' );
-			out_it = daw::json::utils::copy_to_iterator<true>( out_it, unescaped );
-			write_chr( '"' );
+			daw::json::to_json( unescaped, out_it );
 			return true;
 		}
 		case daw::json::JsonBaseParseTypes::Class:
