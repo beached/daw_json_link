@@ -13,13 +13,7 @@
 #include "daw_not_const_ex_functions.h"
 
 namespace daw::json::json_details::name {
-
-	struct name_parser_result {
-		char const *end_of_name;
-		char const *end_of_whitespace;
-	};
-
-	struct name_parser {
+	namespace name_parser {
 		/*
 		 * end of string " -> name value separating : -> any white space
 		 * the string can be escaped too

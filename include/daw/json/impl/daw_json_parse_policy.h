@@ -25,6 +25,17 @@
 #include <type_traits>
 
 namespace daw::json {
+	/***
+	 * Handles the bounds and policy items for parsing execution and comments.
+	 * @tparam IsUncheckedInput If true, do not perform all validity checks on
+	 * input.  This implies that we can trust the source to be perfect
+	 * @tparam CommentPolicy The policy that handles skipping whitespace where
+	 * comments may or may not be allowed:w
+	 * @tparam ExecMode A Policy type for selecting if we must be constexpr, can
+	 * use C/C++ runtime only methods, or if SIMD intrinsics are allowed
+	 * @tparam AllowEscapedNames Are escapes allowed in member names.  When true,
+	 * the slower string parser is used
+	 */
 	template<bool IsUncheckedInput, typename CommentPolicy, typename ExecMode,
 	         bool AllowEscapedNames>
 	struct BasicParsePolicy final {
@@ -317,10 +328,18 @@ namespace daw::json {
 	using CppCommentSkippingPolicyUnchecked =
 	  BasicParsePolicy<true, CppCommentSkippingPolicy, default_exec_tag, false>;
 
+	/***
+	 * Parse using SIMD instructions if available, allow C++ comments and fully
+	 * check input
+	 */
 	template<typename ExecTag>
 	using SIMDCppCommentSkippingPolicyChecked =
 	  BasicParsePolicy<false, CppCommentSkippingPolicy, ExecTag, false>;
 
+	/***
+	 * Parse using SIMD instructions if available, allow C++ comments and do not
+	 * do more than minimum checking
+	 */
 	template<typename ExecTag>
 	using SIMDCppCommentSkippingPolicyUnchecked =
 	  BasicParsePolicy<true, CppCommentSkippingPolicy, ExecTag, false>;

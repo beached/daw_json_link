@@ -747,135 +747,136 @@ $(function() {
 <div class="line"><a name="l00843"></a><span class="lineno">  843</span>&#160;    <span class="keywordflow">if</span> constexpr( std::is_pointer_v&lt;OutputIterator&gt; ) {</div>
 <div class="line"><a name="l00844"></a><span class="lineno">  844</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( out_it, <span class="stringliteral">&quot;Expected valid output iterator&quot;</span> );</div>
 <div class="line"><a name="l00845"></a><span class="lineno">  845</span>&#160;    }</div>
-<div class="line"><a name="l00846"></a><span class="lineno">  846</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00847"></a><span class="lineno">  847</span>&#160;      json_details::has_unnamed_default_type_mapping&lt;JsonClass&gt;::value,</div>
-<div class="line"><a name="l00848"></a><span class="lineno">  848</span>&#160;      <span class="stringliteral">&quot;Expected a typed that has been mapped via specialization &quot;</span></div>
-<div class="line"><a name="l00849"></a><span class="lineno">  849</span>&#160;      <span class="stringliteral">&quot;of daw::json::json_data_contract or is a fundamental type&quot;</span> );</div>
-<div class="line"><a name="l00850"></a><span class="lineno">  850</span>&#160;    <span class="keyword">using</span> json_member = json_details::unnamed_default_type_mapping&lt;JsonClass&gt;;</div>
-<div class="line"><a name="l00851"></a><span class="lineno">  851</span>&#160;    out_it = json_details::member_to_string&lt;json_member&gt;( out_it, value );</div>
-<div class="line"><a name="l00852"></a><span class="lineno">  852</span>&#160;    <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;  }</div>
-<div class="line"><a name="l00854"></a><span class="lineno">  854</span>&#160; </div>
-<div class="line"><a name="l00863"></a><span class="lineno">  863</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result = std::<span class="keywordtype">string</span>, <span class="keyword">typename</span> JsonClass&gt;</div>
-<div class="line"><a name="l00864"></a><span class="lineno">  864</span>&#160;  [[maybe_unused, nodiscard]] constexpr Result</div>
-<div class="line"><a name="l00865"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json.html#afb2e9683da852463e1ad74a5a22144f4">  865</a></span>&#160;  <a class="code" href="namespacedaw_1_1json.html#a5e687cf274f01818426b8bd7e7b19d9d">to_json</a>( JsonClass <span class="keyword">const</span> &amp;value ) {</div>
-<div class="line"><a name="l00866"></a><span class="lineno">  866</span>&#160;    Result result{ };</div>
-<div class="line"><a name="l00867"></a><span class="lineno">  867</span>&#160;    <a class="code" href="namespacedaw_1_1json.html#a5e687cf274f01818426b8bd7e7b19d9d">to_json</a>( value, daw::back_inserter( result ) );</div>
-<div class="line"><a name="l00868"></a><span class="lineno">  868</span>&#160;    <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00869"></a><span class="lineno">  869</span>&#160;  }</div>
-<div class="line"><a name="l00870"></a><span class="lineno">  870</span>&#160; </div>
-<div class="line"><a name="l00885"></a><span class="lineno">  885</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonElement,</div>
-<div class="line"><a name="l00886"></a><span class="lineno">  886</span>&#160;           <span class="keyword">typename</span> Container =</div>
-<div class="line"><a name="l00887"></a><span class="lineno">  887</span>&#160;             std::vector&lt;<span class="keyword">typename</span> json_details::unnamed_default_type_mapping&lt;</div>
-<div class="line"><a name="l00888"></a><span class="lineno">  888</span>&#160;               JsonElement&gt;::parse_to_t&gt;,</div>
-<div class="line"><a name="l00889"></a><span class="lineno">  889</span>&#160;           <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespacedaw_1_1json.html#a85be550e68e1a5ec5d98e5dfbfb88366">NoCommentSkippingPolicyChecked</a>,</div>
-<div class="line"><a name="l00890"></a><span class="lineno">  890</span>&#160;           <span class="keyword">typename</span> Constructor = daw::construct_a_t&lt;Container&gt;,</div>
-<div class="line"><a name="l00891"></a><span class="lineno">  891</span>&#160;           <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>&gt;</div>
-<div class="line"><a name="l00892"></a><span class="lineno">  892</span>&#160;  [[maybe_unused, nodiscard]] constexpr Container</div>
-<div class="line"><a name="l00893"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json.html#aea1e5787af357107d9220896fe090b84">  893</a></span>&#160;  <a class="code" href="namespacedaw_1_1json.html#aea1e5787af357107d9220896fe090b84">from_json_array</a>( std::string_view json_data,</div>
-<div class="line"><a name="l00894"></a><span class="lineno">  894</span>&#160;                   std::string_view member_path = <span class="stringliteral">&quot;&quot;</span> ) {</div>
-<div class="line"><a name="l00895"></a><span class="lineno">  895</span>&#160;    <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( not json_data.empty( ),</div>
-<div class="line"><a name="l00896"></a><span class="lineno">  896</span>&#160;                     <span class="stringliteral">&quot;Cannot parse empty or null strings&quot;</span> );</div>
-<div class="line"><a name="l00897"></a><span class="lineno">  897</span>&#160;    <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( member_path.data( ) != <span class="keyword">nullptr</span>,</div>
-<div class="line"><a name="l00898"></a><span class="lineno">  898</span>&#160;                     <span class="stringliteral">&quot;Cannot parse null strings&quot;</span> );</div>
-<div class="line"><a name="l00899"></a><span class="lineno">  899</span>&#160;    <span class="keyword">using</span> element_type =</div>
-<div class="line"><a name="l00900"></a><span class="lineno">  900</span>&#160;      json_details::unnamed_default_type_mapping&lt;JsonElement&gt;;</div>
-<div class="line"><a name="l00901"></a><span class="lineno">  901</span>&#160;    static_assert( not std::is_same_v&lt;element_type, void&gt;,</div>
-<div class="line"><a name="l00902"></a><span class="lineno">  902</span>&#160;                   <span class="stringliteral">&quot;Unknown JsonElement type.&quot;</span> );</div>
-<div class="line"><a name="l00903"></a><span class="lineno">  903</span>&#160; </div>
-<div class="line"><a name="l00904"></a><span class="lineno">  904</span>&#160;    <span class="keyword">using</span> parser_t = <a class="code" href="structdaw_1_1json_1_1json__array.html">json_array&lt;no_name, JsonElement, Container, Constructor&gt;</a>;</div>
-<div class="line"><a name="l00905"></a><span class="lineno">  905</span>&#160; </div>
-<div class="line"><a name="l00906"></a><span class="lineno">  906</span>&#160;    <span class="keyword">auto</span> [is_found, rng] = json_details::find_range&lt;ParsePolicy&gt;(</div>
-<div class="line"><a name="l00907"></a><span class="lineno">  907</span>&#160;      json_data, { member_path.data( ), member_path.size( ) } );</div>
-<div class="line"><a name="l00908"></a><span class="lineno">  908</span>&#160; </div>
-<div class="line"><a name="l00909"></a><span class="lineno">  909</span>&#160;    <span class="keywordflow">if</span> constexpr( parser_t::expected_type == JsonParseTypes::Null ) {</div>
-<div class="line"><a name="l00910"></a><span class="lineno">  910</span>&#160;      <span class="keywordflow">if</span>( not is_found ) {</div>
-<div class="line"><a name="l00911"></a><span class="lineno">  911</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">typename</span> parser_t::constructor_t{ }( );</div>
-<div class="line"><a name="l00912"></a><span class="lineno">  912</span>&#160;      }</div>
-<div class="line"><a name="l00913"></a><span class="lineno">  913</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00914"></a><span class="lineno">  914</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( is_found, <span class="stringliteral">&quot;Could not find specified member&quot;</span>, rng );</div>
-<div class="line"><a name="l00915"></a><span class="lineno">  915</span>&#160;    }</div>
-<div class="line"><a name="l00916"></a><span class="lineno">  916</span>&#160;    rng.trim_left_unchecked( );</div>
-<div class="line"><a name="l00917"></a><span class="lineno">  917</span>&#160;<span class="preprocessor">#if defined( _MSC_VER ) and not defined( __clang__ )</span></div>
-<div class="line"><a name="l00918"></a><span class="lineno">  918</span>&#160;    <span class="comment">// Work around MSVC ICE</span></div>
-<div class="line"><a name="l00919"></a><span class="lineno">  919</span>&#160;    <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( rng.is_opening_bracket_checked( ),</div>
-<div class="line"><a name="l00920"></a><span class="lineno">  920</span>&#160;                     <span class="stringliteral">&quot;Expected array class to being with a &#39;[&#39;&quot;</span>, rng );</div>
-<div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;    <span class="keyword">using</span> Range = daw::remove_cvref_t&lt;decltype( rng )&gt;;</div>
-<div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;    <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( rng.is_opening_bracket_checked( ),</div>
-<div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;                          <span class="stringliteral">&quot;Expected array class to being with a &#39;[&#39;&quot;</span>, rng );</div>
-<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160; </div>
-<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;    <span class="keywordflow">return</span> json_details::parse_value&lt;parser_t, KnownBounds&gt;(</div>
-<div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;      <a class="code" href="namespacedaw_1_1json.html#aea9c3662fdf67a868543bb85edabe5e8">ParseTag&lt;JsonParseTypes::Array&gt;</a>{ }, rng );</div>
-<div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;  }</div>
-<div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160; </div>
-<div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;  <span class="keyword">namespace </span>json_details {</div>
-<div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;<span class="comment">     * Tag type to indicate that the element of a Container is not being</span></div>
-<div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;<span class="comment">     * specified.  This is the default.</span></div>
-<div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;    <span class="keyword">struct </span>auto_detect_array_element {};</div>
-<div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;  } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160; </div>
-<div class="line"><a name="l00946"></a><span class="lineno">  946</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonElement = json_details::auto_detect_array_element,</div>
-<div class="line"><a name="l00947"></a><span class="lineno">  947</span>&#160;           <span class="keyword">typename</span> Container, <span class="keyword">typename</span> OutputIterator&gt;</div>
-<div class="line"><a name="l00948"></a><span class="lineno">  948</span>&#160;  [[maybe_unused]] constexpr OutputIterator</div>
-<div class="line"><a name="l00949"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json.html#a5f0c4c7079dd2ebdfc69525c2fa9116a">  949</a></span>&#160;  <a class="code" href="namespacedaw_1_1json.html#a5f0c4c7079dd2ebdfc69525c2fa9116a">to_json_array</a>( Container &amp;&amp;c, OutputIterator out_it ) {</div>
-<div class="line"><a name="l00950"></a><span class="lineno">  950</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00951"></a><span class="lineno">  951</span>&#160;      daw::traits::is_container_like_v&lt;daw::remove_cvref_t&lt;Container&gt;&gt;,</div>
-<div class="line"><a name="l00952"></a><span class="lineno">  952</span>&#160;      <span class="stringliteral">&quot;Supplied container must support begin( )/end( )&quot;</span> );</div>
-<div class="line"><a name="l00953"></a><span class="lineno">  953</span>&#160; </div>
-<div class="line"><a name="l00954"></a><span class="lineno">  954</span>&#160;    <span class="keywordflow">if</span> constexpr( std::is_pointer_v&lt;OutputIterator&gt; ) {</div>
-<div class="line"><a name="l00955"></a><span class="lineno">  955</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( out_it, <span class="stringliteral">&quot;Expected valid output iterator&quot;</span> );</div>
-<div class="line"><a name="l00956"></a><span class="lineno">  956</span>&#160;    }</div>
-<div class="line"><a name="l00957"></a><span class="lineno">  957</span>&#160;    *out_it++ = <span class="charliteral">&#39;[&#39;</span>;</div>
-<div class="line"><a name="l00958"></a><span class="lineno">  958</span>&#160;    <span class="keywordtype">bool</span> is_first = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00959"></a><span class="lineno">  959</span>&#160;    <span class="keywordflow">for</span>( <span class="keyword">auto</span> <span class="keyword">const</span> &amp;v : c ) {</div>
-<div class="line"><a name="l00960"></a><span class="lineno">  960</span>&#160;      <span class="keyword">using</span> JsonMember = std::conditional_t&lt;</div>
-<div class="line"><a name="l00961"></a><span class="lineno">  961</span>&#160;        std::is_same_v&lt;JsonElement, json_details::auto_detect_array_element&gt;,</div>
-<div class="line"><a name="l00962"></a><span class="lineno">  962</span>&#160;        json_details::unnamed_default_type_mapping&lt;</div>
-<div class="line"><a name="l00963"></a><span class="lineno">  963</span>&#160;          daw::remove_cvref_t&lt;decltype( v )&gt;&gt;,</div>
-<div class="line"><a name="l00964"></a><span class="lineno">  964</span>&#160;        JsonElement&gt;;</div>
-<div class="line"><a name="l00965"></a><span class="lineno">  965</span>&#160;      <span class="keywordflow">if</span>( is_first ) {</div>
-<div class="line"><a name="l00966"></a><span class="lineno">  966</span>&#160;        is_first = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00967"></a><span class="lineno">  967</span>&#160;      } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00968"></a><span class="lineno">  968</span>&#160;        *out_it++ = <span class="charliteral">&#39;,&#39;</span>;</div>
-<div class="line"><a name="l00969"></a><span class="lineno">  969</span>&#160;      }</div>
-<div class="line"><a name="l00970"></a><span class="lineno">  970</span>&#160;      out_it = json_details::member_to_string&lt;JsonMember&gt;( out_it, v );</div>
-<div class="line"><a name="l00971"></a><span class="lineno">  971</span>&#160;    }</div>
-<div class="line"><a name="l00972"></a><span class="lineno">  972</span>&#160;    <span class="comment">// The last character will be a &#39;,&#39; prior to this</span></div>
-<div class="line"><a name="l00973"></a><span class="lineno">  973</span>&#160;    *out_it++ = <span class="charliteral">&#39;]&#39;</span>;</div>
-<div class="line"><a name="l00974"></a><span class="lineno">  974</span>&#160;    <span class="keywordflow">return</span> out_it;</div>
-<div class="line"><a name="l00975"></a><span class="lineno">  975</span>&#160;  }</div>
-<div class="line"><a name="l00976"></a><span class="lineno">  976</span>&#160; </div>
-<div class="line"><a name="l00984"></a><span class="lineno">  984</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result = std::string,</div>
-<div class="line"><a name="l00985"></a><span class="lineno">  985</span>&#160;           <span class="keyword">typename</span> JsonElement = json_details::auto_detect_array_element,</div>
-<div class="line"><a name="l00986"></a><span class="lineno">  986</span>&#160;           <span class="keyword">typename</span> Container&gt;</div>
-<div class="line"><a name="l00987"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json.html#a8f8796e057e38ded833b6533b42ada92">  987</a></span>&#160;  [[maybe_unused, nodiscard]] constexpr Result <a class="code" href="namespacedaw_1_1json.html#a5f0c4c7079dd2ebdfc69525c2fa9116a">to_json_array</a>( Container &amp;&amp;c ) {</div>
-<div class="line"><a name="l00988"></a><span class="lineno">  988</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00989"></a><span class="lineno">  989</span>&#160;      daw::traits::is_container_like_v&lt;daw::remove_cvref_t&lt;Container&gt;&gt;,</div>
-<div class="line"><a name="l00990"></a><span class="lineno">  990</span>&#160;      <span class="stringliteral">&quot;Supplied container must support begin( )/end( )&quot;</span> );</div>
-<div class="line"><a name="l00991"></a><span class="lineno">  991</span>&#160; </div>
-<div class="line"><a name="l00992"></a><span class="lineno">  992</span>&#160;    Result result{ };</div>
-<div class="line"><a name="l00993"></a><span class="lineno">  993</span>&#160;    <span class="keyword">auto</span> out_it = json_details::basic_appender&lt;Result&gt;( result );</div>
-<div class="line"><a name="l00994"></a><span class="lineno">  994</span>&#160;    to_json_array&lt;JsonElement&gt;( c, out_it );</div>
-<div class="line"><a name="l00995"></a><span class="lineno">  995</span>&#160;    <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00996"></a><span class="lineno">  996</span>&#160;  }</div>
-<div class="line"><a name="l00997"></a><span class="lineno">  997</span>&#160; </div>
-<div class="line"><a name="l00998"></a><span class="lineno">  998</span>&#160;} <span class="comment">// namespace daw::json</span></div>
-<div class="line"><a name="l00999"></a><span class="lineno">  999</span>&#160; </div>
-<div class="line"><a name="l01000"></a><span class="lineno"> 1000</span>&#160;<span class="preprocessor">#if not defined( DAW_JSON_DISABLE_JSON_STRING_LITERAL )</span></div>
-<div class="line"><a name="l01001"></a><span class="lineno"> 1001</span>&#160; </div>
-<div class="line"><a name="l01002"></a><span class="lineno"> 1002</span>&#160;<span class="comment">/***</span></div>
-<div class="line"><a name="l01003"></a><span class="lineno"> 1003</span>&#160;<span class="comment"> * Construct a json_value from a string literal</span></div>
-<div class="line"><a name="l01004"></a><span class="lineno"> 1004</span>&#160;<span class="comment"> * @return A json_value representing the json documnet</span></div>
-<div class="line"><a name="l01005"></a><span class="lineno"> 1005</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l01006"></a><span class="lineno"> 1006</span>&#160;constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">daw::json::json_value</a> <span class="keyword">operator</span><span class="stringliteral">&quot;&quot;</span> _dawjson( <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr,</div>
-<div class="line"><a name="l01007"></a><span class="lineno"> 1007</span>&#160;                                                     std::size_t sz ) {</div>
-<div class="line"><a name="l01008"></a><span class="lineno"> 1008</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="namespacedaw_1_1json.html#a014ebfd35abe0f65c97ccc2fd20dcba5">daw::json::json_value</a>( std::string_view( ptr, sz ) );</div>
-<div class="line"><a name="l01009"></a><span class="lineno"> 1009</span>&#160;}</div>
-<div class="line"><a name="l01010"></a><span class="lineno"> 1010</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00846"></a><span class="lineno">  846</span>&#160;    </div>
+<div class="line"><a name="l00847"></a><span class="lineno">  847</span>&#160;    static_assert(</div>
+<div class="line"><a name="l00848"></a><span class="lineno">  848</span>&#160;      json_details::has_unnamed_default_type_mapping&lt;JsonClass&gt;::value,</div>
+<div class="line"><a name="l00849"></a><span class="lineno">  849</span>&#160;      <span class="stringliteral">&quot;Expected a typed that has been mapped via specialization &quot;</span></div>
+<div class="line"><a name="l00850"></a><span class="lineno">  850</span>&#160;      <span class="stringliteral">&quot;of daw::json::json_data_contract or is a fundamental type&quot;</span> );</div>
+<div class="line"><a name="l00851"></a><span class="lineno">  851</span>&#160;    <span class="keyword">using</span> json_member = json_details::unnamed_default_type_mapping&lt;JsonClass&gt;;</div>
+<div class="line"><a name="l00852"></a><span class="lineno">  852</span>&#160;    out_it = json_details::member_to_string&lt;json_member&gt;( out_it, value );</div>
+<div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;    <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l00854"></a><span class="lineno">  854</span>&#160;  }</div>
+<div class="line"><a name="l00855"></a><span class="lineno">  855</span>&#160; </div>
+<div class="line"><a name="l00864"></a><span class="lineno">  864</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result = std::<span class="keywordtype">string</span>, <span class="keyword">typename</span> JsonClass&gt;</div>
+<div class="line"><a name="l00865"></a><span class="lineno">  865</span>&#160;  [[maybe_unused, nodiscard]] constexpr Result</div>
+<div class="line"><a name="l00866"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json.html#afb2e9683da852463e1ad74a5a22144f4">  866</a></span>&#160;  <a class="code" href="namespacedaw_1_1json.html#a5e687cf274f01818426b8bd7e7b19d9d">to_json</a>( JsonClass <span class="keyword">const</span> &amp;value ) {</div>
+<div class="line"><a name="l00867"></a><span class="lineno">  867</span>&#160;    Result result{ };</div>
+<div class="line"><a name="l00868"></a><span class="lineno">  868</span>&#160;    <a class="code" href="namespacedaw_1_1json.html#a5e687cf274f01818426b8bd7e7b19d9d">to_json</a>( value, daw::back_inserter( result ) );</div>
+<div class="line"><a name="l00869"></a><span class="lineno">  869</span>&#160;    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00870"></a><span class="lineno">  870</span>&#160;  }</div>
+<div class="line"><a name="l00871"></a><span class="lineno">  871</span>&#160; </div>
+<div class="line"><a name="l00886"></a><span class="lineno">  886</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonElement,</div>
+<div class="line"><a name="l00887"></a><span class="lineno">  887</span>&#160;           <span class="keyword">typename</span> Container =</div>
+<div class="line"><a name="l00888"></a><span class="lineno">  888</span>&#160;             std::vector&lt;<span class="keyword">typename</span> json_details::unnamed_default_type_mapping&lt;</div>
+<div class="line"><a name="l00889"></a><span class="lineno">  889</span>&#160;               JsonElement&gt;::parse_to_t&gt;,</div>
+<div class="line"><a name="l00890"></a><span class="lineno">  890</span>&#160;           <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespacedaw_1_1json.html#a85be550e68e1a5ec5d98e5dfbfb88366">NoCommentSkippingPolicyChecked</a>,</div>
+<div class="line"><a name="l00891"></a><span class="lineno">  891</span>&#160;           <span class="keyword">typename</span> Constructor = daw::construct_a_t&lt;Container&gt;,</div>
+<div class="line"><a name="l00892"></a><span class="lineno">  892</span>&#160;           <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>&gt;</div>
+<div class="line"><a name="l00893"></a><span class="lineno">  893</span>&#160;  [[maybe_unused, nodiscard]] constexpr Container</div>
+<div class="line"><a name="l00894"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json.html#aea1e5787af357107d9220896fe090b84">  894</a></span>&#160;  <a class="code" href="namespacedaw_1_1json.html#aea1e5787af357107d9220896fe090b84">from_json_array</a>( std::string_view json_data,</div>
+<div class="line"><a name="l00895"></a><span class="lineno">  895</span>&#160;                   std::string_view member_path = <span class="stringliteral">&quot;&quot;</span> ) {</div>
+<div class="line"><a name="l00896"></a><span class="lineno">  896</span>&#160;    <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( not json_data.empty( ),</div>
+<div class="line"><a name="l00897"></a><span class="lineno">  897</span>&#160;                     <span class="stringliteral">&quot;Cannot parse empty or null strings&quot;</span> );</div>
+<div class="line"><a name="l00898"></a><span class="lineno">  898</span>&#160;    <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( member_path.data( ) != <span class="keyword">nullptr</span>,</div>
+<div class="line"><a name="l00899"></a><span class="lineno">  899</span>&#160;                     <span class="stringliteral">&quot;Cannot parse null strings&quot;</span> );</div>
+<div class="line"><a name="l00900"></a><span class="lineno">  900</span>&#160;    <span class="keyword">using</span> element_type =</div>
+<div class="line"><a name="l00901"></a><span class="lineno">  901</span>&#160;      json_details::unnamed_default_type_mapping&lt;JsonElement&gt;;</div>
+<div class="line"><a name="l00902"></a><span class="lineno">  902</span>&#160;    static_assert( not std::is_same_v&lt;element_type, void&gt;,</div>
+<div class="line"><a name="l00903"></a><span class="lineno">  903</span>&#160;                   <span class="stringliteral">&quot;Unknown JsonElement type.&quot;</span> );</div>
+<div class="line"><a name="l00904"></a><span class="lineno">  904</span>&#160; </div>
+<div class="line"><a name="l00905"></a><span class="lineno">  905</span>&#160;    <span class="keyword">using</span> parser_t = <a class="code" href="structdaw_1_1json_1_1json__array.html">json_array&lt;no_name, JsonElement, Container, Constructor&gt;</a>;</div>
+<div class="line"><a name="l00906"></a><span class="lineno">  906</span>&#160; </div>
+<div class="line"><a name="l00907"></a><span class="lineno">  907</span>&#160;    <span class="keyword">auto</span> [is_found, rng] = json_details::find_range&lt;ParsePolicy&gt;(</div>
+<div class="line"><a name="l00908"></a><span class="lineno">  908</span>&#160;      json_data, { member_path.data( ), member_path.size( ) } );</div>
+<div class="line"><a name="l00909"></a><span class="lineno">  909</span>&#160; </div>
+<div class="line"><a name="l00910"></a><span class="lineno">  910</span>&#160;    <span class="keywordflow">if</span> constexpr( parser_t::expected_type == JsonParseTypes::Null ) {</div>
+<div class="line"><a name="l00911"></a><span class="lineno">  911</span>&#160;      <span class="keywordflow">if</span>( not is_found ) {</div>
+<div class="line"><a name="l00912"></a><span class="lineno">  912</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">typename</span> parser_t::constructor_t{ }( );</div>
+<div class="line"><a name="l00913"></a><span class="lineno">  913</span>&#160;      }</div>
+<div class="line"><a name="l00914"></a><span class="lineno">  914</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00915"></a><span class="lineno">  915</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( is_found, <span class="stringliteral">&quot;Could not find specified member&quot;</span>, rng );</div>
+<div class="line"><a name="l00916"></a><span class="lineno">  916</span>&#160;    }</div>
+<div class="line"><a name="l00917"></a><span class="lineno">  917</span>&#160;    rng.trim_left_unchecked( );</div>
+<div class="line"><a name="l00918"></a><span class="lineno">  918</span>&#160;<span class="preprocessor">#if defined( _MSC_VER ) and not defined( __clang__ )</span></div>
+<div class="line"><a name="l00919"></a><span class="lineno">  919</span>&#160;    <span class="comment">// Work around MSVC ICE</span></div>
+<div class="line"><a name="l00920"></a><span class="lineno">  920</span>&#160;    <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( rng.is_opening_bracket_checked( ),</div>
+<div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160;                     <span class="stringliteral">&quot;Expected array class to being with a &#39;[&#39;&quot;</span>, rng );</div>
+<div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;    <span class="keyword">using</span> Range = daw::remove_cvref_t&lt;decltype( rng )&gt;;</div>
+<div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;    <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( rng.is_opening_bracket_checked( ),</div>
+<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;                          <span class="stringliteral">&quot;Expected array class to being with a &#39;[&#39;&quot;</span>, rng );</div>
+<div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160; </div>
+<div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;    <span class="keywordflow">return</span> json_details::parse_value&lt;parser_t, KnownBounds&gt;(</div>
+<div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;      <a class="code" href="namespacedaw_1_1json.html#aea9c3662fdf67a868543bb85edabe5e8">ParseTag&lt;JsonParseTypes::Array&gt;</a>{ }, rng );</div>
+<div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;  }</div>
+<div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160; </div>
+<div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;  <span class="keyword">namespace </span>json_details {</div>
+<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;<span class="comment">     * Tag type to indicate that the element of a Container is not being</span></div>
+<div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;<span class="comment">     * specified.  This is the default.</span></div>
+<div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;    <span class="keyword">struct </span>auto_detect_array_element {};</div>
+<div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160;  } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00939"></a><span class="lineno">  939</span>&#160; </div>
+<div class="line"><a name="l00947"></a><span class="lineno">  947</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonElement = json_details::auto_detect_array_element,</div>
+<div class="line"><a name="l00948"></a><span class="lineno">  948</span>&#160;           <span class="keyword">typename</span> Container, <span class="keyword">typename</span> OutputIterator&gt;</div>
+<div class="line"><a name="l00949"></a><span class="lineno">  949</span>&#160;  [[maybe_unused]] constexpr OutputIterator</div>
+<div class="line"><a name="l00950"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json.html#a5f0c4c7079dd2ebdfc69525c2fa9116a">  950</a></span>&#160;  <a class="code" href="namespacedaw_1_1json.html#a5f0c4c7079dd2ebdfc69525c2fa9116a">to_json_array</a>( Container &amp;&amp;c, OutputIterator out_it ) {</div>
+<div class="line"><a name="l00951"></a><span class="lineno">  951</span>&#160;    static_assert(</div>
+<div class="line"><a name="l00952"></a><span class="lineno">  952</span>&#160;      daw::traits::is_container_like_v&lt;daw::remove_cvref_t&lt;Container&gt;&gt;,</div>
+<div class="line"><a name="l00953"></a><span class="lineno">  953</span>&#160;      <span class="stringliteral">&quot;Supplied container must support begin( )/end( )&quot;</span> );</div>
+<div class="line"><a name="l00954"></a><span class="lineno">  954</span>&#160; </div>
+<div class="line"><a name="l00955"></a><span class="lineno">  955</span>&#160;    <span class="keywordflow">if</span> constexpr( std::is_pointer_v&lt;OutputIterator&gt; ) {</div>
+<div class="line"><a name="l00956"></a><span class="lineno">  956</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( out_it, <span class="stringliteral">&quot;Expected valid output iterator&quot;</span> );</div>
+<div class="line"><a name="l00957"></a><span class="lineno">  957</span>&#160;    }</div>
+<div class="line"><a name="l00958"></a><span class="lineno">  958</span>&#160;    *out_it++ = <span class="charliteral">&#39;[&#39;</span>;</div>
+<div class="line"><a name="l00959"></a><span class="lineno">  959</span>&#160;    <span class="keywordtype">bool</span> is_first = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00960"></a><span class="lineno">  960</span>&#160;    <span class="keywordflow">for</span>( <span class="keyword">auto</span> <span class="keyword">const</span> &amp;v : c ) {</div>
+<div class="line"><a name="l00961"></a><span class="lineno">  961</span>&#160;      <span class="keyword">using</span> JsonMember = std::conditional_t&lt;</div>
+<div class="line"><a name="l00962"></a><span class="lineno">  962</span>&#160;        std::is_same_v&lt;JsonElement, json_details::auto_detect_array_element&gt;,</div>
+<div class="line"><a name="l00963"></a><span class="lineno">  963</span>&#160;        json_details::unnamed_default_type_mapping&lt;</div>
+<div class="line"><a name="l00964"></a><span class="lineno">  964</span>&#160;          daw::remove_cvref_t&lt;decltype( v )&gt;&gt;,</div>
+<div class="line"><a name="l00965"></a><span class="lineno">  965</span>&#160;        JsonElement&gt;;</div>
+<div class="line"><a name="l00966"></a><span class="lineno">  966</span>&#160;      <span class="keywordflow">if</span>( is_first ) {</div>
+<div class="line"><a name="l00967"></a><span class="lineno">  967</span>&#160;        is_first = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00968"></a><span class="lineno">  968</span>&#160;      } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00969"></a><span class="lineno">  969</span>&#160;        *out_it++ = <span class="charliteral">&#39;,&#39;</span>;</div>
+<div class="line"><a name="l00970"></a><span class="lineno">  970</span>&#160;      }</div>
+<div class="line"><a name="l00971"></a><span class="lineno">  971</span>&#160;      out_it = json_details::member_to_string&lt;JsonMember&gt;( out_it, v );</div>
+<div class="line"><a name="l00972"></a><span class="lineno">  972</span>&#160;    }</div>
+<div class="line"><a name="l00973"></a><span class="lineno">  973</span>&#160;    <span class="comment">// The last character will be a &#39;,&#39; prior to this</span></div>
+<div class="line"><a name="l00974"></a><span class="lineno">  974</span>&#160;    *out_it++ = <span class="charliteral">&#39;]&#39;</span>;</div>
+<div class="line"><a name="l00975"></a><span class="lineno">  975</span>&#160;    <span class="keywordflow">return</span> out_it;</div>
+<div class="line"><a name="l00976"></a><span class="lineno">  976</span>&#160;  }</div>
+<div class="line"><a name="l00977"></a><span class="lineno">  977</span>&#160; </div>
+<div class="line"><a name="l00985"></a><span class="lineno">  985</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result = std::string,</div>
+<div class="line"><a name="l00986"></a><span class="lineno">  986</span>&#160;           <span class="keyword">typename</span> JsonElement = json_details::auto_detect_array_element,</div>
+<div class="line"><a name="l00987"></a><span class="lineno">  987</span>&#160;           <span class="keyword">typename</span> Container&gt;</div>
+<div class="line"><a name="l00988"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json.html#a8f8796e057e38ded833b6533b42ada92">  988</a></span>&#160;  [[maybe_unused, nodiscard]] constexpr Result <a class="code" href="namespacedaw_1_1json.html#a5f0c4c7079dd2ebdfc69525c2fa9116a">to_json_array</a>( Container &amp;&amp;c ) {</div>
+<div class="line"><a name="l00989"></a><span class="lineno">  989</span>&#160;    static_assert(</div>
+<div class="line"><a name="l00990"></a><span class="lineno">  990</span>&#160;      daw::traits::is_container_like_v&lt;daw::remove_cvref_t&lt;Container&gt;&gt;,</div>
+<div class="line"><a name="l00991"></a><span class="lineno">  991</span>&#160;      <span class="stringliteral">&quot;Supplied container must support begin( )/end( )&quot;</span> );</div>
+<div class="line"><a name="l00992"></a><span class="lineno">  992</span>&#160; </div>
+<div class="line"><a name="l00993"></a><span class="lineno">  993</span>&#160;    Result result{ };</div>
+<div class="line"><a name="l00994"></a><span class="lineno">  994</span>&#160;    <span class="keyword">auto</span> out_it = json_details::basic_appender&lt;Result&gt;( result );</div>
+<div class="line"><a name="l00995"></a><span class="lineno">  995</span>&#160;    to_json_array&lt;JsonElement&gt;( c, out_it );</div>
+<div class="line"><a name="l00996"></a><span class="lineno">  996</span>&#160;    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00997"></a><span class="lineno">  997</span>&#160;  }</div>
+<div class="line"><a name="l00998"></a><span class="lineno">  998</span>&#160; </div>
+<div class="line"><a name="l00999"></a><span class="lineno">  999</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l01000"></a><span class="lineno"> 1000</span>&#160; </div>
+<div class="line"><a name="l01001"></a><span class="lineno"> 1001</span>&#160;<span class="preprocessor">#if not defined( DAW_JSON_DISABLE_JSON_STRING_LITERAL )</span></div>
+<div class="line"><a name="l01002"></a><span class="lineno"> 1002</span>&#160; </div>
+<div class="line"><a name="l01003"></a><span class="lineno"> 1003</span>&#160;<span class="comment">/***</span></div>
+<div class="line"><a name="l01004"></a><span class="lineno"> 1004</span>&#160;<span class="comment"> * Construct a json_value from a string literal</span></div>
+<div class="line"><a name="l01005"></a><span class="lineno"> 1005</span>&#160;<span class="comment"> * @return A json_value representing the json document</span></div>
+<div class="line"><a name="l01006"></a><span class="lineno"> 1006</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l01007"></a><span class="lineno"> 1007</span>&#160;constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">daw::json::json_value</a> <span class="keyword">operator</span><span class="stringliteral">&quot;&quot;</span> _dawjson( <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr,</div>
+<div class="line"><a name="l01008"></a><span class="lineno"> 1008</span>&#160;                                                     std::size_t sz ) {</div>
+<div class="line"><a name="l01009"></a><span class="lineno"> 1009</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="namespacedaw_1_1json.html#a014ebfd35abe0f65c97ccc2fd20dcba5">daw::json::json_value</a>( std::string_view( ptr, sz ) );</div>
+<div class="line"><a name="l01010"></a><span class="lineno"> 1010</span>&#160;}</div>
+<div class="line"><a name="l01011"></a><span class="lineno"> 1011</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="astructdaw_1_1json_1_1json__custom_html_afc50521127091b1d85f8a7c9b360c2f7"><div class="ttname"><a href="structdaw_1_1json_1_1json__custom.html#afc50521127091b1d85f8a7c9b360c2f7">daw::json::json_custom::to_converter_t</a></div><div class="ttdeci">ToJsonConverter to_converter_t</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:506</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__delayed_html_a6ffb6edf056f7391277369e5232cc95c"><div class="ttname"><a href="structdaw_1_1json_1_1json__delayed.html#a6ffb6edf056f7391277369e5232cc95c">daw::json::json_delayed::underlying_json_type</a></div><div class="ttdeci">static constexpr JsonBaseParseTypes underlying_json_type</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:732</div></div>
@@ -886,12 +887,12 @@ $(function() {
 <div class="ttc" id="astructdaw_1_1json_1_1json__class_html_a39fdc5df97c2b8362917f75ac2c5f140"><div class="ttname"><a href="structdaw_1_1json_1_1json__class.html#a39fdc5df97c2b8362917f75ac2c5f140">daw::json::json_class::nullable</a></div><div class="ttdeci">static constexpr bool nullable</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:378</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__number_html_a1a9c6f7f27c0bb1c6291da8035e2d7e8"><div class="ttname"><a href="structdaw_1_1json_1_1json__number.html#a1a9c6f7f27c0bb1c6291da8035e2d7e8">daw::json::json_number::base_type</a></div><div class="ttdeci">json_details::unwrap_type&lt; T, Nullable &gt; base_type</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:191</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__key__value__array_html_ae087ee42d1de5cac20ecce8da3ff6c9d"><div class="ttname"><a href="structdaw_1_1json_1_1json__key__value__array.html#ae087ee42d1de5cac20ecce8da3ff6c9d">daw::json::json_key_value_array::json_value_t</a></div><div class="ttdeci">json_details::unnamed_default_type_mapping&lt; JsonValueType, json_details::default_value_name &gt; json_value_t</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:680</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html_aea1e5787af357107d9220896fe090b84"><div class="ttname"><a href="namespacedaw_1_1json.html#aea1e5787af357107d9220896fe090b84">daw::json::from_json_array</a></div><div class="ttdeci">constexpr Container from_json_array(std::string_view json_data, std::string_view member_path=&quot;&quot;)</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:893</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html_aea1e5787af357107d9220896fe090b84"><div class="ttname"><a href="namespacedaw_1_1json.html#aea1e5787af357107d9220896fe090b84">daw::json::from_json_array</a></div><div class="ttdeci">constexpr Container from_json_array(std::string_view json_data, std::string_view member_path=&quot;&quot;)</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:894</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__date_html_a7b9b3d55b61a2dfa5d6e6cd4ff88262a"><div class="ttname"><a href="structdaw_1_1json_1_1json__date.html#a7b9b3d55b61a2dfa5d6e6cd4ff88262a">daw::json::json_date::underlying_json_type</a></div><div class="ttdeci">static constexpr JsonBaseParseTypes underlying_json_type</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:348</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__variant_html_a64dcba3cdee87c25f1dd58c1353382a5"><div class="ttname"><a href="structdaw_1_1json_1_1json__variant.html#a64dcba3cdee87c25f1dd58c1353382a5">daw::json::json_variant::constructor_t</a></div><div class="ttdeci">Constructor constructor_t</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:428</div></div>
 <div class="ttc" id="adaw__json__serialize__impl_8h_html"><div class="ttname"><a href="daw__json__serialize__impl_8h.html">daw_json_serialize_impl.h</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__string_html_afcbc2e905fca31eca9a389b2f1a1f83e"><div class="ttname"><a href="structdaw_1_1json_1_1json__string.html#afcbc2e905fca31eca9a389b2f1a1f83e">daw::json::json_string::expected_type</a></div><div class="ttdeci">static constexpr JsonParseTypes expected_type</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:314</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html_a5f0c4c7079dd2ebdfc69525c2fa9116a"><div class="ttname"><a href="namespacedaw_1_1json.html#a5f0c4c7079dd2ebdfc69525c2fa9116a">daw::json::to_json_array</a></div><div class="ttdeci">constexpr OutputIterator to_json_array(Container &amp;&amp;c, OutputIterator out_it)</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:949</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html_a5f0c4c7079dd2ebdfc69525c2fa9116a"><div class="ttname"><a href="namespacedaw_1_1json.html#a5f0c4c7079dd2ebdfc69525c2fa9116a">daw::json::to_json_array</a></div><div class="ttdeci">constexpr OutputIterator to_json_array(Container &amp;&amp;c, OutputIterator out_it)</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:950</div></div>
 <div class="ttc" id="adaw__json__value_8h_html"><div class="ttname"><a href="daw__json__value_8h.html">daw_json_value.h</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__tagged__variant_html_ac6243bd203f73fb6cccaa24e42678a65"><div class="ttname"><a href="structdaw_1_1json_1_1json__tagged__variant.html#ac6243bd203f73fb6cccaa24e42678a65">daw::json::json_tagged_variant::tag_member</a></div><div class="ttdeci">TagMember tag_member</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:475</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__string__raw_html_af427396a20ed6594666ec5dc6d04f9ed"><div class="ttname"><a href="structdaw_1_1json_1_1json__string__raw.html#af427396a20ed6594666ec5dc6d04f9ed">daw::json::json_string_raw::allow_escape_character</a></div><div class="ttdeci">static constexpr AllowEscapeCharacter allow_escape_character</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:284</div></div>
@@ -1020,7 +1021,7 @@ $(function() {
 <div class="ttc" id="astructdaw_1_1json_1_1json__string_html_a93e7c936a4e2325c3c944ee5e5ef7605"><div class="ttname"><a href="structdaw_1_1json_1_1json__string.html#a93e7c936a4e2325c3c944ee5e5ef7605">daw::json::json_string::parse_to_t</a></div><div class="ttdeci">std::invoke_result_t&lt; Constructor, base_type &gt; parse_to_t</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:310</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__string_html_a11386f46f978d7e1b6f98386c30591a5"><div class="ttname"><a href="structdaw_1_1json_1_1json__string.html#a11386f46f978d7e1b6f98386c30591a5">daw::json::json_string::wrapped_type</a></div><div class="ttdeci">String wrapped_type</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:306</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__array_html_a508e4d3db2de877d9653fbdb6c2b5ec6"><div class="ttname"><a href="structdaw_1_1json_1_1json__array.html#a508e4d3db2de877d9653fbdb6c2b5ec6">daw::json::json_array::json_element_t</a></div><div class="ttdeci">json_details::unnamed_default_type_mapping&lt; JsonElement &gt; json_element_t</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:579</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html_a85be550e68e1a5ec5d98e5dfbfb88366"><div class="ttname"><a href="namespacedaw_1_1json.html#a85be550e68e1a5ec5d98e5dfbfb88366">daw::json::NoCommentSkippingPolicyChecked</a></div><div class="ttdeci">BasicParsePolicy&lt; false, NoCommentSkippingPolicy, default_exec_tag, false &gt; NoCommentSkippingPolicyChecked</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy.h:287</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html_a85be550e68e1a5ec5d98e5dfbfb88366"><div class="ttname"><a href="namespacedaw_1_1json.html#a85be550e68e1a5ec5d98e5dfbfb88366">daw::json::NoCommentSkippingPolicyChecked</a></div><div class="ttdeci">BasicParsePolicy&lt; false, NoCommentSkippingPolicy, default_exec_tag, false &gt; NoCommentSkippingPolicyChecked</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy.h:298</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__class_html_a5e25190a8664f0963326ac1cac3cfc14"><div class="ttname"><a href="structdaw_1_1json_1_1json__class.html#a5e25190a8664f0963326ac1cac3cfc14">daw::json::json_class::wrapped_type</a></div><div class="ttdeci">T wrapped_type</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:367</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__string__raw_html_aaed1a71d326ce673ad5785f994f52d9d"><div class="ttname"><a href="structdaw_1_1json_1_1json__string__raw.html#aaed1a71d326ce673ad5785f994f52d9d">daw::json::json_string_raw::empty_is_null</a></div><div class="ttdeci">static constexpr JsonNullable empty_is_null</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:279</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html_ad386e4018df7e72e41e7268ca9302af2"><div class="ttname"><a href="namespacedaw_1_1json.html#ad386e4018df7e72e41e7268ca9302af2">daw::json::JsonNullable</a></div><div class="ttdeci">JsonNullable</div><div class="ttdef"><b>Definition:</b> daw_json_parse_common.h:330</div></div>

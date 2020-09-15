@@ -843,6 +843,7 @@ namespace daw::json {
 		if constexpr( std::is_pointer_v<OutputIterator> ) {
 			daw_json_assert( out_it, "Expected valid output iterator" );
 		}
+
 		static_assert(
 		  json_details::has_unnamed_default_type_mapping<JsonClass>::value,
 		  "Expected a typed that has been mapped via specialization "
@@ -1001,7 +1002,7 @@ namespace daw::json {
 
 /***
  * Construct a json_value from a string literal
- * @return A json_value representing the json documnet
+ * @return A json_value representing the json document
  */
 constexpr daw::json::json_value operator"" _dawjson( char const *ptr,
                                                      std::size_t sz ) {

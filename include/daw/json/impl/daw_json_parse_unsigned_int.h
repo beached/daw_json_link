@@ -180,10 +180,10 @@ namespace daw::json::json_details {
 	}
 
 #ifdef DAW_ALLOW_SSE42
-/*
+	/*
 	// Adapted from
 	//
-	https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
+	// https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
 	static inline UInt64 parse_eight_digits_unrolled( const char *ptr ) {
 	  // this actually computes *16* values so we are being wasteful.
 	  static __m128i const ascii0 = _mm_set1_epi8( '0' );

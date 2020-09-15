@@ -16,6 +16,9 @@
 #include <daw/daw_hide.h>
 
 namespace daw::json {
+	/***
+	 * Allow skipping C++ style comments in JSON document
+	 */
 	class CppCommentSkippingPolicy final {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
