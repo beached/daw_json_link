@@ -70,11 +70,10 @@ public:
 			return true;
 		case daw::json::JsonBaseParseTypes::String: {
 			member_preamble( );
-			auto rng = p.value.get_range( );
-			rng = daw::json::json_details::skip_string( rng );
-			std::string unescaped =
-			  daw::json::json_details::parse_string_known_stdstring<true, std::string,
-			                                                        true>( rng );
+			std::string const unescaped =
+			  daw::json::from_json<std::string, ParsePolicy, true>(
+			    p.value.get_string_view( ) );
+
 			write_chr( '"' );
 			out_it = daw::json::utils::copy_to_iterator<true>( out_it, unescaped );
 			write_chr( '"' );
