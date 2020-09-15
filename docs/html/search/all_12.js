@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['strings_333',['Strings',['../md___users_dwright__dropbox_github_daw_json_link_cookbook_strings.html',1,'']]],
+  ['strings_333',['Strings',['../md_cookbook_strings.html',1,'']]],
   ['second_334',['second',['../structdaw_1_1json_1_1datetime_1_1time__parts.html#ad3ee8cb36ab8fbaca772c6d6d9abfd29',1,'daw::json::datetime::time_parts::second()'],['../structdaw_1_1json_1_1datetime_1_1ymdhms.html#a5cba190fd98b49d6a2ddaee34de0d2f7',1,'daw::json::datetime::ymdhms::second()']]],
   ['serialize_335',['serialize',['../structdaw_1_1json_1_1json__member__list.html#a01dc9ba300d8aa24f2bddaff62e37f7c',1,'daw::json::json_member_list::serialize()'],['../structdaw_1_1json_1_1json__ordered__member__list.html#a3460133f625cf0001bfdbe70b6e6c66e',1,'daw::json::json_ordered_member_list::serialize()']]],
   ['set_5fclass_5fposition_336',['set_class_position',['../structdaw_1_1json_1_1_basic_parse_policy.html#a22ffd4e203b78d51e105737beba2f5f0',1,'daw::json::BasicParsePolicy']]],

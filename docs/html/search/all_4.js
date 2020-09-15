@@ -56,7 +56,7 @@ var searchData=
   ['disallowhigh_119',['DisallowHigh',['../namespacedaw_1_1json.html#ab23d9b5e7400c47512a88946d69ab2ada92c261a689e015f3fc7bfab8b0b9893b',1,'daw::json']]],
   ['document_5fis_5fminified_120',['document_is_minified',['../structdaw_1_1json_1_1_basic_no_comment_skipping_policy.html#ae27ecad891ef966d4a3b3994476f59d5',1,'daw::json::BasicNoCommentSkippingPolicy']]],
   ['json_121',['json',['../namespacedaw_1_1json.html',1,'daw']]],
-  ['dates_20and_20times_122',['Dates and Times',['../md___users_dwright__dropbox_github_daw_json_link_cookbook_dates.html',1,'']]],
+  ['dates_20and_20times_122',['Dates and Times',['../md_cookbook_dates.html',1,'']]],
   ['murmur3_5fdetails_123',['murmur3_details',['../namespacedaw_1_1murmur3__details.html',1,'daw']]],
   ['parse_5futils_124',['parse_utils',['../namespacedaw_1_1json_1_1parse__utils.html',1,'daw::json']]],
   ['utils_125',['utils',['../namespacedaw_1_1json_1_1utils.html',1,'daw::json']]]

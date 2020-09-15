@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['parser_20policies_305',['Parser Policies',['../md___users_dwright__dropbox_github_daw_json_link_cookbook_parser_policies.html',1,'']]],
-  ['parsing_20individual_20members_306',['Parsing Individual Members',['../md___users_dwright__dropbox_github_daw_json_link_cookbook_parsing_individual_members.html',1,'']]],
+  ['parser_20policies_305',['Parser Policies',['../md_cookbook_parser_policies.html',1,'']]],
+  ['parsing_20individual_20members_306',['Parsing Individual Members',['../md_cookbook_parsing_individual_members.html',1,'']]],
   ['parse_307',['parse',['../structdaw_1_1json_1_1json__member__list.html#ac81991d892d0adb17699d9c27c7a1566',1,'daw::json::json_member_list::parse()'],['../structdaw_1_1json_1_1json__ordered__member__list.html#a2e5f935dd324f6038632e222f4cfa952',1,'daw::json::json_ordered_member_list::parse()']]],
   ['parse_5fiso8601_5ftimestamp_308',['parse_iso8601_timestamp',['../namespacedaw_1_1json_1_1datetime.html#ac842e44ff35ce169edebe9f873e9ee40',1,'daw::json::datetime']]],
   ['parse_5fiso_5f8601_5fdate_309',['parse_iso_8601_date',['../namespacedaw_1_1json_1_1datetime.html#a4b6586ca6336b9d4aa7e71be9748a0ed',1,'daw::json::datetime']]],

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['optional_20values_292',['Optional Values',['../md___users_dwright__dropbox_github_daw_json_link_cookbook_optional_values.html',1,'']]],
+  ['optional_20values_292',['Optional Values',['../md_cookbook_optional_values.html',1,'']]],
   ['operator_20basic_5fjson_5fvalue_3c_20newrange_20_3e_293',['operator basic_json_value&lt; NewRange &gt;',['../classdaw_1_1json_1_1basic__json__value.html#a2363e8592ca7bf763e793e45d30e8f5e',1,'daw::json::basic_json_value']]],
   ['operator_20bool_294',['operator bool',['../classdaw_1_1json_1_1json__array__iterator.html#a9222e5c24964478934651681013fb291',1,'daw::json::json_array_iterator::operator bool()'],['../structdaw_1_1json_1_1basic__json__value__iterator.html#a929b31e38eb88c114465eb94c50a26fe',1,'daw::json::basic_json_value_iterator::operator bool()']]],
   ['operator_21_3d_295',['operator!=',['../classdaw_1_1json_1_1json__array__iterator.html#a3abbe758e4d35515f5c4585f88daed44',1,'daw::json::json_array_iterator::operator!=()'],['../structdaw_1_1json_1_1basic__json__value__iterator.html#a87479752e6a7b519062585826d7d629a',1,'daw::json::basic_json_value_iterator::operator!=()']]],

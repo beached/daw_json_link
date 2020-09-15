@@ -8,5 +8,5 @@ var searchData=
   ['get_5fstring_5fview_153',['get_string_view',['../classdaw_1_1json_1_1basic__json__value.html#a20f15790ce91a4555b6e5913b501ac63',1,'daw::json::basic_json_value']]],
   ['good_154',['good',['../classdaw_1_1json_1_1json__array__iterator.html#a55df3c089a1de24068c74b247bfaceda',1,'daw::json::json_array_iterator::good()'],['../structdaw_1_1json_1_1basic__json__value__iterator.html#a0b28656ef448a673b051a6627bc95aba',1,'daw::json::basic_json_value_iterator::good()']]],
   ['graphs_2emd_155',['graphs.md',['../graphs_8md.html',1,'']]],
-  ['graphs_156',['Graphs',['../md___users_dwright__dropbox_github_daw_json_link_cookbook_graphs.html',1,'']]]
+  ['graphs_156',['Graphs',['../md_cookbook_graphs.html',1,'']]]
 ];

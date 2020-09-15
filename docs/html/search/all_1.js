@@ -15,6 +15,6 @@ var searchData=
   ['as_5funchecked_13',['as_unchecked',['../structdaw_1_1json_1_1_basic_parse_policy.html#a5431cba2eb30d732673b22f4d39a0528',1,'daw::json::BasicParsePolicy']]],
   ['at_14',['at',['../classdaw_1_1json_1_1basic__stateful__json__value.html#ace13ba0cc765a7afa1a28306e8dbade8',1,'daw::json::basic_stateful_json_value::at(std::string_view key)'],['../classdaw_1_1json_1_1basic__stateful__json__value.html#adf572302e8a4b4430420ec2289d82647',1,'daw::json::basic_stateful_json_value::at(Integer index)']]],
   ['automated_5fcode_5fgeneration_2emd_15',['automated_code_generation.md',['../automated__code__generation_8md.html',1,'']]],
-  ['array_27s_16',['Array&apos;s',['../md___users_dwright__dropbox_github_daw_json_link_cookbook_array.html',1,'']]],
-  ['automated_20code_20generation_17',['Automated Code Generation',['../md___users_dwright__dropbox_github_daw_json_link_cookbook_automated_code_generation.html',1,'']]]
+  ['array_27s_16',['Array&apos;s',['../md_cookbook_array.html',1,'']]],
+  ['automated_20code_20generation_17',['Automated Code Generation',['../md_cookbook_automated_code_generation.html',1,'']]]
 ];
