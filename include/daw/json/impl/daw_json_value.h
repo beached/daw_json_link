@@ -15,6 +15,10 @@
 #include <tuple>
 
 namespace daw::json {
+	/***
+	 * A container for arbitrary JSON values
+	 * @tparam Range see IteratorRange
+	 */
 	template<typename Range>
 	class basic_json_value;
 
@@ -282,7 +286,7 @@ namespace daw::json {
 	  -> basic_json_value_iterator_range<Range>;
 
 	/***
-	 * A container for arbutrary JSON values
+	 * A container for arbitrary JSON values
 	 * @tparam Range see IteratorRange
 	 */
 	template<typename Range>

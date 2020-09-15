@@ -15,6 +15,9 @@ struct NumberX {
 namespace daw::json {
 	template<>
 	struct json_data_contract<NumberX> {
+		// Having this type alias, any type on the RHS works, says that operator<<(
+		// ostream &, NumberX const & ) is available.  When used, it will output the
+		// JSON serialization
 		using opt_into_iostreams = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"x", int>>;
@@ -36,7 +39,8 @@ static_assert(
 
 int main( ) {
 	DAW_CONSTEXPR std::string_view const single_numberx = R"({"x":123})";
-	DAW_CONSTEXPR NumberX const nx = daw::json::from_json<NumberX>( single_numberx );
+	DAW_CONSTEXPR NumberX const nx =
+	  daw::json::from_json<NumberX>( single_numberx );
 
 	DAW_CONSTEXPR std::string_view const numberx_in_json_array =
 	  R"([{"x":1},{"x":2},{"x":3}])";

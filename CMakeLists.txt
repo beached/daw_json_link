@@ -17,9 +17,9 @@ project( "json_link"
 set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 set( CMAKE_CXX_STANDARD_REQUIRED ON)
 set( CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 add_subdirectory(extern)
-
 option( DAW_ENABLE_TESTING "Build unit tests" OFF )
 
 include( GNUInstallDirs)
@@ -74,4 +74,6 @@ if( DAW_ENABLE_TESTING )
 	include( cmake/git_properties.cmake )
 	add_subdirectory( tests )
 endif( )	
+
+add_subdirectory(docs)
 

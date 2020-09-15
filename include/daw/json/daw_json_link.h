@@ -161,7 +161,20 @@ namespace daw::json {
 		}
 	};
 
-	// Member types
+	/**************************************************
+	 * Member types - These are the mapping classes to
+	 * describe the constructor of your classes
+	 **************************************************/
+
+	/**
+	 * The member is a range checked number
+	 * @tparam Name name of json member
+	 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+	 * Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 * @tparam Nullable Can the member be missing or have a null value
+	 */
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
 	         typename Constructor, JsonRangeCheck RangeCheck,
 	         JsonNullable Nullable>
@@ -195,6 +208,13 @@ namespace daw::json {
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
+	/**
+	 * The member is a nullable boolean
+	 * @tparam Name name of json member
+	 * @tparam T result type to pass to Constructor
+	 * @tparam LiteralAsString Could this number be embedded in a string
+	 * @tparam Constructor Callable used to construct result
+	 */
 	template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
 	         typename Constructor, JsonNullable Nullable>
 	struct json_bool {
@@ -217,6 +237,21 @@ namespace daw::json {
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
+	/**
+	 * Member is an escaped string and requires unescaping and escaping of string
+	 * data
+	 * @tparam Name of json member
+	 * @tparam String result type constructed by Constructor
+	 * @tparam Constructor a callable taking as arguments ( char const *,
+	 * std::size_t )
+	 * @tparam EmptyStringNull if string is empty, call Constructor with no
+	 * arguments
+	 * @tparam EightBitMode Allow filtering of characters with the MSB set
+	 * arguments
+	 * @tparam Nullable Can the member be missing or have a null value
+	 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
+	 * data
+	 */
 	template<JSONNAMETYPE Name, typename String, typename Constructor,
 	         JsonNullable EmptyStringNull, EightBitModes EightBitMode,
 	         JsonNullable Nullable, AllowEscapeCharacter AllowEscape>
@@ -242,6 +277,19 @@ namespace daw::json {
 		static constexpr AllowEscapeCharacter allow_escape_character = AllowEscape;
 	};
 
+	/**
+	 * Member is an escaped string and requires unescaping and escaping of string
+	 * data
+	 * @tparam Name of json member
+	 * @tparam String result type constructed by Constructor
+	 * @tparam Constructor a callable taking as arguments ( char const *,
+	 * std::size_t )
+	 * @tparam Appender Allows appending characters to the output object
+	 * @tparam EmptyStringNull if string is empty, call Constructor with no
+	 * arguments
+	 * @tparam EightBitMode Allow filtering of characters with the MSB set
+	 * @tparam Nullable Can the member be missing or have a null value
+	 */
 	template<JSONNAMETYPE Name, typename String, typename Constructor,
 	         typename Appender, JsonNullable EmptyStringNull,
 	         EightBitModes EightBitMode, JsonNullable Nullable>
@@ -267,6 +315,13 @@ namespace daw::json {
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
+	/**
+	 * Link to a JSON string representing a nullable date
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T C++ type to construct, by default is a time_point
+	 * @tparam Constructor A Callable used to construct a T.
+	 * Must accept a char pointer and size as argument to the date/time string.
+	 */
 	template<JSONNAMETYPE Name, typename T, typename Constructor,
 	         JsonNullable Nullable>
 	struct json_date {
@@ -288,6 +343,15 @@ namespace daw::json {
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
+	/**
+	 * Link to a JSON class
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T type that has specialization of
+	 * daw::json::json_data_contract
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 * @tparam Nullable Can the member be missing or have a null value
+	 */
 	template<JSONNAMETYPE Name, typename T, typename Constructor,
 	         JsonNullable Nullable>
 	struct json_class {
@@ -338,6 +402,15 @@ namespace daw::json {
 		      JsonElements>::underlying_json_type... } ) };
 	};
 
+	/***
+	 * Link to a nullable JSON variant
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T type that has specialization of
+	 * daw::json::json_data_contract
+	 * @tparam JsonElements a json_variant_type_list
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 */
 	template<JSONNAMETYPE Name, typename T, typename JsonElements,
 	         typename Constructor, JsonNullable Nullable>
 	struct json_variant {
@@ -363,6 +436,20 @@ namespace daw::json {
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
+	/***
+	 * Link to a nullable variant like data type that is discriminated via another
+	 * member.
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T type of value to construct
+	 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
+	 * declared in member list
+	 * @tparam Switcher A callable that returns an index into JsonElements when
+	 * passed the TagMember object in parent member list
+	 * @tparam JsonElements a json_tagged_variant_type_list, defaults to type
+	 * elements of T when T is a std::variant and they are all auto mappable
+	 * @tparam Constructor A callable used to construct T.  The
+	 * default supports normal and aggregate construction
+	 */
 	template<JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
 	         typename JsonElements, typename Constructor, JsonNullable Nullable>
 	struct json_tagged_variant {
@@ -395,6 +482,15 @@ namespace daw::json {
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
+	/**
+	 * Allow parsing of a nullable type that does not fit
+	 * @tparam Name Name of JSON member to link to
+	 * @tparam T type of value being constructed
+	 * @tparam FromConverter Callable that accepts a std::string_view of the range
+	 * to parse
+	 * @tparam ToConverter Returns a string from the value
+	 * @tparam CustomJsonType JSON type value is encoded as literal/string
+	 */
 	template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
 	         typename ToJsonConverter, CustomJsonTypes CustomJsonType,
 	         JsonNullable Nullable>
@@ -457,6 +553,17 @@ namespace daw::json {
 		};
 	} // namespace json_details
 
+	/** Link to a JSON array
+	 * @tparam Name name of JSON member to link to
+	 * @tparam Container type of C++ container being constructed(e.g.
+	 * vector<int>)
+	 * @tparam JsonElement Json type being parsed e.g. json_number,
+	 * json_string...
+	 * @tparam Constructor A callable used to make Container,
+	 * default will use the Containers constructor.  Both normal and aggregate
+	 * are supported
+	 * @tparam Nullable Can the member be missing or have a null value
+	 */
 	template<JSONNAMETYPE Name, typename JsonElement, typename Container,
 	         typename Constructor, JsonNullable Nullable>
 	struct json_array {
@@ -485,6 +592,20 @@ namespace daw::json {
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
+	/** Map a KV type json class { "Key StringRaw": ValueType, ... }
+	 *  to a c++ class.  Keys are Always string like and the destination
+	 *  needs to be constructable with a pointer, size
+	 *  @tparam Name name of JSON member to link to
+	 *  @tparam Container type to put values in
+	 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
+	 *  json_string, ... ). It also supports basic types like numbers, bool, and
+	 * mapped classes and enums(mapped to numbers)
+	 *  @tparam JsonKeyType type of key in kv pair.  As with value it supports
+	 * basic types too
+	 *  @tparam Constructor A callable used to make Container, default will use
+	 * the Containers constructor.  Both normal and aggregate are supported
+	 * @tparam Nullable Can the member be missing or have a null value
+	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType, typename Constructor, JsonNullable Nullable>
 	struct json_key_value {
@@ -557,7 +678,7 @@ namespace daw::json {
 	};
 
 	/***
-	 * An untypes JSON value
+	 * An untyped JSON value
 	 */
 	using json_value = basic_json_value<NoCommentSkippingPolicyChecked>;
 
@@ -694,23 +815,19 @@ namespace daw::json {
 		if constexpr( std::is_pointer_v<OutputIterator> ) {
 			daw_json_assert( out_it, "Expected valid output iterator" );
 		}
-		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
-		               "Expected a typed that has been mapped via specialization "
-		               "of daw::json::json_data_contract" );
-		static_assert( json_details::has_json_to_json_data_v<JsonClass>,
-		               "A function called to_json_data must exist for type." );
-
-		out_it =
-		  json_details::json_data_contract_trait_t<JsonClass>::template serialize(
-		    out_it, daw::json::json_data_contract<JsonClass>::to_json_data( value ),
-		    value );
+		static_assert(
+		  json_details::has_unnamed_default_type_mapping<JsonClass>::value,
+		  "Expected a typed that has been mapped via specialization "
+		  "of daw::json::json_data_contract or is a fundamental type" );
+		using json_member = json_details::unnamed_default_type_mapping<JsonClass>;
+		out_it = json_details::member_to_string<json_member>( out_it, value );
 		return out_it;
 	}
 
 	/**
 	 *
 	 * @tparam Result std::string like type to put result into
-	 * @tparam JsonClass Type that has json_parser_desription and to_json_data
+	 * @tparam JsonClass Type that has json_parser_description and to_json_data
 	 * function overloads
 	 * @param value  value to serialize
 	 * @return  JSON string data
@@ -718,12 +835,13 @@ namespace daw::json {
 	template<typename Result = std::string, typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr Result
 	to_json( JsonClass const &value ) {
+		/*
 		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
 		               "Expected a typed that has been mapped via specialization "
 		               "of daw::json::json_data_contract" );
 		static_assert( json_details::has_json_to_json_data_v<JsonClass>,
 		               "A function called to_json_data must exist for type." );
-
+		*/
 		Result result{ };
 		to_json( value, daw::back_inserter( result ) );
 		return result;
@@ -789,7 +907,13 @@ namespace daw::json {
 		  ParseTag<JsonParseTypes::Array>{ }, rng );
 	}
 
-	struct auto_detect_array_element {};
+	namespace json_details {
+		/***
+		 * Tag type to indicate that the element of a Container is not being
+		 * specified.  This is the default.
+		 */
+		struct auto_detect_array_element {};
+	} // namespace json_details
 
 	/**
 	 * Serialize Container to JSON data via an iterator
@@ -798,8 +922,8 @@ namespace daw::json {
 	 * @param c Data to serialize
 	 * @return OutputIterator with final state of iterator
 	 */
-	template<typename JsonElement = auto_detect_array_element, typename Container,
-	         typename OutputIterator>
+	template<typename JsonElement = json_details::auto_detect_array_element,
+	         typename Container, typename OutputIterator>
 	[[maybe_unused]] constexpr OutputIterator
 	to_json_array( Container &&c, OutputIterator out_it ) {
 		static_assert(
@@ -813,7 +937,7 @@ namespace daw::json {
 		bool is_first = true;
 		for( auto const &v : c ) {
 			using JsonMember = std::conditional_t<
-			  std::is_same_v<JsonElement, auto_detect_array_element>,
+			  std::is_same_v<JsonElement, json_details::auto_detect_array_element>,
 			  json_details::unnamed_default_type_mapping<
 			    daw::remove_cvref_t<decltype( v )>>,
 			  JsonElement>;
@@ -837,7 +961,8 @@ namespace daw::json {
 	 * @return A string containing the serialized elements of c
 	 */
 	template<typename Result = std::string,
-	         typename JsonElement = auto_detect_array_element, typename Container>
+	         typename JsonElement = json_details::auto_detect_array_element,
+	         typename Container>
 	[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c ) {
 		static_assert(
 		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
@@ -884,7 +1009,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
+#if not defined( DAW_JSON_DISABLE_JSON_STRING_LITERAL )
+/// Construct a json_value from a string literal
+/// \return A json_value
 constexpr daw::json::json_value operator"" _dawjson( char const *ptr,
                                                      std::size_t sz ) {
 	return daw::json::json_value( std::string_view( ptr, sz ) );
 }
+#endif

@@ -221,7 +221,7 @@ namespace daw::json {
 	/**
 	 * Link to a JSON string representing a nullable date
 	 * @tparam Name name of JSON member to link to
-	 * @tparam T C++ type to consruct, by default is a time_point
+	 * @tparam T C++ type to construct, by default is a time_point
 	 * @tparam Constructor A Callable used to construct a T.
 	 * Must accept a char pointer and size as argument to the date/time string.
 	 */
