@@ -292,7 +292,7 @@ namespace daw::json::json_details {
 	 * @return A reified value of type JsonMember::parse_to_t
 	 */
 	template<typename JsonMember, typename Range>
-	[[nodiscard]] inline constexpr auto
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr auto
 	parse_ordered_class_member( std::size_t &member_position, Range &rng ) {
 
 		/***
@@ -323,7 +323,7 @@ namespace daw::json::json_details {
 
 	/***
 	 * Parse a member from a json_class
-	 * @tparam member_position positon in json_class member list
+	 * @tparam member_position position in json_class member list
 	 * @tparam JsonMember type description of member to parse
 	 * @tparam N Number of members in json_class
 	 * @tparam Range see IteratorRange
@@ -352,6 +352,7 @@ namespace daw::json::json_details {
 			return parse_value<JsonMember, true>(
 			  ParseTag<JsonMember::expected_type>{ }, loc );
 		}
+		// We cannot find the member, check if the member is nullable
 		if constexpr( is_json_nullable_v<JsonMember> ) {
 			return parse_value<JsonMember, true>(
 			  ParseTag<JsonMember::expected_type>{ }, loc );
@@ -367,7 +368,7 @@ namespace daw::json::json_details {
 			return;
 		}
 		rng.clean_tail( );
-		// If we fullfill the contract before all values are parses
+		// If we fulfill the contract before all values are parses
 		daw_json_assert_weak( rng.has_more( ), "Unexpected end of range", rng );
 		rng.move_to_next_class_member( );
 		(void)rng.skip_class( );
@@ -376,28 +377,13 @@ namespace daw::json::json_details {
 		rng.trim_left_checked( );
 	}
 
-#if defined( __cpp_constexpr_dynamic_alloc )
-	template<typename Range>
-	struct ClassCleanupDtor {
-		Range *rng_ptr;
-		inline constexpr ~ClassCleanupDtor( ) {
-			class_cleanup_now( *rng_ptr );
-		}
-	};
-	template<typename Range>
-	ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
-#else
-	template<typename Range>
-	struct ClassCleanupDtor {
-		Range *rng_ptr;
-		inline ~ClassCleanupDtor( ) {
-			class_cleanup_now( *rng_ptr );
-		}
-	};
-	template<typename Range>
-	ClassCleanupDtor( Range * ) -> ClassCleanupDtor<Range>;
-#endif
-
+	/***
+	 * Parse to the user supplied class.  The parser will run left->right if it
+	 * can when the JSON document's order matches that of the order of the
+	 * supplied classes ctor.  If there is an order mismatch, store the
+	 * start/finish of JSON members we are interested in and return that to the
+	 * members parser when needed.
+	 */
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
 	[[nodiscard]] inline constexpr JsonClass
@@ -418,6 +404,8 @@ namespace daw::json::json_details {
 		} else {
 
 #if not defined( _MSC_VER ) or defined( __clang__ )
+			// Prior to C++20, this will guarantee the data structure is initialized
+			// at compile time.  In the future, constinit should be fine.
 			constexpr auto known_locations_v =
 			  make_locations_info<Range, JsonMembers...>( );
 
@@ -429,12 +417,12 @@ namespace daw::json::json_details {
 
 #endif
 			if constexpr( is_guaranteed_rvo_v<Range> ) {
-				// This relies on non-trivial dtor's being allowed.  So C++20 constexpr
-				// or not in a constant expression.  It does allow for construction of
-				// classes without move/copy special members
-
-				// Do this before we exit but after return
-				auto const oe = ClassCleanupDtor{ &rng };
+				struct cleanup_t {
+					Range *rng_ptr;
+					CPP20CONSTEXPR inline ~cleanup_t( ) {
+						class_cleanup_now( *rng_ptr );
+					}
+				} const run_after_parse{ &rng };
 				/*
 				 * Rather than call directly use apply/tuple to evaluate left->right
 				 */
@@ -466,44 +454,10 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename Range>
-	DAW_ATTRIBUTE_FLATTEN inline constexpr void
-	ordered_class_cleanup_now( Range &rng ) {
-		rng.clean_tail( );
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
-		while( rng.front( ) != ']' ) {
-			(void)skip_value( rng );
-			rng.clean_tail( );
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
-		}
-		// TODO: should we check for end
-		daw_json_assert_weak( rng.front( ) == ']', "Expected a ']'", rng );
-		rng.remove_prefix( );
-		rng.trim_left( );
-	}
-
-#if defined( __cpp_constexpr_dynamic_alloc )
-	template<typename Range>
-	struct OrderedClassCleanupDtor {
-		Range *rng_ptr;
-		inline constexpr ~OrderedClassCleanupDtor( ) {
-			ordered_class_cleanup_now( *rng_ptr );
-		}
-	};
-	template<typename Range>
-	OrderedClassCleanupDtor( Range * ) -> OrderedClassCleanupDtor<Range>;
-#else
-	template<typename Range>
-	struct OrderedClassCleanupDtor {
-		Range *rng_ptr;
-		inline ~OrderedClassCleanupDtor( ) {
-			ordered_class_cleanup_now( *rng_ptr );
-		}
-	};
-	template<typename Range>
-	OrderedClassCleanupDtor( Range * ) -> OrderedClassCleanupDtor<Range>;
-#endif
-
+	/***
+	 * Parse to a class where the members are constructed from the values of a
+	 * JSON array. Often this is used for geometric types like Point
+	 */
 	template<typename JsonClass, typename... JsonMembers, typename Range>
 	[[nodiscard]] inline constexpr JsonClass
 	parse_ordered_json_class( Range &rng ) {
@@ -525,8 +479,12 @@ namespace daw::json::json_details {
 		  parse_ordered_class_member<JsonMembers>( current_idx, rng ) )...>;
 
 		if constexpr( is_guaranteed_rvo_v<Range> ) {
-
-			auto const oe = OrderedClassCleanupDtor{ &rng };
+			struct cleanup_t {
+				Range *ptr;
+				CPP20CONSTEXPR inline ~cleanup_t( ) {
+					(void)ptr->skip_array( );
+				}
+			} const run_after_parse{ &rng };
 			return std::apply( daw::construct_a<JsonClass>,
 			                   tp_t{ parse_ordered_class_member<JsonMembers>(
 			                     current_idx, rng )... } );
@@ -536,7 +494,7 @@ namespace daw::json::json_details {
 			              tp_t{ parse_ordered_class_member<JsonMembers>( current_idx,
 			                                                             rng )... } );
 
-			ordered_class_cleanup_now( rng );
+			(void)rng.skip_array( );
 			return result;
 		}
 	} // namespace daw::json::json_details

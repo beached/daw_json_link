@@ -74,5 +74,3 @@ if( DAW_ENABLE_TESTING )
 	add_subdirectory( tests )
 endif( )	
 
-add_subdirectory(docs)
-

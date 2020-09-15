@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "defines.h"
+
 #include <daw/json/daw_json_link.h>
 
 #include <array>
@@ -58,11 +60,11 @@ namespace daw::geojson {
 		T *ptr;
 
 		template<size_t N>
-		inline explicit array_appender( std::array<T, N> &ary ) noexcept
+		explicit DAW_CONSTEXPR array_appender( std::array<T, N> &ary ) noexcept
 		  : ptr( ary.data( ) ) {}
 
 		template<typename U>
-		inline void operator( )( U &&item ) noexcept {
+		DAW_CONSTEXPR void operator( )( U &&item ) noexcept {
 			*ptr++ = std::forward<U>( item );
 		}
 	};
@@ -73,7 +75,7 @@ namespace daw::json {
 	struct DAW_HIDDEN json_data_contract<daw::geojson::Point> {
 		using type = json_ordered_member_list<double, double>;
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Point const &p ) {
 			return std::forward_as_tuple( p.x, p.y );
 		}
@@ -84,11 +86,11 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_string_raw<"name", std::string_view>>;
 #else
-		static inline constexpr char const type_sym[] = "type";
-		static inline constexpr char const name[] = "name";
+		static constexpr char const type_sym[] = "type";
+		static constexpr char const name[] = "name";
 		using type = json_member_list<json_string_raw<name, std::string_view>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Property const &value ) {
 			return std::forward_as_tuple( value.name );
 		}
@@ -101,14 +103,14 @@ namespace daw::json {
 		  json_string_raw<"type", std::string_view>,
 		  json_array<"coordinates", std::vector<daw::geojson::Point>>>;
 #else
-		static inline constexpr char const type_sym[] = "type";
-		static inline constexpr char const coordinates[] = "coordinates";
+		static constexpr char const type_sym[] = "type";
+		static constexpr char const coordinates[] = "coordinates";
 		using type = json_member_list<
 		  json_string_raw<type_sym, std::string_view>,
 		  json_array<coordinates, std::vector<daw::geojson::Point>>>;
 #endif
 
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Polygon const &value ) {
 			return std::forward_as_tuple( value.type, value.coordinates );
 		}
@@ -122,15 +124,15 @@ namespace daw::json {
 		                   json_class<"properties", daw::geojson::Property>,
 		                   json_class<"geometry", daw::geojson::Polygon>>;
 #else
-		static inline constexpr char const type_sym[] = "type";
-		static inline constexpr char const properties[] = "properties";
-		static inline constexpr char const geometry[] = "geometry";
+		static constexpr char const type_sym[] = "type";
+		static constexpr char const properties[] = "properties";
+		static constexpr char const geometry[] = "geometry";
 		using type =
 		  json_member_list<json_string_raw<type_sym, std::string_view>,
 		                   json_class<properties, daw::geojson::Property>,
 		                   json_class<geometry, daw::geojson::Polygon>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Feature const &value ) {
 			return std::forward_as_tuple( value.type, value.properties,
 			                              value.geometry );
@@ -144,12 +146,12 @@ namespace daw::json {
 		  json_member_list<json_string_raw<"type", std::string_view>,
 		                   json_array<"features", daw::geojson::Feature>>;
 #else
-		static inline constexpr char const type_sym[] = "type";
-		static inline constexpr char const features[] = "features";
+		static constexpr char const type_sym[] = "type";
+		static constexpr char const features[] = "features";
 		using type = json_member_list<json_string_raw<type_sym, std::string_view>,
 		                              json_array<features, daw::geojson::Feature>>;
 #endif
-		[[nodiscard, maybe_unused]] static inline auto
+		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::FeatureCollection const &value ) {
 			return std::forward_as_tuple( value.type, value.features );
 		}

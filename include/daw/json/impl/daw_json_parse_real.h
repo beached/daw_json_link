@@ -36,7 +36,7 @@ namespace daw::json::json_details {
 
 	template<typename Result, bool KnownRange, typename Range,
 	         std::enable_if_t<KnownRange, std::nullptr_t> = nullptr>
-	[[nodiscard]] inline constexpr Result parse_real( Range const &rng ) {
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Result parse_real( Range const &rng ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
 		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
@@ -108,7 +108,7 @@ namespace daw::json::json_details {
 
 	template<typename Result, bool KnownRange, typename Range,
 	         std::enable_if_t<not KnownRange, std::nullptr_t> = nullptr>
-	[[nodiscard]] inline constexpr Result parse_real( Range &rng ) {
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Result parse_real( Range &rng ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
 		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),

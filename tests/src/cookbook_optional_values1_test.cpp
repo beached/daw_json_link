@@ -22,6 +22,40 @@
 #include <string>
 
 namespace daw::cookbook_optional_values1 {
+	namespace details {
+		template<typename... Args>
+		[[maybe_unused]] constexpr void
+		is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
+
+		template<typename T>
+		using is_unique_ptr_test =
+		  decltype( is_unique_ptr_test_impl( std::declval<T>( ) ) );
+
+		template<typename T>
+		constexpr bool is_unique_ptr_v = daw::is_detected_v<is_unique_ptr_test, T>;
+
+	} // namespace details
+
+	/**
+	 * This is used for nullables who's member is a unique_ptr.
+	 * @tparam T Type of value stored in unique_ptr
+	 */
+	template<typename T>
+	struct UniquePtrConstructor {
+		static_assert( not details::is_unique_ptr_v<T>,
+		               "T should be the type contained in the unique_ptr" );
+
+		inline constexpr std::unique_ptr<T> operator( )( ) const {
+			return { };
+		}
+
+		template<typename Arg, typename... Args>
+		inline std::unique_ptr<T> operator( )( Arg &&arg, Args &&... args ) const {
+			return std::make_unique<T>( std::forward<Arg>( arg ),
+			                            std::forward<Args>( args )... );
+		}
+	};
+
 	struct MyOptionalStuff1 {
 		std::optional<int> member0{ };
 		std::string member1{ };
@@ -42,20 +76,20 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_optional_values1::MyOptionalStuff1> {
 #if defined( __cpp_nontype_template_parameter_class )
-		using type =
-		  json_member_list<json_number_null<"member0", std::optional<int>>,
-		                   json_string<"member1">,
-		                   json_bool_null<"member2", std::unique_ptr<bool>,
-		                                  LiteralAsStringOpt::NotBeforeDblQuote,
-		                                  UniquePtrConstructor<bool>>>;
+		using type = json_member_list<
+		  json_number_null<"member0", std::optional<int>>, json_string<"member1">,
+		  json_bool_null<
+		    "member2", std::unique_ptr<bool>, LiteralAsStringOpt::NotBeforeDblQuote,
+		    daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
 #else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 		using type = json_member_list<
 		  json_number_null<member0, std::optional<int>>, json_string<member1>,
-		  json_bool_null<member2, std::unique_ptr<bool>, LiteralAsStringOpt::Never,
-		                 UniquePtrConstructor<bool>>>;
+		  json_bool_null<
+		    member2, std::unique_ptr<bool>, LiteralAsStringOpt::Never,
+		    daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
 #endif
 		static inline auto to_json_data(
 		  daw::cookbook_optional_values1::MyOptionalStuff1 const &value ) {

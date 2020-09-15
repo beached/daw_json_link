@@ -9,7 +9,7 @@ var searchData=
   ['class_5ffirst_37',['class_first',['../structdaw_1_1json_1_1_basic_parse_policy.html#af1121d68c9f62d53e54f1e64336db382',1,'daw::json::BasicParsePolicy']]],
   ['class_5ffrom_5farray_2emd_38',['class_from_array.md',['../class__from__array_8md.html',1,'']]],
   ['class_5flast_39',['class_last',['../structdaw_1_1json_1_1_basic_parse_policy.html#a4151f8d33a49482b6991cbc4f956d9d0',1,'daw::json::BasicParsePolicy']]],
-  ['clean_5ftail_40',['clean_tail',['../structdaw_1_1json_1_1_basic_parse_policy.html#aa06ec2f61d15e7f1a23c50aceb574fd0',1,'daw::json::BasicParsePolicy']]],
+  ['clean_5ftail_40',['clean_tail',['../structdaw_1_1json_1_1_basic_parse_policy.html#abf58688b994b6feb26e739f22bf1ff69',1,'daw::json::BasicParsePolicy']]],
   ['clean_5ftail_5fchecked_41',['clean_tail_checked',['../structdaw_1_1json_1_1_basic_parse_policy.html#a095d924fd2e9b00b81e38dd77da7d4a6',1,'daw::json::BasicParsePolicy']]],
   ['clean_5ftail_5funchecked_42',['clean_tail_unchecked',['../structdaw_1_1json_1_1_basic_parse_policy.html#a10ec18285d12a785bfd0da3c46185986',1,'daw::json::BasicParsePolicy']]],
   ['clear_43',['clear',['../classdaw_1_1json_1_1_default_json_event_parser_stack_policy.html#a5475b00bcbc3b3b1f33981fa63833dd5',1,'daw::json::DefaultJsonEventParserStackPolicy']]],

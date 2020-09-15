@@ -3,7 +3,7 @@ var searchData=
   ['mapped_5ftype_259',['mapped_type',['../structdaw_1_1json_1_1basic__json__value__iterator.html#a4038464d2d8df5551737d8eb9c17288d',1,'daw::json::basic_json_value_iterator']]],
   ['maybe_260',['Maybe',['../namespacedaw_1_1json.html#a713c6c85e86696909be442b84c8ec135a80ba31cc9d111c8ef880737a23ab0c54',1,'daw::json']]],
   ['member_5findex_261',['member_index',['../structdaw_1_1json_1_1ordered__json__member.html#ab97717dd2efc8c22cfa26de291ab9844',1,'daw::json::ordered_json_member']]],
-  ['members_262',['members',['../structdaw_1_1json_1_1unnamed__json__mapping.html#a7256307cfb23f645a7049a669b46e9a2',1,'daw::json::unnamed_json_mapping']]],
+  ['members_262',['members',['../structdaw_1_1json_1_1tuple__json__mapping.html#aedaf6fc0c4dccd4bf0d18812691eaf2e',1,'daw::json::tuple_json_mapping']]],
   ['millisecond_263',['millisecond',['../structdaw_1_1json_1_1datetime_1_1time__parts.html#a5a677b78f188ea892bfceb4cf9769b77',1,'daw::json::datetime::time_parts::millisecond()'],['../structdaw_1_1json_1_1datetime_1_1ymdhms.html#adfcbc18399486fafdd551ebfb04c52e5',1,'daw::json::datetime::ymdhms::millisecond()']]],
   ['minute_264',['minute',['../structdaw_1_1json_1_1datetime_1_1time__parts.html#a9098b890151c05f76bfd84c514f48eb6',1,'daw::json::datetime::time_parts::minute()'],['../structdaw_1_1json_1_1datetime_1_1ymdhms.html#a886408a141a70dc29395fd8931038735',1,'daw::json::datetime::ymdhms::minute()']]],
   ['missing_5fjson_5fdata_5fcontract_5ffor_265',['missing_json_data_contract_for',['../structdaw_1_1json_1_1missing__json__data__contract__for.html',1,'daw::json']]],

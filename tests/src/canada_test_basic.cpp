@@ -27,9 +27,8 @@ int main( int argc, char **argv ) try {
 	auto json_data =
 	  std::string( daw::filesystem::memory_mapped_file_t<>( argv[1] ) );
 
-	auto const canada_result = daw::json::from_json<
-	  daw::geojson::FeatureCollection,
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>>( json_data );
+	auto const canada_result =
+	  daw::json::from_json<daw::geojson::FeatureCollection>( json_data );
 	daw::do_not_optimize( canada_result );
 
 	auto new_json_result = std::string( );

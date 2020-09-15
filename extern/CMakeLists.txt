@@ -13,13 +13,16 @@ if( DAW_ENABLE_TESTING )
 endif( )
 
 include( FetchContent )
+set( FETCHCONTENT_UPDATES_DISCONNECTED ON )
 FetchContent_Declare(
 	daw_header_libraries
-	GIT_REPOSITORY https://github.com/beached/header_libraries.git)
+	GIT_REPOSITORY https://github.com/beached/header_libraries.git
+)
 FetchContent_MakeAvailable(daw_header_libraries)
 
 FetchContent_Declare(
 	daw_utf_range
-	GIT_REPOSITORY https://github.com/beached/utf_range.git)
+	GIT_REPOSITORY https://github.com/beached/utf_range.git
+)
 FetchContent_MakeAvailable(daw_utf_range)
 

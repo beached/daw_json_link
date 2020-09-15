@@ -115,8 +115,8 @@ struct daw::json::json_custom&lt; Name, T, FromJsonConverter, ToJsonConverter, C
   <table class="tparams">
     <tr><td class="paramname">Name</td><td>Name of JSON member to link to </td></tr>
     <tr><td class="paramname">T</td><td>type of value being constructed </td></tr>
-    <tr><td class="paramname">FromConverter</td><td>Callable that accepts a std::string_view of the range to parse </td></tr>
-    <tr><td class="paramname">ToConverter</td><td>Returns a string from the value </td></tr>
+    <tr><td class="paramname">FromJsonConverter</td><td>Callable that accepts a std::string_view of the range to parse </td></tr>
+    <tr><td class="paramname">ToJsonConverter</td><td>Returns a string from the value </td></tr>
     <tr><td class="paramname">CustomJsonType</td><td>JSON type value is encoded as literal/string</td></tr>
   </table>
   </dd>

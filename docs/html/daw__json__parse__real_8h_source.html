@@ -108,7 +108,7 @@ $(function() {
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result, <span class="keywordtype">bool</span> KnownRange, <span class="keyword">typename</span> Range,</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;           std::enable_if_t&lt;KnownRange, std::nullptr_t&gt; = <span class="keyword">nullptr</span>&gt;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  [[nodiscard]] <span class="keyword">inline</span> constexpr Result parse_real( Range <span class="keyword">const</span> &amp;rng ) {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  [[nodiscard]] DAW_ATTRIBUTE_FLATTEN <span class="keyword">inline</span> constexpr Result parse_real( Range <span class="keyword">const</span> &amp;rng ) {</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="comment">// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),</div>
@@ -180,7 +180,7 @@ $(function() {
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; </div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result, <span class="keywordtype">bool</span> KnownRange, <span class="keyword">typename</span> Range,</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;           std::enable_if_t&lt;not KnownRange, std::nullptr_t&gt; = <span class="keyword">nullptr</span>&gt;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  [[nodiscard]] <span class="keyword">inline</span> constexpr Result parse_real( Range &amp;rng ) {</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  [[nodiscard]] DAW_ATTRIBUTE_FLATTEN <span class="keyword">inline</span> constexpr Result parse_real( Range &amp;rng ) {</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="comment">// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]</span></div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),</div>

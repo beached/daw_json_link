@@ -66,7 +66,7 @@ bool missing_members_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
-	using class_t = unnamed_json_mapping<json_number<member0, unsigned>>;
+	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
 	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
@@ -81,7 +81,7 @@ bool wrong_member_type_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
-	using class_t = unnamed_json_mapping<json_number<member0, unsigned>>;
+	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
 	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
@@ -96,7 +96,7 @@ bool wrong_member_number_type_fail( ) {
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	static constexpr char const member0[] = "member0";
-	using class_t = unnamed_json_mapping<json_number<member0, unsigned>>;
+	using class_t = tuple_json_mapping<json_number<member0, unsigned>>;
 	auto v = parse_value<json_class<no_name, class_t>>(
 	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );

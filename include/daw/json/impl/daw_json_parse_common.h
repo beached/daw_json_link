@@ -35,11 +35,11 @@ namespace daw::json {
 	 * result is a tuple
 	 */
 	template<typename... Members>
-	struct unnamed_json_mapping {
+	struct tuple_json_mapping {
 		std::tuple<typename Members::parse_to_t...> members;
-
+		
 		template<typename... Ts>
-		constexpr unnamed_json_mapping( Ts &&... values )
+		constexpr tuple_json_mapping( Ts &&... values )
 		  : members{ std::forward<Ts>( values )... } {}
 	};
 } // namespace daw::json

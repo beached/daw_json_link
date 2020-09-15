@@ -71,7 +71,8 @@ namespace daw::json {
 		 * @return A T object
 		 */
 		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] static inline constexpr T parse( Range &rng ) {
+		[[maybe_unused, nodiscard]] static inline constexpr T
+		parse( Range &rng ) {
 			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
 			return json_details::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{ } );
@@ -79,15 +80,21 @@ namespace daw::json {
 	};
 
 	template<typename... Members>
-	struct json_data_contract<unnamed_json_mapping<Members...>> {
+	struct json_data_contract<tuple_json_mapping<Members...>> {
 		using type = json_member_list<Members...>;
 
 		[[nodiscard, maybe_unused]] static inline auto const &
-		to_json_data( unnamed_json_mapping<Members...> const &value ) {
+		to_json_data( tuple_json_mapping<Members...> const &value ) {
 			return value.members;
 		}
 	};
 
+	/***
+	 * In a json_ordered_member_list, this allows specifying the position in the
+	 * array to parse this member from
+	 * @tparam Index Position in array where member is
+	 * @tparam JsonMember type of value( e.g. int, json_string )
+	 */
 	template<std::size_t Index, typename JsonMember>
 	struct ordered_json_member {
 		using i_am_an_ordered_member = void;
@@ -486,9 +493,9 @@ namespace daw::json {
 	 * Allow parsing of a nullable type that does not fit
 	 * @tparam Name Name of JSON member to link to
 	 * @tparam T type of value being constructed
-	 * @tparam FromConverter Callable that accepts a std::string_view of the range
+	 * @tparam FromJsonConverter Callable that accepts a std::string_view of the range
 	 * to parse
-	 * @tparam ToConverter Returns a string from the value
+	 * @tparam ToJsonConverter Returns a string from the value
 	 * @tparam CustomJsonType JSON type value is encoded as literal/string
 	 */
 	template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
@@ -638,6 +645,21 @@ namespace daw::json {
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
 
+	/**
+	 * Map a KV type json array [ {"key": ValueOfKeyType, "value":
+	 * ValueOfValueType},... ] to a c++ class. needs to be constructable with a
+	 * pointer, size
+	 *  @tparam Name name of JSON member to link to
+	 *  @tparam Container type to put values in
+	 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
+	 *  json_string, ... ).  If specific json member type isn't specified, the
+	 * member name defaults to "value"
+	 *  @tparam JsonKeyType type of key in kv pair.  If specific json member type
+	 * isn't specified, the key name defaults to "key"
+	 *  @tparam Constructor A callable used to make Container, default will use
+	 * the Containers constructor.  Both normal and aggregate are supported
+	 * @tparam Nullable Can the member be missing or have a null value
+	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType, typename Constructor, JsonNullable Nullable>
 	struct json_key_value_array {
@@ -658,7 +680,7 @@ namespace daw::json {
 		  JsonValueType, json_details::default_value_name>;
 
 		using json_class_t =
-		  json_class<no_name, unnamed_json_mapping<json_key_t, json_value_t>>;
+		  json_class<no_name, tuple_json_mapping<json_key_t, json_value_t>>;
 		static_assert( not std::is_same_v<json_value_t, void>,
 		               "Unknown JsonValueType type." );
 		static_assert( daw::string_view( json_value_t::name ) !=
@@ -687,6 +709,13 @@ namespace daw::json {
 	 */
 	using json_pair = basic_json_pair<NoCommentSkippingPolicyChecked>;
 
+	/***
+	 * Do not parse this member but return a basic_json_value that can be used to
+	 * parse later
+	 *  @tparam Name name of JSON member to link to
+	 * @tparam Nullable Does the value have to exist in the document or can it
+	 * have a null value
+	 */
 	template<JSONNAMETYPE Name, JsonNullable Nullable = JsonNullable::Never>
 	struct json_delayed {
 		using i_am_a_json_type = void;
@@ -785,7 +814,6 @@ namespace daw::json {
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( basic_json_value<Range> value, std::string_view member_path ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
-		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		auto const json_data = value.get_string_view( );
 		auto [is_found, rng] = json_details::find_range<ParsePolicy>(
 		  json_data, { std::data( member_path ), std::size( member_path ) } );
@@ -835,13 +863,6 @@ namespace daw::json {
 	template<typename Result = std::string, typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr Result
 	to_json( JsonClass const &value ) {
-		/*
-		static_assert( json_details::has_json_data_contract_trait_v<JsonClass>,
-		               "Expected a typed that has been mapped via specialization "
-		               "of daw::json::json_data_contract" );
-		static_assert( json_details::has_json_to_json_data_v<JsonClass>,
-		               "A function called to_json_data must exist for type." );
-		*/
 		Result result{ };
 		to_json( value, daw::back_inserter( result ) );
 		return result;
@@ -974,44 +995,14 @@ namespace daw::json {
 		return result;
 	}
 
-	namespace json_details {
-		template<typename... Args>
-		[[maybe_unused]] constexpr void
-		is_unique_ptr_test_impl( std::unique_ptr<Args...> const & );
-
-		template<typename T>
-		using is_unique_ptr_test =
-		  decltype( is_unique_ptr_test_impl( std::declval<T>( ) ) );
-
-		template<typename T>
-		constexpr bool is_unique_ptr_v = daw::is_detected_v<is_unique_ptr_test, T>;
-
-	} // namespace json_details
-
-	/**
-	 * This is used for nullables who's member is a unique_ptr.
-	 * @tparam T Type of value stored in unique_ptr
-	 */
-	template<typename T>
-	struct UniquePtrConstructor {
-		static_assert( not json_details::is_unique_ptr_v<T>,
-		               "T should be the type contained in the unique_ptr" );
-
-		inline constexpr std::unique_ptr<T> operator( )( ) const {
-			return { };
-		}
-
-		template<typename Arg, typename... Args>
-		inline std::unique_ptr<T> operator( )( Arg &&arg, Args &&... args ) const {
-			return std::make_unique<T>( std::forward<Arg>( arg ),
-			                            std::forward<Args>( args )... );
-		}
-	};
 } // namespace daw::json
 
 #if not defined( DAW_JSON_DISABLE_JSON_STRING_LITERAL )
-/// Construct a json_value from a string literal
-/// \return A json_value
+
+/***
+ * Construct a json_value from a string literal
+ * @return A json_value representing the json documnet
+ */
 constexpr daw::json::json_value operator"" _dawjson( char const *ptr,
                                                      std::size_t sz ) {
 	return daw::json::json_value( std::string_view( ptr, sz ) );

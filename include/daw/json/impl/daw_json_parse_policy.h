@@ -232,7 +232,7 @@ namespace daw::json {
 			}
 		}
 
-		constexpr void clean_tail( ) {
+		DAW_ATTRIBUTE_FLATTEN constexpr void clean_tail( ) {
 			if constexpr( is_unchecked_input ) {
 				clean_tail_unchecked( );
 			} else {
@@ -326,7 +326,13 @@ namespace daw::json {
 	  BasicParsePolicy<true, CppCommentSkippingPolicy, ExecTag, false>;
 
 	namespace json_details {
+		/***
+		 * We are either not in a constexpr context or we have constexpr dtors. This
+		 * is generally used so that we can call cleanup code after parsing the
+		 * member
+		 */
 		template<typename ParsePolicy>
-		inline constexpr bool is_guaranteed_rvo_v = ParsePolicy::exec_tag_t::always_rvo;
-	}
+		inline constexpr bool is_guaranteed_rvo_v =
+		  ParsePolicy::exec_tag_t::always_rvo;
+	} // namespace json_details
 } // namespace daw::json
