@@ -76,8 +76,8 @@ json_value val = json_value( json_string );
 ## Intro 
 ###### [Top](#content)
 
-JSON Link allows serializing and deserializing of C++ data types and JSON using a predefined schema. The underlying premise is the constructor of C++ data structures can be called with the JSON object's members. The parsers goal isn't conformance. It should be stricter in many ways, but somethings will not be checked(e.g. trailing commas). The serializer generates conforming, minimal JSON. 
-Mapping of custom data structures is done by specializing ```daw::json::json_data_contract``` for type ```T```.
+JSON Link allows serializing and deserializing of C++ data types and JSON using a predefined mapping or ad hoc. The underlying premise is the constructor of C++ data structures can be called with the JSON object's members parsed to the parameters of the construct. If browsing JSON data structures, you can still benefit from both generic and custom parsers build from the mappings. The parsers goal isn't conformance as it does optionally allow comments, but it does allow trailing commas too. The serializer generates conforming and minimal JSON. 
+Mapping of custom data structures is done by specializing ```daw::json::json_data_contract``` for type your data type.  This is hierarchical, so a class `T` can have a member `U` that is already mapped.
 There are two parts to the trait `json_data_contract`, first is a type alias named ```type``` that maps JSON object members by name to the arguments of the C++ data structures constructor. Second, an optional, static method with a signatures like ```static tuple<MemberTypes> to_json_data( T const & )``` which returns a tuple of calculated for referenced members corresponding to the previous mapping. `to_json_data` is only required if serialization is wanted. 
 For example a `json_data_contract` for a `Coordinate` class could look like 
 ```c++

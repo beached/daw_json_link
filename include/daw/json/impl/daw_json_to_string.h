@@ -460,6 +460,34 @@ namespace daw::json::json_details {
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
+		if constexpr( std::is_floating_point_v<typename JsonMember::parse_to_t> ) {
+			if( std::isnan( value ) ) {
+				if constexpr( JsonMember::literal_as_string ==
+				              LiteralAsStringOpt::Never ) {
+					daw_json_error(
+					  "Nan is not supported as json number literals, must be quoted "
+					  "but that is not enabled" );
+				} else {
+					*it++ = '"';
+					it = utils::copy_to_iterator( it, "NaN" );
+					*it++ = '"';
+					return it;
+				}
+			} else if( std::isinf( value ) ) {
+				if constexpr( JsonMember::literal_as_string ==
+				              LiteralAsStringOpt::Never ) {
+					daw_json_error(
+					  "Infinity is not supported as json number literals, must be quoted "
+					  "but that is not enabled" );
+				} else {
+					*it++ = '"';
+					it = utils::copy_to_iterator( it, "Infinity" );
+					*it++ = '"';
+					return it;
+				}
+			}
+		}
+
 		if constexpr( JsonMember::literal_as_string ==
 		              LiteralAsStringOpt::Always ) {
 			*it++ = '"';

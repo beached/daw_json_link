@@ -542,6 +542,19 @@ int main( int, char ** ) try {
 
 	std::vector<double> a = { 1.1, 11.1 };
 	std::cout << daw::json::to_json_array( a ) << '\n';
+
+	using namespace daw::json;
+	using num_t = json_number<no_name, double, LiteralAsStringOpt::Always>;
+	std::cout << "Inf double: "
+	          << to_json<std::string, double, num_t>(
+	               std::numeric_limits<double>::infinity( ) )
+	          << '\n';
+
+	std::cout << "NaN double: "
+	          << to_json<std::string, double, num_t>(
+	               std::numeric_limits<double>::quiet_NaN( ) )
+	          << '\n';
+
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

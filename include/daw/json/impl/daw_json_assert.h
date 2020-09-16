@@ -23,6 +23,10 @@
 #define DAW_JSON_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )
 #define DAW_JSON_UNLIKELY( Bool ) ( __builtin_expect( !!( Bool ), 0 ) )
 #define DAW_JSON_UNREACHABLE( ) ( __builtin_unreachable( ) )
+#elif defined( _MSC_VER )
+#define DAW_JSON_LIKELY( Bool ) !!( Bool )
+#define DAW_JSON_UNLIKELY( Bool ) !!( Bool )
+#define DAW_JSON_UNREACHABLE( ) __assume( false );
 #else
 #define DAW_JSON_LIKELY( Bool ) !!( Bool )
 #define DAW_JSON_UNLIKELY( Bool ) !!( Bool )

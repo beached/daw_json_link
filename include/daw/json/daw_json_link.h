@@ -71,8 +71,7 @@ namespace daw::json {
 		 * @return A T object
 		 */
 		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] static inline constexpr T
-		parse( Range &rng ) {
+		[[maybe_unused, nodiscard]] static inline constexpr T parse( Range &rng ) {
 			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
 			return json_details::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{ } );
@@ -493,8 +492,8 @@ namespace daw::json {
 	 * Allow parsing of a nullable type that does not fit
 	 * @tparam Name Name of JSON member to link to
 	 * @tparam T type of value being constructed
-	 * @tparam FromJsonConverter Callable that accepts a std::string_view of the range
-	 * to parse
+	 * @tparam FromJsonConverter Callable that accepts a std::string_view of the
+	 * range to parse
 	 * @tparam ToJsonConverter Returns a string from the value
 	 * @tparam CustomJsonType JSON type value is encoded as literal/string
 	 */
@@ -837,19 +836,17 @@ namespace daw::json {
 	 * @param value  value to serialize
 	 * @param out_it result to serialize to
 	 */
-	template<typename JsonClass, typename OutputIterator>
-	[[maybe_unused]] constexpr OutputIterator to_json( JsonClass const &value,
+	template<typename Value,
+	         typename JsonClass =
+	           typename json_details::unnamed_default_type_mapping<Value>,
+	         typename OutputIterator>
+	[[maybe_unused]] constexpr OutputIterator to_json( Value const &value,
 	                                                   OutputIterator out_it ) {
 		if constexpr( std::is_pointer_v<OutputIterator> ) {
 			daw_json_assert( out_it, "Expected valid output iterator" );
 		}
 
-		static_assert(
-		  json_details::has_unnamed_default_type_mapping<JsonClass>::value,
-		  "Expected a typed that has been mapped via specialization "
-		  "of daw::json::json_data_contract or is a fundamental type" );
-		using json_member = json_details::unnamed_default_type_mapping<JsonClass>;
-		out_it = json_details::member_to_string<json_member>( out_it, value );
+		out_it = json_details::member_to_string<JsonClass>( out_it, value );
 		return out_it;
 	}
 
@@ -861,11 +858,12 @@ namespace daw::json {
 	 * @param value  value to serialize
 	 * @return  JSON string data
 	 */
-	template<typename Result = std::string, typename JsonClass>
-	[[maybe_unused, nodiscard]] constexpr Result
-	to_json( JsonClass const &value ) {
+	template<typename Result = std::string, typename Value,
+	         typename JsonClass =
+	           typename json_details::unnamed_default_type_mapping<Value>>
+	[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value ) {
 		Result result{ };
-		to_json( value, daw::back_inserter( result ) );
+		to_json<Value, JsonClass>( value, daw::back_inserter( result ) );
 		return result;
 	}
 
