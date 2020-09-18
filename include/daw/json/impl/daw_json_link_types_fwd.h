@@ -20,6 +20,7 @@
 #include <string>
 
 namespace daw::json {
+
 	/**
 	 * The member is a number
 	 * @tparam Name name of json member
@@ -291,28 +292,87 @@ namespace daw::json {
 		} // namespace vector_detect
 
 		template<typename T>
-		inline constexpr bool is_vector_v =
-		  daw::is_detected_v<vector_detect::detector, T>;
+		using is_vector = daw::is_detected<vector_detect::detector, T>;
+	} // namespace json_details
 
+	/***
+	 * This mapping class allows for a quick mapping of fundamental types
+	 * to their JSON link counterparts
+	 * @tparam Name Name of current member
+	 * @tparam T type of value
+	 */
+	template<JSONNAMETYPE Name, typename T>
+	struct json_link_quick_map : std::false_type {
+		using mapped_type = void;
+	};
+
+	/***
+	 * This mapping class allows for a quick mapping of bool to json_bool
+	 * @tparam Name Name of current member
+	 */
+	template<JSONNAMETYPE Name>
+	struct json_link_quick_map<Name, bool> : std::true_type {
+		using mapped_type = json_bool<Name>;
+	};
+
+	/***
+	 * This mapping class allows for a quick mapping of std::string_view to
+	 * json_string_raw as it can only view the JSON data already there
+	 * @tparam Name Name of current member
+	 */
+	template<JSONNAMETYPE Name>
+	struct json_link_quick_map<Name, std::string> : std::true_type {
+		using mapped_type = json_string<Name>;
+	};
+
+	/***
+	 * This mapping class allows for a quick mapping of std::string_view to
+	 * json_string_raw as it can only view the JSON data already there
+	 * @tparam Name Name of current member
+	 */
+	template<JSONNAMETYPE Name>
+	struct json_link_quick_map<Name, std::string_view> : std::true_type {
+		using mapped_type = json_string_raw<Name, std::string_view>;
+	};
+
+	/***
+	 * This mapping class allows for a quick mapping of daw::string_view to
+	 * json_string_raw as it can only view the JSON data already there
+	 * @tparam Name Name of current member
+	 */
+	template<JSONNAMETYPE Name>
+	struct json_link_quick_map<Name, daw::string_view> : std::true_type {
+		using mapped_type = json_string_raw<Name, daw::string_view>;
+	};
+
+	/***
+	 * Check if the current type has a quick map specialized for it
+	 */
+	template<typename T>
+	inline constexpr bool has_json_link_quick_map_v =
+	  json_link_quick_map<no_name, T>::value;
+
+	/***
+	 * Get the quick mapped json type for type T
+	 */
+	template<JSONNAMETYPE Name, typename T>
+	using json_link_quick_map_t =
+	  typename json_link_quick_map<Name, T>::mapped_type;
+
+	namespace json_details {
 		template<typename T, JSONNAMETYPE Name = no_name>
-		using unnamed_default_type_mapping = std::conditional_t<
+		using unnamed_default_type_mapping = daw::if_t<
 		  json_details::is_a_json_type_v<T>, T,
-		  std::conditional_t<
+		  daw::if_t<
 		    has_json_data_contract_trait_v<T>, json_class<Name, T>,
-		    std::conditional_t<
-		      std::is_same_v<T, bool>, json_bool<Name, T>,
-		      std::conditional_t<
-		        daw::is_arithmetic_v<T> or std::is_enum_v<T>, json_number<Name, T>,
-		        std::conditional_t<
-		          std::is_same_v<T, std::string_view>, json_string_raw<Name, T>,
-		          std::conditional_t<
-		            std::is_same_v<T, daw::string_view>, json_string_raw<Name, T>,
-		            std::conditional_t<
-		              daw::traits::is_string_v<T>, json_string<Name, T>,
-		              std::conditional_t<
-		                not can_deref_v<T> and is_vector_v<T>,
-		                json_array_detect<Name, vector_detect::detector<T>, T>,
-		                daw::json::missing_json_data_contract_for<T>>>>>>>>>;
+		    daw::if_t<
+		      has_json_link_quick_map_v<T>, json_link_quick_map_t<Name, T>,
+		      daw::if_t<
+		        std::disjunction_v<daw::is_arithmetic<T>, std::is_enum<T>>,
+		        json_number<Name, T>,
+		        daw::if_t<std::conjunction_v<cant_deref<T>, is_vector<T>>,
+		                  json_array_detect<Name, vector_detect::detector<T>, T>,
+		                  daw::json::missing_json_data_contract_for<T>>>>>>;
 
 		template<typename T>
 		using has_unnamed_default_type_mapping = daw::not_trait<

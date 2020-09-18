@@ -371,7 +371,13 @@ namespace daw::json {
 		  daw::detected_t<dereffed_type, T>, T>;
 
 		template<typename T>
-		inline constexpr bool can_deref_v = daw::is_detected_v<dereffed_type, T>;
+		using can_deref = daw::is_detected<dereffed_type, T>;
+
+		template<typename T>
+		using cant_deref = daw::not_trait<can_deref<T>>;
+
+		template<typename T>
+		inline constexpr bool can_deref_v = can_deref<T>::value;
 
 		template<typename T>
 		inline constexpr JsonParseTypes number_parse_type_impl_v = [] {

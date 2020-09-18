@@ -734,9 +734,8 @@ namespace daw::json {
 	};
 
 	/**
-	 * Parse JSON and construct a T as the result.  This method
-	 * provides checked json
-	 * @tparam JsonMember type that has specialization of
+	 * Construct the JSONMember from the JSON document argument.
+	 * @tparam JsonMember any bool, arithmetic, string, string_view,
 	 * daw::json::json_data_contract
 	 * @param json_data JSON string data
 	 * @tparam KnownBounds The bounds of the json_data are known to contain the

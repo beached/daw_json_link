@@ -189,7 +189,8 @@ namespace daw::json::json_details {
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Bool>, Range &rng ) {
-		daw_json_assert_weak( rng.size( ) >= 4, "Range to small to be a bool", rng );
+		daw_json_assert_weak( rng.size( ) >= 4, "Range to small to be a bool",
+		                      rng );
 
 		using constructor_t = typename JsonMember::constructor_t;
 
@@ -272,9 +273,11 @@ namespace daw::json::json_details {
 					if( first == last ) {
 						return constructor_t{ }( );
 					}
-					return constructor_t{ }( first, static_cast<std::size_t>( last - first ) );
+					return constructor_t{ }( first,
+					                         static_cast<std::size_t>( last - first ) );
 				} else {
-					return constructor_t{ }( first, static_cast<std::size_t>( last - first ) );
+					return constructor_t{ }( first,
+					                         static_cast<std::size_t>( last - first ) );
 				}
 			}
 		}
@@ -351,8 +354,9 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( not rng.empty( ), "Unexpected end of data", rng );
 			while( rng.front( ) != '"' ) {
 				// TODO look at move_to_next_of
-				while( not rng.template in<parse_tokens::escape_quotes>( ) ) {
-					daw_json_assert_weak( not rng.empty( ), "Unexpected end of data", rng );
+				while( not parse_policy_details::in<'\\', '"'>( rng.front( ) ) ) {
+					daw_json_assert_weak( not rng.empty( ), "Unexpected end of data",
+					                      rng );
 					app( rng.front( ) );
 					rng.remove_prefix( );
 				}
@@ -396,7 +400,8 @@ namespace daw::json::json_details {
 							  not rng.is_space_unchecked( ) and
 							    static_cast<unsigned>( rng.front( ) ) <= 0x7FU,
 							  "string support limited to 0x20 < chr <= 0x7F when "
-							  "DisallowHighEightBit is true", rng );
+							  "DisallowHighEightBit is true",
+							  rng );
 						}
 						app( rng.front( ) );
 						rng.remove_prefix( );
@@ -448,7 +453,8 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::Class>, Range &rng ) {
 
 		using element_t = typename JsonMember::base_type;
-		daw_json_assert_weak( rng.has_more( ), "Attempt to parse empty string", rng );
+		daw_json_assert_weak( rng.has_more( ), "Attempt to parse empty string",
+		                      rng );
 
 		if constexpr( is_guaranteed_rvo_v<Range> ) {
 			// This relies on non-trivial dtor's being allowed.  So C++20 constexpr or
@@ -491,7 +497,8 @@ namespace daw::json::json_details {
 		               "Expected a json_key_value" );
 		daw_json_assert_weak(
 		  rng.is_opening_brace_checked( ),
-		  "Expected keyvalue type to be of class type and beginning with '{'", rng );
+		  "Expected keyvalue type to be of class type and beginning with '{'",
+		  rng );
 
 		rng.remove_prefix( );
 		// We are inside a KV map, we can expected a quoted name next
@@ -517,7 +524,8 @@ namespace daw::json::json_details {
 		               "Expected a json_key_value" );
 		daw_json_assert_weak(
 		  rng.is_opening_bracket_checked( ),
-		  "Expected key/value type to be of class type and beginning with '{'", rng );
+		  "Expected key/value type to be of class type and beginning with '{'",
+		  rng );
 
 		rng.remove_prefix( );
 

@@ -18,18 +18,20 @@ namespace daw::json::json_details {
 	template<typename Result>
 	constexpr Result power10( constexpr_exec_tag const &, std::int32_t p ) {
 		if( p >= std::numeric_limits<double>::max_exponent10 ) {
-			double result = 1.0;
-			do {
+			double result = 1e15;
+			p -= 15;
+			while( p >= std::numeric_limits<double>::max_exponent10 ) {
 				p -= 15;
 				result *= 1e15;
-			} while( p >= std::numeric_limits<double>::max_exponent10 );
+			}
 			return static_cast<Result>( result * daw::cxmath::dpow10( p ) );
 		} else if( p <= std::numeric_limits<double>::min_exponent10 ) {
-			double result = 1.0;
-			do {
+			double result = 1e-15;
+			p += 15;
+			while( p <= std::numeric_limits<double>::min_exponent10 ) {
 				p += 15;
 				result *= 1e-15;
-			} while( p <= std::numeric_limits<double>::min_exponent10 );
+			}
 			return static_cast<Result>( result * daw::cxmath::dpow10( p ) );
 		}
 		return static_cast<Result>( daw::cxmath::dpow10( p ) );
