@@ -5,6 +5,8 @@
 //
 // Official repository: https://github.com/beached/daw_json_link
 //
+// See cookbook/array.md for the 1st example
+//
 
 #include "defines.h"
 

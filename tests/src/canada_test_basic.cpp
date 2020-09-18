@@ -5,6 +5,11 @@
 //
 // Official repository: https://github.com/beached/daw_json_link
 //
+//  This test will test the parsing canada_test.json file
+//  in the test_data folder.  This is one of the many common JSON parsing
+//  benchmark files and was included in the nativejson benchmark and this file
+//  provides a cleaner way to profile without the benchmarking harness
+//
 
 #include "defines.h"
 

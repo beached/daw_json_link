@@ -17,11 +17,22 @@
 namespace daw::json::json_details {
 	template<typename Result>
 	constexpr Result power10( constexpr_exec_tag const &, std::int32_t p ) {
-		if constexpr( std::is_same_v<Result, float> ) {
-			return daw::cxmath::fpow10( p );
-		} else {
-			return static_cast<Result>( daw::cxmath::dpow10( p ) );
+		if( p >= std::numeric_limits<double>::max_exponent10 ) {
+			double result = 1.0;
+			do {
+				p -= 15;
+				result *= 1e15;
+			} while( p >= std::numeric_limits<double>::max_exponent10 );
+			return static_cast<Result>( result * daw::cxmath::dpow10( p ) );
+		} else if( p <= std::numeric_limits<double>::min_exponent10 ) {
+			double result = 1.0;
+			do {
+				p += 15;
+				result *= 1e-15;
+			} while( p <= std::numeric_limits<double>::min_exponent10 );
+			return static_cast<Result>( result * daw::cxmath::dpow10( p ) );
 		}
+		return static_cast<Result>( daw::cxmath::dpow10( p ) );
 	}
 
 	template<typename Result>
@@ -36,7 +47,8 @@ namespace daw::json::json_details {
 
 	template<typename Result, bool KnownRange, typename Range,
 	         std::enable_if_t<KnownRange, std::nullptr_t> = nullptr>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Result parse_real( Range const &rng ) {
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Result
+	parse_real( Range const &rng ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
 		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
@@ -87,14 +99,16 @@ namespace daw::json::json_details {
 		if( exp_rng.first != nullptr ) {
 			exp_rng.remove_prefix( );
 			int32_t exsign = 1;
-			daw_json_assert_weak( exp_rng.has_more( ), "Unexpected end of stream", rng );
+			daw_json_assert_weak( exp_rng.has_more( ), "Unexpected end of stream",
+			                      rng );
 			if( exp_rng.front( ) == '-' ) {
 				exp_rng.remove_prefix( );
 				exsign = -1;
 			} else if( exp_rng.front( ) == '+' ) {
 				exp_rng.remove_prefix( );
 			}
-			daw_json_assert_weak( exp_rng.has_more( ), "Unexpected end of stream", rng );
+			daw_json_assert_weak( exp_rng.has_more( ), "Unexpected end of stream",
+			                      rng );
 			exp_part =
 			  exsign * unsigned_parser<int32_t,
 			                           ( Range::is_unchecked_input
@@ -108,17 +122,20 @@ namespace daw::json::json_details {
 
 	template<typename Result, bool KnownRange, typename Range,
 	         std::enable_if_t<not KnownRange, std::nullptr_t> = nullptr>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Result parse_real( Range &rng ) {
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Result
+	parse_real( Range &rng ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
 		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
 		  "Expected a real number", rng );
 
-		std::int32_t sign = 1;
-		if( rng.front( ) == '-' ) {
-			rng.remove_prefix( );
-			sign = -1;
-		}
+		int const sign = [&] {
+			if( rng.front( ) == '-' ) {
+				rng.remove_prefix( );
+				return -1;
+			}
+			return 1;
+		}( );
 		auto const whole_part = static_cast<Result>(
 		  sign * unsigned_parser<int64_t, JsonRangeCheck::Never, false>(
 		           Range::exec_tag, rng ) );

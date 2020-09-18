@@ -851,7 +851,9 @@ namespace daw::json {
 	}
 
 	/**
-	 *
+	 * Serialize a value to JSON.  Some types(std::string, string_view. integer's
+	 * and floating point numbers do not need a mapping setup).  For user classes,
+	 * a json_data_contract specialization is needed.
 	 * @tparam Result std::string like type to put result into
 	 * @tparam JsonClass Type that has json_parser_description and to_json_data
 	 * function overloads
@@ -936,16 +938,18 @@ namespace daw::json {
 	} // namespace json_details
 
 	/**
-	 * Serialize Container to JSON data via an iterator
+	 * Serialize a container to JSON.  This convenience method allows for easier
+	 * serialization of containers when the root of the document is an array
+	 * Serialize Container
+	 * @tparam Container Type of Container to serialize the elements of
 	 * @tparam OutputIterator Iterator to write data to
-	 * @tparam Container Type of Container to serialize
-	 * @param c Data to serialize
+	 * @param c Container containing data to serialize.
 	 * @return OutputIterator with final state of iterator
 	 */
 	template<typename JsonElement = json_details::auto_detect_array_element,
 	         typename Container, typename OutputIterator>
 	[[maybe_unused]] constexpr OutputIterator
-	to_json_array( Container &&c, OutputIterator out_it ) {
+	to_json_array( Container const &c, OutputIterator out_it ) {
 		static_assert(
 		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 		  "Supplied container must support begin( )/end( )" );
@@ -974,11 +978,12 @@ namespace daw::json {
 	}
 
 	/**
-	 * Serialize Container to a JSON array string
-	 * @tparam Result std::string like type to serialize to
-	 * @tparam Container Type of Container to serialize
-	 * @param c Data to serialize
-	 * @return A string containing the serialized elements of c
+	 * Serialize a container to JSON.  This convenience method allows for easier
+	 * serialization of containers when the root of the document is an array
+	 * Serialize Container
+	 * @tparam Container Type of Container to serialize the elements of
+	 * @param c Container containing data to serialize.
+	 * @return A std::string containing the serialized elements of c
 	 */
 	template<typename Result = std::string,
 	         typename JsonElement = json_details::auto_detect_array_element,

@@ -5,6 +5,10 @@
 //
 // Official repository: https://github.com/beached/daw_json_link
 //
+//  This test will benchmark the performance of parsing citm_catalog.json file
+//  in the test_data folder.  This is one of the many common JSON parsing
+//  benchmark files and was included in the nativejson benchmark
+//
 
 #include "defines.h"
 

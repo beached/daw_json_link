@@ -50,6 +50,7 @@ public:
 	template<typename ParsePolicy>
 	bool handle_on_value( daw::json::basic_json_pair<ParsePolicy> p ) {
 		if( member_count_stack.empty( ) ) {
+			// We are root object/array
 			member_count_stack.emplace_back( p.value.is_class( ) );
 		}
 		auto &parent = member_count_stack.back( );
@@ -83,10 +84,10 @@ public:
 			return true;
 		case daw::json::JsonBaseParseTypes::Number:
 		case daw::json::JsonBaseParseTypes::Bool:
-		case daw::json::JsonBaseParseTypes::None:
 			member_preamble( );
 			write_str( p.value.get_string_view( ) );
 			return true;
+		case daw::json::JsonBaseParseTypes::None:
 		default: {
 			auto rng = p.value.get_range( );
 			auto sv = daw::string_view( rng.first, rng.size( ) ).pop_front( 10 );

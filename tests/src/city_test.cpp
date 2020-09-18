@@ -5,6 +5,10 @@
 //
 // Official repository: https://github.com/beached/daw_json_link
 //
+// This file highlights some of the ways of working with JSON array documents as
+// they can be reified into a container or iterated over.  When using the
+// iterator/range interface we can use the std algorithms to do things like
+// count/accumulate them
 
 #include "defines.h"
 
@@ -64,7 +68,7 @@ namespace daw::json {
 
 int main( int argc, char **argv ) try {
 	if( argc <= 1 ) {
-		puts( "Must supply path to cookbook_optional_values1.json file\n" );
+		puts( "Must supply path to cities.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 	auto file_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );

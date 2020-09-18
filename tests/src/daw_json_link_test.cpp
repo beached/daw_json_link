@@ -555,6 +555,36 @@ int main( int, char ** ) try {
 	               std::numeric_limits<double>::quiet_NaN( ) )
 	          << '\n';
 
+	std::cout << "denormal - DOUBLE_MIN/2 double: "
+	          << to_json( std::numeric_limits<double>::min( ) / 2.0 ) << '\n';
+
+	std::cout << "denormal min double: "
+	          << to_json( std::numeric_limits<double>::denorm_min( ) ) << '\n';
+
+	std::cout << "5E-324 -> " << from_json<double>( "5E-324" ) << '\n';
+	std::cout << "1.1125369292536007E-308 -> "
+	          << from_json<double>( "1.1125369292536007E-308" ) << '\n';
+
+	std::cout << "min double: " << to_json( std::numeric_limits<double>::min( ) )
+	          << '\n';
+	std::cout << "2.2250738585072014E-308 -> "
+	          << from_json<double>( "2.2250738585072014E-308" ) << '\n';
+	std::cout << "2.2250738585072014E-307 -> "
+	          << from_json<double>( "2.2250738585072014E-307" ) << '\n';
+	std::cout << "0.22250738585072014E-307 -> "
+	          << from_json<double>( "0.22250738585072014E-307" ) << '\n';
+
+	std::cout << from_json<double>( "5E-324" ) << '\n';
+	std::cout << "max double: " << to_json( std::numeric_limits<double>::max( ) )
+	          << '\n';
+	std::cout << "1.7976931348623157E308 -> "
+	          << from_json<double>( "1.7976931348623157E308" ) << '\n';
+
+	std::cout << "1.7976931348623157E307 -> "
+	          << from_json<double>( "1.7976931348623157E307" ) << '\n';
+	std::cout << "10.7976931348623157E307 -> "
+	          << from_json<double>( "10.7976931348623157E307" ) << '\n';
+
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

@@ -576,7 +576,7 @@ namespace daw::json::json_details {
 				                             static_cast<unsigned char>( '0' ) );
 				++first;
 			}
-			if constexpr( Range::is_unchecked_input ) {
+			if constexpr( not Range::is_unchecked_input ) {
 				first -= static_cast<int>( first < last );
 			} else {
 				--first;
