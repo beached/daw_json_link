@@ -351,6 +351,11 @@ target_link_libraries(apache_builds_test json_test)
 add_test(NAME apache_builds_test COMMAND apache_builds_test ./apache_builds.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full apache_builds_test)
 
+add_executable(apache_builds_cpp_comments_test src/apache_builds_cpp_comments_test.cpp)
+target_link_libraries(apache_builds_cpp_comments_test json_test)
+add_test(NAME apache_builds_cpp_comments_test COMMAND apache_builds_cpp_comments_test ./apache_builds_cpp_comments.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full apache_builds_cpp_comments_test)
+
 add_executable(cookbook_dates1_test src/cookbook_dates1_test.cpp)
 target_link_libraries(cookbook_dates1_test json_test)
 add_test(NAME cookbook_dates1_test COMMAND cookbook_dates1_test ./cookbook_dates1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")

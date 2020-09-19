@@ -215,7 +215,7 @@ namespace daw::json {
 						}
 						break;
 					default:
-						daw_json_error( "Unexpected character in stream" );
+						++ptr_first;
 					}
 					break;
 				}
@@ -308,7 +308,7 @@ namespace daw::json {
 						}
 						break;
 					default:
-						daw_json_error( "Unexpected character in stream" );
+						++ptr_first;
 					}
 					break;
 				}
