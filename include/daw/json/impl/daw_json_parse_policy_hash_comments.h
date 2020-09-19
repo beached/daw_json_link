@@ -20,7 +20,7 @@ namespace daw::json {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		skip_comments_unchecked( Range &rng ) {
-			if( rng.front( ) == '#' ) {
+			while( rng.front( ) == '#' ) {
 				rng.remove_prefix( );
 				rng.template move_to_next_of_unchecked<'\n'>( );
 				rng.remove_prefix( );
@@ -30,7 +30,7 @@ namespace daw::json {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		skip_comments_checked( Range &rng ) {
-			if( rng.has_more( ) and rng.front( ) == '#' ) {
+			while( rng.has_more( ) and rng.front( ) == '#' ) {
 				rng.remove_prefix( );
 				rng.template move_to_next_of_checked<'\n'>( );
 				if( rng.front( ) == '\n' ) {

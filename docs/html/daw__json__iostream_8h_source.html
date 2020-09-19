@@ -110,7 +110,7 @@ $(function() {
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                   std::nullptr_t&gt; = <span class="keyword">nullptr</span>&gt;</div>
 <div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="daw__json__iostream_8h.html#aa63640f4dea34c72a07348dc007aba44">   39</a></span>&#160;std::ostream &amp;<a class="code" href="daw__json__iostream_8h.html#aa63640f4dea34c72a07348dc007aba44">operator&lt;&lt;</a>( std::ostream &amp;os, T <span class="keyword">const</span> &amp;value ) {</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">auto</span> out_it = std::ostreambuf_iterator&lt;char&gt;( os );</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="namespacedaw_1_1json.html#a5e687cf274f01818426b8bd7e7b19d9d">daw::json::to_json</a>( value, out_it );</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="namespacedaw_1_1json.html#a4d8cb2164ad46796233e37e8d908313a">daw::json::to_json</a>( value, out_it );</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordflow">return</span> os;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
@@ -124,11 +124,11 @@ $(function() {
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keyword">auto</span> first = std::begin( c );</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keyword">auto</span> last = std::end( c );</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordflow">if</span>( first != last ) {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    out_it = <a class="code" href="namespacedaw_1_1json.html#a5e687cf274f01818426b8bd7e7b19d9d">daw::json::to_json</a>( *first, out_it );</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    out_it = <a class="code" href="namespacedaw_1_1json.html#a4d8cb2164ad46796233e37e8d908313a">daw::json::to_json</a>( *first, out_it );</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    ++first;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">while</span>( first != last ) {</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      *out_it = <span class="charliteral">&#39;,&#39;</span>;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      out_it = <a class="code" href="namespacedaw_1_1json.html#a5e687cf274f01818426b8bd7e7b19d9d">daw::json::to_json</a>( *first, out_it );</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      out_it = <a class="code" href="namespacedaw_1_1json.html#a4d8cb2164ad46796233e37e8d908313a">daw::json::to_json</a>( *first, out_it );</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      ++first;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  }</div>
@@ -137,7 +137,7 @@ $(function() {
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="adaw__json__iostream_8h_html_aa63640f4dea34c72a07348dc007aba44"><div class="ttname"><a href="daw__json__iostream_8h.html#aa63640f4dea34c72a07348dc007aba44">operator&lt;&lt;</a></div><div class="ttdeci">std::ostream &amp; operator&lt;&lt;(std::ostream &amp;os, T const &amp;value)</div><div class="ttdef"><b>Definition:</b> daw_json_iostream.h:39</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html_a5e687cf274f01818426b8bd7e7b19d9d"><div class="ttname"><a href="namespacedaw_1_1json.html#a5e687cf274f01818426b8bd7e7b19d9d">daw::json::to_json</a></div><div class="ttdeci">constexpr OutputIterator to_json(JsonClass const &amp;value, OutputIterator out_it)</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:841</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html_a4d8cb2164ad46796233e37e8d908313a"><div class="ttname"><a href="namespacedaw_1_1json.html#a4d8cb2164ad46796233e37e8d908313a">daw::json::to_json</a></div><div class="ttdeci">constexpr OutputIterator to_json(Value const &amp;value, OutputIterator out_it)</div><div class="ttdef"><b>Definition:</b> daw_json_link.h:842</div></div>
 <div class="ttc" id="adaw__json__link_8h_html"><div class="ttname"><a href="daw__json__link_8h.html">daw_json_link.h</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

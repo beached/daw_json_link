@@ -1,8 +1,9 @@
-// Apache builds test with commments
+# This is an apache builds json file with comments
+# It should parse via the hash_comments policy
 {
   "assignedLabels" : [
     {
-     /* Where are the labels */ 
+      
     }
   ],
   "mode" : "EXCLUSIVE",
@@ -10,8 +11,7 @@
   "nodeName" : "",
   "numExecutors" : 0,
   "description" : "<a href=\"http://www.apache.org/\"><img src=\"https://www.apache.org/images/asf_logo_wide.gif\"></img></a>\r\n<p>\r\nThis is a public build and test server for <a href=\"http://projects.apache.org/\">projects</a> of the\r\n<a href=\"http://www.apache.org/\">Apache Software Foundation</a>. All times on this server are UTC.\r\n</p>\r\n<p>\r\nSee the <a href=\"http://wiki.apache.org/general/Hudson\">Jenkins wiki page</a> for more information\r\nabout this service.\r\n</p>",
-  "jobs" : [
-		/* Some jobs here */
+  "jobs" : [ # Some random comment here
     {
       "name" : "Abdera-trunk",
       "url" : "https://builds.apache.org/job/Abdera-trunk/",
@@ -4420,4 +4420,4 @@
       "url" : "https://builds.apache.org/view/Onami/"
     }
   ]
-} // Comment at end of stream
+} # Oh look another comment sneaking in

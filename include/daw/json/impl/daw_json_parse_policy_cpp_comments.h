@@ -23,15 +23,14 @@ namespace daw::json {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		skip_comments_unchecked( Range &rng ) {
-			if( rng.front( ) == '/' ) {
-				rng.remove_prefix( );
-				switch( rng.front( ) ) {
+			while( rng.front( ) == '/' ) {
+				switch( *( rng.first + 1 ) ) {
 				case '/':
 					rng.template move_to_next_of_unchecked<'\n'>( );
 					rng.remove_prefix( );
 					break;
 				case '*':
-					rng.remove_prefix( );
+					rng.remove_prefix( 2 );
 					while( true ) {
 						rng.template move_to_next_of_unchecked<'*'>( );
 						rng.remove_prefix( );
@@ -42,6 +41,8 @@ namespace daw::json {
 						rng.remove_prefix( );
 					}
 					break;
+				default:
+					return;
 				}
 			}
 		}
@@ -49,12 +50,11 @@ namespace daw::json {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
 		skip_comments_checked( Range &rng ) {
-			if( rng.has_more( ) and rng.front( ) == '/' ) {
-				rng.remove_prefix( );
+			while( rng.has_more( ) and rng.front( ) == '/' ) {
 				if( not rng.has_more( ) ) {
 					return;
 				}
-				switch( rng.front( ) ) {
+				switch( *(rng.first + 1 ) ) {
 				case '/':
 					rng.template move_to_next_of_checked<'\n'>( );
 					if( rng.has_more( ) ) {
@@ -62,7 +62,7 @@ namespace daw::json {
 					}
 					break;
 				case '*':
-					rng.remove_prefix( );
+					rng.remove_prefix( 2 );
 					while( rng.has_more( ) ) {
 						rng.template move_to_next_of_checked<'*'>( );
 						if( rng.has_more( ) ) {
@@ -77,6 +77,8 @@ namespace daw::json {
 						rng.remove_prefix( );
 					}
 					break;
+				default:
+					return;
 				}
 			}
 		}
