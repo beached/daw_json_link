@@ -632,14 +632,14 @@ namespace daw::json::json_details {
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
-	constexpr basic_json_value<typename Range::as_checked>
+	constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng ) {
-		using result_rng = typename Range::as_checked;
+		using constructor_t = typename JsonMember::constructor_t;
 		if constexpr( KnownBounds ) {
-			return { result_rng( rng.first, rng.last ) };
+			return constructor_t{ }( rng.first, rng.last );
 		} else {
 			auto value_rng = skip_value( rng );
-			return { result_rng( value_rng.first, value_rng.last ) };
+			return constructor_t{ }( value_rng.first, value_rng.last );
 		}
 	}
 } // namespace daw::json::json_details

@@ -313,8 +313,15 @@ namespace daw::json {
 		  : m_rng( sv.data( ), sv.data( ) + sv.size( ) ) {}
 
 		/***
+		 * Construct from std::string_view
+		 */
+		explicit inline constexpr basic_json_value( char const *first,
+		                                            char const *last )
+		  : m_rng( first, last ) {}
+
+		/***
 		 * Get a copy of the underlying range
-		 * @return IteratoRange containing values JSON data
+		 * @return IteratorRange containing values JSON data
 		 */
 		[[nodiscard]] inline constexpr Range get_range( ) const {
 			return m_rng;

@@ -73,7 +73,7 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	constexpr basic_json_value<typename Range::as_checked>
+	constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng );
 
 #if( defined( _MSC_VER ) and not defined( __clang__ ) )

@@ -11,22 +11,36 @@
 
 [![Build Status Arm64 Linux](https://travis-ci.com/beached/daw_json_link.svg?branch=release)](https://travis-ci.com/beached/daw_json_link) - Arm64/PPC64LE/S390X Linux
 
-This library provides serialization/deserialization of JSON documents with a known structure into a C++ object, or exploration of the structure with generic and custom parsers.  In addition, it supports iterating and browsing the document or delayed loading of members.
+The DAW JSON Link library provides multiple ways to serialization/deserialization JSON documents in C++.  The primary one is parsing of JSON directly to your C++ data structures.  This allows the known structure of the document to be exploited for greater checking and performance.  Alternatively, there is an event passing(SAX) interface that can parse to generic types(double, string, bool,...) or can use the same type restricted parsers as the static parser previously mentioned.  A generic DOM(lazy) based parser is provided that can be iterate over the document structure too, again it can use the generic parsers or the type based restricted versions.  One can mix the three modes of parsing to form more complicated systems.  For serialization, the first static mapping method is required, there is no json value type in the library.  
 
 The library is using the [BSL](LICENSE) licensed
 
-Because the structure of the JSON document is known, parsing is like the following 
+When the structure of the JSON document is known, parsing is like the following:
 ```c++
-MyThing thing = from_json<MyThing>( string );
+MyThing thing = daw::json::from_json<MyThing>( json_string );
 ```
-or for array documents 
+or for array documents, where the root of the document is an array, there is a helper method to make it easier and it can be parsed like the following:
 ```c++
-std::vector<MyThing> things = from_json_array<MyThing>( json_string2 );
+std::vector<MyThing> things = daw::json::from_json_array<MyThing>( json_string2 );
 ```
-If the structure of the JSON document is unknown, one can construct a `json_value` that acts as a container and allows iteration and parsing on demand. The following is an example
+If the structure of the JSON document is unknown, one can construct a `json_value` that acts as a container and allows iteration and parsing on demand.  It is a lazy parser and will only parse when asked to. The following is an example of opening a `json_value` from JSON data:
 ```c++
-json_value val = json_value( json_string );
+json_value val = daw::json::json_value( json_string );
 ```
+
+The `from_json` and `to_json` methods allow access most of the parsing needs.
+
+The event based parser(SAX) can be called via `daw::json::json_event_parser`.  It takes two arguments, a json document and an event handler.  The event handler can opt into events by having the following members:
+* handle_on_value
+* handle_on_array_start
+* handle_on_array_end
+* handle_on_class_start
+* handle_on_class_end
+* handle_on_number
+* handle_on_bool
+* handle_on_string
+* handle_on_null
+* handle_on_error
 
 ## Code Examples
 * The  [Cookbook](cookbook/readme.md) section has precanned tasks and working code examples

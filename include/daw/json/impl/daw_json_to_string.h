@@ -10,6 +10,7 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_iso8601_utils.h"
+#include "daw_json_value.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
@@ -366,6 +367,19 @@ namespace daw::json::utils {
 			}
 		}
 		return it;
+	}
+
+	template<bool do_escape = false,
+	         EightBitModes EightBitMode = EightBitModes::AllowFull,
+	         typename OutputIterator, typename Range>
+	[[nodiscard]] constexpr OutputIterator
+	copy_to_iterator( OutputIterator it, basic_json_value<Range> const &jv ) {
+		if( jv.is_null( ) ) {
+			return copy_to_iterator<do_escape, EightBitMode>( it, "null" );
+		} else {
+			return copy_to_iterator<do_escape, EightBitMode>( it,
+			                                                  jv.get_string_view( ) );
+		}
 	}
 } // namespace daw::json::utils
 
@@ -790,16 +804,7 @@ namespace daw::json::json_details {
 	to_string( ParseTag<JsonParseTypes::Unknown>, OutputIterator it,
 	           parse_to_t const &value ) {
 
-		static_assert(
-		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
-		  "value must be convertible to specified type in class contract" );
-
-		if( value.is_null( ) ) {
-			it = utils::copy_to_iterator( it, "null" );
-		} else {
-			it = utils::copy_to_iterator( it, value.get_string_view( ) );
-		}
-		return it;
+		return utils::copy_to_iterator( it, value );
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>

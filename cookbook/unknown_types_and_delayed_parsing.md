@@ -65,7 +65,7 @@ namespace daw::json {
     }
   }; 
 
-  // This isn't necessary to parse the values as but allows for direcly constructing the object
+  // This isn't necessary to parse the values as but allows for directly constructing the object
   template<>
   struct json_data_contract<MyDelayedClass> {
     using type = json_member_list<

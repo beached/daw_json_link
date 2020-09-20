@@ -715,13 +715,18 @@ namespace daw::json {
 	 * @tparam Nullable Does the value have to exist in the document or can it
 	 * have a null value
 	 */
-	template<JSONNAMETYPE Name, JsonNullable Nullable = JsonNullable::Never>
+	template<JSONNAMETYPE Name, typename T = json_value,
+	         typename Constructor = daw::construct_a_t<T>,
+	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_delayed {
 		using i_am_a_json_type = void;
 		using wrapped_type = json_value;
-		using base_type = json_value;
-		using parse_to_t = json_value;
-		using constructor_t = daw::construct_a_t<json_value>;
+		using constructor_t = Constructor;
+		using base_type = json_details::unwrap_type<T, Nullable>;
+		static_assert( not std::is_same_v<void, base_type>,
+		               "Failed to detect base type" );
+
+		using parse_to_t = std::invoke_result_t<Constructor, char const *, char const *>;
 		static constexpr daw::string_view name = Name;
 
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Unknown;
