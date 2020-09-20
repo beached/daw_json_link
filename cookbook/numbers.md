@@ -14,7 +14,7 @@ There is direct support for numbers in JSON of the form `integer`[.`fraction`][e
 The above JSON object has 4 members, each of which are numbers.
 
 Below is the C++ data structure and trait to map the structure to the JSON object.
-To see a working example using this code, refer to [cookbook_numbers1_test.cpp](../tests/cookbook_numbers1_test.cpp) 
+To see a working example using this code, refer to [cookbook_numbers1_test.cpp](../tests/src/cookbook_numbers1_test.cpp) 
 ```c++
 struct MyClass1 {
   double member0;
@@ -55,7 +55,7 @@ The parser supports parsing to specific types such as int32_t and uin64_t with r
 The above JSON object has 2 members, both numbers but one is expected to always be an unsigned, the other a signed integer
 
 Below is the C++ data structure and trait to map the structure to the JSON object.
-To see a working example using this code, refer to [cookbook_numbers1_test.cpp](../tests/cookbook_numbers2_test.cpp) 
+To see a working example using this code, refer to [cookbook_numbers1_test.cpp](../tests/src/cookbook_numbers2_test.cpp) 
 ```
 struct MyClass2 {
   unsigned member_unsigned;

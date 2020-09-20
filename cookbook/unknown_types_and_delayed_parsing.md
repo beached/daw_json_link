@@ -8,6 +8,8 @@ When the data structure is unknown or partially known it can be parsed as a `jso
 ``` 
 The above JSON describes an array of mixed types, string and number.
 
+To see a working example using this code, refer to [cookbook_unknown_types_and_delayed_parsing1_test.cpp](../tests/src/cookbook_unknown_types_and_delayed_parsing1_test.cpp). 
+
 Below is the C++ code to parse and use it.
 ```c++
 std::string_view json_data = ...;
@@ -35,6 +37,8 @@ It is possible to delay the parsing of json members until a later time.  The `js
 ```
 
 The above JSON class has 3 members, a number, a class to parse later, and a string.
+
+To see a working example using this code, refer to [cookbook_unknown_types_and_delayed_parsing2_test.cpp](../tests/src/cookbook_unknown_types_and_delayed_parsing2_test.cpp). 
 
 Below is the C++ code to parse and use it.
 ```c++
@@ -84,4 +88,37 @@ std::string_view json_data = ...;
 MyClass2 val = from_json<MyClass2>( json_data );
 
 MyDelayedClass delayed_val = cls2.member_layer.template parse<MyDelayedClass>( );
+```
+
+# RAW JSON 
+Parsing to a raw JSON string can be done too.  the `json_delayed` mapping type allows for an optional type argument that specifies the destination/source type.  It requires that the 
+type be constructable from a char const * and a std::size_t.
+
+To see a working example using this code, refer to [cookbook_unknown_types_and_delayed_parsing3_test.cpp](../tests/src/cookbook_unknown_types_and_delayed_parsing3_test.cpp). 
+
+```c++
+struct Thing {
+	std::string name;
+	int type;
+	std::string raw_json;
+};
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<Thing> {
+		using type = json_member_list<json_string<"name">, json_number<"type", int>,
+		                              json_delayed<"raw_json", std::string>>;
+
+		static auto to_json_data( Thing const &value ) {
+			return std::forward_as_tuple( value.name, value.type, value.raw_json );
+		}
+	};
+} // namespace daw::json
+
+Thing my_thing = Thing{ "skywalker", 12345, R"({ "name": "last" })" };
+auto json_string = daw::json::to_json( my_thing );
+```
+`json_string` will have a value of
+```json
+{"name":"skywalker","type":12345,"raw_json":{ "name": "last" }}
 ```

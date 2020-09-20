@@ -7,7 +7,7 @@ Sometimes the members of a class are encoded as a JSON array.  GeoJSON is an exa
 ```
 
 The above is the encoding of a Point in GeoJSON.
-Too see a working example using this code, refer to [cookbook_class_from_array1_test.cpp](../tests/cookbook_class_from_array1_test.cpp) 
+Too see a working example using this code, refer to [cookbook_class_from_array1_test.cpp](../tests/src/cookbook_class_from_array1_test.cpp) 
 
 Below is a `Point` structure with two double members.  The mapping uses a `json_ordered_member_list` and can accept unnamed member items.  Below describes a mapping to an array's first and second elements.  Any subsequent members are ignored.
 ```c++
@@ -56,7 +56,7 @@ Sometimes the members to extract are not contiguous and a specific index into th
 
 With the previous `Point` struct, the mapping here will be to parse the first element as a double, and the sixth element as a double. 
 
-Too see a working example using this code, refer to [cookbook_class_from_array2_test.cpp](../tests/cookbook_class_from_array2_test.cpp) 
+Too see a working example using this code, refer to [cookbook_class_from_array2_test.cpp](../tests/src/cookbook_class_from_array2_test.cpp) 
 
 ```c++
 struct Point {

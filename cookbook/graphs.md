@@ -55,7 +55,7 @@ The following is a JGF graph encoded in JSON.
 
 The code below uses a `json_array_range` to iterate over the nodes and edges separately to populate the internal graph.  The `"id"` members are an example of parsing strings as numbers with the `LiteralAsString` option.
 The JSON document does not directly represent the in memory representation.
-To see a working example using this code, refer to [cookbook_graphs1_test.cpp](../tests/cookbook_graphs1_test.cpp) 
+To see a working example using this code, refer to [cookbook_graphs1_test.cpp](../tests/src/cookbook_graphs1_test.cpp) 
 ```c++
 struct Metadata {
   int member0;

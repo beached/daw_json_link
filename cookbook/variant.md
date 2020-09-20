@@ -18,7 +18,7 @@ Take the following JSON
 
 Here we have an array of a class that has two members.  A variant of types number and string, member0; and a variant of type string and bool, member1.
 
-Too see a working example using this code, refer to [cookbook_variant1_test.cpp](../tests/cookbook_variant1_test.cpp) 
+Too see a working example using this code, refer to [cookbook_variant1_test.cpp](../tests/src/cookbook_variant1_test.cpp) 
 
 The following C++ can provide a mapping.  It, also, highlights that the types bool, integers, floating point, std::string, and previously mapped types can be default mapped to elements that do not require a name.  Such as variant, array, and some key_value's.
 
@@ -76,7 +76,7 @@ Below is a JSON array, containing a variant element where the `"type"` member de
 
 A member name and a callable are needed to tell the parser which type will parsed.
 
-Too see a working example using this code, refer to [cookbook_variant2_test.cpp](../tests/cookbook_variant2_test.cpp) 
+Too see a working example using this code, refer to [cookbook_variant2_test.cpp](../tests/src/cookbook_variant2_test.cpp) 
 ```c++
 struct MyClass {
   std::string name;
@@ -138,7 +138,7 @@ Extending the previous example, it auto detected the `std::string`, `int`, and `
  
  A member name and a callable are needed to tell the parser which type will parsed.
  
- Too see a working example using this code, refer to [cookbook_variant3_test.cpp](../tests/cookbook_variant3_test.cpp) 
+ Too see a working example using this code, refer to [cookbook_variant3_test.cpp](../tests/src/cookbook_variant3_test.cpp) 
  ```c++
  struct MyClass {
    std::string name;
