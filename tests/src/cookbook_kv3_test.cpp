@@ -10,7 +10,7 @@
 
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <cstdint>
 #include <cstdio>
@@ -51,7 +51,7 @@ int main( int argc, char **argv ) try {
 		puts( "Must supply path to cookbook_kv3.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto data = *daw::read_file( argv[1] );
 
 	auto kv = daw::json::from_json<daw::cookbook_kv3::MyKeyValue3>(
 	  std::string_view( data.data( ), data.size( ) ) );

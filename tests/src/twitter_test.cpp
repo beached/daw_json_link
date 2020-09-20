@@ -13,7 +13,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
 
 #include <fstream>
@@ -208,7 +208,7 @@ int main( int argc, char **argv )
 	}
 
 	std::string const json_data = [argv] {
-		auto const mmf = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+		auto const mmf = *daw::read_file( argv[1] );
 		daw_json_assert( mmf.size( ) > 2, "Minimum json data size is 2 '{}'" );
 		return std::string( mmf.data( ), mmf.size( ) );
 	}( );

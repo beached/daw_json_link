@@ -12,7 +12,7 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <iostream>
 #include <string_view>
@@ -70,7 +70,7 @@ int main( int argc, char **argv ) try {
 		exit( 1 );
 	}
 
-	auto const mm_numbers = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const mm_numbers = *daw::read_file( argv[1] );
 	auto const sv_numbers =
 	  std::string_view( mm_numbers.data( ), mm_numbers.size( ) );
 

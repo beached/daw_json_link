@@ -710,7 +710,7 @@ namespace daw::json {
 
 	/***
 	 * Do not parse this member but return a T that can be used to
-	 * parse later
+	 * parse later.  Any whitespace surrounding the value may not be preserved.
 	 *
 	 * @tparam Name name of JSON member to link to
 	 * @tparam T destination type.  Must be constructable from a char const * and

@@ -12,7 +12,7 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <fstream>
 #include <iostream>
@@ -72,7 +72,7 @@ int main( int argc, char **argv ) try {
 		std::cerr << "Must supply a filename to open\n";
 		exit( 1 );
 	}
-	auto const json_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const json_data = *daw::read_file( argv[1] );
 	auto json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using iterator_t = daw::json::json_array_iterator<coordinate_t>;

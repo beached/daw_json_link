@@ -17,7 +17,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
 
 #include <fstream>
@@ -102,7 +102,7 @@ int main( int argc, char **argv ) try {
 		exit( 1 );
 	}
 	auto fname = argv[1];
-	auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( fname );
+	auto const json_data1 = *daw::read_file( fname );
 	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 	auto const json_sv1 =
 	  std::string_view( json_data1.data( ), json_data1.size( ) );

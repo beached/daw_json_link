@@ -9,7 +9,7 @@
 #include "defines.h"
 
 #include <daw/daw_do_not_optimize.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <daw/json/daw_json_link.h>
 #include <daw/json/daw_json_value_state.h>
@@ -55,7 +55,7 @@ int main( int argc, char **argv ) {
 		std::cout << "Must supply path to test_stateful_json_value.json file\n";
 		exit( EXIT_FAILURE );
 	}
-	auto const json_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const json_data = *daw::read_file( argv[1] );
 	daw::do_not_optimize( json_data );
 	auto coords = calc( json_data );
 	daw::do_not_optimize( coords );

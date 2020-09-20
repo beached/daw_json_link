@@ -15,7 +15,7 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
 
 #include <cstdlib>
@@ -45,9 +45,9 @@ int main( int argc, char **argv ) try {
 			exit( 1 );
 		}
 
-		auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( argv[1] );
-		auto const json_data2 = daw::filesystem::memory_mapped_file_t<>( argv[2] );
-		auto const json_data3 = daw::filesystem::memory_mapped_file_t<>( argv[3] );
+		auto const json_data1 = *daw::read_file( argv[1] );
+		auto const json_data2 = *daw::read_file( argv[2] );
+		auto const json_data3 = *daw::read_file( argv[3] );
 		auto json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
 		auto json_sv2 = std::string_view( json_data2.data( ), json_data2.size( ) );
 		auto json_sv3 = std::string_view( json_data3.data( ), json_data3.size( ) );

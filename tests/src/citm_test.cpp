@@ -15,7 +15,7 @@
 #include "citm_test.h"
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
 #include <daw/json/daw_json_link.h>
 
@@ -80,7 +80,7 @@ int main( int argc, char **argv ) try {
 		exit( 1 );
 	}
 
-	auto const json_data1 = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const json_data1 = *daw::read_file( argv[1] );
 	auto const json_sv1 =
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 

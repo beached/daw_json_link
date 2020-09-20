@@ -12,7 +12,7 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <iostream>
 
@@ -144,9 +144,9 @@ int main( int argc, char **argv ) try {
 		exit( 1 );
 	}
 
-	auto const json_str = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const json_str = *daw::read_file( argv[1] );
 	auto const json_str_escaped =
-	  daw::filesystem::memory_mapped_file_t<>( argv[2] );
+	  *daw::read_file( argv[2] );
 
 	test<daw::json::constexpr_exec_tag>( json_str, json_str_escaped );
 	test<daw::json::runtime_exec_tag>( json_str, json_str_escaped );

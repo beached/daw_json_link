@@ -10,7 +10,7 @@
 
 #include "defines.h"
 
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include "daw/json/daw_json_link.h"
 
@@ -49,7 +49,7 @@ int main( int argc, char **argv ) try {
 		puts( "Must supply path to cookbook_class_from_array1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto data = *daw::read_file( argv[1] );
 	puts( "Original\n" );
 	puts( data.data( ) );
 

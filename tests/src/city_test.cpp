@@ -16,7 +16,7 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 #include <daw/iterator/daw_back_inserter.h>
 
 #include <fstream>
@@ -71,7 +71,7 @@ int main( int argc, char **argv ) try {
 		puts( "Must supply path to cities.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto file_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto file_data = *daw::read_file( argv[1] );
 	auto const json_data =
 	  std::string_view( file_data.data( ), file_data.size( ) );
 

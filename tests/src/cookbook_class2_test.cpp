@@ -12,7 +12,7 @@
 
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <cstdint>
 #include <cstdio>
@@ -89,7 +89,7 @@ int main( int argc, char **argv ) try {
 		puts( "Must supply path to cookbook_class2.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto data = *daw::read_file( argv[1] );
 
 	auto const cls = daw::json::from_json<daw::cookbook_class2::MyClass2>(
 	  std::string_view( data.data( ), data.size( ) ) );

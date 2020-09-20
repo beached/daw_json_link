@@ -8,7 +8,7 @@
 
 #include "defines.h"
 
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include "daw/json/daw_json_link.h"
 
@@ -23,7 +23,7 @@ int main( int argc, char **argv ) try {
 		puts( "Must supply path to cookbook_kv4.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto json_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto json_data = *daw::read_file( argv[1] );
 
 	using namespace daw::json;
 	auto val = json_value( json_data );

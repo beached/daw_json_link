@@ -16,7 +16,7 @@
 #include "geojson.h"
 
 #include <daw/daw_do_not_optimize.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
 #include <daw/json/daw_json_link.h>
 
@@ -30,7 +30,7 @@ int main( int argc, char **argv ) try {
 	}
 	using namespace daw::json;
 	auto json_data =
-	  std::string( daw::filesystem::memory_mapped_file_t<>( argv[1] ) );
+	  std::string( *daw::read_file( argv[1] ) );
 
 	auto const canada_result =
 	  daw::json::from_json<daw::geojson::FeatureCollection>( json_data );

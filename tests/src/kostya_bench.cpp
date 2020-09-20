@@ -15,7 +15,7 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <cstdint>
 #include <daw/daw_benchmark.h>
@@ -63,7 +63,7 @@ int main( int, char ** ) try {
 	  }
 	*/
 	auto const json_data =
-	  daw::filesystem::memory_mapped_file_t<>( "/tmp/1.json" );
+	  *daw::read_file( "/tmp/1.json" );
 	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using range_t =

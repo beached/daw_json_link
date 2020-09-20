@@ -15,7 +15,7 @@
 #include "twitter_test.h"
 
 #include <daw/daw_benchmark.h>
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 #include <daw/daw_utility.h>
 #include <daw/json/daw_json_link.h>
 
@@ -484,18 +484,14 @@ int main( int argc, char **argv ) {
 		             "citm_catalog.json, and canada.json\n";
 		exit( 1 );
 	}
-	auto const json_data_apache =
-	  daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const json_data_apache = *daw::read_file( argv[1] );
 	assert( json_data_apache.size( ) > 2 and "Minimum json data size is 2 '{}'" );
-	auto const json_data_twitter =
-	  daw::filesystem::memory_mapped_file_t<>( argv[2] );
+	auto const json_data_twitter = *daw::read_file( argv[2] );
 	assert( json_data_twitter.size( ) > 2 and
 	        "Minimum json data size is 2 '{}'" );
-	auto const json_data_citm =
-	  daw::filesystem::memory_mapped_file_t<>( argv[3] );
+	auto const json_data_citm = *daw::read_file( argv[3] );
 	assert( json_data_citm.size( ) > 2 and "Minimum json data size is 2 '{}'" );
-	auto const json_data_canada =
-	  daw::filesystem::memory_mapped_file_t<>( argv[4] );
+	auto const json_data_canada = *daw::read_file( argv[4] );
 	assert( json_data_canada.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 
 	auto const results = std::vector<daw::bench::bench_result>{
@@ -523,8 +519,8 @@ int main( int argc, char **argv ) {
 	}
 	std::string out_data{ };
 	{
-		auto const json_data_results_file =
-		  daw::filesystem::memory_mapped_file_t<>( argv[5] );
+
+		auto const json_data_results_file = *daw::read_file( argv[5] );
 		auto old_results = [&]( ) -> std::vector<daw::bench::bench_result> {
 			if( json_data_results_file.size( ) < 2U ) {
 				return { };

@@ -10,7 +10,7 @@
 
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <cstdint>
 #include <cstdio>
@@ -26,7 +26,7 @@ int main( int argc, char **argv ) try {
 		exit( EXIT_FAILURE );
 	}
 
-	auto const file_data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const file_data = *daw::read_file( argv[1] );
 	auto const json_data =
 	  std::string_view( file_data.data( ), file_data.size( ) );
 

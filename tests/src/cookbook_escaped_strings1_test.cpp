@@ -10,7 +10,7 @@
 
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <cstdint>
 #include <cstdio>
@@ -54,7 +54,7 @@ int main( int argc, char **argv ) try {
 	  { "example.com", "Bücher.ch", "happy.cn", "happy快乐.cn", "快乐.cn",
 	    "happy.中国", "快乐.中国", "www.ハンドボールサムズ.com", "🦄.com" } };
 
-	auto data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto data = *daw::read_file( argv[1] );
 
 	auto const cls =
 	  daw::json::from_json<daw::cookbook_escaped_strings1::WebData>(

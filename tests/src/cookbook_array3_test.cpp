@@ -12,7 +12,7 @@
 
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_memory_mapped_file.h>
+#include <daw/daw_read_file.h>
 
 #include <cstdint>
 #include <cstdio>
@@ -62,7 +62,7 @@ int main( int argc, char **argv ) try {
 		puts( "Must supply path to cookbook_array3.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto const data = daw::filesystem::memory_mapped_file_t<>( argv[1] );
+	auto const data = *daw::read_file( argv[1] );
 
 	using namespace daw::json;
 
