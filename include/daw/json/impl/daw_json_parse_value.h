@@ -636,10 +636,10 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
 		if constexpr( KnownBounds ) {
-			return constructor_t{ }( rng.first, rng.last );
+			return constructor_t{ }( rng.first, rng.size( ) );
 		} else {
 			auto value_rng = skip_value( rng );
-			return constructor_t{ }( value_rng.first, value_rng.last );
+			return constructor_t{ }( value_rng.first, value_rng.size( ) );
 		}
 	}
 } // namespace daw::json::json_details

@@ -709,9 +709,13 @@ namespace daw::json {
 	using json_pair = basic_json_pair<NoCommentSkippingPolicyChecked>;
 
 	/***
-	 * Do not parse this member but return a basic_json_value that can be used to
+	 * Do not parse this member but return a T that can be used to
 	 * parse later
-	 *  @tparam Name name of JSON member to link to
+	 *
+	 * @tparam Name name of JSON member to link to
+	 * @tparam T destination type.  Must be constructable from a char const * and
+	 * a std::size_t
+	 * @tparam Constructor A callable used to construct T.  The
 	 * @tparam Nullable Does the value have to exist in the document or can it
 	 * have a null value
 	 */
@@ -726,7 +730,8 @@ namespace daw::json {
 		static_assert( not std::is_same_v<void, base_type>,
 		               "Failed to detect base type" );
 
-		using parse_to_t = std::invoke_result_t<Constructor, char const *, char const *>;
+		using parse_to_t =
+		  std::invoke_result_t<Constructor, char const *, char const *>;
 		static constexpr daw::string_view name = Name;
 
 		static constexpr JsonParseTypes expected_type = JsonParseTypes::Unknown;

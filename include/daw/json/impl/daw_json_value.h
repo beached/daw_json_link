@@ -316,8 +316,8 @@ namespace daw::json {
 		 * Construct from std::string_view
 		 */
 		explicit inline constexpr basic_json_value( char const *first,
-		                                            char const *last )
-		  : m_rng( first, last ) {}
+		                                            std::size_t sz )
+		  : m_rng( first, first + static_cast<std::ptrdiff_t>( sz ) ) {}
 
 		/***
 		 * Get a copy of the underlying range
