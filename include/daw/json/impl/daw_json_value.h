@@ -313,11 +313,18 @@ namespace daw::json {
 		  : m_rng( sv.data( ), sv.data( ) + sv.size( ) ) {}
 
 		/***
-		 * Construct from std::string_view
+		 * Construct from char const *, std::size_t
 		 */
 		explicit inline constexpr basic_json_value( char const *first,
 		                                            std::size_t sz )
 		  : m_rng( first, first + static_cast<std::ptrdiff_t>( sz ) ) {}
+
+		/***
+		 * Construct from char const *, char const *
+		 */
+		explicit inline constexpr basic_json_value( char const *first,
+		                                            char const *last )
+		  : m_rng( first, last ) {}
 
 		/***
 		 * Get a copy of the underlying range
