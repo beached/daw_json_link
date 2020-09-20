@@ -42,7 +42,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( ) try {
-	std::string obj = R"({ "member": 12345, "member2": "hello" } )";
+	std::string obj = R"({ "member": 12345, "member2": "hello" })";
 	auto my_thing = Thing{ "update", 1, obj };
 	auto json = daw::json::to_json( my_thing );
 
