@@ -299,9 +299,8 @@ namespace daw::json {
 	 * This mapping class allows for a quick mapping of fundamental types
 	 * to their JSON link counterparts
 	 * @tparam Name Name of current member
-	 * @tparam T type of value
 	 */
-	template<JSONNAMETYPE Name, typename T>
+	template<JSONNAMETYPE Name, typename>
 	struct json_link_quick_map : std::false_type {
 		using mapped_type = void;
 	};
