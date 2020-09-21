@@ -1,31 +1,20 @@
-// The MIT License (MIT)
+// Copyright (c) Darrell Wright
 //
-// Copyright (c) 2019-2020 Darrell Wright
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files( the "Software" ), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and / or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
+// Official repository: https://github.com/beached/daw_json_link
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
 
 #pragma once
 
-#include "daw_iterator_range.h"
 #include "daw_json_assert.h"
+#include "daw_json_exec_modes.h"
+#include "daw_json_parse_string_need_slow.h"
 #include "daw_json_parse_string_quote.h"
+#include "daw_json_traits.h"
 
+#include <daw/daw_arith_traits.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -33,25 +22,29 @@
 #include <cstddef>
 #include <iterator>
 
+#if defined( __cpp_constexpr_dynamic_alloc )
+#define CPP20CONSTEXPR constexpr
+#else
+#define CPP20CONSTEXPR
+#endif
+
 namespace daw::json {
 	/***
-	 * Attempt to parse/serialize a type that has not yet been mapped
+	 *
+	 * Allows specifying an unnamed json mapping where the
+	 * result is a tuple
 	 */
-	template<typename>
-	struct missing_json_data_contract_for {};
+	template<typename... Members>
+	struct tuple_json_mapping {
+		std::tuple<typename Members::parse_to_t...> members;
 
-	/***
-	 * Mapping class for JSON data structures to C++
-	 * @tparam T Class to map
-	 */
-	template<typename T>
-	struct json_data_contract {
-		using type = missing_json_data_contract_for<T>;
+		template<typename... Ts>
+		constexpr tuple_json_mapping( Ts &&... values )
+		  : members{ std::forward<Ts>( values )... } {}
 	};
 } // namespace daw::json
 
 namespace daw::json::json_details {
-
 	template<typename T>
 	using json_type_t = typename T::i_am_a_json_type;
 
@@ -128,13 +121,18 @@ namespace daw::json::json_details {
 
 	template<typename Container>
 	struct basic_appender {
+		using value_type = typename Container::value_type;
+		using reference = value_type;
+		using pointer = value_type const *;
+		using difference_type = std::ptrdiff_t;
+		using iterator_category = std::output_iterator_tag;
 		Container *m_container;
 
-		explicit constexpr basic_appender( Container &container )
+		explicit inline constexpr basic_appender( Container &container )
 		  : m_container( &container ) {}
 
 		template<typename Value>
-		constexpr void operator( )( Value &&value ) const {
+		inline constexpr void operator( )( Value &&value ) const {
 			if constexpr( has_push_back_v<Container, daw::remove_cvref_t<Value>> ) {
 				m_container->push_back( std::forward<Value>( value ) );
 			} else if constexpr( has_insert_end_v<Container,
@@ -154,20 +152,20 @@ namespace daw::json::json_details {
 		         std::enable_if_t<
 		           not std::is_same_v<basic_appender, daw::remove_cvref_t<Value>>,
 		           std::nullptr_t> = nullptr>
-		basic_appender &operator=( Value &&v ) {
+		inline constexpr basic_appender &operator=( Value &&v ) {
 			operator( )( std::forward<Value>( v ) );
 			return *this;
 		}
 
-		basic_appender &operator++( ) {
+		inline constexpr basic_appender &operator++( ) {
 			return *this;
 		}
 
-		basic_appender operator++( int ) {
+		inline constexpr basic_appender operator++( int ) const {
 			return *this;
 		}
 
-		basic_appender &operator*( ) {
+		inline constexpr basic_appender &operator*( ) {
 			return *this;
 		}
 	};
@@ -193,19 +191,19 @@ namespace daw::json {
 	template<std::size_t N>
 	struct json_name {
 		static_assert( N > 0 );
-		char const m_data[N]{};
+		char const m_data[N]{ };
 
 	private:
 		template<std::size_t... Is>
 		constexpr json_name( char const ( &ptr )[N], std::index_sequence<Is...> )
-		  : m_data{ptr[Is]...} {}
+		  : m_data{ ptr[Is]... } {}
 
 	public:
 		constexpr json_name( char const ( &ptr )[N] )
-		  : json_name( ptr, std::make_index_sequence<N>{} ) {}
+		  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
 
 		constexpr operator daw::string_view( ) const {
-			return {m_data, N - 1};
+			return { m_data, N - 1 };
 		}
 
 		// Needed for copy_to_iterator
@@ -235,35 +233,36 @@ namespace daw::json {
 			return true;
 		}
 
-		constexpr bool operator==( daw::string_view sv ) const {
-			return daw::string_view( m_data, N - 1 ) == sv;
+		constexpr bool operator==( daw::string_view rhs ) const {
+			return daw::string_view( m_data, N - 1 ) == rhs;
+		}
+
+		constexpr bool operator==( std::string_view rhs ) const {
+			return std::string_view( m_data, N - 1 ) == rhs;
 		}
 
 		constexpr operator std::string_view( ) const {
 			return std::string_view( m_data, N - 1 );
 		}
 	};
-
 	template<typename... Chars>
-	json_name( Chars... )->json_name<sizeof...( Chars )>;
+	json_name( Chars... ) -> json_name<sizeof...( Chars )>;
+
+	template<std::size_t N>
+	json_name( char const ( & )[N] ) -> json_name<N>;
 
 #define JSONNAMETYPE daw::json::json_name
 
 	// Convienience for array members that are required to be unnamed
-	inline constexpr JSONNAMETYPE no_name{""};
+	inline constexpr JSONNAMETYPE no_name{ "" };
 
 	namespace json_details {
-		inline constexpr JSONNAMETYPE default_key_name{"key"};
-		inline constexpr JSONNAMETYPE default_value_name{"value"};
+		inline constexpr JSONNAMETYPE default_key_name{ "key" };
+		inline constexpr JSONNAMETYPE default_value_name{ "value" };
 	} // namespace json_details
 
-	template<JSONNAMETYPE n>
-	inline constexpr bool is_no_name = ( n == no_name );
-
-	template<typename Name>
-	constexpr char const *as_cstr( Name const &n ) {
-		return n.begin( );
-	}
+	template<typename JsonMember>
+	inline constexpr bool is_no_name = ( JsonMember::name == no_name );
 #else
 #define JSONNAMETYPE char const *
 	// Convienience for array members that are required to be unnamed
@@ -275,13 +274,8 @@ namespace daw::json {
 
 	} // namespace json_details
 
-	template<JSONNAMETYPE n>
-	inline constexpr bool
-	  is_no_name = daw::string_view( n ) == daw::string_view( "" );
-
-	constexpr char const *as_cstr( JSONNAMETYPE ptr ) {
-		return ptr;
-	}
+	template<typename JsonMember>
+	inline constexpr bool is_no_name = JsonMember::name == daw::string_view( "" );
 #endif
 
 	enum class JsonParseTypes : std::uint_fast8_t {
@@ -299,7 +293,8 @@ namespace daw::json {
 		KeyValueArray,
 		Custom,
 		Variant,
-		VariantTagged
+		VariantTagged,
+		Unknown
 	};
 
 	enum class JsonBaseParseTypes : std::uint_fast8_t {
@@ -308,32 +303,54 @@ namespace daw::json {
 		String,
 		Class,
 		Array,
+		Null,
 		None
 	};
 
-	enum class JsonNullable : bool { Never = false, Nullable = true };
-	enum class JsonRangeCheck : bool { Never = false, CheckForNarrowing = true };
-	enum class EightBitModes : bool { DisallowHigh = false, AllowFull = true };
-	enum class CustomJsonTypes : bool { Literal = false, String = true };
-	enum class SIMDModes : std::uint8_t {
-		None
-#ifdef DAW_ALLOW_SSE3
-		,
-		SSE3
-#endif
+	constexpr std::string_view to_string( JsonBaseParseTypes pt ) {
+		switch( pt ) {
+		case JsonBaseParseTypes::Number:
+			return "Number";
+		case JsonBaseParseTypes::Bool:
+			return "Bool";
+		case JsonBaseParseTypes::String:
+			return "String";
+		case JsonBaseParseTypes::Class:
+			return "Class";
+		case JsonBaseParseTypes::Array:
+			return "Array";
+		case JsonBaseParseTypes::Null:
+			return "Null";
+		case JsonBaseParseTypes::None:
+		default:
+			return "None";
+		}
+	}
+
+	enum class JsonNullable { Never = false, Nullable = true };
+	enum class JsonRangeCheck { Never = false, CheckForNarrowing = true };
+	enum class EightBitModes { DisallowHigh = false, AllowFull = true };
+	enum class CustomJsonTypes { Literal, String, Either };
+
+	/***
+	 * In RAW String processing, if we know that there are no escaped double
+	 * quotes \" we can stop at the first double quote
+	 */
+	enum class AllowEscapeCharacter {
+		/*Full string processing to skip escaped characters*/ Allow,
+		/*There will never be a \" sequence inside the string*/ NotBeforeDblQuote
 	};
+
 	template<JsonParseTypes ParseType, JsonNullable Nullable>
 	inline constexpr JsonParseTypes get_parse_type_v =
 	  Nullable == JsonNullable::Never ? ParseType : JsonParseTypes::Null;
 
 	namespace json_details {
-		template<SIMDModes>
+		template<typename>
 		inline constexpr std::size_t parse_space_needed_v = 1U;
 
-#ifdef DAW_ALLOW_SSE3
 		template<>
-		inline constexpr std::size_t parse_space_needed_v<SIMDModes::SSE3> = 16U;
-#endif
+		inline constexpr std::size_t parse_space_needed_v<simd_exec_tag> = 16U;
 
 		template<typename JsonType>
 		static inline constexpr bool is_json_nullable_v =
@@ -341,28 +358,35 @@ namespace daw::json {
 
 		template<typename T>
 		[[maybe_unused]] auto dereffed_type_impl( daw::tag_t<T> )
-		  -> decltype( *( T{} ) );
+		  -> decltype( *( std::declval<T &>( ) ) );
 
 		template<typename T>
 		using dereffed_type =
 		  daw::remove_cvref_t<decltype( dereffed_type_impl( daw::tag<T> ) )>;
 
 		template<typename T, JsonNullable Nullable>
-		using unwrap_type =
-		  std::conditional_t<(Nullable == JsonNullable::Nullable and
-		                      daw::is_detected_v<dereffed_type, T>),
-		                     daw::detected_t<dereffed_type, T>, T>;
+		using unwrap_type = std::conditional_t<
+		  std::conjunction_v<std::bool_constant<Nullable == JsonNullable::Nullable>,
+		                     daw::is_detected<dereffed_type, T>>,
+		  daw::detected_t<dereffed_type, T>, T>;
 
 		template<typename T>
-		inline constexpr bool can_deref_v = daw::is_detected_v<dereffed_type, T>;
+		using can_deref = daw::is_detected<dereffed_type, T>;
+
+		template<typename T>
+		using cant_deref = daw::not_trait<can_deref<T>>;
+
+		template<typename T>
+		inline constexpr bool can_deref_v = can_deref<T>::value;
 
 		template<typename T>
 		inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
-			if constexpr( std::is_floating_point_v<T> ) {
+			static_assert( daw::is_arithmetic_v<T>, "Unexpected non-number" );
+			if constexpr( daw::is_floating_point_v<T> ) {
 				return JsonParseTypes::Real;
-			} else if constexpr( std::is_signed_v<T> ) {
+			} else if constexpr( daw::is_signed_v<T> ) {
 				return JsonParseTypes::Signed;
-			} else if constexpr( std::is_unsigned_v<T> ) {
+			} else if constexpr( daw::is_unsigned_v<T> ) {
 				return JsonParseTypes::Unsigned;
 			}
 		}( );
@@ -400,152 +424,253 @@ namespace daw::json {
 	enum class LiteralAsStringOpt : std::uint8_t { Never, Maybe, Always };
 
 	template<typename T>
-	inline constexpr bool is_range_constructable_v =
-	  not std::is_trivially_constructible_v<T>;
+	struct TestInputIteratorType {
+		using iterator_category = std::input_iterator_tag;
+		using value_type = T;
+		using reference = T &;
+		using pointer = T *;
+		using difference_type = std::ptrdiff_t;
+	};
+	static_assert(
+	  std::is_same_v<
+	    typename std::iterator_traits<TestInputIteratorType<int>>::value_type,
+	    int> );
 } // namespace daw::json
 
 namespace daw::json::json_details {
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_string_nq( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	/***
+	 * Skip a string, after the initial quote has been skipped already
+	 */
+	template<typename Range>
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
+	skip_string_nq( Range &rng ) {
 		auto result = rng;
-		rng.first = string_quote::string_quote_parser::parse_nq( rng.first );
+		result.counter = string_quote::string_quote_parser::parse_nq( rng );
 
 		daw_json_assert_weak( rng.front( ) == '"',
-		                      "Expected trailing \" at the end of string" );
+		                      "Expected trailing \" at the end of string", rng );
 		result.last = rng.first;
 		rng.remove_prefix( );
 		return result;
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_string( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		if( rng.front( '"' ) ) {
-			rng.remove_prefix( );
+	/***
+	 * Skip a string and store the first escaped element's position, if any
+	 */
+	template<typename Range>
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
+	skip_string( Range &rng ) {
+		if( rng.empty( ) ) {
+			return rng;
 		}
+		if( *std::prev( rng.first ) != '"' ) {
+			if( rng.front( ) == '"' ) {
+				rng.remove_prefix( );
+			} else {
+				daw_json_error( "Attempt to parse a non-string as string" );
+			}
+		}
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of string", rng );
 		return skip_string_nq( rng );
 	}
 
-	constexpr bool at_literal_end( char c ) {
-		return c == '\0' or c == ',' or c == ']' or c == '}';
-	}
-
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_literal( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_true( Range &rng ) {
 		auto result = rng;
-		while( not at_literal_end( *rng.first ) ) {
-			daw_json_assert_weak( rng.has_more( ), "Expected more data" );
-			++rng.first;
+		if constexpr( Range::is_unchecked_input ) {
+			rng.remove_prefix( 4 );
+		} else {
+			rng.remove_prefix( );
+			daw_json_assert( rng.starts_with( "rue" ), "Expected true", rng );
+			rng.remove_prefix( 3 );
 		}
 		result.last = rng.first;
-		daw_json_assert_weak( rng.front( ",}]" ),
-		                      "Expected a ',', '}', ']' to trail literal" );
+		rng.trim_left( );
+		daw_json_assert_weak( rng.is_at_token_after_value( ),
+		                      "Expected a ',', '}', ']' to trail literal", rng );
 		return result;
 	}
 
-	template<char Left, char Right, typename First, typename Last,
-	         bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_bracketed_item( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		daw_json_assert_weak( rng.front( Left ), "Expected start bracket/brace" );
-		std::size_t bracket_count = 1;
-		bool in_quotes = false;
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_false( Range &rng ) {
 		auto result = rng;
-		while( not rng.empty( ) and bracket_count > 0 ) {
+		if constexpr( Range::is_unchecked_input ) {
+			rng.remove_prefix( 5 );
+		} else {
 			rng.remove_prefix( );
-			rng.trim_left_raw( );
-			switch( rng.front( ) ) {
-			case '\\':
-				rng.remove_prefix( 1 );
-				continue;
-			case '"':
-				in_quotes = not in_quotes;
-				continue;
-			case Left:
-				if( not in_quotes ) {
-					++bracket_count;
-				}
-				break;
-			case Right:
-				if( not in_quotes ) {
-					--bracket_count;
-				}
-				break;
-			case '#':
-				if( not in_quotes ) {
-					rng.trim_left( );
-				}
-				break;
+			daw_json_assert( rng.starts_with( "alse" ), "Expected false", rng );
+			rng.remove_prefix( 4 );
+		}
+		result.last = rng.first;
+		rng.trim_left( );
+		daw_json_assert_weak( rng.is_at_token_after_value( ),
+		                      "Expected a ',', '}', ']' to trail literal", rng );
+		return result;
+	}
+
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_null( Range &rng ) {
+		if constexpr( Range::is_unchecked_input ) {
+			rng.remove_prefix( 4 );
+		} else {
+			rng.remove_prefix( );
+			daw_json_assert( rng.starts_with( "ull" ), "Expected null", rng );
+			rng.remove_prefix( 3 );
+		}
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
+		rng.trim_left( );
+		daw_json_assert_weak( rng.is_at_token_after_value( ),
+		                      "Expected a ',', '}', ']' to trail literal", rng );
+		auto result = rng;
+		result.first = nullptr;
+		result.last = nullptr;
+		return result;
+	}
+
+	/***
+	 * Skip a number and store the position of it's components in the returned
+	 * Range
+	 */
+	template<typename Range>
+	[[nodiscard]] static constexpr Range skip_number( Range &rng ) {
+		auto result = rng;
+		char const *first = rng.first;
+		char const *const last = rng.last;
+		if( ( Range::is_unchecked_input or first < last ) and *first == '-' ) {
+			++first;
+		}
+		unsigned dig = 0;
+		while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
+			dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
+			                             static_cast<unsigned char>( '0' ) );
+			++first;
+		}
+		if constexpr( Range::is_unchecked_input ) {
+			first -= static_cast<int>( first < last );
+		} else {
+			--first;
+		}
+		char const *decimal = nullptr;
+		if( ( Range::is_unchecked_input or ( first < last ) ) and *first == '.' ) {
+			decimal = first;
+			++first;
+			dig = 0;
+			while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
+				dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
+				                             static_cast<unsigned char>( '0' ) );
+				++first;
+			}
+			if constexpr( Range::is_unchecked_input ) {
+				first -= static_cast<int>( first < last );
+			} else {
+				--first;
 			}
 		}
-		daw_json_assert_weak( rng.front( Right ),
-		                      "Expected closing bracket/brace" );
+		char const *exp = nullptr;
+		if( ( Range::is_unchecked_input or ( first < last ) ) and
+		    ( ( *first == 'e' ) | ( *first == 'E' ) ) ) {
+			exp = first;
+			++first;
+			if( ( Range::is_unchecked_input or ( first < last ) ) and
+			    ( ( *first == '+' ) | ( *first == '-' ) ) ) {
+				++first;
+			}
+			dig = 0;
+			while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
+				dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
+				                             static_cast<unsigned char>( '0' ) );
+				++first;
+			}
+			if constexpr( not Range::is_unchecked_input ) {
+				first -= static_cast<int>( first < last );
+			} else {
+				--first;
+			}
+		}
 
-		rng.remove_prefix( );
-		daw_json_assert_weak( rng.has_more( ), "Unexpected empty range" );
-
-		result.last = rng.begin( );
+		rng.first = first;
+		result.last = first;
+		result.class_first = decimal;
+		result.class_last = exp;
 		return result;
 	}
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_class( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		return skip_bracketed_item<'{', '}'>( rng );
-	}
+	/***
+	 * When we don't know ahead of time what we are skipping switch on the first
+	 * value and call that types specific skipper
+	 * TODO: Investigate if there is a difference for the times we know what the
+	 * member should be if that can increase performance
+	 */
+	template<typename Range>
+	[[nodiscard]] static inline constexpr Range skip_value( Range &rng ) {
+		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range",
+		                      rng );
 
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_array( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		return skip_bracketed_item<'[', ']'>( rng );
-	}
-
-	template<typename First, typename Last, bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_value( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
-		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range" );
-
+		// reset counter
+		rng.counter = 0;
 		switch( rng.front( ) ) {
 		case '"':
 			return skip_string( rng );
 		case '[':
-			return skip_array( rng );
+			return rng.skip_array( );
 		case '{':
-			return skip_class( rng );
-		default:
-			return skip_literal( rng );
+			return rng.skip_class( );
+		case 't':
+			return skip_true( rng );
+		case 'f':
+			return skip_false( rng );
+		case 'n':
+			return skip_null( rng );
+		case '-':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			return skip_number( rng );
 		}
+		daw_json_error( "Unknown value type" );
 	}
 
-	template<typename JsonMember, typename First, typename Last,
-	         bool IsUnCheckedInput>
-	[[nodiscard]] static constexpr IteratorRange<First, Last, IsUnCheckedInput>
-	skip_known_value( IteratorRange<First, Last, IsUnCheckedInput> &rng ) {
+	/***
+	 * Used in json_array_iterator::operator++( ) as we know the type we are
+	 * skipping
+	 */
+	template<typename JsonMember, typename Range>
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
+	skip_known_value( Range &rng ) {
+		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 		              JsonMember::expected_type == JsonParseTypes::StringRaw or
+		              JsonMember::expected_type == JsonParseTypes::StringEscaped or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
-			daw_json_assert_weak( rng.front( '"' ),
-			                      "Expected start of value to begin with '\"'" );
+			// json string encodings
+			daw_json_assert_weak( rng.front( ) == '"',
+			                      "Expected start of value to begin with '\"'", rng );
 			rng.remove_prefix( );
 			return json_details::skip_string_nq( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
 		                     JsonMember::expected_type == JsonParseTypes::Signed or
 		                     JsonMember::expected_type ==
 		                       JsonParseTypes::Unsigned or
-		                     is_json_nullable_v<JsonMember> or
-		                     JsonMember::expected_type == JsonParseTypes::Bool ) {
-			return json_details::skip_literal( rng );
+		                     JsonMember::expected_type == JsonParseTypes::Bool or
+		                     JsonMember::expected_type == JsonParseTypes::Null ) {
+			// All literals
+			return json_details::skip_number( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
-			daw_json_assert_weak( rng.front( '[' ),
-			                      "Expected start of array with '['" );
-			return json_details::skip_array( rng );
+			daw_json_assert_weak( rng.is_opening_bracket_checked( ),
+			                      "Expected start of array with '['", rng );
+			return rng.skip_array( );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Class ) {
-			daw_json_assert_weak( rng.front( '{' ),
-			                      "Expected start of class with '{'" );
-			return json_details::skip_class( rng );
+			daw_json_assert_weak( rng.is_opening_brace_checked( ),
+			                      "Expected start of class with '{'", rng );
+			return rng.skip_class( );
 		} else {
 			// Woah there
 			static_assert( JsonMember::expected_type == JsonParseTypes::Class,
@@ -554,5 +679,4 @@ namespace daw::json::json_details {
 			std::abort( );
 		}
 	}
-
 } // namespace daw::json::json_details

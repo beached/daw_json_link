@@ -4,7 +4,7 @@ arch:
   - s390x
 os: linux
 language: cpp
-dist: bionic
+dist: focal 
 
 env:
   - BUILD_TYPE=Debug CC=gcc-9 CXX=g++-9
@@ -15,13 +15,14 @@ before_install:
   - sudo apt-get update -qq
 install:
   - sudo apt-get install g++-9 git build-essential cmake
+  - cmake --version  
 
 
 script:
   - mkdir build && cd build
-  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDAW_JSON_NO_CONST_EXPR=ON -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On
   - cmake --build . --config ${BUILD_TYPE} --target full -- -k
-  - ctest -C ${BUILD_TYPE} -j2 -VV --timeout 300 
+  - ctest -C ${BUILD_TYPE} -j2 -VV --timeout 900
 
 notifications:
   email: false

@@ -18,7 +18,7 @@ Take the following JSON
 
 The JSON document is an array of an object with two members, an optional int, a string, and an optional bool.
 
-Too see a working example using this code, refer to [cookbook_optional_values1_test.cpp](../tests/cookbook_optional_values1_test.cpp). 
+Too see a working example using this code, refer to [cookbook_optional_values1_test.cpp](../tests/src/cookbook_optional_values1_test.cpp). 
 
 ```c++
 struct MyOptionalStuff1 {
@@ -36,7 +36,7 @@ namespace daw::json {
       json_bool_null<
         "member2", 
         std::unique_ptr<bool>, 
-        LiteralAsStringOpt::Never, 
+        LiteralAsStringOpt::NotBeforeDblQuote, 
         UniquePtrConstructor<bool>
       >
     >;

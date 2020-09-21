@@ -5,8 +5,8 @@ mkdir build
 cd build
 
 echo "Configuring project"
-cmake -DCMAKE_BUILD_TYPE=Debug ..
+cmake -DCMAKE_BUILD_TYPE=$1 -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=On ..
 
 echo "Starting dep build"
-cmake --build . --config Debug --target -j 2
+cmake --build . --config $1 --target -j 2
 

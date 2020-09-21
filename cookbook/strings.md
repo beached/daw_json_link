@@ -33,7 +33,7 @@ std::vector<string> uris = {
   "🦄.com"};
 ```
 
-To see a working example using this code, refer to [cookbook_escaped_strings1_test.cpp](../tests/cookbook_escaped_strings1_test.cpp). 
+To see a working example using this code, refer to [cookbook_escaped_strings1_test.cpp](../tests/src/cookbook_escaped_strings1_test.cpp). 
 
 Below the mapping of the JSON object with C++ data structures.
 ```c++
