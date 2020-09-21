@@ -1,5 +1,5 @@
 ![logo image](images/json_link_logo_128.png)
-# JSON Link 
+# DAW JSON Link v2 
 
 [![Build Status Macos](https://github.com/beached/daw_json_link/workflows/MacOS/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AMacOS)
 
