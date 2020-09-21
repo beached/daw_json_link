@@ -79,7 +79,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_number_null<"member0", std::optional<int>>, json_string<"member1">,
 		  json_bool_null<
-		    "member2", std::unique_ptr<bool>, LiteralAsStringOpt::NotBeforeDblQuote,
+		    "member2", std::unique_ptr<bool>, LiteralAsStringOpt::Never,
 		    daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
 #else
 		static constexpr char const member0[] = "member0";
