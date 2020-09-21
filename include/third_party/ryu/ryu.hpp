@@ -597,7 +597,7 @@ namespace ryu::detail {
 } // namespace ryu::detail
 
 namespace ryu {
-	char *d2s_buffered( double f, char *result ) {
+	inline char *d2s_buffered( double f, char *result ) {
 		using namespace detail;
 		// Step 1: Decode the floating-point number, and unify normalized and
 		// subnormal cases.
