@@ -73,7 +73,7 @@ Simple Array of int</h1>
 </div><!-- fragment --><p>The above JSON document contains an array of integers as the root object.</p>
 <p>The C++ to parse this could look like </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">std::vector&lt;int&gt; vec = from_json_array&lt;int&gt;( json_str );</div>
-</div><!-- fragment --><p>To see a working example of the following, refer to <a href="../tests/cookbook_array1_test.cpp">cookbook_array1_test.cpp</a> The previous is a simple example, had the element type of the array been more complicated, such as a class, a data mapping would be required.</p>
+</div><!-- fragment --><p>To see a working example of the following, refer to <a href="../tests/src/cookbook_array1_test.cpp">cookbook_array1_test.cpp</a> The previous is a simple example, had the element type of the array been more complicated, such as a class, a data mapping would be required.</p>
 <h1><a class="anchor" id="autotoc_md2"></a>
 Array of a class</h1>
 <div class="fragment"><div class="line">[</div>
@@ -91,7 +91,7 @@ Array of a class</h1>
 <div class="line">  }</div>
 <div class="line">]</div>
 </div><!-- fragment --><p>Here we hae a JSON array containing a class with members of type string, unsigned, float, and boolean.</p>
-<p>The C++ data structures and the mapping could look like the following To see a working example using this code, refer to <a href="../tests/cookbook_array2_test.cpp">cookbook_array2_test.cpp</a></p>
+<p>The C++ data structures and the mapping could look like the following To see a working example using this code, refer to <a href="../tests/src/cookbook_array2_test.cpp">cookbook_array2_test.cpp</a></p>
 <div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyClass4 {</div>
 <div class="line">  std::string a;</div>
@@ -125,7 +125,7 @@ Array of a class</h1>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Array's as members</h1>
 <p>Use the <code>json_array</code> member type in the member list to describe a member that is an array type.</p>
-<p>To see a working example using this code, refer to <a href="../tests/cookbook_array3_test.cpp">cookbook_array3_test.cpp</a></p>
+<p>To see a working example using this code, refer to <a href="../tests/src/cookbook_array3_test.cpp">cookbook_array3_test.cpp</a></p>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;member0&quot;: 5,</div>
 <div class="line">  &quot;member1&quot;: [ 1,2,3,4,5 ],</div>

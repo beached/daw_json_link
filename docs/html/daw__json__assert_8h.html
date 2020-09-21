@@ -113,6 +113,8 @@ Macros</h2></td></tr>
 <tr class="separator:a043f9b7b84dd49e87d2b0114f7dc4d42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75eb15f03f1448915e415af33e64f9e9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a75eb15f03f1448915e415af33e64f9e9">DAW_JSON_UNREACHABLE</a>()&#160;&#160;&#160;std::terminate( )</td></tr>
 <tr class="separator:a75eb15f03f1448915e415af33e64f9e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab4d7faa2d24e5d5b828e8b013eb8289"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#aab4d7faa2d24e5d5b828e8b013eb8289">DAW_USE_JSON_EXCEPTIONS</a></td></tr>
+<tr class="separator:aab4d7faa2d24e5d5b828e8b013eb8289"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -141,7 +143,7 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a236cef0d7e6c40781c19e4ebcd63aa5b"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a236cef0d7e6c40781c19e4ebcd63aa5b">use_daw_json_exceptions_v</a> = false</td></tr>
+<tr class="memitem:a236cef0d7e6c40781c19e4ebcd63aa5b"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a236cef0d7e6c40781c19e4ebcd63aa5b">use_daw_json_exceptions_v</a> = true</td></tr>
 <tr class="separator:a236cef0d7e6c40781c19e4ebcd63aa5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -258,6 +260,20 @@ Variables</h2></td></tr>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td>&#160;&#160;&#160;std::terminate( )</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aab4d7faa2d24e5d5b828e8b013eb8289"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab4d7faa2d24e5d5b828e8b013eb8289">&#9670;&nbsp;</a></span>DAW_USE_JSON_EXCEPTIONS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DAW_USE_JSON_EXCEPTIONS</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -408,7 +424,7 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool use_daw_json_exceptions_v = false</td>
+          <td class="memname">constexpr bool use_daw_json_exceptions_v = true</td>
         </tr>
       </table>
   </td>

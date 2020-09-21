@@ -76,16 +76,16 @@ $(function() {
 <div class="line">  }</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>With the previous JSON data, the next example will extract the member <code>"a.b"</code>, the <code>"b"</code> member of the <code>"a"</code> member of the root object.</p>
-<p>Too see a working example using this code, refer to <a href="../tests/cookbook_parsing_individual_members1_test.cpp">cookbook_parsing_individual_members1_test.cpp</a>. </p><div class="fragment"><div class="line"> {c++}</div>
+<p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_parsing_individual_members1_test.cpp">cookbook_parsing_individual_members1_test.cpp</a>. </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">std::string b_value = daw::json::from_json&lt;std::string&gt;( json_data, &quot;a.b&quot; );</div>
 </div><!-- fragment --><p><code>b_value</code> should have a value of <code>"found me"</code></p>
 <p>Below shows when member is known to be an array and full control of the resulting collection is needed.</p>
-<p>Too see a working example using this code, refer to <a href="../tests/cookbook_parsing_individual_members2_test.cpp">cookbook_parsing_individual_members2_test.cpp</a>. </p><div class="fragment"><div class="line"> {c++}</div>
+<p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_parsing_individual_members2_test.cpp">cookbook_parsing_individual_members2_test.cpp</a>. </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">std::vector&lt;int&gt; values = daw::json::from_json_array&lt;int&gt;( json_data, &quot;member1&quot; );</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md30"></a>
 Specifying array indexes</h1>
 <p>In the member path array indexes are specified inside square brackets <code>[</code> and <code>]</code>. Below the 3rd item of <code>"member1"</code> will be extracted</p>
-<p>Too see a working example using this code, refer to <a href="../tests/cookbook_parsing_individual_members3_test.cpp">cookbook_parsing_individual_members3_test.cpp</a>. </p><div class="fragment"><div class="line"> {c++}</div>
+<p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_parsing_individual_members3_test.cpp">cookbook_parsing_individual_members3_test.cpp</a>. </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">int third_value = daw::json::from_json&lt;int&gt;( json_data, &quot;member1[2]&quot; );</div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->

@@ -145,7 +145,7 @@ $(function() {
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  parse_value( ParseTag&lt;JsonParseTypes::VariantTagged&gt;, Range &amp;rng );</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember, <span class="keywordtype">bool</span> KnownBounds = false, <span class="keyword">typename</span> Range&gt;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  constexpr basic_json_value&lt;typename Range::as_checked&gt;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  constexpr json_result&lt;JsonMember&gt;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  parse_value( ParseTag&lt;JsonParseTypes::Unknown&gt;, Range &amp;rng );</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#if( defined( _MSC_VER ) and not defined( __clang__ ) )</span></div>

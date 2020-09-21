@@ -76,7 +76,7 @@ As Class</h1>
 <div class="line">    &quot;key1&quot;: 314159 </div>
 <div class="line">  }</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>Too see a working example using this code, refer to <a href="../tests/cookbook_kv1_test.cpp">cookbook_kv1_test.cpp</a> Below the JSON object is mapped to a <code>std::unordered_map&lt;std::string, int&gt;</code> </p><div class="fragment"><div class="line"> {c++}</div>
+</div><!-- fragment --><p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_kv1_test.cpp">cookbook_kv1_test.cpp</a> Below the JSON object is mapped to a <code>std::unordered_map&lt;std::string, int&gt;</code> </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyKeyValue {</div>
 <div class="line">  std::map&lt;std::string, int&gt; kv;</div>
 <div class="line">};</div>
@@ -104,7 +104,7 @@ As Array</h1>
 <div class="line">  ]</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The above JSON document an array member named <code>"kv"</code> whose element is an object with int keys, named <code>"key"</code> and string values named <code>"value"</code>.</p>
-<p>Below it is mapped to a <code>std::unorderd_map&lt;intmax_t, std::string&gt;</code> Too see a working example using this code, refer to <a href="../tests/cookbook_kv2_test.cpp">cookbook_kv2_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
+<p>Below it is mapped to a <code>std::unorderd_map&lt;intmax_t, std::string&gt;</code> Too see a working example using this code, refer to <a href="../tests/src/cookbook_kv2_test.cpp">cookbook_kv2_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyKeyValue2 {</div>
 <div class="line">  std::unordered_map&lt;intmax_t, std::string&gt; kv;</div>
 <div class="line">};</div>
@@ -131,7 +131,7 @@ MultiMap</h1>
 <div class="line">  }</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>When mapped to a C++ class, it will parse the first <code>"firstName"</code> it finds, skipping the rest. To parse this as a <code>json_key_value</code>, the following code will work if it is a submember of the root, or subsequent submember's.</p>
-<p>Too see a working example using this code, refer to <a href="../tests/cookbook_kv3_test.cpp">cookbook_kv3_test.cpp</a></p>
+<p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_kv3_test.cpp">cookbook_kv3_test.cpp</a></p>
 <div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyKeyValue3 {</div>
 <div class="line">  std::multimap&lt;std::string, std::string&gt; kv;</div>
@@ -157,7 +157,7 @@ MultiMap</h1>
 <div class="line">  &quot;firstName&quot;: &quot;Jane&quot;,</div>
 <div class="line">  &quot;firstName&quot;: &quot;John&quot;</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>Too see a working example using this code, refer to <a href="../tests/cookbook_kv4_test.cpp">cookbook_kv4_test.cpp</a></p>
+</div><!-- fragment --><p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_kv4_test.cpp">cookbook_kv4_test.cpp</a></p>
 <div class="fragment"><div class="line"> {c++}</div>
 <div class="line">std::string_view json_data = ...;</div>
 <div class="line">auto val = daw::json::json_value( json_data );</div>

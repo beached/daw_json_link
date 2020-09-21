@@ -84,6 +84,10 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a91c0066975506193d26289a8f37eda64"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1basic__json__value.html#a91c0066975506193d26289a8f37eda64">basic_json_value</a> (char const *first, char const *last)</td></tr>
+<tr class="separator:a91c0066975506193d26289a8f37eda64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b96b07224f61091b41b591778652ecb"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1basic__json__value.html#a3b96b07224f61091b41b591778652ecb">basic_json_value</a> (char const *first, std::size_t sz)</td></tr>
+<tr class="separator:a3b96b07224f61091b41b591778652ecb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af59e2309c3d9fc9b9cdf6adfcdb46040"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1basic__json__value.html#af59e2309c3d9fc9b9cdf6adfcdb46040">basic_json_value</a> (Range rng)</td></tr>
 <tr class="separator:af59e2309c3d9fc9b9cdf6adfcdb46040"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20da1b3217338d8c95b17cece6abad71"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1basic__json__value.html#a20da1b3217338d8c95b17cece6abad71">basic_json_value</a> (std::string_view sv)</td></tr>
@@ -138,7 +142,7 @@ template&lt;typename Range &gt; </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="af59e2309c3d9fc9b9cdf6adfcdb46040"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af59e2309c3d9fc9b9cdf6adfcdb46040">&#9670;&nbsp;</a></span>basic_json_value() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af59e2309c3d9fc9b9cdf6adfcdb46040">&#9670;&nbsp;</a></span>basic_json_value() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -166,7 +170,7 @@ template&lt;typename Range &gt; </div>
 </div>
 </div>
 <a id="a20da1b3217338d8c95b17cece6abad71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a20da1b3217338d8c95b17cece6abad71">&#9670;&nbsp;</a></span>basic_json_value() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a20da1b3217338d8c95b17cece6abad71">&#9670;&nbsp;</a></span>basic_json_value() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -182,6 +186,82 @@ template&lt;typename Range &gt; </div>
           <td class="paramtype">std::string_view&#160;</td>
           <td class="paramname"><em>sv</em></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3b96b07224f61091b41b591778652ecb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b96b07224f61091b41b591778652ecb">&#9670;&nbsp;</a></span>basic_json_value() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Range &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classdaw_1_1json_1_1basic__json__value.html">daw::json::basic_json_value</a>&lt; Range &gt;::<a class="el" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value</a> </td>
+          <td>(</td>
+          <td class="paramtype">char const *&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>sz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a91c0066975506193d26289a8f37eda64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91c0066975506193d26289a8f37eda64">&#9670;&nbsp;</a></span>basic_json_value() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Range &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classdaw_1_1json_1_1basic__json__value.html">daw::json::basic_json_value</a>&lt; Range &gt;::<a class="el" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value</a> </td>
+          <td>(</td>
+          <td class="paramtype">char const *&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char const *&#160;</td>
+          <td class="paramname"><em>last</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>

@@ -72,6 +72,7 @@ Unknown JSON Data</h1>
 <p>When the data structure is unknown or partially known it can be parsed as a <code>json_delayed</code> type. This also, allows for skipping the parsing of certain members and returning later.</p>
 <div class="fragment"><div class="line">[&quot;a&quot;, 2, &quot;b&quot;, 3]</div>
 </div><!-- fragment --><p>The above JSON describes an array of mixed types, string and number.</p>
+<p>To see a working example using this code, refer to <a href="../tests/src/cookbook_unknown_types_and_delayed_parsing1_test.cpp">cookbook_unknown_types_and_delayed_parsing1_test.cpp</a>.</p>
 <p>Below is the C++ code to parse and use it. </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">std::string_view json_data = ...;</div>
 <div class="line">auto val = daw::json::json_value( json_data );</div>
@@ -93,6 +94,7 @@ Delayed Parsing</h1>
 <div class="line">  &quot;member1&quot;: &quot;Hello world&quot;</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The above JSON class has 3 members, a number, a class to parse later, and a string.</p>
+<p>To see a working example using this code, refer to <a href="../tests/src/cookbook_unknown_types_and_delayed_parsing2_test.cpp">cookbook_unknown_types_and_delayed_parsing2_test.cpp</a>.</p>
 <p>Below is the C++ code to parse and use it. </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyClass2 {</div>
 <div class="line">  int member0;</div>
@@ -121,7 +123,7 @@ Delayed Parsing</h1>
 <div class="line">    }</div>
 <div class="line">  }; </div>
 <div class="line"> </div>
-<div class="line">  // This isn&#39;t necessary to parse the values as but allows for direcly constructing the object</div>
+<div class="line">  // This isn&#39;t necessary to parse the values as but allows for directly constructing the object</div>
 <div class="line">  template&lt;&gt;</div>
 <div class="line">  struct json_data_contract&lt;MyDelayedClass&gt; {</div>
 <div class="line">    using type = json_member_list&lt;</div>
@@ -140,6 +142,32 @@ Delayed Parsing</h1>
 <div class="line">MyClass2 val = from_json&lt;MyClass2&gt;( json_data );</div>
 <div class="line"> </div>
 <div class="line">MyDelayedClass delayed_val = cls2.member_layer.template parse&lt;MyDelayedClass&gt;( );</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md37"></a>
+RAW JSON</h1>
+<p>Parsing to a raw JSON string can be done too. the <code>json_delayed</code> mapping type allows for an optional type argument that specifies the destination/source type. It requires that the type be constructable from a char const * and a std::size_t.</p>
+<p>To see a working example using this code, refer to <a href="../tests/src/cookbook_unknown_types_and_delayed_parsing3_test.cpp">cookbook_unknown_types_and_delayed_parsing3_test.cpp</a>.</p>
+<div class="fragment"><div class="line"> {c++}</div>
+<div class="line">struct Thing {</div>
+<div class="line">  std::string name;</div>
+<div class="line">  int type;</div>
+<div class="line">  std::string raw_json;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">namespace daw::json {</div>
+<div class="line">  template&lt;&gt;</div>
+<div class="line">  struct json_data_contract&lt;Thing&gt; {</div>
+<div class="line">    using type = json_member_list&lt;json_string&lt;&quot;name&quot;&gt;, json_number&lt;&quot;type&quot;, int&gt;,</div>
+<div class="line">                                  json_delayed&lt;&quot;raw_json&quot;, std::string&gt;&gt;;</div>
+<div class="line"> </div>
+<div class="line">    static auto to_json_data( Thing const &amp;value ) {</div>
+<div class="line">      return std::forward_as_tuple( value.name, value.type, value.raw_json );</div>
+<div class="line">    }</div>
+<div class="line">  };</div>
+<div class="line">} // namespace daw::json</div>
+<div class="line"> </div>
+<div class="line">Thing my_thing = Thing{ &quot;skywalker&quot;, 12345, R&quot;({ &quot;name&quot;: &quot;last&quot; })&quot; };</div>
+<div class="line">auto json_string = daw::json::to_json( my_thing );</div>
+</div><!-- fragment --><p><code>json_string</code> will have a value of </p><div class="fragment"><div class="line">{&quot;name&quot;:&quot;skywalker&quot;,&quot;type&quot;:12345,&quot;raw_json&quot;:{ &quot;name&quot;: &quot;last&quot; }}</div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

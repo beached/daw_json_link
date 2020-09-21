@@ -688,23 +688,23 @@ $(function() {
 <div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;  }</div>
 <div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160; </div>
 <div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember, <span class="keywordtype">bool</span> KnownBounds, <span class="keyword">typename</span> Range&gt;</div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;  constexpr basic_json_value&lt;typename Range::as_checked&gt;</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;  constexpr json_result&lt;JsonMember&gt;</div>
 <div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;  parse_value( ParseTag&lt;JsonParseTypes::Unknown&gt;, Range &amp;rng ) {</div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;    <span class="keyword">using</span> result_rng = <span class="keyword">typename</span> Range::as_checked;</div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;    <span class="keyword">using</span> constructor_t = <span class="keyword">typename</span> JsonMember::constructor_t;</div>
 <div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;    <span class="keywordflow">if</span> constexpr( KnownBounds ) {</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;      <span class="keywordflow">return</span> { result_rng( rng.first, rng.last ) };</div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;      <span class="keywordflow">return</span> constructor_t{ }( rng.first, rng.size( ) );</div>
 <div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;    } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;      <span class="keyword">auto</span> value_rng = skip_value( rng );</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;      <span class="keywordflow">return</span> { result_rng( value_rng.first, value_rng.last ) };</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;      <span class="keywordflow">return</span> constructor_t{ }( value_rng.first, value_rng.size( ) );</div>
 <div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;    }</div>
 <div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;  }</div>
 <div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;} <span class="comment">// namespace daw::json::json_details</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="adaw__json__parse__kv__class__iterator_8h_html"><div class="ttname"><a href="daw__json__parse__kv__class__iterator_8h.html">daw_json_parse_kv_class_iterator.h</a></div></div>
 <div class="ttc" id="adaw__json__parse__kv__array__iterator_8h_html"><div class="ttname"><a href="daw__json__parse__kv__array__iterator_8h.html">daw_json_parse_kv_array_iterator.h</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a7eec2e453676338364b2bb153a5fce45"><div class="ttname"><a href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a></div><div class="ttdeci">#define daw_json_assert(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:233</div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:243</div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a6984c90a4baed77e2de7712a92e3c4f6"><div class="ttname"><a href="daw__json__assert_8h.html#a6984c90a4baed77e2de7712a92e3c4f6">daw_json_error</a></div><div class="ttdeci">static void daw_json_error(std::string_view reason)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:135</div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a7eec2e453676338364b2bb153a5fce45"><div class="ttname"><a href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a></div><div class="ttdeci">#define daw_json_assert(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:237</div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:247</div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a6984c90a4baed77e2de7712a92e3c4f6"><div class="ttname"><a href="daw__json__assert_8h.html#a6984c90a4baed77e2de7712a92e3c4f6">daw_json_error</a></div><div class="ttdeci">static void daw_json_error(std::string_view reason)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:139</div></div>
 <div class="ttc" id="adaw__json__parse__value__fwd_8h_html"><div class="ttname"><a href="daw__json__parse__value__fwd_8h.html">daw_json_parse_value_fwd.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1parse__utils_html_a9e99a4bee434e52409a59a7293c422ca"><div class="ttname"><a href="namespacedaw_1_1json_1_1parse__utils.html#a9e99a4bee434e52409a59a7293c422ca">daw::json::parse_utils::is_number</a></div><div class="ttdeci">constexpr bool is_number(char c)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_iso8601_utils.h:52</div></div>
 <div class="ttc" id="adaw__json__parse__unsigned__int_8h_html"><div class="ttname"><a href="daw__json__parse__unsigned__int_8h.html">daw_json_parse_unsigned_int.h</a></div></div>

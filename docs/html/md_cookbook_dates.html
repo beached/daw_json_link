@@ -74,7 +74,7 @@ ISO 8601 Timestamps</h1>
 <div class="line">  &quot;timestamp&quot;: &quot;2020-01-02T01:34:34.443Z&quot;</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The above JSON object consists of a 2 string members, where the second stores an <a href="https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations">ISO8601</a> combinded representation timestamp.</p>
-<p>Too see a working example using this code, refer to <a href="../tests/cookbook_dates1_test.cpp">cookbook_dates1_test.cpp</a></p>
+<p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_dates1_test.cpp">cookbook_dates1_test.cpp</a></p>
 <p>Below is code that code serialize/deserialize the above JSON using the <code>json_date</code> class.</p>
 <div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyClass {</div>
@@ -104,7 +104,7 @@ Custom string formats</h1>
 </div><!-- fragment --><p>The above json is like the first example, but the timestamp format is not iso8601. It is the date format used in some twitter JSON apis. The string member will be a <code>json_string</code> and the timestmap will use <code>json_custom</code>. This example is more involved and also outlines using <code>json_custom</code> to work with data that does not fit the other mappings.</p>
 <p><code>json_custom</code> requires a callable FromJsonConverter and a callable ToJsonConverter type to convert to <code>T</code> from a <code>std::string_view</code> and to a string like type from a <code>T</code>.</p>
 <p>The To and From Converters can be the same type with different overloads for <code>operator()</code>. T will be a <code>std::chrono::time_point&lt;std::chrono::system_clock, std::chrono::milliseconds&gt;</code>.</p>
-<p>Too see a working example using this code, refer to <a href="../tests/cookbook_dates2_test.cpp">cookbook_dates2_test.cpp</a></p>
+<p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_dates2_test.cpp">cookbook_dates2_test.cpp</a></p>
 <div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct TimestampConverter {</div>
 <div class="line">  std::chrono::time_point&lt;std::chrono::system_clock, std::chrono::milliseconds&gt;</div>
@@ -150,7 +150,7 @@ Unix time encoding</h2>
 <div class="line"> &quot;lastModified&quot;:1356753810000000</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>This example will use the constructor of the class to construct the <code>time_point</code> from the integer. Otherwise, a <code>json_custom</code> type could be used here too. It demonstrates using a constructor to do the data conversions, along with <code>to_json_data</code> to reverse the conversion. Another alternative is to use the <code>Constructor</code> template argument to do the conversion of the integer to the <code>time_point</code>. The <code>dateAdded</code> member shows parsing strings into numbers. This is often done as numbers in JSON are double and can only hold integers as large as 2^53.</p>
-<p>Too see a working example using this code, refer to <a href="../tests/cookbook_dates3_test.cpp">cookbook_dates3_test.cpp</a></p>
+<p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_dates3_test.cpp">cookbook_dates3_test.cpp</a></p>
 <div class="fragment"><div class="line"> {c++}</div>
 <div class="line">using my_timepoint = std::chrono::time_point&lt;std::chrono::system_clock, std::chrono::milliseconds&gt;;</div>
 <div class="line"> </div>
@@ -201,7 +201,7 @@ Microsoft AJAX DateTime.</h2>
 <div class="line">  &quot;timestamp&quot;: &quot;/DATE(1577928874)/&quot;</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>When parsing the <code>timestamp</code> member we need to skip the first 6 characters, optionally verifying it says <code>"/DATE(</code>. Then parse the number and add it to a <code>std::chrono</code> timestamp with the time of Unix Epoc, Midight January 1, 1970.</p>
-<p>Too see a working example using this code, refer to <a href="../tests/cookbook_dates4_test.cpp">cookbook_dates4_test.cpp</a></p>
+<p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_dates4_test.cpp">cookbook_dates4_test.cpp</a></p>
 <div class="fragment"><div class="line"> {c++}</div>
 <div class="line">using timepoint_t = std::chrono::time_point&lt;std::chrono::system_clock, std::chrono::milliseconds&gt;;</div>
 <div class="line">struct TimestampConverter {</div>
