@@ -90,6 +90,8 @@ The event based parser(SAX) can be called via `daw::json::json_event_parser`.  I
 ## Code Examples
 * The  [Cookbook](cookbook/readme.md) section has precanned tasks and working code examples
 * [Tests](tests/) provide another source of working code samples. 
+* Some video walkthroughs
+  * [Making a config parser](https://youtu.be/iiRDn0CR_sU)
 * Small samples below
 
 
