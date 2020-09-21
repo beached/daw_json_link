@@ -229,14 +229,8 @@ namespace daw::json::json_details {
 		// TODO: should we check for end
 		while( locations[pos].missing( ) & ( rng.front( ) != '}' ) ) {
 			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
-			auto const name = [&] {
-				if constexpr( Range::allow_escaped_names ) {
-					// TODO: fully unescape name
-					return parse_name( rng );
-				} else {
-					return parse_name( rng );
-				}
-			}( );
+			// TODO: fully unescape name
+			auto const name = parse_name( rng );
 			auto const name_pos = locations.template find_name<pos>( name );
 			if( name_pos >= locations.size( ) ) {
 				// This is not a member we are concerned with
