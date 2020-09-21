@@ -181,7 +181,7 @@ namespace daw::json::json_details {
 } // namespace daw::json::json_details
 
 namespace daw::json {
-#if defined( __cpp_nontype_template_parameter_class )
+#if defined( __cpp_nontype_template_parameter_class ) and not defined( DAW_JSON_NO_CPP_NAMES )
 	// C++ 20 Non-Type Class Template Arguments
 
 	/**
@@ -252,7 +252,6 @@ namespace daw::json {
 	json_name( char const ( & )[N] ) -> json_name<N>;
 
 #define JSONNAMETYPE daw::json::json_name
-
 	// Convienience for array members that are required to be unnamed
 	inline constexpr JSONNAMETYPE no_name{ "" };
 

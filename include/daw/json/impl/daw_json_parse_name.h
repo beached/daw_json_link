@@ -53,7 +53,7 @@ namespace daw::json::json_details::name {
 				return result;
 			}
 		}
-	};
+	}
 } // namespace daw::json::json_details::name
 
 namespace daw::json::json_details {
