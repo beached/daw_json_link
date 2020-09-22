@@ -3,7 +3,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-# Official repository: https://github.com/beached/json_link
+# Official repository: https://github.com/beached/daw_json_link
 #
 
 cmake_minimum_required(VERSION 3.10)
@@ -12,68 +12,43 @@ project("json_link"
         VERSION "2.0.2"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
-        LANGUAGES C CXX)
+        LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# ---- Definitions ----
 
-add_subdirectory(extern)
-option(DAW_ENABLE_TESTING "Build unit tests" OFF)
+set(json_link_definitions "")
 
-include(GNUInstallDirs)
-set(json_link_INSTALL_CMAKEDIR
-        "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
-        CACHE STRING
-        "The install directory to use for CMake package config files")
-
-set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
+option(DAW_JSON_NO_CONST_EXPR "Ensure guaranteed copy elision in array/class types" OFF)
 if (DAW_JSON_NO_CONST_EXPR)
-    message("DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
-    add_definitions(-DDAW_JSON_NO_CONST_EXPR)
-else ()
-    message("DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
+    list(APPEND json_link_definitions "DAW_JSON_NO_CONST_EXPR")
 endif ()
 
-set(DAW_JSON_FORCE_INT128 OFF CACHE STRING "Force support for 128bit int")
-if (DAW_JSON_FORCE_INT128)
-    if (DAW_JSON_NO_INT128)
-    else ()
-        message("Forcing support of int128")
-        add_definitions(-DDAW_HAS_INT128)
-    endif ()
+option(DAW_JSON_FORCE_INT128 "Force support for 128bit int" OFF)
+if (DAW_JSON_FORCE_INT128 AND NOT DAW_JSON_NO_INT128)
+    list(APPEND json_link_definitions "DAW_HAS_INT128")
 endif ()
 
-set(DAW_USE_JSON_EXCEPTIONS ON CACHE STRING "Throw exceptions when json errors occur")
+option(DAW_USE_JSON_EXCEPTIONS "Throw exceptions when json errors occur" ON)
 if (DAW_USE_JSON_EXCEPTIONS)
-    message("DAW_USE_JSON_EXCEPTIONS=ON: Errors throw json_exception")
-    add_definitions(-DDAW_USE_JSON_EXCEPTIONS=true)
+    list(APPEND json_link_definitions "DAW_USE_JSON_EXCEPTIONS=1")
 else ()
-    message("DAW_USE_JSON_EXCEPTIONS=OFF: Errors call std::terminate")
-    add_definitions(-DDAW_DONT_USE_JSON_EXCEPTIONS=true)
+    list(APPEND json_link_definitions "DAW_DONT_USE_JSON_EXCEPTIONS=1")
 endif ()
 
-set(DAW_NO_FLATTEN OFF CACHE STRING "Disable function flattening optimization")
-if (DAW_NO_FLATTEN)
-    message("DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
-    add_definitions(-DDAW_NO_FLATTEN=true)
-endif ()
-
+set(allow_sse42 OFF)
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
-  set(DAW_ALLOW_SSE42 ON CACHE STRING "Allow SSE42 Modes")
-else ()
-  set(DAW_ALLOW_SSE42 OFF CACHE STRING "Allow SSE42 Modes")
+    set(allow_sse42 ON)
 endif ()
+
+option(DAW_ALLOW_SSE42 "Allow SSE42 Modes" ${allow_sse42})
 if (DAW_ALLOW_SSE42)
-  message("DAW_ALLOW_SSE42=ON: Allow SSE42 Modes")
-  add_definitions(-DDAW_ALLOW_SSE42=true)
-else ()
-  message("DAW_ALLOW_SSE42=OFF: Do not allow SSE42 Modes")
+    list(APPEND json_link_definitions "DAW_ALLOW_SSE42=1")
 endif ()
+
+# ---- Declare library ----
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-target_link_libraries(${PROJECT_NAME} INTERFACE daw::header_libraries daw::utf_range)
 
 target_include_directories(${PROJECT_NAME}
         INTERFACE
@@ -81,6 +56,17 @@ target_include_directories(${PROJECT_NAME}
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
         )
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+target_compile_definitions(${PROJECT_NAME} INTERFACE ${json_link_definitions})
+
+# ---- Add dependencies ----
+
+add_subdirectory(extern)
+target_link_libraries(${PROJECT_NAME} INTERFACE daw::header_libraries daw::utf_range)
+
+# ---- Install ----
+
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
 
 install(TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}_Targets
@@ -88,13 +74,15 @@ install(TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-include(CMakePackageConfigHelpers)
+set(json_link_INSTALL_CMAKEDIR
+        "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
+        CACHE PATH
+        "The install directory to use for CMake package config files")
 
 configure_package_config_file(
         "${PROJECT_SOURCE_DIR}/cmake/daw_${PROJECT_NAME}Config.cmake.in"
         "${PROJECT_BINARY_DIR}/daw_${PROJECT_NAME}Config.cmake"
-        INSTALL_DESTINATION
-        ${json_link_INSTALL_CMAKEDIR})
+        INSTALL_DESTINATION ${json_link_INSTALL_CMAKEDIR})
 
 write_basic_package_version_file("daw_${PROJECT_NAME}ConfigVersion.cmake"
         VERSION ${PROJECT_VERSION}
@@ -107,13 +95,6 @@ install(EXPORT ${PROJECT_NAME}_Targets
 
 install(FILES "${PROJECT_BINARY_DIR}/daw_${PROJECT_NAME}Config.cmake"
         "${PROJECT_BINARY_DIR}/daw_${PROJECT_NAME}ConfigVersion.cmake"
-				DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKEDIR}$)
+        DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKEDIR}$)
 
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/daw DESTINATION include )
-
-if (DAW_ENABLE_TESTING)
-    enable_testing()
-    include(cmake/git_properties.cmake)
-    add_subdirectory(tests)
-endif ()
-
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/daw DESTINATION include)
