@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 project("json_link"
-        VERSION "1.9.0"
+        VERSION "2.0.2"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
         LANGUAGES C CXX)
@@ -26,9 +26,6 @@ set(json_link_INSTALL_CMAKEDIR
         "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
         CACHE STRING
         "The install directory to use for CMake package config files")
-
-set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-
 
 set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
 if (DAW_JSON_NO_CONST_EXPR)
@@ -62,17 +59,28 @@ if (DAW_NO_FLATTEN)
     add_definitions(-DDAW_NO_FLATTEN=true)
 endif ()
 
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
+  set(DAW_ALLOW_SSE42 ON CACHE STRING "Allow SSE42 Modes")
+else ()
+  set(DAW_ALLOW_SSE42 OFF CACHE STRING "Allow SSE42 Modes")
+endif ()
+if (DAW_ALLOW_SSE42)
+  message("DAW_ALLOW_SSE42=ON: Allow SSE42 Modes")
+  add_definitions(-DDAW_ALLOW_SSE42=true)
+else ()
+  message("DAW_ALLOW_SSE42=OFF: Do not allow SSE42 Modes")
+endif ()
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} INTERFACE daw::header_libraries daw::utf_range)
 
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 target_include_directories(${PROJECT_NAME}
         INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
         )
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 install(TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}_Targets
@@ -84,24 +92,24 @@ include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
         "${PROJECT_SOURCE_DIR}/cmake/daw_${PROJECT_NAME}Config.cmake.in"
-        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        "${PROJECT_BINARY_DIR}/daw_${PROJECT_NAME}Config.cmake"
         INSTALL_DESTINATION
         ${json_link_INSTALL_CMAKEDIR})
 
-write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
+write_basic_package_version_file("daw_${PROJECT_NAME}ConfigVersion.cmake"
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY SameMajorVersion)
 
 install(EXPORT ${PROJECT_NAME}_Targets
-        FILE ${PROJECT_NAME}Targets.cmake
+        FILE daw_${PROJECT_NAME}Targets.cmake
         NAMESPACE daw::
         DESTINATION ${json_link_INSTALL_CMAKEDIR})
 
-install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-        DESTINATION ${json_link_INSTALL_CMAKEDIR}$)
+install(FILES "${PROJECT_BINARY_DIR}/daw_${PROJECT_NAME}Config.cmake"
+        "${PROJECT_BINARY_DIR}/daw_${PROJECT_NAME}ConfigVersion.cmake"
+				DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKEDIR}$)
 
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION include)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/daw DESTINATION include )
 
 if (DAW_ENABLE_TESTING)
     enable_testing()
