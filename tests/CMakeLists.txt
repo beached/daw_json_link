@@ -18,17 +18,6 @@ if (DAW_JSON_USE_SANITIZERS)
 else ()
   message("DAW_JSON_USE_SANITIZERS=OFF: compiler sanitizers disabled")
 endif ()
-if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
-  set(DAW_ALLOW_SSE42 ON CACHE STRING "Allow SSE42 Modes")
-else ()
-  set(DAW_ALLOW_SSE42 OFF CACHE STRING "Allow SSE42 Modes")
-endif ()
-if (DAW_ALLOW_SSE42)
-  message("DAW_ALLOW_SSE42=ON: Allow SSE42 Modes")
-  add_definitions(-DDAW_ALLOW_SSE42=true)
-else ()
-  message("DAW_ALLOW_SSE42=OFF: Do not allow SSE42 Modes")
-endif ()
 
 include(cmake/test_compiler_options.cmake)
 
@@ -519,9 +508,3 @@ target_compile_definitions(json_benchmark PRIVATE -DOS_VERSION="${_os_ver}")
 target_compile_definitions(json_benchmark PRIVATE -DOS_PLATFORM="${_os_plat}")
 target_compile_definitions(json_benchmark PRIVATE -DBUILD_TYPE="${CMAKE_BUILD_TYPE}")
 # **************************************************
-
-install(DIRECTORY ${HEADER_FOLDER}/daw/json/ DESTINATION include/daw/json/)
-install(DIRECTORY ${HEADER_FOLDER}/third_party/ DESTINATION include/third_party/)
-
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
-
