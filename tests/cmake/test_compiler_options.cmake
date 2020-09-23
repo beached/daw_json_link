@@ -47,13 +47,11 @@ if (NOT MSVC AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
           -Wno-return-std-move-in-c++11
           -Wno-float-equal
           -Wzero-as-null-pointer-constant
-          -Wno-unused-macros
-          )
+          -Wno-unused-macros)
 
   if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)"
           AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-          AND (CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0)
-          )
+          AND (CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0))
     message(STATUS "Adding Intel JCC bugfix")
     list(APPEND DAW_COMPILER_OPTIONS -mbranches-within-32B-boundaries)
   endif ()
@@ -72,13 +70,11 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
           -Wold-style-cast
           -Wshadow
           -Wzero-as-null-pointer-constant
-          -Wdisabled-optimization
-          )
+          -Wdisabled-optimization)
 
   if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)"
           AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 9.0.0
-          AND LINUX
-          )
+          AND LINUX)
     message(STATUS "Adding Intel JCC bugfix")
     list(APPEND DAW_COMPILER_OPTIONS -Wa,-mbranches-within-32B-boundaries)
   endif ()

@@ -25,24 +25,24 @@ set(DAW_JSON_LINK_DEFINITIONS "")
 
 option(DAW_JSON_NO_CONST_EXPR "Ensure guaranteed copy elision in array/class types" OFF)
 if (DAW_JSON_NO_CONST_EXPR)
-    list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_JSON_NO_CONST_EXPR=true")
+  list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_JSON_NO_CONST_EXPR=true")
 endif ()
 
 option(DAW_USE_JSON_EXCEPTIONS "Throw exceptions when json errors occur" ON)
 if (DAW_USE_JSON_EXCEPTIONS)
-    list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_USE_JSON_EXCEPTIONS=true")
+  list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_USE_JSON_EXCEPTIONS=true")
 else ()
-    list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_DONT_USE_JSON_EXCEPTIONS=true")
+  list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_DONT_USE_JSON_EXCEPTIONS=true")
 endif ()
 
 set(allow_sse42 OFF)
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
-    set(allow_sse42 ON)
+  set(allow_sse42 ON)
 endif ()
 
 option(DAW_ALLOW_SSE42 "Allow SSE42 Modes" ${allow_sse42})
 if (DAW_ALLOW_SSE42)
-    list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_ALLOW_SSE42=true")
+  list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_ALLOW_SSE42=true")
 endif ()
 
 # ---- Declare library ----
@@ -53,8 +53,7 @@ add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
         INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-        )
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 target_compile_definitions(${PROJECT_NAME} INTERFACE ${DAW_JSON_LINK_DEFINITIONS})
 

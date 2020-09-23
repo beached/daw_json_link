@@ -266,23 +266,21 @@ if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/../.git)
             WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
             OUTPUT_VARIABLE BUILD_VERSION
             ERROR_QUIET
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            )
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
 	else ()
     set(BUILD_VERSION "unknown")
 	endif ()
 else ()
   message(STATUS "The benchmark target requires the project to be tracked by git, ignoring")
   return()
-endif()
+endif ()
 
 add_executable(json_benchmark src/json_benchmark.cpp)
 target_link_libraries(json_benchmark PRIVATE json_test)
 if (NOT DEFINED MSVC)
   add_test(NAME json_benchmark_test
           COMMAND json_benchmark ./apache_builds.json ./twitter.json ./citm_catalog.json ./canada.json
-          WORKING_DIRECTORY "${DAW_TEST_DATA_DIRECTORY}"
-          )
+          WORKING_DIRECTORY "${DAW_TEST_DATA_DIRECTORY}")
 endif ()
 add_dependencies(full json_benchmark)
 
@@ -305,8 +303,7 @@ target_compile_definitions(json_benchmark PRIVATE
         OS_VERSION="${_os_ver}"
         OS_PLATFORM="${_os_plat}"
         BUILD_TYPE="${CMAKE_BUILD_TYPE}"
-        ${DAW_TEST_DEFINITIONS}
-        )
+        ${DAW_TEST_DEFINITIONS})
 
 target_compile_options(json_benchmark PRIVATE ${DAW_COMPILER_OPTIONS})
 
