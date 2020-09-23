@@ -14,6 +14,11 @@ project("json_link"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
         LANGUAGES CXX)
 
+# ---- Includes ----
+
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
 # ---- Definitions ----
 
 set(DAW_JSON_LINK_DEFINITIONS "")
@@ -59,9 +64,6 @@ add_subdirectory(extern)
 target_link_libraries(${PROJECT_NAME} INTERFACE daw::header_libraries daw::utf_range)
 
 # ---- Install ----
-
-include(CMakePackageConfigHelpers)
-include(GNUInstallDirs)
 
 install(TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}_Targets
