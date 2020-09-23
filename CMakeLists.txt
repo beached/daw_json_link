@@ -16,23 +16,18 @@ project("json_link"
 
 # ---- Definitions ----
 
-set(json_link_definitions "")
+set(DAW_JSON_LINK_DEFINITIONS "")
 
 option(DAW_JSON_NO_CONST_EXPR "Ensure guaranteed copy elision in array/class types" OFF)
 if (DAW_JSON_NO_CONST_EXPR)
-    list(APPEND json_link_definitions "DAW_JSON_NO_CONST_EXPR")
-endif ()
-
-option(DAW_JSON_FORCE_INT128 "Force support for 128bit int" OFF)
-if (DAW_JSON_FORCE_INT128 AND NOT DAW_JSON_NO_INT128)
-    list(APPEND json_link_definitions "DAW_HAS_INT128")
+    list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_JSON_NO_CONST_EXPR")
 endif ()
 
 option(DAW_USE_JSON_EXCEPTIONS "Throw exceptions when json errors occur" ON)
 if (DAW_USE_JSON_EXCEPTIONS)
-    list(APPEND json_link_definitions "DAW_USE_JSON_EXCEPTIONS=1")
+    list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_USE_JSON_EXCEPTIONS=1")
 else ()
-    list(APPEND json_link_definitions "DAW_DONT_USE_JSON_EXCEPTIONS=1")
+    list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_DONT_USE_JSON_EXCEPTIONS=1")
 endif ()
 
 set(allow_sse42 OFF)
@@ -42,7 +37,7 @@ endif ()
 
 option(DAW_ALLOW_SSE42 "Allow SSE42 Modes" ${allow_sse42})
 if (DAW_ALLOW_SSE42)
-    list(APPEND json_link_definitions "DAW_ALLOW_SSE42=1")
+    list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_ALLOW_SSE42=1")
 endif ()
 
 # ---- Declare library ----
@@ -56,7 +51,7 @@ target_include_directories(${PROJECT_NAME}
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
         )
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
-target_compile_definitions(${PROJECT_NAME} INTERFACE ${json_link_definitions})
+target_compile_definitions(${PROJECT_NAME} INTERFACE ${DAW_JSON_LINK_DEFINITIONS})
 
 # ---- Add dependencies ----
 
