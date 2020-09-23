@@ -30,6 +30,7 @@
 
 #include <array>
 #include <chrono>
+#include <ciso646>
 #include <cstdint>
 #include <cstdlib>
 #include <iterator>

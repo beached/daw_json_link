@@ -14,7 +14,9 @@
 #include <daw/daw_cxmath.h>
 #include <daw/daw_uint_buffer.h>
 
+#include <ciso646>
 #include <cstddef>
+#include <cstdint>
 #include <utility>
 
 #ifdef DAW_ALLOW_SSE42
@@ -124,9 +126,9 @@ namespace daw::json::json_details {
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 			auto const count =
 			  ( daw::numeric_limits<result_t>::digits10 + 1U ) - rng.size( );
-			daw_json_assert( result <= daw::numeric_limits<result_t>::max( ) and
-			                   count >= 0,
-			                 "Unsigned number outside of range of unsigned numbers", rng );
+			daw_json_assert(
+			  result <= daw::numeric_limits<result_t>::max( ) and count >= 0,
+			  "Unsigned number outside of range of unsigned numbers", rng );
 		}
 		rng.first = first;
 		if constexpr( RangeChecked == JsonRangeCheck::Never ) {
@@ -183,7 +185,8 @@ namespace daw::json::json_details {
 	/*
 	// Adapted from
 	//
-	// https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
+	//
+	https://github.com/lemire/simdjson/blob/102262c7abe64b517a36a6049b39d95f58bf4aea/src/haswell/numberparsing.h
 	static inline UInt64 parse_eight_digits_unrolled( const char *ptr ) {
 	  // this actually computes *16* values so we are being wasteful.
 	  static __m128i const ascii0 = _mm_set1_epi8( '0' );
@@ -233,8 +236,8 @@ namespace daw::json::json_details {
 	  UInt64 val;
 	  memcpy( &val, ptr, sizeof( std::uint64_t ) );
 	  return ( ( ( val & 0xF0F0F0F0F0F0F0F0_u64 ) |
-	             ( ( ( val + 0x0606060606060606_u64 ) & 0xF0F0F0F0F0F0F0F0_u64 ) >>
-	               4_u64 ) ) == 0x3333333333333333_u64 );
+	             ( ( ( val + 0x0606060606060606_u64 ) & 0xF0F0F0F0F0F0F0F0_u64 )
+	>> 4_u64 ) ) == 0x3333333333333333_u64 );
 	}
 
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>

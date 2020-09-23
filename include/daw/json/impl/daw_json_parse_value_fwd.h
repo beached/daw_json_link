@@ -11,6 +11,8 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_value.h"
 
+#include <ciso646>
+
 namespace daw::json::json_details {
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] static constexpr json_result<JsonMember>

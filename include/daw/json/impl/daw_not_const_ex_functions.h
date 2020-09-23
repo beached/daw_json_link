@@ -25,6 +25,8 @@
 #endif
 #endif
 
+#include <ciso646>
+#include <cstddef>
 #include <cstring>
 
 namespace daw::json::json_details {

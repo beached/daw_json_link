@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 /***
  * Public traits that can be opted into
  */
