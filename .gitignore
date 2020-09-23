@@ -173,7 +173,7 @@ CMakeFiles/*
 nbproject/*
 *.cd
 a.out
-cmake-build-*/*
+**/cmake-build-*/*
 CMakeSettings.json
 .vs/
 **/.DS_Store
