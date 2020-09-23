@@ -18,6 +18,7 @@
 #include <daw/daw_traits.h>
 #include <utf8/unchecked.h>
 
+#include <ciso646>
 #include <optional>
 #include <sstream>
 #include <string>

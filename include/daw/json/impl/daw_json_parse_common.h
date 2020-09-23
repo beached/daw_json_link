@@ -19,6 +19,7 @@
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 
+#include <ciso646>
 #include <cstddef>
 #include <iterator>
 

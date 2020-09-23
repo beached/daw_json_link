@@ -13,6 +13,8 @@
 #include "daw_json_iterator_range.h"
 #include "daw_json_parse_value_fwd.h"
 
+#include <ciso646>
+
 namespace daw::json::json_details {
 	template<typename Range, bool>
 	struct json_parse_kv_array_iterator_base {

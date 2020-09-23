@@ -15,6 +15,11 @@
 
 #include <daw/daw_hide.h>
 
+#include <ciso646>
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+
 namespace daw::json {
 	class HashCommentSkippingPolicy final {
 		template<typename Range>
@@ -126,7 +131,8 @@ namespace daw::json {
 							++ptr_first;
 						}
 					}
-					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream", rng );
+					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream",
+					                 rng );
 					break;
 				case ',':
 					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
@@ -139,8 +145,8 @@ namespace daw::json {
 				case PrimRight:
 					--prime_bracket_count;
 					if( prime_bracket_count == 0 ) {
-						daw_json_assert( second_bracket_count == 0,
-						                 "Unexpected bracketing", rng );
+						daw_json_assert( second_bracket_count == 0, "Unexpected bracketing",
+						                 rng );
 						++ptr_first;
 						// We include the close primary bracket in the range so that
 						// subsequent parsers have a terminator inside their range

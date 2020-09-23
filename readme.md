@@ -549,7 +549,7 @@ std::cout << value << '\n';
 std::vector<AggData> values = //...;
 std::cout << values << '\n';
 ```
-A working example can be found at [daw_json_iostream_test.cpp](tests/daw_json_iostream_test.cpp) 
+A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_json_iostream_test.cpp) 
 
 ## Build configuration points
 There are a few defines that affect how JSON Link operates

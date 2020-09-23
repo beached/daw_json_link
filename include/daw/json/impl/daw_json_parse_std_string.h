@@ -3,6 +3,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 
+#include <ciso646>
 #include <string>
 #include <type_traits>
 
@@ -50,7 +51,8 @@ namespace daw::json::json_details {
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			++first;
-			daw_json_assert_weak( *first == 'u', "Expected rng to start with a \\u", rng );
+			daw_json_assert_weak( *first == 'u', "Expected rng to start with a \\u",
+			                      rng );
 			++first;
 			auto trailing =
 			  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
@@ -115,7 +117,8 @@ namespace daw::json::json_details {
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			++first;
-			daw_json_assert_weak( *first == 'u', "Expected rng to start with a \\u", rng );
+			daw_json_assert_weak( *first == 'u', "Expected rng to start with a \\u",
+			                      rng );
 			++first;
 			auto trailing =
 			  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
@@ -193,13 +196,14 @@ namespace daw::json::json_details {
 			it = std::copy_n( rng.first, first_slash, it );
 			rng.first += first_slash;
 		}
-		while( ( Range::is_unchecked_input or
-		         DAW_JSON_LIKELY( rng.has_more( ) ) ) and
-		       rng.front( ) != '"' ) {
+		while(
+		  ( Range::is_unchecked_input or DAW_JSON_LIKELY( rng.has_more( ) ) ) and
+		  rng.front( ) != '"' ) {
 			{
 				char const *first = rng.first;
 				char const *const last = rng.last;
-				if constexpr( std::is_same_v<typename Range::exec_tag_t, constexpr_exec_tag> ) {
+				if constexpr( std::is_same_v<typename Range::exec_tag_t,
+				                             constexpr_exec_tag> ) {
 					while( not key_table<'"', '\\'>[*first] ) {
 						++first;
 						daw_json_assert_weak( KnownBounds or first < last,
@@ -255,7 +259,8 @@ namespace daw::json::json_details {
 						  ( not rng.is_space_unchecked( ) ) &
 						    ( static_cast<unsigned char>( rng.front( ) ) <= 0x7FU ),
 						  "string support limited to 0x20 < chr <= 0x7F when "
-						  "DisallowHighEightBit is true", rng );
+						  "DisallowHighEightBit is true",
+						  rng );
 					}
 					*it++ = rng.front( );
 					rng.remove_prefix( );
@@ -269,7 +274,8 @@ namespace daw::json::json_details {
 		}
 		auto const sz =
 		  static_cast<std::size_t>( std::distance( result.data( ), it ) );
-		daw_json_assert_weak( result.size( ) >= sz, "Unexpected string state", rng );
+		daw_json_assert_weak( result.size( ) >= sz, "Unexpected string state",
+		                      rng );
 		result.resize( sz );
 		return result2;
 	} // namespace daw::json::json_details

@@ -19,6 +19,7 @@
 #include <daw/daw_hide.h>
 
 #include <cassert>
+#include <ciso646>
 #include <cstddef>
 #include <iterator>
 #include <type_traits>

@@ -21,6 +21,7 @@
 #include "daw_json_parse_unsigned_int.h"
 #include "daw_json_parse_value_fwd.h"
 
+#include <ciso646>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>

@@ -15,6 +15,8 @@
 
 #include <daw/daw_hide.h>
 
+#include <ciso646>
+
 namespace daw::json {
 	/***
 	 * Allow skipping C++ style comments in JSON document
@@ -54,7 +56,7 @@ namespace daw::json {
 				if( not rng.has_more( ) ) {
 					return;
 				}
-				switch( *(rng.first + 1 ) ) {
+				switch( *( rng.first + 1 ) ) {
 				case '/':
 					rng.template move_to_next_of_checked<'\n'>( );
 					if( rng.has_more( ) ) {
