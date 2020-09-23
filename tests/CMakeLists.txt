@@ -23,6 +23,8 @@ target_include_directories(json_test INTERFACE include)
 
 add_custom_target(full)
 
+set(DAW_TEST_DATA_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../test_data")
+
 # daw_add_test(NAME <name>
 #         [SOURCE <source_path>]
 #         [ARGS <argN>...]
@@ -62,7 +64,7 @@ function(daw_add_test)
   if (NOT DAW_TEST_DONT_ADD_TEST)
     set(working_dir)
     if (DAW_TEST_WITH_DATA)
-      set(working_dir "WORKING_DIRECTORY;${CMAKE_CURRENT_LIST_DIR}/../test_data")
+      set(working_dir "WORKING_DIRECTORY;${DAW_TEST_DATA_DIRECTORY}")
     endif ()
 
     add_test(NAME ${test_name} COMMAND ${DAW_TEST_NAME} ${DAW_TEST_ARGS} ${working_dir})
@@ -258,9 +260,10 @@ daw_add_test(NAME daw_json_minify_full DONT_ADD_TEST)
 add_executable(json_benchmark src/json_benchmark.cpp)
 target_link_libraries(json_benchmark PRIVATE json_test)
 if (NOT DEFINED MSVC)
-  # TODO: fails with the message below
-  # json_benchmark.cpp:488: int main(int, char**): Assertion `json_data_apache.size( ) > 2 and "Minimum json data size is 2 '{}'"' failed.
-  # add_test(NAME json_benchmark_test COMMAND json_benchmark ./apache_builds.json ./twitter.json ./citm_catalog.json ./canada.json WITH_DATA)
+  add_test(NAME json_benchmark_test
+          COMMAND json_benchmark ./apache_builds.json ./twitter.json ./citm_catalog.json ./canada.json
+          WORKING_DIRECTORY "${DAW_TEST_DATA_DIRECTORY}"
+          )
 endif ()
 add_dependencies(full json_benchmark)
 
