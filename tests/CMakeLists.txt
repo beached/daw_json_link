@@ -257,6 +257,25 @@ daw_add_test(NAME daw_json_minify_full DONT_ADD_TEST)
 
 # ---- JSON Benchmark ----
 
+if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/../.git)
+	find_package(Git)
+
+	if (GIT_FOUND)
+    execute_process(
+            COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+            WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+            OUTPUT_VARIABLE BUILD_VERSION
+            ERROR_QUIET
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+	else ()
+    set(BUILD_VERSION "unknown")
+	endif ()
+else ()
+  message(STATUS "The benchmark target requires the project to be tracked by git, ignoring")
+  return()
+endif()
+
 add_executable(json_benchmark src/json_benchmark.cpp)
 target_link_libraries(json_benchmark PRIVATE json_test)
 if (NOT DEFINED MSVC)
@@ -277,24 +296,6 @@ cmake_host_system_information(RESULT _os_ver QUERY OS_VERSION)
 string(REPLACE "#" "" _os_ver ${_os_ver})
 cmake_host_system_information(RESULT _os_plat QUERY OS_PLATFORM)
 string(REPLACE "#" "" _os_plat ${_os_plat})
-
-if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/../.git)
-	find_package(Git)
-
-	if (GIT_FOUND)
-    execute_process(
-            COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
-            WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-            OUTPUT_VARIABLE BUILD_VERSION
-            ERROR_QUIET
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            )
-	else ()
-    set(BUILD_VERSION "unknown")
-	endif ()
-else ()
-  message(FATAL_ERROR "The benchmark target requires the project to be tracked by git")
-endif()
 
 target_compile_definitions(json_benchmark PRIVATE
         SOURCE_CONTROL_REVISION="${BUILD_VERSION}"
