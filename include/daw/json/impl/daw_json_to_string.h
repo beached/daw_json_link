@@ -22,7 +22,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
-#include <third_party/ryu/ryu.hpp>
+#include <third_party/dragonbox/dragonbox.h>
 #include <tuple>
 #include <type_traits>
 #include <variant>
@@ -515,7 +515,11 @@ namespace daw::json::json_details {
 			if constexpr( std::is_same_v<OutputIterator, char *> ) {
 				ptr = it;
 			}
-			ptr = ryu::d2s_buffered( static_cast<double>( value ), ptr );
+			if constexpr( std::is_same_v<parse_to_t, float> ) {
+				ptr = jkj::dragonbox::to_chars_n( value, ptr );
+			} else {
+				ptr = jkj::dragonbox::to_chars_n( static_cast<double>( value ), ptr );
+			}
 			if constexpr( std::is_same_v<OutputIterator, char *> ) {
 				it = ptr;
 			} else {
@@ -677,6 +681,7 @@ namespace daw::json::json_details {
 		}
 		return it;
 	}
+
 } // namespace daw::json::json_details
 
 namespace daw::json::utils {
