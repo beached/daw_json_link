@@ -8,7 +8,7 @@
 
 #include "defines.h"
 
-#include "citm_test.h"
+#include "citm_test_json.h"
 #include "geojson.h"
 #include "twitter_test2.h"
 

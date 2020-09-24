@@ -8,11 +8,11 @@
 
 #include "defines.h"
 
-#include "apache_builds.h"
+#include "apache_builds_json.h"
 #include "bench_result.h"
-#include "citm_test.h"
+#include "citm_test_json.h"
 #include "geojson.h"
-#include "twitter_test.h"
+#include "twitter_test_json.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
