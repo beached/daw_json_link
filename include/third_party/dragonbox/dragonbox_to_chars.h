@@ -28,7 +28,7 @@ namespace jkj::dragonbox {
 
 	// Returns the next-to-end position
 	template <class Float, class... Policies>
-	char* to_chars_n(Float x, char* buffer, Policies... policies)
+	inline char* to_chars_n(Float x, char* buffer, Policies... policies)
 	{
 		using namespace jkj::dragonbox::detail::policy_impl;
 		using policy_holder = decltype(make_policy_holder(
@@ -83,7 +83,7 @@ namespace jkj::dragonbox {
 
 	// Null-terminate and bypass the return value of fp_to_chars_n
 	template <class Float, class... Policies>
-	char* to_chars(Float x, char* buffer, Policies... policies)
+	inline char* to_chars(Float x, char* buffer, Policies... policies)
 	{
 		auto ptr = to_chars_n(x, buffer, policies...);
 		*ptr = '\0';
