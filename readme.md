@@ -92,6 +92,7 @@ The event based parser(SAX) can be called via `daw::json::json_event_parser`.  I
 * [Tests](tests/) provide another source of working code samples. 
 * Some video walkthroughs
   * [Making a config parser](https://youtu.be/iiRDn0CR_sU)
+* [Example of parsing BigInt/Multiprecision Numbers](https://github.com/beached/daw_json_link_bigint_mp_numbers) 	
 * Small samples below
 
 
