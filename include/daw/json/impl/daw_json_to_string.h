@@ -22,10 +22,36 @@
 #include <optional>
 #include <sstream>
 #include <string>
-#include <third_party/ryu/ryu.hpp>
+#ifndef DAW_JSON_CUSTOM_D2S
+#include <third_party/dragonbox/dragonbox.h>
+#elif __has_include( "custom_d2s.h" )
+#include "custom_d2s.h"
+#else
+#error Request for local d2s, but no custom_d2s.h supplied with char * d2s( Real const & value, char * ); declaration/definition in namespace daw::json
+#endif
 #include <tuple>
 #include <type_traits>
 #include <variant>
+
+namespace daw::json {
+	template<typename Real, typename OutputIterator>
+	inline OutputIterator real2string( Real const &value,
+	                                   OutputIterator out_it ) {
+#ifndef DAW_JSON_CUSTOM_D2S
+		if constexpr( std::is_same_v<Real, float> ) {
+			return jkj::dragonbox::to_chars_n( value, out_it );
+		} else {
+			return jkj::dragonbox::to_chars_n( static_cast<double>( value ), out_it );
+		}
+#else
+		if constexpr( std::is_same_v<Real, float> ) {
+			return daw::json::d2s( value, out_it );
+		} else {
+			return daw::json::d2s( static_cast<double>( value ), out_it );
+		}
+#endif
+	}
+} // namespace daw::json
 
 namespace daw::json::json_details::to_strings {
 
@@ -509,16 +535,13 @@ namespace daw::json::json_details {
 		}
 		if constexpr( daw::is_floating_point_v<parse_to_t> ) {
 			static_assert( sizeof( parse_to_t ) <= sizeof( double ) );
-			char buff[50];
-			buff[49] = 0;
-			char *ptr = buff;
 			if constexpr( std::is_same_v<OutputIterator, char *> ) {
-				ptr = it;
-			}
-			ptr = ryu::d2s_buffered( static_cast<double>( value ), ptr );
-			if constexpr( std::is_same_v<OutputIterator, char *> ) {
-				it = ptr;
+				it = real2string( value, it );
 			} else {
+				char buff[50];
+				buff[49] = 0;
+				char *ptr = buff;
+				ptr = real2string( value, ptr );
 				std::copy( buff, ptr, it );
 			}
 		} else {
@@ -677,6 +700,7 @@ namespace daw::json::json_details {
 		}
 		return it;
 	}
+
 } // namespace daw::json::json_details
 
 namespace daw::json::utils {

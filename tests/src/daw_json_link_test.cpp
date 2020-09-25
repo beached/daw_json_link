@@ -16,7 +16,6 @@
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_bounded_vector.h>
-#include <third_party/ryu/ryu.hpp>
 
 #include <cassert>
 #include <chrono>
