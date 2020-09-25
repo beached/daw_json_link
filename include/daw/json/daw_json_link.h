@@ -969,11 +969,19 @@ namespace daw::json {
 		*out_it++ = '[';
 		bool is_first = true;
 		for( auto const &v : c ) {
-			using JsonMember = std::conditional_t<
-			  std::is_same_v<JsonElement, json_details::auto_detect_array_element>,
-			  json_details::unnamed_default_type_mapping<
-			    daw::remove_cvref_t<decltype( v )>>,
-			  JsonElement>;
+			using v_type = daw::remove_cvref_t<decltype( v )>;
+			constexpr bool is_auto_detect_v =
+			  std::is_same_v<JsonElement, json_details::auto_detect_array_element>;
+			using JsonMember =
+			  std::conditional_t<is_auto_detect_v,
+			                     json_details::unnamed_default_type_mapping<v_type>,
+			                     JsonElement>;
+
+			static_assert(
+			  not std::is_same_v<
+			    JsonMember, daw::json::missing_json_data_contract_for<JsonElement>>,
+			  "Unable to detect unnamed mapping" );
+			static_assert( not std::is_same_v<JsonElement, JsonMember> );
 			if( is_first ) {
 				is_first = false;
 			} else {
