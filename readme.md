@@ -33,7 +33,7 @@
   * [Variant](cookbook/variant.md)
   * [Automatic Code Generation](cookbook/automated_code_generation.md)
 * [Intro](#intro)
-* [Installing](#installing)
+* [Installing/Using](#installingusing)
 * [Performance considerations](#performance-considerations)
   * [Benchmarks](#benchmarks)
 * [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
@@ -163,26 +163,11 @@ struct daw::json::json_data_contract<MyType> {
 };
 ```
  
-## Installing
+## Installing/Using
 ###### [Top](#content)
 
-The following will build and run the tests. 
-```bash
-git clone https://github.com/beached/daw_json_link
-cd daw_json_link
-mkdir build
-cd build
-cmake -DDAW_ENABLE_TESTING=On ..
-cmake --build . 
-ctest .
-```
-If you
-After the build there the examples can be tested. ```city_test_bin``` requires the path to the cities JSON file.
-```bash
-./tests/city_test_bin ../test_data/cities.json
-```
-
-To use daw_json_link in your cmake projects, adding the following should allow it to pull in the dependencies:
+### Including in cmake project
+To use daw_json_link in your cmake projects, adding the following should allow it to pull it in along with the dependencies:
 ```cmake
 include( FetchContent )
 FetchContent_Declare(
@@ -195,6 +180,33 @@ Then in the targets that need it:
 ```cmake
 target_link_libraries( MyTarget daw::json_link )
 ```
+### Installing 
+On a system with bash, it is similar on other systems too, the following can install for the system 
+```bash
+git clone https://github.com/beached/daw_json_link
+cd daw_json_link
+mkdir build
+cd build
+cmake ..
+cmake --install . 
+```
+
+### Testing
+The following will build and run the tests. 
+```bash
+git clone https://github.com/beached/daw_json_link
+cd daw_json_link
+mkdir build
+cd build
+cmake -DDAW_ENABLE_TESTING=On ..
+cmake --build . 
+ctest .
+```
+After the build there the individual examples can be tested too. ```city_test_bin``` requires the path to the cities JSON file.
+```bash
+./tests/city_test_bin ../test_data/cities.json
+```
+
 
 ## Performance considerations
 ###### [Top](#content)
