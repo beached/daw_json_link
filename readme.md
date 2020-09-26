@@ -173,6 +173,7 @@ include( FetchContent )
 FetchContent_Declare(
         daw_json_link
         GIT_REPOSITORY https://github.com/beached/daw_json_link
+				GIT_TAG release
 )
 FetchContent_MakeAvailable(daw_json_link)
 ```
