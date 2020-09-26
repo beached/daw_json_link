@@ -9,7 +9,7 @@
 #pragma once
 
 #include "daw_json_arrow_proxy.h"
-#include "daw_json_assert.h"
+#include "../daw_json_assert.h"
 #include "daw_json_iterator_range.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_iso8601_utils.h"
