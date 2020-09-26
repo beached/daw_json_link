@@ -98,20 +98,20 @@ namespace jkj::dragonbox {
 		static_assert( sizeof( carrier_uint ) == sizeof( T ) );
 
 		static constexpr int carrier_bits =
-		  int( detail::physical_bits<carrier_uint> );
+		  static_cast<int>( detail::physical_bits<carrier_uint> );
 
-		static T carrier_to_float( carrier_uint u ) noexcept {
+		static inline T carrier_to_float( carrier_uint u ) noexcept {
 			T x;
 			std::memcpy( &x, &u, sizeof( carrier_uint ) );
 			return x;
 		}
-		static carrier_uint float_to_carrier( T x ) noexcept {
+		static inline carrier_uint float_to_carrier( T x ) noexcept {
 			carrier_uint u;
 			std::memcpy( &u, &x, sizeof( carrier_uint ) );
 			return u;
 		}
 
-		static constexpr unsigned int
+		static inline constexpr unsigned int
 		extract_exponent_bits( carrier_uint u ) noexcept {
 			constexpr int significand_bits =
 			  ieee754_format_info<format>::significand_bits;
@@ -121,7 +121,7 @@ namespace jkj::dragonbox {
 			return static_cast<unsigned int>( ( u >> significand_bits ) &
 			                                  exponent_bits_mask );
 		}
-		static constexpr carrier_uint
+		static inline constexpr carrier_uint
 		extract_significand_bits( carrier_uint u ) noexcept {
 			constexpr int significand_bits =
 			  ieee754_format_info<format>::significand_bits;
@@ -131,11 +131,11 @@ namespace jkj::dragonbox {
 		}
 
 		// Allows positive zero and positive NaN's, but not allow negative zero
-		static constexpr bool is_positive( carrier_uint u ) noexcept {
+		static inline constexpr bool is_positive( carrier_uint u ) noexcept {
 			return ( u >> ( carrier_bits - 1 ) ) == 0;
 		}
 		// Allows negative zero and negative NaN's, but not allow positive zero
-		static constexpr bool is_negative( carrier_uint u ) noexcept {
+		static inline constexpr bool is_negative( carrier_uint u ) noexcept {
 			return ( u >> ( carrier_bits - 1 ) ) != 0;
 		}
 
@@ -143,7 +143,7 @@ namespace jkj::dragonbox {
 		  1 - ( 1 << ( carrier_bits -
 		               ieee754_format_info<format>::significand_bits - 2 ) );
 
-		static constexpr bool is_finite( carrier_uint u ) noexcept {
+		static inline constexpr bool is_finite( carrier_uint u ) noexcept {
 			constexpr int significand_bits =
 			  ieee754_format_info<format>::significand_bits;
 			constexpr int exponent_bits = ieee754_format_info<format>::exponent_bits;
@@ -152,11 +152,11 @@ namespace jkj::dragonbox {
 
 			return ( u & exponent_bits_mask ) != exponent_bits_mask;
 		}
-		static constexpr bool is_nonzero( carrier_uint u ) noexcept {
+		static inline constexpr bool is_nonzero( carrier_uint u ) noexcept {
 			return ( u << 1 ) != 0;
 		}
 		// Allows positive and negative zeros
-		static constexpr bool is_subnormal( carrier_uint u ) noexcept {
+		static inline constexpr bool is_subnormal( carrier_uint u ) noexcept {
 			constexpr int significand_bits =
 			  ieee754_format_info<format>::significand_bits;
 			constexpr int exponent_bits = ieee754_format_info<format>::exponent_bits;
@@ -165,7 +165,8 @@ namespace jkj::dragonbox {
 
 			return ( u & exponent_bits_mask ) == 0;
 		}
-		static constexpr bool is_positive_infinity( carrier_uint u ) noexcept {
+		static inline constexpr bool
+		is_positive_infinity( carrier_uint u ) noexcept {
 			constexpr int significand_bits =
 			  ieee754_format_info<format>::significand_bits;
 			constexpr int exponent_bits = ieee754_format_info<format>::exponent_bits;
@@ -174,7 +175,8 @@ namespace jkj::dragonbox {
 			  << significand_bits;
 			return u == positive_infinity;
 		}
-		static constexpr bool is_negative_infinity( carrier_uint u ) noexcept {
+		static inline constexpr bool
+		is_negative_infinity( carrier_uint u ) noexcept {
 			constexpr int significand_bits =
 			  ieee754_format_info<format>::significand_bits;
 			constexpr int exponent_bits = ieee754_format_info<format>::exponent_bits;
@@ -184,10 +186,10 @@ namespace jkj::dragonbox {
 			  ( carrier_uint( 1 ) << ( carrier_bits - 1 ) );
 			return u == negative_infinity;
 		}
-		static constexpr bool is_infinity( carrier_uint u ) noexcept {
+		static inline constexpr bool is_infinity( carrier_uint u ) noexcept {
 			return is_positive_infinity( u ) || is_negative_infinity( u );
 		}
-		static constexpr bool is_nan( carrier_uint u ) noexcept {
+		static inline constexpr bool is_nan( carrier_uint u ) noexcept {
 			return !is_finite( u ) && ( extract_significand_bits( u ) != 0 );
 		}
 	};
@@ -215,23 +217,23 @@ namespace jkj::dragonbox {
 		carrier_uint u;
 
 		ieee754_bits( ) = default;
-		constexpr explicit ieee754_bits( carrier_uint _u ) noexcept
+		inline constexpr explicit ieee754_bits( carrier_uint _u ) noexcept
 		  : u{ _u } {}
-		constexpr explicit ieee754_bits( T x ) noexcept
+		inline constexpr explicit ieee754_bits( T x ) noexcept
 		  : u{ ieee754_traits<T>::float_to_carrier( x ) } {}
 
-		constexpr T to_float( ) const noexcept {
+		inline constexpr T to_float( ) const noexcept {
 			return ieee754_traits<T>::carrier_to_float( u );
 		}
 
-		constexpr carrier_uint extract_significand_bits( ) const noexcept {
+		inline constexpr carrier_uint extract_significand_bits( ) const noexcept {
 			return ieee754_traits<T>::extract_significand_bits( u );
 		}
-		constexpr unsigned extract_exponent_bits( ) const noexcept {
+		inline constexpr unsigned extract_exponent_bits( ) const noexcept {
 			return ieee754_traits<T>::extract_exponent_bits( u );
 		}
 
-		constexpr carrier_uint binary_significand( ) const noexcept {
+		inline constexpr carrier_uint binary_significand( ) const noexcept {
 			using format_info = ieee754_format_info<ieee754_traits<T>::format>;
 			auto s = extract_significand_bits( );
 			if( extract_exponent_bits( ) == 0 ) {
@@ -240,7 +242,7 @@ namespace jkj::dragonbox {
 				return s | ( carrier_uint( 1 ) << format_info::significand_bits );
 			}
 		}
-		constexpr int binary_exponent( ) const noexcept {
+		inline constexpr int binary_exponent( ) const noexcept {
 			using format_info = ieee754_format_info<ieee754_traits<T>::format>;
 			auto e = extract_exponent_bits( );
 			if( e == 0 ) {
@@ -250,36 +252,36 @@ namespace jkj::dragonbox {
 			}
 		}
 
-		constexpr bool is_finite( ) const noexcept {
+		inline constexpr bool is_finite( ) const noexcept {
 			return ieee754_traits<T>::is_finite( u );
 		}
-		constexpr bool is_nonzero( ) const noexcept {
+		inline constexpr bool is_nonzero( ) const noexcept {
 			return ieee754_traits<T>::is_nonzero( u );
 		}
 		// Allows positive and negative zeros
-		constexpr bool is_subnormal( ) const noexcept {
+		inline constexpr bool is_subnormal( ) const noexcept {
 			return ieee754_traits<T>::is_subnormal( u );
 		}
 		// Allows positive zero and positive NaN's, but not allow negative zero
-		constexpr bool is_positive( ) const noexcept {
+		inline constexpr bool is_positive( ) const noexcept {
 			return ieee754_traits<T>::is_positive( u );
 		}
 		// Allows negative zero and negative NaN's, but not allow positive zero
-		constexpr bool is_negative( ) const noexcept {
+		inline constexpr bool is_negative( ) const noexcept {
 			return ieee754_traits<T>::is_negative( u );
 		}
-		constexpr bool is_positive_infinity( ) const noexcept {
+		inline constexpr bool is_positive_infinity( ) const noexcept {
 			return ieee754_traits<T>::is_positive_infinity( u );
 		}
 
-		constexpr bool is_negative_infinity( ) const noexcept {
+		inline constexpr bool is_negative_infinity( ) const noexcept {
 			return ieee754_traits<T>::is_negative_infinity( u );
 		}
 		// Allows both plus and minus infinities
-		constexpr bool is_infinity( ) const noexcept {
+		inline constexpr bool is_infinity( ) const noexcept {
 			return ieee754_traits<T>::is_infinity( u );
 		}
-		constexpr bool is_nan( ) const noexcept {
+		inline constexpr bool is_nan( ) const noexcept {
 			return ieee754_traits<T>::is_nan( u );
 		}
 	};
@@ -499,7 +501,7 @@ namespace jkj::dragonbox {
 		} // namespace wuint
 
 		template<int k, class Int>
-		constexpr Int compute_power( Int a ) noexcept {
+		inline constexpr Int compute_power( Int a ) noexcept {
 			static_assert( k >= 0 );
 			Int p = 1;
 			for( int i = 0; i < k; ++i ) {
@@ -509,7 +511,7 @@ namespace jkj::dragonbox {
 		}
 
 		template<int a, class UInt>
-		constexpr int count_factors( UInt n ) noexcept {
+		inline constexpr int count_factors( UInt n ) noexcept {
 			static_assert( a > 1 );
 			int c = 0;
 			while( n % a == 0 ) {
@@ -524,9 +526,9 @@ namespace jkj::dragonbox {
 		////////////////////////////////////////////////////////////////////////////////////////
 
 		namespace log {
-			constexpr std::int32_t floor_shift( std::uint32_t integer_part,
-			                                    std::uint64_t fractional_digits,
-			                                    std::size_t shift_amount ) noexcept {
+			inline constexpr std::int32_t
+			floor_shift( std::uint32_t integer_part, std::uint64_t fractional_digits,
+			             std::size_t shift_amount ) noexcept {
 				assert( shift_amount < 32 );
 				// Ensure no overflow
 				assert( shift_amount == 0 ||
@@ -545,13 +547,14 @@ namespace jkj::dragonbox {
 			         std::size_t shift_amount, std::int32_t max_exponent,
 			         std::uint32_t s_integer_part = 0,
 			         std::uint64_t s_fractional_digits = 0>
-			constexpr int compute( int e ) noexcept {
+			inline constexpr int compute( int e ) noexcept {
 				assert( e <= max_exponent && e >= -max_exponent );
 				constexpr auto c =
 				  floor_shift( c_integer_part, c_fractional_digits, shift_amount );
 				constexpr auto s =
 				  floor_shift( s_integer_part, s_fractional_digits, shift_amount );
-				return int( ( std::int32_t( e ) * c - s ) >> shift_amount );
+				return static_cast<int>( ( std::int32_t( e ) * c - s ) >>
+				                         shift_amount );
 			}
 
 			static constexpr std::uint64_t log10_2_fractional_digits{
@@ -573,7 +576,7 @@ namespace jkj::dragonbox {
 			// For constexpr computation
 			// Returns -1 when n = 0
 			template<class UInt>
-			constexpr int floor_log2( UInt n ) noexcept {
+			inline constexpr int floor_log2( UInt n ) noexcept {
 				int count = -1;
 				while( n != 0 ) {
 					++count;
@@ -582,32 +585,33 @@ namespace jkj::dragonbox {
 				return count;
 			}
 
-			constexpr int floor_log10_pow2( int e ) noexcept {
+			inline constexpr int floor_log10_pow2( int e ) noexcept {
 				using namespace log;
 				return compute<0, log10_2_fractional_digits,
 				               floor_log10_pow2_shift_amount, 1700>( e );
 			}
 
-			constexpr int floor_log2_pow10( int e ) noexcept {
+			inline constexpr int floor_log2_pow10( int e ) noexcept {
 				using namespace log;
 				return compute<3, log2_10_fractional_digits,
 				               floor_log2_pow10_shift_amount, 1233>( e );
 			}
 
-			constexpr int floor_log5_pow2( int e ) noexcept {
+			inline constexpr int floor_log5_pow2( int e ) noexcept {
 				using namespace log;
 				return compute<0, log5_2_fractional_digits,
 				               floor_log5_pow2_shift_amount, 1492>( e );
 			}
 
-			constexpr int floor_log5_pow2_minus_log5_3( int e ) noexcept {
+			inline constexpr int floor_log5_pow2_minus_log5_3( int e ) noexcept {
 				using namespace log;
 				return compute<0, log5_2_fractional_digits,
 				               floor_log5_pow2_shift_amount, 2427, 0,
 				               log5_3_fractional_digits>( e );
 			}
 
-			constexpr int floor_log10_pow2_minus_log10_4_over_3( int e ) noexcept {
+			inline constexpr int
+			floor_log10_pow2_minus_log10_4_over_3( int e ) noexcept {
 				using namespace log;
 				return compute<0, log10_2_fractional_digits,
 				               floor_log10_pow2_shift_amount, 1700, 0,
@@ -621,7 +625,7 @@ namespace jkj::dragonbox {
 
 		namespace div {
 			template<class UInt, UInt a>
-			constexpr UInt modular_inverse(
+			inline constexpr UInt modular_inverse(
 			  int bit_width = static_cast<int>( value_bits<UInt> ) ) noexcept {
 				// By Euler's theorem, a^phi(2^n) == 1 (mod 2^n),
 				// where phi(2^n) = 2^(n-1), so the modular inverse of a is
@@ -670,14 +674,16 @@ namespace jkj::dragonbox {
 			};
 
 			template<std::size_t table_size, class UInt>
-			constexpr bool divisible_by_power_of_5( UInt x, unsigned exp ) noexcept {
+			inline constexpr bool divisible_by_power_of_5( UInt x,
+			                                               unsigned exp ) noexcept {
 				auto const &table = table_holder<UInt, 5, table_size>::table;
 				assert( exp < static_cast<unsigned>( table.size ) );
 				return ( x * table.mod_inv[exp] ) <= table.max_quotients[exp];
 			}
 
 			template<class UInt>
-			constexpr bool divisible_by_power_of_2( UInt x, unsigned exp ) noexcept {
+			inline constexpr bool divisible_by_power_of_2( UInt x,
+			                                               unsigned exp ) noexcept {
 				assert( exp >= 1 );
 				assert( x != 0 );
 #if JKJ_HAS_COUNTR_ZERO_INTRINSIC
@@ -713,7 +719,7 @@ namespace jkj::dragonbox {
 			};
 
 			template<int N>
-			constexpr bool
+			inline constexpr bool
 			check_divisibility_and_divide_by_pow5( std::uint32_t &n ) noexcept {
 				// Make sure the computation for max_n does not overflow
 				static_assert( N + 1 <= log::floor_log5_pow2( 31 ) );
@@ -754,7 +760,7 @@ namespace jkj::dragonbox {
 			};
 
 			template<int N>
-			constexpr std::uint32_t
+			inline constexpr std::uint32_t
 			small_division_by_pow10( std::uint32_t n ) noexcept {
 				assert( n <= compute_power<N + 1>( std::uint32_t( 10 ) ) );
 				return ( n * small_division_by_pow10_info<N>::magic_number ) >>
@@ -764,7 +770,7 @@ namespace jkj::dragonbox {
 			// Compute floor(n / 10^N) for small N
 			// Precondition: n <= 2^a * 5^b (a = max_pow2, b = max_pow5)
 			template<int N, int max_pow2, int max_pow5, class UInt>
-			constexpr UInt divide_by_pow10( UInt n ) noexcept {
+			inline constexpr UInt divide_by_pow10( UInt n ) noexcept {
 				static_assert( N >= 0 );
 
 				// Ensure no overflow
@@ -1575,17 +1581,17 @@ namespace jkj::dragonbox {
 					static constexpr bool return_has_sign = false;
 
 					template<class Float, class Fp>
-					static constexpr void handle_sign( ieee754_bits<Float>,
-					                                   Fp & ) noexcept {}
+					static inline constexpr void handle_sign( ieee754_bits<Float>,
+					                                          Fp & ) noexcept {}
 				};
 
 				struct return_sign : base {
 					using sign_policy = return_sign;
-					static constexpr bool return_has_sign = true;
+					static inline constexpr bool return_has_sign = true;
 
 					template<class Float, class Fp>
-					static constexpr void handle_sign( ieee754_bits<Float> br,
-					                                   Fp &fp ) noexcept {
+					static inline constexpr void handle_sign( ieee754_bits<Float> br,
+					                                          Fp &fp ) noexcept {
 						fp.is_negative = br.is_negative( );
 					}
 				};
@@ -1600,10 +1606,10 @@ namespace jkj::dragonbox {
 					static constexpr bool report_trailing_zeros = false;
 
 					template<class Fp>
-					static constexpr void on_trailing_zeros( Fp & ) noexcept {}
+					static inline constexpr void on_trailing_zeros( Fp & ) noexcept {}
 
 					template<class Fp>
-					static constexpr void no_trailing_zeros( Fp & ) noexcept {}
+					static inline constexpr void no_trailing_zeros( Fp & ) noexcept {}
 				};
 
 				struct remove : base {
@@ -1611,13 +1617,13 @@ namespace jkj::dragonbox {
 					static constexpr bool report_trailing_zeros = false;
 
 					template<class Fp>
-					static constexpr void on_trailing_zeros( Fp &fp ) noexcept {
+					static inline constexpr void on_trailing_zeros( Fp &fp ) noexcept {
 						fp.exponent += impl<typename Fp::float_type>::remove_trailing_zeros(
 						  fp.significand );
 					}
 
 					template<class Fp>
-					static constexpr void no_trailing_zeros( Fp & ) noexcept {}
+					static inline constexpr void no_trailing_zeros( Fp & ) noexcept {}
 				};
 
 				struct report : base {
@@ -1625,12 +1631,12 @@ namespace jkj::dragonbox {
 					static constexpr bool report_trailing_zeros = true;
 
 					template<class Fp>
-					static constexpr void on_trailing_zeros( Fp &fp ) noexcept {
+					static inline constexpr void on_trailing_zeros( Fp &fp ) noexcept {
 						fp.may_have_trailing_zeros = true;
 					}
 
 					template<class Fp>
-					static constexpr void no_trailing_zeros( Fp &fp ) noexcept {
+					static inline constexpr void no_trailing_zeros( Fp &fp ) noexcept {
 						fp.may_have_trailing_zeros = false;
 					}
 				};
@@ -1649,56 +1655,56 @@ namespace jkj::dragonbox {
 					struct symmetric_boundary {
 						static constexpr bool is_symmetric = true;
 						bool is_closed;
-						constexpr bool include_left_endpoint( ) const noexcept {
+						inline constexpr bool include_left_endpoint( ) const noexcept {
 							return is_closed;
 						}
-						constexpr bool include_right_endpoint( ) const noexcept {
+						inline constexpr bool include_right_endpoint( ) const noexcept {
 							return is_closed;
 						}
 					};
 					struct asymmetric_boundary {
 						static constexpr bool is_symmetric = false;
 						bool is_left_closed;
-						constexpr bool include_left_endpoint( ) const noexcept {
+						inline constexpr bool include_left_endpoint( ) const noexcept {
 							return is_left_closed;
 						}
-						constexpr bool include_right_endpoint( ) const noexcept {
+						inline constexpr bool include_right_endpoint( ) const noexcept {
 							return !is_left_closed;
 						}
 					};
 					struct closed {
 						static constexpr bool is_symmetric = true;
-						static constexpr bool include_left_endpoint( ) noexcept {
+						static inline constexpr bool include_left_endpoint( ) noexcept {
 							return true;
 						}
-						static constexpr bool include_right_endpoint( ) noexcept {
+						static inline constexpr bool include_right_endpoint( ) noexcept {
 							return true;
 						}
 					};
 					struct open {
 						static constexpr bool is_symmetric = true;
-						static constexpr bool include_left_endpoint( ) noexcept {
+						static inline constexpr bool include_left_endpoint( ) noexcept {
 							return false;
 						}
-						static constexpr bool include_right_endpoint( ) noexcept {
+						static inline constexpr bool include_right_endpoint( ) noexcept {
 							return false;
 						}
 					};
 					struct left_closed_right_open {
 						static constexpr bool is_symmetric = false;
-						static constexpr bool include_left_endpoint( ) noexcept {
+						static inline constexpr bool include_left_endpoint( ) noexcept {
 							return true;
 						}
-						static constexpr bool include_right_endpoint( ) noexcept {
+						static inline constexpr bool include_right_endpoint( ) noexcept {
 							return false;
 						}
 					};
 					struct right_closed_left_open {
 						static constexpr bool is_symmetric = false;
-						static constexpr bool include_left_endpoint( ) noexcept {
+						static inline constexpr bool include_left_endpoint( ) noexcept {
 							return false;
 						}
-						static constexpr bool include_right_endpoint( ) noexcept {
+						static inline constexpr bool include_right_endpoint( ) noexcept {
 							return true;
 						}
 					};
@@ -1709,17 +1715,18 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::to_nearest;
 
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float>, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float>,
+					                             Func &&f ) noexcept {
 						return f( nearest_to_even{ } );
 					}
 
 					template<class Float>
-					static constexpr interval_type::symmetric_boundary
+					static inline constexpr interval_type::symmetric_boundary
 					interval_type_normal( ieee754_bits<Float> br ) noexcept {
 						return { br.u % 2 == 0 };
 					}
 					template<class Float>
-					static constexpr interval_type::closed
+					static inline constexpr interval_type::closed
 					interval_type_shorter( ieee754_bits<Float> ) noexcept {
 						return { };
 					}
@@ -1729,17 +1736,18 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::to_nearest;
 
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float>, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float>,
+					                             Func &&f ) noexcept {
 						return f( nearest_to_odd{ } );
 					}
 
 					template<class Float>
-					static constexpr interval_type::symmetric_boundary
+					static inline constexpr interval_type::symmetric_boundary
 					interval_type_normal( ieee754_bits<Float> br ) noexcept {
 						return { br.u % 2 != 0 };
 					}
 					template<class Float>
-					static constexpr interval_type::closed
+					static inline constexpr interval_type::closed
 					interval_type_shorter( ieee754_bits<Float> ) noexcept {
 						return { };
 					}
@@ -1749,17 +1757,18 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::to_nearest;
 
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float>, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float>,
+					                             Func &&f ) noexcept {
 						return f( nearest_toward_plus_infinity{ } );
 					}
 
 					template<class Float>
-					static constexpr interval_type::asymmetric_boundary
+					static inline constexpr interval_type::asymmetric_boundary
 					interval_type_normal( ieee754_bits<Float> br ) noexcept {
 						return { !br.is_negative( ) };
 					}
 					template<class Float>
-					static constexpr interval_type::asymmetric_boundary
+					static inline constexpr interval_type::asymmetric_boundary
 					interval_type_shorter( ieee754_bits<Float> br ) noexcept {
 						return { !br.is_negative( ) };
 					}
@@ -1769,17 +1778,18 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::to_nearest;
 
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float>, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float>,
+					                             Func &&f ) noexcept {
 						return f( nearest_toward_minus_infinity{ } );
 					}
 
 					template<class Float>
-					static constexpr interval_type::asymmetric_boundary
+					static inline constexpr interval_type::asymmetric_boundary
 					interval_type_normal( ieee754_bits<Float> br ) noexcept {
 						return { br.is_negative( ) };
 					}
 					template<class Float>
-					static constexpr interval_type::asymmetric_boundary
+					static inline constexpr interval_type::asymmetric_boundary
 					interval_type_shorter( ieee754_bits<Float> br ) noexcept {
 						return { br.is_negative( ) };
 					}
@@ -1789,16 +1799,17 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::to_nearest;
 
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float>, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float>,
+					                             Func &&f ) noexcept {
 						return f( nearest_toward_zero{ } );
 					}
 					template<class Float>
-					static constexpr interval_type::right_closed_left_open
+					static inline constexpr interval_type::right_closed_left_open
 					interval_type_normal( ieee754_bits<Float> ) noexcept {
 						return { };
 					}
 					template<class Float>
-					static constexpr interval_type::right_closed_left_open
+					static inline constexpr interval_type::right_closed_left_open
 					interval_type_shorter( ieee754_bits<Float> ) noexcept {
 						return { };
 					}
@@ -1808,16 +1819,17 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::to_nearest;
 
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float>, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float>,
+					                             Func &&f ) noexcept {
 						return f( nearest_away_from_zero{ } );
 					}
 					template<class Float>
-					static constexpr interval_type::left_closed_right_open
+					static inline constexpr interval_type::left_closed_right_open
 					interval_type_normal( ieee754_bits<Float> ) noexcept {
 						return { };
 					}
 					template<class Float>
-					static constexpr interval_type::left_closed_right_open
+					static inline constexpr interval_type::left_closed_right_open
 					interval_type_shorter( ieee754_bits<Float> ) noexcept {
 						return { };
 					}
@@ -1828,26 +1840,27 @@ namespace jkj::dragonbox {
 						static constexpr auto tag = tag_t::to_nearest;
 
 						template<class Float>
-						static constexpr interval_type::closed
+						static inline constexpr interval_type::closed
 						interval_type_normal( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
 						template<class Float>
-						static constexpr interval_type::closed
+						static inline constexpr interval_type::closed
 						interval_type_shorter( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
 					};
+
 					struct nearest_always_open {
 						static constexpr auto tag = tag_t::to_nearest;
 
 						template<class Float>
-						static constexpr interval_type::open
+						static inline constexpr interval_type::open
 						interval_type_normal( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
 						template<class Float>
-						static constexpr interval_type::open
+						static inline constexpr interval_type::open
 						interval_type_shorter( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
@@ -1857,7 +1870,8 @@ namespace jkj::dragonbox {
 				struct nearest_to_even_static_boundary : base {
 					using rounding_mode_policy = nearest_to_even_static_boundary;
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float> br, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float> br,
+					                             Func &&f ) noexcept {
 						if( br.u % 2 == 0 ) {
 							return f( detail::nearest_always_closed{ } );
 						} else {
@@ -1865,10 +1879,12 @@ namespace jkj::dragonbox {
 						}
 					}
 				};
+
 				struct nearest_to_odd_static_boundary : base {
 					using rounding_mode_policy = nearest_to_odd_static_boundary;
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float> br, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float> br,
+					                             Func &&f ) noexcept {
 						if( br.u % 2 == 0 ) {
 							return f( detail::nearest_always_open{ } );
 						} else {
@@ -1876,11 +1892,13 @@ namespace jkj::dragonbox {
 						}
 					}
 				};
+
 				struct nearest_toward_plus_infinity_static_boundary : base {
 					using rounding_mode_policy =
 					  nearest_toward_plus_infinity_static_boundary;
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float> br, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float> br,
+					                             Func &&f ) noexcept {
 						if( br.is_negative( ) ) {
 							return f( nearest_toward_zero{ } );
 						} else {
@@ -1888,11 +1906,13 @@ namespace jkj::dragonbox {
 						}
 					}
 				};
+
 				struct nearest_toward_minus_infinity_static_boundary : base {
 					using rounding_mode_policy =
 					  nearest_toward_minus_infinity_static_boundary;
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float> br, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float> br,
+					                             Func &&f ) noexcept {
 						if( br.is_negative( ) ) {
 							return f( nearest_away_from_zero{ } );
 						} else {
@@ -1906,7 +1926,7 @@ namespace jkj::dragonbox {
 						static constexpr auto tag = tag_t::left_closed_directed;
 
 						template<class Float>
-						static constexpr interval_type::left_closed_right_open
+						static inline constexpr interval_type::left_closed_right_open
 						interval_type_normal( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
@@ -1915,7 +1935,7 @@ namespace jkj::dragonbox {
 						static constexpr auto tag = tag_t::right_closed_directed;
 
 						template<class Float>
-						static constexpr interval_type::right_closed_left_open
+						static inline constexpr interval_type::right_closed_left_open
 						interval_type_normal( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
@@ -1925,7 +1945,8 @@ namespace jkj::dragonbox {
 				struct toward_plus_infinity : base {
 					using rounding_mode_policy = toward_plus_infinity;
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float> br, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float> br,
+					                             Func &&f ) noexcept {
 						if( br.is_negative( ) ) {
 							return f( detail::left_closed_directed{ } );
 						} else {
@@ -1933,10 +1954,12 @@ namespace jkj::dragonbox {
 						}
 					}
 				};
+
 				struct toward_minus_infinity : base {
 					using rounding_mode_policy = toward_minus_infinity;
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float> br, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float> br,
+					                             Func &&f ) noexcept {
 						if( br.is_negative( ) ) {
 							return f( detail::right_closed_directed{ } );
 						} else {
@@ -1944,17 +1967,21 @@ namespace jkj::dragonbox {
 						}
 					}
 				};
+
 				struct toward_zero : base {
 					using rounding_mode_policy = toward_zero;
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float>, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float>,
+					                             Func &&f ) noexcept {
 						return f( detail::left_closed_directed{ } );
 					}
 				};
+
 				struct away_from_zero : base {
 					using rounding_mode_policy = away_from_zero;
 					template<class Float, class Func>
-					static auto delegate( ieee754_bits<Float>, Func &&f ) noexcept {
+					static inline auto delegate( ieee754_bits<Float>,
+					                             Func &&f ) noexcept {
 						return f( detail::right_closed_directed{ } );
 					}
 				};
@@ -1977,7 +2004,7 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::do_not_care;
 
 					template<class Fp>
-					static constexpr void break_rounding_tie( Fp & ) noexcept {}
+					static constexpr inline void break_rounding_tie( Fp & ) noexcept {}
 				};
 
 				struct to_even : base {
@@ -1985,7 +2012,7 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::to_even;
 
 					template<class Fp>
-					static constexpr void break_rounding_tie( Fp &fp ) noexcept {
+					static constexpr inline void break_rounding_tie( Fp &fp ) noexcept {
 						fp.significand =
 						  fp.significand % 2 == 0 ? fp.significand : fp.significand - 1;
 					}
@@ -1996,7 +2023,7 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::to_odd;
 
 					template<class Fp>
-					static constexpr void break_rounding_tie( Fp &fp ) noexcept {
+					static constexpr inline void break_rounding_tie( Fp &fp ) noexcept {
 						fp.significand =
 						  fp.significand % 2 != 0 ? fp.significand : fp.significand - 1;
 					}
@@ -2007,7 +2034,7 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::away_from_zero;
 
 					template<class Fp>
-					static constexpr void break_rounding_tie( Fp &fp ) noexcept {}
+					static constexpr inline void break_rounding_tie( Fp &fp ) noexcept {}
 				};
 
 				struct toward_zero : base {
@@ -2015,7 +2042,7 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::toward_zero;
 
 					template<class Fp>
-					static constexpr void break_rounding_tie( Fp &fp ) noexcept {
+					static constexpr inline void break_rounding_tie( Fp &fp ) noexcept {
 						--fp.significand;
 					}
 				};
@@ -2027,8 +2054,9 @@ namespace jkj::dragonbox {
 				struct normal : base {
 					using cache_policy = normal;
 					template<ieee754_format format>
-					static constexpr typename cache_holder<format>::cache_entry_type
-					get_cache( int k ) noexcept {
+					static inline constexpr
+					  typename cache_holder<format>::cache_entry_type
+					  get_cache( int k ) noexcept {
 						assert( k >= cache_holder<format>::min_k &&
 						        k <= cache_holder<format>::max_k );
 						return cache_holder<format>::cache[std::size_t(
@@ -2039,8 +2067,9 @@ namespace jkj::dragonbox {
 				struct compressed : base {
 					using cache_policy = compressed;
 					template<ieee754_format format>
-					static constexpr typename cache_holder<format>::cache_entry_type
-					get_cache( int k ) noexcept {
+					static inline constexpr
+					  typename cache_holder<format>::cache_entry_type
+					  get_cache( int k ) noexcept {
 						assert( k >= cache_holder<format>::min_k &&
 						        k <= cache_holder<format>::max_k );
 
@@ -2114,7 +2143,7 @@ namespace jkj::dragonbox {
 				struct assert_finite : base {
 					using input_validation_policy = assert_finite;
 					template<class Float>
-					static void
+					static inline void
 					validate_input( [[maybe_unused]] ieee754_bits<Float> br ) noexcept {
 						assert( br.is_finite( ) );
 					}
@@ -2123,7 +2152,7 @@ namespace jkj::dragonbox {
 				struct do_nothing : base {
 					using input_validation_policy = do_nothing;
 					template<class Float>
-					static void validate_input( ieee754_bits<Float> ) noexcept {}
+					static inline void validate_input( ieee754_bits<Float> ) noexcept {}
 				};
 			} // namespace input_validation
 		}   // namespace policy_impl
@@ -2131,78 +2160,80 @@ namespace jkj::dragonbox {
 
 	namespace policy {
 		namespace sign {
-			static constexpr auto ignore = detail::policy_impl::sign::ignore{ };
-			static constexpr auto return_sign =
+			static inline constexpr auto ignore =
+			  detail::policy_impl::sign::ignore{ };
+			static inline constexpr auto return_sign =
 			  detail::policy_impl::sign::return_sign{ };
 		} // namespace sign
 
 		namespace trailing_zero {
-			static constexpr auto ignore =
+			static inline constexpr auto ignore =
 			  detail::policy_impl::trailing_zero::ignore{ };
-			static constexpr auto remove =
+			static inline constexpr auto remove =
 			  detail::policy_impl::trailing_zero::remove{ };
-			static constexpr auto report =
+			static inline constexpr auto report =
 			  detail::policy_impl::trailing_zero::report{ };
 		} // namespace trailing_zero
 
 		namespace rounding_mode {
-			static constexpr auto nearest_to_even =
+			static inline constexpr auto nearest_to_even =
 			  detail::policy_impl::rounding_mode::nearest_to_even{ };
-			static constexpr auto nearest_to_odd =
+			static inline constexpr auto nearest_to_odd =
 			  detail::policy_impl::rounding_mode::nearest_to_odd{ };
-			static constexpr auto nearest_toward_plus_infinity =
+			static inline constexpr auto nearest_toward_plus_infinity =
 			  detail::policy_impl::rounding_mode::nearest_toward_plus_infinity{ };
-			static constexpr auto nearest_toward_minus_infinity =
+			static inline constexpr auto nearest_toward_minus_infinity =
 			  detail::policy_impl::rounding_mode::nearest_toward_minus_infinity{ };
-			static constexpr auto nearest_toward_zero =
+			static inline constexpr auto nearest_toward_zero =
 			  detail::policy_impl::rounding_mode::nearest_toward_zero{ };
-			static constexpr auto nearest_away_from_zero =
+			static inline constexpr auto nearest_away_from_zero =
 			  detail::policy_impl::rounding_mode::nearest_away_from_zero{ };
 
-			static constexpr auto nearest_to_even_static_boundary =
+			static inline constexpr auto nearest_to_even_static_boundary =
 			  detail::policy_impl::rounding_mode::nearest_to_even_static_boundary{ };
-			static constexpr auto nearest_to_odd_static_boundary =
+			static inline constexpr auto nearest_to_odd_static_boundary =
 			  detail::policy_impl::rounding_mode::nearest_to_odd_static_boundary{ };
-			static constexpr auto nearest_toward_plus_infinity_static_boundary =
-			  detail::policy_impl::rounding_mode::
-			    nearest_toward_plus_infinity_static_boundary{ };
-			static constexpr auto nearest_toward_minus_infinity_static_boundary =
-			  detail::policy_impl::rounding_mode::
-			    nearest_toward_minus_infinity_static_boundary{ };
+			static inline constexpr auto
+			  nearest_toward_plus_infinity_static_boundary = detail::policy_impl::
+			    rounding_mode::nearest_toward_plus_infinity_static_boundary{ };
+			static inline constexpr auto
+			  nearest_toward_minus_infinity_static_boundary = detail::policy_impl::
+			    rounding_mode::nearest_toward_minus_infinity_static_boundary{ };
 
-			static constexpr auto toward_plus_infinity =
+			static inline constexpr auto toward_plus_infinity =
 			  detail::policy_impl::rounding_mode::toward_plus_infinity{ };
-			static constexpr auto toward_minus_infinity =
+			static inline constexpr auto toward_minus_infinity =
 			  detail::policy_impl::rounding_mode::toward_minus_infinity{ };
-			static constexpr auto toward_zero =
+			static inline constexpr auto toward_zero =
 			  detail::policy_impl::rounding_mode::toward_zero{ };
-			static constexpr auto away_from_zero =
+			static inline constexpr auto away_from_zero =
 			  detail::policy_impl::rounding_mode::away_from_zero{ };
 		} // namespace rounding_mode
 
 		namespace correct_rounding {
-			static constexpr auto do_not_care =
+			static inline constexpr auto do_not_care =
 			  detail::policy_impl::correct_rounding::do_not_care{ };
-			static constexpr auto to_even =
+			static inline constexpr auto to_even =
 			  detail::policy_impl::correct_rounding::to_even{ };
-			static constexpr auto to_odd =
+			static inline constexpr auto to_odd =
 			  detail::policy_impl::correct_rounding::to_odd{ };
-			static constexpr auto away_from_zero =
+			static inline constexpr auto away_from_zero =
 			  detail::policy_impl::correct_rounding::away_from_zero{ };
-			static constexpr auto toward_zero =
+			static inline constexpr auto toward_zero =
 			  detail::policy_impl::correct_rounding::toward_zero{ };
 		} // namespace correct_rounding
 
 		namespace cache {
-			static constexpr auto normal = detail::policy_impl::cache::normal{ };
-			static constexpr auto compressed =
+			static inline constexpr auto normal =
+			  detail::policy_impl::cache::normal{ };
+			static inline constexpr auto compressed =
 			  detail::policy_impl::cache::compressed{ };
 		} // namespace cache
 
 		namespace input_validation {
-			static constexpr auto assert_finite =
+			static inline constexpr auto assert_finite =
 			  detail::policy_impl::input_validation::assert_finite{ };
-			static constexpr auto do_nothing =
+			static inline constexpr auto do_nothing =
 			  detail::policy_impl::input_validation::do_nothing{ };
 		} // namespace input_validation
 	}   // namespace policy
@@ -2304,7 +2335,7 @@ namespace jkj::dragonbox {
 			template<class ReturnType, class IntervalTypeProvider, class SignPolicy,
 			         class TrailingZeroPolicy, class CorrectRoundingPolicy,
 			         class CachePolicy>
-			JKJ_SAFEBUFFERS static ReturnType
+			JKJ_SAFEBUFFERS static inline ReturnType
 			compute_nearest( ieee754_bits<Float> const br ) noexcept {
 				//////////////////////////////////////////////////////////////////////
 				// Step 1: integer promotion & Schubfach multiplier calculation
@@ -2498,7 +2529,7 @@ namespace jkj::dragonbox {
 
 			template<class TrailingZeroPolicy, class CorrectRoundingPolicy,
 			         class CachePolicy, class ReturnType, class IntervalType>
-			JKJ_FORCEINLINE JKJ_SAFEBUFFERS static void
+			JKJ_FORCEINLINE JKJ_SAFEBUFFERS static inline void
 			shorter_interval_case( ReturnType &ret_value, int const exponent,
 			                       IntervalType const interval_type ) noexcept {
 				// Compute k and beta
@@ -2563,7 +2594,7 @@ namespace jkj::dragonbox {
 
 			template<class ReturnType, class SignPolicy, class TrailingZeroPolicy,
 			         class CachePolicy>
-			JKJ_SAFEBUFFERS static ReturnType
+			JKJ_SAFEBUFFERS static inline ReturnType
 			compute_left_closed_directed( ieee754_bits<Float> const br ) noexcept {
 				//////////////////////////////////////////////////////////////////////
 				// Step 1: integer promotion & Schubfach multiplier calculation
@@ -2652,7 +2683,7 @@ namespace jkj::dragonbox {
 
 			template<class ReturnType, class SignPolicy, class TrailingZeroPolicy,
 			         class CachePolicy>
-			JKJ_SAFEBUFFERS static ReturnType
+			JKJ_SAFEBUFFERS static inline ReturnType
 			compute_right_closed_directed( ieee754_bits<Float> const br ) noexcept {
 				//////////////////////////////////////////////////////////////////////
 				// Step 1: integer promotion & Schubfach multiplier calculation
@@ -2743,7 +2774,7 @@ namespace jkj::dragonbox {
 			}
 
 			// Remove trailing zeros from n and return the number of zeros removed
-			JKJ_FORCEINLINE static int
+			JKJ_FORCEINLINE static inline int
 			remove_trailing_zeros( carrier_uint &n ) noexcept {
 				constexpr auto max_power = [] {
 					auto max_possible_significand =
@@ -2870,7 +2901,7 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static carrier_uint
+			static inline carrier_uint
 			compute_mul( carrier_uint u, cache_entry_type const &cache ) noexcept {
 				if constexpr( format == ieee754_format::binary32 ) {
 					return wuint::umul96_upper32( u, cache );
@@ -2879,8 +2910,8 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static std::uint32_t compute_delta( cache_entry_type const &cache,
-			                                    int beta_minus_1 ) noexcept {
+			static inline std::uint32_t compute_delta( cache_entry_type const &cache,
+			                                           int beta_minus_1 ) noexcept {
 				if constexpr( format == ieee754_format::binary32 ) {
 					return std::uint32_t( cache >> ( cache_bits - 1 - beta_minus_1 ) );
 				} else {
@@ -2889,9 +2920,9 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static bool compute_mul_parity( carrier_uint two_f,
-			                                cache_entry_type const &cache,
-			                                int beta_minus_1 ) noexcept {
+			static inline bool compute_mul_parity( carrier_uint two_f,
+			                                       cache_entry_type const &cache,
+			                                       int beta_minus_1 ) noexcept {
 				assert( beta_minus_1 >= 1 );
 				assert( beta_minus_1 < 64 );
 
@@ -2906,7 +2937,8 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static carrier_uint compute_left_endpoint_for_shorter_interval_case(
+			static inline carrier_uint
+			compute_left_endpoint_for_shorter_interval_case(
 			  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
 				if constexpr( format == ieee754_format::binary32 ) {
 					return carrier_uint(
@@ -2919,7 +2951,8 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static carrier_uint compute_right_endpoint_for_shorter_interval_case(
+			static inline carrier_uint
+			compute_right_endpoint_for_shorter_interval_case(
 			  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
 				if constexpr( format == ieee754_format::binary32 ) {
 					return carrier_uint(
@@ -2932,7 +2965,7 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static carrier_uint
+			static inline carrier_uint
 			compute_round_up_for_shorter_interval_case( cache_entry_type const &cache,
 			                                            int beta_minus_1 ) noexcept {
 				if constexpr( format == ieee754_format::binary32 ) {
@@ -2948,14 +2981,14 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static bool
+			static inline bool
 			is_right_endpoint_integer_shorter_interval( int exponent ) noexcept {
 				return exponent >=
 				         case_shorter_interval_right_endpoint_lower_threshold &&
 				       exponent <= case_shorter_interval_right_endpoint_upper_threshold;
 			}
 
-			static bool
+			static inline bool
 			is_left_endpoint_integer_shorter_interval( int exponent ) noexcept {
 				return exponent >=
 				         case_shorter_interval_left_endpoint_lower_threshold &&
@@ -2964,8 +2997,8 @@ namespace jkj::dragonbox {
 
 			enum class integer_check_case_id { fc_pm_half, fc };
 			template<integer_check_case_id case_id>
-			static bool is_product_integer( carrier_uint two_f, int exponent,
-			                                int minus_k ) noexcept {
+			static inline bool is_product_integer( carrier_uint two_f, int exponent,
+			                                       int minus_k ) noexcept {
 				// Case I: f = fc +- 1/2
 				if constexpr( case_id == integer_check_case_id::fc_pm_half ) {
 					if( exponent < case_fc_pm_half_lower_threshold ) {
@@ -3183,8 +3216,8 @@ namespace jkj::dragonbox {
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	template<class Float, class... Policies>
-	JKJ_SAFEBUFFERS JKJ_FORCEINLINE auto to_decimal( Float x,
-	                                                 Policies... policies ) {
+	JKJ_SAFEBUFFERS JKJ_FORCEINLINE inline auto
+	to_decimal( Float x, Policies... policies ) {
 		// Build policy holder type
 		using namespace detail::policy_impl;
 		using policy_holder = decltype( make_policy_holder(
