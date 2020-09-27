@@ -244,7 +244,7 @@ namespace daw::json {
 }
 ```
 # C++ 20 Naming of JSON members
-When compiled within C++20 compiler, in addition to passing a `char const *` as in C++17, the member names can be specified as string literals directly.
+When compiled within C++20 compiler, in addition to passing a `char const *` as in C++17, the member names can be specified as string literals directly.  C++20 compiler support is still really early and here be dragons.  There are known issues with g++9.x and it's only tested with g++10.  Here be dragons
 ```c++
 namespace daw::json {
   template<>

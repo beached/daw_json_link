@@ -29,7 +29,7 @@
 // buffer overrun attacks No, they aren't.
 #if defined( __GNUC__ ) || defined( __clang__ )
 #define JKJ_SAFEBUFFERS
-#define JKJ_FORCEINLINE __attribute__( ( always_inline ) )
+#define JKJ_FORCEINLINE inline __attribute__( ( always_inline ) )
 #elif defined( _MSC_VER )
 #define JKJ_SAFEBUFFERS __declspec( safebuffers )
 #define JKJ_FORCEINLINE __forceinline
@@ -2529,7 +2529,7 @@ namespace jkj::dragonbox {
 
 			template<class TrailingZeroPolicy, class CorrectRoundingPolicy,
 			         class CachePolicy, class ReturnType, class IntervalType>
-			JKJ_FORCEINLINE JKJ_SAFEBUFFERS static inline void
+			JKJ_FORCEINLINE JKJ_SAFEBUFFERS static void
 			shorter_interval_case( ReturnType &ret_value, int const exponent,
 			                       IntervalType const interval_type ) noexcept {
 				// Compute k and beta
@@ -2774,7 +2774,7 @@ namespace jkj::dragonbox {
 			}
 
 			// Remove trailing zeros from n and return the number of zeros removed
-			JKJ_FORCEINLINE static inline int
+			JKJ_FORCEINLINE static int
 			remove_trailing_zeros( carrier_uint &n ) noexcept {
 				constexpr auto max_power = [] {
 					auto max_possible_significand =
@@ -3216,7 +3216,7 @@ namespace jkj::dragonbox {
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	template<class Float, class... Policies>
-	JKJ_SAFEBUFFERS JKJ_FORCEINLINE inline auto
+	JKJ_SAFEBUFFERS JKJ_FORCEINLINE auto
 	to_decimal( Float x, Policies... policies ) {
 		// Build policy holder type
 		using namespace detail::policy_impl;

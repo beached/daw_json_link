@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 project("json_link"
-        VERSION "2.1.1"
+        VERSION "2.1.2"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
         LANGUAGES C CXX)
@@ -26,6 +26,12 @@ set(json_link_INSTALL_CMAKEDIR
         "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
         CACHE STRING
         "The install directory to use for CMake package config files")
+
+set(DAW_JSON_NO_CPP_NAMES OFF CACHE STRING "Work around compiler support for CNTTP")
+if( DAW_JSON_NO_CPP_NAMES )
+       message("DAW_JSON_NO_CPP_NAMES=ON")
+       add_definitions(-DDAW_JSON_NO_CPP_NAMES)
+endif( )       
 
 set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
 if (DAW_JSON_NO_CONST_EXPR)
