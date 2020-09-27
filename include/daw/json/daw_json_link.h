@@ -37,6 +37,12 @@ namespace daw::json {
 	template<typename... JsonMembers>
 	struct json_member_list {
 		using i_am_a_json_member_list = void;
+		static_assert( ( json_details::is_a_json_type_v<JsonMembers> and ... ),
+		               "Only JSON Link mapping types can appear in a "
+		               "json_member_list(e.g. json_number, json_string...)" );
+		static_assert(
+		  not( is_no_name<JsonMembers> or ... ),
+		  "All members must have a name and not no_name in a json_member_list" );
 		/**
 		 * Serialize a C++ class to JSON data
 		 * @tparam OutputIterator An output iterator with a char value_type
@@ -55,8 +61,6 @@ namespace daw::json {
 			                                        sizeof...( JsonMembers )>::value,
 			               "Argument count is incorrect" );
 
-			static_assert( ( json_details::is_a_json_type_v<JsonMembers> and ... ),
-			               "Only value JSON types can be used" );
 			return json_details::serialize_json_class<JsonMembers...>(
 			  it, std::index_sequence_for<Args...>{ }, args, v );
 		}
