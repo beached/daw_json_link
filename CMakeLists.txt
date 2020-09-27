@@ -27,6 +27,12 @@ set(json_link_INSTALL_CMAKEDIR
         CACHE STRING
         "The install directory to use for CMake package config files")
 
+set(DAW_JSON_NO_CPP_NAMES OFF CACHE STRING "Work around compiler support for CNTTP")
+if( DAW_JSON_NO_CPP_NAMES )
+       message("DAW_JSON_NO_CPP_NAMES=ON")
+       add_definitions(-DDAW_JSON_NO_CPP_NAMES)
+endif( )       
+
 set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
 if (DAW_JSON_NO_CONST_EXPR)
     message("DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
