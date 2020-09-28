@@ -23,11 +23,6 @@ include(GNUInstallDirs)
 
 set(DAW_JSON_LINK_DEFINITIONS "")
 
-option(DAW_JSON_NO_CONST_EXPR "Ensure guaranteed copy elision in array/class types" OFF)
-if (DAW_JSON_NO_CONST_EXPR)
-  list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_JSON_NO_CONST_EXPR=true")
-endif ()
-
 option(DAW_USE_JSON_EXCEPTIONS "Throw exceptions when json errors occur" ON)
 if (DAW_USE_JSON_EXCEPTIONS)
   list(APPEND DAW_JSON_LINK_DEFINITIONS "DAW_USE_JSON_EXCEPTIONS=true")
