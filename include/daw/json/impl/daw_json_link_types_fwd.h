@@ -12,11 +12,13 @@
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
 
+#include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 
 #include <chrono>
+#include <ciso646>
 #include <optional>
 #include <string>
 
@@ -280,12 +282,13 @@ namespace daw::json {
 		struct json_array_detect;
 
 		namespace vector_detect {
+			struct not_vector {};
 			template<typename T, typename... Alloc>
 			[[maybe_unused]] auto vector_test( daw::tag_t<std::vector<T, Alloc...>> )
 			  -> T;
 
 			template<typename T>
-			[[maybe_unused]] int vector_test( daw::tag_t<T> );
+			[[maybe_unused]] not_vector vector_test( daw::tag_t<T> );
 
 			template<typename T>
 			using detector =
@@ -293,7 +296,8 @@ namespace daw::json {
 		} // namespace vector_detect
 
 		template<typename T>
-		using is_vector = daw::is_detected<vector_detect::detector, T>;
+		using is_vector = daw::not_trait<
+		  std::is_same<vector_detect::detector<T>, vector_detect::not_vector>>;
 	} // namespace json_details
 
 	template<typename Mapped, bool Found = true>

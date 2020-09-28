@@ -8,12 +8,14 @@
 
 #pragma once
 
-#include "daw_json_assert.h"
+#include "../daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_not_const_ex_functions.h"
 
 #include <daw/daw_hide.h>
+
+#include <ciso646>
 
 namespace daw::json {
 	/***
@@ -54,7 +56,7 @@ namespace daw::json {
 				if( not rng.has_more( ) ) {
 					return;
 				}
-				switch( *(rng.first + 1 ) ) {
+				switch( *( rng.first + 1 ) ) {
 				case '/':
 					rng.template move_to_next_of_checked<'\n'>( );
 					if( rng.has_more( ) ) {

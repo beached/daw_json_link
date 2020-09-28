@@ -12,6 +12,7 @@
 #include <daw/daw_string_view.h>
 
 #include <algorithm>
+#include <ciso646>
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
@@ -57,6 +58,11 @@ namespace daw::json::json_details {
 namespace daw::json {
 	enum class ErrorType { Unknown, MissingMember, UnexpectedCharacter };
 
+	/***
+	 * When a parser error occurs this is thrown.  It will provide the local
+	 * reason for the error and some information about the location in the parser
+	 * if available.
+	 */
 	class json_exception {
 		std::string m_reason{ };
 		ErrorType m_error_type = ErrorType::Unknown;
@@ -103,8 +109,12 @@ namespace daw::json {
 		}
 	};
 
-	DAW_ATTRIBUTE_FLATTEN inline std::string
-	to_formatted_string( json_exception const &je ) {
+	/***
+	 * Helper to provide output formatted information about json_exception
+	 * @param je json_exception to be formatted
+	 * @return string representation of json_exception
+	 */
+	inline std::string to_formatted_string( json_exception const &je ) {
 		using namespace std::string_literals;
 		std::string result = "reason: "s + je.reason( );
 		if( not je.location( ).empty( ) ) {

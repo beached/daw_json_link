@@ -8,13 +8,18 @@
 
 #pragma once
 
-#include "daw_json_assert.h"
+#include "../daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_not_const_ex_functions.h"
 
 #include <daw/daw_function_table.h>
 #include <daw/daw_hide.h>
+
+#include <ciso646>
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
 
 namespace daw::json {
 	template<bool DocumentIsMinified>
@@ -135,8 +140,8 @@ namespace daw::json {
 					--prime_bracket_count;
 					if( prime_bracket_count == 0 ) {
 						++ptr_first;
-						daw_json_assert( second_bracket_count == 0,
-						                 "Unexpected bracketing", rng );
+						daw_json_assert( second_bracket_count == 0, "Unexpected bracketing",
+						                 rng );
 						result.last = ptr_first;
 						result.counter = cnt;
 						rng.first = ptr_first;

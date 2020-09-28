@@ -1,9 +1,9 @@
-// copyright (c) darrell wright
+// Copyright (c) Darrell Wright
 //
-// distributed under the boost software license, version 1.0. (see accompanying
+// Distributed under the Boost Software License, version 1.0. (see accompanying
 // file license or copy at http://www.boost.org/license_1_0.txt)
 //
-// official repository: https://github.com/beached/daw_json_link
+// Official repository: https://github.com/beached/daw_json_link
 //
 
 #pragma once
@@ -37,6 +37,12 @@ namespace daw::json {
 	template<typename... JsonMembers>
 	struct json_member_list {
 		using i_am_a_json_member_list = void;
+		static_assert( ( json_details::is_a_json_type_v<JsonMembers> and ... ),
+		               "Only JSON Link mapping types can appear in a "
+		               "json_member_list(e.g. json_number, json_string...)" );
+		static_assert(
+		  not( is_no_name<JsonMembers> or ... ),
+		  "All members must have a name and not no_name in a json_member_list" );
 		/**
 		 * Serialize a C++ class to JSON data
 		 * @tparam OutputIterator An output iterator with a char value_type
@@ -55,8 +61,6 @@ namespace daw::json {
 			                                        sizeof...( JsonMembers )>::value,
 			               "Argument count is incorrect" );
 
-			static_assert( ( json_details::is_a_json_type_v<JsonMembers> and ... ),
-			               "Only value JSON types can be used" );
 			return json_details::serialize_json_class<JsonMembers...>(
 			  it, std::index_sequence_for<Args...>{ }, args, v );
 		}
@@ -969,11 +973,19 @@ namespace daw::json {
 		*out_it++ = '[';
 		bool is_first = true;
 		for( auto const &v : c ) {
-			using JsonMember = std::conditional_t<
-			  std::is_same_v<JsonElement, json_details::auto_detect_array_element>,
-			  json_details::unnamed_default_type_mapping<
-			    daw::remove_cvref_t<decltype( v )>>,
-			  JsonElement>;
+			using v_type = daw::remove_cvref_t<decltype( v )>;
+			constexpr bool is_auto_detect_v =
+			  std::is_same_v<JsonElement, json_details::auto_detect_array_element>;
+			using JsonMember =
+			  std::conditional_t<is_auto_detect_v,
+			                     json_details::unnamed_default_type_mapping<v_type>,
+			                     JsonElement>;
+
+			static_assert(
+			  not std::is_same_v<
+			    JsonMember, daw::json::missing_json_data_contract_for<JsonElement>>,
+			  "Unable to detect unnamed mapping" );
+			static_assert( not std::is_same_v<JsonElement, JsonMember> );
 			if( is_first ) {
 				is_first = false;
 			} else {

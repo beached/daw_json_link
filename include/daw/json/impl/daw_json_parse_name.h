@@ -8,9 +8,11 @@
 
 #pragma once
 
-#include "daw_json_assert.h"
+#include "../daw_json_assert.h"
 #include "daw_json_parse_std_string.h"
 #include "daw_not_const_ex_functions.h"
+
+#include <ciso646>
 
 namespace daw::json::json_details::name {
 	namespace name_parser {

@@ -13,7 +13,7 @@
 
 #include "defines.h"
 
-#include "citm_test.h"
+#include "citm_test_json.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>

@@ -33,7 +33,7 @@
   * [Variant](cookbook/variant.md)
   * [Automatic Code Generation](cookbook/automated_code_generation.md)
 * [Intro](#intro)
-* [Installing](#installing)
+* [Installing/Using](#installingusing)
 * [Performance considerations](#performance-considerations)
   * [Benchmarks](#benchmarks)
 * [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
@@ -92,6 +92,10 @@ The event based parser(SAX) can be called via `daw::json::json_event_parser`.  I
 * [Tests](tests/) provide another source of working code samples. 
 * Some video walkthroughs
   * [Making a config parser](https://youtu.be/iiRDn0CR_sU)
+  * [I Like BigInt's](https://www.youtube.com/watch?v=mhlrYvd1qso)
+* Links to other examples  
+  * [Parsing a Config File](https://github.com/beached/daw_json_link_config_parser)
+  * [Parsing BigInt/Multiprecision Numbers](https://github.com/beached/daw_json_link_bigint_mp_numbers) 	
 * Small samples below
 
 
@@ -162,9 +166,36 @@ struct daw::json::json_data_contract<MyType> {
 };
 ```
  
-## Installing
+## Installing/Using
 ###### [Top](#content)
 
+### Including in cmake project
+To use daw_json_link in your cmake projects, adding the following should allow it to pull it in along with the dependencies:
+```cmake
+include( FetchContent )
+FetchContent_Declare(
+        daw_json_link
+        GIT_REPOSITORY https://github.com/beached/daw_json_link
+				GIT_TAG release
+)
+FetchContent_MakeAvailable(daw_json_link)
+```
+Then in the targets that need it:
+```cmake
+target_link_libraries( MyTarget daw::json_link )
+```
+### Installing 
+On a system with bash, it is similar on other systems too, the following can install for the system 
+```bash
+git clone https://github.com/beached/daw_json_link
+cd daw_json_link
+mkdir build
+cd build
+cmake ..
+cmake --install . 
+```
+
+### Testing
 The following will build and run the tests. 
 ```bash
 git clone https://github.com/beached/daw_json_link
@@ -175,25 +206,11 @@ cmake -DDAW_ENABLE_TESTING=On ..
 cmake --build . 
 ctest .
 ```
-If you
-After the build there the examples can be tested. ```city_test_bin``` requires the path to the cities JSON file.
+After the build there the individual examples can be tested too. ```city_test_bin``` requires the path to the cities JSON file.
 ```bash
 ./tests/city_test_bin ../test_data/cities.json
 ```
 
-To use daw_json_link in your cmake projects, adding the following should allow it to pull in the dependencies:
-```cmake
-include( FetchContent )
-FetchContent_Declare(
-        daw_json_link
-        GIT_REPOSITORY https://github.com/beached/daw_json_link
-)
-FetchContent_MakeAvailable(daw_json_link)
-```
-Then in the targets that need it:
-```cmake
-target_link_libraries( MyTarget daw::json_link )
-```
 
 ## Performance considerations
 ###### [Top](#content)
@@ -227,7 +244,7 @@ namespace daw::json {
 }
 ```
 # C++ 20 Naming of JSON members
-When compiled within C++20 compiler, in addition to passing a `char const *` as in C++17, the member names can be specified as string literals directly.
+When compiled within C++20 compiler, in addition to passing a `char const *` as in C++17, the member names can be specified as string literals directly.  C++20 compiler support is still really early and here be dragons.  There are known issues with g++9.x and it's only tested with g++10.  Here be dragons
 ```c++
 namespace daw::json {
   template<>
@@ -549,7 +566,7 @@ std::cout << value << '\n';
 std::vector<AggData> values = //...;
 std::cout << values << '\n';
 ```
-A working example can be found at [daw_json_iostream_test.cpp](tests/daw_json_iostream_test.cpp) 
+A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_json_iostream_test.cpp) 
 
 ## Build configuration points
 There are a few defines that affect how JSON Link operates

@@ -11,6 +11,7 @@
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_string_view.h>
 
+#include <ciso646>
 #include <chrono>
 #include <cstdint>
 

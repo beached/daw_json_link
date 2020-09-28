@@ -8,7 +8,7 @@
 
 #include "defines.h"
 
-#include "twitter_test.h"
+#include "twitter_test_json.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
