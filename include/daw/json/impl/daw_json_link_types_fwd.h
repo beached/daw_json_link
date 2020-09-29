@@ -139,6 +139,35 @@ namespace daw::json {
 	         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
 	struct json_string_raw;
 
+	namespace json_details {
+		template<typename WrappedItem, bool>
+		struct wrapped_item_ctor_t_impl {
+			constexpr WrappedItem operator( )( ) const {
+				return daw::construct_a<WrappedItem>( );
+			}
+
+			template<typename... Args, std::enable_if_t<( sizeof...( Args ) > 0 ),
+			                                            std::nullptr_t> = nullptr>
+			constexpr auto operator( )( Args &&... args ) const {
+				using wrapped_type = decltype( *std::declval<WrappedItem>( ) );
+				static_assert( std::is_constructible_v<WrappedItem, wrapped_type> );
+				static_assert( std::is_constructible_v<wrapped_type, Args...> );
+				return daw::construct_a<WrappedItem>(
+				  daw::construct_a<wrapped_type>( std::forward<Args>( args )... ) );
+			}
+		};
+
+		template<typename WrappedItem>
+		struct wrapped_item_ctor_t_impl<WrappedItem, false>
+		  : private daw::construct_a_t<WrappedItem> {
+			using daw::construct_a_t<WrappedItem>::operator( );
+		};
+	} // namespace json_details
+
+	template<typename WrappedItem>
+	using wrapped_item_ctor_t = json_details::wrapped_item_ctor_t_impl<
+	  WrappedItem, json_details::can_deref_v<WrappedItem>>;
+
 	/**
 	 * Member is a nullable escaped string and requires unescaping and escaping of
 	 * string data.  Not all invalid codepoints are detected
@@ -154,7 +183,7 @@ namespace daw::json {
 	 * data
 	 */
 	template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
-	         typename Constructor = daw::construct_a_t<String>,
+	         typename Constructor = wrapped_item_ctor_t<String>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
 	         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
@@ -196,8 +225,7 @@ namespace daw::json {
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
 	 */
 	template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
-	         typename Constructor =
-	           daw::construct_a_t<std::optional<std::string>>,
+	         typename Constructor = wrapped_item_ctor_t<String>,
 	         typename Appender = json_details::basic_appender<std::string>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull>
