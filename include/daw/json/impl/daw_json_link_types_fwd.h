@@ -149,7 +149,8 @@ namespace daw::json {
 			template<typename... Args, std::enable_if_t<( sizeof...( Args ) > 0 ),
 			                                            std::nullptr_t> = nullptr>
 			constexpr auto operator( )( Args &&... args ) const {
-				using wrapped_type = decltype( *std::declval<WrappedItem>( ) );
+				using wrapped_type =
+				  daw::remove_cvref_t<decltype( *std::declval<WrappedItem>( ) )>;
 				static_assert( std::is_constructible_v<WrappedItem, wrapped_type> );
 				static_assert( std::is_constructible_v<wrapped_type, Args...> );
 				return daw::construct_a<WrappedItem>(
