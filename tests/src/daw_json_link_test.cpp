@@ -8,9 +8,9 @@
 
 #include "defines.h"
 
+#include "daw/json/daw_json_assert.h"
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
-#include "daw/json/daw_json_assert.h"
 #include "daw/json/impl/daw_json_exec_modes.h"
 
 #include <daw/daw_arith_traits.h>
@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <iostream>
 #include <optional>
+#include <random>
 #include <sstream>
 #include <vector>
 
@@ -436,6 +437,50 @@ void test128( ) {
 #endif
 #endif
 
+long long test_dblparse( std::string_view num ) {
+	double lib_parse_dbl = daw::json::from_json<double>( num );
+	char *nend = nullptr;
+	double const strod_parse_dbl = std::strtod( num.data( ), &nend );
+
+	std::uint64_t const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
+	std::uint64_t const ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
+	auto const diff = std::abs( static_cast<long long>( ui0 - ui1 ) );
+#ifndef NDEBUG
+	if( diff > 3 ) {
+		auto const old_precision = std::cout.precision( );
+		// Do again to do it from debugger
+		lib_parse_dbl = daw::json::from_json<double>( num );
+		std::cout.precision( std::numeric_limits<double>::max_digits10 );
+		std::cout << "orig: " << num << '\n';
+		std::cout << "daw_json_link: " << lib_parse_dbl << '\n'
+		          << "strtod: " << strod_parse_dbl << '\n';
+		std::cout << "diff: " << ( lib_parse_dbl - strod_parse_dbl ) << '\n';
+
+		std::cout.precision( old_precision );
+		std::cout << std::dec << "unsigned diff: " << diff << '\n';
+	}
+#endif
+	return diff;
+}
+
+template<int NUM_VALS = 1'000'000>
+void test_lots_of_doubles( ) {
+	std::mt19937_64 rng;
+	auto dist = std::map<long long, std::size_t>( );
+	for( int i = 0; i < NUM_VALS; ++i ) {
+		unsigned long long x1 = rng( );
+		unsigned long long x2 = rng( );
+		int x3 = std::uniform_int_distribution<>( -308, +308 )( rng );
+		char buffer[128];
+		std::sprintf( buffer, "%llu.%llue%d", x1, x2, x3 );
+		dist[test_dblparse( buffer )]++;
+	}
+	std::cout << std::dec << "distribution of diff:\n";
+	for( auto const &p : dist ) {
+		std::cout << "difference: " << p.first << " count: " << p.second << '\n';
+	}
+}
+
 int main( int, char ** ) try {
 	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
 	test_004( );
@@ -584,6 +629,18 @@ int main( int, char ** ) try {
 	std::cout << "10.7976931348623157E307 -> "
 	          << from_json<double>( "10.7976931348623157E307" ) << '\n';
 
+	test_dblparse(
+	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
+	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
+	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
+	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
+	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
+	  "111111111111111111111111111111.0e-100" );
+	test_dblparse( "14514284786278117030.4620546740167642908e-104" );
+	test_dblparse( "560449937253421.57275338353451748e-223" );
+	test_dblparse( "127987629894956.6249879371780786496e-274" );
+	test_dblparse( "19700720435664.186294290058937593e13" );
+	test_lots_of_doubles( );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
