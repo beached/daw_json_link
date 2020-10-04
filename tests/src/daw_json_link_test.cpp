@@ -437,8 +437,22 @@ void test128( ) {
 #endif
 #endif
 
+template<bool KnownBounds = false>
 long long test_dblparse( std::string_view num ) {
-	double lib_parse_dbl = daw::json::from_json<double>( num );
+	double lib_parse_dbl = [&] {
+		if constexpr( KnownBounds ) {
+			auto rng = daw::json::NoCommentSkippingPolicyChecked(
+			  num.data( ), num.data( ) + num.size( ) );
+			rng = daw::json::json_details::skip_number( rng );
+			using json_member =
+			  daw::json::json_details::unnamed_default_type_mapping<double>;
+			return daw::json::json_details::parse_value<json_member, KnownBounds>(
+			  daw::json::ParseTag<json_member::expected_type>{ }, rng );
+		} else {
+			return daw::json::from_json<
+			  double, daw::json::NoCommentSkippingPolicyChecked, KnownBounds>( num );
+		}
+	}( );
 	char *nend = nullptr;
 	double const strod_parse_dbl = std::strtod( num.data( ), &nend );
 
@@ -446,10 +460,12 @@ long long test_dblparse( std::string_view num ) {
 	std::uint64_t const ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
 	auto const diff = std::abs( static_cast<long long>( ui0 - ui1 ) );
 #ifndef NDEBUG
-	if( diff > 3 ) {
+	if( diff > 2 ) {
 		auto const old_precision = std::cout.precision( );
 		// Do again to do it from debugger
-		lib_parse_dbl = daw::json::from_json<double>( num );
+		lib_parse_dbl =
+		  daw::json::from_json<double, daw::json::NoCommentSkippingPolicyChecked,
+		                       KnownBounds>( num );
 		std::cout.precision( std::numeric_limits<double>::max_digits10 );
 		std::cout << "orig: " << num << '\n';
 		std::cout << "daw_json_link: " << lib_parse_dbl << '\n'
@@ -463,9 +479,10 @@ long long test_dblparse( std::string_view num ) {
 	return diff;
 }
 
-template<int NUM_VALS = 1'000'000>
+template<bool KnownBounds = false, int NUM_VALS = 1'000'000>
 void test_lots_of_doubles( ) {
-	std::mt19937_64 rng;
+	auto rd = std::random_device( );
+	auto rng = std::mt19937_64( rd( ) );
 	auto dist = std::map<long long, std::size_t>( );
 	for( int i = 0; i < NUM_VALS; ++i ) {
 		unsigned long long x1 = rng( );
@@ -473,7 +490,7 @@ void test_lots_of_doubles( ) {
 		int x3 = std::uniform_int_distribution<>( -308, +308 )( rng );
 		char buffer[128];
 		std::sprintf( buffer, "%llu.%llue%d", x1, x2, x3 );
-		dist[test_dblparse( buffer )]++;
+		dist[test_dblparse<KnownBounds>( buffer )]++;
 	}
 	std::cout << std::dec << "distribution of diff:\n";
 	for( auto const &p : dist ) {
@@ -516,7 +533,7 @@ int main( int, char ** ) try {
 	std::cout << "No 128bit int support detected\n";
 #endif
 
-	daw::do_not_optimize( test_001_t_json_data );
+	// daw::do_not_optimize( test_001_t_json_data );
 	CX auto data = daw::json::from_json<test_001_t>( test_001_t_json_data );
 	{
 		std::string tmp = to_json( data );
@@ -636,11 +653,19 @@ int main( int, char ** ) try {
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
 	  "111111111111111111111111111111.0e-100" );
+	test_dblparse(
+	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
+	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
+	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
+	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
+	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
+	  "111111111111111111111111111111.0e+100" );
 	test_dblparse( "14514284786278117030.4620546740167642908e-104" );
 	test_dblparse( "560449937253421.57275338353451748e-223" );
 	test_dblparse( "127987629894956.6249879371780786496e-274" );
 	test_dblparse( "19700720435664.186294290058937593e13" );
 	test_lots_of_doubles( );
+	test_lots_of_doubles<true>( );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
