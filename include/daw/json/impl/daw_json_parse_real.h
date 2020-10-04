@@ -54,9 +54,13 @@ namespace daw::json::json_details {
 
 	template<typename Result>
 	static inline constexpr Result power10( constexpr_exec_tag const &,
-	                                        double result, std::int32_t p ) {
-		constexpr int max_exp = std::numeric_limits<double>::max_exponent10;
-		constexpr double max_v = dpow10_tbl[max_exp];
+	                                        Result result, std::int32_t p ) {
+		// We only have a double table, of which float is a subset.  Long double
+		// will be calculated in terms of that
+		constexpr int max_exp = std::is_same_v<Result, float>
+		                          ? std::numeric_limits<float>::max_exponent10
+		                          : std::numeric_limits<double>::max_exponent10;
+		constexpr Result max_v = static_cast<Result>( dpow10_tbl[max_exp] );
 
 		if( p > max_exp ) {
 			do {
@@ -70,9 +74,16 @@ namespace daw::json::json_details {
 			} while( p < -max_exp );
 		}
 		if( p < 0 ) {
-			return static_cast<Result>( result / dpow10_tbl[-p] );
+			return static_cast<Result>( result ) /
+			       static_cast<Result>( dpow10_tbl[-p] );
 		}
-		return static_cast<Result>( result * dpow10_tbl[p] );
+		return static_cast<Result>( result ) * static_cast<Result>( dpow10_tbl[p] );
+	}
+
+	template<typename Result>
+	static inline constexpr Result power10( runtime_exec_tag const &,
+	                                        Result result, std::int32_t p ) {
+		return result * std::pow( static_cast<Result>( 10.0 ), p );
 	}
 
 	template<typename Result>
@@ -194,8 +205,8 @@ namespace daw::json::json_details {
 			  Range::exec_tag, rng );
 			exp += exp_tmp;
 		}
-		return power10<Result>( Range::exec_tag,
-		                        static_cast<double>( sign * digits ), exp );
+		return sign * power10<Result>( Range::exec_tag,
+		                               static_cast<Result>( digits ), exp );
 	}
 
 	template<typename Result, bool KnownRange, typename Range,
@@ -272,6 +283,6 @@ namespace daw::json::json_details {
 			                    Range::exec_tag, exp_rng );
 		}
 		return sign * power10<Result>( Range::exec_tag,
-		                               static_cast<double>( value ), exp );
+		                               static_cast<Result>( value ), exp );
 	}
 } // namespace daw::json::json_details
