@@ -335,16 +335,21 @@ namespace daw::json {
 	};
 
 	template<JSONNAMETYPE Name, typename T>
-	constexpr auto json_link_quick_map( ) -> daw::if_t<
-	  std::is_same_v<T, std::string_view>,
-	  json_link_quick_map_type<json_string_raw<Name, std::string_view>>,
-	  daw::if_t<std::is_same_v<T, daw::string_view>,
-	            json_link_quick_map_type<json_string_raw<Name, daw::string_view>>,
-	            daw::if_t<std::is_same_v<T, std::string>,
-	                      json_link_quick_map_type<json_string<Name>>,
-	                      daw::if_t<std::is_same_v<T, bool>,
-	                                json_link_quick_map_type<json_bool<Name>>,
-	                                json_link_quick_map_type<void, false>>>>>;
+	DAW_ATTRIBUTE_HIDDEN inline constexpr auto json_link_quick_map( ) {
+		if constexpr( std::is_same_v<T, std::string_view> ) {
+			return json_link_quick_map_type<
+			  json_string_raw<Name, std::string_view>>{ };
+		} else if constexpr( std::is_same_v<T, daw::string_view> ) {
+			return json_link_quick_map_type<
+			  json_string_raw<Name, daw::string_view>>{ };
+		} else if constexpr( std::is_same_v<T, std::string> ) {
+			return json_link_quick_map_type<json_string<Name>>{ };
+		} else if constexpr( std::is_same_v<T, bool> ) {
+			return json_link_quick_map_type<json_bool<Name>>{ };
+		} else {
+			return json_link_quick_map_type<void, false>{ };
+		}
+	}
 	/***
 	 * Check if the current type has a quick map specialized for it
 	 */
