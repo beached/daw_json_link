@@ -474,6 +474,7 @@ long long test_dblparse( std::string_view num ) {
 
 		std::cout.precision( old_precision );
 		std::cout << std::dec << "unsigned diff: " << diff << '\n';
+		std::terminate( );
 	}
 #endif
 	return diff;
