@@ -207,26 +207,28 @@ namespace daw::json::json_details {
 		auto [digits, exp] = parse_real_part<Result>( Range::exec_tag, rng );
 		if( rng.is_exponent_checked( ) ) {
 			rng.remove_prefix( );
-			int exp_tmp = [&] {
+			bool const exp_sign = [&] {
 				switch( rng.front( ) ) {
 				case '-':
 					rng.remove_prefix( );
-					return -1;
+					return true;
 				case '+':
 					rng.remove_prefix( );
-					return 1;
+					return false;
 				default:
-					return 1;
+					return false;
 				}
 			}( );
-			exp_tmp *= unsigned_parser<int, JsonRangeCheck::Never, false>(
-			  Range::exec_tag, rng );
-			exp += exp_tmp;
+			if( exp_sign ) {
+				exp -= unsigned_parser<int, JsonRangeCheck::Never, false>(
+				  Range::exec_tag, rng );
+			} else {
+				exp += unsigned_parser<int, JsonRangeCheck::Never, false>(
+				  Range::exec_tag, rng );
+			}
 		}
-		return copy_sign(
-		  Range::exec_tag,
-		  power10<Result>( Range::exec_tag, static_cast<Result>( digits ), exp ),
-		  sign );
+		return sign * power10<Result>( Range::exec_tag,
+		                               static_cast<Result>( digits ), exp );
 	}
 
 	template<typename Result, bool KnownRange, typename Range,
@@ -240,9 +242,12 @@ namespace daw::json::json_details {
 
 		char const *whole_first = rng.first;
 		char const *whole_last = rng.class_first;
-		char const *fract_first = rng.class_first;
+		char const *fract_first =
+		  rng.class_first == nullptr ? nullptr : rng.class_first + 1;
 		char const *fract_last = rng.class_last;
-		auto exp_rng = Range( rng.class_last, rng.last );
+		auto exp_rng = rng.class_last == nullptr
+		                 ? Range( nullptr, nullptr )
+		                 : Range( rng.class_last + 1, rng.last );
 
 		if( rng.class_first == nullptr ) {
 			if( rng.class_last == nullptr ) {
@@ -253,22 +258,13 @@ namespace daw::json::json_details {
 		} else if( rng.class_last == nullptr ) {
 			fract_last = rng.last;
 		}
-		// If fract exist, it will start with a '.'
-		if( fract_first != nullptr ) {
-			++fract_first;
-		}
 
-		// If exp exists, it will start with a 'e' or 'E'
-		if( exp_rng.data( ) != nullptr ) {
-			exp_rng.remove_prefix( );
-		}
-
-		Result const sign = [&] {
+		bool const sign = [&] {
 			if( *whole_first == '-' ) {
 				++whole_first;
-				return static_cast<Result>( -1.0 );
+				return true;
 			}
-			return static_cast<Result>( 1.0 );
+			return false;
 		}( );
 
 		// TODO clarify this
@@ -290,25 +286,31 @@ namespace daw::json::json_details {
 		}
 		exp -= digits_avail;
 		if( exp_rng.size( ) > 0 ) {
-			int exp_sign = [&] {
+			bool const exp_sign = [&] {
 				switch( exp_rng.front( ) ) {
 				case '-':
 					exp_rng.remove_prefix( );
-					return -1;
+					return true;
 				case '+':
 					exp_rng.remove_prefix( );
-					break;
+					return false;
 				default:
-					break;
+					return false;
 				}
-				return 1;
 			}( );
-			exp += exp_sign * unsigned_parser<int, JsonRangeCheck::Never, true>(
-			                    Range::exec_tag, exp_rng );
+			if( exp_sign ) {
+				exp -= unsigned_parser<int, JsonRangeCheck::Never, true>(
+				  Range::exec_tag, exp_rng );
+			} else {
+				exp += unsigned_parser<int, JsonRangeCheck::Never, true>(
+				  Range::exec_tag, exp_rng );
+			}
 		}
-		return copy_sign(
-		  Range::exec_tag,
-		  power10<Result>( Range::exec_tag, static_cast<Result>( value ), exp ),
-		  sign );
+		if( sign ) {
+			return -power10<Result>( Range::exec_tag, static_cast<Result>( value ),
+			                         exp );
+		}
+		return power10<Result>( Range::exec_tag, static_cast<Result>( value ),
+		                        exp );
 	}
 } // namespace daw::json::json_details
