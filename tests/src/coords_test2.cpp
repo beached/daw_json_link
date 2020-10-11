@@ -66,7 +66,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filename to open\n";

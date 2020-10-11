@@ -23,7 +23,11 @@
 #include <cstdio>
 #include <iostream>
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	if( argc < 2 ) {
 		puts( "Must supply a file name\n" );
 		exit( 1 );
@@ -42,7 +46,10 @@ int main( int argc, char **argv ) try {
 	(void)last;
 	// new_json_result.resize( std::distance( new_json_result.data( ), last ) );
 	daw::do_not_optimize( canada_result );
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

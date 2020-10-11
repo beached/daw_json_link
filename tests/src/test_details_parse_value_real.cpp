@@ -94,7 +94,11 @@ bool test_real_untrusted( ) {
 		          << "" #__VA_ARGS__ << "'\n";                                     \
 	} while( false )
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	do_test( test_zero_untrusted( ) );
 	do_fail_test( test_positive_zero_untrusted( ) );
 	do_test( test_negative_zero_untrusted( ) );

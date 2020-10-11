@@ -224,7 +224,11 @@ namespace tests {
 	}                                                                            \
 	while( false )
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	expect_fail( tests::quotes_in_numbers( ),
 	             "Failed to find unexpected quotes in numbers" );
 	expect_fail( tests::bool_in_numbers( ),

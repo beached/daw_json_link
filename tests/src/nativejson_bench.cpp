@@ -227,7 +227,11 @@ void test( char **argv ) {
 	daw_json_assert( canada_result, "Missing value" );
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	try {
 		using namespace daw::json;
 #if defined( NDEBUG ) and not defined( DEBUG )

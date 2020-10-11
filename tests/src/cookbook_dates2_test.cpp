@@ -151,7 +151,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_dates2.json file\n" );
 		exit( EXIT_FAILURE );
@@ -172,7 +176,10 @@ int main( int argc, char **argv ) try {
 	  daw::json::from_json<daw::cookbook_dates2::MyClass2>( str );
 
 	daw_json_assert( cls == cls2, "Unexpected round trip error" );
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

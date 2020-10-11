@@ -67,6 +67,10 @@ namespace daw::json {
 		  , class_first( f )
 		  , class_last( l ) {}
 
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr iterator data( ) const {
+			return first;
+		}
+
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr iterator begin( ) const {
 			return first;
 		}

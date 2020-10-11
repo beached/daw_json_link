@@ -62,7 +62,11 @@ namespace daw::json {
 	struct force_aggregate_constrution<B> : std::true_type {};
 } // namespace daw::json
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	constexpr std::string_view json_data = R"({ "some_num": 1234 } )";
 	daw::expecting(
 	  daw::json::from_json<A, daw::json::SIMDNoCommentSkippingPolicyChecked<

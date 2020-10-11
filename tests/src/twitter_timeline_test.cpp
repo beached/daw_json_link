@@ -102,7 +102,11 @@ void test( std::string_view json_sv1 ) {
 	daw_json_assert( not twitter_result.empty( ), "Unexpected empty array" );
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 
 	using namespace daw::json;
 	if( argc < 2 ) {

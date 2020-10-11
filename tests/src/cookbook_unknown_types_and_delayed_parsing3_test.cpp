@@ -41,7 +41,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( ) try {
+int main( )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	std::string obj = R"({ "member": 12345, "member2": "hello" })";
 	auto my_thing = Thing{ "update", 1, obj };
 	auto json = daw::json::to_json( my_thing );

@@ -31,7 +31,11 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	try {
 		using namespace daw::json;
 #if defined( NDEBUG ) and not defined( DEBUG )

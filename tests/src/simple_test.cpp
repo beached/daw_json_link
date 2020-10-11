@@ -58,7 +58,11 @@ std::string get_json_data( std::string file_name ) {
 	                    std::istreambuf_iterator<char>( ) );
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	using namespace daw::json;
 	// uses cities.json
 	if( argc < 2 ) {

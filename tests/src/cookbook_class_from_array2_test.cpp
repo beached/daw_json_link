@@ -46,7 +46,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_class_from_array2.json file\n" );
 		exit( EXIT_FAILURE );
@@ -69,7 +73,10 @@ int main( int argc, char **argv ) try {
 	if( cls != cls2 ) {
 		puts( "not exact same\n" );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

@@ -57,7 +57,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_array3.json file\n" );
 		exit( EXIT_FAILURE );
@@ -77,7 +81,10 @@ int main( int argc, char **argv ) try {
 	  { str.data( ), str.size( ) } );
 
 	daw_json_assert( my_array_class == my_array_class2, "Round trip failed" );
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

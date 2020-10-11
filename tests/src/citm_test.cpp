@@ -73,7 +73,11 @@ void test( std::string_view json_sv1 ) {
 	}
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -113,7 +117,10 @@ int main( int argc, char **argv ) try {
 	  citm_result );
 	daw_json_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

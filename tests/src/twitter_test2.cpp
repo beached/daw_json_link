@@ -45,7 +45,11 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	daw_json_error( "Expected that values would be equal" );
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 
 	using namespace daw::json;
 	if( argc < 2 ) {
@@ -113,7 +117,11 @@ int main( int argc, char **argv ) try {
 
 	/*daw_json_assert( twitter_result == twitter_result2,
 	                 "Expected round trip to produce same result" );*/
-} catch( daw::json::json_exception const &jex ) {
+
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

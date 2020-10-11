@@ -163,7 +163,11 @@ bool test_escaped_quote_004( ) {
 		          << "" #__VA_ARGS__ << "'\n";                                     \
 	} while( false )
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	do_test( test_empty( ) );
 	do_test( test_quoted_number( ) );
 	do_test( test_empty_quoted( ) );

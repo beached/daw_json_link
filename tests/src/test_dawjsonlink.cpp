@@ -65,7 +65,11 @@ std::string read_file( std::string const &filename ) {
 	                    std::istreambuf_iterator<char>( ) );
 }
 
-int main( int argc, char *argv[] ) try {
+int main( int argc, char *argv[] )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	std::string const text = read_file( "/tmp/1.json" );
 
 	auto const json_sv = std::string_view( text.data( ), text.size( ) );

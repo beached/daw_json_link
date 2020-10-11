@@ -498,7 +498,11 @@ void test_lots_of_doubles( ) {
 	}
 }
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
 	test_004( );
 	test_005( );

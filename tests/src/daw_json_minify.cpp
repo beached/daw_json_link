@@ -131,7 +131,11 @@ void minify( daw::Arguments const &args, std::string_view data,
 	}
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	std::ios::sync_with_stdio( false );
 
 	auto args = daw::Arguments( argc, argv );
@@ -155,6 +159,7 @@ int main( int argc, char **argv ) try {
 		minify( args, data, std::ostreambuf_iterator<char>( std::cout ) );
 	}
 } catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser\n" << to_formatted_string( jex ) << std::endl;
+	std::cerr << "Exception thrown by parser\n"
+	          << to_formatted_string( jex ) << std::endl;
 	exit( 1 );
 }
