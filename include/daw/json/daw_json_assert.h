@@ -50,7 +50,10 @@ namespace daw::json::json_details {
 	struct missing_member {
 		std::string member_name;
 
-		explicit inline missing_member( daw::string_view name )
+		template<typename StringView,
+		         std::enable_if_t<(not std::is_same_v<StringView, missing_member>),
+		                          std::nullptr_t> = nullptr>
+		explicit inline missing_member( StringView name )
 		  : member_name( name.data( ), name.size( ) ) {}
 	};
 } // namespace daw::json::json_details
