@@ -62,7 +62,11 @@ void test( ) {
 	}
 }
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	test<daw::json::constexpr_exec_tag, 1000>( );
 	test<daw::json::runtime_exec_tag, 1000>( );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,

@@ -133,7 +133,11 @@ bool test_embedded_arrays_broken_001( ) {
 		          << "" #__VA_ARGS__ << "'\n";                                     \
 	} while( false )
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	do_test( test_empty_quoted( ) );
 	do_fail_test( test_end_of_stream( ) );
 	do_fail_test( test_extra_slash( ) );

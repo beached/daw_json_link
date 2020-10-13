@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "daw_json_arrow_proxy.h"
 #include "../daw_json_assert.h"
+#include "daw_json_arrow_proxy.h"
 #include "daw_json_iterator_range.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_iso8601_utils.h"
@@ -221,11 +221,13 @@ namespace daw::json::json_details {
 	[[nodiscard]] inline constexpr Range
 	find_class_member( locations_info_t<N, Range, B> &locations, Range &rng ) {
 
-		daw_json_assert_weak(
-		  ( is_json_nullable_v<JsonMember> or not locations[pos].missing( ) or
-		    not rng.is_closing_brace_checked( ) ),
-		  "Unexpected end of class.  Non-nullable members still not found", rng );
-
+		if constexpr( not Range::is_unchecked_input ) {
+			if( not( is_json_nullable_v<JsonMember> or
+			         ( not locations[pos].missing( ) ) or
+			         ( not rng.is_closing_brace_checked( ) ) ) ) {
+				daw_json_error( missing_member( JsonMember::name ), rng );
+			}
+		}
 		rng.trim_left_unchecked( );
 		// TODO: should we check for end
 		while( locations[pos].missing( ) & ( rng.front( ) != '}' ) ) {
@@ -360,7 +362,8 @@ namespace daw::json::json_details {
 			  ParseTag<JsonMember::expected_type>{ }, loc );
 		} else {
 			daw_json_error( missing_member( std::string_view(
-			  JsonMember::name.data( ), JsonMember::name.size( ) ) ) );
+			                  JsonMember::name.data( ), JsonMember::name.size( ) ) ),
+			                rng );
 		}
 	}
 
@@ -393,6 +396,7 @@ namespace daw::json::json_details {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
 		rng.trim_left( );
+		// TODO, use member name
 		daw_json_assert_weak( rng.is_opening_brace_checked( ),
 		                      "Expected start of class", rng );
 		rng.set_class_position( );

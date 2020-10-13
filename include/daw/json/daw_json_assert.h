@@ -48,10 +48,13 @@
 
 namespace daw::json::json_details {
 	struct missing_member {
-		std::string_view member_name;
+		std::string member_name;
 
-		explicit inline constexpr missing_member( std::string_view name )
-		  : member_name( name ) {}
+		template<typename StringView,
+		         std::enable_if_t<(not std::is_same_v<StringView, missing_member>),
+		                          std::nullptr_t> = nullptr>
+		explicit inline missing_member( StringView name )
+		  : member_name( name.data( ), name.size( ) ) {}
 	};
 } // namespace daw::json::json_details
 
@@ -133,6 +136,8 @@ namespace daw::json {
 #ifndef _WIN32
 			result += "\x1b[0m\n";
 #endif
+		} else {
+			result += "\nlocation: untracked\n"s;
 		}
 		return result;
 	}
@@ -224,8 +229,10 @@ daw_json_error( daw::json::json_details::missing_member reason,
 		msg += static_cast<std::string>( reason.member_name ) + "'"s;
 		if( location.class_first and location.first ) {
 			throw daw::json::json_exception(
-			  msg, std::string_view( location.class_first, ( location.first + 1 ) -
-			                                                 location.class_first ) );
+			  msg,
+			  std::string_view( location.class_first,
+			                    static_cast<std::size_t>( ( location.first + 1 ) -
+			                                              location.class_first ) ) );
 		} else {
 			throw daw::json::json_exception( msg );
 		}

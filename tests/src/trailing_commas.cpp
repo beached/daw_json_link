@@ -216,7 +216,11 @@ bool test_array_trail( ) {
 	return true;
 }
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	daw_json_assert( test_int_trail( ),
 	                 "Signed integers fail to accommodate trailing strings" );
 	daw_json_assert( test_string_raw_trail( ),

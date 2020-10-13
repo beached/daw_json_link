@@ -93,7 +93,11 @@ bool test_null_number_untrusted_known( ) {
 		          << "" #__VA_ARGS__ << "'\n";                                     \
 	} while( false )
 
-int main( ) try {
+int main( )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	do_test( test_null_literal_untrusted( ) );
 	do_test( test_null_literal_known( ) );
 	do_test( test_null_number_untrusted( ) );

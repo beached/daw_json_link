@@ -53,7 +53,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	using namespace daw::json;
 	std::ios_base::sync_with_stdio( false );
 	/*

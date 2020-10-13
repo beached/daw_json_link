@@ -485,7 +485,11 @@ void test_func( ) {
 #endif
 }
 
-int main( int argc, char ** ) try {
+int main( int argc, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	if( argc > 1 ) {
 		test_func<1'000'000ULL>( );
 	} else {

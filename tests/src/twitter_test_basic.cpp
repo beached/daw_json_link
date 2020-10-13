@@ -10,7 +10,7 @@
 
 #include "twitter_test_json.h"
 
-#include <daw/daw_benchmark.h>
+#include <daw/daw_do_not_optimize.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
 #include <daw/json/daw_json_link.h>
@@ -19,7 +19,11 @@
 #include <iostream>
 #include <streambuf>
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc < 2 ) {
 		std::cerr << "Must supply a file name\n";
 		exit( 1 );
@@ -40,8 +44,10 @@ int main( int argc, char **argv ) try {
 	daw_json_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
 	daw_json_assert( twitter_result.statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
-
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

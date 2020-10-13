@@ -156,7 +156,11 @@ void minify( daw::Arguments const &args, std::string_view data,
 	}
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	std::ios::sync_with_stdio( false );
 
 	auto args = daw::Arguments( argc, argv );

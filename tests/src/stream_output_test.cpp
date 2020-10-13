@@ -53,7 +53,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	std::string_view data = R"(
 {
   "member0": "this is a test",

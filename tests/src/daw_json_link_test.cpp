@@ -474,6 +474,7 @@ long long test_dblparse( std::string_view num ) {
 
 		std::cout.precision( old_precision );
 		std::cout << std::dec << "unsigned diff: " << diff << '\n';
+		std::terminate( );
 	}
 #endif
 	return diff;
@@ -498,7 +499,11 @@ void test_lots_of_doubles( ) {
 	}
 }
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
 	test_004( );
 	test_005( );
@@ -664,8 +669,40 @@ int main( int, char ** ) try {
 	test_dblparse( "560449937253421.57275338353451748e-223" );
 	test_dblparse( "127987629894956.6249879371780786496e-274" );
 	test_dblparse( "19700720435664.186294290058937593e13" );
+	test_dblparse( "5.9409999999999999999996e-324" );
+	test_dblparse( "9728625633136924125.18356202983677566044e-308" );
+	test_dblparse( "10199214983525025199.13135016100190689227e-308" );
 	test_lots_of_doubles( );
 	test_lots_of_doubles<true>( );
+	if constexpr( sizeof( double ) < sizeof( long double ) ) {
+		std::cout << "long double test\n";
+		std::cout << std::setprecision(
+		               std::numeric_limits<long double>::max_digits10 )
+		          << from_json<long double>(
+		               "11111111111111111111111111111111111111111111"
+		               "11111111111111111111111111111111111111111111"
+		               "11111111111111111111111111111111111111111111"
+		               "11111111111111111111111111111111111111111111"
+		               "11111111111111111111111111111111111111111111"
+		               "11111111111111111111111111111111111111111111"
+		               "11111111111111111111111111111111111111111111"
+		               "11111111111111111111111111111111111111111111"
+		               "111111111111111111"
+		               "111111111111111111111111111111.0e+400" )
+		          << '\n';
+
+		std::cout << "testing 9223372036854776000e100\n";
+		constexpr std::string_view two63e100 = "9223372036854776000e100";
+		long double const d0 =
+		  from_json<long double,
+		            SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>>(
+		    two63e100 );
+		std::cout << d0 << '\n';
+		std::cout << "using strtold\n";
+		char *end = nullptr;
+		long double const d1 = strtold( two63e100.data( ), &end );
+		std::cout << d1 << '\n';
+	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

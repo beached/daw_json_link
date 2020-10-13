@@ -63,7 +63,11 @@ bool test_number_space( ) {
 		          << "" #__VA_ARGS__ << "'\n";                                     \
 	} while( false )
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	do_test( test_number_in_class( ) );
 	do_test( test_number( ) );
 	do_test( test_number_space( ) );

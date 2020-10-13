@@ -31,7 +31,11 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv ) 
+#ifdef DAW_USE_JSON_EXCEPTIONS
+	try 
+#endif
+{
 	using namespace daw::json;
 	if( argc < 4 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -96,7 +100,10 @@ int main( int argc, char **argv ) try {
 	if( not j3 ) {
 		daw_json_error( "Missing value" );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

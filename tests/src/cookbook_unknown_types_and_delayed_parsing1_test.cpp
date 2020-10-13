@@ -18,7 +18,11 @@
 #include <iostream>
 #include <string>
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	if( argc <= 1 ) {
 		puts(
 		  "Must supply path to cookbook_unknown_types_and_delayed_parsing1.json "

@@ -56,7 +56,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	DAW_CONSTEXPR std::string_view const json_data3 =
 	  R"( {"kv": {
 				"key0": 0,

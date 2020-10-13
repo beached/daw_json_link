@@ -104,7 +104,11 @@ std::size_t test( std::string_view json_data ) {
 	return h1;
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to strings.json file\n" );
 		exit( EXIT_FAILURE );
