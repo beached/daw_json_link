@@ -50,8 +50,8 @@ namespace daw::json::json_details {
 	struct missing_member {
 		std::string member_name;
 
-		explicit inline missing_member( std::string_view name )
-		  : member_name( static_cast<std::string>( name ) ) {}
+		explicit inline missing_member( daw::string_view name )
+		  : member_name( name.data( ), name.size( ) ) {}
 	};
 } // namespace daw::json::json_details
 
