@@ -468,7 +468,7 @@ namespace daw::json::json_details {
 			if( rng.front( ) == '"' ) {
 				rng.remove_prefix( );
 			} else {
-				daw_json_error( "Attempt to parse a non-string as string" );
+				daw_json_error( "Attempt to parse a non-string as string", rng );
 			}
 		}
 		daw_json_assert_weak( rng.has_more( ), "Unexpected end of string", rng );
@@ -635,7 +635,7 @@ namespace daw::json::json_details {
 		case '9':
 			return skip_number( rng );
 		}
-		daw_json_error( "Unknown value type" );
+		daw_json_error( "Unknown value type", rng );
 	}
 
 	/***

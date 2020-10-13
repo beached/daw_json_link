@@ -670,6 +670,8 @@ try
 	test_dblparse( "127987629894956.6249879371780786496e-274" );
 	test_dblparse( "19700720435664.186294290058937593e13" );
 	test_dblparse( "5.9409999999999999999996e-324" );
+	test_dblparse( "9728625633136924125.18356202983677566044e-308" );
+	test_dblparse( "10199214983525025199.13135016100190689227e-308" );
 	test_lots_of_doubles( );
 	test_lots_of_doubles<true>( );
 	if constexpr( sizeof( double ) < sizeof( long double ) ) {

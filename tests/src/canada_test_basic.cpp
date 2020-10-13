@@ -23,33 +23,33 @@
 #include <cstdio>
 #include <iostream>
 
-int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
-try
-#endif
-{
+int main( int argc, char **argv ) {
 	if( argc < 2 ) {
 		puts( "Must supply a file name\n" );
 		exit( 1 );
 	}
 	using namespace daw::json;
-	auto json_data =
-	  std::string( *daw::read_file( argv[1] ) );
-
-	auto const canada_result =
-	  daw::json::from_json<daw::geojson::FeatureCollection>( json_data );
-	daw::do_not_optimize( canada_result );
-
-	auto new_json_result = std::string( );
-	new_json_result.resize( ( json_data.size( ) * 15U ) / 10U );
-	auto last = daw::json::to_json( canada_result, new_json_result.data( ) );
-	(void)last;
-	// new_json_result.resize( std::distance( new_json_result.data( ), last ) );
-	daw::do_not_optimize( canada_result );
-}
+	auto json_data = std::string( *daw::read_file( argv[1] ) );
 #ifdef DAW_USE_JSON_EXCEPTIONS
-catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
-	exit( 1 );
-}
+	try {
 #endif
+		auto const canada_result =
+		  daw::json::from_json<daw::geojson::FeatureCollection>( json_data );
+		daw::do_not_optimize( canada_result );
+
+		auto new_json_result = std::string( );
+		new_json_result.resize( ( json_data.size( ) * 15U ) / 10U );
+		auto last = daw::json::to_json( canada_result, new_json_result.data( ) );
+		(void)last;
+		// new_json_result.resize( std::distance( new_json_result.data( ), last ) );
+		daw::do_not_optimize( canada_result );
+#ifdef DAW_USE_JSON_EXCEPTIONS
+	} catch( daw::json::json_exception const &jex ) {
+		std::cerr << "Exception thrown by parser: " << to_formatted_string( jex );
+		std::cerr << "The error is about "
+		          << ( jex.parse_location( ) - json_data.data( ) ) << " bytes in\n"
+		          << std::endl;
+		exit( 1 );
+	}
+#endif
+}
