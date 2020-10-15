@@ -179,7 +179,7 @@ namespace daw::json::json_details {
 	//************************************************
 	template<typename Char>
 	constexpr char to_nibble_char( Char c ) {
-		daw_json_assert( c < 16, "Unexpected hex nibble" );
+		daw_json_assert( c < 16, ErrorReason::InvalidUTFEscape );
 		if( c < 10 ) {
 			return static_cast<char>( c + '0' );
 		} else {
@@ -230,7 +230,7 @@ namespace daw::json::json_details {
 			*it++ = static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U );
 			return;
 		}
-		daw_json_error( "Invalid code point" );
+		daw_json_error( ErrorReason::InvalidUTFCodepoint );
 	}
 } // namespace daw::json::json_details
 
@@ -307,8 +307,7 @@ namespace daw::json::utils {
 				if constexpr( EightBitMode == EightBitModes::DisallowHigh ) {
 					daw_json_assert( ( static_cast<unsigned char>( c ) >= 0x20U and
 					                   static_cast<unsigned char>( c ) <= 0x7FU ),
-					                 "string support limited to 0x20 < chr <= 0x7F when "
-					                 "DisallowHighEightBit is true" );
+					                 ErrorReason::InvalidStringHighASCII );
 				}
 				*it++ = c;
 			}
@@ -387,8 +386,7 @@ namespace daw::json::utils {
 				if constexpr( EightBitMode == EightBitModes::DisallowHigh ) {
 					daw_json_assert( ( static_cast<unsigned>( *ptr ) >= 0x20U and
 					                   static_cast<unsigned>( *ptr ) <= 0x7FU ),
-					                 "string support limited to 0x20 < chr <= 0x7F when "
-					                 "DisallowHighEightBit is true" );
+					                 ErrorReason::InvalidStringHighASCII );
 				}
 				*it++ = *ptr++;
 			}
@@ -487,7 +485,7 @@ namespace daw::json::json_details {
 	to_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 	           Optional const &value ) {
 		static_assert( is_valid_optional_v<Optional> );
-		daw_json_assert( value, "Should Never get here without a value" );
+		daw_json_assert( value, ErrorReason::UnexpectedNull );
 		using tag_type = ParseTag<JsonMember::base_expected_type>;
 		return to_string<JsonMember>( tag_type{ }, it, *value );
 	}
@@ -505,9 +503,7 @@ namespace daw::json::json_details {
 			if( std::isnan( value ) ) {
 				if constexpr( JsonMember::literal_as_string ==
 				              LiteralAsStringOpt::Never ) {
-					daw_json_error(
-					  "Nan is not supported as json number literals, must be quoted "
-					  "but that is not enabled" );
+					daw_json_error( ErrorReason::NumberIsNaN );
 				} else {
 					*it++ = '"';
 					it = utils::copy_to_iterator( it, "NaN" );
@@ -517,9 +513,7 @@ namespace daw::json::json_details {
 			} else if( std::isinf( value ) ) {
 				if constexpr( JsonMember::literal_as_string ==
 				              LiteralAsStringOpt::Never ) {
-					daw_json_error(
-					  "Infinity is not supported as json number literals, must be quoted "
-					  "but that is not enabled" );
+					daw_json_error( ErrorReason::NumberIsInf );
 				} else {
 					*it++ = '"';
 					it = utils::copy_to_iterator( it, "Infinity" );
@@ -667,8 +661,7 @@ namespace daw::json::json_details {
 		if constexpr( std::is_enum_v<parse_to_t> or
 		              daw::is_integral_v<parse_to_t> ) {
 			auto v = static_cast<under_type>( value );
-			daw_json_assert(
-			  v >= 0, "Negative numbers are not supported for unsigned types" );
+			daw_json_assert( v >= 0, ErrorReason::NumberOutOfRange );
 			char buff[daw::numeric_limits<under_type>::digits10 + 1]{ };
 			char *ptr = buff;
 			if( v == 0 ) {

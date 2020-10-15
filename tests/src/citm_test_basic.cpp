@@ -40,10 +40,10 @@ try
 
 	auto citm_result = daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
 	daw::do_not_optimize( citm_result );
-	daw_json_assert( citm_result.areaNames.size( ) > 0, "Expected values" );
-	daw_json_assert( citm_result.areaNames.count( 205706005 ) == 1,
+	test_assert( citm_result.areaNames.size( ) > 0, "Expected values" );
+	test_assert( citm_result.areaNames.count( 205706005 ) == 1,
 	                 "Expected value" );
-	daw_json_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
+	test_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
 	                 "Incorrect value" );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS

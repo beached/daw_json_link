@@ -121,9 +121,7 @@ std::string to_string( blah_t e ) noexcept {
 
 DAW_CONSTEXPR blah_t from_string( daw::tag_t<blah_t>,
                                   std::string_view sv ) noexcept {
-	if( sv.empty( ) ) {
-		daw_json_error( "Unexpected empty string_view" );
-	}
+	test_assert( not sv.empty( ), "Unexpected empty string_view" );
 	switch( sv.front( ) ) {
 	case 'a':
 		return blah_t::a;
@@ -501,7 +499,7 @@ void test_lots_of_doubles( ) {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
@@ -703,7 +701,8 @@ try
 		long double const d1 = strtold( two63e100.data( ), &end );
 		std::cout << d1 << '\n';
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

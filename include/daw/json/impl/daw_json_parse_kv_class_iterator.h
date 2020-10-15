@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "daw_json_arrow_proxy.h"
 #include "../daw_json_assert.h"
+#include "daw_json_arrow_proxy.h"
 #include "daw_json_iterator_range.h"
 #include "daw_json_parse_value_fwd.h"
 
@@ -80,7 +80,7 @@ namespace daw::json::json_details {
 
 		inline constexpr value_type operator*( ) {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
-			                      "Expected data to parse", *base::rng );
+			                      ErrorReason::UnexpectedEndOfData, *base::rng );
 			auto key =
 			  parse_value<key_t>( ParseTag<key_t::expected_type>{ }, *base::rng );
 			name::name_parser::trim_end_of_name( *base::rng );
@@ -90,15 +90,17 @@ namespace daw::json::json_details {
 		}
 
 		inline constexpr json_parse_kv_class_iterator &operator++( ) {
-			daw_json_assert_weak( base::rng, "Unexpected increment", *base::rng );
+			daw_json_assert_weak(
+			  base::rng, ErrorReason::AttemptToAccessPastEndOfValue, *base::rng );
 			base::rng->clean_tail( );
-			daw_json_assert_weak( base::rng->has_more( ), "Unexpected end of data",
-			                      *base::rng );
+			daw_json_assert_weak( base::rng->has_more( ),
+			                      ErrorReason::UnexpectedEndOfData, *base::rng );
 			if( base::rng->front( ) == '}' ) {
 #ifndef NDEBUG
 				if constexpr( IsKnown ) {
 					if( base::rng ) {
-						daw_json_assert( base::rng->counter > 0, "Unexpected item count",
+						daw_json_assert( base::rng->counter > 0,
+						                 ErrorReason::AttemptToAccessPastEndOfValue,
 						                 *base::rng );
 						base::rng->counter--;
 					}
@@ -115,7 +117,8 @@ namespace daw::json::json_details {
 #ifndef NDEBUG
 			if constexpr( IsKnown ) {
 				if( base::rng ) {
-					daw_json_assert( base::rng->counter > 0, "Unexpected item count",
+					daw_json_assert( base::rng->counter > 0,
+					                 ErrorReason::AttemptToAccessPastEndOfValue,
 					                 *base::rng );
 					base::rng->counter--;
 				}

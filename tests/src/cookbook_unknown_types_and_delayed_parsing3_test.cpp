@@ -5,8 +5,10 @@
 //
 // Official repository: https://github.com/beached/daw_json_link
 //
+#include "defines.h"
 // See cookbook/unknown_types_and_delayed_parsing.md for the 4th example
-// This example shows how to use the json_delayed type to store/retrieve raw json as a string
+// This example shows how to use the json_delayed type to store/retrieve raw
+// json as a string
 
 #include "daw/json/daw_json_link.h"
 
@@ -43,7 +45,7 @@ namespace daw::json {
 
 int main( )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	std::string obj = R"({ "member": 12345, "member2": "hello" })";
@@ -52,9 +54,10 @@ try
 
 	puts( json.c_str( ) );
 	Thing val2 = daw::json::from_json<Thing>( json );
-	daw_json_assert( my_thing.raw_json == val2.raw_json,
-	                 "Unexpected round trip error" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( my_thing.raw_json == val2.raw_json,
+	             "Unexpected round trip error" );
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

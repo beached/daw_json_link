@@ -39,15 +39,14 @@ inline bool DAW_CONSTEXPR is_to_json_data_able_v =
 template<typename T,
          std::enable_if_t<is_to_json_data_able_v<T>, std::nullptr_t> = nullptr>
 DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
-	if( to_json_data( lhs ) == to_json_data( rhs ) ) {
-		return true;
-	}
-	daw_json_error( "Expected that values would be equal" );
+	test_assert( to_json_data( lhs ) == to_json_data( rhs ),
+	             "Expected that values would be equal" );
+	return true;
 }
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 
@@ -76,10 +75,10 @@ try
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
-	daw_json_assert( twitter_result, "Missing value" );
-	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-	daw_json_assert( twitter_result->statuses.front( ).user.id == "1186275104",
-	                 "Missing value" );
+	test_assert( twitter_result, "Missing value" );
+	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( twitter_result->statuses.front( ).user.id == "1186275104",
+	             "Missing value" );
 
 	twitter_result = std::nullopt;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -92,10 +91,10 @@ try
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
-	daw_json_assert( twitter_result, "Missing value" );
-	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-	daw_json_assert( twitter_result->statuses.front( ).user.id == "1186275104",
-	                 "Missing value" );
+	test_assert( twitter_result, "Missing value" );
+	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( twitter_result->statuses.front( ).user.id == "1186275104",
+	             "Missing value" );
 
 	std::string str = std::string( );
 	str.reserve( json_sv1.size( ) );
@@ -108,16 +107,15 @@ try
 		  daw::do_not_optimize( str );
 	  },
 	  twitter_result );
-	daw_json_assert( not str.empty( ), "Expected a string value" );
+	test_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
 	auto const twitter_result2 =
 	  daw::json::from_json<daw::twitter::twitter_object_t>( str );
 	daw::do_not_optimize( twitter_result2 );
 	// Removing for now as it will do a float compare and fail
 
-	/*daw_json_assert( twitter_result == twitter_result2,
+	/*test_assert( twitter_result == twitter_result2,
 	                 "Expected round trip to produce same result" );*/
-
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

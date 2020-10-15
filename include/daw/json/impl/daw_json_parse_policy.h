@@ -120,7 +120,8 @@ namespace daw::json {
 			                                 constexpr_exec_tag> ) {
 				first = reinterpret_cast<char const *>( std::memchr(
 				  first, c, static_cast<std::size_t>( class_last - first ) ) );
-				daw_json_assert( first != nullptr, "Expected token missing", *this );
+				daw_json_assert( first != nullptr, json_details::missing_token( c ),
+				                 *this );
 			} else {
 				while( DAW_JSON_LIKELY( first < last ) and *first != c ) {
 					++first;
@@ -193,7 +194,8 @@ namespace daw::json {
 
 		DAW_ATTRIBUTE_FLATTEN [[nodiscard]] constexpr bool
 		is_space_checked( ) const {
-			daw_json_assert_weak( has_more( ), "Unexpected end", *this );
+			daw_json_assert_weak( has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      *this );
 			return static_cast<unsigned char>( *first ) <= 0x20U;
 		}
 

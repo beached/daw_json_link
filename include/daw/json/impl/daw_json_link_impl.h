@@ -231,7 +231,8 @@ namespace daw::json::json_details {
 		rng.trim_left_unchecked( );
 		// TODO: should we check for end
 		while( locations[pos].missing( ) & ( rng.front( ) != '}' ) ) {
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
+			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      rng );
 			// TODO: fully unescape name
 			auto const name = parse_name( rng );
 			auto const name_pos = locations.template find_name<pos>( name );
@@ -275,14 +276,16 @@ namespace daw::json::json_details {
 		                                   std::size_t desired_position ) {
 
 			rng.clean_tail( );
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range", rng );
+			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      rng );
 			daw_json_assert_weak( current_position <= desired_position,
-			                      "Order of ordered members must be ascending", rng );
+			                      ErrorReason::OutOfOrderOrderedMembers, rng );
 			while( current_position < desired_position and rng.front( ) != ']' ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				++current_position;
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of range", rng );
+				daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+				                      rng );
 			}
 		}
 	} // namespace pocm_details
@@ -344,7 +347,7 @@ namespace daw::json::json_details {
 		               "Array processing should never call parse_class_member" );
 
 		daw_json_assert_weak( rng.is_at_next_class_member( ),
-		                      "Expected end of class or start of member", rng );
+		                      ErrorReason::MissingMemberNameOrEndOfClass, rng );
 		auto loc = find_class_member<member_position, JsonMember>( locations, rng );
 
 		// If the member was found loc will have it's position
@@ -374,7 +377,8 @@ namespace daw::json::json_details {
 		}
 		rng.clean_tail( );
 		// If we fulfill the contract before all values are parses
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of range", rng );
+		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+		                      rng );
 		rng.move_to_next_class_member( );
 		(void)rng.skip_class( );
 		// Yes this must be checked.  We maybe at the end of document.  After the
@@ -398,7 +402,7 @@ namespace daw::json::json_details {
 		rng.trim_left( );
 		// TODO, use member name
 		daw_json_assert_weak( rng.is_opening_brace_checked( ),
-		                      "Expected start of class", rng );
+		                      ErrorReason::InvalidClassStart, rng );
 		rng.set_class_position( );
 		rng.remove_prefix( );
 		rng.move_to_next_class_member( );
@@ -426,6 +430,11 @@ namespace daw::json::json_details {
 				struct cleanup_t {
 					Range *rng_ptr;
 					CPP20CONSTEXPR inline ~cleanup_t( ) {
+#if not defined( HAS_CPP20CONSTEXPR )
+						if( std::uncaught_exceptions( ) > 0 ) {
+							return;
+						}
+#endif
 						class_cleanup_now( *rng_ptr );
 					}
 				} const run_after_parse{ &rng };
@@ -475,7 +484,7 @@ namespace daw::json::json_details {
 
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-		                      "Expected start of array", rng );
+		                      ErrorReason::InvalidArrayStart, rng );
 		rng.set_class_position( );
 		rng.remove_prefix( );
 		rng.trim_left( );

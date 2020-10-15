@@ -29,8 +29,10 @@
 namespace daw::twitter {
 	struct TimestampConverter {
 		constexpr twitter_tp operator( )( std::string_view sv ) const {
-			daw_json_assert( sv.size( ) >= 26,
-			                 "Date format is always 26 characters long" );
+			daw_json_assert(
+			  sv.size( ) >= 26,
+			  daw::json::ErrorReason::InvalidTimestamp ); // Date format is always 26
+			                                              // characters long
 			// Skip Day of Week
 			sv.remove_prefix( 4 );
 			auto const mo = daw::json::datetime::parse_short_month( sv );

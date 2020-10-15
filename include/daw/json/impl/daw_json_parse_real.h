@@ -195,7 +195,7 @@ namespace daw::json::json_details {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
 		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
-		  "Expected a real number", rng );
+		  ErrorReason::InvalidNumberStart, rng );
 
 		Result const sign = [&] {
 			if( rng.front( ) == '-' ) {
@@ -239,7 +239,7 @@ namespace daw::json::json_details {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
 		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
-		  "Expected a real number", rng );
+		  ErrorReason::InvalidNumberStart, rng );
 
 		char const *whole_first = rng.first;
 		char const *whole_last = rng.class_first;

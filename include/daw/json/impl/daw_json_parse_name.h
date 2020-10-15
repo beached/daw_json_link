@@ -24,7 +24,8 @@ namespace daw::json::json_details::name {
 		[[maybe_unused]] static constexpr void trim_end_of_name( Range &rng ) {
 			rng.trim_left( );
 			// TODO: should we check for end
-			daw_json_assert_weak( rng.front( ) == ':', "Expected a ':'", rng );
+			daw_json_assert_weak( rng.front( ) == ':', ErrorReason::InvalidMemberName,
+			                      rng );
 			rng.remove_prefix( );
 			rng.trim_left( );
 		}
@@ -48,14 +49,14 @@ namespace daw::json::json_details::name {
 				}
 				daw_json_assert_weak( rng.is_quotes_checked( ) and
 				                        *std::prev( rng.first ) != '\\',
-				                      "Expected a '\"' at the end of string", rng );
+				                      ErrorReason::InvalidString, rng );
 				auto result = daw::string_view( ptr, rng.first );
 				rng.remove_prefix( );
 				trim_end_of_name( rng );
 				return result;
 			}
 		}
-	}
+	} // namespace name_parser
 } // namespace daw::json::json_details::name
 
 namespace daw::json::json_details {
@@ -121,7 +122,7 @@ namespace daw::json::json_details {
 	template<typename Range>
 	[[nodiscard]] constexpr daw::string_view parse_name( Range &rng ) {
 		daw_json_assert_weak( rng.is_quotes_checked( ),
-		                      "Expected name to start with a quote", rng );
+		                      ErrorReason::InvalidMemberName, rng );
 		rng.remove_prefix( );
 		return name::name_parser::parse_nq( rng );
 	}
@@ -134,7 +135,7 @@ namespace daw::json::json_details {
 			if( pop_result.found_char == ']' ) {
 				// Array Index
 				daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-				                      "Invalid Path Entry", rng );
+				                      ErrorReason::InvalidJSONPath, rng );
 				rng.remove_prefix( );
 				rng.trim_left_unchecked( );
 				auto idx =
@@ -151,7 +152,7 @@ namespace daw::json::json_details {
 				}
 			} else {
 				daw_json_assert_weak( rng.is_opening_brace_checked( ),
-				                      "Invalid Path Entry", rng );
+				                      ErrorReason::InvalidJSONPath, rng );
 				rng.remove_prefix( );
 				rng.trim_left_unchecked( );
 				auto name = parse_name( rng );

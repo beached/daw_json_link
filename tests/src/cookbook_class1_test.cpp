@@ -71,9 +71,9 @@ try
 	  daw::json::from_json<daw::cookbook_class1::MyClass1>(
 	    std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.member_0 == "this is a test", "Unexpected value" );
-	daw_json_assert( cls.member_1 == 314159, "Unexpected value" );
-	daw_json_assert( cls.member_2 == true, "Unexpected value" );
+	test_assert( cls.member_0 == "this is a test", "Unexpected value" );
+	test_assert( cls.member_1 == 314159, "Unexpected value" );
+	test_assert( cls.member_2 == true, "Unexpected value" );
 	std::string const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
@@ -81,7 +81,7 @@ try
 	  daw::json::from_json<daw::cookbook_class1::MyClass1>(
 	    std::string_view( str.data( ), str.size( ) ) );
 
-	daw_json_assert( cls == cls2, "Unexpected round trip error" );
+	test_assert( cls == cls2, "Unexpected round trip error" );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

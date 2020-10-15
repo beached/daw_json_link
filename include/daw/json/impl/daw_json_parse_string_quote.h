@@ -153,7 +153,7 @@ namespace daw::json::json_details::string_quote {
 				}
 			}
 			daw_json_assert_weak( first < last and *first == '"',
-			                      "Expected a '\"' at end of string", rng );
+			                      ErrorReason::InvalidString, rng );
 			rng.first = first;
 			return static_cast<std::size_t>( need_slow_path );
 		}

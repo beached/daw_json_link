@@ -44,10 +44,9 @@ inline bool DAW_CONSTEXPR is_to_json_data_able_v =
 template<typename T,
          std::enable_if_t<is_to_json_data_able_v<T>, std::nullptr_t> = nullptr>
 DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
-	if( to_json_data( lhs ) == to_json_data( rhs ) ) {
-		return true;
-	}
-	daw_json_error( "Expected that values would be equal" );
+	test_assert( to_json_data( lhs ) == to_json_data( rhs ),
+	             "Expected that values would be equal" );
+	return true;
 }
 
 template<typename ExecTag>
@@ -68,7 +67,7 @@ void test( std::string_view json_sv1 ) {
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( canada_result );
-	daw_json_assert( canada_result, "Missing value" );
+	test_assert( canada_result, "Missing value" );
 	canada_result = std::nullopt;
 	//**************************
 	canada_result = std::nullopt;
@@ -83,12 +82,12 @@ void test( std::string_view json_sv1 ) {
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( canada_result );
-	daw_json_assert( canada_result, "Missing value" );
+	test_assert( canada_result, "Missing value" );
 }
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	using namespace daw::json;
@@ -130,7 +129,7 @@ try
 		  },
 		  canada_result );
 	}
-	daw_json_assert( not str.empty( ), "Expected a string value" );
+	test_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
 	auto const canada_result2 =
 	  daw::json::from_json<daw::geojson::Polygon>( str );
@@ -150,13 +149,14 @@ try
 	}
 	// Removing for now as it will do a float compare and fail
 	/*
-	daw_json_assert( canada_result == canada_result2,
+	test_assert( canada_result == canada_result2,
 	                 "Expected round trip to produce same result" );
 	                 */
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << to_formatted_string( jex ) << std::endl;
+	std::cerr << "Exception thrown by parser: "
+	          << to_formatted_string( jex, nullptr ) << std::endl;
 	exit( 1 );
 }
 #endif

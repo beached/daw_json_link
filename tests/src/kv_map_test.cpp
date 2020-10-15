@@ -72,10 +72,10 @@ try
 	daw::do_not_optimize( kv_test );
 
 	DAW_CONSTEXPR kv2_t kv2_test = daw::json::from_json<kv2_t>( json_data3 );
-	daw_json_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
-	daw_json_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
-	daw_json_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
-	daw_json_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
+	test_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
+	test_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
+	test_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
+	test_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

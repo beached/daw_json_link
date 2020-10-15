@@ -53,7 +53,7 @@ try
 	auto const cls = daw::json::from_json<daw::Data>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.a == 12345, "Unexpected value" );
+	test_assert( cls.a == 12345, "Unexpected value" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

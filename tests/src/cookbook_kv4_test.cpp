@@ -34,10 +34,10 @@ try
 	std::multimap<std::string, std::string> kv =
 	  from_json<json_key_value<no_name, std::multimap<std::string, std::string>,
 	                           std::string>>( val );
-	daw_json_assert( kv.size( ) == 2, "Expected data to have 2 items" );
-	daw_json_assert( kv.begin( )->first == std::prev( kv.end( ) )->first,
+	test_assert( kv.size( ) == 2, "Expected data to have 2 items" );
+	test_assert( kv.begin( )->first == std::prev( kv.end( ) )->first,
 	                 "Unexpected value" );
-	daw_json_assert( kv.begin( )->second != std::prev( kv.end( ) )->second,
+	test_assert( kv.begin( )->second != std::prev( kv.end( ) )->second,
 	                 "Unexpected value" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

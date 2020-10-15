@@ -126,9 +126,9 @@ namespace daw::json::json_details {
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 			auto const count =
 			  ( daw::numeric_limits<result_t>::digits10 + 1U ) - rng.size( );
-			daw_json_assert(
-			  result <= daw::numeric_limits<result_t>::max( ) and count >= 0,
-			  "Unsigned number outside of range of unsigned numbers", rng );
+			daw_json_assert( ( ( result <= daw::numeric_limits<result_t>::max( ) ) &
+			                   ( count >= 0 ) ),
+			                 ErrorReason::NumberOutOfRange, rng );
 		}
 		rng.first = first;
 		if constexpr( RangeChecked == JsonRangeCheck::Never ) {
@@ -149,7 +149,8 @@ namespace daw::json::json_details {
 		static_assert( not static_cast<bool>( RangeChecked ) or
 		                 std::is_same_v<result_t, UInt64>,
 		               "Range checking is only supported for std integral types" );
-		daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range", rng );
+		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+		                      rng );
 		char const *first = rng.first;
 		result_t result = result_t( );
 
@@ -167,10 +168,11 @@ namespace daw::json::json_details {
 			auto const count =
 			  static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 ) -
 			  ( first - orig_first );
-			daw_json_assert( count >= 0 and
-			                   result <= static_cast<result_t>(
-			                               daw::numeric_limits<Unsigned>::max( ) ),
-			                 "Parsed number is out of range", rng );
+			daw_json_assert(
+			  ( count >= 0 ) &
+			    ( result <=
+			      static_cast<result_t>( daw::numeric_limits<Unsigned>::max( ) ) ),
+			  ErrorReason::NumberOutOfRange, rng );
 		}
 
 		rng.first = first;
@@ -243,12 +245,10 @@ namespace daw::json::json_details {
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>
 	[[nodiscard]] static inline Unsigned
 	unsigned_parser( sse42_exec_tag const &, Range &rng ) {
-	  daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range", rng );
-	  using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
-	  result_t result = result_t( );
-	  char const *first = rng.first;
-	  char const *const last = rng.last;
-	  char const *const orig_first = first;
+	  daw_json_assert_weak( rng.has_more( ), ErrorRange::UnexpectedEndOfData, rng
+	); using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>; result_t
+	result = result_t( ); char const *first = rng.first; char const *const last =
+	rng.last; char const *const orig_first = first;
 	  {
 	    auto sz = last - first;
 	    while( ( sz >= 8 ) & is_made_of_eight_digits_fast( first ) ) {
@@ -280,10 +280,10 @@ namespace daw::json::json_details {
 	    auto const count =
 	      static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 ) -
 	      ( first - orig_first );
-	    daw_json_assert( count >= 0 and
-	                       result <= static_cast<result_t>(
-	                                   daw::numeric_limits<Unsigned>::max( ) ),
-	                     "Parsed number is out of range", rng );
+	    daw_json_assert( (count >= 0) &
+	                       (result <= static_cast<result_t>(
+	                                   daw::numeric_limits<Unsigned>::max( ) )),
+	                                   ErrorReason::NumberOutOfRange, rng );
 	  }
 	  rng.first = first;
 	  if constexpr( RangeChecked == JsonRangeCheck::Never ) {

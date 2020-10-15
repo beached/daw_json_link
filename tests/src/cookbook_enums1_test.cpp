@@ -96,13 +96,13 @@ try
 	auto const cls = daw::json::from_json<daw::cookbook_enums1::MyClass1>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.member0[0] == daw::cookbook_enums1::Colours::red,
+	test_assert( cls.member0[0] == daw::cookbook_enums1::Colours::red,
 	                 "Unexpected value" );
-	daw_json_assert( cls.member0[1] == daw::cookbook_enums1::Colours::green,
+	test_assert( cls.member0[1] == daw::cookbook_enums1::Colours::green,
 	                 "Unexpected value" );
-	daw_json_assert( cls.member0[2] == daw::cookbook_enums1::Colours::blue,
+	test_assert( cls.member0[2] == daw::cookbook_enums1::Colours::blue,
 	                 "Unexpected value" );
-	daw_json_assert( cls.member0[3] == daw::cookbook_enums1::Colours::black,
+	test_assert( cls.member0[3] == daw::cookbook_enums1::Colours::black,
 	                 "Unexpected value" );
 	auto const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
@@ -110,7 +110,7 @@ try
 	auto const cls2 = daw::json::from_json<daw::cookbook_enums1::MyClass1>(
 	  std::string_view( str.data( ), str.size( ) ) );
 
-	daw_json_assert( cls == cls2, "Unexpected round trip error" );
+	test_assert( cls == cls2, "Unexpected round trip error" );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

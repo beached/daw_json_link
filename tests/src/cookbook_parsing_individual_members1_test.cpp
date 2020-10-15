@@ -38,12 +38,12 @@ try
 	std::string_view b_value =
 	  from_json<std::string_view>( json_data, "member2.b" );
 
-	daw_json_assert( b_value == "found me", "Unexpected value" );
+	test_assert( b_value == "found me", "Unexpected value" );
 
 	std::optional<std::string> opt_value =
 	  from_json<json_string_null<no_name>>( json_data, "a.b" );
 
-	daw_json_assert( not opt_value, "Did not expect a value" );
+	test_assert( not opt_value, "Did not expect a value" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

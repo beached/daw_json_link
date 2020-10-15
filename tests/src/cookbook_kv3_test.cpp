@@ -60,17 +60,17 @@ try
 	auto kv = daw::json::from_json<daw::cookbook_kv3::MyKeyValue3>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( kv.kv.size( ) == 2, "Expected data to have 2 items" );
-	daw_json_assert( kv.kv.begin( )->first == std::prev( kv.kv.end( ) )->first,
+	test_assert( kv.kv.size( ) == 2, "Expected data to have 2 items" );
+	test_assert( kv.kv.begin( )->first == std::prev( kv.kv.end( ) )->first,
 	                 "Unexpected value" );
-	daw_json_assert( kv.kv.begin( )->second != std::prev( kv.kv.end( ) )->second,
+	test_assert( kv.kv.begin( )->second != std::prev( kv.kv.end( ) )->second,
 	                 "Unexpected value" );
 	auto const str = daw::json::to_json( kv );
 	puts( str.c_str( ) );
 
 	auto const kv3 = daw::json::from_json<daw::cookbook_kv3::MyKeyValue3>(
 	  std::string_view( str.data( ), str.size( ) ) );
-	daw_json_assert( kv == kv3, "Unexpected round trip error" );
+	test_assert( kv == kv3, "Unexpected round trip error" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

@@ -60,10 +60,10 @@ void test( char **argv ) {
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
-	daw_json_assert( twitter_result, "Missing value -> twitter_result" );
-	daw_json_assert( twitter_result->statuses.size( ) > 0,
+	test_assert( twitter_result, "Missing value -> twitter_result" );
+	test_assert( twitter_result->statuses.size( ) > 0,
 	                 "Expected values: twitter_result is empty" );
-	daw_json_assert(
+	test_assert(
 	  twitter_result->statuses.front( ).user.id == 1186275104,
 	  std::string( "Expected values: user_id had wrong value, "
 	               "expected 1186275104.  Got " ) +
@@ -81,9 +81,9 @@ void test( char **argv ) {
 	  },
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
-	daw_json_assert( twitter_result, "Missing value" );
-	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	test_assert( twitter_result, "Missing value" );
+	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Expected values" );
 	twitter_result.reset( );
 
@@ -98,11 +98,11 @@ void test( char **argv ) {
 	  },
 	  json_sv2 );
 	daw::do_not_optimize( citm_result );
-	daw_json_assert( citm_result, "Missing value" );
-	daw_json_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
-	daw_json_assert( citm_result->areaNames.count( 205706005 ) == 1,
+	test_assert( citm_result, "Missing value" );
+	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
 	                 "Expected value" );
-	daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
 	                 "Incorrect value" );
 	citm_result.reset( );
 
@@ -116,11 +116,11 @@ void test( char **argv ) {
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2 );
 	  },
 	  json_sv2 );
-	daw_json_assert( citm_result, "Missing value" );
-	daw_json_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
-	daw_json_assert( citm_result->areaNames.count( 205706005 ) == 1,
+	test_assert( citm_result, "Missing value" );
+	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
 	                 "Expected value" );
-	daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
 	                 "Incorrect value" );
 	citm_result.reset( );
 
@@ -136,7 +136,7 @@ void test( char **argv ) {
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
-	daw_json_assert( canada_result, "Missing value" );
+	test_assert( canada_result, "Missing value" );
 	canada_result.reset( );
 
 	std::cout << std::flush;
@@ -151,7 +151,7 @@ void test( char **argv ) {
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
-	daw_json_assert( canada_result, "Missing value" );
+	test_assert( canada_result, "Missing value" );
 	canada_result.reset( );
 
 	std::cout << std::flush;
@@ -177,17 +177,17 @@ void test( char **argv ) {
 	daw::do_not_optimize( twitter_result );
 	daw::do_not_optimize( citm_result );
 	daw::do_not_optimize( canada_result );
-	daw_json_assert( twitter_result, "Missing value" );
-	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	test_assert( twitter_result, "Missing value" );
+	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
-	daw_json_assert( citm_result, "Missing value" );
-	daw_json_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
-	daw_json_assert( citm_result->areaNames.count( 205706005 ) == 1,
+	test_assert( citm_result, "Missing value" );
+	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
 	                 "Expected value" );
-	daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
 	                 "Incorrect value" );
-	daw_json_assert( canada_result, "Missing value" );
+	test_assert( canada_result, "Missing value" );
 	twitter_result.reset( );
 	citm_result.reset( );
 	canada_result.reset( );
@@ -214,17 +214,17 @@ void test( char **argv ) {
 	daw::do_not_optimize( citm_result );
 	daw::do_not_optimize( canada_result );
 
-	daw_json_assert( twitter_result, "Missing value" );
-	daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-	daw_json_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	test_assert( twitter_result, "Missing value" );
+	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
-	daw_json_assert( citm_result, "Missing value" );
-	daw_json_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
-	daw_json_assert( citm_result->areaNames.count( 205706005 ) == 1,
+	test_assert( citm_result, "Missing value" );
+	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
 	                 "Expected value" );
-	daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
 	                 "Incorrect value" );
-	daw_json_assert( canada_result, "Missing value" );
+	test_assert( canada_result, "Missing value" );
 }
 
 int main( int argc, char **argv )

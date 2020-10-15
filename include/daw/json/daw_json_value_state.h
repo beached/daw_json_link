@@ -94,7 +94,7 @@ namespace daw::json {
 			auto const last = m_value.end( );
 			while( it != last ) {
 				auto name = it.name( );
-				daw_json_assert_weak( name, "Expected a class member, not array item" );
+				daw_json_assert_weak( name, ErrorReason::MissingMemberName );
 				auto const &new_loc = m_locs.emplace_back(
 				  daw::string_view( name->data( ), name->size( ) ), it );
 				if( new_loc.is_match( member.name ) ) {
@@ -146,9 +146,9 @@ namespace daw::json {
 		constexpr basic_stateful_json_value( basic_json_value<Range> val )
 		  : m_value( std::move( val ) ) {
 
-			daw_json_assert_weak(
-			  m_value.is_class( ) or m_value.is_array( ),
-			  "basic_state_full_json_value is only valid on arrays or classes" );
+			daw_json_assert_weak( m_value.is_class( ) | m_value.is_array( ),
+			                      ErrorReason::ExpectedArrayOrClassStart,
+			                      val.get_range( ) );
 		}
 
 		constexpr basic_stateful_json_value( )
@@ -174,7 +174,7 @@ namespace daw::json {
 		[[nodiscard]] constexpr basic_json_value<Range>
 		operator[]( std::string_view key ) {
 			std::size_t pos = move_to( json_member_name( key ) );
-			daw_json_assert_weak( pos < m_locs.size( ), "Unknown member" );
+			daw_json_assert_weak( pos < m_locs.size( ), ErrorReason::UnknownMember );
 			return m_locs[pos].location->value;
 		}
 
@@ -187,7 +187,7 @@ namespace daw::json {
 		[[nodiscard]] constexpr basic_json_value<Range>
 		operator[]( json_member_name member ) {
 			std::size_t pos = move_to( member );
-			daw_json_assert_weak( pos < m_locs.size( ), "Unknown member" );
+			daw_json_assert_weak( pos < m_locs.size( ), ErrorReason::UnknownMember );
 			return m_locs[pos].location->value;
 		}
 
@@ -303,13 +303,13 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					daw_json_assert_weak( ( static_cast<std::size_t>( index ) < sz ),
-					                      "Unknown member" );
+					                      ErrorReason::UnknownMember );
 					sz -= static_cast<std::size_t>( index );
 					return m_locs[sz].location->value;
 				}
 			}
 			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
-			daw_json_assert_weak( pos < m_locs.size( ), "Unknown member" );
+			daw_json_assert_weak( pos < m_locs.size( ), ErrorReason::UnknownMember );
 			return m_locs[pos].location->value;
 		}
 

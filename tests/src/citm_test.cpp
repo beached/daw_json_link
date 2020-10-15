@@ -47,11 +47,11 @@ void test( std::string_view json_sv1 ) {
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( citm_result2 );
-		daw_json_assert( citm_result2, "Missing value" );
-		daw_json_assert( not citm_result2->areaNames.empty( ), "Expected values" );
-		daw_json_assert( citm_result2->areaNames.count( 205706005 ) == 1,
+		test_assert( citm_result2, "Missing value" );
+		test_assert( not citm_result2->areaNames.empty( ), "Expected values" );
+		test_assert( citm_result2->areaNames.count( 205706005 ) == 1,
 		                 "Expected value" );
-		daw_json_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
+		test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
 		                 "Incorrect value" );
 	}
 	{
@@ -64,11 +64,11 @@ void test( std::string_view json_sv1 ) {
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( citm_result2 );
-		daw_json_assert( citm_result2, "Missing value" );
-		daw_json_assert( not citm_result2->areaNames.empty( ), "Expected values" );
-		daw_json_assert( citm_result2->areaNames.count( 205706005 ) == 1,
+		test_assert( citm_result2, "Missing value" );
+		test_assert( not citm_result2->areaNames.empty( ), "Expected values" );
+		test_assert( citm_result2->areaNames.count( 205706005 ) == 1,
 		                 "Expected value" );
-		daw_json_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
+		test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
 		                 "Incorrect value" );
 	}
 }
@@ -115,7 +115,7 @@ try
 		  daw::do_not_optimize( str );
 	  },
 	  citm_result );
-	daw_json_assert( not str.empty( ), "Expected a string value" );
+	test_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS

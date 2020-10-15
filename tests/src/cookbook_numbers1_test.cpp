@@ -70,10 +70,10 @@ try
 	  daw::json::from_json<daw::cookbook_numbers1::MyClass1>(
 	    std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.member0 == 1.23, "Unexpected value" );
-	daw_json_assert( cls.member1 == 1, "Unexpected value" );
-	daw_json_assert( cls.member2 == 1200, "Unexpected value" );
-	daw_json_assert( cls.member3 == 3000, "Unexpected value" );
+	test_assert( cls.member0 == 1.23, "Unexpected value" );
+	test_assert( cls.member1 == 1, "Unexpected value" );
+	test_assert( cls.member2 == 1200, "Unexpected value" );
+	test_assert( cls.member3 == 3000, "Unexpected value" );
 	std::string const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
@@ -81,7 +81,7 @@ try
 	  daw::json::from_json<daw::cookbook_numbers1::MyClass1>(
 	    std::string_view( str.data( ), str.size( ) ) );
 
-	daw_json_assert( cls == cls2, "Unexpected round trip error" );
+	test_assert( cls == cls2, "Unexpected round trip error" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

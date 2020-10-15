@@ -41,7 +41,7 @@ try
 	(void)count;
 	for( auto val : ve ) {
 		(void)val;
-		daw_json_assert( count++ == val, "Unexpected value" );
+		test_assert( count++ == val, "Unexpected value" );
 	}
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
