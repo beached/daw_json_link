@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../daw_json_assert.h"
+#include "daw_json_assert.h"
 #include "daw_json_iterator_range.h"
 #include "daw_json_parse_array_iterator.h"
 #include "daw_json_parse_kv_array_iterator.h"

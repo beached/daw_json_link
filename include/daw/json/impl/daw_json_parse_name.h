@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../daw_json_assert.h"
+#include "daw_json_assert.h"
 #include "daw_json_parse_std_string.h"
 #include "daw_not_const_ex_functions.h"
 

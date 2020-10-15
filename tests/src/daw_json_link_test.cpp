@@ -8,7 +8,7 @@
 
 #include "defines.h"
 
-#include "daw/json/daw_json_assert.h"
+#include "daw/json/daw_json_exception.h"
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 #include "daw/json/impl/daw_json_exec_modes.h"

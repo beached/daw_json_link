@@ -10,7 +10,6 @@
 
 #include <daw/daw_hide.h>
 #include <daw/daw_string_view.h>
-#include <daw/daw_visit.h>
 
 #include <algorithm>
 #include <ciso646>
@@ -22,44 +21,26 @@
 #include <string_view>
 
 #if defined( __GNUC__ ) or defined( __clang__ )
-#define DAW_JSON_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )
-#define DAW_JSON_UNLIKELY( Bool ) ( __builtin_expect( !!( Bool ), 0 ) )
 #define DAW_JSON_UNREACHABLE( ) ( __builtin_unreachable( ) )
 #elif defined( _MSC_VER )
-#define DAW_JSON_LIKELY( Bool ) !!( Bool )
-#define DAW_JSON_UNLIKELY( Bool ) !!( Bool )
 #define DAW_JSON_UNREACHABLE( ) __assume( false );
 #else
-#define DAW_JSON_LIKELY( Bool ) !!( Bool )
-#define DAW_JSON_UNLIKELY( Bool ) !!( Bool )
 #define DAW_JSON_UNREACHABLE( ) std::terminate( )
-#endif
-
-#if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
-         defined( _CPPUNWIND ) ) or                                            \
-  defined( DAW_DONT_USE_JSON_EXCEPTIONS )
-#ifdef DAW_USE_JSON_EXCEPTIONS
-#undef DAW_USE_JSON_EXCEPTIONS
-#endif
-#else
-#ifndef DAW_USE_JSON_EXCEPTIONS
-#define DAW_USE_JSON_EXCEPTIONS
-#endif
 #endif
 
 namespace daw::json::json_details {
 	struct missing_member {
-		std::string_view member_name;
+		char const *member_name;
 
 		template<typename StringView,
 		         std::enable_if_t<(not std::is_same_v<StringView, missing_member>),
 		                          std::nullptr_t> = nullptr>
 		explicit constexpr missing_member( StringView name )
-		  : member_name( name.data( ), name.size( ) ) {}
+		  : member_name( name.data( ) ) {}
 
 		template<std::size_t N>
 		explicit constexpr missing_member( char const ( &s )[N] )
-		  : member_name( s, N - 1 ) {}
+		  : member_name( s ) {}
 	};
 
 	struct missing_token {
@@ -216,10 +197,18 @@ namespace daw::json {
 	 * if available.
 	 */
 	class json_exception {
-		std::variant<std::monostate, ErrorReason, json_details::missing_member,
-		             json_details::missing_token>
-		  m_reason{ };
+		ErrorReason m_reason = ErrorReason::Unknown;
+		char const *m_data = nullptr;
 		char const *m_parse_loc = nullptr;
+		static constexpr char token_addr = 0;
+
+		static constexpr char const *get_token_addr( char c ) {
+			return &token_addr + static_cast<int>( static_cast<unsigned char>( c ) );
+		}
+
+		static constexpr char get_token( char const *p ) {
+			return static_cast<char>( static_cast<unsigned char>( p - &token_addr ) );
+		}
 
 	public:
 		constexpr json_exception( ) = default;
@@ -229,19 +218,23 @@ namespace daw::json {
 
 		explicit constexpr json_exception(
 		  json_details::missing_member mm ) noexcept
-		  : m_reason( mm ) {}
+		  : m_reason( ErrorReason::MemberNotFound )
+		  , m_data( mm.member_name ) {}
 
 		explicit constexpr json_exception( json_details::missing_token mt ) noexcept
-		  : m_reason( mt ) {}
+		  : m_reason( ErrorReason::ExpectedTokenNotFound )
+		  , m_data( get_token_addr( mt.token ) ) {}
 
 		explicit constexpr json_exception( json_details::missing_member mm,
 		                                   std::string_view location ) noexcept
-		  : m_reason( mm )
+		  : m_reason( ErrorReason::MemberNotFound )
+		  , m_data( mm.member_name )
 		  , m_parse_loc( location.data( ) ) {}
 
 		explicit constexpr json_exception( json_details::missing_token mt,
 		                                   std::string_view location ) noexcept
-		  : m_reason( mt )
+		  : m_reason( ErrorReason::ExpectedTokenNotFound )
+		  , m_data( get_token_addr( mt.token ) )
 		  , m_parse_loc( location.data( ) ) {}
 
 		explicit constexpr json_exception( ErrorReason reason,
@@ -250,33 +243,30 @@ namespace daw::json {
 		  , m_parse_loc( location.data( ) ) {}
 
 		[[nodiscard]] constexpr ErrorReason reason_type( ) const {
-			return daw::visit_nt(
-			  m_reason, []( std::monostate ) { return ErrorReason::Unknown; },
-			  []( ErrorReason er ) { return er; },
-			  []( json_details::missing_member const & ) {
-				  return ErrorReason::ExpectedMemberNotFound;
-			  },
-			  []( json_details::missing_token const & ) {
-				  return ErrorReason::ExpectedTokenNotFound;
-			  } );
+			return m_reason;
 		}
 
 		[[nodiscard]] inline std::string reason( ) const {
-			return daw::visit_nt(
-			  m_reason, []( std::monostate ) { return std::string{ }; },
-			  []( ErrorReason er ) { return std::string( reason_message( er ) ); },
-			  []( json_details::missing_member const &mm ) {
-				  using namespace std::string_literals;
-				  return "Could not find required class member '"s +
-				         static_cast<std::string>( mm.member_name ) + "'"s;
-			  },
-			  []( json_details::missing_token const &mt ) {
-				  using namespace std::string_literals;
-				  return "Could not find expected parse token '"s + mt.token + "'"s;
-			  } );
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
+			switch( m_reason ) {
+			case ErrorReason::MemberNotFound: {
+				using namespace std::string_literals;
+				return "Could not find required class member '"s +
+				       static_cast<std::string>( m_data ) + "'"s;
+			}
+			case ErrorReason::ExpectedTokenNotFound: {
+				using namespace std::string_literals;
+				return "Could not find expected parse token '"s + get_token( m_data ) +
+				       "'"s;
+			}
+			default:
+				return std::string( ( reason_message( m_reason ) ) );
+			}
+#pragma clang diagnostic pop
 		}
 
-		[[nodiscard]] inline char const *parse_location( ) const {
+		[[nodiscard]] constexpr char const *parse_location( ) const {
 			return m_parse_loc;
 		}
 	};
@@ -319,191 +309,3 @@ namespace daw::json {
 		return result;
 	}
 } // namespace daw::json
-
-#ifdef DAW_USE_JSON_EXCEPTIONS
-inline constexpr bool use_daw_json_exceptions_v = true;
-#else
-inline constexpr bool use_daw_json_exceptions_v = false;
-#endif
-
-template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] static void
-daw_json_error( daw::json::ErrorReason reason ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		throw daw::json::json_exception( reason );
-	} else {
-#endif
-		(void)ShouldThrow;
-		(void)reason;
-		std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	}
-#endif
-}
-
-template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
-[[maybe_unused, noreturn]] static void
-daw_json_error( daw::json::ErrorReason reason, Range const &location ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		if( location.first ) {
-			if( location.class_first ) {
-				auto const len =
-				  static_cast<std::size_t>( location.first - location.class_first );
-				auto loc = std::string_view( location.class_first, len );
-				throw daw::json::json_exception( reason, loc );
-			}
-			if( location.last ) {
-				auto const len =
-				  static_cast<std::size_t>( location.last - location.first );
-				auto loc = std::string_view( location.first, len );
-				throw daw::json::json_exception( reason, loc );
-			}
-			throw daw::json::json_exception( reason,
-			                                 std::string_view( location.first, 0 ) );
-		} else {
-			throw daw::json::json_exception( reason );
-		}
-	} else {
-#endif
-		(void)ShouldThrow;
-		(void)reason;
-		(void)location;
-		std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	}
-#endif
-}
-
-template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] static void
-daw_json_error( daw::json::json_details::missing_member reason ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		throw daw::json::json_exception( reason );
-	} else {
-#endif
-		(void)ShouldThrow;
-		(void)reason;
-		std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	}
-#endif
-}
-
-template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] static void
-daw_json_error( daw::json::json_details::missing_token reason ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		throw daw::json::json_exception( reason );
-	} else {
-#endif
-		(void)ShouldThrow;
-		(void)reason;
-		std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	}
-#endif
-}
-
-template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
-[[maybe_unused, noreturn]] static void
-daw_json_error( daw::json::json_details::missing_member reason,
-                Range const &location ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		using namespace std::string_literals;
-		if( location.class_first and location.first ) {
-			static constexpr std::size_t max_len = 150;
-			std::size_t const len = [&]( ) -> std::size_t {
-				if( location.first == nullptr or location.class_first == nullptr ) {
-					if( location.class_first == nullptr or
-					    location.class_last == nullptr ) {
-						return 0;
-					}
-					return std::min( static_cast<std::size_t>( std::distance(
-					                   location.class_first, location.class_last ) ),
-					                 max_len );
-				}
-				return std::min( static_cast<std::size_t>( std::distance(
-				                   location.class_first, location.first + 1 ) ),
-				                 max_len );
-			}( );
-			throw daw::json::json_exception(
-			  reason, std::string_view( location.class_first, len ) );
-		} else {
-			throw daw::json::json_exception( reason );
-		}
-	} else {
-#endif
-		(void)ShouldThrow;
-		(void)reason;
-		(void)location;
-		std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	}
-#endif
-}
-
-template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
-[[maybe_unused, noreturn]] static void
-daw_json_error( daw::json::json_details::missing_token reason,
-                Range const &location ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		using namespace std::string_literals;
-		if( location.class_first and location.first ) {
-			static constexpr std::size_t max_len = 150;
-			std::size_t const len = [&]( ) -> std::size_t {
-				if( location.first == nullptr or location.class_first == nullptr ) {
-					if( location.class_first == nullptr or
-					    location.class_last == nullptr ) {
-						return 0;
-					}
-					return std::min( static_cast<std::size_t>( std::distance(
-					                   location.class_first, location.class_last ) ),
-					                 max_len );
-				}
-				return std::min( static_cast<std::size_t>( std::distance(
-				                   location.class_first, location.first + 1 ) ),
-				                 max_len );
-			}( );
-			throw daw::json::json_exception(
-			  reason, std::string_view( location.class_first, len ) );
-		} else {
-			throw daw::json::json_exception( reason );
-		}
-	} else {
-#endif
-		(void)ShouldThrow;
-		(void)reason;
-		(void)location;
-		std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	}
-#endif
-}
-
-/***
- * Ensure that Bool is true
- * If false pass rest of args to daw_json_error
- */
-#define daw_json_assert( Bool, ... )                                           \
-	if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {                                     \
-		daw_json_error( __VA_ARGS__ );                                             \
-	}                                                                            \
-	while( false )
-
-/***
- * Ensure that Bool is true when in Checked Input mode
- * If false pass rest of args to daw_json_error
- */
-#define daw_json_assert_weak( Bool, ... )                                      \
-	if constexpr( not Range::is_unchecked_input ) {                              \
-		if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {                                   \
-			daw_json_error( __VA_ARGS__ );                                           \
-		}                                                                          \
-	}                                                                            \
-	while( false )

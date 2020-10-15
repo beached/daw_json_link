@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../daw_json_assert.h"
+#include "daw_json_assert.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cxmath.h>
