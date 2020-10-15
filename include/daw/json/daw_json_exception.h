@@ -248,8 +248,10 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] inline std::string reason( ) const {
+#if defined( __clang__ )
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch-enum"
+#endif
 			switch( m_reason ) {
 			case ErrorReason::MemberNotFound: {
 				using namespace std::string_literals;
@@ -264,7 +266,9 @@ namespace daw::json {
 			default:
 				return std::string( ( reason_message( m_reason ) ) );
 			}
+#if defined( __clang__ )
 #pragma clang diagnostic pop
+#endif
 		}
 
 		[[nodiscard]] constexpr char const *parse_location( ) const {
