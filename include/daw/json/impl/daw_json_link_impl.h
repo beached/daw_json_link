@@ -221,13 +221,11 @@ namespace daw::json::json_details {
 	[[nodiscard]] inline constexpr Range
 	find_class_member( locations_info_t<N, Range, B> &locations, Range &rng ) {
 
-		if constexpr( not Range::is_unchecked_input ) {
-			if( not( is_json_nullable_v<JsonMember> or
-			         ( not locations[pos].missing( ) ) or
-			         ( not rng.is_closing_brace_checked( ) ) ) ) {
-				daw_json_error( missing_member( JsonMember::name ), rng );
-			}
-		}
+		daw_json_assert_weak( is_json_nullable_v<JsonMember> or
+		                        ( not locations[pos].missing( ) ) or
+		                        ( not rng.is_closing_brace_checked( ) ),
+		                      missing_member( JsonMember::name ), rng );
+
 		rng.trim_left_unchecked( );
 		// TODO: should we check for end
 		while( locations[pos].missing( ) & ( rng.front( ) != '}' ) ) {

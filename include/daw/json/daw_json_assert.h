@@ -141,7 +141,7 @@ namespace daw::json {
 		case ErrorReason::InvalidString:
 			return "Invalid or corrupt string";
 		case ErrorReason::InvalidStringHighASCII:
-			return "tring support limited to 0x20 < chr <= 0x7F when "
+			return "String support limited to 0x20 < chr <= 0x7F when "
 			       "DisallowHighEightBit is true";
 		case ErrorReason::ExpectedKeyValueToStartWithBrace:
 			return "Expected key/value's JSON type to be of class type and beginning "
@@ -199,7 +199,7 @@ namespace daw::json {
 			return "Expected member not found";
 		case ErrorReason::TagMemberNotFound:
 			return "Expected tag member not found, they are required for tagged "
-			       "varaints";
+			       "Variants";
 		case ErrorReason::ExpectedMemberNotFound:
 			return "Expected member missing";
 		case ErrorReason::ExpectedTokenNotFound:
@@ -229,19 +229,19 @@ namespace daw::json {
 
 		explicit constexpr json_exception(
 		  json_details::missing_member mm ) noexcept
-		  : m_reason( std::move( mm ) ) {}
+		  : m_reason( mm ) {}
 
 		explicit constexpr json_exception( json_details::missing_token mt ) noexcept
-		  : m_reason( std::move( mt ) ) {}
+		  : m_reason( mt ) {}
 
 		explicit constexpr json_exception( json_details::missing_member mm,
 		                                   std::string_view location ) noexcept
-		  : m_reason( std::move( mm ) )
+		  : m_reason( mm )
 		  , m_parse_loc( location.data( ) ) {}
 
 		explicit constexpr json_exception( json_details::missing_token mt,
 		                                   std::string_view location ) noexcept
-		  : m_reason( std::move( mt ) )
+		  : m_reason( mt )
 		  , m_parse_loc( location.data( ) ) {}
 
 		explicit constexpr json_exception( ErrorReason reason,
@@ -286,8 +286,9 @@ namespace daw::json {
 	 * @param je json_exception to be formatted
 	 * @return string representation of json_exception
 	 */
-	inline std::string to_formatted_string( json_exception const &je,
-	                                        char const *json_document = nullptr ) {
+	inline std::string
+	to_formatted_string( json_exception const &je,
+	                     char const *json_document = nullptr ) {
 		using namespace std::string_literals;
 		std::string result = "reason: "s + je.reason( );
 		if( json_document == nullptr or je.parse_location( ) == nullptr ) {
