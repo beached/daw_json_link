@@ -295,16 +295,24 @@ namespace daw::json {
 			return result;
 		}
 		auto const previous_char_count =
-		  std::min( static_cast<std::size_t>( 50 ),
+		  std::min( static_cast<std::size_t>( 100 ),
 		            static_cast<std::size_t>(
 		              std::distance( json_document, je.parse_location( ) ) ) );
-#ifndef _WIN32
-		result += "\nlocation:\x1b[1m";
-#endif
-		result += std::string_view(
+		auto const loc_data = std::string_view(
 		  std::prev( je.parse_location( ),
 		             static_cast<std::ptrdiff_t>( previous_char_count ) ),
 		  previous_char_count );
+#ifndef _WIN32
+		result += "\nlocation:\x1b[1m";
+#endif
+		result +=
+		  std::accumulate( loc_data.data( ), loc_data.data( ) + loc_data.size( ),
+		                   std::string{ }, []( std::string s, char c ) {
+			                   if( ( c != '\n' ) & ( c != '\r' ) ) {
+				                   s += c;
+			                   }
+			                   return s;
+		                   } );
 #ifndef _WIN32
 		result += "\x1b[0m\n";
 #endif
