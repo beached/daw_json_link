@@ -131,7 +131,8 @@ namespace daw::json {
 					                 ErrorReason::UnexpectedEndOfData, rng );
 					break;
 				case ',':
-					if( ( prime_bracket_count == 1 ) & ( second_bracket_count == 0 ) ) {
+					if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
+					                       ( second_bracket_count == 0 ) ) ) {
 						++cnt;
 					}
 					break;
@@ -206,7 +207,8 @@ namespace daw::json {
 					}
 					break;
 				case ',':
-					if( ( prime_bracket_count == 1 ) & ( second_bracket_count == 0 ) ) {
+					if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
+					                       ( second_bracket_count == 0 ) ) ) {
 						++cnt;
 					}
 					break;
