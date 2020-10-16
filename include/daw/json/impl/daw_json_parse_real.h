@@ -161,6 +161,9 @@ namespace daw::json::json_details {
 		}
 		if( *first != '.' ) {
 			rng.first = first;
+			if( digits_avail < 0 ) {
+				return { static_cast<Result>( value ), -digits_avail };
+			}
 			return { static_cast<Result>( value ), 0 };
 		}
 		++first;
