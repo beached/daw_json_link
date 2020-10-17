@@ -459,7 +459,7 @@ long long test_dblparse( std::string_view num, bool always_disp = false ) {
 
 	std::uint64_t const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
 	std::uint64_t const ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
-	auto const diff = std::abs( static_cast<long long>( ui0 - ui1 ) );
+	auto const diff = std::abs( static_cast<long long>( ui0 ) - static_cast<long long>( ui1 ) );
 	if( always_disp ) {
 		auto const old_precision = std::cout.precision( );
 		std::cout.precision( std::numeric_limits<double>::max_digits10 );
