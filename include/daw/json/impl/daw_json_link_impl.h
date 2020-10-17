@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "daw_json_assert.h"
 #include "daw_json_arrow_proxy.h"
+#include "daw_json_assert.h"
 #include "daw_json_iterator_range.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_iso8601_utils.h"
@@ -427,12 +427,7 @@ namespace daw::json::json_details {
 			if constexpr( is_guaranteed_rvo_v<Range> ) {
 				struct cleanup_t {
 					Range *rng_ptr;
-					CPP20CONSTEXPR inline ~cleanup_t( ) {
-#if not defined( HAS_CPP20CONSTEXPR )
-						if( std::uncaught_exceptions( ) > 0 ) {
-							return;
-						}
-#endif
+					CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
 						class_cleanup_now( *rng_ptr );
 					}
 				} const run_after_parse{ &rng };
@@ -494,7 +489,7 @@ namespace daw::json::json_details {
 		if constexpr( is_guaranteed_rvo_v<Range> ) {
 			struct cleanup_t {
 				Range *ptr;
-				CPP20CONSTEXPR inline ~cleanup_t( ) {
+				CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
 					(void)ptr->skip_array( );
 				}
 			} const run_after_parse{ &rng };

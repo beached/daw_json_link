@@ -233,15 +233,15 @@ namespace daw::json {
 		  , m_parse_loc( location.data( ) ) {}
 
 		explicit constexpr json_exception( json_details::missing_token mt,
-		                                   std::string_view location ) noexcept
+		                                   char const *location ) noexcept
 		  : m_reason( ErrorReason::ExpectedTokenNotFound )
 		  , m_data( get_token_addr( mt.token ) )
-		  , m_parse_loc( location.data( ) ) {}
+		  , m_parse_loc( location ) {}
 
 		explicit constexpr json_exception( ErrorReason reason,
-		                                   std::string_view location ) noexcept
+		                                   char const *location ) noexcept
 		  : m_reason( reason )
-		  , m_parse_loc( location.data( ) ) {}
+		  , m_parse_loc( location ) {}
 
 		[[nodiscard]] constexpr ErrorReason reason_type( ) const {
 			return m_reason;
@@ -290,13 +290,13 @@ namespace daw::json {
 			return result;
 		}
 		auto const previous_char_count =
-		  std::min( static_cast<std::size_t>( 100 ),
+		  std::min( static_cast<std::size_t>( 50 ),
 		            static_cast<std::size_t>(
-		              std::distance( json_document, je.parse_location( ) ) ) );
+		              std::distance( json_document, je.parse_location( ) + 1 ) ) );
 		auto const loc_data = std::string_view(
 		  std::prev( je.parse_location( ),
 		             static_cast<std::ptrdiff_t>( previous_char_count ) ),
-		  previous_char_count );
+		  previous_char_count + 1 );
 #ifndef _WIN32
 		result += "\nlocation:\x1b[1m";
 #endif

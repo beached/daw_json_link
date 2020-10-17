@@ -73,23 +73,12 @@ daw_json_error( daw::json::ErrorReason reason, Range const &location ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
 		if( location.first ) {
-			if( location.class_first ) {
-				auto const len =
-				  static_cast<std::size_t>( location.first - location.class_first );
-				auto loc = std::string_view( location.class_first, len );
-				throw daw::json::json_exception( reason, loc );
-			}
-			if( location.last ) {
-				auto const len =
-				  static_cast<std::size_t>( location.last - location.first );
-				auto loc = std::string_view( location.first, len );
-				throw daw::json::json_exception( reason, loc );
-			}
-			throw daw::json::json_exception( reason,
-			                                 std::string_view( location.first, 0 ) );
-		} else {
-			throw daw::json::json_exception( reason );
+			throw daw::json::json_exception( reason, location.first );
 		}
+		if( location.class_first ) {
+			throw daw::json::json_exception( reason, location.class_first );
+		}
+		throw daw::json::json_exception( reason );
 	} else {
 #endif
 		(void)ShouldThrow;
@@ -179,27 +168,13 @@ daw_json_error( daw::json::json_details::missing_token reason,
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
 		using namespace std::string_literals;
-		if( location.class_first and location.first ) {
-			static constexpr std::size_t max_len = 150;
-			std::size_t const len = [&]( ) -> std::size_t {
-				if( location.first == nullptr or location.class_first == nullptr ) {
-					if( location.class_first == nullptr or
-					    location.class_last == nullptr ) {
-						return 0;
-					}
-					return std::min( static_cast<std::size_t>( std::distance(
-					                   location.class_first, location.class_last ) ),
-					                 max_len );
-				}
-				return std::min( static_cast<std::size_t>( std::distance(
-				                   location.class_first, location.first + 1 ) ),
-				                 max_len );
-			}( );
-			throw daw::json::json_exception(
-			  reason, std::string_view( location.class_first, len ) );
-		} else {
-			throw daw::json::json_exception( reason );
+		if( location.first ) {
+			throw daw::json::json_exception( reason, location.first );
 		}
+		if( location.class_first ) {
+			throw daw::json::json_exception( reason, location.class_first );
+		}
+		throw daw::json::json_exception( reason );
 	} else {
 #endif
 		(void)ShouldThrow;

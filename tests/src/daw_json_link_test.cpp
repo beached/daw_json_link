@@ -436,7 +436,10 @@ void test128( ) {
 #endif
 
 template<bool KnownBounds = false>
-long long test_dblparse( std::string_view num ) {
+long long test_dblparse( std::string_view num, bool always_disp = false ) {
+	if( always_disp ) {
+		std::cout << "testing: '" << num << '\'';
+	}
 	double lib_parse_dbl = [&] {
 		if constexpr( KnownBounds ) {
 			auto rng = daw::json::NoCommentSkippingPolicyChecked(
@@ -457,6 +460,12 @@ long long test_dblparse( std::string_view num ) {
 	std::uint64_t const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
 	std::uint64_t const ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
 	auto const diff = std::abs( static_cast<long long>( ui0 - ui1 ) );
+	if( always_disp ) {
+		auto const old_precision = std::cout.precision( );
+		std::cout.precision( std::numeric_limits<double>::max_digits10 );
+		std::cout << "->ulp diff: " << std::dec << diff << '\n';
+		std::cout.precision( old_precision );
+	}
 #ifndef NDEBUG
 	if( diff > 2 ) {
 		auto const old_precision = std::cout.precision( );
@@ -649,27 +658,39 @@ int main( int, char ** )
 	std::cout << "10.7976931348623157E307 -> "
 	          << from_json<double>( "10.7976931348623157E307" ) << '\n';
 
+	test_dblparse( "4891559871276714924261e222", true );
 	test_dblparse(
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "111111111111111111111111111111.0e-100" );
+	  "111111111111111111111111111111.0e-100",
+	  true );
 	test_dblparse(
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
 	  "11111111111111111111111111111111111111111111111111111111111111111111111111"
-	  "111111111111111111111111111111.0e+100" );
-	test_dblparse( "14514284786278117030.4620546740167642908e-104" );
-	test_dblparse( "560449937253421.57275338353451748e-223" );
-	test_dblparse( "127987629894956.6249879371780786496e-274" );
-	test_dblparse( "19700720435664.186294290058937593e13" );
-	test_dblparse( "5.9409999999999999999996e-324" );
-	test_dblparse( "9728625633136924125.18356202983677566044e-308" );
-	test_dblparse( "10199214983525025199.13135016100190689227e-308" );
+	  "111111111111111111111111111111.0e+100",
+	  true );
+	test_dblparse( "14514284786278117030.4620546740167642908e-104", true );
+	test_dblparse( "560449937253421.57275338353451748e-223", true );
+	test_dblparse( "127987629894956.6249879371780786496e-274", true );
+	test_dblparse( "19700720435664.186294290058937593e13", true );
+	test_dblparse( "5.9409999999999999999996e-324", true );
+	test_dblparse( "9728625633136924125.18356202983677566044e-308", true );
+	test_dblparse( "9728625633136924125.18356202983677566044e-500", true );
+	test_dblparse( "10199214983525025199.13135016100190689227e-308", true );
+	test_dblparse( "0.000000000000000000000000000000000000001e-308", true );
+	test_dblparse( "6372891218502368041059e64", true );
+	test_dblparse( "9223372036854776000e100", true );
+	test_dblparse( "9223372036854776000e2000", true );
+	test_dblparse( "9223372036854776000e+20", true );
+	test_dblparse( "9223372036854776000e-2000", true );
+	test_dblparse( "2e-1000", true );
+	test_dblparse( "1e-1000", true );
 	test_lots_of_doubles( );
 	test_lots_of_doubles<true>( );
 	if constexpr( sizeof( double ) < sizeof( long double ) ) {
