@@ -201,14 +201,14 @@ namespace daw::json {
 		ErrorReason m_reason = ErrorReason::Unknown;
 		char const *m_data = nullptr;
 		char const *m_parse_loc = nullptr;
-		static constexpr char token_addr = 0;
+		static constexpr char token_addr[256] = { };
 
 		static constexpr char const *get_token_addr( char c ) {
-			return &token_addr + static_cast<int>( static_cast<unsigned char>( c ) );
+			return token_addr + static_cast<int>( static_cast<unsigned char>( c ) );
 		}
 
 		static constexpr char get_token( char const *p ) {
-			return static_cast<char>( static_cast<unsigned char>( p - &token_addr ) );
+			return static_cast<char>( static_cast<unsigned char>( p - token_addr ) );
 		}
 
 	public:

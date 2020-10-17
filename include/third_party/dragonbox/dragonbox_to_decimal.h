@@ -358,6 +358,10 @@ namespace jkj::dragonbox {
 
 #if( defined( __GNUC__ ) || defined( __clang__ ) ) &&                          \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 				unsigned __int128 internal_;
 
 				constexpr uint128( std::uint64_t high, std::uint64_t low ) noexcept
@@ -366,7 +370,9 @@ namespace jkj::dragonbox {
 
 				constexpr uint128( unsigned __int128 u ) noexcept
 				  : internal_{ u } {}
-
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 				constexpr std::uint64_t high( ) const noexcept {
 					return std::uint64_t( internal_ >> 64 );
 				}
@@ -413,8 +419,15 @@ namespace jkj::dragonbox {
 			                                        std::uint64_t y ) noexcept {
 #if( defined( __GNUC__ ) || defined( __clang__ ) ) &&                          \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 				return static_cast<unsigned __int128>( x ) *
 				       static_cast<unsigned __int128>( y );
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #elif defined( _MSC_VER ) && defined( _M_X64 )
 				uint128 result;
 				result.low_ = _umul128( x, y, &result.high_ );
@@ -443,9 +456,16 @@ namespace jkj::dragonbox {
 			umul128_upper64( std::uint64_t x, std::uint64_t y ) noexcept {
 #if( defined( __GNUC__ ) || defined( __clang__ ) ) &&                          \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 				auto p = static_cast<unsigned __int128>( x ) *
 				         static_cast<unsigned __int128>( y );
 				return std::uint64_t( p >> 64 );
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #elif defined( _MSC_VER ) && defined( _M_X64 )
 				return __umulh( x, y );
 #else
@@ -3216,8 +3236,8 @@ namespace jkj::dragonbox {
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	template<class Float, class... Policies>
-	JKJ_SAFEBUFFERS JKJ_FORCEINLINE auto
-	to_decimal( Float x, Policies... policies ) {
+	JKJ_SAFEBUFFERS JKJ_FORCEINLINE auto to_decimal( Float x,
+	                                                 Policies... policies ) {
 		// Build policy holder type
 		using namespace detail::policy_impl;
 		using policy_holder = decltype( make_policy_holder(

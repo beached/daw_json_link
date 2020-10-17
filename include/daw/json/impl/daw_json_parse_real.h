@@ -66,14 +66,14 @@ namespace daw::json::json_details {
 		                          : std::numeric_limits<double>::max_exponent10;
 		constexpr Result max_v = static_cast<Result>( dpow10_tbl[max_exp] );
 
-		if( p > max_exp ) {
+		if( DAW_JSON_UNLIKELY( p > max_exp ) ) {
 			do {
 				result *= max_v;
 				p -= max_exp;
 			} while( p > max_exp );
 			return static_cast<Result>( result ) *
 			       static_cast<Result>( dpow10_tbl[p] );
-		} else if( p < -max_exp ) {
+		} else if( DAW_JSON_UNLIKELY( p < -max_exp ) ) {
 			do {
 				result /= max_v;
 				p += max_exp;
@@ -91,9 +91,8 @@ namespace daw::json::json_details {
 	template<typename Result>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
 	power10( runtime_exec_tag const &, Result result, std::int32_t p ) {
-		if constexpr( std::is_same_v<Result, double> ) {
-			return power10( constexpr_exec_tag{ }, result, p );
-		} else if constexpr( std::is_same_v<Result, float> ) {
+		if constexpr( std::is_same_v<Result, double> or
+		              std::is_same_v<Result, float> ) {
 			return power10( constexpr_exec_tag{ }, result, p );
 		} else {
 			// For long double and others fallback to the slower std::pow
@@ -122,7 +121,12 @@ namespace daw::json::json_details {
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr void
 	parse_digits( char const *first, std::uint64_t &v, int num_digits ) {
 		std::uint64_t value = v;
-		for( int n = 0; n < num_digits; ++n ) {
+		while( num_digits >= 8 ) {
+			v *= 100'000'000ULL;
+			v += static_cast<std::uint64_t>( parse_8_digits( first ) );
+			num_digits -= 8;
+		}
+		for( int n = 0; DAW_JSON_LIKELY( n < num_digits ); ++n ) {
 			value *= 10U;
 			value += static_cast<unsigned>( static_cast<unsigned char>( first[n] ) -
 			                                static_cast<unsigned char>( '0' ) );
@@ -141,9 +145,10 @@ namespace daw::json::json_details {
 		std::uint64_t value = 0;
 		char const *first = rng.first;
 		char const *const last = rng.last;
+
 		unsigned dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
 		                                      static_cast<unsigned char>( '0' ) );
-		while( dig < 10U ) {
+		while( DAW_JSON_LIKELY( dig < 10U ) ) {
 			if( digits_avail > 0 ) {
 				value *= 10U;
 				value += dig;
@@ -171,8 +176,8 @@ namespace daw::json::json_details {
 
 		dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
 		                             static_cast<unsigned char>( '0' ) );
-		while( dig < 10U ) {
-			if( digits_avail > 0 ) {
+		while( DAW_JSON_LIKELY( dig < 10U ) ) {
+			if( DAW_JSON_LIKELY( digits_avail > 0 ) ) {
 				value *= 10U;
 				value += dig;
 				--digits_avail;
@@ -180,7 +185,7 @@ namespace daw::json::json_details {
 			}
 			++first;
 			if constexpr( not Range::is_unchecked_input ) {
-				if( first >= last ) {
+				if( DAW_JSON_UNLIKELY( first >= last ) ) {
 					rng.first = first;
 					return { static_cast<Result>( value ), exponent };
 				}
