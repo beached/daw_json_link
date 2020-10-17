@@ -17,7 +17,6 @@
 #include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
 #include <daw/json/daw_json_link.h>
-#include <daw/json/daw_json_stack_tracer.h>
 
 #include <cstdio>
 #include <iostream>
@@ -49,7 +48,6 @@ int main( int argc, char **argv ) {
 		std::cerr << "The error is about "
 		          << ( jex.parse_location( ) - json_data.data( ) ) << " bytes in\n"
 		          << '\n';
-		std::cerr << find_json_path_to( jex, json_data.data( ) );
 		exit( 1 );
 	}
 #endif
