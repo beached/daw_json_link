@@ -132,7 +132,7 @@ namespace daw::json::json_details {
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr void
 	parse_digits( char const *first, char const *const last, std::uint64_t &v ) {
 		std::uint64_t value = v;
-		while( first != last ) {
+		while( DAW_JSON_LIKELY( first < last ) ) {
 			value *= 10U;
 			value += parse_digit( *first );
 			++first;
@@ -140,11 +140,13 @@ namespace daw::json::json_details {
 		v = value;
 	}
 
+	template<bool is_unchecked_input>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr int
 	skip_digits( char const *first, char const *const last ) {
 		unsigned dig = 0;
 		char const *const start = first;
-		while( first < last and ( dig = parse_digit( *first ) < 10 ) ) {
+		while( ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) and
+		       ( dig = parse_digit( *first ) < 10 ) ) {
 			++first;
 		}
 		return static_cast<int>( first - start );
@@ -156,7 +158,7 @@ namespace daw::json::json_details {
 	                           Unsigned &v ) {
 		auto value = v;
 		unsigned dig = 0;
-		while( ( is_unchecked_input or first < last ) and
+		while( ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) and
 		       ( dig = parse_digit( *first ) ) < 10 ) {
 			value *= 10U;
 			value += dig;
@@ -164,29 +166,6 @@ namespace daw::json::json_details {
 		}
 		v = value;
 		return first;
-	}
-
-	template<typename Unsigned>
-	DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-	parse_up_to_n_digits( char const *first, Unsigned &value, int &num_digits ) {
-		if( num_digits < 1 ) {
-			return;
-		}
-		auto v = value;
-		int n = num_digits;
-		unsigned dig = parse_digit( *first++ );
-		while( ( dig < 10 ) & ( n > 1 ) ) {
-			--n;
-			v *= 10U;
-			v += dig;
-			dig = parse_digit( *first++ );
-		}
-		if( n == 1 ) {
-			v *= 10U;
-			v += dig;
-		}
-		value = v;
-		num_digits = n;
 	}
 
 	template<typename Result, bool KnownRange, typename Range,
@@ -322,7 +301,8 @@ namespace daw::json::json_details {
 			if( ( last_char < rng.last and parse_digit( *last_char ) < 10 ) ) {
 				// We have sig digits we cannot parse because there isn't enough room in
 				// a std::uint64_t
-				auto result = skip_digits( last_char, rng.last );
+				auto result =
+				  skip_digits<Range::is_unchecked_input>( last_char, rng.last );
 				last_char += result;
 				return static_cast<signed_t>( result );
 			}
@@ -332,11 +312,12 @@ namespace daw::json::json_details {
 			exponent = 0;
 		}
 		first = last_char;
-		if( ( ( Range::is_unchecked_input or first < rng.last ) and
+		if( ( ( Range::is_unchecked_input or
+		        DAW_JSON_LIKELY( first < rng.last ) ) and
 		      *first == '.' ) ) {
 			++first;
 			if( exponent != 0 ) {
-				first += skip_digits( first, rng.last );
+				first += skip_digits<Range::is_unchecked_input>( first, rng.last );
 			} else {
 				char const *fract_last =
 				  first +
@@ -346,7 +327,7 @@ namespace daw::json::json_details {
 				  first, fract_last, significant_digits );
 				exponent -= last_char - first;
 				first = last_char;
-				first += skip_digits( first, rng.last );
+				first += skip_digits<Range::is_unchecked_input>( first, rng.last );
 			}
 		}
 
