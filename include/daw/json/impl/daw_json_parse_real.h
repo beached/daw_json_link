@@ -146,7 +146,7 @@ namespace daw::json::json_details {
 		unsigned dig = 0;
 		char const *const start = first;
 		while( ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) and
-		       ( dig = parse_digit( *first ) < 10 ) ) {
+		       ( dig = parse_digit( *first ) ) < 10 ) {
 			++first;
 		}
 		return static_cast<int>( first - start );

@@ -146,7 +146,11 @@ namespace daw::json {
 		constexpr basic_stateful_json_value( basic_json_value<Range> val )
 		  : m_value( std::move( val ) ) {
 
-			daw_json_assert_weak( m_value.is_class( ) | m_value.is_array( ),
+			daw_json_assert_weak( ( [&] {
+				                      auto t = m_value.type( );
+				                      return ( t == JsonBaseParseTypes::Class ) |
+				                             ( t == JsonBaseParseTypes::Array );
+			                      }( ) ),
 			                      ErrorReason::ExpectedArrayOrClassStart,
 			                      val.get_range( ) );
 		}
@@ -158,7 +162,7 @@ namespace daw::json {
 		  : basic_stateful_json_value( basic_json_value<Range>( json_data ) ) {}
 		/**
 		 * Reuse state storage for another basic_json_value
-		 * @param val Value to contian state for
+		 * @param val Value to contain state for
 		 */
 		constexpr void reset( basic_json_value<Range> val ) {
 			m_value = std::move( val );

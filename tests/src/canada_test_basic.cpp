@@ -16,6 +16,7 @@
 #include <daw/daw_do_not_optimize.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
+#include <daw/json/daw_json_find_path.h>
 #include <daw/json/daw_json_link.h>
 
 #include <cstdio>

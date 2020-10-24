@@ -244,9 +244,6 @@ namespace daw::json::json_details {
 					it = decode_utf16( rng, it );
 					break;
 				case '/':
-					*it++ = rng.front( );
-					rng.remove_prefix( );
-					break;
 				case '\\':
 				case '"':
 					*it++ = rng.front( );

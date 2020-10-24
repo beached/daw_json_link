@@ -175,8 +175,7 @@ namespace daw::json::json_details {
 
 		while( last - first >= 16 ) {
 			auto const b = uload16_char_data( tag, first );
-			int const b_len =
-			  last - first >= 16 ? 16 : static_cast<int>( last - first );
+			int const b_len = 16;
 			int result = _mm_cmpestri( a, keys_len, b, b_len, compare_mode );
 			first += result;
 			if( result < 16 ) {
