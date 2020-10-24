@@ -44,14 +44,15 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-template<typename Real, bool Trusted = false, std::size_t N>
-DAW_CONSTEXPR Real parse_real( char const ( &str )[N] ) {
-	auto rng = daw::json::NoCommentSkippingPolicyChecked( str, str + N );
+template<typename Real, bool Trusted = false>
+DAW_CONSTEXPR Real parse_real( std::string_view str ) {
+	auto rng = daw::json::NoCommentSkippingPolicyChecked(
+	  str.data( ), str.data( ) + str.size( ) );
 	return daw::json::json_details::parse_real<Real, false>( rng );
 }
 
-template<typename Real, bool Trusted = false, size_t N>
-DAW_CONSTEXPR bool parse_real_test( char const ( &str )[N], Real expected ) {
+template<typename Real, bool Trusted = false>
+DAW_CONSTEXPR bool parse_real_test( std::string_view str, Real expected ) {
 	auto res = parse_real<Real, Trusted>( str );
 	return not( res < expected or res > expected );
 }
@@ -436,7 +437,8 @@ void test128( ) {
 #endif
 
 template<bool KnownBounds = false>
-long long test_dblparse( std::string_view num, bool always_disp = false ) {
+unsigned long long test_dblparse( std::string_view num,
+                                  bool always_disp = false ) {
 	if( always_disp ) {
 		std::cout << "testing: '" << num << '\'';
 	}
@@ -459,7 +461,7 @@ long long test_dblparse( std::string_view num, bool always_disp = false ) {
 
 	std::uint64_t const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
 	std::uint64_t const ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
-	auto const diff = std::abs( static_cast<long long>( ui0 ) - static_cast<long long>( ui1 ) );
+	auto const diff = std::max( ui0, ui1 ) - std::min( ui0, ui1 );
 	if( always_disp ) {
 		auto const old_precision = std::cout.precision( );
 		std::cout.precision( std::numeric_limits<double>::max_digits10 );
@@ -470,9 +472,22 @@ long long test_dblparse( std::string_view num, bool always_disp = false ) {
 	if( diff > 2 ) {
 		auto const old_precision = std::cout.precision( );
 		// Do again to do it from debugger
-		lib_parse_dbl =
-		  daw::json::from_json<double, daw::json::NoCommentSkippingPolicyChecked,
-		                       KnownBounds>( num );
+
+		lib_parse_dbl = [&] {
+			if constexpr( KnownBounds ) {
+				auto rng = daw::json::NoCommentSkippingPolicyChecked(
+				  num.data( ), num.data( ) + num.size( ) );
+				rng = daw::json::json_details::skip_number( rng );
+				using json_member =
+				  daw::json::json_details::unnamed_default_type_mapping<double>;
+				return daw::json::json_details::parse_value<json_member, KnownBounds>(
+				  daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			} else {
+				return daw::json::from_json<
+				  double, daw::json::NoCommentSkippingPolicyChecked, KnownBounds>(
+				  num );
+			}
+		}( );
 		std::cout.precision( std::numeric_limits<double>::max_digits10 );
 		std::cout << "orig: " << num << '\n';
 		std::cout << "daw_json_link: " << lib_parse_dbl << '\n'
@@ -491,7 +506,7 @@ template<bool KnownBounds = false, int NUM_VALS = 1'000'000>
 void test_lots_of_doubles( ) {
 	auto rd = std::random_device( );
 	auto rng = std::mt19937_64( rd( ) );
-	auto dist = std::map<long long, std::size_t>( );
+	auto dist = std::map<unsigned long long, std::size_t>( );
 	for( int i = 0; i < NUM_VALS; ++i ) {
 		unsigned long long x1 = rng( );
 		unsigned long long x2 = rng( );
@@ -512,14 +527,6 @@ int main( int, char ** )
 #endif
 {
 	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
-	test_004( );
-	test_005( );
-	test_006( );
-	{
-		DAW_CONSTEXPR auto const v =
-		  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
-		daw::expecting( not v.b );
-	}
 	using namespace daw::json;
 	daw::expecting(
 	  not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b );
@@ -530,6 +537,21 @@ int main( int, char ** )
 	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
 	daw::expecting( parse_real_test<double>( "5e2", 500.0 ) );
 	daw::expecting( parse_real_test<double>( "5.5e+2", 550.0 ) );
+	daw::expecting( parse_real_test<double>(
+	  std::string_view( test_001_t_json_data ).substr( 12, 9 ), -1.234e+3 ) );
+	std::cout << "'" << std::string_view( test_001_t_json_data ).substr( 33, 2 )
+	          << "'\n";
+	daw::expecting( parse_real_test<double>(
+	  std::string_view( test_001_t_json_data ).substr( 33, 2 ), 55 ) );
+
+	test_004( );
+	test_005( );
+	test_006( );
+	{
+		DAW_CONSTEXPR auto const v =
+		  daw::json::from_json<OptionalOrdered>( optional_ordered1_data );
+		daw::expecting( not v.b );
+	}
 
 #if defined( __GNUC__ ) and __GNUC__ <= 9
 #define CX
@@ -691,6 +713,8 @@ int main( int, char ** )
 	test_dblparse( "9223372036854776000e-2000", true );
 	test_dblparse( "2e-1000", true );
 	test_dblparse( "1e-1000", true );
+	test_dblparse( "78146521210545563.1397450998275178158e-308", true );
+	test_dblparse( "8725540998407961.3743556965848965343e-308", true );
 	test_lots_of_doubles( );
 	test_lots_of_doubles<true>( );
 	if constexpr( sizeof( double ) < sizeof( long double ) ) {

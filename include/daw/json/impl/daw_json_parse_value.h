@@ -31,26 +31,28 @@ namespace daw::json::json_details {
 	template<LiteralAsStringOpt literal_as_string, bool KnownBounds = false,
 	         typename Range>
 	constexpr void skip_quote_when_literal_as_string( Range &rng ) {
+		auto rng2 = rng;
 		if constexpr( literal_as_string == LiteralAsStringOpt::Always ) {
-			daw_json_assert_weak( rng.is_quotes_checked( ),
-			                      ErrorReason::InvalidNumberUnexpectedQuoting, rng );
-			rng.remove_prefix( );
+			daw_json_assert_weak( rng2.is_quotes_checked( ),
+			                      ErrorReason::InvalidNumberUnexpectedQuoting, rng2 );
+			rng2.remove_prefix( );
 			if constexpr( KnownBounds ) {
-				rng.last = std::prev( rng.last );
+				rng2.last = std::prev( rng2.last );
 			}
 		} else if constexpr( literal_as_string == LiteralAsStringOpt::Maybe ) {
-			daw_json_assert_weak( not rng.empty( ), ErrorReason::UnexpectedEndOfData,
-			                      rng );
-			if( rng.front( ) == '"' ) {
-				rng.remove_prefix( );
+			daw_json_assert_weak( not rng2.empty( ), ErrorReason::UnexpectedEndOfData,
+			                      rng2 );
+			if( rng2.front( ) == '"' ) {
+				rng2.remove_prefix( );
 				if constexpr( KnownBounds ) {
-					rng.last = std::prev( rng.last );
+					rng2.last = std::prev( rng2.last );
 				}
 			}
 		} else {
-			daw_json_assert_weak( rng.front( ) != '"',
-			                      ErrorReason::InvalidNumberUnexpectedQuoting, rng );
+			daw_json_assert_weak( rng2.front( ) != '"',
+			                      ErrorReason::InvalidNumberUnexpectedQuoting, rng2 );
 		}
+		rng = rng2;
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>

@@ -10,6 +10,7 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_exec_modes.h"
+#include "daw_json_parse_digit.h"
 #include "daw_json_parse_string_need_slow.h"
 #include "daw_json_parse_string_quote.h"
 #include "daw_json_traits.h"
@@ -531,6 +532,27 @@ namespace daw::json::json_details {
 		return result;
 	}
 
+	template<typename Result, bool is_unchecked_input>
+	DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr Result
+	parse_digits_while_number( char const *&first, char const *const last ) {
+		Result value = 0;
+		if( first >= last ) {
+			return value;
+		}
+		unsigned dig = parse_digit( *first );
+		while( dig < 10 ) {
+			value *= static_cast<Result>( 10 );
+			value += static_cast<Result>( dig );
+			++first;
+			if constexpr( not is_unchecked_input ) {
+				if( first >= last ) {
+					break;
+				}
+			}
+			dig = parse_digit( *first );
+		}
+		return value;
+	}
 	/***
 	 * Skip a number and store the position of it's components in the returned
 	 * Range
@@ -540,56 +562,39 @@ namespace daw::json::json_details {
 		auto result = rng;
 		char const *first = rng.first;
 		char const *const last = rng.last;
-		if( ( Range::is_unchecked_input or first < last ) and *first == '-' ) {
+		daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData, rng );
+		if( *first == '-' ) {
 			++first;
 		}
-		unsigned dig = 0;
-		while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
-			dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-			                             static_cast<unsigned char>( '0' ) );
-			++first;
-		}
-		if constexpr( Range::is_unchecked_input ) {
-			first -= static_cast<int>( first < last );
-		} else {
-			--first;
-		}
+		(void)parse_digits_while_number<unsigned, Range::is_unchecked_input>(
+		  first, last );
 		char const *decimal = nullptr;
-		if( ( Range::is_unchecked_input or ( first < last ) ) and *first == '.' ) {
+		if( ( Range::is_unchecked_input or first < last ) and ( *first == '.' ) ) {
 			decimal = first;
 			++first;
-			dig = 0;
-			while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
-				dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-				                             static_cast<unsigned char>( '0' ) );
-				++first;
-			}
-			if constexpr( Range::is_unchecked_input ) {
-				first -= static_cast<int>( first < last );
-			} else {
-				--first;
-			}
+			(void)parse_digits_while_number<unsigned, Range::is_unchecked_input>(
+			  first, last );
 		}
 		char const *exp = nullptr;
-		if( ( Range::is_unchecked_input or ( first < last ) ) and
-		    ( ( *first == 'e' ) | ( *first == 'E' ) ) ) {
+		unsigned dig = parse_digit( *first );
+		if( ( Range::is_unchecked_input or ( first < last ) ) &
+		    ( ( dig == parsed_constants::e_char ) |
+		      ( dig == parsed_constants::E_char ) ) ) {
 			exp = first;
 			++first;
-			if( ( Range::is_unchecked_input or ( first < last ) ) and
-			    ( ( *first == '+' ) | ( *first == '-' ) ) ) {
+			daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,
+			                      [&] {
+				                      auto r = rng;
+				                      r.first = first;
+				                      return r;
+			                      }( ) );
+			dig = parse_digit( *first );
+			if( ( dig == parsed_constants::plus_char ) |
+			    ( dig == parsed_constants::minus_char ) ) {
 				++first;
 			}
-			dig = 0;
-			while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
-				dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-				                             static_cast<unsigned char>( '0' ) );
-				++first;
-			}
-			if constexpr( not Range::is_unchecked_input ) {
-				first -= static_cast<int>( first < last );
-			} else {
-				--first;
-			}
+			(void)parse_digits_while_number<unsigned, Range::is_unchecked_input>(
+			  first, last );
 		}
 
 		rng.first = first;

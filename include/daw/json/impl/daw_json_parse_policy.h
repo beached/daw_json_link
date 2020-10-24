@@ -67,6 +67,13 @@ namespace daw::json {
 		  , class_first( f )
 		  , class_last( l ) {}
 
+		constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
+		                            iterator cl )
+		  : first( f )
+		  , last( l )
+		  , class_first( cf )
+		  , class_last( cl ) {}
+
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr iterator data( ) const {
 			return first;
 		}

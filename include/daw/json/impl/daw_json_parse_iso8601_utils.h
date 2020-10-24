@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "daw_json_parse_digit.h"
+
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_string_view.h>
 
@@ -16,20 +18,13 @@
 #include <cstdint>
 
 namespace daw::json::parse_utils {
-	template<typename Result>
-	constexpr Result to_integer( char const c ) {
-		return static_cast<Result>( static_cast<unsigned char>( c ) -
-		                            static_cast<unsigned char>( '0' ) );
-	}
 
 	template<typename Result, std::size_t count>
 	constexpr Result parse_unsigned( char const *digit_str ) {
 		UInt64 result = UInt64( );
 		for( std::size_t n = 0; n < count; ++n ) {
 			result *= 10U;
-			result +=
-			  static_cast<unsigned>( static_cast<unsigned char>( digit_str[n] ) -
-			                         static_cast<unsigned char>( '0' ) );
+			result += to_uint64( json_details::parse_digit( digit_str[n] ) );
 		}
 		return static_cast<Result>( result );
 	}
@@ -37,23 +32,18 @@ namespace daw::json::parse_utils {
 	template<typename Result>
 	constexpr Result parse_unsigned2( char const *digit_str ) {
 		UInt64 result = UInt64( );
-		unsigned dig =
-		  static_cast<unsigned>( static_cast<unsigned char>( *digit_str ) -
-		                         static_cast<unsigned char>( '0' ) );
+		unsigned dig = json_details::parse_digit( *digit_str );
 		while( dig < 10 ) {
 			result *= 10U;
 			result += dig;
 			++digit_str;
-			dig = static_cast<unsigned>( static_cast<unsigned char>( *digit_str ) -
-			                             static_cast<unsigned char>( '0' ) );
+			dig = json_details::parse_digit( *digit_str );
 		}
 		return static_cast<Result>( result );
 	}
 
 	constexpr bool is_number( char c ) {
-		auto const dig = static_cast<unsigned>( static_cast<unsigned char>( c ) -
-		                                        static_cast<unsigned char>( '0' ) );
-		return dig < 10U;
+		return json_details::parse_digit( c ) < 10U;
 	}
 } // namespace daw::json::parse_utils
 
@@ -76,9 +66,7 @@ namespace daw::json::datetime {
 				sv.remove_prefix( );
 			}
 			while( not sv.empty( ) ) {
-				auto const dig =
-				  static_cast<unsigned>( static_cast<unsigned char>( sv.pop_front( ) ) -
-				                         static_cast<unsigned char>( '0' ) );
+				auto const dig = json_details::parse_digit( sv.pop_front( ) );
 				daw_json_assert( dig < 10U, ErrorReason::InvalidNumber );
 				result *= 10;
 				result += static_cast<Result>( dig );
