@@ -8,28 +8,23 @@
 
 #pragma once
 
+#include "daw_json_parse_digit.h"
+
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_string_view.h>
 
-#include <ciso646>
 #include <chrono>
+#include <ciso646>
 #include <cstdint>
 
 namespace daw::json::parse_utils {
-	template<typename Result>
-	constexpr Result to_integer( char const c ) {
-		return static_cast<Result>( static_cast<unsigned char>( c ) -
-		                            static_cast<unsigned char>( '0' ) );
-	}
 
 	template<typename Result, std::size_t count>
 	constexpr Result parse_unsigned( char const *digit_str ) {
 		UInt64 result = UInt64( );
 		for( std::size_t n = 0; n < count; ++n ) {
 			result *= 10U;
-			result +=
-			  static_cast<unsigned>( static_cast<unsigned char>( digit_str[n] ) -
-			                         static_cast<unsigned char>( '0' ) );
+			result += to_uint64( json_details::parse_digit( digit_str[n] ) );
 		}
 		return static_cast<Result>( result );
 	}
@@ -37,23 +32,18 @@ namespace daw::json::parse_utils {
 	template<typename Result>
 	constexpr Result parse_unsigned2( char const *digit_str ) {
 		UInt64 result = UInt64( );
-		unsigned dig =
-		  static_cast<unsigned>( static_cast<unsigned char>( *digit_str ) -
-		                         static_cast<unsigned char>( '0' ) );
+		unsigned dig = json_details::parse_digit( *digit_str );
 		while( dig < 10 ) {
 			result *= 10U;
 			result += dig;
 			++digit_str;
-			dig = static_cast<unsigned>( static_cast<unsigned char>( *digit_str ) -
-			                             static_cast<unsigned char>( '0' ) );
+			dig = json_details::parse_digit( *digit_str );
 		}
 		return static_cast<Result>( result );
 	}
 
 	constexpr bool is_number( char c ) {
-		auto const dig = static_cast<unsigned>( static_cast<unsigned char>( c ) -
-		                                        static_cast<unsigned char>( '0' ) );
-		return dig < 10U;
+		return json_details::parse_digit( c ) < 10U;
 	}
 } // namespace daw::json::parse_utils
 
@@ -64,7 +54,7 @@ namespace daw::json::datetime {
 		constexpr Result
 		parse_number( daw::basic_string_view<char, Bounds, Ex> sv ) {
 			static_assert( daw::numeric_limits<Result>::digits10 >= 4 );
-			daw_json_assert( not sv.empty( ), "Invalid number" );
+			daw_json_assert( not sv.empty( ), ErrorReason::InvalidNumber );
 			Result result = 0;
 			Result sign = 1;
 			if( sv.front( ) == '-' ) {
@@ -76,10 +66,8 @@ namespace daw::json::datetime {
 				sv.remove_prefix( );
 			}
 			while( not sv.empty( ) ) {
-				auto const dig =
-				  static_cast<unsigned>( static_cast<unsigned char>( sv.pop_front( ) ) -
-				                         static_cast<unsigned char>( '0' ) );
-				daw_json_assert( dig < 10U, "Invalid digit" );
+				auto const dig = json_details::parse_digit( sv.pop_front( ) );
+				daw_json_assert( dig < 10U, ErrorReason::InvalidNumber );
 				result *= 10;
 				result += static_cast<Result>( dig );
 			}
@@ -221,17 +209,19 @@ namespace daw::json::datetime {
 		constexpr daw::string_view t_str = "T";
 		auto const date_str = ts.pop_front( t_str );
 		if( ts.empty( ) ) {
-			daw_json_error( "Invalid timestamp, missing T separator" );
+			daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid timestamp,
+			                                                 // missing T separator
 		}
+
 		date_parts const ymd = parse_iso_8601_date( date_str );
 		auto time_str = ts.pop_front( []( char c ) {
-			return not( parse_utils::is_number( c ) | (c == ':') | (c == '.') );
+			return not( parse_utils::is_number( c ) | ( c == ':' ) | ( c == '.' ) );
 		} );
 		// TODO: verify or parse timezone
 		time_parts hms = parse_iso_8601_time( time_str );
 		if( not( ts.empty( ) or ts.front( ) == 'Z' ) ) {
 			daw_json_assert( ts.size( ) == 5 or ts.size( ) == 6,
-			                 "Invalid timezone offset" );
+			                 ErrorReason::InvalidTimestamp );
 			// The format will be (+|-)hh[:]mm
 			bool const sign = ts.front( ) == '+';
 			ts.remove_prefix( );
@@ -338,7 +328,7 @@ namespace daw::json::datetime {
 		case 12:
 			return { "Dec" };
 		default:
-			daw_json_error( "Invalid Month" );
+			daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid month
 		}
 	}
 
@@ -364,8 +354,10 @@ namespace daw::json::datetime {
 			return { "Thu" };
 		case 5:
 			return { "Fri" };
-		default:
+		case 6:
 			return { "Sat" };
+		default:
+			daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid month
 		}
 	}
 	static_assert( short_day_of_week(
@@ -375,8 +367,7 @@ namespace daw::json::datetime {
 
 	namespace datetime_details {
 		constexpr std::uint_least32_t month2num( std::string_view ts ) {
-			daw_json_assert( ts.size( ) >= 3,
-			                 "All months must be 3 characters long" );
+			daw_json_assert( ts.size( ) >= 3, ErrorReason::InvalidTimestamp );
 			auto const b0 =
 			  static_cast<std::uint_least32_t>( static_cast<unsigned char>( ts[0] ) );
 			auto const b1 =
@@ -415,7 +406,7 @@ namespace daw::json::datetime {
 		case datetime_details::month2num( "Dec" ):
 			return 12;
 		default:
-			daw_json_error( "Invalid Month" );
+			daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid month
 		}
 	}
 } // namespace daw::json::datetime

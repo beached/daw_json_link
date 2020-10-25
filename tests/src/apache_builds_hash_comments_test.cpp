@@ -43,10 +43,9 @@ inline bool DAW_CONSTEXPR is_to_json_data_able_v =
 template<typename T,
          std::enable_if_t<is_to_json_data_able_v<T>, std::nullptr_t> = nullptr>
 DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
-	if( to_json_data( lhs ) == to_json_data( rhs ) ) {
-		return true;
-	}
-	daw_json_error( "Expected that values would be equal" );
+	test_assert( to_json_data( lhs ) == to_json_data( rhs ),
+	             "Expected that values would be equal" );
+	return true;
 }
 
 template<typename ParsePolicy>
@@ -57,10 +56,10 @@ void test( std::string_view json_sv1 ) {
 
 	auto apache_builds_result =
 	  daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( json_sv1 );
-	daw_json_assert( apache_builds_result.jobs.size( ) > 0,
-	                 "Bad value for jobs.size( )" );
-	daw_json_assert( apache_builds_result.numExecutors == 0,
-	                 "Bad value for numExecutors" );
+	test_assert( apache_builds_result.jobs.size( ) > 0,
+	             "Bad value for jobs.size( )" );
+	test_assert( apache_builds_result.numExecutors == 0,
+	             "Bad value for numExecutors" );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "apache_builds bench", sz,
@@ -82,7 +81,7 @@ void test( std::string_view json_sv1 ) {
 	  },
 	  apache_builds_result );
 
-	daw_json_assert( not str.empty( ), "Expected a string value" );
+	test_assert( not str.empty( ), "Expected a string value" );
 
 	daw::do_not_optimize( str );
 	auto const apache_builds_result2 =
@@ -90,14 +89,14 @@ void test( std::string_view json_sv1 ) {
 	daw::do_not_optimize( apache_builds_result2 );
 	// Removing for now as it will do a float compare and fail
 	/*
-	daw_json_assert( apache_builds_result == apache_builds_result2,
+	test_assert( apache_builds_result == apache_builds_result2,
 	                 "Expected round trip to produce same result" );
 	                 */
 }
 
-int main( int argc, char **argv ) 
+int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-	try
+  try
 #endif
 {
 	using namespace daw::json;
@@ -117,16 +116,14 @@ int main( int argc, char **argv )
 	  daw::json::constexpr_exec_tag>>( json_sv1 );
 	std::cout << "Using " << daw::json::runtime_exec_tag::name
 	          << " exec model\n*********************************************\n";
-	test<
-	  daw::json::SIMDHashCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
-	  json_sv1 );
+	test<daw::json::SIMDHashCommentSkippingPolicyChecked<
+	  daw::json::runtime_exec_tag>>( json_sv1 );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
 		std::cout << "Using " << daw::json::simd_exec_tag::name
 		          << " exec model\n*********************************************\n";
-		test<
-		  daw::json::SIMDHashCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
-		  json_sv1 );
+		test<daw::json::SIMDHashCommentSkippingPolicyChecked<
+		  daw::json::simd_exec_tag>>( json_sv1 );
 	}
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS

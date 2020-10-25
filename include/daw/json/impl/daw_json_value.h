@@ -8,15 +8,15 @@
 
 #pragma once
 
+#include "daw_json_assert.h"
 #include "daw_json_arrow_proxy.h"
-#include "../daw_json_assert.h"
 #include "daw_json_parse_name.h"
 
 #include <ciso646>
-#include <tuple>
+#include <cstddef>
 #include <optional>
 #include <string_view>
-#include <cstddef>
+#include <tuple>
 
 namespace daw::json {
 	/***
@@ -404,8 +404,8 @@ namespace daw::json {
 					return JsonBaseParseTypes::Bool;
 				}
 			case 'n':
-				daw_json_assert_weak( m_rng.starts_with( "null" ), "Expected a null",
-				                      m_rng );
+				daw_json_assert_weak( m_rng.starts_with( "null" ),
+				                      ErrorReason::InvalidNull, m_rng );
 				return JsonBaseParseTypes::Null;
 			}
 			return JsonBaseParseTypes::None;

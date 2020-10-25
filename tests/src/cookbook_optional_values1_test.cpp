@@ -116,9 +116,9 @@ try
 	  daw::json::from_json_array<
 	    daw::cookbook_optional_values1::MyOptionalStuff1>( data );
 
-	daw_json_assert( stuff.size( ) == 2, "Unexpected size" );
-	daw_json_assert( not stuff.front( ).member2, "Unexpected value" );
-	daw_json_assert( not stuff.back( ).member0, "Unexpected value" );
+	test_assert( stuff.size( ) == 2, "Unexpected size" );
+	test_assert( not stuff.front( ).member2, "Unexpected value" );
+	test_assert( not stuff.back( ).member0, "Unexpected value" );
 
 	std::string const str = daw::json::to_json_array( stuff );
 
@@ -129,7 +129,7 @@ try
 	  daw::json::from_json_array<
 	    daw::cookbook_optional_values1::MyOptionalStuff1>( str );
 
-	daw_json_assert( stuff == stuff2, "Unexpected round trip error" );
+	test_assert( stuff == stuff2, "Unexpected round trip error" );
 	return 0;
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

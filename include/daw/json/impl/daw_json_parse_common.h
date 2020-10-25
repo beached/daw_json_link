@@ -8,8 +8,9 @@
 
 #pragma once
 
-#include "../daw_json_assert.h"
+#include "daw_json_assert.h"
 #include "daw_json_exec_modes.h"
+#include "daw_json_parse_digit.h"
 #include "daw_json_parse_string_need_slow.h"
 #include "daw_json_parse_string_quote.h"
 #include "daw_json_traits.h"
@@ -25,6 +26,7 @@
 
 #if defined( __cpp_constexpr_dynamic_alloc )
 #define CPP20CONSTEXPR constexpr
+#define HAS_CPP20CONSTEXPR
 #else
 #define CPP20CONSTEXPR
 #endif
@@ -182,7 +184,8 @@ namespace daw::json::json_details {
 } // namespace daw::json::json_details
 
 namespace daw::json {
-#if defined( __cpp_nontype_template_parameter_class ) and not defined( DAW_JSON_NO_CPP_NAMES )
+#if defined( __cpp_nontype_template_parameter_class ) and                      \
+  not defined( DAW_JSON_NO_CPP_NAMES )
 	// C++ 20 Non-Type Class Template Arguments
 
 	/**
@@ -448,8 +451,8 @@ namespace daw::json::json_details {
 		auto result = rng;
 		result.counter = string_quote::string_quote_parser::parse_nq( rng );
 
-		daw_json_assert_weak( rng.front( ) == '"',
-		                      "Expected trailing \" at the end of string", rng );
+		daw_json_assert_weak( rng.front( ) == '"', ErrorReason::InvalidString,
+		                      rng );
 		result.last = rng.first;
 		rng.remove_prefix( );
 		return result;
@@ -465,13 +468,10 @@ namespace daw::json::json_details {
 			return rng;
 		}
 		if( *std::prev( rng.first ) != '"' ) {
-			if( rng.front( ) == '"' ) {
-				rng.remove_prefix( );
-			} else {
-				daw_json_error( "Attempt to parse a non-string as string", rng );
-			}
+			daw_json_assert( rng.front( ) == '"', ErrorReason::InvalidString, rng );
+			rng.remove_prefix( );
 		}
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of string", rng );
+		daw_json_assert_weak( rng.has_more( ), ErrorReason::InvalidString, rng );
 		return skip_string_nq( rng );
 	}
 
@@ -482,13 +482,14 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 4 );
 		} else {
 			rng.remove_prefix( );
-			daw_json_assert( rng.starts_with( "rue" ), "Expected true", rng );
+			daw_json_assert( rng.starts_with( "rue" ), ErrorReason::InvalidTrue,
+			                 rng );
 			rng.remove_prefix( 3 );
 		}
 		result.last = rng.first;
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      "Expected a ',', '}', ']' to trail literal", rng );
+		                      ErrorReason::InvalidEndOfValue, rng );
 		return result;
 	}
 
@@ -499,13 +500,14 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 5 );
 		} else {
 			rng.remove_prefix( );
-			daw_json_assert( rng.starts_with( "alse" ), "Expected false", rng );
+			daw_json_assert( rng.starts_with( "alse" ), ErrorReason::InvalidFalse,
+			                 rng );
 			rng.remove_prefix( 4 );
 		}
 		result.last = rng.first;
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      "Expected a ',', '}', ']' to trail literal", rng );
+		                      ErrorReason::InvalidEndOfValue, rng );
 		return result;
 	}
 
@@ -515,19 +517,42 @@ namespace daw::json::json_details {
 			rng.remove_prefix( 4 );
 		} else {
 			rng.remove_prefix( );
-			daw_json_assert( rng.starts_with( "ull" ), "Expected null", rng );
+			daw_json_assert( rng.starts_with( "ull" ), ErrorReason::InvalidNull,
+			                 rng );
 			rng.remove_prefix( 3 );
 		}
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
+		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+		                      rng );
 		rng.trim_left( );
 		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      "Expected a ',', '}', ']' to trail literal", rng );
+		                      ErrorReason::UnexpectedEndOfData, rng );
 		auto result = rng;
 		result.first = nullptr;
 		result.last = nullptr;
 		return result;
 	}
 
+	template<typename Result, bool is_unchecked_input>
+	DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr Result
+	parse_digits_while_number( char const *&first, char const *const last ) {
+		Result value = 0;
+		if( first >= last ) {
+			return value;
+		}
+		unsigned dig = parse_digit( *first );
+		while( dig < 10 ) {
+			value *= static_cast<Result>( 10 );
+			value += static_cast<Result>( dig );
+			++first;
+			if constexpr( not is_unchecked_input ) {
+				if( first >= last ) {
+					break;
+				}
+			}
+			dig = parse_digit( *first );
+		}
+		return value;
+	}
 	/***
 	 * Skip a number and store the position of it's components in the returned
 	 * Range
@@ -537,56 +562,39 @@ namespace daw::json::json_details {
 		auto result = rng;
 		char const *first = rng.first;
 		char const *const last = rng.last;
-		if( ( Range::is_unchecked_input or first < last ) and *first == '-' ) {
+		daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData, rng );
+		if( *first == '-' ) {
 			++first;
 		}
-		unsigned dig = 0;
-		while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
-			dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-			                             static_cast<unsigned char>( '0' ) );
-			++first;
-		}
-		if constexpr( Range::is_unchecked_input ) {
-			first -= static_cast<int>( first < last );
-		} else {
-			--first;
-		}
+		(void)parse_digits_while_number<unsigned, Range::is_unchecked_input>(
+		  first, last );
 		char const *decimal = nullptr;
-		if( ( Range::is_unchecked_input or ( first < last ) ) and *first == '.' ) {
+		if( ( Range::is_unchecked_input or first < last ) and ( *first == '.' ) ) {
 			decimal = first;
 			++first;
-			dig = 0;
-			while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
-				dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-				                             static_cast<unsigned char>( '0' ) );
-				++first;
-			}
-			if constexpr( Range::is_unchecked_input ) {
-				first -= static_cast<int>( first < last );
-			} else {
-				--first;
-			}
+			(void)parse_digits_while_number<unsigned, Range::is_unchecked_input>(
+			  first, last );
 		}
 		char const *exp = nullptr;
-		if( ( Range::is_unchecked_input or ( first < last ) ) and
-		    ( ( *first == 'e' ) | ( *first == 'E' ) ) ) {
+		unsigned dig = parse_digit( *first );
+		if( ( Range::is_unchecked_input or ( first < last ) ) &
+		    ( ( dig == parsed_constants::e_char ) |
+		      ( dig == parsed_constants::E_char ) ) ) {
 			exp = first;
 			++first;
-			if( ( Range::is_unchecked_input or ( first < last ) ) and
-			    ( ( *first == '+' ) | ( *first == '-' ) ) ) {
+			daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,
+			                      [&] {
+				                      auto r = rng;
+				                      r.first = first;
+				                      return r;
+			                      }( ) );
+			dig = parse_digit( *first );
+			if( ( dig == parsed_constants::plus_char ) |
+			    ( dig == parsed_constants::minus_char ) ) {
 				++first;
 			}
-			dig = 0;
-			while( ( Range::is_unchecked_input or ( first < last ) ) and dig < 10 ) {
-				dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-				                             static_cast<unsigned char>( '0' ) );
-				++first;
-			}
-			if constexpr( not Range::is_unchecked_input ) {
-				first -= static_cast<int>( first < last );
-			} else {
-				--first;
-			}
+			(void)parse_digits_while_number<unsigned, Range::is_unchecked_input>(
+			  first, last );
 		}
 
 		rng.first = first;
@@ -604,7 +612,7 @@ namespace daw::json::json_details {
 	 */
 	template<typename Range>
 	[[nodiscard]] static inline constexpr Range skip_value( Range &rng ) {
-		daw_json_assert_weak( rng.has_more( ), "Expected value, not empty range",
+		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
 		                      rng );
 
 		// reset counter
@@ -635,7 +643,11 @@ namespace daw::json::json_details {
 		case '9':
 			return skip_number( rng );
 		}
-		daw_json_error( "Unknown value type", rng );
+		if constexpr( Range::is_unchecked_input ) {
+			DAW_JSON_UNREACHABLE( );
+		} else {
+			daw_json_error( ErrorReason::InvalidStartOfValue, rng );
+		}
 	}
 
 	/***
@@ -645,14 +657,15 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename Range>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
 	skip_known_value( Range &rng ) {
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
+		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+		                      rng );
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 		              JsonMember::expected_type == JsonParseTypes::StringRaw or
 		              JsonMember::expected_type == JsonParseTypes::StringEscaped or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
 			// json string encodings
-			daw_json_assert_weak( rng.front( ) == '"',
-			                      "Expected start of value to begin with '\"'", rng );
+			daw_json_assert_weak( rng.front( ) == '"', ErrorReason::InvalidString,
+			                      rng );
 			rng.remove_prefix( );
 			return json_details::skip_string_nq( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
@@ -665,18 +678,18 @@ namespace daw::json::json_details {
 			return json_details::skip_number( rng );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
 			daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-			                      "Expected start of array with '['", rng );
+			                      ErrorReason::InvalidArrayStart, rng );
 			return rng.skip_array( );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Class ) {
 			daw_json_assert_weak( rng.is_opening_brace_checked( ),
-			                      "Expected start of class with '{'", rng );
+			                      ErrorReason::InvalidClassStart, rng );
 			return rng.skip_class( );
 		} else {
 			// Woah there
 			static_assert( JsonMember::expected_type == JsonParseTypes::Class,
 			               "Unknown JsonParseTypes value.  This is a programmer "
 			               "error and the preceding did not check for it" );
-			std::abort( );
+			DAW_JSON_UNREACHABLE( );
 		}
 	}
 } // namespace daw::json::json_details

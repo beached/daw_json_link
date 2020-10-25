@@ -175,8 +175,7 @@ namespace daw::json::json_details {
 
 		while( last - first >= 16 ) {
 			auto const b = uload16_char_data( tag, first );
-			int const b_len =
-			  last - first >= 16 ? 16 : static_cast<int>( last - first );
+			int const b_len = 16;
 			int result = _mm_cmpestri( a, keys_len, b, b_len, compare_mode );
 			first += result;
 			if( result < 16 ) {
@@ -407,7 +406,7 @@ namespace daw::json::json_details {
 	mem_skip_until_end_of_string( ExecTag const &tag, char const *first,
 	                              char const *const last ) {
 		if constexpr( not is_unchecked_input ) {
-			daw_json_assert( first < last, "Unexpected end of stream" );
+			daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData );
 		}
 		first =
 		  mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first, last );
@@ -437,7 +436,7 @@ namespace daw::json::json_details {
 	                              std::ptrdiff_t &first_escape ) {
 		char const *const first_first = first;
 		if constexpr( not is_unchecked_input ) {
-			daw_json_assert( first < last, "Unexpected end of stream" );
+			daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData );
 		}
 		first =
 		  mem_move_to_next_of<is_unchecked_input, '\\', '"'>( tag, first, last );

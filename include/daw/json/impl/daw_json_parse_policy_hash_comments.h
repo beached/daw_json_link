@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../daw_json_assert.h"
+#include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_not_const_ex_functions.h"
@@ -77,9 +77,11 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
 			skip_comments( rng );
 
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data", rng );
+			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      rng );
 			while( not parse_policy_details::in<keys...>( rng.front( ) ) ) {
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data", rng );
+				daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+				                      rng );
 				rng.remove_prefix( );
 				skip_comments( rng );
 			}
@@ -131,8 +133,8 @@ namespace daw::json {
 							++ptr_first;
 						}
 					}
-					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream",
-					                 rng );
+					daw_json_assert( ptr_first < ptr_last,
+					                 ErrorReason::UnexpectedEndOfData, rng );
 					break;
 				case ',':
 					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
@@ -145,8 +147,8 @@ namespace daw::json {
 				case PrimRight:
 					--prime_bracket_count;
 					if( prime_bracket_count == 0 ) {
-						daw_json_assert( second_bracket_count == 0, "Unexpected bracketing",
-						                 rng );
+						daw_json_assert( second_bracket_count == 0,
+						                 ErrorReason::InvalidBracketing, rng );
 						++ptr_first;
 						// We include the close primary bracket in the range so that
 						// subsequent parsers have a terminator inside their range
@@ -174,8 +176,9 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			daw_json_assert( prime_bracket_count == 0 and second_bracket_count == 0,
-			                 "Unexpected bracketing", rng );
+			daw_json_assert( ( prime_bracket_count == 0 ) &
+			                   ( second_bracket_count == 0 ),
+			                 ErrorReason::InvalidBracketing, rng );
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;

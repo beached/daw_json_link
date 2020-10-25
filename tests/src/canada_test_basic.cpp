@@ -11,13 +11,12 @@
 //  provides a cleaner way to profile without the benchmarking harness
 //
 
-#include "defines.h"
-
 #include "geojson.h"
 
 #include <daw/daw_do_not_optimize.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
+//#include <daw/json/daw_json_find_path.h>
 #include <daw/json/daw_json_link.h>
 
 #include <cstdio>
@@ -45,10 +44,11 @@ int main( int argc, char **argv ) {
 		daw::do_not_optimize( canada_result );
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	} catch( daw::json::json_exception const &jex ) {
-		std::cerr << "Exception thrown by parser: " << to_formatted_string( jex );
+		std::cerr << "Exception thrown by parser: "
+		          << to_formatted_string( jex, json_data.data( ) );
 		std::cerr << "The error is about "
 		          << ( jex.parse_location( ) - json_data.data( ) ) << " bytes in\n"
-		          << std::endl;
+		          << '\n';
 		exit( 1 );
 	}
 #endif

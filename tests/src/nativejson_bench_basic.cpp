@@ -31,9 +31,9 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 1;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-int main( int argc, char **argv ) 
+int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-	try 
+  try
 #endif
 {
 	using namespace daw::json;
@@ -91,15 +91,9 @@ int main( int argc, char **argv )
 		daw::do_not_optimize( j3 );
 	}
 #endif
-	if( not j1 ) {
-		daw_json_error( "Missing value" );
-	}
-	if( not j2 ) {
-		daw_json_error( "Missing value" );
-	}
-	if( not j3 ) {
-		daw_json_error( "Missing value" );
-	}
+	test_assert( j1, "Missing value" );
+	test_assert( j2, "Missing value" );
+	test_assert( j3, "Missing value" );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

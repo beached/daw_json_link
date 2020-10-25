@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../daw_json_assert.h"
+#include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_not_const_ex_functions.h"
 
@@ -153,7 +153,7 @@ namespace daw::json::json_details::string_quote {
 				}
 			}
 			daw_json_assert_weak( first < last and *first == '"',
-			                      "Expected a '\"' at end of string", rng );
+			                      ErrorReason::InvalidString, rng );
 			rng.first = first;
 			return static_cast<std::size_t>( need_slow_path );
 		}

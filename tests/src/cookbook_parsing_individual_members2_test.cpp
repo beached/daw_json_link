@@ -38,8 +38,8 @@ try
 	std::vector<std::string_view> value =
 	  from_json_array<std::string_view>( json_data, "member1" );
 
-	daw_json_assert( value.size( ) == 4, "Unexpected value" );
-	daw_json_assert( value[1] == "is", "Unexpected value" );
+	test_assert( value.size( ) == 4, "Unexpected value" );
+	test_assert( value[1] == "is", "Unexpected value" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

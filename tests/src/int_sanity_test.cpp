@@ -44,7 +44,7 @@ void test( ) {
 		std::vector<unsigned> const parsed_1 =
 		  from_json_array<json_number<no_name, unsigned>, std::vector<unsigned>,
 		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
-		daw_json_assert( parsed_1 == data, "Failure to parse unsigned" );
+		test_assert( parsed_1 == data, "Failure to parse unsigned" );
 	}
 
 	{
@@ -58,7 +58,7 @@ void test( ) {
 		std::vector<signed> const parsed_1 =
 		  from_json_array<json_number<no_name, signed>, std::vector<signed>,
 		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
-		daw_json_assert( parsed_1 == data, "Failure to parse signed" );
+		test_assert( parsed_1 == data, "Failure to parse signed" );
 	}
 }
 

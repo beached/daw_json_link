@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../daw_json_assert.h"
+#include "daw_json_assert.h"
 #include "daw_json_iterator_range.h"
 #include "daw_json_parse_unsigned_int.h"
 
@@ -56,48 +56,59 @@ namespace daw::json::json_details {
 		  1e300, 1e301, 1e302, 1e303, 1e304, 1e305, 1e306, 1e307, 1e308 };
 	}
 
-	template<typename Result>
-	static inline constexpr Result power10( constexpr_exec_tag const &,
-	                                        Result result, std::int32_t p ) {
+	template<typename Result, typename Unsigned>
+	DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
+	power10( constexpr_exec_tag const &, Result result, Unsigned p ) {
 		// We only have a double table, of which float is a subset.  Long double
 		// will be calculated in terms of that
-		constexpr int max_exp = std::is_same_v<Result, float>
-		                          ? std::numeric_limits<float>::max_exponent10
-		                          : std::numeric_limits<double>::max_exponent10;
+		constexpr int max_dbl_exp = std::numeric_limits<double>::max_exponent10;
+		constexpr int max_exp =
+		  std::is_same_v<Result, float>
+		    ? std::min( max_dbl_exp, std::numeric_limits<float>::max_exponent10 )
+		    : max_dbl_exp;
 		constexpr Result max_v = static_cast<Result>( dpow10_tbl[max_exp] );
 
-		if( p > max_exp ) {
-			do {
-				result *= max_v;
+		if( DAW_JSON_UNLIKELY( p > max_exp ) ) {
+			Result exp2 = max_v;
+			p -= max_exp;
+			while( p > max_exp ) {
+				exp2 *= max_v;
 				p -= max_exp;
-			} while( p > max_exp );
+			}
 			return static_cast<Result>( result ) *
-			       static_cast<Result>( dpow10_tbl[p] );
-		} else if( p < -max_exp ) {
-			do {
+			       ( exp2 * static_cast<Result>(
+			                  dpow10_tbl[static_cast<std::size_t>( p )] ) );
+		} else if( DAW_JSON_UNLIKELY( p < -max_exp ) ) {
+			Result exp2 = max_v;
+			p += max_exp;
+			while( p < -max_exp ) {
 				result /= max_v;
 				p += max_exp;
-			} while( p < -max_exp );
-			return static_cast<Result>( result ) /
-			       static_cast<Result>( dpow10_tbl[-p] );
+			}
+			return ( static_cast<Result>( result ) /
+			         static_cast<Result>(
+			           dpow10_tbl[static_cast<std::size_t>( -p )] ) ) /
+			       exp2;
 		}
 		if( p < 0 ) {
 			return static_cast<Result>( result ) /
-			       static_cast<Result>( dpow10_tbl[-p] );
+			       static_cast<Result>( dpow10_tbl[static_cast<std::size_t>( -p )] );
 		}
-		return static_cast<Result>( result ) * static_cast<Result>( dpow10_tbl[p] );
+		return static_cast<Result>( result ) *
+		       static_cast<Result>( dpow10_tbl[static_cast<std::size_t>( p )] );
 	}
 
-	template<typename Result>
+	template<typename Result, typename Unsigned>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
-	power10( runtime_exec_tag const &, Result result, std::int32_t p ) {
-		if constexpr( std::is_same_v<Result, double> ) {
-			return power10( constexpr_exec_tag{ }, result, p );
-		} else if constexpr( std::is_same_v<Result, float> ) {
-			return power10( constexpr_exec_tag{ }, result, p );
+	power10( runtime_exec_tag const &, Result result, Unsigned p ) {
+		if constexpr( std::is_same_v<Result, double> or
+		              std::is_same_v<Result, float> ) {
+			return power10( constexpr_exec_tag{ }, result,
+			                static_cast<std::int32_t>( p ) );
 		} else {
 			// For long double and others fallback to the slower std::pow
-			return result * std::pow( static_cast<Result>( 10.0 ), p );
+			using std::pow;
+			return result * pow( static_cast<Result>( 10.0 ), p );
 		}
 	}
 
@@ -113,123 +124,43 @@ namespace daw::json::json_details {
 		return std::copysign( to, from );
 	}
 
-	template<typename Real>
-	struct real_part_result {
-		Real result;
-		int exponent;
-	};
-
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-	parse_digits( char const *first, std::uint64_t &v, int num_digits ) {
+	parse_digits( char const *first, char const *const last, std::uint64_t &v ) {
 		std::uint64_t value = v;
-		for( int n = 0; n < num_digits; ++n ) {
+		while( DAW_JSON_LIKELY( first < last ) ) {
 			value *= 10U;
-			value += static_cast<unsigned>( static_cast<unsigned char>( first[n] ) -
-			                                static_cast<unsigned char>( '0' ) );
+			value += parse_digit( *first );
+			++first;
 		}
 		v = value;
 	}
 
-	template<typename Result, typename Range>
-	DAW_ATTRIBUTE_FLATTEN static inline constexpr real_part_result<Result>
-	parse_real_part( constexpr_exec_tag const &, Range &rng ) {
-		constexpr int max_dig =
-		  std::min( std::numeric_limits<std::uint64_t>::digits10,
-		            std::numeric_limits<Result>::max_digits10 );
-		int digits_avail = max_dig + 1;
-
-		std::uint64_t value = 0;
-		char const *first = rng.first;
-		char const *const last = rng.last;
-		unsigned dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-		                                      static_cast<unsigned char>( '0' ) );
-		while( dig < 10U ) {
-			if( digits_avail > 0 ) {
-				value *= 10U;
-				value += dig;
-			}
-			--digits_avail;
+	template<bool is_unchecked_input>
+	DAW_ATTRIBUTE_FLATTEN static inline constexpr int
+	skip_digits( char const *first, char const *const last ) {
+		unsigned dig = 0;
+		char const *const start = first;
+		while( ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) and
+		       ( dig = parse_digit( *first ) ) < 10 ) {
 			++first;
-			if constexpr( not Range::is_unchecked_input ) {
-				if( first >= last ) {
-					rng.first = first;
-					return { static_cast<Result>( value ), 0 };
-				}
-			}
-			dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-			                             static_cast<unsigned char>( '0' ) );
 		}
-		if( *first != '.' ) {
-			rng.first = first;
-			return { static_cast<Result>( value ), 0 };
-		}
-		++first;
-		int exponent = digits_avail >= 0 ? 0 : -digits_avail;
-
-		dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-		                             static_cast<unsigned char>( '0' ) );
-		while( dig < 10U ) {
-			if( digits_avail > 0 ) {
-				value *= 10U;
-				value += dig;
-				--digits_avail;
-				--exponent;
-			}
-			++first;
-			if constexpr( not Range::is_unchecked_input ) {
-				if( first >= last ) {
-					rng.first = first;
-					return { static_cast<Result>( value ), exponent };
-				}
-			}
-			dig = static_cast<unsigned>( *first - static_cast<unsigned char>( '0' ) );
-		}
-		rng.first = first;
-		return { static_cast<Result>( value ), exponent };
+		return static_cast<int>( first - start );
 	}
 
-	template<typename Result, bool KnownRange, typename Range,
-	         std::enable_if_t<not KnownRange, std::nullptr_t> = nullptr>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Result
-	parse_real( Range &rng ) {
-		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
-		daw_json_assert_weak(
-		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
-		  "Expected a real number", rng );
-
-		Result const sign = [&] {
-			if( rng.front( ) == '-' ) {
-				rng.remove_prefix( );
-				return static_cast<Result>( -1 );
-			}
-			return static_cast<Result>( 1 );
-		}( );
-		auto [digits, exp] = parse_real_part<Result>( Range::exec_tag, rng );
-		if( rng.is_exponent_checked( ) ) {
-			rng.remove_prefix( );
-			bool const exp_sign = [&] {
-				switch( rng.front( ) ) {
-				case '-':
-					rng.remove_prefix( );
-					return true;
-				case '+':
-					rng.remove_prefix( );
-					return false;
-				default:
-					return false;
-				}
-			}( );
-
-			if( exp_sign ) {
-				exp -= unsigned_parser<int, JsonRangeCheck::Never, false>(
-				  Range::exec_tag, rng );
-			} else {
-				exp += unsigned_parser<int, JsonRangeCheck::Never, false>(
-				  Range::exec_tag, rng );
-			}
+	template<bool is_unchecked_input, typename Unsigned>
+	DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
+	parse_digits_while_number( char const *first, char const *const last,
+	                           Unsigned &v ) {
+		auto value = v;
+		unsigned dig = 0;
+		while( ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) and
+		       ( dig = parse_digit( *first ) ) < 10 ) {
+			value *= 10U;
+			value += dig;
+			++first;
 		}
-		return sign * power10<Result>( Range::exec_tag,
-		                               static_cast<Result>( digits ), exp );
+		v = value;
+		return first;
 	}
 
 	template<typename Result, bool KnownRange, typename Range,
@@ -239,16 +170,14 @@ namespace daw::json::json_details {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
 		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
-		  "Expected a real number", rng );
+		  ErrorReason::InvalidNumberStart, rng );
 
 		char const *whole_first = rng.first;
-		char const *whole_last = rng.class_first;
-		char const *fract_first =
-		  rng.class_first == nullptr ? nullptr : rng.class_first + 1;
+		char const *whole_last = rng.class_first ? rng.class_first : rng.class_last;
+		char const *fract_first = rng.class_first ? rng.class_first + 1 : nullptr;
 		char const *fract_last = rng.class_last;
-		auto exp_rng = rng.class_last == nullptr
-		                 ? Range( nullptr, nullptr )
-		                 : Range( rng.class_last + 1, rng.last );
+		char const *exp_first = rng.class_last ? rng.class_last + 1 : nullptr;
+		char const *const exp_last = rng.last;
 
 		if( rng.class_first == nullptr ) {
 			if( rng.class_last == nullptr ) {
@@ -267,51 +196,170 @@ namespace daw::json::json_details {
 			}
 			return false;
 		}( );
+		constexpr auto max_storage_digits = static_cast<std::ptrdiff_t>(
+		  daw::numeric_limits<std::uint64_t>::digits10 );
+		constexpr auto max_exponent = static_cast<std::ptrdiff_t>(
+		  daw::numeric_limits<Result>::max_digits10 + 1 );
+		using unsigned_t = std::conditional_t<max_storage_digits >= max_exponent,
+		                                      std::uint64_t, Result>;
 
-		// TODO clarify this
-		constexpr int max_dig =
-		  std::min( std::numeric_limits<std::uint64_t>::digits10,
-		            std::numeric_limits<Result>::max_digits10 + 1 );
-
-		int const whole_total_digits = static_cast<int>( whole_last - whole_first );
-		int digits_avail = std::min( max_dig, whole_total_digits );
-
-		std::uint64_t value = 0;
-		parse_digits( whole_first, value, digits_avail );
-		int exp =
-		  whole_total_digits - max_dig > 0 ? whole_total_digits - max_dig : 0;
-		int const fract_total_digits = static_cast<int>( fract_last - fract_first );
-		digits_avail = std::min( max_dig - digits_avail, fract_total_digits );
-		if( digits_avail > 0 ) {
-			parse_digits( fract_first, value, digits_avail );
+		std::ptrdiff_t whole_exponent_available = whole_last - whole_first;
+		std::ptrdiff_t fract_exponent_available =
+		  fract_first ? fract_last - fract_first : 0;
+		std::ptrdiff_t exponent = 0;
+		if( whole_exponent_available > max_exponent ) {
+			whole_last = whole_first + max_exponent;
+			whole_exponent_available -= max_exponent;
+			fract_exponent_available = 0;
+			fract_first = nullptr;
+			exponent = whole_exponent_available;
+		} else {
+			whole_exponent_available = max_exponent - whole_exponent_available;
+			fract_exponent_available =
+			  std::min( fract_exponent_available, whole_exponent_available );
+			exponent = -fract_exponent_available;
+			fract_last = fract_first + fract_exponent_available;
 		}
-		exp -= digits_avail;
-		if( exp_rng.size( ) > 0 ) {
-			bool const exp_sign = [&] {
-				switch( exp_rng.front( ) ) {
+
+		unsigned_t significant_digits = 0;
+		parse_digits( whole_first, whole_last, significant_digits );
+		if( fract_first ) {
+			parse_digits( fract_first, fract_last, significant_digits );
+		}
+
+		if( exp_first and ( exp_last - exp_first ) > 0 ) {
+			int const exp_sign = [&] {
+				switch( *exp_first ) {
 				case '-':
-					exp_rng.remove_prefix( );
-					return true;
+					++exp_first;
+					return -1;
 				case '+':
-					exp_rng.remove_prefix( );
-					return false;
+					++exp_first;
+					return 1;
 				default:
-					return false;
+					return 1;
 				}
 			}( );
-			if( exp_sign ) {
-				exp -= unsigned_parser<int, JsonRangeCheck::Never, true>(
-				  Range::exec_tag, exp_rng );
-			} else {
-				exp += unsigned_parser<int, JsonRangeCheck::Never, true>(
-				  Range::exec_tag, exp_rng );
-			}
+			exponent += exp_sign * [&] {
+				std::ptrdiff_t r = 0;
+				while( exp_first < exp_last ) {
+					r *= static_cast<std::ptrdiff_t>( 10 );
+					r += static_cast<std::ptrdiff_t>( parse_digit( *exp_first ) );
+					++exp_first;
+				}
+				return r;
+			}( );
 		}
 		if( sign ) {
-			return -power10<Result>( Range::exec_tag, static_cast<Result>( value ),
-			                         exp );
+			return -power10<Result>(
+			  Range::exec_tag, static_cast<Result>( significant_digits ), exponent );
 		}
-		return power10<Result>( Range::exec_tag, static_cast<Result>( value ),
-		                        exp );
+		return power10<Result>(
+		  Range::exec_tag, static_cast<Result>( significant_digits ), exponent );
+	}
+
+	template<typename Result, bool KnownRange, typename Range,
+	         std::enable_if_t<not KnownRange, std::nullptr_t> = nullptr>
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Result
+	parse_real( Range &rng ) {
+		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
+		daw_json_assert_weak(
+		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
+		  ErrorReason::InvalidNumberStart, rng );
+
+		Result const sign = [&] {
+			if( rng.front( ) == '-' ) {
+				rng.remove_prefix( );
+				return static_cast<Result>( -1 );
+			}
+			return static_cast<Result>( 1 );
+		}( );
+		constexpr auto max_storage_digits = static_cast<std::ptrdiff_t>(
+		  daw::numeric_limits<std::uint64_t>::digits10 );
+		constexpr auto max_exponent = static_cast<std::ptrdiff_t>(
+		  daw::numeric_limits<Result>::max_digits10 + 1 );
+		using unsigned_t = std::conditional_t<max_storage_digits >= max_exponent,
+		                                      std::uint64_t, Result>;
+		using signed_t =
+		  std::conditional_t<max_storage_digits >= max_exponent, int, Result>;
+
+		char const *first = rng.first;
+		char const *const whole_last =
+		  rng.first + std::min( rng.last - rng.first, max_exponent );
+
+		unsigned_t significant_digits = 0;
+		char const *last_char =
+		  parse_digits_while_number<Range::is_unchecked_input>(
+		    first, whole_last, significant_digits );
+
+		signed_t exponent = [&] {
+			if( ( last_char < rng.last and parse_digit( *last_char ) < 10 ) ) {
+				// We have sig digits we cannot parse because there isn't enough room in
+				// a std::uint64_t
+				auto result =
+				  skip_digits<Range::is_unchecked_input>( last_char, rng.last );
+				last_char += result;
+				return static_cast<signed_t>( result );
+			}
+			return static_cast<signed_t>( 0 );
+		}( );
+		if( significant_digits == 0 ) {
+			exponent = 0;
+		}
+		first = last_char;
+		if( ( ( Range::is_unchecked_input or
+		        DAW_JSON_LIKELY( first < rng.last ) ) and
+		      *first == '.' ) ) {
+			++first;
+			if( exponent != 0 ) {
+				first += skip_digits<Range::is_unchecked_input>( first, rng.last );
+			} else {
+				char const *fract_last =
+				  first +
+				  std::min( rng.last - first, max_exponent - ( first - rng.first ) );
+
+				last_char = parse_digits_while_number<Range::is_unchecked_input>(
+				  first, fract_last, significant_digits );
+				exponent -= last_char - first;
+				first = last_char;
+				first += skip_digits<Range::is_unchecked_input>( first, rng.last );
+			}
+		}
+
+		exponent += [&] {
+			if( ( Range::is_unchecked_input or first < rng.last ) and
+			    ( ( *first | 0x20 ) == 'e' ) ) {
+				++first;
+				bool const exp_sign = [&] {
+					daw_json_assert_weak(
+					  first < rng.last, ErrorReason::UnexpectedEndOfData,
+					  Range( first, rng.last, rng.class_first, rng.class_last ) );
+					switch( *first ) {
+					case '+':
+						++first;
+						return false;
+					case '-':
+						++first;
+						return true;
+					default:
+						return false;
+					}
+				}( );
+				daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+				                      rng );
+				unsigned_t exp_tmp = 0;
+				first = parse_digits_while_number<Range::is_unchecked_input>(
+				  first, rng.last, exp_tmp );
+				if( exp_sign ) {
+					return -static_cast<unsigned_t>( exp_tmp );
+				}
+				return static_cast<unsigned_t>( exp_tmp );
+			}
+			return static_cast<unsigned_t>( 0 );
+		}( );
+		rng.first = first;
+		return sign * power10<Result>( Range::exec_tag,
+		                               static_cast<Result>( significant_digits ),
+		                               exponent );
 	}
 } // namespace daw::json::json_details

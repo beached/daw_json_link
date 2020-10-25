@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../daw_json_assert.h"
+#include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_not_const_ex_functions.h"
@@ -67,10 +67,12 @@ namespace daw::json {
 			} else {
 				char const *first = rng.first;
 				char const *const last = rng.last;
-				daw_json_assert_weak( first < last, "Unexpected end of data", rng );
+				daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,
+				                      rng );
 				while( not parse_policy_details::in<keys...>( *first ) ) {
 					++first;
-					daw_json_assert_weak( first < last, "Unexpected end of data", rng );
+					daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,
+					                      rng );
 				}
 				rng.first = first;
 			}
@@ -126,10 +128,11 @@ namespace daw::json {
 						}
 					}
 					daw_json_assert( ptr_first < ptr_last and *ptr_first == '"',
-					                 "Unexpected end of stream", rng );
+					                 ErrorReason::UnexpectedEndOfData, rng );
 					break;
 				case ',':
-					if( ( prime_bracket_count == 1 ) & ( second_bracket_count == 0 ) ) {
+					if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
+					                       ( second_bracket_count == 0 ) ) ) {
 						++cnt;
 					}
 					break;
@@ -140,8 +143,8 @@ namespace daw::json {
 					--prime_bracket_count;
 					if( prime_bracket_count == 0 ) {
 						++ptr_first;
-						daw_json_assert( second_bracket_count == 0, "Unexpected bracketing",
-						                 rng );
+						daw_json_assert( second_bracket_count == 0,
+						                 ErrorReason::InvalidBracketing, rng );
 						result.last = ptr_first;
 						result.counter = cnt;
 						rng.first = ptr_first;
@@ -159,7 +162,7 @@ namespace daw::json {
 			}
 			daw_json_assert( ( prime_bracket_count == 0 ) &
 			                   ( second_bracket_count == 0 ),
-			                 "Unexpected bracketing", rng );
+			                 ErrorReason::InvalidBracketing, rng );
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
@@ -204,7 +207,8 @@ namespace daw::json {
 					}
 					break;
 				case ',':
-					if( ( prime_bracket_count == 1 ) & ( second_bracket_count == 0 ) ) {
+					if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
+					                       ( second_bracket_count == 0 ) ) ) {
 						++cnt;
 					}
 					break;

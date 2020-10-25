@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['maybe_752',['Maybe',['../namespacedaw_1_1json.html#a713c6c85e86696909be442b84c8ec135a80ba31cc9d111c8ef880737a23ab0c54',1,'daw::json']]],
-  ['missingmember_753',['MissingMember',['../namespacedaw_1_1json.html#ab1cba9effd93bfecad7b1217372f573aac53967c2d8668d4772ba17d34d4d4a83',1,'daw::json']]]
+  ['keyvalue_826',['KeyValue',['../namespacedaw_1_1json.html#ad0cefd9ac573603f55cf5c61155e7f1cacb89e84207636fa99103a0873bf81d9a',1,'daw::json']]],
+  ['keyvaluearray_827',['KeyValueArray',['../namespacedaw_1_1json.html#ad0cefd9ac573603f55cf5c61155e7f1ca2d8dc828ac9e8e4958f911c3c20c5ba3',1,'daw::json']]]
 ];

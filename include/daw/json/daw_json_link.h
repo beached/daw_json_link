@@ -76,7 +76,8 @@ namespace daw::json {
 		 */
 		template<typename T, typename Range>
 		[[maybe_unused, nodiscard]] static inline constexpr T parse( Range &rng ) {
-			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
+			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      rng );
 			return json_details::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{ } );
 		}
@@ -165,7 +166,8 @@ namespace daw::json {
 		 */
 		template<typename T, typename Range>
 		[[maybe_unused, nodiscard]] static inline constexpr T parse( Range &rng ) {
-			daw_json_assert_weak( rng.has_more( ), "Cannot parse an empty string" );
+			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      rng );
 			return json_details::parse_ordered_json_class<
 			  T, json_details::ordered_member_wrapper<JsonMembers>...>( rng );
 		}
@@ -761,8 +763,7 @@ namespace daw::json {
 	         bool KnownBounds = false>
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( std::string_view json_data ) {
-		daw_json_assert( not json_data.empty( ),
-		                 "Cannot parse null or empty strings" );
+		daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		auto rng = ParsePolicy( json_data.data( ),
 		                        json_data.data( ) +
@@ -788,8 +789,8 @@ namespace daw::json {
 	         bool KnownBounds = false>
 	[[maybe_unused, nodiscard]] constexpr auto
 	from_json( std::string_view json_data, std::string_view member_path ) {
-		daw_json_assert( not json_data.empty( ), "Cannot parse null strings" );
-		daw_json_assert( not member_path.empty( ), "Cannot parse null strings" );
+		daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
+		daw_json_assert( not member_path.empty( ), ErrorReason::EmptyJSONPath );
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		auto [is_found, rng] = json_details::find_range<ParsePolicy>(
 		  json_data, { std::data( member_path ), std::size( member_path ) } );
@@ -798,8 +799,7 @@ namespace daw::json {
 				return typename json_member::constructor_t{ }( );
 			}
 		} else {
-			daw_json_assert( is_found,
-			                 "Could not find member and type isn't Nullable", rng );
+			daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 		}
 		return json_details::parse_value<json_member, KnownBounds>(
 		  ParseTag<json_member::expected_type>{ }, rng );
@@ -834,8 +834,7 @@ namespace daw::json {
 				return typename json_member::constructor_t{ }( );
 			}
 		} else {
-			daw_json_assert( is_found,
-			                 "Could not find member and type isn't Nullable", rng );
+			daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 		}
 		return json_details::parse_value<json_member, KnownBounds>(
 		  ParseTag<json_member::expected_type>{ }, rng );
@@ -856,7 +855,7 @@ namespace daw::json {
 	[[maybe_unused]] constexpr OutputIterator to_json( Value const &value,
 	                                                   OutputIterator out_it ) {
 		if constexpr( std::is_pointer_v<OutputIterator> ) {
-			daw_json_assert( out_it, "Expected valid output iterator" );
+			daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 		}
 
 		out_it = json_details::member_to_string<JsonClass>( out_it, value );
@@ -906,10 +905,9 @@ namespace daw::json {
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data,
 	                 std::string_view member_path = "" ) {
-		daw_json_assert( not json_data.empty( ),
-		                 "Cannot parse empty or null strings" );
+		daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
 		daw_json_assert( member_path.data( ) != nullptr,
-		                 "Cannot parse null strings" );
+		                 ErrorReason::EmptyJSONPath );
 		using element_type =
 		  json_details::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<element_type, void>,
@@ -925,17 +923,17 @@ namespace daw::json {
 				return typename parser_t::constructor_t{ }( );
 			}
 		} else {
-			daw_json_assert( is_found, "Could not find specified member", rng );
+			daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 		}
 		rng.trim_left_unchecked( );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 		// Work around MSVC ICE
 		daw_json_assert( rng.is_opening_bracket_checked( ),
-		                 "Expected array class to being with a '['", rng );
+		                 ErrorReason::InvalidArrayStart, rng );
 #else
 		using Range = daw::remove_cvref_t<decltype( rng )>;
 		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-		                      "Expected array class to being with a '['", rng );
+		                      ErrorReason::InvalidArrayStart, rng );
 #endif
 
 		return json_details::parse_value<parser_t, KnownBounds>(
@@ -968,7 +966,7 @@ namespace daw::json {
 		  "Supplied container must support begin( )/end( )" );
 
 		if constexpr( std::is_pointer_v<OutputIterator> ) {
-			daw_json_assert( out_it, "Expected valid output iterator" );
+			daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 		}
 		*out_it++ = '[';
 		bool is_first = true;

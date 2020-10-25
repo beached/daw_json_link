@@ -65,11 +65,11 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	    std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
 
-	daw_json_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
+	test_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
 	                 "Expected same size" );
 	auto mismatch_pos = std::mismatch( unicode_test.begin( ), unicode_test.end( ),
 	                                   unicode_test_from_escaped.begin( ) );
-	daw_json_assert( mismatch_pos.first == unicode_test.end( ),
+	test_assert( mismatch_pos.first == unicode_test.end( ),
 	                 "Should be the same after parsing" );
 
 	std::string const json_str2 = daw::json::to_json_array( unicode_test );
@@ -79,7 +79,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 
 	auto mismatch_pos2 = std::mismatch(
 	  unicode_test.begin( ), unicode_test.end( ), unicode_test2.begin( ) );
-	daw_json_assert( mismatch_pos2.first == unicode_test.end( ),
+	test_assert( mismatch_pos2.first == unicode_test.end( ),
 	                 "Should be the same after parsing" );
 	{
 		using range_t = daw::json::json_array_range<

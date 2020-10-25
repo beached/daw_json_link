@@ -38,7 +38,7 @@ namespace daw::cookbook_dates2 {
 		DAW_CONSTEXPR std::chrono::time_point<std::chrono::system_clock,
 		                                      std::chrono::milliseconds>
 		operator( )( std::string_view sv ) const {
-			daw_json_assert( sv.size( ) >= 26,
+			test_assert( sv.size( ) >= 26,
 			                 "Date format is always 26 characters long" );
 			// Skip Day of Week
 			sv.remove_prefix( 4 );
@@ -167,7 +167,7 @@ try
 	  daw::json::from_json<daw::cookbook_dates2::MyClass2>(
 	    std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.name == "Toronto", "Unexpected value" );
+	test_assert( cls.name == "Toronto", "Unexpected value" );
 
 	std::string const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
@@ -175,7 +175,7 @@ try
 	daw::cookbook_dates2::MyClass2 const cls2 =
 	  daw::json::from_json<daw::cookbook_dates2::MyClass2>( str );
 
-	daw_json_assert( cls == cls2, "Unexpected round trip error" );
+	test_assert( cls == cls2, "Unexpected round trip error" );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

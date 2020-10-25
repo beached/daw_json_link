@@ -75,7 +75,7 @@ This is currently out of date</h1>
 <div class="line">cd build</div>
 <div class="line">cmake ..</div>
 <div class="line">cmake --build . </div>
-</div><!-- fragment --><p>Now we will have an executable called json_to_cpp/json_to_cpp.exe that will allow us to convert a json file to C++ structures along with the descript_json_class/to_json_data methods.</p>
+</div><!-- fragment --><p>Now we will have an executable called <code>json_to_cpp</code> or <code>json_to_cpp.exe</code> that will allow us to convert a json file to C++ structures along with the JSON Link mappings.</p>
 <p>For example, let's use <a href="../test_data/cookbook_class2.json">cookbook_class2.json</a> from the <a class="el" href="md_cookbook_class.html">class.md</a> cookbook</p>
 <div class="fragment"><div class="line">json_to_cpp --infile=cookbook_class2.json</div>
 </div><!-- fragment --><p>The program will output the following C++ code </p><div class="fragment"><div class="line"> {c++}</div>
@@ -90,47 +90,45 @@ This is currently out of date</h1>
 <div class="line">  bool member2;</div>
 <div class="line">};  // a_t</div>
 <div class="line"> </div>
-<div class="line">namespace symbols_a_t {</div>
-<div class="line">  static constexpr char const member0[] = &quot;member0&quot;;</div>
-<div class="line">  static constexpr char const member1[] = &quot;member1&quot;;</div>
-<div class="line">  static constexpr char const member2[] = &quot;member2&quot;;</div>
-<div class="line">}</div>
-<div class="line"> </div>
-<div class="line">inline auto json_data_contract_for( a_t ) {</div>
-<div class="line">  using namespace daw::json;</div>
-<div class="line">  return daw::json::json_member_list&lt;</div>
-<div class="line">    json_string&lt;symbols_a_t::member0&gt;</div>
-<div class="line">    ,json_number&lt;symbols_a_t::member1, int64_t&gt;</div>
-<div class="line">    ,json_bool&lt;symbols_a_t::member2&gt;</div>
-<div class="line">  &gt;{};</div>
-<div class="line">}</div>
-<div class="line"> </div>
-<div class="line">inline auto to_json_data( a_t const &amp; value ) {</div>
-<div class="line">  return std::forward_as_tuple( value.member0, value.member1, value.member2 );</div>
-<div class="line">}</div>
-<div class="line"> </div>
 <div class="line">struct root_object_t {</div>
 <div class="line">  a_t a;</div>
 <div class="line">  int64_t b;</div>
 <div class="line">};  // root_object_t</div>
 <div class="line"> </div>
-<div class="line">namespace symbols_root_object_t {</div>
-<div class="line">  static constexpr char const a[] = &quot;a&quot;;</div>
-<div class="line">  static constexpr char const b[] = &quot;b&quot;;</div>
+<div class="line">namespace daw::json {</div>
+<div class="line">  template&lt;&gt;</div>
+<div class="line">  struct json_data_contract&lt;a_t&gt; {</div>
+<div class="line">    static constexpr char const mem_member0[] = &quot;member0&quot;;</div>
+<div class="line">    static constexpr char const mem_member1[] = &quot;member1&quot;;</div>
+<div class="line">    static constexpr char const mem_member2[] = &quot;member2&quot;;</div>
+<div class="line">    using type = json_member_list&lt;</div>
+<div class="line">        json_string&lt;mem_member0&gt;,</div>
+<div class="line">        json_number&lt;mem_member1, int64_t&gt;,</div>
+<div class="line">        json_bool&lt;mem_member2&gt;&gt;;</div>
+<div class="line"> </div>
+<div class="line">    static inline auto to_json_data( a_t const &amp;value ) {</div>
+<div class="line">      return std::forward_as_tuple( value.member0, value.member1,</div>
+<div class="line">                                    value.member2 );</div>
+<div class="line">    }</div>
+<div class="line">  };</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line">inline auto json_data_contract_for( root_object_t ) {</div>
-<div class="line">  using namespace daw::json;</div>
-<div class="line">  return daw::json::json_member_list&lt;</div>
-<div class="line">    json_class&lt;symbols_root_object_t::a, a_t&gt;</div>
-<div class="line">    ,json_number&lt;symbols_root_object_t::b, int64_t&gt;</div>
-<div class="line">  &gt;{};</div>
-<div class="line">}</div>
+<div class="line">namespace daw::json {</div>
+<div class="line">  template&lt;&gt;</div>
+<div class="line">  struct json_data_contract&lt;root_object_t&gt; {</div>
+<div class="line">    static constexpr char const mem_a[] = &quot;a&quot;;</div>
+<div class="line">    static constexpr char const mem_b[] = &quot;b&quot;;</div>
+<div class="line">    using type =</div>
+<div class="line">      json_member_list&lt;</div>
+<div class="line">        json_class&lt;mem_a, a_t&gt;, </div>
+<div class="line">        json_number&lt;mem_b, int64_t&gt;&gt;;</div>
 <div class="line"> </div>
-<div class="line">inline auto to_json_data( root_object_t const &amp; value ) {</div>
-<div class="line">  return std::forward_as_tuple( value.a, value.b );</div>
+<div class="line">    static inline auto to_json_data( root_object_t const &amp;value ) {</div>
+<div class="line">      return std::forward_as_tuple( value.a, value.b );</div>
+<div class="line">    }</div>
+<div class="line">  };</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>As you can see it is pretty close to the types specified, except in this case for integrals it defaults to intmax_t as it cannot know that it was an unsigned.</p>
+</div><!-- fragment --><p>As you can see it is pretty close to the types specified, except in this case for integrals it defaults to int64_t as it cannot know that it was an unsigned.</p>
 <p>We can make it prettier as the default will use root_object_t as the type of the root class and the other objects are the name of their members suffixed with <code>_t</code></p>
 <p>Let's give the root object a name </p><div class="fragment"><div class="line">json_to_cpp --root_object=MyClass2 --infile=cookbook_class2.json</div>
 </div><!-- fragment --><p>The tool was used to generate the citm, twitter, and canada json examples as the json data is large.</p>

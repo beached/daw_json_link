@@ -41,8 +41,8 @@ int main( int argc, char **argv )
 		  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
 		daw::do_not_optimize( twitter_result );
 	}
-	daw_json_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
-	daw_json_assert( twitter_result.statuses.front( ).user.id == 1186275104,
+	test_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
+	test_assert( twitter_result.statuses.front( ).user.id == 1186275104,
 	                 "Missing value" );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS

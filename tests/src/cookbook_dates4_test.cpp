@@ -38,14 +38,14 @@ namespace daw::cookbook_dates4 {
 
 	struct TimestampConverter {
 		DAW_CONSTEXPR timepoint_t operator( )( std::string_view sv ) const {
-			daw_json_assert( sv.size( ) > ( prefix.size( ) + suffix.size( ) ),
+			test_assert( sv.size( ) > ( prefix.size( ) + suffix.size( ) ),
 			                 "Unexpected date size" );
 			auto const sv_prefix = sv.substr( 0, prefix.size( ) );
-			daw_json_assert( sv_prefix == prefix,
+			test_assert( sv_prefix == prefix,
 			                 "Unexpected date format" );
 			sv.remove_prefix( prefix.size( ) );
 			auto const sv_suffix = sv.substr( sv.size( ) - suffix.size( ), suffix.size( ) );
-			daw_json_assert( sv_suffix == suffix,
+			test_assert( sv_suffix == suffix,
 											 "Unexpected date format" );
 			sv.remove_suffix( suffix.size( ) );
 
@@ -116,7 +116,7 @@ try
 	  daw::json::from_json<daw::cookbook_dates4::MyClass4>(
 	    std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.name == "Toronto", "Unexpected value" );
+	test_assert( cls.name == "Toronto", "Unexpected value" );
 
 	std::string const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
@@ -124,7 +124,7 @@ try
 	daw::cookbook_dates4::MyClass4 const cls4 =
 	  daw::json::from_json<daw::cookbook_dates4::MyClass4>( str );
 
-	daw_json_assert( cls == cls4, "Unexpected round trip error" );
+	test_assert( cls == cls4, "Unexpected round trip error" );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

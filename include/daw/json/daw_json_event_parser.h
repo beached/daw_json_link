@@ -33,10 +33,10 @@ namespace daw::json {
 
 		namespace hnd_checks {
 			// On Next Value
-			template<typename Handler, typename ParsePolicy>
+			template<typename Handler, typename Range>
 			using has_on_value_handler_detect =
 			  decltype( std::declval<Handler>( ).handle_on_value(
-			    std::declval<daw::json::basic_json_pair<ParsePolicy>>( ) ) );
+			    std::declval<daw::json::basic_json_pair<Range>>( ) ) );
 
 			template<typename Handler, typename Range>
 			inline constexpr bool has_on_value_handler_v =
@@ -81,34 +81,70 @@ namespace daw::json {
 			  daw::is_detected_v<has_on_class_end_handler_detect, Handler>;
 
 			// On Number
+			template<typename Handler, typename Range>
+			using has_on_number_handler_detect_jv =
+			  decltype( std::declval<Handler>( ).handle_on_number(
+			    std::declval<daw::json::basic_json_value<Range>>( ) ) );
+
+			template<typename Handler, typename Range>
+			inline constexpr bool has_on_number_handler_jv_v =
+			  daw::is_detected_v<has_on_number_handler_detect_jv, Handler, Range>;
+
 			template<typename Handler>
-			using has_on_number_handler_detect =
+			using has_on_number_handler_detect_dbl =
 			  decltype( std::declval<Handler>( ).handle_on_number( 0.0 ) );
 
 			template<typename Handler>
-			inline constexpr bool has_on_number_handler_v =
-			  daw::is_detected_v<has_on_number_handler_detect, Handler>;
+			inline constexpr bool has_on_number_handler_dbl_v =
+			  daw::is_detected_v<has_on_number_handler_detect_dbl, Handler>;
 
 			// On Bool
+			template<typename Handler, typename Range>
+			using has_on_bool_handler_detect_jv =
+			  decltype( std::declval<Handler>( ).handle_on_bool(
+			    std::declval<daw::json::basic_json_value<Range>>( ) ) );
+
+			template<typename Handler, typename Range>
+			inline constexpr bool has_on_bool_handler_jv_v =
+			  daw::is_detected_v<has_on_bool_handler_detect_jv, Handler, Range>;
+
 			template<typename Handler>
-			using has_on_bool_handler_detect =
+			using has_on_bool_handler_detect_bl =
 			  decltype( std::declval<Handler>( ).handle_on_bool( true ) );
 
 			template<typename Handler>
-			inline constexpr bool has_on_bool_handler_v =
-			  daw::is_detected_v<has_on_bool_handler_detect, Handler>;
+			inline constexpr bool has_on_bool_handler_bl_v =
+			  daw::is_detected_v<has_on_bool_handler_detect_bl, Handler>;
 
 			// On String
+			template<typename Handler, typename Range>
+			using has_on_string_handler_detect_jv =
+			  decltype( std::declval<Handler>( ).handle_on_string(
+			    std::declval<daw::json::basic_json_value<Range>>( ) ) );
+
+			template<typename Handler, typename Range>
+			inline constexpr bool has_on_string_handler_jv_v =
+			  daw::is_detected_v<has_on_string_handler_detect_jv, Handler, Range>;
+
 			template<typename Handler>
-			using has_on_string_handler_detect =
+			using has_on_string_handler_detect_str =
 			  decltype( std::declval<Handler>( ).handle_on_string(
 			    std::declval<std::string>( ) ) );
 
 			template<typename Handler>
-			inline constexpr bool has_on_string_handler_v =
-			  daw::is_detected_v<has_on_string_handler_detect, Handler>;
+			inline constexpr bool has_on_string_handler_str_v =
+			  daw::is_detected_v<has_on_string_handler_detect_str, Handler>;
 
 			// On Null
+			template<typename Handler, typename Range>
+			using has_on_null_handler_detect_jv =
+			  decltype( std::declval<Handler>( ).handle_on_null(
+			    std::declval<daw::json::basic_json_value<Range>>( ) ) );
+
+			template<typename Handler, typename Range>
+			inline constexpr bool has_on_null_handler_jv_v =
+			  daw::is_detected_v<has_on_null_handler_detect_jv, Handler, Range>;
+
 			template<typename Handler>
 			using has_on_null_handler_detect =
 			  decltype( std::declval<Handler>( ).handle_on_null( ) );
@@ -127,6 +163,11 @@ namespace daw::json {
 			inline constexpr bool has_on_error_handler_v =
 			  daw::is_detected_v<has_on_error_handler_detect, Handler, Range>;
 		} // namespace hnd_checks
+
+		template<typename T>
+		constexpr daw::remove_cvref_t<T> as_copy( T &&value ) {
+			return value;
+		}
 
 		template<typename Handler, typename ParsePolicy>
 		inline constexpr handler_result_holder
@@ -188,7 +229,9 @@ namespace daw::json {
 		inline constexpr handler_result_holder
 		handle_on_number( Handler &&handler,
 		                  daw::json::basic_json_value<Range> &jv ) {
-			if constexpr( hnd_checks::has_on_number_handler_v<Handler> ) {
+			if constexpr( hnd_checks::has_on_number_handler_jv_v<Handler, Range> ) {
+				return handler.handle_on_number( as_copy( jv ) );
+			} else if constexpr( hnd_checks::has_on_number_handler_dbl_v<Handler> ) {
 				return handler.handle_on_number( from_json<double>( jv ) );
 			} else {
 				(void)jv;
@@ -199,7 +242,9 @@ namespace daw::json {
 		template<typename Handler, typename Range>
 		inline constexpr handler_result_holder
 		handle_on_bool( Handler &&handler, daw::json::basic_json_value<Range> jv ) {
-			if constexpr( hnd_checks::has_on_bool_handler_v<Handler> ) {
+			if constexpr( hnd_checks::has_on_bool_handler_jv_v<Handler, Range> ) {
+				return handler.handle_on_bool( as_copy( jv ) );
+			} else if constexpr( hnd_checks::has_on_bool_handler_bl_v<Handler> ) {
 				return handler.handle_on_bool( from_json<bool>( jv ) );
 			} else {
 				(void)jv;
@@ -211,7 +256,9 @@ namespace daw::json {
 		inline constexpr handler_result_holder
 		handle_on_string( Handler &&handler,
 		                  daw::json::basic_json_value<Range> &jv ) {
-			if constexpr( hnd_checks::has_on_string_handler_v<Handler> ) {
+			if constexpr( hnd_checks::has_on_string_handler_jv_v<Handler, Range> ) {
+				return handler.handle_on_string( as_copy( jv ) );
+			} else if constexpr( hnd_checks::has_on_string_handler_str_v<Handler> ) {
 				return handler.handle_on_string( jv.get_string( ) );
 			} else {
 				(void)jv;
@@ -219,9 +266,13 @@ namespace daw::json {
 			}
 		}
 
-		template<typename Handler>
-		inline constexpr handler_result_holder handle_on_null( Handler &&handler ) {
-			if constexpr( hnd_checks::has_on_null_handler_v<Handler> ) {
+		template<typename Handler, typename Range>
+		inline constexpr handler_result_holder
+		handle_on_null( Handler &&handler,
+		                daw::json::basic_json_value<Range> &jv ) {
+			if constexpr( hnd_checks::has_on_null_handler_jv_v<Handler, Range> ) {
+				return handler.handle_on_null( as_copy( jv ) );
+			} else if constexpr( hnd_checks::has_on_null_handler_v<Handler> ) {
 				return handler.handle_on_null( );
 			} else {
 				return handler_result_holder{ };
@@ -389,7 +440,7 @@ namespace daw::json {
 				}
 			} break;
 			case daw::json::JsonBaseParseTypes::Null: {
-				auto result = json_details::handle_on_null( handler );
+				auto result = json_details::handle_on_null( handler, jv );
 				switch( result.value ) {
 				case json_parse_handler_result::Complete:
 					parent_stack.clear( );

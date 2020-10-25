@@ -8,7 +8,8 @@
 
 #pragma once
 
-#include "../daw_json_assert.h"
+#include "daw_json_assert.h"
+#include "daw_json_parse_digit.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cxmath.h>
@@ -108,27 +109,26 @@ namespace daw::json::json_details {
 		result_t result = result_t( );
 
 		while( last - first >= 16 ) {
-			result *= 10'000'000'000'000'000_u64;
+			result *= static_cast<result_t>( 10'000'000'000'000'000ULL );
 			result += static_cast<result_t>( parse_16_digits( first ) );
 			first += 16;
 		}
 		if( last - first >= 8 ) {
-			result *= 100'000'000_u64;
+			result *= static_cast<result_t>( 100'000'000ULL );
 			result += static_cast<result_t>( parse_8_digits( first ) );
 			first += 8;
 		}
 		while( first < last ) {
 			result *= 10U;
-			result += static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-			                                 static_cast<unsigned char>( '0' ) );
+			result += parse_digit( *first );
 			++first;
 		}
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 			auto const count =
 			  ( daw::numeric_limits<result_t>::digits10 + 1U ) - rng.size( );
-			daw_json_assert(
-			  result <= daw::numeric_limits<result_t>::max( ) and count >= 0,
-			  "Unsigned number outside of range of unsigned numbers", rng );
+			daw_json_assert( ( ( result <= daw::numeric_limits<result_t>::max( ) ) &
+			                   ( count >= 0 ) ),
+			                 ErrorReason::NumberOutOfRange, rng );
 		}
 		rng.first = first;
 		if constexpr( RangeChecked == JsonRangeCheck::Never ) {
@@ -149,28 +149,51 @@ namespace daw::json::json_details {
 		static_assert( not static_cast<bool>( RangeChecked ) or
 		                 std::is_same_v<result_t, UInt64>,
 		               "Range checking is only supported for std integral types" );
-		daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range", rng );
+		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+		                      rng );
 		char const *first = rng.first;
+		char const *const last = rng.last;
 		result_t result = result_t( );
+		bool has_eight =
+		  last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
+		if( has_eight & ( last - first >= 16 ) ) {
+			bool has_sixteen = is_made_of_eight_digits_cx( first + 8 );
+			while( has_sixteen ) {
+				result *= static_cast<result_t>( 10'000'000'000'000'000ULL );
+				result += static_cast<result_t>( parse_16_digits( first ) );
+				first += 16;
+				has_eight =
+				  last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
+				has_sixteen =
+				  has_eight and
+				  ( last - first >= 16 ? is_made_of_eight_digits_cx( first + 8 )
+				                       : false );
+			}
+		}
+		if( has_eight ) {
+			result *= static_cast<result_t>( 100'000'000ULL );
+			result += static_cast<result_t>( parse_8_digits( first ) );
+			first += 8;
+		}
+		auto dig = parse_digit( *first );
 
-		auto dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-		                                  static_cast<unsigned char>( '0' ) );
 		char const *const orig_first = first;
 		while( dig < 10U ) {
 			result *= 10U;
 			result += dig;
 			++first;
-			dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-			                             static_cast<unsigned char>( '0' ) );
+			dig = parse_digit( *first );
 		}
+
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 			auto const count =
 			  static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 ) -
 			  ( first - orig_first );
-			daw_json_assert( count >= 0 and
-			                   result <= static_cast<result_t>(
-			                               daw::numeric_limits<Unsigned>::max( ) ),
-			                 "Parsed number is out of range", rng );
+			daw_json_assert(
+			  ( count >= 0 ) &
+			    ( result <=
+			      static_cast<result_t>( daw::numeric_limits<Unsigned>::max( ) ) ),
+			  ErrorReason::NumberOutOfRange, rng );
 		}
 
 		rng.first = first;
@@ -243,12 +266,10 @@ namespace daw::json::json_details {
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>
 	[[nodiscard]] static inline Unsigned
 	unsigned_parser( sse42_exec_tag const &, Range &rng ) {
-	  daw_json_assert_weak( rng.size( ) > 0, "Unexpected empty range", rng );
-	  using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
-	  result_t result = result_t( );
-	  char const *first = rng.first;
-	  char const *const last = rng.last;
-	  char const *const orig_first = first;
+	  daw_json_assert_weak( rng.has_more( ), ErrorRange::UnexpectedEndOfData, rng
+	); using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>; result_t
+	result = result_t( ); char const *first = rng.first; char const *const last =
+	rng.last; char const *const orig_first = first;
 	  {
 	    auto sz = last - first;
 	    while( ( sz >= 8 ) & is_made_of_eight_digits_fast( first ) ) {
@@ -267,23 +288,21 @@ namespace daw::json::json_details {
 	    }
 	  }
 
-	  auto dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-	                                    static_cast<unsigned char>( '0' ) );
+	  auto dig = parse_digit( *first );
 	  while( dig < 10U ) {
 	    result *= 10U;
 	    result += dig;
 	    ++first;
-	    dig = static_cast<unsigned>( static_cast<unsigned char>( *first ) -
-	                                 static_cast<unsigned char>( '0' ) );
+	    dig = parse_digit( *first );
 	  }
 	  if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 	    auto const count =
 	      static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 ) -
 	      ( first - orig_first );
-	    daw_json_assert( count >= 0 and
-	                       result <= static_cast<result_t>(
-	                                   daw::numeric_limits<Unsigned>::max( ) ),
-	                     "Parsed number is out of range", rng );
+	    daw_json_assert( (count >= 0) &
+	                       (result <= static_cast<result_t>(
+	                                   daw::numeric_limits<Unsigned>::max( ) )),
+	                                   ErrorReason::NumberOutOfRange, rng );
 	  }
 	  rng.first = first;
 	  if constexpr( RangeChecked == JsonRangeCheck::Never ) {

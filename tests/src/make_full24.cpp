@@ -377,7 +377,7 @@ int main( int, char ** ) {
 	std::cout << "[";
 	bool is_first = true;
 	auto const codes = get_codes( );
-	auto last = codes.front( ).high;
+	std::uint32_t last = 0;
 	{
 		auto const &c = codes.front( );
 		std::cerr << "Block " << c.name << " from " << std::hex << c.low << " to "

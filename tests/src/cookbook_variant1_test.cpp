@@ -71,12 +71,12 @@ try
 	puts( std::string( data.data( ), data.size( ) ).c_str( ) );
 	auto stuff =
 	  daw::json::from_json_array<daw::cookbook_variant1::MyVariantStuff1>( data );
-	daw_json_assert( stuff.size( ) == 2, "Unexpected size" );
-	daw_json_assert( stuff.front( ).member0.index( ) == 0, "Unexpected value" );
-	daw_json_assert( (std::get<0>( stuff.front( ).member0 ) == 5),
+	test_assert( stuff.size( ) == 2, "Unexpected size" );
+	test_assert( stuff.front( ).member0.index( ) == 0, "Unexpected value" );
+	test_assert( (std::get<0>( stuff.front( ).member0 ) == 5),
 	                 "Unexpected value" );
-	daw_json_assert( stuff.front( ).member1.index( ) == 0, "Unexpected value" );
-	daw_json_assert( (std::get<0>( stuff.front( ).member1 ) == "hello"),
+	test_assert( stuff.front( ).member1.index( ) == 0, "Unexpected value" );
+	test_assert( (std::get<0>( stuff.front( ).member1 ) == "hello"),
 	                 "Unexpected value" );
 
 	auto const str = daw::json::to_json_array( stuff );
@@ -85,7 +85,7 @@ try
 	auto stuff2 =
 	  daw::json::from_json_array<daw::cookbook_variant1::MyVariantStuff1>( str );
 
-	daw_json_assert( stuff == stuff2, "Unexpected round trip error" );
+	test_assert( stuff == stuff2, "Unexpected round trip error" );
 	return 0;
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

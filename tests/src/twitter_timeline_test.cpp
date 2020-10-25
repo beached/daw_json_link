@@ -54,9 +54,8 @@ void test( std::string_view json_sv1 ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
 		  },
 		  range_t( json_sv1 ) );
-		if( not res.has_value( ) ) {
-			daw_json_error( "Exception while parsing: res.get_exception_message()" );
-		}
+		test_assert( res.has_value( ),
+		             "Exception while parsing: res.get_exception_message()" );
 	}
 	{
 		using range_t = daw::json::json_array_range<
@@ -81,9 +80,8 @@ void test( std::string_view json_sv1 ) {
 			  std::copy( rng.begin( ), rng.end( ), twitter_result.data( ) );
 		  },
 		  range_t( json_sv1 ) );
-		if( not res.has_value( ) ) {
-			daw_json_error( "Exception while parsing: res.get_exception_message()" );
-		}
+		test_assert( res.has_value( ),
+		             "Exception while parsing: res.get_exception_message()" );
 	}
 	{
 		using range_t = daw::json::json_array_range<
@@ -99,12 +97,12 @@ void test( std::string_view json_sv1 ) {
 		  range_t( json_sv1 ) );
 	}
 	daw::do_not_optimize( twitter_result );
-	daw_json_assert( not twitter_result.empty( ), "Unexpected empty array" );
+	test_assert( not twitter_result.empty( ), "Unexpected empty array" );
 }
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 
@@ -129,7 +127,8 @@ try
 	                                 daw::json::runtime_exec_tag> ) {
 		test<daw::json::simd_exec_tag>( json_sv1 );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
