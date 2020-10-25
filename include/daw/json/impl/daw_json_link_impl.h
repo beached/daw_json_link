@@ -319,7 +319,7 @@ namespace daw::json::json_details {
 				using constructor_t = typename json_member_type::constructor_t;
 				return constructor_t{ }( );
 			} else if constexpr( is_json_nullable_v<json_member_type> ) {
-				daw_json_error( missing_member( "ordered_class_member" ) );
+				daw_json_error( missing_member( "ordered_class_member" ), rng );
 			}
 		}
 		return parse_value<json_member_type>(

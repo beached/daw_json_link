@@ -57,8 +57,8 @@ namespace daw::json::json_details {
 	}
 
 	template<typename Result, typename Unsigned>
-	static inline constexpr Result power10( constexpr_exec_tag const &,
-	                                        Result result, Unsigned p ) {
+	DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
+	power10( constexpr_exec_tag const &, Result result, Unsigned p ) {
 		// We only have a double table, of which float is a subset.  Long double
 		// will be calculated in terms of that
 		constexpr int max_dbl_exp = std::numeric_limits<double>::max_exponent10;
@@ -69,20 +69,15 @@ namespace daw::json::json_details {
 		constexpr Result max_v = static_cast<Result>( dpow10_tbl[max_exp] );
 
 		if( DAW_JSON_UNLIKELY( p > max_exp ) ) {
-			if constexpr( false and ( std::is_same_v<Result, double> or
-			                          std::is_same_v<Result, float> ) ) {
-				return std::numeric_limits<Result>::infinity( );
-			} else {
-				Result exp2 = max_v;
+			Result exp2 = max_v;
+			p -= max_exp;
+			while( p > max_exp ) {
+				exp2 *= max_v;
 				p -= max_exp;
-				while( p > max_exp ) {
-					exp2 *= max_v;
-					p -= max_exp;
-				}
-				return static_cast<Result>( result ) *
-				       ( exp2 * static_cast<Result>(
-				                  dpow10_tbl[static_cast<std::size_t>( p )] ) );
 			}
+			return static_cast<Result>( result ) *
+			       ( exp2 * static_cast<Result>(
+			                  dpow10_tbl[static_cast<std::size_t>( p )] ) );
 		} else if( DAW_JSON_UNLIKELY( p < -max_exp ) ) {
 			Result exp2 = max_v;
 			p += max_exp;
