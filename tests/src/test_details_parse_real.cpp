@@ -26,7 +26,16 @@
 #include <sstream>
 #include <vector>
 
-template<bool KnownBounds = false, std::size_t NUM_VALS = 1'000'000>
+#if not defined( DAW_NUM_RUNS )
+#if not defined( DEBUG ) or defined( NDEBUG )
+static inline constexpr std::size_t DAW_NUM_RUNS = 200;
+#else
+static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+#endif
+static_assert( DAW_NUM_RUNS > 0 );
+
+template<std::size_t NUM_VALS = 1'000'000>
 void test_lots_of_doubles( ) {
 	auto rd = std::random_device( );
 	auto rnd = std::mt19937_64( rd( ) );
@@ -45,38 +54,104 @@ void test_lots_of_doubles( ) {
 		bytes += numbers_str[i].size( );
 		auto rng = num_t( numbers_str[i].data( ),
 		                  numbers_str[i].data( ) + numbers_str[i].size( ) );
-		if constexpr( KnownBounds ) {
-			rng = daw::json::json_details::skip_number( rng );
-		}
+		rng = daw::json::json_details::skip_number( rng );
 		numbers[i] = rng;
 	}
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "float parsing(unknown bounds)", bytes,
+	  []( std::vector<num_t> const &nums ) {
+		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
+			  auto rng = nums[n];
+			  using json_member =
+			    daw::json::json_details::unnamed_default_type_mapping<float>;
+			  auto const r = daw::json::json_details::parse_value<json_member, false>(
+			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			  daw::do_not_optimize( r );
+		  }
+	  },
+	  numbers );
 
-	daw::bench_n_test_mbs<200>(
-	  "double parsing", bytes,
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "double parsing(unknown bounds)", bytes,
 	  []( std::vector<num_t> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  auto rng = nums[n];
 			  using json_member =
 			    daw::json::json_details::unnamed_default_type_mapping<double>;
-			  auto const r =
-			    daw::json::json_details::parse_value<json_member, KnownBounds>(
-			      daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			  auto const r = daw::json::json_details::parse_value<json_member, false>(
+			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			  daw::do_not_optimize( r );
+		  }
+	  },
+	  numbers );
+
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "long double parsing(unknown bounds)", bytes,
+	  []( std::vector<num_t> const &nums ) {
+		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
+			  auto rng = nums[n];
+			  using json_member =
+			    daw::json::json_details::unnamed_default_type_mapping<long double>;
+			  auto const r = daw::json::json_details::parse_value<json_member, false>(
+			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			  daw::do_not_optimize( r );
+		  }
+	  },
+	  numbers );
+
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "float parsing(known bounds)", bytes,
+	  []( std::vector<num_t> const &nums ) {
+		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
+			  auto rng = nums[n];
+			  using json_member =
+			    daw::json::json_details::unnamed_default_type_mapping<float>;
+			  auto const r = daw::json::json_details::parse_value<json_member, true>(
+			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			  daw::do_not_optimize( r );
+		  }
+	  },
+	  numbers );
+
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "double parsing(known bounds)", bytes,
+	  []( std::vector<num_t> const &nums ) {
+		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
+			  auto rng = nums[n];
+			  using json_member =
+			    daw::json::json_details::unnamed_default_type_mapping<double>;
+			  auto const r = daw::json::json_details::parse_value<json_member, true>(
+			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			  daw::do_not_optimize( r );
+		  }
+	  },
+	  numbers );
+
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "long double parsing(known bounds)", bytes,
+	  []( std::vector<num_t> const &nums ) {
+		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
+			  auto rng = nums[n];
+			  using json_member =
+			    daw::json::json_details::unnamed_default_type_mapping<long double>;
+			  auto const r = daw::json::json_details::parse_value<json_member, true>(
+			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
 			  daw::do_not_optimize( r );
 		  }
 	  },
 	  numbers );
 
 	// Too slow to need lots of tests
-	daw::bench_n_test_mbs<25>(
-		"double parsing(strtod)", bytes,
-		[]( std::vector<std::string> const &nums ) {
-			for( std::size_t n = 0; n < NUM_VALS; ++n ) {
+	daw::bench_n_test_mbs<10>(
+	  "double parsing(strtod)", bytes,
+	  []( std::vector<std::string> const &nums ) {
+		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
 			  char **nend = nullptr;
-				auto const r = strtod( nums[n].data( ), nend );
-				daw::do_not_optimize( r );
-			}
-		},
-		numbers_str );
+			  auto const r = strtod( nums[n].data( ), nend );
+			  daw::do_not_optimize( r );
+		  }
+	  },
+	  numbers_str );
 }
 
 int main( int, char ** )
@@ -84,10 +159,7 @@ int main( int, char ** )
   try
 #endif
 {
-	std::cout << "Unknown range parts/bounds\n";
 	test_lots_of_doubles( );
-	std::cout << "Known range parts/bounds\n";
-	test_lots_of_doubles<true>( );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
