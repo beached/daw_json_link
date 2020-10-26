@@ -29,8 +29,10 @@
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 200;
+static inline constexpr std::size_t DAW_NUM_RUNS = 10;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+static inline constexpr std::size_t DAW_NUM_RUNS2 = 1;
 #endif
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
@@ -142,7 +144,7 @@ void test_lots_of_doubles( ) {
 	  numbers );
 
 	// Too slow to need lots of tests
-	daw::bench_n_test_mbs<10>(
+	daw::bench_n_test_mbs<DAW_NUM_RUNS2>(
 	  "double parsing(strtod)", bytes,
 	  []( std::vector<std::string> const &nums ) {
 		  for( std::size_t n = 0; n < NUM_VALS; ++n ) {
