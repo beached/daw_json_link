@@ -398,6 +398,11 @@ target_link_libraries(test_stateful_json_value json_test)
 add_test(NAME test_stateful_json_value_test COMMAND test_stateful_json_value ./test_stateful_json_value.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full test_stateful_json_value)
 
+add_executable(test_details_parse_real src/test_details_parse_real.cpp)
+target_link_libraries(test_details_parse_real json_test)
+add_test(test_details_parse_real_test test_details_parse_real)
+add_dependencies(full test_details_parse_real)
+
 add_executable(test_details_skip_string src/test_details_skip_string.cpp)
 target_link_libraries(test_details_skip_string json_test)
 add_test(test_details_skip_string_test test_details_skip_string)
