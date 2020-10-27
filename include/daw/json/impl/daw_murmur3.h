@@ -46,6 +46,7 @@ namespace daw {
 		(void)seed;
 		return fnv1a_32( key );
 	}
+
 	template<typename StringView>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr UInt32
 	murmur3_32( StringView key, std::uint32_t seed = 0 ) noexcept {

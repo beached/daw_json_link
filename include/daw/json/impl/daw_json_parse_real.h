@@ -124,9 +124,10 @@ namespace daw::json::json_details {
 		return std::copysign( to, from );
 	}
 
+	template<typename Value>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-	parse_digits( char const *first, char const *const last, std::uint64_t &v ) {
-		std::uint64_t value = v;
+	parse_digits( char const *first, char const *const last, Value &v ) {
+		Value value = v;
 		while( DAW_JSON_LIKELY( first < last ) ) {
 			value *= 10U;
 			value += parse_digit( *first );
@@ -293,7 +294,7 @@ namespace daw::json::json_details {
 		    first, whole_last, significant_digits );
 
 		signed_t exponent = [&] {
-			if( ( last_char < rng.last and parse_digit( *last_char ) < 10 ) ) {
+			if( last_char >= whole_last ) {
 				// We have sig digits we cannot parse because there isn't enough room in
 				// a std::uint64_t
 				auto result =
@@ -322,7 +323,9 @@ namespace daw::json::json_details {
 				  first, fract_last, significant_digits );
 				exponent -= last_char - first;
 				first = last_char;
-				first += skip_digits<Range::is_unchecked_input>( first, rng.last );
+				if( first >= fract_last ) {
+					first += skip_digits<Range::is_unchecked_input>( first, rng.last );
+				}
 			}
 		}
 
@@ -348,8 +351,9 @@ namespace daw::json::json_details {
 				daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
 				                      rng );
 				unsigned_t exp_tmp = 0;
-				first = parse_digits_while_number<Range::is_unchecked_input>(
+				last_char = parse_digits_while_number<Range::is_unchecked_input>(
 				  first, rng.last, exp_tmp );
+				first = last_char;
 				if( exp_sign ) {
 					return -static_cast<unsigned_t>( exp_tmp );
 				}
