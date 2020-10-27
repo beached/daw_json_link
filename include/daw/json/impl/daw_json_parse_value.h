@@ -484,16 +484,15 @@ namespace daw::json::json_details {
 				auto const oe =
 				  daw::on_exit_success( [&] { rng.trim_left_checked( ); } );
 			}
-			return json_data_contract_trait_t<element_t>::template parse<element_t>(
-			  rng );
+			return json_data_contract_trait_t<element_t>::template parse_class<
+			  element_t>( rng );
 		} else {
 			if constexpr( KnownBounds ) {
-				return json_data_contract_trait_t<element_t>::template parse<element_t>(
-				  rng );
+				return json_data_contract_trait_t<element_t>::template parse_class<
+				  element_t>( rng );
 			} else {
-				auto result =
-				  json_data_contract_trait_t<element_t>::template parse<element_t>(
-				    rng );
+				auto result = json_data_contract_trait_t<
+				  element_t>::template parse_class<element_t>( rng );
 				// TODO: make trim_left
 				rng.trim_left_checked( );
 				return result;
