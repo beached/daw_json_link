@@ -483,8 +483,9 @@ namespace daw::json::json_details {
 		rng.trim_left( );
 
 		size_t current_idx = 0;
-		using tp_t = std::tuple<decltype(
-		  parse_ordered_class_member<JsonMembers>( current_idx, rng ) )...>;
+
+		using tp_t = decltype( std::forward_as_tuple(
+		  parse_ordered_class_member<JsonMembers>( current_idx, rng )... ) );
 
 		if constexpr( is_guaranteed_rvo_v<Range> ) {
 			struct cleanup_t {

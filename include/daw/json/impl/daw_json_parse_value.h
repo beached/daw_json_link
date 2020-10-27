@@ -30,29 +30,25 @@
 namespace daw::json::json_details {
 	template<LiteralAsStringOpt literal_as_string, bool KnownBounds = false,
 	         typename Range>
-	constexpr void skip_quote_when_literal_as_string( Range &rng ) {
-		auto rng2 = rng;
+	DAW_ATTRIBUTE_FLATTEN inline constexpr void
+	skip_quote_when_literal_as_string( Range &rng ) {
 		if constexpr( literal_as_string == LiteralAsStringOpt::Always ) {
-			daw_json_assert_weak( rng2.is_quotes_checked( ),
-			                      ErrorReason::InvalidNumberUnexpectedQuoting, rng2 );
-			rng2.remove_prefix( );
+			daw_json_assert_weak( rng.is_quotes_checked( ),
+			                      ErrorReason::InvalidNumberUnexpectedQuoting, rng );
+			rng.remove_prefix( );
 			if constexpr( KnownBounds ) {
-				rng2.last = std::prev( rng2.last );
+				rng.last = std::prev( rng.last );
 			}
 		} else if constexpr( literal_as_string == LiteralAsStringOpt::Maybe ) {
-			daw_json_assert_weak( not rng2.empty( ), ErrorReason::UnexpectedEndOfData,
-			                      rng2 );
-			if( rng2.front( ) == '"' ) {
-				rng2.remove_prefix( );
+			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      rng );
+			if( rng.front( ) == '"' ) {
+				rng.remove_prefix( );
 				if constexpr( KnownBounds ) {
-					rng2.last = std::prev( rng2.last );
+					rng.last = std::prev( rng.last );
 				}
 			}
-		} else {
-			daw_json_assert_weak( rng2.front( ) != '"',
-			                      ErrorReason::InvalidNumberUnexpectedQuoting, rng2 );
 		}
-		rng = rng2;
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
@@ -62,19 +58,22 @@ namespace daw::json::json_details {
 		using element_t = typename JsonMember::base_type;
 
 		if constexpr( KnownBounds ) {
-			daw_json_assert_weak(
-			  parse_policy_details::is_number_start( rng.front( ) ),
-			  ErrorReason::InvalidNumberStart, rng );
 			return constructor_t{ }( parse_real<element_t, true>( rng ) );
 		} else {
 			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
 			                      rng );
-			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			if constexpr( JsonMember::literal_as_string !=
+			              LiteralAsStringOpt::Never ) {
+				skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			}
 			daw_json_assert_weak(
 			  parse_policy_details::is_number_start( rng.front( ) ),
 			  ErrorReason::InvalidNumberStart, rng );
 			auto result = constructor_t{ }( parse_real<element_t, false>( rng ) );
-			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			if constexpr( JsonMember::literal_as_string !=
+			              LiteralAsStringOpt::Never ) {
+				skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			}
 			daw_json_assert_weak(
 			  parse_policy_details::at_end_of_item( rng.front( ) ),
 			  ErrorReason::InvalidEndOfValue, rng );
