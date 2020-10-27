@@ -75,7 +75,8 @@ namespace daw::json {
 		 * @return A T object
 		 */
 		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] static inline constexpr T parse( Range &rng ) {
+		[[maybe_unused, nodiscard]] static inline constexpr T
+		parse_class( Range &rng ) {
 			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
 			                      rng );
 			return json_details::parse_json_class<T, JsonMembers...>(
@@ -165,7 +166,8 @@ namespace daw::json {
 		 * @return A T object
 		 */
 		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] static inline constexpr T parse( Range &rng ) {
+		[[maybe_unused, nodiscard]] static inline constexpr T
+		parse_class( Range &rng ) {
 			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
 			                      rng );
 			return json_details::parse_ordered_json_class<
