@@ -94,7 +94,10 @@ namespace daw::json::json_details {
 		} else {
 			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
 			                      rng );
-			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			if constexpr( JsonMember::literal_as_string !=
+			              LiteralAsStringOpt::Never ) {
+				skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			}
 			daw_json_assert_weak(
 			  parse_policy_details::is_number_start( rng.front( ) ),
 			  ErrorReason::InvalidNumberStart, rng );
@@ -113,7 +116,11 @@ namespace daw::json::json_details {
 			auto result = constructor_t{ }(
 			  sign * unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 			           Range::exec_tag, rng ) );
-			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+
+			if constexpr( JsonMember::literal_as_string !=
+			              LiteralAsStringOpt::Never ) {
+				skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			}
 			rng.trim_left( );
 			daw_json_assert_weak(
 			  parse_policy_details::at_end_of_item( rng.front( ) ),
@@ -129,7 +136,10 @@ namespace daw::json::json_details {
 		using element_t = typename JsonMember::base_type;
 
 		if constexpr( KnownBounds ) {
-			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			if constexpr( JsonMember::literal_as_string !=
+			              LiteralAsStringOpt::Never ) {
+				skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			}
 			daw_json_assert_weak( parse_policy_details::is_number( rng.front( ) ),
 			                      ErrorReason::InvalidNumber, rng );
 			return constructor_t{ }(
@@ -144,7 +154,10 @@ namespace daw::json::json_details {
 			auto result = constructor_t{ }(
 			  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 			    Range::exec_tag, rng ) );
-			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			if constexpr( JsonMember::literal_as_string !=
+			              LiteralAsStringOpt::Never ) {
+				skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			}
 			daw_json_assert_weak(
 			  parse_policy_details::at_end_of_item( rng.front( ) ),
 			  ErrorReason::InvalidEndOfValue, rng );
@@ -211,7 +224,10 @@ namespace daw::json::json_details {
 				daw_json_error( ErrorReason::InvalidLiteral, rng );
 			}
 		} else {
-			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			if constexpr( JsonMember::literal_as_string !=
+			              LiteralAsStringOpt::Never ) {
+				skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			}
 			bool result = false;
 			if constexpr( Range::is_unchecked_input ) {
 				if( rng.front( ) == 't' ) /* true */ {
@@ -230,7 +246,10 @@ namespace daw::json::json_details {
 					daw_json_error( ErrorReason::InvalidLiteral, rng );
 				}
 			}
-			skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			if constexpr( JsonMember::literal_as_string !=
+			              LiteralAsStringOpt::Never ) {
+				skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
+			}
 			rng.trim_left( );
 			daw_json_assert_weak(
 			  parse_policy_details::at_end_of_item( rng.front( ) ),
