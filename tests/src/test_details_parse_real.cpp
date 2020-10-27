@@ -29,12 +29,18 @@
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 200;
-static inline constexpr std::size_t DAW_NUM_RUNS2 = 10;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+#endif
+#endif
+#if not defined( DAW_NUM_RUNS2 )
+#if not defined( DEBUG ) or defined( NDEBUG )
+static inline constexpr std::size_t DAW_NUM_RUNS2 = 10;
+#else
 static inline constexpr std::size_t DAW_NUM_RUNS2 = 1;
 #endif
 #endif
+
 static_assert( DAW_NUM_RUNS > 0 );
 
 template<std::size_t NUM_VALS = 1'000'000>
