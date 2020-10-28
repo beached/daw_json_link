@@ -532,26 +532,23 @@ namespace daw::json::json_details {
 		return result;
 	}
 
-	template<typename Result, bool is_unchecked_input>
-	DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr Result
-	parse_digits_while_number( char const *&first, char const *const last ) {
-		Result value = 0;
-		if( first >= last ) {
-			return value;
+	template<bool is_unchecked_input>
+	DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr char const *
+	skip_digits( char const *first, char const *const last ) {
+		if( DAW_JSON_UNLIKELY( first >= last ) ) {
+			return first;
 		}
 		unsigned dig = parse_digit( *first );
 		while( dig < 10 ) {
-			value *= static_cast<Result>( 10 );
-			value += static_cast<Result>( dig );
 			++first;
 			if constexpr( not is_unchecked_input ) {
-				if( first >= last ) {
+				if( DAW_JSON_UNLIKELY( first >= last ) ) {
 					break;
 				}
 			}
 			dig = parse_digit( *first );
 		}
-		return value;
+		return first;
 	}
 	/***
 	 * Skip a number and store the position of it's components in the returned
@@ -566,14 +563,12 @@ namespace daw::json::json_details {
 		if( *first == '-' ) {
 			++first;
 		}
-		(void)parse_digits_while_number<unsigned, Range::is_unchecked_input>(
-		  first, last );
+		first = skip_digits<Range::is_unchecked_input>( first, last );
 		char const *decimal = nullptr;
 		if( ( Range::is_unchecked_input or first < last ) and ( *first == '.' ) ) {
 			decimal = first;
 			++first;
-			(void)parse_digits_while_number<unsigned, Range::is_unchecked_input>(
-			  first, last );
+			first = skip_digits<Range::is_unchecked_input>( first, last );
 		}
 		char const *exp = nullptr;
 		unsigned dig = parse_digit( *first );
@@ -593,8 +588,7 @@ namespace daw::json::json_details {
 			    ( dig == parsed_constants::minus_char ) ) {
 				++first;
 			}
-			(void)parse_digits_while_number<unsigned, Range::is_unchecked_input>(
-			  first, last );
+			first = skip_digits<Range::is_unchecked_input>( first, last );
 		}
 
 		rng.first = first;

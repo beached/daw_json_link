@@ -136,22 +136,10 @@ namespace daw::json::json_details {
 		v = value;
 	}
 
-	template<bool is_unchecked_input>
-	DAW_ATTRIBUTE_FLATTEN static inline constexpr int
-	skip_digits( char const *first, char const *const last ) {
-		unsigned dig = 0;
-		char const *const start = first;
-		while( ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) and
-		       ( dig = parse_digit( *first ) ) < 10 ) {
-			++first;
-		}
-		return static_cast<int>( first - start );
-	}
-
 	template<bool is_unchecked_input, typename Unsigned>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
-	parse_digits_while_number( char const *first, char const *const last,
-	                           Unsigned &v ) {
+	parse_real_digits_while_number( char const *first, char const *const last,
+	                                Unsigned &v ) {
 		auto value = v;
 		unsigned dig = 0;
 		while( ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) and
@@ -290,17 +278,18 @@ namespace daw::json::json_details {
 
 		unsigned_t significant_digits = 0;
 		char const *last_char =
-		  parse_digits_while_number<Range::is_unchecked_input>(
+		  parse_real_digits_while_number<Range::is_unchecked_input>(
 		    first, whole_last, significant_digits );
 
 		signed_t exponent = [&] {
 			if( last_char >= whole_last ) {
 				// We have sig digits we cannot parse because there isn't enough room in
 				// a std::uint64_t
-				auto result =
+				char const *ptr =
 				  skip_digits<Range::is_unchecked_input>( last_char, rng.last );
-				last_char += result;
-				return static_cast<signed_t>( result );
+				auto const diff = ptr - last_char;
+				last_char = ptr;
+				return static_cast<signed_t>( diff );
 			}
 			return static_cast<signed_t>( 0 );
 		}( );
@@ -313,18 +302,18 @@ namespace daw::json::json_details {
 		      *first == '.' ) ) {
 			++first;
 			if( exponent != 0 ) {
-				first += skip_digits<Range::is_unchecked_input>( first, rng.last );
+				first = skip_digits<Range::is_unchecked_input>( first, rng.last );
 			} else {
 				char const *fract_last =
 				  first +
 				  std::min( rng.last - first, max_exponent - ( first - rng.first ) );
 
-				last_char = parse_digits_while_number<Range::is_unchecked_input>(
+				last_char = parse_real_digits_while_number<Range::is_unchecked_input>(
 				  first, fract_last, significant_digits );
 				exponent -= last_char - first;
 				first = last_char;
 				if( first >= fract_last ) {
-					first += skip_digits<Range::is_unchecked_input>( first, rng.last );
+					first = skip_digits<Range::is_unchecked_input>( first, rng.last );
 				}
 			}
 		}
@@ -351,7 +340,7 @@ namespace daw::json::json_details {
 				daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
 				                      rng );
 				unsigned_t exp_tmp = 0;
-				last_char = parse_digits_while_number<Range::is_unchecked_input>(
+				last_char = parse_real_digits_while_number<Range::is_unchecked_input>(
 				  first, rng.last, exp_tmp );
 				first = last_char;
 				if( exp_sign ) {
