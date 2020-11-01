@@ -1,5 +1,14 @@
 name: clang-format Check
-on: [push]
+on: 
+  push:
+    branches: release
+  pull_request:
+    push:
+      branches-ignore: develop
+    pull_request:
+      branches-ignore: develop
+
+
 jobs:
   formatting-check:
     name: Formatting Check
