@@ -160,7 +160,7 @@ namespace daw::json::json_details {
 			return last;
 		}
 		}
-		DAW_JSON_UNREACHABLE( );
+		DAW_UNREACHABLE( );
 	}
 
 	template<bool is_unchecked_input, char... keys>

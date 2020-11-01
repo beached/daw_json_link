@@ -55,7 +55,7 @@ namespace daw::json {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	using namespace daw::json;
@@ -66,8 +66,7 @@ try
 	    exit( 1 );
 	  }
 	*/
-	auto const json_data =
-	  *daw::read_file( "/tmp/1.json" );
+	auto const json_data = *daw::read_file( "/tmp/1.json" );
 	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using range_t =

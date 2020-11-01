@@ -64,7 +64,7 @@ namespace daw::json {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	constexpr std::string_view json_data = R"({ "some_num": 1234 } )";

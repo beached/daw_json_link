@@ -58,7 +58,7 @@ namespace daw::json {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	DAW_CONSTEXPR std::string_view const json_data3 =

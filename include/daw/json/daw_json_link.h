@@ -76,7 +76,7 @@ namespace daw::json {
 		 */
 		template<typename T, typename Range>
 		[[maybe_unused, nodiscard]] static inline constexpr T
-		parse_class( Range &rng ) {
+		parse_to_class( Range &rng ) {
 			return json_details::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{ } );
 		}
@@ -165,7 +165,7 @@ namespace daw::json {
 		 */
 		template<typename T, typename Range>
 		[[maybe_unused, nodiscard]] static inline constexpr T
-		parse_class( Range &rng ) {
+		parse_to_class( Range &rng ) {
 			return json_details::parse_ordered_json_class<
 			  T, json_details::ordered_member_wrapper<JsonMembers>...>( rng );
 		}

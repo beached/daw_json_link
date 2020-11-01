@@ -124,7 +124,7 @@ bool wrong_member_number_type_fail( ) {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	do_test( empty_class_empty_json_class( ) );

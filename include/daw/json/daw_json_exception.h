@@ -10,6 +10,7 @@
 
 #include <daw/daw_hide.h>
 #include <daw/daw_string_view.h>
+#include <daw/daw_unreachable.h>
 
 #include <algorithm>
 #include <ciso646>
@@ -19,14 +20,6 @@
 #include <numeric>
 #include <string>
 #include <string_view>
-
-#if defined( __GNUC__ ) or defined( __clang__ )
-#define DAW_JSON_UNREACHABLE( ) ( __builtin_unreachable( ) )
-#elif defined( _MSC_VER )
-#define DAW_JSON_UNREACHABLE( ) __assume( false );
-#else
-#define DAW_JSON_UNREACHABLE( ) std::terminate( )
-#endif
 
 namespace daw::json::json_details {
 	struct missing_member {
@@ -189,7 +182,7 @@ namespace daw::json {
 		case ErrorReason::UnexpectedJSONVariantType:
 			return "Unexpected JSON Variant Type"sv;
 		}
-		DAW_JSON_UNREACHABLE( );
+		DAW_UNREACHABLE( );
 	}
 
 	/***

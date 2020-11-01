@@ -7,15 +7,14 @@
 //
 
 #pragma once
-#include <string_view>
 #include <iostream>
+#include <string_view>
 
 #if defined( DAW_JSON_NO_CONST_EXPR )
 #define DAW_CONSTEXPR
 #else
 #define DAW_CONSTEXPR constexpr
 #endif
-
 
 template<typename Bool>
 inline constexpr void test_assert( Bool &&b, std::string_view msg ) {

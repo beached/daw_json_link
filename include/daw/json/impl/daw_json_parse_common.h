@@ -638,7 +638,7 @@ namespace daw::json::json_details {
 			return skip_number( rng );
 		}
 		if constexpr( Range::is_unchecked_input ) {
-			DAW_JSON_UNREACHABLE( );
+			DAW_UNREACHABLE( );
 		} else {
 			daw_json_error( ErrorReason::InvalidStartOfValue, rng );
 		}
@@ -683,7 +683,7 @@ namespace daw::json::json_details {
 			static_assert( JsonMember::expected_type == JsonParseTypes::Class,
 			               "Unknown JsonParseTypes value.  This is a programmer "
 			               "error and the preceding did not check for it" );
-			DAW_JSON_UNREACHABLE( );
+			DAW_UNREACHABLE( );
 		}
 	}
 } // namespace daw::json::json_details

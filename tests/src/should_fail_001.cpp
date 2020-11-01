@@ -226,7 +226,7 @@ namespace tests {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	expect_fail( tests::quotes_in_numbers( ),

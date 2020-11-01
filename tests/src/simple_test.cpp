@@ -60,7 +60,7 @@ std::string get_json_data( std::string file_name ) {
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	using namespace daw::json;

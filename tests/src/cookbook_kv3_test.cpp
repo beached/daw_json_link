@@ -48,7 +48,7 @@ namespace daw::json {
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc <= 1 ) {
@@ -62,9 +62,9 @@ try
 
 	test_assert( kv.kv.size( ) == 2, "Expected data to have 2 items" );
 	test_assert( kv.kv.begin( )->first == std::prev( kv.kv.end( ) )->first,
-	                 "Unexpected value" );
+	             "Unexpected value" );
 	test_assert( kv.kv.begin( )->second != std::prev( kv.kv.end( ) )->second,
-	                 "Unexpected value" );
+	             "Unexpected value" );
 	auto const str = daw::json::to_json( kv );
 	puts( str.c_str( ) );
 

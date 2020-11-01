@@ -375,8 +375,6 @@ namespace daw::json::json_details {
 		}
 		rng.clean_tail( );
 		// If we fulfill the contract before all values are parses
-		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
-		                      rng );
 		rng.move_to_next_class_member( );
 		(void)rng.skip_class( );
 		// Yes this must be checked.  We maybe at the end of document.  After the
@@ -431,6 +429,7 @@ namespace daw::json::json_details {
 						class_cleanup_now( *rng_ptr );
 					}
 				} const run_after_parse{ &rng };
+				(void)run_after_parse;
 				/*
 				 * Rather than call directly use apply/tuple to evaluate left->right
 				 */
@@ -494,6 +493,7 @@ namespace daw::json::json_details {
 					(void)ptr->skip_array( );
 				}
 			} const run_after_parse{ &rng };
+			(void)run_after_parse;
 			return std::apply( daw::construct_a<JsonClass>,
 			                   tp_t{ parse_ordered_class_member<JsonMembers>(
 			                     current_idx, rng )... } );

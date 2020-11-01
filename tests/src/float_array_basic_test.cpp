@@ -91,7 +91,7 @@ void test_func( ) {
 
 int main( int argc, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc > 1 ) {

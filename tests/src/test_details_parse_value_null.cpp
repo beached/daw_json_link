@@ -95,7 +95,7 @@ bool test_null_number_untrusted_known( ) {
 
 int main( )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	do_test( test_null_literal_untrusted( ) );

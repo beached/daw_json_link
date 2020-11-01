@@ -53,7 +53,7 @@ namespace daw::json {
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc <= 1 ) {
@@ -66,13 +66,13 @@ try
 	  std::string_view( data.data( ), data.size( ) ) );
 
 	test_assert( cls.member0[0] == daw::cookbook_enums2::Colours::red,
-	                 "Unexpected value" );
+	             "Unexpected value" );
 	test_assert( cls.member0[1] == daw::cookbook_enums2::Colours::green,
-	                 "Unexpected value" );
+	             "Unexpected value" );
 	test_assert( cls.member0[2] == daw::cookbook_enums2::Colours::blue,
-	                 "Unexpected value" );
+	             "Unexpected value" );
 	test_assert( cls.member0[3] == daw::cookbook_enums2::Colours::black,
-	                 "Unexpected value" );
+	             "Unexpected value" );
 	auto const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 

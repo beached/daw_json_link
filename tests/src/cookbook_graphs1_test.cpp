@@ -95,7 +95,7 @@ struct Node {
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc <= 1 ) {
@@ -153,18 +153,17 @@ try
 	auto const &n0 = find_node( 0 );
 
 	test_assert( n0.outgoing_edges( ).size( ) == 1U,
-	                 "Node id 0 should only have 1 outgoing edge" );
-	test_assert(
-	  n0.outgoing_edges( ).count( *nid_1 ) == 1U,
-	  "Node id 0 should only have 2 incoming edge from node id 1" );
+	             "Node id 0 should only have 1 outgoing edge" );
+	test_assert( n0.outgoing_edges( ).count( *nid_1 ) == 1U,
+	             "Node id 0 should only have 2 incoming edge from node id 1" );
 
 	test_assert( n0.incoming_edges( ).size( ) == 2U,
-	                 "Node id 0 should 2 incoming edges" );
+	             "Node id 0 should 2 incoming edges" );
 	test_assert( n0.incoming_edges( ).count( *nid_1 ) == 1U,
-	                 "Node id 0 should have 1 incoming edge from node id 1" );
+	             "Node id 0 should have 1 incoming edge from node id 1" );
 
 	test_assert( n0.incoming_edges( ).count( *nid_2 ) == 1U,
-	                 "Node id 0 should have 1 incoming edge from node id 2" );
+	             "Node id 0 should have 1 incoming edge from node id 2" );
 
 	return 0;
 }

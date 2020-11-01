@@ -85,7 +85,7 @@ void test_func( ) {
 		result.resize( result.size( ) + 16U );
 		/*
 		if constexpr( NUMVALUES < 1500 ) {
-			std::cout << "Class data: " << result << '\n';
+		  std::cout << "Class data: " << result << '\n';
 		}
 		*/
 		return result;
@@ -101,7 +101,7 @@ void test_func( ) {
 		result.resize( result.size( ) + 16U );
 		/*
 		if constexpr( NUMVALUES < 1500 ) {
-			std::cout << "Class data: " << result << '\n';
+		  std::cout << "Class data: " << result << '\n';
 		}
 		*/
 		return result;
@@ -487,7 +487,7 @@ void test_func( ) {
 
 int main( int argc, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc > 1 ) {

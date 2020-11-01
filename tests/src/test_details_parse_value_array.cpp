@@ -98,7 +98,7 @@ bool array_with_closing_class_fail( ) {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	do_test( empty_array_empty_json_array( ) );

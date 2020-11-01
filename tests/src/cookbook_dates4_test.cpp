@@ -39,14 +39,13 @@ namespace daw::cookbook_dates4 {
 	struct TimestampConverter {
 		DAW_CONSTEXPR timepoint_t operator( )( std::string_view sv ) const {
 			test_assert( sv.size( ) > ( prefix.size( ) + suffix.size( ) ),
-			                 "Unexpected date size" );
+			             "Unexpected date size" );
 			auto const sv_prefix = sv.substr( 0, prefix.size( ) );
-			test_assert( sv_prefix == prefix,
-			                 "Unexpected date format" );
+			test_assert( sv_prefix == prefix, "Unexpected date format" );
 			sv.remove_prefix( prefix.size( ) );
-			auto const sv_suffix = sv.substr( sv.size( ) - suffix.size( ), suffix.size( ) );
-			test_assert( sv_suffix == suffix,
-											 "Unexpected date format" );
+			auto const sv_suffix =
+			  sv.substr( sv.size( ) - suffix.size( ), suffix.size( ) );
+			test_assert( sv_suffix == suffix, "Unexpected date format" );
 			sv.remove_suffix( suffix.size( ) );
 
 			std::int64_t val = daw::json::from_json<
@@ -102,7 +101,7 @@ namespace daw::json {
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc <= 1 ) {

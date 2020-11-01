@@ -59,7 +59,7 @@ namespace daw::json {
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc <= 1 ) {
@@ -73,11 +73,11 @@ try
 	  daw::json::from_json_array<daw::cookbook_variant1::MyVariantStuff1>( data );
 	test_assert( stuff.size( ) == 2, "Unexpected size" );
 	test_assert( stuff.front( ).member0.index( ) == 0, "Unexpected value" );
-	test_assert( (std::get<0>( stuff.front( ).member0 ) == 5),
-	                 "Unexpected value" );
+	test_assert( ( std::get<0>( stuff.front( ).member0 ) == 5 ),
+	             "Unexpected value" );
 	test_assert( stuff.front( ).member1.index( ) == 0, "Unexpected value" );
-	test_assert( (std::get<0>( stuff.front( ).member1 ) == "hello"),
-	                 "Unexpected value" );
+	test_assert( ( std::get<0>( stuff.front( ).member1 ) == "hello" ),
+	             "Unexpected value" );
 
 	auto const str = daw::json::to_json_array( stuff );
 	puts( "After" );

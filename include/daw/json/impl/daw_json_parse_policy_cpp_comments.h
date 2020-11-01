@@ -320,7 +320,7 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			DAW_JSON_UNREACHABLE( );
+			DAW_UNREACHABLE( );
 		}
 	}; // namespace daw::json
 } // namespace daw::json

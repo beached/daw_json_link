@@ -65,4 +65,3 @@ namespace daw::citm {
 		std::optional<venueNames_t> venueNames;
 	}; // citm_object_t
 } // namespace daw::citm
-

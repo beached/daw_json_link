@@ -238,7 +238,7 @@ namespace daw::json {
 			}
 			// Should never get here, only loop exit is when PrimaryRight is found and
 			// count == 0
-			DAW_JSON_UNREACHABLE( );
+			DAW_UNREACHABLE( );
 		}
 	};
 
