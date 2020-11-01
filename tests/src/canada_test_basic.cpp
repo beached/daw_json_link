@@ -52,7 +52,7 @@ int main( int argc, char **argv ) {
 			          << " bytes in\n"
 			          << '\n';
 			std::cerr << "Possible path: "
-			          << find_json_path_to( jex, json_data.data( ) );
+			          << find_json_path_to( jex, json_data.data( ) ) << '\n';
 		}
 		exit( 1 );
 	}
