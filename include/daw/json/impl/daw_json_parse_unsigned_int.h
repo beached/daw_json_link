@@ -186,14 +186,10 @@ namespace daw::json::json_details {
 		}
 
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
-			auto const count =
-			  static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 ) -
-			  ( first - orig_first );
-			daw_json_assert(
-			  ( count >= 0 ) &
-			    ( result <=
-			      static_cast<result_t>( daw::numeric_limits<Unsigned>::max( ) ) ),
-			  ErrorReason::NumberOutOfRange, rng );
+			auto const count = static_cast<std::ptrdiff_t>(
+			                     daw::numeric_limits<Unsigned>::digits10 + 1 ) -
+			                   ( first - orig_first );
+			daw_json_assert( count >= 0, ErrorReason::NumberOutOfRange, rng );
 		}
 
 		rng.first = first;

@@ -271,7 +271,7 @@ int main( int, char ** )
 
 #ifdef DAW_USE_JSON_EXCEPTIONS
 } catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
 #endif
 }
