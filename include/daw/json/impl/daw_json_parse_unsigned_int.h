@@ -152,6 +152,7 @@ namespace daw::json::json_details {
 		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
 		                      rng );
 		char const *first = rng.first;
+		char const *const orig_first = first;
 		char const *const last = rng.last;
 		result_t result = result_t( );
 		bool has_eight =
@@ -177,7 +178,6 @@ namespace daw::json::json_details {
 		}
 		auto dig = parse_digit( *first );
 
-		char const *const orig_first = first;
 		while( dig < 10U ) {
 			result *= 10U;
 			result += dig;
@@ -186,14 +186,10 @@ namespace daw::json::json_details {
 		}
 
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
-			auto const count =
-			  static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 ) -
-			  ( first - orig_first );
-			daw_json_assert(
-			  ( count >= 0 ) &
-			    ( result <=
-			      static_cast<result_t>( daw::numeric_limits<Unsigned>::max( ) ) ),
-			  ErrorReason::NumberOutOfRange, rng );
+			auto const count = static_cast<std::ptrdiff_t>(
+			                     daw::numeric_limits<Unsigned>::digits10 + 1 ) -
+			                   ( first - orig_first );
+			daw_json_assert( count >= 0, ErrorReason::NumberOutOfRange, rng );
 		}
 
 		rng.first = first;
