@@ -31,7 +31,7 @@ std::string read_file( std::string const &filename ) {
 
 int main( int argc, char *argv[] )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 #if defined( NDEBUG ) and not defined( DEBUG )

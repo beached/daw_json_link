@@ -50,9 +50,9 @@ void test( std::string_view json_sv1 ) {
 		test_assert( citm_result2, "Missing value" );
 		test_assert( not citm_result2->areaNames.empty( ), "Expected values" );
 		test_assert( citm_result2->areaNames.count( 205706005 ) == 1,
-		                 "Expected value" );
+		             "Expected value" );
 		test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
-		                 "Incorrect value" );
+		             "Incorrect value" );
 	}
 	{
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -67,15 +67,15 @@ void test( std::string_view json_sv1 ) {
 		test_assert( citm_result2, "Missing value" );
 		test_assert( not citm_result2->areaNames.empty( ), "Expected values" );
 		test_assert( citm_result2->areaNames.count( 205706005 ) == 1,
-		                 "Expected value" );
+		             "Expected value" );
 		test_assert( citm_result2->areaNames[205706005] == "1er balcon jardin",
-		                 "Incorrect value" );
+		             "Incorrect value" );
 	}
 }
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	using namespace daw::json;

@@ -218,19 +218,19 @@ bool test_array_trail( ) {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	test_assert( test_int_trail( ),
-	                 "Signed integers fail to accommodate trailing strings" );
+	             "Signed integers fail to accommodate trailing strings" );
 	test_assert( test_string_raw_trail( ),
-	                 "Raw strings fail to accommodate trailing strings" );
+	             "Raw strings fail to accommodate trailing strings" );
 	test_assert( test_unsigned_trail( ),
-	                 "Unsigned integers fail to accommodate trailing strings" );
+	             "Unsigned integers fail to accommodate trailing strings" );
 	test_assert( test_bool_trail( ),
-	                 "Bools fail to accommodate trailing strings" );
+	             "Bools fail to accommodate trailing strings" );
 	test_assert( test_object_trail( ),
-	                 "Objects fail to accommodate trailing strings" );
+	             "Objects fail to accommodate trailing strings" );
 	daw::expecting( test_string_trail( ) );
 	daw::expecting( test_array_member_trail( ) );
 	daw::expecting( test_array_trail( ) );

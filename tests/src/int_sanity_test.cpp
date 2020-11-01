@@ -64,7 +64,7 @@ void test( ) {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	test<daw::json::constexpr_exec_tag, 1000>( );

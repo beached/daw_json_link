@@ -65,7 +65,7 @@ bool test_number_space( ) {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	do_test( test_number_in_class( ) );

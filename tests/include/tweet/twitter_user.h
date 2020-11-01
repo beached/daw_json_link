@@ -13,7 +13,7 @@
 
 namespace daw::twitter {
 	struct twitter_user {
-		std::uint64_t id;
 		std::string_view screen_name;
+		std::uint64_t id;
 	};
 } // namespace daw::twitter

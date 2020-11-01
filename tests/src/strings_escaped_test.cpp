@@ -101,7 +101,7 @@ std::size_t test( std::string_view json_data ) {
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc <= 1 ) {
@@ -114,13 +114,11 @@ try
 	}( );
 	auto const h0 = test<daw::json::constexpr_exec_tag>( json_string );
 	auto const h1 = test<daw::json::runtime_exec_tag>( json_string );
-	test_assert( h0 == h1,
-	                 "constexpr/runtime exec model hashes do not match" );
+	test_assert( h0 == h1, "constexpr/runtime exec model hashes do not match" );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
 		auto const h2 = test<daw::json::simd_exec_tag>( json_string );
-		test_assert( h0 == h2,
-		                 "constexpr/fast exec model hashes do not match" );
+		test_assert( h0 == h2, "constexpr/fast exec model hashes do not match" );
 	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

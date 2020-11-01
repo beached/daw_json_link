@@ -20,8 +20,8 @@ namespace daw::json {
 		static constexpr char screen_name[] = "screen_name";
 
 		using type =
-		  json_member_list<json_number<id, std::uint64_t>,
-		                   json_string_raw<screen_name, std::string_view>>;
+		  json_member_list<json_string_raw<screen_name, std::string_view>,
+		                   json_number<id, std::uint64_t>>;
 	};
 
 	template<>
@@ -34,12 +34,12 @@ namespace daw::json {
 		static constexpr char favorite_count[] = "favorite_count";
 		static constexpr char user[] = "user";
 		using type =
-		  json_member_list<json_class<user, daw::twitter::twitter_user>,
-		                   json_number<id, std::uint64_t>,
-		                   json_string_raw<text, std::string_view>,
+		  json_member_list<json_number<retweet_count, std::uint32_t>,
+		                   json_class<user, daw::twitter::twitter_user>,
 		                   json_string_raw<created_at, std::string_view>,
 		                   json_number_null<in_reply_to_status_id, std::uint64_t>,
-		                   json_number<retweet_count, std::uint32_t>,
-		                   json_number_null<favorite_count, std::uint32_t>>;
+		                   json_number_null<favorite_count, std::uint32_t>,
+		                   json_number<id, std::uint64_t>,
+		                   json_string_raw<text, std::string_view>>;
 	};
 } // namespace daw::json

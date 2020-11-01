@@ -47,7 +47,7 @@ namespace daw {
 		auto const Sz = std::size( key );
 		if( Sz <= sizeof( UInt32 ) ) {
 			auto result = 0_u32;
-			for( std::size_t n=0; n<Sz; ++n ) {
+			for( std::size_t n = 0; n < Sz; ++n ) {
 				result <<= 8U;
 				result |= static_cast<unsigned char>( key[n] );
 			}

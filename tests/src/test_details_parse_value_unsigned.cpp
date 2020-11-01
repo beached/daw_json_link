@@ -86,7 +86,7 @@ bool test_real_untrusted( ) {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	do_test( test_zero_untrusted( ) );

@@ -33,7 +33,7 @@ static_assert( DAW_NUM_RUNS > 0 );
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	try {
@@ -75,7 +75,7 @@ try
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value -> twitter_result" );
 		test_assert( twitter_result->statuses.size( ) > 0,
-		                 "Expected values: twitter_result is empty" );
+		             "Expected values: twitter_result is empty" );
 		test_assert(
 		  twitter_result->statuses.front( ).user.id == "1186275104",
 		  std::string( "Expected values: user_id had wrong value, "
@@ -97,7 +97,7 @@ try
 		test_assert( twitter_result, "Missing value" );
 		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == "1186275104",
-		                 "Expected values" );
+		             "Expected values" );
 		twitter_result.reset( );
 
 		std::cout << std::flush;
@@ -112,9 +112,9 @@ try
 		test_assert( citm_result, "Missing value" );
 		test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
 		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-		                 "Expected value" );
+		             "Expected value" );
 		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-		                 "Incorrect value" );
+		             "Incorrect value" );
 		citm_result.reset( );
 
 		std::cout << std::flush;
@@ -130,9 +130,9 @@ try
 		test_assert( citm_result, "Missing value" );
 		test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
 		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-		                 "Expected value" );
+		             "Expected value" );
 		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-		                 "Incorrect value" );
+		             "Incorrect value" );
 		citm_result.reset( );
 
 		std::cout << std::flush;
@@ -183,13 +183,13 @@ try
 		test_assert( twitter_result, "Missing value" );
 		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == "1186275104",
-		                 "Missing value" );
+		             "Missing value" );
 		test_assert( citm_result, "Missing value" );
 		test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
 		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-		                 "Expected value" );
+		             "Expected value" );
 		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-		                 "Incorrect value" );
+		             "Incorrect value" );
 		test_assert( canada_result, "Missing value" );
 		twitter_result.reset( );
 		citm_result.reset( );
@@ -219,13 +219,13 @@ try
 		test_assert( twitter_result, "Missing value" );
 		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == "1186275104",
-		                 "Missing value" );
+		             "Missing value" );
 		test_assert( citm_result, "Missing value" );
 		test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
 		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-		                 "Expected value" );
+		             "Expected value" );
 		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-		                 "Incorrect value" );
+		             "Incorrect value" );
 		test_assert( canada_result, "Missing value" );
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';

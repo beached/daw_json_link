@@ -483,16 +483,19 @@ namespace daw::json::json_details {
 			if constexpr( not KnownBounds ) {
 				auto const oe =
 				  daw::on_exit_success( [&] { rng.trim_left_checked( ); } );
+				return json_data_contract_trait_t<element_t>::template parse_to_class<
+				  element_t>( rng );
+			} else {
+				return json_data_contract_trait_t<element_t>::template parse_to_class<
+				  element_t>( rng );
 			}
-			return json_data_contract_trait_t<element_t>::template parse_class<
-			  element_t>( rng );
 		} else {
 			if constexpr( KnownBounds ) {
-				return json_data_contract_trait_t<element_t>::template parse_class<
+				return json_data_contract_trait_t<element_t>::template parse_to_class<
 				  element_t>( rng );
 			} else {
 				auto result = json_data_contract_trait_t<
-				  element_t>::template parse_class<element_t>( rng );
+				  element_t>::template parse_to_class<element_t>( rng );
 				// TODO: make trim_left
 				rng.trim_left_checked( );
 				return result;
@@ -611,7 +614,7 @@ namespace daw::json::json_details {
 			return parse_variant_value<JsonBaseParseTypes::Number, JsonMember>( rng );
 		}
 		if constexpr( Range::is_unchecked_input ) {
-			DAW_JSON_UNREACHABLE( );
+			DAW_UNREACHABLE( );
 		} else {
 			daw_json_error( ErrorReason::InvalidStartOfValue, rng );
 		}

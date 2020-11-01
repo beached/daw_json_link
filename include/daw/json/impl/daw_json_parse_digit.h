@@ -6,7 +6,6 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-
 #pragma once
 
 #include <daw/daw_hide.h>
@@ -15,8 +14,8 @@ namespace daw::json::json_details {
 
 	DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr unsigned
 	parse_digit( char c ) noexcept {
-	  return static_cast<unsigned>( static_cast<unsigned char>(
-	    static_cast<unsigned char>( c ) - static_cast<unsigned char>( '0' ) ) );
+		return static_cast<unsigned>( static_cast<unsigned char>(
+		  static_cast<unsigned char>( c ) - static_cast<unsigned char>( '0' ) ) );
 	}
 
 	namespace parsed_constants {
@@ -26,6 +25,4 @@ namespace daw::json::json_details {
 		static inline constexpr unsigned plus_char = parse_digit( '+' );
 		static inline constexpr unsigned minus_char = parse_digit( '-' );
 	} // namespace parsed_constants
-}
-
-
+} // namespace daw::json::json_details

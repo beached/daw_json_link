@@ -26,7 +26,7 @@
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc < 2 ) {
@@ -42,9 +42,9 @@ try
 	daw::do_not_optimize( citm_result );
 	test_assert( citm_result.areaNames.size( ) > 0, "Expected values" );
 	test_assert( citm_result.areaNames.count( 205706005 ) == 1,
-	                 "Expected value" );
+	             "Expected value" );
 	test_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
-	                 "Incorrect value" );
+	             "Incorrect value" );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

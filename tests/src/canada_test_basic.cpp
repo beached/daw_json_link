@@ -46,9 +46,15 @@ int main( int argc, char **argv ) {
 	} catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Exception thrown by parser: "
 		          << to_formatted_string( jex, json_data.data( ) );
-		std::cerr << "The error is about "
-		          << ( jex.parse_location( ) - json_data.data( ) ) << " bytes in\n"
-		          << '\n';
+		if( jex.parse_location( ) ) {
+			std::cerr << "The error is about "
+			          << ( jex.parse_location( ) - json_data.data( ) )
+			          << " bytes in\n"
+			          << '\n';
+/*			std::cerr << "Possible path: "
+			          << find_json_path_to( jex, json_data.data( ) );
+								*/
+		}
 		exit( 1 );
 	}
 #endif

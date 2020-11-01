@@ -178,7 +178,7 @@ bool test_class_close_mid_array_without_open( ) {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	/*do_test( test_empty_quoted( ) );

@@ -66,11 +66,11 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	    std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
 
 	test_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
-	                 "Expected same size" );
+	             "Expected same size" );
 	auto mismatch_pos = std::mismatch( unicode_test.begin( ), unicode_test.end( ),
 	                                   unicode_test_from_escaped.begin( ) );
 	test_assert( mismatch_pos.first == unicode_test.end( ),
-	                 "Should be the same after parsing" );
+	             "Should be the same after parsing" );
 
 	std::string const json_str2 = daw::json::to_json_array( unicode_test );
 	std::vector<unicode_data> unicode_test2 =
@@ -80,7 +80,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	auto mismatch_pos2 = std::mismatch(
 	  unicode_test.begin( ), unicode_test.end( ), unicode_test2.begin( ) );
 	test_assert( mismatch_pos2.first == unicode_test.end( ),
-	                 "Should be the same after parsing" );
+	             "Should be the same after parsing" );
 	{
 		using range_t = daw::json::json_array_range<
 		  unicode_data, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
@@ -133,7 +133,7 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	using namespace daw::json;
@@ -149,8 +149,7 @@ try
 	}
 
 	auto const json_str = *daw::read_file( argv[1] );
-	auto const json_str_escaped =
-	  *daw::read_file( argv[2] );
+	auto const json_str_escaped = *daw::read_file( argv[2] );
 
 	test<daw::json::constexpr_exec_tag>( json_str, json_str_escaped );
 	test<daw::json::runtime_exec_tag>( json_str, json_str_escaped );

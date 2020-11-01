@@ -80,8 +80,7 @@ int main( int, char ** )
 	(void)daw::json::to_json( cls, it );
 	std::string const str = ss.str( );
 	puts( str.c_str( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

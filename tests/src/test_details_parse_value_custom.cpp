@@ -57,7 +57,7 @@ bool empty_array_empty_json_array( ) {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	do_test( empty_array_empty_json_array( ) );

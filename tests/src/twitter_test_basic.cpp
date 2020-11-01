@@ -43,7 +43,7 @@ int main( int argc, char **argv )
 	}
 	test_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
 	test_assert( twitter_result.statuses.front( ).user.id == 1186275104,
-	                 "Missing value" );
+	             "Missing value" );
 }
 #ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

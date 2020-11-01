@@ -20,7 +20,7 @@
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc <= 1 ) {
@@ -36,9 +36,9 @@ try
 	                           std::string>>( val );
 	test_assert( kv.size( ) == 2, "Expected data to have 2 items" );
 	test_assert( kv.begin( )->first == std::prev( kv.end( ) )->first,
-	                 "Unexpected value" );
+	             "Unexpected value" );
 	test_assert( kv.begin( )->second != std::prev( kv.end( ) )->second,
-	                 "Unexpected value" );
+	             "Unexpected value" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

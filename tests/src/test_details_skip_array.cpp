@@ -135,7 +135,7 @@ bool test_embedded_arrays_broken_001( ) {
 
 int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	do_test( test_empty_quoted( ) );

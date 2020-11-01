@@ -39,7 +39,7 @@ namespace daw::cookbook_dates2 {
 		                                      std::chrono::milliseconds>
 		operator( )( std::string_view sv ) const {
 			test_assert( sv.size( ) >= 26,
-			                 "Date format is always 26 characters long" );
+			             "Date format is always 26 characters long" );
 			// Skip Day of Week
 			sv.remove_prefix( 4 );
 			auto const mo = daw::json::datetime::parse_short_month( sv );
@@ -153,7 +153,7 @@ namespace daw::json {
 
 int main( int argc, char **argv )
 #ifdef DAW_USE_JSON_EXCEPTIONS
-try
+  try
 #endif
 {
 	if( argc <= 1 ) {
