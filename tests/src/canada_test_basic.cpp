@@ -16,7 +16,7 @@
 #include <daw/daw_do_not_optimize.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
-//#include <daw/json/daw_json_find_path.h>
+#include <daw/json/daw_json_find_path.h>
 #include <daw/json/daw_json_link.h>
 
 #include <cstdio>
@@ -51,9 +51,8 @@ int main( int argc, char **argv ) {
 			          << ( jex.parse_location( ) - json_data.data( ) )
 			          << " bytes in\n"
 			          << '\n';
-/*			std::cerr << "Possible path: "
+			std::cerr << "Possible path: "
 			          << find_json_path_to( jex, json_data.data( ) );
-								*/
 		}
 		exit( 1 );
 	}

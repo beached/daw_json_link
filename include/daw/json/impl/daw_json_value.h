@@ -232,8 +232,11 @@ namespace daw::json {
 			case 'f':
 			case 'n':
 				return true;
+			case '}':
+			case ']':
+				return false;
 			}
-			return false;
+			daw_json_error( ErrorReason::ExpectedTokenNotFound, m_state );
 		}
 
 		/***
