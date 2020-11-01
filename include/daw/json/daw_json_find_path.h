@@ -18,9 +18,12 @@
 
 namespace daw::json {
 
-	inline std::string find_json_path_to( json_exception const &jex,
+	inline std::string find_json_path_to( char const *parse_location,
 	                                      char const *doc_start ) {
-		if( not jex.parse_location( ) or not doc_start ) {
+		if( parse_location == nullptr or doc_start == nullptr ) {
+			return { };
+		}
+		if( std::less<>{ }( parse_location, doc_start ) ) {
 			return { };
 		}
 
@@ -172,13 +175,13 @@ namespace daw::json {
 				}
 				return true;
 			}
-		} handler{ doc_start, jex.parse_location( ) + 1 };
+		} handler{ doc_start, parse_location + 1 };
 
 		try {
 			json_event_parser( doc_start, handler );
 		} catch( json_exception const & ) {
-			std::cout << "Error\n";
 			// Ignoring because we are only looking for the stack leading up to this
+			// and it may have come from an error
 		}
 		if( handler.last_popped ) {
 			handler.parse_stack.push_back( *handler.last_popped );
@@ -193,5 +196,10 @@ namespace daw::json {
 			  }
 			  return std::forward<decltype( state )>( state );
 		  } );
+	}
+
+	inline std::string find_json_path_to( json_exception const &jex,
+	                                      char const *doc_start ) {
+		return find_json_path_to( jex.parse_location( ), doc_start );
 	}
 } // namespace daw::json
