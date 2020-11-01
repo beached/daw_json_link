@@ -536,7 +536,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 		std::cout.precision( old_precision );
 	}
 #ifndef NDEBUG
-	if( diff >= 2 ) {
+	if( diff > 2 ) {
 		double o = orig;
 		(void)o;
 		double orig_ninf =
