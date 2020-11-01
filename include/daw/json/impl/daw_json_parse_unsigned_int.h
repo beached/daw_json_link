@@ -152,6 +152,7 @@ namespace daw::json::json_details {
 		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
 		                      rng );
 		char const *first = rng.first;
+		char const *const orig_first = first;
 		char const *const last = rng.last;
 		result_t result = result_t( );
 		bool has_eight =
@@ -177,7 +178,6 @@ namespace daw::json::json_details {
 		}
 		auto dig = parse_digit( *first );
 
-		char const *const orig_first = first;
 		while( dig < 10U ) {
 			result *= 10U;
 			result += dig;
