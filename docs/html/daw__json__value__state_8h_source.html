@@ -213,228 +213,232 @@ $(function() {
 <div class="line"><a name="l00146"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a5451fd64b8e0e97fd05455783551fab8">  146</a></span>&#160;    constexpr <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a5451fd64b8e0e97fd05455783551fab8">basic_stateful_json_value</a>( <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a> val )</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      : m_value( std::move( val ) ) {</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160; </div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( m_value.<a class="code" href="classdaw_1_1json_1_1basic__json__value.html#a8ad92ac4672ad3ab4269c313aac16edf">is_class</a>( ) | m_value.<a class="code" href="classdaw_1_1json_1_1basic__json__value.html#a5edc5374e67e5a0add9d54e691e60158">is_array</a>( ),</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;                            ErrorReason::ExpectedArrayOrClassStart,</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                            val.<a class="code" href="classdaw_1_1json_1_1basic__json__value.html#a3308c89ed416cc6f5fe5c578e5e80ca6">get_range</a>( ) );</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    }</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
-<div class="line"><a name="l00154"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a77a7a21b274a3d608d86cf664eff04a9">  154</a></span>&#160;    constexpr <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a77a7a21b274a3d608d86cf664eff04a9">basic_stateful_json_value</a>( )</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      : <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html">basic_stateful_json_value</a>( <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value</a>&lt;Range&gt;( <span class="stringliteral">&quot;{}&quot;</span> ) ) {}</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; </div>
-<div class="line"><a name="l00157"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a97436c5b193615f15f08b04b27dfe02d">  157</a></span>&#160;    constexpr <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a97436c5b193615f15f08b04b27dfe02d">basic_stateful_json_value</a>( std::string_view json_data )</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      : <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html">basic_stateful_json_value</a>( <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value</a>&lt;Range&gt;( json_data ) ) {}</div>
-<div class="line"><a name="l00163"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab23ae37302b06345539428e1b95e5a0d">  163</a></span>&#160;    constexpr <span class="keywordtype">void</span> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab23ae37302b06345539428e1b95e5a0d">reset</a>( <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a> val ) {</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;      m_value = std::move( val );</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;      m_locs.clear( );</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    }</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160; </div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="comment">     * Create a basic_json_member for the named member</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment">     * @pre name must be valid</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="comment">     * @param key name of member</span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment">     * @return a new basic_json_member</span></div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    [[nodiscard]] constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a></div>
-<div class="line"><a name="l00175"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a3072fdf6be1d2660c78c4811e1a642df">  175</a></span>&#160;    <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a3072fdf6be1d2660c78c4811e1a642df">operator[]</a>( std::string_view key ) {</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;      std::size_t pos = move_to( <a class="code" href="structdaw_1_1json_1_1json__member__name.html">json_member_name</a>( key ) );</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( pos &lt; m_locs.size( ), ErrorReason::UnknownMember );</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;      <span class="keywordflow">return</span> m_locs[pos].location-&gt;value;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    }</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160; </div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment">     * Create a basic_json_member for the named member</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment">     * @pre name must be valid</span></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment">     * @param member name of member</span></div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment">     * @return a new basic_json_member</span></div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    [[nodiscard]] constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a></div>
-<div class="line"><a name="l00188"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a025e64f6bef0956d9478fd78d46a00c3">  188</a></span>&#160;    <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a025e64f6bef0956d9478fd78d46a00c3">operator[]</a>( <a class="code" href="structdaw_1_1json_1_1json__member__name.html">json_member_name</a> member ) {</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;      std::size_t pos = move_to( member );</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( pos &lt; m_locs.size( ), ErrorReason::UnknownMember );</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      <span class="keywordflow">return</span> m_locs[pos].location-&gt;value;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    }</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160; </div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="comment">     * Create a basic_json_member for the named member</span></div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="comment">     * @pre name must be valid</span></div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="comment">     * @param key name of member</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="comment">     * @return a new basic_json_member for the JSON data or an emtpy one if the</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="comment">     * member does not exist</span></div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00201"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ace13ba0cc765a7afa1a28306e8dbade8">  201</a></span>&#160;    [[nodiscard]] constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ace13ba0cc765a7afa1a28306e8dbade8">at</a>( std::string_view key ) {</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      daw::string_view <span class="keyword">const</span> k = daw::string_view( key.data( ), key.size( ) );</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      std::size_t pos = move_to( k );</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      <span class="keywordflow">if</span>( pos &lt; m_locs.size( ) ) {</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <span class="keywordflow">return</span> m_locs[pos].location-&gt;value;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      }</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;      <span class="keywordflow">return</span> { };</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    }</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160; </div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="comment">     * Count the number of elements/members in the JSON class or array</span></div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="comment">     * This method is O(N) worst case and O(1) if the locations have already</span></div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="comment">     * been determined</span></div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="comment">     * @return number of members/elements</span></div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00216"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">  216</a></span>&#160;    [[nodiscard]] std::size_t <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( ) {</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;      <a class="code" href="namespacedaw_1_1json.html#abfdea85230017d461b5c20bac3f11d79">JsonBaseParseTypes</a> <span class="keyword">const</span> current_type = m_value.<a class="code" href="classdaw_1_1json_1_1basic__json__value.html#ad6594e49f5431db9fed3ccd793b2679b">type</a>( );</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;      <span class="keywordflow">switch</span>( current_type ) {</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;      <span class="keywordflow">case</span> JsonBaseParseTypes::Array:</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;      <span class="keywordflow">case</span> JsonBaseParseTypes::Class:</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="keywordflow">return</span> move_to( daw::numeric_limits&lt;std::size_t&gt;::max( ) );</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;      }</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    }</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160; </div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="comment">     * Return the index of named member</span></div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment">     * This method is O(N) worst case and O(1) if the locations have already</span></div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment">     * @param key name of member</span></div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment">     * @return the position of the member or the count of members if not present</span></div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab880aab30ca327423640f515ceda25e3">  233</a></span>&#160;    [[nodiscard]] std::size_t <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab880aab30ca327423640f515ceda25e3">index_of</a>( std::string_view key ) {</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;      daw::string_view <span class="keyword">const</span> k = daw::string_view( key.data( ), key.size( ) );</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;      <span class="keywordflow">return</span> move_to( k );</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    }</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="comment">     * Is the named member present</span></div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="comment">     * This method is O(N) worst case and O(1) if the locations have already</span></div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="comment">     * @param key name of member</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="comment">     * @return true if the member is present</span></div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00244"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84bc06c1c1b1942d1c67a24b89f4ef51">  244</a></span>&#160;    [[nodiscard]] constexpr <span class="keywordtype">bool</span> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84bc06c1c1b1942d1c67a24b89f4ef51">contains</a>( std::string_view key ) {</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;      daw::string_view <span class="keyword">const</span> k = daw::string_view( key.data( ), key.size( ) );</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;      <span class="keywordflow">return</span> move_to( k ) &lt; m_locs.size( );</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    }</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160; </div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="comment">     * Is the indexed member/element present</span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment">     * This method is O(N) worst case and O(1) if the locations have already</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment">     * @param index position of member/element</span></div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="comment">     * @return true if the member/element is present</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ad74a2371d8f8d7b58f33d4bb05b371cb">  255</a></span>&#160;    [[nodiscard]] constexpr <span class="keywordtype">bool</span> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ad74a2371d8f8d7b58f33d4bb05b371cb">contains</a>( std::size_t index ) {</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;      <span class="keywordflow">return</span> move_to( index ) &lt; m_locs.size( );</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    }</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160; </div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="comment">     * Get the position of the named member</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="comment">     * @tparam Integer An integer type</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="comment">     * @param index position of member.  If negative it returns the position</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="comment">     * from one past last, e.g. -1 is last item</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="comment">     * @return The name of the member or an empty optional</span></div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Integer, std::enable_if_t&lt;std::is_<span class="keywordtype">int</span>egral_v&lt;Integer&gt;,</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;                                                std::<span class="keywordtype">nullptr</span>_t&gt; = <span class="keywordtype">nullptr</span>&gt;</div>
-<div class="line"><a name="l00268"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a435b2d58bda6018d03001c66bb1334a7">  268</a></span>&#160;    [[nodiscard]] std::optional&lt;std::string_view&gt; <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a435b2d58bda6018d03001c66bb1334a7">name_of</a>( Integer index ) {</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;      <span class="keywordflow">if</span> constexpr( std::is_signed_v&lt;Integer&gt; ) {</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        <span class="keywordflow">if</span>( index &lt; 0 ) {</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;          index = -index;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;          <span class="keyword">auto</span> sz = <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( );</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;          <span class="keywordflow">if</span>( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) &gt;= sz ) {</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;            <span class="keywordflow">return</span> { };</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;          }</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;          sz -= <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index );</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;          <span class="keywordflow">return</span> std::string_view( m_locs[sz].name( ).data( ),</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;                                   m_locs[sz].name( ).<a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( ) );</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;        }</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;      }</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;      std::size_t pos = move_to( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) );</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;      <span class="keywordflow">if</span>( pos &lt; m_locs.size( ) ) {</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;        <span class="keywordflow">return</span> std::string_view( m_locs[pos].name( ).data( ),</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;                                 m_locs[pos].name( ).<a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( ) );</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;      }</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;      <span class="keywordflow">return</span> { };</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    }</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160; </div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="comment">     * basic_json_value for the indexed member</span></div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="comment">     * @tparam Integer An integer type</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;<span class="comment">     * @param index position of member.  If negative it returns the position</span></div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="comment">     * from one past last, e.g. -1 is last item</span></div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="comment">     * @pre index must exist</span></div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="comment">     * @return A new basic_json_value for the indexed member</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Integer, std::enable_if_t&lt;std::is_<span class="keywordtype">int</span>egral_v&lt;Integer&gt;,</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;                                                std::<span class="keywordtype">nullptr</span>_t&gt; = <span class="keywordtype">nullptr</span>&gt;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    [[nodiscard]] constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a></div>
-<div class="line"><a name="l00300"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84960a164fb38fef9860b22d635fb7eb">  300</a></span>&#160;    <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84960a164fb38fef9860b22d635fb7eb">operator[]</a>( Integer index ) {</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;      <span class="keywordflow">if</span> constexpr( std::is_signed_v&lt;Integer&gt; ) {</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;        <span class="keywordflow">if</span>( index &lt; 0 ) {</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;          index = -index;</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;          <span class="keyword">auto</span> sz = <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( );</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( ( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) &lt; sz ),</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;                                ErrorReason::UnknownMember );</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;          sz -= <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index );</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;          <span class="keywordflow">return</span> m_locs[sz].location-&gt;value;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        }</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;      }</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;      std::size_t pos = move_to( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) );</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( pos &lt; m_locs.size( ), ErrorReason::UnknownMember );</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;      <span class="keywordflow">return</span> m_locs[pos].location-&gt;value;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    }</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160; </div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;<span class="comment">     * basic_json_value for the indexed member</span></div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="comment">     * @tparam Integer An integer type</span></div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="comment">     * @param index position of member.  If negative it returns the position</span></div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="comment">     * from one past last, e.g. -1 is last item</span></div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="comment">     * @return A new basic_json_value for the indexed member</span></div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Integer, std::enable_if_t&lt;std::is_<span class="keywordtype">int</span>egral_v&lt;Integer&gt;,</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;                                                std::<span class="keywordtype">nullptr</span>_t&gt; = <span class="keywordtype">nullptr</span>&gt;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    [[nodiscard]] constexpr std::optional&lt;basic_json_value&lt;Range&gt;&gt;</div>
-<div class="line"><a name="l00326"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#adf572302e8a4b4430420ec2289d82647">  326</a></span>&#160;    <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#adf572302e8a4b4430420ec2289d82647">at</a>( Integer index ) {</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;      <span class="keywordflow">if</span> constexpr( std::is_signed_v&lt;Integer&gt; ) {</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;        <span class="keywordflow">if</span>( index &lt; 0 ) {</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;          index = -index;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;          <span class="keyword">auto</span> sz = <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( );</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;          <span class="keywordflow">if</span>( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) &gt;= sz ) {</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;            <span class="keywordflow">return</span> { };</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;          }</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;          sz -= <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index );</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;          <span class="keywordflow">return</span> m_locs[sz].location-&gt;value;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        }</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;      }</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;      std::size_t pos = move_to( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) );</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;      <span class="keywordflow">if</span>( pos &lt; m_locs.size( ) ) {</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        <span class="keywordflow">return</span> m_locs[pos].location-&gt;value;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( ( [&amp;] {</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;                              <span class="keyword">auto</span> t = m_value.<a class="code" href="classdaw_1_1json_1_1basic__json__value.html#ad6594e49f5431db9fed3ccd793b2679b">type</a>( );</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                              <span class="keywordflow">return</span> ( t == JsonBaseParseTypes::Class ) |</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                                     ( t == JsonBaseParseTypes::Array );</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                            }( ) ),</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;                            ErrorReason::ExpectedArrayOrClassStart,</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                            val.<a class="code" href="classdaw_1_1json_1_1basic__json__value.html#a3308c89ed416cc6f5fe5c578e5e80ca6">get_range</a>( ) );</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    }</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160; </div>
+<div class="line"><a name="l00158"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a77a7a21b274a3d608d86cf664eff04a9">  158</a></span>&#160;    constexpr <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a77a7a21b274a3d608d86cf664eff04a9">basic_stateful_json_value</a>( )</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      : <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html">basic_stateful_json_value</a>( <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value</a>&lt;Range&gt;( <span class="stringliteral">&quot;{}&quot;</span> ) ) {}</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
+<div class="line"><a name="l00161"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a97436c5b193615f15f08b04b27dfe02d">  161</a></span>&#160;    constexpr <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a97436c5b193615f15f08b04b27dfe02d">basic_stateful_json_value</a>( std::string_view json_data )</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;      : <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html">basic_stateful_json_value</a>( <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value</a>&lt;Range&gt;( json_data ) ) {}</div>
+<div class="line"><a name="l00167"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab23ae37302b06345539428e1b95e5a0d">  167</a></span>&#160;    constexpr <span class="keywordtype">void</span> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab23ae37302b06345539428e1b95e5a0d">reset</a>( <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a> val ) {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;      m_value = std::move( val );</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      m_locs.clear( );</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    }</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160; </div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="comment">     * Create a basic_json_member for the named member</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="comment">     * @pre name must be valid</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="comment">     * @param key name of member</span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="comment">     * @return a new basic_json_member</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    [[nodiscard]] constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a></div>
+<div class="line"><a name="l00179"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a3072fdf6be1d2660c78c4811e1a642df">  179</a></span>&#160;    <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a3072fdf6be1d2660c78c4811e1a642df">operator[]</a>( std::string_view key ) {</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;      std::size_t pos = move_to( <a class="code" href="structdaw_1_1json_1_1json__member__name.html">json_member_name</a>( key ) );</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( pos &lt; m_locs.size( ), ErrorReason::UnknownMember );</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      <span class="keywordflow">return</span> m_locs[pos].location-&gt;value;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    }</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160; </div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment">     * Create a basic_json_member for the named member</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment">     * @pre name must be valid</span></div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment">     * @param member name of member</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment">     * @return a new basic_json_member</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    [[nodiscard]] constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a></div>
+<div class="line"><a name="l00192"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a025e64f6bef0956d9478fd78d46a00c3">  192</a></span>&#160;    <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a025e64f6bef0956d9478fd78d46a00c3">operator[]</a>( <a class="code" href="structdaw_1_1json_1_1json__member__name.html">json_member_name</a> member ) {</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      std::size_t pos = move_to( member );</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( pos &lt; m_locs.size( ), ErrorReason::UnknownMember );</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      <span class="keywordflow">return</span> m_locs[pos].location-&gt;value;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    }</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="comment">     * Create a basic_json_member for the named member</span></div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="comment">     * @pre name must be valid</span></div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="comment">     * @param key name of member</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="comment">     * @return a new basic_json_member for the JSON data or an emtpy one if the</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="comment">     * member does not exist</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ace13ba0cc765a7afa1a28306e8dbade8">  205</a></span>&#160;    [[nodiscard]] constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ace13ba0cc765a7afa1a28306e8dbade8">at</a>( std::string_view key ) {</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      daw::string_view <span class="keyword">const</span> k = daw::string_view( key.data( ), key.size( ) );</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;      std::size_t pos = move_to( k );</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;      <span class="keywordflow">if</span>( pos &lt; m_locs.size( ) ) {</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;        <span class="keywordflow">return</span> m_locs[pos].location-&gt;value;</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;      }</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;      <span class="keywordflow">return</span> { };</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    }</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160; </div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="comment">     * Count the number of elements/members in the JSON class or array</span></div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="comment">     * This method is O(N) worst case and O(1) if the locations have already</span></div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="comment">     * been determined</span></div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="comment">     * @return number of members/elements</span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">  220</a></span>&#160;    [[nodiscard]] std::size_t <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( ) {</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;      <a class="code" href="namespacedaw_1_1json.html#abfdea85230017d461b5c20bac3f11d79">JsonBaseParseTypes</a> <span class="keyword">const</span> current_type = m_value.<a class="code" href="classdaw_1_1json_1_1basic__json__value.html#ad6594e49f5431db9fed3ccd793b2679b">type</a>( );</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;      <span class="keywordflow">switch</span>( current_type ) {</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;      <span class="keywordflow">case</span> JsonBaseParseTypes::Array:</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;      <span class="keywordflow">case</span> JsonBaseParseTypes::Class:</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        <span class="keywordflow">return</span> move_to( daw::numeric_limits&lt;std::size_t&gt;::max( ) );</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;      <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;      }</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    }</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160; </div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment">     * Return the index of named member</span></div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment">     * This method is O(N) worst case and O(1) if the locations have already</span></div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="comment">     * @param key name of member</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="comment">     * @return the position of the member or the count of members if not present</span></div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab880aab30ca327423640f515ceda25e3">  237</a></span>&#160;    [[nodiscard]] std::size_t <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab880aab30ca327423640f515ceda25e3">index_of</a>( std::string_view key ) {</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;      daw::string_view <span class="keyword">const</span> k = daw::string_view( key.data( ), key.size( ) );</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      <span class="keywordflow">return</span> move_to( k );</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    }</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160; </div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="comment">     * Is the named member present</span></div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="comment">     * This method is O(N) worst case and O(1) if the locations have already</span></div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="comment">     * @param key name of member</span></div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="comment">     * @return true if the member is present</span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00248"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84bc06c1c1b1942d1c67a24b89f4ef51">  248</a></span>&#160;    [[nodiscard]] constexpr <span class="keywordtype">bool</span> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84bc06c1c1b1942d1c67a24b89f4ef51">contains</a>( std::string_view key ) {</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;      daw::string_view <span class="keyword">const</span> k = daw::string_view( key.data( ), key.size( ) );</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;      <span class="keywordflow">return</span> move_to( k ) &lt; m_locs.size( );</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    }</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160; </div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="comment">     * Is the indexed member/element present</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="comment">     * This method is O(N) worst case and O(1) if the locations have already</span></div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="comment">     * @param index position of member/element</span></div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="comment">     * @return true if the member/element is present</span></div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ad74a2371d8f8d7b58f33d4bb05b371cb">  259</a></span>&#160;    [[nodiscard]] constexpr <span class="keywordtype">bool</span> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#ad74a2371d8f8d7b58f33d4bb05b371cb">contains</a>( std::size_t index ) {</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;      <span class="keywordflow">return</span> move_to( index ) &lt; m_locs.size( );</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    }</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160; </div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="comment">     * Get the position of the named member</span></div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="comment">     * @tparam Integer An integer type</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="comment">     * @param index position of member.  If negative it returns the position</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="comment">     * from one past last, e.g. -1 is last item</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="comment">     * @return The name of the member or an empty optional</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Integer, std::enable_if_t&lt;std::is_<span class="keywordtype">int</span>egral_v&lt;Integer&gt;,</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;                                                std::<span class="keywordtype">nullptr</span>_t&gt; = <span class="keywordtype">nullptr</span>&gt;</div>
+<div class="line"><a name="l00272"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a435b2d58bda6018d03001c66bb1334a7">  272</a></span>&#160;    [[nodiscard]] std::optional&lt;std::string_view&gt; <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a435b2d58bda6018d03001c66bb1334a7">name_of</a>( Integer index ) {</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;      <span class="keywordflow">if</span> constexpr( std::is_signed_v&lt;Integer&gt; ) {</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        <span class="keywordflow">if</span>( index &lt; 0 ) {</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;          index = -index;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;          <span class="keyword">auto</span> sz = <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( );</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;          <span class="keywordflow">if</span>( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) &gt;= sz ) {</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;            <span class="keywordflow">return</span> { };</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;          }</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;          sz -= <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index );</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;          <span class="keywordflow">return</span> std::string_view( m_locs[sz].name( ).data( ),</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;                                   m_locs[sz].name( ).<a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( ) );</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;        }</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;      }</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;      std::size_t pos = move_to( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) );</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;      <span class="keywordflow">if</span>( pos &lt; m_locs.size( ) ) {</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;        <span class="keywordflow">return</span> std::string_view( m_locs[pos].name( ).data( ),</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;                                 m_locs[pos].name( ).<a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( ) );</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;      }</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;      <span class="keywordflow">return</span> { };</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    }</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160; </div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="comment">     * basic_json_value for the indexed member</span></div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="comment">     * @tparam Integer An integer type</span></div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="comment">     * @param index position of member.  If negative it returns the position</span></div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="comment">     * from one past last, e.g. -1 is last item</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="comment">     * @pre index must exist</span></div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="comment">     * @return A new basic_json_value for the indexed member</span></div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Integer, std::enable_if_t&lt;std::is_<span class="keywordtype">int</span>egral_v&lt;Integer&gt;,</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                                                std::<span class="keywordtype">nullptr</span>_t&gt; = <span class="keywordtype">nullptr</span>&gt;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    [[nodiscard]] constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a></div>
+<div class="line"><a name="l00304"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84960a164fb38fef9860b22d635fb7eb">  304</a></span>&#160;    <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84960a164fb38fef9860b22d635fb7eb">operator[]</a>( Integer index ) {</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;      <span class="keywordflow">if</span> constexpr( std::is_signed_v&lt;Integer&gt; ) {</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        <span class="keywordflow">if</span>( index &lt; 0 ) {</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;          index = -index;</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;          <span class="keyword">auto</span> sz = <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( );</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( ( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) &lt; sz ),</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;                                ErrorReason::UnknownMember );</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;          sz -= <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index );</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;          <span class="keywordflow">return</span> m_locs[sz].location-&gt;value;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        }</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;      }</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;      std::size_t pos = move_to( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) );</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;      <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( pos &lt; m_locs.size( ), ErrorReason::UnknownMember );</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;      <span class="keywordflow">return</span> m_locs[pos].location-&gt;value;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    }</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160; </div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="comment">     * basic_json_value for the indexed member</span></div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;<span class="comment">     * @tparam Integer An integer type</span></div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="comment">     * @param index position of member.  If negative it returns the position</span></div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="comment">     * from one past last, e.g. -1 is last item</span></div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;<span class="comment">     * @return A new basic_json_value for the indexed member</span></div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Integer, std::enable_if_t&lt;std::is_<span class="keywordtype">int</span>egral_v&lt;Integer&gt;,</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;                                                std::<span class="keywordtype">nullptr</span>_t&gt; = <span class="keywordtype">nullptr</span>&gt;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    [[nodiscard]] constexpr std::optional&lt;basic_json_value&lt;Range&gt;&gt;</div>
+<div class="line"><a name="l00330"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#adf572302e8a4b4430420ec2289d82647">  330</a></span>&#160;    <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#adf572302e8a4b4430420ec2289d82647">at</a>( Integer index ) {</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;      <span class="keywordflow">if</span> constexpr( std::is_signed_v&lt;Integer&gt; ) {</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        <span class="keywordflow">if</span>( index &lt; 0 ) {</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;          index = -index;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;          <span class="keyword">auto</span> sz = <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">size</a>( );</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;          <span class="keywordflow">if</span>( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) &gt;= sz ) {</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;            <span class="keywordflow">return</span> { };</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;          }</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;          sz -= <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index );</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;          <span class="keywordflow">return</span> m_locs[sz].location-&gt;value;</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        }</div>
 <div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;      }</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;      <span class="keywordflow">return</span> { };</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    }</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160; </div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="comment">     * @return A copy of the underlying basic_json_value</span></div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00348"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a74f58e6538d71a3fc1396b69f29b5c83">  348</a></span>&#160;    [[nodiscard]] constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a74f58e6538d71a3fc1396b69f29b5c83">get_json_value</a>( )<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;      <span class="keywordflow">return</span> m_value;</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    }</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  };</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160; </div>
-<div class="line"><a name="l00353"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json.html#ae5a50e358a9da9b3529e03f7203e32fd">  353</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html">json_value_state</a> =</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html">basic_stateful_json_value&lt;NoCommentSkippingPolicyChecked&gt;</a>;</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;      std::size_t pos = move_to( <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>( index ) );</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;      <span class="keywordflow">if</span>( pos &lt; m_locs.size( ) ) {</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        <span class="keywordflow">return</span> m_locs[pos].location-&gt;value;</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;      }</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;      <span class="keywordflow">return</span> { };</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    }</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160; </div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;<span class="comment">     * @return A copy of the underlying basic_json_value</span></div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00352"></a><span class="lineno"><a class="line" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a74f58e6538d71a3fc1396b69f29b5c83">  352</a></span>&#160;    [[nodiscard]] constexpr <a class="code" href="classdaw_1_1json_1_1basic__json__value.html">basic_json_value&lt;Range&gt;</a> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html#a74f58e6538d71a3fc1396b69f29b5c83">get_json_value</a>( )<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      <span class="keywordflow">return</span> m_value;</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    }</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;  };</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160; </div>
+<div class="line"><a name="l00357"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json.html#ae5a50e358a9da9b3529e03f7203e32fd">  357</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html">json_value_state</a> =</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    <a class="code" href="classdaw_1_1json_1_1basic__stateful__json__value.html">basic_stateful_json_value&lt;NoCommentSkippingPolicyChecked&gt;</a>;</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="adaw__json__value_8h_html"><div class="ttname"><a href="daw__json__value_8h.html">daw_json_value.h</a></div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a77a7a21b274a3d608d86cf664eff04a9"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a77a7a21b274a3d608d86cf664eff04a9">daw::json::basic_stateful_json_value::basic_stateful_json_value</a></div><div class="ttdeci">constexpr basic_stateful_json_value()</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:154</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a84960a164fb38fef9860b22d635fb7eb"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84960a164fb38fef9860b22d635fb7eb">daw::json::basic_stateful_json_value::operator[]</a></div><div class="ttdeci">constexpr basic_json_value&lt; Range &gt; operator[](Integer index)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:300</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a3072fdf6be1d2660c78c4811e1a642df"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a3072fdf6be1d2660c78c4811e1a642df">daw::json::basic_stateful_json_value::operator[]</a></div><div class="ttdeci">constexpr basic_json_value&lt; Range &gt; operator[](std::string_view key)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:175</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:50</div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:503</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_ace13ba0cc765a7afa1a28306e8dbade8"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#ace13ba0cc765a7afa1a28306e8dbade8">daw::json::basic_stateful_json_value::at</a></div><div class="ttdeci">constexpr basic_json_value&lt; Range &gt; at(std::string_view key)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:201</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a77a7a21b274a3d608d86cf664eff04a9"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a77a7a21b274a3d608d86cf664eff04a9">daw::json::basic_stateful_json_value::basic_stateful_json_value</a></div><div class="ttdeci">constexpr basic_stateful_json_value()</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:158</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a84960a164fb38fef9860b22d635fb7eb"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84960a164fb38fef9860b22d635fb7eb">daw::json::basic_stateful_json_value::operator[]</a></div><div class="ttdeci">constexpr basic_json_value&lt; Range &gt; operator[](Integer index)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:304</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a3072fdf6be1d2660c78c4811e1a642df"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a3072fdf6be1d2660c78c4811e1a642df">daw::json::basic_stateful_json_value::operator[]</a></div><div class="ttdeci">constexpr basic_json_value&lt; Range &gt; operator[](std::string_view key)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:179</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> daw_json_event_parser.h:15</div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:203</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_ace13ba0cc765a7afa1a28306e8dbade8"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#ace13ba0cc765a7afa1a28306e8dbade8">daw::json::basic_stateful_json_value::at</a></div><div class="ttdeci">constexpr basic_json_value&lt; Range &gt; at(std::string_view key)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:205</div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1basic__json__value_html_a3308c89ed416cc6f5fe5c578e5e80ca6"><div class="ttname"><a href="classdaw_1_1json_1_1basic__json__value.html#a3308c89ed416cc6f5fe5c578e5e80ca6">daw::json::basic_json_value::get_range</a></div><div class="ttdeci">constexpr Range get_range() const</div><div class="ttdef"><b>Definition:</b> daw_json_value.h:337</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_adf572302e8a4b4430420ec2289d82647"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#adf572302e8a4b4430420ec2289d82647">daw::json::basic_stateful_json_value::at</a></div><div class="ttdeci">constexpr std::optional&lt; basic_json_value&lt; Range &gt; &gt; at(Integer index)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:326</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a66f3d65ffc1a2714e127b8184469803a"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">daw::json::basic_stateful_json_value::size</a></div><div class="ttdeci">std::size_t size()</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:216</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_adf572302e8a4b4430420ec2289d82647"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#adf572302e8a4b4430420ec2289d82647">daw::json::basic_stateful_json_value::at</a></div><div class="ttdeci">constexpr std::optional&lt; basic_json_value&lt; Range &gt; &gt; at(Integer index)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:330</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a66f3d65ffc1a2714e127b8184469803a"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a66f3d65ffc1a2714e127b8184469803a">daw::json::basic_stateful_json_value::size</a></div><div class="ttdeci">std::size_t size()</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:220</div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html">daw::json::basic_stateful_json_value</a></div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:69</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a74f58e6538d71a3fc1396b69f29b5c83"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a74f58e6538d71a3fc1396b69f29b5c83">daw::json::basic_stateful_json_value::get_json_value</a></div><div class="ttdeci">constexpr basic_json_value&lt; Range &gt; get_json_value() const</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:348</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a84bc06c1c1b1942d1c67a24b89f4ef51"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84bc06c1c1b1942d1c67a24b89f4ef51">daw::json::basic_stateful_json_value::contains</a></div><div class="ttdeci">constexpr bool contains(std::string_view key)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:244</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a435b2d58bda6018d03001c66bb1334a7"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a435b2d58bda6018d03001c66bb1334a7">daw::json::basic_stateful_json_value::name_of</a></div><div class="ttdeci">std::optional&lt; std::string_view &gt; name_of(Integer index)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:268</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_html_abfdea85230017d461b5c20bac3f11d79"><div class="ttname"><a href="namespacedaw_1_1json.html#abfdea85230017d461b5c20bac3f11d79">daw::json::JsonBaseParseTypes</a></div><div class="ttdeci">JsonBaseParseTypes</div><div class="ttdef"><b>Definition:</b> daw_json_parse_common.h:302</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_ad74a2371d8f8d7b58f33d4bb05b371cb"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#ad74a2371d8f8d7b58f33d4bb05b371cb">daw::json::basic_stateful_json_value::contains</a></div><div class="ttdeci">constexpr bool contains(std::size_t index)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:255</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_ab880aab30ca327423640f515ceda25e3"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab880aab30ca327423640f515ceda25e3">daw::json::basic_stateful_json_value::index_of</a></div><div class="ttdeci">std::size_t index_of(std::string_view key)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:233</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_ab23ae37302b06345539428e1b95e5a0d"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab23ae37302b06345539428e1b95e5a0d">daw::json::basic_stateful_json_value::reset</a></div><div class="ttdeci">constexpr void reset(basic_json_value&lt; Range &gt; val)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:163</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a74f58e6538d71a3fc1396b69f29b5c83"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a74f58e6538d71a3fc1396b69f29b5c83">daw::json::basic_stateful_json_value::get_json_value</a></div><div class="ttdeci">constexpr basic_json_value&lt; Range &gt; get_json_value() const</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:352</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a84bc06c1c1b1942d1c67a24b89f4ef51"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a84bc06c1c1b1942d1c67a24b89f4ef51">daw::json::basic_stateful_json_value::contains</a></div><div class="ttdeci">constexpr bool contains(std::string_view key)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:248</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a435b2d58bda6018d03001c66bb1334a7"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a435b2d58bda6018d03001c66bb1334a7">daw::json::basic_stateful_json_value::name_of</a></div><div class="ttdeci">std::optional&lt; std::string_view &gt; name_of(Integer index)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:272</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html_abfdea85230017d461b5c20bac3f11d79"><div class="ttname"><a href="namespacedaw_1_1json.html#abfdea85230017d461b5c20bac3f11d79">daw::json::JsonBaseParseTypes</a></div><div class="ttdeci">JsonBaseParseTypes</div><div class="ttdef"><b>Definition:</b> daw_json_parse_common.h:303</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_ad74a2371d8f8d7b58f33d4bb05b371cb"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#ad74a2371d8f8d7b58f33d4bb05b371cb">daw::json::basic_stateful_json_value::contains</a></div><div class="ttdeci">constexpr bool contains(std::size_t index)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:259</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_ab880aab30ca327423640f515ceda25e3"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab880aab30ca327423640f515ceda25e3">daw::json::basic_stateful_json_value::index_of</a></div><div class="ttdeci">std::size_t index_of(std::string_view key)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:237</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_ab23ae37302b06345539428e1b95e5a0d"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#ab23ae37302b06345539428e1b95e5a0d">daw::json::basic_stateful_json_value::reset</a></div><div class="ttdeci">constexpr void reset(basic_json_value&lt; Range &gt; val)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:167</div></div>
 <div class="ttc" id="adaw__json__arrow__proxy_8h_html"><div class="ttname"><a href="daw__json__arrow__proxy_8h.html">daw_json_arrow_proxy.h</a></div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1basic__json__value_html_a218d9a1aafe585e78cf77a917337bd16"><div class="ttname"><a href="classdaw_1_1json_1_1basic__json__value.html#a218d9a1aafe585e78cf77a917337bd16">daw::json::basic_json_value::begin</a></div><div class="ttdeci">constexpr iterator begin() const</div><div class="ttdef"><b>Definition:</b> daw_json_value.h:346</div></div>
 <div class="ttc" id="adaw__json__link__impl_8h_html"><div class="ttname"><a href="daw__json__link__impl_8h.html">daw_json_link_impl.h</a></div></div>
@@ -442,17 +446,15 @@ $(function() {
 <div class="ttc" id="astructdaw_1_1json_1_1json__member__name_html_aefe5c60dc572b0159eda793c453f3ffd"><div class="ttname"><a href="structdaw_1_1json_1_1json__member__name.html#aefe5c60dc572b0159eda793c453f3ffd">daw::json::json_member_name::json_member_name</a></div><div class="ttdeci">constexpr json_member_name(std::string_view Name) noexcept</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:58</div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1basic__json__value_html_ad6594e49f5431db9fed3ccd793b2679b"><div class="ttname"><a href="classdaw_1_1json_1_1basic__json__value.html#ad6594e49f5431db9fed3ccd793b2679b">daw::json::basic_json_value::type</a></div><div class="ttdeci">JsonBaseParseTypes type() const</div><div class="ttdef"><b>Definition:</b> daw_json_value.h:365</div></div>
 <div class="ttc" id="adaw__murmur3_8h_html"><div class="ttname"><a href="daw__murmur3_8h.html">daw_murmur3.h</a></div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__json__value_html_a5edc5374e67e5a0add9d54e691e60158"><div class="ttname"><a href="classdaw_1_1json_1_1basic__json__value.html#a5edc5374e67e5a0add9d54e691e60158">daw::json::basic_json_value::is_array</a></div><div class="ttdeci">constexpr bool is_array() const</div><div class="ttdef"><b>Definition:</b> daw_json_value.h:465</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a025e64f6bef0956d9478fd78d46a00c3"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a025e64f6bef0956d9478fd78d46a00c3">daw::json::basic_stateful_json_value::operator[]</a></div><div class="ttdeci">constexpr basic_json_value&lt; Range &gt; operator[](json_member_name member)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:188</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a025e64f6bef0956d9478fd78d46a00c3"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a025e64f6bef0956d9478fd78d46a00c3">daw::json::basic_stateful_json_value::operator[]</a></div><div class="ttdeci">constexpr basic_json_value&lt; Range &gt; operator[](json_member_name member)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:192</div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1basic__json__value_html_a6f3d07429e95ac6f40f5830bd2543d64"><div class="ttname"><a href="classdaw_1_1json_1_1basic__json__value.html#a6f3d07429e95ac6f40f5830bd2543d64">daw::json::basic_json_value::end</a></div><div class="ttdeci">constexpr iterator end() const</div><div class="ttdef"><b>Definition:</b> daw_json_value.h:357</div></div>
 <div class="ttc" id="adaw__json__parse__name_8h_html"><div class="ttname"><a href="daw__json__parse__name_8h.html">daw_json_parse_name.h</a></div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__member__name_html_ac7b0868e012166265dd6c5b7f4316a4f"><div class="ttname"><a href="structdaw_1_1json_1_1json__member__name.html#ac7b0868e012166265dd6c5b7f4316a4f">daw::json::json_member_name::name</a></div><div class="ttdeci">daw::string_view name</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:55</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__member__name_html"><div class="ttname"><a href="structdaw_1_1json_1_1json__member__name.html">daw::json::json_member_name</a></div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:54</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1json__member__name_html_afa28c3ef6eb98d8dbe06c59f67e6018d"><div class="ttname"><a href="structdaw_1_1json_1_1json__member__name.html#afa28c3ef6eb98d8dbe06c59f67e6018d">daw::json::json_member_name::hash_value</a></div><div class="ttdeci">daw::UInt32 hash_value</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:56</div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a5451fd64b8e0e97fd05455783551fab8"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a5451fd64b8e0e97fd05455783551fab8">daw::json::basic_stateful_json_value::basic_stateful_json_value</a></div><div class="ttdeci">constexpr basic_stateful_json_value(basic_json_value&lt; Range &gt; val)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:146</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a97436c5b193615f15f08b04b27dfe02d"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a97436c5b193615f15f08b04b27dfe02d">daw::json::basic_stateful_json_value::basic_stateful_json_value</a></div><div class="ttdeci">constexpr basic_stateful_json_value(std::string_view json_data)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:157</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1basic__stateful__json__value_html_a97436c5b193615f15f08b04b27dfe02d"><div class="ttname"><a href="classdaw_1_1json_1_1basic__stateful__json__value.html#a97436c5b193615f15f08b04b27dfe02d">daw::json::basic_stateful_json_value::basic_stateful_json_value</a></div><div class="ttdeci">constexpr basic_stateful_json_value(std::string_view json_data)</div><div class="ttdef"><b>Definition:</b> daw_json_value_state.h:161</div></div>
 <div class="ttc" id="anamespacedaw_html_a895ff2926f93d494c6b57880d3c597d5"><div class="ttname"><a href="namespacedaw.html#a895ff2926f93d494c6b57880d3c597d5">daw::name_hash</a></div><div class="ttdeci">constexpr UInt32 name_hash(StringView key, std::uint32_t seed=0) noexcept</div><div class="ttdef"><b>Definition:</b> daw_murmur3.h:44</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1basic__json__value_html_a8ad92ac4672ad3ab4269c313aac16edf"><div class="ttname"><a href="classdaw_1_1json_1_1basic__json__value.html#a8ad92ac4672ad3ab4269c313aac16edf">daw::json::basic_json_value::is_class</a></div><div class="ttdeci">constexpr bool is_class() const</div><div class="ttdef"><b>Definition:</b> daw_json_value.h:457</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20

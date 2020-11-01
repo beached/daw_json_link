@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['graphs_875',['Graphs',['../md_cookbook_graphs.html',1,'']]]
+  ['graphs_780',['Graphs',['../md_cookbook_graphs.html',1,'']]]
 ];

@@ -1,22 +1,5 @@
 var searchData=
 [
-  ['invalidarraystart_806',['InvalidArrayStart',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525ba6a2cc3a155e96a24aeee1a9faa80520c',1,'daw::json']]],
-  ['invalidbracketing_807',['InvalidBracketing',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525ba63354b5d6dc872f0a7fe52d0b9afc60d',1,'daw::json']]],
-  ['invalidclassstart_808',['InvalidClassStart',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525baac1f4f72b2a4cfde1d6ce455719d5514',1,'daw::json']]],
-  ['invalidendofvalue_809',['InvalidEndOfValue',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525ba250bff665f75b5aa7a9133cb4681b196',1,'daw::json']]],
-  ['invalidfalse_810',['InvalidFalse',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525ba3bfabcf6b3bb43b1499b40a8854fcbbf',1,'daw::json']]],
-  ['invalidjsonpath_811',['InvalidJSONPath',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525ba883f852a3178774fe161d3135d0d7efc',1,'daw::json']]],
-  ['invalidliteral_812',['InvalidLiteral',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525bac0338602dbb6d79e4e0e8b1f20c07fdd',1,'daw::json']]],
-  ['invalidmembername_813',['InvalidMemberName',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525baa82a87ec7cc6515e210c4e71898a25e2',1,'daw::json']]],
-  ['invalidnull_814',['InvalidNull',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525ba3174b4ff4b31818780b72a48486c2586',1,'daw::json']]],
-  ['invalidnumber_815',['InvalidNumber',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525ba950ecfecf7147cf6cbfb7c2dbf6dc5f8',1,'daw::json']]],
-  ['invalidnumberstart_816',['InvalidNumberStart',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525ba621cbc1d501daebf7a9d465e09da09ba',1,'daw::json']]],
-  ['invalidnumberunexpectedquoting_817',['InvalidNumberUnexpectedQuoting',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525baca5ababb688d713774b7aa59a96c9cc8',1,'daw::json']]],
-  ['invalidstartofvalue_818',['InvalidStartOfValue',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525baad6e58f446ddb28bb7bd33283d813c96',1,'daw::json']]],
-  ['invalidstring_819',['InvalidString',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525baeec9d60fe409f3a98a2e2a21cefe6ad1',1,'daw::json']]],
-  ['invalidstringhighascii_820',['InvalidStringHighASCII',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525ba77cb126871382a89f301f919e08039ce',1,'daw::json']]],
-  ['invalidtimestamp_821',['InvalidTimestamp',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525baa9cc3bdfaa3d299f8e4ae283e9104a83',1,'daw::json']]],
-  ['invalidtrue_822',['InvalidTrue',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525ba4b6714fdbf91ba81cdd3df31e3879216',1,'daw::json']]],
-  ['invalidutfcodepoint_823',['InvalidUTFCodepoint',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525badbf4dc95320d2ac980be5e2c3d08dccb',1,'daw::json']]],
-  ['invalidutfescape_824',['InvalidUTFEscape',['../namespacedaw_1_1json.html#a703b6db6f7674e8929967e158485525baf04b8e65b7113f984eb62468dbcc9f34',1,'daw::json']]]
+  ['keyvalue_745',['KeyValue',['../namespacedaw_1_1json.html#ad0cefd9ac573603f55cf5c61155e7f1cacb89e84207636fa99103a0873bf81d9a',1,'daw::json']]],
+  ['keyvaluearray_746',['KeyValueArray',['../namespacedaw_1_1json.html#ad0cefd9ac573603f55cf5c61155e7f1ca2d8dc828ac9e8e4958f911c3c20c5ba3',1,'daw::json']]]
 ];
