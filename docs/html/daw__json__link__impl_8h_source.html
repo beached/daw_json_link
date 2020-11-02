@@ -473,7 +473,7 @@ $(function() {
 <div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;                          ErrorReason::InvalidClassStart, rng );</div>
 <div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    rng.set_class_position( );</div>
 <div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    rng.remove_prefix( );</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    rng.move_to_next_class_member( );</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    rng.trim_left( );</div>
 <div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160; </div>
 <div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="keywordflow">if</span> constexpr( <span class="keyword">sizeof</span>...( JsonMembers ) == 0 ) {</div>
 <div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;      <span class="comment">// Clang-CL with MSVC has issues if we don&#39;t do empties this way</span></div>
