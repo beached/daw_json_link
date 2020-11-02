@@ -47,12 +47,18 @@ int main( int argc, char **argv ) {
 		std::cerr << "Exception thrown by parser: "
 		          << to_formatted_string( jex, json_data.data( ) );
 		if( jex.parse_location( ) ) {
-			std::cerr << "The error is about "
-			          << ( jex.parse_location( ) - json_data.data( ) )
-			          << " bytes in\n"
-			          << '\n';
-			std::cerr << "Possible path: "
-			          << find_json_path_to( jex, json_data.data( ) ) << '\n';
+			auto path_stack = find_json_path_stack_to( jex, json_data.data( ) );
+			if( not path_stack.empty( ) ) {
+				std::cerr << "The error is near line "
+				          << ( 1 + find_line_number_of( jex.parse_location( ),
+				                                        json_data.data( ) ) )
+				          << " column "
+				          << ( 1 + find_column_number_of( jex.parse_location( ),
+				                                          json_data.data( ) ) )
+				          << '\n';
+				std::cerr << "JSON Path to value close to error '"
+				          << to_string( path_stack ) << "'\n";
+			}
 		}
 		exit( 1 );
 	}

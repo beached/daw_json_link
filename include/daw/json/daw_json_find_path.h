@@ -12,8 +12,10 @@
 #include "impl/daw_json_assert.h"
 
 #include <algorithm>
-#include <iostream>
+#include <iterator>
+#include <numeric>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace daw::json {
@@ -84,7 +86,7 @@ namespace daw::json {
 	/// position in the document
 	/// \param parse_location The position in the document to find
 	/// \param doc_start A pointer to the stat of the JSON document
-	std::vector<json_path_node>
+	inline std::vector<json_path_node>
 	find_json_path_stack_to( char const *parse_location, char const *doc_start ) {
 		if( parse_location == nullptr or doc_start == nullptr ) {
 			return { };
@@ -240,6 +242,11 @@ namespace daw::json {
 		return std::move( handler.parse_stack );
 	}
 
+	inline std::vector<json_path_node>
+	find_json_path_stack_to( json_exception const &jex, char const *doc_start ) {
+		return find_json_path_stack_to( jex.parse_location( ), doc_start );
+	}
+
 	inline std::string find_json_path_to( char const *parse_location,
 	                                      char const *doc_start ) {
 		return to_string( find_json_path_stack_to( parse_location, doc_start ) );
@@ -251,4 +258,42 @@ namespace daw::json {
 		  find_json_path_stack_to( jex.parse_location( ), doc_start ) );
 	}
 
+	constexpr std::size_t find_line_number_of( char const *doc_pos,
+	                                           char const *doc_start ) {
+		daw_json_assert( doc_pos != nullptr and doc_start != nullptr,
+		                 ErrorReason::UnexpectedEndOfData );
+		daw_json_assert( std::less<>{ }( doc_start, doc_pos ),
+		                 ErrorReason::UnexpectedEndOfData );
+
+		return std::accumulate( doc_start, doc_pos, std::size_t{ },
+		                        []( std::size_t count, char c ) {
+			                        if( c == '\n' ) {
+				                        return count + 1;
+			                        }
+			                        return count;
+		                        } );
+	}
+	constexpr std::size_t find_line_number_of( json_path_node const &node,
+	                                           char const *doc_start ) {
+		return find_line_number_of( node.value_start( ), doc_start );
+	}
+
+	constexpr std::size_t find_column_number_of( char const *doc_pos,
+	                                             char const *doc_start ) {
+		daw_json_assert( doc_pos != nullptr and doc_start != nullptr,
+		                 ErrorReason::UnexpectedEndOfData );
+		daw_json_assert( std::less<>{ }( doc_start, doc_pos ),
+		                 ErrorReason::UnexpectedEndOfData );
+
+		auto first = std::reverse_iterator<char const *>( doc_pos );
+		auto last = std::reverse_iterator<char const *>( doc_start );
+		auto pos = std::distance( first, std::find( first, last, '\n' ) );
+		daw_json_assert( pos >= 0, ErrorReason::Unknown );
+		return static_cast<std::size_t>( pos );
+	}
+
+	constexpr std::size_t find_column_number_of( json_path_node const &node,
+	                                             char const *doc_start ) {
+		return find_column_number_of( node.value_start( ), doc_start );
+	}
 } // namespace daw::json
