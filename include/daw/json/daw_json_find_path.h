@@ -72,7 +72,7 @@ namespace daw::json {
 	/// the JSON document tree
 	/// \return A string in JSON Path format
 	inline std::string
-	to_string( std::vector<json_path_node> const &path_stack ) {
+	to_json_path_string( std::vector<json_path_node> const &path_stack ) {
 		return daw::algorithm::accumulate(
 		  path_stack.begin( ), path_stack.end( ), std::string{ },
 		  []( auto &&state, json_path_node const &sv ) mutable {
@@ -252,12 +252,13 @@ namespace daw::json {
 
 	inline std::string find_json_path_to( char const *parse_location,
 	                                      char const *doc_start ) {
-		return to_string( find_json_path_stack_to( parse_location, doc_start ) );
+		return to_json_path_string(
+		  find_json_path_stack_to( parse_location, doc_start ) );
 	}
 
 	inline std::string find_json_path_to( json_exception const &jex,
 	                                      char const *doc_start ) {
-		return to_string(
+		return to_json_path_string(
 		  find_json_path_stack_to( jex.parse_location( ), doc_start ) );
 	}
 

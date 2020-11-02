@@ -57,7 +57,7 @@ int main( int argc, char **argv ) {
 				                                          json_data.data( ) ) )
 				          << '\n';
 				std::cerr << "JSON Path to value close to error '"
-				          << to_string( path_stack ) << "'\n";
+				          << to_json_path_string( path_stack ) << "'\n";
 			}
 		}
 		exit( 1 );
