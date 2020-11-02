@@ -12,6 +12,7 @@
 #include "impl/daw_json_assert.h"
 
 #include <daw/daw_algorithm.h>
+#include <daw/iterator/daw_reverse_iterator.h>
 
 #include <algorithm>
 #include <iterator>
@@ -287,8 +288,8 @@ namespace daw::json {
 		daw_json_assert( std::less<>{ }( doc_start, doc_pos ),
 		                 ErrorReason::UnexpectedEndOfData );
 
-		auto first = std::reverse_iterator<char const *>( doc_pos );
-		auto last = std::reverse_iterator<char const *>( doc_start );
+		auto first = daw::reverse_iterator<char const *>( doc_pos );
+		auto last = daw::reverse_iterator<char const *>( doc_start );
 		auto pos = std::distance( first, std::find( first, last, '\n' ) );
 		daw_json_assert( pos >= 0, ErrorReason::Unknown );
 		return static_cast<std::size_t>( pos );
