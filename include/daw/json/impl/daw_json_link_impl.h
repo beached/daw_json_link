@@ -401,7 +401,7 @@ namespace daw::json::json_details {
 		                      ErrorReason::InvalidClassStart, rng );
 		rng.set_class_position( );
 		rng.remove_prefix( );
-		rng.move_to_next_class_member( );
+		rng.trim_left( );
 
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
 			// Clang-CL with MSVC has issues if we don't do empties this way
