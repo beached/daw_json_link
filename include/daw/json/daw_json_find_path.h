@@ -252,7 +252,8 @@ namespace daw::json {
 
 	inline std::string find_json_path_to( char const *parse_location,
 	                                      char const *doc_start ) {
-		return to_json_path_string( find_json_path_stack_to( parse_location, doc_start ) );
+		return to_json_path_string(
+		  find_json_path_stack_to( parse_location, doc_start ) );
 	}
 
 	inline std::string find_json_path_to( json_exception const &jex,
