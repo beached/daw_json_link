@@ -11,6 +11,8 @@
 #include "daw_json_event_parser.h"
 #include "impl/daw_json_assert.h"
 
+#include <daw/daw_algorithm.h>
+
 #include <algorithm>
 #include <iterator>
 #include <numeric>
@@ -70,7 +72,7 @@ namespace daw::json {
 	/// \return A string in JSON Path format
 	inline std::string
 	to_string( std::vector<json_path_node> const &path_stack ) {
-		return std::accumulate(
+		return daw::algorithm::accumulate(
 		  path_stack.begin( ), path_stack.end( ), std::string{ },
 		  []( auto &&state, json_path_node const &sv ) mutable {
 			  if( sv.index( ) >= 0 ) {
@@ -265,13 +267,13 @@ namespace daw::json {
 		daw_json_assert( std::less<>{ }( doc_start, doc_pos ),
 		                 ErrorReason::UnexpectedEndOfData );
 
-		return std::accumulate( doc_start, doc_pos, std::size_t{ },
-		                        []( std::size_t count, char c ) {
-			                        if( c == '\n' ) {
-				                        return count + 1;
-			                        }
-			                        return count;
-		                        } );
+		return daw::algorithm::accumulate( doc_start, doc_pos, std::size_t{ },
+		                                   []( std::size_t count, char c ) {
+			                                   if( c == '\n' ) {
+				                                   return count + 1;
+			                                   }
+			                                   return count;
+		                                   } );
 	}
 	constexpr std::size_t find_line_number_of( json_path_node const &node,
 	                                           char const *doc_start ) {
