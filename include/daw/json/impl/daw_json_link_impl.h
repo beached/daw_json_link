@@ -426,7 +426,17 @@ namespace daw::json::json_details {
 				struct cleanup_t {
 					Range *rng_ptr;
 					CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
-						class_cleanup_now( *rng_ptr );
+#ifdef HAS_CPP20CONSTEXPR
+						if( std::is_constant_evaluated( ) ) {
+#endif
+							if( std::uncaught_exceptions( ) == 0 ) {
+								class_cleanup_now( *rng_ptr );
+							}
+#ifdef HAS_CPP20CONSTEXPR
+						} else {
+							class_cleanup_now( *rng_ptr );
+						}
+#endif
 					}
 				} const run_after_parse{ &rng };
 				(void)run_after_parse;
