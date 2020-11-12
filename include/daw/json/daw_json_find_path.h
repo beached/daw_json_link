@@ -285,7 +285,7 @@ namespace daw::json {
 
 		auto first = daw::reverse_iterator<char const *>( doc_pos );
 		auto last = daw::reverse_iterator<char const *>( doc_start );
-		auto pos = std::distance( first, std::find( first, last, '\n' ) );
+		auto pos = std::distance( first, daw::algorithm::find( first, last, '\n' ) );
 		daw_json_assert( pos >= 0, ErrorReason::Unknown );
 		return static_cast<std::size_t>( pos );
 	}
