@@ -116,6 +116,7 @@ install(FILES "${PROJECT_BINARY_DIR}/daw_${PROJECT_NAME}Config.cmake"
 				DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKEDIR}$)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/daw DESTINATION include )
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/third_party DESTINATION include )
 
 if (DAW_ENABLE_TESTING)
     enable_testing()
