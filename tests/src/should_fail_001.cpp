@@ -222,6 +222,8 @@ static bool has_uncaught_except = false;
 #ifdef DAW_USE_JSON_EXCEPTIONS
 #define expect_fail( Bool, Reason )                                            \
 	do {                                                                         \
+		std::cout << "testing: "                                                   \
+		          << "" #Bool "\n";                                                \
 		try {                                                                      \
 			if( not static_cast<bool>( Bool ) ) {                                    \
 				std::cerr << "Fail: " << ( Reason ) << '\n';                           \
@@ -237,6 +239,8 @@ static bool has_uncaught_except = false;
 	} while( false )
 #else
 #define expect_fail( Bool, Reason )                                            \
+	std::cout << "testing: "                                                     \
+	          << "" #Bool "\n";                                                  \
 	if( not static_cast<bool>( Bool ) ) {                                        \
 		std::cerr << "Fail: " << ( Reason ) << '\n';                               \
 	}                                                                            \

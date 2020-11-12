@@ -114,7 +114,7 @@ namespace daw::json::json_details {
 		Range location{ };
 		std::size_t count = 0;
 
-		explicit constexpr location_info_t( daw::string_view const *Name ) noexcept
+		explicit constexpr location_info_t( daw::string_view const *Name )
 		  : hash_value( daw::name_hash( *Name ) )
 		  , name( Name ) {}
 
@@ -129,7 +129,7 @@ namespace daw::json::json_details {
 		Range location{ };
 		std::size_t count = 0;
 
-		explicit constexpr location_info_t( daw::string_view const *Name ) noexcept
+		explicit constexpr location_info_t( daw::string_view const *Name )
 		  : hash_value( daw::name_hash( *Name ) ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
@@ -158,7 +158,7 @@ namespace daw::json::json_details {
 			return names[idx];
 		}
 
-		static constexpr std::size_t size( ) noexcept {
+		static constexpr std::size_t size( ) {
 			return N;
 		}
 
@@ -187,7 +187,7 @@ namespace daw::json::json_details {
 	};
 
 	template<typename... MemberNames>
-	constexpr bool do_hashes_collide( ) noexcept {
+	constexpr bool do_hashes_collide( ) {
 		std::array<UInt32, sizeof...( MemberNames )> hashes{
 		  name_hash( MemberNames::name )... };
 

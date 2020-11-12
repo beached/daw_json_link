@@ -220,7 +220,7 @@ namespace daw::json {
 			return m_data + static_cast<ptrdiff_t>( size( ) );
 		}
 
-		[[nodiscard]] static constexpr std::size_t size( ) noexcept {
+		[[nodiscard]] static constexpr std::size_t size( ) {
 			return N - 1;
 		}
 

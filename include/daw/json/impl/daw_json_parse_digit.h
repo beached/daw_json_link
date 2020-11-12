@@ -13,7 +13,7 @@
 namespace daw::json::json_details {
 
 	DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr unsigned
-	parse_digit( char c ) noexcept {
+	parse_digit( char c ) {
 		return static_cast<unsigned>( static_cast<unsigned char>(
 		  static_cast<unsigned char>( c ) - static_cast<unsigned char>( '0' ) ) );
 	}

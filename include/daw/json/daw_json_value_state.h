@@ -31,18 +31,17 @@ namespace daw::json {
 			basic_json_value_iterator<Range> location;
 
 			explicit constexpr basic_stateful_json_value_state(
-			  daw::string_view Name, basic_json_value_iterator<Range> val ) noexcept
+			  daw::string_view Name, basic_json_value_iterator<Range> val )
 			  : name( Name )
 			  , hash_value( daw::name_hash( Name ) )
 			  , location( std::move( val ) ) {}
 
-			[[nodiscard]] constexpr bool
-			is_match( daw::string_view Name ) const noexcept {
+			[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
 				return name == Name;
 			}
 
 			[[nodiscard]] constexpr bool is_match( daw::string_view Name,
-			                                       daw::UInt32 hash ) const noexcept {
+			                                       daw::UInt32 hash ) const {
 				if( hash != hash_value ) {
 					return false;
 				}
@@ -55,7 +54,7 @@ namespace daw::json {
 		daw::string_view name;
 		daw::UInt32 hash_value;
 
-		constexpr json_member_name( std::string_view Name ) noexcept
+		constexpr json_member_name( std::string_view Name )
 		  : name( Name.data( ), Name.size( ) )
 		  , hash_value( daw::name_hash( name ) ) {}
 	};
