@@ -149,7 +149,14 @@ namespace tests {
 		try {
 			UriList ul = daw::json::from_json<tests::UriList>( data );
 			(void)ul;
-		} catch( daw::json::json_exception const & ) { return true; }
+		} catch( daw::json::json_exception const &jex ) {
+			if( jex.parse_location( ) and
+			    ( jex.parse_location( ) - data.data( ) == 29 ) ) {
+				return true;
+			}
+			std::cerr << "Wrong exception: " << jex.reason( ) << '\n'
+			          << to_formatted_string( jex ) << '\n';
+		}
 		return false;
 	}
 
@@ -217,18 +224,37 @@ namespace tests {
 		return false;
 	}
 } // namespace tests
+static bool has_uncaught_except = false;
 
+#ifdef DAW_USE_JSON_EXCEPTIONS
 #define expect_fail( Bool, Reason )                                            \
+	do {                                                                         \
+		std::cout << "testing: "                                                   \
+		          << "" #Bool "\n";                                                \
+		try {                                                                      \
+			if( not static_cast<bool>( Bool ) ) {                                    \
+				std::cerr << "Fail: " << ( Reason ) << '\n';                           \
+			}                                                                        \
+		} catch( std::exception const &ex ) {                                      \
+			std::cout << "Fail: " << ( Reason ) << "\nUnexpected std::exception\n"   \
+			          << ex.what( ) << '\n';                                         \
+			has_uncaught_except = true;                                              \
+		} catch( ... ) {                                                           \
+			std::cout << "Fail: " << ( Reason ) << "\nUnknown exception\n";          \
+			has_uncaught_except = true;                                              \
+		}                                                                          \
+	} while( false )
+#else
+#define expect_fail( Bool, Reason )                                            \
+	std::cout << "testing: "                                                     \
+	          << "" #Bool "\n";                                                  \
 	if( not static_cast<bool>( Bool ) ) {                                        \
 		std::cerr << "Fail: " << ( Reason ) << '\n';                               \
 	}                                                                            \
 	while( false )
-
-int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
-  try
 #endif
-{
+
+int main( int, char ** ) {
 	expect_fail( tests::quotes_in_numbers( ),
 	             "Failed to find unexpected quotes in numbers" );
 	expect_fail( tests::bool_in_numbers( ),
@@ -268,10 +294,8 @@ int main( int, char ** )
 	             "Incomplete false in array not caught" );
 
 	expect_fail( tests::bad_true( ), "bad true value not caught" );
-
-#ifdef DAW_USE_JSON_EXCEPTIONS
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
-	exit( 1 );
-#endif
+	if( has_uncaught_except ) {
+		return 1;
+	}
+	return 0;
 }

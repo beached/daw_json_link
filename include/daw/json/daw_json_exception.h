@@ -207,32 +207,31 @@ namespace daw::json {
 	public:
 		constexpr json_exception( ) = default;
 
-		explicit constexpr json_exception( ErrorReason reason ) noexcept
+		explicit constexpr json_exception( ErrorReason reason )
 		  : m_reason( reason ) {}
 
-		explicit constexpr json_exception(
-		  json_details::missing_member mm ) noexcept
+		explicit constexpr json_exception( json_details::missing_member mm )
 		  : m_reason( ErrorReason::MemberNotFound )
 		  , m_data( mm.member_name ) {}
 
-		explicit constexpr json_exception( json_details::missing_token mt ) noexcept
+		explicit constexpr json_exception( json_details::missing_token mt )
 		  : m_reason( ErrorReason::ExpectedTokenNotFound )
 		  , m_data( get_token_addr( mt.token ) ) {}
 
 		explicit constexpr json_exception( json_details::missing_member mm,
-		                                   std::string_view location ) noexcept
+		                                   std::string_view location )
 		  : m_reason( ErrorReason::MemberNotFound )
 		  , m_data( mm.member_name )
 		  , m_parse_loc( location.data( ) ) {}
 
 		explicit constexpr json_exception( json_details::missing_token mt,
-		                                   char const *location ) noexcept
+		                                   char const *location )
 		  : m_reason( ErrorReason::ExpectedTokenNotFound )
 		  , m_data( get_token_addr( mt.token ) )
 		  , m_parse_loc( location ) {}
 
 		explicit constexpr json_exception( ErrorReason reason,
-		                                   char const *location ) noexcept
+		                                   char const *location )
 		  : m_reason( reason )
 		  , m_parse_loc( location ) {}
 

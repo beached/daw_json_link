@@ -44,22 +44,7 @@ int main( int argc, char **argv ) {
 		daw::do_not_optimize( canada_result );
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	} catch( daw::json::json_exception const &jex ) {
-		std::cerr << "Exception thrown by parser: "
-		          << to_formatted_string( jex, json_data.data( ) );
-		if( jex.parse_location( ) ) {
-			auto path_stack = find_json_path_stack_to( jex, json_data.data( ) );
-			if( not path_stack.empty( ) ) {
-				std::cerr << "The error is near line "
-				          << ( 1 + find_line_number_of( jex.parse_location( ),
-				                                        json_data.data( ) ) )
-				          << " column "
-				          << ( 1 + find_column_number_of( jex.parse_location( ),
-				                                          json_data.data( ) ) )
-				          << '\n';
-				std::cerr << "JSON Path to value close to error '"
-				          << to_json_path_string( path_stack ) << "'\n";
-			}
-		}
+		display_exception( jex, json_data.data( ) );
 		exit( 1 );
 	}
 #endif

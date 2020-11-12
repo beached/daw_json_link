@@ -6,6 +6,8 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
+#pragma once
+
 #include "daw/json/daw_json_link.h"
 
 #include <ciso646>

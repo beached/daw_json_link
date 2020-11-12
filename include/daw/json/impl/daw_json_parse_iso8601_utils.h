@@ -257,8 +257,8 @@ namespace daw::json::datetime {
 	};
 
 	template<typename Clock, typename Duration>
-	constexpr ymdhms time_point_to_civil(
-	  std::chrono::time_point<Clock, Duration> const &tp ) noexcept {
+	constexpr ymdhms
+	time_point_to_civil( std::chrono::time_point<Clock, Duration> const &tp ) {
 		auto dur_from_epoch = tp.time_since_epoch( );
 		using Days = std::chrono::duration<std::int_least32_t, std::ratio<86400>>;
 		auto const days_since_epoch =

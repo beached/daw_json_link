@@ -102,6 +102,9 @@ namespace daw::json {
 			char const *first;
 			char const *last;
 			std::vector<json_path_node> parse_stack{ };
+
+			// This is for when we throw after array/class end, but before the next
+			// value starts
 			std::optional<json_path_node> last_popped{ };
 			json_path_node state{ };
 
@@ -117,24 +120,15 @@ namespace daw::json {
 				    range.empty( ) or last <= range.data( ) ) {
 					return false;
 				}
-				switch( child_of( ) ) {
-				case JsonBaseParseTypes::Class:
+				if( auto const t = child_of( ); t == JsonBaseParseTypes::Class ) {
 					state.m_name = *jp.name;
 					state.m_index = -1;
-					break;
-				case JsonBaseParseTypes::Array:
+				} else if( t == JsonBaseParseTypes::Array ) {
 					state.m_name = { };
 					state.m_index++;
-					break;
-				case JsonBaseParseTypes::None:
-				case JsonBaseParseTypes::Bool:
-				case JsonBaseParseTypes::Number:
-				case JsonBaseParseTypes::Null:
-				case JsonBaseParseTypes::String:
-				default:
+				} else {
 					state.m_name = { };
 					state.m_index = -1;
-					break;
 				}
 				state.m_value_start = jp.value.get_range( ).first;
 				state.m_type = jp.value.type( );
@@ -291,7 +285,8 @@ namespace daw::json {
 
 		auto first = daw::reverse_iterator<char const *>( doc_pos );
 		auto last = daw::reverse_iterator<char const *>( doc_start );
-		auto pos = std::distance( first, std::find( first, last, '\n' ) );
+		auto pos =
+		  std::distance( first, daw::algorithm::find( first, last, '\n' ) );
 		daw_json_assert( pos >= 0, ErrorReason::Unknown );
 		return static_cast<std::size_t>( pos );
 	}

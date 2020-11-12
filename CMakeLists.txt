@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 project("json_link"
-        VERSION "2.5.0"
+        VERSION "2.5.1"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
         LANGUAGES C CXX)
@@ -116,6 +116,7 @@ install(FILES "${PROJECT_BINARY_DIR}/daw_${PROJECT_NAME}Config.cmake"
 				DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKEDIR}$)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/daw DESTINATION include )
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/third_party DESTINATION include )
 
 if (DAW_ENABLE_TESTING)
     enable_testing()

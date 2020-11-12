@@ -332,7 +332,13 @@ namespace daw::json::json_details {
 	        std::is_same<typename JsonMember::constructor_t,
 	                     daw::construct_a_t<std::string>>,
 	        std::is_same<typename JsonMember::constructor_t,
-	                     daw::construct_a_t<std::optional<std::string>>>>> {};
+	                     daw::construct_a_t<std::optional<std::string>>>,
+	        std::is_same<
+	          typename JsonMember::constructor_t,
+	          wrapped_item_ctor_t_impl<std::optional<std::string>, true>>,
+	        std::is_same<
+	          typename JsonMember::constructor_t,
+	          wrapped_item_ctor_t_impl<std::optional<std::string>, false>>>> {};
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
