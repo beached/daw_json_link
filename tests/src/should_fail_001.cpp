@@ -272,6 +272,13 @@ int main( int, char ** )
 #ifdef DAW_USE_JSON_EXCEPTIONS
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
+	std::cerr << to_formatted_string( jex ) << '\n';
 	exit( 1 );
+} catch( std::exception const & ex ) {
+	std::cerr << "Unknown exception while parsing: " << ex.what( ) << '\n';
+	exit( 2 );
+} catch( ... ) {
+	std::cerr << "Unknown exception while parsing\n";
+	throw;
 #endif
 }
