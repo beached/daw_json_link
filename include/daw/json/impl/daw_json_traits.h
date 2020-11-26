@@ -67,11 +67,9 @@ namespace daw::json {
 		template<typename... Args>
 		[[nodiscard]] inline constexpr auto operator( )( Args &&... args ) const
 		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...> )
-		    -> std::enable_if_t<
-		      std::conjunction_v<
-		        daw::traits::static_not<std::is_constructible<T, Args...>>,
-		        daw::traits::is_list_constructible<T, Args...>>,
-		      T> {
+		    -> std::enable_if_t<(not std::is_constructible_v<T, Args...> and
+		                         daw::traits::is_list_constructible_v<T, Args...>),
+		                        T> {
 
 			return T{ std::forward<Args>( args )... };
 		}
@@ -96,10 +94,6 @@ namespace daw::json {
 		}
 	};
 
-	namespace json_details {
-		template<typename... Args>
-		using is_null_argument = std::bool_constant<( sizeof...( Args ) == 0 )>;
-	}
 	/***
 	 * Auto generated constructor for nullable types.
 	 * Specializations must accept accept an operator( )( ) that signifies a JSON
@@ -123,9 +117,8 @@ namespace daw::json {
 		  noexcept( std::is_nothrow_constructible_v<std::optional<T>,
 		                                            std::in_place_t, Args...> )
 		    -> std::enable_if_t<
-		      std::conjunction_v<
-		        daw::traits::static_not<json_details::is_null_argument<Args...>>,
-		        std::is_constructible<T, std::in_place_t, Args...>>,
+		      (( sizeof...( Args ) > 0 ) and
+		       std::is_constructible_v<T, std::in_place_t, Args...>),
 		      std::optional<T>> {
 
 			return std::optional<T>( std::in_place, std::forward<Args>( args )... );
@@ -137,11 +130,9 @@ namespace daw::json {
 		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...>
 		              and std::is_nothrow_move_constructible_v<T> )
 		    -> std::enable_if_t<
-		      std::conjunction_v<
-		        daw::traits::static_not<json_details::is_null_argument<Args...>>,
-		        daw::traits::static_not<
-		          std::is_constructible<T, std::in_place_t, Args...>>,
-		        daw::traits::is_list_constructible<T, Args...>>,
+		      (( sizeof...( Args ) > 0 ) and
+		       not std::is_constructible_v<T, std::in_place_t, Args...> and
+		       daw::traits::is_list_constructible_v<T, Args...>),
 		      std::optional<T>> {
 
 			return std::optional<T>( T{ std::forward<Args>( args )... } );
@@ -172,11 +163,10 @@ namespace daw::json {
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline auto
 		operator( )( Args &&... args ) const
 		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...> )
-		    -> std::enable_if_t<
-		      (( sizeof...( Args ) > 0 ) and
-		       daw::traits::static_not<std::is_constructible<T, Args...>> and
-		       daw::traits::is_list_constructible<T, Args...>),
-		      std::unique_ptr<T, Deleter>> {
+		    -> std::enable_if_t<(( sizeof...( Args ) > 0 ) and
+		                         not std::is_constructible_v<T, Args...> and
+		                         daw::traits::is_list_constructible_v<T, Args...>),
+		                        std::unique_ptr<T, Deleter>> {
 
 			return std::unique_ptr<T, Deleter>(
 			  new T{ std::forward<Args>( args )... } );
