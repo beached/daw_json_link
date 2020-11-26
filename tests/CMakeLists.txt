@@ -507,8 +507,10 @@ add_dependencies(full daw_json_minify_full)
 # **************************************************
 add_executable(json_benchmark src/json_benchmark.cpp)
 target_link_libraries(json_benchmark json_test)
-if (NOT DEFINED MSVC)
+if (NOT DEFINED MSVC OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
   add_test(NAME json_benchmark_test COMMAND json_benchmark ./apache_builds.json ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+else( )
+  add_compile_options("/bigobj")
 endif ()
 add_dependencies(full json_benchmark)
 
