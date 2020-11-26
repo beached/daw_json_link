@@ -13,6 +13,8 @@
 #include <memory>
 #include <optional>
 #include <type_traits>
+#include <unordered_map>
+#include <utility>
 
 /***
  * Customization point traits

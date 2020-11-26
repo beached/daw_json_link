@@ -42,7 +42,7 @@ namespace daw::json {
 		std::tuple<typename Members::parse_to_t...> members;
 
 		template<typename... Ts>
-		constexpr tuple_json_mapping( Ts &&... values )
+		constexpr tuple_json_mapping( Ts &&...values )
 		  : members{ std::forward<Ts>( values )... } {}
 	};
 } // namespace daw::json
@@ -106,15 +106,15 @@ namespace daw::json::json_details {
 	template<typename Value, typename Constructor, typename Range,
 	         typename... Args>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr auto
-	construct_value( Constructor &&ctor, Range &rng, Args &&... args ) {
+	construct_value( Constructor &&ctor, Range &rng, Args &&...args ) {
 		if constexpr( Range::has_allocator ) {
 			using alloc_t = typename Range::template allocator_type_as<Value>;
 			auto alloc = rng.template get_allocator_for<Value>( );
 			if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
 				return ctor( std::forward<Args>( args )..., std::move( alloc ) );
 			} else if constexpr( daw::traits::is_callable_v<Constructor,
-			                                         std::allocator_arg_t, alloc_t,
-			                                         Args...> ) {
+			                                                std::allocator_arg_t,
+			                                                alloc_t, Args...> ) {
 				return ctor( std::allocator_arg, std::move( alloc ),
 				             std::forward<Args>( args )... );
 			} else {

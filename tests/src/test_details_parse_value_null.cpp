@@ -103,7 +103,8 @@ int main( )
 	do_test( test_null_number_untrusted( ) );
 	do_test( test_null_number_trusted( ) );
 	do_test( test_null_number_untrusted_known( ) );
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

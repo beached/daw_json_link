@@ -96,6 +96,7 @@ add_dependencies(full nativejson_bench)
 
 add_executable( nativejson_bench_alloc EXCLUDE_FROM_ALL src/nativejson_bench_alloc.cpp)
 target_link_libraries(nativejson_bench_alloc json_test)
+add_dependencies(full nativejson_bench_alloc)
 
 add_executable(nativejson_bench2 src/nativejson_bench2.cpp)
 target_link_libraries(nativejson_bench2 json_test)
@@ -119,6 +120,7 @@ add_dependencies(full citm_test)
 
 add_executable(citm_test_alloc EXCLUDE_FROM_ALL src/citm_test_alloc.cpp)
 target_link_libraries(citm_test_alloc json_test)
+add_dependencies(full citm_test_alloc)
 
 add_executable(citm_test_basic src/citm_test_basic.cpp)
 target_link_libraries(citm_test_basic json_test)
@@ -132,6 +134,7 @@ add_dependencies(full twitter_test)
 
 add_executable(twitter_test_alloc EXCLUDE_FROM_ALL src/twitter_test_alloc.cpp)
 target_link_libraries(twitter_test_alloc json_test)
+add_dependencies(full twitter_test_alloc)
 
 add_executable(twitter_test2 src/twitter_test2.cpp)
 target_link_libraries(twitter_test2 json_test)
@@ -160,6 +163,7 @@ add_dependencies(full canada_test)
 
 add_executable(canada_test_alloc EXCLUDE_FROM_ALL src/canada_test_alloc.cpp)
 target_link_libraries(canada_test_alloc json_test)
+add_dependencies(full canada_test_alloc)
 
 add_executable(canada_test_basic src/canada_test_basic.cpp)
 target_link_libraries(canada_test_basic json_test)

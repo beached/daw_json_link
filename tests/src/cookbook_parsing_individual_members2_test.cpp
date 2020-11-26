@@ -40,7 +40,8 @@ int main( int argc, char **argv )
 
 	test_assert( value.size( ) == 4, "Unexpected value" );
 	test_assert( value[1] == "is", "Unexpected value" );
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

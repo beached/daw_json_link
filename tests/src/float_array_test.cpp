@@ -495,7 +495,8 @@ int main( int argc, char ** )
 	} else {
 		test_func<1'000ULL>( );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

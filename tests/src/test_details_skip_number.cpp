@@ -71,7 +71,8 @@ int main( int, char ** )
 	do_test( test_number_in_class( ) );
 	do_test( test_number( ) );
 	do_test( test_number_space( ) );
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

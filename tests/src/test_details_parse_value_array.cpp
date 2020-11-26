@@ -46,7 +46,6 @@ template<typename... Members>
 struct InlineClass {
 	std::tuple<typename Members::parse_to_t...> members;
 
-	inline DAW_CONSTEXPR InlineClass( ) = default;
 	template<
 	  typename... Ts,
 	  std::enable_if_t<( not daw::traits::is_first_type_v<InlineClass, Ts...> and

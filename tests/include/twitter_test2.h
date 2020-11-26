@@ -30,7 +30,7 @@ struct opt_construct_a {
 	}
 
 	template<typename... Args>
-	constexpr std::optional<T> operator( )( Args &&... args ) const {
+	constexpr std::optional<T> operator( )( Args &&...args ) const {
 		return std::optional<T>(
 		  daw::construct_a<T>( std::forward<Args>( args )... ) );
 	}

@@ -132,7 +132,8 @@ int main( int, char ** )
 	do_fail_test( missing_members_fail( ) );
 	do_fail_test( wrong_member_type_fail( ) );
 	do_fail_test( wrong_member_number_type_fail( ) );
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

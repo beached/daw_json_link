@@ -194,7 +194,8 @@ int main( int, char ** )
 	do_test( test_embedded_class( ) );
 	do_fail_test( test_embedded_class_broken_001( ) );*/
 	do_fail_test( test_class_close_mid_array_without_open( ) );
-} catch( json_exception const &jex ) {
+}
+catch( json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
