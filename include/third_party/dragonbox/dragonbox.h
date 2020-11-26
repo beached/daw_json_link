@@ -222,7 +222,7 @@ namespace jkj::dragonbox {
 			// Print decimal point if needed.
 			if( olength > 1 ) {
 				buffer[1] = '.';
-				buffer += olength + 1;
+				buffer += static_cast<std::ptrdiff_t>( olength + 1 );
 			} else {
 				++buffer;
 			}
@@ -239,11 +239,11 @@ namespace jkj::dragonbox {
 			if constexpr( sizeof( Float ) == 8 ) {
 				if( exp >= 100 ) {
 					const std::int32_t c = exp % 10;
-					memcpy( buffer, radix_100_table + 2 * ( exp / 10 ), 2 );
+					memcpy( buffer, radix_100_table + static_cast<std::ptrdiff_t>( 2 * ( exp / 10 )), 2 );
 					buffer[2] = static_cast<char>( '0' + c );
 					buffer += 3;
 				} else if( exp >= 10 ) {
-					memcpy( buffer, radix_100_table + 2 * exp, 2 );
+					memcpy( buffer, radix_100_table + static_cast<std::ptrdiff_t>( 2 * exp), 2 );
 					buffer += 2;
 				} else {
 					*buffer = static_cast<char>( '0' + exp );
@@ -251,7 +251,7 @@ namespace jkj::dragonbox {
 				}
 			} else {
 				if( exp >= 10 ) {
-					memcpy( buffer, radix_100_table + 2 * exp, 2 );
+					memcpy( buffer, radix_100_table + static_cast<std::ptrdiff_t>(2 * exp), 2 );
 					buffer += 2;
 				} else {
 					*buffer = static_cast<char>( '0' + exp );

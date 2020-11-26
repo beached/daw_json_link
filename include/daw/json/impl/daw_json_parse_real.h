@@ -310,7 +310,7 @@ namespace daw::json::json_details {
 
 				last_char = parse_real_digits_while_number<Range::is_unchecked_input>(
 				  first, fract_last, significant_digits );
-				exponent -= last_char - first;
+				exponent -= static_cast<signed_t>( last_char - first );
 				first = last_char;
 				if( first >= fract_last ) {
 					first = skip_digits<Range::is_unchecked_input>( first, rng.last );
@@ -318,7 +318,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		exponent += [&] {
+		exponent += [&]( ) -> signed_t {
 			if( ( Range::is_unchecked_input or first < rng.last ) and
 			    ( ( *first | 0x20 ) == 'e' ) ) {
 				++first;
@@ -344,11 +344,11 @@ namespace daw::json::json_details {
 				  first, rng.last, exp_tmp );
 				first = last_char;
 				if( exp_sign ) {
-					return -static_cast<unsigned_t>( exp_tmp );
+					return -static_cast<signed_t>( exp_tmp );
 				}
-				return static_cast<unsigned_t>( exp_tmp );
+				return static_cast<signed_t>( exp_tmp );
 			}
-			return static_cast<unsigned_t>( 0 );
+			return static_cast<signed_t>( 0 );
 		}( );
 		rng.first = first;
 		return sign * power10<Result>( Range::exec_tag,

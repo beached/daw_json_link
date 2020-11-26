@@ -15,7 +15,7 @@
 #include <utility>
 
 namespace daw::json {
-	enum json_parse_handler_result { Continue, SkipClassArray, Complete };
+	enum class json_parse_handler_result { Continue, SkipClassArray, Complete };
 	namespace json_details {
 		struct handler_result_holder {
 			json_parse_handler_result value = json_parse_handler_result::Continue;
@@ -23,7 +23,8 @@ namespace daw::json {
 			constexpr handler_result_holder( ) = default;
 
 			constexpr handler_result_holder( bool b )
-			  : value( b ? Continue : Complete ) {}
+			  : value( b ? json_parse_handler_result::Continue
+			             : json_parse_handler_result::Complete ) {}
 
 			constexpr handler_result_holder( json_parse_handler_result r )
 			  : value( r ) {}
