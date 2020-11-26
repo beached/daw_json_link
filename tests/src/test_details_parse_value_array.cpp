@@ -51,7 +51,7 @@ struct InlineClass {
 	  std::enable_if_t<( not daw::traits::is_first_type_v<InlineClass, Ts...> and
 	                     ( std::is_convertible_v<Ts, Members> and ... ) ),
 	                   std::nullptr_t> = nullptr>
-	inline DAW_CONSTEXPR InlineClass( Ts &&...values )
+	inline DAW_CONSTEXPR InlineClass( Ts &&... values )
 	  : members{ std::forward<Ts>( values )... } {}
 };
 
@@ -107,8 +107,7 @@ int main( int, char ** )
 {
 	do_test( empty_array_empty_json_array( ) );
 	do_fail_test( int_array_json_string_array_fail( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

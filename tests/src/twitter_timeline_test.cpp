@@ -127,8 +127,7 @@ int main( int argc, char **argv )
 	                                 daw::json::runtime_exec_tag> ) {
 		test<daw::json::simd_exec_tag>( json_sv1 );
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

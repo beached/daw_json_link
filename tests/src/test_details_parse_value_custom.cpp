@@ -61,8 +61,7 @@ int main( int, char ** )
 #endif
 {
 	do_test( empty_array_empty_json_array( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

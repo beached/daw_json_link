@@ -192,8 +192,7 @@ int main( int, char ** )
 	do_fail_test( test_missing_quotes_001( ) );
 	do_fail_test( test_missing_quotes_002( ) );
 	do_fail_test( test_missing_quotes_003( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: "
 	          << to_formatted_string( jex, nullptr ) << '\n';
 	exit( 1 );

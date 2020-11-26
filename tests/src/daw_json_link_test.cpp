@@ -868,8 +868,7 @@ int main( int, char ** )
 		long double const d1 = strtold( two63e100.data( ), &end );
 		std::cout << d1 << '\n';
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

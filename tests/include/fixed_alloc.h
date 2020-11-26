@@ -187,14 +187,14 @@ namespace daw {
 		}
 
 		template<typename U>
-		[[nodiscard]] bool
-		operator==( fixed_allocator<U> const &rhs ) const noexcept {
+		[[nodiscard]] bool operator==( fixed_allocator<U> const &rhs )
+		  const noexcept {
 			return m_data == rhs.m_data;
 		}
 
 		template<typename U>
-		[[nodiscard]] bool
-		operator!=( fixed_allocator<U> const &rhs ) const noexcept {
+		[[nodiscard]] bool operator!=( fixed_allocator<U> const &rhs )
+		  const noexcept {
 			return m_data != rhs.m_data;
 		}
 	};

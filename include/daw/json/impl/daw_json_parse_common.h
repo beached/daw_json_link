@@ -42,7 +42,7 @@ namespace daw::json {
 		std::tuple<typename Members::parse_to_t...> members;
 
 		template<typename... Ts>
-		constexpr tuple_json_mapping( Ts &&...values )
+		constexpr tuple_json_mapping( Ts &&... values )
 		  : members{ std::forward<Ts>( values )... } {}
 	};
 } // namespace daw::json
@@ -86,27 +86,39 @@ namespace daw::json::json_details {
 	using json_data_contract_trait_t =
 	  typename daw::json::json_data_contract<T>::type;
 
+	template<typename T, bool, bool>
+	struct json_data_constract_constructor_impl {
+		using type = default_constructor<T>;
+	};
+
 	template<typename T>
-	using json_data_contract_constructor_t =
+	using has_json_data_constract_constructor_test =
 	  typename json_data_contract_trait_t<T>::constructor;
 
 	template<typename T>
-	inline constexpr auto json_class_constructor = [] {
-		if constexpr( daw::is_detected_v<json_data_contract_constructor_t, T> ) {
-			return json_data_contract_constructor_t<T>{ };
-		} else {
-			return default_constructor<T>( );
-		}
-	}( );
+	struct json_data_constract_constructor_impl<T, true, true> {
+		using type = typename json_data_contract_trait_t<T>::constructor;
+	};
+
+	template<typename T>
+	using json_data_contract_constructor_t =
+	  typename json_data_constract_constructor_impl<
+	    T, daw::is_detected_v<json_data_contract_trait_t, T>,
+	    daw::is_detected_v<has_json_data_constract_constructor_test, T>>::type;
 
 	template<typename T>
 	using json_class_constructor_t =
-	  daw::remove_cvref_t<decltype( json_class_constructor<T> )>;
+	  std::conditional_t<daw::is_detected_v<json_data_contract_constructor_t, T>,
+	                     json_data_contract_constructor_t<T>,
+	                     default_constructor<T>>;
+
+	template<typename T>
+	inline constexpr auto json_class_constructor = json_class_constructor_t<T>{ };
 
 	template<typename Value, typename Constructor, typename Range,
 	         typename... Args>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr auto
-	construct_value( Constructor &&ctor, Range &rng, Args &&...args ) {
+	construct_value( Constructor &&ctor, Range &rng, Args &&... args ) {
 		if constexpr( Range::has_allocator ) {
 			using alloc_t = typename Range::template allocator_type_as<Value>;
 			auto alloc = rng.template get_allocator_for<Value>( );
