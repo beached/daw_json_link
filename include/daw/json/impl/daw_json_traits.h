@@ -160,11 +160,9 @@ namespace daw::json {
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline auto
 		operator( )( Args &&... args ) const
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> )
-		    -> std::enable_if_t<
-		      std::conjunction_v<
-		        daw::traits::static_not<json_details::is_null_argument<Args...>>,
-		        std::is_constructible_v<T, Args...>>,
-		      std::unique_ptr<T, Deleter>> {
+		    -> std::enable_if_t<(sizeof...( Args ) > 0 and
+		                         std::is_constructible_v<T, Args...>),
+		                        std::unique_ptr<T, Deleter>> {
 
 			return std::unique_ptr<T, Deleter>(
 			  new T( std::forward<Args>( args )... ) );
@@ -175,10 +173,9 @@ namespace daw::json {
 		operator( )( Args &&... args ) const
 		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...> )
 		    -> std::enable_if_t<
-		      std::conjunction_v<
-		        daw::traits::static_not<json_details::is_null_argument<Args...>>,
-		        daw::traits::static_not<std::is_constructible<T, Args...>>,
-		        daw::traits::is_list_constructible<T, Args...>>,
+		      (( sizeof...( Args ) > 0 ) and
+		       daw::traits::static_not<std::is_constructible<T, Args...>> and
+		       daw::traits::is_list_constructible<T, Args...>),
 		      std::unique_ptr<T, Deleter>> {
 
 			return std::unique_ptr<T, Deleter>(
