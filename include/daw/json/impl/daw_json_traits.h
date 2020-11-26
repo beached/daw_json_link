@@ -12,6 +12,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -68,7 +69,7 @@ namespace daw::json {
 		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...> )
 		    -> std::enable_if_t<
 		      std::conjunction_v<
-		        daw::traits::static_not_t<std::is_constructible<T, Args...>>,
+		        daw::traits::static_not<std::is_constructible<T, Args...>>,
 		        daw::traits::is_list_constructible<T, Args...>>,
 		      T> {
 
@@ -123,7 +124,7 @@ namespace daw::json {
 		                                            std::in_place_t, Args...> )
 		    -> std::enable_if_t<
 		      std::conjunction_v<
-		        daw::traits::static_not_t<json_details::is_null_argument<Args...>>,
+		        daw::traits::static_not<json_details::is_null_argument<Args...>>,
 		        std::is_constructible<T, std::in_place_t, Args...>>,
 		      std::optional<T>> {
 
@@ -137,8 +138,8 @@ namespace daw::json {
 		              and std::is_nothrow_move_constructible_v<T> )
 		    -> std::enable_if_t<
 		      std::conjunction_v<
-		        daw::traits::static_not_t<json_details::is_null_argument<Args...>>,
-		        daw::traits::static_not_t<
+		        daw::traits::static_not<json_details::is_null_argument<Args...>>,
+		        daw::traits::static_not<
 		          std::is_constructible<T, std::in_place_t, Args...>>,
 		        daw::traits::is_list_constructible<T, Args...>>,
 		      std::optional<T>> {
@@ -161,7 +162,7 @@ namespace daw::json {
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> )
 		    -> std::enable_if_t<
 		      std::conjunction_v<
-		        daw::traits::static_not_t<json_details::is_null_argument<Args...>>,
+		        daw::traits::static_not<json_details::is_null_argument<Args...>>,
 		        std::is_constructible_v<T, Args...>>,
 		      std::unique_ptr<T, Deleter>> {
 
@@ -175,8 +176,8 @@ namespace daw::json {
 		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...> )
 		    -> std::enable_if_t<
 		      std::conjunction_v<
-		        daw::traits::static_not_t<json_details::is_null_argument<Args...>>,
-		        daw::traits::static_not_t<std::is_constructible<T, Args...>>,
+		        daw::traits::static_not<json_details::is_null_argument<Args...>>,
+		        daw::traits::static_not<std::is_constructible<T, Args...>>,
 		        daw::traits::is_list_constructible<T, Args...>>,
 		      std::unique_ptr<T, Deleter>> {
 
