@@ -25,12 +25,15 @@
 #if defined( __GNUC__ ) or defined( __clang__ )
 #define DAW_JSON_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )
 #define DAW_JSON_UNLIKELY( Bool ) ( __builtin_expect( !!( Bool ), 0 ) )
+#define DAW_JSON_NOINLINE __attribute__( ( noinline ) )
 #elif defined( _MSC_VER )
 #define DAW_JSON_LIKELY( Bool ) !!( Bool )
 #define DAW_JSON_UNLIKELY( Bool ) !!( Bool )
+#define DAW_JSON_NOINLINE __declspec( noinline )
 #else
 #define DAW_JSON_LIKELY( Bool ) !!( Bool )
 #define DAW_JSON_UNLIKELY( Bool ) !!( Bool )
+#define DAW_JSON_NOINLINE __attribute__( ( noinline ) )
 #endif
 
 #if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
@@ -52,7 +55,7 @@ inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
 template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] static void
+[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 daw_json_error( daw::json::ErrorReason reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
@@ -68,7 +71,7 @@ daw_json_error( daw::json::ErrorReason reason ) {
 }
 
 template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
-[[maybe_unused, noreturn]] static void
+[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 daw_json_error( daw::json::ErrorReason reason, Range const &location ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
@@ -91,7 +94,7 @@ daw_json_error( daw::json::ErrorReason reason, Range const &location ) {
 }
 
 template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] static void
+[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 daw_json_error( daw::json::json_details::missing_member reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
@@ -107,7 +110,7 @@ daw_json_error( daw::json::json_details::missing_member reason ) {
 }
 
 template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] static void
+[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 daw_json_error( daw::json::json_details::missing_token reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	if constexpr( ShouldThrow ) {
@@ -123,7 +126,7 @@ daw_json_error( daw::json::json_details::missing_token reason ) {
 }
 
 template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
-[[maybe_unused, noreturn]] static void
+[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 daw_json_error( daw::json::json_details::missing_member reason,
                 Range const &location ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
@@ -162,7 +165,7 @@ daw_json_error( daw::json::json_details::missing_member reason,
 }
 
 template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
-[[maybe_unused, noreturn]] static void
+[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 daw_json_error( daw::json::json_details::missing_token reason,
                 Range const &location ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS

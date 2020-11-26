@@ -835,7 +835,8 @@ int main( int, char ** )
 	  true );
 	test_dblparse( "0.9868011474609375", true );
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
-	std::cout << "result: " << from_json<long double>( "0.9868011474609375" ) << '\n';
+	std::cout << "result: " << from_json<long double>( "0.9868011474609375" )
+	          << '\n';
 	test_lots_of_doubles( );
 	test_lots_of_doubles<true>( );
 	if constexpr( sizeof( double ) < sizeof( long double ) ) {

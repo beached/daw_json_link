@@ -59,7 +59,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct force_aggregate_constrution<B> : std::true_type {};
+	struct force_aggregate_construction<B> : std::true_type {};
 } // namespace daw::json
 
 int main( int, char ** )

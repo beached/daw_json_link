@@ -94,6 +94,9 @@ target_link_libraries(nativejson_bench json_test)
 add_test(NAME nativejson_bench COMMAND nativejson_bench ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_bench)
 
+add_executable( nativejson_bench_alloc EXCLUDE_FROM_ALL src/nativejson_bench_alloc.cpp)
+target_link_libraries(nativejson_bench_alloc json_test)
+
 add_executable(nativejson_bench2 src/nativejson_bench2.cpp)
 target_link_libraries(nativejson_bench2 json_test)
 add_test(NAME nativejson_bench2 COMMAND nativejson_bench2 ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
@@ -114,6 +117,9 @@ target_link_libraries(citm_test json_test)
 add_test(NAME citm_test COMMAND citm_test ./citm_catalog.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full citm_test)
 
+add_executable(citm_test_alloc EXCLUDE_FROM_ALL src/citm_test_alloc.cpp)
+target_link_libraries(citm_test_alloc json_test)
+
 add_executable(citm_test_basic src/citm_test_basic.cpp)
 target_link_libraries(citm_test_basic json_test)
 add_test(NAME citm_test_basic COMMAND citm_test_basic ./citm_catalog.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
@@ -123,6 +129,9 @@ add_executable(twitter_test src/twitter_test.cpp)
 target_link_libraries(twitter_test json_test)
 add_test(NAME twitter_test COMMAND twitter_test ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full twitter_test)
+
+add_executable(twitter_test_alloc EXCLUDE_FROM_ALL src/twitter_test_alloc.cpp)
+target_link_libraries(twitter_test_alloc json_test)
 
 add_executable(twitter_test2 src/twitter_test2.cpp)
 target_link_libraries(twitter_test2 json_test)
@@ -148,6 +157,9 @@ add_executable(canada_test src/canada_test.cpp)
 target_link_libraries(canada_test json_test)
 add_test(NAME canada_test COMMAND canada_test ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full canada_test)
+
+add_executable(canada_test_alloc EXCLUDE_FROM_ALL src/canada_test_alloc.cpp)
+target_link_libraries(canada_test_alloc json_test)
 
 add_executable(canada_test_basic src/canada_test_basic.cpp)
 target_link_libraries(canada_test_basic json_test)

@@ -25,6 +25,71 @@
 #include <type_traits>
 
 namespace daw::json {
+	namespace json_details {
+		template<typename Alloc, bool /*is_empty*/>
+		class AllocatorWrapperBase {
+			Alloc *allocator_ptr;
+
+		public:
+			AllocatorWrapperBase( Alloc &alloc ) noexcept
+			  : allocator_ptr( &alloc ) {}
+
+			Alloc &get_allocator( ) const {
+				return *allocator_ptr;
+			}
+		};
+
+		template<typename Alloc>
+		class AllocatorWrapperBase<Alloc, true /*is_empty*/> {
+			static constexpr Alloc allocator{ };
+
+		public:
+			constexpr AllocatorWrapperBase( ) = default;
+			constexpr AllocatorWrapperBase( Alloc & ) noexcept {}
+
+			Alloc &get_allocator( ) const {
+				return allocator;
+			}
+		};
+
+		template<typename Alloc>
+		struct AllocatorWrapper
+		  : AllocatorWrapperBase<Alloc, std::is_empty_v<Alloc>> {
+
+			AllocatorWrapper( Alloc &alloc ) noexcept
+			  : AllocatorWrapperBase<Alloc, std::is_empty_v<Alloc>>( alloc ) {}
+
+			static constexpr bool has_allocator = true;
+			using allocator_type = Alloc;
+
+			template<typename T>
+			using allocator_type_as =
+			  typename std::allocator_traits<Alloc>::template rebind_alloc<T>;
+
+			template<typename T>
+			auto get_allocator_for( ) const {
+				return static_cast<allocator_type_as<T>>( this->get_allocator( ) );
+			}
+		};
+
+		struct NoAllocator {};
+		template<>
+		class AllocatorWrapper<NoAllocator> {
+		public:
+			constexpr AllocatorWrapper( ) noexcept = default;
+			static constexpr bool has_allocator = false;
+
+			using allocator_type = std::allocator<char>;
+
+			template<typename T>
+			using allocator_type_as = std::allocator<T>;
+
+			template<typename T>
+			auto get_allocator_for( ) const {
+				return std::allocator<T>( );
+			}
+		};
+	} // namespace json_details
 	/***
 	 * Handles the bounds and policy items for parsing execution and comments.
 	 * @tparam IsUncheckedInput If true, do not perform all validity checks on
@@ -37,8 +102,9 @@ namespace daw::json {
 	 * the slower string parser is used
 	 */
 	template<bool IsUncheckedInput, typename CommentPolicy, typename ExecMode,
-	         bool AllowEscapedNames>
-	struct BasicParsePolicy final {
+	         bool AllowEscapedNames,
+	         typename Allocator = json_details::NoAllocator>
+	struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 		using iterator = char const *;
 		static constexpr bool is_unchecked_input = IsUncheckedInput;
 		using exec_tag_t = ExecMode;
@@ -47,10 +113,10 @@ namespace daw::json {
 		static constexpr bool force_name_equal_check = false;
 		using CharT = char;
 
-		using as_unchecked =
-		  BasicParsePolicy<true, CommentPolicy, exec_tag_t, allow_escaped_names>;
-		using as_checked =
-		  BasicParsePolicy<false, CommentPolicy, exec_tag_t, allow_escaped_names>;
+		using as_unchecked = BasicParsePolicy<true, CommentPolicy, exec_tag_t,
+		                                      allow_escaped_names, Allocator>;
+		using as_checked = BasicParsePolicy<false, CommentPolicy, exec_tag_t,
+		                                    allow_escaped_names, Allocator>;
 
 		iterator first{ };
 		iterator last{ };
@@ -67,12 +133,120 @@ namespace daw::json {
 		  , class_first( f )
 		  , class_last( l ) {}
 
+		inline constexpr BasicParsePolicy( iterator f, iterator l,
+		                                   Allocator &alloc )
+		  : json_details::AllocatorWrapper<Allocator>( alloc )
+		  , first( f )
+		  , last( l )
+		  , class_first( f )
+		  , class_last( l ) {}
+
 		inline constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
 		                                   iterator cl )
 		  : first( f )
 		  , last( l )
 		  , class_first( cf )
 		  , class_last( cl ) {}
+
+		inline constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
+		                                   iterator cl, Allocator &alloc )
+		  : json_details::AllocatorWrapper<Allocator>( alloc )
+		  , first( f )
+		  , last( l )
+		  , class_first( cf )
+		  , class_last( cl ) {}
+
+		inline constexpr BasicParsePolicy copy( iterator f = iterator{ },
+		                                        iterator l = iterator{ },
+		                                        iterator cf = iterator{ },
+		                                        iterator cl = iterator{ } ) const {
+			BasicParsePolicy result = *this;
+			if( f ) {
+				result.first = f;
+			}
+			if( l ) {
+				result.last = l;
+			}
+			if( cf ) {
+				result.class_first = cf;
+			}
+			if( cl ) {
+				result.class_last = cl;
+			}
+			return result;
+		}
+
+		template<typename Alloc>
+		using with_allocator_type =
+		  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
+		                   AllowEscapedNames, Alloc>;
+
+		template<typename Alloc>
+		static inline constexpr with_allocator_type<Alloc>
+		with_allocator( iterator f, iterator l, iterator cf, iterator cl,
+		                Alloc &alloc ) {
+			return { f, l, cf, cl, alloc };
+		}
+
+		template<typename Alloc>
+		constexpr auto
+		with_allocator( BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
+		                                 AllowEscapedNames, Alloc>
+		                  p ) const {
+
+			if constexpr( std::is_same_v<Alloc, json_details::NoAllocator> ) {
+				return *this;
+			} else {
+				auto result = with_allocator( first, last, class_first, class_last,
+				                              p.get_allocator( ) );
+				result.counter = p.counter;
+				return result;
+			}
+		}
+
+		template<typename Alloc>
+		inline constexpr with_allocator_type<Alloc>
+		with_allocator( Alloc &alloc ) const {
+			auto result =
+			  with_allocator( first, last, class_first, class_last, alloc );
+			result.counter = counter;
+			return result;
+		}
+
+		using without_allocator_type =
+		  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
+		                   AllowEscapedNames, json_details::NoAllocator>;
+
+		static inline constexpr without_allocator_type
+		without_allocator( BasicParsePolicy p ) {
+			auto result =
+			  without_allocator_type( p.first, p.last, p.class_first, p.class_last );
+			result.counter = p.counter;
+			return result;
+		}
+
+		inline constexpr without_allocator_type without_allocator( ) const {
+			auto result =
+			  without_allocator_type( first, last, class_first, class_last );
+			result.counter = counter;
+			return result;
+		}
+
+		template<typename Alloc>
+		static inline constexpr with_allocator_type<Alloc>
+		with_allocator( iterator f, iterator l, Alloc &alloc ) {
+			return { f, l, f, l, alloc };
+		}
+
+		static inline constexpr without_allocator_type
+		without_allocator( iterator f, iterator l ) {
+			return { f, l };
+		}
+
+		static inline constexpr without_allocator_type
+		without_allocator( iterator f, iterator l, iterator cf, iterator cl ) {
+			return { f, l, cf, cl };
+		}
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
 		data( ) const {
@@ -339,13 +513,13 @@ namespace daw::json {
 	using NoCommentSkippingPolicyUnchecked =
 	  BasicParsePolicy<true, NoCommentSkippingPolicy, default_exec_tag, false>;
 
-	template<typename ExecTag>
+	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 	using SIMDNoCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, NoCommentSkippingPolicy, ExecTag, false>;
+	  BasicParsePolicy<false, NoCommentSkippingPolicy, ExecTag, false, Allocator>;
 
-	template<typename ExecTag>
+	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 	using SIMDNoCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, NoCommentSkippingPolicy, ExecTag, false>;
+	  BasicParsePolicy<true, NoCommentSkippingPolicy, ExecTag, false, Allocator>;
 
 	using HashCommentSkippingPolicyChecked =
 	  BasicParsePolicy<false, HashCommentSkippingPolicy, default_exec_tag, false>;
@@ -353,13 +527,15 @@ namespace daw::json {
 	using HashCommentSkippingPolicyUnchecked =
 	  BasicParsePolicy<true, HashCommentSkippingPolicy, default_exec_tag, false>;
 
-	template<typename ExecTag>
+	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 	using SIMDHashCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, HashCommentSkippingPolicy, ExecTag, false>;
+	  BasicParsePolicy<false, HashCommentSkippingPolicy, ExecTag, false,
+	                   Allocator>;
 
-	template<typename ExecTag>
+	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 	using SIMDHashCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, HashCommentSkippingPolicy, ExecTag, false>;
+	  BasicParsePolicy<true, HashCommentSkippingPolicy, ExecTag, false,
+	                   Allocator>;
 
 	using CppCommentSkippingPolicyChecked =
 	  BasicParsePolicy<false, CppCommentSkippingPolicy, default_exec_tag, false>;
@@ -371,17 +547,18 @@ namespace daw::json {
 	 * Parse using SIMD instructions if available, allow C++ comments and fully
 	 * check input
 	 */
-	template<typename ExecTag>
+	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 	using SIMDCppCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, CppCommentSkippingPolicy, ExecTag, false>;
+	  BasicParsePolicy<false, CppCommentSkippingPolicy, ExecTag, false,
+	                   Allocator>;
 
 	/***
 	 * Parse using SIMD instructions if available, allow C++ comments and do not
 	 * do more than minimum checking
 	 */
-	template<typename ExecTag>
+	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 	using SIMDCppCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, CppCommentSkippingPolicy, ExecTag, false>;
+	  BasicParsePolicy<true, CppCommentSkippingPolicy, ExecTag, false, Allocator>;
 
 	namespace json_details {
 		/***

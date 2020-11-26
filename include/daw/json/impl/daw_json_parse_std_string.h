@@ -169,19 +169,15 @@ namespace daw::json::json_details {
 
 	// Fast path for parsing escaped strings to a std::string with the default
 	// appender
-	template<bool AllowHighEight, typename Result, bool KnownBounds,
+	template<bool AllowHighEight, typename JsonMember, bool KnownBounds,
 	         typename Range>
-	[[nodiscard, maybe_unused]] constexpr Result
+	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 	parse_string_known_stdstring( Range &rng ) {
-		Result result2 = std::string( rng.size( ), '\0' );
-
-		auto &result = [&result2]( ) -> std::string & {
-			if constexpr( std::is_same_v<Result, std::string> ) {
-				return result2;
-			} else {
-				return *result2;
-			}
-		}( );
+		using string_type =
+		  std::basic_string<char, std::char_traits<char>,
+		                    typename Range::template allocator_type_as<char>>;
+		string_type result =
+		  string_type( rng.size( ), '\0', rng.template get_allocator_for<char>( ) );
 
 		char *it = result.data( );
 
@@ -271,6 +267,14 @@ namespace daw::json::json_details {
 		daw_json_assert_weak( result.size( ) >= sz, ErrorReason::InvalidString,
 		                      rng );
 		result.resize( sz );
-		return result2;
-	} // namespace daw::json::json_details
+		if constexpr( std::is_convertible_v<string_type,
+		                                    json_result<JsonMember>> ) {
+			return result;
+		} else {
+			using constructor_t = typename JsonMember::constructor_t;
+			construct_value<json_result<JsonMember>>(
+			  constructor_t{ }, rng, result.data( ),
+			  result.data( ) + static_cast<std::ptrdiff_t>( result.size( ) ) );
+		}
+	}
 } // namespace daw::json::json_details
