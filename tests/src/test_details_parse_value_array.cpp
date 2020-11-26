@@ -51,7 +51,7 @@ struct InlineClass {
 	  std::enable_if_t<( not daw::traits::is_first_type_v<InlineClass, Ts...> and
 	                     ( std::is_convertible_v<Ts, Members> and ... ) ),
 	                   std::nullptr_t> = nullptr>
-	inline DAW_CONSTEXPR InlineClass( Ts &&... values )
+	inline DAW_CONSTEXPR InlineClass( Ts &&...values )
 	  : members{ std::forward<Ts>( values )... } {}
 };
 
