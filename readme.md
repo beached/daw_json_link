@@ -9,9 +9,6 @@
 
 [![Build Status Windows - ClangCL](https://github.com/beached/daw_json_link/workflows/Windows_ClangCl/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows_ClangCl)
 
-[![Build Status Arm64 Linux](https://travis-ci.com/beached/daw_json_link.svg?branch=release)](https://travis-ci.com/beached/daw_json_link) - Arm64/PPC64LE/S390X Linux
-
-
 ## Content 
 * [Intro](#intro)
   * [Default Mapping of Types](#default-mapping-of-types)
