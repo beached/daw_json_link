@@ -31,10 +31,10 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-static auto alloc = daw::fixed_allocator<char>( 100'000'000ULL );
+using AllocType = daw::fixed_allocator<char>;
 
 template<typename ExecTag>
-void test( char **argv ) {
+void test( char **argv, AllocType & alloc ) {
 	auto const json_data1 = *daw::read_file( argv[1] );
 	auto const json_data2 = *daw::read_file( argv[2] );
 	auto const json_data3 = *daw::read_file( argv[3] );
@@ -267,7 +267,10 @@ int main( int argc, char **argv )
   try
 #endif
 {
+	static auto alloc = AllocType( 100'000'000ULL );
+#ifdef DAW_USE_JSON_EXCEPTIONS
 	try {
+#endif
 		using namespace daw::json;
 #if defined( NDEBUG ) and not defined( DEBUG )
 		std::cout << "release run\n";
@@ -279,17 +282,22 @@ int main( int argc, char **argv )
 			std::cerr << "twitter citm canada\n";
 			exit( 1 );
 		}
-		test<daw::json::constexpr_exec_tag>( argv );
+		test<daw::json::constexpr_exec_tag>( argv, alloc );
 		if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 		                                 daw::json::runtime_exec_tag> ) {
-			test<daw::json::runtime_exec_tag>( argv );
+			test<daw::json::runtime_exec_tag>( argv, alloc );
 		}
-		test<daw::json::simd_exec_tag>( argv );
+		test<daw::json::simd_exec_tag>( argv, alloc );
+#ifdef DAW_USE_JSON_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
-} catch( daw::json::json_exception const &jex ) {
+#endif
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

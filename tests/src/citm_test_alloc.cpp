@@ -32,11 +32,10 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-static auto alloc =
-  daw::fixed_allocator<daw::citm::citm_object_t>( 150'000'000ULL );
+using AllocType = daw::fixed_allocator<daw::citm::citm_object_t>;
 
 template<typename ExecTag>
-void test( std::string_view json_sv1 ) {
+void test( std::string_view json_sv1, AllocType & alloc ) {
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( );
@@ -85,6 +84,7 @@ int main( int argc, char **argv )
   try
 #endif
 {
+	static auto alloc = AllocType( 150'000'000ULL );
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -98,11 +98,11 @@ int main( int argc, char **argv )
 	auto const sz = json_sv1.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
-	test<daw::json::constexpr_exec_tag>( json_sv1 );
-	test<daw::json::runtime_exec_tag>( json_sv1 );
+	test<daw::json::constexpr_exec_tag>( json_sv1, alloc );
+	test<daw::json::runtime_exec_tag>( json_sv1, alloc );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
-		test<daw::json::simd_exec_tag>( json_sv1 );
+		test<daw::json::simd_exec_tag>( json_sv1, alloc );
 	}
 
 	alloc.reset( );

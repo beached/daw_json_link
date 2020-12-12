@@ -45,10 +45,9 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 }
 
 using AllocType = daw::fixed_allocator<daw::twitter::twitter_object_t>;
-static auto alloc = AllocType( 500'000ULL );
 
 template<typename ExecTag>
-void test( std::string_view json_data ) {
+void test( std::string_view json_data, AllocType & alloc ) {
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
   defined( _CPPUNWIND )
 	try {
@@ -232,7 +231,7 @@ int main( int argc, char **argv )
   try
 #endif
 {
-
+	static auto alloc = AllocType( 500'000ULL );
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -248,10 +247,10 @@ int main( int argc, char **argv )
 	auto const sz = json_data.size( );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
-	test<constexpr_exec_tag>( json_data );
-	test<runtime_exec_tag>( json_data );
+	test<constexpr_exec_tag>( json_data, alloc );
+	test<runtime_exec_tag>( json_data, alloc );
 	if constexpr( not std::is_same_v<runtime_exec_tag, simd_exec_tag> ) {
-		test<simd_exec_tag>( json_data );
+		test<simd_exec_tag>( json_data, alloc );
 	}
 
 	// ******************************
