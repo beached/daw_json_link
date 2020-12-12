@@ -745,9 +745,11 @@ namespace daw::json::json_details {
 	to_string( ParseTag<JsonParseTypes::StringEscaped>, OutputIterator it,
 	           parse_to_t const &value ) {
 
-		static_assert(
+		/* TODO is something like this necessary
+		 static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
+		  */
 
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 		*it++ = '"';

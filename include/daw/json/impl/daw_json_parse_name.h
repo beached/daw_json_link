@@ -185,4 +185,21 @@ namespace daw::json::json_details {
 		}
 		return { true, rng };
 	}
+
+	template<typename ParsePolicy, typename String, typename Allocator>
+	[[nodiscard]] constexpr auto
+	find_range( String &&str, daw::string_view start_path, Allocator &alloc ) {
+		static_assert( std::is_same_v<char const *, typename ParsePolicy::iterator>,
+		               "Only char const * ranges are currently supported" );
+		auto rng = ParsePolicy::with_allocator(
+		  std::data( str ), std::data( str ) + std::size( str ), alloc );
+		rng.trim_left_checked( );
+		if( rng.has_more( ) and not start_path.empty( ) ) {
+			if( not find_range2( rng, start_path ) ) {
+				return std::pair{ false, rng };
+			}
+		}
+		return std::pair{ true, rng };
+	}
+
 } // namespace daw::json::json_details

@@ -835,7 +835,8 @@ int main( int, char ** )
 	  true );
 	test_dblparse( "0.9868011474609375", true );
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
-	std::cout << "result: " << from_json<long double>( "0.9868011474609375" ) << '\n';
+	std::cout << "result: " << from_json<long double>( "0.9868011474609375" )
+	          << '\n';
 	test_lots_of_doubles( );
 	test_lots_of_doubles<true>( );
 	if constexpr( sizeof( double ) < sizeof( long double ) ) {
@@ -867,8 +868,7 @@ int main( int, char ** )
 		long double const d1 = strtold( two63e100.data( ), &end );
 		std::cout << d1 << '\n';
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

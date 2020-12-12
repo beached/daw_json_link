@@ -9,7 +9,7 @@
 #pragma once
 
 #include "daw_json_assert.h"
-#include "daw_json_iterator_range.h"
+#include "daw_json_parse_policy.h"
 #include "daw_json_parse_unsigned_int.h"
 
 #include <daw/daw_cxmath.h>
@@ -305,8 +305,9 @@ namespace daw::json::json_details {
 				first = skip_digits<Range::is_unchecked_input>( first, rng.last );
 			} else {
 				char const *fract_last =
-				  first +
-				  std::min( rng.last - first, max_exponent - ( first - rng.first ) );
+				  first + std::min( rng.last - first,
+				                    static_cast<std::ptrdiff_t>(
+				                      max_exponent - ( first - rng.first ) ) );
 
 				last_char = parse_real_digits_while_number<Range::is_unchecked_input>(
 				  first, fract_last, significant_digits );
@@ -323,9 +324,9 @@ namespace daw::json::json_details {
 			    ( ( *first | 0x20 ) == 'e' ) ) {
 				++first;
 				bool const exp_sign = [&] {
-					daw_json_assert_weak(
-					  first < rng.last, ErrorReason::UnexpectedEndOfData,
-					  Range( first, rng.last, rng.class_first, rng.class_last ) );
+					daw_json_assert_weak( first < rng.last,
+					                      ErrorReason::UnexpectedEndOfData,
+					                      rng.copy( first ) );
 					switch( *first ) {
 					case '+':
 						++first;

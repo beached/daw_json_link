@@ -35,7 +35,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
 #else
-		DAW_CONSTEXPR inline static char const kv[] = "kv";
+		constexpr inline static char const kv[] = "kv";
 		using type = json_member_list<
 		  json_key_value<kv, std::unordered_map<std::string, int>, int>>;
 #endif
@@ -48,7 +48,7 @@ namespace daw::json {
 		  "kv", daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
 		  int, daw::string_view>>;
 #else
-		DAW_CONSTEXPR inline static char const kv[] = "kv";
+		constexpr inline static char const kv[] = "kv";
 		using type = json_member_list<json_key_value<
 		  kv, daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
 		  int, daw::string_view>>;

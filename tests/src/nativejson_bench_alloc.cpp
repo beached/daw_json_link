@@ -8,9 +8,9 @@
 
 #include "defines.h"
 
-#include "citm_test_json.h"
-#include "geojson.h"
-#include "twitter_test_json.h"
+#include "citm_test_json_alloc.h"
+#include "geojson_alloc.h"
+#include "twitter_test_alloc_json.h"
 
 #include "daw/json/daw_json_link.h"
 
@@ -31,8 +31,10 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
+using AllocType = daw::fixed_allocator<char>;
+
 template<typename ExecTag>
-void test( char **argv ) {
+void test( char **argv, AllocType & alloc ) {
 	auto const json_data1 = *daw::read_file( argv[1] );
 	auto const json_data2 = *daw::read_file( argv[2] );
 	auto const json_data3 = *daw::read_file( argv[3] );
@@ -54,12 +56,15 @@ void test( char **argv ) {
 	try {
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_twitter bench", json_sv1.size( ),
-		  [&twitter_result]( auto f1 ) {
-			  twitter_result = daw::json::from_json<
+		  [&]( auto f1 ) {
+			  twitter_result.reset( );
+			  alloc.reset( );
+			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
+			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
 		  },
 		  json_sv1 );
+		std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 	} catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Error while testing twitter.json\n";
@@ -72,37 +77,43 @@ void test( char **argv ) {
 	             std::string( "Expected values: user_id had wrong value, "
 	                          "expected 1186275104.  Got " ) +
 	               std::to_string( twitter_result->statuses.front( ).user.id ) );
-	twitter_result.reset( );
-
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_twitter bench trusted", json_sv1.size( ),
-	  [&twitter_result]( auto f1 ) {
+	  [&]( auto f1 ) {
 		  {
-			  twitter_result = daw::json::from_json<
+			  twitter_result.reset( );
+			  alloc.reset( );
+			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
+			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1,
+			                                                               alloc );
 		  }
 	  },
 	  json_sv1 );
+	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
 	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Expected values" );
 	twitter_result.reset( );
+	alloc.reset( );
 
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_citm bench", json_sv2.size( ),
-	  [&citm_result]( auto f2 ) {
-		  citm_result = daw::json::from_json<
+	  [&]( auto f2 ) {
+		  citm_result.reset( );
+		  alloc.reset( );
+		  citm_result = daw::json::from_json_alloc<
 		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2 );
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2, alloc );
 	  },
 	  json_sv2 );
+	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	daw::do_not_optimize( citm_result );
 	test_assert( citm_result, "Missing value" );
 	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
@@ -110,18 +121,20 @@ void test( char **argv ) {
 	             "Expected value" );
 	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
 	             "Incorrect value" );
-	citm_result.reset( );
 
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_citm bench trusted", json_sv2.size( ),
-	  [&citm_result]( auto f2 ) {
-		  citm_result = daw::json::from_json<
+	  [&]( auto f2 ) {
+		  citm_result.reset( );
+		  alloc.reset( );
+		  citm_result = daw::json::from_json_alloc<
 		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2 );
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2, alloc );
 	  },
 	  json_sv2 );
+	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	test_assert( citm_result, "Missing value" );
 	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
 	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
@@ -134,28 +147,33 @@ void test( char **argv ) {
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_canada bench", json_sv3.size( ),
-	  [&canada_result]( auto f3 ) {
-		  canada_result = daw::json::from_json<
+	  [&]( auto f3 ) {
+		  canada_result.reset( );
+		  alloc.reset( );
+		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+		    f3, "features[0].geometry", alloc );
 	  },
 	  json_sv3 );
+	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	daw::do_not_optimize( canada_result );
 	test_assert( canada_result, "Missing value" );
-	canada_result.reset( );
 
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_canada bench trusted", json_sv3.size( ),
-	  [&canada_result]( auto f3 ) {
-		  canada_result = daw::json::from_json<
+	  [&]( auto f3 ) {
+		  canada_result.reset( );
+		  alloc.reset( );
+		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+		    f3, "features[0].geometry", alloc );
 	  },
 	  json_sv3 );
+	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	daw::do_not_optimize( canada_result );
 	test_assert( canada_result, "Missing value" );
 	canada_result.reset( );
@@ -165,24 +183,68 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
-		  twitter_result = daw::json::from_json<
+		  twitter_result.reset( );
+		  citm_result.reset( );
+		  canada_result.reset( );
+		  alloc.reset( );
+		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
-		  citm_result = daw::json::from_json<
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
+		  citm_result = daw::json::from_json_alloc<
 		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2 );
-		  canada_result = daw::json::from_json<
+		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2, alloc );
+		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+		    f3, "features[0].geometry", alloc );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
+	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
 	std::cout << std::flush;
 
 	daw::do_not_optimize( twitter_result );
 	daw::do_not_optimize( citm_result );
 	daw::do_not_optimize( canada_result );
+	test_assert( twitter_result, "Missing value" );
+	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
+	             "Missing value" );
+	test_assert( citm_result, "Missing value" );
+	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
+	             "Expected value" );
+	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+	             "Incorrect value" );
+	test_assert( canada_result, "Missing value" );
+
+	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
+	  "nativejson bench trusted", sz,
+	  [&]( auto f1, auto f2, auto f3 ) {
+		  twitter_result.reset( );
+		  citm_result.reset( );
+		  canada_result.reset( );
+		  alloc.reset( );
+		  twitter_result = daw::json::from_json_alloc<
+		    daw::twitter::twitter_object_t,
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1, alloc );
+		  citm_result = daw::json::from_json_alloc<
+		    daw::citm::citm_object_t,
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2, alloc );
+		  canada_result = daw::json::from_json_alloc<
+		    daw::geojson::Polygon,
+		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
+		    f3, "features[0].geometry", alloc );
+	  },
+	  json_sv1, json_sv2, json_sv3 );
+
+	std::cout << "Total Allocations: " << alloc.used( ) << " bytes\n";
+	std::cout << std::flush;
+
+	daw::do_not_optimize( twitter_result );
+	daw::do_not_optimize( citm_result );
+	daw::do_not_optimize( canada_result );
+
 	test_assert( twitter_result, "Missing value" );
 	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
@@ -197,40 +259,7 @@ void test( char **argv ) {
 	twitter_result.reset( );
 	citm_result.reset( );
 	canada_result.reset( );
-
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson bench trusted", sz,
-	  [&]( auto f1, auto f2, auto f3 ) {
-		  twitter_result = daw::json::from_json<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
-		  citm_result = daw::json::from_json<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2 );
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3, "features[0].geometry" );
-	  },
-	  json_sv1, json_sv2, json_sv3 );
-
-	std::cout << std::flush;
-
-	daw::do_not_optimize( twitter_result );
-	daw::do_not_optimize( citm_result );
-	daw::do_not_optimize( canada_result );
-
-	test_assert( twitter_result, "Missing value" );
-	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
-	             "Missing value" );
-	test_assert( citm_result, "Missing value" );
-	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
-	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
-	             "Expected value" );
-	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-	             "Incorrect value" );
-	test_assert( canada_result, "Missing value" );
+	alloc.reset( );
 }
 
 int main( int argc, char **argv )
@@ -238,7 +267,10 @@ int main( int argc, char **argv )
   try
 #endif
 {
+	static auto alloc = AllocType( 100'000'000ULL );
+#ifdef DAW_USE_JSON_EXCEPTIONS
 	try {
+#endif
 		using namespace daw::json;
 #if defined( NDEBUG ) and not defined( DEBUG )
 		std::cout << "release run\n";
@@ -250,17 +282,22 @@ int main( int argc, char **argv )
 			std::cerr << "twitter citm canada\n";
 			exit( 1 );
 		}
-		test<daw::json::constexpr_exec_tag>( argv );
+		test<daw::json::constexpr_exec_tag>( argv, alloc );
 		if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 		                                 daw::json::runtime_exec_tag> ) {
-			test<daw::json::runtime_exec_tag>( argv );
+			test<daw::json::runtime_exec_tag>( argv, alloc );
 		}
-		test<daw::json::simd_exec_tag>( argv );
+		test<daw::json::simd_exec_tag>( argv, alloc );
+#ifdef DAW_USE_JSON_EXCEPTIONS
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
-} catch( daw::json::json_exception const &jex ) {
+#endif
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

@@ -86,7 +86,6 @@ int main( int argc, char **argv )
 #if defined( DAW_ALLOW_SSE42 )
 	test<daw::json::sse42_exec_tag>( sv_numbers );
 #endif
-
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

@@ -41,8 +41,8 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_string<"escaped">, json_string<"unicode">>;
 #else
-		DAW_CONSTEXPR inline static char const escaped[] = "escaped";
-		DAW_CONSTEXPR inline static char const unicode[] = "unicode";
+		constexpr inline static char const escaped[] = "escaped";
+		constexpr inline static char const unicode[] = "unicode";
 		using type = json_member_list<json_string<escaped>, json_string<unicode>>;
 #endif
 		static inline auto to_json_data( unicode_data const &value ) {

@@ -10,7 +10,6 @@
 
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
-#include "daw_json_iterator_range.h"
 #include "daw_json_parse_value_fwd.h"
 
 #include <ciso646>
@@ -84,7 +83,7 @@ namespace daw::json::json_details {
 			auto key =
 			  parse_value<key_t>( ParseTag<key_t::expected_type>{ }, *base::rng );
 			name::name_parser::trim_end_of_name( *base::rng );
-			return daw::construct_a<value_type>(
+			return json_class_constructor<value_type>(
 			  std::move( key ), parse_value<value_t>(
 			                      ParseTag<value_t::expected_type>{ }, *base::rng ) );
 		}
