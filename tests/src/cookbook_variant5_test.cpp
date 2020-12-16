@@ -39,8 +39,32 @@ namespace daw::cookbook_variant4 {
 			int option2;
 		};
 	} // namespace v2
-	using configs_t = std::variant<daw::cookbook_variant4::v1::Config,
-	                               daw::cookbook_variant4::v2::Config>;
+
+	template<typename... VersionedConfigs>
+	struct BasicConfig {
+		std::variant<VersionedConfigs...> data;
+
+		template<typename T,
+		         std::enable_if_t<std::disjunction_v<std::is_same<
+		                            daw::remove_cvref_t<T>, VersionedConfigs>...>,
+		                          std::nullptr_t> = nullptr>
+		constexpr BasicConfig( T &&value )
+		  : data( std::forward<T>( value ) ) {}
+	};
+	template<std::size_t Idx, typename... VersionedConfigs>
+	constexpr auto *get_if( BasicConfig<VersionedConfigs...> const *v ) {
+		return std::get_if<Idx>( &( v->data ) );
+	}
+	template<std::size_t Idx, typename... VersionedConfigs>
+	constexpr auto *get_if( BasicConfig<VersionedConfigs...> *v ) {
+		return std::get_if<Idx>( &( v->data ) );
+	}
+	template<typename... VersionedConfigs>
+	constexpr std::size_t get_index( BasicConfig<VersionedConfigs...> const &v ) {
+		return v.data.index( );
+	}
+
+	using Config = BasicConfig<v1::Config, v2::Config>;
 
 	struct Switcher {
 		// Convert JSON tag member to type index
@@ -50,8 +74,8 @@ namespace daw::cookbook_variant4 {
 		}
 
 		// Get value for Tag from class value
-		DAW_CONSTEXPR std::size_t operator( )( configs_t const &v ) const {
-			return static_cast<std::size_t>( v.index( ) );
+		DAW_CONSTEXPR std::size_t operator( )( Config const &v ) const {
+			return static_cast<std::size_t>( v.data.index( ) );
 		}
 	};
 } // namespace daw::cookbook_variant4
@@ -95,7 +119,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct json_data_contract<daw::cookbook_variant4::configs_t> {
+	struct json_data_contract<daw::cookbook_variant4::Config> {
 		static constexpr char const mem_version[] = "version";
 		using type = json_submember_tagged_variant<
 		  json_number<mem_version, int>, daw::cookbook_variant4::Switcher,
@@ -116,7 +140,7 @@ int main( int argc, char **argv )
 	auto json_data = std::string_view( data.data( ), data.size( ) );
 
 	auto configs =
-	  daw::json::from_json_array<daw::cookbook_variant4::configs_t>( json_data );
+	  daw::json::from_json_array<daw::cookbook_variant4::Config>( json_data );
 
 	std::string const json_str = daw::json::to_json_array( configs );
 	std::cout << json_str << '\n';

@@ -309,6 +309,11 @@ target_link_libraries(cookbook_variant4_test json_test)
 add_test(NAME cookbook_variant4_test COMMAND cookbook_variant4_test ./cookbook_variant4.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_variant4_test)
 
+add_executable(cookbook_variant5_test src/cookbook_variant5_test.cpp)
+target_link_libraries(cookbook_variant5_test json_test)
+add_test(NAME cookbook_variant5_test COMMAND cookbook_variant5_test ./cookbook_variant5.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_variant5_test)
+
 add_executable(optional_tagged_variant_test src/optional_tagged_variant_test.cpp)
 target_link_libraries(optional_tagged_variant_test json_test)
 add_test(NAME optional_tagged_variant_test COMMAND optional_tagged_variant_test ./optional_tagged_variant.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
