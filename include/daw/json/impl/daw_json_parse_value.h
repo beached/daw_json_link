@@ -599,4 +599,156 @@ namespace daw::json::json_details {
 			  constructor_t{ }, rng, value_rng.first, value_rng.size( ) );
 		}
 	}
+
+	template<std::size_t N, typename JsonClass, bool KnownBounds,
+	         typename... JsonClasses, typename Range>
+	constexpr JsonClass parse_nth_class( std::size_t idx, Range &rng ) {
+		if constexpr( sizeof...( JsonClasses ) >= N + 8 ) {
+			switch( idx ) {
+			case N + 0:
+				return parse_value<daw::traits::nth_element<N + 0, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 1:
+				return parse_value<daw::traits::nth_element<N + 1, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 2:
+				return parse_value<daw::traits::nth_element<N + 2, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 3:
+				return parse_value<daw::traits::nth_element<N + 3, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 4:
+				return parse_value<daw::traits::nth_element<N + 4, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 5:
+				return parse_value<daw::traits::nth_element<N + 5, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 6:
+				return parse_value<daw::traits::nth_element<N + 6, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 7:
+				return parse_value<daw::traits::nth_element<N + 7, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			default:
+				if constexpr( sizeof...( JsonClasses ) > N + 7 ) {
+					return parse_nth_class<N + 8, JsonClass, KnownBounds, JsonClasses...>(
+					  idx, rng );
+				} else {
+					DAW_UNREACHABLE( );
+					DAW_UNREACHABLE( );
+				}
+			}
+		} else if constexpr( sizeof...( JsonClasses ) == N + 7 ) {
+			switch( idx ) {
+			case N + 0:
+				return parse_value<daw::traits::nth_element<N + 0, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 1:
+				return parse_value<daw::traits::nth_element<N + 1, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 2:
+				return parse_value<daw::traits::nth_element<N + 2, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 3:
+				return parse_value<daw::traits::nth_element<N + 3, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 4:
+				return parse_value<daw::traits::nth_element<N + 4, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 5:
+				return parse_value<daw::traits::nth_element<N + 5, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 6:
+				return parse_value<daw::traits::nth_element<N + 6, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			default:
+				DAW_UNREACHABLE( );
+			}
+		} else if constexpr( sizeof...( JsonClasses ) == N + 6 ) {
+			switch( idx ) {
+			case N + 0:
+				return parse_value<daw::traits::nth_element<N + 0, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 1:
+				return parse_value<daw::traits::nth_element<N + 1, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 2:
+				return parse_value<daw::traits::nth_element<N + 2, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 3:
+				return parse_value<daw::traits::nth_element<N + 3, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 4:
+				return parse_value<daw::traits::nth_element<N + 4, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 5:
+				return parse_value<daw::traits::nth_element<N + 5, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			default:
+				DAW_UNREACHABLE( );
+			}
+		} else if constexpr( sizeof...( JsonClasses ) == N + 5 ) {
+			switch( idx ) {
+			case N + 0:
+				return parse_value<daw::traits::nth_element<N + 0, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 1:
+				return parse_value<daw::traits::nth_element<N + 1, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 2:
+				return parse_value<daw::traits::nth_element<N + 2, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 3:
+				return parse_value<daw::traits::nth_element<N + 3, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 4:
+				return parse_value<daw::traits::nth_element<N + 4, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			default:
+				DAW_UNREACHABLE( );
+			}
+		} else if constexpr( sizeof...( JsonClasses ) == N + 4 ) {
+			switch( idx ) {
+			case N + 0:
+				return parse_value<daw::traits::nth_element<N + 0, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 1:
+				return parse_value<daw::traits::nth_element<N + 1, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 2:
+				return parse_value<daw::traits::nth_element<N + 2, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 3:
+				return parse_value<daw::traits::nth_element<N + 3, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			default:
+				DAW_UNREACHABLE( );
+			}
+		} else if constexpr( sizeof...( JsonClasses ) == N + 3 ) {
+			switch( idx ) {
+			case N + 0:
+				return parse_value<daw::traits::nth_element<N + 0, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 1:
+				return parse_value<daw::traits::nth_element<N + 1, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			case N + 2:
+				return parse_value<daw::traits::nth_element<N + 2, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			default:
+				DAW_UNREACHABLE( );
+			}
+		} else if constexpr( sizeof...( JsonClasses ) == N + 2 ) {
+			if( idx == N ) {
+				return parse_value<daw::traits::nth_element<N + 0, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			} else {
+				return parse_value<daw::traits::nth_element<N + 1, JsonClasses...>>(
+				  ParseTag<JsonParseTypes::Class>{ }, rng );
+			}
+		} else {
+			return parse_value<daw::traits::nth_element<N + 0, JsonClasses...>>(
+			  ParseTag<JsonParseTypes::Class>{ }, rng );
+		}
+	}
 } // namespace daw::json::json_details

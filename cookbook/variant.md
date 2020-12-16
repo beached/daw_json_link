@@ -136,7 +136,7 @@ Extending the previous example, it auto detected the `std::string`, `int`, and `
  ]
  ```
  
- A member name and a callable are needed to tell the parser which type will parsed.
+ A member name and a Callable are needed to tell the parser which type will parsed.
  
  Too see a working example using this code, refer to [cookbook_variant3_test.cpp](../tests/src/cookbook_variant3_test.cpp) 
  ```c++
@@ -179,3 +179,86 @@ Extending the previous example, it auto detected the `std::string`, `int`, and `
  };
  ```
  As you can see, the json_tagged_variant_type_list can use terse type names for some, or the full names.
+
+## Submember as tag for tagged_variant
+
+There are cases where a classes structure is determined by one of it's submembers.  This comes up with file versioning.
+
+In our example we have two versions of a config file.  The tag member `"version"` determines the layout of the other members in the example.
+
+```json
+{
+  "version": 1,
+  "name": "what is the answer to the ultimate question?",
+  "value": 42,
+  "next question": "what is earth"
+}
+```
+```json
+{
+  "version": 2,
+  "config_options": [{"name": "bob", "value":  42}],
+  "option2": 5
+}
+```
+
+The above example shows two distinct JSON objects that both have a `"version"` member that is a discriminator for the expected data structure.
+
+```c++
+struct ConfigV1 {
+	int version;
+  std::string name;
+  int value;
+  std::string next_question;
+};
+
+struct ConfigV2 {
+	int version;
+  std::map<std::string, int> config_options;
+  int option2;
+};
+
+namespace daw::json {
+  template<>
+  struct json_data_contract<ConfigV1> {
+    using type =
+      json_member_list<
+        json_number<"version", int>,  
+        json_string<"name">,
+        json_number<"value", int>,
+        json_string<"next question">
+      >;
+    
+    static constexpr auto to_json_data( ConfigV1 const & v ) {
+    	return std::forward_as_tuple( v.version, v.name, v.value, v.next_question );
+    }
+  };
+  
+  template<>
+  struct json_data_contract<ConfigV2> {
+    using type = json_member_list<
+      json_number<"version", int>,  
+      json_key_value_array<"config_options", 
+        std::map<std::string, int>,
+        json_number<"value", int>, 
+        json_string<"name">
+      >,
+      json_number<"option2", int>
+    >;
+    
+    static constexpr auto to_json_data( ConfigV2 const & v ) {
+    	return std::forward_as_tuple( v.version, v.config_options, v.option2 );
+    }
+  };
+  
+  template<>
+  struct json_data_contract<std::variant<ConfigV1, ConfigV2>> {
+      using type = json_submember_tagged_variant<
+        json_number<"version", int>,
+        ConfigSwitcher,    
+        ConfigV1,
+        ConfigV2
+      >;  
+  };
+}
+```
