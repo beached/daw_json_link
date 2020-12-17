@@ -836,9 +836,14 @@ namespace daw::json::json_details {
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
-		return json_data_contract_trait_t<parse_to_t>::serialize(
-		  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ),
-		  value );
+		if constexpr( has_json_to_json_data_v<parse_to_t> ) {
+			return json_data_contract_trait_t<parse_to_t>::serialize(
+			  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ),
+			  value );
+		} else {
+			static_assert( is_submember_tagged_variant_v<parse_to_t> );
+			return json_data_contract_trait_t<parse_to_t>::serialize( it, value );
+		}
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>

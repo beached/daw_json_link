@@ -20,6 +20,7 @@
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
+#include <daw/daw_visit.h>
 #include <daw/iterator/daw_back_inserter.h>
 
 #include <array>
@@ -169,6 +170,70 @@ namespace daw::json {
 		parse_to_class( Range &rng ) {
 			return json_details::parse_ordered_json_class<
 			  T, json_details::ordered_member_wrapper<JsonMembers>...>( rng );
+		}
+	};
+
+	/***
+	 * Parse a tagged variant like class where the tag member is in the same class
+	 * that is being discriminated.  The container type, that will specialize
+	 * json_data_constract on, must support the get_if, get_index
+	 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
+	 * declared in member list
+	 * @tparam Switcher A callable that returns an index into JsonClasses when
+	 * passed the TagMember object
+	 * @tparam JsonClasses List of alternative classes that are mapped via a
+	 * json_data_contract
+	 */
+	template<typename TagMember, typename Switcher, typename... JsonClasses>
+	struct json_submember_tagged_variant {
+		using i_am_a_json_member_list = void;
+		using i_am_a_submember_tagged_variant = void;
+
+		/**
+		 * Serialize a C++ class to JSON data
+		 * @tparam OutputIterator An output iterator with a char value_type
+		 * @param it OutputIterator to append string data to
+		 * @return the OutputIterator it
+		 */
+		template<typename OutputIterator, typename Value>
+		[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
+		serialize( OutputIterator it, Value const &v ) {
+
+			return daw::visit_nt( v, [&]( auto const &alternative ) {
+				using Alternative = daw::remove_cvref_t<decltype( alternative )>;
+				static_assert( ( std::is_same_v<Alternative, JsonClasses> or ... ),
+				               "Unexpected alternative type" );
+				static_assert( json_details::has_json_to_json_data_v<Alternative>,
+				               "Alternative type does not have a to_json_data_member "
+				               "in it's json_data_contract specialization" );
+
+				return json_details::member_to_string<json_class<no_name, Alternative>>(
+				  it, alternative );
+			} );
+		}
+
+		/**
+		 *
+		 * Parse JSON data and construct a C++ class.  This is used by parse_value
+		 * to get back into a mode with a JsonMembers...
+		 * @tparam T The result of parsing json_class
+		 * @tparam Range Input range type
+		 * @param rng JSON data to parse
+		 * @return A T object
+		 */
+		template<typename T, typename Range>
+		[[maybe_unused, nodiscard]] static inline constexpr T
+		parse_to_class( Range &rng ) {
+			using tag_class_t = tuple_json_mapping<TagMember>;
+			std::size_t const idx = [rng]( ) mutable {
+				return Switcher{ }( std::get<0>(
+				  json_details::parse_value<json_class<no_name, tag_class_t>>(
+				    ParseTag<JsonParseTypes::Class>{ }, rng )
+				    .members ) );
+			}( );
+			return json_details::parse_nth_class<0, T, false,
+			                                     json_class<no_name, JsonClasses>...>(
+			  idx, rng );
 		}
 	};
 

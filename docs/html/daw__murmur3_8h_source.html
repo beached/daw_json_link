@@ -90,84 +90,83 @@ $(function() {
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw.html">daw</a> {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">namespace </span>murmur3_details {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    [[nodiscard]] <span class="keyword">inline</span> constexpr UInt32</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    murmur3_32_scramble( UInt32 k ) noexcept {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      k *= 0xcc9e<span class="stringliteral">&#39;2d51_u32;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="stringliteral">      k = rotate_left&lt;15&gt;( k );</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="stringliteral">      k *= 0x1b87&#39;</span>3593_u32;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      <span class="keywordflow">return</span> k;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    }</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  } <span class="comment">// namespace murmur3_details</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> StringView&gt;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  [[nodiscard]] DAW_ATTRIBUTE_FLATTEN <span class="keyword">inline</span> constexpr UInt32</div>
-<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="namespacedaw.html#a81deee62575a811f5fc737a42aa92182">   32</a></span>&#160;  <a class="code" href="namespacedaw.html#a81deee62575a811f5fc737a42aa92182">fnv1a_32</a>( StringView key ) noexcept {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    std::size_t <span class="keyword">const</span> len = std::size( key );</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr = std::data( key );</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    UInt32 hash = 0x811c<span class="stringliteral">&#39;9dc5_u32;</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="stringliteral">    for( std::size_t n = 0; n &lt; len; ++n ) {</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="stringliteral">      hash ^= static_cast&lt;unsigned char&gt;( ptr[n] );</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="stringliteral">      hash *= 0x0100&#39;</span>0193_u32;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordflow">return</span> hash;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  }</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> StringView&gt;</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="namespacedaw.html#a895ff2926f93d494c6b57880d3c597d5">   44</a></span>&#160;  [[nodiscard]] constexpr UInt32 <a class="code" href="namespacedaw.html#a895ff2926f93d494c6b57880d3c597d5">name_hash</a>( StringView key,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                                            std::uint32_t seed = 0 ) noexcept {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    (void)seed;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">auto</span> <span class="keyword">const</span> Sz = std::size( key );</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">if</span>( Sz &lt;= <span class="keyword">sizeof</span>( UInt32 ) ) {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <span class="keyword">auto</span> result = 0_u32;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="keywordflow">for</span>( std::size_t n = 0; n &lt; Sz; ++n ) {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        result &lt;&lt;= 8U;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        result |= <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( key[n] );</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="namespacedaw.html#a81deee62575a811f5fc737a42aa92182">fnv1a_32</a>( key );</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  }</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> StringView&gt;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  [[nodiscard]] DAW_ATTRIBUTE_FLATTEN <span class="keyword">inline</span> constexpr UInt32</div>
-<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="namespacedaw.html#a3befd937ad539f2ee96f1f62af95eee3">   61</a></span>&#160;  <a class="code" href="namespacedaw.html#a3befd937ad539f2ee96f1f62af95eee3">murmur3_32</a>( StringView key, std::uint32_t seed = 0 ) noexcept {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    UInt32 h = to_uint32( seed );</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    UInt32 k = 0_u32;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">char</span> <span class="keyword">const</span> *first = std::data( key );</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> last = std::data( key ) + std::size( key );</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">while</span>( ( last - first ) &gt;= 4 ) {</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="comment">// Here is a source of differing results across endiannesses.</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="comment">// A swap here has no effects on hash properties though.</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      k = daw::to_uint32_buffer( first );</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      first += 4;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      h ^= murmur3_details::murmur3_32_scramble( k );</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      h = rotate_left&lt;13&gt;( h );</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      h = h * 5 + 0xe654<span class="stringliteral">&#39;6b64_u32;</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="stringliteral">    }</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="stringliteral"></span> </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="stringliteral">    // Anything left over</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="stringliteral">    k = 0_u32;</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="stringliteral">    for( auto i = ( last - first ); i &gt; 0; --i ) {</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="stringliteral">      k &lt;&lt;= 8U;</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="stringliteral">      k |= static_cast&lt;unsigned char&gt;( first[i - 1] );</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="stringliteral">    }</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="stringliteral"></span> </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="stringliteral">    h ^= murmur3_details::murmur3_32_scramble( k );</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="stringliteral"></span> </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="stringliteral">    h ^= to_uint32( std::size( key ) );</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="stringliteral">    h ^= h &gt;&gt; 16U;</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="stringliteral">    h *= 0x85eb&#39;</span>ca6b_u32;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    h ^= h &gt;&gt; 13U;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    h *= 0xc2b2<span class="stringliteral">&#39;ae35_u32;</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="stringliteral">    h ^= h &gt;&gt; 16U;</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="stringliteral">    return h;</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="stringliteral">  }</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="stringliteral">} // namespace daw</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    [[nodiscard]] <span class="keyword">inline</span> constexpr UInt32 murmur3_32_scramble( UInt32 k ) {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      k *= 0xcc9e<span class="stringliteral">&#39;2d51_u32;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="stringliteral">      k = rotate_left&lt;15&gt;( k );</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="stringliteral">      k *= 0x1b87&#39;</span>3593_u32;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      <span class="keywordflow">return</span> k;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    }</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  } <span class="comment">// namespace murmur3_details</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> StringView&gt;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  [[nodiscard]] DAW_ATTRIBUTE_FLATTEN <span class="keyword">inline</span> constexpr UInt32</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="namespacedaw.html#a95adfa5df64e8b532c22b0bc8ce7dc73">   31</a></span>&#160;  <a class="code" href="namespacedaw.html#a95adfa5df64e8b532c22b0bc8ce7dc73">fnv1a_32</a>( StringView key ) {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    std::size_t <span class="keyword">const</span> len = std::size( key );</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr = std::data( key );</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    UInt32 hash = 0x811c<span class="stringliteral">&#39;9dc5_u32;</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="stringliteral">    for( std::size_t n = 0; n &lt; len; ++n ) {</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="stringliteral">      hash ^= static_cast&lt;unsigned char&gt;( ptr[n] );</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="stringliteral">      hash *= 0x0100&#39;</span>0193_u32;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">return</span> hash;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> StringView&gt;</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="namespacedaw.html#ac989592690750411ffe7fea72426f034">   43</a></span>&#160;  [[nodiscard]] constexpr UInt32 <a class="code" href="namespacedaw.html#ac989592690750411ffe7fea72426f034">name_hash</a>( StringView key,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                                            std::uint32_t seed = 0 ) {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    (void)seed;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">auto</span> <span class="keyword">const</span> Sz = std::size( key );</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">if</span>( Sz &lt;= <span class="keyword">sizeof</span>( UInt32 ) ) {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keyword">auto</span> result = 0_u32;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <span class="keywordflow">for</span>( std::size_t n = 0; n &lt; Sz; ++n ) {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        result &lt;&lt;= 8U;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        result |= <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( key[n] );</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="namespacedaw.html#a95adfa5df64e8b532c22b0bc8ce7dc73">fnv1a_32</a>( key );</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> StringView&gt;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  [[nodiscard]] DAW_ATTRIBUTE_FLATTEN <span class="keyword">inline</span> constexpr UInt32</div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="namespacedaw.html#a488839633373c246a8c4d7e3b3c38fe6">   60</a></span>&#160;  <a class="code" href="namespacedaw.html#a488839633373c246a8c4d7e3b3c38fe6">murmur3_32</a>( StringView key, std::uint32_t seed = 0 ) {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    UInt32 h = to_uint32( seed );</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    UInt32 k = 0_u32;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">char</span> <span class="keyword">const</span> *first = std::data( key );</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> last = std::data( key ) + std::size( key );</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">while</span>( ( last - first ) &gt;= 4 ) {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      <span class="comment">// Here is a source of differing results across endiannesses.</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="comment">// A swap here has no effects on hash properties though.</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      k = daw::to_uint32_buffer( first );</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      first += 4;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      h ^= murmur3_details::murmur3_32_scramble( k );</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      h = rotate_left&lt;13&gt;( h );</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      h = h * 5 + 0xe654<span class="stringliteral">&#39;6b64_u32;</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="stringliteral">    }</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="stringliteral"></span> </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="stringliteral">    // Anything left over</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="stringliteral">    k = 0_u32;</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="stringliteral">    for( auto i = ( last - first ); i &gt; 0; --i ) {</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="stringliteral">      k &lt;&lt;= 8U;</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="stringliteral">      k |= static_cast&lt;unsigned char&gt;( first[i - 1] );</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="stringliteral">    }</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="stringliteral"></span> </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="stringliteral">    h ^= murmur3_details::murmur3_32_scramble( k );</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="stringliteral"></span> </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="stringliteral">    h ^= to_uint32( std::size( key ) );</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="stringliteral">    h ^= h &gt;&gt; 16U;</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="stringliteral">    h *= 0x85eb&#39;</span>ca6b_u32;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    h ^= h &gt;&gt; 13U;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    h *= 0xc2b2<span class="stringliteral">&#39;ae35_u32;</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="stringliteral">    h ^= h &gt;&gt; 16U;</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="stringliteral">    return h;</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="stringliteral">  }</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="stringliteral">} // namespace daw</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="anamespacedaw_html_a81deee62575a811f5fc737a42aa92182"><div class="ttname"><a href="namespacedaw.html#a81deee62575a811f5fc737a42aa92182">daw::fnv1a_32</a></div><div class="ttdeci">constexpr DAW_ATTRIBUTE_FLATTEN UInt32 fnv1a_32(StringView key) noexcept</div><div class="ttdef"><b>Definition:</b> daw_murmur3.h:32</div></div>
-<div class="ttc" id="anamespacedaw_html"><div class="ttname"><a href="namespacedaw.html">daw</a></div><div class="ttdef"><b>Definition:</b> daw_json_event_parser.h:15</div></div>
-<div class="ttc" id="anamespacedaw_html_a3befd937ad539f2ee96f1f62af95eee3"><div class="ttname"><a href="namespacedaw.html#a3befd937ad539f2ee96f1f62af95eee3">daw::murmur3_32</a></div><div class="ttdeci">constexpr DAW_ATTRIBUTE_FLATTEN UInt32 murmur3_32(StringView key, std::uint32_t seed=0) noexcept</div><div class="ttdef"><b>Definition:</b> daw_murmur3.h:61</div></div>
-<div class="ttc" id="anamespacedaw_html_a895ff2926f93d494c6b57880d3c597d5"><div class="ttname"><a href="namespacedaw.html#a895ff2926f93d494c6b57880d3c597d5">daw::name_hash</a></div><div class="ttdeci">constexpr UInt32 name_hash(StringView key, std::uint32_t seed=0) noexcept</div><div class="ttdef"><b>Definition:</b> daw_murmur3.h:44</div></div>
+<div class="ttc" id="anamespacedaw_html_a95adfa5df64e8b532c22b0bc8ce7dc73"><div class="ttname"><a href="namespacedaw.html#a95adfa5df64e8b532c22b0bc8ce7dc73">daw::fnv1a_32</a></div><div class="ttdeci">constexpr DAW_ATTRIBUTE_FLATTEN UInt32 fnv1a_32(StringView key)</div><div class="ttdef"><b>Definition:</b> daw_murmur3.h:31</div></div>
+<div class="ttc" id="anamespacedaw_html_ac989592690750411ffe7fea72426f034"><div class="ttname"><a href="namespacedaw.html#ac989592690750411ffe7fea72426f034">daw::name_hash</a></div><div class="ttdeci">constexpr UInt32 name_hash(StringView key, std::uint32_t seed=0)</div><div class="ttdef"><b>Definition:</b> daw_murmur3.h:43</div></div>
+<div class="ttc" id="anamespacedaw_html"><div class="ttname"><a href="namespacedaw.html">daw</a></div><div class="ttdef"><b>Definition:</b> daw_json_event_parser.h:17</div></div>
+<div class="ttc" id="anamespacedaw_html_a488839633373c246a8c4d7e3b3c38fe6"><div class="ttname"><a href="namespacedaw.html#a488839633373c246a8c4d7e3b3c38fe6">daw::murmur3_32</a></div><div class="ttdeci">constexpr DAW_ATTRIBUTE_FLATTEN UInt32 murmur3_32(StringView key, std::uint32_t seed=0)</div><div class="ttdef"><b>Definition:</b> daw_murmur3.h:60</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20

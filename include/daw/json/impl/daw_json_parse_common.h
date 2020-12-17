@@ -42,7 +42,7 @@ namespace daw::json {
 		std::tuple<typename Members::parse_to_t...> members;
 
 		template<typename... Ts>
-		constexpr tuple_json_mapping( Ts &&... values )
+		constexpr tuple_json_mapping( Ts &&...values )
 		  : members{ std::forward<Ts>( values )... } {}
 	};
 } // namespace daw::json
@@ -118,7 +118,7 @@ namespace daw::json::json_details {
 	template<typename Value, typename Constructor, typename Range,
 	         typename... Args>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr auto
-	construct_value( Constructor &&ctor, Range &rng, Args &&... args ) {
+	construct_value( Constructor &&ctor, Range &rng, Args &&...args ) {
 		if constexpr( Range::has_allocator ) {
 			using alloc_t = typename Range::template allocator_type_as<Value>;
 			auto alloc = rng.template get_allocator_for<Value>( );
@@ -165,8 +165,8 @@ namespace daw::json::json_details {
 	  has_json_data_contract_trait<T>::value;
 
 	template<typename Container, typename Value>
-	using detect_push_back = decltype(
-	  std::declval<Container &>( ).push_back( std::declval<Value>( ) ) );
+	using detect_push_back = decltype( std::declval<Container &>( ).push_back(
+	  std::declval<Value>( ) ) );
 
 	template<typename Container, typename Value>
 	using detect_insert_end = decltype( std::declval<Container &>( ).insert(
@@ -242,13 +242,21 @@ namespace daw::json::json_details {
 	};
 
 	template<typename T>
-	using json_parser_to_json_data_t = decltype(
-	  daw::json::json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
+	using json_parser_to_json_data_t =
+	  decltype( daw::json::json_data_contract<T>::to_json_data(
+	    std::declval<T &>( ) ) );
 
 	template<typename T>
 	static inline constexpr bool has_json_to_json_data_v =
 	  daw::is_detected_v<json_parser_to_json_data_t, T>;
 
+	template<typename T>
+	using is_submember_tagged_variant_t =
+	  typename json_data_contract<T>::type::i_am_a_submember_tagged_variant;
+
+	template<typename T>
+	static inline constexpr bool is_submember_tagged_variant_v =
+	  daw::is_detected_v<is_submember_tagged_variant_t, T>;
 } // namespace daw::json::json_details
 
 namespace daw::json {

@@ -96,6 +96,8 @@ Macros</h2></td></tr>
 <tr class="separator:a728389a742b837d2170f62d34d78ddf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a082cf03a74704f531a43d012c84cdbb1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a082cf03a74704f531a43d012c84cdbb1">DAW_JSON_LIKELY</a>(Bool)&#160;&#160;&#160;!!( Bool )</td></tr>
 <tr class="separator:a082cf03a74704f531a43d012c84cdbb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf37d1f6b1961417726ac65a35ce8978"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a>&#160;&#160;&#160;__attribute__( ( noinline ) )</td></tr>
+<tr class="separator:adf37d1f6b1961417726ac65a35ce8978"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a043f9b7b84dd49e87d2b0114f7dc4d42"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>(Bool)&#160;&#160;&#160;!!( Bool )</td></tr>
 <tr class="separator:a043f9b7b84dd49e87d2b0114f7dc4d42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab4d7faa2d24e5d5b828e8b013eb8289"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#aab4d7faa2d24e5d5b828e8b013eb8289">DAW_USE_JSON_EXCEPTIONS</a></td></tr>
@@ -103,24 +105,24 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a976d377fa9c45a7aabb67bd351905daa"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
-<tr class="memitem:a976d377fa9c45a7aabb67bd351905daa"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a976d377fa9c45a7aabb67bd351905daa">daw_json_error</a> (daw::json::ErrorReason reason)</td></tr>
-<tr class="separator:a976d377fa9c45a7aabb67bd351905daa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6dccd6b8c998cc5bf25b2030524b69df"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </td></tr>
-<tr class="memitem:a6dccd6b8c998cc5bf25b2030524b69df"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a6dccd6b8c998cc5bf25b2030524b69df">daw_json_error</a> (daw::json::ErrorReason reason, Range const &amp;location)</td></tr>
-<tr class="separator:a6dccd6b8c998cc5bf25b2030524b69df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9aef7fc91602ef79b670328b284ea1b"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
-<tr class="memitem:ad9aef7fc91602ef79b670328b284ea1b"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#ad9aef7fc91602ef79b670328b284ea1b">daw_json_error</a> (daw::json::json_details::missing_member reason)</td></tr>
-<tr class="separator:ad9aef7fc91602ef79b670328b284ea1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c9fe055142c0b3a40127c5249bbe6c5"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </td></tr>
-<tr class="memitem:a4c9fe055142c0b3a40127c5249bbe6c5"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a4c9fe055142c0b3a40127c5249bbe6c5">daw_json_error</a> (daw::json::json_details::missing_member reason, Range const &amp;location)</td></tr>
-<tr class="separator:a4c9fe055142c0b3a40127c5249bbe6c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af12e9f3252a3f9a19729f2a917740fd6"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
-<tr class="memitem:af12e9f3252a3f9a19729f2a917740fd6"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#af12e9f3252a3f9a19729f2a917740fd6">daw_json_error</a> (daw::json::json_details::missing_token reason)</td></tr>
-<tr class="separator:af12e9f3252a3f9a19729f2a917740fd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42658829e4ad95d03500b16715019de7"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </td></tr>
-<tr class="memitem:a42658829e4ad95d03500b16715019de7"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a42658829e4ad95d03500b16715019de7">daw_json_error</a> (daw::json::json_details::missing_token reason, Range const &amp;location)</td></tr>
-<tr class="separator:a42658829e4ad95d03500b16715019de7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7daf548b96a0e1caf85a0e0a350e2944"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
+<tr class="memitem:a7daf548b96a0e1caf85a0e0a350e2944"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a7daf548b96a0e1caf85a0e0a350e2944">daw_json_error</a> (daw::json::ErrorReason reason)</td></tr>
+<tr class="separator:a7daf548b96a0e1caf85a0e0a350e2944"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dadd799b7c62da7088249a9e484ca3c"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </td></tr>
+<tr class="memitem:a6dadd799b7c62da7088249a9e484ca3c"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a6dadd799b7c62da7088249a9e484ca3c">daw_json_error</a> (daw::json::ErrorReason reason, Range const &amp;location)</td></tr>
+<tr class="separator:a6dadd799b7c62da7088249a9e484ca3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1182a343f7120d52eb365fe5267248f"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
+<tr class="memitem:aa1182a343f7120d52eb365fe5267248f"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#aa1182a343f7120d52eb365fe5267248f">daw_json_error</a> (daw::json::json_details::missing_member reason)</td></tr>
+<tr class="separator:aa1182a343f7120d52eb365fe5267248f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a963169daa4ac6a47a7330f9ac38d58c1"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </td></tr>
+<tr class="memitem:a963169daa4ac6a47a7330f9ac38d58c1"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a963169daa4ac6a47a7330f9ac38d58c1">daw_json_error</a> (daw::json::json_details::missing_member reason, Range const &amp;location)</td></tr>
+<tr class="separator:a963169daa4ac6a47a7330f9ac38d58c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6598f37c6801b1892c38b2ca774793c7"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
+<tr class="memitem:a6598f37c6801b1892c38b2ca774793c7"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a6598f37c6801b1892c38b2ca774793c7">daw_json_error</a> (daw::json::json_details::missing_token reason)</td></tr>
+<tr class="separator:a6598f37c6801b1892c38b2ca774793c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10d173696a5caaaad5b4fb674b2f850d"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </td></tr>
+<tr class="memitem:a10d173696a5caaaad5b4fb674b2f850d"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a10d173696a5caaaad5b4fb674b2f850d">daw_json_error</a> (daw::json::json_details::missing_token reason, Range const &amp;location)</td></tr>
+<tr class="separator:a10d173696a5caaaad5b4fb674b2f850d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -212,6 +214,20 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="adf37d1f6b1961417726ac65a35ce8978"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf37d1f6b1961417726ac65a35ce8978">&#9670;&nbsp;</a></span>DAW_JSON_NOINLINE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DAW_JSON_NOINLINE&#160;&#160;&#160;__attribute__( ( noinline ) )</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a043f9b7b84dd49e87d2b0114f7dc4d42"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a043f9b7b84dd49e87d2b0114f7dc4d42">&#9670;&nbsp;</a></span>DAW_JSON_UNLIKELY</h2>
 
@@ -245,8 +261,8 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a976d377fa9c45a7aabb67bd351905daa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a976d377fa9c45a7aabb67bd351905daa">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[1/6]</span></h2>
+<a id="a7daf548b96a0e1caf85a0e0a350e2944"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7daf548b96a0e1caf85a0e0a350e2944">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[1/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -257,7 +273,7 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void daw_json_error </td>
+          <td class="memname">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void daw_json_error </td>
           <td>(</td>
           <td class="paramtype">daw::json::ErrorReason&#160;</td>
           <td class="paramname"><em>reason</em></td><td>)</td>
@@ -273,8 +289,8 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </div>
 
 </div>
 </div>
-<a id="a6dccd6b8c998cc5bf25b2030524b69df"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6dccd6b8c998cc5bf25b2030524b69df">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[2/6]</span></h2>
+<a id="a6dadd799b7c62da7088249a9e484ca3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dadd799b7c62da7088249a9e484ca3c">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[2/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -285,7 +301,7 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void daw_json_error </td>
+          <td class="memname">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void daw_json_error </td>
           <td>(</td>
           <td class="paramtype">daw::json::ErrorReason&#160;</td>
           <td class="paramname"><em>reason</em>, </td>
@@ -311,8 +327,8 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </
 
 </div>
 </div>
-<a id="ad9aef7fc91602ef79b670328b284ea1b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9aef7fc91602ef79b670328b284ea1b">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[3/6]</span></h2>
+<a id="aa1182a343f7120d52eb365fe5267248f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1182a343f7120d52eb365fe5267248f">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[3/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -323,7 +339,7 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void daw_json_error </td>
+          <td class="memname">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void daw_json_error </td>
           <td>(</td>
           <td class="paramtype">daw::json::json_details::missing_member&#160;</td>
           <td class="paramname"><em>reason</em></td><td>)</td>
@@ -339,8 +355,8 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </div>
 
 </div>
 </div>
-<a id="a4c9fe055142c0b3a40127c5249bbe6c5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c9fe055142c0b3a40127c5249bbe6c5">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[4/6]</span></h2>
+<a id="a963169daa4ac6a47a7330f9ac38d58c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a963169daa4ac6a47a7330f9ac38d58c1">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[4/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -351,7 +367,7 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void daw_json_error </td>
+          <td class="memname">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void daw_json_error </td>
           <td>(</td>
           <td class="paramtype">daw::json::json_details::missing_member&#160;</td>
           <td class="paramname"><em>reason</em>, </td>
@@ -377,8 +393,8 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </
 
 </div>
 </div>
-<a id="af12e9f3252a3f9a19729f2a917740fd6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af12e9f3252a3f9a19729f2a917740fd6">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[5/6]</span></h2>
+<a id="a6598f37c6801b1892c38b2ca774793c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6598f37c6801b1892c38b2ca774793c7">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[5/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -389,7 +405,7 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void daw_json_error </td>
+          <td class="memname">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void daw_json_error </td>
           <td>(</td>
           <td class="paramtype">daw::json::json_details::missing_token&#160;</td>
           <td class="paramname"><em>reason</em></td><td>)</td>
@@ -405,8 +421,8 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </div>
 
 </div>
 </div>
-<a id="a42658829e4ad95d03500b16715019de7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a42658829e4ad95d03500b16715019de7">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[6/6]</span></h2>
+<a id="a10d173696a5caaaad5b4fb674b2f850d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10d173696a5caaaad5b4fb674b2f850d">&#9670;&nbsp;</a></span>daw_json_error() <span class="overload">[6/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -417,7 +433,7 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void daw_json_error </td>
+          <td class="memname">static <a class="el" href="daw__json__assert_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void daw_json_error </td>
           <td>(</td>
           <td class="paramtype">daw::json::json_details::missing_token&#160;</td>
           <td class="paramname"><em>reason</em>, </td>
@@ -467,7 +483,7 @@ template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename Range &gt; </
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="adaw__json__assert_8h_html_a043f9b7b84dd49e87d2b0114f7dc4d42"><div class="ttname"><a href="daw__json__assert_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a></div><div class="ttdeci">#define DAW_JSON_UNLIKELY(Bool)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:33</div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a043f9b7b84dd49e87d2b0114f7dc4d42"><div class="ttname"><a href="daw__json__assert_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a></div><div class="ttdeci">#define DAW_JSON_UNLIKELY(Bool)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:35</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20
