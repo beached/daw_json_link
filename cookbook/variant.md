@@ -232,7 +232,7 @@ members in the example.
 The above example shows two distinct JSON objects that both have a `"version"` member that is a discriminator for the
 expected data structure.
 
-```
+```cpp
 namespace version1 {
 struct Config {
 	int version;

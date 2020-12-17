@@ -176,7 +176,7 @@ namespace daw::json {
 	/***
 	 * Parse a tagged variant like class where the tag member is in the same class
 	 * that is being discriminated.  The container type, that will specialize
-	 * json_data_constract on, must support the tuple interface
+	 * json_data_constract on, must support the get_if, get_index
 	 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
 	 * declared in member list
 	 * @tparam Switcher A callable that returns an index into JsonClasses when

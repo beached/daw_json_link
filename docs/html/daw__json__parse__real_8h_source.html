@@ -81,7 +81,7 @@ $(function() {
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__assert_8h.html">daw_json_assert.h</a>&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__iterator__range_8h.html">daw_json_iterator_range.h</a>&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__parse__policy_8h.html">daw_json_parse_policy.h</a>&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__parse__unsigned__int_8h.html">daw_json_parse_unsigned_int.h</a>&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;daw/daw_cxmath.h&gt;</span></div>
@@ -377,64 +377,65 @@ $(function() {
 <div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        first = skip_digits&lt;Range::is_unchecked_input&gt;( first, rng.last );</div>
 <div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;      } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        <span class="keywordtype">char</span> <span class="keyword">const</span> *fract_last =</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;          first +</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;          std::min( rng.last - first, max_exponent - ( first - rng.first ) );</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160; </div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        last_char = parse_real_digits_while_number&lt;Range::is_unchecked_input&gt;(</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;          first, fract_last, significant_digits );</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        exponent -= last_char - first;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;        first = last_char;</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;        <span class="keywordflow">if</span>( first &gt;= fract_last ) {</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;          first = skip_digits&lt;Range::is_unchecked_input&gt;( first, rng.last );</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        }</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;      }</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    }</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160; </div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    exponent += [&amp;] {</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;      <span class="keywordflow">if</span>( ( Range::is_unchecked_input or first &lt; rng.last ) and</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;          ( ( *first | 0x20 ) == <span class="charliteral">&#39;e&#39;</span> ) ) {</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        ++first;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        <span class="keywordtype">bool</span> <span class="keyword">const</span> exp_sign = [&amp;] {</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;            first &lt; rng.last, ErrorReason::UnexpectedEndOfData,</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;            Range( first, rng.last, rng.class_first, rng.class_last ) );</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;          <span class="keywordflow">switch</span>( *first ) {</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;+&#39;</span>:</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;            ++first;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;-&#39;</span>:</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;            ++first;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;          <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;          }</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;        }( );</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( rng.has_more( ), ErrorReason::UnexpectedEndOfData,</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;                              rng );</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        unsigned_t exp_tmp = 0;</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;        last_char = parse_real_digits_while_number&lt;Range::is_unchecked_input&gt;(</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;          first, rng.last, exp_tmp );</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;        first = last_char;</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;        <span class="keywordflow">if</span>( exp_sign ) {</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;          <span class="keywordflow">return</span> -<span class="keyword">static_cast&lt;</span>unsigned_t<span class="keyword">&gt;</span>( exp_tmp );</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;        }</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>unsigned_t<span class="keyword">&gt;</span>( exp_tmp );</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;      }</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>unsigned_t<span class="keyword">&gt;</span>( 0 );</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    }( );</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    rng.first = first;</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <span class="keywordflow">return</span> sign * power10&lt;Result&gt;( Range::exec_tag,</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;                                   <span class="keyword">static_cast&lt;</span>Result<span class="keyword">&gt;</span>( significant_digits ),</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;                                   exponent );</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  }</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;} <span class="comment">// namespace daw::json::json_details</span></div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;          first + std::min( rng.last - first,</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;                            <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;                              max_exponent - ( first - rng.first ) ) );</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160; </div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        last_char = parse_real_digits_while_number&lt;Range::is_unchecked_input&gt;(</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;          first, fract_last, significant_digits );</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;        exponent -= <span class="keyword">static_cast&lt;</span>signed_t<span class="keyword">&gt;</span>( last_char - first );</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;        first = last_char;</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        <span class="keywordflow">if</span>( first &gt;= fract_last ) {</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;          first = skip_digits&lt;Range::is_unchecked_input&gt;( first, rng.last );</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;        }</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;      }</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    }</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160; </div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    exponent += [&amp;] {</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;      <span class="keywordflow">if</span>( ( Range::is_unchecked_input or first &lt; rng.last ) and</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;          ( ( *first | 0x20 ) == <span class="charliteral">&#39;e&#39;</span> ) ) {</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        ++first;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;        <span class="keywordtype">bool</span> <span class="keyword">const</span> exp_sign = [&amp;] {</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;          <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( first &lt; rng.last,</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;                                ErrorReason::UnexpectedEndOfData,</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;                                rng.copy( first ) );</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;          <span class="keywordflow">switch</span>( *first ) {</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;+&#39;</span>:</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;            ++first;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;-&#39;</span>:</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;            ++first;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;          <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;          }</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        }( );</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( rng.has_more( ), ErrorReason::UnexpectedEndOfData,</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;                              rng );</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;        unsigned_t exp_tmp = 0;</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        last_char = parse_real_digits_while_number&lt;Range::is_unchecked_input&gt;(</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;          first, rng.last, exp_tmp );</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;        first = last_char;</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;        <span class="keywordflow">if</span>( exp_sign ) {</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;          <span class="keywordflow">return</span> -<span class="keyword">static_cast&lt;</span>signed_t<span class="keyword">&gt;</span>( exp_tmp );</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;        }</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>signed_t<span class="keyword">&gt;</span>( exp_tmp );</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;      }</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>signed_t<span class="keyword">&gt;</span>( 0 );</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    }( );</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    rng.first = first;</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <span class="keywordflow">return</span> sign * power10&lt;Result&gt;( Range::exec_tag,</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;                                   <span class="keyword">static_cast&lt;</span>Result<span class="keyword">&gt;</span>( significant_digits ),</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;                                   exponent );</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  }</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;} <span class="comment">// namespace daw::json::json_details</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:203</div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:206</div></div>
 <div class="ttc" id="adaw__json__parse__unsigned__int_8h_html"><div class="ttname"><a href="daw__json__parse__unsigned__int_8h.html">daw_json_parse_unsigned_int.h</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a043f9b7b84dd49e87d2b0114f7dc4d42"><div class="ttname"><a href="daw__json__assert_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a></div><div class="ttdeci">#define DAW_JSON_UNLIKELY(Bool)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:33</div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a043f9b7b84dd49e87d2b0114f7dc4d42"><div class="ttname"><a href="daw__json__assert_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a></div><div class="ttdeci">#define DAW_JSON_UNLIKELY(Bool)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:35</div></div>
+<div class="ttc" id="adaw__json__parse__policy_8h_html"><div class="ttname"><a href="daw__json__parse__policy_8h.html">daw_json_parse_policy.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a082cf03a74704f531a43d012c84cdbb1"><div class="ttname"><a href="daw__json__assert_8h.html#a082cf03a74704f531a43d012c84cdbb1">DAW_JSON_LIKELY</a></div><div class="ttdeci">#define DAW_JSON_LIKELY(Bool)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:32</div></div>
-<div class="ttc" id="adaw__json__iterator__range_8h_html"><div class="ttname"><a href="daw__json__iterator__range_8h.html">daw_json_iterator_range.h</a></div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a082cf03a74704f531a43d012c84cdbb1"><div class="ttname"><a href="daw__json__assert_8h.html#a082cf03a74704f531a43d012c84cdbb1">DAW_JSON_LIKELY</a></div><div class="ttdeci">#define DAW_JSON_LIKELY(Bool)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:34</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20
