@@ -21,7 +21,6 @@
 #include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
 
-#include <fstream>
 #include <iostream>
 #include <streambuf>
 
@@ -52,7 +51,7 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 using AllocType = daw::fixed_allocator<char>;
 
 template<typename ExecTag>
-void test( std::string_view json_sv1, AllocType & alloc ) {
+void test( std::string_view json_sv1, AllocType &alloc ) {
 
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
@@ -63,7 +62,7 @@ void test( std::string_view json_sv1, AllocType & alloc ) {
 	  "canada bench(checked)", sz,
 	  [&]( auto f1 ) {
 		  canada_result.reset( );
-		  alloc.reset( );
+		  alloc.release( );
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
@@ -79,7 +78,7 @@ void test( std::string_view json_sv1, AllocType & alloc ) {
 	  "canada bench(unchecked)", sz,
 	  [&]( auto f1 ) {
 		  canada_result.reset( );
-		  alloc.reset( );
+		  alloc.release( );
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
@@ -96,7 +95,7 @@ int main( int argc, char **argv )
   try
 #endif
 {
-	static auto alloc = AllocType( 3'000'000ULL );
+	static auto alloc = AllocType( 10'000'000ULL );
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
@@ -119,7 +118,7 @@ int main( int argc, char **argv )
 		test<daw::json::simd_exec_tag>( json_sv1, alloc );
 	}
 
-	alloc.reset( );
+	alloc.release( );
 	std::cout
 	  << "to_json testing\n*********************************************\n";
 	auto const canada_result = daw::json::from_json_alloc<daw::geojson::Polygon>(
