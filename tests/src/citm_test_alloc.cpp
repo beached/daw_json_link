@@ -35,7 +35,7 @@ static_assert( DAW_NUM_RUNS > 0 );
 using AllocType = daw::fixed_allocator<daw::citm::citm_object_t>;
 
 template<typename ExecTag>
-void test( std::string_view json_sv1, AllocType & alloc ) {
+void test( std::string_view json_sv1, AllocType &alloc ) {
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
 	auto const sz = json_sv1.size( );
@@ -58,7 +58,7 @@ void test( std::string_view json_sv1, AllocType & alloc ) {
 		             "Incorrect value" );
 	}
 	{
-		alloc.reset( );
+		alloc.release( );
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "citm_catalog bench(unchecked)", sz,
 		  [&]( auto f1 ) {
@@ -105,7 +105,7 @@ int main( int argc, char **argv )
 		test<daw::json::simd_exec_tag>( json_sv1, alloc );
 	}
 
-	alloc.reset( );
+	alloc.release( );
 	std::cout
 	  << "to_json testing\n*********************************************\n";
 	auto const citm_result =
