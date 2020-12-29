@@ -1,18 +1,18 @@
 BasedOnStyle: LLVM
 AccessModifierOffset: -2
-AlignAfterOpenBracket: true
-AlignEscapedNewlinesLeft: false
-AlignOperands: true
+AlignAfterOpenBracket: "true"
+AlignEscapedNewlines: Left
+AlignOperands: "true"
 AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: true
-AllowShortBlocksOnASingleLine: true
+AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: "false"
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: false
+AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: true
-AlwaysBreakTemplateDeclarations: true
+AlwaysBreakTemplateDeclarations: Yes
 SpaceAfterTemplateKeyword: false
 BinPackArguments: true
 BinPackParameters: true
@@ -56,7 +56,7 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: true
 SpacesInParentheses: true
 SpacesInSquareBrackets: false
-Standard: Cpp11
+Standard: c++17
 TabWidth: 2
 UseTab: ForIndentation
 

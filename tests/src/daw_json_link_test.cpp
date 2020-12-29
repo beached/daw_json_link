@@ -248,8 +248,8 @@ DAW_CONSTEXPR bool test_006( ) {
 	return daw::json::from_json<int>( test_001_t_json_data, "y[2]" ) == 3;
 }
 
-#if not defined( DAW_JSON_NO_CONST_EXPR ) and                                  \
-  ( ( defined( __GNUC__ ) and __GNUC__ > 8 ) or defined( __clang__ ) or        \
+#if not defined( DAW_JSON_NO_CONST_EXPR ) and                           \
+  ( ( defined( __GNUC__ ) and __GNUC__ > 8 ) or defined( __clang__ ) or \
     defined( _MSC_VER ) )
 static_assert( test_004( ), "Unexpected value" );
 static_assert( test_005( ), "Unexpected value" );
@@ -374,7 +374,7 @@ namespace daw::json {
 		}
 	};
 } // namespace daw::json
-#if not defined( DAW_JSON_NO_CONST_EXPR ) and                                  \
+#if not defined( DAW_JSON_NO_CONST_EXPR ) and \
   ( not defined( _MSC_VER ) or defined( __clang__ ) )
 static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
 #endif
@@ -403,7 +403,7 @@ static_assert(
    not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) );
 */
 
-#if not defined( DAW_JSON_NO_INT128 ) and defined( __SIZEOF_INT128__ ) and     \
+#if not defined( DAW_JSON_NO_INT128 ) and defined( __SIZEOF_INT128__ ) and \
   ( not defined( _MSC_VER ) )
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -819,6 +819,7 @@ int main( int, char ** )
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
 	std::cout << "result: " << from_json<long double>( "1e-10000" ) << '\n';
 	test_dblparse( "1e-214748364", true );
+	test_dblparse( "0.89", true );
 	test_dblparse(
 	  "2."
 	  "22507385850720113605740979670913197593481954635164564802342610972482222202"
@@ -867,6 +868,8 @@ int main( int, char ** )
 		char *end = nullptr;
 		long double const d1 = strtold( two63e100.data( ), &end );
 		std::cout << d1 << '\n';
+		double d2 = 0.89;
+		std::cout << to_json( d2 ) << '\n';
 	}
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

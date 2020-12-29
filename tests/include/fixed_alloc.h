@@ -39,7 +39,7 @@ namespace daw {
 		constexpr ref_counted_ptr( ) noexcept = default;
 
 		~ref_counted_ptr( ) {
-			reset( );
+			release( );
 		}
 
 		explicit constexpr ref_counted_ptr( T *p ) noexcept
@@ -52,7 +52,7 @@ namespace daw {
 
 		constexpr ref_counted_ptr &operator=( T *p ) noexcept {
 			if( ptr != p ) {
-				reset( );
+				release( );
 				ptr = p;
 				count = new std::size_t{ 1 };
 			}
@@ -61,7 +61,7 @@ namespace daw {
 
 		constexpr ref_counted_ptr &operator=( ref_counted_ptr const &rhs ) {
 			if( this != &rhs ) {
-				reset( );
+				release( );
 				ptr = rhs.ptr;
 				count = rhs.count;
 				if( count ) {
@@ -78,14 +78,14 @@ namespace daw {
 
 		constexpr ref_counted_ptr &operator=( ref_counted_ptr &&rhs ) noexcept {
 		  if( this != &rhs ) {
-		    reset( );
+		    release( );
 		    ptr = std::exchange( rhs.ptr, nullptr );
 		    count = std::exchange( rhs.count, nullptr );
 		  }
 		  return *this;
 		}*/
 
-		constexpr void reset( ) {
+		constexpr void release( ) {
 			if( ptr ) {
 				if( --( *count ) == 0 ) {
 					Deleter{ }( ptr );
@@ -170,7 +170,7 @@ namespace daw {
 
 		static void deallocate( void *const, std::size_t ) noexcept {}
 
-		void reset( ) noexcept {
+		void release( ) noexcept {
 			m_data->ptr = m_data->buf;
 		}
 
@@ -187,14 +187,14 @@ namespace daw {
 		}
 
 		template<typename U>
-		[[nodiscard]] bool operator==( fixed_allocator<U> const &rhs )
-		  const noexcept {
+		[[nodiscard]] bool
+		operator==( fixed_allocator<U> const &rhs ) const noexcept {
 			return m_data == rhs.m_data;
 		}
 
 		template<typename U>
-		[[nodiscard]] bool operator!=( fixed_allocator<U> const &rhs )
-		  const noexcept {
+		[[nodiscard]] bool
+		operator!=( fixed_allocator<U> const &rhs ) const noexcept {
 			return m_data != rhs.m_data;
 		}
 	};
