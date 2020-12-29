@@ -47,8 +47,8 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 using AllocType = daw::fixed_allocator<daw::twitter::twitter_object_t>;
 
 template<typename ExecTag>
-void test( std::string_view json_data, AllocType & alloc ) {
-#if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
+void test( std::string_view json_data, AllocType &alloc ) {
+#if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
   defined( _CPPUNWIND )
 	try {
 #endif
@@ -62,7 +62,7 @@ void test( std::string_view json_data, AllocType & alloc ) {
 		  "twitter bench(checked)", sz,
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
-			  alloc.reset( );
+			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
@@ -81,7 +81,7 @@ void test( std::string_view json_data, AllocType & alloc ) {
 		  "twitter bench(unchecked)", sz,
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
-			  alloc.reset( );
+			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1,
@@ -101,7 +101,7 @@ void test( std::string_view json_data, AllocType & alloc ) {
 		  "twitter bench(cpp comments)", sz,
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
-			  alloc.reset( );
+			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDCppCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
@@ -120,7 +120,7 @@ void test( std::string_view json_data, AllocType & alloc ) {
 		  "twitter bench(cpp comments, unchecked)", sz,
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
-			  alloc.reset( );
+			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDCppCommentSkippingPolicyUnchecked<ExecTag>>( f1,
@@ -140,7 +140,7 @@ void test( std::string_view json_data, AllocType & alloc ) {
 		  "twitter bench(hash comments)", sz,
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
-			  alloc.reset( );
+			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDHashCommentSkippingPolicyChecked<ExecTag>>( f1,
@@ -160,7 +160,7 @@ void test( std::string_view json_data, AllocType & alloc ) {
 		  "twitter bench(hash comments, unchecked)", sz,
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
-			  alloc.reset( );
+			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDHashCommentSkippingPolicyUnchecked<ExecTag,
@@ -182,7 +182,7 @@ void test( std::string_view json_data, AllocType & alloc ) {
 		  "twitter bench(checked, escaped names)", sz,
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
-			  alloc.reset( );
+			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
@@ -201,7 +201,7 @@ void test( std::string_view json_data, AllocType & alloc ) {
 		  "twitter bench(unchecked, escaped names)", sz,
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
-			  alloc.reset( );
+			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1,
@@ -215,7 +215,7 @@ void test( std::string_view json_data, AllocType & alloc ) {
 		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
-#if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
+#if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
   defined( _CPPUNWIND )
 	} catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Exception thrown by parser: "
@@ -226,7 +226,7 @@ void test( std::string_view json_data, AllocType & alloc ) {
 }
 
 int main( int argc, char **argv )
-#if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
+#if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
   defined( _CPPUNWIND )
   try
 #endif
@@ -255,7 +255,7 @@ int main( int argc, char **argv )
 
 	// ******************************
 	// Test serialization
-	alloc.reset( );
+	alloc.release( );
 	std::string str{ };
 	{
 		auto twitter_result =
@@ -274,11 +274,11 @@ int main( int argc, char **argv )
 		test_assert( not str.empty( ), "Expected a string value" );
 		daw::do_not_optimize( str );
 	}
-	alloc.reset( );
+	alloc.release( );
 	auto const twitter_result2 =
 	  daw::json::from_json_alloc<daw::twitter::twitter_object_t>( str, alloc );
 	daw::do_not_optimize( twitter_result2 );
-#if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
+#if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
   defined( _CPPUNWIND )
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: "

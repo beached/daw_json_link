@@ -34,7 +34,7 @@ static_assert( DAW_NUM_RUNS > 0 );
 using AllocType = daw::fixed_allocator<char>;
 
 template<typename ExecTag>
-void test( char **argv, AllocType & alloc ) {
+void test( char **argv, AllocType &alloc ) {
 	auto const json_data1 = *daw::read_file( argv[1] );
 	auto const json_data2 = *daw::read_file( argv[2] );
 	auto const json_data3 = *daw::read_file( argv[3] );
@@ -58,7 +58,7 @@ void test( char **argv, AllocType & alloc ) {
 		  "nativejson_twitter bench", json_sv1.size( ),
 		  [&]( auto f1 ) {
 			  twitter_result.reset( );
-			  alloc.reset( );
+			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
@@ -84,7 +84,7 @@ void test( char **argv, AllocType & alloc ) {
 	  [&]( auto f1 ) {
 		  {
 			  twitter_result.reset( );
-			  alloc.reset( );
+			  alloc.release( );
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1,
@@ -99,7 +99,7 @@ void test( char **argv, AllocType & alloc ) {
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Expected values" );
 	twitter_result.reset( );
-	alloc.reset( );
+	alloc.release( );
 
 	std::cout << std::flush;
 
@@ -107,7 +107,7 @@ void test( char **argv, AllocType & alloc ) {
 	  "nativejson_citm bench", json_sv2.size( ),
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
-		  alloc.reset( );
+		  alloc.release( );
 		  citm_result = daw::json::from_json_alloc<
 		    daw::citm::citm_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2, alloc );
@@ -128,7 +128,7 @@ void test( char **argv, AllocType & alloc ) {
 	  "nativejson_citm bench trusted", json_sv2.size( ),
 	  [&]( auto f2 ) {
 		  citm_result.reset( );
-		  alloc.reset( );
+		  alloc.release( );
 		  citm_result = daw::json::from_json_alloc<
 		    daw::citm::citm_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2, alloc );
@@ -149,7 +149,7 @@ void test( char **argv, AllocType & alloc ) {
 	  "nativejson_canada bench", json_sv3.size( ),
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
-		  alloc.reset( );
+		  alloc.release( );
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
@@ -166,7 +166,7 @@ void test( char **argv, AllocType & alloc ) {
 	  "nativejson_canada bench trusted", json_sv3.size( ),
 	  [&]( auto f3 ) {
 		  canada_result.reset( );
-		  alloc.reset( );
+		  alloc.release( );
 		  canada_result = daw::json::from_json_alloc<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
@@ -186,7 +186,7 @@ void test( char **argv, AllocType & alloc ) {
 		  twitter_result.reset( );
 		  citm_result.reset( );
 		  canada_result.reset( );
-		  alloc.reset( );
+		  alloc.release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1, alloc );
@@ -224,7 +224,7 @@ void test( char **argv, AllocType & alloc ) {
 		  twitter_result.reset( );
 		  citm_result.reset( );
 		  canada_result.reset( );
-		  alloc.reset( );
+		  alloc.release( );
 		  twitter_result = daw::json::from_json_alloc<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1, alloc );
@@ -259,7 +259,7 @@ void test( char **argv, AllocType & alloc ) {
 	twitter_result.reset( );
 	citm_result.reset( );
 	canada_result.reset( );
-	alloc.reset( );
+	alloc.release( );
 }
 
 int main( int argc, char **argv )
@@ -275,7 +275,7 @@ int main( int argc, char **argv )
 #if defined( NDEBUG ) and not defined( DEBUG )
 		std::cout << "release run\n";
 #else
-		std::cout << "debug run\n";
+	std::cout << "debug run\n";
 #endif
 		if( argc < 4 ) {
 			std::cerr << "Must supply a filenames to open\n";
