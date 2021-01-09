@@ -512,6 +512,12 @@ add_executable(daw_json_minify_full src/daw_json_minify_full.cpp)
 target_link_libraries(daw_json_minify_full json_test)
 add_dependencies(full daw_json_minify_full)
 
+
+add_executable(test_array_of_ordered src/test_array_of_ordered.cpp )
+target_link_libraries(test_array_of_ordered json_test)
+add_dependencies(full test_array_of_ordered)
+
+
 # **************************************************
 # JSON Benchmark
 # **************************************************

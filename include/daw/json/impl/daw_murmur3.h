@@ -28,7 +28,7 @@ namespace daw {
 
 	template<typename StringView>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr UInt32
-	fnv1a_32( StringView key ) {
+	fnv1a_32( StringView &&key ) {
 		std::size_t const len = std::size( key );
 		char const *ptr = std::data( key );
 		UInt32 hash = 0x811c'9dc5_u32;
@@ -40,7 +40,7 @@ namespace daw {
 	}
 
 	template<typename StringView>
-	[[nodiscard]] constexpr UInt32 name_hash( StringView key,
+	[[nodiscard]] constexpr UInt32 name_hash( StringView &&key,
 	                                          std::uint32_t seed = 0 ) {
 		(void)seed;
 		auto const Sz = std::size( key );
@@ -57,7 +57,7 @@ namespace daw {
 
 	template<typename StringView>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr UInt32
-	murmur3_32( StringView key, std::uint32_t seed = 0 ) {
+	murmur3_32( StringView &&key, std::uint32_t seed = 0 ) {
 		UInt32 h = to_uint32( seed );
 		UInt32 k = 0_u32;
 		char const *first = std::data( key );

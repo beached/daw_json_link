@@ -10,6 +10,7 @@
 
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
+#include "daw_json_parse_policy.h"
 #include "daw_json_parse_value_fwd.h"
 
 #include <ciso646>
@@ -73,8 +74,39 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
 			                      ErrorReason::UnexpectedEndOfData, *base::rng );
 			at_first = false;
-			return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
-			                               *base::rng );
+			if constexpr( KnownBounds ) {
+				if constexpr( is_guaranteed_rvo_v<Range> ) {
+					struct cleanup_t {
+						Range *ptr;
+						std::size_t counter;
+						CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
+#ifdef HAS_CPP20CONSTEXPR
+							if( std::is_constant_evaluated( ) ) {
+#endif
+								if( std::uncaught_exceptions( ) == 0 ) {
+									ptr->counter = counter;
+								}
+#ifdef HAS_CPP20CONSTEXPR
+							} else {
+								ptr->counter = counter;
+							}
+#endif
+						}
+					} const run_after_parse{ base::rng, base::rng->counter };
+					(void)run_after_parse;
+					return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
+					                               *base::rng );
+				} else {
+					auto const cnt = base::rng->counter;
+					auto result = parse_value<element_t>(
+					  ParseTag<element_t::expected_type>{ }, *base::rng );
+					base::rng->counter = cnt;
+					return result;
+				}
+			} else {
+				return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
+				                               *base::rng );
+			}
 		}
 
 		inline constexpr json_parse_array_iterator &operator++( ) {
