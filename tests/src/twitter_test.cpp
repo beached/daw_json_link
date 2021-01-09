@@ -193,7 +193,7 @@ void test( std::string_view json_data ) {
 	}
 }
 
-int main( int argc, char **argv )
+DAW_ATTRIBUTE_FLATTEN int main( int argc, char **argv )
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or                  \
   defined( _CPPUNWIND )
   try

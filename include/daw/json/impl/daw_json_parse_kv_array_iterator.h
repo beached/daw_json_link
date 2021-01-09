@@ -40,12 +40,12 @@ namespace daw::json::json_details {
 		}
 	};
 
-	template<typename JsonMember, typename Range, bool IsKnown>
+	template<typename JsonMember, typename Range, bool KnownBounds>
 	struct json_parse_kv_array_iterator
-	  : json_parse_kv_array_iterator_base<Range, can_random_v<IsKnown>> {
+	  : json_parse_kv_array_iterator_base<Range, can_random_v<KnownBounds>> {
 
 		using base =
-		  json_parse_kv_array_iterator_base<Range, can_random_v<IsKnown>>;
+		  json_parse_kv_array_iterator_base<Range, can_random_v<KnownBounds>>;
 		using iterator_category = typename base::iterator_category;
 		using json_key_t = typename JsonMember::json_key_t;
 		using json_element_t = typename JsonMember::json_value_t;
@@ -63,7 +63,7 @@ namespace daw::json::json_details {
 		  iterator_range_t &r )
 		  : base{ &r } {
 			if( base::rng->front( ) == ']' ) {
-				if constexpr( not IsKnown ) {
+				if constexpr( not KnownBounds ) {
 					// Cleanup at end of value
 					base::rng->remove_prefix( );
 					base::rng->trim_left_checked( );
@@ -85,8 +85,39 @@ namespace daw::json::json_details {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
 			                      ErrorReason::UnexpectedEndOfData, *base::rng );
 
-			return get_pair( parse_value<json_class_type>(
-			  ParseTag<JsonParseTypes::Class>{ }, *base::rng ) );
+			if constexpr( KnownBounds ) {
+				if constexpr( is_guaranteed_rvo_v<Range> ) {
+					struct cleanup_t {
+						Range *ptr;
+						std::size_t counter;
+						CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
+#ifdef HAS_CPP20CONSTEXPR
+							if( std::is_constant_evaluated( ) ) {
+#endif
+								if( std::uncaught_exceptions( ) == 0 ) {
+									ptr->counter = counter;
+								}
+#ifdef HAS_CPP20CONSTEXPR
+							} else {
+								ptr->counter = counter;
+							}
+#endif
+						}
+					} const run_after_parse{ base::rng, base::rng->counter };
+					(void)run_after_parse;
+					return get_pair( parse_value<json_class_type>(
+					  ParseTag<JsonParseTypes::Class>{ }, *base::rng ) );
+				} else {
+					auto const cnt = base::rng->counter;
+					auto result = get_pair( parse_value<json_class_type>(
+					  ParseTag<JsonParseTypes::Class>{ }, *base::rng ) );
+					base::rng->counter = cnt;
+					return result;
+				}
+			} else {
+				return get_pair( parse_value<json_class_type>(
+				  ParseTag<JsonParseTypes::Class>{ }, *base::rng ) );
+			}
 		}
 
 		inline constexpr json_parse_kv_array_iterator &operator++( ) {
@@ -101,7 +132,7 @@ namespace daw::json::json_details {
 					                      ErrorReason::UnexpectedEndOfData );
 				}
 #endif
-				if constexpr( not IsKnown ) {
+				if constexpr( not KnownBounds ) {
 					// Cleanup at end of value
 					base::rng->remove_prefix( );
 					base::rng->trim_left_checked( );
