@@ -376,9 +376,8 @@ namespace daw::json::json_details {
 
 	template<typename Range>
 	DAW_ATTRIBUTE_FLATTEN inline constexpr void class_cleanup_now( Range &rng ) {
-		if( not rng.has_more( ) ) {
-			return;
-		}
+		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+		                      rng );
 		rng.clean_tail( );
 		// If we fulfill the contract before all values are parses
 		rng.move_to_next_class_member( );
