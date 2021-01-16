@@ -301,12 +301,13 @@ std::string my_json_data = to_json_array( arry );
 ###### [Top](#content)
 
 Error checking can be modified on a per parse basis.  the from_json/from_json_array calls can be supplied a Parser Policy.  The current policies are
-`NoCommentSkippingPolicyChecked` - No comments allowed, checks enabled
-`NoCommentSkippingPolicyUnchecked` - No comments allowed, assumes perfect JSON
-`CppCommentSkippingPolicyChecked` - C++ style comments `/* commment */` and `// comment until end of line`, checks enabled
-`CppCommentSkippingPolicyUnchecked` - C++ style comments `/* commment */` and `// comment until end of line`, assumes perfect JSON
-`HashCommentSkippingPolicyChecked` - Hash style comments `# comment until end of line`, checks enabled
-`HashCommentSkippingPolicyUnchecked` - Hash style comments `# comment until end of line`, assumes perfect JSON
+
+* `NoCommentSkippingPolicyChecked` - No comments allowed, checks enabled
+* `NoCommentSkippingPolicyUnchecked` - No comments allowed, assumes perfect JSON
+* `CppCommentSkippingPolicyChecked` - C++ style comments `/* commment */` and `// comment until end of line`, checks enabled
+* `CppCommentSkippingPolicyUnchecked` - C++ style comments `/* commment */` and `// comment until end of line`, assumes perfect JSON
+* `HashCommentSkippingPolicyChecked` - Hash style comments `# comment until end of line`, checks enabled
+* `HashCommentSkippingPolicyUnchecked` - Hash style comments `# comment until end of line`, assumes perfect JSON
 
 The unchecked variants can sometimes provide a 5-15% performance increase, but at great risk when the data isn't perfect.
 ## Global
