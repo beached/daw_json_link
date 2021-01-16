@@ -261,7 +261,7 @@ MyClass my_class = from_json<MyClass>( json_str );
 ```
 Alternatively, if the input is trusted, the less checked version can be faster 
 ```c++
-MyClass my_class = from_json_unchecked<MyClass>( json_str );
+MyClass my_class = from_json<MyClass, NoCommentSkippingPolicyUnchecked>( json_str );
 ```
 
 JSON documents with array root's use the `from_json_array` function to parse 
@@ -270,7 +270,7 @@ std::vector<MyClass> my_data = from_json_array<MyClass>( json_str );
 ```
 Alternatively, if the input is trusted, the less checked version can be faster 
 ```c++
-std::vector<MyClass> my_data = from_json_array_unchecked<MyClass>( json_str );
+std::vector<MyClass> my_data = from_json_array<MyClass, std::vector<MyClass>, NoCommentSkippingPolicyUnchecked>( json_str );
 ```
 
 If you want to work from JSON array data you can get an iterator and use the std algorithms to
@@ -300,7 +300,16 @@ std::string my_json_data = to_json_array( arry );
 ## Parsing call
 ###### [Top](#content)
 
-With error checking enabled globally, you can now designate a parsing call as trusted by calling the _unchecked variant. `from_json_unchecked`, `from_json_array_unchecked`, and `json_array_iterator_trusted`. These paths are unchecked beyond missing non-nullable members. The performance difference is from around 5%-15% in my testing.
+Error checking can be modified on a per parse basis.  the from_json/from_json_array calls can be supplied a Parser Policy.  The current policies are
+
+* `NoCommentSkippingPolicyChecked` - No comments allowed, checks enabled
+* `NoCommentSkippingPolicyUnchecked` - No comments allowed, assumes perfect JSON
+* `CppCommentSkippingPolicyChecked` - C++ style comments `/* commment */` and `// comment until end of line`, checks enabled
+* `CppCommentSkippingPolicyUnchecked` - C++ style comments `/* commment */` and `// comment until end of line`, assumes perfect JSON
+* `HashCommentSkippingPolicyChecked` - Hash style comments `# comment until end of line`, checks enabled
+* `HashCommentSkippingPolicyUnchecked` - Hash style comments `# comment until end of line`, assumes perfect JSON
+
+The unchecked variants can sometimes provide a 5-15% performance increase, but at great risk when the data isn't perfect.
 ## Global
 ###### [Top](#content)
 
