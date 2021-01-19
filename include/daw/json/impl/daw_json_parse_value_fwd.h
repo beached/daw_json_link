@@ -71,11 +71,11 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::Variant>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
+	[[nodiscard, maybe_unused]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	constexpr json_result<JsonMember>
+	[[nodiscard, maybe_unused]] static constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng );
 
 #if( defined( _MSC_VER ) and not defined( __clang__ ) )

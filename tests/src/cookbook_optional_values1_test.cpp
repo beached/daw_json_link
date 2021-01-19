@@ -50,7 +50,7 @@ namespace daw::cookbook_optional_values1 {
 		}
 
 		template<typename Arg, typename... Args>
-		inline std::unique_ptr<T> operator( )( Arg &&arg, Args &&... args ) const {
+		inline std::unique_ptr<T> operator( )( Arg &&arg, Args &&...args ) const {
 			return std::make_unique<T>( std::forward<Arg>( arg ),
 			                            std::forward<Args>( args )... );
 		}
@@ -131,7 +131,8 @@ int main( int argc, char **argv )
 
 	test_assert( stuff == stuff2, "Unexpected round trip error" );
 	return 0;
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

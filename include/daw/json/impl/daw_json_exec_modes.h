@@ -13,7 +13,7 @@
 namespace daw::json {
 	struct constexpr_exec_tag {
 		static constexpr std::string_view name = "constexpr";
-#if defined( __cpp_constexpr_dynamic_alloc ) or                                \
+#if defined( __cpp_constexpr_dynamic_alloc ) or \
   defined( DAW_JSON_NO_CONST_EXPR )
 		static constexpr bool always_rvo = true;
 #else

@@ -320,17 +320,19 @@ namespace daw::json::json_details {
 		}
 	}
 
-	/***
-	 * We know that we are constructing a std::string or
-	 * std::optional<std::string> We can take advantage of this and reduce the
-	 * allocator time by presizing the string up front and then using a
-	 * pointer to the data( ).
-	 */
-	template<typename JsonMember>
-	struct can_parse_to_stdstring_fast
-	  : std::disjunction<
-	      can_single_allocation_string<json_result<JsonMember>>,
-	      can_single_allocation_string<json_base_type<JsonMember>>> {};
+	namespace {
+		/***
+		 * We know that we are constructing a std::string or
+		 * std::optional<std::string> We can take advantage of this and reduce the
+		 * allocator time by presizing the string up front and then using a
+		 * pointer to the data( ).
+		 */
+		template<typename JsonMember>
+		struct can_parse_to_stdstring_fast
+		  : std::disjunction<
+		      can_single_allocation_string<json_result<JsonMember>>,
+		      can_single_allocation_string<json_base_type<JsonMember>>> {};
+	} // namespace
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
@@ -517,7 +519,7 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename Range>
+	template<typename JsonMember, bool /*KnownBounds*/, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Variant>, Range &rng ) {
 
@@ -567,7 +569,7 @@ namespace daw::json::json_details {
 		}
 	}
 
-	template<typename JsonMember, bool KnownBounds, typename Range>
+	template<typename JsonMember, bool /*KnownBounds*/, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng ) {
 

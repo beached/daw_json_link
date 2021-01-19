@@ -698,13 +698,15 @@ namespace daw::json::json_details {
 
 namespace daw::json::utils {
 	namespace utils_details {
-		template<typename Integer>
-		struct number {
-			using parse_to_t = Integer;
-			static constexpr LiteralAsStringOpt literal_as_string =
-			  LiteralAsStringOpt::Never;
-		};
-	} // namespace utils_details
+		namespace {
+			template<typename Integer>
+			struct number {
+				using parse_to_t = Integer;
+				static constexpr LiteralAsStringOpt literal_as_string =
+				  LiteralAsStringOpt::Never;
+			};
+		} // namespace
+	}   // namespace utils_details
 
 	template<typename Integer, typename OutputIterator>
 	inline constexpr OutputIterator integer_to_string( OutputIterator it,

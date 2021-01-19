@@ -114,23 +114,23 @@ bool test_embedded_arrays_broken_001( ) {
 	return false;
 }
 
-#define do_test( ... )                                                         \
-	try {                                                                        \
-		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                    \
-	} catch( daw::json::json_exception const &jex ) {                            \
-		std::cerr << "Unexpected exception thrown by parser in test '"             \
-		          << "" #__VA_ARGS__ << "': " << jex.reason( ) << std::endl;       \
-	}                                                                            \
-	do {                                                                         \
+#define do_test( ... )                                                   \
+	try {                                                                  \
+		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );              \
+	} catch( daw::json::json_exception const &jex ) {                      \
+		std::cerr << "Unexpected exception thrown by parser in test '"       \
+		          << "" #__VA_ARGS__ << "': " << jex.reason( ) << std::endl; \
+	}                                                                      \
+	do {                                                                   \
 	} while( false )
 
-#define do_fail_test( ... )                                                    \
-	do {                                                                         \
-		try {                                                                      \
-			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                  \
-		} catch( daw::json::json_exception const & ) { break; }                    \
-		std::cerr << "Expected exception, but none thrown in '"                    \
-		          << "" #__VA_ARGS__ << "'\n";                                     \
+#define do_fail_test( ... )                                   \
+	do {                                                        \
+		try {                                                     \
+			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ ); \
+		} catch( daw::json::json_exception const & ) { break; }   \
+		std::cerr << "Expected exception, but none thrown in '"   \
+		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
 
 int main( int, char ** )
@@ -149,7 +149,8 @@ int main( int, char ** )
 	do_test( test_classes_002( ) );
 	do_test( test_embedded_arrays( ) );
 	do_fail_test( test_embedded_arrays_broken_001( ) );
-} catch( json_exception const &jex ) {
+}
+catch( json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

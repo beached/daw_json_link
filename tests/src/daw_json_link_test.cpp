@@ -397,9 +397,8 @@ namespace daw::json {
 	};
 } // namespace daw::json
 constexpr std::string_view optional_ordered1_data = "[1]";
-static_assert(
-  static_cast<bool>(
-   not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) );
+static_assert( static_cast<bool>(
+  not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) );
 
 #if not defined( DAW_JSON_NO_INT128 ) and defined( __SIZEOF_INT128__ ) and \
   ( not defined( _MSC_VER ) )
@@ -869,7 +868,8 @@ int main( int, char ** )
 		double d2 = 0.89;
 		std::cout << to_json( d2 ) << '\n';
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

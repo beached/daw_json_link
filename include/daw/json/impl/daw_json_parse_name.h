@@ -201,5 +201,4 @@ namespace daw::json::json_details {
 		}
 		return std::pair{ true, rng };
 	}
-
 } // namespace daw::json::json_details

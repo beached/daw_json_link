@@ -57,8 +57,7 @@ namespace daw::json::json_details {
 		return result;
 	}( );
 
-	static inline std::ptrdiff_t find_lsb_set( runtime_exec_tag const &,
-	                                           UInt32 value ) {
+	static inline std::ptrdiff_t find_lsb_set( runtime_exec_tag, UInt32 value ) {
 #if defined( __GNUC__ ) or defined( __clang__ )
 		return __builtin_ffs( static_cast<int>( value ) ) - 1;
 #else
@@ -79,21 +78,26 @@ namespace daw::json::json_details {
 	}
 
 	DAW_ATTRIBUTE_FLATTEN static inline __m128i
-	uload16_char_data( sse42_exec_tag const &, char const *ptr ) {
+	uload16_char_data( sse42_exec_tag, char const *ptr ) {
 		return _mm_loadu_si128( reinterpret_cast<__m128i const *>( ptr ) );
 	}
 
+	DAW_ATTRIBUTE_FLATTEN static inline __m128i
+	load16_char_data( sse42_exec_tag, char const *ptr ) {
+		return _mm_load_si128( reinterpret_cast<__m128i const *>( ptr ) );
+	}
+
 	template<char k>
-	DAW_ATTRIBUTE_FLATTEN static inline UInt32
-	mem_find_eq( sse42_exec_tag const &, __m128i block ) {
-		static __m128i const keys = _mm_set1_epi8( k );
+	DAW_ATTRIBUTE_FLATTEN static inline UInt32 mem_find_eq( sse42_exec_tag,
+	                                                        __m128i block ) {
+		__m128i const keys = _mm_set1_epi8( k );
 		__m128i const found = _mm_cmpeq_epi8( block, keys );
 		return to_uint32( _mm_movemask_epi8( found ) );
 	}
 
 	template<unsigned char k>
-	DAW_ATTRIBUTE_FLATTEN static inline UInt32
-	mem_find_gt( sse42_exec_tag const &, __m128i block ) {
+	DAW_ATTRIBUTE_FLATTEN static inline UInt32 mem_find_gt( sse42_exec_tag,
+	                                                        __m128i block ) {
 		static __m128i const keys = _mm_set1_epi8( k );
 		__m128i const found = _mm_cmpgt_epi8( block, keys );
 		return to_uint32( _mm_movemask_epi8( found ) );
@@ -101,7 +105,7 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input, char... keys>
 	DAW_ATTRIBUTE_FLATTEN static inline char const *
-	mem_move_to_next_of( sse42_exec_tag const &tag, char const *first,
+	mem_move_to_next_of( sse42_exec_tag tag, char const *first,
 	                     char const *const last ) {
 
 		while( last - first >= 16 ) {
@@ -112,60 +116,23 @@ namespace daw::json::json_details {
 			}
 			first += 16;
 		}
-		if( last - first >= 8 ) {
-			char const buff[16]{ first[0], first[1], first[2], first[3],
-			                     first[4], first[5], first[6], first[7] };
-			auto const val0 = uload16_char_data( tag, buff );
-			auto const key_positions =
-			  ( mem_find_eq<keys>( tag, val0 ) | ... ) & mask_from_lsb32<8>;
-			if( key_positions != 0 ) {
-				return first + find_lsb_set( tag, key_positions );
+		__m128i val1{ };
+		auto const max_pos = last - first;
+		memcpy( &val1, first, static_cast<std::size_t>( max_pos ) );
+		auto const key_positions = ( mem_find_eq<keys>( tag, val1 ) | ... );
+		if( key_positions != 0 ) {
+			auto const offset = find_lsb_set( tag, key_positions );
+			if( offset >= max_pos ) {
+				return last;
 			}
-			first += 8;
+			return first + offset;
 		}
-		if( last - first >= 4 ) {
-			char const buff[16]{ first[0], first[1], first[2], first[3] };
-			auto const val0 = uload16_char_data( tag, buff );
-			auto const key_positions =
-			  ( mem_find_eq<keys>( tag, val0 ) | ... ) & mask_from_lsb32<4>;
-			if( key_positions != 0 ) {
-				return first + find_lsb_set( tag, key_positions );
-			}
-			first += 4;
-		}
-		switch( last - first ) {
-		case 0:
-			return first;
-		case 1:
-			return first +
-			       static_cast<std::ptrdiff_t>( not key_table<keys...>[*first] );
-		case 2: {
-			char const buff[16]{ first[0], first[1] };
-			auto const val0 = uload16_char_data( tag, buff );
-			auto const key_positions =
-			  ( mem_find_eq<keys>( tag, val0 ) | ... ) & mask_from_lsb32<2>;
-			if( key_positions != 0 ) {
-				return first + find_lsb_set( tag, key_positions );
-			}
-			return last;
-		}
-		case 3: {
-			char const buff[16]{ first[0], first[1], first[2] };
-			auto const val0 = uload16_char_data( tag, buff );
-			auto const key_positions =
-			  ( mem_find_eq<keys>( tag, val0 ) | ... ) & mask_from_lsb32<3>;
-			if( key_positions != 0 ) {
-				return first + find_lsb_set( tag, key_positions );
-			}
-			return last;
-		}
-		}
-		DAW_UNREACHABLE( );
+		return last;
 	}
 
 	template<bool is_unchecked_input, char... keys>
 	DAW_ATTRIBUTE_FLATTEN static inline char const *
-	mem_move_to_next_not_of( sse42_exec_tag const &tag, char const *first,
+	mem_move_to_next_not_of( sse42_exec_tag tag, char const *first,
 	                         char const *last ) {
 		static constexpr int keys_len = static_cast<int>( sizeof...( keys ) );
 		static_assert( keys_len <= 16 );
@@ -175,26 +142,19 @@ namespace daw::json::json_details {
 
 		while( last - first >= 16 ) {
 			auto const b = uload16_char_data( tag, first );
-			int const b_len = 16;
-			int result = _mm_cmpestri( a, keys_len, b, b_len, compare_mode );
+			int const result = _mm_cmpestri( a, keys_len, b, 16, compare_mode );
 			first += result;
 			if( result < 16 ) {
 				return first;
 			}
 		}
-		static constexpr auto is_eq = []( char c ) {
-			return ( ( c == keys ) | ... );
-		};
-		if constexpr( is_unchecked_input ) {
-			while( is_eq( *first ) ) {
-				++first;
-			}
-		} else {
-			while( first < last and is_eq( *first ) ) {
-				++first;
-			}
+		__m128i b{ };
+		auto const max_pos = last - first;
+		int const result = _mm_cmpestri( a, keys_len, b, 16, compare_mode );
+		if( result < max_pos ) {
+			return first + result;
 		}
-		return first;
+		return last;
 	}
 
 	template<typename U32>
@@ -228,7 +188,7 @@ namespace daw::json::json_details {
 	// Adapted from
 	// https://github.com/simdjson/simdjson/blob/master/src/generic/stage1/json_string_scanner.h#L79
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr UInt32
-	find_escaped_branchless( constexpr_exec_tag const &, UInt32 &prev_escaped,
+	find_escaped_branchless( constexpr_exec_tag, UInt32 &prev_escaped,
 	                         UInt32 backslashes ) {
 		backslashes &= ~prev_escaped;
 		UInt32 follow_escape = ( backslashes << 1 ) | prev_escaped;
@@ -248,7 +208,7 @@ namespace daw::json::json_details {
 		return ( even_bits ^ invert_mask ) & follow_escape;
 	}
 
-	DAW_ATTRIBUTE_FLATTEN static inline UInt32 prefix_xor( sse42_exec_tag const &,
+	DAW_ATTRIBUTE_FLATTEN static inline UInt32 prefix_xor( sse42_exec_tag,
 	                                                       UInt32 bitmask ) {
 		__m128i const all_ones = _mm_set1_epi8( '\xFF' );
 		__m128i const result = _mm_clmulepi64_si128(
@@ -259,7 +219,7 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input>
 	static inline char const *
-	mem_skip_until_end_of_string( simd_exec_tag const &tag, char const *first,
+	mem_skip_until_end_of_string( simd_exec_tag tag, char const *first,
 	                              char const *const last ) {
 		UInt32 prev_escapes = 0_u32;
 		while( last - first >= 16 ) {
@@ -306,7 +266,7 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input>
 	static inline char const *
-	mem_skip_until_end_of_string( simd_exec_tag const &tag, char const *first,
+	mem_skip_until_end_of_string( simd_exec_tag tag, char const *first,
 	                              char const *const last,
 	                              std::ptrdiff_t &first_escape ) {
 		char const *const first_first = first;
@@ -365,8 +325,7 @@ namespace daw::json::json_details {
 #endif
 	template<bool is_unchecked_input, char... keys>
 	DAW_ATTRIBUTE_FLATTEN static inline char const *
-	mem_move_to_next_of( runtime_exec_tag const &, char const *first,
-	                     char const *last ) {
+	mem_move_to_next_of( runtime_exec_tag, char const *first, char const *last ) {
 
 		if( sizeof...( keys ) == 1 ) {
 			char const key[]{ keys... };
@@ -431,7 +390,7 @@ namespace daw::json::json_details {
 
 	template<bool is_unchecked_input>
 	DAW_ATTRIBUTE_FLATTEN static inline char const *
-	mem_skip_until_end_of_string( runtime_exec_tag const &tag, char const *first,
+	mem_skip_until_end_of_string( runtime_exec_tag tag, char const *first,
 	                              char const *const last,
 	                              std::ptrdiff_t &first_escape ) {
 		char const *const first_first = first;

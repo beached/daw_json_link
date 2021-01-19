@@ -9,7 +9,9 @@
 #pragma once
 
 #include "../daw_json_exception.h"
+#include "daw_json_defs.h"
 
+#include <daw/daw_assume.h>
 #include <daw/daw_hide.h>
 #include <daw/daw_string_view.h>
 
@@ -22,22 +24,8 @@
 #include <string>
 #include <string_view>
 
-#if defined( __GNUC__ ) or defined( __clang__ )
-#define DAW_JSON_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )
-#define DAW_JSON_UNLIKELY( Bool ) ( __builtin_expect( !!( Bool ), 0 ) )
-#define DAW_JSON_NOINLINE __attribute__( ( noinline ) )
-#elif defined( _MSC_VER )
-#define DAW_JSON_LIKELY( Bool ) !!( Bool )
-#define DAW_JSON_UNLIKELY( Bool ) !!( Bool )
-#define DAW_JSON_NOINLINE __declspec( noinline )
-#else
-#define DAW_JSON_LIKELY( Bool ) !!( Bool )
-#define DAW_JSON_UNLIKELY( Bool ) !!( Bool )
-#define DAW_JSON_NOINLINE __attribute__( ( noinline ) )
-#endif
-
-#if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or             \
-         defined( _CPPUNWIND ) ) or                                            \
+#if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
+         defined( _CPPUNWIND ) ) or                                \
   defined( DAW_DONT_USE_JSON_EXCEPTIONS )
 #ifdef DAW_USE_JSON_EXCEPTIONS
 #undef DAW_USE_JSON_EXCEPTIONS
@@ -193,20 +181,20 @@ daw_json_error( daw::json::json_details::missing_token reason,
  * Ensure that Bool is true
  * If false pass rest of args to daw_json_error
  */
-#define daw_json_assert( Bool, ... )                                           \
-	if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {                                     \
-		daw_json_error( __VA_ARGS__ );                                             \
-	}                                                                            \
+#define daw_json_assert( Bool, ... )       \
+	if( DAW_JSON_UNLIKELY( not( Bool ) ) ) { \
+		daw_json_error( __VA_ARGS__ );         \
+	}                                        \
 	while( false )
 
 /***
  * Ensure that Bool is true when in Checked Input mode
  * If false pass rest of args to daw_json_error
  */
-#define daw_json_assert_weak( Bool, ... )                                      \
-	if constexpr( not Range::is_unchecked_input ) {                              \
-		if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {                                   \
-			daw_json_error( __VA_ARGS__ );                                           \
-		}                                                                          \
-	}                                                                            \
+#define daw_json_assert_weak( Bool, ... )         \
+	if constexpr( not Range::is_unchecked_input ) { \
+		if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {      \
+			daw_json_error( __VA_ARGS__ );              \
+		}                                             \
+	}                                               \
 	while( false )
