@@ -433,7 +433,7 @@ namespace daw::json::json_details {
 					Range *rng_ptr;
 					CPP20CONSTEXPR
 					DAW_ATTRIBUTE_FLATTEN
-					  DAW_ATTRIBUTE_HIDDEN inline ~cleanup_t( ) noexcept( false ) {
+					inline ~cleanup_t( ) noexcept( false ) {
 #ifdef HAS_CPP20CONSTEXPR
 						if( std::is_constant_evaluated( ) ) {
 #endif
