@@ -21,3 +21,9 @@
 #define DAW_JSON_UNLIKELY( Bool ) !!( Bool )
 #define DAW_JSON_NOINLINE __attribute__( ( noinline ) )
 #endif
+
+#if not defined( DAW_NO_FLATTEN ) and not defined( _MSC_VER )
+#define DAW_ONLY_FLATTEN [[gnu::flatten]]
+#else
+#define DAW_ONLY_FLATTEN
+#endif
