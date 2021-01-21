@@ -144,7 +144,8 @@ int main( int argc, char **argv )
 
 	std::string const json_str = daw::json::to_json_array( configs );
 	std::cout << json_str << '\n';
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

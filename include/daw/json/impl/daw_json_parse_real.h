@@ -58,7 +58,7 @@ namespace daw::json::json_details {
 
 	template<typename Result, typename Unsigned>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
-	power10( constexpr_exec_tag const &, Result result, Unsigned p ) {
+	power10( constexpr_exec_tag, Result result, Unsigned p ) {
 		// We only have a double table, of which float is a subset.  Long double
 		// will be calculated in terms of that
 		constexpr int max_dbl_exp = std::numeric_limits<double>::max_exponent10;
@@ -100,7 +100,7 @@ namespace daw::json::json_details {
 
 	template<typename Result, typename Unsigned>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
-	power10( runtime_exec_tag const &, Result result, Unsigned p ) {
+	power10( runtime_exec_tag, Result result, Unsigned p ) {
 		if constexpr( std::is_same_v<Result, double> or
 		              std::is_same_v<Result, float> ) {
 			return power10( constexpr_exec_tag{ }, result,
@@ -114,13 +114,13 @@ namespace daw::json::json_details {
 
 	template<typename Result>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
-	copy_sign( constexpr_exec_tag const &, Result to, Result from ) {
+	copy_sign( constexpr_exec_tag, Result to, Result from ) {
 		return daw::cxmath::copy_sign( to, from );
 	}
 
 	template<typename Result>
 	DAW_ATTRIBUTE_FLATTEN static inline Result
-	copy_sign( runtime_exec_tag const &, Result to, Result from ) {
+	copy_sign( runtime_exec_tag, Result to, Result from ) {
 		return std::copysign( to, from );
 	}
 

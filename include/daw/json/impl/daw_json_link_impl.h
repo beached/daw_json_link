@@ -186,7 +186,7 @@ namespace daw::json::json_details {
 	};
 
 	template<typename... MemberNames>
-	constexpr bool do_hashes_collide( ) {
+	static constexpr bool do_hashes_collide( ) {
 		std::array<UInt32, sizeof...( MemberNames )> hashes{
 		  name_hash( MemberNames::name )... };
 
@@ -207,23 +207,20 @@ namespace daw::json::json_details {
 	/***
 	 * Get the position from already seen JSON members or move the parser
 	 * forward until we reach the end of the class or the member.
-	 * @tparam pos JsonMember's position in locations
-	 * @tparam JsonMember current member in json_class
 	 * @tparam N Number of members in json_class
 	 * @tparam Range see IteratorRange
 	 * @param locations members location and names
 	 * @param rng Current JSON data
 	 * @return IteratorRange with begin( ) being start of value
 	 */
-	template<std::size_t pos, typename JsonMember, std::size_t N, typename Range,
-	         bool B>
-	[[nodiscard]] inline constexpr Range
-	find_class_member( locations_info_t<N, Range, B> &locations, Range &rng ) {
+	template<std::size_t pos, std::size_t N, typename Range, bool B>
+	[[nodiscard]] static inline constexpr Range
+	find_class_member( locations_info_t<N, Range, B> &locations, Range &rng,
+	                   bool is_nullable, daw::string_view member_name ) {
 
-		daw_json_assert_weak( is_json_nullable_v<JsonMember> or
-		                        ( not locations[pos].missing( ) ) or
+		daw_json_assert_weak( is_nullable or ( not locations[pos].missing( ) ) or
 		                        ( not rng.is_closing_brace_checked( ) ),
-		                      missing_member( JsonMember::name ), rng );
+		                      missing_member( member_name ), rng );
 
 		rng.trim_left_unchecked( );
 		// TODO: should we check for end
@@ -347,10 +344,13 @@ namespace daw::json::json_details {
 		                      ErrorReason::MissingMemberNameOrEndOfClass, rng );
 		Range loc = [&] {
 			if constexpr( Range::has_allocator ) {
-				return find_class_member<member_position, JsonMember>( locations, rng )
+				return find_class_member<member_position>(
+				         locations, rng, is_json_nullable_v<JsonMember>,
+				         JsonMember::name )
 				  .with_allocator( rng.get_allocator( ) );
 			} else {
-				return find_class_member<member_position, JsonMember>( locations, rng );
+				return find_class_member<member_position>(
+				  locations, rng, is_json_nullable_v<JsonMember>, JsonMember::name );
 			}
 		}( );
 
@@ -396,7 +396,7 @@ namespace daw::json::json_details {
 	 */
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
-	[[nodiscard]] inline constexpr JsonClass
+	[[nodiscard]] static constexpr JsonClass
 	parse_json_class( Range &rng, std::index_sequence<Is...> ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
@@ -431,9 +431,11 @@ namespace daw::json::json_details {
 			if constexpr( is_guaranteed_rvo_v<Range> ) {
 				struct cleanup_t {
 					Range *rng_ptr;
-					CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
+					CPP20CONSTEXPR
+					DAW_ONLY_INLINE
+					inline ~cleanup_t( ) noexcept( false ) {
 #ifdef HAS_CPP20CONSTEXPR
-						if( std::is_constant_evaluated( ) ) {
+						if( not std::is_constant_evaluated( ) ) {
 #endif
 							if( std::uncaught_exceptions( ) == 0 ) {
 								class_cleanup_now( *rng_ptr );
@@ -484,7 +486,7 @@ namespace daw::json::json_details {
 	 * JSON array. Often this is used for geometric types like Point
 	 */
 	template<typename JsonClass, typename... JsonMembers, typename Range>
-	[[nodiscard]] inline constexpr JsonClass
+	[[nodiscard]] static constexpr JsonClass
 	parse_ordered_json_class( Range &rng ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
@@ -510,7 +512,7 @@ namespace daw::json::json_details {
 				Range *ptr;
 				CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
 #ifdef HAS_CPP20CONSTEXPR
-					if( std::is_constant_evaluated( ) ) {
+					if( not std::is_constant_evaluated( ) ) {
 #endif
 						if( std::uncaught_exceptions( ) == 0 ) {
 							(void)ptr->skip_array( );

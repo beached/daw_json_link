@@ -99,8 +99,6 @@ bool test_bad_real_untrusted2( ) {
 	return false;
 }
 
-
-
 #define do_test( ... )                                                   \
 	try {                                                                  \
 		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );              \

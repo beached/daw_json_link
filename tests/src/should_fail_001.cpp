@@ -227,30 +227,30 @@ namespace tests {
 static bool has_uncaught_except = false;
 
 #ifdef DAW_USE_JSON_EXCEPTIONS
-#define expect_fail( Bool, Reason )                                            \
-	do {                                                                         \
-		std::cout << "testing: "                                                   \
-		          << "" #Bool "\n";                                                \
-		try {                                                                      \
-			if( not static_cast<bool>( Bool ) ) {                                    \
-				std::cerr << "Fail: " << ( Reason ) << '\n';                           \
-			}                                                                        \
-		} catch( std::exception const &ex ) {                                      \
-			std::cout << "Fail: " << ( Reason ) << "\nUnexpected std::exception\n"   \
-			          << ex.what( ) << '\n';                                         \
-			has_uncaught_except = true;                                              \
-		} catch( ... ) {                                                           \
-			std::cout << "Fail: " << ( Reason ) << "\nUnknown exception\n";          \
-			has_uncaught_except = true;                                              \
-		}                                                                          \
+#define expect_fail( Bool, Reason )                                          \
+	do {                                                                       \
+		std::cout << "testing: "                                                 \
+		          << "" #Bool "\n";                                              \
+		try {                                                                    \
+			if( not static_cast<bool>( Bool ) ) {                                  \
+				std::cerr << "Fail: " << ( Reason ) << '\n';                         \
+			}                                                                      \
+		} catch( std::exception const &ex ) {                                    \
+			std::cout << "Fail: " << ( Reason ) << "\nUnexpected std::exception\n" \
+			          << ex.what( ) << '\n';                                       \
+			has_uncaught_except = true;                                            \
+		} catch( ... ) {                                                         \
+			std::cout << "Fail: " << ( Reason ) << "\nUnknown exception\n";        \
+			has_uncaught_except = true;                                            \
+		}                                                                        \
 	} while( false )
 #else
-#define expect_fail( Bool, Reason )                                            \
-	std::cout << "testing: "                                                     \
-	          << "" #Bool "\n";                                                  \
-	if( not static_cast<bool>( Bool ) ) {                                        \
-		std::cerr << "Fail: " << ( Reason ) << '\n';                               \
-	}                                                                            \
+#define expect_fail( Bool, Reason )              \
+	std::cout << "testing: "                       \
+	          << "" #Bool "\n";                    \
+	if( not static_cast<bool>( Bool ) ) {          \
+		std::cerr << "Fail: " << ( Reason ) << '\n'; \
+	}                                              \
 	while( false )
 #endif
 

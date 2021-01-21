@@ -77,7 +77,7 @@ namespace daw::json {
 		 * @return A T object
 		 */
 		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] static inline constexpr T
+		[[maybe_unused, nodiscard]] DAW_ONLY_FLATTEN static constexpr T
 		parse_to_class( Range &rng ) {
 			return json_details::parse_json_class<T, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{ } );

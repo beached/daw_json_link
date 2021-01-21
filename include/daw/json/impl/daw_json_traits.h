@@ -57,7 +57,7 @@ namespace daw::json {
 	template<typename T>
 	struct default_constructor {
 		template<typename... Args>
-		[[nodiscard]] inline constexpr auto operator( )( Args &&... args ) const
+		[[nodiscard]] inline constexpr auto operator( )( Args &&...args ) const
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> )
 		    -> std::enable_if_t<std::is_constructible_v<T, Args...>, T> {
 
@@ -65,7 +65,7 @@ namespace daw::json {
 		}
 
 		template<typename... Args>
-		[[nodiscard]] inline constexpr auto operator( )( Args &&... args ) const
+		[[nodiscard]] inline constexpr auto operator( )( Args &&...args ) const
 		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...> )
 		    -> std::enable_if_t<(not std::is_constructible_v<T, Args...> and
 		                         daw::traits::is_list_constructible_v<T, Args...>),
@@ -113,7 +113,7 @@ namespace daw::json {
 
 		template<typename... Args>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr auto
-		operator( )( Args &&... args ) const
+		operator( )( Args &&...args ) const
 		  noexcept( std::is_nothrow_constructible_v<std::optional<T>,
 		                                            std::in_place_t, Args...> )
 		    -> std::enable_if_t<
@@ -126,7 +126,7 @@ namespace daw::json {
 
 		template<typename... Args>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr auto
-		operator( )( Args &&... args ) const
+		operator( )( Args &&...args ) const
 		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...>
 		              and std::is_nothrow_move_constructible_v<T> )
 		    -> std::enable_if_t<
@@ -149,7 +149,7 @@ namespace daw::json {
 
 		template<typename... Args>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline auto
-		operator( )( Args &&... args ) const
+		operator( )( Args &&...args ) const
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> )
 		    -> std::enable_if_t<(sizeof...( Args ) > 0 and
 		                         std::is_constructible_v<T, Args...>),
@@ -161,7 +161,7 @@ namespace daw::json {
 
 		template<typename... Args>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline auto
-		operator( )( Args &&... args ) const
+		operator( )( Args &&...args ) const
 		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...> )
 		    -> std::enable_if_t<(( sizeof...( Args ) > 0 ) and
 		                         not std::is_constructible_v<T, Args...> and

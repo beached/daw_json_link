@@ -96,8 +96,8 @@ namespace daw::json::json_details {
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
 	         typename Range,
 	         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
-	[[nodiscard]] static constexpr Unsigned
-	unsigned_parser( constexpr_exec_tag const &, Range &rng ) {
+	[[nodiscard]] static constexpr Unsigned unsigned_parser( constexpr_exec_tag,
+	                                                         Range &rng ) {
 		// We know how many digits are in the number
 		using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 		static_assert( not static_cast<bool>( RangeChecked ) or
@@ -142,8 +142,8 @@ namespace daw::json::json_details {
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool KnownBounds,
 	         typename Range,
 	         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
-	[[nodiscard]] static constexpr Unsigned
-	unsigned_parser( constexpr_exec_tag const &, Range &rng ) {
+	[[nodiscard]] static constexpr Unsigned unsigned_parser( constexpr_exec_tag,
+	                                                         Range &rng ) {
 		// We do not know how long the string is
 		using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 		static_assert( not static_cast<bool>( RangeChecked ) or
@@ -261,7 +261,7 @@ namespace daw::json::json_details {
 
 	template<typename Unsigned, JsonRangeCheck RangeChecked, bool, typename Range>
 	[[nodiscard]] static inline Unsigned
-	unsigned_parser( sse42_exec_tag const &, Range &rng ) {
+	unsigned_parser( sse42_exec_tag , Range &rng ) {
 	  daw_json_assert_weak( rng.has_more( ), ErrorRange::UnexpectedEndOfData, rng
 	); using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>; result_t
 	result = result_t( ); char const *first = rng.first; char const *const last =

@@ -35,7 +35,7 @@
   * [Benchmarks](#benchmarks)
 * [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
 * [Differences between C++17 and C++20](#differences-between-c17-and-c20)
-  * [C++ 17 Naming of members](#c-17-naming-of-json-members)
+  * [C++ 17 Naming of members](#naming-of-json-members)
   * [C++ 20 Naming of members](#c-20-naming-of-json-members)
 * [Using data types](#using-mapped-data-types)
 * [Error Handling](#error-handling)
