@@ -24,6 +24,8 @@
 
 #if not defined( DAW_NO_FLATTEN ) and not defined( _MSC_VER )
 #define DAW_ONLY_FLATTEN [[gnu::flatten]]
+#define DAW_ONLY_INLINE [[gnu::always_inline]]
 #else
 #define DAW_ONLY_FLATTEN
+#define DAW_ONLY_INLINE
 #endif

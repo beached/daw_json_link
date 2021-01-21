@@ -186,7 +186,7 @@ namespace daw::json::json_details {
 	};
 
 	template<typename... MemberNames>
-	constexpr bool do_hashes_collide( ) {
+	static constexpr bool do_hashes_collide( ) {
 		std::array<UInt32, sizeof...( MemberNames )> hashes{
 		  name_hash( MemberNames::name )... };
 
@@ -432,10 +432,10 @@ namespace daw::json::json_details {
 				struct cleanup_t {
 					Range *rng_ptr;
 					CPP20CONSTEXPR
-					DAW_ATTRIBUTE_FLATTEN
+					DAW_ONLY_INLINE
 					inline ~cleanup_t( ) noexcept( false ) {
 #ifdef HAS_CPP20CONSTEXPR
-						if( std::is_constant_evaluated( ) ) {
+						if( not std::is_constant_evaluated( ) ) {
 #endif
 							if( std::uncaught_exceptions( ) == 0 ) {
 								class_cleanup_now( *rng_ptr );
@@ -486,7 +486,7 @@ namespace daw::json::json_details {
 	 * JSON array. Often this is used for geometric types like Point
 	 */
 	template<typename JsonClass, typename... JsonMembers, typename Range>
-	[[nodiscard]] inline constexpr JsonClass
+	[[nodiscard]] static constexpr JsonClass
 	parse_ordered_json_class( Range &rng ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
@@ -512,7 +512,7 @@ namespace daw::json::json_details {
 				Range *ptr;
 				CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
 #ifdef HAS_CPP20CONSTEXPR
-					if( std::is_constant_evaluated( ) ) {
+					if( not std::is_constant_evaluated( ) ) {
 #endif
 						if( std::uncaught_exceptions( ) == 0 ) {
 							(void)ptr->skip_array( );
