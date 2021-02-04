@@ -136,6 +136,13 @@ add_executable(twitter_test_alloc EXCLUDE_FROM_ALL src/twitter_test_alloc.cpp)
 target_link_libraries(twitter_test_alloc json_test)
 add_dependencies(full twitter_test_alloc)
 
+# libc++ does not have PMR yet
+if ( MSVC OR NOT (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang"))
+add_executable(twitter_test_pmr EXCLUDE_FROM_ALL src/twitter_test_pmr.cpp)
+target_link_libraries(twitter_test_pmr json_test)
+add_dependencies(full twitter_test_pmr)
+endif( )
+
 add_executable(twitter_test2 src/twitter_test2.cpp)
 target_link_libraries(twitter_test2 json_test)
 add_test(NAME twitter_test2 COMMAND twitter_test2 ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")

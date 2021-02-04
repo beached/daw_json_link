@@ -173,9 +173,7 @@ namespace daw::json::json_details {
 	         typename Range>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 	parse_string_known_stdstring( Range &rng ) {
-		using string_type =
-		  std::basic_string<char, std::char_traits<char>,
-		                    typename Range::template allocator_type_as<char>>;
+		using string_type = json_base_type<JsonMember>;
 		string_type result =
 		  string_type( rng.size( ), '\0', rng.template get_allocator_for<char>( ) );
 

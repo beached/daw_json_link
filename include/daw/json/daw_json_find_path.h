@@ -24,7 +24,7 @@
 namespace daw::json {
 	class json_path_node;
 
-	std::vector<json_path_node>
+	[[nodiscard]] std::vector<json_path_node>
 	find_json_path_stack_to( char const *parse_location, char const *doc_start );
 
 	class json_path_node {
@@ -47,22 +47,22 @@ namespace daw::json {
 
 	public:
 		/// What type of value is represented.
-		constexpr JsonBaseParseTypes type( ) const {
+		[[nodiscard]] constexpr JsonBaseParseTypes type( ) const {
 			return m_type;
 		}
 
 		/// The member name, only value for submembers of Class types
-		constexpr std::string_view name( ) const {
+		[[nodiscard]] constexpr std::string_view name( ) const {
 			return m_name;
 		}
 
 		/// The element index, only valid for elements of Array types
-		constexpr long long index( ) const {
+		[[nodiscard]] constexpr long long index( ) const {
 			return m_index;
 		}
 
 		/// The beginning of the value's data in JSON document
-		constexpr char const *value_start( ) const {
+		[[nodiscard]] constexpr char const *value_start( ) const {
 			return m_value_start;
 		}
 	};
@@ -71,7 +71,7 @@ namespace daw::json {
 	/// \param path_stack A vector with json_path_nodes representing the path in
 	/// the JSON document tree
 	/// \return A string in JSON Path format
-	inline std::string
+	[[nodiscard]] inline std::string
 	to_json_path_string( std::vector<json_path_node> const &path_stack ) {
 		return daw::algorithm::accumulate(
 		  path_stack.begin( ), path_stack.end( ), std::string{ },
@@ -89,7 +89,7 @@ namespace daw::json {
 	/// position in the document
 	/// \param parse_location The position in the document to find
 	/// \param doc_start A pointer to the stat of the JSON document
-	inline std::vector<json_path_node>
+	[[nodiscard]] inline std::vector<json_path_node>
 	find_json_path_stack_to( char const *parse_location, char const *doc_start ) {
 		if( parse_location == nullptr or doc_start == nullptr ) {
 			return { };
@@ -115,7 +115,7 @@ namespace daw::json {
 				return parse_stack.back( ).type( );
 			}
 
-			bool handle_on_value( json_pair jp ) {
+			[[nodiscard]] bool handle_on_value( json_pair jp ) {
 				if( auto const range = jp.value.get_range( );
 				    range.empty( ) or last <= range.data( ) ) {
 					return false;
@@ -136,13 +136,13 @@ namespace daw::json {
 				return true;
 			}
 
-			bool handle_on_array_start( json_value const & ) {
+			[[nodiscard]] bool handle_on_array_start( json_value const & ) {
 				parse_stack.push_back( state );
 				state = { };
 				return true;
 			}
 
-			bool handle_on_array_end( ) {
+			[[nodiscard]] bool handle_on_array_end( ) {
 				if( not parse_stack.empty( ) ) {
 					last_popped = parse_stack.back( );
 					state = parse_stack.back( );
@@ -151,13 +151,13 @@ namespace daw::json {
 				return true;
 			}
 
-			bool handle_on_class_start( json_value const & ) {
+			[[nodiscard]] bool handle_on_class_start( json_value const & ) {
 				parse_stack.push_back( state );
 				state = { };
 				return true;
 			}
 
-			bool handle_on_class_end( ) {
+			[[nodiscard]] bool handle_on_class_end( ) {
 				if( not parse_stack.empty( ) ) {
 					last_popped = parse_stack.back( );
 					state = parse_stack.back( );
@@ -166,14 +166,18 @@ namespace daw::json {
 				return true;
 			}
 
-			bool handle_on_number( json_value jv ) {
+			[[nodiscard]] bool handle_on_number( json_value jv ) {
 				auto sv = std::string_view( );
+#if defined( DAW_USE_JSON_EXCEPTIONS )
 				try {
+#endif
 					sv = jv.get_string_view( );
+#if defined( DAW_USE_JSON_EXCEPTIONS )
 				} catch( json_exception const & ) {
 					parse_stack.push_back( state );
 					return false;
 				}
+#endif
 				if( sv.data( ) <= last and last <= ( sv.data( ) + sv.size( ) ) ) {
 					parse_stack.push_back( state );
 					return false;
@@ -181,14 +185,18 @@ namespace daw::json {
 				return true;
 			}
 
-			bool handle_on_bool( json_value jv ) {
+			[[nodiscard]] bool handle_on_bool( json_value jv ) {
 				auto sv = std::string_view( );
+#if defined( DAW_USE_JSON_EXCEPTIONS )
 				try {
+#endif
 					sv = jv.get_string_view( );
+#if defined( DAW_USE_JSON_EXCEPTIONS )
 				} catch( json_exception const & ) {
 					parse_stack.push_back( state );
 					return false;
 				}
+#endif
 				if( sv.data( ) <= last and last <= ( sv.data( ) + sv.size( ) ) ) {
 					parse_stack.push_back( state );
 					return false;
@@ -196,14 +204,18 @@ namespace daw::json {
 				return true;
 			}
 
-			bool handle_on_string( json_value jv ) {
+			[[nodiscard]] bool handle_on_string( json_value jv ) {
 				auto sv = std::string_view( );
+#if defined( DAW_USE_JSON_EXCEPTIONS )
 				try {
+#endif
 					sv = jv.get_string_view( );
+#if defined( DAW_USE_JSON_EXCEPTIONS )
 				} catch( json_exception const & ) {
 					parse_stack.push_back( state );
 					return false;
 				}
+#endif
 				if( sv.data( ) <= last and last <= ( sv.data( ) + sv.size( ) ) ) {
 					parse_stack.push_back( state );
 					return false;
@@ -211,14 +223,18 @@ namespace daw::json {
 				return true;
 			}
 
-			bool handle_on_null( json_value jv ) {
+			[[nodiscard]] bool handle_on_null( json_value jv ) {
 				auto sv = std::string_view( );
+#if defined( DAW_USE_JSON_EXCEPTIONS )
 				try {
+#endif
 					sv = jv.get_string_view( );
+#if defined( DAW_USE_JSON_EXCEPTIONS )
 				} catch( json_exception const & ) {
 					parse_stack.push_back( state );
 					return false;
 				}
+#endif
 				if( sv.data( ) <= last and last <= ( sv.data( ) + sv.size( ) ) ) {
 					parse_stack.push_back( state );
 					return false;
@@ -227,37 +243,41 @@ namespace daw::json {
 			}
 		} handler{ doc_start, parse_location + 1 };
 
+#if defined( DAW_USE_JSON_EXCEPTIONS )
 		try {
+#endif
 			json_event_parser( doc_start, handler );
+#if defined( DAW_USE_JSON_EXCEPTIONS )
 		} catch( json_exception const & ) {
 			// Ignoring because we are only looking for the stack leading up to this
 			// and it may have come from an error
 		}
+#endif
 		if( handler.last_popped ) {
 			handler.parse_stack.push_back( *handler.last_popped );
 		}
 		return std::move( handler.parse_stack );
 	}
 
-	inline std::vector<json_path_node>
+	[[nodiscard]] inline std::vector<json_path_node>
 	find_json_path_stack_to( json_exception const &jex, char const *doc_start ) {
 		return find_json_path_stack_to( jex.parse_location( ), doc_start );
 	}
 
-	inline std::string find_json_path_to( char const *parse_location,
-	                                      char const *doc_start ) {
+	[[nodiscard]] inline std::string
+	find_json_path_to( char const *parse_location, char const *doc_start ) {
 		return to_json_path_string(
 		  find_json_path_stack_to( parse_location, doc_start ) );
 	}
 
-	inline std::string find_json_path_to( json_exception const &jex,
-	                                      char const *doc_start ) {
+	[[nodiscard]] inline std::string find_json_path_to( json_exception const &jex,
+	                                                    char const *doc_start ) {
 		return to_json_path_string(
 		  find_json_path_stack_to( jex.parse_location( ), doc_start ) );
 	}
 
-	constexpr std::size_t find_line_number_of( char const *doc_pos,
-	                                           char const *doc_start ) {
+	[[nodiscard]] constexpr std::size_t
+	find_line_number_of( char const *doc_pos, char const *doc_start ) {
 		daw_json_assert( doc_pos != nullptr and doc_start != nullptr,
 		                 ErrorReason::UnexpectedEndOfData );
 		daw_json_assert( std::less<>{ }( doc_start, doc_pos ),
@@ -271,13 +291,14 @@ namespace daw::json {
 			                                   return count;
 		                                   } );
 	}
-	constexpr std::size_t find_line_number_of( json_path_node const &node,
-	                                           char const *doc_start ) {
+
+	[[nodiscard]] constexpr std::size_t
+	find_line_number_of( json_path_node const &node, char const *doc_start ) {
 		return find_line_number_of( node.value_start( ), doc_start );
 	}
 
-	constexpr std::size_t find_column_number_of( char const *doc_pos,
-	                                             char const *doc_start ) {
+	[[nodiscard]] constexpr std::size_t
+	find_column_number_of( char const *doc_pos, char const *doc_start ) {
 		daw_json_assert( doc_pos != nullptr and doc_start != nullptr,
 		                 ErrorReason::UnexpectedEndOfData );
 		daw_json_assert( std::less<>{ }( doc_start, doc_pos ),
@@ -291,8 +312,8 @@ namespace daw::json {
 		return static_cast<std::size_t>( pos );
 	}
 
-	constexpr std::size_t find_column_number_of( json_path_node const &node,
-	                                             char const *doc_start ) {
+	[[nodiscard]] constexpr std::size_t
+	find_column_number_of( json_path_node const &node, char const *doc_start ) {
 		return find_column_number_of( node.value_start( ), doc_start );
 	}
 } // namespace daw::json

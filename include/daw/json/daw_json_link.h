@@ -819,6 +819,7 @@ namespace daw::json {
 	 * @tparam KnownBounds The bounds of the json_data are known to contain the
 	 * whole value
 	 * @return A reified T constructed from JSON data
+	 * @throws daw::json::json_exception
 	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
@@ -843,15 +844,16 @@ namespace daw::json {
 	 * @tparam KnownBounds The bounds of the json_data are known to contain the
 	 * whole value
 	 * @return A reified T constructed from JSON data
+	 * @throws daw::json::json_exception
 	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
 	         bool KnownBounds = false, typename Allocator>
 	[[maybe_unused, nodiscard]] constexpr auto
-	from_json_alloc( std::string_view json_data, Allocator &alloc ) {
+	from_json_alloc( std::string_view json_data, Allocator const &alloc ) {
 		daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
-		static_assert( json_details::is_allocator_v<Allocator> );
+		//static_assert( json_details::is_allocator_v<Allocator> );
 		char const *f = json_data.data( );
 		char const *l = f + static_cast<ptrdiff_t>( json_data.size( ) );
 		auto rng = ParsePolicy::with_allocator( f, l, alloc );
@@ -870,6 +872,7 @@ namespace daw::json {
 	 * @tparam KnownBounds The bounds of the json_data are known to contain the
 	 * whole value
 	 * @return A value reified from the JSON data member
+	 * @throws daw::json::json_exception
 	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
@@ -902,6 +905,7 @@ namespace daw::json {
 	 * @tparam KnownBounds The bounds of the json_data are known to contain the
 	 * whole value
 	 * @return A value reified from the JSON data member
+	 * @throws daw::json::json_exception
 	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
@@ -927,6 +931,15 @@ namespace daw::json {
 		  ParseTag<json_member::expected_type>{ }, rng );
 	}
 
+	/***
+	 * Parse a value from a json_value
+	 * @tparam JsonMember The type of the item being parsed
+	 * @param value JSON data, see basic_json_value
+	 * @tparam KnownBounds The bounds of the json_data are known to contain the
+	 * whole value
+	 * @return A value reified from the JSON data member
+	 * @throws daw::json::json_exception
+	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
 	         bool KnownBounds = false, typename Range>
@@ -942,6 +955,18 @@ namespace daw::json {
 		  ParseTag<json_member::expected_type>{ }, rng );
 	}
 
+	/***
+	 * Parse a JSONMember from the json_data starting at member_path.
+	 * @param value JSON data, see basic_json_value
+	 * @param member_path A dot separated path of member names, default is the
+	 * root.  Array indices are specified with square brackets e.g. [5] is the 6th
+	 * item
+	 * @tparam JsonMember The type of the item being parsed
+	 * @tparam KnownBounds The bounds of the json_data are known to contain the
+	 * whole value
+	 * @return A value reified from the JSON data member
+	 * @throws daw::json::json_exception
+	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
 	         bool KnownBounds = false, typename Range>
@@ -1016,6 +1041,7 @@ namespace daw::json {
 	 * @tparam KnownBounds The bounds of the json_data are known to contain the
 	 * whole value
 	 * @return A Container containing parsed data from JSON string
+	 * @throws daw::json::json_exception
 	 */
 	template<typename JsonElement,
 	         typename Container =

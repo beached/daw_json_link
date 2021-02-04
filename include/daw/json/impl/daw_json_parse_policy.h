@@ -28,26 +28,28 @@ namespace daw::json {
 	namespace json_details {
 		template<typename Alloc, bool /*is_empty*/>
 		class AllocatorWrapperBase {
-			Alloc *allocator_ptr;
+			using allocator_t = std::remove_reference_t<Alloc>;
+			allocator_t *allocator_ptr;
 
 		public:
-			AllocatorWrapperBase( Alloc &alloc ) noexcept
+			AllocatorWrapperBase( allocator_t &alloc ) noexcept
 			  : allocator_ptr( &alloc ) {}
 
-			Alloc &get_allocator( ) const {
+			allocator_t &get_allocator( ) const {
 				return *allocator_ptr;
 			}
 		};
 
 		template<typename Alloc>
 		class AllocatorWrapperBase<Alloc, true /*is_empty*/> {
-			static constexpr Alloc allocator{ };
+			using allocator_t = std::remove_reference_t<Alloc>;
+			static constexpr allocator_t allocator{ };
 
 		public:
 			constexpr AllocatorWrapperBase( ) = default;
-			constexpr AllocatorWrapperBase( Alloc & ) noexcept {}
+			constexpr AllocatorWrapperBase( allocator_t & ) noexcept {}
 
-			Alloc &get_allocator( ) const {
+			allocator_t &get_allocator( ) const {
 				return allocator;
 			}
 		};
@@ -55,16 +57,34 @@ namespace daw::json {
 		template<typename Alloc>
 		struct AllocatorWrapper
 		  : AllocatorWrapperBase<Alloc, std::is_empty_v<Alloc>> {
+			using allocator_type = std::remove_reference_t<Alloc>;
 
-			AllocatorWrapper( Alloc &alloc ) noexcept
-			  : AllocatorWrapperBase<Alloc, std::is_empty_v<Alloc>>( alloc ) {}
+			AllocatorWrapper( allocator_type &alloc ) noexcept
+			  : AllocatorWrapperBase<allocator_type, std::is_empty_v<allocator_type>>(
+			      alloc ) {}
 
 			static constexpr bool has_allocator = true;
-			using allocator_type = Alloc;
 
+			template<typename A, typename T>
+			struct allocator_type_as_rebind {
+				using type =
+				  typename std::allocator_traits<A>::template rebind_alloc<T>;
+			};
+
+			template<typename A, typename T>
+			using has_allocator_type_as_rebind =
+			  typename std::allocator_traits<A>::template rebind_traits<T>::type;
+
+			template<typename A, typename T>
+			static inline constexpr bool has_rebind_v =
+			  daw::is_detected_v<has_allocator_type_as_rebind, A, T>;
+
+			// DAW FIX
 			template<typename T>
 			using allocator_type_as =
-			  typename std::allocator_traits<Alloc>::template rebind_alloc<T>;
+			  std::conditional_t<has_rebind_v<allocator_type, T>,
+			                     allocator_type_as_rebind<allocator_type, T>,
+			                     allocator_type>;
 
 			template<typename T>
 			auto get_allocator_for( ) const {
