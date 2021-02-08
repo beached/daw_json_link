@@ -24,7 +24,7 @@
 namespace daw::json {
 	class json_path_node;
 
-	[[nodiscard]] std::vector<json_path_node>
+	[[nodiscard]] inline std::vector<json_path_node>
 	find_json_path_stack_to( char const *parse_location, char const *doc_start );
 
 	class json_path_node {

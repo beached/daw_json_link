@@ -14,9 +14,7 @@
 #include <daw/cpp_17.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
-#include <daw/daw_traits.h>
 
-#include <fstream>
 #include <iostream>
 #include <streambuf>
 
@@ -77,7 +75,7 @@ void test( std::string_view json_data,
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+		test_assert( twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 
@@ -98,7 +96,7 @@ void test( std::string_view json_data,
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 
@@ -119,7 +117,7 @@ void test( std::string_view json_data,
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+		test_assert( twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
@@ -140,7 +138,7 @@ void test( std::string_view json_data,
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+		test_assert( twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 #endif
@@ -161,7 +159,7 @@ void test( std::string_view json_data,
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+		test_assert( twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
@@ -183,7 +181,7 @@ void test( std::string_view json_data,
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+		test_assert( twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 #endif
@@ -205,7 +203,7 @@ void test( std::string_view json_data,
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+		test_assert( twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 
@@ -226,7 +224,7 @@ void test( std::string_view json_data,
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+		test_assert( twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
