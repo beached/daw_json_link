@@ -22,48 +22,82 @@
 #include <streambuf>
 #include <string_view>
 
+static void benchmark_twitter( benchmark::State &state ) {
+	using namespace daw::json;
+
+	auto const mm_twitter = *daw::read_file( "../test_data/twitter.json" );
+
+	for( auto s : state ) {
+		auto j1 =
+		  daw::json::from_json<daw::twitter::twitter_object_t,
+		                       NoCommentSkippingPolicyChecked>( mm_twitter );
+		benchmark::DoNotOptimize( j1 );
+	}
+	state.SetBytesProcessed( static_cast<int64_t>( state.iterations( ) ) *
+	                         static_cast<int64_t>( mm_twitter.size( ) ) );
+	state.SetItemsProcessed( state.iterations( ) );
+}
+
+BENCHMARK( benchmark_twitter );
+
+static void benchmark_citm_catalog( benchmark::State &state ) {
+	using namespace daw::json;
+
+	auto const mm_citm = *daw::read_file( "../test_data/citm_catalog.json" );
+
+	for( auto s : state ) {
+		auto j1 = daw::json::from_json<daw::citm::citm_object_t,
+		                               NoCommentSkippingPolicyChecked>( mm_citm );
+		benchmark::DoNotOptimize( j1 );
+	}
+	state.SetBytesProcessed( static_cast<int64_t>( state.iterations( ) ) *
+	                         static_cast<int64_t>( mm_citm.size( ) ) );
+	state.SetItemsProcessed( state.iterations( ) );
+}
+
+BENCHMARK( benchmark_citm_catalog );
+
+static void benchmark_canada( benchmark::State &state ) {
+	using namespace daw::json;
+
+	auto const mm_canada = *daw::read_file( "../test_data/canada.json" );
+
+	for( auto s : state ) {
+		auto j1 = daw::json::from_json<daw::geojson::FeatureCollection,
+		                               NoCommentSkippingPolicyChecked>( mm_canada );
+		benchmark::DoNotOptimize( j1 );
+	}
+	state.SetBytesProcessed( static_cast<int64_t>( state.iterations( ) ) *
+	                         static_cast<int64_t>( mm_canada.size( ) ) );
+	state.SetItemsProcessed( state.iterations( ) );
+}
+
+BENCHMARK( benchmark_canada );
+
 static void benchmark_nativejson( benchmark::State &state ) {
 	using namespace daw::json;
 
 	auto const mm_twitter = *daw::read_file( "../test_data/twitter.json" );
 	auto const mm_citm = *daw::read_file( "../test_data/citm_catalog.json" );
 	auto const mm_canada = *daw::read_file( "../test_data/canada.json" );
-	auto const sv_twitter =
-	  std::string_view( mm_twitter.data( ), mm_twitter.size( ) );
-	auto const sv_citm = std::string_view( mm_citm.data( ), mm_citm.size( ) );
-	auto const sv_canada =
-	  std::string_view( mm_canada.data( ), mm_canada.size( ) );
 
-	std::optional<daw::twitter::twitter_object_t> j1{ };
-	std::optional<daw::citm::citm_object_t> j2{ };
-	std::optional<daw::geojson::FeatureCollection> j3{ };
-	std::cout << "non-debug run\n";
-	auto const test_func = [&]( auto f1, auto f2, auto f3 ) {
-		j1 = daw::json::from_json<daw::twitter::twitter_object_t,
-		                          NoCommentSkippingPolicyChecked>( f1 );
-		j2 = daw::json::from_json<daw::citm::citm_object_t,
-		                          NoCommentSkippingPolicyChecked>( f2 );
-		j3 = daw::json::from_json<daw::geojson::FeatureCollection,
-		                          NoCommentSkippingPolicyChecked>( f3 );
+	for( auto s : state ) {
+		auto j1 =
+		  daw::json::from_json<daw::twitter::twitter_object_t,
+		                       NoCommentSkippingPolicyChecked>( mm_twitter );
+		auto j2 = daw::json::from_json<daw::citm::citm_object_t,
+		                               NoCommentSkippingPolicyChecked>( mm_citm );
+		auto j3 = daw::json::from_json<daw::geojson::FeatureCollection,
+		                               NoCommentSkippingPolicyChecked>( mm_canada );
 		benchmark::DoNotOptimize( j1 );
 		benchmark::DoNotOptimize( j2 );
 		benchmark::DoNotOptimize( j3 );
-	};
-
-	for( auto s : state ) {
-		test_func( sv_twitter, sv_citm, sv_canada );
-		benchmark::DoNotOptimize( sv_twitter );
-		benchmark::DoNotOptimize( sv_citm );
-		benchmark::DoNotOptimize( sv_canada );
 	}
 	state.SetBytesProcessed( static_cast<int64_t>( state.iterations( ) ) *
-	                         static_cast<int64_t>( sv_twitter.size( ) +
-	                                               sv_citm.size( ) +
-	                                               sv_canada.size( ) ) );
-	state.SetItemsProcessed( state.iterations() * 3 );
-	test_assert( j1, "Missing value" );
-	test_assert( j2, "Missing value" );
-	test_assert( j3, "Missing value" );
+	                         static_cast<int64_t>( mm_twitter.size( ) +
+	                                               mm_citm.size( ) +
+	                                               mm_canada.size( ) ) );
+	state.SetItemsProcessed( state.iterations( ) * 3 );
 }
 
 BENCHMARK( benchmark_nativejson );
