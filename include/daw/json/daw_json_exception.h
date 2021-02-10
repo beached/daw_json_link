@@ -29,7 +29,7 @@ namespace daw::json::json_details {
 		         std::enable_if_t<(not std::is_same_v<StringView, missing_member>),
 		                          std::nullptr_t> = nullptr>
 		explicit constexpr missing_member( StringView name )
-		  : member_name( name.data( ) ) {}
+		  : member_name( std::data( name ) ) {}
 
 		template<std::size_t N>
 		explicit constexpr missing_member( char const ( &s )[N] )
@@ -192,17 +192,16 @@ namespace daw::json {
 	 */
 	class json_exception {
 		ErrorReason m_reason = ErrorReason::Unknown;
-		char const *m_data = nullptr;
+		union data_t {
+			char const *pointer;
+			char token;
+
+			constexpr data_t( char const *p )
+			  : pointer( p ) {}
+			constexpr data_t( char t )
+			  : token( t ) {}
+		} m_data = data_t( nullptr );
 		char const *m_parse_loc = nullptr;
-		static constexpr char token_addr[256] = { };
-
-		static constexpr char const *get_token_addr( char c ) {
-			return token_addr + static_cast<int>( static_cast<unsigned char>( c ) );
-		}
-
-		static constexpr char get_token( char const *p ) {
-			return static_cast<char>( static_cast<unsigned char>( p - token_addr ) );
-		}
 
 	public:
 		constexpr json_exception( ) = default;
@@ -216,18 +215,18 @@ namespace daw::json {
 
 		explicit constexpr json_exception( json_details::missing_token mt )
 		  : m_reason( ErrorReason::ExpectedTokenNotFound )
-		  , m_data( get_token_addr( mt.token ) ) {}
+		  , m_data( mt.token ) {}
 
 		explicit constexpr json_exception( json_details::missing_member mm,
 		                                   std::string_view location )
 		  : m_reason( ErrorReason::MemberNotFound )
 		  , m_data( mm.member_name )
-		  , m_parse_loc( location.data( ) ) {}
+		  , m_parse_loc( std::data( location ) ) {}
 
 		explicit constexpr json_exception( json_details::missing_token mt,
 		                                   char const *location )
 		  : m_reason( ErrorReason::ExpectedTokenNotFound )
-		  , m_data( get_token_addr( mt.token ) )
+		  , m_data( mt.token )
 		  , m_parse_loc( location ) {}
 
 		explicit constexpr json_exception( ErrorReason reason,
@@ -248,12 +247,11 @@ namespace daw::json {
 			case ErrorReason::MemberNotFound: {
 				using namespace std::string_literals;
 				return "Could not find required class member '"s +
-				       static_cast<std::string>( m_data ) + "'"s;
+				       static_cast<std::string>( m_data.pointer ) + "'"s;
 			}
 			case ErrorReason::ExpectedTokenNotFound: {
 				using namespace std::string_literals;
-				return "Could not find expected parse token '"s + get_token( m_data ) +
-				       "'"s;
+				return "Could not find expected parse token '"s + m_data.token + "'"s;
 			}
 			default:
 				return std::string( ( reason_message( m_reason ) ) );
@@ -292,14 +290,13 @@ namespace daw::json {
 #ifndef _WIN32
 		result += "\nlocation:\x1b[1m";
 #endif
-		result +=
-		  std::accumulate( loc_data.data( ), loc_data.data( ) + loc_data.size( ),
-		                   std::string{ }, []( std::string s, char c ) {
-			                   if( ( c != '\n' ) & ( c != '\r' ) ) {
-				                   s += c;
-			                   }
-			                   return s;
-		                   } );
+		result += std::accumulate( std::data( loc_data ), daw::data_end( loc_data ),
+		                           std::string{ }, []( std::string s, char c ) {
+			                           if( ( c != '\n' ) & ( c != '\r' ) ) {
+				                           s += c;
+			                           }
+			                           return s;
+		                           } );
 #ifndef _WIN32
 		result += "\x1b[0m\n";
 #endif

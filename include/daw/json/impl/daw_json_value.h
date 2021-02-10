@@ -123,7 +123,7 @@ namespace daw::json {
 			}
 			auto rng = m_state;
 			auto result = json_details::parse_name( rng );
-			return std::string_view( result.data( ), result.size( ) );
+			return std::string_view( std::data( result ), std::size( result ) );
 		}
 
 		/***
@@ -150,7 +150,7 @@ namespace daw::json {
 			}
 			auto rng = m_state;
 			auto name = json_details::parse_name( rng );
-			return { std::string_view( name.data( ), name.size( ) ),
+			return { std::string_view( std::data( name ), std::size( name ) ),
 			         Range( rng.first, rng.last ) };
 		}
 
@@ -317,7 +317,7 @@ namespace daw::json {
 		 * Construct from std::string_view
 		 */
 		explicit inline constexpr basic_json_value( std::string_view sv )
-		  : m_rng( sv.data( ), sv.data( ) + sv.size( ) ) {}
+		  : m_rng( std::data( sv ), daw::data_end( sv ) ) {}
 
 		/***
 		 * Construct from char const *, std::size_t
@@ -425,7 +425,7 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return { result.first, result.size( ) };
+			return { std::data( result ), std::size( result ) };
 		}
 
 		/***
@@ -442,7 +442,7 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return { result.first, result.size( ), alloc };
+			return { std::data( result ), std::size( result ), alloc };
 		}
 
 		/***

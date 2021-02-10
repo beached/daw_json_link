@@ -11,7 +11,8 @@
 #if defined( __GNUC__ ) or defined( __clang__ )
 #define DAW_JSON_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )
 #define DAW_JSON_UNLIKELY( Bool ) ( __builtin_expect( !!( Bool ), 0 ) )
-#define DAW_JSON_NOINLINE __attribute__( ( noinline ) )
+#define DAW_JSON_NOINLINE [[gnu::noinline]]
+// __attribute__( ( noinline ) )
 #elif defined( _MSC_VER )
 #define DAW_JSON_LIKELY( Bool ) !!( Bool )
 #define DAW_JSON_UNLIKELY( Bool ) !!( Bool )
@@ -19,7 +20,7 @@
 #else
 #define DAW_JSON_LIKELY( Bool ) !!( Bool )
 #define DAW_JSON_UNLIKELY( Bool ) !!( Bool )
-#define DAW_JSON_NOINLINE __attribute__( ( noinline ) )
+#define DAW_JSON_NOINLINE [[gnu::noinline]]
 #endif
 
 #if not defined( DAW_NO_FLATTEN ) and not defined( _MSC_VER )

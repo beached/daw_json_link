@@ -8,18 +8,17 @@
 
 #pragma once
 
-#include "twitter_test.h"
+#include "twitter_test_pmr.h"
 
 #include <daw/daw_hide.h>
+#include <daw/daw_utility.h>
 #include <daw/json/daw_json_link.h>
 
 #include <chrono>
 #include <cstdint>
 #include <optional>
-#include <string>
 #include <string_view>
 #include <tuple>
-#include <vector>
 
 namespace daw::twitter {
 	struct TimestampConverter {
@@ -111,16 +110,23 @@ namespace daw::twitter {
 
 namespace daw::json {
 	template<>
+	struct json_link_basic_type_map<daw::twitter::String> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::StringEscaped;
+	};
+
+	template<>
 	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::metadata_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_string<"result_type">,
-		                              json_string<"iso_language_code">>;
+		using type =
+		  json_member_list<json_string<"result_type", daw::twitter::String>,
+		                   json_string<"iso_language_code", daw::twitter::String>>;
 #else
 		static inline constexpr char const result_type[] = "result_type";
 		static inline constexpr char const iso_language_code[] =
 		  "iso_language_code";
-		using type = json_member_list<json_string<result_type>,
-		                              json_string<iso_language_code>>;
+		using type =
+		  json_member_list<json_string<result_type, daw::twitter::String>,
+		                   json_string<iso_language_code, daw::twitter::String>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::metadata_t const &value ) {
@@ -132,18 +138,21 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::urls_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_string<"url">, json_string<"expanded_url">,
-		                   json_string<"display_url">,
-		                   json_array<"indices", int32_t>>;
+		using type = json_member_list<
+		  json_string<"url", daw::twitter::String>,
+		  json_string<"expanded_url", daw::twitter::String>,
+		  json_string<"display_url", daw::twitter::String>,
+		  json_array<"indices", int32_t, daw::twitter::Vector<int32_t>>>;
 #else
 		static inline constexpr char const url[] = "url";
 		static inline constexpr char const expanded_url[] = "expanded_url";
 		static inline constexpr char const display_url[] = "display_url";
 		static inline constexpr char const indices[] = "indices";
-		using type =
-		  json_member_list<json_string<url>, json_string<expanded_url>,
-		                   json_string<display_url>, json_array<indices, int32_t>>;
+		using type = json_member_list<
+		  json_string<url, daw::twitter::String>,
+		  json_string<expanded_url, daw::twitter::String>,
+		  json_string<display_url, daw::twitter::String>,
+		  json_array<indices, int32_t, daw::twitter::Vector<int32_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::urls_element_t const &value ) {
@@ -155,12 +164,14 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::url_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_array<"urls", daw::twitter::urls_element_t>>;
+		using type = json_member_list<
+		  json_array<"urls", daw::twitter::urls_element_t,
+		             daw::twitter::Vector<daw::twitter::urls_element_t>>>;
 #else
 		static inline constexpr char const urls[] = "urls";
-		using type =
-		  json_member_list<json_array<urls, daw::twitter::urls_element_t>>;
+		using type = json_member_list<
+		  json_array<urls, daw::twitter::urls_element_t,
+		             daw::twitter::Vector<daw::twitter::urls_element_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::url_t const &value ) {
@@ -171,12 +182,14 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::description_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_array<"urls", daw::twitter::urls_element_t>>;
+		using type = json_member_list<
+		  json_array<"urls", daw::twitter::urls_element_t,
+		             daw::twitter::Vector<daw::twitter::urls_element_t>>>;
 #else
 		static inline constexpr char const urls[] = "urls";
-		using type =
-		  json_member_list<json_array<urls, daw::twitter::urls_element_t>>;
+		using type = json_member_list<
+		  json_array<urls, daw::twitter::urls_element_t,
+		             daw::twitter::Vector<daw::twitter::urls_element_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::description_t const &value ) {
@@ -208,9 +221,12 @@ namespace daw::json {
 	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::user_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
-		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"name">,
-		  json_string<"screen_name">, json_string<"location">,
-		  json_string<"description">, json_string_null<"url">,
+		  json_number<"id", int64_t>, json_string<"id_str", daw::twitter::String>,
+		  json_string<"name", daw::twitter::String>,
+		  json_string<"screen_name", daw::twitter::String>,
+		  json_string<"location", daw::twitter::String>,
+		  json_string<"description", daw::twitter::String>,
+		  json_string_null<"url", daw::twitter::OptString>,
 		  json_class<"entities", daw::twitter::entities_t>, json_bool<"protected">,
 		  json_number<"followers_count", int32_t>,
 		  json_number<"friends_count", int32_t>,
@@ -220,17 +236,20 @@ namespace daw::json {
 		              daw::twitter::TimestampConverter>,
 		  json_number<"favourites_count", int32_t>, json_bool<"geo_enabled">,
 		  json_bool<"verified">, json_number<"statuses_count", int32_t>,
-		  json_string<"lang">, json_bool<"contributors_enabled">,
-		  json_bool<"is_translator">, json_bool<"is_translation_enabled">,
-		  json_string<"profile_background_color">,
-		  json_string<"profile_background_image_url">,
-		  json_string<"profile_background_image_url_https">,
-		  json_bool<"profile_background_tile">, json_string<"profile_image_url">,
-		  json_string<"profile_image_url_https">,
-		  json_string_null<"profile_banner_url">, json_string<"profile_link_color">,
-		  json_string<"profile_sidebar_border_color">,
-		  json_string<"profile_sidebar_fill_color">,
-		  json_string<"profile_text_color">,
+		  json_string<"lang", daw::twitter::String>,
+		  json_bool<"contributors_enabled">, json_bool<"is_translator">,
+		  json_bool<"is_translation_enabled">,
+		  json_string<"profile_background_color", daw::twitter::String>,
+		  json_string<"profile_background_image_url", daw::twitter::String>,
+		  json_string<"profile_background_image_url_https", daw::twitter::String>,
+		  json_bool<"profile_background_tile">,
+		  json_string<"profile_image_url", daw::twitter::String>,
+		  json_string<"profile_image_url_https", daw::twitter::String>,
+		  json_string_null<"profile_banner_url", daw::twitter::OptString>,
+		  json_string<"profile_link_color", daw::twitter::String>,
+		  json_string<"profile_sidebar_border_color", daw::twitter::String>,
+		  json_string<"profile_sidebar_fill_color", daw::twitter::String>,
+		  json_string<"profile_text_color", daw::twitter::String>,
 		  json_bool<"profile_use_background_image">, json_bool<"default_profile">,
 		  json_bool<"default_profile_image">, json_bool<"following">,
 		  json_bool<"follow_request_sent">, json_bool<"notifications">>;
@@ -290,26 +309,33 @@ namespace daw::json {
 		  "follow_request_sent";
 		static inline constexpr char const notifications[] = "notifications";
 		using type = json_member_list<
-		  json_number<id, int64_t>, json_string<id_str>, json_string<name>,
-		  json_string<screen_name>, json_string<location>, json_string<description>,
-		  json_string_null<url>, json_class<entities, daw::twitter::entities_t>,
-		  json_bool<_jsonprotected>, json_number<followers_count, int32_t>,
+		  json_number<id, int64_t>, json_string<id_str, daw::twitter::String>,
+		  json_string<name, daw::twitter::String>,
+		  json_string<screen_name, daw::twitter::String>,
+		  json_string<location, daw::twitter::String>,
+		  json_string<description, daw::twitter::String>,
+		  json_string_null<url, daw::twitter::OptString>,
+		  json_class<entities, daw::twitter::entities_t>, json_bool<_jsonprotected>,
+		  json_number<followers_count, int32_t>,
 		  json_number<friends_count, int32_t>, json_number<listed_count, int32_t>,
 		  json_custom<created_at, daw::twitter::twitter_tp,
 		              daw::twitter::TimestampConverter,
 		              daw::twitter::TimestampConverter>,
 		  json_number<favourites_count, int32_t>, json_bool<geo_enabled>,
 		  json_bool<verified>, json_number<statuses_count, int32_t>,
-		  json_string<lang>, json_bool<contributors_enabled>,
+		  json_string<lang, daw::twitter::String>, json_bool<contributors_enabled>,
 		  json_bool<is_translator>, json_bool<is_translation_enabled>,
-		  json_string<profile_background_color>,
-		  json_string<profile_background_image_url>,
-		  json_string<profile_background_image_url_https>,
-		  json_bool<profile_background_tile>, json_string<profile_image_url>,
-		  json_string<profile_image_url_https>,
-		  json_string_null<profile_banner_url>, json_string<profile_link_color>,
-		  json_string<profile_sidebar_border_color>,
-		  json_string<profile_sidebar_fill_color>, json_string<profile_text_color>,
+		  json_string<profile_background_color, daw::twitter::String>,
+		  json_string<profile_background_image_url, daw::twitter::String>,
+		  json_string<profile_background_image_url_https, daw::twitter::String>,
+		  json_bool<profile_background_tile>,
+		  json_string<profile_image_url, daw::twitter::String>,
+		  json_string<profile_image_url_https, daw::twitter::String>,
+		  json_string_null<profile_banner_url, daw::twitter::OptString>,
+		  json_string<profile_link_color, daw::twitter::String>,
+		  json_string<profile_sidebar_border_color, daw::twitter::String>,
+		  json_string<profile_sidebar_fill_color, daw::twitter::String>,
+		  json_string<profile_text_color, daw::twitter::String>,
 		  json_bool<profile_use_background_image>, json_bool<default_profile>,
 		  json_bool<default_profile_image>, json_bool<following>,
 		  json_bool<follow_request_sent>, json_bool<notifications>>;
@@ -338,14 +364,17 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIBUTE_HIDDEN
 	  json_data_contract<daw::twitter::hashtags_element_t> {
+		using constructor = daw::construct_a_t<daw::twitter::hashtags_element_t>;
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_string<"text">, json_array<"indices", int32_t>>;
+		using type = json_member_list<
+		  json_string<"text", daw::twitter::String>,
+		  json_array<"indices", int32_t, daw::twitter::Vector<int32_t>>>;
 #else
 		static inline constexpr char const text[] = "text";
 		static inline constexpr char const indices[] = "indices";
-		using type =
-		  json_member_list<json_string<text>, json_array<indices, int32_t>>;
+		using type = json_member_list<
+		  json_string<text, daw::twitter::String>,
+		  json_array<indices, int32_t, daw::twitter::Vector<int32_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::hashtags_element_t const &value ) {
@@ -361,19 +390,20 @@ namespace daw::json {
 		  json_custom<"created_at", daw::twitter::twitter_tp,
 		              daw::twitter::TimestampConverter,
 		              daw::twitter::TimestampConverter>,
-		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
-		  json_string<"source">, json_bool<"truncated">,
+		  json_number<"id", int64_t>, json_string<"id_str", daw::twitter::String>,
+		  json_string<"text", daw::twitter::String>,
+		  json_string<"source", daw::twitter::String>, json_bool<"truncated">,
 		  json_number_null<"in_reply_to_status_id", std::optional<int64_t>>,
-		  json_string_null<"in_reply_to_status_id_str">,
+		  json_string_null<"in_reply_to_status_id_str", daw::twitter::OptString>,
 		  json_number_null<"in_reply_to_user_id", std::optional<int64_t>>,
-		  json_string_null<"in_reply_to_user_id_str">,
-		  json_string_null<"in_reply_to_screen_name">,
+		  json_string_null<"in_reply_to_user_id_str", daw::twitter::OptString>,
+		  json_string_null<"in_reply_to_screen_name", daw::twitter::OptString>,
 		  json_class<"user", daw::twitter::user_t>,
 		  json_number<"retweet_count", int32_t>,
 		  json_number_null<"favorite_count", std::optional<int32_t>>,
 		  json_class<"entities", daw::twitter::entities_t>, json_bool<"favorited">,
 		  json_bool<"retweeted">, json_bool_null<"possibly_sensitive">,
-		  json_string<"lang">>;
+		  json_string<"lang", daw::twitter::String>>;
 #else
 		static inline constexpr char const metadata[] = "metadata";
 		static inline constexpr char const created_at[] = "created_at";
@@ -406,19 +436,20 @@ namespace daw::json {
 		  json_custom<created_at, daw::twitter::twitter_tp,
 		              daw::twitter::TimestampConverter,
 		              daw::twitter::TimestampConverter>,
-		  json_number<id, int64_t>, json_string<id_str>, json_string<text>,
-		  json_string<source>, json_bool<truncated>,
+		  json_number<id, int64_t>, json_string<id_str, daw::twitter::String>,
+		  json_string<text, daw::twitter::String>,
+		  json_string<source, daw::twitter::String>, json_bool<truncated>,
 		  json_number_null<in_reply_to_status_id, std::optional<int64_t>>,
-		  json_string_null<in_reply_to_status_id_str>,
+		  json_string_null<in_reply_to_status_id_str, daw::twitter::OptString>,
 		  json_number_null<in_reply_to_user_id, std::optional<int64_t>>,
-		  json_string_null<in_reply_to_user_id_str>,
-		  json_string_null<in_reply_to_screen_name>,
+		  json_string_null<in_reply_to_user_id_str, daw::twitter::OptString>,
+		  json_string_null<in_reply_to_screen_name, daw::twitter::OptString>,
 		  json_class<user, daw::twitter::user_t>,
 		  json_number<retweet_count, int32_t>,
 		  json_number_null<favorite_count, std::optional<int32_t>>,
 		  json_class<entities, daw::twitter::entities_t>, json_bool<favorited>,
 		  json_bool<retweeted>, json_bool_null<possibly_sensitive>,
-		  json_string<lang>>;
+		  json_string<lang, daw::twitter::String>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::tweet_object_t const &value ) {
@@ -437,19 +468,22 @@ namespace daw::json {
 	struct DAW_ATTRIBUTE_HIDDEN
 	  json_data_contract<daw::twitter::user_mentions_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_string<"screen_name">, json_string<"name">,
-		                   json_number<"id", int64_t>, json_string<"id_str">,
-		                   json_array<"indices", int64_t>>;
+		using type = json_member_list<
+		  json_string<"screen_name", daw::twitter::String>,
+		  json_string<"name", daw::twitter::String>, json_number<"id", int64_t>,
+		  json_string<"id_str", daw::twitter::String>,
+		  json_array<"indices", int64_t, daw::twitter::Vector<int64_t>>>;
 #else
 		static inline constexpr char const screen_name[] = "screen_name";
 		static inline constexpr char const name[] = "name";
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const id_str[] = "id_str";
 		static inline constexpr char const indices[] = "indices";
-		using type = json_member_list<json_string<screen_name>, json_string<name>,
-		                              json_number<id, int64_t>, json_string<id_str>,
-		                              json_array<indices, int64_t>>;
+		using type = json_member_list<
+		  json_string<screen_name, daw::twitter::String>,
+		  json_string<name, daw::twitter::String>, json_number<id, int64_t>,
+		  json_string<id_str, daw::twitter::String>,
+		  json_array<indices, int64_t, daw::twitter::Vector<int64_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::user_mentions_element_t const &value ) {
@@ -463,13 +497,14 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_number<"w", int64_t>, json_number<"h", int64_t>,
-		                   json_string<"resize">>;
+		                   json_string<"resize", daw::twitter::String>>;
 #else
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_number<w, int64_t>,
-		                              json_number<h, int64_t>, json_string<resize>>;
+		using type =
+		  json_member_list<json_number<w, int64_t>, json_number<h, int64_t>,
+		                   json_string<resize, daw::twitter::String>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::medium_t const &value ) {
@@ -482,13 +517,14 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_number<"w", int64_t>, json_number<"h", int64_t>,
-		                   json_string<"resize">>;
+		                   json_string<"resize", daw::twitter::String>>;
 #else
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_number<w, int64_t>,
-		                              json_number<h, int64_t>, json_string<resize>>;
+		using type =
+		  json_member_list<json_number<w, int64_t>, json_number<h, int64_t>,
+		                   json_string<resize, daw::twitter::String>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::small_t const &value ) {
@@ -501,13 +537,14 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_number<"w", int64_t>, json_number<"h", int64_t>,
-		                   json_string<"resize">>;
+		                   json_string<"resize", daw::twitter::String>>;
 #else
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_number<w, int64_t>,
-		                              json_number<h, int64_t>, json_string<resize>>;
+		using type =
+		  json_member_list<json_number<w, int64_t>, json_number<h, int64_t>,
+		                   json_string<resize, daw::twitter::String>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::thumb_t const &value ) {
@@ -520,13 +557,14 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_number<"w", int64_t>, json_number<"h", int64_t>,
-		                   json_string<"resize">>;
+		                   json_string<"resize", daw::twitter::String>>;
 #else
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_number<w, int64_t>,
-		                              json_number<h, int64_t>, json_string<resize>>;
+		using type =
+		  json_member_list<json_number<w, int64_t>, json_number<h, int64_t>,
+		                   json_string<resize, daw::twitter::String>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::large_t const &value ) {
@@ -562,13 +600,16 @@ namespace daw::json {
 	struct DAW_ATTRIBUTE_HIDDEN
 	  json_data_contract<daw::twitter::media_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"id", int64_t>, json_string<"id_str">,
-		                   json_array<"indices", int64_t>, json_string<"media_url">,
-		                   json_string<"media_url_https">, json_string<"url">,
-		                   json_string<"display_url">, json_string<"expanded_url">,
-		                   json_string<"type">,
-		                   json_class<"sizes", daw::twitter::sizes_t>>;
+		using type = json_member_list<
+		  json_number<"id", int64_t>, json_string<"id_str", daw::twitter::String>,
+		  json_array<indices, int64_t, daw::twitter::Vector<int64_t>>,
+		  json_string<"media_url", daw::twitter::String>,
+		  json_string<"media_url_https", daw::twitter::String>,
+		  json_string<"url", daw::twitter::String>,
+		  json_string<"display_url", daw::twitter::String>,
+		  json_string<"expanded_url", daw::twitter::String>,
+		  json_string<"type", daw::twitter::String>,
+		  json_class<"sizes", daw::twitter::sizes_t>>;
 #else
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const id_str[] = "id_str";
@@ -580,13 +621,16 @@ namespace daw::json {
 		static inline constexpr char const expanded_url[] = "expanded_url";
 		static inline constexpr char const _jsontype[] = "type";
 		static inline constexpr char const sizes[] = "sizes";
-		using type =
-		  json_member_list<json_number<id, int64_t>, json_string<id_str>,
-		                   json_array<indices, int64_t>, json_string<media_url>,
-		                   json_string<media_url_https>, json_string<url>,
-		                   json_string<display_url>, json_string<expanded_url>,
-		                   json_string<_jsontype>,
-		                   json_class<sizes, daw::twitter::sizes_t>>;
+		using type = json_member_list<
+		  json_number<id, int64_t>, json_string<id_str, daw::twitter::String>,
+		  json_array<indices, int64_t, daw::twitter::Vector<int64_t>>,
+		  json_string<media_url, daw::twitter::String>,
+		  json_string<media_url_https, daw::twitter::String>,
+		  json_string<url, daw::twitter::String>,
+		  json_string<display_url, daw::twitter::String>,
+		  json_string<expanded_url, daw::twitter::String>,
+		  json_string<_jsontype, daw::twitter::String>,
+		  json_class<sizes, daw::twitter::sizes_t>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::media_element_t const &value ) {
@@ -606,19 +650,20 @@ namespace daw::json {
 		  json_custom<"created_at", daw::twitter::twitter_tp,
 		              daw::twitter::TimestampConverter,
 		              daw::twitter::TimestampConverter>,
-		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
-		  json_string<"source">, json_bool<"truncated">,
+		  json_number<"id", int64_t>, json_string<"id_str", daw::twitter::String>,
+		  json_string<"text", daw::twitter::String>,
+		  json_string<"source", daw::twitter::String>, json_bool<"truncated">,
 		  json_number_null<"in_reply_to_status_id", std::optional<int64_t>>,
-		  json_string_null<"in_reply_to_status_id_str">,
+		  json_string_null<"in_reply_to_status_id_str", daw::twitter::OptString>,
 		  json_number_null<"in_reply_to_user_id", std::optional<int64_t>>,
-		  json_string_null<"in_reply_to_user_id_str">,
-		  json_string_null<"in_reply_to_screen_name">,
+		  json_string_null<"in_reply_to_user_id_str", daw::twitter::OptString>,
+		  json_string_null<"in_reply_to_screen_name", daw::twitter::OptString>,
 		  json_class<"user", daw::twitter::user_t>,
 		  json_number<"retweet_count", int32_t>,
 		  json_number_null<"favorite_count", std::optional<int32_t>>,
 		  json_class<"entities", daw::twitter::entities_t>, json_bool<"favorited">,
 		  json_bool<"retweeted">, json_bool_null<"possibly_sensitive">,
-		  json_string<"lang">>;
+		  json_string<"lang", daw::twitter::String>>;
 #else
 		static inline constexpr char const metadata[] = "metadata";
 		static inline constexpr char const created_at[] = "created_at";
@@ -651,19 +696,20 @@ namespace daw::json {
 		  json_custom<created_at, daw::twitter::twitter_tp,
 		              daw::twitter::TimestampConverter,
 		              daw::twitter::TimestampConverter>,
-		  json_number<id, int64_t>, json_string<id_str>, json_string<text>,
-		  json_string<source>, json_bool<truncated>,
+		  json_number<id, int64_t>, json_string<id_str, daw::twitter::String>,
+		  json_string<text, daw::twitter::String>,
+		  json_string<source, daw::twitter::String>, json_bool<truncated>,
 		  json_number_null<in_reply_to_status_id, std::optional<int64_t>>,
-		  json_string_null<in_reply_to_status_id_str>,
+		  json_string_null<in_reply_to_status_id_str, daw::twitter::OptString>,
 		  json_number_null<in_reply_to_user_id, std::optional<int64_t>>,
-		  json_string_null<in_reply_to_user_id_str>,
-		  json_string_null<in_reply_to_screen_name>,
+		  json_string_null<in_reply_to_user_id_str, daw::twitter::OptString>,
+		  json_string_null<in_reply_to_screen_name, daw::twitter::OptString>,
 		  json_class<user, daw::twitter::user_t>,
 		  json_number<retweet_count, int32_t>,
 		  json_number_null<favorite_count, std::optional<int32_t>>,
 		  json_class<entities, daw::twitter::entities_t>, json_bool<favorited>,
 		  json_bool<retweeted>, json_bool_null<possibly_sensitive>,
-		  json_string<lang>>;
+		  json_string<lang, daw::twitter::String>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::retweeted_status_t const &value ) {
@@ -684,10 +730,12 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_number<"completed_in">, json_number<"max_id", int64_t>,
-		  json_string<"max_id_str">, json_string<"next_results">,
-		  json_string<"query">, json_string<"refresh_url">,
+		  json_string<"max_id_str", daw::twitter::String>,
+		  json_string<"next_results", daw::twitter::String>,
+		  json_string<"query", daw::twitter::String>,
+		  json_string<"refresh_url", daw::twitter::String>,
 		  json_number<"count", int64_t>, json_number<"since_id", int64_t>,
-		  json_string<"since_id_str">>;
+		  json_string<"since_id_str", daw::twitter::String>>;
 #else
 		static inline constexpr char const completed_in[] = "completed_in";
 		static inline constexpr char const max_id[] = "max_id";
@@ -698,11 +746,15 @@ namespace daw::json {
 		static inline constexpr char const count[] = "count";
 		static inline constexpr char const since_id[] = "since_id";
 		static inline constexpr char const since_id_str[] = "since_id_str";
-		using type = json_member_list<
-		  json_number<completed_in>, json_number<max_id, int64_t>,
-		  json_string<max_id_str>, json_string<next_results>, json_string<query>,
-		  json_string<refresh_url>, json_number<count, int64_t>,
-		  json_number<since_id, int64_t>, json_string<since_id_str>>;
+		using type =
+		  json_member_list<json_number<completed_in>, json_number<max_id, int64_t>,
+		                   json_string<max_id_str, daw::twitter::String>,
+		                   json_string<next_results, daw::twitter::String>,
+		                   json_string<query, daw::twitter::String>,
+		                   json_string<refresh_url, daw::twitter::String>,
+		                   json_number<count, int64_t>,
+		                   json_number<since_id, int64_t>,
+		                   json_string<since_id_str, daw::twitter::String>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::search_metadata_t const &value ) {
@@ -718,13 +770,15 @@ namespace daw::json {
 	  json_data_contract<daw::twitter::twitter_object_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
-		  json_array<"statuses", daw::twitter::tweet_object_t>,
+		  json_array<"statuses", daw::twitter::tweet_object_t,
+		             daw::twitter::Vector<daw::twitter::tweet_object_t>>,
 		  json_class<"search_metadata", daw::twitter::search_metadata_t>>;
 #else
 		static inline constexpr char const statuses[] = "statuses";
 		static inline constexpr char const search_metadata[] = "search_metadata";
 		using type = json_member_list<
-		  json_array<statuses, daw::twitter::tweet_object_t>,
+		  json_array<statuses, daw::twitter::tweet_object_t,
+		             daw::twitter::Vector<daw::twitter::tweet_object_t>>,
 		  json_class<search_metadata, daw::twitter::search_metadata_t>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto

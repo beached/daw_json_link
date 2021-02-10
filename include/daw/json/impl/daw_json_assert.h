@@ -42,149 +42,151 @@ inline constexpr bool use_daw_json_exceptions_v = true;
 inline constexpr bool use_daw_json_exceptions_v = false;
 #endif
 
-template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
-daw_json_error( daw::json::ErrorReason reason ) {
+namespace daw::json {
+	template<bool ShouldThrow = use_daw_json_exceptions_v>
+	[[maybe_unused, noreturn]] DAW_JSON_NOINLINE void
+	daw_json_error( daw::json::ErrorReason reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		throw daw::json::json_exception( reason );
-	} else {
+		if constexpr( ShouldThrow ) {
+			throw daw::json::json_exception( reason );
+		} else {
 #endif
-		(void)ShouldThrow;
-		(void)reason;
-		std::terminate( );
+			(void)ShouldThrow;
+			(void)reason;
+			std::terminate( );
 #ifdef DAW_USE_JSON_EXCEPTIONS
-	}
-#endif
-}
-
-template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
-[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
-daw_json_error( daw::json::ErrorReason reason, Range const &location ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		if( location.first ) {
-			throw daw::json::json_exception( reason, location.first );
 		}
-		if( location.class_first ) {
-			throw daw::json::json_exception( reason, location.class_first );
+#endif
+	}
+
+	template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
+	[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
+	daw_json_error( daw::json::ErrorReason reason, Range const &location ) {
+#ifdef DAW_USE_JSON_EXCEPTIONS
+		if constexpr( ShouldThrow ) {
+			if( location.first ) {
+				throw daw::json::json_exception( reason, location.first );
+			}
+			if( location.class_first ) {
+				throw daw::json::json_exception( reason, location.class_first );
+			}
+			throw daw::json::json_exception( reason );
+		} else {
+#endif
+			(void)ShouldThrow;
+			(void)reason;
+			(void)location;
+			std::terminate( );
+#ifdef DAW_USE_JSON_EXCEPTIONS
 		}
-		throw daw::json::json_exception( reason );
-	} else {
 #endif
-		(void)ShouldThrow;
-		(void)reason;
-		(void)location;
-		std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
 	}
-#endif
-}
 
-template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
-daw_json_error( daw::json::json_details::missing_member reason ) {
+	template<bool ShouldThrow = use_daw_json_exceptions_v>
+	[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
+	daw_json_error( daw::json::json_details::missing_member reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		throw daw::json::json_exception( reason );
-	} else {
+		if constexpr( ShouldThrow ) {
+			throw daw::json::json_exception( reason );
+		} else {
 #endif
-		(void)ShouldThrow;
-		(void)reason;
-		std::terminate( );
+			(void)ShouldThrow;
+			(void)reason;
+			std::terminate( );
 #ifdef DAW_USE_JSON_EXCEPTIONS
+		}
+#endif
 	}
-#endif
-}
 
-template<bool ShouldThrow = use_daw_json_exceptions_v>
-[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
-daw_json_error( daw::json::json_details::missing_token reason ) {
+	template<bool ShouldThrow = use_daw_json_exceptions_v>
+	[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
+	daw_json_error( daw::json::json_details::missing_token reason ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		throw daw::json::json_exception( reason );
-	} else {
+		if constexpr( ShouldThrow ) {
+			throw daw::json::json_exception( reason );
+		} else {
 #endif
-		(void)ShouldThrow;
-		(void)reason;
-		std::terminate( );
+			(void)ShouldThrow;
+			(void)reason;
+			std::terminate( );
 #ifdef DAW_USE_JSON_EXCEPTIONS
+		}
+#endif
 	}
-#endif
-}
 
-template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
-[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
-daw_json_error( daw::json::json_details::missing_member reason,
-                Range const &location ) {
+	template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
+	[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
+	daw_json_error( daw::json::json_details::missing_member reason,
+	                Range const &location ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		using namespace std::string_literals;
-		if( location.class_first and location.first ) {
-			static constexpr std::size_t max_len = 150;
-			std::size_t const len = [&]( ) -> std::size_t {
-				if( location.first == nullptr or location.class_first == nullptr ) {
-					if( location.class_first == nullptr or
-					    location.class_last == nullptr ) {
-						return 0;
+		if constexpr( ShouldThrow ) {
+			using namespace std::string_literals;
+			if( location.class_first and location.first ) {
+				static constexpr std::size_t max_len = 150;
+				std::size_t const len = [&]( ) -> std::size_t {
+					if( location.first == nullptr or location.class_first == nullptr ) {
+						if( location.class_first == nullptr or
+						    location.class_last == nullptr ) {
+							return 0;
+						}
+						return std::min( static_cast<std::size_t>( std::distance(
+						                   location.class_first, location.class_last ) ),
+						                 max_len );
 					}
 					return std::min( static_cast<std::size_t>( std::distance(
-					                   location.class_first, location.class_last ) ),
+					                   location.class_first, location.first + 1 ) ),
 					                 max_len );
-				}
-				return std::min( static_cast<std::size_t>( std::distance(
-				                   location.class_first, location.first + 1 ) ),
-				                 max_len );
-			}( );
-			throw daw::json::json_exception(
-			  reason, std::string_view( location.class_first, len ) );
+				}( );
+				throw daw::json::json_exception(
+				  reason, std::string_view( location.class_first, len ) );
+			} else {
+				throw daw::json::json_exception( reason );
+			}
 		} else {
-			throw daw::json::json_exception( reason );
-		}
-	} else {
 #endif
-		(void)ShouldThrow;
-		(void)reason;
-		(void)location;
-		std::terminate( );
+			(void)ShouldThrow;
+			(void)reason;
+			(void)location;
+			std::terminate( );
 #ifdef DAW_USE_JSON_EXCEPTIONS
-	}
+		}
 #endif
-}
+	}
 
-template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
-[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
-daw_json_error( daw::json::json_details::missing_token reason,
-                Range const &location ) {
+	template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
+	[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
+	daw_json_error( daw::json::json_details::missing_token reason,
+	                Range const &location ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
-	if constexpr( ShouldThrow ) {
-		using namespace std::string_literals;
-		if( location.first ) {
-			throw daw::json::json_exception( reason, location.first );
-		}
-		if( location.class_first ) {
-			throw daw::json::json_exception( reason, location.class_first );
-		}
-		throw daw::json::json_exception( reason );
-	} else {
+		if constexpr( ShouldThrow ) {
+			using namespace std::string_literals;
+			if( location.first ) {
+				throw daw::json::json_exception( reason, location.first );
+			}
+			if( location.class_first ) {
+				throw daw::json::json_exception( reason, location.class_first );
+			}
+			throw daw::json::json_exception( reason );
+		} else {
 #endif
-		(void)ShouldThrow;
-		(void)reason;
-		(void)location;
-		std::terminate( );
+			(void)ShouldThrow;
+			(void)reason;
+			(void)location;
+			std::terminate( );
 #ifdef DAW_USE_JSON_EXCEPTIONS
+		}
+#endif
 	}
-#endif
-}
+} // namespace daw::json
 
 /***
  * Ensure that Bool is true
  * If false pass rest of args to daw_json_error
  */
-#define daw_json_assert( Bool, ... )       \
-	if( DAW_JSON_UNLIKELY( not( Bool ) ) ) { \
-		daw_json_error( __VA_ARGS__ );         \
-	}                                        \
+#define daw_json_assert( Bool, ... )            \
+	if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {      \
+		::daw::json::daw_json_error( __VA_ARGS__ ); \
+	}                                             \
 	while( false )
 
 /***
@@ -194,7 +196,7 @@ daw_json_error( daw::json::json_details::missing_token reason,
 #define daw_json_assert_weak( Bool, ... )         \
 	if constexpr( not Range::is_unchecked_input ) { \
 		if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {      \
-			daw_json_error( __VA_ARGS__ );              \
+			::daw::json::daw_json_error( __VA_ARGS__ ); \
 		}                                             \
 	}                                               \
 	while( false )

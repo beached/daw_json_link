@@ -190,7 +190,7 @@ namespace daw::json::json_details {
 		std::array<UInt32, sizeof...( MemberNames )> hashes{
 		  name_hash( MemberNames::name )... };
 
-		daw::sort( hashes.data( ), hashes.data( ) + hashes.size( ) );
+		daw::sort( std::data( hashes ), daw::data_end( hashes ) );
 		return daw::algorithm::adjacent_find(
 		         hashes.begin( ), hashes.end( ),
 		         []( UInt32 l, UInt32 r ) { return l == r; } ) != hashes.end( );
@@ -230,7 +230,7 @@ namespace daw::json::json_details {
 			// TODO: fully unescape name
 			auto const name = parse_name( rng );
 			auto const name_pos = locations.template find_name<pos>( name );
-			if( name_pos >= locations.size( ) ) {
+			if( name_pos >= std::size( locations ) ) {
 				// This is not a member we are concerned with
 				(void)skip_value( rng );
 				rng.clean_tail( );
@@ -368,9 +368,10 @@ namespace daw::json::json_details {
 			return parse_value<JsonMember, true>(
 			  ParseTag<JsonMember::expected_type>{ }, loc );
 		} else {
-			daw_json_error( missing_member( std::string_view(
-			                  JsonMember::name.data( ), JsonMember::name.size( ) ) ),
-			                rng );
+			daw_json_error(
+			  missing_member( std::string_view( std::data( JsonMember::name ),
+			                                    std::size( JsonMember::name ) ) ),
+			  rng );
 		}
 	}
 

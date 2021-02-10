@@ -39,7 +39,7 @@ namespace daw::json::json_details::name {
 			if constexpr( Range::allow_escaped_names ) {
 				auto r = skip_string_nq( rng );
 				trim_end_of_name( rng );
-				return daw::string_view( r.data( ), r.size( ) );
+				return daw::string_view( std::data( r ), std::size( r ) );
 			} else {
 				char const *const ptr = rng.first;
 				if constexpr( Range::is_unchecked_input ) {
@@ -112,7 +112,7 @@ namespace daw::json::json_details {
 			}
 			member_name.remove_prefix( );
 		}
-		return json_path_item.size( ) == member_name.size( );
+		return std::size( json_path_item ) == std::size( member_name );
 	}
 
 	// Get the next member name
@@ -175,8 +175,7 @@ namespace daw::json::json_details {
 	find_range( String &&str, daw::string_view start_path ) {
 		static_assert( std::is_same_v<char const *, typename ParsePolicy::iterator>,
 		               "Only char const * ranges are currently supported" );
-		auto rng =
-		  ParsePolicy( std::data( str ), std::data( str ) + std::size( str ) );
+		auto rng = ParsePolicy( std::data( str ), daw::data_end( str ) );
 		rng.trim_left_checked( );
 		if( rng.has_more( ) and not start_path.empty( ) ) {
 			if( not find_range2( rng, start_path ) ) {
@@ -191,8 +190,8 @@ namespace daw::json::json_details {
 	find_range( String &&str, daw::string_view start_path, Allocator &alloc ) {
 		static_assert( std::is_same_v<char const *, typename ParsePolicy::iterator>,
 		               "Only char const * ranges are currently supported" );
-		auto rng = ParsePolicy::with_allocator(
-		  std::data( str ), std::data( str ) + std::size( str ), alloc );
+		auto rng = ParsePolicy::with_allocator( std::data( str ),
+		                                        daw::data_end( str ), alloc );
 		rng.trim_left_checked( );
 		if( rng.has_more( ) and not start_path.empty( ) ) {
 			if( not find_range2( rng, start_path ) ) {

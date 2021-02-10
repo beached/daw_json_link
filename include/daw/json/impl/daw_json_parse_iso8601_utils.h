@@ -151,12 +151,12 @@ namespace daw::json::datetime {
 	  daw::basic_string_view<char, Bounds, Ex> timestamp_str ) {
 		auto result = date_parts{ 0, 0, 0 };
 		result.day = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
-		  timestamp_str.pop_back( 2U ).data( ) );
+		  std::data( timestamp_str.pop_back( 2U ) ) );
 		if( not parse_utils::is_number( timestamp_str.back( ) ) ) {
 			timestamp_str.remove_suffix( );
 		}
 		result.month = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
-		  timestamp_str.pop_back( 2U ).data( ) );
+		  std::data( timestamp_str.pop_back( 2U ) ) );
 		if( not parse_utils::is_number( timestamp_str.back( ) ) ) {
 			timestamp_str.remove_suffix( );
 		}
@@ -177,12 +177,12 @@ namespace daw::json::datetime {
 	  daw::basic_string_view<char, Bounds, Ex> timestamp_str ) {
 		auto result = time_parts{ 0, 0, 0, 0 };
 		result.hour = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
-		  timestamp_str.pop_front( 2 ).data( ) );
+		  std::data( timestamp_str.pop_front( 2 ) ) );
 		if( not parse_utils::is_number( timestamp_str.front( ) ) ) {
 			timestamp_str.remove_prefix( );
 		}
 		result.minute = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
-		  timestamp_str.pop_front( 2 ).data( ) );
+		  std::data( timestamp_str.pop_front( 2 ) ) );
 		if( timestamp_str.empty( ) ) {
 			return result;
 		}
@@ -190,7 +190,7 @@ namespace daw::json::datetime {
 			timestamp_str.remove_prefix( );
 		}
 		result.second = parse_utils::parse_unsigned<std::uint_least32_t, 2>(
-		  timestamp_str.pop_front( 2 ).data( ) );
+		  std::data( timestamp_str.pop_front( 2 ) ) );
 		if( timestamp_str.empty( ) ) {
 			return result;
 		}
@@ -220,18 +220,18 @@ namespace daw::json::datetime {
 		// TODO: verify or parse timezone
 		time_parts hms = parse_iso_8601_time( time_str );
 		if( not( ts.empty( ) or ts.front( ) == 'Z' ) ) {
-			daw_json_assert( ts.size( ) == 5 or ts.size( ) == 6,
+			daw_json_assert( std::size( ts ) == 5 or std::size( ts ) == 6,
 			                 ErrorReason::InvalidTimestamp );
 			// The format will be (+|-)hh[:]mm
 			bool const sign = ts.front( ) == '+';
 			ts.remove_prefix( );
 			auto hr_offset =
-			  parse_utils::parse_unsigned<std::uint_least32_t, 2>( ts.data( ) );
+			  parse_utils::parse_unsigned<std::uint_least32_t, 2>( std::data( ts ) );
 			if( ts.front( ) == ':' ) {
 				ts.remove_prefix( );
 			}
 			auto mn_offset =
-			  parse_utils::parse_unsigned<std::uint_least32_t, 2>( ts.data( ) );
+			  parse_utils::parse_unsigned<std::uint_least32_t, 2>( std::data( ts ) );
 			// Want to subtract offset from current time, we are converting to UTC
 			if( sign ) {
 				// Positive offset
@@ -367,7 +367,7 @@ namespace daw::json::datetime {
 
 	namespace datetime_details {
 		constexpr std::uint_least32_t month2num( std::string_view ts ) {
-			daw_json_assert( ts.size( ) >= 3, ErrorReason::InvalidTimestamp );
+			daw_json_assert( std::size( ts ) >= 3, ErrorReason::InvalidTimestamp );
 			auto const b0 =
 			  static_cast<std::uint_least32_t>( static_cast<unsigned char>( ts[0] ) );
 			auto const b1 =

@@ -171,15 +171,13 @@ namespace daw::json::json_details {
 	// appender
 	template<bool AllowHighEight, typename JsonMember, bool KnownBounds,
 	         typename Range>
-	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
+	[[nodiscard, maybe_unused]] constexpr auto //json_result<JsonMember>
 	parse_string_known_stdstring( Range &rng ) {
-		using string_type =
-		  std::basic_string<char, std::char_traits<char>,
-		                    typename Range::template allocator_type_as<char>>;
-		string_type result =
-		  string_type( rng.size( ), '\0', rng.template get_allocator_for<char>( ) );
+		using string_type = json_base_type<JsonMember>;
+		string_type result = string_type( std::size( rng ), '\0',
+		                                  rng.template get_allocator_for<char>( ) );
 
-		char *it = result.data( );
+		char *it = std::data( result );
 
 		bool const has_quote = rng.front( ) == '"';
 		if( has_quote ) {
@@ -263,8 +261,8 @@ namespace daw::json::json_details {
 			                      ErrorReason::UnexpectedEndOfData, rng );
 		}
 		auto const sz =
-		  static_cast<std::size_t>( std::distance( result.data( ), it ) );
-		daw_json_assert_weak( result.size( ) >= sz, ErrorReason::InvalidString,
+		  static_cast<std::size_t>( std::distance( std::data( result ), it ) );
+		daw_json_assert_weak( std::size( result ) >= sz, ErrorReason::InvalidString,
 		                      rng );
 		result.resize( sz );
 		if constexpr( std::is_convertible_v<string_type,
@@ -273,8 +271,7 @@ namespace daw::json::json_details {
 		} else {
 			using constructor_t = typename JsonMember::constructor_t;
 			construct_value<json_result<JsonMember>>(
-			  constructor_t{ }, rng, result.data( ),
-			  result.data( ) + static_cast<std::ptrdiff_t>( result.size( ) ) );
+			  constructor_t{ }, rng, std::data( result ), daw::data_end( result ) );
 		}
 	}
 } // namespace daw::json::json_details
