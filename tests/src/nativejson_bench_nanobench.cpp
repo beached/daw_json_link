@@ -15,6 +15,7 @@
 #include <daw/daw_read_file.h>
 
 #include <fmt/format.h>
+#include <fstream>
 #include <iostream>
 #include <nanobench.h>
 #include <string>
@@ -92,8 +93,8 @@ int main( int argc, char **argv ) {
 	            .title( "nativejson parts" )
 	            .unit( "byte" )
 	            .warmup( 100 )
-	            .minEpochIterations( 100 )
-	            .minEpochTime( std::chrono::milliseconds( 500 ) );
+	            .minEpochIterations( 100 );
+	           // .minEpochTime( std::chrono::milliseconds( 500 ) );
 
 	std::string const twitter_doc = *daw::read_file( argv[1] );
 	std::string const citm_doc = *daw::read_file( argv[2] );
@@ -101,7 +102,7 @@ int main( int argc, char **argv ) {
 
 	bench<constexpr_checked_pol>( b1, "constexpr checked", twitter_doc, citm_doc,
 	                              canada_doc );
-/*	bench<constexpr_unchecked_pol>( b1, "constexpr unchecked", twitter_doc,
+	bench<constexpr_unchecked_pol>( b1, "constexpr unchecked", twitter_doc,
 	                                citm_doc, canada_doc );
 	bench<runtime_checked_pol>( b1, "runtime checked", twitter_doc, citm_doc,
 	                            canada_doc );
@@ -112,11 +113,31 @@ int main( int argc, char **argv ) {
 	                         canada_doc );
 	bench<simd_unchecked_pol>( b1, "simd unchecked", twitter_doc, citm_doc,
 	                           canada_doc );
-*/
-	static constexpr char const out_template[] =
-	  R"DELIM("title", "name", "unit", "batch", "minimum time", "median time", "iterations", "error %", "instructions", "branches", "branch misses", "total"
+
+	if( argc > 4 ) {
+		std::string_view const fname = argv[4];
+		std::ofstream ofile = std::ofstream( argv[4] );
+		if( not ofile ) {
+			std::cerr << "Could not open output file '" << fname << "'\n";
+			exit( 1 );
+		}
+		if( fname.size( ) > 5 ) {
+			auto const ext = fname.substr( fname.size( ) - 4 );
+			if( ext == "json" ) {
+				b1.render( ankerl::nanobench::templates::json( ), ofile );
+				return 0;
+			} else if( ext == "html" ) {
+				b1.render( ankerl::nanobench::templates::htmlBoxplot( ), ofile );
+				return 0;
+			}
+		}
+		if( fname.size( ) > 4 and fname.substr( fname.size( ) - 3 ) == "csv" ) {
+			static constexpr char const csvout_template[] =
+			  R"DELIM("title", "name", "unit", "batch", "minimum time", "median time", "iterations", "error %", "instructions", "branches", "branch misses", "total"
 {{#result}}"{{title}}", "{{name}}", "{{unit}}", {{batch}}, {{minimum(elapsed)}}, {{median(elapsed)}}, {{median(iterations)}}, {{medianAbsolutePercentError(elapsed)}}, {{median(instructions)}}, {{median(branchinstructions)}}, {{median(branchmisses)}}, {{sumProduct(iterations, elapsed)}}
 {{/result}})DELIM";
-
-	b1.render( out_template, std::cout );
+			b1.render( csvout_template, ofile );
+			return 0;
+		}
+	}
 }
