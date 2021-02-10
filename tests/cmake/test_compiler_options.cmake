@@ -11,7 +11,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
  			endif( )
     else( )
       message("Clang ${CMAKE_CXX_COMPILER_VERSION} detected")
-			add_compile_options( -Wall -Wextra -pedantic -Weverything -Wno-c++98-compat -Wno-covered-switch-default -Wno-padded -Wno-exit-time-destructors -Wno-c++98-compat-pedantic -Wno-unused-parameter -Wno-missing-noreturn -Wno-missing-prototypes -Wno-disabled-macro-expansion -Wno-missing-braces -Wno-unneeded-internal-declaration -Wunreachable-code -Wno-tautological-type-limit-compare -Wno-return-std-move-in-c++11 -Wno-float-equal -Wzero-as-null-pointer-constant -Wno-unused-macros -Wno-global-constructors -ftemplate-backtrace-limit=0)
+			add_compile_options( -Wall -Wextra -pedantic -Weverything -Wno-c++98-compat -Wno-covered-switch-default -Wno-padded -Wno-exit-time-destructors -Wno-c++98-compat-pedantic -Wno-unused-parameter -Wno-missing-noreturn -Wno-missing-prototypes -Wno-disabled-macro-expansion -Wno-missing-braces -Wno-unneeded-internal-declaration -Wunreachable-code -Wno-tautological-type-limit-compare -Wno-return-std-move-in-c++11 -Wno-float-equal -Wzero-as-null-pointer-constant -Wno-unused-macros -Wno-global-constructors -ftemplate-backtrace-limit=0 -Wno-used-but-marked-unused -Wno-weak-vtables)
 			if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
 				if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
 					if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
