@@ -114,6 +114,10 @@ add_executable(nativejson_bench_google src/nativejson_bench_google.cpp)
 target_link_libraries(nativejson_bench_google json_test benchmark::benchmark)
 add_test(NAME nativejson_bench_google COMMAND nativejson_bench_google ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 
+add_executable(nativejson_bench_nanobench src/nativejson_bench_nanobench.cpp)
+target_link_libraries(nativejson_bench_nanobench json_test nanobench fmt::fmt)
+add_test(NAME nativejson_bench_nanobench COMMAND nativejson_bench_nanobench ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+
 add_executable(nativejson_bench_basic2 src/nativejson_bench_basic2.cpp)
 target_link_libraries(nativejson_bench_basic2 json_test)
 add_test(NAME nativejson_bench_basic2 COMMAND nativejson_bench_basic2 ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")

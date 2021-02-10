@@ -25,3 +25,23 @@ FetchContent_Declare(google_benchmark
         GIT_TAG master) 
 
 FetchContent_MakeAvailable(google_test google_benchmark)
+
+FetchContent_Declare(
+    nanobench
+    GIT_REPOSITORY https://github.com/martinus/nanobench.git
+    GIT_TAG v4.1.0
+    GIT_SHALLOW TRUE)
+
+FetchContent_MakeAvailable( nanobench )
+
+FetchContent_Declare(
+        fmt
+        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+        GIT_TAG master
+)
+
+FetchContent_MakeAvailable(fmt)
+get_target_property(FMTLIB_IID fmt INTERFACE_INCLUDE_DIRECTORIES)
+set_target_properties(fmt PROPERTIES INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${FMTLIB_IID}")
+
+

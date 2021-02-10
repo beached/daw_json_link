@@ -25,9 +25,9 @@ std::string const citm_doc =
 std::string const canada_doc =
   daw::read_file( "../test_data/canada.json" ).value( );
 
-using cx_checked_pol =
+using constexpr_checked_pol =
   daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>;
-using cx_unchecked_pol = daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+using constexpr_unchecked_pol = daw::json::SIMDNoCommentSkippingPolicyUnchecked<
   daw::json::constexpr_exec_tag>;
 using runtime_checked_pol =
   daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>;
@@ -39,7 +39,7 @@ using simd_unchecked_pol =
   daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>;
 
 template<typename ParsePolicy, typename... ParseObjs, typename... JsonDocs>
-static void do_test( benchmark::State &state, JsonDocs const &...jds ) try {
+static inline void do_test( benchmark::State &state, JsonDocs const &...jds ) try {
 	using namespace daw::json;
 
 	for( auto s : state ) {
@@ -58,22 +58,22 @@ static void do_test( benchmark::State &state, JsonDocs const &...jds ) try {
 
 //****************** Constexpr Checked ****************************
 static void bm_twitter_constexpr( benchmark::State &state ) {
-	do_test<cx_checked_pol, daw::twitter::twitter_object_t>( state, twitter_doc );
+	do_test<constexpr_checked_pol, daw::twitter::twitter_object_t>( state, twitter_doc );
 }
 BENCHMARK( bm_twitter_constexpr );
 
 static void bm_citm_constexpr( benchmark::State &state ) {
-	do_test<cx_checked_pol, daw::citm::citm_object_t>( state, citm_doc );
+	do_test<constexpr_checked_pol, daw::citm::citm_object_t>( state, citm_doc );
 }
 BENCHMARK( bm_citm_constexpr );
 
 static void bm_canada_constexpr( benchmark::State &state ) {
-	do_test<cx_checked_pol, daw::geojson::FeatureCollection>( state, canada_doc );
+	do_test<constexpr_checked_pol, daw::geojson::FeatureCollection>( state, canada_doc );
 }
 BENCHMARK( bm_canada_constexpr );
 
 static void bm_nativejson_constexpr( benchmark::State &state ) {
-	do_test<cx_checked_pol, daw::twitter::twitter_object_t,
+	do_test<constexpr_checked_pol, daw::twitter::twitter_object_t,
 	        daw::citm::citm_object_t, daw::geojson::FeatureCollection>(
 	  state, twitter_doc, citm_doc, canada_doc );
 }
@@ -81,24 +81,24 @@ BENCHMARK( bm_nativejson_constexpr );
 
 //****************** Constexpr Unchecked ****************************
 static void bm_twitter_constexpr_unchecked( benchmark::State &state ) {
-	do_test<cx_unchecked_pol, daw::twitter::twitter_object_t>( state,
+	do_test<constexpr_unchecked_pol, daw::twitter::twitter_object_t>( state,
 	                                                           twitter_doc );
 }
 BENCHMARK( bm_twitter_constexpr_unchecked );
 
 static void bm_citm_constexpr_unchecked( benchmark::State &state ) {
-	do_test<cx_unchecked_pol, daw::citm::citm_object_t>( state, citm_doc );
+	do_test<constexpr_unchecked_pol, daw::citm::citm_object_t>( state, citm_doc );
 }
 BENCHMARK( bm_citm_constexpr_unchecked );
 
 static void bm_canada_constexpr_unchecked( benchmark::State &state ) {
-	do_test<cx_unchecked_pol, daw::geojson::FeatureCollection>( state,
+	do_test<constexpr_unchecked_pol, daw::geojson::FeatureCollection>( state,
 	                                                            canada_doc );
 }
 BENCHMARK( bm_canada_constexpr_unchecked );
 
 static void bm_nativejson_constexpr_unchecked( benchmark::State &state ) {
-	do_test<cx_unchecked_pol, daw::twitter::twitter_object_t,
+	do_test<constexpr_unchecked_pol, daw::twitter::twitter_object_t,
 	        daw::citm::citm_object_t, daw::geojson::FeatureCollection>(
 	  state, twitter_doc, citm_doc, canada_doc );
 }
