@@ -10,19 +10,19 @@
 
 #include "fixed_alloc.h"
 
+#include <boost/container/pmr/polymorphic_allocator.hpp>
+#include <boost/container/pmr/string.hpp>
+#include <boost/container/pmr/vector.hpp>
 #include <chrono>
 #include <cstdint>
 #include <optional>
-#include <memory_resource> 
 #include <string>
 #include <string_view>
-#include <vector>
 
 namespace daw::twitter {
 	template<typename T>
-	using Vector = std::pmr::vector<T>;
-	using String =
-	  std::pmr::basic_string<char, std::char_traits<char>>;
+	using Vector = boost::container::pmr::vector<T>;
+	using String = boost::container::pmr::string;
 	using OptString = std::optional<String>;
 
 	using twitter_tp = std::chrono::time_point<std::chrono::system_clock,

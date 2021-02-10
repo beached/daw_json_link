@@ -48,7 +48,7 @@ namespace daw::json {
 		get_range( String &&data, std::string_view member_path ) {
 			auto [is_found, result] = json_details::find_range<ParsePolicy>(
 			  std::forward<String>( data ),
-			  { member_path.data( ), member_path.size( ) } );
+			  { std::data( member_path ), std::size( member_path ) } );
 			daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 			daw_json_assert( result.front( ) == '[', ErrorReason::InvalidArrayStart,
 			                 result );
@@ -83,8 +83,7 @@ namespace daw::json {
 		         daw::enable_when_t<not std::is_same_v<
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		inline constexpr explicit json_array_iterator( String &&jd )
-		  : m_state(
-		      ParsePolicy( std::data( jd ), std::data( jd ) + std::size( jd ) ) ) {
+		  : m_state( ParsePolicy( std::data( jd ), daw::data_end( jd ) ) ) {
 
 			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,

@@ -15,6 +15,7 @@
 #include <ciso646>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 
 namespace daw {
 	namespace murmur3_details {
@@ -61,7 +62,7 @@ namespace daw {
 		UInt32 h = to_uint32( seed );
 		UInt32 k = 0_u32;
 		char const *first = std::data( key );
-		char const *const last = std::data( key ) + std::size( key );
+		char const *const last = daw::data_end( key );
 		while( ( last - first ) >= 4 ) {
 			// Here is a source of differing results across endiannesses.
 			// A swap here has no effects on hash properties though.

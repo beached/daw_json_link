@@ -1,5 +1,7 @@
 # TODO clean this up, but for now it makes tests get approprait options
 
+find_package( Boost COMPONENTS container )
+
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF CACHE STRING "Enable LTO")
 if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
     message("CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON: LTO is enabled")
@@ -137,9 +139,10 @@ target_link_libraries(twitter_test_alloc json_test)
 add_dependencies(full twitter_test_alloc)
 
 # libc++ does not have PMR yet
-if ( MSVC OR NOT (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang"))
+#if ( MSVC OR NOT (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang"))
+if( Boost_FOUND )
 add_executable(twitter_test_pmr EXCLUDE_FROM_ALL src/twitter_test_pmr.cpp)
-target_link_libraries(twitter_test_pmr json_test)
+target_link_libraries(twitter_test_pmr json_test Boost::headers Boost::container )
 add_dependencies(full twitter_test_pmr)
 endif( )
 

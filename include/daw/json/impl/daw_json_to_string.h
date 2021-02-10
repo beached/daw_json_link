@@ -735,7 +735,7 @@ namespace daw::json::json_details {
 
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 		*it++ = '"';
-		if( value.size( ) > 0U ) {
+		if( std::size( value ) > 0U ) {
 			it = utils::copy_to_iterator<false, eight_bit_mode>( it, value );
 		}
 		*it++ = '"';
@@ -1013,8 +1013,8 @@ namespace daw::json::json_details {
 	                                 Value const &v,
 	                                 VisitedMembers &visited_members ) {
 		using tag_member = tag_member_t<JsonMember>;
-		constexpr auto tag_member_name =
-		  daw::string_view( tag_member::name.data( ), tag_member::name.size( ) );
+		constexpr auto tag_member_name = daw::string_view(
+		  std::data( tag_member::name ), std::size( tag_member::name ) );
 		if( daw::algorithm::contains( visited_members.begin( ),
 		                              visited_members.end( ), tag_member_name ) ) {
 			return;
@@ -1037,8 +1037,8 @@ namespace daw::json::json_details {
 	inline constexpr void to_json_str( bool &is_first, OutputIterator &it,
 	                                   std::tuple<Args...> const &tp,
 	                                   Value const &, Visited &visited_members ) {
-		constexpr auto json_member_name =
-		  daw::string_view( JsonMember::name.data( ), JsonMember::name.size( ) );
+		constexpr auto json_member_name = daw::string_view(
+		  std::data( JsonMember::name ), std::size( JsonMember::name ) );
 		if( daw::algorithm::contains( visited_members.begin( ),
 		                              visited_members.end( ), json_member_name ) ) {
 			return;

@@ -215,7 +215,8 @@ namespace daw::json::json_details {
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Bool>, Range &rng ) {
-		daw_json_assert_weak( rng.size( ) >= 4, ErrorReason::InvalidLiteral, rng );
+		daw_json_assert_weak( std::size( rng ) >= 4, ErrorReason::InvalidLiteral,
+		                      rng );
 
 		using constructor_t = typename JsonMember::constructor_t;
 
@@ -282,8 +283,8 @@ namespace daw::json::json_details {
 					                                                 rng );
 				}
 			}
-			return construct_value<json_result<JsonMember>>( constructor_t{ }, rng,
-			                                                 rng.first, rng.size( ) );
+			return construct_value<json_result<JsonMember>>(
+			  constructor_t{ }, rng, std::data( rng ), std::size( rng ) );
 		} else {
 			if constexpr( JsonMember::allow_escape_character ==
 			              AllowEscapeCharacter::Allow ) {
@@ -295,7 +296,7 @@ namespace daw::json::json_details {
 					}
 				}
 				return construct_value<json_result<JsonMember>>(
-				  constructor_t{ }, rng, str.first, str.size( ) );
+				  constructor_t{ }, rng, std::data( str ), std::size( str ) );
 			} else {
 				rng.remove_prefix( );
 
@@ -334,9 +335,25 @@ namespace daw::json::json_details {
 		      can_single_allocation_string<json_base_type<JsonMember>>> {};
 	} // namespace
 
+	template<typename T>
+	using json_member_constructor_t = typename T::constructor_t;
+
+	template<typename T>
+	using json_member_parse_to_t = typename T::parse_to_t;
+
+	template<typename T>
+	inline constexpr bool has_json_member_constructor_v = daw::is_detected_v<json_member_constructor_t, T>;
+
+	template<typename T>
+	inline constexpr bool has_json_member_parse_to_v = daw::is_detected_v<json_member_constructor_t, T>;
+
+
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng ) {
+		static_assert( has_json_member_constructor_v<JsonMember> );
+		static_assert( has_json_member_parse_to_v<JsonMember> );
+
 		using constructor_t = typename JsonMember::constructor_t;
 		if constexpr( can_parse_to_stdstring_fast<JsonMember>::value ) {
 			constexpr bool AllowHighEightbits =
@@ -350,8 +367,7 @@ namespace daw::json::json_details {
 			}
 			// There are no escapes in the string, we can just use the ptr/size ctor
 			return construct_value<json_result<JsonMember>>(
-			  constructor_t{ }, rng, rng2.first,
-			  rng2.first + static_cast<std::ptrdiff_t>( rng2.size( ) ) );
+			  constructor_t{ }, rng, std::data( rng2 ), daw::data_end( rng2 ) );
 		} else {
 			auto rng2 = KnownBounds ? rng : skip_string( rng );
 			constexpr bool AllowHighEightbits =
@@ -359,13 +375,12 @@ namespace daw::json::json_details {
 			if( not AllowHighEightbits or needs_slow_path( rng2 ) ) {
 				// There are escapes in the string
 				return parse_string_known_stdstring<AllowHighEightbits,
-				                                    json_result<JsonMember>, true>(
+				                                    JsonMember, true>(
 				  rng2 );
 			}
 			// There are no escapes in the string, we can just use the ptr/size ctor
 			return construct_value<json_result<JsonMember>>(
-			  constructor_t{ }, rng, rng2.first,
-			  rng2.first + static_cast<std::ptrdiff_t>( rng2.size( ) ) );
+			  constructor_t{ }, rng, std::data( rng2 ), daw::data_end( rng2 ) );
 		}
 	}
 
@@ -377,8 +392,8 @@ namespace daw::json::json_details {
 		                      rng );
 		auto str = skip_string( rng );
 		using constructor_t = typename JsonMember::constructor_t;
-		return construct_value<json_result<JsonMember>>( constructor_t{ }, rng,
-		                                                 str.first, str.size( ) );
+		return construct_value<json_result<JsonMember>>(
+		  constructor_t{ }, rng, std::data( str ), std::size( str ) );
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
@@ -394,7 +409,8 @@ namespace daw::json::json_details {
 
 		using constructor_t = typename JsonMember::from_converter_t;
 		return construct_value<json_result<JsonMember>>(
-		  constructor_t{ }, rng, std::string_view( str.first, str.size( ) ) );
+		  constructor_t{ }, rng,
+		  std::string_view( std::data( str ), std::size( str ) ) );
 	}
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
@@ -593,12 +609,12 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
 		if constexpr( KnownBounds ) {
-			return construct_value<json_result<JsonMember>>( constructor_t{ }, rng,
-			                                                 rng.first, rng.size( ) );
+			return construct_value<json_result<JsonMember>>(
+			  constructor_t{ }, rng, std::data( rng ), std::size( rng ) );
 		} else {
 			auto value_rng = skip_value( rng );
 			return construct_value<json_result<JsonMember>>(
-			  constructor_t{ }, rng, value_rng.first, value_rng.size( ) );
+			  constructor_t{ }, rng, std::data( value_rng ), std::size( value_rng ) );
 		}
 	}
 

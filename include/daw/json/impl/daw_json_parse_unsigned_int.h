@@ -125,7 +125,7 @@ namespace daw::json::json_details {
 		}
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 			auto const count =
-			  ( daw::numeric_limits<result_t>::digits10 + 1U ) - rng.size( );
+			  ( daw::numeric_limits<result_t>::digits10 + 1U ) - std::size( rng );
 			daw_json_assert( ( ( result <= daw::numeric_limits<result_t>::max( ) ) &
 			                   ( count >= 0 ) ),
 			                 ErrorReason::NumberOutOfRange, rng );

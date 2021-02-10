@@ -29,7 +29,7 @@ namespace daw::json::json_details {
 		         std::enable_if_t<(not std::is_same_v<StringView, missing_member>),
 		                          std::nullptr_t> = nullptr>
 		explicit constexpr missing_member( StringView name )
-		  : member_name( name.data( ) ) {}
+		  : member_name( std::data( name ) ) {}
 
 		template<std::size_t N>
 		explicit constexpr missing_member( char const ( &s )[N] )
@@ -221,7 +221,7 @@ namespace daw::json {
 		                                   std::string_view location )
 		  : m_reason( ErrorReason::MemberNotFound )
 		  , m_data( mm.member_name )
-		  , m_parse_loc( location.data( ) ) {}
+		  , m_parse_loc( std::data( location ) ) {}
 
 		explicit constexpr json_exception( json_details::missing_token mt,
 		                                   char const *location )
@@ -290,14 +290,13 @@ namespace daw::json {
 #ifndef _WIN32
 		result += "\nlocation:\x1b[1m";
 #endif
-		result +=
-		  std::accumulate( loc_data.data( ), loc_data.data( ) + loc_data.size( ),
-		                   std::string{ }, []( std::string s, char c ) {
-			                   if( ( c != '\n' ) & ( c != '\r' ) ) {
-				                   s += c;
-			                   }
-			                   return s;
-		                   } );
+		result += std::accumulate( std::data( loc_data ), daw::data_end( loc_data ),
+		                           std::string{ }, []( std::string s, char c ) {
+			                           if( ( c != '\n' ) & ( c != '\r' ) ) {
+				                           s += c;
+			                           }
+			                           return s;
+		                           } );
 #ifndef _WIN32
 		result += "\x1b[0m\n";
 #endif

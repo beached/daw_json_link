@@ -12,6 +12,7 @@
 #include "impl/daw_json_assert.h"
 
 #include <daw/daw_algorithm.h>
+#include <daw/daw_utility.h>
 #include <daw/iterator/daw_reverse_iterator.h>
 
 #include <algorithm>
@@ -117,7 +118,7 @@ namespace daw::json {
 
 			[[nodiscard]] bool handle_on_value( json_pair jp ) {
 				if( auto const range = jp.value.get_range( );
-				    range.empty( ) or last <= range.data( ) ) {
+				    range.empty( ) or last <= std::data( range ) ) {
 					return false;
 				}
 				if( auto const t = child_of( ); t == JsonBaseParseTypes::Class ) {
@@ -178,7 +179,7 @@ namespace daw::json {
 					return false;
 				}
 #endif
-				if( sv.data( ) <= last and last <= ( sv.data( ) + sv.size( ) ) ) {
+				if( std::data( sv ) <= last and last <= daw::data_end( sv ) ) {
 					parse_stack.push_back( state );
 					return false;
 				}
@@ -197,7 +198,7 @@ namespace daw::json {
 					return false;
 				}
 #endif
-				if( sv.data( ) <= last and last <= ( sv.data( ) + sv.size( ) ) ) {
+				if( std::data( sv ) <= last and last <= daw::data_end( sv ) ) {
 					parse_stack.push_back( state );
 					return false;
 				}
@@ -216,7 +217,7 @@ namespace daw::json {
 					return false;
 				}
 #endif
-				if( sv.data( ) <= last and last <= ( sv.data( ) + sv.size( ) ) ) {
+				if( std::data( sv ) <= last and last <= daw::data_end( sv ) ) {
 					parse_stack.push_back( state );
 					return false;
 				}
@@ -235,7 +236,7 @@ namespace daw::json {
 					return false;
 				}
 #endif
-				if( sv.data( ) <= last and last <= ( sv.data( ) + sv.size( ) ) ) {
+				if( std::data( sv ) <= last and last <= daw::data_end( sv ) ) {
 					parse_stack.push_back( state );
 					return false;
 				}

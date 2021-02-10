@@ -15,6 +15,9 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 
+#include <boost/container/pmr/memory_resource.hpp>
+#include <boost/container/pmr/monotonic_buffer_resource.hpp>
+#include <boost/container/pmr/polymorphic_allocator.hpp>
 #include <iostream>
 #include <streambuf>
 
@@ -42,13 +45,12 @@ DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
 	return true;
 }
 
-// using AllocType = daw::fixed_allocator<daw::twitter::twitter_object_t>;
 using AllocType =
-  std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>;
+  boost::container::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>;
 
 template<typename ExecTag>
 void test( std::string_view json_data,
-           std::pmr::monotonic_buffer_resource *alloc ) {
+           boost::container::pmr::monotonic_buffer_resource *alloc ) {
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
   defined( _CPPUNWIND )
 	try {
@@ -67,15 +69,15 @@ void test( std::string_view json_data,
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-			    f1, std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>(
-			          alloc ) );
+			    f1, boost::container::pmr::polymorphic_allocator<
+			          daw::twitter::twitter_object_t>( alloc ) );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 
@@ -88,8 +90,8 @@ void test( std::string_view json_data,
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-			    f1, std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>(
-			          alloc ) );
+			    f1, boost::container::pmr::polymorphic_allocator<
+			          daw::twitter::twitter_object_t>( alloc ) );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
@@ -109,15 +111,15 @@ void test( std::string_view json_data,
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDCppCommentSkippingPolicyChecked<ExecTag>>(
-			    f1, std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>(
-			          alloc ) );
+			    f1, boost::container::pmr::polymorphic_allocator<
+			          daw::twitter::twitter_object_t>( alloc ) );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
@@ -130,15 +132,15 @@ void test( std::string_view json_data,
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDCppCommentSkippingPolicyUnchecked<ExecTag>>(
-			    f1, std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>(
-			          alloc ) );
+			    f1, boost::container::pmr::polymorphic_allocator<
+			          daw::twitter::twitter_object_t>( alloc ) );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 #endif
@@ -151,15 +153,15 @@ void test( std::string_view json_data,
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDHashCommentSkippingPolicyChecked<ExecTag>>(
-			    f1, std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>(
-			          alloc ) );
+			    f1, boost::container::pmr::polymorphic_allocator<
+			          daw::twitter::twitter_object_t>( alloc ) );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
@@ -173,15 +175,15 @@ void test( std::string_view json_data,
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDHashCommentSkippingPolicyUnchecked<ExecTag,
 			                                                      AllocType>>(
-			    f1, std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>(
-			          alloc ) );
+			    f1, boost::container::pmr::polymorphic_allocator<
+			          daw::twitter::twitter_object_t>( alloc ) );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 #endif
@@ -195,15 +197,15 @@ void test( std::string_view json_data,
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-			    f1, std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>(
-			          alloc ) );
+			    f1, boost::container::pmr::polymorphic_allocator<
+			          daw::twitter::twitter_object_t>( alloc ) );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 
@@ -216,15 +218,15 @@ void test( std::string_view json_data,
 			  twitter_result = daw::json::from_json_alloc<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-			    f1, std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>(
-			          alloc ) );
+			    f1, boost::container::pmr::polymorphic_allocator<
+			          daw::twitter::twitter_object_t>( alloc ) );
 			  daw::do_not_optimize( twitter_result );
 		  },
 		  json_data );
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result, "Missing value" );
-		test_assert( twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 		test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 		             "Missing value" );
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
@@ -246,8 +248,8 @@ int main( int argc, char **argv )
 	constexpr std::size_t alloc_buff_size = 1'000'000ULL;
 	static auto alloc_buff = std::unique_ptr<char[]>( new char[alloc_buff_size] );
 	static auto alloc_impl =
-	  std::make_unique<std::pmr::monotonic_buffer_resource>( alloc_buff.get( ),
-	                                                         alloc_buff_size );
+	  std::make_unique<boost::container::pmr::monotonic_buffer_resource>(
+	    alloc_buff.get( ), alloc_buff_size );
 	static auto *alloc = alloc_impl.get( );
 	using namespace daw::json;
 	if( argc < 2 ) {
@@ -277,9 +279,12 @@ int main( int argc, char **argv )
 	{
 		auto twitter_result =
 		  daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-		    json_data,
-		    std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>(
-		      alloc ) );
+		    json_data, boost::container::pmr::polymorphic_allocator<
+		                 daw::twitter::twitter_object_t>( alloc ) );
+		auto twitter_result2 = daw::json::from_json_alloc<daw::twitter::String>(
+		  json_data, ".statuses[0].id_str",
+		  boost::container::pmr::polymorphic_allocator<daw::twitter::String>(
+		    alloc ) );
 		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		auto out_it = std::back_inserter( str );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
@@ -296,8 +301,8 @@ int main( int argc, char **argv )
 	alloc->release( );
 	auto const twitter_result2 =
 	  daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
-	    str, std::pmr::polymorphic_allocator<daw::twitter::twitter_object_t>(
-	           alloc ) );
+	    str, boost::container::pmr::polymorphic_allocator<
+	           daw::twitter::twitter_object_t>( alloc ) );
 	daw::do_not_optimize( twitter_result2 );
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
   defined( _CPPUNWIND )

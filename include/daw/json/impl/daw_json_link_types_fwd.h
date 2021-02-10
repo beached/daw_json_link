@@ -295,42 +295,128 @@ namespace daw::json {
 		  std::is_same<vector_detect::detector<T>, vector_detect::not_vector>>;
 	} // namespace json_details
 
-	template<typename Mapped, bool Found = true>
-	struct json_link_quick_map_type : std::bool_constant<Found> {
-		using mapped_type = Mapped;
+	template<typename>
+	struct json_link_basic_type_map {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unknown;
 	};
 
-	template<JSONNAMETYPE Name, typename T>
-	DAW_ATTRIBUTE_HIDDEN inline constexpr auto json_link_quick_map( ) {
-		if constexpr( std::is_same_v<T, std::string_view> ) {
-			return json_link_quick_map_type<
-			  json_string_raw<Name, std::string_view>>{ };
-		} else if constexpr( std::is_same_v<T, daw::string_view> ) {
-			return json_link_quick_map_type<
-			  json_string_raw<Name, daw::string_view>>{ };
-		} else if constexpr( std::is_same_v<T, std::string> ) {
-			return json_link_quick_map_type<json_string<Name>>{ };
-		} else if constexpr( std::is_same_v<T, bool> ) {
-			return json_link_quick_map_type<json_bool<Name>>{ };
-		} else {
-			return json_link_quick_map_type<void, false>{ };
-		}
-	}
-	/***
-	 * Check if the current type has a quick map specialized for it
-	 */
-	template<typename T>
-	inline constexpr bool has_json_link_quick_map_v =
-	  decltype( json_link_quick_map<no_name, T>( ) )::value;
+	template<>
+	struct json_link_basic_type_map<daw::string_view> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::StringRaw;
+	};
 
-	/***
-	 * Get the quick mapped json type for type T
-	 */
-	template<JSONNAMETYPE Name, typename T>
-	using json_link_quick_map_t =
-	  typename decltype( json_link_quick_map<Name, T>( ) )::mapped_type;
+	template<>
+	struct json_link_basic_type_map<std::string_view> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::StringRaw;
+	};
+
+	template<>
+	struct json_link_basic_type_map<std::string> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::StringEscaped;
+	};
+
+	template<>
+	struct json_link_basic_type_map<bool> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Bool;
+	};
+
+	template<>
+	struct json_link_basic_type_map<short> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
+	};
+
+	template<>
+	struct json_link_basic_type_map<int> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
+	};
+
+	template<>
+	struct json_link_basic_type_map<long> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
+	};
+
+	template<>
+	struct json_link_basic_type_map<long long> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
+	};
+
+	template<>
+	struct json_link_basic_type_map<unsigned short> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
+	};
+
+	template<>
+	struct json_link_basic_type_map<unsigned int> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
+	};
+
+	template<>
+	struct json_link_basic_type_map<unsigned long> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
+	};
+
+	template<>
+	struct json_link_basic_type_map<unsigned long long> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
+	};
+
+	template<>
+	struct json_link_basic_type_map<float> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
+	};
+
+	template<>
+	struct json_link_basic_type_map<double> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
+	};
 
 	namespace json_details {
+		template<typename T>
+		inline constexpr bool has_basic_type_map_v =
+		  daw::is_detected_v<::daw::json::json_link_basic_type_map, T>;
+
+		template<typename Mapped, bool Found = true>
+		struct json_link_quick_map_type : std::bool_constant<Found> {
+			using mapped_type = Mapped;
+		};
+
+		template<JSONNAMETYPE Name, typename T>
+		DAW_ATTRIBUTE_HIDDEN inline constexpr auto json_link_quick_map( ) {
+			if constexpr( has_basic_type_map_v<T> ) {
+				constexpr auto mapped_type = json_link_basic_type_map<T>::parse_type;
+				if constexpr( mapped_type == JsonParseTypes::StringRaw ) {
+					return json_link_quick_map_type<json_string_raw<Name, T>>{ };
+				} else if constexpr( mapped_type == JsonParseTypes::StringEscaped ) {
+					return json_link_quick_map_type<json_string<Name, T>>{ };
+				} else if constexpr( mapped_type == JsonParseTypes::Bool ) {
+					return json_link_quick_map_type<json_bool<Name, T>>{ };
+				} else if constexpr( mapped_type == JsonParseTypes::Signed ) {
+					return json_link_quick_map_type<json_number<Name, T>>{ };
+				} else if constexpr( mapped_type == JsonParseTypes::Unsigned ) {
+					return json_link_quick_map_type<json_number<Name, T>>{ };
+				} else if constexpr( mapped_type == JsonParseTypes::Real ) {
+					return json_link_quick_map_type<json_number<Name, T>>{ };
+				} else {
+					return json_link_quick_map_type<void, false>{ };
+				}
+			} else {
+				return json_link_quick_map_type<void, false>{ };
+			}
+		}
+		/***
+		 * Check if the current type has a quick map specialized for it
+		 */
+		template<typename T>
+		inline constexpr bool has_json_link_quick_map_v =
+		  decltype( json_link_quick_map<no_name, T>( ) )::value;
+
+		/***
+		 * Get the quick mapped json type for type T
+		 */
+		template<JSONNAMETYPE Name, typename T>
+		using json_link_quick_map_t =
+		  typename decltype( json_link_quick_map<Name, T>( ) )::mapped_type;
+
 		template<typename T, JSONNAMETYPE Name = no_name>
 		using unnamed_default_type_mapping = daw::if_t<
 		  json_details::is_a_json_type_v<T>, T,
@@ -349,6 +435,10 @@ namespace daw::json {
 		using has_unnamed_default_type_mapping = daw::not_trait<
 		  std::is_same<unnamed_default_type_mapping<T>,
 		               daw::json::missing_json_data_contract_for<T>>>;
+
+		template<typename T>
+		inline constexpr bool has_unnamed_default_type_mapping_v =
+		  has_unnamed_default_type_mapping<T>::value;
 	} // namespace json_details
 
 	/***
@@ -602,8 +692,8 @@ namespace daw::json {
 		template<JsonNullable Nullable, typename Variant>
 		using determine_variant_element_types = std::conditional_t<
 		  Nullable == JsonNullable::Never or not is_nullable_type<Variant>,
-		  std::remove_reference_t<decltype(
-		    get_variant_type_list( std::declval<Variant const *>( ) ) )>,
+		  std::remove_reference_t<decltype( get_variant_type_list(
+		    std::declval<Variant const *>( ) ) )>,
 		  std::conditional_t<
 		    is_nullable_type<Variant>,
 		    std::remove_reference_t<decltype( get_variant_type_list(
