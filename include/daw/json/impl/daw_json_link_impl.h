@@ -433,7 +433,6 @@ namespace daw::json::json_details {
 				struct cleanup_t {
 					Range *rng_ptr;
 					CPP20CONSTEXPR
-					DAW_ONLY_INLINE
 					inline ~cleanup_t( ) noexcept( false ) {
 #ifdef HAS_CPP20CONSTEXPR
 						if( not std::is_constant_evaluated( ) ) {

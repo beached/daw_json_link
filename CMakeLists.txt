@@ -17,9 +17,9 @@ project("json_link"
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+option(DAW_ENABLE_TESTING "Build unit tests" OFF)
 
 add_subdirectory(extern)
-option(DAW_ENABLE_TESTING "Build unit tests" OFF)
 
 include(GNUInstallDirs)
 set(json_link_INSTALL_CMAKEDIR

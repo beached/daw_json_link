@@ -15,15 +15,13 @@ endif( )
 include( FetchContent )
 set( FETCHCONTENT_UPDATES_DISCONNECTED ON )
 
-FetchContent_Declare(
-	daw_header_libraries
-	GIT_REPOSITORY https://github.com/beached/header_libraries.git
-)
+option( BENCHMARK_ENABLE_TESTING "Enable testing in Google Benchmark" OFF )
+FetchContent_Declare(google_test
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG master)
 
-FetchContent_Declare(
-	daw_utf_range
-	GIT_REPOSITORY https://github.com/beached/utf_range.git
-)
+FetchContent_Declare(google_benchmark
+        GIT_REPOSITORY https://github.com/google/benchmark.git
+        GIT_TAG master) 
 
-FetchContent_MakeAvailable(daw_header_libraries daw_utf_range)
-
+FetchContent_MakeAvailable(google_test google_benchmark)

@@ -1,7 +1,7 @@
 # TODO clean this up, but for now it makes tests get approprait options
 
 find_package( Boost COMPONENTS container )
-
+add_subdirectory( extern )
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF CACHE STRING "Enable LTO")
 if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
     message("CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON: LTO is enabled")
@@ -110,6 +110,10 @@ target_link_libraries(nativejson_bench_basic json_test)
 add_test(NAME nativejson_bench_basic COMMAND nativejson_bench_basic ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_bench_basic)
 
+add_executable(nativejson_bench_google src/nativejson_bench_google.cpp)
+target_link_libraries(nativejson_bench_google json_test benchmark::benchmark)
+add_test(NAME nativejson_bench_google COMMAND nativejson_bench_google ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+
 add_executable(nativejson_bench_basic2 src/nativejson_bench_basic2.cpp)
 target_link_libraries(nativejson_bench_basic2 json_test)
 add_test(NAME nativejson_bench_basic2 COMMAND nativejson_bench_basic2 ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
@@ -138,8 +142,6 @@ add_executable(twitter_test_alloc EXCLUDE_FROM_ALL src/twitter_test_alloc.cpp)
 target_link_libraries(twitter_test_alloc json_test)
 add_dependencies(full twitter_test_alloc)
 
-# libc++ does not have PMR yet
-#if ( MSVC OR NOT (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang"))
 if( Boost_FOUND )
 add_executable(twitter_test_pmr EXCLUDE_FROM_ALL src/twitter_test_pmr.cpp)
 target_link_libraries(twitter_test_pmr json_test Boost::headers Boost::container )
