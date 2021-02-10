@@ -101,7 +101,7 @@ int main( int argc, char **argv ) {
 
 	bench<constexpr_checked_pol>( b1, "constexpr checked", twitter_doc, citm_doc,
 	                              canada_doc );
-	bench<constexpr_unchecked_pol>( b1, "constexpr unchecked", twitter_doc,
+/*	bench<constexpr_unchecked_pol>( b1, "constexpr unchecked", twitter_doc,
 	                                citm_doc, canada_doc );
 	bench<runtime_checked_pol>( b1, "runtime checked", twitter_doc, citm_doc,
 	                            canada_doc );
@@ -112,10 +112,10 @@ int main( int argc, char **argv ) {
 	                         canada_doc );
 	bench<simd_unchecked_pol>( b1, "simd unchecked", twitter_doc, citm_doc,
 	                           canada_doc );
-
+*/
 	static constexpr char const out_template[] =
 	  R"DELIM("title", "name", "unit", "batch", "minimum time", "median time", "iterations", "error %", "instructions", "branches", "branch misses", "total"
-{{#result}}"{{title}}", "{{name}}", "{{unit}}", {{batch}}, {{minimum(elapsed)}}, {{median(elapsed)}}, {{iterations}}, {{medianAbsolutePercentError(elapsed)}}, {{median(instructions)}}, {{median(branchinstructions)}}, {{median(branchmisses)}}, {{sumProduct(iterations, elapsed)}}
+{{#result}}"{{title}}", "{{name}}", "{{unit}}", {{batch}}, {{minimum(elapsed)}}, {{median(elapsed)}}, {{median(iterations)}}, {{medianAbsolutePercentError(elapsed)}}, {{median(instructions)}}, {{median(branchinstructions)}}, {{median(branchmisses)}}, {{sumProduct(iterations, elapsed)}}
 {{/result}})DELIM";
 
 	b1.render( out_template, std::cout );
