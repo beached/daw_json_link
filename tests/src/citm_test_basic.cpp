@@ -13,7 +13,7 @@
 
 #include "defines.h"
 
-#include "citm_test_json.h"
+#include "citm_test.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
@@ -38,7 +38,7 @@ int main( int argc, char **argv )
 	auto const json_sv1 =
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 
-	auto citm_result = daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
+	auto citm_result = daw::parse_json_data<daw::citm::citm_object_t>( json_sv1 );
 	daw::do_not_optimize( citm_result );
 	test_assert( citm_result.areaNames.size( ) > 0, "Expected values" );
 	test_assert( citm_result.areaNames.count( 205706005 ) == 1,

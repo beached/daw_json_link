@@ -8,11 +8,11 @@
 
 #include "defines.h"
 
-#include "apache_builds_json.h"
+#include "apache_builds.h"
 #include "bench_result.h"
-#include "citm_test_json.h"
+#include "citm_test.h"
 #include "geojson.h"
-#include "twitter_test_json.h"
+#include "twitter_test.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
@@ -169,7 +169,7 @@ namespace {
 			  "apache builds from_json(checked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string_view jd ) {
-				    return daw::json::from_json<
+				    return daw::parse_json_data<
 				      apache_builds::apache_builds,
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
 				      jd );
@@ -196,7 +196,7 @@ namespace {
 			  "apache builds from_json(unchecked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string_view jd ) {
-				    return daw::json::from_json<
+				    return daw::parse_json_data<
 				      apache_builds::apache_builds,
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
 				      jd );
@@ -223,7 +223,7 @@ namespace {
 			  "twitter from_json(checked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string_view jd ) {
-				    return daw::json::from_json<
+				    return daw::parse_json_data<
 				      daw::twitter::twitter_object_t,
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
 				      jd );
@@ -251,7 +251,7 @@ namespace {
 			  "twitter from_json(unchecked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string_view jd ) {
-				    return daw::json::from_json<
+				    return daw::parse_json_data<
 				      daw::twitter::twitter_object_t,
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
 				      jd );
@@ -279,7 +279,7 @@ namespace {
 			  "citm catalog from_json(checked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string_view jd ) {
-				    return daw::json::from_json<
+				    return daw::parse_json_data<
 				      daw::citm::citm_object_t,
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
 				      jd );
@@ -307,7 +307,7 @@ namespace {
 			  "citm catalog from_json(unchecked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string_view jd ) {
-				    return daw::json::from_json<
+				    return daw::parse_json_data<
 				      daw::citm::citm_object_t,
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
 				      jd );
@@ -335,10 +335,10 @@ namespace {
 			  "canada from_json(checked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string_view jd ) {
-				    return daw::json::from_json<
-				      daw::geojson::FeatureCollection,
+				    return daw::parse_json_data<
+				      daw::geojson::Polygon,
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      jd );
+				      jd, "features[0].geometry" );
 			    },
 			    json_data ) );
 		};
@@ -363,10 +363,10 @@ namespace {
 			  "canada from_json(unchecked)", json_data.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string_view jd ) {
-				    return daw::json::from_json<
-				      daw::geojson::FeatureCollection,
+				    return daw::parse_json_data<
+				      daw::geojson::Polygon,
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      jd );
+				      jd, "features[0].geometry" );
 			    },
 			    json_data ) );
 		};
@@ -396,18 +396,18 @@ namespace {
 			    json_data_canada.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
-				    auto const j1 = daw::json::from_json<
+				    auto const j1 = daw::parse_json_data<
 				      daw::twitter::twitter_object_t,
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
 				      tw );
-				    auto const j2 = daw::json::from_json<
+				    auto const j2 = daw::parse_json_data<
 				      daw::citm::citm_object_t,
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
 				      ci );
-				    auto const j3 = daw::json::from_json<
-				      daw::geojson::FeatureCollection,
+				    auto const j3 = daw::parse_json_data<
+				      daw::geojson::Polygon,
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      ca );
+				      ca, "features[0].geometry" );
 				    daw::do_not_optimize( j1 );
 				    daw::do_not_optimize( j2 );
 				    daw::do_not_optimize( j3 );
@@ -440,18 +440,18 @@ namespace {
 			    json_data_canada.size( ),
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    [&]( std::string_view tw, std::string_view ci, std::string_view ca ) {
-				    auto const j1 = daw::json::from_json<
+				    auto const j1 = daw::parse_json_data<
 				      daw::twitter::twitter_object_t,
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
 				      tw );
-				    auto const j2 = daw::json::from_json<
+				    auto const j2 = daw::parse_json_data<
 				      daw::citm::citm_object_t,
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
 				      ci );
-				    auto const j3 = daw::json::from_json<
-				      daw::geojson::FeatureCollection,
+				    auto const j3 = daw::parse_json_data<
+				      daw::geojson::Polygon,
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      ca );
+				      ca, "features[0].geometry" );
 				    daw::do_not_optimize( j1 );
 				    daw::do_not_optimize( j2 );
 				    daw::do_not_optimize( j3 );

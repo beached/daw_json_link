@@ -6,14 +6,14 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#include "citm_test_json.h"
+#include "citm_test.h"
 #include "geojson.h"
-#include "twitter_test_json.h"
-
-#include "daw/json/daw_json_link.h"
+#include "json_firewall.h"
+#include "twitter_test.h"
 
 #include <daw/daw_read_file.h>
 
+#include <cstdlib>
 #include <fmt/format.h>
 #include <fstream>
 #include <iostream>
@@ -34,14 +34,31 @@ using simd_checked_pol =
 using simd_unchecked_pol =
   daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>;
 
+using PPair = std::pair<std::string_view, std::string_view>;
+
+template<typename ParseObj, typename ParsePolicy>
+struct parser_t {
+	constexpr parser_t( ) = default;
+
+	bool operator( )( std::string_view jd ) const {
+		ankerl::nanobench::doNotOptimizeAway(
+		  daw::parse_json_data<ParseObj, ParsePolicy>( jd ) );
+		return true;
+	}
+
+	bool
+	operator( )( PPair const &jd ) const {
+		ankerl::nanobench::doNotOptimizeAway(
+		  daw::parse_json_data<ParseObj, ParsePolicy>( jd.first, jd.second ) );
+		return true;
+	}
+};
+
 template<typename ParsePolicy, typename... ParseObjs, typename... JsonDocs>
 static inline void do_test( JsonDocs const &...jds ) try {
 	using namespace daw::json;
 
-	(void)( ( ankerl::nanobench::doNotOptimizeAway(
-	            daw::json::from_json<ParseObjs, ParsePolicy>( jds ) ),
-	          true ) and
-	        ... );
+	(void)( parser_t<ParseObjs, ParsePolicy>{}( jds ) and ... );
 
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
@@ -66,14 +83,16 @@ void bench( ankerl::nanobench::Bench &b, std::string_view title,
 
 	b.batch( canada_doc.size( ) );
 	b.run( fmt::format( "canada {}", title ).c_str( ), [&]( ) {
-		do_test<ParsePolicy, daw::geojson::FeatureCollection>( canada_doc );
+		do_test<ParsePolicy, daw::geojson::Polygon>( PPair{ canada_doc,
+		                                             "features[0].geometry" } );
 	} );
 
 	b.batch( twitter_doc.size( ) + citm_doc.size( ) + canada_doc.size( ) );
 	b.run( fmt::format( "nativejson {0}", title ).c_str( ), [&]( ) {
 		do_test<ParsePolicy, daw::twitter::twitter_object_t>( twitter_doc );
 		do_test<ParsePolicy, daw::citm::citm_object_t>( citm_doc );
-		do_test<ParsePolicy, daw::geojson::FeatureCollection>( canada_doc );
+		do_test<ParsePolicy, daw::geojson::Polygon>( PPair{ canada_doc,
+		                                             "features[0].geometry" } );
 	} );
 	// Constexpr Unchecked
 	// Runtime Checked
@@ -94,7 +113,6 @@ int main( int argc, char **argv ) {
 	            .unit( "byte" )
 	            .warmup( 100 )
 	            .minEpochIterations( 100 );
-	           // .minEpochTime( std::chrono::milliseconds( 500 ) );
 
 	std::string const twitter_doc = *daw::read_file( argv[1] );
 	std::string const citm_doc = *daw::read_file( argv[2] );

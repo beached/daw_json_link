@@ -39,7 +39,7 @@ void test( std::string_view json_sv1 ) {
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "citm_catalog bench(checked)", sz,
 		  []( auto f1 ) {
-			  return daw::json::from_json<
+			  return daw::parse_json_data<
 			    daw::citm::citm_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
 		  },
@@ -56,7 +56,7 @@ void test( std::string_view json_sv1 ) {
 		auto citm_result2 = daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "citm_catalog bench(unchecked)", sz,
 		  []( auto f1 ) {
-			  return daw::json::from_json<
+			  return daw::parse_json_data<
 			    daw::citm::citm_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
 		  },
@@ -99,7 +99,7 @@ int main( int argc, char **argv )
 	std::cout
 	  << "to_json testing\n*********************************************\n";
 	auto const citm_result =
-	  daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
+	  daw::parse_json_data<daw::citm::citm_object_t>( json_sv1 );
 
 	std::string str{ };
 	auto out_it = std::back_inserter( str );

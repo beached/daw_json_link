@@ -29,21 +29,21 @@ inline constexpr void test_assert( Bool &&b, std::string_view msg ) {
 }
 
 inline void display_exception( daw::json::json_exception const &jex,
-												char const *json_data ) {
+                               char const *json_data ) {
 	std::cerr << "Exception thrown by parser: "
-						<< to_formatted_string( jex, json_data );
+	          << to_formatted_string( jex, json_data );
 	if( jex.parse_location( ) ) {
 		auto path_stack = find_json_path_stack_to( jex, json_data );
 		if( not path_stack.empty( ) ) {
 			std::cerr << "The error is near line "
-								<< ( 1 + daw::json::find_line_number_of( jex.parse_location( ),
-																												 json_data ) )
-								<< " column "
-								<< ( 1 + daw::json::find_column_number_of(
-									jex.parse_location( ), json_data ) )
-								<< '\n';
+			          << ( 1 + daw::json::find_line_number_of( jex.parse_location( ),
+			                                                   json_data ) )
+			          << " column "
+			          << ( 1 + daw::json::find_column_number_of(
+			                     jex.parse_location( ), json_data ) )
+			          << '\n';
 			std::cerr << "JSON Path to value close to error '"
-								<< to_json_path_string( path_stack ) << "'\n";
+			          << to_json_path_string( path_stack ) << "'\n";
 		}
 	}
 }

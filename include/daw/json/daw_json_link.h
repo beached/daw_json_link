@@ -925,7 +925,6 @@ namespace daw::json {
 	from_json( std::string_view json_data, std::string_view member_path ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
-		daw_json_assert( not member_path.empty( ), ErrorReason::EmptyJSONPath );
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		static_assert(
 		  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
@@ -963,7 +962,6 @@ namespace daw::json {
 	from_json_alloc( std::string_view json_data, std::string_view member_path,
 	                 Allocator const &alloc ) {
 		daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
-		daw_json_assert( not member_path.empty( ), ErrorReason::EmptyJSONPath );
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		static_assert(
 		  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
@@ -1034,7 +1032,6 @@ namespace daw::json {
 		  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 		  "Missing specialization of daw::json::json_data_contract for class "
 		  "mapping or specialization of daw::json::json_link_basic_type_map" );
-		daw_json_assert( not member_path.empty( ), ErrorReason::EmptyJSONPath );
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		auto const json_data = value.get_string_view( );
 		auto [is_found, rng] = json_details::find_range<ParsePolicy>(

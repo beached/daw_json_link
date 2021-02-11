@@ -8,7 +8,7 @@
 
 #include "defines.h"
 
-#include "citm_test_json.h"
+#include "citm_test.h"
 #include "geojson.h"
 #include "twitter_test2.h"
 
@@ -54,7 +54,7 @@ int main( int argc, char **argv )
 
 	std::optional<daw::twitter::twitter_object_t> j1{ };
 	std::optional<daw::citm::citm_object_t> j2{ };
-	std::optional<daw::geojson::FeatureCollection> j3{ };
+	std::optional<daw::geojson::Polygon> j3{ };
 #ifdef NDEBUG
 	std::cout << "non-debug run\n";
 	auto const sz = sv_twitter.size( ) + sv_citm.size( ) + sv_canada.size( );
@@ -65,11 +65,11 @@ int main( int argc, char **argv )
 		    daw::json::from_json<daw::twitter::twitter_object_t,
 		                         daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
 		  j2 =
-		    daw::json::from_json<daw::citm::citm_object_t,
+		    daw::parse_json_data<daw::citm::citm_object_t,
 		                         daw::json::NoCommentSkippingPolicyUnchecked>( f2 );
-		  j3 =
-		    daw::json::from_json<daw::geojson::FeatureCollection,
-		                         daw::json::NoCommentSkippingPolicyUnchecked>( f3 );
+		  j3 = daw::parse_json_data<daw::geojson::Polygon,
+		                            daw::json::NoCommentSkippingPolicyUnchecked>(
+		    f3, "features[0].geometry" );
 		  daw::do_not_optimize( sv_twitter );
 		  daw::do_not_optimize( sv_citm );
 		  daw::do_not_optimize( sv_canada );
@@ -83,12 +83,12 @@ int main( int argc, char **argv )
 		j1 = daw::json::from_json<daw::twitter::twitter_object_t,
 		                          daw::json::NoCommentSkippingPolicyUnchecked>(
 		  sv_twitter );
-		j2 = daw::json::from_json<daw::citm::citm_object_t,
+		j2 = daw::parse_json_data<daw::citm::citm_object_t,
 		                          daw::json::NoCommentSkippingPolicyUnchecked>(
 		  sv_citm );
-		j3 = daw::json::from_json<daw::geojson::FeatureCollection,
+		j3 = daw::parse_json_data<daw::geojson::Polygon,
 		                          daw::json::NoCommentSkippingPolicyUnchecked>(
-		  sv_canada );
+		  sv_canada, "features[0].geometry" );
 		daw::do_not_optimize( sv_twitter );
 		daw::do_not_optimize( sv_citm );
 		daw::do_not_optimize( sv_canada );

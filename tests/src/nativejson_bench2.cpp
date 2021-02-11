@@ -8,7 +8,7 @@
 
 #include "defines.h"
 
-#include "citm_test_json.h"
+#include "citm_test.h"
 #include "geojson.h"
 #include "twitter_test2.h"
 
@@ -105,7 +105,7 @@ int main( int argc, char **argv )
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_citm bench", json_sv2.size( ),
 		  [&citm_result]( auto f2 ) {
-			  citm_result = daw::json::from_json<daw::citm::citm_object_t>( f2 );
+			  citm_result = daw::parse_json_data<daw::citm::citm_object_t>( f2 );
 		  },
 		  json_sv2 );
 		daw::do_not_optimize( citm_result );
@@ -123,7 +123,7 @@ int main( int argc, char **argv )
 		  "nativejson_citm bench trusted", json_sv2.size( ),
 		  [&citm_result]( auto f2 ) {
 			  citm_result =
-			    daw::json::from_json<daw::citm::citm_object_t,
+			    daw::parse_json_data<daw::citm::citm_object_t,
 			                         NoCommentSkippingPolicyUnchecked>( f2 );
 		  },
 		  json_sv2 );
@@ -140,7 +140,7 @@ int main( int argc, char **argv )
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_canada bench", json_sv3.size( ),
 		  [&canada_result]( auto f3 ) {
-			  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+			  canada_result = daw::parse_json_data<daw::geojson::Polygon>(
 			    f3, "features[0].geometry" );
 		  },
 		  json_sv3 );
@@ -153,7 +153,7 @@ int main( int argc, char **argv )
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_canada bench trusted", json_sv3.size( ),
 		  [&canada_result]( auto f3 ) {
-			  canada_result = daw::json::from_json<daw::geojson::Polygon,
+			  canada_result = daw::parse_json_data<daw::geojson::Polygon,
 			                                       NoCommentSkippingPolicyUnchecked>(
 			    f3, "features[0].geometry" );
 		  },
@@ -169,8 +169,8 @@ int main( int argc, char **argv )
 		  [&]( auto f1, auto f2, auto f3 ) {
 			  twitter_result =
 			    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
-			  citm_result = daw::json::from_json<daw::citm::citm_object_t>( f2 );
-			  canada_result = daw::json::from_json<daw::geojson::Polygon>(
+			  citm_result = daw::parse_json_data<daw::citm::citm_object_t>( f2 );
+			  canada_result = daw::parse_json_data<daw::geojson::Polygon>(
 			    f3, "features[0].geometry" );
 		  },
 		  json_sv1, json_sv2, json_sv3 );
@@ -202,9 +202,9 @@ int main( int argc, char **argv )
 			    daw::json::from_json<daw::twitter::twitter_object_t,
 			                         NoCommentSkippingPolicyUnchecked>( f1 );
 			  citm_result =
-			    daw::json::from_json<daw::citm::citm_object_t,
+			    daw::parse_json_data<daw::citm::citm_object_t,
 			                         NoCommentSkippingPolicyUnchecked>( f2 );
-			  canada_result = daw::json::from_json<daw::geojson::Polygon,
+			  canada_result = daw::parse_json_data<daw::geojson::Polygon,
 			                                       NoCommentSkippingPolicyUnchecked>(
 			    f3, "features[0].geometry" );
 		  },

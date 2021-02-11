@@ -15,17 +15,6 @@ endif( )
 include( FetchContent )
 set( FETCHCONTENT_UPDATES_DISCONNECTED ON )
 
-option( BENCHMARK_ENABLE_TESTING "Enable testing in Google Benchmark" OFF )
-FetchContent_Declare(google_test
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG master)
-
-FetchContent_Declare(google_benchmark
-        GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG master) 
-
-FetchContent_MakeAvailable(google_test google_benchmark)
-
 FetchContent_Declare(
     nanobench
     GIT_REPOSITORY https://github.com/martinus/nanobench.git

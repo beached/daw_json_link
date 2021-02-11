@@ -11,7 +11,7 @@
 //  provides a cleaner way to profile without the benchmarking harness
 //
 
-#include "geojson.h"
+#include "geojson_json.h"
 
 #include <daw/daw_do_not_optimize.h>
 #include <daw/daw_read_file.h>
@@ -32,8 +32,8 @@ int main( int argc, char **argv ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 	try {
 #endif
-		auto const canada_result =
-		  daw::json::from_json<daw::geojson::FeatureCollection>( json_data );
+		auto const canada_result = daw::parse_json_data<daw::geojson::Polygon>(
+		  json_data, "features[0].geometry" );
 		daw::do_not_optimize( canada_result );
 
 		auto new_json_result = std::string( );

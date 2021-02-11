@@ -43,7 +43,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS2 = 1;
 
 static_assert( DAW_NUM_RUNS > 0 );
 
-template<std::size_t NUM_VALS = 1'000'000>
+template<std::size_t NUM_VALS = 100'000>
 void test_lots_of_doubles( ) {
 	auto rd = std::random_device( );
 	auto rnd = std::mt19937_64( rd( ) );

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "json_firewall.h"
+
 #include <cstdint>
 #include <optional>
 #include <string_view>
@@ -64,4 +66,45 @@ namespace daw::citm {
 		  topicSubTopics;
 		std::optional<venueNames_t> venueNames;
 	}; // citm_object_t
+
+	citm_object_t parse_citm( std::string_view json_doc );
 } // namespace daw::citm
+
+std::string serialize_to_json( daw::citm::citm_object_t const & );
+
+template<>
+daw::citm::citm_object_t daw::parse_json_data<
+  daw::citm::citm_object_t,
+  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>>(
+  std::string_view json_doc, std::string_view path );
+
+template<>
+daw::citm::citm_object_t
+daw::parse_json_data<daw::citm::citm_object_t,
+                     daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+                       daw::json::constexpr_exec_tag>>(
+  std::string_view json_doc, std::string_view path );
+
+template<>
+daw::citm::citm_object_t daw::parse_json_data<
+  daw::citm::citm_object_t,
+  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
+  std::string_view json_doc, std::string_view path );
+
+template<>
+daw::citm::citm_object_t daw::parse_json_data<
+  daw::citm::citm_object_t,
+  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::runtime_exec_tag>>(
+  std::string_view json_doc, std::string_view path );
+
+template<>
+daw::citm::citm_object_t daw::parse_json_data<
+  daw::citm::citm_object_t,
+  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
+  std::string_view json_doc, std::string_view path );
+
+template<>
+daw::citm::citm_object_t daw::parse_json_data<
+  daw::citm::citm_object_t,
+  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
+  std::string_view json_doc, std::string_view path );

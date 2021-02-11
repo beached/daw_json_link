@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "json_firewall.h"
+
 #include <chrono>
 #include <cstdint>
 #include <optional>
@@ -205,3 +207,43 @@ namespace daw::twitter {
 		search_metadata_t search_metadata;
 	}; // twitter_object_t
 } // namespace daw::twitter
+
+namespace daw {
+	std::string serialize_to_json( twitter::twitter_object_t const & );
+
+	template<>
+	twitter::twitter_object_t parse_json_data<
+	  twitter::twitter_object_t,
+	  json::SIMDNoCommentSkippingPolicyChecked<json::constexpr_exec_tag>>(
+	  std::string_view json_doc, std::string_view path );
+
+	template<>
+	twitter::twitter_object_t parse_json_data<
+	  twitter::twitter_object_t,
+	  json::SIMDNoCommentSkippingPolicyUnchecked<json::constexpr_exec_tag>>(
+	  std::string_view json_doc, std::string_view path );
+
+	template<>
+	twitter::twitter_object_t parse_json_data<
+	  twitter::twitter_object_t,
+	  json::SIMDNoCommentSkippingPolicyChecked<json::runtime_exec_tag>>(
+	  std::string_view json_doc, std::string_view path );
+
+	template<>
+	twitter::twitter_object_t parse_json_data<
+	  twitter::twitter_object_t,
+	  json::SIMDNoCommentSkippingPolicyUnchecked<json::runtime_exec_tag>>(
+	  std::string_view json_doc, std::string_view path );
+
+	template<>
+	twitter::twitter_object_t parse_json_data<
+	  twitter::twitter_object_t,
+	  json::SIMDNoCommentSkippingPolicyChecked<json::simd_exec_tag>>(
+	  std::string_view json_doc, std::string_view path );
+
+	template<>
+	twitter::twitter_object_t parse_json_data<
+	  twitter::twitter_object_t,
+	  json::SIMDNoCommentSkippingPolicyUnchecked<json::simd_exec_tag>>(
+	  std::string_view json_doc, std::string_view path );
+} // namespace daw
