@@ -12,8 +12,6 @@
 #include "geojson.h"
 #include "twitter_test2.h"
 
-#include "daw/json/daw_json_link.h"
-
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 
@@ -52,7 +50,7 @@ int main( int argc, char **argv )
 	auto const sv_canada =
 	  std::string_view( mm_canada.data( ), mm_canada.size( ) );
 
-	std::optional<daw::twitter::twitter_object_t> j1{ };
+	std::optional<daw::twitter2::twitter_object_t> j1{ };
 	std::optional<daw::citm::citm_object_t> j2{ };
 	std::optional<daw::geojson::Polygon> j3{ };
 #ifdef NDEBUG
@@ -62,7 +60,7 @@ int main( int argc, char **argv )
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  j1 =
-		    daw::json::from_json<daw::twitter::twitter_object_t,
+		    daw::parse_json_data<daw::twitter2::twitter_object_t,
 		                         daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
 		  j2 =
 		    daw::parse_json_data<daw::citm::citm_object_t,
@@ -80,7 +78,7 @@ int main( int argc, char **argv )
 	  sv_twitter, sv_citm, sv_canada );
 #else
 	for( size_t n = 0; n < DAW_NUM_RUNS; ++n ) {
-		j1 = daw::json::from_json<daw::twitter::twitter_object_t,
+		j1 = daw::parse_json_data<daw::twitter2::twitter_object_t,
 		                          daw::json::NoCommentSkippingPolicyUnchecked>(
 		  sv_twitter );
 		j2 = daw::parse_json_data<daw::citm::citm_object_t,
@@ -100,8 +98,7 @@ int main( int argc, char **argv )
 	test_assert( j1, "Missing value" );
 	test_assert( j2, "Missing value" );
 	test_assert( j3, "Missing value" );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

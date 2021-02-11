@@ -13,7 +13,6 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
-#include <daw/json/daw_json_link.h>
 
 #include <fstream>
 #include <iostream>
@@ -30,7 +29,7 @@ int main( int argc, char **argv ) {
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 	try {
 		auto const twitter_result =
-		  daw::json::from_json<daw::twitter::twitter_object_t>( json_sv1 );
+		  daw::parse_json_data<daw::twitter2::twitter_object_t>( json_sv1 );
 		daw::do_not_optimize( twitter_result );
 		test_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
 		test_assert( twitter_result.statuses.front( ).user.id == "1186275104",

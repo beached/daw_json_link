@@ -12,8 +12,6 @@
 #include "geojson.h"
 #include "twitter_test2.h"
 
-#include "daw/json/daw_json_link.h"
-
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
@@ -62,14 +60,14 @@ int main( int argc, char **argv )
 
 		std::cout << std::flush;
 
-		std::optional<daw::twitter::twitter_object_t> twitter_result{ };
+		std::optional<daw::twitter2::twitter_object_t> twitter_result{ };
 		std::optional<daw::citm::citm_object_t> citm_result{ };
 		std::optional<daw::geojson::Polygon> canada_result{ };
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_twitter bench", json_sv1.size( ),
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result =
-			    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
+			    daw::parse_json_data<daw::twitter2::twitter_object_t>( f1 );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( twitter_result );
@@ -89,7 +87,7 @@ int main( int argc, char **argv )
 		  "nativejson_twitter bench trusted", json_sv1.size( ),
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result =
-			    daw::json::from_json<daw::twitter::twitter_object_t,
+			    daw::parse_json_data<daw::twitter2::twitter_object_t,
 			                         NoCommentSkippingPolicyUnchecked>( f1 );
 		  },
 		  json_sv1 );
@@ -168,7 +166,7 @@ int main( int argc, char **argv )
 		  "nativejson bench", sz,
 		  [&]( auto f1, auto f2, auto f3 ) {
 			  twitter_result =
-			    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
+			    daw::parse_json_data<daw::twitter2::twitter_object_t>( f1 );
 			  citm_result = daw::parse_json_data<daw::citm::citm_object_t>( f2 );
 			  canada_result = daw::parse_json_data<daw::geojson::Polygon>(
 			    f3, "features[0].geometry" );
@@ -199,7 +197,7 @@ int main( int argc, char **argv )
 		  "nativejson bench trusted", sz,
 		  [&]( auto f1, auto f2, auto f3 ) {
 			  twitter_result =
-			    daw::json::from_json<daw::twitter::twitter_object_t,
+			    daw::parse_json_data<daw::twitter2::twitter_object_t,
 			                         NoCommentSkippingPolicyUnchecked>( f1 );
 			  citm_result =
 			    daw::parse_json_data<daw::citm::citm_object_t,

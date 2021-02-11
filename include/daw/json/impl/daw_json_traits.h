@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <daw/daw_move.h>
 #include <daw/daw_traits.h>
 
 #include <memory>
@@ -61,7 +62,7 @@ namespace daw::json {
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> )
 		    -> std::enable_if_t<std::is_constructible_v<T, Args...>, T> {
 
-			return T( std::forward<Args>( args )... );
+			return T( DAW_FWD( args )... );
 		}
 
 		template<typename... Args>
@@ -71,7 +72,7 @@ namespace daw::json {
 		                         daw::traits::is_list_constructible_v<T, Args...>),
 		                        T> {
 
-			return T{ std::forward<Args>( args )... };
+			return T{ DAW_FWD( args )... };
 		}
 	};
 
@@ -121,7 +122,7 @@ namespace daw::json {
 		       std::is_constructible_v<T, std::in_place_t, Args...>),
 		      std::optional<T>> {
 
-			return std::optional<T>( std::in_place, std::forward<Args>( args )... );
+			return std::optional<T>( std::in_place, DAW_FWD( args )... );
 		}
 
 		template<typename... Args>
@@ -135,7 +136,7 @@ namespace daw::json {
 		       daw::traits::is_list_constructible_v<T, Args...>),
 		      std::optional<T>> {
 
-			return std::optional<T>( T{ std::forward<Args>( args )... } );
+			return std::optional<T>( T{ DAW_FWD( args )... } );
 		}
 	};
 
@@ -155,8 +156,7 @@ namespace daw::json {
 		                         std::is_constructible_v<T, Args...>),
 		                        std::unique_ptr<T, Deleter>> {
 
-			return std::unique_ptr<T, Deleter>(
-			  new T( std::forward<Args>( args )... ) );
+			return std::unique_ptr<T, Deleter>( new T( DAW_FWD( args )... ) );
 		}
 
 		template<typename... Args>
@@ -168,8 +168,7 @@ namespace daw::json {
 		                         daw::traits::is_list_constructible_v<T, Args...>),
 		                        std::unique_ptr<T, Deleter>> {
 
-			return std::unique_ptr<T, Deleter>(
-			  new T{ std::forward<Args>( args )... } );
+			return std::unique_ptr<T, Deleter>( new T{ DAW_FWD( args )... } );
 		}
 	};
 

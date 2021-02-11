@@ -7,13 +7,13 @@
 //
 
 #include "json_firewall.h"
-#include "twitter_test_json.h"
+#include "twitter_test2_json.h"
 
 #include <daw/json/daw_json_link.h>
 
-using result_t = daw::twitter::twitter_object_t;
+using result_t = daw::twitter2::twitter_object_t;
 using policy_t =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>;
+  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>;
 
 template<>
 result_t daw::parse_json_data<result_t, policy_t>( std::string_view json_doc,

@@ -46,8 +46,7 @@ struct parser_t {
 		return true;
 	}
 
-	bool
-	operator( )( PPair const &jd ) const {
+	bool operator( )( PPair const &jd ) const {
 		ankerl::nanobench::doNotOptimizeAway(
 		  daw::parse_json_data<ParseObj, ParsePolicy>( jd.first, jd.second ) );
 		return true;
@@ -58,7 +57,7 @@ template<typename ParsePolicy, typename... ParseObjs, typename... JsonDocs>
 static inline void do_test( JsonDocs const &...jds ) try {
 	using namespace daw::json;
 
-	(void)( parser_t<ParseObjs, ParsePolicy>{}( jds ) and ... );
+	(void)( parser_t<ParseObjs, ParsePolicy>{ }( jds ) and ... );
 
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
@@ -83,16 +82,16 @@ void bench( ankerl::nanobench::Bench &b, std::string_view title,
 
 	b.batch( canada_doc.size( ) );
 	b.run( fmt::format( "canada {}", title ).c_str( ), [&]( ) {
-		do_test<ParsePolicy, daw::geojson::Polygon>( PPair{ canada_doc,
-		                                             "features[0].geometry" } );
+		do_test<ParsePolicy, daw::geojson::Polygon>(
+		  PPair{ canada_doc, "features[0].geometry" } );
 	} );
 
 	b.batch( twitter_doc.size( ) + citm_doc.size( ) + canada_doc.size( ) );
 	b.run( fmt::format( "nativejson {0}", title ).c_str( ), [&]( ) {
 		do_test<ParsePolicy, daw::twitter::twitter_object_t>( twitter_doc );
 		do_test<ParsePolicy, daw::citm::citm_object_t>( citm_doc );
-		do_test<ParsePolicy, daw::geojson::Polygon>( PPair{ canada_doc,
-		                                             "features[0].geometry" } );
+		do_test<ParsePolicy, daw::geojson::Polygon>(
+		  PPair{ canada_doc, "features[0].geometry" } );
 	} );
 	// Constexpr Unchecked
 	// Runtime Checked

@@ -8,13 +8,13 @@
 
 #include "defines.h"
 
-#include "daw/json/daw_json_link.h"
-#include "twitter_test2.h"
+#include "twitter_test2_json.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
+#include <daw/json/daw_json_link.h>
 
 #include <fstream>
 #include <iostream>
@@ -65,12 +65,12 @@ int main( int argc, char **argv )
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
-	std::optional<daw::twitter::twitter_object_t> twitter_result;
+	std::optional<daw::twitter2::twitter_object_t> twitter_result;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "twitter bench(checked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
-		    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
+		    daw::parse_json_data<daw::twitter2::twitter_object_t>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
 	  json_sv1 );
@@ -85,7 +85,7 @@ int main( int argc, char **argv )
 	  "twitter bench(unchecked)", sz,
 	  [&twitter_result]( auto f1 ) {
 		  twitter_result =
-		    daw::json::from_json<daw::twitter::twitter_object_t,
+		    daw::parse_json_data<daw::twitter2::twitter_object_t,
 		                         daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
 		  daw::do_not_optimize( twitter_result );
 	  },
@@ -103,14 +103,14 @@ int main( int argc, char **argv )
 	  "twitter_catalog bench(to_json_string)", sz,
 	  [&]( auto const &tr ) {
 		  str.clear( );
-		  daw::json::to_json( *tr, out_it );
+		  daw::json::to_json( tr.value( ), out_it );
 		  daw::do_not_optimize( str );
 	  },
 	  twitter_result );
 	test_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
 	auto const twitter_result2 =
-	  daw::json::from_json<daw::twitter::twitter_object_t>( str );
+	  daw::parse_json_data<daw::twitter2::twitter_object_t>( str );
 	daw::do_not_optimize( twitter_result2 );
 	// Removing for now as it will do a float compare and fail
 

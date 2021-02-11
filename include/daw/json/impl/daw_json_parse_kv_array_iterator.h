@@ -12,6 +12,8 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_value_fwd.h"
 
+#include <daw/daw_move.h>
+
 #include <ciso646>
 
 namespace daw::json::json_details {
@@ -76,8 +78,8 @@ namespace daw::json::json_details {
 	private:
 		static constexpr value_type
 		get_pair( typename json_class_type::parse_to_t &&v ) {
-			return value_type( std::get<0>( std::move( v.members ) ),
-			                   std::get<1>( std::move( v.members ) ) );
+			return value_type( std::get<0>( daw::move( v.members ) ),
+			                   std::get<1>( daw::move( v.members ) ) );
 		}
 
 	public:

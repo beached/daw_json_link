@@ -30,4 +30,3 @@ result2_t daw::parse_json_data<result2_t, policy_t>( std::string_view json_doc,
 std::string serialize_to_json( result1_t const &obj ) {
 	return daw::json::to_json( obj );
 }
-

@@ -6,14 +6,14 @@
 // Official repository: https://github.com/beached/
 //
 
+#include "citm_test_json.h"
 #include "json_firewall.h"
-#include "twitter_test_json.h"
 
 #include <daw/json/daw_json_link.h>
 
-using result_t = daw::twitter::twitter_object_t;
-using policy_t =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>;
+using result_t = daw::citm::citm_object_t;
+using policy_t = daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+  daw::json::constexpr_exec_tag>;
 
 template<>
 result_t daw::parse_json_data<result_t, policy_t>( std::string_view json_doc,

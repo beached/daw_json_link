@@ -20,4 +20,3 @@ result_t daw::parse_json_data<result_t, policy_t>( std::string_view json_doc,
                                                    std::string_view path ) {
 	return daw::json::from_json<result_t, policy_t>( json_doc, path );
 }
-

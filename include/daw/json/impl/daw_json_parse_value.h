@@ -342,11 +342,12 @@ namespace daw::json::json_details {
 	using json_member_parse_to_t = typename T::parse_to_t;
 
 	template<typename T>
-	inline constexpr bool has_json_member_constructor_v = daw::is_detected_v<json_member_constructor_t, T>;
+	inline constexpr bool has_json_member_constructor_v =
+	  daw::is_detected_v<json_member_constructor_t, T>;
 
 	template<typename T>
-	inline constexpr bool has_json_member_parse_to_v = daw::is_detected_v<json_member_constructor_t, T>;
-
+	inline constexpr bool has_json_member_parse_to_v =
+	  daw::is_detected_v<json_member_constructor_t, T>;
 
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard, maybe_unused]] inline constexpr json_result<JsonMember>
@@ -374,9 +375,8 @@ namespace daw::json::json_details {
 			  JsonMember::eight_bit_mode != EightBitModes::DisallowHigh;
 			if( not AllowHighEightbits or needs_slow_path( rng2 ) ) {
 				// There are escapes in the string
-				return parse_string_known_stdstring<AllowHighEightbits,
-				                                    JsonMember, true>(
-				  rng2 );
+				return parse_string_known_stdstring<AllowHighEightbits, JsonMember,
+				                                    true>( rng2 );
 			}
 			// There are no escapes in the string, we can just use the ptr/size ctor
 			return construct_value<json_result<JsonMember>>(

@@ -665,9 +665,9 @@ namespace daw::json {
 	struct json_array {
 		using i_am_a_json_type = void;
 		static_assert(
-			json_details::has_unnamed_default_type_mapping_v<JsonElement>,
-			"Missing specialization of daw::json::json_data_contract for class "
-			"mapping or specialization of daw::json::json_link_basic_type_map" );
+		  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
+		  "Missing specialization of daw::json::json_data_contract for class "
+		  "mapping or specialization of daw::json::json_link_basic_type_map" );
 		using json_element_t =
 		  json_details::unnamed_default_type_mapping<JsonElement>;
 		static_assert( not std::is_same_v<json_element_t, void>,

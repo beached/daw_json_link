@@ -55,6 +55,19 @@ target_link_libraries(twitter_parser_rn_unch json_test)
 add_library(twitter_parser_si_unch src/twitter_parser_si_unch.cpp)
 target_link_libraries(twitter_parser_si_unch json_test)
 
+add_library(twitter2_parser_cx_ch src/twitter2_parser_cx_ch.cpp)
+target_link_libraries(twitter2_parser_cx_ch json_test)
+add_library(twitter2_parser_rn_ch src/twitter2_parser_rn_ch.cpp)
+target_link_libraries(twitter2_parser_rn_ch json_test)
+add_library(twitter2_parser_si_ch src/twitter2_parser_si_ch.cpp)
+target_link_libraries(twitter2_parser_si_ch json_test)
+add_library(twitter2_parser_cx_unch src/twitter2_parser_cx_unch.cpp)
+target_link_libraries(twitter2_parser_cx_unch json_test)
+add_library(twitter2_parser_rn_unch src/twitter2_parser_rn_unch.cpp)
+target_link_libraries(twitter2_parser_rn_unch json_test)
+add_library(twitter2_parser_si_unch src/twitter2_parser_si_unch.cpp)
+target_link_libraries(twitter2_parser_si_unch json_test)
+
 add_library(geojson_parser_cx_ch src/geojson_parser_cx_ch.cpp)
 target_link_libraries(geojson_parser_cx_ch json_test)
 add_library(geojson_parser_rn_ch src/geojson_parser_rn_ch.cpp)
@@ -154,7 +167,7 @@ target_link_libraries(nativejson_bench_alloc json_test)
 add_dependencies(full nativejson_bench_alloc)
 
 add_executable(nativejson_bench2 src/nativejson_bench2.cpp)
-target_link_libraries(nativejson_bench2 twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test)
+target_link_libraries(nativejson_bench2 twitter2_parser_cx_ch twitter2_parser_cx_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test)
 add_test(NAME nativejson_bench2 COMMAND nativejson_bench2 ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_bench2)
 
@@ -168,7 +181,7 @@ target_link_libraries(nativejson_bench_nanobench twitter_parser_cx_ch twitter_pa
 add_test(NAME nativejson_bench_nanobench COMMAND nativejson_bench_nanobench ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 
 add_executable(nativejson_bench_basic2 src/nativejson_bench_basic2.cpp)
-target_link_libraries(nativejson_bench_basic2 twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test)
+target_link_libraries(nativejson_bench_basic2 twitter2_parser_cx_ch twitter2_parser_cx_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test)
 add_test(NAME nativejson_bench_basic2 COMMAND nativejson_bench_basic2 ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_bench_basic2)
 
@@ -202,17 +215,17 @@ if (Boost_FOUND)
 endif ()
 
 add_executable(twitter_test2 src/twitter_test2.cpp)
-target_link_libraries(twitter_test2 json_test)
+target_link_libraries(twitter_test2 twitter2_parser_cx_ch twitter2_parser_cx_unch json_test)
 add_test(NAME twitter_test2 COMMAND twitter_test2 ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full twitter_test2)
 
 add_executable(twitter_test_basic src/twitter_test_basic.cpp)
-target_link_libraries(twitter_test_basic json_test)
+target_link_libraries(twitter_test_basic twitter_parser_cx_ch json_test)
 add_test(NAME twitter_test_basic COMMAND twitter_test_basic ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full twitter_test_basic)
 
 add_executable(twitter_test_basic2 src/twitter_test_basic2.cpp)
-target_link_libraries(twitter_test_basic2 json_test)
+target_link_libraries(twitter_test_basic2 twitter2_parser_cx_ch json_test)
 add_test(NAME twitter_test_basic2 COMMAND twitter_test_basic2 ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full twitter_test_basic2)
 

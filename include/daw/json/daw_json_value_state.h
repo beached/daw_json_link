@@ -14,6 +14,7 @@
 #include "impl/daw_json_value.h"
 #include "impl/daw_murmur3.h"
 
+#include <daw/daw_move.h>
 #include <daw/daw_uint_buffer.h>
 
 #include <ciso646>
@@ -34,7 +35,7 @@ namespace daw::json {
 			  daw::string_view Name, basic_json_value_iterator<Range> val )
 			  : name( Name )
 			  , hash_value( daw::name_hash( Name ) )
-			  , location( std::move( val ) ) {}
+			  , location( daw::move( val ) ) {}
 
 			[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
 				return name == Name;
@@ -144,7 +145,7 @@ namespace daw::json {
 
 	public:
 		constexpr basic_stateful_json_value( basic_json_value<Range> val )
-		  : m_value( std::move( val ) ) {
+		  : m_value( daw::move( val ) ) {
 
 			daw_json_assert_weak( ( [&] {
 				                      auto t = m_value.type( );
@@ -165,7 +166,7 @@ namespace daw::json {
 		 * @param val Value to contain state for
 		 */
 		constexpr void reset( basic_json_value<Range> val ) {
-			m_value = std::move( val );
+			m_value = daw::move( val );
 			m_locs.clear( );
 		}
 
