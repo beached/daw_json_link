@@ -293,7 +293,7 @@ namespace daw::json::json_details {
 	 * @return A reified value of type JsonMember::parse_to_t
 	 */
 	template<typename JsonMember, typename Range>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr auto
+	[[nodiscard]] DAW_ONLY_INLINE inline constexpr json_result<JsonMember>
 	parse_ordered_class_member( std::size_t &member_position, Range &rng ) {
 
 		/***
@@ -359,20 +359,22 @@ namespace daw::json::json_details {
 			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 			                                rng );
 		}
-		if( not loc.is_null( ) ) {
-			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::expected_type>{ }, loc );
-		}
 		// We cannot find the member, check if the member is nullable
 		if constexpr( is_json_nullable_v<JsonMember> ) {
-			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::expected_type>{ }, loc );
+			if( loc.is_null( ) ) {
+				return parse_value<JsonMember, true>(
+				  ParseTag<JsonMember::expected_type>{ }, loc );
+			}
 		} else {
-			daw_json_error(
-			  missing_member( std::string_view( std::data( JsonMember::name ),
-			                                    std::size( JsonMember::name ) ) ),
-			  rng );
+			if( DAW_JSON_UNLIKELY( loc.is_null( ) ) ) {
+				daw_json_error(
+				  missing_member( std::string_view( std::data( JsonMember::name ),
+				                                    std::size( JsonMember::name ) ) ),
+				  rng );
+			}
 		}
+		return parse_value<JsonMember, true>(
+		  ParseTag<JsonMember::expected_type>{ }, loc );
 	}
 
 	template<typename Range>
@@ -433,7 +435,6 @@ namespace daw::json::json_details {
 				struct cleanup_t {
 					Range *rng_ptr;
 					CPP20CONSTEXPR
-					DAW_ONLY_INLINE
 					inline ~cleanup_t( ) noexcept( false ) {
 #ifdef HAS_CPP20CONSTEXPR
 						if( not std::is_constant_evaluated( ) ) {
@@ -496,7 +497,7 @@ namespace daw::json::json_details {
 		                      typename JsonMembers::parse_to_t...>,
 		  "Supplied types cannot be used for construction of this type" );
 
-		rng.trim_left( );
+		rng.trim_left( ); // Move to array start '['
 		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
 		                      ErrorReason::InvalidArrayStart, rng );
 		rng.set_class_position( );

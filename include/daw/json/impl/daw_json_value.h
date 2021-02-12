@@ -12,6 +12,8 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_name.h"
 
+#include <daw/daw_move.h>
+
 #include <ciso646>
 #include <cstddef>
 #include <optional>
@@ -60,9 +62,9 @@ namespace daw::json {
 	constexpr decltype( auto ) get( basic_json_pair<Range> &&rng ) {
 		static_assert( Idx < 2 );
 		if constexpr( Idx == 0 ) {
-			return std::move( rng.name );
+			return daw::move( rng.name );
 		} else {
-			return std::move( rng.value );
+			return daw::move( rng.value );
 		}
 	}
 } // namespace daw::json
@@ -308,7 +310,7 @@ namespace daw::json {
 		 * @param rng string data where start is the start of our value
 		 */
 		inline constexpr basic_json_value( Range rng )
-		  : m_rng( std::move( rng ) ) {
+		  : m_rng( daw::move( rng ) ) {
 			// Ensure we are at the actual value
 			m_rng.trim_left( );
 		}
@@ -542,7 +544,7 @@ namespace daw::json {
 			auto new_range = NewRange( m_rng.first, m_rng.last );
 			new_range.class_first = m_rng.class_first;
 			new_range.class_last = m_rng.class_last;
-			return basic_json_value<NewRange>( std::move( new_range ) );
+			return basic_json_value<NewRange>( daw::move( new_range ) );
 		}
 	};
 } // namespace daw::json

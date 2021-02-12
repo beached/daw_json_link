@@ -9,9 +9,11 @@
 #pragma once
 
 #include "daw_json_event_parser.h"
+#include "daw_json_link_types.h"
 #include "impl/daw_json_assert.h"
 
 #include <daw/daw_algorithm.h>
+#include <daw/daw_move.h>
 #include <daw/daw_utility.h>
 #include <daw/iterator/daw_reverse_iterator.h>
 
@@ -82,7 +84,7 @@ namespace daw::json {
 			  } else if( not sv.name( ).empty( ) ) {
 				  state += "." + static_cast<std::string>( sv.name( ) );
 			  }
-			  return std::forward<decltype( state )>( state );
+			  return DAW_FWD( state );
 		  } );
 	}
 
@@ -257,7 +259,7 @@ namespace daw::json {
 		if( handler.last_popped ) {
 			handler.parse_stack.push_back( *handler.last_popped );
 		}
-		return std::move( handler.parse_stack );
+		return daw::move( handler.parse_stack );
 	}
 
 	[[nodiscard]] inline std::vector<json_path_node>

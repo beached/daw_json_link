@@ -8,11 +8,18 @@
 
 #pragma once
 
-#include "daw/json/daw_json_link.h"
+#include "daw_from_json_fwd.h"
+#include "impl/daw_json_parse_policy.h"
+#include "impl/daw_json_value.h"
+
+#include <daw/daw_move.h>
 
 #include <ciso646>
+#include <cstddef>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace daw::json {
 	enum class json_parse_handler_result { Continue, SkipClassArray, Complete };
@@ -177,7 +184,7 @@ namespace daw::json {
 		handle_on_value( Handler &&handler,
 		                 daw::json::basic_json_pair<ParsePolicy> p ) {
 			if constexpr( hnd_checks::has_on_value_handler_v<Handler, ParsePolicy> ) {
-				return handler.handle_on_value( std::move( p ) );
+				return handler.handle_on_value( daw::move( p ) );
 			} else {
 				(void)p;
 				return handler_result_holder{ };
@@ -189,7 +196,7 @@ namespace daw::json {
 		handle_on_array_start( Handler &&handler,
 		                       daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_array_start_handler_v<Handler, Range> ) {
-				return handler.handle_on_array_start( std::move( jv ) );
+				return handler.handle_on_array_start( daw::move( jv ) );
 			} else {
 				(void)jv;
 				return handler_result_holder{ };
@@ -211,7 +218,7 @@ namespace daw::json {
 		handle_on_class_start( Handler &&handler,
 		                       daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_class_start_handler_v<Handler, Range> ) {
-				return handler.handle_on_class_start( std::move( jv ) );
+				return handler.handle_on_class_start( daw::move( jv ) );
 			} else {
 				(void)jv;
 				return handler_result_holder{ };
@@ -287,7 +294,7 @@ namespace daw::json {
 		handle_on_error( Handler &&handler,
 		                 daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_error_handler_v<Handler, Range> ) {
-				return handler.handle_on_error( std::move( jv ) );
+				return handler.handle_on_error( daw::move( jv ) );
 			} else {
 				(void)jv;
 				return handler_result_holder{ };
@@ -317,10 +324,10 @@ namespace daw::json {
 		CPP20CONSTEXPR DefaultJsonEventParserStackPolicy( ) = default;
 
 		CPP20CONSTEXPR inline void push_back( value_type &&v ) {
-			m_stack.push_back( std::move( v ) );
+			m_stack.push_back( daw::move( v ) );
 		}
 
-		CPP20CONSTEXPR inline reference back( ) {
+		[[nodiscard]] CPP20CONSTEXPR inline reference back( ) {
 			return m_stack.back( );
 		}
 
@@ -332,7 +339,7 @@ namespace daw::json {
 			m_stack.pop_back( );
 		}
 
-		CPP20CONSTEXPR inline bool empty( ) const {
+		[[nodiscard]] CPP20CONSTEXPR inline bool empty( ) const {
 			return m_stack.empty( );
 		}
 	};
@@ -476,8 +483,8 @@ namespace daw::json {
 			if( v.value.first != v.value.second ) {
 				auto jv = *v.value.first;
 				v.value.first++;
-				parent_stack.push_back( std::move( v ) );
-				process_value( std::move( jv ) );
+				parent_stack.push_back( daw::move( v ) );
+				process_value( daw::move( jv ) );
 			} else {
 				switch( v.type ) {
 				case StackRangeType::Class: {
@@ -506,10 +513,10 @@ namespace daw::json {
 			}
 		};
 
-		process_value( { std::nullopt, std::move( jvalue ) } );
+		process_value( { std::nullopt, daw::move( jvalue ) } );
 
 		while( not parent_stack.empty( ) ) {
-			auto v = std::move( parent_stack.back( ) );
+			auto v = daw::move( parent_stack.back( ) );
 			parent_stack.pop_back( );
 			process_range( v );
 		}
@@ -520,6 +527,6 @@ namespace daw::json {
 	inline void json_event_parser( std::string_view json_document,
 	                               Handler &&handler ) {
 		return json_event_parser( basic_json_value<ParsePolicy>( json_document ),
-		                          std::forward<Handler>( handler ) );
+		                          DAW_FWD( handler ) );
 	}
 } // namespace daw::json

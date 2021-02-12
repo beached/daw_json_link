@@ -13,12 +13,13 @@
 #include "defines.h"
 
 #include "apache_builds_json.h"
-#include "daw/json/daw_json_link.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
+#include <daw/json/daw_from_json.h>
+#include <daw/json/daw_to_json.h>
 
 #include <fstream>
 #include <iostream>

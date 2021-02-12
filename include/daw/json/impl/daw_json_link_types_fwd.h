@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "daw_json_enums.h"
 #include "daw_json_link_impl.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"

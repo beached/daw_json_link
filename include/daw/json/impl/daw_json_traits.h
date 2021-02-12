@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <daw/daw_move.h>
 #include <daw/daw_traits.h>
 
 #include <memory>
@@ -40,6 +41,10 @@ namespace daw::json {
 		using type = missing_json_data_contract_for<T>;
 	};
 
+	template<typename T>
+	using json_data_contract_trait_t =
+	  typename daw::json::json_data_contract<T>::type;
+
 	/***
 	 * This trait can be specialized such that when class being returned has
 	 * non-move/copyable members the construction can be done with { } instead of
@@ -61,7 +66,7 @@ namespace daw::json {
 		  noexcept( std::is_nothrow_constructible_v<T, Args...> )
 		    -> std::enable_if_t<std::is_constructible_v<T, Args...>, T> {
 
-			return T( std::forward<Args>( args )... );
+			return T( DAW_FWD( args )... );
 		}
 
 		template<typename... Args>
@@ -71,7 +76,7 @@ namespace daw::json {
 		                         daw::traits::is_list_constructible_v<T, Args...>),
 		                        T> {
 
-			return T{ std::forward<Args>( args )... };
+			return T{ DAW_FWD( args )... };
 		}
 	};
 
@@ -121,7 +126,7 @@ namespace daw::json {
 		       std::is_constructible_v<T, std::in_place_t, Args...>),
 		      std::optional<T>> {
 
-			return std::optional<T>( std::in_place, std::forward<Args>( args )... );
+			return std::optional<T>( std::in_place, DAW_FWD( args )... );
 		}
 
 		template<typename... Args>
@@ -135,7 +140,7 @@ namespace daw::json {
 		       daw::traits::is_list_constructible_v<T, Args...>),
 		      std::optional<T>> {
 
-			return std::optional<T>( T{ std::forward<Args>( args )... } );
+			return std::optional<T>( T{ DAW_FWD( args )... } );
 		}
 	};
 
@@ -155,8 +160,7 @@ namespace daw::json {
 		                         std::is_constructible_v<T, Args...>),
 		                        std::unique_ptr<T, Deleter>> {
 
-			return std::unique_ptr<T, Deleter>(
-			  new T( std::forward<Args>( args )... ) );
+			return std::unique_ptr<T, Deleter>( new T( DAW_FWD( args )... ) );
 		}
 
 		template<typename... Args>
@@ -168,8 +172,7 @@ namespace daw::json {
 		                         daw::traits::is_list_constructible_v<T, Args...>),
 		                        std::unique_ptr<T, Deleter>> {
 
-			return std::unique_ptr<T, Deleter>(
-			  new T{ std::forward<Args>( args )... } );
+			return std::unique_ptr<T, Deleter>( new T{ DAW_FWD( args )... } );
 		}
 	};
 
@@ -185,4 +188,28 @@ namespace daw::json {
 	template<typename Char, typename CharTrait, typename Allocator>
 	struct can_single_allocation_string<
 	  std::basic_string<Char, CharTrait, Allocator>> : std::true_type {};
+
+	namespace json_details {
+		template<typename T>
+		using json_type_t = typename T::i_am_a_json_type;
+
+		template<typename T>
+		inline constexpr bool is_a_json_type_v = daw::is_detected_v<json_type_t, T>;
+
+		template<typename T>
+		using ordered_member_t = typename T::i_am_an_ordered_member;
+
+		template<typename T>
+		inline constexpr bool is_an_ordered_member_v =
+		  daw::is_detected_v<ordered_member_t, T>;
+
+		template<typename T>
+		using is_a_json_tagged_variant_test =
+		  typename T::i_am_a_json_tagged_variant;
+
+		template<typename T>
+		inline constexpr bool is_a_json_tagged_variant_v =
+		  daw::is_detected_v<is_a_json_tagged_variant_test, T>;
+
+	} // namespace json_details
 } // namespace daw::json

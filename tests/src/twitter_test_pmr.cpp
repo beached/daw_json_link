@@ -281,11 +281,6 @@ int main( int argc, char **argv )
 		  daw::json::from_json_alloc<daw::twitter::twitter_object_t>(
 		    json_data, boost::container::pmr::polymorphic_allocator<
 		                 daw::twitter::twitter_object_t>( alloc ) );
-		auto twitter_result2 = daw::json::from_json_alloc<daw::twitter::String>(
-		  json_data, ".statuses[0].id_str",
-		  boost::container::pmr::polymorphic_allocator<daw::twitter::String>(
-		    alloc ) );
-		// std::cout << "Total Allocations: " << alloc->used( ) << " bytes\n";
 		auto out_it = std::back_inserter( str );
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "twitter bench(to_json_string)", sz,
@@ -306,7 +301,8 @@ int main( int argc, char **argv )
 	daw::do_not_optimize( twitter_result2 );
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
   defined( _CPPUNWIND )
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: "
 	          << to_formatted_string( jex, nullptr ) << std::endl;
 	exit( 1 );

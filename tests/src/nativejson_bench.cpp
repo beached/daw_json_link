@@ -9,10 +9,8 @@
 #include "defines.h"
 
 #include "citm_test_json.h"
-#include "geojson.h"
+#include "geojson_json.h"
 #include "twitter_test_json.h"
-
-#include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
@@ -260,8 +258,7 @@ int main( int argc, char **argv )
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

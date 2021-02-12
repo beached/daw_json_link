@@ -9,10 +9,8 @@
 #include "defines.h"
 
 #include "citm_test_json.h"
-#include "geojson.h"
+#include "geojson_json.h"
 #include "twitter_test_json.h"
-
-#include "daw/json/daw_json_link.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
@@ -54,7 +52,7 @@ int main( int argc, char **argv )
 
 	std::optional<daw::twitter::twitter_object_t> j1{ };
 	std::optional<daw::citm::citm_object_t> j2{ };
-	std::optional<daw::geojson::FeatureCollection> j3{ };
+	std::optional<daw::geojson::Polygon> j3{ };
 #ifdef NDEBUG
 	std::cout << "non-debug run\n";
 	auto const sz = sv_twitter.size( ) + sv_citm.size( ) + sv_canada.size( );
@@ -65,8 +63,9 @@ int main( int argc, char **argv )
 		                            NoCommentSkippingPolicyChecked>( f1 );
 		  j2 = daw::json::from_json<daw::citm::citm_object_t,
 		                            NoCommentSkippingPolicyChecked>( f2 );
-		  j3 = daw::json::from_json<daw::geojson::FeatureCollection,
-		                            NoCommentSkippingPolicyChecked>( f3 );
+		  j3 = daw::json::from_json<daw::geojson::Polygon,
+		                            NoCommentSkippingPolicyChecked>(
+		    f3, "features[0].geometry" );
 		  daw::do_not_optimize( sv_twitter );
 		  daw::do_not_optimize( sv_citm );
 		  daw::do_not_optimize( sv_canada );
@@ -81,8 +80,9 @@ int main( int argc, char **argv )
 		                          NoCommentSkippingPolicyChecked>( sv_twitter );
 		j2 = daw::json::from_json<daw::citm::citm_object_t,
 		                          NoCommentSkippingPolicyChecked>( sv_citm );
-		j3 = daw::json::from_json<daw::geojson::FeatureCollection,
-		                          NoCommentSkippingPolicyChecked>( sv_canada );
+		j3 = daw::json::from_json<daw::geojson::Polygon,
+		                          NoCommentSkippingPolicyChecked>(
+		  sv_canada, "features[0].geometry" );
 		daw::do_not_optimize( sv_twitter );
 		daw::do_not_optimize( sv_citm );
 		daw::do_not_optimize( sv_canada );

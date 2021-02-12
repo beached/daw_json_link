@@ -15,6 +15,7 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_bounded_vector.h>
+#include <daw/daw_move.h>
 #include <daw/daw_traits.h>
 #include <utf8/unchecked.h>
 
@@ -59,7 +60,7 @@ namespace daw::json::json_details::to_strings {
 	namespace to_string_test {
 		template<typename T>
 		[[maybe_unused]] auto to_string_test( T &&v )
-		  -> decltype( to_string( std::forward<T>( v ) ) );
+		  -> decltype( to_string( DAW_FWD( v ) ) );
 
 		template<typename T>
 		using to_string_result = decltype( to_string_test( std::declval<T>( ) ) );
@@ -91,7 +92,7 @@ namespace daw::json {
 		[[nodiscard]] inline constexpr decltype( auto )
 		operator( )( U &&value ) const {
 			using std::to_string;
-			return to_string( std::forward<U>( value ) );
+			return to_string( DAW_FWD( value ) );
 		}
 
 		template<typename U,
@@ -99,7 +100,7 @@ namespace daw::json {
 		                          std::nullptr_t> = nullptr>
 		[[nodiscard]] inline std::string operator( )( U &&value ) const {
 			std::stringstream ss;
-			ss << std::forward<U>( value );
+			ss << DAW_FWD( value );
 			return ss.str( );
 		}
 	};
@@ -567,8 +568,10 @@ namespace daw::json::json_details {
 	inline constexpr auto digits100 = [] {
 		std::array<char[2], 100> result{ };
 		for( size_t n = 0; n < 100; ++n ) {
-			result[n][0] = static_cast<char>( n % 10 ) + '0';
-			result[n][1] = static_cast<char>( n / 10 ) + '0';
+			result[n][0] =
+			  static_cast<char>( ( n % 10 ) + static_cast<unsigned char>( '0' ) );
+			result[n][1] =
+			  static_cast<char>( ( n / 10 ) + static_cast<unsigned char>( '0' ) );
 		}
 		return result;
 	}( );

@@ -12,6 +12,8 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_value_fwd.h"
 
+#include <daw/daw_move.h>
+
 #include <ciso646>
 
 namespace daw::json::json_details {
@@ -84,7 +86,7 @@ namespace daw::json::json_details {
 			  parse_value<key_t>( ParseTag<key_t::expected_type>{ }, *base::rng );
 			name::name_parser::trim_end_of_name( *base::rng );
 			return json_class_constructor<value_type>(
-			  std::move( key ), parse_value<value_t>(
+			  daw::move( key ), parse_value<value_t>(
 			                      ParseTag<value_t::expected_type>{ }, *base::rng ) );
 		}
 
