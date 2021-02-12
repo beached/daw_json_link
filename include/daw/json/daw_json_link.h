@@ -7,8 +7,8 @@
 //
 
 #pragma once
-
 #include "daw_from_json.h"
+#include "daw_to_json.h"
 #include "impl/daw_json_link_impl.h"
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/daw_json_parse_policy.h"
@@ -185,7 +185,7 @@ namespace daw::json {
 	/***
 	 * Parse a tagged variant like class where the tag member is in the same class
 	 * that is being discriminated.  The container type, that will specialize
-	 * json_data_constract on, must support the get_if, get_index
+	 * json_data_construct on, must support the get_if, get_index
 	 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
 	 * declared in member list
 	 * @tparam Switcher A callable that returns an index into JsonClasses when
@@ -844,125 +844,6 @@ namespace daw::json {
 		  JsonBaseParseTypes::None;
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
-
-	/**
-	 *
-	 * @tparam OutputIterator Iterator to character data to
-	 * @tparam JsonClass Type that has json_parser_description and to_json_data
-	 * function overloads
-	 * @param value  value to serialize
-	 * @param out_it result to serialize to
-	 */
-	template<typename Value,
-	         typename JsonClass =
-	           typename json_details::unnamed_default_type_mapping<Value>,
-	         typename OutputIterator>
-	[[maybe_unused]] constexpr OutputIterator to_json( Value const &value,
-	                                                   OutputIterator out_it ) {
-		if constexpr( std::is_pointer_v<OutputIterator> ) {
-			daw_json_assert( out_it, ErrorReason::NullOutputIterator );
-		}
-
-		out_it = json_details::member_to_string<JsonClass>( out_it, value );
-		return out_it;
-	}
-
-	/**
-	 * Serialize a value to JSON.  Some types(std::string, string_view. integer's
-	 * and floating point numbers do not need a mapping setup).  For user classes,
-	 * a json_data_contract specialization is needed.
-	 * @tparam Result std::string like type to put result into
-	 * @tparam JsonClass Type that has json_parser_description and to_json_data
-	 * function overloads
-	 * @param value  value to serialize
-	 * @return  JSON string data
-	 */
-	template<typename Result = std::string, typename Value,
-	         typename JsonClass =
-	           typename json_details::unnamed_default_type_mapping<Value>>
-	[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value ) {
-		Result result{ };
-		to_json<Value, JsonClass>( value, daw::back_inserter( result ) );
-		return result;
-	}
-
-	namespace json_details {
-		/***
-		 * Tag type to indicate that the element of a Container is not being
-		 * specified.  This is the default.
-		 */
-		struct auto_detect_array_element {};
-	} // namespace json_details
-
-	/**
-	 * Serialize a container to JSON.  This convenience method allows for easier
-	 * serialization of containers when the root of the document is an array
-	 * Serialize Container
-	 * @tparam Container Type of Container to serialize the elements of
-	 * @tparam OutputIterator Iterator to write data to
-	 * @param c Container containing data to serialize.
-	 * @return OutputIterator with final state of iterator
-	 */
-	template<typename JsonElement = json_details::auto_detect_array_element,
-	         typename Container, typename OutputIterator>
-	[[maybe_unused]] constexpr OutputIterator
-	to_json_array( Container const &c, OutputIterator out_it ) {
-		static_assert(
-		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
-		  "Supplied container must support begin( )/end( )" );
-
-		if constexpr( std::is_pointer_v<OutputIterator> ) {
-			daw_json_assert( out_it, ErrorReason::NullOutputIterator );
-		}
-		*out_it++ = '[';
-		bool is_first = true;
-		for( auto const &v : c ) {
-			using v_type = daw::remove_cvref_t<decltype( v )>;
-			constexpr bool is_auto_detect_v =
-			  std::is_same_v<JsonElement, json_details::auto_detect_array_element>;
-			using JsonMember =
-			  std::conditional_t<is_auto_detect_v,
-			                     json_details::unnamed_default_type_mapping<v_type>,
-			                     JsonElement>;
-
-			static_assert(
-			  not std::is_same_v<
-			    JsonMember, daw::json::missing_json_data_contract_for<JsonElement>>,
-			  "Unable to detect unnamed mapping" );
-			static_assert( not std::is_same_v<JsonElement, JsonMember> );
-			if( is_first ) {
-				is_first = false;
-			} else {
-				*out_it++ = ',';
-			}
-			out_it = json_details::member_to_string<JsonMember>( out_it, v );
-		}
-		// The last character will be a ',' prior to this
-		*out_it++ = ']';
-		return out_it;
-	}
-
-	/**
-	 * Serialize a container to JSON.  This convenience method allows for easier
-	 * serialization of containers when the root of the document is an array
-	 * Serialize Container
-	 * @tparam Container Type of Container to serialize the elements of
-	 * @param c Container containing data to serialize.
-	 * @return A std::string containing the serialized elements of c
-	 */
-	template<typename Result = std::string,
-	         typename JsonElement = json_details::auto_detect_array_element,
-	         typename Container>
-	[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c ) {
-		static_assert(
-		  daw::traits::is_container_like_v<daw::remove_cvref_t<Container>>,
-		  "Supplied container must support begin( )/end( )" );
-
-		Result result{ };
-		auto out_it = json_details::basic_appender<Result>( result );
-		to_json_array<JsonElement>( c, out_it );
-		return result;
-	}
 } // namespace daw::json
 
 #if not defined( DAW_JSON_DISABLE_JSON_STRING_LITERAL )
