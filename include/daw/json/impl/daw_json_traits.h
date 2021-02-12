@@ -41,6 +41,10 @@ namespace daw::json {
 		using type = missing_json_data_contract_for<T>;
 	};
 
+	template<typename T>
+	using json_data_contract_trait_t =
+	  typename daw::json::json_data_contract<T>::type;
+
 	/***
 	 * This trait can be specialized such that when class being returned has
 	 * non-move/copyable members the construction can be done with { } instead of
@@ -181,7 +185,30 @@ namespace daw::json {
 	template<typename>
 	struct can_single_allocation_string : std::false_type {};
 
-	template<typename Char, typename CharTrait, typename Allocator>
-	struct can_single_allocation_string<
-	  std::basic_string<Char, CharTrait, Allocator>> : std::true_type {};
+		template<typename Char, typename CharTrait, typename Allocator>
+		struct can_single_allocation_string<
+		  std::basic_string<Char, CharTrait, Allocator>> : std::true_type {};
+
+	namespace json_details {
+		template<typename T>
+		using json_type_t = typename T::i_am_a_json_type;
+
+		template<typename T>
+		inline constexpr bool is_a_json_type_v = daw::is_detected_v<json_type_t, T>;
+
+		template<typename T>
+		using ordered_member_t = typename T::i_am_an_ordered_member;
+
+		template<typename T>
+		inline constexpr bool is_an_ordered_member_v =
+		  daw::is_detected_v<ordered_member_t, T>;
+
+		template<typename T>
+		using is_a_json_tagged_variant_test =
+		  typename T::i_am_a_json_tagged_variant;
+
+		template<typename T>
+		inline constexpr bool is_a_json_tagged_variant_v =
+		  daw::is_detected_v<is_a_json_tagged_variant_test, T>;
+	} // namespace json_details
 } // namespace daw::json

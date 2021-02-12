@@ -9,7 +9,9 @@
 #pragma once
 
 #include "daw_json_assert.h"
+#include "daw_json_enums.h"
 #include "daw_json_exec_modes.h"
+#include "daw_json_name.h"
 #include "daw_json_parse_digit.h"
 #include "daw_json_parse_string_need_slow.h"
 #include "daw_json_parse_string_quote.h"
@@ -49,25 +51,6 @@ namespace daw::json {
 } // namespace daw::json
 
 namespace daw::json::json_details {
-	template<typename T>
-	using json_type_t = typename T::i_am_a_json_type;
-
-	template<typename T>
-	inline constexpr bool is_a_json_type_v = daw::is_detected_v<json_type_t, T>;
-
-	template<typename T>
-	using ordered_member_t = typename T::i_am_an_ordered_member;
-
-	template<typename T>
-	inline constexpr bool is_an_ordered_member_v =
-	  daw::is_detected_v<ordered_member_t, T>;
-
-	template<typename T>
-	using is_a_json_tagged_variant_test = typename T::i_am_a_json_tagged_variant;
-
-	template<typename T>
-	inline constexpr bool is_a_json_tagged_variant_v =
-	  daw::is_detected_v<is_a_json_tagged_variant_test, T>;
 
 	template<typename T, bool = false>
 	struct ordered_member_subtype {
@@ -82,10 +65,6 @@ namespace daw::json::json_details {
 	template<typename T>
 	using ordered_member_subtype_t =
 	  typename ordered_member_subtype<T, is_an_ordered_member_v<T>>::type;
-
-	template<typename T>
-	using json_data_contract_trait_t =
-	  typename daw::json::json_data_contract<T>::type;
 
 	template<typename T, bool, bool>
 	struct json_data_constract_constructor_impl {
@@ -166,8 +145,8 @@ namespace daw::json::json_details {
 	  has_json_data_contract_trait<T>::value;
 
 	template<typename Container, typename Value>
-	using detect_push_back = decltype(
-	  std::declval<Container &>( ).push_back( std::declval<Value>( ) ) );
+	using detect_push_back = decltype( std::declval<Container &>( ).push_back(
+	  std::declval<Value>( ) ) );
 
 	template<typename Container, typename Value>
 	using detect_insert_end = decltype( std::declval<Container &>( ).insert(
@@ -242,8 +221,9 @@ namespace daw::json::json_details {
 	};
 
 	template<typename T>
-	using json_parser_to_json_data_t = decltype(
-	  daw::json::json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
+	using json_parser_to_json_data_t =
+	  decltype( daw::json::json_data_contract<T>::to_json_data(
+	    std::declval<T &>( ) ) );
 
 	template<typename T>
 	static inline constexpr bool has_json_to_json_data_v =
@@ -259,169 +239,6 @@ namespace daw::json::json_details {
 } // namespace daw::json::json_details
 
 namespace daw::json {
-#if defined( __cpp_nontype_template_parameter_class ) and \
-  not defined( DAW_JSON_NO_CPP_NAMES )
-	// C++ 20 Non-Type Class Template Arguments
-
-	/**
-	 * A fixed string used for member names in json descriptions
-	 * @tparam N size of string plus 1.  Do not set explicitly.  Use CTAD
-	 */
-	template<std::size_t N>
-	struct json_name {
-		static_assert( N > 0 );
-		char const m_data[N]{ };
-
-	private:
-		template<std::size_t... Is>
-		constexpr json_name( char const ( &ptr )[N], std::index_sequence<Is...> )
-		  : m_data{ ptr[Is]... } {}
-
-	public:
-		constexpr json_name( char const ( &ptr )[N] )
-		  : json_name( ptr, std::make_index_sequence<N>{ } ) {}
-
-		constexpr operator daw::string_view( ) const {
-			return { m_data, N - 1 };
-		}
-
-		// Needed for copy_to_iterator
-		[[nodiscard]] constexpr char const *begin( ) const {
-			return m_data;
-		}
-
-		// Needed for copy_to_iterator
-		[[nodiscard]] constexpr char const *end( ) const {
-			return m_data + static_cast<ptrdiff_t>( size( ) );
-		}
-
-		[[nodiscard]] static constexpr std::size_t size( ) {
-			return N - 1;
-		}
-
-		template<std::size_t M>
-		constexpr bool operator==( json_name<M> const &rhs ) const {
-			if( N != M ) {
-				return false;
-			}
-			for( std::size_t n = 0; n < N; ++n ) {
-				if( m_data[n] != rhs.m_data[n] ) {
-					return false;
-				}
-			}
-			return true;
-		}
-
-		constexpr bool operator==( daw::string_view rhs ) const {
-			return daw::string_view( m_data, N - 1 ) == rhs;
-		}
-
-		constexpr bool operator==( std::string_view rhs ) const {
-			return std::string_view( m_data, N - 1 ) == rhs;
-		}
-
-		constexpr operator std::string_view( ) const {
-			return std::string_view( m_data, N - 1 );
-		}
-	};
-	template<typename... Chars>
-	json_name( Chars... ) -> json_name<sizeof...( Chars )>;
-
-	template<std::size_t N>
-	json_name( char const ( & )[N] ) -> json_name<N>;
-
-#define JSONNAMETYPE daw::json::json_name
-	// Convienience for array members that are required to be unnamed
-	inline constexpr JSONNAMETYPE no_name{ "\a" };
-
-	namespace json_details {
-		inline constexpr JSONNAMETYPE default_key_name{ "key" };
-		inline constexpr JSONNAMETYPE default_value_name{ "value" };
-	} // namespace json_details
-
-	template<typename JsonMember>
-	inline constexpr bool is_no_name = ( JsonMember::name == no_name );
-#else
-#define JSONNAMETYPE char const *
-	// Convienience for array members that are required to be unnamed
-	inline constexpr char const no_name[] = "\a";
-	namespace json_details {
-
-		inline constexpr char const default_key_name[] = "key";
-		inline constexpr char const default_value_name[] = "value";
-
-	} // namespace json_details
-
-	template<typename JsonMember>
-	inline constexpr bool is_no_name = JsonMember::name == no_name;
-#endif
-
-	enum class JsonParseTypes : std::uint_fast8_t {
-		Real,
-		Signed,
-		Unsigned,
-		Bool,
-		StringRaw,
-		StringEscaped,
-		Date,
-		Class,
-		Array,
-		Null,
-		KeyValue,
-		KeyValueArray,
-		Custom,
-		Variant,
-		VariantTagged,
-		Unknown
-	};
-
-	enum class JsonBaseParseTypes : std::uint_fast8_t {
-		Number,
-		Bool,
-		String,
-		Class,
-		Array,
-		Null,
-		None
-	};
-
-	constexpr std::string_view to_string( JsonBaseParseTypes pt ) {
-		switch( pt ) {
-		case JsonBaseParseTypes::Number:
-			return "Number";
-		case JsonBaseParseTypes::Bool:
-			return "Bool";
-		case JsonBaseParseTypes::String:
-			return "String";
-		case JsonBaseParseTypes::Class:
-			return "Class";
-		case JsonBaseParseTypes::Array:
-			return "Array";
-		case JsonBaseParseTypes::Null:
-			return "Null";
-		case JsonBaseParseTypes::None:
-		default:
-			return "None";
-		}
-	}
-
-	enum class JsonNullable { Never = false, Nullable = true };
-	enum class JsonRangeCheck { Never = false, CheckForNarrowing = true };
-	enum class EightBitModes { DisallowHigh = false, AllowFull = true };
-	enum class CustomJsonTypes { Literal, String, Either };
-
-	/***
-	 * In RAW String processing, if we know that there are no escaped double
-	 * quotes \" we can stop at the first double quote
-	 */
-	enum class AllowEscapeCharacter {
-		/*Full string processing to skip escaped characters*/ Allow,
-		/*There will never be a \" sequence inside the string*/ NotBeforeDblQuote
-	};
-
-	template<JsonParseTypes ParseType, JsonNullable Nullable>
-	inline constexpr JsonParseTypes get_parse_type_v =
-	  Nullable == JsonNullable::Never ? ParseType : JsonParseTypes::Null;
 
 	namespace json_details {
 		template<typename>
@@ -487,19 +304,6 @@ namespace daw::json {
 
 	} // namespace json_details
 
-	/**
-	 * Tag lookup for parsing overload selection
-	 */
-	template<JsonParseTypes v>
-	using ParseTag = std::integral_constant<JsonParseTypes, v>;
-
-	/**
-	 * Allows having literals parse that are encoded as strings. It allows
-	 * one to have it be Never true, Maybe true or Always true.  This controls
-	 * whether the parser will Never remove quotes, check if quotes exist, or
-	 * Always remove quotes around the literal
-	 */
-	enum class LiteralAsStringOpt : std::uint8_t { Never, Maybe, Always };
 
 	template<typename T>
 	struct TestInputIteratorType {

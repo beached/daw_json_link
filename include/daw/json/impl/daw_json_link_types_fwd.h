@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "daw_json_enums.h"
 #include "daw_json_link_impl.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
@@ -692,8 +693,8 @@ namespace daw::json {
 		template<JsonNullable Nullable, typename Variant>
 		using determine_variant_element_types = std::conditional_t<
 		  Nullable == JsonNullable::Never or not is_nullable_type<Variant>,
-		  std::remove_reference_t<decltype(
-		    get_variant_type_list( std::declval<Variant const *>( ) ) )>,
+		  std::remove_reference_t<decltype( get_variant_type_list(
+		    std::declval<Variant const *>( ) ) )>,
 		  std::conditional_t<
 		    is_nullable_type<Variant>,
 		    std::remove_reference_t<decltype( get_variant_type_list(
