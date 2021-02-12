@@ -48,7 +48,7 @@ namespace daw::cookbook_dates4 {
 			test_assert( sv_suffix == suffix, "Unexpected date format" );
 			sv.remove_suffix( suffix.size( ) );
 
-			std::int64_t val = daw::json::from_json<
+			auto const val = daw::json::from_json<
 			  std::int64_t, daw::json::NoCommentSkippingPolicyChecked, true>( sv );
 			DAW_CONSTEXPR const auto epoch =
 			  daw::json::datetime::civil_to_time_point( 1970, 1, 1, 0, 0, 0, 0 );
@@ -111,17 +111,15 @@ int main( int argc, char **argv )
 	auto data = *daw::read_file( argv[1] );
 	puts( data.data( ) );
 
-	daw::cookbook_dates4::MyClass4 const cls =
-	  daw::json::from_json<daw::cookbook_dates4::MyClass4>(
-	    std::string_view( data.data( ), data.size( ) ) );
+	auto const cls = daw::json::from_json<daw::cookbook_dates4::MyClass4>(
+	  std::string_view( data.data( ), data.size( ) ) );
 
 	test_assert( cls.name == "Toronto", "Unexpected value" );
 
 	std::string const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
-	daw::cookbook_dates4::MyClass4 const cls4 =
-	  daw::json::from_json<daw::cookbook_dates4::MyClass4>( str );
+	auto const cls4 = daw::json::from_json<daw::cookbook_dates4::MyClass4>( str );
 
 	test_assert( cls == cls4, "Unexpected round trip error" );
 }

@@ -11,7 +11,6 @@
 #include "daw_to_json_fwd.h"
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/daw_json_to_string.h"
-//#include "impl/daw_json_serialize_impl.h"
 
 #include <iterator>
 #include <string>
@@ -25,7 +24,6 @@ namespace daw::json {
 		if constexpr( std::is_pointer_v<OutputIterator> ) {
 			daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 		}
-
 		out_it = json_details::member_to_string<JsonClass>( out_it, value );
 		return out_it;
 	}
@@ -33,7 +31,7 @@ namespace daw::json {
 	template<typename Result, typename Value, typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value ) {
 		Result result{ };
-		to_json<Value, JsonClass>( value, daw::back_inserter( result ) );
+		(void)json_details::member_to_string<JsonClass>( std::back_inserter( result ), value );
 		return result;
 	}
 

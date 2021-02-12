@@ -66,9 +66,8 @@ int main( int, char ** )
 }
 )";
 
-	daw::cookbook_class1::MyClass1 const cls =
-	  daw::json::from_json<daw::cookbook_class1::MyClass1>(
-	    std::string_view( data.data( ), data.size( ) ) );
+	auto const cls = daw::json::from_json<daw::cookbook_class1::MyClass1>(
+	  std::string_view( data.data( ), data.size( ) ) );
 
 	test_assert( cls.member_0 == "this is a test", "Unexpected value" );
 	test_assert( cls.member_1 == 314159, "Unexpected value" );
@@ -80,8 +79,7 @@ int main( int, char ** )
 	(void)daw::json::to_json( cls, it );
 	std::string const str = ss.str( );
 	puts( str.c_str( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

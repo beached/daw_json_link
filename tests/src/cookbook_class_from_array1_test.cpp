@@ -57,15 +57,14 @@ int main( int argc, char **argv )
 	puts( "Original\n" );
 	puts( data.data( ) );
 
-	daw::cookbook_class_from_array1::Point const cls =
-	  daw::json::from_json<daw::cookbook_class_from_array1::Point>(
-	    std::string_view( data.data( ), data.size( ) ) );
+	auto const cls = daw::json::from_json<daw::cookbook_class_from_array1::Point>(
+	  std::string_view( data.data( ), data.size( ) ) );
 
 	std::string const str = daw::json::to_json( cls );
 
 	puts( "Round trip\n" );
 	puts( str.c_str( ) );
-	daw::cookbook_class_from_array1::Point const cls2 =
+	auto const cls2 =
 	  daw::json::from_json<daw::cookbook_class_from_array1::Point>(
 	    std::string_view( str.data( ), str.size( ) ) );
 

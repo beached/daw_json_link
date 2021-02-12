@@ -11,6 +11,7 @@
 #include "twitter_test_json.h"
 
 #include <daw/daw_read_file.h>
+#include <daw/json/daw_from_json.h>
 
 #include <cstdlib>
 #include <fmt/format.h>

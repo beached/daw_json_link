@@ -14,7 +14,7 @@
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
-#include <daw/daw_string_view.h>
+#include <daw/json/daw_from_json.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -64,7 +64,7 @@ void test( char **argv ) {
 		std::cerr << to_formatted_string( jex ) << '\n';
 	}
 	test_assert( twitter_result, "Missing value -> twitter_result" );
-	test_assert( twitter_result->statuses.size( ) > 0,
+	test_assert( not twitter_result->statuses.empty( ),
 	             "Expected values: twitter_result is empty" );
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             std::string( "Expected values: user_id had wrong value, "
@@ -86,7 +86,8 @@ void test( char **argv ) {
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
-	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( not twitter_result->statuses.empty( ),
+	             "Expected values: twitter_result is empty" );
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Expected values" );
 	twitter_result.reset( );
@@ -103,7 +104,7 @@ void test( char **argv ) {
 	  json_sv2 );
 	daw::do_not_optimize( citm_result );
 	test_assert( citm_result, "Missing value" );
-	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
 	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
 	             "Expected value" );
 	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
@@ -121,7 +122,7 @@ void test( char **argv ) {
 	  },
 	  json_sv2 );
 	test_assert( citm_result, "Missing value" );
-	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
 	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
 	             "Expected value" );
 	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
@@ -182,11 +183,12 @@ void test( char **argv ) {
 	daw::do_not_optimize( citm_result );
 	daw::do_not_optimize( canada_result );
 	test_assert( twitter_result, "Missing value" );
-	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( not twitter_result->statuses.empty( ),
+	             "Expected values: twitter_result is empty" );
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Missing value" );
 	test_assert( citm_result, "Missing value" );
-	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
 	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
 	             "Expected value" );
 	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
@@ -219,11 +221,11 @@ void test( char **argv ) {
 	daw::do_not_optimize( canada_result );
 
 	test_assert( twitter_result, "Missing value" );
-	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 	test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 	             "Missing value" );
 	test_assert( citm_result, "Missing value" );
-	test_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
+	test_assert( not citm_result->areaNames.empty( ), "Expected values" );
 	test_assert( citm_result->areaNames.count( 205706005 ) == 1,
 	             "Expected value" );
 	test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",

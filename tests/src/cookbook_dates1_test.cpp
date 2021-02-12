@@ -63,17 +63,15 @@ int main( int argc, char **argv )
 	}
 	auto data = *daw::read_file( argv[1] );
 
-	daw::cookbook_dates1::MyClass1 const cls =
-	  daw::json::from_json<daw::cookbook_dates1::MyClass1>(
-	    std::string_view( data.data( ), data.size( ) ) );
+	auto const cls = daw::json::from_json<daw::cookbook_dates1::MyClass1>(
+	  std::string_view( data.data( ), data.size( ) ) );
 
 	test_assert( cls.name == "Toronto", "Unexpected value" );
 
 	std::string const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
-	daw::cookbook_dates1::MyClass1 const cls2 =
-	  daw::json::from_json<daw::cookbook_dates1::MyClass1>( str );
+	auto const cls2 = daw::json::from_json<daw::cookbook_dates1::MyClass1>( str );
 
 	test_assert( cls == cls2, "Unexpected round trip error" );
 }
