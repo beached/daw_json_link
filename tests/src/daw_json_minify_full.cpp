@@ -72,7 +72,7 @@ public:
 			return true;
 		case daw::json::JsonBaseParseTypes::String: {
 			member_preamble( );
-			std::string const unescaped =
+			auto const unescaped =
 			  daw::json::from_json<std::string, ParsePolicy, true>(
 			    p.value.get_string_view( ) );
 

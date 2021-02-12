@@ -96,10 +96,10 @@ int main( int argc, char **argv )
 	}
 	auto data = *daw::read_file( argv[1] );
 
-	MyClass2 val = daw::json::from_json<MyClass2>(
+	auto const val = daw::json::from_json<MyClass2>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	MyDelayedClass delayed_val =
+	auto const delayed_val =
 	  daw::json::from_json<MyDelayedClass>( val.member_later );
 
 	test_assert( delayed_val.a == 1, "Unexpected value" );
@@ -107,10 +107,9 @@ int main( int argc, char **argv )
 
 	std::string json_str2 = daw::json::to_json( val );
 	puts( json_str2.c_str( ) );
-	MyClass2 val2 = daw::json::from_json<MyClass2>( json_str2 );
+	auto const val2 = daw::json::from_json<MyClass2>( json_str2 );
 	test_assert( val == val2, "Broken round trip" );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

@@ -66,7 +66,7 @@ namespace daw::json::json_details {
 		  std::is_same_v<Result, float>
 		    ? std::min( max_dbl_exp, std::numeric_limits<float>::max_exponent10 )
 		    : max_dbl_exp;
-		constexpr Result max_v = static_cast<Result>( dpow10_tbl[max_exp] );
+		constexpr auto max_v = static_cast<Result>( dpow10_tbl[max_exp] );
 
 		if( DAW_JSON_UNLIKELY( p > max_exp ) ) {
 			Result exp2 = max_v;

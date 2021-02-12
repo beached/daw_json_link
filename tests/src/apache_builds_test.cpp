@@ -57,7 +57,7 @@ void test( std::string_view json_sv1 ) {
 
 	auto apache_builds_result =
 	  daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( json_sv1 );
-	test_assert( apache_builds_result.jobs.size( ) > 0,
+	test_assert( not apache_builds_result.jobs.empty( ),
 	             "Bad value for jobs.size( )" );
 	test_assert( apache_builds_result.numExecutors == 0,
 	             "Bad value for numExecutors" );

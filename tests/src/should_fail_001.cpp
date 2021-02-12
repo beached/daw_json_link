@@ -60,7 +60,7 @@ namespace tests {
 		static DAW_CONSTEXPR std::string_view data =
 		  R"({"lat": "55.55", "lng": "12.34" })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -70,7 +70,7 @@ namespace tests {
 		static DAW_CONSTEXPR std::string_view data =
 		  R"({"lat": true, "lng": false })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -80,7 +80,7 @@ namespace tests {
 		static DAW_CONSTEXPR std::string_view data =
 		  R"({"lat": 1.23b34, "lng": 1234.4 })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -89,7 +89,7 @@ namespace tests {
 	bool missing_value_001( ) {
 		static DAW_CONSTEXPR std::string_view data = R"({"lat": 1.23, "lng": })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -98,7 +98,7 @@ namespace tests {
 	bool missing_value_002( ) {
 		static DAW_CONSTEXPR std::string_view data = R"({"lat": , "lng": 1.23 })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -108,7 +108,7 @@ namespace tests {
 		static DAW_CONSTEXPR std::string_view data =
 		  R"({"name": "lat": 1.23, "lng": 1.34 })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -117,7 +117,7 @@ namespace tests {
 	bool missing_member( ) {
 		static DAW_CONSTEXPR std::string_view data = R"({"lng": 1.23 })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -127,7 +127,7 @@ namespace tests {
 		static DAW_CONSTEXPR std::string_view data =
 		  R"({"lng": 1.23, "lat": 1.22 )";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -137,7 +137,7 @@ namespace tests {
 		std::string data =
 		  R"({"uris": [ "http://www.example.com", "http://www.example.com/missing_quote ] })";
 		try {
-			UriList ul = daw::json::from_json<tests::UriList>( data );
+			auto const ul = daw::json::from_json<tests::UriList>( data );
 			(void)ul;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -147,7 +147,7 @@ namespace tests {
 		std::string data =
 		  R"({"uris": [ "http://www.ex\u4"\"ample.com", "http://www.example.com/missing_quote ] })";
 		try {
-			UriList ul = daw::json::from_json<tests::UriList>( data );
+			auto const ul = daw::json::from_json<tests::UriList>( data );
 			(void)ul;
 		} catch( daw::json::json_exception const &jex ) {
 			if( jex.parse_location( ) and

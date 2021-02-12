@@ -119,7 +119,7 @@ namespace daw::json {
 		 * Name of member
 		 * @return The name, if any, of the current member
 		 */
-		constexpr std::optional<std::string_view> name( ) const {
+		[[nodiscard]] constexpr std::optional<std::string_view> name( ) const {
 			if( is_array( ) ) {
 				return { };
 			}
@@ -211,7 +211,7 @@ namespace daw::json {
 		 * Can we increment more
 		 * @return True if safe to increment more
 		 */
-		constexpr bool good( ) const {
+		[[nodiscard]] constexpr bool good( ) const {
 			if( not m_state.has_more( ) or m_state.is_null( ) ) {
 				return false;
 			}
@@ -245,7 +245,7 @@ namespace daw::json {
 		 * Can we increment more
 		 * @return True if safe to increment more
 		 */
-		constexpr explicit operator bool( ) const {
+		[[nodiscard]] constexpr explicit operator bool( ) const {
 			return good( );
 		}
 
@@ -254,7 +254,7 @@ namespace daw::json {
 		 * @param rhs iterator to compare for equivilence with
 		 * @return true if both are equivilent
 		 */
-		constexpr bool
+		[[nodiscard]] constexpr bool
 		operator==( basic_json_value_iterator<Range> const &rhs ) const {
 			if( good( ) ) {
 				if( rhs.good( ) ) {
@@ -270,7 +270,7 @@ namespace daw::json {
 		 * @param rhs iterator to compare for equivilence with
 		 * @return true if the rhs is not equivilent
 		 */
-		constexpr bool
+		[[nodiscard]] constexpr bool
 		operator!=( basic_json_value_iterator<Range> const &rhs ) const {
 			return not operator==( rhs );
 		}
@@ -282,10 +282,10 @@ namespace daw::json {
 		iterator first;
 		iterator last;
 
-		constexpr iterator begin( ) {
+		[[nodiscard]] constexpr iterator begin( ) {
 			return first;
 		}
-		constexpr iterator end( ) {
+		[[nodiscard]] constexpr iterator end( ) {
 			return last;
 		}
 	};
@@ -420,7 +420,7 @@ namespace daw::json {
 		 * Get the JSON data
 		 * @return the JSON data as a std::string_view
 		 */
-		constexpr std::string_view get_string_view( ) const {
+		[[nodiscard]] constexpr std::string_view get_string_view( ) const {
 			auto rng = m_rng;
 			auto result = json_details::skip_value( rng );
 			if( is_string( ) ) {
@@ -436,7 +436,7 @@ namespace daw::json {
 		 */
 		template<typename Allocator = std::allocator<char>,
 		         typename Traits = std::char_traits<char>>
-		std::basic_string<char, Traits, Allocator>
+		[[nodiscard]] std::basic_string<char, Traits, Allocator>
 		get_string( Allocator const &alloc = std::allocator<char>( ) ) const {
 			auto rng = m_rng;
 			auto result = json_details::skip_value( rng );
@@ -451,7 +451,7 @@ namespace daw::json {
 		 * Is the JSON value a null literal
 		 * @return true if the value is a null literal
 		 */
-		constexpr bool is_null( ) const {
+		[[nodiscard]] constexpr bool is_null( ) const {
 			return ( m_rng.starts_with( "null" ) );
 		}
 
@@ -459,7 +459,7 @@ namespace daw::json {
 		 * Is the JSON value a class
 		 * @return true if the value is a class
 		 */
-		constexpr bool is_class( ) const {
+		[[nodiscard]] constexpr bool is_class( ) const {
 			return m_rng.is_opening_brace_checked( );
 		}
 
@@ -467,7 +467,7 @@ namespace daw::json {
 		 * Is the JSON value a array
 		 * @return true if the value is a array
 		 */
-		constexpr bool is_array( ) const {
+		[[nodiscard]] constexpr bool is_array( ) const {
 			return m_rng.is_opening_bracket_checked( );
 		}
 
@@ -475,7 +475,7 @@ namespace daw::json {
 		 * Is the JSON value a number literal
 		 * @return true if the value is a number literal
 		 */
-		constexpr bool is_number( ) const {
+		[[nodiscard]] constexpr bool is_number( ) const {
 			if( not m_rng.has_more( ) ) {
 				return false;
 			}
@@ -501,7 +501,7 @@ namespace daw::json {
 		 * Is the JSON value a string
 		 * @return true if the value is a string
 		 */
-		inline constexpr bool is_string( ) const {
+		[[nodiscard]] inline constexpr bool is_string( ) const {
 			return m_rng.is_quotes_checked( );
 		}
 
@@ -509,7 +509,7 @@ namespace daw::json {
 		 * Is the JSON value a boolean
 		 * @return true if the value is a boolean
 		 */
-		constexpr bool is_bool( ) const {
+		[[nodiscard]] constexpr bool is_bool( ) const {
 			if( not m_rng.has_more( ) ) {
 				return false;
 			}
@@ -535,7 +535,7 @@ namespace daw::json {
 		 * ",[,{,0,1,2,3,4,5,6,7,8,9,-,t,f, or n and this does not
 		 * @return true if the parser is unsure what the data is
 		 */
-		inline constexpr bool is_unknown( ) const {
+		[[nodiscard]] inline constexpr bool is_unknown( ) const {
 			return type( ) == JsonBaseParseTypes::None;
 		}
 

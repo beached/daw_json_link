@@ -35,8 +35,7 @@ int main( int argc, char **argv )
 	  std::string_view( file_data.data( ), file_data.size( ) );
 
 	using namespace daw::json;
-	std::string_view value =
-	  from_json<std::string_view>( json_data, "member1[1]" );
+	auto const value = from_json<std::string_view>( json_data, "member1[1]" );
 
 	test_assert( value == "is", "Unexpected value" );
 
@@ -45,8 +44,7 @@ int main( int argc, char **argv )
 	    json_data, "member1[1000]" );
 
 	test_assert( opt_value.empty( ), "Unexpected result" );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

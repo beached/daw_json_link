@@ -40,7 +40,7 @@ int main( int argc, char **argv )
 
 	auto citm_result = daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
 	daw::do_not_optimize( citm_result );
-	test_assert( citm_result.areaNames.size( ) > 0, "Expected values" );
+	test_assert( not citm_result.areaNames.empty( ), "Expected values" );
 	test_assert( citm_result.areaNames.count( 205706005 ) == 1,
 	             "Expected value" );
 	test_assert( citm_result.areaNames[205706005] == "1er balcon jardin",

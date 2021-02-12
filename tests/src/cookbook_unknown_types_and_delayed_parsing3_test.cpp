@@ -53,11 +53,10 @@ int main( )
 	auto json = daw::json::to_json( my_thing );
 
 	puts( json.c_str( ) );
-	Thing val2 = daw::json::from_json<Thing>( json );
+	auto const val2 = daw::json::from_json<Thing>( json );
 	test_assert( my_thing.raw_json == val2.raw_json,
 	             "Unexpected round trip error" );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

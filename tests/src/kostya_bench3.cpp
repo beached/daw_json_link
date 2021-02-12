@@ -97,7 +97,7 @@ coordinate_t calc( const string &text ) {
 }
 
 int main( ) {
-	auto left = calc( "{\"coordinates\":[{\"x\":1.1,\"y\":2.2,\"z\":3.3}]}" );
+	auto left = calc( R"({"coordinates":[{"x":1.1,"y":2.2,"z":3.3}]})" );
 	auto right = coordinate_t{ 1.1, 2.2, 3.3 };
 	if( left != right ) {
 		cerr << left << " != " << right << endl;

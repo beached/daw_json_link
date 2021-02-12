@@ -13,6 +13,7 @@
 #include "twitter_test_json.h"
 
 #include <daw/json/daw_to_json.h>
+#include <daw/json/daw_from_json.h>
 
 #include <fstream>
 #include <iostream>

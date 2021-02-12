@@ -856,7 +856,7 @@ int main( int, char ** )
 
 		std::cout << "testing 9223372036854776000e100\n";
 		constexpr std::string_view two63e100 = "9223372036854776000e100";
-		long double const d0 =
+		auto const d0 =
 		  from_json<long double,
 		            SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>>(
 		    two63e100 );
@@ -868,8 +868,7 @@ int main( int, char ** )
 		double d2 = 0.89;
 		std::cout << to_json( d2 ) << '\n';
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

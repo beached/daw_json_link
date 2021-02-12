@@ -55,7 +55,8 @@ namespace daw::json {
 } // namespace daw::json
 
 namespace daw::json::json_details::to_strings {
-
+	// Need to use ADL to_string in unevaluated contexts.  Limiting to it's own
+	// namespace
 	using std::to_string;
 	namespace to_string_test {
 		template<typename T>
@@ -80,7 +81,6 @@ namespace daw::json::json_details::to_strings {
 		}
 		return to_string( *v );
 	}
-
 } // namespace daw::json::json_details::to_strings
 
 namespace daw::json {
@@ -110,7 +110,7 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline OutputIterator constexpr to_string(
 	  ParseTag<JsonParseTypes::Null>, OutputIterator it,
-	  parse_to_t const &container );
+	  parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
@@ -180,11 +180,13 @@ namespace daw::json::json_details {
 	//************************************************
 	template<typename Char>
 	constexpr char to_nibble_char( Char c ) {
-		daw_json_assert( c < 16, ErrorReason::InvalidUTFEscape );
-		if( c < 10 ) {
-			return static_cast<char>( c + '0' );
+		auto const u = static_cast<unsigned>( static_cast<unsigned char>( c ) );
+		daw_json_assert( u < 16, ErrorReason::InvalidUTFEscape );
+		if( u < 10 ) {
+			return static_cast<char>( u + static_cast<unsigned char>( '0' ) );
 		} else {
-			return static_cast<char>( ( c - 10U ) + 'A' );
+			return static_cast<char>( ( u - 10U ) +
+			                          static_cast<unsigned char>( 'A' ) );
 		}
 	}
 
@@ -882,16 +884,16 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,
-	           parse_to_t const &container ) {
+	           parse_to_t const &value ) {
 
 		static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
 		*it++ = '[';
-		if( not std::empty( container ) ) {
-			auto count = std::size( container ) - 1U;
-			for( auto const &v : container ) {
+		if( not std::empty( value ) ) {
+			auto count = std::size( value ) - 1U;
+			for( auto const &v : value ) {
 				it = to_string<typename JsonMember::json_element_t>(
 				  ParseTag<JsonMember::json_element_t::expected_type>{ }, it, v );
 				if( count-- > 0 ) {
@@ -918,7 +920,7 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::KeyValueArray>, OutputIterator it,
-	           parse_to_t const &container ) {
+	           parse_to_t const &value ) {
 
 		static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
@@ -926,9 +928,9 @@ namespace daw::json::json_details {
 		using key_t = typename JsonMember::json_key_t;
 		using value_t = typename JsonMember::json_value_t;
 		*it++ = '[';
-		if( not std::empty( container ) ) {
-			auto count = std::size( container ) - 1U;
-			for( auto const &v : container ) {
+		if( not std::empty( value ) ) {
+			auto count = std::size( value ) - 1U;
+			for( auto const &v : value ) {
 				*it++ = '{';
 				// Append Key Name
 				*it++ = '"';
@@ -962,16 +964,16 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::KeyValue>, OutputIterator it,
-	           parse_to_t const &container ) {
+	           parse_to_t const &value ) {
 
 		static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
 		*it++ = '{';
-		if( not std::empty( container ) ) {
-			auto count = std::size( container ) - 1U;
-			for( auto const &v : container ) {
+		if( not std::empty( value ) ) {
+			auto count = std::size( value ) - 1U;
+			for( auto const &v : value ) {
 				it = to_string<typename JsonMember::json_key_t>(
 				  ParseTag<JsonMember::json_key_t::expected_type>{ }, it,
 				  json_get_key( v ) );

@@ -15,6 +15,7 @@
 #include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
 #include <daw/json/daw_to_json.h>
+#include <daw/json/daw_from_json.h>
 
 #include <iostream>
 #include <streambuf>
@@ -75,7 +76,7 @@ int main( int argc, char **argv )
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
-	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 	test_assert( twitter_result->statuses.front( ).user.id == "1186275104",
 	             "Missing value" );
 
@@ -91,7 +92,7 @@ int main( int argc, char **argv )
 	  json_sv1 );
 	daw::do_not_optimize( twitter_result );
 	test_assert( twitter_result, "Missing value" );
-	test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+	test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 	test_assert( twitter_result->statuses.front( ).user.id == "1186275104",
 	             "Missing value" );
 

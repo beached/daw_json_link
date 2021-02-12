@@ -12,6 +12,7 @@
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
+#include <daw/json/daw_from_json.h>
 
 #include <iostream>
 #include <string_view>
@@ -29,7 +30,7 @@ int main( int argc, char **argv ) {
 		auto const twitter_result =
 		  daw::json::from_json<daw::twitter2::twitter_object_t>( json_sv1 );
 		daw::do_not_optimize( twitter_result );
-		test_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
+		test_assert( not twitter_result.statuses.empty( ), "Expected values" );
 		test_assert( twitter_result.statuses.front( ).user.id == "1186275104",
 		             "Missing value" );
 	} catch( daw::json::json_exception const &jex ) {

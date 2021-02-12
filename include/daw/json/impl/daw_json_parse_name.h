@@ -14,50 +14,48 @@
 
 #include <ciso646>
 
-namespace daw::json::json_details::name {
-	namespace name_parser {
-		/*
-		 * end of string " -> name value separating : -> any white space
-		 * the string can be escaped too
-		 */
-		template<typename Range>
-		[[maybe_unused]] static constexpr void trim_end_of_name( Range &rng ) {
-			rng.trim_left( );
-			// TODO: should we check for end
-			daw_json_assert_weak( rng.front( ) == ':', ErrorReason::InvalidMemberName,
-			                      rng );
-			rng.remove_prefix( );
-			rng.trim_left( );
-		}
+namespace daw::json::json_details::name::name_parser {
+	/*
+	 * end of string " -> name value separating : -> any white space
+	 * the string can be escaped too
+	 */
+	template<typename Range>
+	[[maybe_unused]] static constexpr void trim_end_of_name( Range &rng ) {
+		rng.trim_left( );
+		// TODO: should we check for end
+		daw_json_assert_weak( rng.front( ) == ':', ErrorReason::InvalidMemberName,
+		                      rng );
+		rng.remove_prefix( );
+		rng.trim_left( );
+	}
 
-		template<typename Range>
-		[[nodiscard,
-		  maybe_unused]] DAW_ATTRIBUTE_FLATTEN static inline constexpr daw::
-		  string_view
-		  parse_nq( Range &rng ) {
+	template<typename Range>
+	[[nodiscard,
+	  maybe_unused]] DAW_ATTRIBUTE_FLATTEN static inline constexpr daw::
+	  string_view
+	  parse_nq( Range &rng ) {
 
-			if constexpr( Range::allow_escaped_names ) {
-				auto r = skip_string_nq( rng );
-				trim_end_of_name( rng );
-				return daw::string_view( std::data( r ), std::size( r ) );
+		if constexpr( Range::allow_escaped_names ) {
+			auto r = skip_string_nq( rng );
+			trim_end_of_name( rng );
+			return daw::string_view( std::data( r ), std::size( r ) );
+		} else {
+			char const *const ptr = rng.first;
+			if constexpr( Range::is_unchecked_input ) {
+				rng.template move_to_next_of_unchecked<'"'>( );
 			} else {
-				char const *const ptr = rng.first;
-				if constexpr( Range::is_unchecked_input ) {
-					rng.template move_to_next_of_unchecked<'"'>( );
-				} else {
-					rng.template move_to_next_of_checked<'"'>( );
-				}
-				daw_json_assert_weak( rng.is_quotes_checked( ) and
-				                        *std::prev( rng.first ) != '\\',
-				                      ErrorReason::InvalidString, rng );
-				auto result = daw::string_view( ptr, rng.first );
-				rng.remove_prefix( );
-				trim_end_of_name( rng );
-				return result;
+				rng.template move_to_next_of_checked<'"'>( );
 			}
+			daw_json_assert_weak( rng.is_quotes_checked( ) and
+			                        *std::prev( rng.first ) != '\\',
+			                      ErrorReason::InvalidString, rng );
+			auto result = daw::string_view( ptr, rng.first );
+			rng.remove_prefix( );
+			trim_end_of_name( rng );
+			return result;
 		}
-	} // namespace name_parser
-} // namespace daw::json::json_details::name
+	}
+} // namespace daw::json::json_details::name::name_parser
 
 namespace daw::json::json_details {
 

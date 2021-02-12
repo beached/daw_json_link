@@ -488,11 +488,11 @@ namespace daw::json {
 			CommentPolicy::template move_to_next_of<'"', '}'>( *this );
 		}
 
-		inline constexpr bool is_at_next_class_member( ) const {
+		[[nodiscard]] inline constexpr bool is_at_next_class_member( ) const {
 			return parse_policy_details::in<'"', '}'>( *first );
 		}
 
-		inline constexpr bool is_at_token_after_value( ) const {
+		[[nodiscard]] inline constexpr bool is_at_token_after_value( ) const {
 			return parse_policy_details::in<',', '}', ']'>( *first );
 		}
 
