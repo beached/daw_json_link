@@ -8,9 +8,9 @@
 
 #include "defines.h"
 
-#include "citm_test.h"
-#include "geojson.h"
-#include "twitter_test2.h"
+#include "citm_test_json.h"
+#include "geojson_json.h"
+#include "twitter_test2_json.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
@@ -60,12 +60,12 @@ int main( int argc, char **argv )
 	  "nativejson bench", sz,
 	  [&]( auto f1, auto f2, auto f3 ) {
 		  j1 =
-		    daw::parse_json_data<daw::twitter2::twitter_object_t,
+		    daw::json::from_json<daw::twitter2::twitter_object_t,
 		                         daw::json::NoCommentSkippingPolicyUnchecked>( f1 );
 		  j2 =
-		    daw::parse_json_data<daw::citm::citm_object_t,
+		    daw::json::from_json<daw::citm::citm_object_t,
 		                         daw::json::NoCommentSkippingPolicyUnchecked>( f2 );
-		  j3 = daw::parse_json_data<daw::geojson::Polygon,
+		  j3 = daw::json::from_json<daw::geojson::Polygon,
 		                            daw::json::NoCommentSkippingPolicyUnchecked>(
 		    f3, "features[0].geometry" );
 		  daw::do_not_optimize( sv_twitter );
@@ -78,13 +78,13 @@ int main( int argc, char **argv )
 	  sv_twitter, sv_citm, sv_canada );
 #else
 	for( size_t n = 0; n < DAW_NUM_RUNS; ++n ) {
-		j1 = daw::parse_json_data<daw::twitter2::twitter_object_t,
+		j1 = daw::json::from_json<daw::twitter2::twitter_object_t,
 		                          daw::json::NoCommentSkippingPolicyUnchecked>(
 		  sv_twitter );
-		j2 = daw::parse_json_data<daw::citm::citm_object_t,
+		j2 = daw::json::from_json<daw::citm::citm_object_t,
 		                          daw::json::NoCommentSkippingPolicyUnchecked>(
 		  sv_citm );
-		j3 = daw::parse_json_data<daw::geojson::Polygon,
+		j3 = daw::json::from_json<daw::geojson::Polygon,
 		                          daw::json::NoCommentSkippingPolicyUnchecked>(
 		  sv_canada, "features[0].geometry" );
 		daw::do_not_optimize( sv_twitter );

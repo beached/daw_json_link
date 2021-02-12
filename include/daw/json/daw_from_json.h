@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_from_json_fwd.h"
+#include "impl/daw_json_value.h"
 
 #include <iterator>
 #include <string_view>

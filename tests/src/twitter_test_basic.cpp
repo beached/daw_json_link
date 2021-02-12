@@ -8,10 +8,11 @@
 
 #include "defines.h"
 
-#include "twitter_test.h"
+#include "twitter_test_json.h"
 
 #include <daw/daw_do_not_optimize.h>
 #include <daw/daw_read_file.h>
+#include <daw/json/daw_from_json_fwd.h>
 
 #include <iostream>
 #include <streambuf>
@@ -35,7 +36,7 @@ int main( int argc, char **argv )
 	for( std::size_t n = 0; n < 1000; ++n ) {
 		daw::do_not_optimize( json_data );
 		twitter_result =
-		  daw::parse_json_data<daw::twitter::twitter_object_t>( json_data );
+		  daw::json::from_json<daw::twitter::twitter_object_t>( json_data );
 		daw::do_not_optimize( twitter_result );
 	}
 	test_assert( twitter_result.statuses.size( ) > 0, "Expected values" );

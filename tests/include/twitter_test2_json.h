@@ -10,15 +10,13 @@
 
 #include "twitter_test2.h"
 
-#include <daw/json/daw_json_iostream.h>
-#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_json_link_types.h>
 
 #include <cstdint>
 #include <optional>
 #include <string_view>
 #include <tuple>
 #include <vector>
-
 
 namespace daw::json {
 	template<>

@@ -6,10 +6,9 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#include "citm_test.h"
-#include "geojson.h"
-#include "json_firewall.h"
-#include "twitter_test.h"
+#include "citm_test_json.h"
+#include "geojson_json.h"
+#include "twitter_test_json.h"
 
 #include <daw/daw_read_file.h>
 
@@ -42,13 +41,13 @@ struct parser_t {
 
 	bool operator( )( std::string_view jd ) const {
 		ankerl::nanobench::doNotOptimizeAway(
-		  daw::parse_json_data<ParseObj, ParsePolicy>( jd ) );
+		  daw::json::from_json<ParseObj, ParsePolicy>( jd ) );
 		return true;
 	}
 
 	bool operator( )( PPair const &jd ) const {
 		ankerl::nanobench::doNotOptimizeAway(
-		  daw::parse_json_data<ParseObj, ParsePolicy>( jd.first, jd.second ) );
+		  daw::json::from_json<ParseObj, ParsePolicy>( jd.first, jd.second ) );
 		return true;
 	}
 };

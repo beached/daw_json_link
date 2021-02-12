@@ -8,13 +8,18 @@
 
 #pragma once
 
-#include "daw/json/daw_json_link.h"
+#include "daw_from_json_fwd.h"
+#include "impl/daw_json_parse_policy.h"
+#include "impl/daw_json_value.h"
 
 #include <daw/daw_move.h>
 
 #include <ciso646>
+#include <cstddef>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace daw::json {
 	enum json_parse_handler_result { Continue, SkipClassArray, Complete };
@@ -321,7 +326,7 @@ namespace daw::json {
 			m_stack.push_back( daw::move( v ) );
 		}
 
-		CPP20CONSTEXPR inline reference back( ) {
+		[[nodiscard]] CPP20CONSTEXPR inline reference back( ) {
 			return m_stack.back( );
 		}
 
@@ -333,7 +338,7 @@ namespace daw::json {
 			m_stack.pop_back( );
 		}
 
-		CPP20CONSTEXPR inline bool empty( ) const {
+		[[nodiscard]] CPP20CONSTEXPR inline bool empty( ) const {
 			return m_stack.empty( );
 		}
 	};

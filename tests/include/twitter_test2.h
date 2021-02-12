@@ -8,13 +8,13 @@
 
 #pragma once
 
+#include <daw/json/daw_from_json_fwd.h>
+
 #include <cstdint>
 #include <optional>
 #include <string_view>
 #include <tuple>
 #include <vector>
-
-#include "json_firewall.h"
 
 template<typename T>
 struct opt_construct_a {
@@ -218,40 +218,67 @@ namespace daw::twitter2 {
 	}; // twitter_object_t
 } // namespace daw::twitter2
 
-namespace daw {
-	template<>
-	twitter2::twitter_object_t parse_json_data<
-	  twitter2::twitter_object_t,
-	  json::SIMDNoCommentSkippingPolicyChecked<json::constexpr_exec_tag>>(
-	  std::string_view json_doc, std::string_view path );
+namespace daw::json {
+	extern template daw::twitter2::twitter_object_t
+	from_json<daw::twitter2::twitter_object_t,
+	          daw::json::SIMDNoCommentSkippingPolicyChecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data,
+	                                             std::string_view path );
 
-	template<>
-	twitter2::twitter_object_t parse_json_data<
-	  twitter2::twitter_object_t,
-	  json::SIMDNoCommentSkippingPolicyUnchecked<json::constexpr_exec_tag>>(
-	  std::string_view json_doc, std::string_view path );
+	extern template daw::twitter2::twitter_object_t
+	from_json<daw::twitter2::twitter_object_t,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data,
+	                                             std::string_view path );
 
-	template<>
-	twitter2::twitter_object_t parse_json_data<
-	  twitter2::twitter_object_t,
-	  json::SIMDNoCommentSkippingPolicyChecked<json::runtime_exec_tag>>(
-	  std::string_view json_doc, std::string_view path );
+	extern template daw::twitter2::twitter_object_t from_json<
+	  daw::twitter2::twitter_object_t,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
 
-	template<>
-	twitter2::twitter_object_t parse_json_data<
-	  twitter2::twitter_object_t,
-	  json::SIMDNoCommentSkippingPolicyUnchecked<json::runtime_exec_tag>>(
-	  std::string_view json_doc, std::string_view path );
+	extern template daw::twitter2::twitter_object_t
+	from_json<daw::twitter2::twitter_object_t,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::runtime_exec_tag>>( std::string_view json_data,
+	                                           std::string_view path );
 
-	template<>
-	twitter2::twitter_object_t parse_json_data<
-	  twitter2::twitter_object_t,
-	  json::SIMDNoCommentSkippingPolicyChecked<json::simd_exec_tag>>(
-	  std::string_view json_doc, std::string_view path );
+	extern template daw::twitter2::twitter_object_t from_json<
+	  daw::twitter2::twitter_object_t,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
 
-	template<>
-	twitter2::twitter_object_t parse_json_data<
-	  twitter2::twitter_object_t,
-	  json::SIMDNoCommentSkippingPolicyUnchecked<json::simd_exec_tag>>(
-	  std::string_view json_doc, std::string_view path );
-} // namespace daw
+	extern template daw::twitter2::twitter_object_t from_json<
+	  daw::twitter2::twitter_object_t,
+	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
+
+	extern template daw::twitter2::twitter_object_t
+	from_json<daw::twitter2::twitter_object_t,
+	          daw::json::SIMDNoCommentSkippingPolicyChecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
+
+	extern template daw::twitter2::twitter_object_t
+	from_json<daw::twitter2::twitter_object_t,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
+
+	extern template daw::twitter2::twitter_object_t from_json<
+	  daw::twitter2::twitter_object_t,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
+	  std::string_view json_data );
+
+	extern template daw::twitter2::twitter_object_t
+	from_json<daw::twitter2::twitter_object_t,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::runtime_exec_tag>>( std::string_view json_data );
+
+	extern template daw::twitter2::twitter_object_t from_json<
+	  daw::twitter2::twitter_object_t,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data );
+
+	extern template daw::twitter2::twitter_object_t from_json<
+	  daw::twitter2::twitter_object_t,
+	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data );
+} // namespace daw::json

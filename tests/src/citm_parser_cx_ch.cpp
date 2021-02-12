@@ -7,16 +7,17 @@
 //
 
 #include "citm_test_json.h"
-#include "json_firewall.h"
+#include <daw/json/daw_from_json.h>
 
-#include <daw/json/daw_json_link.h>
+namespace daw::json {
+	template daw::citm::citm_object_t
+	from_json<daw::citm::citm_object_t,
+	          daw::json::SIMDNoCommentSkippingPolicyChecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data,
+	                                             std::string_view path );
 
-using result_t = daw::citm::citm_object_t;
-using policy_t =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>;
-
-template<>
-result_t daw::parse_json_data<result_t, policy_t>( std::string_view json_doc,
-                                                   std::string_view path ) {
-	return daw::json::from_json<result_t, policy_t>( json_doc, path );
-}
+	template daw::citm::citm_object_t
+	from_json<daw::citm::citm_object_t,
+	          daw::json::SIMDNoCommentSkippingPolicyChecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
+} // namespace daw::json

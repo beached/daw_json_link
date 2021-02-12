@@ -11,7 +11,7 @@
 #include "twitter_test.h"
 
 #include <daw/daw_hide.h>
-#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_json_link_types.h>
 
 #include <chrono>
 #include <cstdint>

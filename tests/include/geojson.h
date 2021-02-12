@@ -9,7 +9,8 @@
 #pragma once
 
 #include "defines.h"
-#include "json_firewall.h"
+
+#include <daw/json/daw_from_json_fwd.h>
 
 #include <array>
 #include <cstdint>
@@ -63,78 +64,67 @@ namespace daw::geojson {
 	};
 } // namespace daw::geojson
 
-template<>
-daw::geojson::Polygon daw::parse_json_data<
-  daw::geojson::Polygon,
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+namespace daw::json {
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyChecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data,
+	                                             std::string_view path );
 
-template<>
-daw::geojson::Polygon
-daw::parse_json_data<daw::geojson::Polygon,
-                     daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-                       daw::json::constexpr_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data,
+	                                             std::string_view path );
 
-template<>
-daw::geojson::Polygon daw::parse_json_data<
-  daw::geojson::Polygon,
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
 
-template<>
-daw::geojson::Polygon daw::parse_json_data<
-  daw::geojson::Polygon,
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::runtime_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::runtime_exec_tag>>( std::string_view json_data,
+	                                           std::string_view path );
 
-template<>
-daw::geojson::Polygon daw::parse_json_data<
-  daw::geojson::Polygon,
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
 
-template<>
-daw::geojson::Polygon daw::parse_json_data<
-  daw::geojson::Polygon,
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
 
-//
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyChecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
 
-template<>
-daw::geojson::FeatureCollection daw::parse_json_data<
-  daw::geojson::FeatureCollection,
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::constexpr_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
 
-template<>
-daw::geojson::FeatureCollection
-daw::parse_json_data<daw::geojson::FeatureCollection,
-                     daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-                       daw::json::constexpr_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
+	  std::string_view json_data );
 
-template<>
-daw::geojson::FeatureCollection daw::parse_json_data<
-  daw::geojson::FeatureCollection,
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::runtime_exec_tag>>( std::string_view json_data );
 
-template<>
-daw::geojson::FeatureCollection daw::parse_json_data<
-  daw::geojson::FeatureCollection,
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::runtime_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data );
 
-template<>
-daw::geojson::FeatureCollection daw::parse_json_data<
-  daw::geojson::FeatureCollection,
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
-
-template<>
-daw::geojson::FeatureCollection daw::parse_json_data<
-  daw::geojson::FeatureCollection,
-  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
-  std::string_view json_doc, std::string_view path );
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data );
+} // namespace daw::json

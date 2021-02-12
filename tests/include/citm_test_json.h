@@ -10,7 +10,7 @@
 
 #include "citm_test.h"
 
-#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_json_link_types.h>
 
 #include <cstdint>
 #include <optional>
@@ -19,15 +19,9 @@
 #include <unordered_map>
 #include <vector>
 
-#ifdef __GNUC__
-#define DAW_HIDDEN __attribute__( ( visibility( "hidden" ) ) )
-#else
-#define DAW_HIDDEN
-#endif
-
 namespace daw::json {
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::citm::events_value_t> {
+	struct json_data_contract<daw::citm::events_value_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_number<"id", std::int64_t>,
@@ -55,7 +49,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::citm::prices_element_t> {
+	struct json_data_contract<daw::citm::prices_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_number<"amount", std::int64_t>,
@@ -79,7 +73,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::citm::areas_element_t> {
+	struct json_data_contract<daw::citm::areas_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"areaId", std::int64_t>>;
 #else
@@ -93,7 +87,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::citm::seatCategories_element_t> {
+	struct json_data_contract<daw::citm::seatCategories_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_array<"areas", daw::citm::areas_element_t>,
@@ -111,7 +105,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::citm::performances_element_t> {
+	struct json_data_contract<daw::citm::performances_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_number<"eventId", std::int64_t>, json_number<"id", std::int64_t>,
@@ -145,7 +139,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::citm::venueNames_t> {
+	struct json_data_contract<daw::citm::venueNames_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string_raw<"PLEYEL_PLEYEL", std::string_view>>;
@@ -161,7 +155,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::citm::citm_object_t> {
+	struct json_data_contract<daw::citm::citm_object_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_key_value<

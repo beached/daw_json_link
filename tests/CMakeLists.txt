@@ -94,7 +94,6 @@ target_link_libraries(citm_parser_rn_unch json_test)
 add_library(citm_parser_si_unch src/citm_parser_si_unch.cpp)
 target_link_libraries(citm_parser_si_unch json_test)
 
-
 add_executable(daw_json_link_test src/daw_json_link_test.cpp)
 target_link_libraries(daw_json_link_test json_test)
 add_test(NAME daw_json_link_test COMMAND daw_json_link_test)
@@ -195,12 +194,12 @@ target_link_libraries(citm_test_alloc json_test)
 add_dependencies(full citm_test_alloc)
 
 add_executable(citm_test_basic src/citm_test_basic.cpp)
-target_link_libraries(citm_test_basic citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test)
+target_link_libraries(citm_test_basic citm_parser_cx_ch json_test)
 add_test(NAME citm_test_basic COMMAND citm_test_basic ./citm_catalog.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full citm_test_basic)
 
 add_executable(twitter_test src/twitter_test.cpp)
-target_link_libraries(twitter_test json_test)
+target_link_libraries(twitter_test twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch json_test)
 add_test(NAME twitter_test COMMAND twitter_test ./twitter.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full twitter_test)
 

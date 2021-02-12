@@ -13,12 +13,13 @@
 #include "defines.h"
 
 #include "apache_builds_json.h"
-#include "daw/json/daw_json_link.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
+#include <daw/json/daw_from_json.h>
+#include <daw/json/daw_to_json.h>
 
 #include <fstream>
 #include <iostream>
@@ -55,7 +56,7 @@ void test( std::string_view json_sv1 ) {
 	          << '\n';
 
 	auto apache_builds_result =
-	  daw::parse_json_data<apache_builds::apache_builds, ParsePolicy>( json_sv1 );
+	  daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( json_sv1 );
 	test_assert( apache_builds_result.jobs.size( ) > 0,
 	             "Bad value for jobs.size( )" );
 	test_assert( apache_builds_result.numExecutors == 0,
@@ -65,7 +66,7 @@ void test( std::string_view json_sv1 ) {
 	  "apache_builds bench", sz,
 	  []( auto f1 ) {
 		  auto r =
-		    daw::parse_json_data<apache_builds::apache_builds, ParsePolicy>( f1 );
+		    daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( f1 );
 		  daw::do_not_optimize( r );
 	  },
 	  json_sv1 );
@@ -85,7 +86,7 @@ void test( std::string_view json_sv1 ) {
 
 	daw::do_not_optimize( str );
 	auto const apache_builds_result2 =
-	  daw::parse_json_data<apache_builds::apache_builds, ParsePolicy>( str );
+	  daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( str );
 	daw::do_not_optimize( apache_builds_result2 );
 	// Removing for now as it will do a float compare and fail
 	/*

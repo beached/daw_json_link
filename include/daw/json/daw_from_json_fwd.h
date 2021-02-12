@@ -27,7 +27,9 @@ namespace daw::json {
 	 * @param json_data JSON string data
 	 * @tparam KnownBounds The bounds of the json_data are known to contain the
 	 * whole value
-	 * @return A reified T constructed from JSON data
+	 * @tparam ParsePolicy Parse policy used while parsing.  Default is with
+	 * checking and no comments
+	 * @return A reified JSONMember constructed from JSON data
 	 * @throws daw::json::json_exception
 	 */
 	template<typename JsonMember,

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_json_event_parser.h"
+#include "daw_json_link_types.h"
 #include "impl/daw_json_assert.h"
 
 #include <daw/daw_algorithm.h>

@@ -16,11 +16,10 @@
 #include <daw/daw_do_not_optimize.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
-#include <daw/json/daw_json_find_path.h>
-#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_from_json.h>
+#include <daw/json/daw_to_json.h>
 
 #include <cstdio>
-#include <iostream>
 
 int main( int argc, char **argv ) {
 	if( argc < 2 ) {
@@ -33,7 +32,7 @@ int main( int argc, char **argv ) {
 	try {
 #endif
 		for( int n = 0; n < 100; ++n ) {
-			auto const canada_result = daw::parse_json_data<daw::geojson::Polygon>(
+			auto const canada_result = daw::json::from_json<daw::geojson::Polygon>(
 			  json_data, "features[0].geometry" );
 			daw::do_not_optimize( canada_result );
 

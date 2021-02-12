@@ -7,22 +7,17 @@
 //
 
 #include "geojson_json.h"
-#include "json_firewall.h"
 
-#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_from_json.h>
 
-using policy_t =
-  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>;
+namespace daw::json {
+	template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
 
-using result1_t = daw::geojson::Polygon;
-template<>
-result1_t daw::parse_json_data<result1_t, policy_t>( std::string_view json_doc,
-                                                     std::string_view path ) {
-	return daw::json::from_json<result1_t, policy_t>( json_doc, path );
-}
-using result2_t = daw::geojson::FeatureCollection;
-template<>
-result2_t daw::parse_json_data<result2_t, policy_t>( std::string_view json_doc,
-                                                     std::string_view path ) {
-	return daw::json::from_json<result2_t, policy_t>( json_doc, path );
-}
+	template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
+	  std::string_view json_data );
+} // namespace daw::json

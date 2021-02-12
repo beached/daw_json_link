@@ -18,6 +18,8 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
+#include <daw/json/daw_from_json.h>
+#include <daw/json/daw_to_json.h>
 
 #include <fstream>
 #include <iostream>
@@ -57,7 +59,7 @@ void test( std::string_view json_sv1 ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(checked)", sz,
 	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::parse_json_data<
+		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 		    f1, "features[0].geometry" );
@@ -72,7 +74,7 @@ void test( std::string_view json_sv1 ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "canada bench(unchecked)", sz,
 	  [&canada_result]( auto f1 ) {
-		  canada_result = daw::parse_json_data<
+		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
 		    f1, "features[0].geometry" );
@@ -112,7 +114,7 @@ int main( int argc, char **argv )
 
 	std::cout
 	  << "to_json testing\n*********************************************\n";
-	auto const canada_result = daw::parse_json_data<daw::geojson::Polygon>(
+	auto const canada_result = daw::json::from_json<daw::geojson::Polygon>(
 	  json_sv1, "features[0].geometry" );
 	std::string str{ };
 	{
@@ -130,7 +132,7 @@ int main( int argc, char **argv )
 	test_assert( not str.empty( ), "Expected a string value" );
 	daw::do_not_optimize( str );
 	auto const canada_result2 =
-	  daw::parse_json_data<daw::geojson::Polygon>( str );
+	  daw::json::from_json<daw::geojson::Polygon>( str );
 	daw::do_not_optimize( canada_result2 );
 	{
 		auto const str_sz = str.size( );
