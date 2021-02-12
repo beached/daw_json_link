@@ -185,9 +185,9 @@ namespace daw::json {
 	template<typename>
 	struct can_single_allocation_string : std::false_type {};
 
-		template<typename Char, typename CharTrait, typename Allocator>
-		struct can_single_allocation_string<
-		  std::basic_string<Char, CharTrait, Allocator>> : std::true_type {};
+	template<typename Char, typename CharTrait, typename Allocator>
+	struct can_single_allocation_string<
+	  std::basic_string<Char, CharTrait, Allocator>> : std::true_type {};
 
 	namespace json_details {
 		template<typename T>
@@ -210,5 +210,6 @@ namespace daw::json {
 		template<typename T>
 		inline constexpr bool is_a_json_tagged_variant_v =
 		  daw::is_detected_v<is_a_json_tagged_variant_test, T>;
+
 	} // namespace json_details
 } // namespace daw::json

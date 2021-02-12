@@ -408,7 +408,7 @@ add_test(NAME daw_murmur3_test COMMAND daw_murmur3_test)
 add_dependencies(full daw_murmur3_test)
 
 add_executable(apache_builds_test src/apache_builds_test.cpp)
-target_link_libraries(apache_builds_test json_test)
+target_link_libraries(apache_builds_test apache_builds_parser_cx_ch apache_builds_parser_rn_ch apache_builds_parser_si_ch json_test)
 add_test(NAME apache_builds_test COMMAND apache_builds_test ./apache_builds.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full apache_builds_test)
 

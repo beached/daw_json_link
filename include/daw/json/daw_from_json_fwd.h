@@ -15,6 +15,11 @@
 #include <string_view>
 
 namespace daw::json {
+	namespace json_details {
+		template<typename JsonMember>
+		using from_json_result_t =
+		  json_result<unnamed_default_type_mapping<JsonMember>>;
+	}
 	/**
 	 * Construct the JSONMember from the JSON document argument.
 	 * @tparam JsonMember any bool, arithmetic, string, string_view,
@@ -27,8 +32,9 @@ namespace daw::json {
 	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
-	         bool KnownBounds = false>
-	[[maybe_unused, nodiscard]] constexpr auto
+	         bool KnownBounds = false,
+	         typename Result = json_details::from_json_result_t<JsonMember>>
+	[[maybe_unused, nodiscard]] constexpr Result
 	from_json( std::string_view json_data );
 
 	/**
@@ -43,8 +49,10 @@ namespace daw::json {
 	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
-	         bool KnownBounds = false, typename Allocator>
-	[[maybe_unused, nodiscard]] constexpr auto
+	         bool KnownBounds = false,
+	         typename Result = json_details::from_json_result_t<JsonMember>,
+	         typename Allocator>
+	[[maybe_unused, nodiscard]] constexpr Result
 	from_json_alloc( std::string_view json_data, Allocator const &alloc );
 
 	/***
@@ -61,8 +69,9 @@ namespace daw::json {
 	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
-	         bool KnownBounds = false>
-	[[maybe_unused, nodiscard]] constexpr auto
+	         bool KnownBounds = false,
+	         typename Result = json_details::from_json_result_t<JsonMember>>
+	[[maybe_unused, nodiscard]] constexpr Result
 	from_json( std::string_view json_data, std::string_view member_path );
 
 	/***
@@ -79,8 +88,10 @@ namespace daw::json {
 	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
-	         bool KnownBounds = false, typename Allocator>
-	[[maybe_unused, nodiscard]] constexpr auto
+	         bool KnownBounds = false,
+	         typename Result = json_details::from_json_result_t<JsonMember>,
+	         typename Allocator>
+	[[maybe_unused, nodiscard]] constexpr Result
 	from_json_alloc( std::string_view json_data, std::string_view member_path,
 	                 Allocator const &alloc );
 
@@ -95,8 +106,10 @@ namespace daw::json {
 	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
-	         bool KnownBounds = false, typename Range>
-	[[maybe_unused, nodiscard]] inline constexpr auto
+	         bool KnownBounds = false,
+	         typename Result = json_details::from_json_result_t<JsonMember>,
+	         typename Range>
+	[[maybe_unused, nodiscard]] inline constexpr Result
 	from_json( basic_json_value<Range> value );
 
 	/***
@@ -113,8 +126,10 @@ namespace daw::json {
 	 */
 	template<typename JsonMember,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
-	         bool KnownBounds = false, typename Range>
-	[[maybe_unused, nodiscard]] constexpr auto
+	         bool KnownBounds = false,
+	         typename Result = json_details::from_json_result_t<JsonMember>,
+	         typename Range>
+	[[maybe_unused, nodiscard]] constexpr Result
 	from_json( basic_json_value<Range> value, std::string_view member_path );
 
 	/**
