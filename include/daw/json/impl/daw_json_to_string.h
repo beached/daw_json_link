@@ -568,8 +568,10 @@ namespace daw::json::json_details {
 	inline constexpr auto digits100 = [] {
 		std::array<char[2], 100> result{ };
 		for( size_t n = 0; n < 100; ++n ) {
-			result[n][0] = static_cast<char>( n % 10 ) + '0';
-			result[n][1] = static_cast<char>( n / 10 ) + '0';
+			result[n][0] =
+			  static_cast<char>( ( n % 10 ) + static_cast<unsigned char>( '0' ) );
+			result[n][1] =
+			  static_cast<char>( ( n / 10 ) + static_cast<unsigned char>( '0' ) );
 		}
 		return result;
 	}( );

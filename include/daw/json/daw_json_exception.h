@@ -200,7 +200,7 @@ namespace daw::json {
 			  : pointer( p ) {}
 			constexpr data_t( char t )
 			  : token( t ) {}
-		} m_data = data_t( nullptr );
+		} m_data{ nullptr };
 		char const *m_parse_loc = nullptr;
 
 	public:
