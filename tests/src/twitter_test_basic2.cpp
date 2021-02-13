@@ -8,16 +8,14 @@
 
 #include "defines.h"
 
-#include "twitter_test2.h"
+#include "twitter_test2_json.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
-#include <daw/daw_string_view.h>
-#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_from_json.h>
 
-#include <fstream>
 #include <iostream>
-#include <streambuf>
+#include <string_view>
 
 int main( int argc, char **argv ) {
 	if( argc < 2 ) {
@@ -30,14 +28,14 @@ int main( int argc, char **argv ) {
 	  std::string_view( json_data1.data( ), json_data1.size( ) );
 	try {
 		auto const twitter_result =
-		  daw::json::from_json<daw::twitter::twitter_object_t>( json_sv1 );
+		  daw::json::from_json<daw::twitter2::twitter_object_t>( json_sv1 );
 		daw::do_not_optimize( twitter_result );
-		daw_json_assert( twitter_result.statuses.size( ) > 0, "Expected values" );
-		daw_json_assert( twitter_result.statuses.front( ).user.id == "1186275104",
-		                 "Missing value" );
+		test_assert( not twitter_result.statuses.empty( ), "Expected values" );
+		test_assert( twitter_result.statuses.front( ).user.id == "1186275104",
+		             "Missing value" );
 	} catch( daw::json::json_exception const &jex ) {
-		std::cerr << "Exception thrown by parser: " << to_formatted_string( jex )
-		          << '\n';
+		std::cerr << "Exception thrown by parser: "
+		          << to_formatted_string( jex, json_data1.data( ) ) << '\n';
 		if( jex.parse_location( ) ) {
 			std::cerr << "Error happened around "
 			          << ( jex.parse_location( ) - json_sv1.data( ) )

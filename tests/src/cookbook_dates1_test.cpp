@@ -52,27 +52,32 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_dates1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
 	auto data = *daw::read_file( argv[1] );
 
-	daw::cookbook_dates1::MyClass1 const cls =
-	  daw::json::from_json<daw::cookbook_dates1::MyClass1>(
-	    std::string_view( data.data( ), data.size( ) ) );
+	auto const cls = daw::json::from_json<daw::cookbook_dates1::MyClass1>(
+	  std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.name == "Toronto", "Unexpected value" );
+	test_assert( cls.name == "Toronto", "Unexpected value" );
 
 	std::string const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
-	daw::cookbook_dates1::MyClass1 const cls2 =
-	  daw::json::from_json<daw::cookbook_dates1::MyClass1>( str );
+	auto const cls2 = daw::json::from_json<daw::cookbook_dates1::MyClass1>( str );
 
-	daw_json_assert( cls == cls2, "Unexpected round trip error" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( cls == cls2, "Unexpected round trip error" );
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

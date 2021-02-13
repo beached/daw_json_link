@@ -46,7 +46,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_kv3.json file\n" );
 		exit( EXIT_FAILURE );
@@ -56,18 +60,19 @@ int main( int argc, char **argv ) try {
 	auto kv = daw::json::from_json<daw::cookbook_kv3::MyKeyValue3>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( kv.kv.size( ) == 2, "Expected data to have 2 items" );
-	daw_json_assert( kv.kv.begin( )->first == std::prev( kv.kv.end( ) )->first,
-	                 "Unexpected value" );
-	daw_json_assert( kv.kv.begin( )->second != std::prev( kv.kv.end( ) )->second,
-	                 "Unexpected value" );
+	test_assert( kv.kv.size( ) == 2, "Expected data to have 2 items" );
+	test_assert( kv.kv.begin( )->first == std::prev( kv.kv.end( ) )->first,
+	             "Unexpected value" );
+	test_assert( kv.kv.begin( )->second != std::prev( kv.kv.end( ) )->second,
+	             "Unexpected value" );
 	auto const str = daw::json::to_json( kv );
 	puts( str.c_str( ) );
 
 	auto const kv3 = daw::json::from_json<daw::cookbook_kv3::MyKeyValue3>(
 	  std::string_view( str.data( ), str.size( ) ) );
-	daw_json_assert( kv == kv3, "Unexpected round trip error" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( kv == kv3, "Unexpected round trip error" );
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

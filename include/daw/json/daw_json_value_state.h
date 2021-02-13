@@ -14,7 +14,14 @@
 #include "impl/daw_json_value.h"
 #include "impl/daw_murmur3.h"
 
+#include <daw/daw_move.h>
 #include <daw/daw_uint_buffer.h>
+
+#include <ciso646>
+#include <cstddef>
+#include <string_view>
+#include <utility>
+#include <vector>
 
 namespace daw::json {
 	namespace json_details {
@@ -25,18 +32,17 @@ namespace daw::json {
 			basic_json_value_iterator<Range> location;
 
 			explicit constexpr basic_stateful_json_value_state(
-			  daw::string_view Name, basic_json_value_iterator<Range> val ) noexcept
+			  daw::string_view Name, basic_json_value_iterator<Range> val )
 			  : name( Name )
 			  , hash_value( daw::name_hash( Name ) )
-			  , location( std::move( val ) ) {}
+			  , location( daw::move( val ) ) {}
 
-			[[nodiscard]] constexpr bool
-			is_match( daw::string_view Name ) const noexcept {
+			[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
 				return name == Name;
 			}
 
 			[[nodiscard]] constexpr bool is_match( daw::string_view Name,
-			                                       daw::UInt32 hash ) const noexcept {
+			                                       daw::UInt32 hash ) const {
 				if( hash != hash_value ) {
 					return false;
 				}
@@ -49,8 +55,8 @@ namespace daw::json {
 		daw::string_view name;
 		daw::UInt32 hash_value;
 
-		constexpr json_member_name( std::string_view Name ) noexcept
-		  : name( Name.data( ), Name.size( ) )
+		constexpr json_member_name( std::string_view Name )
+		  : name( std::data( Name ), std::size( Name ) )
 		  , hash_value( daw::name_hash( name ) ) {}
 	};
 
@@ -71,7 +77,8 @@ namespace daw::json {
 		 */
 		[[nodiscard]] constexpr std::size_t move_to( json_member_name member ) {
 			std::size_t pos = 0;
-			for( ; pos < m_locs.size( ); ++pos ) {
+			std::size_t const Sz = std::size( m_locs );
+			for( ; pos < Sz; ++pos ) {
 				if( m_locs[pos].is_match( member.name, member.hash_value ) ) {
 					return pos;
 				}
@@ -88,16 +95,16 @@ namespace daw::json {
 			auto const last = m_value.end( );
 			while( it != last ) {
 				auto name = it.name( );
-				daw_json_assert_weak( name, "Expected a class member, not array item" );
+				daw_json_assert_weak( name, ErrorReason::MissingMemberName );
 				auto const &new_loc = m_locs.emplace_back(
-				  daw::string_view( name->data( ), name->size( ) ), it );
+				  daw::string_view( std::data( *name ), std::size( *name ) ), it );
 				if( new_loc.is_match( member.name ) ) {
 					return pos;
 				}
 				++pos;
 				++it;
 			}
-			return m_locs.size( );
+			return std::size( m_locs );
 		}
 
 		/***
@@ -106,7 +113,7 @@ namespace daw::json {
 		 * @return position in members or size
 		 */
 		[[nodiscard]] constexpr std::size_t move_to( std::size_t index ) {
-			if( index < m_locs.size( ) ) {
+			if( index < std::size( m_locs ) ) {
 				return index;
 			}
 			auto it = [&] {
@@ -118,12 +125,12 @@ namespace daw::json {
 				return res;
 			}( );
 			auto last = m_value.end( );
-			std::size_t pos = m_locs.size( );
+			std::size_t pos = std::size( m_locs );
 			while( it != last ) {
 				auto name = it.name( );
 				if( name ) {
-					m_locs.emplace_back( daw::string_view( name->data( ), name->size( ) ),
-					                     it );
+					m_locs.emplace_back(
+					  daw::string_view( std::data( *name ), std::size( *name ) ), it );
 				} else {
 					m_locs.emplace_back( daw::string_view( ), it );
 				}
@@ -133,16 +140,20 @@ namespace daw::json {
 				++pos;
 				++it;
 			}
-			return m_locs.size( );
+			return std::size( m_locs );
 		}
 
 	public:
 		constexpr basic_stateful_json_value( basic_json_value<Range> val )
-		  : m_value( std::move( val ) ) {
+		  : m_value( daw::move( val ) ) {
 
-			daw_json_assert_weak(
-			  m_value.is_class( ) or m_value.is_array( ),
-			  "basic_state_full_json_value is only valid on arrays or classes" );
+			daw_json_assert_weak( ( [&] {
+				                      auto t = m_value.type( );
+				                      return ( t == JsonBaseParseTypes::Class ) |
+				                             ( t == JsonBaseParseTypes::Array );
+			                      }( ) ),
+			                      ErrorReason::ExpectedArrayOrClassStart,
+			                      val.get_range( ) );
 		}
 
 		constexpr basic_stateful_json_value( )
@@ -152,10 +163,10 @@ namespace daw::json {
 		  : basic_stateful_json_value( basic_json_value<Range>( json_data ) ) {}
 		/**
 		 * Reuse state storage for another basic_json_value
-		 * @param val Value to contian state for
+		 * @param val Value to contain state for
 		 */
 		constexpr void reset( basic_json_value<Range> val ) {
-			m_value = std::move( val );
+			m_value = daw::move( val );
 			m_locs.clear( );
 		}
 
@@ -168,7 +179,8 @@ namespace daw::json {
 		[[nodiscard]] constexpr basic_json_value<Range>
 		operator[]( std::string_view key ) {
 			std::size_t pos = move_to( json_member_name( key ) );
-			daw_json_assert_weak( pos < m_locs.size( ), "Unknown member" );
+			daw_json_assert_weak( pos < std::size( m_locs ),
+			                      ErrorReason::UnknownMember );
 			return m_locs[pos].location->value;
 		}
 
@@ -181,7 +193,8 @@ namespace daw::json {
 		[[nodiscard]] constexpr basic_json_value<Range>
 		operator[]( json_member_name member ) {
 			std::size_t pos = move_to( member );
-			daw_json_assert_weak( pos < m_locs.size( ), "Unknown member" );
+			daw_json_assert_weak( pos < std::size( m_locs ),
+			                      ErrorReason::UnknownMember );
 			return m_locs[pos].location->value;
 		}
 
@@ -193,9 +206,10 @@ namespace daw::json {
 		 * member does not exist
 		 */
 		[[nodiscard]] constexpr basic_json_value<Range> at( std::string_view key ) {
-			daw::string_view const k = daw::string_view( key.data( ), key.size( ) );
+			daw::string_view const k =
+			  daw::string_view( std::data( key ), std::size( key ) );
 			std::size_t pos = move_to( k );
-			if( pos < m_locs.size( ) ) {
+			if( pos < std::size( m_locs ) ) {
 				return m_locs[pos].location->value;
 			}
 			return { };
@@ -225,7 +239,8 @@ namespace daw::json {
 		 * @return the position of the member or the count of members if not present
 		 */
 		[[nodiscard]] std::size_t index_of( std::string_view key ) {
-			daw::string_view const k = daw::string_view( key.data( ), key.size( ) );
+			daw::string_view const k =
+			  daw::string_view( std::data( key ), std::size( key ) );
 			return move_to( k );
 		}
 
@@ -236,8 +251,9 @@ namespace daw::json {
 		 * @return true if the member is present
 		 */
 		[[nodiscard]] constexpr bool contains( std::string_view key ) {
-			daw::string_view const k = daw::string_view( key.data( ), key.size( ) );
-			return move_to( k ) < m_locs.size( );
+			daw::string_view const k =
+			  daw::string_view( std::data( key ), std::size( key ) );
+			return move_to( k ) < std::size( m_locs );
 		}
 
 		/***
@@ -247,7 +263,7 @@ namespace daw::json {
 		 * @return true if the member/element is present
 		 */
 		[[nodiscard]] constexpr bool contains( std::size_t index ) {
-			return move_to( index ) < m_locs.size( );
+			return move_to( index ) < size( m_locs );
 		}
 
 		/***
@@ -268,14 +284,14 @@ namespace daw::json {
 						return { };
 					}
 					sz -= static_cast<std::size_t>( index );
-					return std::string_view( m_locs[sz].name( ).data( ),
-					                         m_locs[sz].name( ).size( ) );
+					return std::string_view( std::data( m_locs[sz].name( ) ),
+					                         std::size( m_locs[sz].name( ) ) );
 				}
 			}
 			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
-			if( pos < m_locs.size( ) ) {
-				return std::string_view( m_locs[pos].name( ).data( ),
-				                         m_locs[pos].name( ).size( ) );
+			if( pos < std::size( m_locs ) ) {
+				return std::string_view( std::data( m_locs[pos].name( ) ),
+				                         std::size( m_locs[pos].name( ) ) );
 			}
 			return { };
 		}
@@ -297,13 +313,14 @@ namespace daw::json {
 					index = -index;
 					auto sz = size( );
 					daw_json_assert_weak( ( static_cast<std::size_t>( index ) < sz ),
-					                      "Unknown member" );
+					                      ErrorReason::UnknownMember );
 					sz -= static_cast<std::size_t>( index );
 					return m_locs[sz].location->value;
 				}
 			}
 			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
-			daw_json_assert_weak( pos < m_locs.size( ), "Unknown member" );
+			daw_json_assert_weak( pos < std::size( m_locs ),
+			                      ErrorReason::UnknownMember );
 			return m_locs[pos].location->value;
 		}
 
@@ -330,7 +347,7 @@ namespace daw::json {
 				}
 			}
 			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
-			if( pos < m_locs.size( ) ) {
+			if( pos < std::size( m_locs ) ) {
 				return m_locs[pos].location->value;
 			}
 			return { };

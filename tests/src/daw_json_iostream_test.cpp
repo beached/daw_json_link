@@ -39,8 +39,7 @@ static_assert(
 
 int main( ) {
 	DAW_CONSTEXPR std::string_view const single_numberx = R"({"x":123})";
-	DAW_CONSTEXPR NumberX const nx =
-	  daw::json::from_json<NumberX>( single_numberx );
+	DAW_CONSTEXPR auto const nx = daw::json::from_json<NumberX>( single_numberx );
 
 	DAW_CONSTEXPR std::string_view const numberx_in_json_array =
 	  R"([{"x":1},{"x":2},{"x":3}])";

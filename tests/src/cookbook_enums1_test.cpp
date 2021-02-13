@@ -13,8 +13,8 @@
 #include "daw/json/daw_json_link.h"
 
 #include <daw/daw_read_file.h>
+#include <daw/daw_utility.h>
 
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -71,7 +71,7 @@ namespace daw::json {
 		using type = json_member_list<json_array<
 		  "member0", json_custom<no_name, daw::cookbook_enums1::Colours>>>;
 #else
-		static DAW_CONSTEXPR inline char const member0[] = "member0";
+		constexpr inline static char const member0[] = "member0";
 		using type = json_member_list<
 		  json_array<member0, json_custom<no_name, daw::cookbook_enums1::Colours>>>;
 #endif
@@ -82,7 +82,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_enums1.json file\n" );
 		exit( EXIT_FAILURE );
@@ -92,22 +96,25 @@ int main( int argc, char **argv ) try {
 	auto const cls = daw::json::from_json<daw::cookbook_enums1::MyClass1>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.member0[0] == daw::cookbook_enums1::Colours::red,
-	                 "Unexpected value" );
-	daw_json_assert( cls.member0[1] == daw::cookbook_enums1::Colours::green,
-	                 "Unexpected value" );
-	daw_json_assert( cls.member0[2] == daw::cookbook_enums1::Colours::blue,
-	                 "Unexpected value" );
-	daw_json_assert( cls.member0[3] == daw::cookbook_enums1::Colours::black,
-	                 "Unexpected value" );
+	test_assert( cls.member0[0] == daw::cookbook_enums1::Colours::red,
+	             "Unexpected value" );
+	test_assert( cls.member0[1] == daw::cookbook_enums1::Colours::green,
+	             "Unexpected value" );
+	test_assert( cls.member0[2] == daw::cookbook_enums1::Colours::blue,
+	             "Unexpected value" );
+	test_assert( cls.member0[3] == daw::cookbook_enums1::Colours::black,
+	             "Unexpected value" );
 	auto const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
 	auto const cls2 = daw::json::from_json<daw::cookbook_enums1::MyClass1>(
 	  std::string_view( str.data( ), str.size( ) ) );
 
-	daw_json_assert( cls == cls2, "Unexpected round trip error" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( cls == cls2, "Unexpected round trip error" );
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

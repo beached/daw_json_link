@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.20"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DAW JSON Link: daw::json::BasicParsePolicy&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt; Struct Template Reference</title>
+<title>DAW JSON Link: daw::json::BasicParsePolicy&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,231 +69,313 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="structdaw_1_1json_1_1_basic_parse_policy-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">daw::json::BasicParsePolicy&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt; Struct Template Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
+<div class="title">daw::json::BasicParsePolicy&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="daw__json__parse__policy_8h_source.html">daw_json_parse_policy.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for daw::json::BasicParsePolicy&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="structdaw_1_1json_1_1_basic_parse_policy.png" alt=""/>
+ </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ac89eb85dc65c63f321a23e881e369c8b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ac89eb85dc65c63f321a23e881e369c8b">as_checked</a> = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; false, CommentPolicy, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a32cd28981ce3e25015aa47b3c2212c">exec_tag_t</a>, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a6da37df424502e6472fa5671eba08755">allow_escaped_names</a> &gt;</td></tr>
-<tr class="separator:ac89eb85dc65c63f321a23e881e369c8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5431cba2eb30d732673b22f4d39a0528"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5431cba2eb30d732673b22f4d39a0528">as_unchecked</a> = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; true, CommentPolicy, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a32cd28981ce3e25015aa47b3c2212c">exec_tag_t</a>, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a6da37df424502e6472fa5671eba08755">allow_escaped_names</a> &gt;</td></tr>
-<tr class="separator:a5431cba2eb30d732673b22f4d39a0528"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a325bd754e43af519a0ab1467ddcdcc5f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a325bd754e43af519a0ab1467ddcdcc5f">CharT</a> = char</td></tr>
-<tr class="separator:a325bd754e43af519a0ab1467ddcdcc5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a32cd28981ce3e25015aa47b3c2212c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a32cd28981ce3e25015aa47b3c2212c">exec_tag_t</a> = ExecMode</td></tr>
-<tr class="separator:a9a32cd28981ce3e25015aa47b3c2212c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeeb109ccf0f2806399ae306fc58371ef"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a> = char const *</td></tr>
-<tr class="separator:aeeb109ccf0f2806399ae306fc58371ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d7f88eba25c50a58d9241467094c582"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5d7f88eba25c50a58d9241467094c582">Range</a> = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a></td></tr>
-<tr class="separator:a5d7f88eba25c50a58d9241467094c582"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add04a161fcdc0f96d27aa7c6dba54d28"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#add04a161fcdc0f96d27aa7c6dba54d28">as_checked</a> = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; false, CommentPolicy, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a46456480cf3c36b089c02033f82936dc">exec_tag_t</a>, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1908223b65ad87ab9394034c33324498">allow_escaped_names</a>, Allocator &gt;</td></tr>
+<tr class="separator:add04a161fcdc0f96d27aa7c6dba54d28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb099e3b878fb2a5e7ce2d0f51306bd7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#adb099e3b878fb2a5e7ce2d0f51306bd7">as_unchecked</a> = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; true, CommentPolicy, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a46456480cf3c36b089c02033f82936dc">exec_tag_t</a>, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1908223b65ad87ab9394034c33324498">allow_escaped_names</a>, Allocator &gt;</td></tr>
+<tr class="separator:adb099e3b878fb2a5e7ce2d0f51306bd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57e37542ffbe6b145201f210dd32d54b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a57e37542ffbe6b145201f210dd32d54b">CharT</a> = char</td></tr>
+<tr class="separator:a57e37542ffbe6b145201f210dd32d54b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46456480cf3c36b089c02033f82936dc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a46456480cf3c36b089c02033f82936dc">exec_tag_t</a> = ExecMode</td></tr>
+<tr class="separator:a46456480cf3c36b089c02033f82936dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a1d872b6e33eb1bd2f8875f11345197"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> = char const *</td></tr>
+<tr class="separator:a2a1d872b6e33eb1bd2f8875f11345197"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b8b32a2a9607491345b0b697f42e815"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0b8b32a2a9607491345b0b697f42e815">Range</a> = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a></td></tr>
+<tr class="separator:a0b8b32a2a9607491345b0b697f42e815"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad21b5ac79033151196755d5d588f2e07"><td class="memTemplParams" colspan="2">template&lt;typename Alloc &gt; </td></tr>
+<tr class="memitem:ad21b5ac79033151196755d5d588f2e07"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad21b5ac79033151196755d5d588f2e07">with_allocator_type</a> = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Alloc &gt;</td></tr>
+<tr class="separator:ad21b5ac79033151196755d5d588f2e07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c5be5144c22b16ea9c9b8c906921503"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3c5be5144c22b16ea9c9b8c906921503">without_allocator_type</a> = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, json_details::NoAllocator &gt;</td></tr>
+<tr class="separator:a3c5be5144c22b16ea9c9b8c906921503"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ace914b6395ed6ccb97b518e19604ca7a"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ace914b6395ed6ccb97b518e19604ca7a">BasicParsePolicy</a> ()=default</td></tr>
-<tr class="separator:ace914b6395ed6ccb97b518e19604ca7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abffe2e5947cfa0dc4c12ca01357d5a3f"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#abffe2e5947cfa0dc4c12ca01357d5a3f">BasicParsePolicy</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a> f, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a> l)</td></tr>
-<tr class="separator:abffe2e5947cfa0dc4c12ca01357d5a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66f4199b15a9bfbc4bc3f768478e82a2"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a66f4199b15a9bfbc4bc3f768478e82a2">begin</a> () const</td></tr>
-<tr class="separator:a66f4199b15a9bfbc4bc3f768478e82a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf58688b994b6feb26e739f22bf1ff69"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#abf58688b994b6feb26e739f22bf1ff69">clean_tail</a> ()</td></tr>
-<tr class="separator:abf58688b994b6feb26e739f22bf1ff69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a095d924fd2e9b00b81e38dd77da7d4a6"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a095d924fd2e9b00b81e38dd77da7d4a6">clean_tail_checked</a> ()</td></tr>
-<tr class="separator:a095d924fd2e9b00b81e38dd77da7d4a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10ec18285d12a785bfd0da3c46185986"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a10ec18285d12a785bfd0da3c46185986">clean_tail_unchecked</a> ()</td></tr>
-<tr class="separator:a10ec18285d12a785bfd0da3c46185986"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28b694e456f72c007d803888f1e54d0b"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a28b694e456f72c007d803888f1e54d0b">empty</a> () const</td></tr>
-<tr class="separator:a28b694e456f72c007d803888f1e54d0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa970bf5f2d1accac3c4dc27ea1188e8d"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aa970bf5f2d1accac3c4dc27ea1188e8d">end</a> () const</td></tr>
-<tr class="separator:aa970bf5f2d1accac3c4dc27ea1188e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6213af76b808235fe8c84d1211b6797e"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a6213af76b808235fe8c84d1211b6797e">front</a> () const</td></tr>
-<tr class="separator:a6213af76b808235fe8c84d1211b6797e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a707e06fc708b4b98ea2facc5355d1043"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a707e06fc708b4b98ea2facc5355d1043">has_more</a> () const</td></tr>
-<tr class="separator:a707e06fc708b4b98ea2facc5355d1043"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25ae0cbcfadb68c6d3deea206b741061"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a25ae0cbcfadb68c6d3deea206b741061">is_at_next_class_member</a> () const</td></tr>
-<tr class="separator:a25ae0cbcfadb68c6d3deea206b741061"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5996aed3afea2c77a224e57bb225104"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ae5996aed3afea2c77a224e57bb225104">is_at_token_after_value</a> () const</td></tr>
-<tr class="separator:ae5996aed3afea2c77a224e57bb225104"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0ac54e5bffe4b555f7a29260684cde7"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ae0ac54e5bffe4b555f7a29260684cde7">is_closing_brace_checked</a> () const</td></tr>
-<tr class="separator:ae0ac54e5bffe4b555f7a29260684cde7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fa5eb6f5b95c5c2c4e1278322a3650e"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1fa5eb6f5b95c5c2c4e1278322a3650e">is_exponent_checked</a> () const</td></tr>
-<tr class="separator:a1fa5eb6f5b95c5c2c4e1278322a3650e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cb5a54ce726e1f367d9c5326c5c1d81"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a6cb5a54ce726e1f367d9c5326c5c1d81">is_literal_end</a> () const</td></tr>
-<tr class="separator:a6cb5a54ce726e1f367d9c5326c5c1d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6415eac191dc2b600de73aacbb6b539e"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a6415eac191dc2b600de73aacbb6b539e">is_null</a> () const</td></tr>
-<tr class="separator:a6415eac191dc2b600de73aacbb6b539e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e71bdcffcb77f118d18ed21fae8b175"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a6e71bdcffcb77f118d18ed21fae8b175">is_opening_brace_checked</a> () const</td></tr>
-<tr class="separator:a6e71bdcffcb77f118d18ed21fae8b175"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af62171a37bc2a5359f81d971e825d7f9"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#af62171a37bc2a5359f81d971e825d7f9">is_opening_bracket_checked</a> () const</td></tr>
-<tr class="separator:af62171a37bc2a5359f81d971e825d7f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3411d4923519f4cdd557ee5965906672"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3411d4923519f4cdd557ee5965906672">is_quotes_checked</a> () const</td></tr>
-<tr class="separator:a3411d4923519f4cdd557ee5965906672"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1d4dab4d93dea537d8a1fab18b85bf9"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aa1d4dab4d93dea537d8a1fab18b85bf9">is_space_checked</a> () const</td></tr>
-<tr class="separator:aa1d4dab4d93dea537d8a1fab18b85bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b984610b36243cb1cf0943c2a477106"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2b984610b36243cb1cf0943c2a477106">is_space_unchecked</a> () const</td></tr>
-<tr class="separator:a2b984610b36243cb1cf0943c2a477106"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e8216fa587fe8c45b3a8f6335480eec"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0e8216fa587fe8c45b3a8f6335480eec">move_to_end_of_literal</a> ()</td></tr>
-<tr class="separator:a0e8216fa587fe8c45b3a8f6335480eec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c7cc97d298ad8cebe9301de974325e7"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1c7cc97d298ad8cebe9301de974325e7">move_to_next_class_member</a> ()</td></tr>
-<tr class="separator:a1c7cc97d298ad8cebe9301de974325e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adecde8a92952b2d0294aa5c060be8b5d"><td class="memTemplParams" colspan="2">template&lt;char c&gt; </td></tr>
-<tr class="memitem:adecde8a92952b2d0294aa5c060be8b5d"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#adecde8a92952b2d0294aa5c060be8b5d">move_to_next_of</a> ()</td></tr>
-<tr class="separator:adecde8a92952b2d0294aa5c060be8b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1221d8fd609f3850d361d1050d3c6922"><td class="memTemplParams" colspan="2">template&lt;char c&gt; </td></tr>
-<tr class="memitem:a1221d8fd609f3850d361d1050d3c6922"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1221d8fd609f3850d361d1050d3c6922">move_to_next_of_checked</a> ()</td></tr>
-<tr class="separator:a1221d8fd609f3850d361d1050d3c6922"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8a39995b6a90e13d81d0467d45adcdd"><td class="memTemplParams" colspan="2">template&lt;char c&gt; </td></tr>
-<tr class="memitem:ac8a39995b6a90e13d81d0467d45adcdd"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ac8a39995b6a90e13d81d0467d45adcdd">move_to_next_of_unchecked</a> ()</td></tr>
-<tr class="separator:ac8a39995b6a90e13d81d0467d45adcdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2ff937e2cd17895482f74a370e60ada"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad2ff937e2cd17895482f74a370e60ada">remove_prefix</a> ()</td></tr>
-<tr class="separator:ad2ff937e2cd17895482f74a370e60ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a191134948eaf191d428de21636159c86"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a191134948eaf191d428de21636159c86">remove_prefix</a> (std::size_t n)</td></tr>
-<tr class="separator:a191134948eaf191d428de21636159c86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22ffd4e203b78d51e105737beba2f5f0"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a22ffd4e203b78d51e105737beba2f5f0">set_class_position</a> ()</td></tr>
-<tr class="separator:a22ffd4e203b78d51e105737beba2f5f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e0a22fd2f46f3b2cf80a02536310b7e"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9e0a22fd2f46f3b2cf80a02536310b7e">size</a> () const</td></tr>
-<tr class="separator:a9e0a22fd2f46f3b2cf80a02536310b7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20973cd5891799305e5184a6cc82ae18"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5d7f88eba25c50a58d9241467094c582">Range</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a20973cd5891799305e5184a6cc82ae18">skip_array</a> ()</td></tr>
-<tr class="separator:a20973cd5891799305e5184a6cc82ae18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae518204e2f6298ec5ab8c8b4b0b30b75"><td class="memTemplParams" colspan="2">template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </td></tr>
-<tr class="memitem:ae518204e2f6298ec5ab8c8b4b0b30b75"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5d7f88eba25c50a58d9241467094c582">Range</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ae518204e2f6298ec5ab8c8b4b0b30b75">skip_bracketed_item_checked</a> ()</td></tr>
-<tr class="separator:ae518204e2f6298ec5ab8c8b4b0b30b75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad856d807dfcb48b376f6481ec798b342"><td class="memTemplParams" colspan="2">template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </td></tr>
-<tr class="memitem:ad856d807dfcb48b376f6481ec798b342"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5d7f88eba25c50a58d9241467094c582">Range</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad856d807dfcb48b376f6481ec798b342">skip_bracketed_item_unchecked</a> ()</td></tr>
-<tr class="separator:ad856d807dfcb48b376f6481ec798b342"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3eaa3b0443dedc7700922e5a8f1c38f8"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5d7f88eba25c50a58d9241467094c582">Range</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3eaa3b0443dedc7700922e5a8f1c38f8">skip_class</a> ()</td></tr>
-<tr class="separator:a3eaa3b0443dedc7700922e5a8f1c38f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5b6fdf7170636c585764111486bf5fa"><td class="memTemplParams" colspan="2">template&lt;std::size_t N&gt; </td></tr>
-<tr class="memitem:aa5b6fdf7170636c585764111486bf5fa"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aa5b6fdf7170636c585764111486bf5fa">starts_with</a> (char const (&amp;rhs)[N]) const</td></tr>
-<tr class="separator:aa5b6fdf7170636c585764111486bf5fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0b26ec98870eb4976d2ff9a63b4ce9b"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aa0b26ec98870eb4976d2ff9a63b4ce9b">trim_left</a> ()</td></tr>
-<tr class="separator:aa0b26ec98870eb4976d2ff9a63b4ce9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a102c898311be99e961b0f955490cc933"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a102c898311be99e961b0f955490cc933">trim_left_checked</a> ()</td></tr>
-<tr class="separator:a102c898311be99e961b0f955490cc933"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0219d8813d8071ee02f03fe3dc55f45"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ac0219d8813d8071ee02f03fe3dc55f45">trim_left_unchecked</a> ()</td></tr>
-<tr class="separator:ac0219d8813d8071ee02f03fe3dc55f45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6a7a81992a14f53d0b279c2a0551f8c"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad6a7a81992a14f53d0b279c2a0551f8c">BasicParsePolicy</a> ()=default</td></tr>
+<tr class="separator:ad6a7a81992a14f53d0b279c2a0551f8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5961e7db576bf8437f274ddcd8165107"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5961e7db576bf8437f274ddcd8165107">BasicParsePolicy</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> f, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> l)</td></tr>
+<tr class="separator:a5961e7db576bf8437f274ddcd8165107"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9acee204daef4e6992cc9892c3317a14"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9acee204daef4e6992cc9892c3317a14">BasicParsePolicy</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> f, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> l, Allocator &amp;alloc)</td></tr>
+<tr class="separator:a9acee204daef4e6992cc9892c3317a14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a843c7e68f233e72a13280e8122d3816b"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a843c7e68f233e72a13280e8122d3816b">BasicParsePolicy</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> f, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> l, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> cf, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> cl)</td></tr>
+<tr class="separator:a843c7e68f233e72a13280e8122d3816b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1488abef3bc8ec7db7e10d25f14af7a8"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1488abef3bc8ec7db7e10d25f14af7a8">BasicParsePolicy</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> f, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> l, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> cf, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> cl, Allocator &amp;alloc)</td></tr>
+<tr class="separator:a1488abef3bc8ec7db7e10d25f14af7a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4313788affe84c23c270fb20a60d2ed"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aa4313788affe84c23c270fb20a60d2ed">begin</a> () const</td></tr>
+<tr class="separator:aa4313788affe84c23c270fb20a60d2ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7c0057c3e4c2539093a81747e887d30"><td class="memTemplParams" colspan="2">template&lt;char EndChar = '\0'&gt; </td></tr>
+<tr class="memitem:ab7c0057c3e4c2539093a81747e887d30"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ab7c0057c3e4c2539093a81747e887d30">clean_end_of_value</a> (bool at_first)</td></tr>
+<tr class="separator:ab7c0057c3e4c2539093a81747e887d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabb8ea63c3559bf7983c3ed27e3fc286"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aabb8ea63c3559bf7983c3ed27e3fc286">clean_tail</a> ()</td></tr>
+<tr class="separator:aabb8ea63c3559bf7983c3ed27e3fc286"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d46b72dcc6bcdabf2a1ece704b0186f"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a8d46b72dcc6bcdabf2a1ece704b0186f">clean_tail_checked</a> ()</td></tr>
+<tr class="separator:a8d46b72dcc6bcdabf2a1ece704b0186f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a999e7238a1e6860fb752836072ec69"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a999e7238a1e6860fb752836072ec69">clean_tail_unchecked</a> ()</td></tr>
+<tr class="separator:a9a999e7238a1e6860fb752836072ec69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18eaea4c00bb112948ce33dff85c0b67"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a18eaea4c00bb112948ce33dff85c0b67">copy</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> f=<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>{ }, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> l=<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>{ }, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> cf=<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>{ }, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> cl=<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>{ }) const</td></tr>
+<tr class="separator:a18eaea4c00bb112948ce33dff85c0b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4379cc04397081272c7aab26dcbad63e"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a4379cc04397081272c7aab26dcbad63e">data</a> () const</td></tr>
+<tr class="separator:a4379cc04397081272c7aab26dcbad63e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e6472c2c0bf2cbc94340f7188a8d210"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a7e6472c2c0bf2cbc94340f7188a8d210">empty</a> () const</td></tr>
+<tr class="separator:a7e6472c2c0bf2cbc94340f7188a8d210"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e847129b14f3c22aa9eab810fd1bf7a"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a7e847129b14f3c22aa9eab810fd1bf7a">end</a> () const</td></tr>
+<tr class="separator:a7e847129b14f3c22aa9eab810fd1bf7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7ac789b775b51136b74a4f7a5d1fa4d"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#af7ac789b775b51136b74a4f7a5d1fa4d">front</a> () const</td></tr>
+<tr class="separator:af7ac789b775b51136b74a4f7a5d1fa4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cc3996a132c8b5dd2a71da04fb98f06"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9cc3996a132c8b5dd2a71da04fb98f06">has_more</a> () const</td></tr>
+<tr class="separator:a9cc3996a132c8b5dd2a71da04fb98f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cc5bb9de1a9e126de05a4a42f24ca73"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0cc5bb9de1a9e126de05a4a42f24ca73">is_at_next_class_member</a> () const</td></tr>
+<tr class="separator:a0cc5bb9de1a9e126de05a4a42f24ca73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66918adae595578bbaab99b325bf7d4b"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a66918adae595578bbaab99b325bf7d4b">is_at_token_after_value</a> () const</td></tr>
+<tr class="separator:a66918adae595578bbaab99b325bf7d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdf8a2f22a64e9c1f3505bf1da3ec867"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#afdf8a2f22a64e9c1f3505bf1da3ec867">is_closing_brace_checked</a> () const</td></tr>
+<tr class="separator:afdf8a2f22a64e9c1f3505bf1da3ec867"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a600a4d7c643224c4409648b323a78044"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a600a4d7c643224c4409648b323a78044">is_exponent_checked</a> () const</td></tr>
+<tr class="separator:a600a4d7c643224c4409648b323a78044"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ee6f0026e7cdad8f9f313c3cbc2497c"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1ee6f0026e7cdad8f9f313c3cbc2497c">is_literal_end</a> () const</td></tr>
+<tr class="separator:a1ee6f0026e7cdad8f9f313c3cbc2497c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a613f61a7554972204083e012e80ade95"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a613f61a7554972204083e012e80ade95">is_null</a> () const</td></tr>
+<tr class="separator:a613f61a7554972204083e012e80ade95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4fa358cabc5db1a00cc0d889ded9ba3"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aa4fa358cabc5db1a00cc0d889ded9ba3">is_opening_brace_checked</a> () const</td></tr>
+<tr class="separator:aa4fa358cabc5db1a00cc0d889ded9ba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9b1bdf76d8bb5532d1b3bc7dcdb41b7"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ae9b1bdf76d8bb5532d1b3bc7dcdb41b7">is_opening_bracket_checked</a> () const</td></tr>
+<tr class="separator:ae9b1bdf76d8bb5532d1b3bc7dcdb41b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f867d2ced872f20573e69a726545a70"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2f867d2ced872f20573e69a726545a70">is_quotes_checked</a> () const</td></tr>
+<tr class="separator:a2f867d2ced872f20573e69a726545a70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53b01c79866b29b6964e20d1db00ef52"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a53b01c79866b29b6964e20d1db00ef52">is_space_checked</a> () const</td></tr>
+<tr class="separator:a53b01c79866b29b6964e20d1db00ef52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb19b76f32a0c4ccb07109835eec024c"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#abb19b76f32a0c4ccb07109835eec024c">is_space_unchecked</a> () const</td></tr>
+<tr class="separator:abb19b76f32a0c4ccb07109835eec024c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1935aaab3ef4857510bb558aeeab75e"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ae1935aaab3ef4857510bb558aeeab75e">move_to_end_of_literal</a> ()</td></tr>
+<tr class="separator:ae1935aaab3ef4857510bb558aeeab75e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19bc11a1473b3435af8fb9650091569b"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a19bc11a1473b3435af8fb9650091569b">move_to_next_class_member</a> ()</td></tr>
+<tr class="separator:a19bc11a1473b3435af8fb9650091569b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91d935efd784fb5bf7a4d6aaaae379d0"><td class="memTemplParams" colspan="2">template&lt;char c&gt; </td></tr>
+<tr class="memitem:a91d935efd784fb5bf7a4d6aaaae379d0"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a91d935efd784fb5bf7a4d6aaaae379d0">move_to_next_of</a> ()</td></tr>
+<tr class="separator:a91d935efd784fb5bf7a4d6aaaae379d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af51a4862b38caa52c1bf927ac56358ef"><td class="memTemplParams" colspan="2">template&lt;char c&gt; </td></tr>
+<tr class="memitem:af51a4862b38caa52c1bf927ac56358ef"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#af51a4862b38caa52c1bf927ac56358ef">move_to_next_of_checked</a> ()</td></tr>
+<tr class="separator:af51a4862b38caa52c1bf927ac56358ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ed3b9ccb68e63aafe62487fb883ace4"><td class="memTemplParams" colspan="2">template&lt;char c&gt; </td></tr>
+<tr class="memitem:a1ed3b9ccb68e63aafe62487fb883ace4"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1ed3b9ccb68e63aafe62487fb883ace4">move_to_next_of_unchecked</a> ()</td></tr>
+<tr class="separator:a1ed3b9ccb68e63aafe62487fb883ace4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd1d11363a4f99458805ad22b8d63053"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#acd1d11363a4f99458805ad22b8d63053">remove_prefix</a> ()</td></tr>
+<tr class="separator:acd1d11363a4f99458805ad22b8d63053"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad45a4f129a5ca318d136a41c4835698d"><td class="memItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad45a4f129a5ca318d136a41c4835698d">remove_prefix</a> (std::size_t n)</td></tr>
+<tr class="separator:ad45a4f129a5ca318d136a41c4835698d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeae7e7fc019f6c6cce77a89913af3166"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeae7e7fc019f6c6cce77a89913af3166">set_class_position</a> ()</td></tr>
+<tr class="separator:aeae7e7fc019f6c6cce77a89913af3166"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7536d303d203f8afe985e9f0a46712b"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ae7536d303d203f8afe985e9f0a46712b">size</a> () const</td></tr>
+<tr class="separator:ae7536d303d203f8afe985e9f0a46712b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8727b852bcfaecb7e721dcd310309301"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0b8b32a2a9607491345b0b697f42e815">Range</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a8727b852bcfaecb7e721dcd310309301">skip_array</a> ()</td></tr>
+<tr class="separator:a8727b852bcfaecb7e721dcd310309301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabbb967ee388638566b7f79889f711ee"><td class="memTemplParams" colspan="2">template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </td></tr>
+<tr class="memitem:aabbb967ee388638566b7f79889f711ee"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0b8b32a2a9607491345b0b697f42e815">Range</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aabbb967ee388638566b7f79889f711ee">skip_bracketed_item_checked</a> ()</td></tr>
+<tr class="separator:aabbb967ee388638566b7f79889f711ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0908548112f11274cc1590669f009b25"><td class="memTemplParams" colspan="2">template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </td></tr>
+<tr class="memitem:a0908548112f11274cc1590669f009b25"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0b8b32a2a9607491345b0b697f42e815">Range</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0908548112f11274cc1590669f009b25">skip_bracketed_item_unchecked</a> ()</td></tr>
+<tr class="separator:a0908548112f11274cc1590669f009b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5326f3b0af38ac8327d829ebeb5ab362"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0b8b32a2a9607491345b0b697f42e815">Range</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5326f3b0af38ac8327d829ebeb5ab362">skip_class</a> ()</td></tr>
+<tr class="separator:a5326f3b0af38ac8327d829ebeb5ab362"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cd53c24f401bbacb389431f51774a5a"><td class="memTemplParams" colspan="2">template&lt;std::size_t N&gt; </td></tr>
+<tr class="memitem:a7cd53c24f401bbacb389431f51774a5a"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a7cd53c24f401bbacb389431f51774a5a">starts_with</a> (char const (&amp;rhs)[N]) const</td></tr>
+<tr class="separator:a7cd53c24f401bbacb389431f51774a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a284355fa79ee7c62dd26943cc8c538eb"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a284355fa79ee7c62dd26943cc8c538eb">trim_left</a> ()</td></tr>
+<tr class="separator:a284355fa79ee7c62dd26943cc8c538eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad26c721393da45acbb4ecfda4d5f2dcc"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad26c721393da45acbb4ecfda4d5f2dcc">trim_left_checked</a> ()</td></tr>
+<tr class="separator:ad26c721393da45acbb4ecfda4d5f2dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1913d80e8e2a418840ed32cdfaab048"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#af1913d80e8e2a418840ed32cdfaab048">trim_left_unchecked</a> ()</td></tr>
+<tr class="separator:af1913d80e8e2a418840ed32cdfaab048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0baa6e3f1bf02155f792e1f04060249f"><td class="memTemplParams" colspan="2">template&lt;typename Alloc &gt; </td></tr>
+<tr class="memitem:a0baa6e3f1bf02155f792e1f04060249f"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad21b5ac79033151196755d5d588f2e07">with_allocator_type</a>&lt; Alloc &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0baa6e3f1bf02155f792e1f04060249f">with_allocator</a> (Alloc &amp;alloc) const</td></tr>
+<tr class="separator:a0baa6e3f1bf02155f792e1f04060249f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96bc667bfa2570e4c28e4a2388b0b303"><td class="memTemplParams" colspan="2">template&lt;typename Alloc &gt; </td></tr>
+<tr class="memitem:a96bc667bfa2570e4c28e4a2388b0b303"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a96bc667bfa2570e4c28e4a2388b0b303">with_allocator</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Alloc &gt; p) const</td></tr>
+<tr class="separator:a96bc667bfa2570e4c28e4a2388b0b303"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfd42b520a979ac2e9f25e8397c3363c"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3c5be5144c22b16ea9c9b8c906921503">without_allocator_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#acfd42b520a979ac2e9f25e8397c3363c">without_allocator</a> () const</td></tr>
+<tr class="separator:acfd42b520a979ac2e9f25e8397c3363c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a7fe214ef4716f3900b7dc22e17c3c229"><td class="memTemplParams" colspan="2">template&lt;typename Alloc &gt; </td></tr>
+<tr class="memitem:a7fe214ef4716f3900b7dc22e17c3c229"><td class="memTemplItemLeft" align="right" valign="top">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad21b5ac79033151196755d5d588f2e07">with_allocator_type</a>&lt; Alloc &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a7fe214ef4716f3900b7dc22e17c3c229">with_allocator</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> f, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> l, Alloc &amp;alloc)</td></tr>
+<tr class="separator:a7fe214ef4716f3900b7dc22e17c3c229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56c882bd91152d316d98701acfab8be7"><td class="memTemplParams" colspan="2">template&lt;typename Alloc &gt; </td></tr>
+<tr class="memitem:a56c882bd91152d316d98701acfab8be7"><td class="memTemplItemLeft" align="right" valign="top">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad21b5ac79033151196755d5d588f2e07">with_allocator_type</a>&lt; Alloc &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a56c882bd91152d316d98701acfab8be7">with_allocator</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> f, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> l, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> cf, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> cl, Alloc &amp;alloc)</td></tr>
+<tr class="separator:a56c882bd91152d316d98701acfab8be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75f4f2bb76803f47fa23bb4087c51c9a"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3c5be5144c22b16ea9c9b8c906921503">without_allocator_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a75f4f2bb76803f47fa23bb4087c51c9a">without_allocator</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a> p)</td></tr>
+<tr class="separator:a75f4f2bb76803f47fa23bb4087c51c9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf6f1d8d2bad9e8730b5a17c20b898a8"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3c5be5144c22b16ea9c9b8c906921503">without_allocator_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#acf6f1d8d2bad9e8730b5a17c20b898a8">without_allocator</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> f, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> l)</td></tr>
+<tr class="separator:acf6f1d8d2bad9e8730b5a17c20b898a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97c140ac259ba38913934e23c3662081"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3c5be5144c22b16ea9c9b8c906921503">without_allocator_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a97c140ac259ba38913934e23c3662081">without_allocator</a> (<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> f, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> l, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> cf, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> cl)</td></tr>
+<tr class="separator:a97c140ac259ba38913934e23c3662081"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:af1121d68c9f62d53e54f1e64336db382"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#af1121d68c9f62d53e54f1e64336db382">class_first</a> { }</td></tr>
-<tr class="separator:af1121d68c9f62d53e54f1e64336db382"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4151f8d33a49482b6991cbc4f956d9d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a4151f8d33a49482b6991cbc4f956d9d0">class_last</a> { }</td></tr>
-<tr class="separator:a4151f8d33a49482b6991cbc4f956d9d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5287a26957d4c565902cad2f01c00ddc"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5287a26957d4c565902cad2f01c00ddc">counter</a> = 0</td></tr>
-<tr class="separator:a5287a26957d4c565902cad2f01c00ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23c3962cceded81bc2b2854707d9236e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a23c3962cceded81bc2b2854707d9236e">first</a> { }</td></tr>
-<tr class="separator:a23c3962cceded81bc2b2854707d9236e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31e944d955bee11b00cd14c36f76e8eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a31e944d955bee11b00cd14c36f76e8eb">last</a> { }</td></tr>
-<tr class="separator:a31e944d955bee11b00cd14c36f76e8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82c1a7896a4f6ef51b4958e3fee643f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a82c1a7896a4f6ef51b4958e3fee643f1">class_first</a> { }</td></tr>
+<tr class="separator:a82c1a7896a4f6ef51b4958e3fee643f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70c7423706825dad5e1c5876b21e2689"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a70c7423706825dad5e1c5876b21e2689">class_last</a> { }</td></tr>
+<tr class="separator:a70c7423706825dad5e1c5876b21e2689"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c49839885304d35d79ea9b34d88ef3b"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2c49839885304d35d79ea9b34d88ef3b">counter</a> = 0</td></tr>
+<tr class="separator:a2c49839885304d35d79ea9b34d88ef3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a292c4a2a4f9e2ff84955214395ce0f4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a292c4a2a4f9e2ff84955214395ce0f4e">first</a> { }</td></tr>
+<tr class="separator:a292c4a2a4f9e2ff84955214395ce0f4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac58e2eb4bdf59b191af06598f99dfaa3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ac58e2eb4bdf59b191af06598f99dfaa3">last</a> { }</td></tr>
+<tr class="separator:ac58e2eb4bdf59b191af06598f99dfaa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a6da37df424502e6472fa5671eba08755"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a6da37df424502e6472fa5671eba08755">allow_escaped_names</a> = AllowEscapedNames</td></tr>
-<tr class="separator:a6da37df424502e6472fa5671eba08755"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adab4e813a543d64e0a2c3d677cb5f3f0"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a32cd28981ce3e25015aa47b3c2212c">exec_tag_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#adab4e813a543d64e0a2c3d677cb5f3f0">exec_tag</a> = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a32cd28981ce3e25015aa47b3c2212c">exec_tag_t</a>{ }</td></tr>
-<tr class="separator:adab4e813a543d64e0a2c3d677cb5f3f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a221ead650c2b7cd77e25b0eedefcbe8e"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a221ead650c2b7cd77e25b0eedefcbe8e">force_name_equal_check</a> = false</td></tr>
-<tr class="separator:a221ead650c2b7cd77e25b0eedefcbe8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abad594fd33c3402ba0143e1b98492668"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#abad594fd33c3402ba0143e1b98492668">is_unchecked_input</a> = IsUncheckedInput</td></tr>
-<tr class="separator:abad594fd33c3402ba0143e1b98492668"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1908223b65ad87ab9394034c33324498"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1908223b65ad87ab9394034c33324498">allow_escaped_names</a> = AllowEscapedNames</td></tr>
+<tr class="separator:a1908223b65ad87ab9394034c33324498"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25a448378eecea90893aa9927b804ab7"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a46456480cf3c36b089c02033f82936dc">exec_tag_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a25a448378eecea90893aa9927b804ab7">exec_tag</a> = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a46456480cf3c36b089c02033f82936dc">exec_tag_t</a>{ }</td></tr>
+<tr class="separator:a25a448378eecea90893aa9927b804ab7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d5af510c5910a00a83ff4d893a8d20e"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2d5af510c5910a00a83ff4d893a8d20e">force_name_equal_check</a> = false</td></tr>
+<tr class="separator:a2d5af510c5910a00a83ff4d893a8d20e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc33dc0210ca65c3ef66100994b321ef"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#adc33dc0210ca65c3ef66100994b321ef">is_unchecked_input</a> = IsUncheckedInput</td></tr>
+<tr class="separator:adc33dc0210ca65c3ef66100994b321ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="ac89eb85dc65c63f321a23e881e369c8b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac89eb85dc65c63f321a23e881e369c8b">&#9670;&nbsp;</a></span>as_checked</h2>
+<a id="add04a161fcdc0f96d27aa7c6dba54d28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add04a161fcdc0f96d27aa7c6dba54d28">&#9670;&nbsp;</a></span>as_checked</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ac89eb85dc65c63f321a23e881e369c8b">as_checked</a> =  <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt;false, CommentPolicy, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a32cd28981ce3e25015aa47b3c2212c">exec_tag_t</a>, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a6da37df424502e6472fa5671eba08755">allow_escaped_names</a>&gt;</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#add04a161fcdc0f96d27aa7c6dba54d28">as_checked</a> =  <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt;false, CommentPolicy, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a46456480cf3c36b089c02033f82936dc">exec_tag_t</a>, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1908223b65ad87ab9394034c33324498">allow_escaped_names</a>, Allocator&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a5431cba2eb30d732673b22f4d39a0528"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5431cba2eb30d732673b22f4d39a0528">&#9670;&nbsp;</a></span>as_unchecked</h2>
+<a id="adb099e3b878fb2a5e7ce2d0f51306bd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb099e3b878fb2a5e7ce2d0f51306bd7">&#9670;&nbsp;</a></span>as_unchecked</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5431cba2eb30d732673b22f4d39a0528">as_unchecked</a> =  <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt;true, CommentPolicy, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a32cd28981ce3e25015aa47b3c2212c">exec_tag_t</a>, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a6da37df424502e6472fa5671eba08755">allow_escaped_names</a>&gt;</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#adb099e3b878fb2a5e7ce2d0f51306bd7">as_unchecked</a> =  <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt;true, CommentPolicy, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a46456480cf3c36b089c02033f82936dc">exec_tag_t</a>, <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a1908223b65ad87ab9394034c33324498">allow_escaped_names</a>, Allocator&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a325bd754e43af519a0ab1467ddcdcc5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a325bd754e43af519a0ab1467ddcdcc5f">&#9670;&nbsp;</a></span>CharT</h2>
+<a id="a57e37542ffbe6b145201f210dd32d54b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57e37542ffbe6b145201f210dd32d54b">&#9670;&nbsp;</a></span>CharT</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a325bd754e43af519a0ab1467ddcdcc5f">CharT</a> =  char</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a57e37542ffbe6b145201f210dd32d54b">CharT</a> =  char</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a9a32cd28981ce3e25015aa47b3c2212c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a32cd28981ce3e25015aa47b3c2212c">&#9670;&nbsp;</a></span>exec_tag_t</h2>
+<a id="a46456480cf3c36b089c02033f82936dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46456480cf3c36b089c02033f82936dc">&#9670;&nbsp;</a></span>exec_tag_t</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a32cd28981ce3e25015aa47b3c2212c">exec_tag_t</a> =  ExecMode</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a46456480cf3c36b089c02033f82936dc">exec_tag_t</a> =  ExecMode</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="aeeb109ccf0f2806399ae306fc58371ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeeb109ccf0f2806399ae306fc58371ef">&#9670;&nbsp;</a></span>iterator</h2>
+<a id="a2a1d872b6e33eb1bd2f8875f11345197"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a1d872b6e33eb1bd2f8875f11345197">&#9670;&nbsp;</a></span>iterator</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a> =  char const *</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> =  char const *</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a5d7f88eba25c50a58d9241467094c582"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d7f88eba25c50a58d9241467094c582">&#9670;&nbsp;</a></span>Range</h2>
+<a id="a0b8b32a2a9607491345b0b697f42e815"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b8b32a2a9607491345b0b697f42e815">&#9670;&nbsp;</a></span>Range</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5d7f88eba25c50a58d9241467094c582">Range</a> =  <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a></td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0b8b32a2a9607491345b0b697f42e815">Range</a> =  <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad21b5ac79033151196755d5d588f2e07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad21b5ac79033151196755d5d588f2e07">&#9670;&nbsp;</a></span>with_allocator_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<div class="memtemplate">
+template&lt;typename Alloc &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad21b5ac79033151196755d5d588f2e07">with_allocator_type</a> =  <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt;IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Alloc&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3c5be5144c22b16ea9c9b8c906921503"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c5be5144c22b16ea9c9b8c906921503">&#9670;&nbsp;</a></span>without_allocator_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3c5be5144c22b16ea9c9b8c906921503">without_allocator_type</a> =  <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt;IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, json_details::NoAllocator&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -301,19 +383,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ace914b6395ed6ccb97b518e19604ca7a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace914b6395ed6ccb97b518e19604ca7a">&#9670;&nbsp;</a></span>BasicParsePolicy() <span class="overload">[1/2]</span></h2>
+<a id="ad6a7a81992a14f53d0b279c2a0551f8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6a7a81992a14f53d0b279c2a0551f8c">&#9670;&nbsp;</a></span>BasicParsePolicy() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a> </td>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -321,34 +403,34 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">default</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="abffe2e5947cfa0dc4c12ca01357d5a3f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abffe2e5947cfa0dc4c12ca01357d5a3f">&#9670;&nbsp;</a></span>BasicParsePolicy() <span class="overload">[2/2]</span></h2>
+<a id="a5961e7db576bf8437f274ddcd8165107"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5961e7db576bf8437f274ddcd8165107">&#9670;&nbsp;</a></span>BasicParsePolicy() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a> </td>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a> </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
           <td class="paramname"><em>f</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
           <td class="paramname"><em>l</em>&#160;</td>
         </tr>
         <tr>
@@ -366,20 +448,170 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
+<a id="a9acee204daef4e6992cc9892c3317a14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9acee204daef4e6992cc9892c3317a14">&#9670;&nbsp;</a></span>BasicParsePolicy() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Allocator &amp;&#160;</td>
+          <td class="paramname"><em>alloc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a843c7e68f233e72a13280e8122d3816b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a843c7e68f233e72a13280e8122d3816b">&#9670;&nbsp;</a></span>BasicParsePolicy() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>cf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>cl</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1488abef3bc8ec7db7e10d25f14af7a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1488abef3bc8ec7db7e10d25f14af7a8">&#9670;&nbsp;</a></span>BasicParsePolicy() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::<a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>cf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>cl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Allocator &amp;&#160;</td>
+          <td class="paramname"><em>alloc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a66f4199b15a9bfbc4bc3f768478e82a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a66f4199b15a9bfbc4bc3f768478e82a2">&#9670;&nbsp;</a></span>begin()</h2>
+<a id="aa4313788affe84c23c270fb20a60d2ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4313788affe84c23c270fb20a60d2ed">&#9670;&nbsp;</a></span>begin()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::begin </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::begin </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -394,19 +626,49 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="abf58688b994b6feb26e739f22bf1ff69"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf58688b994b6feb26e739f22bf1ff69">&#9670;&nbsp;</a></span>clean_tail()</h2>
+<a id="ab7c0057c3e4c2539093a81747e887d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7c0057c3e4c2539093a81747e887d30">&#9670;&nbsp;</a></span>clean_end_of_value()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<div class="memtemplate">
+template&lt;char EndChar = '\0'&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::clean_tail </td>
+          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::clean_end_of_value </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>at_first</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aabb8ea63c3559bf7983c3ed27e3fc286"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabb8ea63c3559bf7983c3ed27e3fc286">&#9670;&nbsp;</a></span>clean_tail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::clean_tail </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -421,19 +683,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a095d924fd2e9b00b81e38dd77da7d4a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a095d924fd2e9b00b81e38dd77da7d4a6">&#9670;&nbsp;</a></span>clean_tail_checked()</h2>
+<a id="a8d46b72dcc6bcdabf2a1ece704b0186f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d46b72dcc6bcdabf2a1ece704b0186f">&#9670;&nbsp;</a></span>clean_tail_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::clean_tail_checked </td>
+          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::clean_tail_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -448,19 +710,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a10ec18285d12a785bfd0da3c46185986"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a10ec18285d12a785bfd0da3c46185986">&#9670;&nbsp;</a></span>clean_tail_unchecked()</h2>
+<a id="a9a999e7238a1e6860fb752836072ec69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a999e7238a1e6860fb752836072ec69">&#9670;&nbsp;</a></span>clean_tail_unchecked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::clean_tail_unchecked </td>
+          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::clean_tail_unchecked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -475,19 +737,69 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a28b694e456f72c007d803888f1e54d0b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28b694e456f72c007d803888f1e54d0b">&#9670;&nbsp;</a></span>empty()</h2>
+<a id="a18eaea4c00bb112948ce33dff85c0b67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18eaea4c00bb112948ce33dff85c0b67">&#9670;&nbsp;</a></span>copy()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::empty </td>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::copy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>f</em> = <code><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>{&#160;}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>l</em> = <code><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>{&#160;}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>cf</em> = <code><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>{&#160;}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>cl</em> = <code><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>{&#160;}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4379cc04397081272c7aab26dcbad63e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4379cc04397081272c7aab26dcbad63e">&#9670;&nbsp;</a></span>data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::data </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -502,19 +814,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="aa970bf5f2d1accac3c4dc27ea1188e8d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa970bf5f2d1accac3c4dc27ea1188e8d">&#9670;&nbsp;</a></span>end()</h2>
+<a id="a7e6472c2c0bf2cbc94340f7188a8d210"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e6472c2c0bf2cbc94340f7188a8d210">&#9670;&nbsp;</a></span>empty()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::end </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::empty </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -529,19 +841,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a6213af76b808235fe8c84d1211b6797e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6213af76b808235fe8c84d1211b6797e">&#9670;&nbsp;</a></span>front()</h2>
+<a id="a7e847129b14f3c22aa9eab810fd1bf7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e847129b14f3c22aa9eab810fd1bf7a">&#9670;&nbsp;</a></span>end()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN char <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::front </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::end </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -556,19 +868,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a707e06fc708b4b98ea2facc5355d1043"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a707e06fc708b4b98ea2facc5355d1043">&#9670;&nbsp;</a></span>has_more()</h2>
+<a id="af7ac789b775b51136b74a4f7a5d1fa4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7ac789b775b51136b74a4f7a5d1fa4d">&#9670;&nbsp;</a></span>front()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::has_more </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN char <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::front </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -583,19 +895,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a25ae0cbcfadb68c6d3deea206b741061"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25ae0cbcfadb68c6d3deea206b741061">&#9670;&nbsp;</a></span>is_at_next_class_member()</h2>
+<a id="a9cc3996a132c8b5dd2a71da04fb98f06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cc3996a132c8b5dd2a71da04fb98f06">&#9670;&nbsp;</a></span>has_more()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_at_next_class_member </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::has_more </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -610,19 +922,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="ae5996aed3afea2c77a224e57bb225104"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae5996aed3afea2c77a224e57bb225104">&#9670;&nbsp;</a></span>is_at_token_after_value()</h2>
+<a id="a0cc5bb9de1a9e126de05a4a42f24ca73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cc5bb9de1a9e126de05a4a42f24ca73">&#9670;&nbsp;</a></span>is_at_next_class_member()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_at_token_after_value </td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_at_next_class_member </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -637,19 +949,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="ae0ac54e5bffe4b555f7a29260684cde7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae0ac54e5bffe4b555f7a29260684cde7">&#9670;&nbsp;</a></span>is_closing_brace_checked()</h2>
+<a id="a66918adae595578bbaab99b325bf7d4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66918adae595578bbaab99b325bf7d4b">&#9670;&nbsp;</a></span>is_at_token_after_value()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_closing_brace_checked </td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_at_token_after_value </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -664,19 +976,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a1fa5eb6f5b95c5c2c4e1278322a3650e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1fa5eb6f5b95c5c2c4e1278322a3650e">&#9670;&nbsp;</a></span>is_exponent_checked()</h2>
+<a id="afdf8a2f22a64e9c1f3505bf1da3ec867"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdf8a2f22a64e9c1f3505bf1da3ec867">&#9670;&nbsp;</a></span>is_closing_brace_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_exponent_checked </td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_closing_brace_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -691,19 +1003,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a6cb5a54ce726e1f367d9c5326c5c1d81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6cb5a54ce726e1f367d9c5326c5c1d81">&#9670;&nbsp;</a></span>is_literal_end()</h2>
+<a id="a600a4d7c643224c4409648b323a78044"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a600a4d7c643224c4409648b323a78044">&#9670;&nbsp;</a></span>is_exponent_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_literal_end </td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_exponent_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -718,19 +1030,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a6415eac191dc2b600de73aacbb6b539e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6415eac191dc2b600de73aacbb6b539e">&#9670;&nbsp;</a></span>is_null()</h2>
+<a id="a1ee6f0026e7cdad8f9f313c3cbc2497c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ee6f0026e7cdad8f9f313c3cbc2497c">&#9670;&nbsp;</a></span>is_literal_end()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_null </td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_literal_end </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -745,19 +1057,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a6e71bdcffcb77f118d18ed21fae8b175"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e71bdcffcb77f118d18ed21fae8b175">&#9670;&nbsp;</a></span>is_opening_brace_checked()</h2>
+<a id="a613f61a7554972204083e012e80ade95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a613f61a7554972204083e012e80ade95">&#9670;&nbsp;</a></span>is_null()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_opening_brace_checked </td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_null </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -772,19 +1084,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="af62171a37bc2a5359f81d971e825d7f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af62171a37bc2a5359f81d971e825d7f9">&#9670;&nbsp;</a></span>is_opening_bracket_checked()</h2>
+<a id="aa4fa358cabc5db1a00cc0d889ded9ba3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4fa358cabc5db1a00cc0d889ded9ba3">&#9670;&nbsp;</a></span>is_opening_brace_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_opening_bracket_checked </td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_opening_brace_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -799,19 +1111,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a3411d4923519f4cdd557ee5965906672"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3411d4923519f4cdd557ee5965906672">&#9670;&nbsp;</a></span>is_quotes_checked()</h2>
+<a id="ae9b1bdf76d8bb5532d1b3bc7dcdb41b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9b1bdf76d8bb5532d1b3bc7dcdb41b7">&#9670;&nbsp;</a></span>is_opening_bracket_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_quotes_checked </td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_opening_bracket_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -826,19 +1138,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="aa1d4dab4d93dea537d8a1fab18b85bf9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa1d4dab4d93dea537d8a1fab18b85bf9">&#9670;&nbsp;</a></span>is_space_checked()</h2>
+<a id="a2f867d2ced872f20573e69a726545a70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f867d2ced872f20573e69a726545a70">&#9670;&nbsp;</a></span>is_quotes_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_space_checked </td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_quotes_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -853,19 +1165,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a2b984610b36243cb1cf0943c2a477106"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b984610b36243cb1cf0943c2a477106">&#9670;&nbsp;</a></span>is_space_unchecked()</h2>
+<a id="a53b01c79866b29b6964e20d1db00ef52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53b01c79866b29b6964e20d1db00ef52">&#9670;&nbsp;</a></span>is_space_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_space_unchecked </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_space_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -880,19 +1192,46 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a0e8216fa587fe8c45b3a8f6335480eec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0e8216fa587fe8c45b3a8f6335480eec">&#9670;&nbsp;</a></span>move_to_end_of_literal()</h2>
+<a id="abb19b76f32a0c4ccb07109835eec024c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb19b76f32a0c4ccb07109835eec024c">&#9670;&nbsp;</a></span>is_space_unchecked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::move_to_end_of_literal </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_space_unchecked </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae1935aaab3ef4857510bb558aeeab75e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1935aaab3ef4857510bb558aeeab75e">&#9670;&nbsp;</a></span>move_to_end_of_literal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::move_to_end_of_literal </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -907,19 +1246,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a1c7cc97d298ad8cebe9301de974325e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c7cc97d298ad8cebe9301de974325e7">&#9670;&nbsp;</a></span>move_to_next_class_member()</h2>
+<a id="a19bc11a1473b3435af8fb9650091569b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19bc11a1473b3435af8fb9650091569b">&#9670;&nbsp;</a></span>move_to_next_class_member()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::move_to_next_class_member </td>
+          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::move_to_next_class_member </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -934,13 +1273,13 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="adecde8a92952b2d0294aa5c060be8b5d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adecde8a92952b2d0294aa5c060be8b5d">&#9670;&nbsp;</a></span>move_to_next_of()</h2>
+<a id="a91d935efd784fb5bf7a4d6aaaae379d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91d935efd784fb5bf7a4d6aaaae379d0">&#9670;&nbsp;</a></span>move_to_next_of()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <div class="memtemplate">
 template&lt;char c&gt; </div>
 <table class="mlabels">
@@ -948,7 +1287,7 @@ template&lt;char c&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::move_to_next_of </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::move_to_next_of </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -963,13 +1302,13 @@ template&lt;char c&gt; </div>
 
 </div>
 </div>
-<a id="a1221d8fd609f3850d361d1050d3c6922"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1221d8fd609f3850d361d1050d3c6922">&#9670;&nbsp;</a></span>move_to_next_of_checked()</h2>
+<a id="af51a4862b38caa52c1bf927ac56358ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af51a4862b38caa52c1bf927ac56358ef">&#9670;&nbsp;</a></span>move_to_next_of_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <div class="memtemplate">
 template&lt;char c&gt; </div>
 <table class="mlabels">
@@ -977,7 +1316,7 @@ template&lt;char c&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::move_to_next_of_checked </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::move_to_next_of_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -992,13 +1331,13 @@ template&lt;char c&gt; </div>
 
 </div>
 </div>
-<a id="ac8a39995b6a90e13d81d0467d45adcdd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac8a39995b6a90e13d81d0467d45adcdd">&#9670;&nbsp;</a></span>move_to_next_of_unchecked()</h2>
+<a id="a1ed3b9ccb68e63aafe62487fb883ace4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ed3b9ccb68e63aafe62487fb883ace4">&#9670;&nbsp;</a></span>move_to_next_of_unchecked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <div class="memtemplate">
 template&lt;char c&gt; </div>
 <table class="mlabels">
@@ -1006,7 +1345,7 @@ template&lt;char c&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::move_to_next_of_unchecked </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::move_to_next_of_unchecked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1021,19 +1360,19 @@ template&lt;char c&gt; </div>
 
 </div>
 </div>
-<a id="ad2ff937e2cd17895482f74a370e60ada"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2ff937e2cd17895482f74a370e60ada">&#9670;&nbsp;</a></span>remove_prefix() <span class="overload">[1/2]</span></h2>
+<a id="acd1d11363a4f99458805ad22b8d63053"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd1d11363a4f99458805ad22b8d63053">&#9670;&nbsp;</a></span>remove_prefix() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::remove_prefix </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::remove_prefix </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1048,19 +1387,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a191134948eaf191d428de21636159c86"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a191134948eaf191d428de21636159c86">&#9670;&nbsp;</a></span>remove_prefix() <span class="overload">[2/2]</span></h2>
+<a id="ad45a4f129a5ca318d136a41c4835698d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad45a4f129a5ca318d136a41c4835698d">&#9670;&nbsp;</a></span>remove_prefix() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::remove_prefix </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::remove_prefix </td>
           <td>(</td>
           <td class="paramtype">std::size_t&#160;</td>
           <td class="paramname"><em>n</em></td><td>)</td>
@@ -1076,19 +1415,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a22ffd4e203b78d51e105737beba2f5f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a22ffd4e203b78d51e105737beba2f5f0">&#9670;&nbsp;</a></span>set_class_position()</h2>
+<a id="aeae7e7fc019f6c6cce77a89913af3166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeae7e7fc019f6c6cce77a89913af3166">&#9670;&nbsp;</a></span>set_class_position()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::set_class_position </td>
+          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::set_class_position </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1103,19 +1442,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a9e0a22fd2f46f3b2cf80a02536310b7e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9e0a22fd2f46f3b2cf80a02536310b7e">&#9670;&nbsp;</a></span>size()</h2>
+<a id="ae7536d303d203f8afe985e9f0a46712b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7536d303d203f8afe985e9f0a46712b">&#9670;&nbsp;</a></span>size()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr std::size_t <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::size </td>
+          <td class="memname">constexpr std::size_t <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::size </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1130,19 +1469,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a20973cd5891799305e5184a6cc82ae18"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a20973cd5891799305e5184a6cc82ae18">&#9670;&nbsp;</a></span>skip_array()</h2>
+<a id="a8727b852bcfaecb7e721dcd310309301"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8727b852bcfaecb7e721dcd310309301">&#9670;&nbsp;</a></span>skip_array()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5d7f88eba25c50a58d9241467094c582">Range</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::skip_array </td>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0b8b32a2a9607491345b0b697f42e815">Range</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::skip_array </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1157,13 +1496,13 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="ae518204e2f6298ec5ab8c8b4b0b30b75"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae518204e2f6298ec5ab8c8b4b0b30b75">&#9670;&nbsp;</a></span>skip_bracketed_item_checked()</h2>
+<a id="aabbb967ee388638566b7f79889f711ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabbb967ee388638566b7f79889f711ee">&#9670;&nbsp;</a></span>skip_bracketed_item_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <div class="memtemplate">
 template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div>
 <table class="mlabels">
@@ -1171,7 +1510,7 @@ template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5d7f88eba25c50a58d9241467094c582">Range</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::skip_bracketed_item_checked </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0b8b32a2a9607491345b0b697f42e815">Range</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::skip_bracketed_item_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1186,13 +1525,13 @@ template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div
 
 </div>
 </div>
-<a id="ad856d807dfcb48b376f6481ec798b342"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad856d807dfcb48b376f6481ec798b342">&#9670;&nbsp;</a></span>skip_bracketed_item_unchecked()</h2>
+<a id="a0908548112f11274cc1590669f009b25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0908548112f11274cc1590669f009b25">&#9670;&nbsp;</a></span>skip_bracketed_item_unchecked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <div class="memtemplate">
 template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div>
 <table class="mlabels">
@@ -1200,7 +1539,7 @@ template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5d7f88eba25c50a58d9241467094c582">Range</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::skip_bracketed_item_unchecked </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0b8b32a2a9607491345b0b697f42e815">Range</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::skip_bracketed_item_unchecked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1215,19 +1554,19 @@ template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div
 
 </div>
 </div>
-<a id="a3eaa3b0443dedc7700922e5a8f1c38f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3eaa3b0443dedc7700922e5a8f1c38f8">&#9670;&nbsp;</a></span>skip_class()</h2>
+<a id="a5326f3b0af38ac8327d829ebeb5ab362"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5326f3b0af38ac8327d829ebeb5ab362">&#9670;&nbsp;</a></span>skip_class()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a5d7f88eba25c50a58d9241467094c582">Range</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::skip_class </td>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a0b8b32a2a9607491345b0b697f42e815">Range</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::skip_class </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1242,13 +1581,13 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="aa5b6fdf7170636c585764111486bf5fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa5b6fdf7170636c585764111486bf5fa">&#9670;&nbsp;</a></span>starts_with()</h2>
+<a id="a7cd53c24f401bbacb389431f51774a5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cd53c24f401bbacb389431f51774a5a">&#9670;&nbsp;</a></span>starts_with()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <div class="memtemplate">
 template&lt;std::size_t N&gt; </div>
 <table class="mlabels">
@@ -1256,7 +1595,7 @@ template&lt;std::size_t N&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::starts_with </td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::starts_with </td>
           <td>(</td>
           <td class="paramtype">char const (&amp;)&#160;</td>
           <td class="paramname"><em>rhs</em>[N]</td><td>)</td>
@@ -1272,19 +1611,19 @@ template&lt;std::size_t N&gt; </div>
 
 </div>
 </div>
-<a id="aa0b26ec98870eb4976d2ff9a63b4ce9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa0b26ec98870eb4976d2ff9a63b4ce9b">&#9670;&nbsp;</a></span>trim_left()</h2>
+<a id="a284355fa79ee7c62dd26943cc8c538eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a284355fa79ee7c62dd26943cc8c538eb">&#9670;&nbsp;</a></span>trim_left()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::trim_left </td>
+          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::trim_left </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1299,19 +1638,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a102c898311be99e961b0f955490cc933"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a102c898311be99e961b0f955490cc933">&#9670;&nbsp;</a></span>trim_left_checked()</h2>
+<a id="ad26c721393da45acbb4ecfda4d5f2dcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad26c721393da45acbb4ecfda4d5f2dcc">&#9670;&nbsp;</a></span>trim_left_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::trim_left_checked </td>
+          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::trim_left_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1326,19 +1665,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="ac0219d8813d8071ee02f03fe3dc55f45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0219d8813d8071ee02f03fe3dc55f45">&#9670;&nbsp;</a></span>trim_left_unchecked()</h2>
+<a id="af1913d80e8e2a418840ed32cdfaab048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1913d80e8e2a418840ed32cdfaab048">&#9670;&nbsp;</a></span>trim_left_unchecked()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::trim_left_unchecked </td>
+          <td class="memname">constexpr void <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::trim_left_unchecked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1347,6 +1686,313 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0baa6e3f1bf02155f792e1f04060249f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0baa6e3f1bf02155f792e1f04060249f">&#9670;&nbsp;</a></span>with_allocator() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<div class="memtemplate">
+template&lt;typename Alloc &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad21b5ac79033151196755d5d588f2e07">with_allocator_type</a>&lt;Alloc&gt; <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::with_allocator </td>
+          <td>(</td>
+          <td class="paramtype">Alloc &amp;&#160;</td>
+          <td class="paramname"><em>alloc</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a96bc667bfa2570e4c28e4a2388b0b303"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96bc667bfa2570e4c28e4a2388b0b303">&#9670;&nbsp;</a></span>with_allocator() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<div class="memtemplate">
+template&lt;typename Alloc &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::with_allocator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Alloc &gt;&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7fe214ef4716f3900b7dc22e17c3c229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fe214ef4716f3900b7dc22e17c3c229">&#9670;&nbsp;</a></span>with_allocator() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<div class="memtemplate">
+template&lt;typename Alloc &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad21b5ac79033151196755d5d588f2e07">with_allocator_type</a>&lt;Alloc&gt; <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::with_allocator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Alloc &amp;&#160;</td>
+          <td class="paramname"><em>alloc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a56c882bd91152d316d98701acfab8be7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56c882bd91152d316d98701acfab8be7">&#9670;&nbsp;</a></span>with_allocator() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<div class="memtemplate">
+template&lt;typename Alloc &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#ad21b5ac79033151196755d5d588f2e07">with_allocator_type</a>&lt;Alloc&gt; <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::with_allocator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>cf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>cl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Alloc &amp;&#160;</td>
+          <td class="paramname"><em>alloc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acfd42b520a979ac2e9f25e8397c3363c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfd42b520a979ac2e9f25e8397c3363c">&#9670;&nbsp;</a></span>without_allocator() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3c5be5144c22b16ea9c9b8c906921503">without_allocator_type</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::without_allocator </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a75f4f2bb76803f47fa23bb4087c51c9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75f4f2bb76803f47fa23bb4087c51c9a">&#9670;&nbsp;</a></span>without_allocator() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3c5be5144c22b16ea9c9b8c906921503">without_allocator_type</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::without_allocator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acf6f1d8d2bad9e8730b5a17c20b898a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf6f1d8d2bad9e8730b5a17c20b898a8">&#9670;&nbsp;</a></span>without_allocator() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3c5be5144c22b16ea9c9b8c906921503">without_allocator_type</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::without_allocator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>l</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a97c140ac259ba38913934e23c3662081"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97c140ac259ba38913934e23c3662081">&#9670;&nbsp;</a></span>without_allocator() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a3c5be5144c22b16ea9c9b8c906921503">without_allocator_type</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::without_allocator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>cf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a>&#160;</td>
+          <td class="paramname"><em>cl</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1354,19 +2000,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a6da37df424502e6472fa5671eba08755"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6da37df424502e6472fa5671eba08755">&#9670;&nbsp;</a></span>allow_escaped_names</h2>
+<a id="a1908223b65ad87ab9394034c33324498"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1908223b65ad87ab9394034c33324498">&#9670;&nbsp;</a></span>allow_escaped_names</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::allow_escaped_names = AllowEscapedNames</td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::allow_escaped_names = AllowEscapedNames</td>
         </tr>
       </table>
   </td>
@@ -1378,67 +2024,67 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="af1121d68c9f62d53e54f1e64336db382"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af1121d68c9f62d53e54f1e64336db382">&#9670;&nbsp;</a></span>class_first</h2>
+<a id="a82c1a7896a4f6ef51b4958e3fee643f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82c1a7896a4f6ef51b4958e3fee643f1">&#9670;&nbsp;</a></span>class_first</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::class_first { }</td>
+          <td class="memname"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::class_first { }</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a4151f8d33a49482b6991cbc4f956d9d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4151f8d33a49482b6991cbc4f956d9d0">&#9670;&nbsp;</a></span>class_last</h2>
+<a id="a70c7423706825dad5e1c5876b21e2689"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70c7423706825dad5e1c5876b21e2689">&#9670;&nbsp;</a></span>class_last</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::class_last { }</td>
+          <td class="memname"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::class_last { }</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a5287a26957d4c565902cad2f01c00ddc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5287a26957d4c565902cad2f01c00ddc">&#9670;&nbsp;</a></span>counter</h2>
+<a id="a2c49839885304d35d79ea9b34d88ef3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c49839885304d35d79ea9b34d88ef3b">&#9670;&nbsp;</a></span>counter</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::size_t <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::counter = 0</td>
+          <td class="memname">std::size_t <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::counter = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="adab4e813a543d64e0a2c3d677cb5f3f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adab4e813a543d64e0a2c3d677cb5f3f0">&#9670;&nbsp;</a></span>exec_tag</h2>
+<a id="a25a448378eecea90893aa9927b804ab7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25a448378eecea90893aa9927b804ab7">&#9670;&nbsp;</a></span>exec_tag</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a32cd28981ce3e25015aa47b3c2212c">exec_tag_t</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::exec_tag = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a9a32cd28981ce3e25015aa47b3c2212c">exec_tag_t</a>{ }</td>
+          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a46456480cf3c36b089c02033f82936dc">exec_tag_t</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::exec_tag = <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a46456480cf3c36b089c02033f82936dc">exec_tag_t</a>{ }</td>
         </tr>
       </table>
   </td>
@@ -1450,35 +2096,35 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a23c3962cceded81bc2b2854707d9236e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a23c3962cceded81bc2b2854707d9236e">&#9670;&nbsp;</a></span>first</h2>
+<a id="a292c4a2a4f9e2ff84955214395ce0f4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a292c4a2a4f9e2ff84955214395ce0f4e">&#9670;&nbsp;</a></span>first</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::first { }</td>
+          <td class="memname"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::first { }</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a221ead650c2b7cd77e25b0eedefcbe8e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a221ead650c2b7cd77e25b0eedefcbe8e">&#9670;&nbsp;</a></span>force_name_equal_check</h2>
+<a id="a2d5af510c5910a00a83ff4d893a8d20e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d5af510c5910a00a83ff4d893a8d20e">&#9670;&nbsp;</a></span>force_name_equal_check</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::force_name_equal_check = false</td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::force_name_equal_check = false</td>
         </tr>
       </table>
   </td>
@@ -1490,19 +2136,19 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="abad594fd33c3402ba0143e1b98492668"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abad594fd33c3402ba0143e1b98492668">&#9670;&nbsp;</a></span>is_unchecked_input</h2>
+<a id="adc33dc0210ca65c3ef66100994b321ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc33dc0210ca65c3ef66100994b321ef">&#9670;&nbsp;</a></span>is_unchecked_input</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::is_unchecked_input = IsUncheckedInput</td>
+          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::is_unchecked_input = IsUncheckedInput</td>
         </tr>
       </table>
   </td>
@@ -1514,16 +2160,16 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a31e944d955bee11b00cd14c36f76e8eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a31e944d955bee11b00cd14c36f76e8eb">&#9670;&nbsp;</a></span>last</h2>
+<a id="ac58e2eb4bdf59b191af06598f99dfaa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac58e2eb4bdf59b191af06598f99dfaa3">&#9670;&nbsp;</a></span>last</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames&gt; </div>
+template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#aeeb109ccf0f2806399ae306fc58371ef">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames &gt;::last { }</td>
+          <td class="memname"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html#a2a1d872b6e33eb1bd2f8875f11345197">iterator</a> <a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator &gt;::last { }</td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -20,7 +20,7 @@
 #include <memory>
 #include <string>
 
-namespace daw::cookbook_variant2 {
+namespace daw::cookbook_variant3 {
 	struct MyClass {
 		std::string name;
 		std::variant<std::string, int, bool> value;
@@ -40,16 +40,16 @@ namespace daw::cookbook_variant2 {
 			return static_cast<int>( v.value.index( ) );
 		}
 	};
-} // namespace daw::cookbook_variant2
+} // namespace daw::cookbook_variant3
 
 template<>
-struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
+struct daw::json::json_data_contract<daw::cookbook_variant3::MyClass> {
 #ifdef __cpp_nontype_template_parameter_class
 	using type = json_member_list<
 	  json_string<"name">,
 	  json_tagged_variant<
 	    "value", std::variant<std::string, int, bool>, json_number<"type", int>,
-	    daw::cookbook_variant2::MyClassSwitcher,
+	    daw::cookbook_variant3::MyClassSwitcher,
 	    json_tagged_variant_type_list<std::string, json_number<no_name, int>,
 	                                  json_bool<no_name>>>>;
 #else
@@ -60,17 +60,21 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 	  json_string<name>,
 	  json_tagged_variant<
 	    value, std::variant<std::string, int, bool>, json_number<type_mem, int>,
-	    daw::cookbook_variant2::MyClassSwitcher,
+	    daw::cookbook_variant3::MyClassSwitcher,
 	    json_tagged_variant_type_list<std::string, json_number<no_name, int>,
 	                                  json_bool<no_name>>>>;
 #endif
 	static DAW_CONSTEXPR inline auto
-	to_json_data( daw::cookbook_variant2::MyClass const &v ) {
+	to_json_data( daw::cookbook_variant3::MyClass const &v ) {
 		return std::forward_as_tuple( v.name, v.value );
 	}
 };
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_variant3.json file\n" );
 		exit( EXIT_FAILURE );
@@ -78,16 +82,17 @@ int main( int argc, char **argv ) try {
 	auto data = *daw::read_file( argv[1] );
 	auto json_data = std::string_view( data.data( ), data.size( ) );
 
-	std::vector<daw::cookbook_variant2::MyClass> values1 =
-	  daw::json::from_json_array<daw::cookbook_variant2::MyClass>( json_data );
+	std::vector<daw::cookbook_variant3::MyClass> values1 =
+	  daw::json::from_json_array<daw::cookbook_variant3::MyClass>( json_data );
 
 	std::string const json_str = daw::json::to_json_array( values1 );
 
-	std::vector<daw::cookbook_variant2::MyClass> values2 =
-	  daw::json::from_json_array<daw::cookbook_variant2::MyClass>( json_str );
+	std::vector<daw::cookbook_variant3::MyClass> values2 =
+	  daw::json::from_json_array<daw::cookbook_variant3::MyClass>( json_str );
 
-	daw_json_assert( values1 == values2, "Error in round tripping" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( values1 == values2, "Error in round tripping" );
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

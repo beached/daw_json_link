@@ -20,7 +20,7 @@
 #if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 200;
 #else
-static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
@@ -41,8 +41,8 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_string<"escaped">, json_string<"unicode">>;
 #else
-		DAW_CONSTEXPR inline static char const escaped[] = "escaped";
-		DAW_CONSTEXPR inline static char const unicode[] = "unicode";
+		constexpr inline static char const escaped[] = "escaped";
+		constexpr inline static char const unicode[] = "unicode";
 		using type = json_member_list<json_string<escaped>, json_string<unicode>>;
 #endif
 		static inline auto to_json_data( unicode_data const &value ) {
@@ -65,12 +65,12 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	    std::string_view( json_str_escaped.data( ), json_str_escaped.size( ) ) );
 
-	daw_json_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
-	                 "Expected same size" );
+	test_assert( unicode_test.size( ) == unicode_test_from_escaped.size( ),
+	             "Expected same size" );
 	auto mismatch_pos = std::mismatch( unicode_test.begin( ), unicode_test.end( ),
 	                                   unicode_test_from_escaped.begin( ) );
-	daw_json_assert( mismatch_pos.first == unicode_test.end( ),
-	                 "Should be the same after parsing" );
+	test_assert( mismatch_pos.first == unicode_test.end( ),
+	             "Should be the same after parsing" );
 
 	std::string const json_str2 = daw::json::to_json_array( unicode_test );
 	std::vector<unicode_data> unicode_test2 =
@@ -79,8 +79,8 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 
 	auto mismatch_pos2 = std::mismatch(
 	  unicode_test.begin( ), unicode_test.end( ), unicode_test2.begin( ) );
-	daw_json_assert( mismatch_pos2.first == unicode_test.end( ),
-	                 "Should be the same after parsing" );
+	test_assert( mismatch_pos2.first == unicode_test.end( ),
+	             "Should be the same after parsing" );
 	{
 		using range_t = daw::json::json_array_range<
 		  unicode_data, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>;
@@ -131,7 +131,11 @@ void test( MMF const &json_str, MMF const &json_str_escaped ) {
 	}
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	using namespace daw::json;
 #if defined( NDEBUG ) and not defined( DEBUG )
 	std::cout << "release run\n";
@@ -145,8 +149,7 @@ int main( int argc, char **argv ) try {
 	}
 
 	auto const json_str = *daw::read_file( argv[1] );
-	auto const json_str_escaped =
-	  *daw::read_file( argv[2] );
+	auto const json_str_escaped = *daw::read_file( argv[2] );
 
 	test<daw::json::constexpr_exec_tag>( json_str, json_str_escaped );
 	test<daw::json::runtime_exec_tag>( json_str, json_str_escaped );
@@ -154,7 +157,8 @@ int main( int argc, char **argv ) try {
 	                                 daw::json::runtime_exec_tag> ) {
 		test<daw::json::simd_exec_tag>( json_str, json_str_escaped );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

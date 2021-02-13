@@ -15,6 +15,11 @@
 
 #include <daw/daw_hide.h>
 
+#include <ciso646>
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+
 namespace daw::json {
 	class HashCommentSkippingPolicy final {
 		template<typename Range>
@@ -72,9 +77,11 @@ namespace daw::json {
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
 			skip_comments( rng );
 
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data", rng );
+			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      rng );
 			while( not parse_policy_details::in<keys...>( rng.front( ) ) ) {
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data", rng );
+				daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+				                      rng );
 				rng.remove_prefix( );
 				skip_comments( rng );
 			}
@@ -126,7 +133,8 @@ namespace daw::json {
 							++ptr_first;
 						}
 					}
-					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream", rng );
+					daw_json_assert( ptr_first < ptr_last,
+					                 ErrorReason::UnexpectedEndOfData, rng );
 					break;
 				case ',':
 					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
@@ -140,7 +148,7 @@ namespace daw::json {
 					--prime_bracket_count;
 					if( prime_bracket_count == 0 ) {
 						daw_json_assert( second_bracket_count == 0,
-						                 "Unexpected bracketing", rng );
+						                 ErrorReason::InvalidBracketing, rng );
 						++ptr_first;
 						// We include the close primary bracket in the range so that
 						// subsequent parsers have a terminator inside their range
@@ -168,8 +176,9 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			daw_json_assert( prime_bracket_count == 0 and second_bracket_count == 0,
-			                 "Unexpected bracketing", rng );
+			daw_json_assert( ( prime_bracket_count == 0 ) &
+			                   ( second_bracket_count == 0 ),
+			                 ErrorReason::InvalidBracketing, rng );
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
@@ -247,7 +256,7 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			DAW_JSON_UNREACHABLE( );
+			DAW_UNREACHABLE( );
 		}
 	};
 } // namespace daw::json

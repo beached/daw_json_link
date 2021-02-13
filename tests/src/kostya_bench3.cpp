@@ -60,9 +60,9 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
 #else
-		DAW_CONSTEXPR inline static char const x[] = "x";
-		DAW_CONSTEXPR inline static char const y[] = "y";
-		DAW_CONSTEXPR inline static char const z[] = "z";
+		constexpr inline static char const x[] = "x";
+		constexpr inline static char const y[] = "y";
+		constexpr inline static char const z[] = "z";
 		using type =
 		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
 #endif
@@ -97,7 +97,7 @@ coordinate_t calc( const string &text ) {
 }
 
 int main( ) {
-	auto left = calc( "{\"coordinates\":[{\"x\":1.1,\"y\":2.2,\"z\":3.3}]}" );
+	auto left = calc( R"({"coordinates":[{"x":1.1,"y":2.2,"z":3.3}]})" );
 	auto right = coordinate_t{ 1.1, 2.2, 3.3 };
 	if( left != right ) {
 		cerr << left << " != " << right << endl;

@@ -14,6 +14,10 @@
 
 #include <daw/daw_uint_buffer.h>
 
+#include <ciso646>
+#include <cstddef>
+#include <type_traits>
+
 namespace daw::json::json_details::string_quote {
 	template<std::size_t N, char c>
 	inline constexpr UInt8 test_at_byte( UInt64 b ) {
@@ -53,7 +57,7 @@ namespace daw::json::json_details::string_quote {
 			keep_going = not( q0 | q1 | q2 | q3 | q4 | q5 | q6 | q7 | s0 | s1 | s2 |
 			                  s3 | s4 | s5 | s6 | s7 );
 			keep_going = keep_going & static_cast<bool>( last - ( first + 8 ) >= 8 );
-			first += static_cast<int>( keep_going ) * 8;
+			first += static_cast<std::ptrdiff_t>( keep_going ) * 8;
 		}
 		first -= *( first - 1 ) == '\\' ? 1 : 0;
 	}
@@ -74,7 +78,7 @@ namespace daw::json::json_details::string_quote {
 			auto const s0 = test_at_byte<0U, '\\'>( buff );
 			keep_going = not( q0 | q1 | q2 | q3 | s0 | s1 | s2 | s3 );
 			keep_going = keep_going & static_cast<bool>( last - ( first + 4 ) >= 4 );
-			first += static_cast<int>( keep_going ) * 4;
+			first += static_cast<std::ptrdiff_t>( keep_going ) * 4;
 		}
 		first -= *( first - 1 ) == '\\' ? 1 : 0;
 	}
@@ -149,7 +153,7 @@ namespace daw::json::json_details::string_quote {
 				}
 			}
 			daw_json_assert_weak( first < last and *first == '"',
-			                      "Expected a '\"' at end of string", rng );
+			                      ErrorReason::InvalidString, rng );
 			rng.first = first;
 			return static_cast<std::size_t>( need_slow_path );
 		}

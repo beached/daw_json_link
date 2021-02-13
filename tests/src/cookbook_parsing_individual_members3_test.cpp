@@ -19,7 +19,11 @@
 #include <string>
 #include <unordered_map>
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts(
 		  "Must supply path to cookbook_parsing_individual_members1.json file\n" );
@@ -31,16 +35,15 @@ int main( int argc, char **argv ) try {
 	  std::string_view( file_data.data( ), file_data.size( ) );
 
 	using namespace daw::json;
-	std::string_view value =
-	  from_json<std::string_view>( json_data, "member1[1]" );
+	auto const value = from_json<std::string_view>( json_data, "member1[1]" );
 
-	daw_json_assert( value == "is", "Unexpected value" );
+	test_assert( value == "is", "Unexpected value" );
 
 	std::string_view opt_value =
 	  from_json<json_string_raw_null<no_name, std::string_view>>(
 	    json_data, "member1[1000]" );
 
-	daw_json_assert( opt_value.empty( ), "Unexpected result" );
+	test_assert( opt_value.empty( ), "Unexpected result" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

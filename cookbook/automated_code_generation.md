@@ -15,7 +15,7 @@ cmake ..
 cmake --build . 
 ```
 
-Now we will have an executable called json_to_cpp/json_to_cpp.exe that will allow us to convert a json file to C++ structures along with the descript_json_class/to_json_data methods.
+Now we will have an executable called `json_to_cpp` or `json_to_cpp.exe` that will allow us to convert a json file to C++ structures along with the JSON Link mappings.
 
 For example, let's use [cookbook_class2.json](../test_data/cookbook_class2.json) from the [class.md](class.md) cookbook
 
@@ -36,49 +36,47 @@ struct a_t {
 	bool member2;
 };	// a_t
 
-namespace symbols_a_t {
-	static constexpr char const member0[] = "member0";
-	static constexpr char const member1[] = "member1";
-	static constexpr char const member2[] = "member2";
-}
-
-inline auto json_data_contract_for( a_t ) {
-	using namespace daw::json;
-	return daw::json::json_member_list<
-		json_string<symbols_a_t::member0>
-		,json_number<symbols_a_t::member1, int64_t>
-		,json_bool<symbols_a_t::member2>
-	>{};
-}
-
-inline auto to_json_data( a_t const & value ) {
-	return std::forward_as_tuple( value.member0, value.member1, value.member2 );
-}
-
 struct root_object_t {
 	a_t a;
 	int64_t b;
 };	// root_object_t
 
-namespace symbols_root_object_t {
-	static constexpr char const a[] = "a";
-	static constexpr char const b[] = "b";
+namespace daw::json {
+  template<>
+  struct json_data_contract<a_t> {
+    static constexpr char const mem_member0[] = "member0";
+    static constexpr char const mem_member1[] = "member1";
+    static constexpr char const mem_member2[] = "member2";
+    using type = json_member_list<
+        json_string<mem_member0>,
+        json_number<mem_member1, int64_t>,
+        json_bool<mem_member2>>;
+
+    static inline auto to_json_data( a_t const &value ) {
+      return std::forward_as_tuple( value.member0, value.member1,
+                                    value.member2 );
+    }
+  };
 }
 
-inline auto json_data_contract_for( root_object_t ) {
-	using namespace daw::json;
-	return daw::json::json_member_list<
-		json_class<symbols_root_object_t::a, a_t>
-		,json_number<symbols_root_object_t::b, int64_t>
-	>{};
-}
+namespace daw::json {
+  template<>
+  struct json_data_contract<root_object_t> {
+  	static constexpr char const mem_a[] = "a";
+  	static constexpr char const mem_b[] = "b";
+  	using type =
+  	  json_member_list<
+  	    json_class<mem_a, a_t>, 
+  	    json_number<mem_b, int64_t>>;
 
-inline auto to_json_data( root_object_t const & value ) {
-	return std::forward_as_tuple( value.a, value.b );
+  	static inline auto to_json_data( root_object_t const &value ) {
+  	  return std::forward_as_tuple( value.a, value.b );
+  	}
+  };
 }
 ```
 
-As you can see it is pretty close to the types specified, except in this case for integrals it defaults to intmax_t as it cannot know that it was an unsigned.
+As you can see it is pretty close to the types specified, except in this case for integrals it defaults to int64_t as it cannot know that it was an unsigned.
 
 We can make it prettier as the default will use root_object_t as the type of the root class and the other objects are the name of their members suffixed with `_t`
 

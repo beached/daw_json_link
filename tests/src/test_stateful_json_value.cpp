@@ -14,6 +14,7 @@
 #include <daw/json/daw_json_link.h>
 #include <daw/json/daw_json_value_state.h>
 
+#include <cstdlib>
 #include <iostream>
 
 struct coordinate_t {
@@ -56,9 +57,14 @@ int main( int argc, char **argv ) {
 		exit( EXIT_FAILURE );
 	}
 	auto const json_data = *daw::read_file( argv[1] );
-	daw::do_not_optimize( json_data );
-	auto coords = calc( json_data );
-	daw::do_not_optimize( coords );
-	std::cout << "x: " << coords.x << " y: " << coords.y << " z: " << coords.z
-	          << '\n';
+	try {
+		auto coords = calc( json_data );
+		daw::do_not_optimize( coords );
+		std::cout << "x: " << coords.x << " y: " << coords.y << " z: " << coords.z
+		          << '\n';
+	} catch( daw::json::json_exception const &jex ) {
+		std::cerr << "Exception while parsing: " << to_formatted_string( jex )
+		          << '\n';
+		return EXIT_FAILURE;
+	}
 }

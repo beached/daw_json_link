@@ -18,7 +18,11 @@
 #include <iostream>
 #include <string>
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_kv4.json file\n" );
 		exit( EXIT_FAILURE );
@@ -30,12 +34,13 @@ int main( int argc, char **argv ) try {
 	std::multimap<std::string, std::string> kv =
 	  from_json<json_key_value<no_name, std::multimap<std::string, std::string>,
 	                           std::string>>( val );
-	daw_json_assert( kv.size( ) == 2, "Expected data to have 2 items" );
-	daw_json_assert( kv.begin( )->first == std::prev( kv.end( ) )->first,
-	                 "Unexpected value" );
-	daw_json_assert( kv.begin( )->second != std::prev( kv.end( ) )->second,
-	                 "Unexpected value" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( kv.size( ) == 2, "Expected data to have 2 items" );
+	test_assert( kv.begin( )->first == std::prev( kv.end( ) )->first,
+	             "Unexpected value" );
+	test_assert( kv.begin( )->second != std::prev( kv.end( ) )->second,
+	             "Unexpected value" );
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

@@ -12,13 +12,14 @@
 
 #include "defines.h"
 
-#include "apache_builds.h"
-#include "daw/json/daw_json_link.h"
+#include "apache_builds_json.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
+#include <daw/json/daw_from_json.h>
+#include <daw/json/daw_to_json.h>
 
 #include <fstream>
 #include <iostream>
@@ -28,7 +29,7 @@
 #if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 250;
 #else
-static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
@@ -43,10 +44,9 @@ inline bool DAW_CONSTEXPR is_to_json_data_able_v =
 template<typename T,
          std::enable_if_t<is_to_json_data_able_v<T>, std::nullptr_t> = nullptr>
 DAW_CONSTEXPR bool operator==( T const &lhs, T const &rhs ) {
-	if( to_json_data( lhs ) == to_json_data( rhs ) ) {
-		return true;
-	}
-	daw_json_error( "Expected that values would be equal" );
+	test_assert( to_json_data( lhs ) == to_json_data( rhs ),
+	             "Expected that values would be equal" );
+	return true;
 }
 
 template<typename ParsePolicy>
@@ -57,10 +57,10 @@ void test( std::string_view json_sv1 ) {
 
 	auto apache_builds_result =
 	  daw::json::from_json<apache_builds::apache_builds, ParsePolicy>( json_sv1 );
-	daw_json_assert( apache_builds_result.jobs.size( ) > 0,
-	                 "Bad value for jobs.size( )" );
-	daw_json_assert( apache_builds_result.numExecutors == 0,
-	                 "Bad value for numExecutors" );
+	test_assert( not apache_builds_result.jobs.empty( ),
+	             "Bad value for jobs.size( )" );
+	test_assert( apache_builds_result.numExecutors == 0,
+	             "Bad value for numExecutors" );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "apache_builds bench", sz,
@@ -82,7 +82,7 @@ void test( std::string_view json_sv1 ) {
 	  },
 	  apache_builds_result );
 
-	daw_json_assert( not str.empty( ), "Expected a string value" );
+	test_assert( not str.empty( ), "Expected a string value" );
 
 	daw::do_not_optimize( str );
 	auto const apache_builds_result2 =
@@ -90,12 +90,16 @@ void test( std::string_view json_sv1 ) {
 	daw::do_not_optimize( apache_builds_result2 );
 	// Removing for now as it will do a float compare and fail
 	/*
-	daw_json_assert( apache_builds_result == apache_builds_result2,
+	test_assert( apache_builds_result == apache_builds_result2,
 	                 "Expected round trip to produce same result" );
 	                 */
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a path to apache_builds.json\n";
@@ -124,7 +128,10 @@ int main( int argc, char **argv ) try {
 		  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
 		  json_sv1 );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

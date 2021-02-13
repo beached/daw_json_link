@@ -5,6 +5,7 @@
 //
 // Official repository: https://github.com/beached/daw_json_link
 //
+#include "defines.h"
 
 #include "daw/json/daw_json_event_parser.h"
 #include "daw/json/daw_json_link.h"
@@ -131,7 +132,7 @@ void minify( daw::Arguments const &args, std::string_view data,
 	}
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv ) {
 	std::ios::sync_with_stdio( false );
 
 	auto args = daw::Arguments( argc, argv );
@@ -145,16 +146,26 @@ int main( int argc, char **argv ) try {
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( args[0].value );
 
-	if( args.size( ) > 1 and args[1].name.empty( ) ) {
-		daw_json_assert( data.size( ) > 0, "Invalid JSON document" );
-		auto ofile = std::ofstream( args[1].value.to_string( ).c_str( ),
-		                            std::ios::trunc | std::ios::binary );
-		daw_json_assert( ofile, "Unable to output file" );
-		minify( args, data, std::ostreambuf_iterator<char>( ofile ) );
-	} else {
-		minify( args, data, std::ostreambuf_iterator<char>( std::cout ) );
+#ifdef DAW_USE_JSON_EXCEPTIONS
+	try {
+#endif
+		if( args.size( ) > 1 and args[1].name.empty( ) ) {
+			test_assert( data.size( ) > 0, "Could not open JSON document" );
+			auto ofile = std::ofstream( args[1].value.to_string( ).c_str( ),
+			                            std::ios::trunc | std::ios::binary );
+			if( not ofile ) {
+				std::cerr << "Failed to open outputfile '" << args[1].value << "'\n";
+				exit( 1 );
+			}
+			minify( args, data, std::ostreambuf_iterator<char>( ofile ) );
+		} else {
+			minify( args, data, std::ostreambuf_iterator<char>( std::cout ) );
+		}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+	} catch( daw::json::json_exception const &jex ) {
+		std::cerr << "Exception thrown by parser\n"
+		          << to_formatted_string( jex, data.data( ) ) << '\n';
+		exit( 1 );
 	}
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser\n" << to_formatted_string( jex ) << std::endl;
-	exit( 1 );
+#endif
 }

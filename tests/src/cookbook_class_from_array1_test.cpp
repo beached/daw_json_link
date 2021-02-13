@@ -44,7 +44,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_class_from_array1.json file\n" );
 		exit( EXIT_FAILURE );
@@ -53,22 +57,24 @@ int main( int argc, char **argv ) try {
 	puts( "Original\n" );
 	puts( data.data( ) );
 
-	daw::cookbook_class_from_array1::Point const cls =
-	  daw::json::from_json<daw::cookbook_class_from_array1::Point>(
-	    std::string_view( data.data( ), data.size( ) ) );
+	auto const cls = daw::json::from_json<daw::cookbook_class_from_array1::Point>(
+	  std::string_view( data.data( ), data.size( ) ) );
 
 	std::string const str = daw::json::to_json( cls );
 
 	puts( "Round trip\n" );
 	puts( str.c_str( ) );
-	daw::cookbook_class_from_array1::Point const cls2 =
+	auto const cls2 =
 	  daw::json::from_json<daw::cookbook_class_from_array1::Point>(
 	    std::string_view( str.data( ), str.size( ) ) );
 
 	if( cls != cls2 ) {
 		puts( "not exact same\n" );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

@@ -74,9 +74,11 @@ $(function() {
 <div class="title">daw_json_parse_iso8601_utils.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;daw/daw_arith_traits.h&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="daw__json__parse__digit_8h_source.html">daw_json_parse_digit.h</a>&quot;</code><br />
+<code>#include &lt;daw/daw_arith_traits.h&gt;</code><br />
 <code>#include &lt;daw/daw_string_view.h&gt;</code><br />
 <code>#include &lt;chrono&gt;</code><br />
+<code>#include &lt;ciso646&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
 </div>
 <p><a href="daw__json__parse__iso8601__utils_8h_source.html">Go to the source code of this file.</a></p>
@@ -130,12 +132,9 @@ Functions</h2></td></tr>
 <tr class="memitem:afc2dc3593719c2183a9cc0a327556dcb"><td class="memTemplParams" colspan="2">template&lt;typename Duration &gt; </td></tr>
 <tr class="memitem:afc2dc3593719c2183a9cc0a327556dcb"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1datetime.html#afc2dc3593719c2183a9cc0a327556dcb">daw::json::datetime::short_day_of_week</a> (std::chrono::time_point&lt; std::chrono::system_clock, Duration &gt; tp)</td></tr>
 <tr class="separator:afc2dc3593719c2183a9cc0a327556dcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a921db189cf4bb8dab76bc00f534c1ffe"><td class="memTemplParams" colspan="2">template&lt;typename Clock , typename Duration &gt; </td></tr>
-<tr class="memitem:a921db189cf4bb8dab76bc00f534c1ffe"><td class="memTemplItemLeft" align="right" valign="top">constexpr ymdhms&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1datetime.html#a921db189cf4bb8dab76bc00f534c1ffe">daw::json::datetime::time_point_to_civil</a> (std::chrono::time_point&lt; Clock, Duration &gt; const &amp;tp) noexcept</td></tr>
-<tr class="separator:a921db189cf4bb8dab76bc00f534c1ffe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbfcba1413efe5395e28f3c7ec909364"><td class="memTemplParams" colspan="2">template&lt;typename Result &gt; </td></tr>
-<tr class="memitem:abbfcba1413efe5395e28f3c7ec909364"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1parse__utils.html#abbfcba1413efe5395e28f3c7ec909364">daw::json::parse_utils::to_integer</a> (char const c)</td></tr>
-<tr class="separator:abbfcba1413efe5395e28f3c7ec909364"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabebe536cbd0b3473731f46463572135"><td class="memTemplParams" colspan="2">template&lt;typename Clock , typename Duration &gt; </td></tr>
+<tr class="memitem:aabebe536cbd0b3473731f46463572135"><td class="memTemplItemLeft" align="right" valign="top">constexpr ymdhms&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1datetime.html#aabebe536cbd0b3473731f46463572135">daw::json::datetime::time_point_to_civil</a> (std::chrono::time_point&lt; Clock, Duration &gt; const &amp;tp)</td></tr>
+<tr class="separator:aabebe536cbd0b3473731f46463572135"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -5,9 +5,9 @@ on:
     branches: release
   pull_request:
     push:
-      branches-ignore: dev
+      branches-ignore: develop
     pull_request:
-      branches-ignore: dev
+      branches-ignore: develop
 
 jobs:
   debug:

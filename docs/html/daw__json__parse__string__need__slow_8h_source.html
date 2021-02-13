@@ -87,7 +87,7 @@ $(function() {
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">   * When skip_string encounters escaping, it will note this as a non-zero value</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">   */</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Range&gt;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  constexpr <span class="keyword">inline</span> <span class="keywordtype">bool</span> needs_slow_path( Range <span class="keyword">const</span> &amp;rng ) noexcept {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  constexpr <span class="keyword">inline</span> <span class="keywordtype">bool</span> needs_slow_path( Range <span class="keyword">const</span> &amp;rng ) {</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>( rng.counter ) &gt;= 0;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  }</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;} <span class="comment">// namespace daw::json::json_details</span></div>

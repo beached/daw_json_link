@@ -35,7 +35,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_key_value<"kv", std::unordered_map<std::string, int>, int>>;
 #else
-		DAW_CONSTEXPR inline static char const kv[] = "kv";
+		constexpr inline static char const kv[] = "kv";
 		using type = json_member_list<
 		  json_key_value<kv, std::unordered_map<std::string, int>, int>>;
 #endif
@@ -48,7 +48,7 @@ namespace daw::json {
 		  "kv", daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
 		  int, daw::string_view>>;
 #else
-		DAW_CONSTEXPR inline static char const kv[] = "kv";
+		constexpr inline static char const kv[] = "kv";
 		using type = json_member_list<json_key_value<
 		  kv, daw::bounded_hash_map<daw::string_view, int, 5, daw::fnv1a_hash_t>,
 		  int, daw::string_view>>;
@@ -56,7 +56,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	DAW_CONSTEXPR std::string_view const json_data3 =
 	  R"( {"kv": {
 				"key0": 0,
@@ -68,11 +72,12 @@ int main( int, char ** ) try {
 	daw::do_not_optimize( kv_test );
 
 	DAW_CONSTEXPR kv2_t kv2_test = daw::json::from_json<kv2_t>( json_data3 );
-	daw_json_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
-	daw_json_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
-	daw_json_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
-	daw_json_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( kv2_test.kv.size( ) == 3, "Unexpected size" );
+	test_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
+	test_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
+	test_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

@@ -25,7 +25,7 @@
 #if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 2500;
 #else
-static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
@@ -34,6 +34,13 @@ template<typename Container>
 constexpr void clear( Container &c ) {
 	for( auto &v : c ) {
 		v = { };
+	}
+}
+
+inline constexpr void test_assert( bool b, std::string_view msg ) {
+	if( not b ) {
+		std::cerr << msg << '\n';
+		exit( 1 );
 	}
 }
 
@@ -68,7 +75,7 @@ std::size_t test( std::string_view json_data ) {
 	  },
 	  json_data, values.data( ) );
 	daw::do_not_optimize( values );
-	daw_json_assert( v2 == values, "Expected them to parse the same" );
+	test_assert( v2 == values, "Expected them to parse the same" );
 	auto const h0 = std::accumulate(
 	  values.begin( ), values.end( ), 0ULL, []( auto old, auto current ) {
 		  return old +=
@@ -99,12 +106,16 @@ std::size_t test( std::string_view json_data ) {
 		  return old +=
 		         std::hash<std::string>{ }( static_cast<std::string>( current ) );
 	  } );
-	daw_json_assert( values == values2, "Parses don't match" );
-	daw_json_assert( h0 == h1, "Hashes don't match" );
+	test_assert( values == values2, "Parses don't match" );
+	test_assert( h0 == h1, "Hashes don't match" );
 	return h1;
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to strings.json file\n" );
 		exit( EXIT_FAILURE );
@@ -115,15 +126,14 @@ int main( int argc, char **argv ) try {
 	}( );
 	auto const h0 = test<daw::json::constexpr_exec_tag>( json_string );
 	auto const h1 = test<daw::json::runtime_exec_tag>( json_string );
-	daw_json_assert( h0 == h1,
-	                 "constexpr/runtime exec model hashes do not match" );
+	test_assert( h0 == h1, "constexpr/runtime exec model hashes do not match" );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
 		auto const h2 = test<daw::json::simd_exec_tag>( json_string );
-		daw_json_assert( h0 == h2,
-		                 "constexpr/fast exec model hashes do not match" );
+		test_assert( h0 == h2, "constexpr/fast exec model hashes do not match" );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

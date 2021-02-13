@@ -8,12 +8,12 @@
 
 #include "defines.h"
 
-#include "citm_test.h"
-#include "geojson.h"
-#include "twitter_test.h"
+#include "citm_test_json.h"
+#include "geojson_json.h"
+#include "twitter_test_json.h"
 
-#include <daw/json/daw_json_iterator.h>
-#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_to_json.h>
+#include <daw/json/daw_from_json.h>
 
 #include <fstream>
 #include <iostream>
@@ -29,7 +29,11 @@ std::string read_file( std::string const &filename ) {
 	                    std::istreambuf_iterator<char>( ) );
 }
 
-int main( int argc, char *argv[] ) try {
+int main( int argc, char *argv[] )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 #if defined( NDEBUG ) and not defined( DEBUG )
 	std::cout << "release run\n";
 #else
@@ -46,8 +50,8 @@ int main( int argc, char *argv[] ) try {
 	std::string const canada_data = read_file( argv[3] );
 
 	std::cout << "C++ DAW JSON Link\n";
-	auto const canada_obj =
-	  daw::json::from_json<daw::geojson::FeatureCollection>( canada_data );
+	auto const canada_obj = daw::json::from_json<daw::geojson::Polygon>(
+	  canada_data, "features[0].geometry" );
 	auto const twitter_obj =
 	  daw::json::from_json<daw::twitter::twitter_object_t>( twitter_data );
 	auto const citm_obj =
@@ -58,7 +62,7 @@ int main( int argc, char *argv[] ) try {
 	auto const citm_out = daw::json::to_json( citm_obj );
 
 	auto const canada_obj2 =
-	  daw::json::from_json<daw::geojson::FeatureCollection>( canada_out );
+	  daw::json::from_json<daw::geojson::Polygon>( canada_out );
 	auto const twitter_obj2 =
 	  daw::json::from_json<daw::twitter::twitter_object_t>( twitter_out );
 	auto const citm_obj2 =

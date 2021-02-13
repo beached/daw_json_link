@@ -93,7 +93,11 @@ struct Node {
 	bool member2;
 };
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_graphs1.json file\n" );
 		exit( EXIT_FAILURE );
@@ -112,19 +116,19 @@ int main( int argc, char **argv ) try {
 
 	auto const find_node_id = [&g]( size_t id ) -> std::optional<daw::node_id_t> {
 		auto result = g.find( [id]( auto const &node ) {
-			daw_json_assert( node, "Expected a node" );
+			test_assert( node, "Expected a node" );
 			return node.value( ).id == id;
 		} );
 		if( result.empty( ) ) {
 			return { };
 		}
-		daw_json_assert( result.size( ) == 1, "Unexpected size" );
+		test_assert( result.size( ) == 1, "Unexpected size" );
 		return result.front( );
 	};
 
 	auto const find_node = [&]( size_t id ) {
 		auto result = find_node_id( id );
-		daw_json_assert( result, "Expected a result" );
+		test_assert( result, "Expected a result" );
 		return g.get_node( *result );
 	};
 
@@ -138,32 +142,34 @@ int main( int argc, char **argv ) try {
 	}
 	(void)g;
 
-	daw_json_assert( g.size( ) == 3U, "Expected graph to have 3 nodes" );
+	test_assert( g.size( ) == 3U, "Expected graph to have 3 nodes" );
 	auto nid_0 = find_node_id( 0 );
-	daw_json_assert( nid_0, "Expecting a node with id 0" );
+	test_assert( nid_0, "Expecting a node with id 0" );
 	auto nid_1 = find_node_id( 1 );
-	daw_json_assert( nid_1, "Expecting a node with id 1" );
+	test_assert( nid_1, "Expecting a node with id 1" );
 	auto nid_2 = find_node_id( 2 );
-	daw_json_assert( nid_2, "Expecting a node with id 2" );
+	test_assert( nid_2, "Expecting a node with id 2" );
 
 	auto const &n0 = find_node( 0 );
 
-	daw_json_assert( n0.outgoing_edges( ).size( ) == 1U,
-	                 "Node id 0 should only have 1 outgoing edge" );
-	daw_json_assert(
-	  n0.outgoing_edges( ).count( *nid_1 ) == 1U,
-	  "Node id 0 should only have 2 incoming edge from node id 1" );
+	test_assert( n0.outgoing_edges( ).size( ) == 1U,
+	             "Node id 0 should only have 1 outgoing edge" );
+	test_assert( n0.outgoing_edges( ).count( *nid_1 ) == 1U,
+	             "Node id 0 should only have 2 incoming edge from node id 1" );
 
-	daw_json_assert( n0.incoming_edges( ).size( ) == 2U,
-	                 "Node id 0 should 2 incoming edges" );
-	daw_json_assert( n0.incoming_edges( ).count( *nid_1 ) == 1U,
-	                 "Node id 0 should have 1 incoming edge from node id 1" );
+	test_assert( n0.incoming_edges( ).size( ) == 2U,
+	             "Node id 0 should 2 incoming edges" );
+	test_assert( n0.incoming_edges( ).count( *nid_1 ) == 1U,
+	             "Node id 0 should have 1 incoming edge from node id 1" );
 
-	daw_json_assert( n0.incoming_edges( ).count( *nid_2 ) == 1U,
-	                 "Node id 0 should have 1 incoming edge from node id 2" );
+	test_assert( n0.incoming_edges( ).count( *nid_2 ) == 1U,
+	             "Node id 0 should have 1 incoming edge from node id 2" );
 
 	return 0;
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

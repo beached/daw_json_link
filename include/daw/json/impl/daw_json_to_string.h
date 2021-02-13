@@ -15,24 +15,53 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_bounded_vector.h>
+#include <daw/daw_move.h>
 #include <daw/daw_traits.h>
 #include <utf8/unchecked.h>
 
+#include <ciso646>
 #include <optional>
 #include <sstream>
 #include <string>
-#include <third_party/ryu/ryu.hpp>
+#ifndef DAW_JSON_CUSTOM_D2S
+#include <third_party/dragonbox/dragonbox.h>
+#elif __has_include( "custom_d2s.h" )
+#include "custom_d2s.h"
+#else
+#error Request for local d2s, but no custom_d2s.h supplied with char * d2s( Real const & value, char * ); declaration/definition in namespace daw::json
+#endif
 #include <tuple>
 #include <type_traits>
 #include <variant>
 
-namespace daw::json::json_details::to_strings {
+namespace daw::json {
+	template<typename Real, typename OutputIterator>
+	inline OutputIterator real2string( Real const &value,
+	                                   OutputIterator out_it ) {
+#ifndef DAW_JSON_CUSTOM_D2S
+		if constexpr( std::is_same_v<Real, float> ) {
+			return jkj::dragonbox::to_chars_n( value, out_it );
+		} else {
+			return jkj::dragonbox::to_chars_n( static_cast<double>( value ), out_it );
+		}
+#else
+		if constexpr( std::is_same_v<Real, float> ) {
+			return daw::json::d2s( value, out_it );
+		} else {
+			return daw::json::d2s( static_cast<double>( value ), out_it );
+		}
+#endif
+	}
+} // namespace daw::json
 
+namespace daw::json::json_details::to_strings {
+	// Need to use ADL to_string in unevaluated contexts.  Limiting to it's own
+	// namespace
 	using std::to_string;
 	namespace to_string_test {
 		template<typename T>
 		[[maybe_unused]] auto to_string_test( T &&v )
-		  -> decltype( to_string( std::forward<T>( v ) ) );
+		  -> decltype( to_string( DAW_FWD( v ) ) );
 
 		template<typename T>
 		using to_string_result = decltype( to_string_test( std::declval<T>( ) ) );
@@ -52,7 +81,6 @@ namespace daw::json::json_details::to_strings {
 		}
 		return to_string( *v );
 	}
-
 } // namespace daw::json::json_details::to_strings
 
 namespace daw::json {
@@ -64,7 +92,7 @@ namespace daw::json {
 		[[nodiscard]] inline constexpr decltype( auto )
 		operator( )( U &&value ) const {
 			using std::to_string;
-			return to_string( std::forward<U>( value ) );
+			return to_string( DAW_FWD( value ) );
 		}
 
 		template<typename U,
@@ -72,7 +100,7 @@ namespace daw::json {
 		                          std::nullptr_t> = nullptr>
 		[[nodiscard]] inline std::string operator( )( U &&value ) const {
 			std::stringstream ss;
-			ss << std::forward<U>( value );
+			ss << DAW_FWD( value );
 			return ss.str( );
 		}
 	};
@@ -82,7 +110,7 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline OutputIterator constexpr to_string(
 	  ParseTag<JsonParseTypes::Null>, OutputIterator it,
-	  parse_to_t const &container );
+	  parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
@@ -152,11 +180,13 @@ namespace daw::json::json_details {
 	//************************************************
 	template<typename Char>
 	constexpr char to_nibble_char( Char c ) {
-		daw_json_assert( c < 16, "Unexpected hex nibble" );
-		if( c < 10 ) {
-			return static_cast<char>( c + '0' );
+		auto const u = static_cast<unsigned>( static_cast<unsigned char>( c ) );
+		daw_json_assert( u < 16, ErrorReason::InvalidUTFEscape );
+		if( u < 10 ) {
+			return static_cast<char>( u + static_cast<unsigned char>( '0' ) );
 		} else {
-			return static_cast<char>( ( c - 10U ) + 'A' );
+			return static_cast<char>( ( u - 10U ) +
+			                          static_cast<unsigned char>( 'A' ) );
 		}
 	}
 
@@ -203,7 +233,7 @@ namespace daw::json::json_details {
 			*it++ = static_cast<char>( ( cp & 0b00111111U ) | 0b10000000U );
 			return;
 		}
-		daw_json_error( "Invalid code point" );
+		daw_json_error( ErrorReason::InvalidUTFCodepoint );
 	}
 } // namespace daw::json::json_details
 
@@ -280,8 +310,7 @@ namespace daw::json::utils {
 				if constexpr( EightBitMode == EightBitModes::DisallowHigh ) {
 					daw_json_assert( ( static_cast<unsigned char>( c ) >= 0x20U and
 					                   static_cast<unsigned char>( c ) <= 0x7FU ),
-					                 "string support limited to 0x20 < chr <= 0x7F when "
-					                 "DisallowHighEightBit is true" );
+					                 ErrorReason::InvalidStringHighASCII );
 				}
 				*it++ = c;
 			}
@@ -360,8 +389,7 @@ namespace daw::json::utils {
 				if constexpr( EightBitMode == EightBitModes::DisallowHigh ) {
 					daw_json_assert( ( static_cast<unsigned>( *ptr ) >= 0x20U and
 					                   static_cast<unsigned>( *ptr ) <= 0x7FU ),
-					                 "string support limited to 0x20 < chr <= 0x7F when "
-					                 "DisallowHighEightBit is true" );
+					                 ErrorReason::InvalidStringHighASCII );
 				}
 				*it++ = *ptr++;
 			}
@@ -460,7 +488,7 @@ namespace daw::json::json_details {
 	to_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 	           Optional const &value ) {
 		static_assert( is_valid_optional_v<Optional> );
-		daw_json_assert( value, "Should Never get here without a value" );
+		daw_json_assert( value, ErrorReason::UnexpectedNull );
 		using tag_type = ParseTag<JsonMember::base_expected_type>;
 		return to_string<JsonMember>( tag_type{ }, it, *value );
 	}
@@ -478,9 +506,7 @@ namespace daw::json::json_details {
 			if( std::isnan( value ) ) {
 				if constexpr( JsonMember::literal_as_string ==
 				              LiteralAsStringOpt::Never ) {
-					daw_json_error(
-					  "Nan is not supported as json number literals, must be quoted "
-					  "but that is not enabled" );
+					daw_json_error( ErrorReason::NumberIsNaN );
 				} else {
 					*it++ = '"';
 					it = utils::copy_to_iterator( it, "NaN" );
@@ -490,9 +516,7 @@ namespace daw::json::json_details {
 			} else if( std::isinf( value ) ) {
 				if constexpr( JsonMember::literal_as_string ==
 				              LiteralAsStringOpt::Never ) {
-					daw_json_error(
-					  "Infinity is not supported as json number literals, must be quoted "
-					  "but that is not enabled" );
+					daw_json_error( ErrorReason::NumberIsInf );
 				} else {
 					*it++ = '"';
 					it = utils::copy_to_iterator( it, "Infinity" );
@@ -508,16 +532,13 @@ namespace daw::json::json_details {
 		}
 		if constexpr( daw::is_floating_point_v<parse_to_t> ) {
 			static_assert( sizeof( parse_to_t ) <= sizeof( double ) );
-			char buff[50];
-			buff[49] = 0;
-			char *ptr = buff;
 			if constexpr( std::is_same_v<OutputIterator, char *> ) {
-				ptr = it;
-			}
-			ptr = ryu::d2s_buffered( static_cast<double>( value ), ptr );
-			if constexpr( std::is_same_v<OutputIterator, char *> ) {
-				it = ptr;
+				it = real2string( value, it );
 			} else {
+				char buff[50];
+				buff[49] = 0;
+				char *ptr = buff;
+				ptr = real2string( value, ptr );
 				std::copy( buff, ptr, it );
 			}
 		} else {
@@ -549,8 +570,10 @@ namespace daw::json::json_details {
 	inline constexpr auto digits100 = [] {
 		std::array<char[2], 100> result{ };
 		for( size_t n = 0; n < 100; ++n ) {
-			result[n][0] = static_cast<char>( n % 10 ) + '0';
-			result[n][1] = static_cast<char>( n / 10 ) + '0';
+			result[n][0] =
+			  static_cast<char>( ( n % 10 ) + static_cast<unsigned char>( '0' ) );
+			result[n][1] =
+			  static_cast<char>( ( n / 10 ) + static_cast<unsigned char>( '0' ) );
 		}
 		return result;
 	}( );
@@ -643,8 +666,7 @@ namespace daw::json::json_details {
 		if constexpr( std::is_enum_v<parse_to_t> or
 		              daw::is_integral_v<parse_to_t> ) {
 			auto v = static_cast<under_type>( value );
-			daw_json_assert(
-			  v >= 0, "Negative numbers are not supported for unsigned types" );
+			daw_json_assert( v >= 0, ErrorReason::NumberOutOfRange );
 			char buff[daw::numeric_limits<under_type>::digits10 + 1]{ };
 			char *ptr = buff;
 			if( v == 0 ) {
@@ -676,17 +698,20 @@ namespace daw::json::json_details {
 		}
 		return it;
 	}
+
 } // namespace daw::json::json_details
 
 namespace daw::json::utils {
 	namespace utils_details {
-		template<typename Integer>
-		struct number {
-			using parse_to_t = Integer;
-			static constexpr LiteralAsStringOpt literal_as_string =
-			  LiteralAsStringOpt::Never;
-		};
-	} // namespace utils_details
+		namespace {
+			template<typename Integer>
+			struct number {
+				using parse_to_t = Integer;
+				static constexpr LiteralAsStringOpt literal_as_string =
+				  LiteralAsStringOpt::Never;
+			};
+		} // namespace
+	}   // namespace utils_details
 
 	template<typename Integer, typename OutputIterator>
 	inline constexpr OutputIterator integer_to_string( OutputIterator it,
@@ -715,7 +740,7 @@ namespace daw::json::json_details {
 
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 		*it++ = '"';
-		if( value.size( ) > 0U ) {
+		if( std::size( value ) > 0U ) {
 			it = utils::copy_to_iterator<false, eight_bit_mode>( it, value );
 		}
 		*it++ = '"';
@@ -727,9 +752,11 @@ namespace daw::json::json_details {
 	to_string( ParseTag<JsonParseTypes::StringEscaped>, OutputIterator it,
 	           parse_to_t const &value ) {
 
-		static_assert(
+		/* TODO is something like this necessary
+		 static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
+		  */
 
 		constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 		*it++ = '"';
@@ -816,9 +843,14 @@ namespace daw::json::json_details {
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
-		return json_data_contract_trait_t<parse_to_t>::serialize(
-		  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ),
-		  value );
+		if constexpr( has_json_to_json_data_v<parse_to_t> ) {
+			return json_data_contract_trait_t<parse_to_t>::serialize(
+			  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ),
+			  value );
+		} else {
+			static_assert( is_submember_tagged_variant_v<parse_to_t> );
+			return json_data_contract_trait_t<parse_to_t>::serialize( it, value );
+		}
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
@@ -852,16 +884,16 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,
-	           parse_to_t const &container ) {
+	           parse_to_t const &value ) {
 
 		static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
 		*it++ = '[';
-		if( not std::empty( container ) ) {
-			auto count = std::size( container ) - 1U;
-			for( auto const &v : container ) {
+		if( not std::empty( value ) ) {
+			auto count = std::size( value ) - 1U;
+			for( auto const &v : value ) {
 				it = to_string<typename JsonMember::json_element_t>(
 				  ParseTag<JsonMember::json_element_t::expected_type>{ }, it, v );
 				if( count-- > 0 ) {
@@ -888,7 +920,7 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::KeyValueArray>, OutputIterator it,
-	           parse_to_t const &container ) {
+	           parse_to_t const &value ) {
 
 		static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
@@ -896,9 +928,9 @@ namespace daw::json::json_details {
 		using key_t = typename JsonMember::json_key_t;
 		using value_t = typename JsonMember::json_value_t;
 		*it++ = '[';
-		if( not std::empty( container ) ) {
-			auto count = std::size( container ) - 1U;
-			for( auto const &v : container ) {
+		if( not std::empty( value ) ) {
+			auto count = std::size( value ) - 1U;
+			for( auto const &v : value ) {
 				*it++ = '{';
 				// Append Key Name
 				*it++ = '"';
@@ -932,16 +964,16 @@ namespace daw::json::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::KeyValue>, OutputIterator it,
-	           parse_to_t const &container ) {
+	           parse_to_t const &value ) {
 
 		static_assert(
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
 		*it++ = '{';
-		if( not std::empty( container ) ) {
-			auto count = std::size( container ) - 1U;
-			for( auto const &v : container ) {
+		if( not std::empty( value ) ) {
+			auto count = std::size( value ) - 1U;
+			for( auto const &v : value ) {
 				it = to_string<typename JsonMember::json_key_t>(
 				  ParseTag<JsonMember::json_key_t::expected_type>{ }, it,
 				  json_get_key( v ) );
@@ -986,8 +1018,8 @@ namespace daw::json::json_details {
 	                                 Value const &v,
 	                                 VisitedMembers &visited_members ) {
 		using tag_member = tag_member_t<JsonMember>;
-		constexpr auto tag_member_name =
-		  daw::string_view( tag_member::name.data( ), tag_member::name.size( ) );
+		constexpr auto tag_member_name = daw::string_view(
+		  std::data( tag_member::name ), std::size( tag_member::name ) );
 		if( daw::algorithm::contains( visited_members.begin( ),
 		                              visited_members.end( ), tag_member_name ) ) {
 			return;
@@ -1010,8 +1042,8 @@ namespace daw::json::json_details {
 	inline constexpr void to_json_str( bool &is_first, OutputIterator &it,
 	                                   std::tuple<Args...> const &tp,
 	                                   Value const &, Visited &visited_members ) {
-		constexpr auto json_member_name =
-		  daw::string_view( JsonMember::name.data( ), JsonMember::name.size( ) );
+		constexpr auto json_member_name = daw::string_view(
+		  std::data( JsonMember::name ), std::size( JsonMember::name ) );
 		if( daw::algorithm::contains( visited_members.begin( ),
 		                              visited_members.end( ), json_member_name ) ) {
 			return;

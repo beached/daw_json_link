@@ -6,25 +6,23 @@
 // Official repository: https://github.com/beached/daw_json_link
 //
 
-#include "defines.h"
-
-#include "apache_builds.h"
+#include "apache_builds_json.h"
 #include "bench_result.h"
-#include "citm_test.h"
-#include "geojson.h"
-#include "twitter_test.h"
+#include "citm_test_json.h"
+#include "geojson_json.h"
+#include "twitter_test_json.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_utility.h>
-#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_from_json.h>
+#include <daw/json/daw_to_json.h>
 
 #include <cassert>
 #include <chrono>
 #include <cstddef>
 #include <fstream>
 #include <ios>
-#include <limits>
 #include <string_view>
 
 // These come from build system and must be defined
@@ -57,9 +55,9 @@ using UncheckedPolicy =
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
-static inline constexpr std::size_t DAW_NUM_RUNS = 1000;
+static inline constexpr std::size_t DAW_NUM_RUNS = 2000;
 #else
-static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
@@ -336,9 +334,9 @@ namespace {
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string_view jd ) {
 				    return daw::json::from_json<
-				      daw::geojson::FeatureCollection,
+				      daw::geojson::Polygon,
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      jd );
+				      jd, "features[0].geometry" );
 			    },
 			    json_data ) );
 		};
@@ -364,9 +362,9 @@ namespace {
 			  daw::bench_n_test_json<DAW_NUM_RUNS>(
 			    []( std::string_view jd ) {
 				    return daw::json::from_json<
-				      daw::geojson::FeatureCollection,
+				      daw::geojson::Polygon,
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      jd );
+				      jd, "features[0].geometry" );
 			    },
 			    json_data ) );
 		};
@@ -405,9 +403,9 @@ namespace {
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
 				      ci );
 				    auto const j3 = daw::json::from_json<
-				      daw::geojson::FeatureCollection,
+				      daw::geojson::Polygon,
 				      daw::json::SIMDNoCommentSkippingPolicyChecked<decltype( e )>>(
-				      ca );
+				      ca, "features[0].geometry" );
 				    daw::do_not_optimize( j1 );
 				    daw::do_not_optimize( j2 );
 				    daw::do_not_optimize( j3 );
@@ -449,9 +447,9 @@ namespace {
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
 				      ci );
 				    auto const j3 = daw::json::from_json<
-				      daw::geojson::FeatureCollection,
+				      daw::geojson::Polygon,
 				      daw::json::SIMDNoCommentSkippingPolicyUnchecked<decltype( e )>>(
-				      ca );
+				      ca, "features[0].geometry" );
 				    daw::do_not_optimize( j1 );
 				    daw::do_not_optimize( j2 );
 				    daw::do_not_optimize( j3 );

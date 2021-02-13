@@ -46,8 +46,12 @@ template<typename... Members>
 struct InlineClass {
 	std::tuple<typename Members::parse_to_t...> members;
 
-	template<typename... Ts>
-	inline DAW_CONSTEXPR InlineClass( Ts &&... values )
+	template<
+	  typename... Ts,
+	  std::enable_if_t<( not daw::traits::is_first_type_v<InlineClass, Ts...> and
+	                     ( std::is_convertible_v<Ts, Members> and ... ) ),
+	                   std::nullptr_t> = nullptr>
+	inline DAW_CONSTEXPR InlineClass( Ts &&...values )
 	  : members{ std::forward<Ts>( values )... } {}
 };
 
@@ -77,29 +81,34 @@ bool array_with_closing_class_fail( ) {
 	return true;
 }
 
-#define do_test( ... )                                                         \
-	try {                                                                        \
-		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                    \
-	} catch( daw::json::json_exception const &jex ) {                            \
-		std::cerr << "Unexpected exception thrown by parser in test '"             \
-		          << "" #__VA_ARGS__ << "': " << jex.reason( ) << std::endl;       \
-	}                                                                            \
-	do {                                                                         \
+#define do_test( ... )                                                   \
+	try {                                                                  \
+		daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );              \
+	} catch( daw::json::json_exception const &jex ) {                      \
+		std::cerr << "Unexpected exception thrown by parser in test '"       \
+		          << "" #__VA_ARGS__ << "': " << jex.reason( ) << std::endl; \
+	}                                                                      \
+	do {                                                                   \
 	} while( false )
 
-#define do_fail_test( ... )                                                    \
-	do {                                                                         \
-		try {                                                                      \
-			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                  \
-		} catch( daw::json::json_exception const & ) { break; }                    \
-		std::cerr << "Expected exception, but none thrown in '"                    \
-		          << "" #__VA_ARGS__ << "'\n";                                     \
+#define do_fail_test( ... )                                   \
+	do {                                                        \
+		try {                                                     \
+			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ ); \
+		} catch( daw::json::json_exception const & ) { break; }   \
+		std::cerr << "Expected exception, but none thrown in '"   \
+		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	do_test( empty_array_empty_json_array( ) );
 	do_fail_test( int_array_json_string_array_fail( ) );
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

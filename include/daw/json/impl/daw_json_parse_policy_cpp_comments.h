@@ -15,6 +15,8 @@
 
 #include <daw/daw_hide.h>
 
+#include <ciso646>
+
 namespace daw::json {
 	/***
 	 * Allow skipping C++ style comments in JSON document
@@ -54,7 +56,7 @@ namespace daw::json {
 				if( not rng.has_more( ) ) {
 					return;
 				}
-				switch( *(rng.first + 1 ) ) {
+				switch( *( rng.first + 1 ) ) {
 				case '/':
 					rng.template move_to_next_of_checked<'\n'>( );
 					if( rng.has_more( ) ) {
@@ -115,9 +117,11 @@ namespace daw::json {
 		template<char... keys, typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void move_to_next_of( Range &rng ) {
 			skip_comments( rng );
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of data", rng );
+			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      rng );
 			while( not parse_policy_details::in<keys...>( rng.front( ) ) ) {
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of data", rng );
+				daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+				                      rng );
 				rng.remove_prefix( );
 				skip_comments( rng );
 			}
@@ -167,8 +171,8 @@ namespace daw::json {
 							++ptr_first;
 						}
 					}
-					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream",
-					                 rng );
+					daw_json_assert( ptr_first < ptr_last,
+					                 ErrorReason::UnexpectedEndOfData, rng );
 					break;
 				case ',':
 					if( prime_bracket_count == 1 and second_bracket_count == 0 ) {
@@ -181,8 +185,8 @@ namespace daw::json {
 				case PrimRight:
 					--prime_bracket_count;
 					if( prime_bracket_count == 0 ) {
-						daw_json_assert( second_bracket_count == 0, "Unexpected bracketing",
-						                 rng );
+						daw_json_assert( second_bracket_count == 0,
+						                 ErrorReason::InvalidBracketing, rng );
 						++ptr_first;
 						// We include the close primary bracket in the range so that
 						// subsequent parsers have a terminator inside their range
@@ -200,8 +204,8 @@ namespace daw::json {
 					break;
 				case '/':
 					++ptr_first;
-					daw_json_assert( ptr_first < ptr_last, "Unexpected end of stream",
-					                 rng );
+					daw_json_assert( ptr_first < ptr_last,
+					                 ErrorReason::UnexpectedEndOfData, rng );
 					switch( *ptr_first ) {
 					case '/':
 						++ptr_first;
@@ -223,9 +227,9 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			daw_json_assert_weak( prime_bracket_count == 0 and
-			                        second_bracket_count == 0,
-			                      "Unexpected bracketing", rng );
+			daw_json_assert_weak( ( prime_bracket_count == 0 ) &
+			                        ( second_bracket_count == 0 ),
+			                      ErrorReason::InvalidBracketing, rng );
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
@@ -316,7 +320,7 @@ namespace daw::json {
 				}
 				++ptr_first;
 			}
-			DAW_JSON_UNREACHABLE( );
+			DAW_UNREACHABLE( );
 		}
 	}; // namespace daw::json
 } // namespace daw::json

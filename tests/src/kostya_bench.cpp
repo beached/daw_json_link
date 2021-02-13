@@ -44,16 +44,20 @@ namespace daw::json {
 		using type =
 		  json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
 #else
-		DAW_CONSTEXPR inline static char const x[] = "x";
-		DAW_CONSTEXPR inline static char const y[] = "y";
-		DAW_CONSTEXPR inline static char const z[] = "z";
+		constexpr inline static char const x[] = "x";
+		constexpr inline static char const y[] = "y";
+		constexpr inline static char const z[] = "z";
 		using type =
 		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
 #endif
 	};
 } // namespace daw::json
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	using namespace daw::json;
 	std::ios_base::sync_with_stdio( false );
 	/*
@@ -62,8 +66,7 @@ int main( int, char ** ) try {
 	    exit( 1 );
 	  }
 	*/
-	auto const json_data =
-	  *daw::read_file( "/tmp/1.json" );
+	auto const json_data = *daw::read_file( "/tmp/1.json" );
 	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using range_t =
@@ -86,7 +89,8 @@ int main( int, char ** ) try {
 	std::cout << x / dsz << '\n';
 	std::cout << y / dsz << '\n';
 	std::cout << z / dsz << '\n';
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

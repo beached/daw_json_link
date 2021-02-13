@@ -83,7 +83,11 @@ bool operator==( MyClass2 const &lhs, MyClass2 const &rhs ) {
 	       from_json<MyDelayedClass>( rhs.member_later );
 }
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts(
 		  "Must supply path to cookbook_unknown_types_and_delayed_parsing2.json "
@@ -92,20 +96,19 @@ int main( int argc, char **argv ) try {
 	}
 	auto data = *daw::read_file( argv[1] );
 
-	MyClass2 val = daw::json::from_json<MyClass2>(
+	auto const val = daw::json::from_json<MyClass2>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	MyDelayedClass delayed_val =
+	auto const delayed_val =
 	  daw::json::from_json<MyDelayedClass>( val.member_later );
 
-	daw_json_assert( delayed_val.a == 1, "Unexpected value" );
-	daw_json_assert( delayed_val.b, "Unexpected value" );
+	test_assert( delayed_val.a == 1, "Unexpected value" );
+	test_assert( delayed_val.b, "Unexpected value" );
 
 	std::string json_str2 = daw::json::to_json( val );
 	puts( json_str2.c_str( ) );
-	MyClass2 val2 = daw::json::from_json<MyClass2>( json_str2 );
-	daw_json_assert( val == val2, "Broken round trip" );
-
+	auto const val2 = daw::json::from_json<MyClass2>( json_str2 );
+	test_assert( val == val2, "Broken round trip" );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
