@@ -509,12 +509,10 @@ namespace daw::json::json_details {
 		                      ErrorReason::InvalidArrayStart, rng );
 		rng.remove_prefix( );
 		rng.trim_left_unchecked( );
-
-		using iterator_t =
-		  json_parse_array_iterator<JsonMember, Range, KnownBounds>;
+		using iterator_t = json_parse_array_iterator<JsonMember, Range, KnownBounds>;
+		using constructor_t = typename JsonMember::constructor_t;
 		return construct_value<json_result<JsonMember>>(
-		  typename JsonMember::constructor_t{ }, rng, iterator_t( rng ),
-		  iterator_t( ) );
+		  constructor_t{ }, rng, iterator_t( rng ), iterator_t( ) );
 	}
 
 	template<JsonBaseParseTypes BPT, typename JsonMembers, typename Range>
