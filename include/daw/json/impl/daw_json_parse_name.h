@@ -31,7 +31,7 @@ namespace daw::json::json_details::name::name_parser {
 
 	template<typename Range>
 	[[nodiscard,
-	  maybe_unused]] DAW_ATTRIBUTE_FLATTEN static inline constexpr daw::
+	  maybe_unused]] inline constexpr daw::
 	  string_view
 	  parse_nq( Range &rng ) {
 
@@ -118,7 +118,7 @@ namespace daw::json::json_details {
 	// Ensures that the stream is left at the position of the associated
 	// value(e.g after the colon(:) and trimmed)
 	template<typename Range>
-	[[nodiscard]] constexpr daw::string_view parse_name( Range &rng ) {
+	[[nodiscard]] DAW_ONLY_FLATTEN constexpr daw::string_view parse_name( Range &rng ) {
 		daw_json_assert_weak( rng.is_quotes_checked( ),
 		                      ErrorReason::InvalidMemberName, rng );
 		rng.remove_prefix( );
