@@ -169,34 +169,17 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::description_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_array<"urls", daw::twitter::urls_element_t>>;
-#else
-		static inline constexpr char const urls[] = "urls";
-		using type =
-		  json_member_list<json_array<urls, daw::twitter::urls_element_t>>;
-#endif
-		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::twitter::description_t const &value ) {
-			return std::forward_as_tuple( value.urls );
-		}
-	};
-
-	template<>
 	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::entities_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class_null<"url", std::optional<daw::twitter::url_t>>,
-		  json_class_null<"description",
-		                  std::optional<daw::twitter::description_t>>>;
+		  json_class_null<"description", std::optional<daw::twitter::url_t>>>;
 #else
 		static inline constexpr char const url[] = "url";
 		static inline constexpr char const description[] = "description";
 		using type = json_member_list<
 		  json_class_null<url, std::optional<daw::twitter::url_t>>,
-		  json_class_null<description, std::optional<daw::twitter::description_t>>>;
+		  json_class_null<description, std::optional<daw::twitter::url_t>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::entities_t const &value ) {
@@ -459,7 +442,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::medium_t> {
+	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::size_item_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_number<"w", int64_t>, json_number<"h", int64_t>,
@@ -472,64 +455,7 @@ namespace daw::json {
 		                              json_number<h, int64_t>, json_string<resize>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::twitter::medium_t const &value ) {
-			return std::forward_as_tuple( value.w, value.h, value.resize );
-		}
-	};
-
-	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::small_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"w", int64_t>, json_number<"h", int64_t>,
-		                   json_string<"resize">>;
-#else
-		static inline constexpr char const w[] = "w";
-		static inline constexpr char const h[] = "h";
-		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_number<w, int64_t>,
-		                              json_number<h, int64_t>, json_string<resize>>;
-#endif
-		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::twitter::small_t const &value ) {
-			return std::forward_as_tuple( value.w, value.h, value.resize );
-		}
-	};
-
-	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::thumb_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"w", int64_t>, json_number<"h", int64_t>,
-		                   json_string<"resize">>;
-#else
-		static inline constexpr char const w[] = "w";
-		static inline constexpr char const h[] = "h";
-		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_number<w, int64_t>,
-		                              json_number<h, int64_t>, json_string<resize>>;
-#endif
-		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::twitter::thumb_t const &value ) {
-			return std::forward_as_tuple( value.w, value.h, value.resize );
-		}
-	};
-
-	template<>
-	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::large_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"w", int64_t>, json_number<"h", int64_t>,
-		                   json_string<"resize">>;
-#else
-		static inline constexpr char const w[] = "w";
-		static inline constexpr char const h[] = "h";
-		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_number<w, int64_t>,
-		                              json_number<h, int64_t>, json_string<resize>>;
-#endif
-		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( daw::twitter::large_t const &value ) {
+		to_json_data( daw::twitter::size_item_t const &value ) {
 			return std::forward_as_tuple( value.w, value.h, value.resize );
 		}
 	};
@@ -537,19 +463,20 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIBUTE_HIDDEN json_data_contract<daw::twitter::sizes_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_class<"medium", daw::twitter::medium_t>,
-		                              json_class<"small", daw::twitter::small_t>,
-		                              json_class<"thumb", daw::twitter::thumb_t>,
-		                              json_class<"large", daw::twitter::large_t>>;
+		using type =
+		  json_member_list<json_class<"medium", daw::twitter::size_item_t>,
+		                   json_class<"small", daw::twitter::size_item_t>,
+		                   json_class<"thumb", daw::twitter::size_item_t>,
+		                   json_class<"large", daw::twitter::size_item_t>>;
 #else
 		static inline constexpr char const medium[] = "medium";
 		static inline constexpr char const small_[] = "small";
 		static inline constexpr char const thumb[] = "thumb";
 		static inline constexpr char const large[] = "large";
-		using type = json_member_list<json_class<medium, daw::twitter::medium_t>,
-		                              json_class<small_, daw::twitter::small_t>,
-		                              json_class<thumb, daw::twitter::thumb_t>,
-		                              json_class<large, daw::twitter::large_t>>;
+		using type = json_member_list<json_class<medium, daw::twitter::size_item_t>,
+		                              json_class<small_, daw::twitter::size_item_t>,
+		                              json_class<thumb, daw::twitter::size_item_t>,
+		                              json_class<large, daw::twitter::size_item_t>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::sizes_t const &value ) {
