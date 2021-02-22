@@ -13,7 +13,6 @@
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_array.h>
-#include <daw/daw_bounded_string.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_exception.h>
 #include <daw/daw_move.h>

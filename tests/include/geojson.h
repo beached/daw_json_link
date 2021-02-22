@@ -48,20 +48,6 @@ namespace daw::geojson {
 		std::string_view type;
 		std::vector<Feature> features;
 	}; // FeatureCollection
-
-	template<typename T>
-	struct array_appender {
-		T *ptr;
-
-		template<size_t N>
-		explicit DAW_CONSTEXPR array_appender( std::array<T, N> &ary ) noexcept
-		  : ptr( ary.data( ) ) {}
-
-		template<typename U>
-		DAW_CONSTEXPR void operator( )( U &&item ) noexcept {
-			*ptr++ = std::forward<U>( item );
-		}
-	};
 } // namespace daw::geojson
 
 namespace daw::json {

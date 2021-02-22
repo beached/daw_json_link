@@ -37,13 +37,9 @@ namespace daw::twitter {
 		std::vector<urls_element_t> urls;
 	}; // url_t
 
-	struct description_t {
-		std::vector<urls_element_t> urls;
-	}; // description_t
-
 	struct entities_t {
 		std::optional<url_t> url;
-		std::optional<description_t> description;
+		std::optional<url_t> description;
 	}; // entities_t
 
 	struct user_t {
@@ -123,35 +119,17 @@ namespace daw::twitter {
 		std::vector<int32_t> indices;
 	}; // user_mentions_element_t
 
-	struct medium_t {
+	struct size_item_t {
 		int64_t w;
 		int64_t h;
 		std::string resize;
-	}; // medium_t
-
-	struct small_t {
-		int64_t w;
-		int64_t h;
-		std::string resize;
-	}; // small_t
-
-	struct thumb_t {
-		int64_t w;
-		int64_t h;
-		std::string resize;
-	}; // thumb_t
-
-	struct large_t {
-		int64_t w;
-		int64_t h;
-		std::string resize;
-	}; // large_t
+	}; // size_item_t
 
 	struct sizes_t {
-		medium_t medium;
-		small_t small_;
-		thumb_t thumb;
-		large_t large;
+		size_item_t medium;
+		size_item_t small_;
+		size_item_t thumb;
+		size_item_t large;
 	}; // sizes_t
 
 	struct media_element_t {
