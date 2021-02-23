@@ -3,7 +3,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
     if (MSVC)
         message("Clang-CL ${CMAKE_CXX_COMPILER_VERSION} detected")
     	add_definitions(-DNOMINMAX -DD_WIN32_WINNT=0x0601)
-			set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /O0 -DDEBUG /permissive-")
+			set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive-")
 			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 -DNDEBUG /permissive-")
 			if( DAW_ALLOW_SSE42 )
 				message( "Using -march=native" )
