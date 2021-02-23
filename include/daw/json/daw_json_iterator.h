@@ -36,7 +36,7 @@ namespace daw::json {
 	/***
 	 * Iterator for iterating over JSON array's
 	 * @tparam JsonElement type under underlying element in array. If
-	 * heterogenous, a basic_json_value_iterator may be more appropriate
+	 * heterogeneous, a basic_json_value_iterator may be more appropriate
 	 * @tparam ParsePolicy Parsing policy type
 	 */
 	template<typename JsonElement,
