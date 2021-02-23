@@ -10,11 +10,9 @@
 
 #include "daw/json/daw_json_link.h"
 
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-#include <sstream>
 #include <string>
 
 namespace daw::cookbook_class1 {
@@ -71,7 +69,7 @@ int main( int, char ** )
 
 	test_assert( cls.member_0 == "this is a test", "Unexpected value" );
 	test_assert( cls.member_1 == 314159, "Unexpected value" );
-	test_assert( cls.member_2 == true, "Unexpected value" );
+	test_assert( cls.member_2, "Unexpected value" );
 
 	std::stringstream ss{ };
 	auto it = std::ostreambuf_iterator<char>( ss );

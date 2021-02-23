@@ -20,12 +20,6 @@
 #include <utility>
 #include <vector>
 
-#ifdef __GNUC__
-#define DAW_HIDDEN __attribute__( ( visibility( "hidden" ) ) )
-#else
-#define DAW_HIDDEN
-#endif
-
 namespace daw::geojson {
 	template<typename T>
 	using Vector = std::vector<T, daw::fixed_allocator<T>>;
@@ -58,25 +52,11 @@ namespace daw::geojson {
 		std::string_view type;
 		Vector<Feature> features;
 	}; // FeatureCollection
-
-	template<typename T>
-	struct array_appender {
-		T *ptr;
-
-		template<size_t N>
-		explicit DAW_CONSTEXPR array_appender( std::array<T, N> &ary ) noexcept
-		  : ptr( ary.data( ) ) {}
-
-		template<typename U>
-		DAW_CONSTEXPR void operator( )( U &&item ) noexcept {
-			*ptr++ = std::forward<U>( item );
-		}
-	};
 } // namespace daw::geojson
 
 namespace daw::json {
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::geojson::Point> {
+	struct json_data_contract<daw::geojson::Point> {
 		using type = json_ordered_member_list<double, double>;
 
 		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
@@ -86,7 +66,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::geojson::Property> {
+	struct json_data_contract<daw::geojson::Property> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_string_raw<"name", std::string_view>>;
 #else
@@ -100,7 +80,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::geojson::Polygon> {
+	struct json_data_contract<daw::geojson::Polygon> {
 
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
@@ -125,7 +105,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::geojson::Feature> {
+	struct json_data_contract<daw::geojson::Feature> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string_raw<"type", std::string_view>,
@@ -148,7 +128,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_HIDDEN json_data_contract<daw::geojson::FeatureCollection> {
+	struct json_data_contract<daw::geojson::FeatureCollection> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_string_raw<"type", std::string_view>,
