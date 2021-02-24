@@ -3,15 +3,40 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
     if (MSVC)
         message("Clang-CL ${CMAKE_CXX_COMPILER_VERSION} detected")
     	add_definitions(-DNOMINMAX -DD_WIN32_WINNT=0x0601)
-			set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /O0 -DDEBUG")
-			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 -DNDEBUG")
+			set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG /permissive-")
+			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 -DNDEBUG /permissive-")
 			if( DAW_ALLOW_SSE42 )
 				message( "Using -march=native" )
 				add_compile_options(-march=native)
  			endif( )
     else( )
       message("Clang ${CMAKE_CXX_COMPILER_VERSION} detected")
-			add_compile_options( -Wall -Wextra -pedantic -Weverything -Wno-c++98-compat -Wno-covered-switch-default -Wno-padded -Wno-exit-time-destructors -Wno-c++98-compat-pedantic -Wno-unused-parameter -Wno-missing-noreturn -Wno-missing-prototypes -Wno-disabled-macro-expansion -Wno-missing-braces -Wno-unneeded-internal-declaration -Wunreachable-code -Wno-tautological-type-limit-compare -Wno-return-std-move-in-c++11 -Wno-float-equal -Wzero-as-null-pointer-constant -Wno-unused-macros -Wno-global-constructors -ftemplate-backtrace-limit=0 -Wno-used-but-marked-unused -Wno-weak-vtables -Wno-documentation -Wno-undefined-inline )
+			add_compile_options( 
+				-Wall -Wextra -pedantic -Weverything 
+				-Wunreachable-code 
+				-Wzero-as-null-pointer-constant 
+				-ftemplate-backtrace-limit=0 
+				-Wno-c++98-compat 
+				-Wno-covered-switch-default 
+				-Wno-padded 
+				-Wno-exit-time-destructors 
+				-Wno-c++98-compat-pedantic 
+				-Wno-unused-parameter 
+				-Wno-missing-prototypes 
+				-Wno-disabled-macro-expansion 
+				-Wno-missing-braces 
+				-Wno-unneeded-internal-declaration 
+				-Wno-tautological-type-limit-compare 
+				-Wno-return-std-move-in-c++11 
+				-Wno-float-equal 
+				-Wno-unused-macros 
+				-Wno-global-constructors 
+				-Wno-used-but-marked-unused 
+				-Wno-weak-vtables 
+				-Wno-documentation 
+				-Wno-undefined-inline 
+				-Wno-poison-system-directories
+				)
 			if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
 				if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
 					if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )

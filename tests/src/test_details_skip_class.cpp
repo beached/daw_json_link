@@ -54,8 +54,7 @@ bool test_trailing_comma( ) {
 }
 
 bool test_strings( ) {
-	DAW_CONSTEXPR std::string_view sv =
-	  R"({ "a": "1", "b": "2", "c": "3"})";
+	DAW_CONSTEXPR std::string_view sv = R"({ "a": "1", "b": "2", "c": "3"})";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
@@ -63,8 +62,7 @@ bool test_strings( ) {
 }
 
 bool test_bad_strings_001( ) {
-	DAW_CONSTEXPR std::string_view sv =
-	  R"({ "a": "1", "b": "2", "c": "3})";
+	DAW_CONSTEXPR std::string_view sv = R"({ "a": "1", "b": "2", "c": "3})";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );
@@ -73,8 +71,7 @@ bool test_bad_strings_001( ) {
 }
 
 bool test_bad_strings_002( ) {
-	DAW_CONSTEXPR std::string_view sv =
-	  R"({ "a": "1", "b": "2", "c: "3"})";
+	DAW_CONSTEXPR std::string_view sv = R"({ "a": "1", "b": "2", "c: "3"})";
 	// DAW_CONSTEXPR std::string_view sv = "[\"1\",\"2\",\"3\",\"4\\\"]";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
@@ -84,8 +81,7 @@ bool test_bad_strings_002( ) {
 }
 
 bool test_bad_strings_003( ) {
-	DAW_CONSTEXPR std::string_view sv =
-	  R"({ "a": "1", "b": "2", "c": "3\"})";
+	DAW_CONSTEXPR std::string_view sv = R"({ "a": "1", "b": "2", "c": "3\"})";
 	auto rng =
 	  daw::json::DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = rng.skip_class( );

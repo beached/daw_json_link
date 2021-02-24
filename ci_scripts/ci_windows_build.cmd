@@ -6,4 +6,4 @@ REM Setting VCVars
 
 REM ##############################
 REM Building
-cmake --build . --config %1 -j 2 -- -k 1000
+cmake --build . --config %1 -j 2 

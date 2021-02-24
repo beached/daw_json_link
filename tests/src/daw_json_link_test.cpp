@@ -868,7 +868,8 @@ int main( int, char ** )
 		double d2 = 0.89;
 		std::cout << to_json( d2 ) << '\n';
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

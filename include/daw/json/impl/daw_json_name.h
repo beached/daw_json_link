@@ -9,8 +9,8 @@
 #pragma once
 
 #include <cstddef>
-#include <utility>
 #include <string_view>
+#include <utility>
 
 namespace daw::json {
 #if defined( __cpp_nontype_template_parameter_class ) and \

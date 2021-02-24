@@ -14,8 +14,8 @@
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_traits.h>
-#include <daw/json/daw_to_json.h>
 #include <daw/json/daw_from_json.h>
+#include <daw/json/daw_to_json.h>
 
 #include <iostream>
 #include <streambuf>

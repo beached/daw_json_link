@@ -12,9 +12,9 @@
 
 namespace daw::json {
 	template apache_builds::apache_builds from_json<
-		apache_builds::apache_builds,
-		daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
-		std::string_view json_data, std::string_view json_path );
+	  apache_builds::apache_builds,
+	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data, std::string_view json_path );
 
 	template apache_builds::apache_builds from_json<
 	  apache_builds::apache_builds,
