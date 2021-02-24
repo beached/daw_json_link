@@ -8,6 +8,7 @@
 
 #pragma once
 #include "daw_from_json.h"
+#include "daw_json_exception.h"
 #include "daw_json_link_types.h"
 #include "daw_to_json.h"
 #include "impl/daw_json_value.h"
