@@ -543,8 +543,7 @@ namespace daw::json::json_details {
 	}
 
 	template<typename JsonMember, bool /*KnownBounds*/, typename Range>
-	[[nodiscard,
-	  maybe_unused]] DAW_ONLY_INLINE constexpr json_result<JsonMember>
+	[[nodiscard, maybe_unused]] DAW_ONLY_INLINE constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Variant>, Range &rng ) {
 
 		switch( rng.front( ) ) {
@@ -580,7 +579,8 @@ namespace daw::json::json_details {
 
 	template<typename Result, typename TypeList, std::size_t pos = 0,
 	         typename Range>
-	DAW_ATTRIBUTE_FLATTEN constexpr Result parse_visit( std::size_t idx, Range &rng ) {
+	DAW_ATTRIBUTE_FLATTEN constexpr Result parse_visit( std::size_t idx,
+	                                                    Range &rng ) {
 		if( idx == pos ) {
 			using JsonMember = std::tuple_element_t<pos, TypeList>;
 			return { parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
@@ -594,7 +594,8 @@ namespace daw::json::json_details {
 	}
 
 	template<typename JsonMember, bool /*KnownBounds*/, typename Range>
-	[[nodiscard, maybe_unused]] DAW_ONLY_INLINE inline constexpr json_result<JsonMember>
+	[[nodiscard,
+	  maybe_unused]] DAW_ONLY_INLINE inline constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng ) {
 
 		using tag_member = typename JsonMember::tag_member;
@@ -628,7 +629,8 @@ namespace daw::json::json_details {
 
 	template<std::size_t N, typename JsonClass, bool KnownBounds,
 	         typename... JsonClasses, typename Range>
-	DAW_ONLY_FLATTEN constexpr JsonClass parse_nth_class( std::size_t idx, Range &rng ) {
+	DAW_ONLY_FLATTEN constexpr JsonClass parse_nth_class( std::size_t idx,
+	                                                      Range &rng ) {
 		if constexpr( sizeof...( JsonClasses ) >= N + 8 ) {
 			switch( idx ) {
 			case N + 0:

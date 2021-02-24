@@ -72,7 +72,5 @@ struct island_t {
 
 namespace daw::json {
 	template<>
-	daw::json::json_data_contract<daw::island::obj_t>  {
-		using type =
-	};
+	daw::json::json_data_contract<daw::island::obj_t>{ using type = };
 }

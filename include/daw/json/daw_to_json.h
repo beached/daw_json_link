@@ -31,7 +31,8 @@ namespace daw::json {
 	template<typename Result, typename Value, typename JsonClass>
 	[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value ) {
 		Result result{ };
-		(void)json_details::member_to_string<JsonClass>( std::back_inserter( result ), value );
+		(void)json_details::member_to_string<JsonClass>(
+		  std::back_inserter( result ), value );
 		return result;
 	}
 
