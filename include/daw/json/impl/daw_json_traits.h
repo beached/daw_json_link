@@ -221,7 +221,6 @@ namespace daw::json {
 		/// Policy Type
 		template<typename ParsePolicy>
 		inline constexpr bool must_verify_end_of_data_is_valid_v =
-		  not ParsePolicy::is_unchecked_input and
 		  daw::is_detected_v<must_verify_end_of_data_is_valid_t, ParsePolicy>;
 	} // namespace json_details
 } // namespace daw::json
