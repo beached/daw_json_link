@@ -39,8 +39,17 @@ namespace daw::json {
 		auto rng =
 		  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) );
 
-		return json_details::parse_value<json_member, KnownBounds>(
-		  ParseTag<json_member::expected_type>{ }, rng );
+		if constexpr( json_details::must_verify_end_of_data_is_valid_v<
+		                ParsePolicy> ) {
+			auto result = json_details::parse_value<json_member, KnownBounds>(
+			  ParseTag<json_member::expected_type>{ }, rng );
+			rng.trim_left( );
+			daw_json_assert( rng.empty( ), ErrorReason::InvalidEndOfValue, rng );
+			return result;
+		} else {
+			return json_details::parse_value<json_member, KnownBounds>(
+			  ParseTag<json_member::expected_type>{ }, rng );
+		}
 	}
 
 	/**
@@ -70,9 +79,17 @@ namespace daw::json {
 		char const *l = daw::data_end( json_data );
 		Allocator a = alloc;
 		auto rng = ParsePolicy::with_allocator( f, l, a );
-
-		return json_details::parse_value<json_member, KnownBounds>(
-		  ParseTag<json_member::expected_type>{ }, rng );
+		if constexpr( json_details::must_verify_end_of_data_is_valid_v<
+		                ParsePolicy> ) {
+			auto result = json_details::parse_value<json_member, KnownBounds>(
+			  ParseTag<json_member::expected_type>{ }, rng );
+			rng.trim_left( );
+			daw_json_assert( rng.empty( ), ErrorReason::InvalidEndOfValue, rng );
+			return result;
+		} else {
+			return json_details::parse_value<json_member, KnownBounds>(
+			  ParseTag<json_member::expected_type>{ }, rng );
+		}
 	}
 
 	/***
@@ -107,8 +124,17 @@ namespace daw::json {
 		} else {
 			daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 		}
-		return json_details::parse_value<json_member, KnownBounds>(
-		  ParseTag<json_member::expected_type>{ }, rng );
+		if constexpr( json_details::must_verify_end_of_data_is_valid_v<
+		                ParsePolicy> ) {
+			auto result = json_details::parse_value<json_member, KnownBounds>(
+			  ParseTag<json_member::expected_type>{ }, rng );
+			rng.trim_left( );
+			daw_json_assert( rng.empty( ), ErrorReason::InvalidEndOfValue, rng );
+			return result;
+		} else {
+			return json_details::parse_value<json_member, KnownBounds>(
+			  ParseTag<json_member::expected_type>{ }, rng );
+		}
 	}
 
 	/***
@@ -144,8 +170,19 @@ namespace daw::json {
 		} else {
 			daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 		}
-		return json_details::parse_value<json_member, KnownBounds>(
-		  ParseTag<json_member::expected_type>{ }, rng );
+
+		if constexpr( json_details::must_verify_end_of_data_is_valid_v<
+		                ParsePolicy> ) {
+
+			auto result = json_details::parse_value<json_member, KnownBounds>(
+			  ParseTag<json_member::expected_type>{ }, rng );
+			rng.trim_left( );
+			daw_json_assert( rng.empty( ), ErrorReason::InvalidEndOfValue, rng );
+			return result;
+		} else {
+			return json_details::parse_value<json_member, KnownBounds>(
+			  ParseTag<json_member::expected_type>{ }, rng );
+		}
 	}
 
 	/***
@@ -265,8 +302,16 @@ namespace daw::json {
 		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
 		                      ErrorReason::InvalidArrayStart, rng );
 #endif
-
-		return json_details::parse_value<parser_t, KnownBounds>(
-		  ParseTag<JsonParseTypes::Array>{ }, rng );
+		if constexpr( json_details::must_verify_end_of_data_is_valid_v<
+		                ParsePolicy> ) {
+			auto result = json_details::parse_value<parser_t, KnownBounds>(
+			  ParseTag<JsonParseTypes::Array>{ }, rng );
+			rng.trim_left( );
+			daw_json_assert( rng.empty( ), ErrorReason::InvalidEndOfValue, rng );
+			return result;
+		} else {
+			return json_details::parse_value<parser_t, KnownBounds>(
+			  ParseTag<JsonParseTypes::Array>{ }, rng );
+		}
 	}
 } // namespace daw::json

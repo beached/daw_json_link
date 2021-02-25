@@ -211,5 +211,17 @@ namespace daw::json {
 		inline constexpr bool is_a_json_tagged_variant_v =
 		  daw::is_detected_v<is_a_json_tagged_variant_test, T>;
 
+		template<typename T>
+		using must_verify_end_of_data_is_valid_t =
+		  typename T::must_verify_end_of_data_is_valid;
+
+		/// If the parse policy has a type alias `must_verify_end_of_data_is_valid`
+		/// this trait is true.  This is used to ensure that after the JSON value is
+		/// parse that only whitespace or nothing follows \tparam ParsePolicy Parser
+		/// Policy Type
+		template<typename ParsePolicy>
+		inline constexpr bool must_verify_end_of_data_is_valid_v =
+		  not ParsePolicy::is_unchecked_input and
+		  daw::is_detected_v<must_verify_end_of_data_is_valid_t, ParsePolicy>;
 	} // namespace json_details
 } // namespace daw::json
