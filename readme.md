@@ -215,7 +215,7 @@ After the build there the individual examples can be tested too. ```city_test_bi
 The order of the members in the data structures should generally match that of the JSON data. The parser is faster if it doesn't have to back track for values. Optional values, when missing in the JSON data, can slow down the parsing too. If possible have them sent as null. The parser does not allocate. The parsed to data types may and this allows one to use custom allocators or a mix as their data structures will do the allocation. The defaults for arrays is to use the std::vector<T> and if this isn't desirable, you must supply the type.
 
 ### Benchmarks
-* [Kostya results](kostya_benchmark_results.md) using [test_dawjsonlink.cpp](tests/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks) for latest results.
+* [Kostya results](kostya_benchmark_results.md) using [test_dawjsonlink.cpp](tests/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks#json) for latest results.
 
 ![chart desribing kostya benmark results](images/kostya_bench_chart_2021_02_26.png)
 
