@@ -217,9 +217,7 @@ The order of the members in the data structures should generally match that of t
 ### Benchmarks
 * [Kostya results](kostya_benchmark_results.md) using [test_dawjsonlink.cpp](tests/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks) for latest results.
 
-![chart desribing kostya benmark results](images/kostya_bench_chart.png)
-
-* [Parial NativeJson](partial_nativejson_benchmark.md)
+![chart desribing kostya benmark results](images/kostya_bench_chart_2021_02_26.png)
 
 ## Escaping/Unescaping of member names
 ###### [Top](#content)
