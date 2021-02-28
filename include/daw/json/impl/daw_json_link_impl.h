@@ -396,7 +396,7 @@ namespace daw::json::json_details {
 		rng.clean_tail( );
 		// If we fulfill the contract before all values are parses
 		rng.move_to_next_class_member( );
-		(void)rng.template skip_class<false>( );
+		(void)rng.skip_class( );
 		// Yes this must be checked.  We maybe at the end of document.  After the
 		// 2nd try, give up
 		rng.trim_left_checked( );

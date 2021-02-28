@@ -412,37 +412,33 @@ namespace daw::json {
 			return parse_policy_details::in<',', '}', ']'>( *first );
 		}
 
-		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
-		         bool Count = true>
+		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
 		skip_bracketed_item_checked( ) {
 			return CommentPolicy::template skip_bracketed_item_checked<
-			  PrimLeft, PrimRight, SecLeft, SecRight, Count>( *this );
+			  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
 		}
 
-		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
-		         bool Count = true>
+		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
 		skip_bracketed_item_unchecked( ) {
 			return CommentPolicy::template skip_bracketed_item_unchecked<
-			  PrimLeft, PrimRight, SecLeft, SecRight, Count>( *this );
+			  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
 		}
 
-		template<bool Count = true>
 		[[nodiscard]] inline constexpr Range skip_class( ) {
 			if constexpr( is_unchecked_input ) {
-				return skip_bracketed_item_unchecked<'{', '}', '[', ']', Count>( );
+				return skip_bracketed_item_unchecked<'{', '}', '[', ']'>( );
 			} else {
-				return skip_bracketed_item_checked<'{', '}', '[', ']', Count>( );
+				return skip_bracketed_item_checked<'{', '}', '[', ']'>( );
 			}
 		}
 
-		template<bool Count = true>
 		[[nodiscard]] inline constexpr Range skip_array( ) {
 			if constexpr( is_unchecked_input ) {
-				return skip_bracketed_item_unchecked<'[', ']', '{', '}', Count>( );
+				return skip_bracketed_item_unchecked<'[', ']', '{', '}'>( );
 			} else {
-				return skip_bracketed_item_checked<'[', ']', '{', '}', Count>( );
+				return skip_bracketed_item_checked<'[', ']', '{', '}'>( );
 			}
 		}
 	}; // namespace daw::json
