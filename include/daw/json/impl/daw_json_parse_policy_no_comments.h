@@ -83,8 +83,8 @@ namespace daw::json {
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
-		         typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr Range
+		         bool Count = true, typename Range>
+		DAW_ONLY_FLATTEN static constexpr Range
 		skip_bracketed_item_checked( Range &rng ) {
 			// Not checking for Left as it is required to be skipped already
 			auto result = rng;
@@ -131,9 +131,11 @@ namespace daw::json {
 					                 ErrorReason::UnexpectedEndOfData, rng );
 					break;
 				case ',':
-					if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
-					                       ( second_bracket_count == 0 ) ) ) {
-						++cnt;
+					if constexpr( Count ) {
+						if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
+						                       ( second_bracket_count == 0 ) ) ) {
+							++cnt;
+						}
 					}
 					break;
 				case PrimLeft:
@@ -146,7 +148,9 @@ namespace daw::json {
 						daw_json_assert( second_bracket_count == 0,
 						                 ErrorReason::InvalidBracketing, rng );
 						result.last = ptr_first;
-						result.counter = cnt;
+						if constexpr( Count ) {
+							result.counter = cnt;
+						}
 						rng.first = ptr_first;
 						return result;
 					}
@@ -166,14 +170,16 @@ namespace daw::json {
 			// We include the close primary bracket in the range so that subsequent
 			// parsers have a terminator inside their range
 			result.last = ptr_first;
-			result.counter = cnt;
+			if constexpr( Count ) {
+				result.counter = cnt;
+			}
 			rng.first = ptr_first;
 			return result;
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
-		         typename Range>
-		DAW_ATTRIBUTE_FLATTEN static constexpr Range
+		         bool Count = true, typename Range>
+		DAW_ONLY_FLATTEN static constexpr Range
 		skip_bracketed_item_unchecked( Range &rng ) {
 			// Not checking for Left as it is required to be skipped already
 			auto result = rng;
@@ -207,9 +213,11 @@ namespace daw::json {
 					}
 					break;
 				case ',':
-					if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
-					                       ( second_bracket_count == 0 ) ) ) {
-						++cnt;
+					if constexpr( Count ) {
+						if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
+						                       ( second_bracket_count == 0 ) ) ) {
+							++cnt;
+						}
 					}
 					break;
 				case PrimLeft:
@@ -222,7 +230,9 @@ namespace daw::json {
 						// We include the close primary bracket in the range so that
 						// subsequent parsers have a terminator inside their range
 						result.last = ptr_first;
-						result.counter = cnt;
+						if constexpr( Count ) {
+							result.counter = cnt;
+						}
 						rng.first = ptr_first;
 						return result;
 					}
