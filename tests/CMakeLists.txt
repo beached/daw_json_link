@@ -120,7 +120,7 @@ add_test(NAME float_array_test COMMAND float_array_test)
 add_dependencies(full float_array_test)
 
 add_executable(float_array_basic_test src/float_array_basic_test.cpp)
-target_link_libraries(float_array_basic_test json_test)
+target_link_libraries(float_array_basic_test json_test nanobench )
 add_test(NAME float_array_basic_test COMMAND float_array_basic_test)
 add_dependencies(full float_array_basic_test)
 

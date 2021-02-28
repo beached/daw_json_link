@@ -9,21 +9,20 @@
 #include "defines.h"
 
 #include "daw/json/daw_json_iterator.h"
-#include "daw/json/daw_json_link.h"
 
-#include <daw/daw_benchmark.h>
 #include <daw/daw_do_n.h>
 #include <daw/daw_random.h>
 
 #include <iostream>
+#include <nanobench.h>
 #include <streambuf>
 #include <string_view>
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
-static inline constexpr std::size_t DAW_NUM_RUNS = 250;
+static inline constexpr std::size_t DAW_NUM_RUNS = 10000;
 #else
-static inline constexpr std::size_t DAW_NUM_RUNS = 2;
+static inline constexpr std::size_t DAW_NUM_RUNS = 3000;
 #endif
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
@@ -59,7 +58,7 @@ Float rand_float( ) {
 }
 
 template<size_t NUMVALUES>
-void test_func( ) {
+void test_func( ankerl::nanobench::Bench &b ) {
 	using namespace daw::json;
 	using iterator_t = daw::json::json_array_iterator<float>;
 
@@ -73,20 +72,16 @@ void test_func( ) {
 		return result;
 	}( );
 
-	daw::string_view json_sv{ json_data3.data( ), json_data3.size( ) };
+	auto const json_sv =
+	  daw::string_view( json_data3.data( ), json_data3.size( ) );
 	auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
-	{
-		auto const count3 = *daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "float", json_sv.size( ),
-		  [&]( auto &&sv ) noexcept {
-			  auto ptr = std::copy( iterator_t( sv ), iterator_t( ), data2.get( ) );
-			  daw::do_not_optimize( data2 );
-			  return ptr - data2.get( );
-		  },
-		  json_sv );
-
-		std::cout << "float parse count: " << count3 << '\n';
-	}
+	b.batch( sizeof( float ) * NUMVALUES );
+	b.run( "float", [&]( ) noexcept {
+		//ankerl::nanobench::doNotOptimizeAway( json_sv );
+		auto ptr = std::copy( iterator_t( json_sv ), iterator_t( ), data2.get( ) );
+		ankerl::nanobench::doNotOptimizeAway( data2 );
+		ankerl::nanobench::doNotOptimizeAway( ptr );
+	} );
 }
 
 int main( int argc, char ** )
@@ -94,13 +89,18 @@ int main( int argc, char ** )
   try
 #endif
 {
+
+	auto b1 = ankerl::nanobench::Bench( )
+	            .title( "nativejson parts" )
+	            .unit( "byte" )
+	            .warmup( 3000 )
+	            .minEpochIterations( DAW_NUM_RUNS );
 	if( argc > 1 ) {
-		test_func<1'000'000ULL>( );
+		test_func<1'000'000ULL>( b1 );
 	} else {
-		test_func<1'000ULL>( );
+		test_func<1'000ULL>( b1 );
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

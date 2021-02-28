@@ -70,7 +70,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		inline constexpr value_type operator*( ) {
+		DAW_ONLY_INLINE inline constexpr value_type operator*( ) {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
 			                      ErrorReason::UnexpectedEndOfData, *base::rng );
 			at_first = false;
@@ -109,7 +109,7 @@ namespace daw::json::json_details {
 			}
 		}
 
-		inline constexpr json_parse_array_iterator &operator++( ) {
+		DAW_ONLY_INLINE inline constexpr json_parse_array_iterator &operator++( ) {
 			// daw_json_assert_weak( base::rng, "Unexpected increment", *base::rng );
 			base::rng->template clean_end_of_value<']'>( at_first );
 			daw_json_assert_weak( base::rng->has_more( ),
