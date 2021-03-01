@@ -145,8 +145,8 @@ namespace daw::json::json_details {
 	  has_json_data_contract_trait<T>::value;
 
 	template<typename Container, typename Value>
-	using detect_push_back = decltype( std::declval<Container &>( ).push_back(
-	  std::declval<Value>( ) ) );
+	using detect_push_back = decltype(
+	  std::declval<Container &>( ).push_back( std::declval<Value>( ) ) );
 
 	template<typename Container, typename Value>
 	using detect_insert_end = decltype( std::declval<Container &>( ).insert(
@@ -221,9 +221,8 @@ namespace daw::json::json_details {
 	};
 
 	template<typename T>
-	using json_parser_to_json_data_t =
-	  decltype( daw::json::json_data_contract<T>::to_json_data(
-	    std::declval<T &>( ) ) );
+	using json_parser_to_json_data_t = decltype(
+	  daw::json::json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
 
 	template<typename T>
 	static inline constexpr bool has_json_to_json_data_v =
