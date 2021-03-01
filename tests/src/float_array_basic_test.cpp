@@ -20,7 +20,7 @@
 
 #if not defined( DAW_NUM_RUNS )
 #if not defined( DEBUG ) or defined( NDEBUG )
-static inline constexpr std::size_t DAW_NUM_RUNS = 10000;
+static inline constexpr std::size_t DAW_NUM_RUNS = 1000;
 #else
 static inline constexpr std::size_t DAW_NUM_RUNS = 3000;
 #endif
@@ -77,7 +77,6 @@ void test_func( ankerl::nanobench::Bench &b ) {
 	auto data2 = std::unique_ptr<float[]>( new float[NUMVALUES] );
 	b.batch( sizeof( float ) * NUMVALUES );
 	b.run( "float", [&]( ) noexcept {
-		//ankerl::nanobench::doNotOptimizeAway( json_sv );
 		auto ptr = std::copy( iterator_t( json_sv ), iterator_t( ), data2.get( ) );
 		ankerl::nanobench::doNotOptimizeAway( data2 );
 		ankerl::nanobench::doNotOptimizeAway( ptr );

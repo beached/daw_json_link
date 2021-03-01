@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "impl/daw_json_link_impl.h"
+#include "impl/daw_json_parse_class.h"
 #include "impl/daw_json_link_types_fwd.h"
 
 #include <daw/daw_algorithm.h>

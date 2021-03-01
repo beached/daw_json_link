@@ -9,7 +9,7 @@
 #pragma once
 
 #include "impl/daw_json_arrow_proxy.h"
-#include "impl/daw_json_link_impl.h"
+#include "impl/daw_json_parse_class.h"
 #include "impl/daw_json_parse_name.h"
 #include "impl/daw_json_value.h"
 #include "impl/daw_murmur3.h"

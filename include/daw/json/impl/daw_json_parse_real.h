@@ -143,7 +143,7 @@ namespace daw::json::json_details {
 		auto value = v;
 		unsigned dig = 0;
 		while( ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) and
-		       ( dig = parse_digit( *first ) ) < 10 ) {
+		       ( dig = parse_digit( *first ) ) < 10U ) {
 			value *= 10U;
 			value += dig;
 			++first;

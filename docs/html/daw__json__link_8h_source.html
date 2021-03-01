@@ -116,7 +116,7 @@ $(function() {
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    [[maybe_unused, nodiscard]] <span class="keyword">static</span> <span class="keyword">inline</span> constexpr OutputIterator</div>
 <div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1json__member__list.html#a01dc9ba300d8aa24f2bddaff62e37f7c">   60</a></span>&#160;    <a class="code" href="structdaw_1_1json_1_1json__member__list.html#a01dc9ba300d8aa24f2bddaff62e37f7c">serialize</a>( OutputIterator it, std::tuple&lt;Args...&gt; <span class="keyword">const</span> &amp;args,</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;               Value <span class="keyword">const</span> &amp;v ) {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      static_assert( json_details::CheckMatch&lt;Value, <span class="keyword">sizeof</span>...( Args ),</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      static_assert( json_details::are_equal&lt;Value, <span class="keyword">sizeof</span>...( Args ),</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                                              <span class="keyword">sizeof</span>...( JsonMembers )&gt;::value,</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                     <span class="stringliteral">&quot;Argument count is incorrect&quot;</span> );</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>

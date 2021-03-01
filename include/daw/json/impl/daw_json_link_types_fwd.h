@@ -9,7 +9,8 @@
 #pragma once
 
 #include "daw_json_enums.h"
-#include "daw_json_link_impl.h"
+#include "daw_json_parse_class.h"
+#include "daw_json_link_types_iso8601.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
 
@@ -490,6 +491,74 @@ namespace daw::json {
 	using json_array_null = json_array<Name, JsonElement, Container, Constructor,
 	                                   JsonNullable::Nullable>;
 
+	/**
+	 * The json_fixed_array must be this long
+	 * @tparam N
+	 */
+	template<std::size_t N>
+	struct FixedSizedArray {
+		static constexpr std::size_t size( ) {
+			return N;
+		}
+	};
+
+	/**
+	 * Use another JSON member to tell us the size.
+	 * Performance Note:  This should be prior to array in class
+	 * @tparam JsonMember A class member to parse to tell SizeFinder how large the
+	 * array is
+	 * @tparam SizeFinder A callable that takes the parsed JsonMember and returns.
+	 * Returning (std::size_t)-1 indicates that no value was found a std::size_t
+	 * representing how large the array will be
+	 */
+	template<typename JsonMember, typename SizeFinder>
+	struct MemberSizedArray {
+		using json_member = JsonMember;
+		using size_finder = SizeFinder;
+	};
+
+	/** Link to a JSON fixed size array
+	 * @tparam Name name of JSON member to link to
+	 * @tparam Container type of C++ container being constructed(e.g.
+	 * vector<int>)
+	 * @tparam JsonElement Json type being parsed e.g. json_number,
+	 * json_string...
+	 * @tparam SizeDeterminator Either FixedSizedArray or MemberSizedArray.  Used
+	 * to determine size of array
+	 * @tparam Constructor A callable used to make Container,
+	 * default will use the Containers constructor.  Both normal and aggregate
+	 * are supported
+	 * @tparam Nullable Can the member be missing or have a null value
+	 */
+	template<JSONNAMETYPE Name, typename JsonElement, typename SizeDeterminator,
+	         typename Container =
+	           std::vector<typename json_details::unnamed_default_type_mapping<
+	             JsonElement>::parse_to_t>,
+	         typename Constructor = default_constructor<Container>,
+	         JsonNullable Nullable = JsonNullable::Never>
+	struct json_fixed_array;
+
+	/** Link to a JSON fixed size array
+	 * @tparam Name name of JSON member to link to
+	 * @tparam Container type of C++ container being constructed(e.g.
+	 * vector<int>)
+	 * @tparam JsonElement Json type being parsed e.g. json_number,
+	 * json_string...
+	 * @tparam SizeDeterminator Either FixedSizedArray or MemberSizedArray.  Used
+	 * to determine size of array
+	 * @tparam Constructor A callable used to make Container,
+	 * default will use the Containers constructor.  Both normal and aggregate
+	 * are supported
+	 */
+	template<JSONNAMETYPE Name, typename JsonElement, typename SizeDeterminator,
+	         typename Container =
+	           std::vector<typename json_details::unnamed_default_type_mapping<
+	             JsonElement>::parse_to_t>,
+	         typename Constructor = default_constructor<Container>>
+	using json_fixed_array_null =
+	  json_fixed_array<Name, JsonElement, SizeDeterminator, Container,
+	                   Constructor, JsonNullable::Nullable>;
+
 	/** Map a KV type json class { "Key StringRaw": ValueType, ... }
 	 *  to a c++ class.  Keys are Always string like and the destination
 	 *  needs to be constructable with a pointer, size
@@ -693,8 +762,8 @@ namespace daw::json {
 		template<JsonNullable Nullable, typename Variant>
 		using determine_variant_element_types = std::conditional_t<
 		  Nullable == JsonNullable::Never or not is_nullable_type<Variant>,
-		  std::remove_reference_t<decltype(
-		    get_variant_type_list( std::declval<Variant const *>( ) ) )>,
+		  std::remove_reference_t<decltype( get_variant_type_list(
+		    std::declval<Variant const *>( ) ) )>,
 		  std::conditional_t<
 		    is_nullable_type<Variant>,
 		    std::remove_reference_t<decltype( get_variant_type_list(
