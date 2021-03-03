@@ -18,6 +18,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_hide.h>
+#include <daw/daw_traits.h>
 
 #include <cassert>
 #include <ciso646>
@@ -222,7 +223,7 @@ namespace daw::json {
 		template<char c>
 		DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of_unchecked( ) {
 
-			if constexpr( not std::is_same_v<Range::exec_tag_t,
+			if constexpr( traits::not_same_v<Range::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
 				first = reinterpret_cast<char const *>( std::memchr(
 				  first, c, static_cast<std::size_t>( class_last - first ) ) );
@@ -236,7 +237,7 @@ namespace daw::json {
 		template<char c>
 		DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of_checked( ) {
 
-			if constexpr( not std::is_same_v<Range::exec_tag_t,
+			if constexpr( traits::not_same_v<Range::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
 				first = reinterpret_cast<char const *>( std::memchr(
 				  first, c, static_cast<std::size_t>( class_last - first ) ) );

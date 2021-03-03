@@ -12,6 +12,7 @@
 #include "daw_json_parse_common.h"
 #include "daw_not_const_ex_functions.h"
 
+#include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
 
 #include <ciso646>
@@ -92,7 +93,7 @@ namespace daw::json::json_details::string_quote {
 			char const *const last = rng.last;
 			// This is a logic error to happen.
 			// daw_json_assert_weak( first != '"', "Unexpected quote", rng );
-			if constexpr( not std::is_same_v<typename Range::exec_tag_t,
+			if constexpr( traits::not_same_v<typename Range::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
 				first = mem_skip_until_end_of_string<true>( Range::exec_tag, first,
 				                                            last, need_slow_path );
@@ -127,7 +128,7 @@ namespace daw::json::json_details::string_quote {
 			std::ptrdiff_t need_slow_path = -1;
 			char const *first = rng.first;
 			char const *const last = rng.class_last;
-			if constexpr( not std::is_same_v<typename Range::exec_tag_t,
+			if constexpr( traits::not_same_v<typename Range::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
 				first = mem_skip_until_end_of_string<false>( Range::exec_tag, first,
 				                                             last, need_slow_path );

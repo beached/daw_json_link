@@ -10,6 +10,7 @@
 
 #include <daw/daw_hide.h>
 #include <daw/daw_string_view.h>
+#include <daw/daw_traits.h>
 #include <daw/daw_unreachable.h>
 
 #include <algorithm>
@@ -26,7 +27,7 @@ namespace daw::json::json_details {
 		char const *member_name;
 
 		template<typename StringView,
-		         std::enable_if_t<(not std::is_same_v<StringView, missing_member>),
+		         std::enable_if_t<(traits::not_same_v<StringView, missing_member>),
 		                          std::nullptr_t> = nullptr>
 		explicit constexpr missing_member( StringView name )
 		  : member_name( std::data( name ) ) {}

@@ -137,14 +137,28 @@ namespace daw::json::json_details {
 
 		// If the member was found loc will have it's position
 		if( loc.first == rng.first ) {
+			/*
+			if constexpr( needs_locations_info_v<JsonMember> ) {
+			  return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
+			                                  rng, locations );
+			} else {
+			 */
 			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 			                                rng );
+			//}
 		}
 		// We cannot find the member, check if the member is nullable
 		if constexpr( is_json_nullable_v<JsonMember> ) {
 			if( loc.is_null( ) ) {
+				/*
+				if constexpr( needs_locations_info_v<JsonMember> ) {
+				  return parse_value<JsonMember, true>(
+				    ParseTag<JsonMember::expected_type>{ }, loc, locations );
+				} else {
+				 */
 				return parse_value<JsonMember, true>(
 				  ParseTag<JsonMember::expected_type>{ }, loc );
+				//	}
 			}
 		} else {
 			daw_json_assert_weak(
@@ -153,8 +167,15 @@ namespace daw::json::json_details {
 			                                    std::size( JsonMember::name ) ) ),
 			  rng );
 		}
+		/*
+		if constexpr( needs_locations_info_v<JsonMember> ) {
+		  return parse_value<JsonMember, true>(
+		    ParseTag<JsonMember::expected_type>{ }, loc, locations );
+		} else {
+		 */
 		return parse_value<JsonMember, true>(
 		  ParseTag<JsonMember::expected_type>{ }, loc );
+		//}
 	}
 
 	template<typename Range>
@@ -276,6 +297,12 @@ namespace daw::json::json_details {
 		  std::is_invocable_v<json_class_constructor_t<JsonClass>,
 		                      typename JsonMembers::parse_to_t...>,
 		  "Supplied types cannot be used for construction of this type" );
+
+		/*
+		static_assert( ( not needs_locations_info_v<JsonMembers> and ... ),
+		               "Types that require access to named members are not "
+		               "supported in classes stored in arrays" );
+		               */
 
 		rng.trim_left( ); // Move to array start '['
 		daw_json_assert_weak( rng.is_opening_bracket_checked( ),

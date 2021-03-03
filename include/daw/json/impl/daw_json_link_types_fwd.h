@@ -500,6 +500,7 @@ namespace daw::json {
 		static constexpr std::size_t size( ) {
 			return N;
 		}
+		static constexpr bool is_fixed = true;
 	};
 
 	/**
@@ -515,6 +516,7 @@ namespace daw::json {
 	struct MemberSizedArray {
 		using json_member = JsonMember;
 		using size_finder = SizeFinder;
+		static constexpr bool is_fixed = false;
 	};
 
 	/** Link to a JSON fixed size array

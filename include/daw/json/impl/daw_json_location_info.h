@@ -128,7 +128,7 @@ namespace daw::json::json_details {
 	 * @param rng Current JSON data
 	 * @return IteratorRange with begin( ) being start of value
 	 */
-	template<std::size_t pos, std::size_t N, typename Range, bool B>
+	template<std::size_t pos, bool from_start = false, std::size_t N, typename Range, bool B>
 	[[nodiscard]] static inline constexpr Range
 	find_class_member( locations_info_t<N, Range, B> &locations, Range &rng,
 	                   bool is_nullable, daw::string_view member_name ) {
@@ -144,7 +144,7 @@ namespace daw::json::json_details {
 			                      rng );
 			// TODO: fully unescape name
 			auto const name = parse_name( rng );
-			auto const name_pos = locations.template find_name<pos>( name );
+			auto const name_pos = locations.template find_name<(from_start ? 0: pos)>( name );
 			if( name_pos >= std::size( locations ) ) {
 				// This is not a member we are concerned with
 				(void)skip_value( rng );

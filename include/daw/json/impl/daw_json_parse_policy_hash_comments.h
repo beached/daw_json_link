@@ -14,6 +14,7 @@
 #include "daw_not_const_ex_functions.h"
 
 #include <daw/daw_hide.h>
+#include <daw/daw_traits.h>
 
 #include <ciso646>
 #include <cstddef>
@@ -116,7 +117,7 @@ namespace daw::json {
 					break;
 				case '"':
 					++ptr_first;
-					if constexpr( not std::is_same_v<typename Range::exec_tag_t,
+					if constexpr( traits::not_same_v<typename Range::exec_tag_t,
 					                                 constexpr_exec_tag> ) {
 						ptr_first = json_details::mem_skip_until_end_of_string<
 						  Range::is_unchecked_input>( Range::exec_tag, ptr_first,
@@ -207,7 +208,7 @@ namespace daw::json {
 					break;
 				case '"':
 					++ptr_first;
-					if constexpr( not std::is_same_v<typename Range::exec_tag_t,
+					if constexpr( traits::not_same_v<typename Range::exec_tag_t,
 					                                 constexpr_exec_tag> ) {
 						ptr_first = json_details::mem_skip_until_end_of_string<
 						  Range::is_unchecked_input>( Range::exec_tag, ptr_first,

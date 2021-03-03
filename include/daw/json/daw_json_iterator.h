@@ -58,7 +58,7 @@ namespace daw::json {
 	public:
 		using element_type =
 		  json_details::unnamed_default_type_mapping<JsonElement>;
-		static_assert( not std::is_same_v<element_type, void>,
+		static_assert( traits::not_same_v<element_type, void>,
 		               "Unknown JsonElement type." );
 		using value_type = typename element_type::parse_to_t;
 		using reference = value_type;
@@ -80,14 +80,13 @@ namespace daw::json {
 		inline constexpr json_array_iterator( ) = default;
 
 		template<typename String,
-		         daw::enable_when_t<not std::is_same_v<
+		         daw::enable_when_t<traits::not_same_v<
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		inline constexpr explicit json_array_iterator( String &&jd )
 		  : m_state( ParsePolicy( std::data( jd ), daw::data_end( jd ) ) ) {
 
-			static_assert(
-			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
-			  "StringRaw must be like a string_view" );
+			static_assert( traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
+			               "StringRaw must be like a string_view" );
 			m_state.trim_left( );
 			daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
 			                      ErrorReason::InvalidArrayStart, m_state );
@@ -97,15 +96,14 @@ namespace daw::json {
 		}
 
 		template<typename String,
-		         daw::enable_when_t<not std::is_same_v<
+		         daw::enable_when_t<traits::not_same_v<
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		inline constexpr explicit json_array_iterator( String &&jd,
 		                                               std::string_view start_path )
 		  : m_state( get_range( DAW_FWD( jd ), start_path ) ) {
 
-			static_assert(
-			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
-			  "StringRaw must be like a string_view" );
+			static_assert( traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
+			               "StringRaw must be like a string_view" );
 			m_state.trim_left( );
 			daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
 			                      ErrorReason::InvalidArrayStart, m_state );
@@ -244,13 +242,13 @@ namespace daw::json {
 		constexpr json_array_range( ) = default;
 
 		template<typename String,
-		         daw::enable_when_t<not std::is_same_v<
+		         daw::enable_when_t<traits::not_same_v<
 		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr explicit json_array_range( String &&jd )
 		  : m_first( DAW_FWD( jd ) ) {}
 
 		template<typename String,
-		         daw::enable_when_t<not std::is_same_v<
+		         daw::enable_when_t<traits::not_same_v<
 		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr explicit json_array_range( String &&jd,
 		                                     std::string_view start_path )

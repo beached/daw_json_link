@@ -71,9 +71,9 @@ namespace daw::json {
 
 		template<typename... Args>
 		[[nodiscard]] inline constexpr auto operator( )( Args &&...args ) const
-		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...> )
+		  noexcept( traits::is_nothrow_list_constructible_v<T, Args...> )
 		    -> std::enable_if_t<(not std::is_constructible_v<T, Args...> and
-		                         daw::traits::is_list_constructible_v<T, Args...>),
+		                         traits::is_list_constructible_v<T, Args...>),
 		                        T> {
 
 			return T{ DAW_FWD( args )... };
@@ -132,12 +132,12 @@ namespace daw::json {
 		template<typename... Args>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr auto
 		operator( )( Args &&...args ) const
-		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...>
+		  noexcept( traits::is_nothrow_list_constructible_v<T, Args...>
 		              and std::is_nothrow_move_constructible_v<T> )
 		    -> std::enable_if_t<
 		      (( sizeof...( Args ) > 0 ) and
 		       not std::is_constructible_v<T, std::in_place_t, Args...> and
-		       daw::traits::is_list_constructible_v<T, Args...>),
+		       traits::is_list_constructible_v<T, Args...>),
 		      std::optional<T>> {
 
 			return std::optional<T>( T{ DAW_FWD( args )... } );
@@ -166,10 +166,10 @@ namespace daw::json {
 		template<typename... Args>
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline auto
 		operator( )( Args &&...args ) const
-		  noexcept( daw::traits::is_nothrow_list_constructible_v<T, Args...> )
+		  noexcept( traits::is_nothrow_list_constructible_v<T, Args...> )
 		    -> std::enable_if_t<(( sizeof...( Args ) > 0 ) and
 		                         not std::is_constructible_v<T, Args...> and
-		                         daw::traits::is_list_constructible_v<T, Args...>),
+		                         traits::is_list_constructible_v<T, Args...>),
 		                        std::unique_ptr<T, Deleter>> {
 
 			return std::unique_ptr<T, Deleter>( new T{ DAW_FWD( args )... } );

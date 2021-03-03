@@ -15,67 +15,93 @@
 
 namespace daw::json::json_details {
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Real>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Signed>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Unsigned>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Null>, Range &rng );
 
+	/*
+	template<typename JsonMember, bool KnownBounds = false, std::size_t N,
+	         typename Range, bool B>
+	[[nodiscard]] constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::Null>, Range &,
+	             locations_info_t<N, Range, B> & );
+	             */
+
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Bool>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::StringRaw>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Date>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Custom>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Class>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Array>, Range & );
 
+	/*
+	template<typename JsonMember, bool KnownBounds = false, std::size_t N,
+	         typename Range, bool B>
+	[[nodiscard]] constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::FixedArray>, Range &,
+	             locations_info_t<N, Range, B> & );
+	             */
+
+	template<typename JsonMember, bool KnownBounds = false, std::size_t N,
+	         typename Range, bool B>
+	[[nodiscard]] constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::FixedArray>, Range & );
+
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::KeyValue>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::KeyValueArray>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Variant>, Range &rng );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard, maybe_unused]] static constexpr json_result<JsonMember>
+	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng );
 
+	template<typename JsonMember, bool KnownBounds = false, std::size_t N,
+	         typename Range, bool B>
+	[[nodiscard]] constexpr json_result<JsonMember>
+	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range & );
+
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
-	[[nodiscard, maybe_unused]] static constexpr json_result<JsonMember>
+	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng );
 
 #if( defined( _MSC_VER ) and not defined( __clang__ ) )
