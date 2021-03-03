@@ -19,33 +19,30 @@
 #include <cstddef>
 
 namespace daw::json::json_details {
-	template<bool HashesCollide, typename Range>
 	struct location_info_t {
-		UInt32 hash_value = 0_u32;
-		daw::string_view const *name;
-		Range location{ };
-		std::size_t count = 0;
+		daw::string_view name;
+		daw::string_view location{ };
+		std::size_t counter = 0;
 
-		explicit constexpr location_info_t( daw::string_view const *Name )
-		  : hash_value( daw::name_hash( *Name ) )
-		  , name( Name ) {}
+		explicit constexpr location_info_t( daw::string_view Name )
+		  : name( Name ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
-			return location.is_null( );
+			return location.data( ) == nullptr;
 		}
-	};
 
-	template<typename Range>
-	struct location_info_t<false, Range> {
-		UInt32 hash_value = 0_u32;
-		typename Range::without_allocator_type location{ };
-		std::size_t count = 0;
+		template<typename Range>
+		constexpr void set_range( Range rng ) {
+			location = daw::string_view( rng.first, rng.last );
+			counter = rng.counter;
+		}
 
-		explicit constexpr location_info_t( daw::string_view const *Name )
-		  : hash_value( daw::name_hash( *Name ) ) {}
-
-		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
-			return location.is_null( );
+		template<typename Range>
+		constexpr auto get_range( ) const {
+			using range_t = typename Range::without_allocator_type;
+			auto result = range_t( std::data( location ), daw::data_end( location ) );
+			result.counter = counter;
+			return result;
 		}
 	};
 
@@ -54,19 +51,20 @@ namespace daw::json::json_details {
 	 * @tparam MemberCount Number of mapped members from json_class
 	 * @tparam Range see IteratorRange
 	 */
-	template<std::size_t MemberCount, typename Range, bool HasCollisions = true>
+	template<std::size_t MemberCount, bool HasCollisions = true>
 	struct locations_info_t {
-		using value_type = location_info_t<HasCollisions, Range>;
-		static constexpr bool has_collisons = HasCollisions;
+		using value_type = location_info_t;
+		using reference = value_type &;
+		using const_reference = value_type const &;
+		static constexpr bool has_collisions = HasCollisions;
+		std::array<daw::UInt32, MemberCount> hashes;
 		std::array<value_type, MemberCount> names;
 
-		constexpr location_info_t<HasCollisions, Range> const &
-		operator[]( std::size_t idx ) const {
+		constexpr const_reference operator[]( std::size_t idx ) const {
 			return names[idx];
 		}
 
-		constexpr location_info_t<HasCollisions, Range> &
-		operator[]( std::size_t idx ) {
+		constexpr reference operator[]( std::size_t idx ) {
 			return names[idx];
 		}
 
@@ -85,9 +83,9 @@ namespace daw::json::json_details {
 #else
 			for( std::size_t n = start_pos; n < MemberCount; ++n ) {
 #endif
-				if( names[n].hash_value == hash ) {
-					if constexpr( has_collisons ) {
-						if( DAW_JSON_UNLIKELY( key != *names[n].name ) ) {
+				if( hashes[n] == hash ) {
+					if constexpr( has_collisions ) {
+						if( DAW_JSON_UNLIKELY( key != names[n].name ) ) {
 							continue;
 						}
 					}
@@ -115,8 +113,9 @@ namespace daw::json::json_details {
 	constexpr auto make_locations_info( ) {
 		constexpr bool hashes_collide =
 		  Range::force_name_equal_check or do_hashes_collide<JsonMembers...>( );
-		return locations_info_t<sizeof...( JsonMembers ), Range, hashes_collide>{
-		  location_info_t<hashes_collide, Range>( &JsonMembers::name )... };
+		return locations_info_t<sizeof...( JsonMembers ), hashes_collide>{
+		  { daw::name_hash( JsonMembers::name )... },
+		  { location_info_t( JsonMembers::name )... } };
 	}
 
 	/***
@@ -128,9 +127,10 @@ namespace daw::json::json_details {
 	 * @param rng Current JSON data
 	 * @return IteratorRange with begin( ) being start of value
 	 */
-	template<std::size_t pos, bool from_start = false, std::size_t N, typename Range, bool B>
+	template<std::size_t pos, bool from_start = false, std::size_t N,
+	         typename Range, bool B>
 	[[nodiscard]] static inline constexpr Range
-	find_class_member( locations_info_t<N, Range, B> &locations, Range &rng,
+	find_class_member( locations_info_t<N, B> &locations, Range &rng,
 	                   bool is_nullable, daw::string_view member_name ) {
 
 		daw_json_assert_weak( is_nullable or ( not locations[pos].missing( ) ) or
@@ -144,7 +144,8 @@ namespace daw::json::json_details {
 			                      rng );
 			// TODO: fully unescape name
 			auto const name = parse_name( rng );
-			auto const name_pos = locations.template find_name<(from_start ? 0: pos)>( name );
+			auto const name_pos =
+			  locations.template find_name<( from_start ? 0 : pos )>( name );
 			if( name_pos >= std::size( locations ) ) {
 				// This is not a member we are concerned with
 				(void)skip_value( rng );
@@ -152,7 +153,7 @@ namespace daw::json::json_details {
 				continue;
 			}
 			if( name_pos == pos ) {
-				locations[pos].location = Range::without_allocator( rng );
+				locations[pos].template set_range( rng );
 				break;
 			} else {
 				// We are out of order, store position for later
@@ -163,11 +164,11 @@ namespace daw::json::json_details {
 				// RESULT: storing preparsed is slower, don't try 3 times
 				// it also limits the type of things we can parse potentially
 				// Using locations to switch on BaseType is slower too
-				locations[name_pos].location = skip_value( rng ).without_allocator( );
+				locations[name_pos].set_range( skip_value( rng ) );
 
 				rng.clean_tail( );
 			}
 		}
-		return locations[pos].location.with_allocator( rng );
+		return locations[pos].template get_range<Range>( ).with_allocator( rng );
 	}
 } // namespace daw::json::json_details

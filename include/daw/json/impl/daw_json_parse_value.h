@@ -216,16 +216,6 @@ namespace daw::json::json_details {
 		}
 	}
 
-	/*
-	template<typename JsonMember, bool KnownBounds, std::size_t N, typename Range,
-	         bool B>
-	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Null> pt, Range &rng,
-	             locations_info_t<N, Range, B> & ) {
-		return parse_value<JsonMember, KnownBounds>( pt, rng );
-	}
-	 */
-
 	template<typename JsonMember, bool KnownBounds, typename Range>
 	[[nodiscard,
 	  maybe_unused]] DAW_ONLY_INLINE inline constexpr json_result<JsonMember>

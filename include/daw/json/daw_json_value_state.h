@@ -343,12 +343,12 @@ namespace daw::json {
 						return { };
 					}
 					sz -= static_cast<std::size_t>( index );
-					return m_locs[sz].location->value;
+					return m_locs[sz].location->value( );
 				}
 			}
 			std::size_t pos = move_to( static_cast<std::size_t>( index ) );
 			if( pos < std::size( m_locs ) ) {
-				return m_locs[pos].location->value;
+				return m_locs[pos].location->value( );
 			}
 			return { };
 		}

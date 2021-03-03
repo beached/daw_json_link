@@ -116,7 +116,7 @@ namespace daw::json::json_details {
 	template<std::size_t member_position, typename JsonMember, std::size_t N,
 	         typename Range, bool B>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_class_member( locations_info_t<N, Range, B> &locations, Range &rng ) {
+	parse_class_member( locations_info_t<N, B> &locations, Range &rng ) {
 		rng.clean_tail( );
 		static_assert( not is_no_name<JsonMember>,
 		               "Array processing should never call parse_class_member" );

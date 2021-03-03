@@ -191,6 +191,12 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+		data_end( ) const {
+			return last;
+		}
+
+
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
 		begin( ) const {
 			return first;
 		}
