@@ -51,14 +51,6 @@ namespace daw::json {
 } // namespace daw::json
 
 namespace daw::json::json_details {
-	/*
-	template<typename JsonMember>
-	using needs_locations_info_test = typename JsonMember::needs_locations_info;
-
-	template<typename JsonMember>
-	inline constexpr bool needs_locations_info_v =
-	  daw::is_detected_v<needs_locations_info_test, JsonMember>;
-*/
 	template<typename T, bool = false>
 	struct ordered_member_subtype {
 		using type = T;

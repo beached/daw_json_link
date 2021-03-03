@@ -551,7 +551,6 @@ namespace daw::json {
 		static_assert( traits::not_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
-		//using needs_locations_info = void;
 		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
 		  get_parse_type_v<JsonParseTypes::VariantTagged, Nullable>;
@@ -680,56 +679,6 @@ namespace daw::json {
 		  JsonBaseParseTypes::Array;
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
-
-	/** Link to a JSON fixed size array
-	 * @tparam Name name of JSON member to link to
-	 * @tparam Container type of C++ container being constructed(e.g.
-	 * vector<int>)
-	 * @tparam JsonElement Json type being parsed e.g. json_number,
-	 * json_string...
-	 * @tparam SizeDeterminator Either FixedSizedArray or MemberSizedArray.  Used
-	 * to determine size of array
-	 * @tparam Constructor A callable used to make Container,
-	 * default will use the Containers constructor.  Both normal and aggregate
-	 * are supported
-	 */
-	 /*
-	template<JSONNAMETYPE Name, typename JsonElement, typename Container,
-	         typename SizeDeterminator, typename Constructor,
-	         JsonNullable Nullable>
-	struct json_fixed_array {
-		using i_am_a_json_type = void;
-		static_assert(
-		  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
-		  "Missing specialization of daw::json::json_data_contract for class "
-		  "mapping or specialization of daw::json::json_link_basic_type_map" );
-		using json_element_t =
-		  json_details::unnamed_default_type_mapping<JsonElement>;
-		static_assert( traits::not_same_v<json_element_t, void>,
-		               "Unknown JsonElement type." );
-		static_assert( json_details::is_a_json_type_v<json_element_t>,
-		               "Error determining element type" );
-		using constructor_t = Constructor;
-
-		using base_type = json_details::unwrap_type<Container, Nullable>;
-		static_assert( traits::not_same_v<void, base_type>,
-		               "Failed to detect base type" );
-		using parse_to_t = std::invoke_result_t<Constructor>;
-		using size_determinator = SizeDeterminator;
-		using needs_locations_info = void;
-		static constexpr daw::string_view name = Name;
-		static constexpr JsonParseTypes expected_type =
-		  get_parse_type_v<JsonParseTypes::FixedArray, Nullable>;
-		static constexpr JsonParseTypes base_expected_type =
-		  JsonParseTypes::FixedArray;
-
-		static_assert( json_element_t::name == no_name,
-		               "All elements of json_array must be have no_name" );
-		static constexpr JsonBaseParseTypes underlying_json_type =
-		  JsonBaseParseTypes::Array;
-		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
-	};
-	  */
 
 	/** Map a KV type json class { "Key StringRaw": ValueType, ... }
 	 *  to a c++ class.  Keys are Always string like and the destination

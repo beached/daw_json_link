@@ -30,14 +30,6 @@ namespace daw::json::json_details {
 	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Null>, Range &rng );
 
-	/*
-	template<typename JsonMember, bool KnownBounds = false, std::size_t N,
-	         typename Range, bool B>
-	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Null>, Range &,
-	             locations_info_t<N, Range, B> & );
-	             */
-
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Bool>, Range &rng );
@@ -65,19 +57,6 @@ namespace daw::json::json_details {
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Array>, Range & );
-
-	/*
-	template<typename JsonMember, bool KnownBounds = false, std::size_t N,
-	         typename Range, bool B>
-	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::FixedArray>, Range &,
-	             locations_info_t<N, Range, B> & );
-	             */
-
-	template<typename JsonMember, bool KnownBounds = false, std::size_t N,
-	         typename Range, bool B>
-	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::FixedArray>, Range & );
 
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] constexpr json_result<JsonMember>

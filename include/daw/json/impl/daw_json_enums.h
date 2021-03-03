@@ -23,7 +23,6 @@ namespace daw::json {
 		Date,
 		Class,
 		Array,
-		FixedArray,
 		Null,
 		KeyValue,
 		KeyValueArray,
