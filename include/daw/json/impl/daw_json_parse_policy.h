@@ -207,12 +207,20 @@ namespace daw::json {
 		}
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool empty( ) const {
-			return first >= last;
+			if constexpr( is_zero_terminated_string ) {
+				return first >= last or *first == '\0';
+			} else {
+				return first >= last;
+			}
 		}
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
 		has_more( ) const {
-			return first < last;
+			if constexpr( is_zero_terminated_string ) {
+				return first < last and *first != '\0';
+			} else {
+				return first < last;
+			}
 		}
 
 		template<std::size_t N>

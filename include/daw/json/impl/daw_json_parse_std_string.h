@@ -193,7 +193,8 @@ namespace daw::json::json_details {
 			if constexpr( Range::is_unchecked_input ) {
 				return r.front( ) != '"';
 			} else if constexpr( Range::is_zero_terminated_string ) {
-				return DAW_JSON_LIKELY( r.front( ) != '\0' ) & ( r.front( ) != '"' );
+				char const c = r.front( );
+				return DAW_JSON_LIKELY( c != '\0' ) & ( c != '"' );
 			} else {
 				return DAW_JSON_LIKELY( r.has_more( ) ) & ( r.front( ) != '"' );
 			}
