@@ -21,6 +21,7 @@ namespace daw::json::json_details {
 	struct location_info_t {
 		daw::string_view name;
 		daw::string_view location{ };
+		daw::string_view class_loc{ };
 		std::size_t counter = 0;
 
 		explicit constexpr location_info_t( daw::string_view Name )
@@ -33,13 +34,16 @@ namespace daw::json::json_details {
 		template<typename Range>
 		constexpr void set_range( Range rng ) {
 			location = daw::string_view( rng.first, rng.last );
+			class_loc = daw::string_view( rng.class_first, rng.class_last );
 			counter = rng.counter;
 		}
 
 		template<typename Range>
 		constexpr auto get_range( ) const {
 			using range_t = typename Range::without_allocator_type;
-			auto result = range_t( std::data( location ), daw::data_end( location ) );
+			auto result =
+			  range_t( std::data( location ), daw::data_end( location ),
+			           std::data( class_loc ), daw::data_end( class_loc ) );
 			result.counter = counter;
 			return result;
 		}
