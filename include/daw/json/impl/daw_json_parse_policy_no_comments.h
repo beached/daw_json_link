@@ -36,9 +36,16 @@ namespace daw::json {
 				// SIMD here was much slower, most JSON has very minimal whitespace
 				char const *first = rng.first;
 				char const *const last = rng.last;
-				while( DAW_JSON_LIKELY( first < last ) and
-				       static_cast<unsigned char>( *first ) <= 0x20U ) {
-					++first;
+				if constexpr( Range::is_zero_terminated_string ) {
+					// Ensure that zero terminator isn't included in skipable value
+					while( ( static_cast<unsigned char>( *first ) - 1U ) < 0x20U ) {
+						++first;
+					}
+				} else {
+					while( DAW_JSON_LIKELY( first < last ) and
+					       static_cast<unsigned char>( *first ) <= 0x20U ) {
+						++first;
+					}
 				}
 				rng.first = first;
 			}
@@ -68,12 +75,20 @@ namespace daw::json {
 			} else {
 				char const *first = rng.first;
 				char const *const last = rng.last;
-				daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,
-				                      rng );
-				while( not parse_policy_details::in<keys...>( *first ) ) {
-					++first;
+				if( Range::is_zero_terminated_string ) {
+					daw_json_assert_weak( first < last and *first != '\0',
+					                      ErrorReason::UnexpectedEndOfData, rng );
+					while( not parse_policy_details::in<keys...>( *first ) ) {
+						++first;
+					}
+				} else {
 					daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,
 					                      rng );
+					while( not parse_policy_details::in<keys...>( *first ) ) {
+						++first;
+						daw_json_assert_weak( first < last,
+						                      ErrorReason::UnexpectedEndOfData, rng );
+					}
 				}
 				rng.first = first;
 			}
@@ -101,65 +116,128 @@ namespace daw::json {
 			if( *ptr_first == PrimLeft ) {
 				++ptr_first;
 			}
-			while( DAW_JSON_LIKELY( ptr_first < ptr_last ) ) {
-				switch( *ptr_first ) {
-				case '\\':
-					++ptr_first;
-					break;
-				case '"':
-					++ptr_first;
-					if constexpr( traits::not_same_v<typename Range::exec_tag_t,
-					                                 constexpr_exec_tag> ) {
-						ptr_first = json_details::mem_skip_until_end_of_string<
-						  Range::is_unchecked_input>( Range::exec_tag, ptr_first,
-						                              rng.last );
-					} else {
-						while( DAW_JSON_LIKELY( ptr_first < ptr_last ) and
-						       *ptr_first != '"' ) {
-							if( *ptr_first == '\\' ) {
-								if( ptr_first + 1 < ptr_last ) {
-									ptr_first += 2;
-									continue;
-								} else {
-									ptr_first = ptr_last;
-									break;
-								}
-							}
-							++ptr_first;
-						}
-					}
-					daw_json_assert( ptr_first < ptr_last and *ptr_first == '"',
-					                 ErrorReason::UnexpectedEndOfData, rng );
-					break;
-				case ',':
-					if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
-					                       ( second_bracket_count == 0 ) ) ) {
-						++cnt;
-					}
-					break;
-				case PrimLeft:
-					++prime_bracket_count;
-					break;
-				case PrimRight:
-					--prime_bracket_count;
-					if( prime_bracket_count == 0 ) {
+			if constexpr( Range::is_zero_terminated_string ) {
+				while( *ptr_first != '\0' ) {
+					switch( *ptr_first ) {
+					case '\\':
 						++ptr_first;
-						daw_json_assert( second_bracket_count == 0,
-						                 ErrorReason::InvalidBracketing, rng );
-						result.last = ptr_first;
-						result.counter = cnt;
-						rng.first = ptr_first;
-						return result;
+						break;
+					case '"':
+						++ptr_first;
+						if constexpr( traits::not_same_v<typename Range::exec_tag_t,
+						                                 constexpr_exec_tag> ) {
+							ptr_first = json_details::mem_skip_until_end_of_string<
+							  Range::is_unchecked_input>( Range::exec_tag, ptr_first,
+							                              rng.last );
+						} else {
+							while( ( *ptr_first != '\0' ) & ( *ptr_first != '"' ) ) {
+								if( *ptr_first == '\\' ) {
+									if( ptr_first + 1 < ptr_last ) {
+										ptr_first += 2;
+										continue;
+									} else {
+										ptr_first = ptr_last;
+										break;
+									}
+								}
+								++ptr_first;
+							}
+						}
+						daw_json_assert( ptr_first < ptr_last and *ptr_first != '\0' and
+						                   *ptr_first == '"',
+						                 ErrorReason::UnexpectedEndOfData, rng );
+						break;
+					case ',':
+						if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
+						                       ( second_bracket_count == 0 ) ) ) {
+							++cnt;
+						}
+						break;
+					case PrimLeft:
+						++prime_bracket_count;
+						break;
+					case PrimRight:
+						--prime_bracket_count;
+						if( prime_bracket_count == 0 ) {
+							++ptr_first;
+							daw_json_assert( second_bracket_count == 0,
+							                 ErrorReason::InvalidBracketing, rng );
+							result.last = ptr_first;
+							result.counter = cnt;
+							rng.first = ptr_first;
+							return result;
+						}
+						break;
+					case SecLeft:
+						++second_bracket_count;
+						break;
+					case SecRight:
+						--second_bracket_count;
+						break;
 					}
-					break;
-				case SecLeft:
-					++second_bracket_count;
-					break;
-				case SecRight:
-					--second_bracket_count;
-					break;
+					++ptr_first;
 				}
-				++ptr_first;
+			} else {
+				while( DAW_JSON_LIKELY( ptr_first < ptr_last ) ) {
+					switch( *ptr_first ) {
+					case '\\':
+						++ptr_first;
+						break;
+					case '"':
+						++ptr_first;
+						if constexpr( traits::not_same_v<typename Range::exec_tag_t,
+						                                 constexpr_exec_tag> ) {
+							ptr_first = json_details::mem_skip_until_end_of_string<
+							  Range::is_unchecked_input>( Range::exec_tag, ptr_first,
+							                              rng.last );
+						} else {
+							while( DAW_JSON_LIKELY( ptr_first < ptr_last ) and
+							       *ptr_first != '"' ) {
+								if( *ptr_first == '\\' ) {
+									if( ptr_first + 1 < ptr_last ) {
+										ptr_first += 2;
+										continue;
+									} else {
+										ptr_first = ptr_last;
+										break;
+									}
+								}
+								++ptr_first;
+							}
+						}
+						daw_json_assert( ptr_first < ptr_last and *ptr_first == '"',
+						                 ErrorReason::UnexpectedEndOfData, rng );
+						break;
+					case ',':
+						if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
+						                       ( second_bracket_count == 0 ) ) ) {
+							++cnt;
+						}
+						break;
+					case PrimLeft:
+						++prime_bracket_count;
+						break;
+					case PrimRight:
+						--prime_bracket_count;
+						if( prime_bracket_count == 0 ) {
+							++ptr_first;
+							daw_json_assert( second_bracket_count == 0,
+							                 ErrorReason::InvalidBracketing, rng );
+							result.last = ptr_first;
+							result.counter = cnt;
+							rng.first = ptr_first;
+							return result;
+						}
+						break;
+					case SecLeft:
+						++second_bracket_count;
+						break;
+					case SecRight:
+						--second_bracket_count;
+						break;
+					}
+					++ptr_first;
+				}
 			}
 			daw_json_assert( ( prime_bracket_count == 0 ) &
 			                   ( second_bracket_count == 0 ),

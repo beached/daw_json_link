@@ -19,6 +19,7 @@
 #include <daw/daw_traits.h>
 #include <utf8/unchecked.h>
 
+#include <array>
 #include <ciso646>
 #include <optional>
 #include <sstream>
@@ -38,6 +39,7 @@ namespace daw::json {
 	template<typename Real, typename OutputIterator>
 	inline OutputIterator real2string( Real const &value,
 	                                   OutputIterator out_it ) {
+		// TODO: Customization point, add to readme
 #ifndef DAW_JSON_CUSTOM_D2S
 		if constexpr( std::is_same_v<Real, float> ) {
 			return jkj::dragonbox::to_chars_n( value, out_it );

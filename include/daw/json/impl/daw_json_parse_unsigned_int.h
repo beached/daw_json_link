@@ -35,12 +35,13 @@ namespace daw::json::json_details {
 	is_made_of_eight_digits_cx( const char *ptr ) {
 		// The copy to local buffer is to get the compiler to treat it like a
 		// reinterpret_cast
-		std::byte buff[8]{ };
-		for( std::size_t n = 0; n < 8; ++n ) {
-			buff[n] = static_cast<std::byte>( ptr[n] );
-		}
-		UInt64 val = UInt64( );
+		std::byte const buff[8]{
+		  static_cast<std::byte>( ptr[0] ), static_cast<std::byte>( ptr[1] ),
+		  static_cast<std::byte>( ptr[2] ), static_cast<std::byte>( ptr[3] ),
+		  static_cast<std::byte>( ptr[4] ), static_cast<std::byte>( ptr[5] ),
+		  static_cast<std::byte>( ptr[6] ), static_cast<std::byte>( ptr[7] ) };
 
+		UInt64 val = UInt64( );
 		for( std::size_t n = 0; n < 8; ++n ) {
 			val |= to_uint64( buff[n] ) << ( 8 * n );
 		}
@@ -118,10 +119,20 @@ namespace daw::json::json_details {
 			result += static_cast<result_t>( parse_8_digits( first ) );
 			first += 8;
 		}
-		while( first < last ) {
-			result *= 10U;
-			result += parse_digit( *first );
-			++first;
+		if constexpr( Range::is_zero_terminated_string ) {
+			auto dig = parse_digit( *first );
+			while( dig < 10U ) {
+				result *= 10U;
+				result += dig;
+				++first;
+				dig = parse_digit( *first );
+			}
+		} else {
+			while( first < last ) {
+				result *= 10U;
+				result += parse_digit( *first );
+				++first;
+			}
 		}
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {
 			auto const count =
@@ -176,13 +187,22 @@ namespace daw::json::json_details {
 			result += static_cast<result_t>( parse_8_digits( first ) );
 			first += 8;
 		}
-		auto dig = parse_digit( *first );
-
-		while( dig < 10U ) {
-			result *= 10U;
-			result += dig;
-			++first;
-			dig = parse_digit( *first );
+		if constexpr( Range::is_zero_terminated_string ) {
+			auto dig = parse_digit( *first );
+			while( dig < 10U ) {
+				result *= 10U;
+				result += dig;
+				++first;
+				dig = parse_digit( *first );
+			}
+		} else {
+			auto dig = parse_digit( *first );
+			while( first < last and dig < 10U ) {
+				result *= 10U;
+				result += dig;
+				++first;
+				dig = parse_digit( *first );
+			}
 		}
 
 		if constexpr( RangeChecked != JsonRangeCheck::Never ) {

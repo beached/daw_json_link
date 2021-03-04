@@ -23,7 +23,6 @@
  *
  */
 namespace daw::json {
-
 	/***
 	 * This class is used as a way to indicate that a json_data_contract
 	 * specialization has not been done for a user class.

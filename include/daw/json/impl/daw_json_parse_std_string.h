@@ -189,9 +189,17 @@ namespace daw::json::json_details {
 			it = std::copy_n( rng.first, first_slash, it );
 			rng.first += first_slash;
 		}
-		while(
-		  ( Range::is_unchecked_input or DAW_JSON_LIKELY( rng.has_more( ) ) ) and
-		  rng.front( ) != '"' ) {
+		constexpr auto pred = []( auto const &r ) {
+			if constexpr( Range::is_unchecked_input ) {
+				return r.front( ) != '"';
+			} else if constexpr( Range::is_zero_terminated_string ) {
+				return DAW_JSON_LIKELY( r.front( ) != '\0' ) & ( r.front( ) != '"' );
+			} else {
+				return DAW_JSON_LIKELY( r.has_more( ) ) & ( r.front( ) != '"' );
+			}
+		};
+
+		while( pred( rng ) ) {
 			{
 				char const *first = rng.first;
 				char const *const last = rng.last;

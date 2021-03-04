@@ -40,7 +40,8 @@ namespace daw::json {
 	 */
 	template<bool IsUncheckedInput, typename CommentPolicy, typename ExecMode,
 	         bool AllowEscapedNames,
-	         typename Allocator = json_details::NoAllocator>
+	         typename Allocator = json_details::NoAllocator,
+	         bool IsZeroTerminated = true>
 	struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 		using iterator = char const *;
 		static constexpr bool is_unchecked_input = IsUncheckedInput;
@@ -48,6 +49,7 @@ namespace daw::json {
 		static constexpr exec_tag_t exec_tag = exec_tag_t{ };
 		static constexpr bool allow_escaped_names = AllowEscapedNames;
 		static constexpr bool force_name_equal_check = false;
+		static constexpr bool is_zero_terminated_string = IsZeroTerminated;
 		using CharT = char;
 
 		using as_unchecked = BasicParsePolicy<true, CommentPolicy, exec_tag_t,
@@ -194,7 +196,6 @@ namespace daw::json {
 		data_end( ) const {
 			return last;
 		}
-
 
 		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
 		begin( ) const {
@@ -345,11 +346,6 @@ namespace daw::json {
 
 		[[nodiscard]] inline constexpr bool is_quotes_checked( ) const {
 			return DAW_JSON_LIKELY( first < last ) and *first == '"';
-		}
-
-		[[nodiscard]] inline constexpr bool is_exponent_checked( ) const {
-			return DAW_JSON_LIKELY( first < last ) and
-			       ( ( *first == 'e' ) bitor ( *first == 'E' ) );
 		}
 
 		inline constexpr void trim_left( ) {

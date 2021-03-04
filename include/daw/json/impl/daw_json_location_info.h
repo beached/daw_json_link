@@ -14,7 +14,6 @@
 #include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
 
-#include <array>
 #include <ciso646>
 #include <cstddef>
 
@@ -57,8 +56,8 @@ namespace daw::json::json_details {
 		using reference = value_type &;
 		using const_reference = value_type const &;
 		static constexpr bool has_collisions = HasCollisions;
-		std::array<daw::UInt32, MemberCount> hashes;
-		std::array<value_type, MemberCount> names;
+		daw::UInt32 hashes[MemberCount];
+		value_type names[MemberCount];
 
 		constexpr const_reference operator[]( std::size_t idx ) const {
 			return names[idx];
@@ -99,13 +98,15 @@ namespace daw::json::json_details {
 	// Should never be called outsite a consteval context
 	template<typename... MemberNames>
 	static inline constexpr bool do_hashes_collide( ) {
-		std::array<UInt32, sizeof...( MemberNames )> hashes{
+		daw::UInt32 hashes[sizeof...( MemberNames )]{
 		  name_hash( MemberNames::name )... };
 
 		daw::sort( std::data( hashes ), daw::data_end( hashes ) );
-		return daw::algorithm::adjacent_find(
-		         hashes.begin( ), hashes.end( ),
-		         []( UInt32 l, UInt32 r ) { return l == r; } ) != hashes.end( );
+		return daw::algorithm::adjacent_find( std::data( hashes ),
+		                                      daw::data_end( hashes ),
+		                                      []( UInt32 l, UInt32 r ) {
+			                                      return l == r;
+		                                      } ) != daw::data_end( hashes );
 	}
 
 	// Should never be called outsite a consteval context
