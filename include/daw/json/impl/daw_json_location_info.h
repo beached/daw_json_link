@@ -18,32 +18,35 @@
 #include <cstddef>
 
 namespace daw::json::json_details {
-	struct location_info_t {
+	class location_info_t {
 		daw::string_view name;
-		daw::string_view location{ };
-		daw::string_view class_loc{ };
+		char const *first = nullptr;
+		char const *last = nullptr;
+		char const *class_first = nullptr;
+		char const *class_last = nullptr;
 		std::size_t counter = 0;
 
+	public:
 		explicit constexpr location_info_t( daw::string_view Name )
 		  : name( Name ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
-			return location.data( ) == nullptr;
+			return first == nullptr;
 		}
 
 		template<typename Range>
 		constexpr void set_range( Range rng ) {
-			location = daw::string_view( rng.first, rng.last );
-			class_loc = daw::string_view( rng.class_first, rng.class_last );
+			first = rng.first;
+			last = rng.last;
+			class_first = rng.class_first;
+			class_last = rng.class_last;
 			counter = rng.counter;
 		}
 
 		template<typename Range>
 		constexpr auto get_range( ) const {
 			using range_t = typename Range::without_allocator_type;
-			auto result =
-			  range_t( std::data( location ), daw::data_end( location ),
-			           std::data( class_loc ), daw::data_end( class_loc ) );
+			auto result = range_t( first, last, class_first, class_last );
 			result.counter = counter;
 			return result;
 		}
