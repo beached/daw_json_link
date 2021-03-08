@@ -465,6 +465,11 @@ target_link_libraries(cookbook_numbers2_test json_test)
 add_test(NAME cookbook_numbers2_test COMMAND cookbook_numbers2_test ./cookbook_numbers2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_numbers2_test)
 
+add_executable(cookbook_numbers3_test src/cookbook_numbers3_test.cpp)
+target_link_libraries(cookbook_numbers3_test json_test Boost::headers)
+add_test(NAME cookbook_numbers3_test COMMAND cookbook_numbers3_test ./cookbook_numbers3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_numbers3_test)
+
 add_executable(cookbook_unknown_types_and_delayed_parsing1_test src/cookbook_unknown_types_and_delayed_parsing1_test.cpp)
 target_link_libraries(cookbook_unknown_types_and_delayed_parsing1_test json_test)
 add_test(NAME cookbook_unknown_types_and_delayed_parsing1_test COMMAND cookbook_unknown_types_and_delayed_parsing1_test ./cookbook_unknown_types_and_delayed_parsing1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
@@ -479,6 +484,11 @@ add_executable(cookbook_unknown_types_and_delayed_parsing3_test src/cookbook_unk
 target_link_libraries(cookbook_unknown_types_and_delayed_parsing3_test json_test)
 add_test(NAME cookbook_unknown_types_and_delayed_parsing3_test COMMAND cookbook_unknown_types_and_delayed_parsing3_test)
 add_dependencies(full cookbook_unknown_types_and_delayed_parsing3_test)
+
+add_executable(cookbook_class_from_json_mapping_test src/cookbook_class_from_json_mapping_test.cpp)
+target_link_libraries(cookbook_class_from_json_mapping_test json_test)
+add_test(NAME cookbook_class_from_json_mapping_test COMMAND cookbook_class_from_json_mapping_test ./cookbook_class_from_json_mapping.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_class_from_json_mapping_test)
 
 add_executable(stream_output_test src/stream_output_test.cpp)
 target_link_libraries(stream_output_test json_test)

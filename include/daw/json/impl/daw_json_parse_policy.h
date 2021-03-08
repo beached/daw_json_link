@@ -41,7 +41,7 @@ namespace daw::json {
 	template<bool IsUncheckedInput, typename CommentPolicy, typename ExecMode,
 	         bool AllowEscapedNames,
 	         typename Allocator = json_details::NoAllocator,
-	         bool IsZeroTerminated = true>
+	         bool IsZeroTerminated = false>
 	struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 		using iterator = char const *;
 		static constexpr bool is_unchecked_input = IsUncheckedInput;

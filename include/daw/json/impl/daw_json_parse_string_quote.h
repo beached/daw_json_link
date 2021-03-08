@@ -98,17 +98,20 @@ namespace daw::json::json_details::string_quote {
 				first = mem_skip_until_end_of_string<true>( Range::exec_tag, first,
 				                                            last, need_slow_path );
 			} else {
-				if( last - first >= 8 ) {
-					skip_to_first8( first, last );
-				} else if( last - first >= 4 ) {
-					skip_to_first4( first, last );
+				{
+					auto const sz = last - first;
+					if( sz >= 8 ) {
+						skip_to_first8( first, last );
+					} else if( sz >= 4 ) {
+						skip_to_first4( first, last );
+					}
 				}
-				while( DAW_JSON_LIKELY( *first != '"' ) ) {
-					while( DAW_JSON_LIKELY( *first != '"' ) &
-					       DAW_JSON_LIKELY( *first != '\\' ) ) {
+				while( *first != '"' ) {
+					while(
+					  []( char c ) { return ( c != '"' ) & ( c != '\\' ); }( *first ) ) {
 						++first;
 					}
-					if( DAW_JSON_UNLIKELY( *first == '\\' ) ) {
+					if( *first == '\\' ) {
 						if( need_slow_path < 0 ) {
 							need_slow_path = first - rng.first;
 						}
@@ -138,15 +141,13 @@ namespace daw::json::json_details::string_quote {
 				} else if( last - first >= 4 ) {
 					skip_to_first4( first, l );
 				}
-				while( DAW_JSON_LIKELY( first < last ) and
-				       DAW_JSON_LIKELY( *first != '"' ) ) {
-					while( DAW_JSON_LIKELY( first < last ) and
-					       ( DAW_JSON_LIKELY( *first != '"' ) &
-					         DAW_JSON_LIKELY( *first != '\\' ) ) ) {
+				while( first < last and *first != '"' ) {
+					while( ( first < last ) and
+					       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
 						++first;
 					}
 
-					if( DAW_JSON_UNLIKELY( first < last and *first == '\\' ) ) {
+					if( ( first < last and *first == '\\' ) ) {
 						if( need_slow_path < 0 ) {
 							need_slow_path = first - rng.first;
 						}

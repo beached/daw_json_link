@@ -79,3 +79,15 @@ namespace daw::json {
 }
 ```
 
+## Big Numbers, Rationals, ...
+The parser supports parsing big numbers that model arithmetic types directly.  However, some types have built in serialization/deserialization and that is often more efficient.
+
+
+
+```c++
+#include <boost/multiprecision/cpp_dec_float.hpp>
+
+
+```
+
+

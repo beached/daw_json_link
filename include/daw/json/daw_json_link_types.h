@@ -72,6 +72,34 @@ namespace daw::json {
 		}
 	};
 
+	template<typename JsonMember>
+	struct json_class_map {
+		using i_am_a_json_member_list = void;
+		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
+		static_assert( json_details::is_a_json_type_v<json_member>,
+		               "Only JSON Link mapping types can appear in a "
+		               "json_class_map(e.g. json_number, json_string...)" );
+		static_assert( is_no_name<json_member>,
+		               "The JSONMember cannot be named, it does not make sense in "
+		               "this context" );
+
+		template<typename OutputIterator, typename Member, typename Value>
+		[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
+		serialize( OutputIterator it, Member const &m, Value const &v ) {
+			using member_json_t = json_details::unnamed_default_type_mapping<Member>;
+			return json_details::member_to_string<member_json_t>( it, m );
+		}
+
+		template<typename T, typename Range>
+		[[maybe_unused, nodiscard]] DAW_ONLY_FLATTEN static constexpr T
+		parse_to_class( Range &rng ) {
+			return json_details::construct_value<T>(
+			  json_details::json_class_constructor<T>, rng,
+			  json_details::parse_value<json_member, false>(
+			    ParseTag<json_member::expected_type>{ }, rng ) );
+		}
+	};
+
 	template<typename... Members>
 	struct json_data_contract<tuple_json_mapping<Members...>> {
 		using type = json_member_list<Members...>;
