@@ -55,7 +55,6 @@ namespace daw::json::json_details {
 	/***
 	 * Contains an array of member location_info mapped in a json_class
 	 * @tparam MemberCount Number of mapped members from json_class
-	 * @tparam Range see IteratorRange
 	 */
 	template<std::size_t MemberCount, bool HasCollisions = true>
 	struct locations_info_t {

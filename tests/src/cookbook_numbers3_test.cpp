@@ -17,7 +17,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-#include <string>
+#include <string_view>
 
 namespace daw::json {
 	template<typename Backend, boost::multiprecision::expression_template_option
@@ -25,7 +25,7 @@ namespace daw::json {
 	struct json_data_contract<
 	  boost::multiprecision::number<Backend, ExpressionTemplates>> {
 
-		using type = json_class_map<std::string>;
+		using type = json_class_map<std::string_view>;
 
 		static inline auto to_json_data(
 		  boost::multiprecision::number<Backend, ExpressionTemplates> const
