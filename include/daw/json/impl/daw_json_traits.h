@@ -216,8 +216,8 @@ namespace daw::json {
 
 		/// If the parse policy has a type alias `must_verify_end_of_data_is_valid`
 		/// this trait is true.  This is used to ensure that after the JSON value is
-		/// parse that only whitespace or nothing follows \tparam ParsePolicy Parser
-		/// Policy Type
+		/// parse that only whitespace or nothing follows 
+		//  @tparam ParsePolicy Parser Policy Type
 		template<typename ParsePolicy>
 		inline constexpr bool must_verify_end_of_data_is_valid_v =
 		  daw::is_detected_v<must_verify_end_of_data_is_valid_t, ParsePolicy>;
