@@ -24,6 +24,10 @@
 #include <string>
 #include <string_view>
 
+#if defined( __has_include ) and __has_include( <version> )
+#include <version>
+#endif
+
 #if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
          defined( _CPPUNWIND ) ) or                                \
   defined( DAW_DONT_USE_JSON_EXCEPTIONS )

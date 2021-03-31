@@ -10,6 +10,10 @@
 
 #include <string_view>
 
+#if defined( __has_include ) and __has_include( <version> )
+#include <version>
+#endif
+
 namespace daw::json {
 	struct constexpr_exec_tag {
 		static constexpr std::string_view name = "constexpr";

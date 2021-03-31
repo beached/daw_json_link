@@ -27,6 +27,10 @@
 #include <cstddef>
 #include <iterator>
 
+#if defined( __has_include ) and __has_include( <version> )
+#include <version>
+#endif
+
 #if defined( __cpp_constexpr_dynamic_alloc )
 #define CPP20CONSTEXPR constexpr
 #define HAS_CPP20CONSTEXPR

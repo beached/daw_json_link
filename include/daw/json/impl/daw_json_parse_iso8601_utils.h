@@ -20,6 +20,10 @@
 #include <ciso646>
 #include <cstdint>
 
+#if defined( __has_include ) and __has_include( <version> )
+#include <version>
+#endif
+
 namespace daw::json::parse_utils {
 
 	template<typename Result, std::size_t count>

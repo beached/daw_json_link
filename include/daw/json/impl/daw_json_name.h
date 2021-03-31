@@ -12,6 +12,10 @@
 #include <string_view>
 #include <utility>
 
+#if defined( __has_include ) and __has_include( <version> )
+#include <version>
+#endif
+
 namespace daw::json {
 #if defined( __cpp_nontype_template_parameter_class ) and \
   not defined( DAW_JSON_NO_CPP_NAMES )
