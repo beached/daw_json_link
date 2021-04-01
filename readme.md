@@ -575,7 +575,7 @@ A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_jso
 ## Build configuration points
 There are a few defines that affect how JSON Link operates
 * `DAW_JSON_DONT_USE_EXCEPTIONS` - Controls if exceptions are allowed. If they are not, an `std::terminate()` on errors will occur
-* `DAW_ALLOW_SSE42` - Allow experimental SSE3 mode
+* `DAW_ALLOW_SSE42` - Allow experimental SSE42 mode, generally the constexpr mode is faster
 * `DAW_JSON_NO_CONST_EXPR` - This can be used to allow classes without move/copy special members to be constructed from JSON data prior to C++ 20. This mode does not work in a constant expression prior to C++20 when this flag is no longer needed. 
 
 ## Requirements
