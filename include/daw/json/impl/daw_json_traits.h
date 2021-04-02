@@ -230,8 +230,5 @@ namespace daw::json {
 		inline constexpr bool must_verify_end_of_data_is_valid_v =
 		  daw::is_detected_v<must_verify_end_of_data_is_valid_t, ParsePolicy>;
 
-		template<typename JsonMember>
-		using from_json_result_t =
-		json_result<unnamed_default_type_mapping<JsonMember>>;
 	} // namespace json_details
 } // namespace daw::json

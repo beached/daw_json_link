@@ -441,6 +441,10 @@ namespace daw::json {
 		template<typename T>
 		inline constexpr bool has_unnamed_default_type_mapping_v =
 		  has_unnamed_default_type_mapping<T>::value;
+
+		template<typename JsonMember>
+		using from_json_result_t =
+		json_result<unnamed_default_type_mapping<JsonMember>>;
 	} // namespace json_details
 
 	/***

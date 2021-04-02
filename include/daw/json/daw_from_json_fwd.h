@@ -15,9 +15,7 @@
 #include <string_view>
 
 namespace daw::json {
-	namespace json_details {
-
-	}
+	namespace json_details {}
 	/**
 	 * Construct the JSONMember from the JSON document argument.
 	 * @tparam JsonMember any bool, arithmetic, string, string_view,
@@ -149,8 +147,7 @@ namespace daw::json {
 	 */
 	template<typename JsonElement,
 	         typename Container =
-	           std::vector<typename json_details::unnamed_default_type_mapping<
-	             JsonElement>::parse_to_t>,
+	           std::vector<json_details::from_json_result_t<JsonElement>>,
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
 	         typename Constructor = daw::construct_a_t<Container>,
 	         bool KnownBounds = false>
