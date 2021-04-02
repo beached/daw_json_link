@@ -64,10 +64,15 @@ namespace daw::json {
 		 * @param rng JSON data to parse
 		 * @return A T object
 		 */
-		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] DAW_ONLY_FLATTEN static constexpr T
-		parse_to_class( Range &rng ) {
-			return json_details::parse_json_class<T, JsonMembers...>(
+		template<typename JsonClass, typename Range>
+		[[maybe_unused, nodiscard]] DAW_ONLY_FLATTEN static constexpr json_details::
+		  json_result<JsonClass>
+		  parse_to_class( Range &rng ) {
+			static_assert( json_details::is_a_json_type_v<JsonClass> );
+			static_assert( json_details::has_json_data_contract_trait_v<
+			                 typename JsonClass::base_type>,
+			               "Unexpected type" );
+			return json_details::parse_json_class<JsonClass, JsonMembers...>(
 			  rng, std::index_sequence_for<JsonMembers...>{ } );
 		}
 	};
@@ -90,11 +95,17 @@ namespace daw::json {
 			return json_details::member_to_string<member_json_t>( it, m );
 		}
 
-		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] DAW_ONLY_FLATTEN static constexpr T
-		parse_to_class( Range &rng ) {
-			return json_details::construct_value<T>(
-			  json_details::json_class_constructor<T>, rng,
+		template<typename JsonClass, typename Range>
+		[[maybe_unused, nodiscard]] DAW_ONLY_FLATTEN static constexpr json_details::
+		  json_result<JsonClass>
+		  parse_to_class( Range &rng ) {
+			static_assert( json_details::is_a_json_type_v<JsonClass> );
+			static_assert( json_details::has_json_data_contract_trait_v<
+			                 typename JsonClass::base_type>,
+			               "Unexpected type" );
+			using Constructor = typename JsonClass::constructor_t;
+			return json_details::construct_value<JsonClass>(
+			  Constructor{ }, rng,
 			  json_details::parse_value<json_member, false>(
 			    ParseTag<json_member::expected_type>{ }, rng ) );
 		}
@@ -189,11 +200,16 @@ namespace daw::json {
 		 * @param rng JSON data to parse
 		 * @return A T object
 		 */
-		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] static inline constexpr T
+		template<typename JsonClass, typename Range>
+		[[maybe_unused,
+		  nodiscard]] static inline constexpr json_details::json_result<JsonClass>
 		parse_to_class( Range &rng ) {
+			static_assert( json_details::is_a_json_type_v<JsonClass> );
+			static_assert( json_details::has_json_data_contract_trait_v<
+			                 typename JsonClass::base_type>,
+			               "Unexpected type" );
 			return json_details::parse_ordered_json_class<
-			  T, json_details::ordered_member_wrapper<JsonMembers>...>( rng );
+			  JsonClass, json_details::ordered_member_wrapper<JsonMembers>...>( rng );
 		}
 	};
 
@@ -245,9 +261,14 @@ namespace daw::json {
 		 * @param rng JSON data to parse
 		 * @return A T object
 		 */
-		template<typename T, typename Range>
-		[[maybe_unused, nodiscard]] static inline constexpr T
+		template<typename JsonClass, typename Range>
+		[[maybe_unused,
+		  nodiscard]] static inline constexpr json_details::json_result<JsonClass>
 		parse_to_class( Range &rng ) {
+			static_assert( json_details::is_a_json_type_v<JsonClass> );
+			static_assert( json_details::has_json_data_contract_trait_v<
+			                 typename JsonClass::base_type>,
+			               "Unexpected type" );
 			using tag_class_t = tuple_json_mapping<TagMember>;
 			std::size_t const idx = [rng]( ) mutable {
 				return Switcher{ }( std::get<0>(
@@ -255,7 +276,7 @@ namespace daw::json {
 				    ParseTag<JsonParseTypes::Class>{ }, rng )
 				    .members ) );
 			}( );
-			return json_details::parse_nth_class<0, T, false,
+			return json_details::parse_nth_class<0, JsonClass, false,
 			                                     json_class<no_name, JsonClasses>...>(
 			  idx, rng );
 		}

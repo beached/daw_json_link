@@ -423,7 +423,7 @@ namespace daw::json {
 		using unnamed_default_type_mapping = daw::if_t<
 		  json_details::is_a_json_type_v<T>, T,
 		  daw::if_t<
-		    has_json_data_contract_trait_v<T>, json_class<Name, T>,
+		    has_json_data_contract_trait_v<T>, json_class<Name, T, json_class_constructor_t<T>>,
 		    daw::if_t<
 		      has_json_link_quick_map_v<T>, json_link_quick_map_t<Name, T>,
 		      daw::if_t<

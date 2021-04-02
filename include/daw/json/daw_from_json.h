@@ -39,6 +39,7 @@ namespace daw::json {
 		  "Missing specialization of daw::json::json_data_contract for class "
 		  "mapping or specialization of daw::json::json_link_basic_type_map" );
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
+
 		auto rng =
 		  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) );
 

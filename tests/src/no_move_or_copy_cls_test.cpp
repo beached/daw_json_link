@@ -46,6 +46,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<B> {
+		using force_aggregate_construction = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_class<"a", A>>;
 
@@ -57,9 +58,6 @@ namespace daw::json {
 			return std::forward_as_tuple( v.a );
 		}
 	};
-
-	template<>
-	struct force_aggregate_construction<B> : std::true_type {};
 } // namespace daw::json
 
 int main( int, char ** )
@@ -78,8 +76,7 @@ int main( int, char ** )
 	  daw::json::from_json<B, daw::json::SIMDNoCommentSkippingPolicyChecked<
 	                            daw::json::runtime_exec_tag>>( json_data2 )
 	    .a.member == 1234 );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

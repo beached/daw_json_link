@@ -44,14 +44,22 @@ namespace daw::json {
 	using json_data_contract_trait_t =
 	  typename daw::json::json_data_contract<T>::type;
 
+	namespace json_details {
+		template<typename T>
+		using force_aggregate_construction_test =
+		  typename json_data_contract<T>::force_aggregate_construction;
+	}
 	/***
 	 * This trait can be specialized such that when class being returned has
 	 * non-move/copyable members the construction can be done with { } instead of
 	 * a callable.  This is a blunt object and probably should not be used
+	 * add a type alias named force_aggregate_construction to your
+	 * json_data_contract specialization
 	 * @tparam T type to specialize
 	 */
 	template<typename T>
-	struct force_aggregate_construction : std::false_type {};
+	inline constexpr bool force_aggregate_construction_v =
+	  daw::is_detected_v<json_details::force_aggregate_construction_test, T>;
 
 	/***
 	 * Default Constructor for a type.  It accounts for aggregate types and uses
@@ -216,10 +224,14 @@ namespace daw::json {
 
 		/// If the parse policy has a type alias `must_verify_end_of_data_is_valid`
 		/// this trait is true.  This is used to ensure that after the JSON value is
-		/// parse that only whitespace or nothing follows 
+		/// parse that only whitespace or nothing follows
 		//  @tparam ParsePolicy Parser Policy Type
 		template<typename ParsePolicy>
 		inline constexpr bool must_verify_end_of_data_is_valid_v =
 		  daw::is_detected_v<must_verify_end_of_data_is_valid_t, ParsePolicy>;
+
+		template<typename JsonMember>
+		using from_json_result_t =
+		json_result<unnamed_default_type_mapping<JsonMember>>;
 	} // namespace json_details
 } // namespace daw::json

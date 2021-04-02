@@ -179,10 +179,13 @@ namespace daw::json::json_details {
 	 */
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
-	[[nodiscard]] static constexpr JsonClass
+	[[nodiscard]] static constexpr json_result<JsonClass>
 	parse_json_class( Range &rng, std::index_sequence<Is...> ) {
-		static_assert( has_json_data_contract_trait_v<JsonClass>,
-		               "Unexpected type" );
+		static_assert( is_a_json_type_v<JsonClass> );
+		using T = typename JsonClass::base_type;
+		using Constructor = typename JsonClass::constructor_t;
+		static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
+
 		rng.trim_left( );
 		// TODO, use member name
 		daw_json_assert_weak( rng.is_opening_brace_checked( ),
@@ -194,8 +197,7 @@ namespace daw::json::json_details {
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
 			// Clang-CL with MSVC has issues if we don't do empties this way
 			class_cleanup_now( rng );
-			return construct_value<JsonClass>( json_class_constructor<JsonClass>,
-			                                   rng );
+			return construct_value<T>( Constructor{ }, rng );
 		} else {
 
 #if not defined( _MSC_VER ) or defined( __clang__ )
@@ -233,19 +235,17 @@ namespace daw::json::json_details {
 				/*
 				 * Rather than call directly use apply/tuple to evaluate left->right
 				 */
-				if constexpr( daw::json::force_aggregate_construction<
-				                JsonClass>::value ) {
-					return JsonClass{
+				if constexpr( daw::json::force_aggregate_construction_v<T> ) {
+					return T{
 					  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... };
 				} else {
-
 					using tp_t = decltype( std::forward_as_tuple(
 					  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... ) );
 
 					return std::apply(
-					  json_class_constructor<JsonClass>,
+					  Constructor{ },
 					  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... } );
 				}
@@ -253,8 +253,8 @@ namespace daw::json::json_details {
 				using tp_t = decltype( std::forward_as_tuple(
 				  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 				    known_locations, rng )... ) );
-				JsonClass result = std::apply(
-				  json_class_constructor<JsonClass>,
+				auto result = std::apply(
+				  Constructor{ },
 				  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 				    known_locations, rng )... } );
 				class_cleanup_now( rng );
@@ -268,13 +268,14 @@ namespace daw::json::json_details {
 	 * JSON array. Often this is used for geometric types like Point
 	 */
 	template<typename JsonClass, typename... JsonMembers, typename Range>
-	[[nodiscard]] static constexpr JsonClass
+	[[nodiscard]] static constexpr json_result<JsonClass>
 	parse_ordered_json_class( Range &rng ) {
-		static_assert( has_json_data_contract_trait_v<JsonClass>,
-		               "Unexpected type" );
+		static_assert( is_a_json_type_v<JsonClass> );
+		using T = typename JsonClass::base_type;
+		using Constructor = typename JsonClass::constructor_t;
+		static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
 		static_assert(
-		  std::is_invocable_v<json_class_constructor_t<JsonClass>,
-		                      typename JsonMembers::parse_to_t...>,
+		  std::is_invocable_v<Constructor, typename JsonMembers::parse_to_t...>,
 		  "Supplied types cannot be used for construction of this type" );
 
 		rng.trim_left( ); // Move to array start '['
@@ -307,14 +308,13 @@ namespace daw::json::json_details {
 				}
 			} const run_after_parse{ &rng };
 			(void)run_after_parse;
-			return std::apply( json_class_constructor<JsonClass>,
+			return std::apply( Constructor{ },
 			                   tp_t{ parse_ordered_class_member<JsonMembers>(
 			                     current_idx, rng )... } );
 		} else {
-			JsonClass result =
-			  std::apply( json_class_constructor<JsonClass>,
-			              tp_t{ parse_ordered_class_member<JsonMembers>( current_idx,
-			                                                             rng )... } );
+			auto result = std::apply( Constructor{ },
+			                          tp_t{ parse_ordered_class_member<JsonMembers>(
+			                            current_idx, rng )... } );
 
 			(void)rng.skip_array( );
 			return result;

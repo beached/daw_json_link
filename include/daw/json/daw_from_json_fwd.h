@@ -16,9 +16,7 @@
 
 namespace daw::json {
 	namespace json_details {
-		template<typename JsonMember>
-		using from_json_result_t =
-		  json_result<unnamed_default_type_mapping<JsonMember>>;
+
 	}
 	/**
 	 * Construct the JSONMember from the JSON document argument.
