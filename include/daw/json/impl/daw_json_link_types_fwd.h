@@ -13,6 +13,7 @@
 #include "daw_json_parse_class.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
+#include "daw_json_traits.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>

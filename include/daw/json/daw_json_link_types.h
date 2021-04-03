@@ -9,6 +9,7 @@
 #pragma once
 
 #include "impl/daw_json_link_types_fwd.h"
+#include "impl/daw_json_traits.h"
 
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -505,17 +506,18 @@ namespace daw::json {
 	         JsonNullable Nullable>
 	struct json_class {
 		using i_am_a_json_type = void;
-		using constructor_t = Constructor;
 		using wrapped_type = T;
 		using base_type = json_details::unwrap_type<T, Nullable>;
+		using constructor_t =
+		  json_details::json_class_constructor_t<base_type, Constructor>;
 		static_assert( traits::not_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using data_contract = json_data_contract_trait_t<base_type>;
 		using parse_to_t = typename std::conditional_t<
 		  force_aggregate_construction_v<base_type>,
 		  json_details::json_identity<base_type>,
-		  json_details::json_identity<typename data_contract::template result_type<
-		    constructor_t>>>::type;
+		  json_details::json_identity<
+		    typename data_contract::template result_type<constructor_t>>>::type;
 
 		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =
@@ -578,9 +580,10 @@ namespace daw::json {
 		static_assert(
 		  std::is_same_v<typename JsonElements::i_am_variant_type_list, void>,
 		  "Expected a json_variant_type_list" );
-		using constructor_t = Constructor;
 		using wrapped_type = T;
 		using base_type = json_details::unwrap_type<T, Nullable>;
+		using constructor_t =
+		  json_details::json_class_constructor_t<base_type, Constructor>;
 		static_assert( traits::not_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
@@ -623,11 +626,12 @@ namespace daw::json {
 		static_assert( std::is_same_v<typename TagMember::i_am_a_json_type, void>,
 		               "JSON member types must be passed as "
 		               "TagMember" );
-		using constructor_t = Constructor;
 		using wrapped_type = T;
 		using tag_member = TagMember;
 		using switcher = Switcher;
 		using base_type = json_details::unwrap_type<T, Nullable>;
+		using constructor_t =
+		  json_details::json_class_constructor_t<base_type, Constructor>;
 		static_assert( traits::not_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = T;
@@ -778,8 +782,9 @@ namespace daw::json {
 	         typename JsonKeyType, typename Constructor, JsonNullable Nullable>
 	struct json_key_value {
 		using i_am_a_json_type = void;
-		using constructor_t = Constructor;
 		using base_type = json_details::unwrap_type<Container, Nullable>;
+		using constructor_t =
+		  json_details::json_class_constructor_t<base_type, Constructor>;
 		static_assert( traits::not_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;
@@ -832,8 +837,9 @@ namespace daw::json {
 	         typename JsonKeyType, typename Constructor, JsonNullable Nullable>
 	struct json_key_value_array {
 		using i_am_a_json_type = void;
-		using constructor_t = Constructor;
 		using base_type = json_details::unwrap_type<Container, Nullable>;
+		using constructor_t =
+		  json_details::json_class_constructor_t<base_type, Constructor>;
 		static_assert( traits::not_same_v<void, base_type>,
 		               "Failed to detect base type" );
 		using parse_to_t = std::invoke_result_t<Constructor>;

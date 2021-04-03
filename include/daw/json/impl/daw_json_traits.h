@@ -52,6 +52,7 @@ namespace daw::json {
 		template<typename T>
 		using force_aggregate_construction_test =
 		  decltype( force_aggregate_construction_func<T>( ) );
+
 	} // namespace json_details
 	/***
 	 * This trait can be specialized such that when class being returned has
@@ -240,5 +241,29 @@ namespace daw::json {
 		inline constexpr bool must_verify_end_of_data_is_valid_v =
 		  daw::is_detected_v<must_verify_end_of_data_is_valid_t, ParsePolicy>;
 
+		template<typename T, bool, bool>
+		struct json_data_contract_constructor_impl {
+			using type = default_constructor<T>;
+		};
+
+		template<typename T>
+		using has_json_data_constract_constructor_test =
+		  typename json_data_contract_trait_t<T>::constructor;
+
+		template<typename T>
+		struct json_data_contract_constructor_impl<T, true, true> {
+			using type = typename json_data_contract_trait_t<T>::constructor;
+		};
+
+		template<typename T>
+		using json_data_contract_constructor_t =
+		  typename json_data_contract_constructor_impl<
+		    T, daw::is_detected_v<json_data_contract_trait_t, T>,
+		    daw::is_detected_v<has_json_data_constract_constructor_test, T>>::type;
+
+		template<typename T, typename Default = default_constructor<T>>
+		using json_class_constructor_t = std::conditional_t<
+		  daw::is_detected_v<json_data_contract_constructor_t, T>,
+		  json_data_contract_constructor_t<T>, Default>;
 	} // namespace json_details
 } // namespace daw::json
