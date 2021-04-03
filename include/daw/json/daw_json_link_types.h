@@ -55,7 +55,7 @@ namespace daw::json {
 			  it, std::index_sequence_for<Args...>{ }, args, v );
 		}
 
-		template<typename Constructor, typename T>
+		template<typename Constructor>
 		using result_type =
 		  json_details::json_class_parse_result_t<Constructor, JsonMembers...>;
 		/**
@@ -68,8 +68,10 @@ namespace daw::json {
 		 * @return A T object
 		 */
 		template<typename JsonClass, typename Range>
-		[[maybe_unused, nodiscard]] DAW_ONLY_FLATTEN static constexpr auto
-		parse_to_class( Range &rng ) {
+		[[maybe_unused,
+		  nodiscard]] DAW_ONLY_FLATTEN static inline constexpr json_details::
+		  json_result<JsonClass>
+		  parse_to_class( Range &rng ) {
 			static_assert( json_details::is_a_json_type_v<JsonClass> );
 			static_assert( json_details::has_json_data_contract_trait_v<
 			                 typename JsonClass::base_type>,
@@ -104,13 +106,14 @@ namespace daw::json {
 			return json_details::member_to_string<member_json_t>( it, m );
 		}
 
-		template<typename Constructor, typename T>
+		template<typename Constructor>
 		using result_type =
 		  json_details::json_class_parse_result_t<Constructor, json_member>;
 
 		template<typename JsonClass, typename Range>
-		[[maybe_unused, nodiscard]] DAW_ONLY_FLATTEN static constexpr auto
-		parse_to_class( Range &rng ) {
+		[[maybe_unused, nodiscard]] DAW_ONLY_FLATTEN static constexpr json_details::
+		  json_result<JsonClass>
+		  parse_to_class( Range &rng ) {
 			static_assert( json_details::is_a_json_type_v<JsonClass> );
 			static_assert( json_details::has_json_data_contract_trait_v<
 			                 typename JsonClass::base_type>,
@@ -203,8 +206,11 @@ namespace daw::json {
 			  it, std::index_sequence_for<Args...>{ }, args, v );
 		}
 
-		template<typename, typename JsonClass>
-		using result_type = JsonClass;
+		template<typename Constructor>
+		using result_type = json_details::json_class_parse_result_t<
+		  Constructor,
+		  json_details::ordered_member_subtype_t<
+		    json_details::unnamed_default_type_mapping<JsonMembers>>...>;
 		/**
 		 *
 		 * Parse JSON data and construct a C++ class.  This is used by parse_value
@@ -267,8 +273,10 @@ namespace daw::json {
 		}
 
 		// TODO: use Constructor result
-		template<typename, typename JsonClass>
-		using result_type = JsonClass;
+		template<typename Constructor>
+		using result_type = json_details::json_class_parse_result_t<
+		  Constructor, json_details::unnamed_default_type_mapping<
+		                 daw::traits::first_type<JsonClasses...>>>;
 		/**
 		 *
 		 * Parse JSON data and construct a C++ class.  This is used by parse_value
@@ -507,7 +515,7 @@ namespace daw::json {
 		  force_aggregate_construction_v<base_type>,
 		  json_details::json_identity<base_type>,
 		  json_details::json_identity<typename data_contract::template result_type<
-		    constructor_t, base_type>>>::type;
+		    constructor_t>>>::type;
 
 		static constexpr daw::string_view name = Name;
 		static constexpr JsonParseTypes expected_type =

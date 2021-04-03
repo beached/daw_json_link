@@ -251,7 +251,7 @@ namespace daw::json::json_details {
 	    std::declval<T &>( ) ) );
 
 	template<typename T>
-	static inline constexpr bool has_json_to_json_data_v =
+	inline constexpr bool has_json_to_json_data_v =
 	  daw::is_detected_v<json_parser_to_json_data_t, T>;
 
 	template<typename T>
@@ -259,11 +259,9 @@ namespace daw::json::json_details {
 	  typename json_data_contract<T>::type::i_am_a_submember_tagged_variant;
 
 	template<typename T>
-	static inline constexpr bool is_submember_tagged_variant_v =
+	inline constexpr bool is_submember_tagged_variant_v =
 	  daw::is_detected_v<is_submember_tagged_variant_t, T>;
-} // namespace daw::json::json_details
 
-namespace daw::json::json_details {
 	template<typename>
 	inline constexpr std::size_t parse_space_needed_v = 1U;
 
@@ -494,6 +492,7 @@ namespace daw::json {
 		constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
 	};
 } // namespace daw::json
+
 namespace daw::json::json_details {
 	template<typename T>
 	inline constexpr bool has_basic_type_map_v =
@@ -604,7 +603,7 @@ namespace daw::json::json_details {
 
 	template<typename Constructor, typename... Members>
 	using json_class_parse_result_impl2 = decltype(
-	  Constructor{ }( uneval_func<typename Members::parse_to_t>( )... ) );
+	  Constructor{ }( std::declval<typename Members::parse_to_t &&>( )... ) );
 
 	template<typename Constructor, typename... Members>
 	using json_class_parse_result_impl =

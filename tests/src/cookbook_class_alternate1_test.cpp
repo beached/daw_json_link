@@ -16,16 +16,7 @@ struct Thing {
 	int a;
 };
 
-template<typename C, std::size_t Idx = 0>
-struct json_alt {
-	using type = C;
-	static constexpr std::size_t index = Idx;
-};
-
 namespace daw::json {
-	template<typename T, std::size_t I>
-	struct default_constructor<json_alt<T, I>> : default_constructor<T> {};
-
 	template<>
 	struct json_data_contract<Thing> {
 		static constexpr char const a[] = "a";
@@ -35,16 +26,15 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<json_alt<Thing>> {
 		static constexpr char const a[] = "a";
-		using type =
-		  json_member_list<json_number<a, int, LiteralAsStringOpt::Always>>;
+		using type = json_ordered_member_list<int>;
 	};
 } // namespace daw::json
 
 int main( ) {
 	std::string_view const jsonA = R"({ "a": 42 } )";
-	std::string_view const jsonB = R"({ "a": "42" } )";
+	std::string_view const jsonB = R"([ 42 ] )";
 	Thing a = daw::json::from_json<Thing>( jsonA );
-	Thing b = daw::json::from_json<json_alt<Thing>>( jsonB );
+	Thing b = daw::json::from_json<daw::json::json_alt<Thing>>( jsonB );
 	if( a.a != b.a ) {
 		std::cerr << "Error parsing\n";
 		std::terminate( );

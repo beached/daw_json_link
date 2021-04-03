@@ -179,7 +179,7 @@ namespace daw::json::json_details {
 	 */
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
-	[[nodiscard]] static constexpr auto
+	[[nodiscard]] static constexpr json_result<JsonClass>
 	parse_json_class( Range &rng, std::index_sequence<Is...> ) {
 		static_assert( is_a_json_type_v<JsonClass> );
 		using T = typename JsonClass::base_type;
@@ -268,7 +268,8 @@ namespace daw::json::json_details {
 	 * JSON array. Often this is used for geometric types like Point
 	 */
 	template<typename JsonClass, typename... JsonMembers, typename Range>
-	[[nodiscard]] static constexpr auto parse_ordered_json_class( Range &rng ) {
+	[[nodiscard]] static constexpr json_result<JsonClass>
+	parse_ordered_json_class( Range &rng ) {
 		static_assert( is_a_json_type_v<JsonClass> );
 		using T = typename JsonClass::base_type;
 		using Constructor = typename JsonClass::constructor_t;

@@ -77,7 +77,7 @@ namespace daw::json {
 	[[nodiscard]] inline std::string
 	to_json_path_string( std::vector<json_path_node> const &path_stack ) {
 		return daw::algorithm::accumulate(
-		  path_stack.begin( ), path_stack.end( ), std::string{ },
+		  std::data( path_stack ), daw::data_end( path_stack ), std::string{ },
 		  []( auto &&state, json_path_node const &sv ) mutable {
 			  if( sv.index( ) >= 0 ) {
 				  state += "[" + std::to_string( sv.index( ) ) + "]";

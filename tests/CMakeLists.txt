@@ -492,8 +492,8 @@ add_dependencies(full cookbook_class_from_json_mapping_test)
 
 add_executable(cookbook_class_alternate_test src/cookbook_class_alternate1_test.cpp)
 target_link_libraries(cookbook_class_alternate_test json_test)
-#add_test(NAME cookbook_class_alternate_test COMMAND cookbook_class_alternate_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
-#add_dependencies(full cookbook_class_alternate_test)
+add_test(NAME cookbook_class_alternate_test COMMAND cookbook_class_alternate_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_class_alternate_test)
 
 add_executable(stream_output_test src/stream_output_test.cpp)
 target_link_libraries(stream_output_test json_test)
