@@ -599,9 +599,8 @@ namespace daw::json::json_details {
 	  has_unnamed_default_type_mapping<T>::value;
 
 	template<typename JsonMember>
-	using from_json_result_t = typename std::conditional_t<
-	  force_aggregate_construction_v<JsonMember>, JsonMember,
-	  json_result<unnamed_default_type_mapping<JsonMember>>>;
+	using from_json_result_t =
+	  json_result<unnamed_default_type_mapping<JsonMember>>;
 
 	template<typename Constructor, typename... Members>
 	using json_class_parse_result_impl2 = decltype(

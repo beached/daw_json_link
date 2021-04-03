@@ -56,10 +56,8 @@ namespace daw::json {
 		}
 
 		template<typename Constructor, typename T>
-		using result_type = std::conditional_t<
-		  (force_aggregate_construction_v<T> or
-		   not json_details::can_defer_construction_v<Constructor, JsonMembers...>),
-		  T, json_details::json_class_parse_result_t<Constructor, JsonMembers...>>;
+		using result_type =
+		  json_details::json_class_parse_result_t<Constructor, JsonMembers...>;
 		/**
 		 *
 		 * Parse JSON data and construct a C++ class.  This is used by parse_value
