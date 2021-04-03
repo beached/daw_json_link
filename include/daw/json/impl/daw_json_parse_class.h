@@ -179,7 +179,7 @@ namespace daw::json::json_details {
 	 */
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
-	[[nodiscard]] static constexpr json_result<JsonClass>
+	[[nodiscard]] static constexpr auto
 	parse_json_class( Range &rng, std::index_sequence<Is...> ) {
 		static_assert( is_a_json_type_v<JsonClass> );
 		using T = typename JsonClass::base_type;
@@ -244,8 +244,8 @@ namespace daw::json::json_details {
 					  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... ) );
 
-					return std::apply(
-					  Constructor{ },
+					return construct_value_tp<T>(
+					  Constructor{ }, rng,
 					  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... } );
 				}
@@ -253,8 +253,8 @@ namespace daw::json::json_details {
 				using tp_t = decltype( std::forward_as_tuple(
 				  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 				    known_locations, rng )... ) );
-				auto result = std::apply(
-				  Constructor{ },
+				auto result = construct_value_tp<T>(
+				  Constructor{ }, rng,
 				  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 				    known_locations, rng )... } );
 				class_cleanup_now( rng );
@@ -268,8 +268,7 @@ namespace daw::json::json_details {
 	 * JSON array. Often this is used for geometric types like Point
 	 */
 	template<typename JsonClass, typename... JsonMembers, typename Range>
-	[[nodiscard]] static constexpr json_result<JsonClass>
-	parse_ordered_json_class( Range &rng ) {
+	[[nodiscard]] static constexpr auto parse_ordered_json_class( Range &rng ) {
 		static_assert( is_a_json_type_v<JsonClass> );
 		using T = typename JsonClass::base_type;
 		using Constructor = typename JsonClass::constructor_t;
@@ -308,13 +307,15 @@ namespace daw::json::json_details {
 				}
 			} const run_after_parse{ &rng };
 			(void)run_after_parse;
-			return std::apply( Constructor{ },
-			                   tp_t{ parse_ordered_class_member<JsonMembers>(
-			                     current_idx, rng )... } );
+			return construct_value_tp<T>(
+			  Constructor{ }, rng,
+			  tp_t{
+			    parse_ordered_class_member<JsonMembers>( current_idx, rng )... } );
 		} else {
-			auto result = std::apply( Constructor{ },
-			                          tp_t{ parse_ordered_class_member<JsonMembers>(
-			                            current_idx, rng )... } );
+			auto result =
+			  construct_value_tp<T>( Constructor{ }, rng,
+			                         tp_t{ parse_ordered_class_member<JsonMembers>(
+			                           current_idx, rng )... } );
 
 			(void)rng.skip_array( );
 			return result;

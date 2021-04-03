@@ -46,9 +46,13 @@ namespace daw::json {
 
 	namespace json_details {
 		template<typename T>
-		using force_aggregate_construction_test =
+		auto force_aggregate_construction_func( ) ->
 		  typename json_data_contract<T>::force_aggregate_construction;
-	}
+
+		template<typename T>
+		using force_aggregate_construction_test =
+		  decltype( force_aggregate_construction_func<T>( ) );
+	} // namespace json_details
 	/***
 	 * This trait can be specialized such that when class being returned has
 	 * non-move/copyable members the construction can be done with { } instead of
@@ -61,6 +65,10 @@ namespace daw::json {
 	inline constexpr bool force_aggregate_construction_v =
 	  daw::is_detected_v<json_details::force_aggregate_construction_test, T>;
 
+	namespace json_details {
+		template<typename T>
+		T uneval_func( );
+	}
 	/***
 	 * Default Constructor for a type.  It accounts for aggregate types and uses
 	 * brace construction for them
@@ -68,20 +76,22 @@ namespace daw::json {
 	 */
 	template<typename T>
 	struct default_constructor {
-		template<typename... Args>
-		[[nodiscard]] inline constexpr auto operator( )( Args &&...args ) const
-		  noexcept( std::is_nothrow_constructible_v<T, Args...> )
-		    -> std::enable_if_t<std::is_constructible_v<T, Args...>, T> {
+		template<typename... Args,
+		         std::enable_if_t<std::is_constructible_v<T, Args...>,
+		                          std::nullptr_t> = nullptr>
+		[[nodiscard]] inline constexpr T operator( )( Args &&...args ) const {
 
 			return T( DAW_FWD( args )... );
 		}
 
-		template<typename... Args>
-		[[nodiscard]] inline constexpr auto operator( )( Args &&...args ) const
-		  noexcept( traits::is_nothrow_list_constructible_v<T, Args...> )
-		    -> std::enable_if_t<(not std::is_constructible_v<T, Args...> and
-		                         traits::is_list_constructible_v<T, Args...>),
-		                        T> {
+		template<
+		  typename... Args,
+		  typename std::enable_if_t<
+		    std::conjunction_v<daw::not_trait<std::is_constructible<T, Args...>>,
+		                       daw::traits::is_list_constructible<T, Args...>>,
+		    std::nullptr_t> = nullptr>
+		[[nodiscard]] inline constexpr T operator( )( Args &&...args ) const
+		  noexcept( noexcept( T{ DAW_FWD( args )... } ) ) {
 
 			return T{ DAW_FWD( args )... };
 		}

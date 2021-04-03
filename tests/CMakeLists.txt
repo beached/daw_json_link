@@ -120,7 +120,7 @@ add_test(NAME float_array_test COMMAND float_array_test)
 add_dependencies(full float_array_test)
 
 add_executable(float_array_basic_test src/float_array_basic_test.cpp)
-target_link_libraries(float_array_basic_test json_test nanobench )
+target_link_libraries(float_array_basic_test json_test nanobench)
 add_test(NAME float_array_basic_test COMMAND float_array_basic_test)
 add_dependencies(full float_array_basic_test)
 
@@ -490,6 +490,11 @@ target_link_libraries(cookbook_class_from_json_mapping_test json_test)
 add_test(NAME cookbook_class_from_json_mapping_test COMMAND cookbook_class_from_json_mapping_test ./cookbook_class_from_json_mapping1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_class_from_json_mapping_test)
 
+add_executable(cookbook_class_alternate_test src/cookbook_class_alternate1_test.cpp)
+target_link_libraries(cookbook_class_alternate_test json_test)
+#add_test(NAME cookbook_class_alternate_test COMMAND cookbook_class_alternate_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+#add_dependencies(full cookbook_class_alternate_test)
+
 add_executable(stream_output_test src/stream_output_test.cpp)
 target_link_libraries(stream_output_test json_test)
 add_test(NAME stream_output_test COMMAND stream_output_test)
@@ -607,7 +612,7 @@ add_dependencies(full test_array_of_ordered)
 # JSON Benchmark
 # **************************************************
 
-message( "Git revision: ${SOURCE_CONTROL_REVISION}" )
+message("Git revision: ${SOURCE_CONTROL_REVISION}")
 add_executable(json_benchmark src/json_benchmark.cpp)
 include(./cmake/git_properties.cmake)
 target_link_libraries(json_benchmark apache_builds_parser_cx_ch apache_builds_parser_rn_ch apache_builds_parser_si_ch apache_builds_parser_cx_unch apache_builds_parser_rn_unch apache_builds_parser_si_unch twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test json_test)
