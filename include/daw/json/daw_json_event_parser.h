@@ -183,7 +183,7 @@ namespace daw::json {
 		handle_on_value( Handler &&handler,
 		                 daw::json::basic_json_pair<ParsePolicy> p ) {
 			if constexpr( hnd_checks::has_on_value_handler_v<Handler, ParsePolicy> ) {
-				return handler.handle_on_value( daw::move( p ) );
+				return handler.handle_on_value( DAW_MOVE( p ) );
 			} else {
 				(void)p;
 				return handler_result_holder{ };
@@ -195,7 +195,7 @@ namespace daw::json {
 		handle_on_array_start( Handler &&handler,
 		                       daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_array_start_handler_v<Handler, Range> ) {
-				return handler.handle_on_array_start( daw::move( jv ) );
+				return handler.handle_on_array_start( DAW_MOVE( jv ) );
 			} else {
 				(void)jv;
 				return handler_result_holder{ };
@@ -217,7 +217,7 @@ namespace daw::json {
 		handle_on_class_start( Handler &&handler,
 		                       daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_class_start_handler_v<Handler, Range> ) {
-				return handler.handle_on_class_start( daw::move( jv ) );
+				return handler.handle_on_class_start( DAW_MOVE( jv ) );
 			} else {
 				(void)jv;
 				return handler_result_holder{ };
@@ -293,7 +293,7 @@ namespace daw::json {
 		handle_on_error( Handler &&handler,
 		                 daw::json::basic_json_value<Range> jv ) {
 			if constexpr( hnd_checks::has_on_error_handler_v<Handler, Range> ) {
-				return handler.handle_on_error( daw::move( jv ) );
+				return handler.handle_on_error( DAW_MOVE( jv ) );
 			} else {
 				(void)jv;
 				return handler_result_holder{ };
@@ -323,7 +323,7 @@ namespace daw::json {
 		CPP20CONSTEXPR DefaultJsonEventParserStackPolicy( ) = default;
 
 		CPP20CONSTEXPR inline void push_back( value_type &&v ) {
-			m_stack.push_back( daw::move( v ) );
+			m_stack.push_back( DAW_MOVE( v ) );
 		}
 
 		[[nodiscard]] CPP20CONSTEXPR inline reference back( ) {
@@ -482,8 +482,8 @@ namespace daw::json {
 			if( v.value.first != v.value.second ) {
 				auto jv = *v.value.first;
 				v.value.first++;
-				parent_stack.push_back( daw::move( v ) );
-				process_value( daw::move( jv ) );
+				parent_stack.push_back( DAW_MOVE( v ) );
+				process_value( DAW_MOVE( jv ) );
 			} else {
 				switch( v.type ) {
 				case StackRangeType::Class: {
@@ -512,10 +512,10 @@ namespace daw::json {
 			}
 		};
 
-		process_value( { std::nullopt, daw::move( jvalue ) } );
+		process_value( { std::nullopt, DAW_MOVE( jvalue ) } );
 
 		while( not parent_stack.empty( ) ) {
-			auto v = daw::move( parent_stack.back( ) );
+			auto v = DAW_MOVE( parent_stack.back( ) );
 			parent_stack.pop_back( );
 			process_range( v );
 		}

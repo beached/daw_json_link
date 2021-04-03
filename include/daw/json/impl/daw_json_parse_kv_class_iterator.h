@@ -86,7 +86,7 @@ namespace daw::json::json_details {
 			  parse_value<key_t>( ParseTag<key_t::expected_type>{ }, *base::rng );
 			name::name_parser::trim_end_of_name( *base::rng );
 			return json_class_constructor<value_type>(
-			  daw::move( key ), parse_value<value_t>(
+			  DAW_MOVE( key ), parse_value<value_t>(
 			                      ParseTag<value_t::expected_type>{ }, *base::rng ) );
 		}
 

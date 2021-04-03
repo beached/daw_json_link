@@ -78,8 +78,8 @@ namespace daw::json::json_details {
 	private:
 		static constexpr value_type
 		get_pair( typename json_class_type::parse_to_t &&v ) {
-			return value_type( std::get<0>( daw::move( v.members ) ),
-			                   std::get<1>( daw::move( v.members ) ) );
+			return value_type( std::get<0>( DAW_MOVE( v.members ) ),
+			                   std::get<1>( DAW_MOVE( v.members ) ) );
 		}
 
 	public:

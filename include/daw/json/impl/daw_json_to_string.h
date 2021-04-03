@@ -996,7 +996,7 @@ namespace daw::json::json_details {
 	[[nodiscard]] inline constexpr OutputIterator
 	member_to_string( OutputIterator it, T const &value ) {
 		return to_string<JsonMember>( ParseTag<JsonMember::expected_type>{ },
-		                              daw::move( it ), value );
+		                              DAW_MOVE( it ), value );
 	}
 
 	template<typename JsonMember>
@@ -1036,7 +1036,7 @@ namespace daw::json::json_details {
 		it = utils::copy_to_iterator<false, EightBitModes::AllowFull>(
 		  it, tag_member_name );
 		it = utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
-		it = member_to_string<tag_member>( daw::move( it ),
+		it = member_to_string<tag_member>( DAW_MOVE( it ),
 		                                   typename JsonMember::switcher{ }( v ) );
 	}
 
@@ -1067,7 +1067,7 @@ namespace daw::json::json_details {
 		it = utils::copy_to_iterator<false, EightBitModes::AllowFull>(
 		  it, JsonMember::name );
 		it = utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
-		it = member_to_string<JsonMember>( daw::move( it ), std::get<pos>( tp ) );
+		it = member_to_string<JsonMember>( DAW_MOVE( it ), std::get<pos>( tp ) );
 	}
 
 	template<size_t TupleIdx, typename JsonMember, typename OutputIterator,

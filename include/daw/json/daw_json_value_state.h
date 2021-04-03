@@ -35,7 +35,7 @@ namespace daw::json {
 			  daw::string_view Name, basic_json_value_iterator<Range> val )
 			  : name( Name )
 			  , hash_value( daw::name_hash( Name ) )
-			  , location( daw::move( val ) ) {}
+			  , location( DAW_MOVE( val ) ) {}
 
 			[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
 				return name == Name;
@@ -145,7 +145,7 @@ namespace daw::json {
 
 	public:
 		constexpr basic_stateful_json_value( basic_json_value<Range> val )
-		  : m_value( daw::move( val ) ) {
+		  : m_value( DAW_MOVE( val ) ) {
 
 			daw_json_assert_weak( ( [&] {
 				                      auto t = m_value.type( );
@@ -166,7 +166,7 @@ namespace daw::json {
 		 * @param val Value to contain state for
 		 */
 		constexpr void reset( basic_json_value<Range> val ) {
-			m_value = daw::move( val );
+			m_value = DAW_MOVE( val );
 			m_locs.clear( );
 		}
 

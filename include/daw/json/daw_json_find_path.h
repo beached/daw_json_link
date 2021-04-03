@@ -259,7 +259,7 @@ namespace daw::json {
 		if( handler.last_popped ) {
 			handler.parse_stack.push_back( *handler.last_popped );
 		}
-		return daw::move( handler.parse_stack );
+		return DAW_MOVE( handler.parse_stack );
 	}
 
 	[[nodiscard]] inline std::vector<json_path_node>

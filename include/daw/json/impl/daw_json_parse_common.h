@@ -77,11 +77,11 @@ namespace daw::json::json_details {
 			using alloc_t = typename Range::template allocator_type_as<Value>;
 			auto alloc = rng.template get_allocator_for<Value>( );
 			if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
-				return ctor( DAW_FWD( args )..., daw::move( alloc ) );
+				return ctor( DAW_FWD( args )..., DAW_MOVE( alloc ) );
 			} else if constexpr( daw::traits::is_callable_v<Constructor,
 			                                                std::allocator_arg_t,
 			                                                alloc_t, Args...> ) {
-				return ctor( std::allocator_arg, daw::move( alloc ),
+				return ctor( std::allocator_arg, DAW_MOVE( alloc ),
 				             DAW_FWD( args )... );
 			} else {
 				static_assert( std::is_invocable_v<Constructor, Args...> );
@@ -105,22 +105,22 @@ namespace daw::json::json_details {
 			auto alloc = rng.template get_allocator_for<Value>( );
 			if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
 				return std::apply(
-				  ctor, std::tuple_cat( daw::move( tp_args ),
-				                        std::forward_as_tuple( daw::move( alloc ) ) ) );
+				  ctor, std::tuple_cat( DAW_MOVE( tp_args ),
+				                        std::forward_as_tuple( DAW_MOVE( alloc ) ) ) );
 			} else if constexpr( daw::traits::is_callable_v<Constructor,
 			                                                std::allocator_arg_t,
 			                                                alloc_t, Args...> ) {
 				return std::apply(
 				  ctor, std::tuple_cat( std::forward_as_tuple( std::allocator_arg,
-				                                               daw::move( alloc ) ),
-				                        daw::move( tp_args ) ) );
+				                                               DAW_MOVE( alloc ) ),
+				                        DAW_MOVE( tp_args ) ) );
 			} else {
 				static_assert( std::is_invocable_v<Constructor, Args...> );
-				return std::apply( ctor, daw::move( tp_args ) );
+				return std::apply( ctor, DAW_MOVE( tp_args ) );
 			}
 		} else {
 			static_assert( std::is_invocable_v<Constructor, Args...> );
-			return std::apply( ctor, daw::move( tp_args ) );
+			return std::apply( ctor, DAW_MOVE( tp_args ) );
 		}
 	}
 
