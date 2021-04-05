@@ -187,7 +187,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line"><span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;version1::Config&gt; {</div>
-<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1json__data__contract.html#a9c5f9687922361c8e04dfa9ed5901da5">type</a> = json_member_list&lt;</div>
+<div class="line">    <span class="keyword">using</span> type = json_member_list&lt;</div>
 <div class="line">      json_number&lt;<span class="stringliteral">&quot;version&quot;</span>, <span class="keywordtype">int</span>&gt;,  </div>
 <div class="line">      json_string&lt;<span class="stringliteral">&quot;name&quot;</span>&gt;,</div>
 <div class="line">      json_number&lt;<span class="stringliteral">&quot;value&quot;</span>, <span class="keywordtype">int</span>&gt;,</div>
@@ -201,7 +201,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line">  </div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;version2::Config&gt; {</div>
-<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1json__data__contract.html#a9c5f9687922361c8e04dfa9ed5901da5">type</a> = json_member_list&lt;</div>
+<div class="line">    <span class="keyword">using</span> type = json_member_list&lt;</div>
 <div class="line">      json_number&lt;<span class="stringliteral">&quot;version&quot;</span>, <span class="keywordtype">int</span>&gt;,  </div>
 <div class="line">      json_key_value_array&lt;<span class="stringliteral">&quot;config_options&quot;</span>, </div>
 <div class="line">        std::map&lt;std::string, int&gt;,</div>
@@ -218,7 +218,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line">  </div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;std::variant&lt;version1::Config, version2::Config&gt;&gt; {</div>
-<div class="line">      <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1json__data__contract.html#a9c5f9687922361c8e04dfa9ed5901da5">type</a> = json_submember_tagged_variant&lt;</div>
+<div class="line">      <span class="keyword">using</span> type = json_submember_tagged_variant&lt;</div>
 <div class="line">        json_number&lt;<span class="stringliteral">&quot;version&quot;</span>, <span class="keywordtype">int</span>&gt;,</div>
 <div class="line">        Switcher,   </div>
 <div class="line">        version1::Config,</div>
@@ -226,8 +226,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line">      &gt;;  </div>
 <div class="line">  };</div>
 <div class="line">}</div>
-<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> daw_from_json.h:21</div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1json__data__contract_html_a9c5f9687922361c8e04dfa9ed5901da5"><div class="ttname"><a href="structdaw_1_1json_1_1json__data__contract.html#a9c5f9687922361c8e04dfa9ed5901da5">daw::json::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for&lt; T &gt; type</div><div class="ttdef"><b>Definition:</b> daw_json_traits.h:40</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> namespace.h:13</div></div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

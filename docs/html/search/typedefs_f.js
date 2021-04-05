@@ -1,6 +1,12 @@
 var searchData=
 [
-  ['tag_5fmember_813',['tag_member',['../structdaw_1_1json_1_1json__tagged__variant.html#ac6243bd203f73fb6cccaa24e42678a65',1,'daw::json::json_tagged_variant']]],
-  ['to_5fconverter_5ft_814',['to_converter_t',['../structdaw_1_1json_1_1json__custom.html#afc50521127091b1d85f8a7c9b360c2f7',1,'daw::json::json_custom']]],
-  ['type_815',['type',['../structdaw_1_1json_1_1json__data__contract_3_01tuple__json__mapping_3_01_members_8_8_8_01_4_01_4.html#a4d893072d4dd363fae12248fc58b8071',1,'daw::json::json_data_contract&lt; tuple_json_mapping&lt; Members... &gt; &gt;::type()'],['../structdaw_1_1json_1_1json__alt.html#a7b0d46746dab69963ffd031c76f31b18',1,'daw::json::json_alt::type()'],['../structdaw_1_1json_1_1json__data__contract.html#a9c5f9687922361c8e04dfa9ed5901da5',1,'daw::json::json_data_contract::type()']]]
+  ['simd_5fexec_5ftag_1412',['simd_exec_tag',['../namespace_d_a_w___j_s_o_n___n_s.html#a7aeb5fc178e24bc7a892ba8ca4b72138',1,'DAW_JSON_NS']]],
+  ['simdcppcommentskippingpolicychecked_1413',['SIMDCppCommentSkippingPolicyChecked',['../namespace_d_a_w___j_s_o_n___n_s.html#a49413dd4cee9e15ea94b2fb30f3d12f4',1,'DAW_JSON_NS']]],
+  ['simdcppcommentskippingpolicyunchecked_1414',['SIMDCppCommentSkippingPolicyUnchecked',['../namespace_d_a_w___j_s_o_n___n_s.html#af0d8589f55dd835d6ad3fb5aba83616f',1,'DAW_JSON_NS']]],
+  ['simdhashcommentskippingpolicychecked_1415',['SIMDHashCommentSkippingPolicyChecked',['../namespace_d_a_w___j_s_o_n___n_s.html#ae6fcd54f07a04777eab6497d1df940ee',1,'DAW_JSON_NS']]],
+  ['simdhashcommentskippingpolicyunchecked_1416',['SIMDHashCommentSkippingPolicyUnchecked',['../namespace_d_a_w___j_s_o_n___n_s.html#abe5a25b16d0e166c45e5ac4368d5b0a0',1,'DAW_JSON_NS']]],
+  ['simdnocommentskippingpolicychecked_1417',['SIMDNoCommentSkippingPolicyChecked',['../namespace_d_a_w___j_s_o_n___n_s.html#a6bacbd5266e58c2b943875638a3feac4',1,'DAW_JSON_NS']]],
+  ['simdnocommentskippingpolicyunchecked_1418',['SIMDNoCommentSkippingPolicyUnchecked',['../namespace_d_a_w___j_s_o_n___n_s.html#ae5656e409033f25c97ec6b6b45db0b0f',1,'DAW_JSON_NS']]],
+  ['size_5ftype_1419',['size_type',['../class_d_a_w___j_s_o_n___n_s_1_1_default_json_event_parser_stack_policy.html#ae3367aeab87e7c81e85f2236f3f538e6',1,'DAW_JSON_NS::DefaultJsonEventParserStackPolicy']]],
+  ['switcher_1420',['switcher',['../struct_d_a_w___j_s_o_n___n_s_1_1json__tagged__variant.html#aca6d9399d1f6821f15e8b3b91148fb62',1,'DAW_JSON_NS::json_tagged_variant']]]
 ];

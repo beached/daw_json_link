@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['allowescapecharacter_820',['AllowEscapeCharacter',['../namespacedaw_1_1json.html#a75daffb79d06d1d88576d3de104f3b05',1,'daw::json']]]
+  ['allowescapecharacter_1434',['AllowEscapeCharacter',['../namespace_d_a_w___j_s_o_n___n_s.html#ad9e41fb99a90e6335834c0a8ea775300',1,'DAW_JSON_NS']]]
 ];

@@ -69,7 +69,8 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_parse_policy.h File Reference</div>  </div>
 </div><!--header-->
@@ -81,6 +82,7 @@ $(function() {
 <code>#include &quot;<a class="el" href="daw__json__parse__policy__hash__comments_8h_source.html">daw_json_parse_policy_hash_comments.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__policy__no__comments_8h_source.html">daw_json_parse_policy_no_comments.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__policy__policy__details_8h_source.html">daw_json_parse_policy_policy_details.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="namespace_8h_source.html">namespace.h</a>&quot;</code><br />
 <code>#include &lt;daw/cpp_17.h&gt;</code><br />
 <code>#include &lt;daw/daw_hide.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
@@ -94,48 +96,54 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_basic_parse_policy.html">daw::json::BasicParsePolicy&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s_1_1json__details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ae63c0c0a57382a203e71bb2cb54b830a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ae63c0c0a57382a203e71bb2cb54b830a">daw::json::CppCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, CppCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:ae63c0c0a57382a203e71bb2cb54b830a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70d2b37b6a0e569316b717d0516c982d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a70d2b37b6a0e569316b717d0516c982d">daw::json::CppCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, CppCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:a70d2b37b6a0e569316b717d0516c982d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7963bb60c23ab5a8066f22069a4b498a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a7963bb60c23ab5a8066f22069a4b498a">daw::json::HashCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, HashCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:a7963bb60c23ab5a8066f22069a4b498a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b8c653bc0ba96408ff4fdca36c944e9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a6b8c653bc0ba96408ff4fdca36c944e9">daw::json::HashCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, HashCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:a6b8c653bc0ba96408ff4fdca36c944e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85be550e68e1a5ec5d98e5dfbfb88366"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a85be550e68e1a5ec5d98e5dfbfb88366">daw::json::NoCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, NoCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:a85be550e68e1a5ec5d98e5dfbfb88366"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acafd1e3616bdf578c04dc1a3853f0841"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#acafd1e3616bdf578c04dc1a3853f0841">daw::json::NoCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, NoCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
-<tr class="separator:acafd1e3616bdf578c04dc1a3853f0841"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a622a1ce2bebfb8ef59398fa2ffbf29a2"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:a622a1ce2bebfb8ef59398fa2ffbf29a2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a622a1ce2bebfb8ef59398fa2ffbf29a2">daw::json::SIMDCppCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, CppCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:a622a1ce2bebfb8ef59398fa2ffbf29a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f78e05e135d25a68c212718aa6a89fc"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:a5f78e05e135d25a68c212718aa6a89fc"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a5f78e05e135d25a68c212718aa6a89fc">daw::json::SIMDCppCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, CppCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:a5f78e05e135d25a68c212718aa6a89fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f9be031cd8b4f6cc1ee05f32cc4b7f9"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:a0f9be031cd8b4f6cc1ee05f32cc4b7f9"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a0f9be031cd8b4f6cc1ee05f32cc4b7f9">daw::json::SIMDHashCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, HashCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:a0f9be031cd8b4f6cc1ee05f32cc4b7f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87de0c3ed631fc4dac59fd5e1f333744"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:a87de0c3ed631fc4dac59fd5e1f333744"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a87de0c3ed631fc4dac59fd5e1f333744">daw::json::SIMDHashCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, HashCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:a87de0c3ed631fc4dac59fd5e1f333744"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4590971fa17f536693fe7fd7f6dbd846"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:a4590971fa17f536693fe7fd7f6dbd846"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a4590971fa17f536693fe7fd7f6dbd846">daw::json::SIMDNoCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, NoCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:a4590971fa17f536693fe7fd7f6dbd846"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adba4d19f5a0fdbd773caad9a7fce6c44"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
-<tr class="memitem:adba4d19f5a0fdbd773caad9a7fce6c44"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#adba4d19f5a0fdbd773caad9a7fce6c44">daw::json::SIMDNoCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, NoCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
-<tr class="separator:adba4d19f5a0fdbd773caad9a7fce6c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3d6221921e47be1cd41d6b35f90d1f1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#ac3d6221921e47be1cd41d6b35f90d1f1">DAW_JSON_NS::CppCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, CppCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
+<tr class="separator:ac3d6221921e47be1cd41d6b35f90d1f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a17073d8e06bcee110c1af1b8b73f52"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a9a17073d8e06bcee110c1af1b8b73f52">DAW_JSON_NS::CppCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, CppCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
+<tr class="separator:a9a17073d8e06bcee110c1af1b8b73f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76ff12991af7b7a163f798bd69af9355"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a76ff12991af7b7a163f798bd69af9355">DAW_JSON_NS::HashCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, HashCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
+<tr class="separator:a76ff12991af7b7a163f798bd69af9355"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2483be9bf3c870e7d99a6f1dd6495cb8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a2483be9bf3c870e7d99a6f1dd6495cb8">DAW_JSON_NS::HashCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, HashCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
+<tr class="separator:a2483be9bf3c870e7d99a6f1dd6495cb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa47311996d5e63060107c33298415ffc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#aa47311996d5e63060107c33298415ffc">DAW_JSON_NS::NoCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, NoCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
+<tr class="separator:aa47311996d5e63060107c33298415ffc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ed3d772f35201c6890e9f66c1dbd28f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a9ed3d772f35201c6890e9f66c1dbd28f">DAW_JSON_NS::NoCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, NoCommentSkippingPolicy, default_exec_tag, false &gt;</td></tr>
+<tr class="separator:a9ed3d772f35201c6890e9f66c1dbd28f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49413dd4cee9e15ea94b2fb30f3d12f4"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
+<tr class="memitem:a49413dd4cee9e15ea94b2fb30f3d12f4"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a49413dd4cee9e15ea94b2fb30f3d12f4">DAW_JSON_NS::SIMDCppCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, CppCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
+<tr class="separator:a49413dd4cee9e15ea94b2fb30f3d12f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0d8589f55dd835d6ad3fb5aba83616f"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
+<tr class="memitem:af0d8589f55dd835d6ad3fb5aba83616f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#af0d8589f55dd835d6ad3fb5aba83616f">DAW_JSON_NS::SIMDCppCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, CppCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
+<tr class="separator:af0d8589f55dd835d6ad3fb5aba83616f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6fcd54f07a04777eab6497d1df940ee"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
+<tr class="memitem:ae6fcd54f07a04777eab6497d1df940ee"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#ae6fcd54f07a04777eab6497d1df940ee">DAW_JSON_NS::SIMDHashCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, HashCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
+<tr class="separator:ae6fcd54f07a04777eab6497d1df940ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe5a25b16d0e166c45e5ac4368d5b0a0"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
+<tr class="memitem:abe5a25b16d0e166c45e5ac4368d5b0a0"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#abe5a25b16d0e166c45e5ac4368d5b0a0">DAW_JSON_NS::SIMDHashCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, HashCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
+<tr class="separator:abe5a25b16d0e166c45e5ac4368d5b0a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bacbd5266e58c2b943875638a3feac4"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
+<tr class="memitem:a6bacbd5266e58c2b943875638a3feac4"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a6bacbd5266e58c2b943875638a3feac4">DAW_JSON_NS::SIMDNoCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; false, NoCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
+<tr class="separator:a6bacbd5266e58c2b943875638a3feac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5656e409033f25c97ec6b6b45db0b0f"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag , typename Allocator  = json_details::NoAllocator&gt; </td></tr>
+<tr class="memitem:ae5656e409033f25c97ec6b6b45db0b0f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#ae5656e409033f25c97ec6b6b45db0b0f">DAW_JSON_NS::SIMDNoCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; true, NoCommentSkippingPolicy, ExecTag, false, Allocator &gt;</td></tr>
+<tr class="separator:ae5656e409033f25c97ec6b6b45db0b0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:abb5402f7d64c604e5348c3cf6911aa6d"><td class="memTemplParams" colspan="2">template&lt;typename ParsePolicy &gt; </td></tr>
+<tr class="memitem:abb5402f7d64c604e5348c3cf6911aa6d"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#abb5402f7d64c604e5348c3cf6911aa6d">DAW_JSON_NS::json_details::is_guaranteed_rvo_v</a></td></tr>
+<tr class="separator:abb5402f7d64c604e5348c3cf6911aa6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

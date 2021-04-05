@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['stackrangetype_829',['StackRangeType',['../namespacedaw_1_1json.html#af83b21b6a0f6f758951f14d3a876f781',1,'daw::json']]]
+  ['stackrangetype_1443',['StackRangeType',['../namespace_d_a_w___j_s_o_n___n_s.html#ad07e88e0ddb1aee98afc661e197ec15f',1,'DAW_JSON_NS']]]
 ];

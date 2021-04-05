@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['bool_834',['Bool',['../namespacedaw_1_1json.html#ad0cefd9ac573603f55cf5c61155e7f1cac26f15e86e3de4c398a8273272aba034',1,'daw::json::Bool()'],['../namespacedaw_1_1json.html#abfdea85230017d461b5c20bac3f11d79ac26f15e86e3de4c398a8273272aba034',1,'daw::json::Bool()']]]
+  ['bool_1448',['Bool',['../namespace_d_a_w___j_s_o_n___n_s.html#a5460e0976e019ae27df797d0e8ab1b12ac26f15e86e3de4c398a8273272aba034',1,'DAW_JSON_NS::Bool()'],['../namespace_d_a_w___j_s_o_n___n_s.html#aa9b3e81b32201cb7553b9f3440ce6499ac26f15e86e3de4c398a8273272aba034',1,'DAW_JSON_NS::Bool()']]]
 ];

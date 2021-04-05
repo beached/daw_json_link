@@ -80,17 +80,22 @@ $(function() {
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="namespace_8h.html">namespace.h</a>&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>daw::json::json_details {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">  /***</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">   * When skip_string encounters escaping, it will note this as a non-zero value</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">   */</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Range&gt;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  constexpr <span class="keyword">inline</span> <span class="keywordtype">bool</span> needs_slow_path( Range <span class="keyword">const</span> &amp;rng ) {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>( rng.counter ) &gt;= 0;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  }</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;} <span class="comment">// namespace daw::json::json_details</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a> {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">  /***</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">   * When skip_string encounters escaping, it will note this as a non-zero value</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">   */</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Range&gt;</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a64b26a5ac764d43d709159e23e1eb8ee">   20</a></span>&#160;  constexpr <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a64b26a5ac764d43d709159e23e1eb8ee">needs_slow_path</a>( Range <span class="keyword">const</span> &amp;rng ) {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>( rng.counter ) &gt;= 0;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  }</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;} <span class="comment">// namespace DAW_JSON_NS::json_details</span></div>
+<div class="ttc" id="anamespace_8h_html"><div class="ttname"><a href="namespace_8h.html">namespace.h</a></div></div>
+<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_1_1json__details_html"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a></div><div class="ttdef"><b>Definition:</b> daw_from_json_fwd.h:19</div></div>
+<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_1_1json__details_html_a64b26a5ac764d43d709159e23e1eb8ee"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a64b26a5ac764d43d709159e23e1eb8ee">DAW_JSON_NS::json_details::needs_slow_path</a></div><div class="ttdeci">constexpr bool needs_slow_path(Range const &amp;rng)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_string_need_slow.h:20</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

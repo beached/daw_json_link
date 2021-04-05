@@ -1,10 +1,13 @@
 var searchData=
 [
-  ['basic_5fjson_5fpair_438',['basic_json_pair',['../structdaw_1_1json_1_1basic__json__pair.html',1,'daw::json']]],
-  ['basic_5fjson_5fvalue_439',['basic_json_value',['../classdaw_1_1json_1_1basic__json__value.html',1,'daw::json']]],
-  ['basic_5fjson_5fvalue_5fiterator_440',['basic_json_value_iterator',['../structdaw_1_1json_1_1basic__json__value__iterator.html',1,'daw::json']]],
-  ['basic_5fjson_5fvalue_5fiterator_5frange_441',['basic_json_value_iterator_range',['../structdaw_1_1json_1_1basic__json__value__iterator__range.html',1,'daw::json']]],
-  ['basic_5fstateful_5fjson_5fvalue_442',['basic_stateful_json_value',['../classdaw_1_1json_1_1basic__stateful__json__value.html',1,'daw::json']]],
-  ['basicnocommentskippingpolicy_443',['BasicNoCommentSkippingPolicy',['../structdaw_1_1json_1_1_basic_no_comment_skipping_policy.html',1,'daw::json']]],
-  ['basicparsepolicy_444',['BasicParsePolicy',['../structdaw_1_1json_1_1_basic_parse_policy.html',1,'daw::json']]]
+  ['allocator_5ftype_5fas_5frebind_739',['allocator_type_as_rebind',['../struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1_allocator_wrapper_1_1allocator__type__as__rebind.html',1,'DAW_JSON_NS::json_details::AllocatorWrapper']]],
+  ['allocatorwrapper_740',['AllocatorWrapper',['../struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1_allocator_wrapper.html',1,'DAW_JSON_NS::json_details']]],
+  ['allocatorwrapper_3c_20json_5fdetails_3a_3anoallocator_20_3e_741',['AllocatorWrapper&lt; json_details::NoAllocator &gt;',['../struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1_allocator_wrapper.html',1,'DAW_JSON_NS::json_details']]],
+  ['allocatorwrapper_3c_20noallocator_20_3e_742',['AllocatorWrapper&lt; NoAllocator &gt;',['../class_d_a_w___j_s_o_n___n_s_1_1json__details_1_1_allocator_wrapper_3_01_no_allocator_01_4.html',1,'DAW_JSON_NS::json_details']]],
+  ['allocatorwrapperbase_743',['AllocatorWrapperBase',['../class_d_a_w___j_s_o_n___n_s_1_1json__details_1_1_allocator_wrapper_base.html',1,'DAW_JSON_NS::json_details']]],
+  ['allocatorwrapperbase_3c_20alloc_2c_20std_3a_3ais_5fempty_5fv_3c_20alloc_20_3e_20_3e_744',['AllocatorWrapperBase&lt; Alloc, std::is_empty_v&lt; Alloc &gt; &gt;',['../class_d_a_w___j_s_o_n___n_s_1_1json__details_1_1_allocator_wrapper_base.html',1,'DAW_JSON_NS::json_details']]],
+  ['allocatorwrapperbase_3c_20alloc_2c_20true_20_3e_745',['AllocatorWrapperBase&lt; Alloc, true &gt;',['../class_d_a_w___j_s_o_n___n_s_1_1json__details_1_1_allocator_wrapper_base_3_01_alloc_00_01true_01_4.html',1,'DAW_JSON_NS::json_details']]],
+  ['allocatorwrapperbase_3c_20json_5fdetails_3a_3anoallocator_2c_20std_3a_3ais_5fempty_5fv_3c_20json_5fdetails_3a_3anoallocator_20_3e_20_3e_746',['AllocatorWrapperBase&lt; json_details::NoAllocator, std::is_empty_v&lt; json_details::NoAllocator &gt; &gt;',['../class_d_a_w___j_s_o_n___n_s_1_1json__details_1_1_allocator_wrapper_base.html',1,'DAW_JSON_NS::json_details']]],
+  ['arrow_5fproxy_747',['arrow_proxy',['../struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html',1,'DAW_JSON_NS::json_details']]],
+  ['auto_5fdetect_5farray_5felement_748',['auto_detect_array_element',['../struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1auto__detect__array__element.html',1,'DAW_JSON_NS::json_details']]]
 ];

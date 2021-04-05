@@ -68,12 +68,15 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_iostream.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="daw__json__link_8h_source.html">daw_json_link.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="namespace_8h_source.html">impl/namespace.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
@@ -83,19 +86,37 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s_1_1json__details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a42cd07edc977cf510c5615bd62ab1ca0"><td class="memTemplParams" colspan="2">template&lt;typename Container &gt; </td></tr>
+<tr class="memitem:a42cd07edc977cf510c5615bd62ab1ca0"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a42cd07edc977cf510c5615bd62ab1ca0">DAW_JSON_NS::json_details::is_container_opted_into_json_iostreams</a> = is_opted_into_json_iostreams&lt; typename Container::value_type &gt;</td></tr>
+<tr class="separator:a42cd07edc977cf510c5615bd62ab1ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75d7c39f3ab6aa3e3578015e79985ff2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a75d7c39f3ab6aa3e3578015e79985ff2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a75d7c39f3ab6aa3e3578015e79985ff2">DAW_JSON_NS::json_details::is_opted_into_json_iostreams</a> = typename json_data_contract&lt; T &gt;::opt_into_iostreams</td></tr>
+<tr class="separator:a75d7c39f3ab6aa3e3578015e79985ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a8b5f0fadda1a1effd73f8c3dc61eb640"><td class="memTemplParams" colspan="2">template&lt;typename Container , std::enable_if_t&lt; daw::json::json_details::is_container_opted_into_json_iostreams_v&lt; Container &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
+<tr class="memitem:a8b5f0fadda1a1effd73f8c3dc61eb640"><td class="memTemplParams" colspan="2">template&lt;typename Container , std::enable_if_t&lt; DAW_JSON_NS::json_details::is_container_opted_into_json_iostreams_v&lt; Container &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
 <tr class="memitem:a8b5f0fadda1a1effd73f8c3dc61eb640"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__iostream_8h.html#a8b5f0fadda1a1effd73f8c3dc61eb640">operator&lt;&lt;</a> (std::ostream &amp;os, Container const &amp;c)</td></tr>
 <tr class="separator:a8b5f0fadda1a1effd73f8c3dc61eb640"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa63640f4dea34c72a07348dc007aba44"><td class="memTemplParams" colspan="2">template&lt;typename T , std::enable_if_t&lt; daw::json::json_details::is_opted_into_json_iostreams_v&lt; T &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
+<tr class="memitem:aa63640f4dea34c72a07348dc007aba44"><td class="memTemplParams" colspan="2">template&lt;typename T , std::enable_if_t&lt; DAW_JSON_NS::json_details::is_opted_into_json_iostreams_v&lt; T &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
 <tr class="memitem:aa63640f4dea34c72a07348dc007aba44"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="daw__json__iostream_8h.html#aa63640f4dea34c72a07348dc007aba44">operator&lt;&lt;</a> (std::ostream &amp;os, T const &amp;value)</td></tr>
 <tr class="separator:aa63640f4dea34c72a07348dc007aba44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:af97544d719702906bec3492837e3f8fc"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af97544d719702906bec3492837e3f8fc"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#af97544d719702906bec3492837e3f8fc">DAW_JSON_NS::json_details::is_container_opted_into_json_iostreams_v</a></td></tr>
+<tr class="separator:af97544d719702906bec3492837e3f8fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0d71776d609f88194cf5bd779b20e4b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ad0d71776d609f88194cf5bd779b20e4b"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#ad0d71776d609f88194cf5bd779b20e4b">DAW_JSON_NS::json_details::is_opted_into_json_iostreams_v</a></td></tr>
+<tr class="separator:ad0d71776d609f88194cf5bd779b20e4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a8b5f0fadda1a1effd73f8c3dc61eb640"></a>
@@ -104,7 +125,7 @@ Functions</h2></td></tr>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container , std::enable_if_t&lt; daw::json::json_details::is_container_opted_into_json_iostreams_v&lt; Container &gt;, std::nullptr_t &gt;  = nullptr&gt; </div>
+template&lt;typename Container , std::enable_if_t&lt; DAW_JSON_NS::json_details::is_container_opted_into_json_iostreams_v&lt; Container &gt;, std::nullptr_t &gt;  = nullptr&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::ostream&amp; operator&lt;&lt; </td>
@@ -134,7 +155,7 @@ template&lt;typename Container , std::enable_if_t&lt; daw::json::json_details::i
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , std::enable_if_t&lt; daw::json::json_details::is_opted_into_json_iostreams_v&lt; T &gt;, std::nullptr_t &gt;  = nullptr&gt; </div>
+template&lt;typename T , std::enable_if_t&lt; DAW_JSON_NS::json_details::is_opted_into_json_iostreams_v&lt; T &gt;, std::nullptr_t &gt;  = nullptr&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::ostream&amp; operator&lt;&lt; </td>

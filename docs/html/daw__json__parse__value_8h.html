@@ -67,7 +67,10 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_parse_value.h File Reference</div>  </div>
 </div><!--header-->
@@ -83,6 +86,7 @@ $(function() {
 <code>#include &quot;<a class="el" href="daw__json__parse__string__quote_8h_source.html">daw_json_parse_string_quote.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__unsigned__int_8h_source.html">daw_json_parse_unsigned_int.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__value__fwd_8h_source.html">daw_json_parse_value_fwd.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="namespace_8h_source.html">namespace.h</a>&quot;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
@@ -93,10 +97,94 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s_1_1json__details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a423f24011c6d7e44684a1b3b890d6dca"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a423f24011c6d7e44684a1b3b890d6dca"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a423f24011c6d7e44684a1b3b890d6dca">DAW_JSON_NS::json_details::json_member_constructor_t</a> = typename T::constructor_t</td></tr>
+<tr class="separator:a423f24011c6d7e44684a1b3b890d6dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b63a7c1865e87f92fac9c3543c92de5"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a8b63a7c1865e87f92fac9c3543c92de5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a8b63a7c1865e87f92fac9c3543c92de5">DAW_JSON_NS::json_details::json_member_parse_to_t</a> = typename T::parse_to_t</td></tr>
+<tr class="separator:a8b63a7c1865e87f92fac9c3543c92de5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a3981c5115cfaaeb090e20a366622cfb1"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, typename JsonClass , bool KnownBounds, typename... JsonClasses, typename Range &gt; </td></tr>
+<tr class="memitem:a3981c5115cfaaeb090e20a366622cfb1"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> json_result&lt; JsonClass &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a3981c5115cfaaeb090e20a366622cfb1">DAW_JSON_NS::json_details::parse_nth_class</a> (std::size_t idx, Range &amp;rng)</td></tr>
+<tr class="separator:a3981c5115cfaaeb090e20a366622cfb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a328d8ace71ee020dff0713028c259b41"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:a328d8ace71ee020dff0713028c259b41"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a328d8ace71ee020dff0713028c259b41">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Array &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:a328d8ace71ee020dff0713028c259b41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b731e0e6bbbf5e8309d7be7c88d20ce"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:a1b731e0e6bbbf5e8309d7be7c88d20ce"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a1b731e0e6bbbf5e8309d7be7c88d20ce">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Bool &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:a1b731e0e6bbbf5e8309d7be7c88d20ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3729a7698e9dacfd94a1882c2a80ba50"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:a3729a7698e9dacfd94a1882c2a80ba50"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a3729a7698e9dacfd94a1882c2a80ba50">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Class &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:a3729a7698e9dacfd94a1882c2a80ba50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9616cb6de0d6611fd32f0a1613df72e2"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:a9616cb6de0d6611fd32f0a1613df72e2"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a9616cb6de0d6611fd32f0a1613df72e2">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Custom &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:a9616cb6de0d6611fd32f0a1613df72e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15525779aadaec55360ad0162cf2591b"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:a15525779aadaec55360ad0162cf2591b"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a15525779aadaec55360ad0162cf2591b">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Date &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:a15525779aadaec55360ad0162cf2591b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af28d250cb4f23c85fff4ab7e98add915"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:af28d250cb4f23c85fff4ab7e98add915"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#af28d250cb4f23c85fff4ab7e98add915">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::KeyValue &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:af28d250cb4f23c85fff4ab7e98add915"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1da1c70e20c0fdb235bb9b8be33b1aaf"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:a1da1c70e20c0fdb235bb9b8be33b1aaf"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a1da1c70e20c0fdb235bb9b8be33b1aaf">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::KeyValueArray &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:a1da1c70e20c0fdb235bb9b8be33b1aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab163c0767e56edfebfe4dccee0965ff2"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:ab163c0767e56edfebfe4dccee0965ff2"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#ab163c0767e56edfebfe4dccee0965ff2">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Null &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:ab163c0767e56edfebfe4dccee0965ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0340d3af96b916b4da59f366361dbc62"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:a0340d3af96b916b4da59f366361dbc62"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a0340d3af96b916b4da59f366361dbc62">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Real &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:a0340d3af96b916b4da59f366361dbc62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac819d0ee2a1b422bd0c3c9dbc347ebae"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:ac819d0ee2a1b422bd0c3c9dbc347ebae"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#ac819d0ee2a1b422bd0c3c9dbc347ebae">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Signed &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:ac819d0ee2a1b422bd0c3c9dbc347ebae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac54bb0ab75b27123b569654e7fcff686"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:ac54bb0ab75b27123b569654e7fcff686"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#ac54bb0ab75b27123b569654e7fcff686">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::StringEscaped &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:ac54bb0ab75b27123b569654e7fcff686"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa105337e498d0103677c3c2ff3ce31f5"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:aa105337e498d0103677c3c2ff3ce31f5"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#aa105337e498d0103677c3c2ff3ce31f5">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::StringRaw &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:aa105337e498d0103677c3c2ff3ce31f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0589ef7b4effcc910ec7e3af08e3ef6d"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:a0589ef7b4effcc910ec7e3af08e3ef6d"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a0589ef7b4effcc910ec7e3af08e3ef6d">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Unknown &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:a0589ef7b4effcc910ec7e3af08e3ef6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abba4d2dc09b8ac0a1bb321b6ab863564"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename Range &gt; </td></tr>
+<tr class="memitem:abba4d2dc09b8ac0a1bb321b6ab863564"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#abba4d2dc09b8ac0a1bb321b6ab863564">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Unsigned &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:abba4d2dc09b8ac0a1bb321b6ab863564"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abee9186940496eaf661b83e63b63be77"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool , typename Range &gt; </td></tr>
+<tr class="memitem:abee9186940496eaf661b83e63b63be77"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#abee9186940496eaf661b83e63b63be77">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::Variant &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:abee9186940496eaf661b83e63b63be77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a916167d2a763525d7458933aa60f5838"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool , typename Range &gt; </td></tr>
+<tr class="memitem:a916167d2a763525d7458933aa60f5838"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a916167d2a763525d7458933aa60f5838">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::VariantTagged &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:a916167d2a763525d7458933aa60f5838"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add496bdb45e2d1a8554fbba134722448"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, std::size_t N, typename Range , bool B&gt; </td></tr>
+<tr class="memitem:add496bdb45e2d1a8554fbba134722448"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#add496bdb45e2d1a8554fbba134722448">DAW_JSON_NS::json_details::parse_value</a> (ParseTag&lt; JsonParseTypes::VariantTagged &gt;, Range &amp;rng)</td></tr>
+<tr class="separator:add496bdb45e2d1a8554fbba134722448"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91379a3da8a35d519999cc99b7b79c78"><td class="memTemplParams" colspan="2">template&lt;JsonBaseParseTypes BPT, typename JsonMembers , typename Range &gt; </td></tr>
+<tr class="memitem:a91379a3da8a35d519999cc99b7b79c78"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> json_result&lt; JsonMembers &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a91379a3da8a35d519999cc99b7b79c78">DAW_JSON_NS::json_details::parse_variant_value</a> (Range &amp;rng)</td></tr>
+<tr class="separator:a91379a3da8a35d519999cc99b7b79c78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9366924128ebc3d23d5c128c493adf63"><td class="memTemplParams" colspan="2">template&lt;typename Result , typename TypeList , std::size_t pos = 0, typename Range &gt; </td></tr>
+<tr class="memitem:a9366924128ebc3d23d5c128c493adf63"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a9366924128ebc3d23d5c128c493adf63">DAW_JSON_NS::json_details::parse_visit</a> (std::size_t idx, Range &amp;rng)</td></tr>
+<tr class="separator:a9366924128ebc3d23d5c128c493adf63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a264f7e68e036fb3d84019cdc38de0949"><td class="memTemplParams" colspan="2">template&lt;LiteralAsStringOpt literal_as_string, bool KnownBounds = false, typename Range &gt; </td></tr>
+<tr class="memitem:a264f7e68e036fb3d84019cdc38de0949"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a264f7e68e036fb3d84019cdc38de0949">DAW_JSON_NS::json_details::skip_quote_when_literal_as_string</a> (Range &amp;rng)</td></tr>
+<tr class="separator:a264f7e68e036fb3d84019cdc38de0949"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ace1731c434a5d85c92b6ce80f9d4b803"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ace1731c434a5d85c92b6ce80f9d4b803"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#ace1731c434a5d85c92b6ce80f9d4b803">DAW_JSON_NS::json_details::has_json_member_constructor_v</a></td></tr>
+<tr class="separator:ace1731c434a5d85c92b6ce80f9d4b803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7db6a730d6b948f9140d2e14b76b5d87"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a7db6a730d6b948f9140d2e14b76b5d87"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a7db6a730d6b948f9140d2e14b76b5d87">DAW_JSON_NS::json_details::has_json_member_parse_to_v</a></td></tr>
+<tr class="separator:a7db6a730d6b948f9140d2e14b76b5d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

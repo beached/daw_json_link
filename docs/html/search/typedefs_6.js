@@ -1,5 +1,25 @@
 var searchData=
 [
-  ['hashcommentskippingpolicychecked_757',['HashCommentSkippingPolicyChecked',['../namespacedaw_1_1json.html#a7963bb60c23ab5a8066f22069a4b498a',1,'daw::json']]],
-  ['hashcommentskippingpolicyunchecked_758',['HashCommentSkippingPolicyUnchecked',['../namespacedaw_1_1json.html#a6b8c653bc0ba96408ff4fdca36c944e9',1,'daw::json']]]
+  ['has_5fallocate_5ftest_1320',['has_allocate_test',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a66a7113d4bf8342f27558a222af30e47',1,'DAW_JSON_NS::json_details']]],
+  ['has_5fallocator_5ftype_5fas_5frebind_1321',['has_allocator_type_as_rebind',['../struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1_allocator_wrapper.html#adccc6eebfb73f0443dabd8688a46f7c0',1,'DAW_JSON_NS::json_details::AllocatorWrapper']]],
+  ['has_5fdeallocate_5ftest_1322',['has_deallocate_test',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#ae5fe4d0b1e9600c407ff6404e0a4b46e',1,'DAW_JSON_NS::json_details']]],
+  ['has_5fjson_5fdata_5fconstract_5fconstructor_5ftest_1323',['has_json_data_constract_constructor_test',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a2c99f30a60af5fef94de8a6aa4b38b20',1,'DAW_JSON_NS::json_details']]],
+  ['has_5fon_5farray_5fend_5fhandler_5fdetect_1324',['has_on_array_end_handler_detect',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#aac8c3db119efde8e66bae774fd656883',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5farray_5fstart_5fhandler_5fdetect_1325',['has_on_array_start_handler_detect',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#aa585f748dade03b5332eb2b158d3ba27',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fbool_5fhandler_5fdetect_5fbl_1326',['has_on_bool_handler_detect_bl',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#ae9526b8c040e95a73e3b3c3fa7b85ba7',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fbool_5fhandler_5fdetect_5fjv_1327',['has_on_bool_handler_detect_jv',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#aa0f419747b1e458204219dc0741a3e91',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fclass_5fend_5fhandler_5fdetect_1328',['has_on_class_end_handler_detect',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#add6ef77bc9d2c90748328a92a2aa6b15',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fclass_5fstart_5fhandler_5fdetect_1329',['has_on_class_start_handler_detect',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#a59f41a554ed3c3db1f7c2ae6ac4d8d43',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5ferror_5fhandler_5fdetect_1330',['has_on_error_handler_detect',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#ae505af60113292a38b2de91e8f621332',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fnull_5fhandler_5fdetect_1331',['has_on_null_handler_detect',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#a203ffcc501c49c903ca5f6d79dbe0648',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fnull_5fhandler_5fdetect_5fjv_1332',['has_on_null_handler_detect_jv',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#ab02286fff5884ea07e8960b51c735ad0',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fnumber_5fhandler_5fdetect_5fdbl_1333',['has_on_number_handler_detect_dbl',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#a9cab72af8f38c77208b29659b6299ec6',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fnumber_5fhandler_5fdetect_5fjv_1334',['has_on_number_handler_detect_jv',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#a9d22dcedcc20fb9cb1b237fcf12e3d52',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fstring_5fhandler_5fdetect_5fjv_1335',['has_on_string_handler_detect_jv',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#a6ce867c29200df0f3fb0d29d00520028',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fstring_5fhandler_5fdetect_5fstr_1336',['has_on_string_handler_detect_str',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#af144e0a1afd02c78b35cf387d08c2877',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fon_5fvalue_5fhandler_5fdetect_1337',['has_on_value_handler_detect',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1hnd__checks.html#ac2f102d8b5e16537f79e26440fa3701a',1,'DAW_JSON_NS::json_details::hnd_checks']]],
+  ['has_5fto_5fstring_1338',['has_to_string',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1to__strings.html#ab9ad2e66646b96bf83d5a19a7d9b6f32',1,'DAW_JSON_NS::json_details::to_strings']]],
+  ['has_5funnamed_5fdefault_5ftype_5fmapping_1339',['has_unnamed_default_type_mapping',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#af5e2b3bb1fc730f59dbca28eacd32125',1,'DAW_JSON_NS::json_details']]],
+  ['hashcommentskippingpolicychecked_1340',['HashCommentSkippingPolicyChecked',['../namespace_d_a_w___j_s_o_n___n_s.html#a76ff12991af7b7a163f798bd69af9355',1,'DAW_JSON_NS']]],
+  ['hashcommentskippingpolicyunchecked_1341',['HashCommentSkippingPolicyUnchecked',['../namespace_d_a_w___j_s_o_n___n_s.html#a2483be9bf3c870e7d99a6f1dd6495cb8',1,'DAW_JSON_NS']]]
 ];

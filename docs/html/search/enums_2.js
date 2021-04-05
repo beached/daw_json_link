@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['eightbitmodes_822',['EightBitModes',['../namespacedaw_1_1json.html#ab23d9b5e7400c47512a88946d69ab2ad',1,'daw::json']]]
+  ['eightbitmodes_1436',['EightBitModes',['../namespace_d_a_w___j_s_o_n___n_s.html#a6095a62aeea4f29d8c366eaabb7d3bac',1,'DAW_JSON_NS']]]
 ];

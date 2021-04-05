@@ -70,12 +70,14 @@ $(function() {
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_traits.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;daw/daw_move.h&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="namespace_8h_source.html">namespace.h</a>&quot;</code><br />
+<code>#include &lt;daw/daw_move.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;optional&gt;</code><br />
@@ -88,35 +90,85 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1can__single__allocation__string.html">daw::json::can_single_allocation_string&lt; typename &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1can__single__allocation__string.html">DAW_JSON_NS::can_single_allocation_string&lt; typename &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1default__constructor.html">daw::json::default_constructor&lt; T &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1default__constructor.html">DAW_JSON_NS::default_constructor&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1json__data__contract.html">daw::json::json_data_contract&lt; T &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1json__data__contract.html">DAW_JSON_NS::json_data_contract&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1missing__json__data__contract__for.html">daw::json::missing_json_data_contract_for&lt; typename &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1json__data__contract__constructor__impl.html">DAW_JSON_NS::json_details::json_data_contract_constructor_impl&lt; T, bool, bool &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1nullable__constructor.html">daw::json::nullable_constructor&lt; T &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1json__data__contract__constructor__impl_3_01_t_00_01true_00_01true_01_4.html">DAW_JSON_NS::json_details::json_data_contract_constructor_impl&lt; T, true, true &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1missing__json__data__contract__for.html">DAW_JSON_NS::missing_json_data_contract_for&lt; typename &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1nullable__constructor.html">DAW_JSON_NS::nullable_constructor&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s_1_1json__details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a4625d6d62a2f9be4bddfc41449049531"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a4625d6d62a2f9be4bddfc41449049531"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a4625d6d62a2f9be4bddfc41449049531">daw::json::json_data_contract_trait_t</a> = typename <a class="el" href="structdaw_1_1json_1_1json__data__contract.html">daw::json::json_data_contract</a>&lt; T &gt;::type</td></tr>
-<tr class="separator:a4625d6d62a2f9be4bddfc41449049531"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba96ef539f9f5dcc1625fd4a41d25435"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aba96ef539f9f5dcc1625fd4a41d25435"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#aba96ef539f9f5dcc1625fd4a41d25435">DAW_JSON_NS::json_details::force_aggregate_construction_test</a> = decltype(force_aggregate_construction_func&lt; T &gt;())</td></tr>
+<tr class="separator:aba96ef539f9f5dcc1625fd4a41d25435"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c99f30a60af5fef94de8a6aa4b38b20"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a2c99f30a60af5fef94de8a6aa4b38b20"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a2c99f30a60af5fef94de8a6aa4b38b20">DAW_JSON_NS::json_details::has_json_data_constract_constructor_test</a> = typename json_data_contract_trait_t&lt; T &gt;::constructor</td></tr>
+<tr class="separator:a2c99f30a60af5fef94de8a6aa4b38b20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd023e89dcf8e60876485446e50df862"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:acd023e89dcf8e60876485446e50df862"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#acd023e89dcf8e60876485446e50df862">DAW_JSON_NS::json_details::is_a_json_tagged_variant_test</a> = typename T::i_am_a_json_tagged_variant</td></tr>
+<tr class="separator:acd023e89dcf8e60876485446e50df862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeecadad5385ce0e2fd7a14b74a71ad2a"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Default  = default_constructor&lt;T&gt;&gt; </td></tr>
+<tr class="memitem:aeecadad5385ce0e2fd7a14b74a71ad2a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#aeecadad5385ce0e2fd7a14b74a71ad2a">DAW_JSON_NS::json_details::json_class_constructor_t</a> = std::conditional_t&lt; daw::is_detected_v&lt; json_data_contract_constructor_t, T &gt;, json_data_contract_constructor_t&lt; T &gt;, Default &gt;</td></tr>
+<tr class="separator:aeecadad5385ce0e2fd7a14b74a71ad2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1abbf513ae3d5da73cd0d06fe6a80f3b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a1abbf513ae3d5da73cd0d06fe6a80f3b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a1abbf513ae3d5da73cd0d06fe6a80f3b">DAW_JSON_NS::json_details::json_data_contract_constructor_t</a> = typename json_data_contract_constructor_impl&lt; T, daw::is_detected_v&lt; json_data_contract_trait_t, T &gt;, daw::is_detected_v&lt; has_json_data_constract_constructor_test, T &gt; &gt;::type</td></tr>
+<tr class="separator:a1abbf513ae3d5da73cd0d06fe6a80f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3e3f1099d2ae09f19e81d8474b88ca4"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aa3e3f1099d2ae09f19e81d8474b88ca4"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#aa3e3f1099d2ae09f19e81d8474b88ca4">DAW_JSON_NS::json_data_contract_trait_t</a> = typename <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1json__data__contract.html">DAW_JSON_NS::json_data_contract</a>&lt; T &gt;::type</td></tr>
+<tr class="separator:aa3e3f1099d2ae09f19e81d8474b88ca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa70e12efe57bb20051b245cdcf4edbda"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aa70e12efe57bb20051b245cdcf4edbda"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#aa70e12efe57bb20051b245cdcf4edbda">DAW_JSON_NS::json_details::json_type_t</a> = typename T::i_am_a_json_type</td></tr>
+<tr class="separator:aa70e12efe57bb20051b245cdcf4edbda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60dd27d42993df10bffa1006f53e367c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a60dd27d42993df10bffa1006f53e367c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a60dd27d42993df10bffa1006f53e367c">DAW_JSON_NS::json_details::must_verify_end_of_data_is_valid_t</a> = typename T::must_verify_end_of_data_is_valid</td></tr>
+<tr class="separator:a60dd27d42993df10bffa1006f53e367c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a985c173557f93770216fdc47df39381b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a985c173557f93770216fdc47df39381b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a985c173557f93770216fdc47df39381b">DAW_JSON_NS::json_details::ordered_member_t</a> = typename T::i_am_an_ordered_member</td></tr>
+<tr class="separator:a985c173557f93770216fdc47df39381b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a4ffcbd412aba2ffb6dbafe6b1dc377cc"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a4ffcbd412aba2ffb6dbafe6b1dc377cc"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a4ffcbd412aba2ffb6dbafe6b1dc377cc">DAW_JSON_NS::json_details::force_aggregate_construction_func</a> () -&gt; typename json_data_contract&lt; T &gt;::force_aggregate_construction</td></tr>
+<tr class="separator:a4ffcbd412aba2ffb6dbafe6b1dc377cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe2735ec86374347c6b50e7dd6b614e5"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:afe2735ec86374347c6b50e7dd6b614e5"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#afe2735ec86374347c6b50e7dd6b614e5">DAW_JSON_NS::json_details::uneval_func</a> ()</td></tr>
+<tr class="separator:afe2735ec86374347c6b50e7dd6b614e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a62253fd556d529b99525429cdfeeb376"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a62253fd556d529b99525429cdfeeb376"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a62253fd556d529b99525429cdfeeb376">daw::json::force_aggregate_construction_v</a></td></tr>
-<tr class="separator:a62253fd556d529b99525429cdfeeb376"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12638d607ccf48a487730d920f7f6856"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a12638d607ccf48a487730d920f7f6856"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a12638d607ccf48a487730d920f7f6856">DAW_JSON_NS::force_aggregate_construction_v</a></td></tr>
+<tr class="separator:a12638d607ccf48a487730d920f7f6856"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1782ce72f89740607857cb8473041ee"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af1782ce72f89740607857cb8473041ee"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#af1782ce72f89740607857cb8473041ee">DAW_JSON_NS::json_details::is_a_json_tagged_variant_v</a></td></tr>
+<tr class="separator:af1782ce72f89740607857cb8473041ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08e7b1e5e02b22d6786f6e967f512563"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a08e7b1e5e02b22d6786f6e967f512563"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a08e7b1e5e02b22d6786f6e967f512563">DAW_JSON_NS::json_details::is_a_json_type_v</a> = daw::is_detected_v&lt;json_type_t, T&gt;</td></tr>
+<tr class="separator:a08e7b1e5e02b22d6786f6e967f512563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac111a81b16c437c7347a4e58e80f284b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac111a81b16c437c7347a4e58e80f284b"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#ac111a81b16c437c7347a4e58e80f284b">DAW_JSON_NS::json_details::is_an_ordered_member_v</a></td></tr>
+<tr class="separator:ac111a81b16c437c7347a4e58e80f284b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a445e8eeefc8841cd2224cf98ca88cb28"><td class="memTemplParams" colspan="2">template&lt;typename ParsePolicy &gt; </td></tr>
+<tr class="memitem:a445e8eeefc8841cd2224cf98ca88cb28"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a445e8eeefc8841cd2224cf98ca88cb28">DAW_JSON_NS::json_details::must_verify_end_of_data_is_valid_v</a></td></tr>
+<tr class="memdesc:a445e8eeefc8841cd2224cf98ca88cb28"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the parse policy has a type alias <code>must_verify_end_of_data_is_valid</code> this trait is true. This is used to ensure that after the JSON value is parse that only whitespace or nothing follows.  <a href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a445e8eeefc8841cd2224cf98ca88cb28">More...</a><br /></td></tr>
+<tr class="separator:a445e8eeefc8841cd2224cf98ca88cb28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

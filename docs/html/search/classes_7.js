@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['ordered_5fjson_5fmember_501',['ordered_json_member',['../structdaw_1_1json_1_1ordered__json__member.html',1,'daw::json']]]
+  ['location_5finfo_5ft_835',['location_info_t',['../class_d_a_w___j_s_o_n___n_s_1_1json__details_1_1location__info__t.html',1,'DAW_JSON_NS::json_details']]],
+  ['locations_5finfo_5ft_836',['locations_info_t',['../struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1locations__info__t.html',1,'DAW_JSON_NS::json_details']]]
 ];

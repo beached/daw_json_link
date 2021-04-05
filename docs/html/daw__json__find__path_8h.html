@@ -77,6 +77,7 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="daw__json__event__parser_8h_source.html">daw_json_event_parser.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__link__types_8h_source.html">daw_json_link_types.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">impl/daw_json_assert.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="namespace_8h_source.html">impl/namespace.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_algorithm.h&gt;</code><br />
 <code>#include &lt;daw/daw_move.h&gt;</code><br />
 <code>#include &lt;daw/daw_utility.h&gt;</code><br />
@@ -92,38 +93,36 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdaw_1_1json_1_1json__path__node.html">daw::json::json_path_node</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_a_w___j_s_o_n___n_s_1_1json__path__node.html">DAW_JSON_NS::json_path_node</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a20fe1c81f161f3ca8686f650a89f1233"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a20fe1c81f161f3ca8686f650a89f1233">daw::json::find_column_number_of</a> (char const *doc_pos, char const *doc_start)</td></tr>
-<tr class="separator:a20fe1c81f161f3ca8686f650a89f1233"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab440e254ec5d6f40e2e59a7cf9d1c758"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ab440e254ec5d6f40e2e59a7cf9d1c758">daw::json::find_column_number_of</a> (json_path_node const &amp;node, char const *doc_start)</td></tr>
-<tr class="separator:ab440e254ec5d6f40e2e59a7cf9d1c758"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac4ee04d2d7d3049e0c97956180af7dab"><td class="memItemLeft" align="right" valign="top">std::vector&lt; json_path_node &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ac4ee04d2d7d3049e0c97956180af7dab">daw::json::find_json_path_stack_to</a> (char const *parse_location, char const *doc_start)</td></tr>
-<tr class="memdesc:ac4ee04d2d7d3049e0c97956180af7dab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the json_path_nodes representing the path to the nearest value's position in the document.  <a href="namespacedaw_1_1json.html#ac4ee04d2d7d3049e0c97956180af7dab">More...</a><br /></td></tr>
-<tr class="separator:ac4ee04d2d7d3049e0c97956180af7dab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a9cf5ce762350f8d6d9c57df23b1aab"><td class="memItemLeft" align="right" valign="top">std::vector&lt; json_path_node &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a9a9cf5ce762350f8d6d9c57df23b1aab">daw::json::find_json_path_stack_to</a> (json_exception const &amp;jex, char const *doc_start)</td></tr>
-<tr class="separator:a9a9cf5ce762350f8d6d9c57df23b1aab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9f857c7cbc402fb94da7f81d6969fa6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ad9f857c7cbc402fb94da7f81d6969fa6">daw::json::find_json_path_to</a> (char const *parse_location, char const *doc_start)</td></tr>
-<tr class="separator:ad9f857c7cbc402fb94da7f81d6969fa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac4553c87ed4c31762e2862851074f28"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#aac4553c87ed4c31762e2862851074f28">daw::json::find_json_path_to</a> (json_exception const &amp;jex, char const *doc_start)</td></tr>
-<tr class="separator:aac4553c87ed4c31762e2862851074f28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8248127aa05808f8b71dee09458751ef"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a8248127aa05808f8b71dee09458751ef">daw::json::find_line_number_of</a> (char const *doc_pos, char const *doc_start)</td></tr>
-<tr class="separator:a8248127aa05808f8b71dee09458751ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac44a5fceab43500258d827fa43670327"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ac44a5fceab43500258d827fa43670327">daw::json::find_line_number_of</a> (json_path_node const &amp;node, char const *doc_start)</td></tr>
-<tr class="separator:ac44a5fceab43500258d827fa43670327"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abfae73058f991ae47f935c72b2dc0ea7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#abfae73058f991ae47f935c72b2dc0ea7">daw::json::to_json_path_string</a> (std::vector&lt; json_path_node &gt; const &amp;path_stack)</td></tr>
-<tr class="memdesc:abfae73058f991ae47f935c72b2dc0ea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a <a class="el" href="classdaw_1_1json_1_1json__path__node.html">json_path_node</a> stack to a JSON Path string.  <a href="namespacedaw_1_1json.html#abfae73058f991ae47f935c72b2dc0ea7">More...</a><br /></td></tr>
-<tr class="separator:abfae73058f991ae47f935c72b2dc0ea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e4e51630fac71f249e5d1db7f1b04d5"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a6e4e51630fac71f249e5d1db7f1b04d5">DAW_JSON_NS::find_column_number_of</a> (char const *doc_pos, char const *doc_start)</td></tr>
+<tr class="separator:a6e4e51630fac71f249e5d1db7f1b04d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e3b2b6d1da0654df28991c24016bc29"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a1e3b2b6d1da0654df28991c24016bc29">DAW_JSON_NS::find_column_number_of</a> (json_path_node const &amp;node, char const *doc_start)</td></tr>
+<tr class="separator:a1e3b2b6d1da0654df28991c24016bc29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dfbddc5c5c300fc6c8ff95011c6e0db"><td class="memItemLeft" align="right" valign="top">std::vector&lt; json_path_node &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a6dfbddc5c5c300fc6c8ff95011c6e0db">DAW_JSON_NS::find_json_path_stack_to</a> (char const *parse_location, char const *doc_start)</td></tr>
+<tr class="memdesc:a6dfbddc5c5c300fc6c8ff95011c6e0db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the json_path_nodes representing the path to the nearest value's position in the document.  <a href="namespace_d_a_w___j_s_o_n___n_s.html#a6dfbddc5c5c300fc6c8ff95011c6e0db">More...</a><br /></td></tr>
+<tr class="separator:a6dfbddc5c5c300fc6c8ff95011c6e0db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af31cd58e758bfd1fcf0f7bef0d5bb198"><td class="memItemLeft" align="right" valign="top">std::vector&lt; json_path_node &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#af31cd58e758bfd1fcf0f7bef0d5bb198">DAW_JSON_NS::find_json_path_stack_to</a> (json_exception const &amp;jex, char const *doc_start)</td></tr>
+<tr class="separator:af31cd58e758bfd1fcf0f7bef0d5bb198"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d8b40fd22b60b49fcb429eae87c99f2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a2d8b40fd22b60b49fcb429eae87c99f2">DAW_JSON_NS::find_json_path_to</a> (char const *parse_location, char const *doc_start)</td></tr>
+<tr class="separator:a2d8b40fd22b60b49fcb429eae87c99f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a948df9ad428a61239dbf297569cb300c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a948df9ad428a61239dbf297569cb300c">DAW_JSON_NS::find_json_path_to</a> (json_exception const &amp;jex, char const *doc_start)</td></tr>
+<tr class="separator:a948df9ad428a61239dbf297569cb300c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7afa1f281959fc69b2d35ffb826b7adc"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#a7afa1f281959fc69b2d35ffb826b7adc">DAW_JSON_NS::find_line_number_of</a> (char const *doc_pos, char const *doc_start)</td></tr>
+<tr class="separator:a7afa1f281959fc69b2d35ffb826b7adc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb9e55f03011c3ede6da8406af539f77"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#aeb9e55f03011c3ede6da8406af539f77">DAW_JSON_NS::find_line_number_of</a> (json_path_node const &amp;node, char const *doc_start)</td></tr>
+<tr class="separator:aeb9e55f03011c3ede6da8406af539f77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab65f65211724fc44f6231b35855517f7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html#ab65f65211724fc44f6231b35855517f7">DAW_JSON_NS::to_json_path_string</a> (std::vector&lt; json_path_node &gt; const &amp;path_stack)</td></tr>
+<tr class="memdesc:ab65f65211724fc44f6231b35855517f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a <a class="el" href="class_d_a_w___j_s_o_n___n_s_1_1json__path__node.html">json_path_node</a> stack to a JSON Path string.  <a href="namespace_d_a_w___j_s_o_n___n_s.html#ab65f65211724fc44f6231b35855517f7">More...</a><br /></td></tr>
+<tr class="separator:ab65f65211724fc44f6231b35855517f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

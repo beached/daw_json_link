@@ -67,12 +67,16 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">daw_not_const_ex_functions.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="daw__json__exec__modes_8h_source.html">daw_json_exec_modes.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="namespace_8h_source.html">namespace.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_hide.h&gt;</code><br />
 <code>#include &lt;daw/daw_uint_buffer.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
@@ -81,12 +85,42 @@ $(function() {
 </div>
 <p><a href="daw__not__const__ex__functions_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1key__table__t.html">DAW_JSON_NS::json_details::key_table_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s_1_1json__details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a03ae3f2973fa4b5e617a85246e7d442e"><td class="memItemLeft" align="right" valign="top">static std::ptrdiff_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a03ae3f2973fa4b5e617a85246e7d442e">DAW_JSON_NS::json_details::find_lsb_set</a> (runtime_exec_tag, UInt32 value)</td></tr>
+<tr class="separator:a03ae3f2973fa4b5e617a85246e7d442e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac71dfb807df125bf7709339eed58bf99"><td class="memItemLeft" align="right" valign="top">static constexpr DAW_ATTRIBUTE_FLATTEN bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#ac71dfb807df125bf7709339eed58bf99">DAW_JSON_NS::json_details::is_escaped</a> (char const *ptr, char const *min_ptr)</td></tr>
+<tr class="separator:ac71dfb807df125bf7709339eed58bf99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf5cc81bc5ee805fc0a672770e627f42"><td class="memTemplParams" colspan="2">template&lt;bool is_unchecked_input, char... keys&gt; </td></tr>
+<tr class="memitem:adf5cc81bc5ee805fc0a672770e627f42"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIBUTE_FLATTEN char const  *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#adf5cc81bc5ee805fc0a672770e627f42">DAW_JSON_NS::json_details::mem_move_to_next_of</a> (runtime_exec_tag, char const *first, char const *last)</td></tr>
+<tr class="separator:adf5cc81bc5ee805fc0a672770e627f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bc0c34eb8d2c6650217c13a8e4e9fea"><td class="memTemplParams" colspan="2">template&lt;bool is_unchecked_input, typename ExecTag , std::enable_if_t&lt; std::is_base_of_v&lt; runtime_exec_tag, ExecTag &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
+<tr class="memitem:a4bc0c34eb8d2c6650217c13a8e4e9fea"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIBUTE_FLATTEN char const  *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a4bc0c34eb8d2c6650217c13a8e4e9fea">DAW_JSON_NS::json_details::mem_skip_string</a> (ExecTag const &amp;tag, char const *first, char const *const last)</td></tr>
+<tr class="separator:a4bc0c34eb8d2c6650217c13a8e4e9fea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a774594af7540a7e4734858080d2c9c"><td class="memTemplParams" colspan="2">template&lt;bool is_unchecked_input, typename ExecTag , std::enable_if_t&lt; std::is_base_of_v&lt; runtime_exec_tag, ExecTag &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
+<tr class="memitem:a5a774594af7540a7e4734858080d2c9c"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIBUTE_FLATTEN char const  *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a5a774594af7540a7e4734858080d2c9c">DAW_JSON_NS::json_details::mem_skip_until_end_of_string</a> (ExecTag const &amp;tag, char const *first, char const *const last)</td></tr>
+<tr class="separator:a5a774594af7540a7e4734858080d2c9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d43271461565c3465859b763e08dde9"><td class="memTemplParams" colspan="2">template&lt;bool is_unchecked_input&gt; </td></tr>
+<tr class="memitem:a8d43271461565c3465859b763e08dde9"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIBUTE_FLATTEN char const  *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a8d43271461565c3465859b763e08dde9">DAW_JSON_NS::json_details::mem_skip_until_end_of_string</a> (runtime_exec_tag tag, char const *first, char const *const last, std::ptrdiff_t &amp;first_escape)</td></tr>
+<tr class="separator:a8d43271461565c3465859b763e08dde9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ac48d9a19f8d57991277563748201a712"><td class="memTemplParams" colspan="2">template&lt;char... keys&gt; </td></tr>
+<tr class="memitem:ac48d9a19f8d57991277563748201a712"><td class="memTemplItemLeft" align="right" valign="top">static constexpr key_table_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#ac48d9a19f8d57991277563748201a712">DAW_JSON_NS::json_details::key_table</a></td></tr>
+<tr class="separator:ac48d9a19f8d57991277563748201a712"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

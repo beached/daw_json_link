@@ -67,7 +67,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">daw_json_skip.h File Reference</div>  </div>
 </div><!--header-->
@@ -76,6 +77,7 @@ $(function() {
 <code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__digit_8h_source.html">daw_json_parse_digit.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__string__quote_8h_source.html">daw_json_parse_string_quote.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="namespace_8h_source.html">namespace.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_hide.h&gt;</code><br />
 <code>#include &lt;daw/daw_unreachable.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
@@ -85,10 +87,40 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
+<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s_1_1json__details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a668e293d0cccd016590afe7b8c154af1"><td class="memTemplParams" colspan="2">template&lt;bool is_unchecked_input&gt; </td></tr>
+<tr class="memitem:a668e293d0cccd016590afe7b8c154af1"><td class="memTemplItemLeft" align="right" valign="top">static constexpr DAW_ATTRIBUTE_FLATTEN char const  *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a668e293d0cccd016590afe7b8c154af1">DAW_JSON_NS::json_details::skip_digits</a> (char const *first, char const *const last)</td></tr>
+<tr class="separator:a668e293d0cccd016590afe7b8c154af1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad424e4c25c8803f52094d2d47faccaba"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
+<tr class="memitem:ad424e4c25c8803f52094d2d47faccaba"><td class="memTemplItemLeft" align="right" valign="top">static constexpr Range&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#ad424e4c25c8803f52094d2d47faccaba">DAW_JSON_NS::json_details::skip_false</a> (Range &amp;rng)</td></tr>
+<tr class="separator:ad424e4c25c8803f52094d2d47faccaba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fece828a43229d9f16e7f2cca298b12"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , typename Range &gt; </td></tr>
+<tr class="memitem:a6fece828a43229d9f16e7f2cca298b12"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN Range&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a6fece828a43229d9f16e7f2cca298b12">DAW_JSON_NS::json_details::skip_known_value</a> (Range &amp;rng)</td></tr>
+<tr class="separator:a6fece828a43229d9f16e7f2cca298b12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a650cfee81c5e152d6b6d79a383ff76af"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
+<tr class="memitem:a650cfee81c5e152d6b6d79a383ff76af"><td class="memTemplItemLeft" align="right" valign="top">static constexpr Range&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a650cfee81c5e152d6b6d79a383ff76af">DAW_JSON_NS::json_details::skip_null</a> (Range &amp;rng)</td></tr>
+<tr class="separator:a650cfee81c5e152d6b6d79a383ff76af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a156966c7e65c23bba784a81917443519"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
+<tr class="memitem:a156966c7e65c23bba784a81917443519"><td class="memTemplItemLeft" align="right" valign="top">static constexpr Range&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a156966c7e65c23bba784a81917443519">DAW_JSON_NS::json_details::skip_number</a> (Range &amp;rng)</td></tr>
+<tr class="separator:a156966c7e65c23bba784a81917443519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6952d75b4b159059e77f0a3a5e0cfb83"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
+<tr class="memitem:a6952d75b4b159059e77f0a3a5e0cfb83"><td class="memTemplItemLeft" align="right" valign="top">static constexpr DAW_ATTRIBUTE_FLATTEN Range&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a6952d75b4b159059e77f0a3a5e0cfb83">DAW_JSON_NS::json_details::skip_string</a> (Range &amp;rng)</td></tr>
+<tr class="separator:a6952d75b4b159059e77f0a3a5e0cfb83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c9ce82a27453d039dd7cdd919a42437"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
+<tr class="memitem:a8c9ce82a27453d039dd7cdd919a42437"><td class="memTemplItemLeft" align="right" valign="top">static constexpr DAW_ATTRIBUTE_FLATTEN Range&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a8c9ce82a27453d039dd7cdd919a42437">DAW_JSON_NS::json_details::skip_string_nq</a> (Range &amp;rng)</td></tr>
+<tr class="separator:a8c9ce82a27453d039dd7cdd919a42437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7140bed3b3f08d67cda5a80fae916a8"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
+<tr class="memitem:af7140bed3b3f08d67cda5a80fae916a8"><td class="memTemplItemLeft" align="right" valign="top">static constexpr Range&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#af7140bed3b3f08d67cda5a80fae916a8">DAW_JSON_NS::json_details::skip_true</a> (Range &amp;rng)</td></tr>
+<tr class="separator:af7140bed3b3f08d67cda5a80fae916a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeed8afda2e5c07544d6440049c015518"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
+<tr class="memitem:aeed8afda2e5c07544d6440049c015518"><td class="memTemplItemLeft" align="right" valign="top">static constexpr Range&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#aeed8afda2e5c07544d6440049c015518">DAW_JSON_NS::json_details::skip_value</a> (Range &amp;rng)</td></tr>
+<tr class="separator:aeed8afda2e5c07544d6440049c015518"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

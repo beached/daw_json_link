@@ -79,16 +79,23 @@ $(function() {
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>daw::json::json_details {</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keyword">struct </span>arrow_proxy {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    T value;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    [[nodiscard]] constexpr T *operator-&gt;( ) &amp;&amp; {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;      <span class="keywordflow">return</span> &amp;value;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    }</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  };</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;} <span class="comment">// namespace daw::json::json_details</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="namespace_8h.html">namespace.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a> {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html">   14</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html">arrow_proxy</a> {</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html#aff780cb9447400a324d7b056d4c93f58">   15</a></span>&#160;    T <a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html#aff780cb9447400a324d7b056d4c93f58">value</a>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html#a80a111c74cb8ca71a26762fee5c4e37f">   17</a></span>&#160;    [[nodiscard]] constexpr T *<a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html#a80a111c74cb8ca71a26762fee5c4e37f">operator-&gt;</a>( ) &amp;&amp; {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;      <span class="keywordflow">return</span> &amp;<a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html#aff780cb9447400a324d7b056d4c93f58">value</a>;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    }</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  };</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;} <span class="comment">// namespace DAW_JSON_NS::v3_0::json_details</span></div>
+<div class="ttc" id="anamespace_8h_html"><div class="ttname"><a href="namespace_8h.html">namespace.h</a></div></div>
+<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_1_1json__details_html"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a></div><div class="ttdef"><b>Definition:</b> daw_from_json_fwd.h:19</div></div>
+<div class="ttc" id="astruct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy_html"><div class="ttname"><a href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html">DAW_JSON_NS::json_details::arrow_proxy</a></div><div class="ttdef"><b>Definition:</b> daw_json_arrow_proxy.h:14</div></div>
+<div class="ttc" id="astruct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy_html_a80a111c74cb8ca71a26762fee5c4e37f"><div class="ttname"><a href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html#a80a111c74cb8ca71a26762fee5c4e37f">DAW_JSON_NS::json_details::arrow_proxy::operator-&gt;</a></div><div class="ttdeci">constexpr T * operator-&gt;() &amp;&amp;</div><div class="ttdef"><b>Definition:</b> daw_json_arrow_proxy.h:17</div></div>
+<div class="ttc" id="astruct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy_html_aff780cb9447400a324d7b056d4c93f58"><div class="ttname"><a href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1arrow__proxy.html#aff780cb9447400a324d7b056d4c93f58">DAW_JSON_NS::json_details::arrow_proxy::value</a></div><div class="ttdeci">T value</div><div class="ttdef"><b>Definition:</b> daw_json_arrow_proxy.h:15</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

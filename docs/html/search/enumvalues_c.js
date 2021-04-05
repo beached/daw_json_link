@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['variant_861',['Variant',['../namespacedaw_1_1json.html#ad0cefd9ac573603f55cf5c61155e7f1ca492f18b60811bf85ce118c0c6a1a5c4a',1,'daw::json']]],
-  ['varianttagged_862',['VariantTagged',['../namespacedaw_1_1json.html#ad0cefd9ac573603f55cf5c61155e7f1caf8ec5b3ca7f383932bb2c0ef894a9734',1,'daw::json']]]
+  ['variant_1475',['Variant',['../namespace_d_a_w___j_s_o_n___n_s.html#a5460e0976e019ae27df797d0e8ab1b12a492f18b60811bf85ce118c0c6a1a5c4a',1,'DAW_JSON_NS']]],
+  ['varianttagged_1476',['VariantTagged',['../namespace_d_a_w___j_s_o_n___n_s.html#a5460e0976e019ae27df797d0e8ab1b12af8ec5b3ca7f383932bb2c0ef894a9734',1,'DAW_JSON_NS']]]
 ];
