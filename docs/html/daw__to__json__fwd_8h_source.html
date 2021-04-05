@@ -81,45 +81,48 @@ $(function() {
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__link__types__fwd_8h.html">impl/daw_json_link_types_fwd.h</a>&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="namespace_8h.html">impl/namespace.h</a>&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">impl/version.h</a>&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a> {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Value,</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;           <span class="keyword">typename</span> JsonClass =</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;             <span class="keyword">typename</span> json_details::unnamed_default_type_mapping&lt;Value&gt;,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;           <span class="keyword">typename</span> OutputIterator&gt;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  [[maybe_unused]] constexpr OutputIterator <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a62c67a96c949d7dae7bcd9ebb74b4dd5">to_json</a>( Value <span class="keyword">const</span> &amp;value,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                                                     OutputIterator out_it );</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result = std::string, <span class="keyword">typename</span> Value,</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;           <span class="keyword">typename</span> JsonClass =</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;             <span class="keyword">typename</span> json_details::unnamed_default_type_mapping&lt;Value&gt;&gt;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  [[maybe_unused, nodiscard]] constexpr Result <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a62c67a96c949d7dae7bcd9ebb74b4dd5">to_json</a>( Value <span class="keyword">const</span> &amp;value );</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keyword">namespace </span>json_details {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">    /***</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">     * Tag type to indicate that the element of a Container is not being</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">     * specified.  This is the default.</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1auto__detect__array__element.html">   50</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1auto__detect__array__element.html">auto_detect_array_element</a> {};</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonElement = <a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1auto__detect__array__element.html">json_details::auto_detect_array_element</a>,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;           <span class="keyword">typename</span> Container, <span class="keyword">typename</span> OutputIterator&gt;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  [[maybe_unused]] constexpr OutputIterator</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a14d5227d6613993bcf7947a06f093a30">to_json_array</a>( Container <span class="keyword">const</span> &amp;c, OutputIterator out_it );</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result = std::string,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;           <span class="keyword">typename</span> JsonElement = <a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1auto__detect__array__element.html">json_details::auto_detect_array_element</a>,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;           <span class="keyword">typename</span> Container&gt;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  [[maybe_unused, nodiscard]] constexpr Result <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a14d5227d6613993bcf7947a06f093a30">to_json_array</a>( Container &amp;&amp;c );</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;} <span class="comment">// namespace DAW_JSON_NS</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Value,</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;             <span class="keyword">typename</span> JsonClass =</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;               <span class="keyword">typename</span> json_details::unnamed_default_type_mapping&lt;Value&gt;,</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;             <span class="keyword">typename</span> OutputIterator&gt;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    [[maybe_unused]] constexpr OutputIterator <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a3ab6b09777eb76d887bcc879d60f1d9d">to_json</a>( Value <span class="keyword">const</span> &amp;value,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                                                       OutputIterator out_it );</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result = std::string, <span class="keyword">typename</span> Value,</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;             <span class="keyword">typename</span> JsonClass =</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;               <span class="keyword">typename</span> json_details::unnamed_default_type_mapping&lt;Value&gt;&gt;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    [[maybe_unused, nodiscard]] constexpr Result <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a3ab6b09777eb76d887bcc879d60f1d9d">to_json</a>( Value <span class="keyword">const</span> &amp;value );</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">namespace </span>json_details {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">      /***</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">       * Tag type to indicate that the element of a Container is not being</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">       * specified.  This is the default.</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">       */</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1auto__detect__array__element.html">   51</a></span>&#160;      <span class="keyword">struct </span><a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1auto__detect__array__element.html">auto_detect_array_element</a> {};</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonElement = <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1auto__detect__array__element.html">json_details::auto_detect_array_element</a>,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;             <span class="keyword">typename</span> Container, <span class="keyword">typename</span> OutputIterator&gt;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    [[maybe_unused]] constexpr OutputIterator</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ac96b99fd1ec61cde8394e4c2bc9467cd">to_json_array</a>( Container <span class="keyword">const</span> &amp;c, OutputIterator out_it );</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result = std::string,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;             <span class="keyword">typename</span> JsonElement = <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1auto__detect__array__element.html">json_details::auto_detect_array_element</a>,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;             <span class="keyword">typename</span> Container&gt;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    [[maybe_unused, nodiscard]] constexpr Result <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ac96b99fd1ec61cde8394e4c2bc9467cd">to_json_array</a>( Container &amp;&amp;c );</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__link__types__fwd_8h_html"><div class="ttname"><a href="daw__json__link__types__fwd_8h.html">daw_json_link_types_fwd.h</a></div></div>
-<div class="ttc" id="anamespace_8h_html"><div class="ttname"><a href="namespace_8h.html">namespace.h</a></div></div>
-<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_html"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a></div><div class="ttdef"><b>Definition:</b> daw_from_json.h:22</div></div>
-<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_html_a14d5227d6613993bcf7947a06f093a30"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s.html#a14d5227d6613993bcf7947a06f093a30">DAW_JSON_NS::to_json_array</a></div><div class="ttdeci">constexpr OutputIterator to_json_array(Container const &amp;c, OutputIterator out_it)</div><div class="ttdef"><b>Definition:</b> daw_to_json.h:44</div></div>
-<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_html_a62c67a96c949d7dae7bcd9ebb74b4dd5"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s.html#a62c67a96c949d7dae7bcd9ebb74b4dd5">DAW_JSON_NS::to_json</a></div><div class="ttdeci">constexpr OutputIterator to_json(Value const &amp;value, OutputIterator out_it)</div><div class="ttdef"><b>Definition:</b> daw_to_json.h:25</div></div>
-<div class="ttc" id="astruct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1auto__detect__array__element_html"><div class="ttname"><a href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1auto__detect__array__element.html">DAW_JSON_NS::json_details::auto_detect_array_element</a></div><div class="ttdef"><b>Definition:</b> daw_to_json_fwd.h:50</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_a3ab6b09777eb76d887bcc879d60f1d9d"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a3ab6b09777eb76d887bcc879d60f1d9d">daw::json::DAW_JSON_VER::to_json</a></div><div class="ttdeci">constexpr OutputIterator to_json(Value const &amp;value, OutputIterator out_it)</div><div class="ttdef"><b>Definition:</b> daw_to_json.h:26</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_ac96b99fd1ec61cde8394e4c2bc9467cd"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ac96b99fd1ec61cde8394e4c2bc9467cd">daw::json::DAW_JSON_VER::to_json_array</a></div><div class="ttdeci">constexpr OutputIterator to_json_array(Container const &amp;c, OutputIterator out_it)</div><div class="ttdef"><b>Definition:</b> daw_to_json.h:45</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> daw_from_json.h:22</div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1auto__detect__array__element_html"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1auto__detect__array__element.html">daw::json::DAW_JSON_VER::json_details::auto_detect_array_element</a></div><div class="ttdef"><b>Definition:</b> daw_to_json_fwd.h:51</div></div>
+<div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
+<div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdef"><b>Definition:</b> version.h:11</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

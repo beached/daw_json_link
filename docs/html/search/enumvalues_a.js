@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['signed_1470',['Signed',['../namespace_d_a_w___j_s_o_n___n_s.html#a5460e0976e019ae27df797d0e8ab1b12a71fed0c3428bf1a2e19af257c4bac379',1,'DAW_JSON_NS']]],
-  ['skipclassarray_1471',['SkipClassArray',['../namespace_d_a_w___j_s_o_n___n_s.html#aeb9cd117a7485484575303f03acf28f3a97023526d8aa6eee029b42ad1af1f728',1,'DAW_JSON_NS']]],
-  ['string_1472',['String',['../namespace_d_a_w___j_s_o_n___n_s.html#aa9b3e81b32201cb7553b9f3440ce6499a27118326006d3829667a400ad23d5d98',1,'DAW_JSON_NS::String()'],['../namespace_d_a_w___j_s_o_n___n_s.html#a1232f60965ebb8b69b5efbe02746ffa6a27118326006d3829667a400ad23d5d98',1,'DAW_JSON_NS::String()']]],
-  ['stringescaped_1473',['StringEscaped',['../namespace_d_a_w___j_s_o_n___n_s.html#a5460e0976e019ae27df797d0e8ab1b12ac124770da9b704dd86d8a718d65ce5a0',1,'DAW_JSON_NS']]],
-  ['stringraw_1474',['StringRaw',['../namespace_d_a_w___j_s_o_n___n_s.html#a5460e0976e019ae27df797d0e8ab1b12a24c54e7d8bd90a9515ab55db3896dc23',1,'DAW_JSON_NS']]]
+  ['signed_1460',['Signed',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a71fed0c3428bf1a2e19af257c4bac379',1,'daw::json::DAW_JSON_VER']]],
+  ['skipclassarray_1461',['SkipClassArray',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ac935c0b334d58134ae52eecd9eef0426ad1295af952ba4f9a93c3a9b6584c02a6',1,'daw::json::SkipClassArray()'],['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ac935c0b334d58134ae52eecd9eef0426ad1295af952ba4f9a93c3a9b6584c02a6',1,'daw::json::DAW_JSON_VER::SkipClassArray()']]],
+  ['string_1462',['String',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487a27118326006d3829667a400ad23d5d98',1,'daw::json::DAW_JSON_VER::String()'],['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ade673bffb256d9fec110219127313254a27118326006d3829667a400ad23d5d98',1,'daw::json::DAW_JSON_VER::String()']]],
+  ['stringescaped_1463',['StringEscaped',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119ac124770da9b704dd86d8a718d65ce5a0',1,'daw::json::DAW_JSON_VER']]],
+  ['stringraw_1464',['StringRaw',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a24c54e7d8bd90a9515ab55db3896dc23',1,'daw::json::DAW_JSON_VER']]]
 ];

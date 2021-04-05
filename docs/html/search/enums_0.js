@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['allowescapecharacter_1436',['AllowEscapeCharacter',['../namespace_d_a_w___j_s_o_n___n_s.html#ad9e41fb99a90e6335834c0a8ea775300',1,'DAW_JSON_NS']]]
+  ['allowescapecharacter_1426',['AllowEscapeCharacter',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a0843d3c2e3ff42e6fa6a576f92c6e185',1,'daw::json::AllowEscapeCharacter()'],['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a0843d3c2e3ff42e6fa6a576f92c6e185',1,'daw::json::DAW_JSON_VER::AllowEscapeCharacter()']]]
 ];

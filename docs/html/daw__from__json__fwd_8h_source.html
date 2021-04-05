@@ -83,125 +83,126 @@ $(function() {
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__link__types__fwd_8h.html">impl/daw_json_link_types_fwd.h</a>&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__parse__policy_8h.html">impl/daw_json_parse_policy.h</a>&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="daw__json__traits_8h.html">impl/daw_json_traits.h</a>&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="namespace_8h.html">impl/namespace.h</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="version_8h.html">impl/version.h</a>&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;string_view&gt;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a> {</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">   19</a></span>&#160;  <span class="keyword">namespace </span>json_details {}</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;           <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#aa47311996d5e63060107c33298415ffc">NoCommentSkippingPolicyChecked</a>,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;           <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;           <span class="keyword">typename</span> Result = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a8015c0632bef7e1ed9022975d115741a">json_details::from_json_result_t&lt;JsonMember&gt;</a>&gt;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  [[maybe_unused, nodiscard]] constexpr Result</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a7e53d4520f436e4ba9ca782ecff14965">from_json</a>( std::string_view json_data );</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;             <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a174b50a340af5676c9acd97d4d2e7a21">NoCommentSkippingPolicyChecked</a>,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;             <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;             <span class="keyword">typename</span> Result = json_details::from_json_result_t&lt;JsonMember&gt;&gt;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    [[maybe_unused, nodiscard]] constexpr Result</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a8a010a797798db03e48243a8f208e296">from_json</a>( std::string_view json_data );</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;           <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#aa47311996d5e63060107c33298415ffc">NoCommentSkippingPolicyChecked</a>,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;           <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;           <span class="keyword">typename</span> Result = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a8015c0632bef7e1ed9022975d115741a">json_details::from_json_result_t&lt;JsonMember&gt;</a>,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;           <span class="keyword">typename</span> Allocator&gt;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  [[maybe_unused, nodiscard]] constexpr Result</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a149192ccdfd86e1594fb552014aa0a6a">from_json_alloc</a>( std::string_view json_data, Allocator <span class="keyword">const</span> &amp;alloc );</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;             <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a174b50a340af5676c9acd97d4d2e7a21">NoCommentSkippingPolicyChecked</a>,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;             <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;             <span class="keyword">typename</span> Result = json_details::from_json_result_t&lt;JsonMember&gt;,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;             <span class="keyword">typename</span> Allocator&gt;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    [[maybe_unused, nodiscard]] constexpr Result</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9a1dcccf87d4319d0fc56acf6a255e9b">from_json_alloc</a>( std::string_view json_data, Allocator <span class="keyword">const</span> &amp;alloc );</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">  /***</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">   * Parse a JSONMember from the json_data starting at member_path.</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">   * @tparam JsonMember The type of the item being parsed</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">   * @param json_data JSON string data</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">   * @param member_path A dot separated path of member names, default is the</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">   * root.  Array indices are specified with square brackets e.g. [5] is the 6th</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">   * item</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">   * @tparam KnownBounds The bounds of the json_data are known to contain the</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">   * whole value</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">   * @return A value reified from the JSON data member</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">   * @throws daw::json::json_exception</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">   */</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;           <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#aa47311996d5e63060107c33298415ffc">NoCommentSkippingPolicyChecked</a>,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;           <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;           <span class="keyword">typename</span> Result = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a8015c0632bef7e1ed9022975d115741a">json_details::from_json_result_t&lt;JsonMember&gt;</a>&gt;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  [[maybe_unused, nodiscard]] constexpr Result</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a7e53d4520f436e4ba9ca782ecff14965">from_json</a>( std::string_view json_data, std::string_view member_path );</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">     * Parse a JSONMember from the json_data starting at member_path.</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">     * @tparam JsonMember The type of the item being parsed</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">     * @param json_data JSON string data</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">     * @param member_path A dot separated path of member names, default is the</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">     * root.  Array indices are specified with square brackets e.g. [5] is the</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">     * 6th item</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">     * @tparam KnownBounds The bounds of the json_data are known to contain the</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">     * whole value</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">     * @return A value reified from the JSON data member</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">     * @throws daw::json::json_exception</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;             <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a174b50a340af5676c9acd97d4d2e7a21">NoCommentSkippingPolicyChecked</a>,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;             <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;             <span class="keyword">typename</span> Result = json_details::from_json_result_t&lt;JsonMember&gt;&gt;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    [[maybe_unused, nodiscard]] constexpr Result</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a8a010a797798db03e48243a8f208e296">from_json</a>( std::string_view json_data, std::string_view member_path );</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">  /***</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">   * Parse a JSONMember from the json_data starting at member_path.</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">   * @tparam JsonMember The type of the item being parsed</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">   * @param json_data JSON string data</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">   * @param member_path A dot separated path of member names, default is the</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">   * root.  Array indices are specified with square brackets e.g. [5] is the 6th</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">   * item</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">   * @tparam KnownBounds The bounds of the json_data are known to contain the</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">   * whole value</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">   * @return A value reified from the JSON data member</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">   * @throws daw::json::json_exception</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">   */</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;           <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#aa47311996d5e63060107c33298415ffc">NoCommentSkippingPolicyChecked</a>,</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;           <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;           <span class="keyword">typename</span> Result = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a8015c0632bef7e1ed9022975d115741a">json_details::from_json_result_t&lt;JsonMember&gt;</a>,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;           <span class="keyword">typename</span> Allocator&gt;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  [[maybe_unused, nodiscard]] constexpr Result</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a149192ccdfd86e1594fb552014aa0a6a">from_json_alloc</a>( std::string_view json_data, std::string_view member_path,</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                   Allocator <span class="keyword">const</span> &amp;alloc );</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">     * Parse a JSONMember from the json_data starting at member_path.</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">     * @tparam JsonMember The type of the item being parsed</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">     * @param json_data JSON string data</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">     * @param member_path A dot separated path of member names, default is the</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">     * root.  Array indices are specified with square brackets e.g. [5] is the</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">     * 6th item</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">     * @tparam KnownBounds The bounds of the json_data are known to contain the</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">     * whole value</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">     * @return A value reified from the JSON data member</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">     * @throws daw::json::json_exception</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;             <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a174b50a340af5676c9acd97d4d2e7a21">NoCommentSkippingPolicyChecked</a>,</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;             <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;             <span class="keyword">typename</span> Result = json_details::from_json_result_t&lt;JsonMember&gt;,</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;             <span class="keyword">typename</span> Allocator&gt;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    [[maybe_unused, nodiscard]] constexpr Result</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9a1dcccf87d4319d0fc56acf6a255e9b">from_json_alloc</a>( std::string_view json_data, std::string_view member_path,</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                     Allocator <span class="keyword">const</span> &amp;alloc );</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">  /***</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">   * Parse a value from a json_value</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">   * @tparam JsonMember The type of the item being parsed</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment">   * @param value JSON data, see basic_json_value</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">   * @tparam KnownBounds The bounds of the json_data are known to contain the</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment">   * whole value</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">   * @return A value reified from the JSON data member</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment">   * @throws daw::json::json_exception</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment">   */</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;           <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#aa47311996d5e63060107c33298415ffc">NoCommentSkippingPolicyChecked</a>,</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;           <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;           <span class="keyword">typename</span> Result = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a8015c0632bef7e1ed9022975d115741a">json_details::from_json_result_t&lt;JsonMember&gt;</a>,</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;           <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  [[maybe_unused, nodiscard]] <span class="keyword">inline</span> constexpr Result</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a7e53d4520f436e4ba9ca782ecff14965">from_json</a>( <a class="code" href="class_d_a_w___j_s_o_n___n_s_1_1basic__json__value.html">basic_json_value&lt;ParseState&gt;</a> value );</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">     * Parse a value from a json_value</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">     * @tparam JsonMember The type of the item being parsed</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment">     * @param value JSON data, see basic_json_value</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">     * @tparam KnownBounds The bounds of the json_data are known to contain the</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment">     * whole value</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">     * @return A value reified from the JSON data member</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment">     * @throws daw::json::json_exception</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;             <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a174b50a340af5676c9acd97d4d2e7a21">NoCommentSkippingPolicyChecked</a>,</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;             <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;             <span class="keyword">typename</span> Result = json_details::from_json_result_t&lt;JsonMember&gt;,</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;             <span class="keyword">typename</span> ParseState&gt;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    [[maybe_unused, nodiscard]] <span class="keyword">inline</span> constexpr Result</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a8a010a797798db03e48243a8f208e296">from_json</a>( basic_json_value&lt;ParseState&gt; value );</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160; </div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment">  /***</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="comment">   * Parse a JSONMember from the json_data starting at member_path.</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment">   * @param value JSON data, see basic_json_value</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="comment">   * @param member_path A dot separated path of member names, default is the</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment">   * root.  Array indices are specified with square brackets e.g. [5] is the 6th</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="comment">   * item</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="comment">   * @tparam JsonMember The type of the item being parsed</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="comment">   * @tparam KnownBounds The bounds of the json_data are known to contain the</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment">   * whole value</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment">   * @return A value reified from the JSON data member</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="comment">   * @throws daw::json::json_exception</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment">   */</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;           <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#aa47311996d5e63060107c33298415ffc">NoCommentSkippingPolicyChecked</a>,</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;           <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;           <span class="keyword">typename</span> Result = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a8015c0632bef7e1ed9022975d115741a">json_details::from_json_result_t&lt;JsonMember&gt;</a>,</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;           <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  [[maybe_unused, nodiscard]] constexpr Result</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a7e53d4520f436e4ba9ca782ecff14965">from_json</a>( <a class="code" href="class_d_a_w___j_s_o_n___n_s_1_1basic__json__value.html">basic_json_value&lt;ParseState&gt;</a> value, std::string_view member_path );</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonElement,</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;           <span class="keyword">typename</span> Container =</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;             std::vector&lt;json_details::from_json_result_t&lt;JsonElement&gt;&gt;,</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;           <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#aa47311996d5e63060107c33298415ffc">NoCommentSkippingPolicyChecked</a>,</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;           <span class="keyword">typename</span> Constructor = daw::construct_a_t&lt;Container&gt;,</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;           <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>&gt;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  [[maybe_unused, nodiscard]] constexpr Container</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#a8b20a96bb1c1f7ae81ce33e092ec6909">from_json_array</a>( std::string_view json_data,</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;                   std::string_view member_path = <span class="stringliteral">&quot;&quot;</span> );</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;} <span class="comment">// namespace DAW_JSON_NS</span></div>
-<div class="ttc" id="aclass_d_a_w___j_s_o_n___n_s_1_1basic__json__value_html"><div class="ttname"><a href="class_d_a_w___j_s_o_n___n_s_1_1basic__json__value.html">DAW_JSON_NS::basic_json_value</a></div><div class="ttdef"><b>Definition:</b> daw_json_value.h:306</div></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment">    /***</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="comment">     * Parse a JSONMember from the json_data starting at member_path.</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment">     * @param value JSON data, see basic_json_value</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="comment">     * @param member_path A dot separated path of member names, default is the</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment">     * root.  Array indices are specified with square brackets e.g. [5] is the</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="comment">     * 6th item</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="comment">     * @tparam JsonMember The type of the item being parsed</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="comment">     * @tparam KnownBounds The bounds of the json_data are known to contain the</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment">     * whole value</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment">     * @return A value reified from the JSON data member</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="comment">     * @throws daw::json::json_exception</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonMember,</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;             <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a174b50a340af5676c9acd97d4d2e7a21">NoCommentSkippingPolicyChecked</a>,</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;             <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>,</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;             <span class="keyword">typename</span> Result = json_details::from_json_result_t&lt;JsonMember&gt;,</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;             <span class="keyword">typename</span> ParseState&gt;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    [[maybe_unused, nodiscard]] constexpr Result</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a8a010a797798db03e48243a8f208e296">from_json</a>( basic_json_value&lt;ParseState&gt; value,</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;               std::string_view member_path );</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonElement,</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;             <span class="keyword">typename</span> Container =</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;               std::vector&lt;json_details::from_json_result_t&lt;JsonElement&gt;&gt;,</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;             <span class="keyword">typename</span> ParsePolicy = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a174b50a340af5676c9acd97d4d2e7a21">NoCommentSkippingPolicyChecked</a>,</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;             <span class="keyword">typename</span> Constructor = daw::construct_a_t&lt;Container&gt;,</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;             <span class="keywordtype">bool</span> KnownBounds = <span class="keyword">false</span>&gt;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    [[maybe_unused, nodiscard]] constexpr Container</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a70c952f969aba53dcda1c939b340e337">from_json_array</a>( std::string_view json_data,</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;                     std::string_view member_path = <span class="stringliteral">&quot;&quot;</span> );</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__link__types__fwd_8h_html"><div class="ttname"><a href="daw__json__link__types__fwd_8h.html">daw_json_link_types_fwd.h</a></div></div>
 <div class="ttc" id="adaw__json__parse__policy_8h_html"><div class="ttname"><a href="daw__json__parse__policy_8h.html">daw_json_parse_policy.h</a></div></div>
 <div class="ttc" id="adaw__json__traits_8h_html"><div class="ttname"><a href="daw__json__traits_8h.html">daw_json_traits.h</a></div></div>
-<div class="ttc" id="anamespace_8h_html"><div class="ttname"><a href="namespace_8h.html">namespace.h</a></div></div>
-<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_1_1json__details_html_a8015c0632bef7e1ed9022975d115741a"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a8015c0632bef7e1ed9022975d115741a">DAW_JSON_NS::json_details::from_json_result_t</a></div><div class="ttdeci">json_result&lt; unnamed_default_type_mapping&lt; JsonMember &gt; &gt; from_json_result_t</div><div class="ttdef"><b>Definition:</b> daw_json_parse_common.h:577</div></div>
-<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_html"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a></div><div class="ttdef"><b>Definition:</b> daw_from_json.h:22</div></div>
-<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_html_a149192ccdfd86e1594fb552014aa0a6a"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s.html#a149192ccdfd86e1594fb552014aa0a6a">DAW_JSON_NS::from_json_alloc</a></div><div class="ttdeci">constexpr Result from_json_alloc(std::string_view json_data, Allocator const &amp;alloc)</div><div class="ttdef"><b>Definition:</b> daw_from_json.h:74</div></div>
-<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_html_a7e53d4520f436e4ba9ca782ecff14965"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s.html#a7e53d4520f436e4ba9ca782ecff14965">DAW_JSON_NS::from_json</a></div><div class="ttdeci">constexpr Result from_json(std::string_view json_data)</div><div class="ttdef"><b>Definition:</b> daw_from_json.h:36</div></div>
-<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_html_a8b20a96bb1c1f7ae81ce33e092ec6909"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s.html#a8b20a96bb1c1f7ae81ce33e092ec6909">DAW_JSON_NS::from_json_array</a></div><div class="ttdeci">constexpr Container from_json_array(std::string_view json_data, std::string_view member_path)</div><div class="ttdef"><b>Definition:</b> daw_from_json.h:280</div></div>
-<div class="ttc" id="anamespace_d_a_w___j_s_o_n___n_s_html_aa47311996d5e63060107c33298415ffc"><div class="ttname"><a href="namespace_d_a_w___j_s_o_n___n_s.html#aa47311996d5e63060107c33298415ffc">DAW_JSON_NS::NoCommentSkippingPolicyChecked</a></div><div class="ttdeci">BasicParsePolicy&lt; false, NoCommentSkippingPolicy, default_exec_tag, false &gt; NoCommentSkippingPolicyChecked</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy.h:459</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_a174b50a340af5676c9acd97d4d2e7a21"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a174b50a340af5676c9acd97d4d2e7a21">daw::json::DAW_JSON_VER::NoCommentSkippingPolicyChecked</a></div><div class="ttdeci">BasicParsePolicy&lt; false, NoCommentSkippingPolicy, default_exec_tag, false &gt; NoCommentSkippingPolicyChecked</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy.h:461</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_a70c952f969aba53dcda1c939b340e337"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a70c952f969aba53dcda1c939b340e337">daw::json::DAW_JSON_VER::from_json_array</a></div><div class="ttdeci">constexpr Container from_json_array(std::string_view json_data, std::string_view member_path)</div><div class="ttdef"><b>Definition:</b> daw_from_json.h:293</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_a8a010a797798db03e48243a8f208e296"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a8a010a797798db03e48243a8f208e296">daw::json::DAW_JSON_VER::from_json</a></div><div class="ttdeci">constexpr Result from_json(std::string_view json_data)</div><div class="ttdef"><b>Definition:</b> daw_from_json.h:37</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_a9a1dcccf87d4319d0fc56acf6a255e9b"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9a1dcccf87d4319d0fc56acf6a255e9b">daw::json::DAW_JSON_VER::from_json_alloc</a></div><div class="ttdeci">constexpr Result from_json_alloc(std::string_view json_data, Allocator const &amp;alloc)</div><div class="ttdef"><b>Definition:</b> daw_from_json.h:76</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> daw_from_json.h:22</div></div>
+<div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
+<div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdef"><b>Definition:</b> version.h:11</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

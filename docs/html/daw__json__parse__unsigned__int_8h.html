@@ -76,7 +76,7 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__digit_8h_source.html">daw_json_parse_digit.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="namespace_8h_source.html">namespace.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_arith_traits.h&gt;</code><br />
 <code>#include &lt;daw/daw_cxmath.h&gt;</code><br />
 <code>#include &lt;daw/daw_uint_buffer.h&gt;</code><br />
@@ -89,28 +89,32 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s.html">DAW_JSON_NS</a></td></tr>
+<tr class="memitem:namespacedaw"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw.html">daw</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespace_d_a_w___j_s_o_n___n_s_1_1json__details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html">DAW_JSON_NS::json_details</a></td></tr>
+<tr class="memitem:namespacedaw_1_1json"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html">daw::json</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html">daw::json::DAW_JSON_VER</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html">daw::json::DAW_JSON_VER::json_details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a921c6036241e65b731a2dbc63f508559"><td class="memTemplParams" colspan="2">template&lt;JsonRangeCheck RangeCheck, typename Unsigned , typename MaxArithUnsigned &gt; </td></tr>
-<tr class="memitem:a921c6036241e65b731a2dbc63f508559"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a921c6036241e65b731a2dbc63f508559">DAW_JSON_NS::json_details::max_unsigned_t</a> = std::conditional_t&lt;(daw::is_integral_v&lt; Unsigned &gt; or std::is_enum_v&lt; Unsigned &gt;), std::conditional_t&lt;(sizeof(Unsigned) &gt; sizeof(MaxArithUnsigned)), Unsigned, MaxArithUnsigned &gt;, Unsigned &gt;</td></tr>
-<tr class="separator:a921c6036241e65b731a2dbc63f508559"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ecebd6f1ddfae1f7007f58fb658be7c"><td class="memTemplParams" colspan="2">template&lt;JsonRangeCheck RangeCheck, typename Unsigned , typename MaxArithUnsigned &gt; </td></tr>
+<tr class="memitem:a7ecebd6f1ddfae1f7007f58fb658be7c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7ecebd6f1ddfae1f7007f58fb658be7c">daw::json::DAW_JSON_VER::json_details::max_unsigned_t</a> = std::conditional_t&lt;(daw::is_integral_v&lt; Unsigned &gt; or std::is_enum_v&lt; Unsigned &gt;), std::conditional_t&lt;(sizeof(Unsigned) &gt; sizeof(MaxArithUnsigned)), Unsigned, MaxArithUnsigned &gt;, Unsigned &gt;</td></tr>
+<tr class="separator:a7ecebd6f1ddfae1f7007f58fb658be7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a855bf38a2f7b06cda6e381749942d6fa"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a855bf38a2f7b06cda6e381749942d6fa">DAW_JSON_NS::json_details::is_made_of_eight_digits_cx</a> (const char *ptr)</td></tr>
-<tr class="separator:a855bf38a2f7b06cda6e381749942d6fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acdb50cc1d9d2dfc1d59f96313ccca4ec"><td class="memItemLeft" align="right" valign="top">constexpr UInt64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#acdb50cc1d9d2dfc1d59f96313ccca4ec">DAW_JSON_NS::json_details::parse_16_digits</a> (const char *const str)</td></tr>
-<tr class="separator:acdb50cc1d9d2dfc1d59f96313ccca4ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71debf4b6ff514b5178a23da22c9cbc3"><td class="memItemLeft" align="right" valign="top">constexpr UInt64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a71debf4b6ff514b5178a23da22c9cbc3">DAW_JSON_NS::json_details::parse_8_digits</a> (const char *const str)</td></tr>
-<tr class="separator:a71debf4b6ff514b5178a23da22c9cbc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a16438a38298ebea95900b13c71de93"><td class="memTemplParams" colspan="2">template&lt;typename Unsigned , JsonRangeCheck RangeChecked, bool KnownBounds, typename ParseState , std::enable_if_t&lt; KnownBounds, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
-<tr class="memitem:a4a16438a38298ebea95900b13c71de93"><td class="memTemplItemLeft" align="right" valign="top">static constexpr Unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a4a16438a38298ebea95900b13c71de93">DAW_JSON_NS::json_details::unsigned_parser</a> (constexpr_exec_tag, ParseState &amp;parse_state)</td></tr>
-<tr class="separator:a4a16438a38298ebea95900b13c71de93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab27fc96a11a26f6147bf9a3dccf7af45"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ab27fc96a11a26f6147bf9a3dccf7af45">daw::json::DAW_JSON_VER::json_details::is_made_of_eight_digits_cx</a> (const char *ptr)</td></tr>
+<tr class="separator:ab27fc96a11a26f6147bf9a3dccf7af45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a806012ba57ba86cdc70db69a11f7801d"><td class="memItemLeft" align="right" valign="top">constexpr UInt64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a806012ba57ba86cdc70db69a11f7801d">daw::json::DAW_JSON_VER::json_details::parse_16_digits</a> (const char *const str)</td></tr>
+<tr class="separator:a806012ba57ba86cdc70db69a11f7801d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5907048132a4e7342e3558ecb8d8710f"><td class="memItemLeft" align="right" valign="top">constexpr UInt64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a5907048132a4e7342e3558ecb8d8710f">daw::json::DAW_JSON_VER::json_details::parse_8_digits</a> (const char *const str)</td></tr>
+<tr class="separator:a5907048132a4e7342e3558ecb8d8710f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a009de94b987dba1a6fd436774c4aae20"><td class="memTemplParams" colspan="2">template&lt;typename Unsigned , JsonRangeCheck RangeChecked, bool KnownBounds, typename ParseState , std::enable_if_t&lt; KnownBounds, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
+<tr class="memitem:a009de94b987dba1a6fd436774c4aae20"><td class="memTemplItemLeft" align="right" valign="top">static constexpr Unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a009de94b987dba1a6fd436774c4aae20">daw::json::DAW_JSON_VER::json_details::unsigned_parser</a> (constexpr_exec_tag, ParseState &amp;parse_state)</td></tr>
+<tr class="separator:a009de94b987dba1a6fd436774c4aae20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

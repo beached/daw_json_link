@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['u32toc_1169',['u32toC',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#afd2ecb6b66695e7e4649cc819bf9c682',1,'DAW_JSON_NS::json_details']]],
-  ['uneval_5ffunc_1170',['uneval_func',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#afe2735ec86374347c6b50e7dd6b614e5',1,'DAW_JSON_NS::json_details']]],
-  ['unsigned_5fparser_1171',['unsigned_parser',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a4a16438a38298ebea95900b13c71de93',1,'DAW_JSON_NS::json_details']]],
-  ['utf32_5fto_5futf8_1172',['utf32_to_utf8',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a0cc465ffd37f3aed8f9bc880a5c9139c',1,'DAW_JSON_NS::json_details']]]
+  ['u32toc_1160',['u32toC',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aeaf791a78f89b28b5e69d863812019ab',1,'daw::json::DAW_JSON_VER::json_details']]],
+  ['uneval_5ffunc_1161',['uneval_func',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3fcfb13d7daa5deed09c96ba9bf575f3',1,'daw::json::DAW_JSON_VER::json_details']]],
+  ['unsigned_5fparser_1162',['unsigned_parser',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a009de94b987dba1a6fd436774c4aae20',1,'daw::json::DAW_JSON_VER::json_details']]],
+  ['utf32_5fto_5futf8_1163',['utf32_to_utf8',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a9b57d0b1e672c077465f2005ce5f6207',1,'daw::json::DAW_JSON_VER::json_details']]]
 ];

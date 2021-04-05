@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['json_5fclass_5fconstructor_1256',['json_class_constructor',['../namespace_d_a_w___j_s_o_n___n_s_1_1json__details.html#a90ebdbb226ceb752a678a16a7b208277',1,'DAW_JSON_NS::json_details']]]
+  ['json_5fclass_5fconstructor_1249',['json_class_constructor',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#acbb9db054148c09e59194f82cb285d01',1,'daw::json::DAW_JSON_VER::json_details']]]
 ];
