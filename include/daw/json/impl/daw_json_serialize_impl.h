@@ -7,8 +7,8 @@
 //
 #pragma once
 
-#include "to_daw_json_string.h"
 #include "namespace.h"
+#include "to_daw_json_string.h"
 
 #include <array>
 #include <ciso646>
