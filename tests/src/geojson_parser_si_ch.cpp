@@ -10,7 +10,7 @@
 
 #include <daw/json/daw_from_json.h>
 
-namespace DAW_JSON_NS {
+namespace daw::json {
 	template daw::geojson::Polygon
 	from_json<daw::geojson::Polygon,
 	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>>(
@@ -20,4 +20,4 @@ namespace DAW_JSON_NS {
 	from_json<daw::geojson::Polygon,
 	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>>(
 	  std::string_view json_data );
-} // namespace DAW_JSON_NS
+} // namespace daw::json

@@ -8,10 +8,4 @@
 
 #pragma once
 
-#define DAW_JSON_API_VER v3_0_0
-#define DAW_JSON_NS daw::json::DAW_JSON_API_VER
-
-namespace daw::json {
-	namespace DAW_JSON_API_VER {}
-	using namespace ::DAW_JSON_NS;
-} // namespace daw::json
+#define DAW_JSON_VER v3_0_0

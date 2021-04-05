@@ -42,7 +42,7 @@ namespace apache_builds {
 	};
 } // namespace apache_builds
 
-namespace DAW_JSON_NS {
+namespace daw::json {
 	extern template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
 	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>>(
@@ -102,4 +102,4 @@ namespace DAW_JSON_NS {
 	from_json<apache_builds::apache_builds,
 	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>>(
 	  std::string_view json_data );
-} // namespace DAW_JSON_NS
+} // namespace daw::json

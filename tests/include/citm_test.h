@@ -70,7 +70,7 @@ namespace daw::citm {
 	citm_object_t parse_citm( std::string_view json_doc );
 } // namespace daw::citm
 
-namespace DAW_JSON_NS {
+namespace daw::json {
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
 	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>>(
@@ -130,4 +130,4 @@ namespace DAW_JSON_NS {
 	from_json<daw::citm::citm_object_t,
 	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>>(
 	  std::string_view json_data );
-} // namespace DAW_JSON_NS
+} // namespace daw::json

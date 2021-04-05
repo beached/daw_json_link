@@ -50,7 +50,7 @@ namespace daw::geojson {
 	}; // FeatureCollection
 } // namespace daw::geojson
 
-namespace DAW_JSON_NS {
+namespace daw::json {
 	extern template daw::geojson::Polygon
 	from_json<daw::geojson::Polygon,
 	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>>(
@@ -110,4 +110,4 @@ namespace DAW_JSON_NS {
 	from_json<daw::geojson::Polygon,
 	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>>(
 	  std::string_view json_data );
-} // namespace DAW_JSON_NS
+} // namespace daw::json

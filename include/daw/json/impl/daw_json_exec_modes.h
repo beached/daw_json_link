@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "namespace.h"
+#include "version.h"
 
 #include <string_view>
 
@@ -16,31 +16,33 @@
 #include <version>
 #endif
 
-namespace DAW_JSON_NS {
-	struct constexpr_exec_tag {
-		static constexpr std::string_view name = "constexpr";
+namespace daw::json {
+	inline namespace DAW_JSON_VER {
+		struct constexpr_exec_tag {
+			static constexpr std::string_view name = "constexpr";
 #if defined( __cpp_constexpr_dynamic_alloc ) or \
   defined( DAW_JSON_NO_CONST_EXPR )
-		static constexpr bool always_rvo = true;
+			static constexpr bool always_rvo = true;
 #else
-		static constexpr bool always_rvo = false;
+			static constexpr bool always_rvo = false;
 #endif
-		static constexpr bool can_constexpr = true;
-	};
-	struct runtime_exec_tag : constexpr_exec_tag {
-		static constexpr std::string_view name = "runtime";
-		static constexpr bool always_rvo = true;
-		static constexpr bool can_constexpr = false;
-	};
+			static constexpr bool can_constexpr = true;
+		};
+		struct runtime_exec_tag : constexpr_exec_tag {
+			static constexpr std::string_view name = "runtime";
+			static constexpr bool always_rvo = true;
+			static constexpr bool can_constexpr = false;
+		};
 #if defined( DAW_ALLOW_SSE42 )
-	struct sse42_exec_tag : runtime_exec_tag {
-		static constexpr std::string_view name = "sse4.2";
-		static constexpr bool always_rvo = true;
-		static constexpr bool can_constexpr = false;
-	};
-	using simd_exec_tag = sse42_exec_tag;
+		struct sse42_exec_tag : runtime_exec_tag {
+			static constexpr std::string_view name = "sse4.2";
+			static constexpr bool always_rvo = true;
+			static constexpr bool can_constexpr = false;
+		};
+		using simd_exec_tag = sse42_exec_tag;
 #else
-	using simd_exec_tag = runtime_exec_tag;
+		using simd_exec_tag = runtime_exec_tag;
 #endif
-	using default_exec_tag = constexpr_exec_tag;
-} // namespace DAW_JSON_NS
+		using default_exec_tag = constexpr_exec_tag;
+	} // namespace DAW_JSON_VER
+} // namespace daw::json

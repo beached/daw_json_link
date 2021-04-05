@@ -8,23 +8,28 @@
 
 #pragma once
 
-#include "namespace.h"
+#include "version.h"
 
 #include <daw/daw_hide.h>
 
-namespace DAW_JSON_NS::json_details {
+namespace daw::json {
+	inline namespace DAW_JSON_VER {
+		namespace json_details {
 
-	DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr unsigned
-	parse_digit( char c ) {
-		return static_cast<unsigned>( static_cast<unsigned char>(
-		  static_cast<unsigned char>( c ) - static_cast<unsigned char>( '0' ) ) );
-	}
+			DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr unsigned
+			parse_digit( char c ) {
+				return static_cast<unsigned>(
+				  static_cast<unsigned char>( static_cast<unsigned char>( c ) -
+				                              static_cast<unsigned char>( '0' ) ) );
+			}
 
-	namespace parsed_constants {
-		static inline constexpr unsigned decimal_char = parse_digit( '.' );
-		static inline constexpr unsigned e_char = parse_digit( 'e' );
-		static inline constexpr unsigned E_char = parse_digit( 'E' );
-		static inline constexpr unsigned plus_char = parse_digit( '+' );
-		static inline constexpr unsigned minus_char = parse_digit( '-' );
-	} // namespace parsed_constants
-} // namespace DAW_JSON_NS::json_details
+			namespace parsed_constants {
+				static inline constexpr unsigned decimal_char = parse_digit( '.' );
+				static inline constexpr unsigned e_char = parse_digit( 'e' );
+				static inline constexpr unsigned E_char = parse_digit( 'E' );
+				static inline constexpr unsigned plus_char = parse_digit( '+' );
+				static inline constexpr unsigned minus_char = parse_digit( '-' );
+			} // namespace parsed_constants
+		}   // namespace json_details
+	}     // namespace DAW_JSON_VER
+} // namespace daw::json

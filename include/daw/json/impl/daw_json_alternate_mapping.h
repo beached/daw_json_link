@@ -9,26 +9,27 @@
 #pragma once
 
 #include "daw_json_traits.h"
-#include "namespace.h"
+#include "version.h"
 
-namespace DAW_JSON_NS {
-	/***
-	 * Allows for alternate mappings of types.
-	 * @tparam C Base type to map to
-	 * @tparam Idx alternate mapping index
-	 */
-	template<typename C, std::size_t Idx = 0>
-	struct json_alt {
-		using type = C;
-		static constexpr std::size_t index = Idx;
-	};
+namespace daw::json {
+	inline namespace DAW_JSON_VER {
+		/***
+		 * Allows for alternate mappings of types.
+		 * @tparam C Base type to map to
+		 * @tparam Idx alternate mapping index
+		 */
+		template<typename C, std::size_t Idx = 0>
+		struct json_alt {
+			using type = C;
+			static constexpr std::size_t index = Idx;
+		};
 
-	/***
-	 * Default constructor for json_alt is to construct the base type
-	 * @tparam T base type to construct
-	 * @tparam I index of alternate mapping
-	 */
-	template<typename T, std::size_t I>
-	struct default_constructor<json_alt<T, I>> : default_constructor<T> {};
-
-} // namespace DAW_JSON_NS
+		/***
+		 * Default constructor for json_alt is to construct the base type
+		 * @tparam T base type to construct
+		 * @tparam I index of alternate mapping
+		 */
+		template<typename T, std::size_t I>
+		struct default_constructor<json_alt<T, I>> : default_constructor<T> {};
+	} // namespace DAW_JSON_VER
+} // namespace daw::json

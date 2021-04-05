@@ -8,16 +8,21 @@
 
 #pragma once
 
-#include "namespace.h"
+#include "version.h"
 
 #include <cstddef>
 
-namespace DAW_JSON_NS::json_details {
-	/***
-	 * When skip_string encounters escaping, it will note this as a non-zero value
-	 */
-	template<typename ParseState>
-	constexpr inline bool needs_slow_path( ParseState const &parse_state ) {
-		return static_cast<std::ptrdiff_t>( parse_state.counter ) >= 0;
-	}
-} // namespace DAW_JSON_NS::json_details
+namespace daw::json {
+	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			/***
+			 * When skip_string encounters escaping, it will note this as a non-zero
+			 * value
+			 */
+			template<typename ParseState>
+			constexpr inline bool needs_slow_path( ParseState const &parse_state ) {
+				return static_cast<std::ptrdiff_t>( parse_state.counter ) >= 0;
+			}
+		} // namespace json_details
+	}   // namespace DAW_JSON_VER
+} // namespace daw::json

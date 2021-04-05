@@ -12,7 +12,7 @@
 
 #include <string_view>
 
-namespace DAW_JSON_NS {
+namespace daw::json {
 	template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
 	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>>(
@@ -22,4 +22,4 @@ namespace DAW_JSON_NS {
 	from_json<daw::citm::citm_object_t,
 	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>>(
 	  std::string_view json_data );
-} // namespace DAW_JSON_NS
+} // namespace daw::json

@@ -12,7 +12,7 @@
 #include "daw_json_parse_digit.h"
 #include "daw_json_parse_iso8601_utils.h"
 #include "daw_json_serialize_impl.h"
-#include "namespace.h"
+#include "version.h"
 
 #include <daw/daw_string_view.h>
 #include <daw/daw_utility.h>
@@ -22,59 +22,61 @@
 #include <optional>
 #include <string_view>
 
-namespace DAW_JSON_NS {
-	template<JsonNullable>
-	struct construct_from_iso8601_timestamp;
+namespace daw::json {
+	inline namespace DAW_JSON_VER {
+		template<JsonNullable>
+		struct construct_from_iso8601_timestamp;
 
-	template<>
-	struct construct_from_iso8601_timestamp<JsonNullable::Never> {
-		using result_type = std::chrono::time_point<std::chrono::system_clock,
-		                                            std::chrono::milliseconds>;
+		template<>
+		struct construct_from_iso8601_timestamp<JsonNullable::Never> {
+			using result_type = std::chrono::time_point<std::chrono::system_clock,
+			                                            std::chrono::milliseconds>;
 
-		[[maybe_unused, nodiscard]] inline constexpr result_type
-		operator( )( char const *ptr, std::size_t sz ) const {
-			return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
-		}
-	};
-
-	template<>
-	struct construct_from_iso8601_timestamp<JsonNullable::Nullable> {
-		using result_type =
-		  std::optional<std::chrono::time_point<std::chrono::system_clock,
-		                                        std::chrono::milliseconds>>;
-
-		[[maybe_unused, nodiscard]] inline constexpr result_type
-		operator( )( ) const {
-			return { };
-		}
-
-		[[maybe_unused, nodiscard]] inline constexpr result_type
-		operator( )( char const *ptr, std::size_t sz ) const {
-			return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
-		}
-	};
-
-	template<typename T>
-	struct custom_from_converter_t {
-		[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {
-			if constexpr( std::is_same_v<T, std::string_view> or
-			              std::is_same_v<T, std::optional<std::string_view>> ) {
-				return std::string_view{ };
-			} else {
-				// Use ADL customization point
-				return from_string( daw::tag<T> );
+			[[maybe_unused, nodiscard]] inline constexpr result_type
+			operator( )( char const *ptr, std::size_t sz ) const {
+				return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
 			}
-		}
+		};
 
-		[[nodiscard]] inline constexpr decltype( auto )
-		operator( )( std::string_view sv ) {
-			if constexpr( std::is_same_v<T, std::string_view> or
-			              std::is_same_v<T, std::optional<std::string_view>> ) {
-				return sv;
-			} else {
-				// Use ADL customization point
-				return from_string( daw::tag<T>, sv );
+		template<>
+		struct construct_from_iso8601_timestamp<JsonNullable::Nullable> {
+			using result_type =
+			  std::optional<std::chrono::time_point<std::chrono::system_clock,
+			                                        std::chrono::milliseconds>>;
+
+			[[maybe_unused, nodiscard]] inline constexpr result_type
+			operator( )( ) const {
+				return { };
 			}
-		}
-	};
-} // namespace DAW_JSON_NS
+
+			[[maybe_unused, nodiscard]] inline constexpr result_type
+			operator( )( char const *ptr, std::size_t sz ) const {
+				return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
+			}
+		};
+
+		template<typename T>
+		struct custom_from_converter_t {
+			[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {
+				if constexpr( std::is_same_v<T, std::string_view> or
+				              std::is_same_v<T, std::optional<std::string_view>> ) {
+					return std::string_view{ };
+				} else {
+					// Use ADL customization point
+					return from_string( daw::tag<T> );
+				}
+			}
+
+			[[nodiscard]] inline constexpr decltype( auto )
+			operator( )( std::string_view sv ) {
+				if constexpr( std::is_same_v<T, std::string_view> or
+				              std::is_same_v<T, std::optional<std::string_view>> ) {
+					return sv;
+				} else {
+					// Use ADL customization point
+					return from_string( daw::tag<T>, sv );
+				}
+			}
+		};
+	} // namespace DAW_JSON_VER
+} // namespace daw::json

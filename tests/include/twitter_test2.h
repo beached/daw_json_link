@@ -218,7 +218,7 @@ namespace daw::twitter2 {
 	}; // twitter_object_t
 } // namespace daw::twitter2
 
-namespace DAW_JSON_NS {
+namespace daw::json {
 	extern template daw::twitter2::twitter_object_t
 	from_json<daw::twitter2::twitter_object_t,
 	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>>(
@@ -278,4 +278,4 @@ namespace DAW_JSON_NS {
 	from_json<daw::twitter2::twitter_object_t,
 	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>>(
 	  std::string_view json_data );
-} // namespace DAW_JSON_NS
+} // namespace daw::json

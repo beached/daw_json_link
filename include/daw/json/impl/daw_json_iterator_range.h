@@ -9,8 +9,10 @@
 #pragma once
 
 #include "daw_json_parse_policy.h"
-#include "namespace.h"
+#include "version.h"
 
-namespace DAW_JSON_NS {
-	using DefaultParsePolicy = NoCommentSkippingPolicyChecked;
-}
+namespace daw::json {
+	inline namespace DAW_JSON_VER {
+		using DefaultParsePolicy = NoCommentSkippingPolicyChecked;
+	}
+} // namespace daw::json

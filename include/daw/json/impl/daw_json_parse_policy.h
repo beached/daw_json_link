@@ -16,7 +16,7 @@
 #include "daw_json_parse_policy_no_comments.h"
 #include "daw_json_parse_policy_policy_details.h"
 
-#include "namespace.h"
+#include "version.h"
 #include <daw/cpp_17.h>
 #include <daw/daw_hide.h>
 #include <daw/daw_traits.h>
@@ -27,495 +27,504 @@
 #include <iterator>
 #include <type_traits>
 
-namespace DAW_JSON_NS {
-	/***
-	 * Handles the bounds and policy items for parsing execution and comments.
-	 * @tparam IsUncheckedInput If true, do not perform all validity checks on
-	 * input.  This implies that we can trust the source to be perfect
-	 * @tparam CommentPolicy The policy that handles skipping whitespace where
-	 * comments may or may not be allowed:w
-	 * @tparam ExecMode A Policy type for selecting if we must be constexpr, can
-	 * use C/C++ runtime only methods, or if SIMD intrinsics are allowed
-	 * @tparam AllowEscapedNames Are escapes allowed in member names.  When true,
-	 * the slower string parser is used
-	 */
-	template<bool IsUncheckedInput, typename CommentPolicy, typename ExecMode,
-	         bool AllowEscapedNames,
-	         typename Allocator = json_details::NoAllocator,
-	         bool IsZeroTerminated = false>
-	struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
-		using iterator = char const *;
-		static constexpr bool is_unchecked_input = IsUncheckedInput;
-		using exec_tag_t = ExecMode;
-		static constexpr exec_tag_t exec_tag = exec_tag_t{ };
-		static constexpr bool allow_escaped_names = AllowEscapedNames;
-		static constexpr bool force_name_equal_check = false;
-		static constexpr bool is_zero_terminated_string = IsZeroTerminated;
-		using CharT = char;
+namespace daw::json {
+	inline namespace DAW_JSON_VER {
+		/***
+		 * Handles the bounds and policy items for parsing execution and comments.
+		 * @tparam IsUncheckedInput If true, do not perform all validity checks on
+		 * input.  This implies that we can trust the source to be perfect
+		 * @tparam CommentPolicy The policy that handles skipping whitespace where
+		 * comments may or may not be allowed:w
+		 * @tparam ExecMode A Policy type for selecting if we must be constexpr, can
+		 * use C/C++ runtime only methods, or if SIMD intrinsics are allowed
+		 * @tparam AllowEscapedNames Are escapes allowed in member names.  When
+		 * true, the slower string parser is used
+		 */
+		template<bool IsUncheckedInput, typename CommentPolicy, typename ExecMode,
+		         bool AllowEscapedNames,
+		         typename Allocator = json_details::NoAllocator,
+		         bool IsZeroTerminated = false>
+		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
+			using iterator = char const *;
+			static constexpr bool is_unchecked_input = IsUncheckedInput;
+			using exec_tag_t = ExecMode;
+			static constexpr exec_tag_t exec_tag = exec_tag_t{ };
+			static constexpr bool allow_escaped_names = AllowEscapedNames;
+			static constexpr bool force_name_equal_check = false;
+			static constexpr bool is_zero_terminated_string = IsZeroTerminated;
+			using CharT = char;
 
-		using as_unchecked = BasicParsePolicy<true, CommentPolicy, exec_tag_t,
-		                                      allow_escaped_names, Allocator>;
-		using as_checked = BasicParsePolicy<false, CommentPolicy, exec_tag_t,
-		                                    allow_escaped_names, Allocator>;
+			using as_unchecked = BasicParsePolicy<true, CommentPolicy, exec_tag_t,
+			                                      allow_escaped_names, Allocator>;
+			using as_checked = BasicParsePolicy<false, CommentPolicy, exec_tag_t,
+			                                    allow_escaped_names, Allocator>;
 
-		iterator first{ };
-		iterator last{ };
-		iterator class_first{ };
-		iterator class_last{ };
-		std::size_t counter = 0;
-		using ParseState = BasicParsePolicy;
+			iterator first{ };
+			iterator last{ };
+			iterator class_first{ };
+			iterator class_last{ };
+			std::size_t counter = 0;
+			using ParseState = BasicParsePolicy;
 
-		inline constexpr BasicParsePolicy( ) = default;
+			inline constexpr BasicParsePolicy( ) = default;
 
-		inline constexpr BasicParsePolicy( iterator f, iterator l )
-		  : first( f )
-		  , last( l )
-		  , class_first( f )
-		  , class_last( l ) {}
+			inline constexpr BasicParsePolicy( iterator f, iterator l )
+			  : first( f )
+			  , last( l )
+			  , class_first( f )
+			  , class_last( l ) {}
 
-		inline constexpr BasicParsePolicy( iterator f, iterator l,
-		                                   Allocator &alloc )
-		  : json_details::AllocatorWrapper<Allocator>( alloc )
-		  , first( f )
-		  , last( l )
-		  , class_first( f )
-		  , class_last( l ) {}
+			inline constexpr BasicParsePolicy( iterator f, iterator l,
+			                                   Allocator &alloc )
+			  : json_details::AllocatorWrapper<Allocator>( alloc )
+			  , first( f )
+			  , last( l )
+			  , class_first( f )
+			  , class_last( l ) {}
 
-		inline constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
-		                                   iterator cl )
-		  : first( f )
-		  , last( l )
-		  , class_first( cf )
-		  , class_last( cl ) {}
+			inline constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
+			                                   iterator cl )
+			  : first( f )
+			  , last( l )
+			  , class_first( cf )
+			  , class_last( cl ) {}
 
-		inline constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
-		                                   iterator cl, Allocator &alloc )
-		  : json_details::AllocatorWrapper<Allocator>( alloc )
-		  , first( f )
-		  , last( l )
-		  , class_first( cf )
-		  , class_last( cl ) {}
+			inline constexpr BasicParsePolicy( iterator f, iterator l, iterator cf,
+			                                   iterator cl, Allocator &alloc )
+			  : json_details::AllocatorWrapper<Allocator>( alloc )
+			  , first( f )
+			  , last( l )
+			  , class_first( cf )
+			  , class_last( cl ) {}
 
-		inline constexpr BasicParsePolicy copy( iterator f = iterator{ },
-		                                        iterator l = iterator{ },
-		                                        iterator cf = iterator{ },
-		                                        iterator cl = iterator{ } ) const {
-			BasicParsePolicy result = *this;
-			if( f ) {
-				result.first = f;
+			inline constexpr BasicParsePolicy
+			copy( iterator f = iterator{ }, iterator l = iterator{ },
+			      iterator cf = iterator{ }, iterator cl = iterator{ } ) const {
+				BasicParsePolicy result = *this;
+				if( f ) {
+					result.first = f;
+				}
+				if( l ) {
+					result.last = l;
+				}
+				if( cf ) {
+					result.class_first = cf;
+				}
+				if( cl ) {
+					result.class_last = cl;
+				}
+				return result;
 			}
-			if( l ) {
-				result.last = l;
+
+			template<typename Alloc>
+			using with_allocator_type =
+			  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
+			                   AllowEscapedNames, Alloc>;
+
+			template<typename Alloc>
+			static inline constexpr with_allocator_type<Alloc>
+			with_allocator( iterator f, iterator l, iterator cf, iterator cl,
+			                Alloc &alloc ) {
+				return { f, l, cf, cl, alloc };
 			}
-			if( cf ) {
-				result.class_first = cf;
+
+			template<typename Alloc>
+			constexpr auto
+			with_allocator( BasicParsePolicy<IsUncheckedInput, CommentPolicy,
+			                                 ExecMode, AllowEscapedNames, Alloc>
+			                  p ) const {
+
+				if constexpr( std::is_same_v<Alloc, json_details::NoAllocator> ) {
+					return *this;
+				} else {
+					auto result = with_allocator( first, last, class_first, class_last,
+					                              p.get_allocator( ) );
+					result.counter = p.counter;
+					return result;
+				}
 			}
-			if( cl ) {
-				result.class_last = cl;
+
+			template<typename Alloc>
+			inline constexpr with_allocator_type<Alloc>
+			with_allocator( Alloc &alloc ) const {
+				auto result =
+				  with_allocator( first, last, class_first, class_last, alloc );
+				result.counter = counter;
+				return result;
 			}
-			return result;
-		}
 
-		template<typename Alloc>
-		using with_allocator_type =
-		  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
-		                   AllowEscapedNames, Alloc>;
+			using without_allocator_type =
+			  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
+			                   AllowEscapedNames, json_details::NoAllocator>;
 
-		template<typename Alloc>
-		static inline constexpr with_allocator_type<Alloc>
-		with_allocator( iterator f, iterator l, iterator cf, iterator cl,
-		                Alloc &alloc ) {
-			return { f, l, cf, cl, alloc };
-		}
-
-		template<typename Alloc>
-		constexpr auto
-		with_allocator( BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
-		                                 AllowEscapedNames, Alloc>
-		                  p ) const {
-
-			if constexpr( std::is_same_v<Alloc, json_details::NoAllocator> ) {
-				return *this;
-			} else {
-				auto result = with_allocator( first, last, class_first, class_last,
-				                              p.get_allocator( ) );
+			static inline constexpr without_allocator_type
+			without_allocator( BasicParsePolicy p ) {
+				auto result = without_allocator_type( p.first, p.last, p.class_first,
+				                                      p.class_last );
 				result.counter = p.counter;
 				return result;
 			}
-		}
 
-		template<typename Alloc>
-		inline constexpr with_allocator_type<Alloc>
-		with_allocator( Alloc &alloc ) const {
-			auto result =
-			  with_allocator( first, last, class_first, class_last, alloc );
-			result.counter = counter;
-			return result;
-		}
-
-		using without_allocator_type =
-		  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
-		                   AllowEscapedNames, json_details::NoAllocator>;
-
-		static inline constexpr without_allocator_type
-		without_allocator( BasicParsePolicy p ) {
-			auto result =
-			  without_allocator_type( p.first, p.last, p.class_first, p.class_last );
-			result.counter = p.counter;
-			return result;
-		}
-
-		inline constexpr without_allocator_type without_allocator( ) const {
-			auto result =
-			  without_allocator_type( first, last, class_first, class_last );
-			result.counter = counter;
-			return result;
-		}
-
-		template<typename Alloc>
-		static inline constexpr with_allocator_type<Alloc>
-		with_allocator( iterator f, iterator l, Alloc &alloc ) {
-			return { f, l, f, l, alloc };
-		}
-
-		static inline constexpr without_allocator_type
-		without_allocator( iterator f, iterator l ) {
-			return { f, l };
-		}
-
-		static inline constexpr without_allocator_type
-		without_allocator( iterator f, iterator l, iterator cf, iterator cl ) {
-			return { f, l, cf, cl };
-		}
-
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
-		data( ) const {
-			return first;
-		}
-
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
-		data_end( ) const {
-			return last;
-		}
-
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
-		begin( ) const {
-			return first;
-		}
-
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator end( ) const {
-			return last;
-		}
-
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool empty( ) const {
-			if constexpr( is_zero_terminated_string ) {
-				return first >= last or *first == '\0';
-			} else {
-				return first >= last;
+			inline constexpr without_allocator_type without_allocator( ) const {
+				auto result =
+				  without_allocator_type( first, last, class_first, class_last );
+				result.counter = counter;
+				return result;
 			}
-		}
 
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
-		has_more( ) const {
-			if constexpr( is_zero_terminated_string ) {
-				return first < last and *first != '\0';
-			} else {
-				return first < last;
+			template<typename Alloc>
+			static inline constexpr with_allocator_type<Alloc>
+			with_allocator( iterator f, iterator l, Alloc &alloc ) {
+				return { f, l, f, l, alloc };
 			}
-		}
 
-		template<std::size_t N>
-		inline constexpr bool starts_with( char const ( &rhs )[N] ) const {
-			if( size( ) < ( N - 1 ) ) {
-				return false;
+			static inline constexpr without_allocator_type
+			without_allocator( iterator f, iterator l ) {
+				return { f, l };
 			}
-			bool result = true;
-			for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
-				result = result & ( first[n] == rhs[n] );
+
+			static inline constexpr without_allocator_type
+			without_allocator( iterator f, iterator l, iterator cf, iterator cl ) {
+				return { f, l, cf, cl };
 			}
-			return result;
-		}
 
-		template<char c>
-		DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of_unchecked( ) {
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+			data( ) const {
+				return first;
+			}
 
-			if constexpr( traits::not_same_v<ParseState::exec_tag_t,
-			                                 constexpr_exec_tag> ) {
-				first = reinterpret_cast<char const *>( std::memchr(
-				  first, c, static_cast<std::size_t>( class_last - first ) ) );
-			} else {
-				while( *first != c ) {
-					++first;
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+			data_end( ) const {
+				return last;
+			}
+
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+			begin( ) const {
+				return first;
+			}
+
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+			end( ) const {
+				return last;
+			}
+
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool empty( ) const {
+				if constexpr( is_zero_terminated_string ) {
+					return first >= last or *first == '\0';
+				} else {
+					return first >= last;
 				}
 			}
-		}
 
-		template<char c>
-		DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of_checked( ) {
-
-			if constexpr( traits::not_same_v<ParseState::exec_tag_t,
-			                                 constexpr_exec_tag> ) {
-				first = reinterpret_cast<char const *>( std::memchr(
-				  first, c, static_cast<std::size_t>( class_last - first ) ) );
-				daw_json_assert( first != nullptr, json_details::missing_token( c ),
-				                 *this );
-			} else {
-				while( DAW_JSON_LIKELY( first < last ) and *first != c ) {
-					++first;
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+			has_more( ) const {
+				if constexpr( is_zero_terminated_string ) {
+					return first < last and *first != '\0';
+				} else {
+					return first < last;
 				}
 			}
-		}
 
-		template<char c>
-		DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of( ) {
-			if( is_unchecked_input ) {
-				move_to_next_of_unchecked<c>( );
-			} else {
-				move_to_next_of_checked<c>( );
-			}
-		}
-
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr char front( ) const {
-			return *first;
-		}
-
-		[[nodiscard]] inline constexpr std::size_t size( ) const {
-			return static_cast<std::size_t>( last - first );
-		}
-
-		[[nodiscard]] inline constexpr bool is_null( ) const {
-			return first == nullptr;
-		}
-
-		DAW_ATTRIBUTE_FLATTEN inline constexpr void remove_prefix( ) {
-			++first;
-		}
-
-		DAW_ATTRIBUTE_FLATTEN inline constexpr void remove_prefix( std::size_t n ) {
-			first += static_cast<std::ptrdiff_t>( n );
-		}
-
-		inline constexpr void set_class_position( ) {
-			class_first = first;
-			class_last = last;
-		}
-
-		inline constexpr void trim_left_checked( ) {
-			return CommentPolicy::trim_left_checked( *this );
-		}
-
-		inline constexpr void trim_left_unchecked( ) {
-			return CommentPolicy::trim_left_unchecked( *this );
-		}
-
-		inline constexpr void move_to_end_of_literal( ) {
-			char const *f = first;
-			char const *const l = last;
-			if constexpr( IsUncheckedInput ) {
-				while( ( static_cast<unsigned char>( *f ) > 0x20U ) &
-				       not CommentPolicy::is_literal_end( *f ) ) {
-					++f;
+			template<std::size_t N>
+			inline constexpr bool starts_with( char const ( &rhs )[N] ) const {
+				if( size( ) < ( N - 1 ) ) {
+					return false;
 				}
-			} else {
-				while( ( f < l ) and ( ( static_cast<unsigned char>( *f ) > 0x20 ) &
-				                       not CommentPolicy::is_literal_end( *f ) ) ) {
-					++f;
+				bool result = true;
+				for( std::size_t n = 0; n < ( N - 1 ); ++n ) {
+					result = result & ( first[n] == rhs[n] );
+				}
+				return result;
+			}
+
+			template<char c>
+			DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of_unchecked( ) {
+
+				if constexpr( traits::not_same_v<ParseState::exec_tag_t,
+				                                 constexpr_exec_tag> ) {
+					first = reinterpret_cast<char const *>( std::memchr(
+					  first, c, static_cast<std::size_t>( class_last - first ) ) );
+				} else {
+					while( *first != c ) {
+						++first;
+					}
 				}
 			}
-			first = f;
-		}
 
-		[[nodiscard]] inline constexpr bool is_literal_end( ) const {
-			return CommentPolicy::is_literal_end( *first );
-		}
+			template<char c>
+			DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of_checked( ) {
 
-		DAW_ATTRIBUTE_FLATTEN [[nodiscard]] inline constexpr bool
-		is_space_checked( ) const {
-			daw_json_assert_weak( has_more( ), ErrorReason::UnexpectedEndOfData,
-			                      *this );
-			return static_cast<unsigned char>( *first ) <= 0x20U;
-		}
-
-		DAW_ATTRIBUTE_FLATTEN [[nodiscard]] inline constexpr bool
-		is_space_unchecked( ) const {
-			return static_cast<unsigned char>( *first ) <= 0x20U;
-		}
-
-		[[nodiscard]] inline constexpr bool is_opening_bracket_checked( ) const {
-			return DAW_JSON_LIKELY( first < last ) and *first == '[';
-		}
-
-		[[nodiscard]] inline constexpr bool is_opening_brace_checked( ) const {
-			return DAW_JSON_LIKELY( first < last ) and *first == '{';
-		}
-
-		[[nodiscard]] inline constexpr bool is_closing_brace_checked( ) const {
-			return DAW_JSON_LIKELY( first < last ) and *first == '}';
-		}
-
-		[[nodiscard]] inline constexpr bool is_quotes_checked( ) const {
-			return DAW_JSON_LIKELY( first < last ) and *first == '"';
-		}
-
-		inline constexpr void trim_left( ) {
-			if constexpr( is_unchecked_input ) {
-				trim_left_unchecked( );
-			} else {
-				trim_left_checked( );
+				if constexpr( traits::not_same_v<ParseState::exec_tag_t,
+				                                 constexpr_exec_tag> ) {
+					first = reinterpret_cast<char const *>( std::memchr(
+					  first, c, static_cast<std::size_t>( class_last - first ) ) );
+					daw_json_assert( first != nullptr, json_details::missing_token( c ),
+					                 *this );
+				} else {
+					while( DAW_JSON_LIKELY( first < last ) and *first != c ) {
+						++first;
+					}
+				}
 			}
-		}
 
-		inline constexpr void clean_tail_unchecked( ) {
-			trim_left_unchecked( );
-			if( *first == ',' ) {
+			template<char c>
+			DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of( ) {
+				if( is_unchecked_input ) {
+					move_to_next_of_unchecked<c>( );
+				} else {
+					move_to_next_of_checked<c>( );
+				}
+			}
+
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr char front( ) const {
+				return *first;
+			}
+
+			[[nodiscard]] inline constexpr std::size_t size( ) const {
+				return static_cast<std::size_t>( last - first );
+			}
+
+			[[nodiscard]] inline constexpr bool is_null( ) const {
+				return first == nullptr;
+			}
+
+			DAW_ATTRIBUTE_FLATTEN inline constexpr void remove_prefix( ) {
 				++first;
-				trim_left_unchecked( );
 			}
-		}
 
-		template<char EndChar = '\0'>
-		inline constexpr void clean_end_of_value( bool at_first ) {
-			trim_left( );
-			if constexpr( is_unchecked_input ) {
+			DAW_ATTRIBUTE_FLATTEN inline constexpr void
+			remove_prefix( std::size_t n ) {
+				first += static_cast<std::ptrdiff_t>( n );
+			}
+
+			inline constexpr void set_class_position( ) {
+				class_first = first;
+				class_last = last;
+			}
+
+			inline constexpr void trim_left_checked( ) {
+				return CommentPolicy::trim_left_checked( *this );
+			}
+
+			inline constexpr void trim_left_unchecked( ) {
+				return CommentPolicy::trim_left_unchecked( *this );
+			}
+
+			inline constexpr void move_to_end_of_literal( ) {
+				char const *f = first;
+				char const *const l = last;
+				if constexpr( IsUncheckedInput ) {
+					while( ( static_cast<unsigned char>( *f ) > 0x20U ) &
+					       not CommentPolicy::is_literal_end( *f ) ) {
+						++f;
+					}
+				} else {
+					while( ( f < l ) and ( ( static_cast<unsigned char>( *f ) > 0x20 ) &
+					                       not CommentPolicy::is_literal_end( *f ) ) ) {
+						++f;
+					}
+				}
+				first = f;
+			}
+
+			[[nodiscard]] inline constexpr bool is_literal_end( ) const {
+				return CommentPolicy::is_literal_end( *first );
+			}
+
+			DAW_ATTRIBUTE_FLATTEN [[nodiscard]] inline constexpr bool
+			is_space_checked( ) const {
+				daw_json_assert_weak( has_more( ), ErrorReason::UnexpectedEndOfData,
+				                      *this );
+				return static_cast<unsigned char>( *first ) <= 0x20U;
+			}
+
+			DAW_ATTRIBUTE_FLATTEN [[nodiscard]] inline constexpr bool
+			is_space_unchecked( ) const {
+				return static_cast<unsigned char>( *first ) <= 0x20U;
+			}
+
+			[[nodiscard]] inline constexpr bool is_opening_bracket_checked( ) const {
+				return DAW_JSON_LIKELY( first < last ) and *first == '[';
+			}
+
+			[[nodiscard]] inline constexpr bool is_opening_brace_checked( ) const {
+				return DAW_JSON_LIKELY( first < last ) and *first == '{';
+			}
+
+			[[nodiscard]] inline constexpr bool is_closing_brace_checked( ) const {
+				return DAW_JSON_LIKELY( first < last ) and *first == '}';
+			}
+
+			[[nodiscard]] inline constexpr bool is_quotes_checked( ) const {
+				return DAW_JSON_LIKELY( first < last ) and *first == '"';
+			}
+
+			inline constexpr void trim_left( ) {
+				if constexpr( is_unchecked_input ) {
+					trim_left_unchecked( );
+				} else {
+					trim_left_checked( );
+				}
+			}
+
+			inline constexpr void clean_tail_unchecked( ) {
+				trim_left_unchecked( );
 				if( *first == ',' ) {
 					++first;
-					trim_left( );
+					trim_left_unchecked( );
 				}
-			} else {
-				if( ( not at_first ) & ( first < last ) ) {
+			}
+
+			template<char EndChar = '\0'>
+			inline constexpr void clean_end_of_value( bool at_first ) {
+				trim_left( );
+				if constexpr( is_unchecked_input ) {
 					if( *first == ',' ) {
 						++first;
 						trim_left( );
-					} else {
-						if constexpr( EndChar != '\0' ) {
-							daw_json_assert( *first == EndChar,
-							                 ErrorReason::ExpectedTokenNotFound, *this );
+					}
+				} else {
+					if( ( not at_first ) & ( first < last ) ) {
+						if( *first == ',' ) {
+							++first;
+							trim_left( );
+						} else {
+							if constexpr( EndChar != '\0' ) {
+								daw_json_assert( *first == EndChar,
+								                 ErrorReason::ExpectedTokenNotFound, *this );
+							}
 						}
 					}
 				}
 			}
-		}
 
-		inline constexpr void clean_tail_checked( ) {
-			trim_left_checked( );
-			if( DAW_JSON_LIKELY( first < last ) and *first == ',' ) {
-				++first;
+			inline constexpr void clean_tail_checked( ) {
 				trim_left_checked( );
+				if( DAW_JSON_LIKELY( first < last ) and *first == ',' ) {
+					++first;
+					trim_left_checked( );
+				}
 			}
-		}
 
-		DAW_ATTRIBUTE_FLATTEN inline constexpr void clean_tail( ) {
-			if constexpr( is_unchecked_input ) {
-				clean_tail_unchecked( );
-			} else {
-				clean_tail_checked( );
+			DAW_ATTRIBUTE_FLATTEN inline constexpr void clean_tail( ) {
+				if constexpr( is_unchecked_input ) {
+					clean_tail_unchecked( );
+				} else {
+					clean_tail_checked( );
+				}
 			}
-		}
 
-		inline constexpr void move_to_next_class_member( ) {
-			CommentPolicy::template move_to_next_of<'"', '}'>( *this );
-		}
-
-		[[nodiscard]] inline constexpr bool is_at_next_class_member( ) const {
-			return parse_policy_details::in<'"', '}'>( *first );
-		}
-
-		[[nodiscard]] inline constexpr bool is_at_token_after_value( ) const {
-			return parse_policy_details::in<',', '}', ']'>( *first );
-		}
-
-		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
-		skip_bracketed_item_checked( ) {
-			return CommentPolicy::template skip_bracketed_item_checked<
-			  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
-		}
-
-		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
-		skip_bracketed_item_unchecked( ) {
-			return CommentPolicy::template skip_bracketed_item_unchecked<
-			  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
-		}
-
-		[[nodiscard]] inline constexpr ParseState skip_class( ) {
-			if constexpr( is_unchecked_input ) {
-				return skip_bracketed_item_unchecked<'{', '}', '[', ']'>( );
-			} else {
-				return skip_bracketed_item_checked<'{', '}', '[', ']'>( );
+			inline constexpr void move_to_next_class_member( ) {
+				CommentPolicy::template move_to_next_of<'"', '}'>( *this );
 			}
-		}
 
-		[[nodiscard]] inline constexpr ParseState skip_array( ) {
-			if constexpr( is_unchecked_input ) {
-				return skip_bracketed_item_unchecked<'[', ']', '{', '}'>( );
-			} else {
-				return skip_bracketed_item_checked<'[', ']', '{', '}'>( );
+			[[nodiscard]] inline constexpr bool is_at_next_class_member( ) const {
+				return parse_policy_details::in<'"', '}'>( *first );
 			}
-		}
-	};
 
-	using NoCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, NoCommentSkippingPolicy, default_exec_tag, false>;
+			[[nodiscard]] inline constexpr bool is_at_token_after_value( ) const {
+				return parse_policy_details::in<',', '}', ']'>( *first );
+			}
 
-	using NoCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, NoCommentSkippingPolicy, default_exec_tag, false>;
+			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
+			skip_bracketed_item_checked( ) {
+				return CommentPolicy::template skip_bracketed_item_checked<
+				  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
+			}
 
-	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-	using SIMDNoCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, NoCommentSkippingPolicy, ExecTag, false, Allocator>;
+			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
+			skip_bracketed_item_unchecked( ) {
+				return CommentPolicy::template skip_bracketed_item_unchecked<
+				  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
+			}
 
-	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-	using SIMDNoCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, NoCommentSkippingPolicy, ExecTag, false, Allocator>;
+			[[nodiscard]] inline constexpr ParseState skip_class( ) {
+				if constexpr( is_unchecked_input ) {
+					return skip_bracketed_item_unchecked<'{', '}', '[', ']'>( );
+				} else {
+					return skip_bracketed_item_checked<'{', '}', '[', ']'>( );
+				}
+			}
 
-	using HashCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, HashCommentSkippingPolicy, default_exec_tag, false>;
+			[[nodiscard]] inline constexpr ParseState skip_array( ) {
+				if constexpr( is_unchecked_input ) {
+					return skip_bracketed_item_unchecked<'[', ']', '{', '}'>( );
+				} else {
+					return skip_bracketed_item_checked<'[', ']', '{', '}'>( );
+				}
+			}
+		};
 
-	using HashCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, HashCommentSkippingPolicy, default_exec_tag, false>;
+		using NoCommentSkippingPolicyChecked =
+		  BasicParsePolicy<false, NoCommentSkippingPolicy, default_exec_tag, false>;
 
-	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-	using SIMDHashCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, HashCommentSkippingPolicy, ExecTag, false,
-	                   Allocator>;
+		using NoCommentSkippingPolicyUnchecked =
+		  BasicParsePolicy<true, NoCommentSkippingPolicy, default_exec_tag, false>;
 
-	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-	using SIMDHashCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, HashCommentSkippingPolicy, ExecTag, false,
-	                   Allocator>;
+		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
+		using SIMDNoCommentSkippingPolicyChecked =
+		  BasicParsePolicy<false, NoCommentSkippingPolicy, ExecTag, false,
+		                   Allocator>;
 
-	using CppCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, CppCommentSkippingPolicy, default_exec_tag, false>;
+		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
+		using SIMDNoCommentSkippingPolicyUnchecked =
+		  BasicParsePolicy<true, NoCommentSkippingPolicy, ExecTag, false,
+		                   Allocator>;
 
-	using CppCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, CppCommentSkippingPolicy, default_exec_tag, false>;
+		using HashCommentSkippingPolicyChecked =
+		  BasicParsePolicy<false, HashCommentSkippingPolicy, default_exec_tag,
+		                   false>;
 
-	/***
-	 * Parse using SIMD instructions if available, allow C++ comments and fully
-	 * check input
-	 */
-	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-	using SIMDCppCommentSkippingPolicyChecked =
-	  BasicParsePolicy<false, CppCommentSkippingPolicy, ExecTag, false,
-	                   Allocator>;
+		using HashCommentSkippingPolicyUnchecked =
+		  BasicParsePolicy<true, HashCommentSkippingPolicy, default_exec_tag,
+		                   false>;
 
-	/***
-	 * Parse using SIMD instructions if available, allow C++ comments and do not
-	 * do more than minimum checking
-	 */
-	template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-	using SIMDCppCommentSkippingPolicyUnchecked =
-	  BasicParsePolicy<true, CppCommentSkippingPolicy, ExecTag, false, Allocator>;
+		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
+		using SIMDHashCommentSkippingPolicyChecked =
+		  BasicParsePolicy<false, HashCommentSkippingPolicy, ExecTag, false,
+		                   Allocator>;
 
-	namespace json_details {
+		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
+		using SIMDHashCommentSkippingPolicyUnchecked =
+		  BasicParsePolicy<true, HashCommentSkippingPolicy, ExecTag, false,
+		                   Allocator>;
+
+		using CppCommentSkippingPolicyChecked =
+		  BasicParsePolicy<false, CppCommentSkippingPolicy, default_exec_tag,
+		                   false>;
+
+		using CppCommentSkippingPolicyUnchecked =
+		  BasicParsePolicy<true, CppCommentSkippingPolicy, default_exec_tag, false>;
+
 		/***
-		 * We are either not in a constexpr context or we have constexpr dtors. This
-		 * is generally used so that we can call cleanup code after parsing the
-		 * member
+		 * Parse using SIMD instructions if available, allow C++ comments and fully
+		 * check input
 		 */
-		template<typename ParsePolicy>
-		inline constexpr bool is_guaranteed_rvo_v =
-		  ParsePolicy::exec_tag_t::always_rvo;
-	} // namespace json_details
-} // namespace DAW_JSON_NS
+		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
+		using SIMDCppCommentSkippingPolicyChecked =
+		  BasicParsePolicy<false, CppCommentSkippingPolicy, ExecTag, false,
+		                   Allocator>;
+
+		/***
+		 * Parse using SIMD instructions if available, allow C++ comments and do not
+		 * do more than minimum checking
+		 */
+		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
+		using SIMDCppCommentSkippingPolicyUnchecked =
+		  BasicParsePolicy<true, CppCommentSkippingPolicy, ExecTag, false,
+		                   Allocator>;
+
+		namespace json_details {
+			/***
+			 * We are either not in a constexpr context or we have constexpr dtors.
+			 * This is generally used so that we can call cleanup code after parsing
+			 * the member
+			 */
+			template<typename ParsePolicy>
+			inline constexpr bool is_guaranteed_rvo_v =
+			  ParsePolicy::exec_tag_t::always_rvo;
+		} // namespace json_details
+	}   // namespace DAW_JSON_VER
+} // namespace daw::json
