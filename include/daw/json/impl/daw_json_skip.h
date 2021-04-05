@@ -24,88 +24,93 @@ namespace DAW_JSON_NS::json_details {
 	/***
 	 * Skip a string, after the initial quote has been skipped already
 	 */
-	template<typename Range>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
-	skip_string_nq( Range &rng ) {
-		auto result = rng;
-		result.counter = string_quote::string_quote_parser::parse_nq( rng );
+	template<typename ParseState>
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr ParseState
+	skip_string_nq( ParseState &parse_state ) {
+		auto result = parse_state;
+		result.counter = string_quote::string_quote_parser::parse_nq( parse_state );
 
-		daw_json_assert_weak( rng.front( ) == '"', ErrorReason::InvalidString,
-		                      rng );
-		result.last = rng.first;
-		rng.remove_prefix( );
+		daw_json_assert_weak( parse_state.front( ) == '"',
+		                      ErrorReason::InvalidString, parse_state );
+		result.last = parse_state.first;
+		parse_state.remove_prefix( );
 		return result;
 	}
 
 	/***
 	 * Skip a string and store the first escaped element's position, if any
 	 */
-	template<typename Range>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Range
-	skip_string( Range &rng ) {
-		if( rng.empty( ) ) {
-			return rng;
+	template<typename ParseState>
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr ParseState
+	skip_string( ParseState &parse_state ) {
+		if( parse_state.empty( ) ) {
+			return parse_state;
 		}
-		if( *std::prev( rng.first ) != '"' ) {
-			daw_json_assert( rng.front( ) == '"', ErrorReason::InvalidString, rng );
-			rng.remove_prefix( );
+		if( *std::prev( parse_state.first ) != '"' ) {
+			daw_json_assert( parse_state.front( ) == '"', ErrorReason::InvalidString,
+			                 parse_state );
+			parse_state.remove_prefix( );
 		}
-		daw_json_assert_weak( rng.has_more( ), ErrorReason::InvalidString, rng );
-		return skip_string_nq( rng );
+		daw_json_assert_weak( parse_state.has_more( ), ErrorReason::InvalidString,
+		                      parse_state );
+		return skip_string_nq( parse_state );
 	}
 
-	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_true( Range &rng ) {
-		auto result = rng;
-		if constexpr( Range::is_unchecked_input ) {
-			rng.remove_prefix( 4 );
+	template<typename ParseState>
+	[[nodiscard]] static constexpr ParseState
+	skip_true( ParseState &parse_state ) {
+		auto result = parse_state;
+		if constexpr( ParseState::is_unchecked_input ) {
+			parse_state.remove_prefix( 4 );
 		} else {
-			rng.remove_prefix( );
-			daw_json_assert( rng.starts_with( "rue" ), ErrorReason::InvalidTrue,
-			                 rng );
-			rng.remove_prefix( 3 );
+			parse_state.remove_prefix( );
+			daw_json_assert( parse_state.starts_with( "rue" ),
+			                 ErrorReason::InvalidTrue, parse_state );
+			parse_state.remove_prefix( 3 );
 		}
-		result.last = rng.first;
-		rng.trim_left( );
-		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      ErrorReason::InvalidEndOfValue, rng );
+		result.last = parse_state.first;
+		parse_state.trim_left( );
+		daw_json_assert_weak( parse_state.is_at_token_after_value( ),
+		                      ErrorReason::InvalidEndOfValue, parse_state );
 		return result;
 	}
 
-	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_false( Range &rng ) {
-		auto result = rng;
-		if constexpr( Range::is_unchecked_input ) {
-			rng.remove_prefix( 5 );
+	template<typename ParseState>
+	[[nodiscard]] static constexpr ParseState
+	skip_false( ParseState &parse_state ) {
+		auto result = parse_state;
+		if constexpr( ParseState::is_unchecked_input ) {
+			parse_state.remove_prefix( 5 );
 		} else {
-			rng.remove_prefix( );
-			daw_json_assert( rng.starts_with( "alse" ), ErrorReason::InvalidFalse,
-			                 rng );
-			rng.remove_prefix( 4 );
+			parse_state.remove_prefix( );
+			daw_json_assert( parse_state.starts_with( "alse" ),
+			                 ErrorReason::InvalidFalse, parse_state );
+			parse_state.remove_prefix( 4 );
 		}
-		result.last = rng.first;
-		rng.trim_left( );
-		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      ErrorReason::InvalidEndOfValue, rng );
+		result.last = parse_state.first;
+		parse_state.trim_left( );
+		daw_json_assert_weak( parse_state.is_at_token_after_value( ),
+		                      ErrorReason::InvalidEndOfValue, parse_state );
 		return result;
 	}
 
-	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_null( Range &rng ) {
-		if constexpr( Range::is_unchecked_input ) {
-			rng.remove_prefix( 4 );
+	template<typename ParseState>
+	[[nodiscard]] static constexpr ParseState
+	skip_null( ParseState &parse_state ) {
+		if constexpr( ParseState::is_unchecked_input ) {
+			parse_state.remove_prefix( 4 );
 		} else {
-			rng.remove_prefix( );
-			daw_json_assert( rng.starts_with( "ull" ), ErrorReason::InvalidNull,
-			                 rng );
-			rng.remove_prefix( 3 );
+			parse_state.remove_prefix( );
+			daw_json_assert( parse_state.starts_with( "ull" ),
+			                 ErrorReason::InvalidNull, parse_state );
+			parse_state.remove_prefix( 3 );
 		}
-		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
-		                      rng );
-		rng.trim_left( );
-		daw_json_assert_weak( rng.is_at_token_after_value( ),
-		                      ErrorReason::UnexpectedEndOfData, rng );
-		auto result = rng;
+		daw_json_assert_weak( parse_state.has_more( ),
+		                      ErrorReason::UnexpectedEndOfData, parse_state );
+		parse_state.trim_left( );
+		daw_json_assert_weak( parse_state.is_at_token_after_value( ),
+		                      ErrorReason::UnexpectedEndOfData, parse_state );
+		auto result = parse_state;
 		result.first = nullptr;
 		result.last = nullptr;
 		return result;
@@ -131,34 +136,37 @@ namespace DAW_JSON_NS::json_details {
 	}
 	/***
 	 * Skip a number and store the position of it's components in the returned
-	 * Range
+	 * ParseState
 	 */
-	template<typename Range>
-	[[nodiscard]] static constexpr Range skip_number( Range &rng ) {
-		auto result = rng;
-		char const *first = rng.first;
-		char const *const last = rng.last;
-		daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData, rng );
+	template<typename ParseState>
+	[[nodiscard]] static constexpr ParseState
+	skip_number( ParseState &parse_state ) {
+		auto result = parse_state;
+		char const *first = parse_state.first;
+		char const *const last = parse_state.last;
+		daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,
+		                      parse_state );
 		if( *first == '-' ) {
 			++first;
 		}
-		first = skip_digits<Range::is_unchecked_input>( first, last );
+		first = skip_digits<ParseState::is_unchecked_input>( first, last );
 		char const *decimal = nullptr;
-		if( ( Range::is_unchecked_input or first < last ) and ( *first == '.' ) ) {
+		if( ( ParseState::is_unchecked_input or first < last ) and
+		    ( *first == '.' ) ) {
 			decimal = first;
 			++first;
-			first = skip_digits<Range::is_unchecked_input>( first, last );
+			first = skip_digits<ParseState::is_unchecked_input>( first, last );
 		}
 		char const *exp = nullptr;
 		unsigned dig = parse_digit( *first );
-		if( ( Range::is_unchecked_input or ( first < last ) ) &
+		if( ( ParseState::is_unchecked_input or ( first < last ) ) &
 		    ( ( dig == parsed_constants::e_char ) |
 		      ( dig == parsed_constants::E_char ) ) ) {
 			exp = first;
 			++first;
 			daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,
 			                      [&] {
-				                      auto r = rng;
+				                      auto r = parse_state;
 				                      r.first = first;
 				                      return r;
 			                      }( ) );
@@ -167,10 +175,10 @@ namespace DAW_JSON_NS::json_details {
 			    ( dig == parsed_constants::minus_char ) ) {
 				++first;
 			}
-			first = skip_digits<Range::is_unchecked_input>( first, last );
+			first = skip_digits<ParseState::is_unchecked_input>( first, last );
 		}
 
-		rng.first = first;
+		parse_state.first = first;
 		result.last = first;
 		result.class_first = decimal;
 		result.class_last = exp;
@@ -183,26 +191,27 @@ namespace DAW_JSON_NS::json_details {
 	 * TODO: Investigate if there is a difference for the times we know what the
 	 * member should be if that can increase performance
 	 */
-	template<typename Range>
-	[[nodiscard]] static inline constexpr Range skip_value( Range &rng ) {
-		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
-		                      rng );
+	template<typename ParseState>
+	[[nodiscard]] static inline constexpr ParseState
+	skip_value( ParseState &parse_state ) {
+		daw_json_assert_weak( parse_state.has_more( ),
+		                      ErrorReason::UnexpectedEndOfData, parse_state );
 
 		// reset counter
-		rng.counter = 0;
-		switch( rng.front( ) ) {
+		parse_state.counter = 0;
+		switch( parse_state.front( ) ) {
 		case '"':
-			return skip_string( rng );
+			return skip_string( parse_state );
 		case '[':
-			return rng.skip_array( );
+			return parse_state.skip_array( );
 		case '{':
-			return rng.skip_class( );
+			return parse_state.skip_class( );
 		case 't':
-			return skip_true( rng );
+			return skip_true( parse_state );
 		case 'f':
-			return skip_false( rng );
+			return skip_false( parse_state );
 		case 'n':
-			return skip_null( rng );
+			return skip_null( parse_state );
 		case '-':
 		case '0':
 		case '1':
@@ -214,12 +223,12 @@ namespace DAW_JSON_NS::json_details {
 		case '7':
 		case '8':
 		case '9':
-			return skip_number( rng );
+			return skip_number( parse_state );
 		}
-		if constexpr( Range::is_unchecked_input ) {
+		if constexpr( ParseState::is_unchecked_input ) {
 			DAW_UNREACHABLE( );
 		} else {
-			daw_json_error( ErrorReason::InvalidStartOfValue, rng );
+			daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
 		}
 	}
 
@@ -227,20 +236,20 @@ namespace DAW_JSON_NS::json_details {
 	 * Used in json_array_iterator::operator++( ) as we know the type we are
 	 * skipping
 	 */
-	template<typename JsonMember, typename Range>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
-	skip_known_value( Range &rng ) {
-		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
-		                      rng );
+	template<typename JsonMember, typename ParseState>
+	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
+	skip_known_value( ParseState &parse_state ) {
+		daw_json_assert_weak( parse_state.has_more( ),
+		                      ErrorReason::UnexpectedEndOfData, parse_state );
 		if constexpr( JsonMember::expected_type == JsonParseTypes::Date or
 		              JsonMember::expected_type == JsonParseTypes::StringRaw or
 		              JsonMember::expected_type == JsonParseTypes::StringEscaped or
 		              JsonMember::expected_type == JsonParseTypes::Custom ) {
 			// json string encodings
-			daw_json_assert_weak( rng.front( ) == '"', ErrorReason::InvalidString,
-			                      rng );
-			rng.remove_prefix( );
-			return json_details::skip_string_nq( rng );
+			daw_json_assert_weak( parse_state.front( ) == '"',
+			                      ErrorReason::InvalidString, parse_state );
+			parse_state.remove_prefix( );
+			return json_details::skip_string_nq( parse_state );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Real or
 		                     JsonMember::expected_type == JsonParseTypes::Signed or
 		                     JsonMember::expected_type ==
@@ -248,15 +257,15 @@ namespace DAW_JSON_NS::json_details {
 		                     JsonMember::expected_type == JsonParseTypes::Bool or
 		                     JsonMember::expected_type == JsonParseTypes::Null ) {
 			// All literals
-			return skip_number( rng );
+			return skip_number( parse_state );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Array ) {
-			daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-			                      ErrorReason::InvalidArrayStart, rng );
-			return rng.skip_array( );
+			daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
+			                      ErrorReason::InvalidArrayStart, parse_state );
+			return parse_state.skip_array( );
 		} else if constexpr( JsonMember::expected_type == JsonParseTypes::Class ) {
-			daw_json_assert_weak( rng.is_opening_brace_checked( ),
-			                      ErrorReason::InvalidClassStart, rng );
-			return rng.skip_class( );
+			daw_json_assert_weak( parse_state.is_opening_brace_checked( ),
+			                      ErrorReason::InvalidClassStart, parse_state );
+			return parse_state.skip_class( );
 		} else {
 			// Woah there
 			static_assert( JsonMember::expected_type == JsonParseTypes::Class,

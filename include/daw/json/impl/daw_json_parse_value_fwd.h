@@ -15,74 +15,77 @@
 #include <ciso646>
 
 namespace DAW_JSON_NS::json_details {
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Real>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::Real>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Signed>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::Signed>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Unsigned>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::Unsigned>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Null>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::Null>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Bool>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::Bool>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::StringRaw>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::StringRaw>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::StringEscaped>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::StringEscaped>,
+	             ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Date>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::Date>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Custom>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::Custom>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Class>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::Class>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Array>, Range & );
+	parse_value( ParseTag<JsonParseTypes::Array>, ParseState & );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::KeyValue>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::KeyValue>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::KeyValueArray>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::KeyValueArray>,
+	             ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Variant>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::Variant>, ParseState &parse_state );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::VariantTagged>,
+	             ParseState &parse_state );
 
 	template<typename JsonMember, bool KnownBounds = false, std::size_t N,
-	         typename Range, bool B>
+	         typename ParseState, bool B>
 	[[nodiscard]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::VariantTagged>, Range & );
+	parse_value( ParseTag<JsonParseTypes::VariantTagged>, ParseState & );
 
-	template<typename JsonMember, bool KnownBounds = false, typename Range>
+	template<typename JsonMember, bool KnownBounds = false, typename ParseState>
 	[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-	parse_value( ParseTag<JsonParseTypes::Unknown>, Range &rng );
+	parse_value( ParseTag<JsonParseTypes::Unknown>, ParseState &parse_state );
 
 #if( defined( _MSC_VER ) and not defined( __clang__ ) )
 	// Lying to MSVC about being a random iterator causes issues I have not found

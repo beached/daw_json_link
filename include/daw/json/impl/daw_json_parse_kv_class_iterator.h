@@ -23,42 +23,42 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename... Args>
 	[[maybe_unused]] void test_map( std::unordered_map<Args...> const & );
-	template<typename Range, bool>
+	template<typename ParseState, bool>
 	struct json_parse_kv_class_iterator_base {
 		using iterator_category = std::input_iterator_tag;
 		using difference_type = std::ptrdiff_t;
-		Range *rng = nullptr;
+		ParseState *parse_state = nullptr;
 	};
 
-	template<typename Range>
-	struct json_parse_kv_class_iterator_base<Range, true> {
+	template<typename ParseState>
+	struct json_parse_kv_class_iterator_base<ParseState, true> {
 		// We have to lie so that std::distance uses O(1) instead of O(N)
 		using iterator_category = std::random_access_iterator_tag;
 		using difference_type = std::ptrdiff_t;
-		Range *rng = nullptr;
+		ParseState *parse_state = nullptr;
 
 		constexpr difference_type
 		operator-( json_parse_kv_class_iterator_base const &rhs ) const {
-			if( rhs.rng ) {
-				return static_cast<difference_type>( rhs.rng->counter );
+			if( rhs.parse_state ) {
+				return static_cast<difference_type>( rhs.parse_state->counter );
 			}
 			return 0;
 		}
 	};
 
-	template<typename JsonMember, typename Range, bool IsKnown>
+	template<typename JsonMember, typename ParseState, bool IsKnown>
 	struct json_parse_kv_class_iterator
-	  : json_parse_kv_class_iterator_base<Range, can_random_v<IsKnown>> {
+	  : json_parse_kv_class_iterator_base<ParseState, can_random_v<IsKnown>> {
 
 		using base =
-		  json_parse_kv_class_iterator_base<Range, can_random_v<IsKnown>>;
+		  json_parse_kv_class_iterator_base<ParseState, can_random_v<IsKnown>>;
 		using iterator_category = typename base::iterator_category;
 		using element_t = typename JsonMember::json_element_t;
 		using member_container_type = typename JsonMember::base_type;
 		using value_type = typename member_container_type::value_type;
 		using reference = value_type;
 		using pointer = arrow_proxy<value_type>;
-		using iterator_range_t = Range;
+		using iterator_range_t = ParseState;
 		using difference_type = typename base::difference_type;
 
 		using key_t = typename JsonMember::json_key_t;
@@ -69,60 +69,64 @@ namespace DAW_JSON_NS::json_details {
 		inline constexpr explicit json_parse_kv_class_iterator(
 		  iterator_range_t &r )
 		  : base{ &r } {
-			if( base::rng->front( ) == '}' ) {
+			if( base::parse_state->front( ) == '}' ) {
 				// Cleanup at end of value
 				if( not IsKnown ) {
-					base::rng->remove_prefix( );
-					base::rng->trim_left_checked( );
+					base::parse_state->remove_prefix( );
+					base::parse_state->trim_left_checked( );
 					// Ensure we are equal to default
 				}
-				base::rng = nullptr;
+				base::parse_state = nullptr;
 			}
 		}
 
 		inline constexpr value_type operator*( ) {
-			daw_json_assert_weak( base::rng and base::rng->has_more( ),
-			                      ErrorReason::UnexpectedEndOfData, *base::rng );
-			auto key =
-			  parse_value<key_t>( ParseTag<key_t::expected_type>{ }, *base::rng );
-			name::name_parser::trim_end_of_name( *base::rng );
+			daw_json_assert_weak(
+			  base::parse_state and base::parse_state->has_more( ),
+			  ErrorReason::UnexpectedEndOfData, *base::parse_state );
+			auto key = parse_value<key_t>( ParseTag<key_t::expected_type>{ },
+			                               *base::parse_state );
+			name::name_parser::trim_end_of_name( *base::parse_state );
 			return json_class_constructor<value_type>(
-			  DAW_MOVE( key ), parse_value<value_t>(
-			                     ParseTag<value_t::expected_type>{ }, *base::rng ) );
+			  DAW_MOVE( key ),
+			  parse_value<value_t>( ParseTag<value_t::expected_type>{ },
+			                        *base::parse_state ) );
 		}
 
 		inline constexpr json_parse_kv_class_iterator &operator++( ) {
-			daw_json_assert_weak(
-			  base::rng, ErrorReason::AttemptToAccessPastEndOfValue, *base::rng );
-			base::rng->clean_tail( );
-			daw_json_assert_weak( base::rng->has_more( ),
-			                      ErrorReason::UnexpectedEndOfData, *base::rng );
-			if( base::rng->front( ) == '}' ) {
+			daw_json_assert_weak( base::parse_state,
+			                      ErrorReason::AttemptToAccessPastEndOfValue,
+			                      *base::parse_state );
+			base::parse_state->clean_tail( );
+			daw_json_assert_weak( base::parse_state->has_more( ),
+			                      ErrorReason::UnexpectedEndOfData,
+			                      *base::parse_state );
+			if( base::parse_state->front( ) == '}' ) {
 #ifndef NDEBUG
 				if constexpr( IsKnown ) {
-					if( base::rng ) {
-						daw_json_assert( base::rng->counter > 0,
+					if( base::parse_state ) {
+						daw_json_assert( base::parse_state->counter > 0,
 						                 ErrorReason::AttemptToAccessPastEndOfValue,
-						                 *base::rng );
-						base::rng->counter--;
+						                 *base::parse_state );
+						base::parse_state->counter--;
 					}
 				}
 #endif
 				if constexpr( not IsKnown ) {
 					// Cleanup at end of value
-					base::rng->remove_prefix( );
-					base::rng->trim_left_checked( );
+					base::parse_state->remove_prefix( );
+					base::parse_state->trim_left_checked( );
 					// Ensure we are equal to default
 				}
-				base::rng = nullptr;
+				base::parse_state = nullptr;
 			}
 #ifndef NDEBUG
 			if constexpr( IsKnown ) {
-				if( base::rng ) {
-					daw_json_assert( base::rng->counter > 0,
+				if( base::parse_state ) {
+					daw_json_assert( base::parse_state->counter > 0,
 					                 ErrorReason::AttemptToAccessPastEndOfValue,
-					                 *base::rng );
-					base::rng->counter--;
+					                 *base::parse_state );
+					base::parse_state->counter--;
 				}
 			}
 #endif
@@ -138,13 +142,13 @@ namespace DAW_JSON_NS::json_details {
 		inline constexpr bool
 		operator==( json_parse_kv_class_iterator const &rhs ) const {
 			// using identity as equality
-			return base::rng == rhs.base::rng;
+			return base::parse_state == rhs.base::parse_state;
 		}
 
 		inline constexpr bool
 		operator!=( json_parse_kv_class_iterator const &rhs ) const {
 			// using identity as equality
-			return base::rng != rhs.base::rng;
+			return base::parse_state != rhs.base::parse_state;
 		}
 	};
 } // namespace DAW_JSON_NS::json_details

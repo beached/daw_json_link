@@ -77,4 +77,4 @@ namespace DAW_JSON_NS {
 			}
 		}
 	};
-} // namespace DAW_JSON_NS::v3_0
+} // namespace DAW_JSON_NS

@@ -433,8 +433,8 @@ namespace DAW_JSON_NS {
 		template<JsonNullable Nullable, typename Variant>
 		using determine_variant_element_types = std::conditional_t<
 		  Nullable == JsonNullable::Never or not is_nullable_type<Variant>,
-		  std::remove_reference_t<decltype( get_variant_type_list(
-		    std::declval<Variant const *>( ) ) )>,
+		  std::remove_reference_t<decltype(
+		    get_variant_type_list( std::declval<Variant const *>( ) ) )>,
 		  std::conditional_t<
 		    is_nullable_type<Variant>,
 		    std::remove_reference_t<decltype( get_variant_type_list(
@@ -487,4 +487,4 @@ namespace DAW_JSON_NS {
 	using json_tagged_variant_null =
 	  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements, Constructor,
 	                      JsonNullable::Nullable>;
-} // namespace DAW_JSON_NS::v3_0
+} // namespace DAW_JSON_NS

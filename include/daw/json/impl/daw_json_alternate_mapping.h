@@ -31,4 +31,4 @@ namespace DAW_JSON_NS {
 	template<typename T, std::size_t I>
 	struct default_constructor<json_alt<T, I>> : default_constructor<T> {};
 
-} // namespace DAW_JSON_NS::v3_0
+} // namespace DAW_JSON_NS

@@ -68,8 +68,8 @@ namespace DAW_JSON_NS {
 		using iterator_category = std::input_iterator_tag;
 
 	private:
-		using Range = ParsePolicy;
-		Range m_state = Range( );
+		using ParseState = ParsePolicy;
+		ParseState m_state = ParseState( );
 		/***
 		 * This lets us fastpath and just skip n characters as we have already
 		 * parsed them

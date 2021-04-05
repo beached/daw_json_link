@@ -34,17 +34,18 @@ namespace DAW_JSON_NS::json_details {
 		return static_cast<char>( static_cast<unsigned char>( value ) );
 	}
 
-	template<typename Range>
-	[[nodiscard]] static constexpr char *decode_utf16( Range &rng, char *it ) {
-		constexpr bool is_unchecked_input = Range::is_unchecked_input;
-		char const *first = rng.first;
+	template<typename ParseState>
+	[[nodiscard]] static constexpr char *decode_utf16( ParseState &parse_state,
+	                                                   char *it ) {
+		constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
+		char const *first = parse_state.first;
 		++first;
 		UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) )
 		            << 8U;
 		cp |= byte_from_nibbles<is_unchecked_input>( first );
 		if( cp <= 0x7FU ) {
 			*it++ = static_cast<char>( static_cast<unsigned char>( cp ) );
-			rng.first = first;
+			parse_state.first = first;
 			return it;
 		}
 
@@ -52,8 +53,9 @@ namespace DAW_JSON_NS::json_details {
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			++first;
-			daw_json_assert_weak( *first == 'u', ErrorReason::InvalidUTFEscape,
-			                      rng ); // Expected rng to start with a \\u
+			daw_json_assert_weak(
+			  *first == 'u', ErrorReason::InvalidUTFEscape,
+			  parse_state ); // Expected parse_state to start with a \\u
 			++first;
 			auto trailing =
 			  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
@@ -75,7 +77,7 @@ namespace DAW_JSON_NS::json_details {
 			*it++ = enc1;
 			*it++ = enc2;
 			*it++ = enc3;
-			rng.first = first;
+			parse_state.first = first;
 			return it;
 		}
 		//******************************
@@ -88,7 +90,7 @@ namespace DAW_JSON_NS::json_details {
 			*it++ = enc0;
 			*it++ = enc1;
 			*it++ = enc2;
-			rng.first = first;
+			parse_state.first = first;
 			return it;
 		}
 		//******************************
@@ -98,27 +100,28 @@ namespace DAW_JSON_NS::json_details {
 		char const enc0 = u32toC( ( cp >> 6U ) | 0b1100'0000U );
 		*it++ = enc0;
 		*it++ = enc1;
-		rng.first = first;
+		parse_state.first = first;
 		return it;
 	}
 
-	template<typename Range, typename Appender>
-	static constexpr void decode_utf16( Range &rng, Appender &app ) {
-		constexpr bool is_unchecked_input = Range::is_unchecked_input;
-		char const *first = rng.first;
+	template<typename ParseState, typename Appender>
+	static constexpr void decode_utf16( ParseState &parse_state, Appender &app ) {
+		constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
+		char const *first = parse_state.first;
 		++first;
 		UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) )
 		            << 8U;
 		cp |= byte_from_nibbles<is_unchecked_input>( first );
 		if( cp <= 0x7FU ) {
 			app( u32toC( cp ) );
-			rng.first = first;
+			parse_state.first = first;
 			return;
 		}
 		if( 0xD800U <= cp and cp <= 0xDBFFU ) {
 			cp = ( cp - 0xD800U ) * 0x400U;
 			++first;
-			daw_json_assert_weak( *first == 'u', ErrorReason::InvalidUTFEscape, rng );
+			daw_json_assert_weak( *first == 'u', ErrorReason::InvalidUTFEscape,
+			                      parse_state );
 			++first;
 			auto trailing =
 			  to_uint32( byte_from_nibbles<is_unchecked_input>( first ) ) << 8U;
@@ -140,7 +143,7 @@ namespace DAW_JSON_NS::json_details {
 			app( enc1 );
 			app( enc2 );
 			app( enc3 );
-			rng.first = first;
+			parse_state.first = first;
 			return;
 		}
 		if( cp >= 0x800U ) {
@@ -152,7 +155,7 @@ namespace DAW_JSON_NS::json_details {
 			app( enc0 );
 			app( enc1 );
 			app( enc2 );
-			rng.first = first;
+			parse_state.first = first;
 			return;
 		}
 		// cp >= 0x80U
@@ -161,7 +164,7 @@ namespace DAW_JSON_NS::json_details {
 		char const enc0 = u32toC( ( cp >> 6U ) | 0b1100'0000U );
 		app( enc0 );
 		app( enc1 );
-		rng.first = first;
+		parse_state.first = first;
 	}
 
 	namespace parse_tokens {
@@ -171,29 +174,31 @@ namespace DAW_JSON_NS::json_details {
 	// Fast path for parsing escaped strings to a std::string with the default
 	// appender
 	template<bool AllowHighEight, typename JsonMember, bool KnownBounds,
-	         typename Range>
+	         typename ParseState>
 	[[nodiscard, maybe_unused]] constexpr auto // json_result<JsonMember>
-	parse_string_known_stdstring( Range &rng ) {
+	parse_string_known_stdstring( ParseState &parse_state ) {
 		using string_type = json_base_type<JsonMember>;
-		string_type result = string_type( std::size( rng ), '\0',
-		                                  rng.template get_allocator_for<char>( ) );
+		string_type result =
+		  string_type( std::size( parse_state ), '\0',
+		               parse_state.template get_allocator_for<char>( ) );
 
 		char *it = std::data( result );
 
-		bool const has_quote = rng.front( ) == '"';
+		bool const has_quote = parse_state.front( ) == '"';
 		if( has_quote ) {
-			rng.remove_prefix( );
+			parse_state.remove_prefix( );
 		}
 
-		if( auto const first_slash = static_cast<std::ptrdiff_t>( rng.counter ) - 1;
+		if( auto const first_slash =
+		      static_cast<std::ptrdiff_t>( parse_state.counter ) - 1;
 		    first_slash > 1 ) {
-			it = std::copy_n( rng.first, first_slash, it );
-			rng.first += first_slash;
+			it = std::copy_n( parse_state.first, first_slash, it );
+			parse_state.first += first_slash;
 		}
 		constexpr auto pred = []( auto const &r ) {
-			if constexpr( Range::is_unchecked_input ) {
+			if constexpr( ParseState::is_unchecked_input ) {
 				return r.front( ) != '"';
-			} else if constexpr( Range::is_zero_terminated_string ) {
+			} else if constexpr( ParseState::is_zero_terminated_string ) {
 				char const c = r.front( );
 				return DAW_JSON_LIKELY( c != '\0' ) & ( c != '"' );
 			} else {
@@ -201,87 +206,90 @@ namespace DAW_JSON_NS::json_details {
 			}
 		};
 
-		while( pred( rng ) ) {
+		while( pred( parse_state ) ) {
 			{
-				char const *first = rng.first;
-				char const *const last = rng.last;
-				if constexpr( std::is_same_v<typename Range::exec_tag_t,
+				char const *first = parse_state.first;
+				char const *const last = parse_state.last;
+				if constexpr( std::is_same_v<typename ParseState::exec_tag_t,
 				                             constexpr_exec_tag> ) {
 					while( not key_table<'"', '\\'>[*first] ) {
 						++first;
 						daw_json_assert_weak( KnownBounds or first < last,
-						                      ErrorReason::UnexpectedEndOfData, rng );
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
 					}
 				} else {
-					first = mem_move_to_next_of<Range::is_unchecked_input, '"', '\\'>(
-					  Range::exec_tag, first, last );
+					first =
+					  mem_move_to_next_of<ParseState::is_unchecked_input, '"', '\\'>(
+					    ParseState::exec_tag, first, last );
 				}
-				it = std::copy( rng.first, first, it );
-				rng.first = first;
+				it = std::copy( parse_state.first, first, it );
+				parse_state.first = first;
 			}
-			if( rng.front( ) == '\\' ) {
-				daw_json_assert_weak( not rng.is_space_unchecked( ),
-				                      ErrorReason::InvalidUTFCodepoint, rng );
-				rng.remove_prefix( );
-				switch( rng.front( ) ) {
+			if( parse_state.front( ) == '\\' ) {
+				daw_json_assert_weak( not parse_state.is_space_unchecked( ),
+				                      ErrorReason::InvalidUTFCodepoint, parse_state );
+				parse_state.remove_prefix( );
+				switch( parse_state.front( ) ) {
 				case 'b':
 					*it++ = '\b';
-					rng.remove_prefix( );
+					parse_state.remove_prefix( );
 					break;
 				case 'f':
 					*it++ = '\f';
-					rng.remove_prefix( );
+					parse_state.remove_prefix( );
 					break;
 				case 'n':
 					*it++ = '\n';
-					rng.remove_prefix( );
+					parse_state.remove_prefix( );
 					break;
 				case 'r':
 					*it++ = '\r';
-					rng.remove_prefix( );
+					parse_state.remove_prefix( );
 					break;
 				case 't':
 					*it++ = '\t';
-					rng.remove_prefix( );
+					parse_state.remove_prefix( );
 					break;
 				case 'u':
-					it = decode_utf16( rng, it );
+					it = decode_utf16( parse_state, it );
 					break;
 				case '/':
 				case '\\':
 				case '"':
-					*it++ = rng.front( );
-					rng.remove_prefix( );
+					*it++ = parse_state.front( );
+					parse_state.remove_prefix( );
 					break;
 				default:
 					if constexpr( not AllowHighEight ) {
 						daw_json_assert_weak(
-						  ( not rng.is_space_unchecked( ) ) &
-						    ( static_cast<unsigned char>( rng.front( ) ) <= 0x7FU ),
-						  ErrorReason::InvalidStringHighASCII, rng );
+						  ( not parse_state.is_space_unchecked( ) ) &
+						    ( static_cast<unsigned char>( parse_state.front( ) ) <= 0x7FU ),
+						  ErrorReason::InvalidStringHighASCII, parse_state );
 					}
-					*it++ = rng.front( );
-					rng.remove_prefix( );
+					*it++ = parse_state.front( );
+					parse_state.remove_prefix( );
 				}
 			} else {
-				daw_json_assert_weak( not has_quote or rng.is_quotes_checked( ),
-				                      ErrorReason::InvalidString, rng );
+				daw_json_assert_weak( not has_quote or parse_state.is_quotes_checked( ),
+				                      ErrorReason::InvalidString, parse_state );
 			}
-			daw_json_assert_weak( not has_quote or rng.has_more( ),
-			                      ErrorReason::UnexpectedEndOfData, rng );
+			daw_json_assert_weak( not has_quote or parse_state.has_more( ),
+			                      ErrorReason::UnexpectedEndOfData, parse_state );
 		}
 		auto const sz =
 		  static_cast<std::size_t>( std::distance( std::data( result ), it ) );
 		daw_json_assert_weak( std::size( result ) >= sz, ErrorReason::InvalidString,
-		                      rng );
+		                      parse_state );
 		result.resize( sz );
 		if constexpr( std::is_convertible_v<string_type,
 		                                    json_result<JsonMember>> ) {
 			return result;
 		} else {
 			using constructor_t = typename JsonMember::constructor_t;
-			construct_value<json_result<JsonMember>>(
-			  constructor_t{ }, rng, std::data( result ), daw::data_end( result ) );
+			construct_value<json_result<JsonMember>>( constructor_t{ }, parse_state,
+			                                          std::data( result ),
+			                                          daw::data_end( result ) );
 		}
 	}
 } // namespace DAW_JSON_NS::json_details

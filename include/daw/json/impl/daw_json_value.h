@@ -26,94 +26,95 @@
 namespace DAW_JSON_NS {
 	/***
 	 * A container for arbitrary JSON values
-	 * @tparam Range see IteratorRange
+	 * @tparam ParseState see IteratorRange
 	 */
-	template<typename Range>
+	template<typename ParseState>
 	class basic_json_value;
 
 	/***
 	 * A name/value pair of string_view/json_value
-	 * @tparam Range see IteratorRange
+	 * @tparam ParseState see IteratorRange
 	 */
-	template<typename Range>
+	template<typename ParseState>
 	struct basic_json_pair {
 		std::optional<std::string_view> name;
-		basic_json_value<Range> value;
+		basic_json_value<ParseState> value;
 	};
 
-	template<std::size_t Idx, typename Range>
-	constexpr decltype( auto ) get( basic_json_pair<Range> const &rng ) {
+	template<std::size_t Idx, typename ParseState>
+	constexpr decltype( auto )
+	get( basic_json_pair<ParseState> const &parse_state ) {
 		static_assert( Idx < 2 );
 		if constexpr( Idx == 0 ) {
-			return rng.name;
+			return parse_state.name;
 		} else {
-			return rng.value;
+			return parse_state.value;
 		}
 	}
 
-	template<std::size_t Idx, typename Range>
-	constexpr decltype( auto ) get( basic_json_pair<Range> &rng ) {
+	template<std::size_t Idx, typename ParseState>
+	constexpr decltype( auto ) get( basic_json_pair<ParseState> &parse_state ) {
 		static_assert( Idx < 2 );
 		if constexpr( Idx == 0 ) {
-			return rng.name;
+			return parse_state.name;
 		} else {
-			return rng.value;
+			return parse_state.value;
 		}
 	}
 
-	template<std::size_t Idx, typename Range>
-	constexpr decltype( auto ) get( basic_json_pair<Range> &&rng ) {
+	template<std::size_t Idx, typename ParseState>
+	constexpr decltype( auto ) get( basic_json_pair<ParseState> &&parse_state ) {
 		static_assert( Idx < 2 );
 		if constexpr( Idx == 0 ) {
-			return DAW_MOVE( rng.name );
+			return DAW_MOVE( parse_state.name );
 		} else {
-			return DAW_MOVE( rng.value );
+			return DAW_MOVE( parse_state.value );
 		}
 	}
 } // namespace DAW_JSON_NS
 
 namespace std {
-	template<typename Range>
-	class tuple_element<0, DAW_JSON_NS::basic_json_pair<Range>> {
+	template<typename ParseState>
+	class tuple_element<0, DAW_JSON_NS::basic_json_pair<ParseState>> {
 	public:
 		using type = std::optional<std::string_view>;
 	};
 
-	template<typename Range>
-	class tuple_element<1, DAW_JSON_NS::basic_json_pair<Range>> {
+	template<typename ParseState>
+	class tuple_element<1, DAW_JSON_NS::basic_json_pair<ParseState>> {
 	public:
-		using type = DAW_JSON_NS::basic_json_value<Range>;
+		using type = DAW_JSON_NS::basic_json_value<ParseState>;
 	};
 
-	template<typename Range>
-	class tuple_size<DAW_JSON_NS::basic_json_pair<Range>>
+	template<typename ParseState>
+	class tuple_size<DAW_JSON_NS::basic_json_pair<ParseState>>
 	  : public std::integral_constant<std::size_t, 2> {};
 } // namespace std
 
 namespace DAW_JSON_NS {
 	/***
-	 * Iterator for iterating over arbutrary JSON members and array elements
-	 * @tparam Range see IteratorRange
+	 * Iterator for iterating over arbitrary JSON members and array elements
+	 * @tparam ParseState see IteratorRange
 	 */
-	template<typename Range>
+	template<typename ParseState>
 	struct basic_json_value_iterator {
 		using key_type = std::string_view;
-		using mapped_type = basic_json_value<Range>;
+		using mapped_type = basic_json_value<ParseState>;
 
-		using json_pair = basic_json_pair<Range>;
-		using value_type = basic_json_pair<Range>;
+		using json_pair = basic_json_pair<ParseState>;
+		using value_type = basic_json_pair<ParseState>;
 		using reference = value_type;
 		using pointer = json_details::arrow_proxy<value_type>;
 		using difference_type = std::ptrdiff_t;
 		using iterator_category = std::forward_iterator_tag;
 
 	private:
-		Range m_state{ };
+		ParseState m_state{ };
 
-		constexpr basic_json_value_iterator( Range rng )
-		  : m_state( rng ) {}
+		constexpr basic_json_value_iterator( ParseState parse_state )
+		  : m_state( parse_state ) {}
 
-		friend class ::DAW_JSON_NS::basic_json_value<Range>;
+		friend class ::DAW_JSON_NS::basic_json_value<ParseState>;
 
 	public:
 		constexpr basic_json_value_iterator( ) = default;
@@ -126,8 +127,8 @@ namespace DAW_JSON_NS {
 			if( is_array( ) ) {
 				return { };
 			}
-			auto rng = m_state;
-			auto result = json_details::parse_name( rng );
+			auto parse_state = m_state;
+			auto result = json_details::parse_name( parse_state );
 			return std::string_view( std::data( result ), std::size( result ) );
 		}
 
@@ -136,27 +137,27 @@ namespace DAW_JSON_NS {
 		 * @return A basic_json_value representing the currently referenced element
 		 * in the range
 		 */
-		[[nodiscard]] constexpr basic_json_value<Range> value( ) const {
+		[[nodiscard]] constexpr basic_json_value<ParseState> value( ) const {
 			if( is_array( ) ) {
-				return Range( m_state );
+				return ParseState( m_state );
 			}
-			auto rng = m_state;
-			(void)json_details::parse_name( rng );
-			return Range( rng.first, rng.last );
+			auto parse_state = m_state;
+			(void)json_details::parse_name( parse_state );
+			return ParseState( parse_state.first, parse_state.last );
 		}
 
 		/***
 		 * Get the name/value pair of the currently referenced element
 		 * @return a json_pair with the name, if any, and json_value
 		 */
-		[[nodiscard]] constexpr basic_json_pair<Range> operator*( ) {
+		[[nodiscard]] constexpr basic_json_pair<ParseState> operator*( ) {
 			if( is_array( ) ) {
-				return { { }, Range( m_state.first, m_state.last ) };
+				return { { }, ParseState( m_state.first, m_state.last ) };
 			}
-			auto rng = m_state;
-			auto name = json_details::parse_name( rng );
+			auto parse_state = m_state;
+			auto name = json_details::parse_name( parse_state );
 			return { std::string_view( std::data( name ), std::size( name ) ),
-			         Range( rng.first, rng.last ) };
+			         ParseState( parse_state.first, parse_state.last ) };
 		}
 
 		/***
@@ -258,7 +259,7 @@ namespace DAW_JSON_NS {
 		 * @return true if both are equivilent
 		 */
 		[[nodiscard]] constexpr bool
-		operator==( basic_json_value_iterator<Range> const &rhs ) const {
+		operator==( basic_json_value_iterator<ParseState> const &rhs ) const {
 			if( good( ) ) {
 				if( rhs.good( ) ) {
 					return m_state.first == rhs.m_state.first;
@@ -274,14 +275,14 @@ namespace DAW_JSON_NS {
 		 * @return true if the rhs is not equivilent
 		 */
 		[[nodiscard]] constexpr bool
-		operator!=( basic_json_value_iterator<Range> const &rhs ) const {
+		operator!=( basic_json_value_iterator<ParseState> const &rhs ) const {
 			return not operator==( rhs );
 		}
 	};
 
-	template<typename Range>
+	template<typename ParseState>
 	struct basic_json_value_iterator_range {
-		using iterator = basic_json_value_iterator<Range>;
+		using iterator = basic_json_value_iterator<ParseState>;
 		iterator first;
 		iterator last;
 
@@ -292,58 +293,58 @@ namespace DAW_JSON_NS {
 			return last;
 		}
 	};
-	template<typename Range>
-	basic_json_value_iterator_range( basic_json_value_iterator<Range>,
-	                                 basic_json_value_iterator<Range> )
-	  -> basic_json_value_iterator_range<Range>;
+	template<typename ParseState>
+	basic_json_value_iterator_range( basic_json_value_iterator<ParseState>,
+	                                 basic_json_value_iterator<ParseState> )
+	  -> basic_json_value_iterator_range<ParseState>;
 
 	/***
 	 * A container for arbitrary JSON values
-	 * @tparam Range see IteratorRange
+	 * @tparam ParseState see IteratorRange
 	 */
-	template<typename Range>
+	template<typename ParseState>
 	class basic_json_value {
-		Range m_rng{ };
+		ParseState m_parse_state{ };
 
 	public:
-		using iterator = basic_json_value_iterator<Range>;
+		using iterator = basic_json_value_iterator<ParseState>;
 
 		/***
 		 * Construct from IteratorRange
-		 * @param rng string data where start is the start of our value
+		 * @param parse_state string data where start is the start of our value
 		 */
-		inline constexpr basic_json_value( Range rng )
-		  : m_rng( DAW_MOVE( rng ) ) {
+		inline constexpr basic_json_value( ParseState parse_state )
+		  : m_parse_state( DAW_MOVE( parse_state ) ) {
 			// Ensure we are at the actual value
-			m_rng.trim_left( );
+			m_parse_state.trim_left( );
 		}
 
 		/***
 		 * Construct from std::string_view
 		 */
 		explicit inline constexpr basic_json_value( std::string_view sv )
-		  : m_rng( std::data( sv ), daw::data_end( sv ) ) {}
+		  : m_parse_state( std::data( sv ), daw::data_end( sv ) ) {}
 
 		/***
 		 * Construct from char const *, std::size_t
 		 */
 		explicit inline constexpr basic_json_value( char const *first,
 		                                            std::size_t sz )
-		  : m_rng( first, first + static_cast<std::ptrdiff_t>( sz ) ) {}
+		  : m_parse_state( first, first + static_cast<std::ptrdiff_t>( sz ) ) {}
 
 		/***
 		 * Construct from char const *, char const *
 		 */
 		explicit inline constexpr basic_json_value( char const *first,
 		                                            char const *last )
-		  : m_rng( first, last ) {}
+		  : m_parse_state( first, last ) {}
 
 		/***
 		 * Get a copy of the underlying range
 		 * @return IteratorRange containing values JSON data
 		 */
-		[[nodiscard]] inline constexpr Range get_range( ) const {
-			return m_rng;
+		[[nodiscard]] inline constexpr ParseState get_range( ) const {
+			return m_parse_state;
 		}
 
 		/***
@@ -352,10 +353,11 @@ namespace DAW_JSON_NS {
 		 * @return basic_json_value_iterator to the first item/member
 		 */
 		[[nodiscard]] inline constexpr iterator begin( ) const {
-			Range rng = Range( m_rng.first, m_rng.last );
-			rng.remove_prefix( );
-			rng.trim_left( );
-			return basic_json_value_iterator<Range>( rng );
+			ParseState parse_state =
+			  ParseState( m_parse_state.first, m_parse_state.last );
+			parse_state.remove_prefix( );
+			parse_state.trim_left( );
+			return basic_json_value_iterator<ParseState>( parse_state );
 		}
 
 		/***
@@ -363,7 +365,7 @@ namespace DAW_JSON_NS {
 		 * @return default constructed basic_json_value_iterator
 		 */
 		[[nodiscard]] inline constexpr iterator end( ) const {
-			return basic_json_value_iterator<Range>( );
+			return basic_json_value_iterator<ParseState>( );
 		}
 
 		/***
@@ -371,10 +373,10 @@ namespace DAW_JSON_NS {
 		 * @return a JSONBaseParseTypes enum value with the type of this JSON value
 		 */
 		[[nodiscard]] JsonBaseParseTypes type( ) const {
-			if( not m_rng.has_more( ) ) {
+			if( not m_parse_state.has_more( ) ) {
 				return JsonBaseParseTypes::None;
 			}
-			switch( m_rng.front( ) ) {
+			switch( m_parse_state.front( ) ) {
 			case '"':
 				return JsonBaseParseTypes::String;
 			case '{':
@@ -394,8 +396,8 @@ namespace DAW_JSON_NS {
 			case '9':
 				return JsonBaseParseTypes::Number;
 			case 't':
-				if constexpr( not Range::is_unchecked_input ) {
-					if( m_rng.starts_with( "true" ) ) {
+				if constexpr( not ParseState::is_unchecked_input ) {
+					if( m_parse_state.starts_with( "true" ) ) {
 						return JsonBaseParseTypes::Bool;
 					}
 					return JsonBaseParseTypes::None;
@@ -403,8 +405,8 @@ namespace DAW_JSON_NS {
 					return JsonBaseParseTypes::Bool;
 				}
 			case 'f':
-				if constexpr( not Range::is_unchecked_input ) {
-					if( m_rng.starts_with( "false" ) ) {
+				if constexpr( not ParseState::is_unchecked_input ) {
+					if( m_parse_state.starts_with( "false" ) ) {
 						return JsonBaseParseTypes::Bool;
 					}
 					return JsonBaseParseTypes::None;
@@ -412,8 +414,8 @@ namespace DAW_JSON_NS {
 					return JsonBaseParseTypes::Bool;
 				}
 			case 'n':
-				daw_json_assert_weak( m_rng.starts_with( "null" ),
-				                      ErrorReason::InvalidNull, m_rng );
+				daw_json_assert_weak( m_parse_state.starts_with( "null" ),
+				                      ErrorReason::InvalidNull, m_parse_state );
 				return JsonBaseParseTypes::Null;
 			}
 			return JsonBaseParseTypes::None;
@@ -424,8 +426,8 @@ namespace DAW_JSON_NS {
 		 * @return the JSON data as a std::string_view
 		 */
 		[[nodiscard]] constexpr std::string_view get_string_view( ) const {
-			auto rng = m_rng;
-			auto result = json_details::skip_value( rng );
+			auto parse_state = m_parse_state;
+			auto result = json_details::skip_value( parse_state );
 			if( is_string( ) ) {
 				--result.first;
 				++result.last;
@@ -441,8 +443,8 @@ namespace DAW_JSON_NS {
 		         typename Traits = std::char_traits<char>>
 		[[nodiscard]] std::basic_string<char, Traits, Allocator>
 		get_string( Allocator const &alloc = std::allocator<char>( ) ) const {
-			auto rng = m_rng;
-			auto result = json_details::skip_value( rng );
+			auto parse_state = m_parse_state;
+			auto result = json_details::skip_value( parse_state );
 			if( is_string( ) ) {
 				--result.first;
 				++result.last;
@@ -455,7 +457,7 @@ namespace DAW_JSON_NS {
 		 * @return true if the value is a null literal
 		 */
 		[[nodiscard]] constexpr bool is_null( ) const {
-			return ( m_rng.starts_with( "null" ) );
+			return ( m_parse_state.starts_with( "null" ) );
 		}
 
 		/***
@@ -463,7 +465,7 @@ namespace DAW_JSON_NS {
 		 * @return true if the value is a class
 		 */
 		[[nodiscard]] constexpr bool is_class( ) const {
-			return m_rng.is_opening_brace_checked( );
+			return m_parse_state.is_opening_brace_checked( );
 		}
 
 		/***
@@ -471,7 +473,7 @@ namespace DAW_JSON_NS {
 		 * @return true if the value is a array
 		 */
 		[[nodiscard]] constexpr bool is_array( ) const {
-			return m_rng.is_opening_bracket_checked( );
+			return m_parse_state.is_opening_bracket_checked( );
 		}
 
 		/***
@@ -479,10 +481,10 @@ namespace DAW_JSON_NS {
 		 * @return true if the value is a number literal
 		 */
 		[[nodiscard]] constexpr bool is_number( ) const {
-			if( not m_rng.has_more( ) ) {
+			if( not m_parse_state.has_more( ) ) {
 				return false;
 			}
-			switch( m_rng.front( ) ) {
+			switch( m_parse_state.front( ) ) {
 			case '0':
 			case '1':
 			case '2':
@@ -505,7 +507,7 @@ namespace DAW_JSON_NS {
 		 * @return true if the value is a string
 		 */
 		[[nodiscard]] inline constexpr bool is_string( ) const {
-			return m_rng.is_quotes_checked( );
+			return m_parse_state.is_quotes_checked( );
 		}
 
 		/***
@@ -513,19 +515,19 @@ namespace DAW_JSON_NS {
 		 * @return true if the value is a boolean
 		 */
 		[[nodiscard]] constexpr bool is_bool( ) const {
-			if( not m_rng.has_more( ) ) {
+			if( not m_parse_state.has_more( ) ) {
 				return false;
 			}
-			switch( m_rng.front( ) ) {
+			switch( m_parse_state.front( ) ) {
 			case 't':
-				if constexpr( not Range::is_unchecked_input ) {
-					return m_rng == "true";
+				if constexpr( not ParseState::is_unchecked_input ) {
+					return m_parse_state == "true";
 				} else {
 					return true;
 				}
 			case 'f':
-				if constexpr( not Range::is_unchecked_input ) {
-					return m_rng == "false";
+				if constexpr( not ParseState::is_unchecked_input ) {
+					return m_parse_state == "false";
 				} else {
 					return true;
 				}
@@ -542,12 +544,13 @@ namespace DAW_JSON_NS {
 			return type( ) == JsonBaseParseTypes::None;
 		}
 
-		template<typename NewRange>
-		explicit inline constexpr operator basic_json_value<NewRange>( ) const {
-			auto new_range = NewRange( m_rng.first, m_rng.last );
-			new_range.class_first = m_rng.class_first;
-			new_range.class_last = m_rng.class_last;
-			return basic_json_value<NewRange>( DAW_MOVE( new_range ) );
+		template<typename NewParseState>
+		explicit inline constexpr
+		operator basic_json_value<NewParseState>( ) const {
+			auto new_range = NewParseState( m_parse_state.first, m_parse_state.last );
+			new_range.class_first = m_parse_state.class_first;
+			new_range.class_last = m_parse_state.class_last;
+			return basic_json_value<NewParseState>( DAW_MOVE( new_range ) );
 		}
 	};
 } // namespace DAW_JSON_NS

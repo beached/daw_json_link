@@ -153,30 +153,34 @@ namespace DAW_JSON_NS::json_details {
 		return first;
 	}
 
-	template<typename Result, bool KnownRange, typename Range,
+	template<typename Result, bool KnownRange, typename ParseState,
 	         std::enable_if_t<KnownRange, std::nullptr_t> = nullptr>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
-	parse_real( Range &rng ) {
+	parse_real( ParseState &parse_state ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
-		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
-		  ErrorReason::InvalidNumberStart, rng );
+		  parse_state.has_more( ) and
+		    parse_policy_details::is_number_start( parse_state.front( ) ),
+		  ErrorReason::InvalidNumberStart, parse_state );
 
-		char const *whole_first = rng.first;
-		char const *whole_last = rng.class_first ? rng.class_first : rng.class_last;
-		char const *fract_first = rng.class_first ? rng.class_first + 1 : nullptr;
-		char const *fract_last = rng.class_last;
-		char const *exp_first = rng.class_last ? rng.class_last + 1 : nullptr;
-		char const *const exp_last = rng.last;
+		char const *whole_first = parse_state.first;
+		char const *whole_last = parse_state.class_first ? parse_state.class_first
+		                                                 : parse_state.class_last;
+		char const *fract_first =
+		  parse_state.class_first ? parse_state.class_first + 1 : nullptr;
+		char const *fract_last = parse_state.class_last;
+		char const *exp_first =
+		  parse_state.class_last ? parse_state.class_last + 1 : nullptr;
+		char const *const exp_last = parse_state.last;
 
-		if( rng.class_first == nullptr ) {
-			if( rng.class_last == nullptr ) {
-				whole_last = rng.last;
+		if( parse_state.class_first == nullptr ) {
+			if( parse_state.class_last == nullptr ) {
+				whole_last = parse_state.last;
 			} else {
-				whole_last = rng.class_last;
+				whole_last = parse_state.class_last;
 			}
-		} else if( rng.class_last == nullptr ) {
-			fract_last = rng.last;
+		} else if( parse_state.class_last == nullptr ) {
+			fract_last = parse_state.last;
 		}
 
 		bool const sign = [&] {
@@ -241,25 +245,28 @@ namespace DAW_JSON_NS::json_details {
 			}( );
 		}
 		if( sign ) {
-			return -power10<Result>(
-			  Range::exec_tag, static_cast<Result>( significant_digits ), exponent );
+			return -power10<Result>( ParseState::exec_tag,
+			                         static_cast<Result>( significant_digits ),
+			                         exponent );
 		}
-		return power10<Result>(
-		  Range::exec_tag, static_cast<Result>( significant_digits ), exponent );
+		return power10<Result>( ParseState::exec_tag,
+		                        static_cast<Result>( significant_digits ),
+		                        exponent );
 	}
 
-	template<typename Result, bool KnownRange, typename Range,
+	template<typename Result, bool KnownRange, typename ParseState,
 	         std::enable_if_t<not KnownRange, std::nullptr_t> = nullptr>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Result
-	parse_real( Range &rng ) {
+	parse_real( ParseState &parse_state ) {
 		// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 		daw_json_assert_weak(
-		  rng.has_more( ) and parse_policy_details::is_number_start( rng.front( ) ),
-		  ErrorReason::InvalidNumberStart, rng );
+		  parse_state.has_more( ) and
+		    parse_policy_details::is_number_start( parse_state.front( ) ),
+		  ErrorReason::InvalidNumberStart, parse_state );
 
 		Result const sign = [&] {
-			if( rng.front( ) == '-' ) {
-				rng.remove_prefix( );
+			if( parse_state.front( ) == '-' ) {
+				parse_state.remove_prefix( );
 				return static_cast<Result>( -1 );
 			}
 			return static_cast<Result>( 1 );
@@ -273,21 +280,22 @@ namespace DAW_JSON_NS::json_details {
 		using signed_t =
 		  std::conditional_t<max_storage_digits >= max_exponent, int, Result>;
 
-		char const *first = rng.first;
+		char const *first = parse_state.first;
 		char const *const whole_last =
-		  rng.first + std::min( rng.last - rng.first, max_exponent );
+		  parse_state.first +
+		  std::min( parse_state.last - parse_state.first, max_exponent );
 
 		unsigned_t significant_digits = 0;
 		char const *last_char =
-		  parse_real_digits_while_number<Range::is_unchecked_input>(
+		  parse_real_digits_while_number<ParseState::is_unchecked_input>(
 		    first, whole_last, significant_digits );
 
 		signed_t exponent = [&] {
 			if( last_char >= whole_last ) {
 				// We have sig digits we cannot parse because there isn't enough room in
 				// a std::uint64_t
-				char const *ptr =
-				  skip_digits<Range::is_unchecked_input>( last_char, rng.last );
+				char const *ptr = skip_digits<ParseState::is_unchecked_input>(
+				  last_char, parse_state.last );
 				auto const diff = ptr - last_char;
 				last_char = ptr;
 				return static_cast<signed_t>( diff );
@@ -298,36 +306,39 @@ namespace DAW_JSON_NS::json_details {
 			exponent = 0;
 		}
 		first = last_char;
-		if( ( ( Range::is_unchecked_input or
-		        DAW_JSON_LIKELY( first < rng.last ) ) and
+		if( ( ( ParseState::is_unchecked_input or
+		        DAW_JSON_LIKELY( first < parse_state.last ) ) and
 		      *first == '.' ) ) {
 			++first;
 			if( exponent != 0 ) {
-				first = skip_digits<Range::is_unchecked_input>( first, rng.last );
+				first = skip_digits<ParseState::is_unchecked_input>( first,
+				                                                     parse_state.last );
 			} else {
 				char const *fract_last =
-				  first + std::min( rng.last - first,
+				  first + std::min( parse_state.last - first,
 				                    static_cast<std::ptrdiff_t>(
-				                      max_exponent - ( first - rng.first ) ) );
+				                      max_exponent - ( first - parse_state.first ) ) );
 
-				last_char = parse_real_digits_while_number<Range::is_unchecked_input>(
-				  first, fract_last, significant_digits );
+				last_char =
+				  parse_real_digits_while_number<ParseState::is_unchecked_input>(
+				    first, fract_last, significant_digits );
 				exponent -= static_cast<signed_t>( last_char - first );
 				first = last_char;
 				if( first >= fract_last ) {
-					first = skip_digits<Range::is_unchecked_input>( first, rng.last );
+					first = skip_digits<ParseState::is_unchecked_input>(
+					  first, parse_state.last );
 				}
 			}
 		}
 
 		exponent += [&] {
-			if( ( Range::is_unchecked_input or first < rng.last ) and
+			if( ( ParseState::is_unchecked_input or first < parse_state.last ) and
 			    ( ( *first | 0x20 ) == 'e' ) ) {
 				++first;
 				bool const exp_sign = [&] {
-					daw_json_assert_weak( first < rng.last,
+					daw_json_assert_weak( first < parse_state.last,
 					                      ErrorReason::UnexpectedEndOfData,
-					                      rng.copy( first ) );
+					                      parse_state.copy( first ) );
 					switch( *first ) {
 					case '+':
 						++first;
@@ -339,11 +350,12 @@ namespace DAW_JSON_NS::json_details {
 						return false;
 					}
 				}( );
-				daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
-				                      rng );
+				daw_json_assert_weak( parse_state.has_more( ),
+				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				unsigned_t exp_tmp = 0;
-				last_char = parse_real_digits_while_number<Range::is_unchecked_input>(
-				  first, rng.last, exp_tmp );
+				last_char =
+				  parse_real_digits_while_number<ParseState::is_unchecked_input>(
+				    first, parse_state.last, exp_tmp );
 				first = last_char;
 				if( exp_sign ) {
 					return -static_cast<signed_t>( exp_tmp );
@@ -352,8 +364,8 @@ namespace DAW_JSON_NS::json_details {
 			}
 			return static_cast<signed_t>( 0 );
 		}( );
-		rng.first = first;
-		return sign * power10<Result>( Range::exec_tag,
+		parse_state.first = first;
+		return sign * power10<Result>( ParseState::exec_tag,
 		                               static_cast<Result>( significant_digits ),
 		                               exponent );
 	}

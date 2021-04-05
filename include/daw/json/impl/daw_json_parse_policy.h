@@ -63,7 +63,7 @@ namespace DAW_JSON_NS {
 		iterator class_first{ };
 		iterator class_last{ };
 		std::size_t counter = 0;
-		using Range = BasicParsePolicy;
+		using ParseState = BasicParsePolicy;
 
 		inline constexpr BasicParsePolicy( ) = default;
 
@@ -239,7 +239,7 @@ namespace DAW_JSON_NS {
 		template<char c>
 		DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of_unchecked( ) {
 
-			if constexpr( traits::not_same_v<Range::exec_tag_t,
+			if constexpr( traits::not_same_v<ParseState::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
 				first = reinterpret_cast<char const *>( std::memchr(
 				  first, c, static_cast<std::size_t>( class_last - first ) ) );
@@ -253,7 +253,7 @@ namespace DAW_JSON_NS {
 		template<char c>
 		DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of_checked( ) {
 
-			if constexpr( traits::not_same_v<Range::exec_tag_t,
+			if constexpr( traits::not_same_v<ParseState::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
 				first = reinterpret_cast<char const *>( std::memchr(
 				  first, c, static_cast<std::size_t>( class_last - first ) ) );
@@ -425,20 +425,20 @@ namespace DAW_JSON_NS {
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
 		skip_bracketed_item_checked( ) {
 			return CommentPolicy::template skip_bracketed_item_checked<
 			  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
 		}
 
 		template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Range
+		[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
 		skip_bracketed_item_unchecked( ) {
 			return CommentPolicy::template skip_bracketed_item_unchecked<
 			  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
 		}
 
-		[[nodiscard]] inline constexpr Range skip_class( ) {
+		[[nodiscard]] inline constexpr ParseState skip_class( ) {
 			if constexpr( is_unchecked_input ) {
 				return skip_bracketed_item_unchecked<'{', '}', '[', ']'>( );
 			} else {
@@ -446,7 +446,7 @@ namespace DAW_JSON_NS {
 			}
 		}
 
-		[[nodiscard]] inline constexpr Range skip_array( ) {
+		[[nodiscard]] inline constexpr ParseState skip_array( ) {
 			if constexpr( is_unchecked_input ) {
 				return skip_bracketed_item_unchecked<'[', ']', '{', '}'>( );
 			} else {

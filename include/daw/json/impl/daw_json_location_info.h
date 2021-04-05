@@ -35,18 +35,18 @@ namespace DAW_JSON_NS::json_details {
 			return first == nullptr;
 		}
 
-		template<typename Range>
-		constexpr void set_range( Range rng ) {
-			first = rng.first;
-			last = rng.last;
-			class_first = rng.class_first;
-			class_last = rng.class_last;
-			counter = rng.counter;
+		template<typename ParseState>
+		constexpr void set_range( ParseState parse_state ) {
+			first = parse_state.first;
+			last = parse_state.last;
+			class_first = parse_state.class_first;
+			class_last = parse_state.class_last;
+			counter = parse_state.counter;
 		}
 
-		template<typename Range>
+		template<typename ParseState>
 		constexpr auto get_range( ) const {
-			using range_t = typename Range::without_allocator_type;
+			using range_t = typename ParseState::without_allocator_type;
 			auto result = range_t( first, last, class_first, class_last );
 			result.counter = counter;
 			return result;
@@ -117,10 +117,10 @@ namespace DAW_JSON_NS::json_details {
 	}
 
 	// Should never be called outsite a consteval context
-	template<typename Range, typename... JsonMembers>
+	template<typename ParseState, typename... JsonMembers>
 	constexpr auto make_locations_info( ) {
-		constexpr bool hashes_collide =
-		  Range::force_name_equal_check or do_hashes_collide<JsonMembers...>( );
+		constexpr bool hashes_collide = ParseState::force_name_equal_check or
+		                                do_hashes_collide<JsonMembers...>( );
 		return locations_info_t<sizeof...( JsonMembers ), hashes_collide>{
 		  { daw::name_hash( JsonMembers::name )... },
 		  { location_info_t( JsonMembers::name )... } };
@@ -130,38 +130,38 @@ namespace DAW_JSON_NS::json_details {
 	 * Get the position from already seen JSON members or move the parser
 	 * forward until we reach the end of the class or the member.
 	 * @tparam N Number of members in json_class
-	 * @tparam Range see IteratorRange
+	 * @tparam ParseState see IteratorRange
 	 * @param locations members location and names
-	 * @param rng Current JSON data
+	 * @param parse_state Current JSON data
 	 * @return IteratorRange with begin( ) being start of value
 	 */
 	template<std::size_t pos, bool from_start = false, std::size_t N,
-	         typename Range, bool B>
-	[[nodiscard]] static inline constexpr Range
-	find_class_member( locations_info_t<N, B> &locations, Range &rng,
+	         typename ParseState, bool B>
+	[[nodiscard]] static inline constexpr ParseState
+	find_class_member( locations_info_t<N, B> &locations, ParseState &parse_state,
 	                   bool is_nullable, daw::string_view member_name ) {
 
 		daw_json_assert_weak( is_nullable or ( not locations[pos].missing( ) ) or
-		                        ( not rng.is_closing_brace_checked( ) ),
-		                      missing_member( member_name ), rng );
+		                        ( not parse_state.is_closing_brace_checked( ) ),
+		                      missing_member( member_name ), parse_state );
 
-		rng.trim_left_unchecked( );
+		parse_state.trim_left_unchecked( );
 		// TODO: should we check for end
-		while( locations[pos].missing( ) & ( rng.front( ) != '}' ) ) {
-			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
-			                      rng );
+		while( locations[pos].missing( ) & ( parse_state.front( ) != '}' ) ) {
+			daw_json_assert_weak( parse_state.has_more( ),
+			                      ErrorReason::UnexpectedEndOfData, parse_state );
 			// TODO: fully unescape name
-			auto const name = parse_name( rng );
+			auto const name = parse_name( parse_state );
 			auto const name_pos =
 			  locations.template find_name<( from_start ? 0 : pos )>( name );
 			if( name_pos >= std::size( locations ) ) {
 				// This is not a member we are concerned with
-				(void)skip_value( rng );
-				rng.clean_tail( );
+				(void)skip_value( parse_state );
+				parse_state.clean_tail( );
 				continue;
 			}
 			if( name_pos == pos ) {
-				locations[pos].template set_range( rng );
+				locations[pos].template set_range( parse_state );
 				break;
 			} else {
 				// We are out of order, store position for later
@@ -172,11 +172,12 @@ namespace DAW_JSON_NS::json_details {
 				// RESULT: storing preparsed is slower, don't try 3 times
 				// it also limits the type of things we can parse potentially
 				// Using locations to switch on BaseType is slower too
-				locations[name_pos].set_range( skip_value( rng ) );
+				locations[name_pos].set_range( skip_value( parse_state ) );
 
-				rng.clean_tail( );
+				parse_state.clean_tail( );
 			}
 		}
-		return locations[pos].template get_range<Range>( ).with_allocator( rng );
+		return locations[pos].template get_range<ParseState>( ).with_allocator(
+		  parse_state );
 	}
-} // namespace DAW_JSON_NS::v3_0::json_details
+} // namespace DAW_JSON_NS::json_details

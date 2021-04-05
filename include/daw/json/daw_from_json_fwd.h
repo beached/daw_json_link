@@ -107,9 +107,9 @@ namespace DAW_JSON_NS {
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
 	         bool KnownBounds = false,
 	         typename Result = json_details::from_json_result_t<JsonMember>,
-	         typename Range>
+	         typename ParseState>
 	[[maybe_unused, nodiscard]] inline constexpr Result
-	from_json( basic_json_value<Range> value );
+	from_json( basic_json_value<ParseState> value );
 
 	/***
 	 * Parse a JSONMember from the json_data starting at member_path.
@@ -127,9 +127,9 @@ namespace DAW_JSON_NS {
 	         typename ParsePolicy = NoCommentSkippingPolicyChecked,
 	         bool KnownBounds = false,
 	         typename Result = json_details::from_json_result_t<JsonMember>,
-	         typename Range>
+	         typename ParseState>
 	[[maybe_unused, nodiscard]] constexpr Result
-	from_json( basic_json_value<Range> value, std::string_view member_path );
+	from_json( basic_json_value<ParseState> value, std::string_view member_path );
 
 	/**
 	 * Parse JSON data where the root item is an array

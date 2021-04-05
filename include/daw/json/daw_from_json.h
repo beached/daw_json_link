@@ -41,19 +41,20 @@ namespace DAW_JSON_NS {
 		  "mapping or specialization of daw::json::json_link_basic_type_map" );
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 
-		auto rng =
+		auto parse_state =
 		  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) );
 
 		if constexpr( json_details::must_verify_end_of_data_is_valid_v<
 		                ParsePolicy> ) {
 			auto result = json_details::parse_value<json_member, KnownBounds>(
-			  ParseTag<json_member::expected_type>{ }, rng );
-			rng.trim_left( );
-			daw_json_assert( rng.empty( ), ErrorReason::InvalidEndOfValue, rng );
+			  ParseTag<json_member::expected_type>{ }, parse_state );
+			parse_state.trim_left( );
+			daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+			                 parse_state );
 			return result;
 		} else {
 			return json_details::parse_value<json_member, KnownBounds>(
-			  ParseTag<json_member::expected_type>{ }, rng );
+			  ParseTag<json_member::expected_type>{ }, parse_state );
 		}
 	}
 
@@ -83,17 +84,18 @@ namespace DAW_JSON_NS {
 		char const *f = std::data( json_data );
 		char const *l = daw::data_end( json_data );
 		Allocator a = alloc;
-		auto rng = ParsePolicy::with_allocator( f, l, a );
+		auto parse_state = ParsePolicy::with_allocator( f, l, a );
 		if constexpr( json_details::must_verify_end_of_data_is_valid_v<
 		                ParsePolicy> ) {
 			auto result = json_details::parse_value<json_member, KnownBounds>(
-			  ParseTag<json_member::expected_type>{ }, rng );
-			rng.trim_left( );
-			daw_json_assert( rng.empty( ), ErrorReason::InvalidEndOfValue, rng );
+			  ParseTag<json_member::expected_type>{ }, parse_state );
+			parse_state.trim_left( );
+			daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+			                 parse_state );
 			return result;
 		} else {
 			return json_details::parse_value<json_member, KnownBounds>(
-			  ParseTag<json_member::expected_type>{ }, rng );
+			  ParseTag<json_member::expected_type>{ }, parse_state );
 		}
 	}
 
@@ -120,7 +122,7 @@ namespace DAW_JSON_NS {
 		  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 		  "Missing specialization of daw::json::json_data_contract for class "
 		  "mapping or specialization of daw::json::json_link_basic_type_map" );
-		auto [is_found, rng] = json_details::find_range<ParsePolicy>(
+		auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
 		  json_data, { std::data( member_path ), std::size( member_path ) } );
 		if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 			if( not is_found ) {
@@ -132,13 +134,14 @@ namespace DAW_JSON_NS {
 		if constexpr( json_details::must_verify_end_of_data_is_valid_v<
 		                ParsePolicy> ) {
 			auto result = json_details::parse_value<json_member, KnownBounds>(
-			  ParseTag<json_member::expected_type>{ }, rng );
-			rng.trim_left( );
-			daw_json_assert( rng.empty( ), ErrorReason::InvalidEndOfValue, rng );
+			  ParseTag<json_member::expected_type>{ }, parse_state );
+			parse_state.trim_left( );
+			daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+			                 parse_state );
 			return result;
 		} else {
 			return json_details::parse_value<json_member, KnownBounds>(
-			  ParseTag<json_member::expected_type>{ }, rng );
+			  ParseTag<json_member::expected_type>{ }, parse_state );
 		}
 	}
 
@@ -166,7 +169,7 @@ namespace DAW_JSON_NS {
 		  "Missing specialization of daw::json::json_data_contract for class "
 		  "mapping or specialization of daw::json::json_link_basic_type_map" );
 		Allocator a = alloc;
-		auto [is_found, rng] = json_details::find_range<ParsePolicy>(
+		auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
 		  json_data, { std::data( member_path ), std::size( member_path ) }, a );
 		if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 			if( not is_found ) {
@@ -180,13 +183,14 @@ namespace DAW_JSON_NS {
 		                ParsePolicy> ) {
 
 			auto result = json_details::parse_value<json_member, KnownBounds>(
-			  ParseTag<json_member::expected_type>{ }, rng );
-			rng.trim_left( );
-			daw_json_assert( rng.empty( ), ErrorReason::InvalidEndOfValue, rng );
+			  ParseTag<json_member::expected_type>{ }, parse_state );
+			parse_state.trim_left( );
+			daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+			                 parse_state );
 			return result;
 		} else {
 			return json_details::parse_value<json_member, KnownBounds>(
-			  ParseTag<json_member::expected_type>{ }, rng );
+			  ParseTag<json_member::expected_type>{ }, parse_state );
 		}
 	}
 
@@ -200,9 +204,9 @@ namespace DAW_JSON_NS {
 	 * @throws daw::json::json_exception
 	 */
 	template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-	         typename Result, typename Range>
+	         typename Result, typename ParseState>
 	[[maybe_unused, nodiscard]] inline constexpr Result
-	from_json( basic_json_value<Range> value ) {
+	from_json( basic_json_value<ParseState> value ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		static_assert(
@@ -210,11 +214,11 @@ namespace DAW_JSON_NS {
 		  "Missing specialization of daw::json::json_data_contract for class "
 		  "mapping or specialization of daw::json::json_link_basic_type_map" );
 		auto const json_data = value.get_string_view( );
-		auto rng =
+		auto parse_state =
 		  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) );
 
 		return json_details::parse_value<json_member, KnownBounds>(
-		  ParseTag<json_member::expected_type>{ }, rng );
+		  ParseTag<json_member::expected_type>{ }, parse_state );
 	}
 
 	/***
@@ -230,9 +234,10 @@ namespace DAW_JSON_NS {
 	 * @throws daw::json::json_exception
 	 */
 	template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-	         typename Result, typename Range>
+	         typename Result, typename ParseState>
 	[[maybe_unused, nodiscard]] constexpr Result
-	from_json( basic_json_value<Range> value, std::string_view member_path ) {
+	from_json( basic_json_value<ParseState> value,
+	           std::string_view member_path ) {
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		static_assert(
@@ -241,7 +246,7 @@ namespace DAW_JSON_NS {
 		  "mapping or specialization of daw::json::json_link_basic_type_map" );
 		using json_member = json_details::unnamed_default_type_mapping<JsonMember>;
 		auto const json_data = value.get_string_view( );
-		auto [is_found, rng] = json_details::find_range<ParsePolicy>(
+		auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
 		  json_data, { std::data( member_path ), std::size( member_path ) } );
 		if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 			if( not is_found ) {
@@ -251,7 +256,7 @@ namespace DAW_JSON_NS {
 			daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 		}
 		return json_details::parse_value<json_member, KnownBounds>(
-		  ParseTag<json_member::expected_type>{ }, rng );
+		  ParseTag<json_member::expected_type>{ }, parse_state );
 	}
 
 	/**
@@ -287,7 +292,7 @@ namespace DAW_JSON_NS {
 
 		using parser_t = json_array<no_name, JsonElement, Container, Constructor>;
 
-		auto [is_found, rng] = json_details::find_range<ParsePolicy>(
+		auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
 		  json_data, { std::data( member_path ), std::size( member_path ) } );
 
 		if constexpr( parser_t::expected_type == JsonParseTypes::Null ) {
@@ -297,26 +302,27 @@ namespace DAW_JSON_NS {
 		} else {
 			daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 		}
-		rng.trim_left_unchecked( );
+		parse_state.trim_left_unchecked( );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 		// Work around MSVC ICE
-		daw_json_assert( rng.is_opening_bracket_checked( ),
-		                 ErrorReason::InvalidArrayStart, rng );
+		daw_json_assert( parse_state.is_opening_bracket_checked( ),
+		                 ErrorReason::InvalidArrayStart, parse_state );
 #else
-		using Range = daw::remove_cvref_t<decltype( rng )>;
-		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-		                      ErrorReason::InvalidArrayStart, rng );
+		using ParseState = daw::remove_cvref_t<decltype( parse_state )>;
+		daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
+		                      ErrorReason::InvalidArrayStart, parse_state );
 #endif
 		if constexpr( json_details::must_verify_end_of_data_is_valid_v<
 		                ParsePolicy> ) {
 			auto result = json_details::parse_value<parser_t, KnownBounds>(
-			  ParseTag<JsonParseTypes::Array>{ }, rng );
-			rng.trim_left( );
-			daw_json_assert( rng.empty( ), ErrorReason::InvalidEndOfValue, rng );
+			  ParseTag<JsonParseTypes::Array>{ }, parse_state );
+			parse_state.trim_left( );
+			daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
+			                 parse_state );
 			return result;
 		} else {
 			return json_details::parse_value<parser_t, KnownBounds>(
-			  ParseTag<JsonParseTypes::Array>{ }, rng );
+			  ParseTag<JsonParseTypes::Array>{ }, parse_state );
 		}
 	}
 } // namespace DAW_JSON_NS

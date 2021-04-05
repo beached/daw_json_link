@@ -17,68 +17,69 @@
 #include <ciso646>
 
 namespace DAW_JSON_NS::json_details {
-	template<typename Range, bool>
+	template<typename ParseState, bool>
 	struct json_parse_array_iterator_base {
 		using iterator_category = std::input_iterator_tag;
 		using difference_type = std::ptrdiff_t;
 		static constexpr bool has_counter = false;
-		Range *rng = nullptr;
+		ParseState *parse_state = nullptr;
 	};
 
-	template<typename Range>
-	struct json_parse_array_iterator_base<Range, true> {
+	template<typename ParseState>
+	struct json_parse_array_iterator_base<ParseState, true> {
 		// We have to lie so that std::distance uses O(1) instead of O(N)
 		using iterator_category = std::random_access_iterator_tag;
 		using difference_type = std::ptrdiff_t;
 		static constexpr bool has_counter = true;
-		Range *rng = nullptr;
+		ParseState *parse_state = nullptr;
 
 		constexpr difference_type
 		operator-( json_parse_array_iterator_base const &rhs ) const {
-			if( rhs.rng ) {
-				return static_cast<difference_type>( rhs.rng->counter ) + 1;
+			if( rhs.parse_state ) {
+				return static_cast<difference_type>( rhs.parse_state->counter ) + 1;
 			}
 			return 0;
 		}
 	};
 
-	template<typename JsonMember, typename Range, bool KnownBounds>
+	template<typename JsonMember, typename ParseState, bool KnownBounds>
 	struct json_parse_array_iterator
-	  : json_parse_array_iterator_base<Range, can_random_v<KnownBounds>> {
+	  : json_parse_array_iterator_base<ParseState, can_random_v<KnownBounds>> {
 
 		using base =
-		  json_parse_array_iterator_base<Range, can_random_v<KnownBounds>>;
+		  json_parse_array_iterator_base<ParseState, can_random_v<KnownBounds>>;
 		using iterator_category = typename base::iterator_category;
 		using element_t = typename JsonMember::json_element_t;
 		using value_type = typename element_t::parse_to_t;
 		using reference = value_type;
 		using pointer = arrow_proxy<value_type>;
-		using iterator_range_t = Range;
+		using iterator_range_t = ParseState;
 		using difference_type = typename base::difference_type;
 		bool at_first = true;
 		inline constexpr json_parse_array_iterator( ) = default;
 
 		inline constexpr explicit json_parse_array_iterator( iterator_range_t &r )
 		  : base{ &r } {
-			if( base::rng->front( ) == ']' ) {
+			if( base::parse_state->front( ) == ']' ) {
 				if constexpr( not KnownBounds ) {
 					// Cleanup at end of value
-					base::rng->remove_prefix( );
-					base::rng->trim_left_checked( );
+					base::parse_state->remove_prefix( );
+					base::parse_state->trim_left_checked( );
 					// Ensure we are equal to default
 				}
-				base::rng = nullptr;
+				base::parse_state = nullptr;
 			}
 		}
 
 		DAW_ONLY_INLINE inline constexpr value_type operator*( ) {
-			daw_json_assert_weak( base::rng and base::rng->has_more( ),
-			                      ErrorReason::UnexpectedEndOfData, *base::rng );
+			daw_json_assert_weak(
+			  base::parse_state and base::parse_state->has_more( ),
+			  ErrorReason::UnexpectedEndOfData, *base::parse_state );
 			at_first = false;
 			if constexpr( KnownBounds ) {
-				if constexpr( is_guaranteed_rvo_v<Range> ) {
+				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 					struct cleanup_t {
-						Range *ptr;
+						ParseState *ptr;
 						std::size_t counter;
 						CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
 #ifdef HAS_CPP20CONSTEXPR
@@ -93,51 +94,54 @@ namespace DAW_JSON_NS::json_details {
 							}
 #endif
 						}
-					} const run_after_parse{ base::rng, base::rng->counter };
+					} const run_after_parse{ base::parse_state,
+					                         base::parse_state->counter };
 					(void)run_after_parse;
 					return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
-					                               *base::rng );
+					                               *base::parse_state );
 				} else {
-					auto const cnt = base::rng->counter;
+					auto const cnt = base::parse_state->counter;
 					auto result = parse_value<element_t>(
-					  ParseTag<element_t::expected_type>{ }, *base::rng );
-					base::rng->counter = cnt;
+					  ParseTag<element_t::expected_type>{ }, *base::parse_state );
+					base::parse_state->counter = cnt;
 					return result;
 				}
 			} else {
 				return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
-				                               *base::rng );
+				                               *base::parse_state );
 			}
 		}
 
 		DAW_ONLY_INLINE inline constexpr json_parse_array_iterator &operator++( ) {
-			// daw_json_assert_weak( base::rng, "Unexpected increment", *base::rng );
-			base::rng->template clean_end_of_value<']'>( at_first );
-			daw_json_assert_weak( base::rng->has_more( ),
-			                      ErrorReason::UnexpectedEndOfData, *base::rng );
-			if( base::rng->front( ) == ']' ) {
+			// daw_json_assert_weak( base::parse_state, "Unexpected increment",
+			// *base::parse_state );
+			base::parse_state->template clean_end_of_value<']'>( at_first );
+			daw_json_assert_weak( base::parse_state->has_more( ),
+			                      ErrorReason::UnexpectedEndOfData,
+			                      *base::parse_state );
+			if( base::parse_state->front( ) == ']' ) {
 #ifndef NDEBUG
 				if constexpr( base::has_counter ) {
-					daw_json_assert_weak( base::rng->counter == 0,
+					daw_json_assert_weak( base::parse_state->counter == 0,
 					                      ErrorReason::AttemptToAccessPastEndOfValue,
-					                      *base::rng );
+					                      *base::parse_state );
 				}
 #endif
 				if constexpr( not KnownBounds ) {
 					// Cleanup at end of value
-					base::rng->remove_prefix( );
-					base::rng->trim_left_checked( );
+					base::parse_state->remove_prefix( );
+					base::parse_state->trim_left_checked( );
 					// Ensure we are equal to default
 				}
-				base::rng = nullptr;
+				base::parse_state = nullptr;
 			}
 #ifndef NDEBUG
 			if constexpr( base::has_counter ) {
-				if( base::rng ) {
-					daw_json_assert_weak( base::rng->counter > 0,
+				if( base::parse_state ) {
+					daw_json_assert_weak( base::parse_state->counter > 0,
 					                      ErrorReason::AttemptToAccessPastEndOfValue,
-					                      *base::rng );
-					base::rng->counter--;
+					                      *base::parse_state );
+					base::parse_state->counter--;
 				}
 			}
 #endif
@@ -146,12 +150,12 @@ namespace DAW_JSON_NS::json_details {
 
 		inline constexpr bool
 		operator==( json_parse_array_iterator const &rhs ) const {
-			return base::rng == rhs.base::rng;
+			return base::parse_state == rhs.base::parse_state;
 		}
 
 		inline constexpr bool
 		operator!=( json_parse_array_iterator const &rhs ) const {
-			return base::rng != rhs.base::rng;
+			return base::parse_state != rhs.base::parse_state;
 		}
 	};
 } // namespace DAW_JSON_NS::json_details

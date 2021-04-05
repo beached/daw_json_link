@@ -26,14 +26,14 @@
 
 namespace DAW_JSON_NS {
 	namespace json_details {
-		template<typename Range>
+		template<typename ParseState>
 		struct basic_stateful_json_value_state {
 			daw::string_view name;
 			daw::UInt32 hash_value;
-			basic_json_value_iterator<Range> location;
+			basic_json_value_iterator<ParseState> location;
 
 			explicit constexpr basic_stateful_json_value_state(
-			  daw::string_view Name, basic_json_value_iterator<Range> val )
+			  daw::string_view Name, basic_json_value_iterator<ParseState> val )
 			  : name( Name )
 			  , hash_value( daw::name_hash( Name ) )
 			  , location( DAW_MOVE( val ) ) {}
@@ -64,12 +64,13 @@ namespace DAW_JSON_NS {
 	/**
 	 * Maintains the parse positions of a json_value so that you pay the lookup
 	 * costs once
-	 * @tparam Range see IteratorRange
+	 * @tparam ParseState see IteratorRange
 	 */
-	template<typename Range>
+	template<typename ParseState>
 	class basic_stateful_json_value {
-		basic_json_value<Range> m_value;
-		std::vector<json_details::basic_stateful_json_value_state<Range>> m_locs{ };
+		basic_json_value<ParseState> m_value;
+		std::vector<json_details::basic_stateful_json_value_state<ParseState>>
+		  m_locs{ };
 
 		/***
 		 * Move parser until member name matches key if needed
@@ -145,7 +146,7 @@ namespace DAW_JSON_NS {
 		}
 
 	public:
-		constexpr basic_stateful_json_value( basic_json_value<Range> val )
+		constexpr basic_stateful_json_value( basic_json_value<ParseState> val )
 		  : m_value( DAW_MOVE( val ) ) {
 
 			daw_json_assert_weak( ( [&] {
@@ -158,15 +159,16 @@ namespace DAW_JSON_NS {
 		}
 
 		constexpr basic_stateful_json_value( )
-		  : basic_stateful_json_value( basic_json_value<Range>( "{}" ) ) {}
+		  : basic_stateful_json_value( basic_json_value<ParseState>( "{}" ) ) {}
 
 		constexpr basic_stateful_json_value( std::string_view json_data )
-		  : basic_stateful_json_value( basic_json_value<Range>( json_data ) ) {}
+		  : basic_stateful_json_value( basic_json_value<ParseState>( json_data ) ) {
+		}
 		/**
 		 * Reuse state storage for another basic_json_value
 		 * @param val Value to contain state for
 		 */
-		constexpr void reset( basic_json_value<Range> val ) {
+		constexpr void reset( basic_json_value<ParseState> val ) {
 			m_value = DAW_MOVE( val );
 			m_locs.clear( );
 		}
@@ -177,7 +179,7 @@ namespace DAW_JSON_NS {
 		 * @param key name of member
 		 * @return a new basic_json_member
 		 */
-		[[nodiscard]] constexpr basic_json_value<Range>
+		[[nodiscard]] constexpr basic_json_value<ParseState>
 		operator[]( std::string_view key ) {
 			std::size_t pos = move_to( json_member_name( key ) );
 			daw_json_assert_weak( pos < std::size( m_locs ),
@@ -191,7 +193,7 @@ namespace DAW_JSON_NS {
 		 * @param member name of member
 		 * @return a new basic_json_member
 		 */
-		[[nodiscard]] constexpr basic_json_value<Range>
+		[[nodiscard]] constexpr basic_json_value<ParseState>
 		operator[]( json_member_name member ) {
 			std::size_t pos = move_to( member );
 			daw_json_assert_weak( pos < std::size( m_locs ),
@@ -206,7 +208,8 @@ namespace DAW_JSON_NS {
 		 * @return a new basic_json_member for the JSON data or an emtpy one if the
 		 * member does not exist
 		 */
-		[[nodiscard]] constexpr basic_json_value<Range> at( std::string_view key ) {
+		[[nodiscard]] constexpr basic_json_value<ParseState>
+		at( std::string_view key ) {
 			daw::string_view const k =
 			  daw::string_view( std::data( key ), std::size( key ) );
 			std::size_t pos = move_to( k );
@@ -307,7 +310,7 @@ namespace DAW_JSON_NS {
 		 */
 		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
 		                                            std::nullptr_t> = nullptr>
-		[[nodiscard]] constexpr basic_json_value<Range>
+		[[nodiscard]] constexpr basic_json_value<ParseState>
 		operator[]( Integer index ) {
 			if constexpr( std::is_signed_v<Integer> ) {
 				if( index < 0 ) {
@@ -334,7 +337,7 @@ namespace DAW_JSON_NS {
 		 */
 		template<typename Integer, std::enable_if_t<std::is_integral_v<Integer>,
 		                                            std::nullptr_t> = nullptr>
-		[[nodiscard]] constexpr std::optional<basic_json_value<Range>>
+		[[nodiscard]] constexpr std::optional<basic_json_value<ParseState>>
 		at( Integer index ) {
 			if constexpr( std::is_signed_v<Integer> ) {
 				if( index < 0 ) {
@@ -357,7 +360,8 @@ namespace DAW_JSON_NS {
 		/***
 		 * @return A copy of the underlying basic_json_value
 		 */
-		[[nodiscard]] constexpr basic_json_value<Range> get_json_value( ) const {
+		[[nodiscard]] constexpr basic_json_value<ParseState>
+		get_json_value( ) const {
 			return m_value;
 		}
 	};

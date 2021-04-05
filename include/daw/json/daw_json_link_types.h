@@ -65,21 +65,21 @@ namespace DAW_JSON_NS {
 		 * Parse JSON data and construct a C++ class.  This is used by parse_value
 		 * to get back into a mode with a JsonMembers...
 		 * @tparam T The result of parsing json_class
-		 * @tparam Range Input range type
-		 * @param rng JSON data to parse
+		 * @tparam ParseState Input range type
+		 * @param parse_state JSON data to parse
 		 * @return A T object
 		 */
-		template<typename JsonClass, typename Range>
+		template<typename JsonClass, typename ParseState>
 		[[maybe_unused,
 		  nodiscard]] DAW_ONLY_FLATTEN static inline constexpr json_details::
 		  json_result<JsonClass>
-		  parse_to_class( Range &rng ) {
+		  parse_to_class( ParseState &parse_state ) {
 			static_assert( json_details::is_a_json_type_v<JsonClass> );
 			static_assert( json_details::has_json_data_contract_trait_v<
 			                 typename JsonClass::base_type>,
 			               "Unexpected type" );
 			return json_details::parse_json_class<JsonClass, JsonMembers...>(
-			  rng, std::index_sequence_for<JsonMembers...>{ } );
+			  parse_state, std::index_sequence_for<JsonMembers...>{ } );
 		}
 	};
 
@@ -112,19 +112,19 @@ namespace DAW_JSON_NS {
 		using result_type =
 		  json_details::json_class_parse_result_t<Constructor, json_member>;
 
-		template<typename JsonClass, typename Range>
+		template<typename JsonClass, typename ParseState>
 		[[maybe_unused, nodiscard]] DAW_ONLY_FLATTEN static constexpr json_details::
 		  json_result<JsonClass>
-		  parse_to_class( Range &rng ) {
+		  parse_to_class( ParseState &parse_state ) {
 			static_assert( json_details::is_a_json_type_v<JsonClass> );
 			static_assert( json_details::has_json_data_contract_trait_v<
 			                 typename JsonClass::base_type>,
 			               "Unexpected type" );
 			using Constructor = typename JsonClass::constructor_t;
 			return json_details::construct_value<JsonClass>(
-			  Constructor{ }, rng,
+			  Constructor{ }, parse_state,
 			  json_details::parse_value<json_member, false>(
-			    ParseTag<json_member::expected_type>{ }, rng ) );
+			    ParseTag<json_member::expected_type>{ }, parse_state ) );
 		}
 	};
 
@@ -218,20 +218,21 @@ namespace DAW_JSON_NS {
 		 * Parse JSON data and construct a C++ class.  This is used by parse_value
 		 * to get back into a mode with a JsonMembers...
 		 * @tparam T The result of parsing json_class
-		 * @tparam Range Input range type
-		 * @param rng JSON data to parse
+		 * @tparam ParseState Input range type
+		 * @param parse_state JSON data to parse
 		 * @return A T object
 		 */
-		template<typename JsonClass, typename Range>
+		template<typename JsonClass, typename ParseState>
 		[[maybe_unused,
 		  nodiscard]] static inline constexpr json_details::json_result<JsonClass>
-		parse_to_class( Range &rng ) {
+		parse_to_class( ParseState &parse_state ) {
 			static_assert( json_details::is_a_json_type_v<JsonClass> );
 			static_assert( json_details::has_json_data_contract_trait_v<
 			                 typename JsonClass::base_type>,
 			               "Unexpected type" );
 			return json_details::parse_ordered_json_class<
-			  JsonClass, json_details::ordered_member_wrapper<JsonMembers>...>( rng );
+			  JsonClass, json_details::ordered_member_wrapper<JsonMembers>...>(
+			  parse_state );
 		}
 	};
 
@@ -284,28 +285,28 @@ namespace DAW_JSON_NS {
 		 * Parse JSON data and construct a C++ class.  This is used by parse_value
 		 * to get back into a mode with a JsonMembers...
 		 * @tparam T The result of parsing json_class
-		 * @tparam Range Input range type
-		 * @param rng JSON data to parse
+		 * @tparam ParseState Input range type
+		 * @param parse_state JSON data to parse
 		 * @return A T object
 		 */
-		template<typename JsonClass, typename Range>
+		template<typename JsonClass, typename ParseState>
 		[[maybe_unused, nodiscard]] static inline constexpr json_details::
 		  from_json_result_t<JsonClass>
-		  parse_to_class( Range &rng ) {
+		  parse_to_class( ParseState &parse_state ) {
 			static_assert( json_details::is_a_json_type_v<JsonClass> );
 			static_assert( json_details::has_json_data_contract_trait_v<
 			                 typename JsonClass::base_type>,
 			               "Unexpected type" );
 			using tag_class_t = tuple_json_mapping<TagMember>;
-			std::size_t const idx = [rng]( ) mutable {
+			std::size_t const idx = [parse_state]( ) mutable {
 				return Switcher{ }( std::get<0>(
 				  json_details::parse_value<json_class<no_name, tag_class_t>>(
-				    ParseTag<JsonParseTypes::Class>{ }, rng )
+				    ParseTag<JsonParseTypes::Class>{ }, parse_state )
 				    .members ) );
 			}( );
 			return json_details::parse_nth_class<0, JsonClass, false,
 			                                     json_class<no_name, JsonClasses>...>(
-			  idx, rng );
+			  idx, parse_state );
 		}
 	};
 

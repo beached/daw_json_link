@@ -85,17 +85,17 @@ namespace DAW_JSON_NS::json_details::string_quote {
 	}
 
 	struct string_quote_parser {
-		template<typename Range>
-		[[nodiscard]] static constexpr auto parse_nq( Range &rng )
-		  -> std::enable_if_t<Range::is_unchecked_input, std::size_t> {
+		template<typename ParseState>
+		[[nodiscard]] static constexpr auto parse_nq( ParseState &parse_state )
+		  -> std::enable_if_t<ParseState::is_unchecked_input, std::size_t> {
 			std::ptrdiff_t need_slow_path = -1;
-			char const *first = rng.first;
-			char const *const last = rng.last;
+			char const *first = parse_state.first;
+			char const *const last = parse_state.last;
 			// This is a logic error to happen.
-			// daw_json_assert_weak( first != '"', "Unexpected quote", rng );
-			if constexpr( traits::not_same_v<typename Range::exec_tag_t,
+			// daw_json_assert_weak( first != '"', "Unexpected quote", parse_state );
+			if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
-				first = mem_skip_until_end_of_string<true>( Range::exec_tag, first,
+				first = mem_skip_until_end_of_string<true>( ParseState::exec_tag, first,
 				                                            last, need_slow_path );
 			} else {
 				{
@@ -113,7 +113,7 @@ namespace DAW_JSON_NS::json_details::string_quote {
 					}
 					if( *first == '\\' ) {
 						if( need_slow_path < 0 ) {
-							need_slow_path = first - rng.first;
+							need_slow_path = first - parse_state.first;
 						}
 						first += 2;
 					} else {
@@ -121,22 +121,22 @@ namespace DAW_JSON_NS::json_details::string_quote {
 					}
 				}
 			}
-			rng.first = first;
+			parse_state.first = first;
 			return static_cast<std::size_t>( need_slow_path );
 		}
 
-		template<typename Range>
-		[[nodiscard]] static constexpr auto parse_nq( Range &rng )
-		  -> std::enable_if_t<not Range::is_unchecked_input, std::size_t> {
+		template<typename ParseState>
+		[[nodiscard]] static constexpr auto parse_nq( ParseState &parse_state )
+		  -> std::enable_if_t<not ParseState::is_unchecked_input, std::size_t> {
 			std::ptrdiff_t need_slow_path = -1;
-			char const *first = rng.first;
-			char const *const last = rng.class_last;
-			if constexpr( traits::not_same_v<typename Range::exec_tag_t,
+			char const *first = parse_state.first;
+			char const *const last = parse_state.class_last;
+			if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
 			                                 constexpr_exec_tag> ) {
-				first = mem_skip_until_end_of_string<false>( Range::exec_tag, first,
-				                                             last, need_slow_path );
+				first = mem_skip_until_end_of_string<false>(
+				  ParseState::exec_tag, first, last, need_slow_path );
 			} else {
-				if( char const *const l = rng.last; l - first >= 8 ) {
+				if( char const *const l = parse_state.last; l - first >= 8 ) {
 					skip_to_first8( first, l );
 				} else if( last - first >= 4 ) {
 					skip_to_first4( first, l );
@@ -149,7 +149,7 @@ namespace DAW_JSON_NS::json_details::string_quote {
 
 					if( ( first < last and *first == '\\' ) ) {
 						if( need_slow_path < 0 ) {
-							need_slow_path = first - rng.first;
+							need_slow_path = first - parse_state.first;
 						}
 						first += 2;
 					} else {
@@ -158,8 +158,8 @@ namespace DAW_JSON_NS::json_details::string_quote {
 				}
 			}
 			daw_json_assert_weak( first < last and *first == '"',
-			                      ErrorReason::InvalidString, rng );
-			rng.first = first;
+			                      ErrorReason::InvalidString, parse_state );
+			parse_state.first = first;
 			return static_cast<std::size_t>( need_slow_path );
 		}
 	};

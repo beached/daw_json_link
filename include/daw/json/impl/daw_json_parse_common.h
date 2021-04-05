@@ -70,13 +70,14 @@ namespace DAW_JSON_NS::json_details {
 	template<typename T>
 	inline constexpr auto json_class_constructor = json_class_constructor_t<T>{ };
 
-	template<typename Value, typename Constructor, typename Range,
+	template<typename Value, typename Constructor, typename ParseState,
 	         typename... Args>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr auto
-	construct_value( Constructor &&ctor, Range &rng, Args &&...args ) {
-		if constexpr( Range::has_allocator ) {
-			using alloc_t = typename Range::template allocator_type_as<Value>;
-			auto alloc = rng.template get_allocator_for<Value>( );
+	construct_value( Constructor &&ctor, ParseState &parse_state,
+	                 Args &&...args ) {
+		if constexpr( ParseState::has_allocator ) {
+			using alloc_t = typename ParseState::template allocator_type_as<Value>;
+			auto alloc = parse_state.template get_allocator_for<Value>( );
 			if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
 				return ctor( DAW_FWD( args )..., DAW_MOVE( alloc ) );
 			} else if constexpr( daw::traits::is_callable_v<Constructor,
@@ -96,14 +97,14 @@ namespace DAW_JSON_NS::json_details {
 		}
 	}
 
-	template<typename Value, typename Constructor, typename Range,
+	template<typename Value, typename Constructor, typename ParseState,
 	         typename... Args>
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr auto
-	construct_value_tp( Constructor &&ctor, Range &rng,
+	construct_value_tp( Constructor &&ctor, ParseState &parse_state,
 	                    std::tuple<Args...> &&tp_args ) {
-		if constexpr( Range::has_allocator ) {
-			using alloc_t = typename Range::template allocator_type_as<Value>;
-			auto alloc = rng.template get_allocator_for<Value>( );
+		if constexpr( ParseState::has_allocator ) {
+			using alloc_t = typename ParseState::template allocator_type_as<Value>;
+			auto alloc = parse_state.template get_allocator_for<Value>( );
 			if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
 				return std::apply(
 				  ctor, std::tuple_cat( DAW_MOVE( tp_args ),
@@ -149,8 +150,8 @@ namespace DAW_JSON_NS::json_details {
 	  has_json_data_contract_trait<T>::value;
 
 	template<typename Container, typename Value>
-	using detect_push_back = decltype( std::declval<Container &>( ).push_back(
-	  std::declval<Value>( ) ) );
+	using detect_push_back = decltype(
+	  std::declval<Container &>( ).push_back( std::declval<Value>( ) ) );
 
 	template<typename Container, typename Value>
 	using detect_insert_end = decltype( std::declval<Container &>( ).insert(
@@ -221,9 +222,8 @@ namespace DAW_JSON_NS::json_details {
 	};
 
 	template<typename T>
-	using json_parser_to_json_data_t =
-	  decltype( DAW_JSON_NS::json_data_contract<T>::to_json_data(
-	    std::declval<T &>( ) ) );
+	using json_parser_to_json_data_t = decltype(
+	  DAW_JSON_NS::json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
 
 	template<typename T>
 	inline constexpr bool has_json_to_json_data_v =

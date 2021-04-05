@@ -402,9 +402,10 @@ namespace DAW_JSON_NS::utils {
 
 	template<bool do_escape = false,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
-	         typename OutputIterator, typename Range>
+	         typename OutputIterator, typename ParseState>
 	[[nodiscard]] constexpr OutputIterator
-	copy_to_iterator( OutputIterator it, basic_json_value<Range> const &jv ) {
+	copy_to_iterator( OutputIterator it,
+	                  basic_json_value<ParseState> const &jv ) {
 		if( jv.is_null( ) ) {
 			return copy_to_iterator<do_escape, EightBitMode>( it, "null" );
 		} else {

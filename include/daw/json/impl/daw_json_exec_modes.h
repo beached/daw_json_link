@@ -43,4 +43,4 @@ namespace DAW_JSON_NS {
 	using simd_exec_tag = runtime_exec_tag;
 #endif
 	using default_exec_tag = constexpr_exec_tag;
-} // namespace DAW_JSON_NS::v3_0
+} // namespace DAW_JSON_NS

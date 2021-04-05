@@ -95,4 +95,4 @@ namespace DAW_JSON_NS {
 	 * Always remove quotes around the literal
 	 */
 	enum class LiteralAsStringOpt : std::uint8_t { Never, Maybe, Always };
-} // namespace DAW_JSON_NS::v3_0
+} // namespace DAW_JSON_NS

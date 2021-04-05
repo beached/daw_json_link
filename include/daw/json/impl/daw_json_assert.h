@@ -64,9 +64,9 @@ namespace DAW_JSON_NS {
 #endif
 	}
 
-	template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
+	template<bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState>
 	[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
-	daw_json_error( ErrorReason reason, Range const &location ) {
+	daw_json_error( ErrorReason reason, ParseState const &location ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 		if constexpr( ShouldThrow ) {
 			if( location.first ) {
@@ -119,10 +119,10 @@ namespace DAW_JSON_NS {
 #endif
 	}
 
-	template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
+	template<bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState>
 	[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 	daw_json_error( DAW_JSON_NS::json_details::missing_member reason,
-	                Range const &location ) {
+	                ParseState const &location ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 		if constexpr( ShouldThrow ) {
 			using namespace std::string_literals;
@@ -158,10 +158,10 @@ namespace DAW_JSON_NS {
 #endif
 	}
 
-	template<bool ShouldThrow = use_daw_json_exceptions_v, typename Range>
+	template<bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState>
 	[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 	daw_json_error( DAW_JSON_NS::json_details::missing_token reason,
-	                Range const &location ) {
+	                ParseState const &location ) {
 #ifdef DAW_USE_JSON_EXCEPTIONS
 		if constexpr( ShouldThrow ) {
 			using namespace std::string_literals;
@@ -198,10 +198,10 @@ namespace DAW_JSON_NS {
  * Ensure that Bool is true when in Checked Input mode
  * If false pass rest of args to daw_json_error
  */
-#define daw_json_assert_weak( Bool, ... )           \
-	if constexpr( not Range::is_unchecked_input ) {   \
-		if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {        \
-			::DAW_JSON_NS::daw_json_error( __VA_ARGS__ ); \
-		}                                               \
-	}                                                 \
+#define daw_json_assert_weak( Bool, ... )              \
+	if constexpr( not ParseState::is_unchecked_input ) { \
+		if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {           \
+			::DAW_JSON_NS::daw_json_error( __VA_ARGS__ );    \
+		}                                                  \
+	}                                                    \
 	while( false )
