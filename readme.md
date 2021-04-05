@@ -55,7 +55,7 @@
 
 The DAW JSON Link library provides multiple ways to serialization/deserialization JSON documents in C++.  The primary one is parsing of JSON directly to your C++ data structures.  This allows the known structure of the document to be exploited for greater checking and performance.  Alternatively, there is an event passing(SAX) interface that can parse to generic types(double, string, bool,...) or can use the same type restricted parsers as the static parser previously mentioned.  A generic DOM(lazy) based parser is provided that can be iterate over the document structure too, again it can use the generic parsers or the type based restricted versions.  One can mix the three modes of parsing to form more complicated systems.  For serialization, the first static mapping method is required, there is no json value type in the library. The library is, also, non-intrusive into your data structures and does not require member's to be declared/defined within them. This allows keeping the mapping in a separate header file from the data structures themselves.
 
-The library is using the [BSL](LICENSE) licensed
+The library is using the [BSL](LICENSE) license
 
 When the structure of the JSON document is known, parsing is like the following:
 ```c++

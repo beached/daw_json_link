@@ -42,7 +42,7 @@ namespace daw::json {
 				}
 			};
 
-			version.hnd_checks {
+			namespace hnd_checks {
 				// On Next Value
 				template<typename Handler, typename ParseState>
 				using has_on_value_handler_detect =
@@ -179,7 +179,7 @@ namespace daw::json {
 				template<typename Handler, typename ParseState>
 				inline constexpr bool has_on_error_handler_v =
 				  daw::is_detected_v<has_on_error_handler_detect, Handler, ParseState>;
-			} // version.hnd_checks
+			} // namespace hnd_checks
 
 			template<typename T>
 			constexpr daw::remove_cvref_t<T> as_copy( T &&value ) {
