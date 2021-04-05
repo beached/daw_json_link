@@ -140,8 +140,8 @@ $(function() {
 <div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="class_d_a_w___j_s_o_n___n_s_1_1json__array__iterator.html#a9d19d7315af0d9e42d10f6b6a123c298">   68</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="class_d_a_w___j_s_o_n___n_s_1_1json__array__iterator.html#a9d19d7315af0d9e42d10f6b6a123c298">iterator_category</a> = std::input_iterator_tag;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keyword">using</span> Range = ParsePolicy;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    Range m_state = Range( );</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keyword">using</span> ParseState = ParsePolicy;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    ParseState m_state = ParseState( );</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment">    /***</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment">     * This lets us fastpath and just skip n characters as we have already</span></div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">     * parsed them</span></div>

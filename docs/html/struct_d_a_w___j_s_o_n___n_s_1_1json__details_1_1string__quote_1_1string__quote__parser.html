@@ -78,21 +78,21 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a0bc5b446e91af2c80db4e367e351eade"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
-<tr class="memitem:a0bc5b446e91af2c80db4e367e351eade"><td class="memTemplItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1string__quote_1_1string__quote__parser.html#a0bc5b446e91af2c80db4e367e351eade">parse_nq</a> (Range &amp;rng) -&gt; std::enable_if_t&lt; not Range::is_unchecked_input, std::size_t &gt;</td></tr>
-<tr class="separator:a0bc5b446e91af2c80db4e367e351eade"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc5cb0a47917225803609229181609ec"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
-<tr class="memitem:adc5cb0a47917225803609229181609ec"><td class="memTemplItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1string__quote_1_1string__quote__parser.html#adc5cb0a47917225803609229181609ec">parse_nq</a> (Range &amp;rng) -&gt; std::enable_if_t&lt; Range::is_unchecked_input, std::size_t &gt;</td></tr>
-<tr class="separator:adc5cb0a47917225803609229181609ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0490453beadbc49ca8c3f2ad3f123e85"><td class="memTemplParams" colspan="2">template&lt;typename ParseState &gt; </td></tr>
+<tr class="memitem:a0490453beadbc49ca8c3f2ad3f123e85"><td class="memTemplItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1string__quote_1_1string__quote__parser.html#a0490453beadbc49ca8c3f2ad3f123e85">parse_nq</a> (ParseState &amp;parse_state) -&gt; std::enable_if_t&lt; not ParseState::is_unchecked_input, std::size_t &gt;</td></tr>
+<tr class="separator:a0490453beadbc49ca8c3f2ad3f123e85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0603aab3fda4e674de783efb136c6230"><td class="memTemplParams" colspan="2">template&lt;typename ParseState &gt; </td></tr>
+<tr class="memitem:a0603aab3fda4e674de783efb136c6230"><td class="memTemplItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1string__quote_1_1string__quote__parser.html#a0603aab3fda4e674de783efb136c6230">parse_nq</a> (ParseState &amp;parse_state) -&gt; std::enable_if_t&lt; ParseState::is_unchecked_input, std::size_t &gt;</td></tr>
+<tr class="separator:a0603aab3fda4e674de783efb136c6230"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0bc5b446e91af2c80db4e367e351eade"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0bc5b446e91af2c80db4e367e351eade">&#9670;&nbsp;</a></span>parse_nq() <span class="overload">[1/2]</span></h2>
+<a id="a0490453beadbc49ca8c3f2ad3f123e85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0490453beadbc49ca8c3f2ad3f123e85">&#9670;&nbsp;</a></span>parse_nq() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Range &gt; </div>
+template&lt;typename ParseState &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -100,9 +100,9 @@ template&lt;typename Range &gt; </div>
         <tr>
           <td class="memname">static constexpr auto DAW_JSON_NS::json_details::string_quote::string_quote_parser::parse_nq </td>
           <td>(</td>
-          <td class="paramtype">Range &amp;&#160;</td>
-          <td class="paramname"><em>rng</em></td><td>)</td>
-          <td> -&gt; std::enable_if_t&lt;not Range::is_unchecked_input, std::size_t&gt; </td>
+          <td class="paramtype">ParseState &amp;&#160;</td>
+          <td class="paramname"><em>parse_state</em></td><td>)</td>
+          <td> -&gt; std::enable_if_t&lt;not ParseState::is_unchecked_input, std::size_t&gt; </td>
         </tr>
       </table>
   </td>
@@ -114,13 +114,13 @@ template&lt;typename Range &gt; </div>
 
 </div>
 </div>
-<a id="adc5cb0a47917225803609229181609ec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc5cb0a47917225803609229181609ec">&#9670;&nbsp;</a></span>parse_nq() <span class="overload">[2/2]</span></h2>
+<a id="a0603aab3fda4e674de783efb136c6230"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0603aab3fda4e674de783efb136c6230">&#9670;&nbsp;</a></span>parse_nq() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Range &gt; </div>
+template&lt;typename ParseState &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -128,9 +128,9 @@ template&lt;typename Range &gt; </div>
         <tr>
           <td class="memname">static constexpr auto DAW_JSON_NS::json_details::string_quote::string_quote_parser::parse_nq </td>
           <td>(</td>
-          <td class="paramtype">Range &amp;&#160;</td>
-          <td class="paramname"><em>rng</em></td><td>)</td>
-          <td> -&gt; std::enable_if_t&lt;Range::is_unchecked_input, std::size_t&gt; </td>
+          <td class="paramtype">ParseState &amp;&#160;</td>
+          <td class="paramname"><em>parse_state</em></td><td>)</td>
+          <td> -&gt; std::enable_if_t&lt;ParseState::is_unchecked_input, std::size_t&gt; </td>
         </tr>
       </table>
   </td>

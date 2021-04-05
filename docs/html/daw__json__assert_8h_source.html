@@ -136,9 +136,9 @@ $(function() {
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  }</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> ShouldThrow = use_daw_json_exceptions_v, <span class="keyword">typename</span> Range&gt;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> ShouldThrow = use_daw_json_exceptions_v, <span class="keyword">typename</span> ParseState&gt;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  [[maybe_unused, noreturn]] <a class="code" href="daw__json__defs_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> <span class="keyword">static</span> <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="namespace_d_a_w___j_s_o_n___n_s.html#a687b6fceb21b07feb1ab3ad2ea49c794">   69</a></span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#ab506e2aa6f3a38063e0d7430bff06a69">daw_json_error</a>( ErrorReason reason, Range <span class="keyword">const</span> &amp;location ) {</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="namespace_d_a_w___j_s_o_n___n_s.html#a8572ad3898ae1fe8f77feec94aae8acf">   69</a></span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#ab506e2aa6f3a38063e0d7430bff06a69">daw_json_error</a>( ErrorReason reason, ParseState <span class="keyword">const</span> &amp;location ) {</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#ifdef DAW_USE_JSON_EXCEPTIONS</span></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">if</span> constexpr( ShouldThrow ) {</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keywordflow">if</span>( location.first ) {</div>
@@ -191,10 +191,10 @@ $(function() {
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  }</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> ShouldThrow = use_daw_json_exceptions_v, <span class="keyword">typename</span> Range&gt;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> ShouldThrow = use_daw_json_exceptions_v, <span class="keyword">typename</span> ParseState&gt;</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  [[maybe_unused, noreturn]] <a class="code" href="daw__json__defs_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> <span class="keyword">static</span> <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno"><a class="line" href="namespace_d_a_w___j_s_o_n___n_s.html#a042f485116d7fa17973a48bccc85cbee">  124</a></span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#ab506e2aa6f3a38063e0d7430bff06a69">daw_json_error</a>( <a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1missing__member.html">DAW_JSON_NS::json_details::missing_member</a> reason,</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;                  Range <span class="keyword">const</span> &amp;location ) {</div>
+<div class="line"><a name="l00124"></a><span class="lineno"><a class="line" href="namespace_d_a_w___j_s_o_n___n_s.html#a13f6c6526211b7eaf9c14bf88428f7bd">  124</a></span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#ab506e2aa6f3a38063e0d7430bff06a69">daw_json_error</a>( <a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1missing__member.html">DAW_JSON_NS::json_details::missing_member</a> reason,</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;                  ParseState <span class="keyword">const</span> &amp;location ) {</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="preprocessor">#ifdef DAW_USE_JSON_EXCEPTIONS</span></div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keywordflow">if</span> constexpr( ShouldThrow ) {</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      <span class="keyword">using namespace </span>std::string_literals;</div>
@@ -230,10 +230,10 @@ $(function() {
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  }</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> ShouldThrow = use_daw_json_exceptions_v, <span class="keyword">typename</span> Range&gt;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> ShouldThrow = use_daw_json_exceptions_v, <span class="keyword">typename</span> ParseState&gt;</div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  [[maybe_unused, noreturn]] <a class="code" href="daw__json__defs_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> <span class="keyword">static</span> <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00163"></a><span class="lineno"><a class="line" href="namespace_d_a_w___j_s_o_n___n_s.html#a4dd3f53f35a0699ee2b61fe36569f5ee">  163</a></span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#ab506e2aa6f3a38063e0d7430bff06a69">daw_json_error</a>( <a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1missing__token.html">DAW_JSON_NS::json_details::missing_token</a> reason,</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                  Range <span class="keyword">const</span> &amp;location ) {</div>
+<div class="line"><a name="l00163"></a><span class="lineno"><a class="line" href="namespace_d_a_w___j_s_o_n___n_s.html#ad209a5a8366446088a75878d1f32196b">  163</a></span>&#160;  <a class="code" href="namespace_d_a_w___j_s_o_n___n_s.html#ab506e2aa6f3a38063e0d7430bff06a69">daw_json_error</a>( <a class="code" href="struct_d_a_w___j_s_o_n___n_s_1_1json__details_1_1missing__token.html">DAW_JSON_NS::json_details::missing_token</a> reason,</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                  ParseState <span class="keyword">const</span> &amp;location ) {</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="preprocessor">#ifdef DAW_USE_JSON_EXCEPTIONS</span></div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="keywordflow">if</span> constexpr( ShouldThrow ) {</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;      <span class="keyword">using namespace </span>std::string_literals;</div>
@@ -270,12 +270,12 @@ $(function() {
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="comment"> * Ensure that Bool is true when in Checked Input mode</span></div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="comment"> * If false pass rest of args to daw_json_error</span></div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00201"></a><span class="lineno"><a class="line" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">  201</a></span>&#160;<span class="preprocessor">#define daw_json_assert_weak( Bool, ... )           \</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="preprocessor">  if constexpr( not Range::is_unchecked_input ) {   \</span></div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="preprocessor">    if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {        \</span></div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="preprocessor">      ::DAW_JSON_NS::daw_json_error( __VA_ARGS__ ); \</span></div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="preprocessor">    }                                               \</span></div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="preprocessor">  }                                                 \</span></div>
+<div class="line"><a name="l00201"></a><span class="lineno"><a class="line" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">  201</a></span>&#160;<span class="preprocessor">#define daw_json_assert_weak( Bool, ... )              \</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="preprocessor">  if constexpr( not ParseState::is_unchecked_input ) { \</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="preprocessor">    if( DAW_JSON_UNLIKELY( not( Bool ) ) ) {           \</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="preprocessor">      ::DAW_JSON_NS::daw_json_error( __VA_ARGS__ );    \</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="preprocessor">    }                                                  \</span></div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="preprocessor">  }                                                    \</span></div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<span class="preprocessor">  while( false )</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html_a236cef0d7e6c40781c19e4ebcd63aa5b"><div class="ttname"><a href="daw__json__assert_8h.html#a236cef0d7e6c40781c19e4ebcd63aa5b">use_daw_json_exceptions_v</a></div><div class="ttdeci">constexpr bool use_daw_json_exceptions_v</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:45</div></div>
 <div class="ttc" id="adaw__json__defs_8h_html"><div class="ttname"><a href="daw__json__defs_8h.html">daw_json_defs.h</a></div></div>

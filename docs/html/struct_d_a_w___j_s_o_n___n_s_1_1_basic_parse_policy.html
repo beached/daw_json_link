@@ -102,8 +102,8 @@ Public Types</h2></td></tr>
 <tr class="separator:ae5156ccd789d3848e280e8f366942b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a387f69b4e4d4ed2aaebd4173256829ee"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a387f69b4e4d4ed2aaebd4173256829ee">iterator</a> = char const *</td></tr>
 <tr class="separator:a387f69b4e4d4ed2aaebd4173256829ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2de36324349a7a5cad60a89a72c742e0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a2de36324349a7a5cad60a89a72c742e0">Range</a> = <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">BasicParsePolicy</a></td></tr>
-<tr class="separator:a2de36324349a7a5cad60a89a72c742e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea5892492ade7a5ed77a395ed1ca8eb6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#aea5892492ade7a5ed77a395ed1ca8eb6">ParseState</a> = <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">BasicParsePolicy</a></td></tr>
+<tr class="separator:aea5892492ade7a5ed77a395ed1ca8eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55f1ca93b1705690586f6f76fcb937ec"><td class="memTemplParams" colspan="2">template&lt;typename Alloc &gt; </td></tr>
 <tr class="memitem:a55f1ca93b1705690586f6f76fcb937ec"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a55f1ca93b1705690586f6f76fcb937ec">with_allocator_type</a> = <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Alloc &gt;</td></tr>
 <tr class="separator:a55f1ca93b1705690586f6f76fcb937ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -195,16 +195,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9085715d2ed66fd9ddda6e10d5e1f2d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f58936b21172804abe429f8de9af150"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a8f58936b21172804abe429f8de9af150">size</a> () const</td></tr>
 <tr class="separator:a8f58936b21172804abe429f8de9af150"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5107f3664656075d28a3e1de98e5f2d8"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a2de36324349a7a5cad60a89a72c742e0">Range</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a5107f3664656075d28a3e1de98e5f2d8">skip_array</a> ()</td></tr>
-<tr class="separator:a5107f3664656075d28a3e1de98e5f2d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a25bcaaf54b1029382a9db5408548e2"><td class="memTemplParams" colspan="2">template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </td></tr>
-<tr class="memitem:a3a25bcaaf54b1029382a9db5408548e2"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a2de36324349a7a5cad60a89a72c742e0">Range</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a3a25bcaaf54b1029382a9db5408548e2">skip_bracketed_item_checked</a> ()</td></tr>
-<tr class="separator:a3a25bcaaf54b1029382a9db5408548e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3b825fdb26769dcad79d02432244f8d"><td class="memTemplParams" colspan="2">template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </td></tr>
-<tr class="memitem:ad3b825fdb26769dcad79d02432244f8d"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a2de36324349a7a5cad60a89a72c742e0">Range</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#ad3b825fdb26769dcad79d02432244f8d">skip_bracketed_item_unchecked</a> ()</td></tr>
-<tr class="separator:ad3b825fdb26769dcad79d02432244f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b3fec6973f39a8fcffdb836ef7d17f4"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a2de36324349a7a5cad60a89a72c742e0">Range</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a9b3fec6973f39a8fcffdb836ef7d17f4">skip_class</a> ()</td></tr>
-<tr class="separator:a9b3fec6973f39a8fcffdb836ef7d17f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a351309a66b9219b9331fbfb675e70f"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#aea5892492ade7a5ed77a395ed1ca8eb6">ParseState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a4a351309a66b9219b9331fbfb675e70f">skip_array</a> ()</td></tr>
+<tr class="separator:a4a351309a66b9219b9331fbfb675e70f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67b4b14668256670dc1ce1548dbb9cd7"><td class="memTemplParams" colspan="2">template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </td></tr>
+<tr class="memitem:a67b4b14668256670dc1ce1548dbb9cd7"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#aea5892492ade7a5ed77a395ed1ca8eb6">ParseState</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a67b4b14668256670dc1ce1548dbb9cd7">skip_bracketed_item_checked</a> ()</td></tr>
+<tr class="separator:a67b4b14668256670dc1ce1548dbb9cd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af224d8f8359dcf847e972bd66ef5ea58"><td class="memTemplParams" colspan="2">template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </td></tr>
+<tr class="memitem:af224d8f8359dcf847e972bd66ef5ea58"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#aea5892492ade7a5ed77a395ed1ca8eb6">ParseState</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#af224d8f8359dcf847e972bd66ef5ea58">skip_bracketed_item_unchecked</a> ()</td></tr>
+<tr class="separator:af224d8f8359dcf847e972bd66ef5ea58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9670f0939453b141cef4e8de52a95e8b"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#aea5892492ade7a5ed77a395ed1ca8eb6">ParseState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a9670f0939453b141cef4e8de52a95e8b">skip_class</a> ()</td></tr>
+<tr class="separator:a9670f0939453b141cef4e8de52a95e8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01ad74201bdc05ba934eedcb51d9cb6a"><td class="memTemplParams" colspan="2">template&lt;std::size_t N&gt; </td></tr>
 <tr class="memitem:a01ad74201bdc05ba934eedcb51d9cb6a"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a01ad74201bdc05ba934eedcb51d9cb6a">starts_with</a> (char const (&amp;rhs)[N]) const</td></tr>
 <tr class="separator:a01ad74201bdc05ba934eedcb51d9cb6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -355,8 +355,8 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a2de36324349a7a5cad60a89a72c742e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2de36324349a7a5cad60a89a72c742e0">&#9670;&nbsp;</a></span>Range</h2>
+<a id="aea5892492ade7a5ed77a395ed1ca8eb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea5892492ade7a5ed77a395ed1ca8eb6">&#9670;&nbsp;</a></span>ParseState</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -364,7 +364,7 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , bool AllowEscapedNames, typename Allocator  = json_details::NoAllocator, bool IsZeroTerminated = false&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;::<a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a2de36324349a7a5cad60a89a72c742e0">Range</a> =  <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">BasicParsePolicy</a></td>
+          <td class="memname">using <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;::<a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#aea5892492ade7a5ed77a395ed1ca8eb6">ParseState</a> =  <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">BasicParsePolicy</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1492,8 +1492,8 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a5107f3664656075d28a3e1de98e5f2d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5107f3664656075d28a3e1de98e5f2d8">&#9670;&nbsp;</a></span>skip_array()</h2>
+<a id="a4a351309a66b9219b9331fbfb675e70f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a351309a66b9219b9331fbfb675e70f">&#9670;&nbsp;</a></span>skip_array()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1504,7 +1504,7 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a2de36324349a7a5cad60a89a72c742e0">Range</a> <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;::skip_array </td>
+          <td class="memname">constexpr <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#aea5892492ade7a5ed77a395ed1ca8eb6">ParseState</a> <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;::skip_array </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1519,8 +1519,8 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
 
 </div>
 </div>
-<a id="a3a25bcaaf54b1029382a9db5408548e2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a25bcaaf54b1029382a9db5408548e2">&#9670;&nbsp;</a></span>skip_bracketed_item_checked()</h2>
+<a id="a67b4b14668256670dc1ce1548dbb9cd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67b4b14668256670dc1ce1548dbb9cd7">&#9670;&nbsp;</a></span>skip_bracketed_item_checked()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1533,7 +1533,7 @@ template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a2de36324349a7a5cad60a89a72c742e0">Range</a> <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;::skip_bracketed_item_checked </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#aea5892492ade7a5ed77a395ed1ca8eb6">ParseState</a> <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;::skip_bracketed_item_checked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1548,8 +1548,8 @@ template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div
 
 </div>
 </div>
-<a id="ad3b825fdb26769dcad79d02432244f8d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad3b825fdb26769dcad79d02432244f8d">&#9670;&nbsp;</a></span>skip_bracketed_item_unchecked()</h2>
+<a id="af224d8f8359dcf847e972bd66ef5ea58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af224d8f8359dcf847e972bd66ef5ea58">&#9670;&nbsp;</a></span>skip_bracketed_item_unchecked()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1562,7 +1562,7 @@ template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a2de36324349a7a5cad60a89a72c742e0">Range</a> <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;::skip_bracketed_item_unchecked </td>
+          <td class="memname">constexpr DAW_ATTRIBUTE_FLATTEN <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#aea5892492ade7a5ed77a395ed1ca8eb6">ParseState</a> <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;::skip_bracketed_item_unchecked </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1577,8 +1577,8 @@ template&lt;char PrimLeft, char PrimRight, char SecLeft, char SecRight&gt; </div
 
 </div>
 </div>
-<a id="a9b3fec6973f39a8fcffdb836ef7d17f4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9b3fec6973f39a8fcffdb836ef7d17f4">&#9670;&nbsp;</a></span>skip_class()</h2>
+<a id="a9670f0939453b141cef4e8de52a95e8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9670f0939453b141cef4e8de52a95e8b">&#9670;&nbsp;</a></span>skip_class()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1589,7 +1589,7 @@ template&lt;bool IsUncheckedInput, typename CommentPolicy , typename ExecMode , 
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#a2de36324349a7a5cad60a89a72c742e0">Range</a> <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;::skip_class </td>
+          <td class="memname">constexpr <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html#aea5892492ade7a5ed77a395ed1ca8eb6">ParseState</a> <a class="el" href="struct_d_a_w___j_s_o_n___n_s_1_1_basic_parse_policy.html">DAW_JSON_NS::BasicParsePolicy</a>&lt; IsUncheckedInput, CommentPolicy, ExecMode, AllowEscapedNames, Allocator, IsZeroTerminated &gt;::skip_class </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

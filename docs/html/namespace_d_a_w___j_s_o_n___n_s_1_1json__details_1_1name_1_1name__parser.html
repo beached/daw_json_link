@@ -75,21 +75,21 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae52595dc988373042f23b7bc9c9abb50"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
-<tr class="memitem:ae52595dc988373042f23b7bc9c9abb50"><td class="memTemplItemLeft" align="right" valign="top">constexpr daw::string_view&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1name_1_1name__parser.html#ae52595dc988373042f23b7bc9c9abb50">parse_nq</a> (Range &amp;rng)</td></tr>
-<tr class="separator:ae52595dc988373042f23b7bc9c9abb50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb9d7692e993cbe842ebb093a95d43a9"><td class="memTemplParams" colspan="2">template&lt;typename Range &gt; </td></tr>
-<tr class="memitem:afb9d7692e993cbe842ebb093a95d43a9"><td class="memTemplItemLeft" align="right" valign="top">static constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1name_1_1name__parser.html#afb9d7692e993cbe842ebb093a95d43a9">trim_end_of_name</a> (Range &amp;rng)</td></tr>
-<tr class="separator:afb9d7692e993cbe842ebb093a95d43a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb6b630721a7491f9a2f2ef280f9c68e"><td class="memTemplParams" colspan="2">template&lt;typename ParseState &gt; </td></tr>
+<tr class="memitem:adb6b630721a7491f9a2f2ef280f9c68e"><td class="memTemplItemLeft" align="right" valign="top">constexpr daw::string_view&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1name_1_1name__parser.html#adb6b630721a7491f9a2f2ef280f9c68e">parse_nq</a> (ParseState &amp;parse_state)</td></tr>
+<tr class="separator:adb6b630721a7491f9a2f2ef280f9c68e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba64e8538cfe31146348f13bc1669370"><td class="memTemplParams" colspan="2">template&lt;typename ParseState &gt; </td></tr>
+<tr class="memitem:aba64e8538cfe31146348f13bc1669370"><td class="memTemplItemLeft" align="right" valign="top">static constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_d_a_w___j_s_o_n___n_s_1_1json__details_1_1name_1_1name__parser.html#aba64e8538cfe31146348f13bc1669370">trim_end_of_name</a> (ParseState &amp;parse_state)</td></tr>
+<tr class="separator:aba64e8538cfe31146348f13bc1669370"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ae52595dc988373042f23b7bc9c9abb50"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae52595dc988373042f23b7bc9c9abb50">&#9670;&nbsp;</a></span>parse_nq()</h2>
+<a id="adb6b630721a7491f9a2f2ef280f9c68e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb6b630721a7491f9a2f2ef280f9c68e">&#9670;&nbsp;</a></span>parse_nq()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Range &gt; </div>
+template&lt;typename ParseState &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -97,8 +97,8 @@ template&lt;typename Range &gt; </div>
         <tr>
           <td class="memname">constexpr daw::string_view DAW_JSON_NS::json_details::name::name_parser::parse_nq </td>
           <td>(</td>
-          <td class="paramtype">Range &amp;&#160;</td>
-          <td class="paramname"><em>rng</em></td><td>)</td>
+          <td class="paramtype">ParseState &amp;&#160;</td>
+          <td class="paramname"><em>parse_state</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -111,13 +111,13 @@ template&lt;typename Range &gt; </div>
 
 </div>
 </div>
-<a id="afb9d7692e993cbe842ebb093a95d43a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afb9d7692e993cbe842ebb093a95d43a9">&#9670;&nbsp;</a></span>trim_end_of_name()</h2>
+<a id="aba64e8538cfe31146348f13bc1669370"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba64e8538cfe31146348f13bc1669370">&#9670;&nbsp;</a></span>trim_end_of_name()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Range &gt; </div>
+template&lt;typename ParseState &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -125,8 +125,8 @@ template&lt;typename Range &gt; </div>
         <tr>
           <td class="memname">static constexpr void DAW_JSON_NS::json_details::name::name_parser::trim_end_of_name </td>
           <td>(</td>
-          <td class="paramtype">Range &amp;&#160;</td>
-          <td class="paramname"><em>rng</em></td><td>)</td>
+          <td class="paramtype">ParseState &amp;&#160;</td>
+          <td class="paramname"><em>parse_state</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
