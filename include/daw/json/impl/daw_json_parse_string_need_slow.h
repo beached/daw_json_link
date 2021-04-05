@@ -8,9 +8,11 @@
 
 #pragma once
 
+#include "namespace.h"
+
 #include <cstddef>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	/***
 	 * When skip_string encounters escaping, it will note this as a non-zero value
 	 */
@@ -18,4 +20,4 @@ namespace daw::json::json_details {
 	constexpr inline bool needs_slow_path( Range const &rng ) {
 		return static_cast<std::ptrdiff_t>( rng.counter ) >= 0;
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

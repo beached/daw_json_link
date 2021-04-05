@@ -13,6 +13,7 @@
 #include "daw_json_exec_modes.h"
 #include "daw_json_name.h"
 #include "daw_json_traits.h"
+#include "namespace.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_move.h>
@@ -35,7 +36,7 @@
 #define CPP20CONSTEXPR
 #endif
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/***
 	 *
 	 * Allows specifying an unnamed json mapping where the
@@ -49,9 +50,9 @@ namespace daw::json {
 		constexpr tuple_json_mapping( Ts &&...values )
 		  : members{ DAW_FWD( values )... } {}
 	};
-} // namespace daw::json
+} // namespace DAW_JSON_NS
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<typename T, bool = false>
 	struct ordered_member_subtype {
 		using type = T;
@@ -140,7 +141,7 @@ namespace daw::json::json_details {
 	template<typename T>
 	struct has_json_data_contract_trait
 	  : std::bool_constant<
-	      not std::is_same_v<daw::json::missing_json_data_contract_for<T>,
+	      not std::is_same_v<DAW_JSON_NS::missing_json_data_contract_for<T>,
 	                         json_data_contract_trait_t<T>>> {};
 
 	template<typename T>
@@ -148,8 +149,8 @@ namespace daw::json::json_details {
 	  has_json_data_contract_trait<T>::value;
 
 	template<typename Container, typename Value>
-	using detect_push_back = decltype(
-	  std::declval<Container &>( ).push_back( std::declval<Value>( ) ) );
+	using detect_push_back = decltype( std::declval<Container &>( ).push_back(
+	  std::declval<Value>( ) ) );
 
 	template<typename Container, typename Value>
 	using detect_insert_end = decltype( std::declval<Container &>( ).insert(
@@ -220,8 +221,9 @@ namespace daw::json::json_details {
 	};
 
 	template<typename T>
-	using json_parser_to_json_data_t = decltype(
-	  daw::json::json_data_contract<T>::to_json_data( std::declval<T &>( ) ) );
+	using json_parser_to_json_data_t =
+	  decltype( DAW_JSON_NS::json_data_contract<T>::to_json_data(
+	    std::declval<T &>( ) ) );
 
 	template<typename T>
 	inline constexpr bool has_json_to_json_data_v =
@@ -258,9 +260,9 @@ namespace daw::json::json_details {
 	  std::conjunction_v<std::bool_constant<Nullable == JsonNullable::Nullable>,
 	                     daw::is_detected<dereffed_type, T>>,
 	  daw::detected_t<dereffed_type, T>, T>;
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/**
 	 * Link to a JSON class
 	 * @tparam Name name of JSON member to link to
@@ -348,9 +350,9 @@ namespace daw::json {
 	         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
 	struct json_string_raw;
 
-} // namespace daw::json
+} // namespace DAW_JSON_NS
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<typename T>
 	using can_deref = daw::is_detected<dereffed_type, T>;
 
@@ -387,9 +389,9 @@ namespace daw::json::json_details {
 	template<typename T>
 	inline constexpr JsonParseTypes
 	  number_parse_type_v = number_parse_type_test<T>( );
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	template<typename>
 	struct json_link_basic_type_map {
 		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unknown;
@@ -464,12 +466,12 @@ namespace daw::json {
 	struct json_link_basic_type_map<double> {
 		constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
 	};
-} // namespace daw::json
+} // namespace DAW_JSON_NS
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<typename T>
 	inline constexpr bool has_basic_type_map_v =
-	  daw::is_detected_v<::daw::json::json_link_basic_type_map, T>;
+	  daw::is_detected_v<::DAW_JSON_NS::json_link_basic_type_map, T>;
 
 	template<typename Mapped, bool Found = true>
 	struct json_link_quick_map_type : std::bool_constant<Found> {
@@ -559,12 +561,12 @@ namespace daw::json::json_details {
 	        json_number<Name, T>,
 	        daw::if_t<std::conjunction_v<cant_deref<T>, is_vector<T>>,
 	                  json_array_detect<Name, vector_detect::detector<T>, T>,
-	                  daw::json::missing_json_data_contract_for<T>>>>>>;
+	                  DAW_JSON_NS::missing_json_data_contract_for<T>>>>>>;
 
 	template<typename T>
-	using has_unnamed_default_type_mapping =
-	  daw::not_trait<std::is_same<unnamed_default_type_mapping<T>,
-	                              daw::json::missing_json_data_contract_for<T>>>;
+	using has_unnamed_default_type_mapping = daw::not_trait<
+	  std::is_same<unnamed_default_type_mapping<T>,
+	               DAW_JSON_NS::missing_json_data_contract_for<T>>>;
 
 	template<typename T>
 	inline constexpr bool has_unnamed_default_type_mapping_v =
@@ -589,9 +591,9 @@ namespace daw::json::json_details {
 	template<typename Constructor, typename... Members>
 	inline constexpr bool can_defer_construction_v =
 	  std::is_invocable_v<Constructor, typename Members::parse_to_t...>;
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	template<typename T>
 	struct TestInputIteratorType {
 		using iterator_category = std::input_iterator_tag;
@@ -604,4 +606,4 @@ namespace daw::json {
 	  std::is_same_v<
 	    typename std::iterator_traits<TestInputIteratorType<int>>::value_type,
 	    int> );
-} // namespace daw::json
+} // namespace DAW_JSON_NS

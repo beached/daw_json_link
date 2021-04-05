@@ -7,7 +7,9 @@
 //
 #pragma once
 
-namespace daw::json::json_details {
+#include "namespace.h"
+
+namespace DAW_JSON_NS::json_details {
 	template<typename T>
 	struct arrow_proxy {
 		T value;
@@ -16,4 +18,4 @@ namespace daw::json::json_details {
 			return &value;
 		}
 	};
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::v3_0::json_details

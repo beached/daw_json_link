@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_murmur3.h"
+#include "namespace.h"
 
 #include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
@@ -17,7 +18,7 @@
 #include <ciso646>
 #include <cstddef>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	class location_info_t {
 		daw::string_view name;
 		char const *first = nullptr;
@@ -178,4 +179,4 @@ namespace daw::json::json_details {
 		}
 		return locations[pos].template get_range<Range>( ).with_allocator( rng );
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::v3_0::json_details

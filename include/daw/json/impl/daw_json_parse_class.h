@@ -16,6 +16,7 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_value.h"
 #include "daw_json_skip.h"
+#include "namespace.h"
 
 #include <daw/daw_traits.h>
 
@@ -25,7 +26,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	namespace pocm_details {
 		/***
 		 * Maybe skip json members
@@ -235,7 +236,7 @@ namespace daw::json::json_details {
 				/*
 				 * Rather than call directly use apply/tuple to evaluate left->right
 				 */
-				if constexpr( daw::json::force_aggregate_construction_v<T> ) {
+				if constexpr( DAW_JSON_NS::force_aggregate_construction_v<T> ) {
 					return T{
 					  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... };
@@ -321,5 +322,5 @@ namespace daw::json::json_details {
 			(void)rng.skip_array( );
 			return result;
 		}
-	} // namespace daw::json::json_details
-} // namespace daw::json::json_details
+	}
+} // namespace DAW_JSON_NS::json_details

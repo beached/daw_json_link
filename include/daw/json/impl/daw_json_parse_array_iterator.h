@@ -12,10 +12,11 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_policy.h"
 #include "daw_json_parse_value_fwd.h"
+#include "namespace.h"
 
 #include <ciso646>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<typename Range, bool>
 	struct json_parse_array_iterator_base {
 		using iterator_category = std::input_iterator_tag;
@@ -153,4 +154,4 @@ namespace daw::json::json_details {
 			return base::rng != rhs.base::rng;
 		}
 	};
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

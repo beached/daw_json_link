@@ -11,6 +11,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_iso8601_utils.h"
 #include "daw_json_value.h"
+#include "namespace.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
@@ -35,7 +36,7 @@
 #include <type_traits>
 #include <variant>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	template<typename Real, typename OutputIterator>
 	inline OutputIterator real2string( Real const &value,
 	                                   OutputIterator out_it ) {
@@ -48,15 +49,15 @@ namespace daw::json {
 		}
 #else
 		if constexpr( std::is_same_v<Real, float> ) {
-			return daw::json::d2s( value, out_it );
+			return DAW_JSON_NS::d2s( value, out_it );
 		} else {
-			return daw::json::d2s( static_cast<double>( value ), out_it );
+			return DAW_JSON_NS::d2s( static_cast<double>( value ), out_it );
 		}
 #endif
 	}
-} // namespace daw::json
+} // namespace DAW_JSON_NS
 
-namespace daw::json::json_details::to_strings {
+namespace DAW_JSON_NS::json_details::to_strings {
 	// Need to use ADL to_string in unevaluated contexts.  Limiting to it's own
 	// namespace
 	using std::to_string;
@@ -83,9 +84,9 @@ namespace daw::json::json_details::to_strings {
 		}
 		return to_string( *v );
 	}
-} // namespace daw::json::json_details::to_strings
+} // namespace DAW_JSON_NS::json_details::to_strings
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	template<typename T>
 	struct custom_to_converter_t {
 		template<typename U,
@@ -106,9 +107,9 @@ namespace daw::json {
 			return ss.str( );
 		}
 	};
-} // namespace daw::json
+} // namespace DAW_JSON_NS
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline OutputIterator constexpr to_string(
 	  ParseTag<JsonParseTypes::Null>, OutputIterator it,
@@ -237,9 +238,9 @@ namespace daw::json::json_details {
 		}
 		daw_json_error( ErrorReason::InvalidUTFCodepoint );
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details
 
-namespace daw::json::utils {
+namespace DAW_JSON_NS::utils {
 	template<bool do_escape = false,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
 	         typename OutputIterator, typename Container,
@@ -411,9 +412,9 @@ namespace daw::json::utils {
 			                                                  jv.get_string_view( ) );
 		}
 	}
-} // namespace daw::json::utils
+} // namespace DAW_JSON_NS::utils
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
@@ -701,9 +702,9 @@ namespace daw::json::json_details {
 		return it;
 	}
 
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details
 
-namespace daw::json::utils {
+namespace DAW_JSON_NS::utils {
 	namespace utils_details {
 		namespace {
 			template<typename Integer>
@@ -728,9 +729,9 @@ namespace daw::json::utils {
 			  ParseTag<JsonParseTypes::Signed>{ }, it, value );
 		}
 	}
-} // namespace daw::json::utils
+} // namespace DAW_JSON_NS::utils
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline constexpr OutputIterator
 	to_string( ParseTag<JsonParseTypes::StringRaw>, OutputIterator it,
@@ -786,7 +787,7 @@ namespace daw::json::json_details {
 		  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
 		  "value must be convertible to specified type in class contract" );
 
-		using daw::json::json_details::is_null;
+		using DAW_JSON_NS::json_details::is_null;
 		if( is_null( value ) ) {
 			it = utils::copy_to_iterator( it, "null" );
 		} else {
@@ -847,7 +848,7 @@ namespace daw::json::json_details {
 
 		if constexpr( has_json_to_json_data_v<parse_to_t> ) {
 			return json_data_contract_trait_t<parse_to_t>::serialize(
-			  it, daw::json::json_data_contract<parse_to_t>::to_json_data( value ),
+			  it, DAW_JSON_NS::json_data_contract<parse_to_t>::to_json_data( value ),
 			  value );
 		} else {
 			static_assert( is_submember_tagged_variant_v<parse_to_t> );
@@ -1103,4 +1104,4 @@ namespace daw::json::json_details {
 		it = member_to_string<json_member_type>( it, std::get<TupleIdx>( tp ) );
 		++array_idx;
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

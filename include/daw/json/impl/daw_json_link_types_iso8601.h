@@ -12,6 +12,7 @@
 #include "daw_json_parse_digit.h"
 #include "daw_json_parse_iso8601_utils.h"
 #include "daw_json_serialize_impl.h"
+#include "namespace.h"
 
 #include <daw/daw_string_view.h>
 #include <daw/daw_utility.h>
@@ -21,7 +22,7 @@
 #include <optional>
 #include <string_view>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	template<JsonNullable>
 	struct construct_from_iso8601_timestamp;
 
@@ -76,4 +77,4 @@ namespace daw::json {
 			}
 		}
 	};
-} // namespace daw::json
+} // namespace DAW_JSON_NS::v3_0

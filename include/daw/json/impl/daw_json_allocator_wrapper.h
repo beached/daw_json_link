@@ -8,13 +8,15 @@
 
 #pragma once
 
+#include "namespace.h"
+
 #include <daw/cpp_17.h>
 
 #include <cstddef>
 #include <memory>
 #include <type_traits>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<typename Alloc, bool /*is_empty*/>
 	class AllocatorWrapperBase {
 		using allocator_t = std::remove_reference_t<Alloc>;
@@ -97,4 +99,4 @@ namespace daw::json::json_details {
 			return std::allocator<T>( );
 		}
 	};
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::v3_0::json_details

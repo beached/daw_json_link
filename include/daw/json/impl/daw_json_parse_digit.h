@@ -8,9 +8,11 @@
 
 #pragma once
 
+#include "namespace.h"
+
 #include <daw/daw_hide.h>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 
 	DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr unsigned
 	parse_digit( char c ) {
@@ -25,4 +27,4 @@ namespace daw::json::json_details {
 		static inline constexpr unsigned plus_char = parse_digit( '+' );
 		static inline constexpr unsigned minus_char = parse_digit( '-' );
 	} // namespace parsed_constants
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

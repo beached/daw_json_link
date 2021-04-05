@@ -14,6 +14,7 @@
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
 #include "daw_json_traits.h"
+#include "namespace.h"
 
 #include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>
@@ -25,7 +26,7 @@
 #include <optional>
 #include <string>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/**
 	 * NOTE:
 	 * Some of the basic json types used for deduction are in
@@ -432,8 +433,8 @@ namespace daw::json {
 		template<JsonNullable Nullable, typename Variant>
 		using determine_variant_element_types = std::conditional_t<
 		  Nullable == JsonNullable::Never or not is_nullable_type<Variant>,
-		  std::remove_reference_t<decltype(
-		    get_variant_type_list( std::declval<Variant const *>( ) ) )>,
+		  std::remove_reference_t<decltype( get_variant_type_list(
+		    std::declval<Variant const *>( ) ) )>,
 		  std::conditional_t<
 		    is_nullable_type<Variant>,
 		    std::remove_reference_t<decltype( get_variant_type_list(
@@ -486,4 +487,4 @@ namespace daw::json {
 	using json_tagged_variant_null =
 	  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements, Constructor,
 	                      JsonNullable::Nullable>;
-} // namespace daw::json
+} // namespace DAW_JSON_NS::v3_0

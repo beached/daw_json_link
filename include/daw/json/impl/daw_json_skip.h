@@ -12,6 +12,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_digit.h"
 #include "daw_json_parse_string_quote.h"
+#include "namespace.h"
 
 #include <daw/daw_hide.h>
 #include <daw/daw_unreachable.h>
@@ -19,7 +20,7 @@
 #include <ciso646>
 #include <iterator>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	/***
 	 * Skip a string, after the initial quote has been skipped already
 	 */
@@ -264,4 +265,4 @@ namespace daw::json::json_details {
 			DAW_UNREACHABLE( );
 		}
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

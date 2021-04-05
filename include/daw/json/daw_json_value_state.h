@@ -13,6 +13,7 @@
 #include "impl/daw_json_parse_name.h"
 #include "impl/daw_json_value.h"
 #include "impl/daw_murmur3.h"
+#include "impl/namespace.h"
 
 #include <daw/daw_move.h>
 #include <daw/daw_uint_buffer.h>
@@ -23,7 +24,7 @@
 #include <utility>
 #include <vector>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	namespace json_details {
 		template<typename Range>
 		struct basic_stateful_json_value_state {
@@ -363,4 +364,4 @@ namespace daw::json {
 
 	using json_value_state =
 	  basic_stateful_json_value<NoCommentSkippingPolicyChecked>;
-} // namespace daw::json
+} // namespace DAW_JSON_NS

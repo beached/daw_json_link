@@ -11,6 +11,7 @@
 #include "daw_to_json_fwd.h"
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/daw_json_to_string.h"
+#include "impl/namespace.h"
 
 #include <daw/daw_traits.h>
 
@@ -19,7 +20,7 @@
 #include <string_view>
 #include <type_traits>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	template<typename Value, typename JsonClass, typename OutputIterator>
 	[[maybe_unused]] constexpr OutputIterator to_json( Value const &value,
 	                                                   OutputIterator out_it ) {
@@ -60,7 +61,7 @@ namespace daw::json {
 
 			static_assert(
 			  traits::not_same_v<
-			    JsonMember, daw::json::missing_json_data_contract_for<JsonElement>>,
+			    JsonMember, DAW_JSON_NS::missing_json_data_contract_for<JsonElement>>,
 			  "Unable to detect unnamed mapping" );
 			static_assert( traits::not_same_v<JsonElement, JsonMember> );
 			if( is_first ) {
@@ -85,4 +86,4 @@ namespace daw::json {
 		to_json_array<JsonElement>( c, out_it );
 		return result;
 	}
-} // namespace daw::json
+} // namespace DAW_JSON_NS

@@ -9,7 +9,8 @@
 #pragma once
 
 #include "daw_json_parse_policy.h"
+#include "namespace.h"
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	using DefaultParsePolicy = NoCommentSkippingPolicyChecked;
 }

@@ -12,6 +12,7 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_not_const_ex_functions.h"
+#include "namespace.h"
 
 #include <daw/daw_function_table.h>
 #include <daw/daw_hide.h>
@@ -22,7 +23,7 @@
 #include <cstdint>
 #include <type_traits>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	template<bool DocumentIsMinified>
 	struct BasicNoCommentSkippingPolicy final {
 		/***
@@ -322,4 +323,4 @@ namespace daw::json {
 	};
 
 	using NoCommentSkippingPolicy = BasicNoCommentSkippingPolicy<false>;
-} // namespace daw::json
+} // namespace DAW_JSON_NS

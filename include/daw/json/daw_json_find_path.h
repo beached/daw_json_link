@@ -11,6 +11,7 @@
 #include "daw_json_event_parser.h"
 #include "daw_json_link_types.h"
 #include "impl/daw_json_assert.h"
+#include "impl/namespace.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_move.h>
@@ -24,7 +25,7 @@
 #include <string_view>
 #include <vector>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	class json_path_node;
 
 	[[nodiscard]] inline std::vector<json_path_node>
@@ -319,4 +320,4 @@ namespace daw::json {
 	find_column_number_of( json_path_node const &node, char const *doc_start ) {
 		return find_column_number_of( node.value_start( ), doc_start );
 	}
-} // namespace daw::json
+} // namespace DAW_JSON_NS

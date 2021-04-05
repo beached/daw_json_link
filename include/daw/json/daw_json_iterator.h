@@ -10,6 +10,7 @@
 
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/daw_json_parse_class.h"
+#include "impl/namespace.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_array.h>
@@ -31,8 +32,7 @@
 #include <string_view>
 #include <tuple>
 
-namespace daw::json {
-
+namespace DAW_JSON_NS {
 	/***
 	 * Iterator for iterating over JSON array's
 	 * @tparam JsonElement type under underlying element in array. If
@@ -276,4 +276,4 @@ namespace daw::json {
 			return m_first == m_last;
 		}
 	};
-} // namespace daw::json
+} // namespace DAW_JSON_NS

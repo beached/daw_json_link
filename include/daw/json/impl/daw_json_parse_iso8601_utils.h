@@ -10,6 +10,7 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_digit.h"
+#include "namespace.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_string_view.h>
@@ -24,8 +25,7 @@
 #include <version>
 #endif
 
-namespace daw::json::parse_utils {
-
+namespace DAW_JSON_NS::parse_utils {
 	template<typename Result, std::size_t count>
 	constexpr Result parse_unsigned( char const *digit_str ) {
 		UInt64 result = UInt64( );
@@ -52,9 +52,9 @@ namespace daw::json::parse_utils {
 	constexpr bool is_number( char c ) {
 		return json_details::parse_digit( c ) < 10U;
 	}
-} // namespace daw::json::parse_utils
+} // namespace DAW_JSON_NS::parse_utils
 
-namespace daw::json::datetime {
+namespace DAW_JSON_NS::datetime {
 	namespace datetime_details {
 
 		template<typename Result, typename Bounds, std::ptrdiff_t Ex>
@@ -416,4 +416,4 @@ namespace daw::json::datetime {
 			daw_json_error( ErrorReason::InvalidTimestamp ); // Invalid month
 		}
 	}
-} // namespace daw::json::datetime
+} // namespace DAW_JSON_JS::datetime

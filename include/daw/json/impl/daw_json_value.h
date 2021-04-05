@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_json_skip.h"
+#include "namespace.h"
 
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
@@ -22,7 +23,7 @@
 #include <string_view>
 #include <tuple>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/***
 	 * A container for arbitrary JSON values
 	 * @tparam Range see IteratorRange
@@ -69,27 +70,27 @@ namespace daw::json {
 			return DAW_MOVE( rng.value );
 		}
 	}
-} // namespace daw::json
+} // namespace DAW_JSON_NS
 
 namespace std {
 	template<typename Range>
-	class tuple_element<0, daw::json::basic_json_pair<Range>> {
+	class tuple_element<0, DAW_JSON_NS::basic_json_pair<Range>> {
 	public:
 		using type = std::optional<std::string_view>;
 	};
 
 	template<typename Range>
-	class tuple_element<1, daw::json::basic_json_pair<Range>> {
+	class tuple_element<1, DAW_JSON_NS::basic_json_pair<Range>> {
 	public:
-		using type = daw::json::basic_json_value<Range>;
+		using type = DAW_JSON_NS::basic_json_value<Range>;
 	};
 
 	template<typename Range>
-	class tuple_size<daw::json::basic_json_pair<Range>>
+	class tuple_size<DAW_JSON_NS::basic_json_pair<Range>>
 	  : public std::integral_constant<std::size_t, 2> {};
 } // namespace std
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/***
 	 * Iterator for iterating over arbutrary JSON members and array elements
 	 * @tparam Range see IteratorRange
@@ -112,7 +113,7 @@ namespace daw::json {
 		constexpr basic_json_value_iterator( Range rng )
 		  : m_state( rng ) {}
 
-		friend class ::daw::json::basic_json_value<Range>;
+		friend class ::DAW_JSON_NS::basic_json_value<Range>;
 
 	public:
 		constexpr basic_json_value_iterator( ) = default;
@@ -549,4 +550,4 @@ namespace daw::json {
 			return basic_json_value<NewRange>( DAW_MOVE( new_range ) );
 		}
 	};
-} // namespace daw::json
+} // namespace DAW_JSON_NS

@@ -10,10 +10,11 @@
 
 #include "daw_json_parse_common.h"
 #include "daw_json_value.h"
+#include "namespace.h"
 
 #include <ciso646>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<typename JsonMember, bool KnownBounds = false, typename Range>
 	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_value( ParseTag<JsonParseTypes::Real>, Range &rng );
@@ -92,4 +93,4 @@ namespace daw::json::json_details {
 	template<bool IsKnown>
 	inline constexpr bool can_random_v = IsKnown;
 #endif
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

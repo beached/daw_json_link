@@ -19,6 +19,7 @@
 #include "daw_json_parse_string_quote.h"
 #include "daw_json_parse_unsigned_int.h"
 #include "daw_json_parse_value_fwd.h"
+#include "namespace.h"
 
 #include <ciso646>
 #include <cstddef>
@@ -26,7 +27,7 @@
 #include <iterator>
 #include <tuple>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<LiteralAsStringOpt literal_as_string, bool KnownBounds = false,
 	         typename Range>
 	DAW_ONLY_INLINE inline constexpr void
@@ -867,4 +868,4 @@ namespace daw::json::json_details {
 			  ParseTag<cur_json_class_t::base_expected_type>{ }, rng );
 		}
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

@@ -9,8 +9,9 @@
 #pragma once
 
 #include "daw_json_traits.h"
+#include "namespace.h"
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/***
 	 * Allows for alternate mappings of types.
 	 * @tparam C Base type to map to
@@ -30,4 +31,4 @@ namespace daw::json {
 	template<typename T, std::size_t I>
 	struct default_constructor<json_alt<T, I>> : default_constructor<T> {};
 
-} // namespace daw::json
+} // namespace DAW_JSON_NS::v3_0

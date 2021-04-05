@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_json_exec_modes.h"
+#include "namespace.h"
 
 #include <daw/daw_hide.h>
 #include <daw/daw_uint_buffer.h>
@@ -29,7 +30,7 @@
 #include <cstddef>
 #include <cstring>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	DAW_ATTRIBUTE_FLATTEN static inline constexpr bool
 	is_escaped( char const *ptr, char const *min_ptr ) {
 		if( *( ptr - 1 ) != '\\' ) {
@@ -420,4 +421,4 @@ namespace daw::json::json_details {
 		}
 		return first;
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

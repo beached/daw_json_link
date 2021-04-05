@@ -10,6 +10,7 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_digit.h"
+#include "namespace.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cxmath.h>
@@ -30,7 +31,7 @@
 #endif
 #endif
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	[[nodiscard]] static inline constexpr bool
 	is_made_of_eight_digits_cx( const char *ptr ) {
 		// The copy to local buffer is to get the compiler to treat it like a
@@ -330,4 +331,4 @@ namespace daw::json::json_details {
 	}
 	 */
 #endif
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

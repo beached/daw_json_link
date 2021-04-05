@@ -10,6 +10,7 @@
 
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/daw_json_traits.h"
+#include "impl/namespace.h"
 
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -20,7 +21,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/**
 	 *
 	 * @tparam JsonMembers JSON classes that map the relation ship from the json
@@ -917,4 +918,4 @@ namespace daw::json {
 		  JsonBaseParseTypes::None;
 		static constexpr bool nullable = Nullable == JsonNullable::Nullable;
 	};
-} // namespace daw::json
+} // namespace DAW_JSON_NS

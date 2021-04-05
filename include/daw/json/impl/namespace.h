@@ -8,4 +8,9 @@
 
 #pragma once
 
-namespace daw::json {}
+#define DAW_JSON_NS daw::json::v3_0_0
+
+namespace daw::json {
+	namespace v3_0 {}
+	using namespace ::DAW_JSON_NS;
+} // namespace daw::json

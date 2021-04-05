@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "impl/namespace.h"
+
 #include <daw/daw_hide.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
@@ -22,7 +24,7 @@
 #include <string>
 #include <string_view>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	struct missing_member {
 		char const *member_name;
 
@@ -42,9 +44,9 @@ namespace daw::json::json_details {
 		explicit constexpr missing_token( char c )
 		  : token( c ) {}
 	};
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	// enum class ErrorType { Unknown, MissingMember, UnexpectedCharacter };
 	enum class ErrorReason {
 		Unknown,
@@ -303,4 +305,4 @@ namespace daw::json {
 #endif
 		return result;
 	}
-} // namespace daw::json
+} // namespace DAW_JSON_NS

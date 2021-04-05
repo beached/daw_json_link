@@ -16,6 +16,7 @@
 #include "daw_json_parse_policy_no_comments.h"
 #include "daw_json_parse_policy_policy_details.h"
 
+#include "namespace.h"
 #include <daw/cpp_17.h>
 #include <daw/daw_hide.h>
 #include <daw/daw_traits.h>
@@ -26,7 +27,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/***
 	 * Handles the bounds and policy items for parsing execution and comments.
 	 * @tparam IsUncheckedInput If true, do not perform all validity checks on
@@ -452,7 +453,7 @@ namespace daw::json {
 				return skip_bracketed_item_checked<'[', ']', '{', '}'>( );
 			}
 		}
-	}; // namespace daw::json
+	};
 
 	using NoCommentSkippingPolicyChecked =
 	  BasicParsePolicy<false, NoCommentSkippingPolicy, default_exec_tag, false>;
@@ -517,4 +518,4 @@ namespace daw::json {
 		inline constexpr bool is_guaranteed_rvo_v =
 		  ParsePolicy::exec_tag_t::always_rvo;
 	} // namespace json_details
-} // namespace daw::json
+} // namespace DAW_JSON_NS

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "namespace.h"
+
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
 
@@ -22,7 +24,7 @@
  * Customization point traits
  *
  */
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/***
 	 * This class is used as a way to indicate that a json_data_contract
 	 * specialization has not been done for a user class.
@@ -42,7 +44,7 @@ namespace daw::json {
 
 	template<typename T>
 	using json_data_contract_trait_t =
-	  typename daw::json::json_data_contract<T>::type;
+	  typename DAW_JSON_NS::json_data_contract<T>::type;
 
 	namespace json_details {
 		template<typename T>
@@ -56,8 +58,8 @@ namespace daw::json {
 	} // namespace json_details
 	/***
 	 * This trait can be specialized such that when class being returned has
-	 * non-move/copyable members the construction can be done with { } instead of
-	 * a callable.  This is a blunt object and probably should not be used
+	 * non-move/copyable members the construction can be done with { } instead
+	 * of a callable.  This is a blunt object and probably should not be used
 	 * add a type alias named force_aggregate_construction to your
 	 * json_data_contract specialization
 	 * @tparam T type to specialize
@@ -119,8 +121,9 @@ namespace daw::json {
 
 	/***
 	 * Auto generated constructor for nullable types.
-	 * Specializations must accept accept an operator( )( ) that signifies a JSON
-	 * null. Any other arguments only need to be valid to construct the type.
+	 * Specializations must accept accept an operator( )( ) that signifies a
+	 * JSON null. Any other arguments only need to be valid to construct the
+	 * type.
 	 */
 	template<typename T>
 	struct nullable_constructor : default_constructor<T> {};
@@ -195,10 +198,11 @@ namespace daw::json {
 	};
 
 	/***
-	 * Can use the fast, pseudo random string iterators.  They are InputIterators
-	 * with an operator- that allows for O(1) distance calculations as we often
-	 * know the length but cannot provide random access.  For types that only use
-	 * InputIterator operations and last - first for distance calc
+	 * Can use the fast, pseudo random string iterators.  They are
+	 * InputIterators with an operator- that allows for O(1) distance
+	 * calculations as we often know the length but cannot provide random
+	 * access.  For types that only use InputIterator operations and last -
+	 * first for distance calc
 	 */
 	template<typename>
 	struct can_single_allocation_string : std::false_type {};
@@ -233,9 +237,10 @@ namespace daw::json {
 		using must_verify_end_of_data_is_valid_t =
 		  typename T::must_verify_end_of_data_is_valid;
 
-		/// If the parse policy has a type alias `must_verify_end_of_data_is_valid`
-		/// this trait is true.  This is used to ensure that after the JSON value is
-		/// parse that only whitespace or nothing follows
+		/// If the parse policy has a type alias
+		/// `must_verify_end_of_data_is_valid` this trait is true.  This is used
+		/// to ensure that after the JSON value is parse that only whitespace or
+		/// nothing follows
 		//  @tparam ParsePolicy Parser Policy Type
 		template<typename ParsePolicy>
 		inline constexpr bool must_verify_end_of_data_is_valid_v =
@@ -266,4 +271,4 @@ namespace daw::json {
 		  daw::is_detected_v<json_data_contract_constructor_t, T>,
 		  json_data_contract_constructor_t<T>, Default>;
 	} // namespace json_details
-} // namespace daw::json
+} // namespace DAW_JSON_NS

@@ -8,11 +8,13 @@
 
 #pragma once
 
+#include "namespace.h"
+
 #include <cstdint>
 #include <string_view>
 #include <utility>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	enum class JsonParseTypes : std::uint_fast8_t {
 		Real,
 		Signed,
@@ -93,4 +95,4 @@ namespace daw::json {
 	 * Always remove quotes around the literal
 	 */
 	enum class LiteralAsStringOpt : std::uint8_t { Never, Maybe, Always };
-} // namespace daw::json
+} // namespace DAW_JSON_NS::v3_0

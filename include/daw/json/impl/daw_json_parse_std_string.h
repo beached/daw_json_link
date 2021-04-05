@@ -2,12 +2,13 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
+#include "namespace.h"
 
 #include <ciso646>
 #include <string>
 #include <type_traits>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	[[nodiscard]] inline constexpr UInt8 to_nibble( unsigned char chr ) {
 		int const b = static_cast<int>( chr );
 		int const maskLetter = ( ( '9' - b ) >> 31 );
@@ -283,4 +284,4 @@ namespace daw::json::json_details {
 			  constructor_t{ }, rng, std::data( result ), daw::data_end( result ) );
 		}
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

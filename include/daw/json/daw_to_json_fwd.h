@@ -9,8 +9,9 @@
 #pragma once
 
 #include "impl/daw_json_link_types_fwd.h"
+#include "impl/namespace.h"
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/**
 	 *
 	 * @tparam OutputIterator Iterator to character data to
@@ -75,4 +76,4 @@ namespace daw::json {
 	         typename JsonElement = json_details::auto_detect_array_element,
 	         typename Container>
 	[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c );
-} // namespace daw::json
+} // namespace DAW_JSON_NS

@@ -11,10 +11,11 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_std_string.h"
 #include "daw_not_const_ex_functions.h"
+#include "namespace.h"
 
 #include <ciso646>
 
-namespace daw::json::json_details::name::name_parser {
+namespace DAW_JSON_NS::json_details::name::name_parser {
 	/*
 	 * end of string " -> name value separating : -> any white space
 	 * the string can be escaped too
@@ -53,10 +54,9 @@ namespace daw::json::json_details::name::name_parser {
 			return result;
 		}
 	}
-} // namespace daw::json::json_details::name::name_parser
+} // namespace DAW_JSON_NS::json_details::name::name_parser
 
-namespace daw::json::json_details {
-
+namespace DAW_JSON_NS::json_details {
 	// Paths are specified with dot separators, if the name has a dot in it,
 	// it must be escaped
 	// memberA.memberB.member\.C has 3 parts['memberA', 'memberB', 'member.C']
@@ -197,4 +197,4 @@ namespace daw::json::json_details {
 		}
 		return std::pair{ true, rng };
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

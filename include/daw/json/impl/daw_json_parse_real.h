@@ -11,6 +11,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_policy.h"
 #include "daw_json_parse_unsigned_int.h"
+#include "namespace.h"
 
 #include <daw/daw_cxmath.h>
 
@@ -20,7 +21,7 @@
 #include <limits>
 #include <type_traits>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	namespace {
 		inline constexpr double dpow10_tbl[] = {
 		  1e0,   1e1,   1e2,   1e3,   1e4,   1e5,   1e6,   1e7,   1e8,   1e9,
@@ -356,4 +357,4 @@ namespace daw::json::json_details {
 		                               static_cast<Result>( significant_digits ),
 		                               exponent );
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

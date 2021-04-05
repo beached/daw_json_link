@@ -8,13 +8,15 @@
 
 #pragma once
 
+#include "namespace.h"
+
 #include <string_view>
 
 #if defined( __has_include ) and __has_include( <version> )
 #include <version>
 #endif
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	struct constexpr_exec_tag {
 		static constexpr std::string_view name = "constexpr";
 #if defined( __cpp_constexpr_dynamic_alloc ) or \
@@ -41,4 +43,4 @@ namespace daw::json {
 	using simd_exec_tag = runtime_exec_tag;
 #endif
 	using default_exec_tag = constexpr_exec_tag;
-} // namespace daw::json
+} // namespace DAW_JSON_NS::v3_0

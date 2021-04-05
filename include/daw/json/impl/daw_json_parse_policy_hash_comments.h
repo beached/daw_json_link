@@ -12,6 +12,7 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_not_const_ex_functions.h"
+#include "namespace.h"
 
 #include <daw/daw_hide.h>
 #include <daw/daw_traits.h>
@@ -21,7 +22,7 @@
 #include <cstdint>
 #include <type_traits>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	class HashCommentSkippingPolicy final {
 		template<typename Range>
 		DAW_ATTRIBUTE_FLATTEN static constexpr void
@@ -260,4 +261,4 @@ namespace daw::json {
 			DAW_UNREACHABLE( );
 		}
 	};
-} // namespace daw::json
+} // namespace DAW_JSON_NS

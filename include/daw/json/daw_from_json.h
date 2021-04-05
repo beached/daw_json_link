@@ -12,13 +12,14 @@
 #include "impl/daw_json_parse_class.h"
 #include "impl/daw_json_parse_value.h"
 #include "impl/daw_json_value.h"
+#include "impl/namespace.h"
 
 #include <daw/daw_traits.h>
 
 #include <iterator>
 #include <string_view>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/**
 	 * Construct the JSONMember from the JSON document argument.
 	 * @tparam JsonMember any bool, arithmetic, string, string_view,
@@ -318,4 +319,4 @@ namespace daw::json {
 			  ParseTag<JsonParseTypes::Array>{ }, rng );
 		}
 	}
-} // namespace daw::json
+} // namespace DAW_JSON_NS

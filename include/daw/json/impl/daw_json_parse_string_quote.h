@@ -10,6 +10,7 @@
 
 #include "daw_json_assert.h"
 #include "daw_not_const_ex_functions.h"
+#include "namespace.h"
 
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
@@ -18,7 +19,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace daw::json::json_details::string_quote {
+namespace DAW_JSON_NS::json_details::string_quote {
 	template<std::size_t N, char c>
 	inline constexpr UInt8 test_at_byte( UInt64 b ) {
 		auto const lhs = b & ( 0xFF_u64 << ( N * 8U ) );
@@ -162,4 +163,4 @@ namespace daw::json::json_details::string_quote {
 			return static_cast<std::size_t>( need_slow_path );
 		}
 	};
-} // namespace daw::json::json_details::string_quote
+} // namespace DAW_JSON_NS::json_details::string_quote

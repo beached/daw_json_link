@@ -8,13 +8,14 @@
 #pragma once
 
 #include "daw_json_to_string.h"
+#include "namespace.h"
 
 #include <array>
 #include <ciso646>
 #include <cstddef>
 #include <utility>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	/***
 	 * Serialize items to an output iterator as members of a class
 	 * @tparam JsonMembers member items in json_class
@@ -72,4 +73,4 @@ namespace daw::json::json_details {
 		*it++ = ']';
 		return it;
 	}
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

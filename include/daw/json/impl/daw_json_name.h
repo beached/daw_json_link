@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "namespace.h"
+
 #include <cstddef>
 #include <string_view>
 #include <utility>
@@ -16,7 +18,7 @@
 #include <version>
 #endif
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 #if defined( __cpp_nontype_template_parameter_class ) and \
   not defined( DAW_JSON_NO_CPP_NAMES )
 	// C++ 20 Non-Type Class Template Arguments
@@ -88,7 +90,7 @@ namespace daw::json {
 	template<std::size_t N>
 	json_name( char const ( & )[N] ) -> json_name<N>;
 
-#define JSONNAMETYPE daw::json::json_name
+#define JSONNAMETYPE DAW_JSON_NS::json_name
 	// Convienience for array members that are required to be unnamed
 	inline constexpr JSONNAMETYPE no_name{ "\a" };
 
@@ -113,4 +115,4 @@ namespace daw::json {
 	template<typename JsonMember>
 	inline constexpr bool is_no_name = JsonMember::name == no_name;
 #endif
-} // namespace daw::json
+} // namespace DAW_JSON_NS

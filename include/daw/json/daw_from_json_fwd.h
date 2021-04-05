@@ -11,10 +11,11 @@
 #include "impl/daw_json_link_types_fwd.h"
 #include "impl/daw_json_parse_policy.h"
 #include "impl/daw_json_traits.h"
+#include "impl/namespace.h"
 
 #include <string_view>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	namespace json_details {}
 	/**
 	 * Construct the JSONMember from the JSON document argument.
@@ -154,4 +155,4 @@ namespace daw::json {
 	[[maybe_unused, nodiscard]] constexpr Container
 	from_json_array( std::string_view json_data,
 	                 std::string_view member_path = "" );
-} // namespace daw::json
+} // namespace DAW_JSON_NS

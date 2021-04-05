@@ -11,12 +11,13 @@
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_value_fwd.h"
+#include "namespace.h"
 
 #include <daw/daw_move.h>
 
 #include <ciso646>
 
-namespace daw::json::json_details {
+namespace DAW_JSON_NS::json_details {
 	template<typename... Args>
 	[[maybe_unused]] void test_map( std::map<Args...> const & );
 
@@ -87,7 +88,7 @@ namespace daw::json::json_details {
 			name::name_parser::trim_end_of_name( *base::rng );
 			return json_class_constructor<value_type>(
 			  DAW_MOVE( key ), parse_value<value_t>(
-			                      ParseTag<value_t::expected_type>{ }, *base::rng ) );
+			                     ParseTag<value_t::expected_type>{ }, *base::rng ) );
 		}
 
 		inline constexpr json_parse_kv_class_iterator &operator++( ) {
@@ -146,4 +147,4 @@ namespace daw::json::json_details {
 			return base::rng != rhs.base::rng;
 		}
 	};
-} // namespace daw::json::json_details
+} // namespace DAW_JSON_NS::json_details

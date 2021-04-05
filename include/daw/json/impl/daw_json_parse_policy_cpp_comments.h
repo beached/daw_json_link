@@ -12,13 +12,14 @@
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_not_const_ex_functions.h"
+#include "namespace.h"
 
 #include <daw/daw_hide.h>
 #include <daw/daw_traits.h>
 
 #include <ciso646>
 
-namespace daw::json {
+namespace DAW_JSON_NS {
 	/***
 	 * Allow skipping C++ style comments in JSON document
 	 */
@@ -323,5 +324,5 @@ namespace daw::json {
 			}
 			DAW_UNREACHABLE( );
 		}
-	}; // namespace daw::json
-} // namespace daw::json
+	};
+} // namespace DAW_JSON_NS

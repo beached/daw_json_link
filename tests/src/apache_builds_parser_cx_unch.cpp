@@ -10,15 +10,16 @@
 
 #include <daw/json/daw_from_json.h>
 
-namespace daw::json {
+#include <string_view>
+
+namespace DAW_JSON_NS {
 	template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
-	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-	            daw::json::constexpr_exec_tag>>( std::string_view json_doc,
-	                                             std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>>(
+	  std::string_view json_doc, std::string_view json_data );
 
 	template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
-	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
-	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
-} // namespace daw::json
+	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>>(
+	  std::string_view json_data );
+} // namespace DAW_JSON_NS

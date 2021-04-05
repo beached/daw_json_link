@@ -8,9 +8,11 @@
 
 #pragma once
 
+#include "namespace.h"
+
 #include <daw/daw_hide.h>
 
-namespace daw::json::parse_policy_details {
+namespace DAW_JSON_NS::parse_policy_details {
 	template<char... keys>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool in( char c ) {
 		auto const eq = [c]( char k ) { return c == k; };
@@ -49,4 +51,4 @@ namespace daw::json::parse_policy_details {
 		}
 		return false;
 	}
-} // namespace daw::json::parse_policy_details
+} // namespace DAW_JSON_NS::parse_policy_details
