@@ -111,73 +111,73 @@ namespace DAW_JSON_NS {
 
 namespace DAW_JSON_NS::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] inline OutputIterator constexpr to_string(
+	[[nodiscard]] inline OutputIterator constexpr to_daw_json_string(
 	  ParseTag<JsonParseTypes::Null>, OutputIterator it,
 	  parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::KeyValueArray>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::KeyValueArray>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::KeyValue>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::KeyValue>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Custom>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Custom>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Variant>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Variant>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Class>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Class>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] OutputIterator to_string( ParseTag<JsonParseTypes::Real>,
+	[[nodiscard]] OutputIterator to_daw_json_string( ParseTag<JsonParseTypes::Real>,
 	                                        OutputIterator it,
 	                                        parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Signed>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Signed>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Unsigned>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Unsigned>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::StringRaw>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::StringRaw>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::StringEscaped>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::StringEscaped>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Date>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Date>, OutputIterator it,
 	           parse_to_t const &value );
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
 	           parse_to_t const &value );
 
 	//************************************************
@@ -418,7 +418,7 @@ namespace DAW_JSON_NS::utils {
 namespace DAW_JSON_NS::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		if constexpr( JsonMember::literal_as_string ==
@@ -450,14 +450,14 @@ namespace DAW_JSON_NS::json_details {
 			using JsonMember =
 			  typename std::tuple_element<idx,
 			                              typename element_t::element_map_t>::type;
-			it = to_string<JsonMember>( ParseTag<JsonMember::base_expected_type>{ },
+			it = to_daw_json_string<JsonMember>( ParseTag<JsonMember::base_expected_type>{ },
 			                            it, std::get<idx>( value ) );
 		}
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Variant>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Variant>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		to_variant_string<0, JsonMember>( it, value );
@@ -466,7 +466,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::VariantTagged>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::VariantTagged>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		to_variant_string<0, JsonMember>( it, value );
@@ -489,16 +489,16 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename Optional>
 	[[nodiscard]] inline constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 	           Optional const &value ) {
 		static_assert( is_valid_optional_v<Optional> );
 		daw_json_assert( value, ErrorReason::UnexpectedNull );
 		using tag_type = ParseTag<JsonMember::base_expected_type>;
-		return to_string<JsonMember>( tag_type{ }, it, *value );
+		return to_daw_json_string<JsonMember>( tag_type{ }, it, *value );
 	}
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
-	[[nodiscard]] inline OutputIterator to_string( ParseTag<JsonParseTypes::Real>,
+	[[nodiscard]] inline OutputIterator to_daw_json_string( ParseTag<JsonParseTypes::Real>,
 	                                               OutputIterator it,
 	                                               parse_to_t const &value ) {
 
@@ -584,7 +584,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Signed>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Signed>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		static_assert(
@@ -652,7 +652,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Unsigned>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Unsigned>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		static_assert(
@@ -723,10 +723,10 @@ namespace DAW_JSON_NS::utils {
 		static_assert( daw::is_integral_v<Integer> );
 
 		if constexpr( daw::is_unsigned_v<Integer> ) {
-			return json_details::to_string<utils_details::number<Integer>>(
+			return json_details::to_daw_json_string<utils_details::number<Integer>>(
 			  ParseTag<JsonParseTypes::Unsigned>{ }, it, value );
 		} else {
-			return json_details::to_string<utils_details::number<Integer>>(
+			return json_details::to_daw_json_string<utils_details::number<Integer>>(
 			  ParseTag<JsonParseTypes::Signed>{ }, it, value );
 		}
 	}
@@ -735,7 +735,7 @@ namespace DAW_JSON_NS::utils {
 namespace DAW_JSON_NS::json_details {
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::StringRaw>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::StringRaw>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		static_assert(
@@ -753,7 +753,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::StringEscaped>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::StringEscaped>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		/* TODO is something like this necessary
@@ -781,7 +781,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Date>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Date>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		static_assert(
@@ -832,7 +832,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Unknown>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Unknown>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		return utils::copy_to_iterator( it, value );
@@ -840,7 +840,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Class>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Class>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		static_assert(
@@ -859,7 +859,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] inline constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Custom>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Custom>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		static_assert(
@@ -887,7 +887,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		static_assert(
@@ -898,7 +898,7 @@ namespace DAW_JSON_NS::json_details {
 		if( not std::empty( value ) ) {
 			auto count = std::size( value ) - 1U;
 			for( auto const &v : value ) {
-				it = to_string<typename JsonMember::json_element_t>(
+				it = to_daw_json_string<typename JsonMember::json_element_t>(
 				  ParseTag<JsonMember::json_element_t::expected_type>{ }, it, v );
 				if( count-- > 0 ) {
 					*it++ = ',';
@@ -923,7 +923,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::KeyValueArray>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::KeyValueArray>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		static_assert(
@@ -942,7 +942,7 @@ namespace DAW_JSON_NS::json_details {
 				*it++ = '"';
 				*it++ = ':';
 				// Append Key Value
-				it = to_string<key_t>( ParseTag<key_t::expected_type>{ }, it,
+				it = to_daw_json_string<key_t>( ParseTag<key_t::expected_type>{ }, it,
 				                       json_get_key( v ) );
 
 				*it++ = ',';
@@ -952,7 +952,7 @@ namespace DAW_JSON_NS::json_details {
 				*it++ = '"';
 				*it++ = ':';
 				// Append Value Value
-				it = to_string<value_t>( ParseTag<value_t::expected_type>{ }, it,
+				it = to_daw_json_string<value_t>( ParseTag<value_t::expected_type>{ }, it,
 				                         json_get_value( v ) );
 
 				*it++ = '}';
@@ -967,7 +967,7 @@ namespace DAW_JSON_NS::json_details {
 
 	template<typename JsonMember, typename OutputIterator, typename parse_to_t>
 	[[nodiscard]] constexpr OutputIterator
-	to_string( ParseTag<JsonParseTypes::KeyValue>, OutputIterator it,
+	to_daw_json_string( ParseTag<JsonParseTypes::KeyValue>, OutputIterator it,
 	           parse_to_t const &value ) {
 
 		static_assert(
@@ -978,11 +978,11 @@ namespace DAW_JSON_NS::json_details {
 		if( not std::empty( value ) ) {
 			auto count = std::size( value ) - 1U;
 			for( auto const &v : value ) {
-				it = to_string<typename JsonMember::json_key_t>(
+				it = to_daw_json_string<typename JsonMember::json_key_t>(
 				  ParseTag<JsonMember::json_key_t::expected_type>{ }, it,
 				  json_get_key( v ) );
 				*it++ = ':';
-				it = to_string<typename JsonMember::json_element_t>(
+				it = to_daw_json_string<typename JsonMember::json_element_t>(
 				  ParseTag<JsonMember::json_element_t::expected_type>{ }, it,
 				  json_get_value( v ) );
 				if( count-- > 0 ) {
@@ -997,7 +997,7 @@ namespace DAW_JSON_NS::json_details {
 	template<typename JsonMember, typename OutputIterator, typename T>
 	[[nodiscard]] inline constexpr OutputIterator
 	member_to_string( OutputIterator it, T const &value ) {
-		return to_string<JsonMember>( ParseTag<JsonMember::expected_type>{ },
+		return to_daw_json_string<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 		                              DAW_MOVE( it ), value );
 	}
 
