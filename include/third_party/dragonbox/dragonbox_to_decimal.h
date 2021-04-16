@@ -556,10 +556,10 @@ namespace jkj::dragonbox {
 				          ( std::uint32_t( 1 ) << ( 32 - shift_amount ) ) );
 
 				return shift_amount == 0
-				         ? std::int32_t( integer_part )
-				         : std::int32_t(
-				             ( integer_part << shift_amount ) |
-				             ( fractional_digits >> ( 64 - shift_amount ) ) );
+				         ? static_cast<std::int32_t>( integer_part )
+				         : static_cast<std::int32_t>(
+				             ( integer_part << static_cast<std::uint32_t>( shift_amount ) ) |
+				             ( fractional_digits >> ( 64U - shift_amount ) ) );
 			}
 
 			// Compute floor(e * c - s)
@@ -2868,8 +2868,8 @@ namespace jkj::dragonbox {
 					}
 
 					// Otherwise, work with the remainder
-					auto quotient = std::uint32_t( div::divide_by_pow10<8, 54, 0>( n ) );
-					auto remainder = std::uint32_t( n - 1'0000'0000 * quotient );
+					auto quotient = static_cast<std::uint32_t>( div::divide_by_pow10<8, 54, 0>( n ) );
+					auto remainder = static_cast<std::uint32_t>( static_cast<unsigned>( n ) - 1'0000'0000 * quotient );
 
 					constexpr auto mod_inverse = std::uint32_t( divtable.mod_inv[1] );
 					constexpr auto max_quotient =
