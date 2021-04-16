@@ -100,7 +100,7 @@ namespace daw::json {
 								std::size_t counter;
 								CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
 #ifdef HAS_CPP20CONSTEXPR
-									if( std::is_constant_evaluated( ) ) {
+									if( not std::is_constant_evaluated( ) ) {
 #endif
 										if( std::uncaught_exceptions( ) == 0 ) {
 											ptr->counter = counter;
