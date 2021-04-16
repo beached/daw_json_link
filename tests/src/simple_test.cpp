@@ -88,7 +88,9 @@ int main( int argc, char **argv )
 
 	std::cout << "Chitungwiza was found.\n" << to_json( *pos ) << '\n';
 }
+#ifdef DAW_USE_JSON_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

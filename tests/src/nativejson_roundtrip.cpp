@@ -12,8 +12,8 @@
 #include "geojson_json.h"
 #include "twitter_test_json.h"
 
-#include <daw/json/daw_to_json.h>
 #include <daw/json/daw_from_json.h>
+#include <daw/json/daw_to_json.h>
 
 #include <fstream>
 #include <iostream>
@@ -83,7 +83,8 @@ int main( int argc, char *argv[] )
 	std::cout << "stop";
 
 	return EXIT_SUCCESS;
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
