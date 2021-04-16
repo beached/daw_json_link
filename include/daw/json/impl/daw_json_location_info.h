@@ -165,7 +165,7 @@ namespace daw::json {
 						continue;
 					}
 					if( name_pos == pos ) {
-						locations[pos].template set_range( parse_state );
+						locations[pos].set_range( parse_state );
 						break;
 					} else {
 						// We are out of order, store position for later
