@@ -1,4 +1,5 @@
 set(DAW_JSON_USE_SANITIZERS OFF CACHE STRING "Enable address and undefined sanitizers")
+set(DAW_WERROR OFF CACHE STRING "Enable WError for test builds")
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
     if (MSVC)
         message("Clang-CL ${CMAKE_CXX_COMPILER_VERSION} detected")
@@ -37,6 +38,9 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-undefined-inline 
 				-Wno-poison-system-directories
 				)
+			if( DAW_WERROR ) 
+				add_compile_options( -Werror )
+			endif( )
 			if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
 				if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
 					if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0 )
@@ -68,7 +72,19 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 		endif ()
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	message("g++ ${CMAKE_CXX_COMPILER_VERSION} detected")
-	add_compile_options(--param max-gcse-memory=260000000  -Wall -Wextra -pedantic -Wno-deprecated-declarations -Wduplicated-cond -Wlogical-op -Wold-style-cast -Wshadow -Wzero-as-null-pointer-constant)
+	add_compile_options(--param max-gcse-memory=260000000 
+		-Wall 
+		-Wextra 
+		-pedantic 
+		-Wno-deprecated-declarations 
+		-Wduplicated-cond 
+		-Wlogical-op 
+		-Wold-style-cast 
+		-Wshadow 
+		-Wzero-as-null-pointer-constant)
+	if( DAW_WERROR ) 
+		add_compile_options( -Werror )
+	endif( )
 	#-Wdisabled-optimization)
     if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
 		if( CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 9.0.0 )
