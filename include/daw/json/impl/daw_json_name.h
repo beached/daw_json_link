@@ -91,8 +91,8 @@ namespace daw::json {
 		template<std::size_t N>
 		json_name( char const ( & )[N] ) -> json_name<N>;
 
-#define JSONNAMETYPE json_name
-		// Convienience for array members that are required to be unnamed
+#define JSONNAMETYPE ::daw::json::json_name
+		// Convenience for array members that are required to be unnamed
 		inline constexpr JSONNAMETYPE no_name{ "\a" };
 
 		namespace json_details {
