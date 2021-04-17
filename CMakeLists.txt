@@ -105,7 +105,6 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION include)
 
 if (DAW_ENABLE_TESTING)
     enable_testing()
-    include(cmake/git_properties.cmake)
     add_subdirectory(tests)
 endif ()
 
