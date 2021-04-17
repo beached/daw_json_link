@@ -9,6 +9,8 @@
 
 #include "daw_json_to_string.h"
 
+#include <ciso646>
+
 namespace daw::json::json_details {
 	/***
 	 * Serialize items to an output iterator as members of a class

@@ -59,10 +59,14 @@ namespace daw::json {
 	};
 
 	template<>
-	struct force_aggregate_constrution<B> : std::true_type {};
+	struct force_aggregate_construction<B> : std::true_type {};
 } // namespace daw::json
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	constexpr std::string_view json_data = R"({ "some_num": 1234 } )";
 	daw::expecting(
 	  daw::json::from_json<A, daw::json::SIMDNoCommentSkippingPolicyChecked<
@@ -74,8 +78,8 @@ int main( int, char ** ) try {
 	  daw::json::from_json<B, daw::json::SIMDNoCommentSkippingPolicyChecked<
 	                            daw::json::runtime_exec_tag>>( json_data2 )
 	    .a.member == 1234 );
-
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

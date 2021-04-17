@@ -50,7 +50,7 @@ namespace daw::cookbook_optional_values1 {
 		}
 
 		template<typename Arg, typename... Args>
-		inline std::unique_ptr<T> operator( )( Arg &&arg, Args &&... args ) const {
+		inline std::unique_ptr<T> operator( )( Arg &&arg, Args &&...args ) const {
 			return std::make_unique<T>( std::forward<Arg>( arg ),
 			                            std::forward<Args>( args )... );
 		}
@@ -79,7 +79,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_number_null<"member0", std::optional<int>>, json_string<"member1">,
 		  json_bool_null<
-		    "member2", std::unique_ptr<bool>, LiteralAsStringOpt::NotBeforeDblQuote,
+		    "member2", std::unique_ptr<bool>, LiteralAsStringOpt::Never,
 		    daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
 #else
 		static constexpr char const member0[] = "member0";
@@ -99,7 +99,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_optional_values1.json file\n" );
 		exit( EXIT_FAILURE );
@@ -112,9 +116,9 @@ int main( int argc, char **argv ) try {
 	  daw::json::from_json_array<
 	    daw::cookbook_optional_values1::MyOptionalStuff1>( data );
 
-	daw_json_assert( stuff.size( ) == 2, "Unexpected size" );
-	daw_json_assert( not stuff.front( ).member2, "Unexpected value" );
-	daw_json_assert( not stuff.back( ).member0, "Unexpected value" );
+	test_assert( stuff.size( ) == 2, "Unexpected size" );
+	test_assert( not stuff.front( ).member2, "Unexpected value" );
+	test_assert( not stuff.back( ).member0, "Unexpected value" );
 
 	std::string const str = daw::json::to_json_array( stuff );
 
@@ -125,9 +129,10 @@ int main( int argc, char **argv ) try {
 	  daw::json::from_json_array<
 	    daw::cookbook_optional_values1::MyOptionalStuff1>( str );
 
-	daw_json_assert( stuff == stuff2, "Unexpected round trip error" );
+	test_assert( stuff == stuff2, "Unexpected round trip error" );
 	return 0;
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

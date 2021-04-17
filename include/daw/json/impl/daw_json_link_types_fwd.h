@@ -8,14 +8,18 @@
 
 #pragma once
 
+#include "daw_json_enums.h"
 #include "daw_json_link_impl.h"
 #include "daw_json_parse_name.h"
 #include "daw_json_parse_value_fwd.h"
 
+#include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>
+#include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 
 #include <chrono>
+#include <ciso646>
 #include <optional>
 #include <string>
 
@@ -33,7 +37,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename T = double,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-	         typename Constructor = daw::construct_a_t<T>,
+	         typename Constructor = default_constructor<T>,
 	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_number;
@@ -49,7 +53,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename T = std::optional<double>,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-	         typename Constructor = daw::construct_a_t<T>,
+	         typename Constructor = nullable_constructor<T>,
 	         JsonRangeCheck RangeCheck = JsonRangeCheck::Never>
 	using json_number_null = json_number<Name, T, LiteralAsString, Constructor,
 	                                     RangeCheck, JsonNullable::Nullable>;
@@ -65,7 +69,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename T = double,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-	         typename Constructor = daw::construct_a_t<T>,
+	         typename Constructor = default_constructor<T>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	using json_checked_number =
 	  json_number<Name, T, LiteralAsString, Constructor,
@@ -81,7 +85,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename T = std::optional<double>,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-	         typename Constructor = daw::construct_a_t<T>>
+	         typename Constructor = nullable_constructor<T>>
 	using json_checked_number_null =
 	  json_number<Name, T, LiteralAsString, Constructor,
 	              JsonRangeCheck::CheckForNarrowing, JsonNullable::Nullable>;
@@ -96,7 +100,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename T = bool,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-	         typename Constructor = daw::construct_a_t<T>,
+	         typename Constructor = default_constructor<T>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_bool;
 
@@ -109,7 +113,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename T = std::optional<bool>,
 	         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-	         typename Constructor = daw::construct_a_t<T>>
+	         typename Constructor = nullable_constructor<T>>
 	using json_bool_null =
 	  json_bool<Name, T, LiteralAsString, Constructor, JsonNullable::Nullable>;
 
@@ -129,7 +133,7 @@ namespace daw::json {
 	 * data
 	 */
 	template<JSONNAMETYPE Name, typename String = std::string,
-	         typename Constructor = daw::construct_a_t<String>,
+	         typename Constructor = default_constructor<String>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
 	         JsonNullable Nullable = JsonNullable::Never,
@@ -151,8 +155,8 @@ namespace daw::json {
 	 * data
 	 */
 	template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
-	         typename Constructor = daw::construct_a_t<String>,
-	         JsonNullable EmptyStringNull = JsonNullable::Never,
+	         typename Constructor = nullable_constructor<String>,
+	         JsonNullable EmptyStringNull = JsonNullable::Nullable,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
 	         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
 	using json_string_raw_null =
@@ -166,15 +170,13 @@ namespace daw::json {
 	 * @tparam String result type constructed by Constructor
 	 * @tparam Constructor a callable taking as arguments ( char const *,
 	 * std::size_t )
-	 * @tparam Appender Allows appending characters to the output object
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
 	 * @tparam Nullable Can the member be missing or have a null value
 	 */
 	template<JSONNAMETYPE Name, typename String = std::string,
-	         typename Constructor = daw::construct_a_t<String>,
-	         typename Appender = json_details::basic_appender<String>,
+	         typename Constructor = default_constructor<String>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull,
 	         JsonNullable Nullable = JsonNullable::Never>
@@ -185,22 +187,19 @@ namespace daw::json {
 	 * string data
 	 * @tparam Name of json member
 	 * @tparam String result type constructed by Constructor
-	 * @tparam Constructor a callable taking as arguments ( char const *,
-	 * std::size_t )
-	 * @tparam Appender Allows appending characters to the output object
+	 * @tparam Constructor a callable taking as arguments ( InputIterator,
+	 * InputIterator ).  If others are needed use the Constructor callable convert
 	 * @tparam EmptyStringNull if string is empty, call Constructor with no
 	 * arguments
 	 * @tparam EightBitMode Allow filtering of characters with the MSB set
 	 */
 	template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
-	         typename Constructor =
-	           daw::construct_a_t<std::optional<std::string>>,
-	         typename Appender = json_details::basic_appender<std::string>,
+	         typename Constructor = nullable_constructor<String>,
 	         JsonNullable EmptyStringNull = JsonNullable::Never,
 	         EightBitModes EightBitMode = EightBitModes::AllowFull>
 	using json_string_null =
-	  json_string<Name, String, Constructor, Appender, EmptyStringNull,
-	              EightBitMode, JsonNullable::Nullable>;
+	  json_string<Name, String, Constructor, EmptyStringNull, EightBitMode,
+	              JsonNullable::Nullable>;
 
 	/**
 	 * Link to a JSON string representing a date
@@ -244,7 +243,7 @@ namespace daw::json {
 	 * @tparam Nullable Can the member be missing or have a null value
 	 */
 	template<JSONNAMETYPE Name, typename T,
-	         typename Constructor = daw::construct_a_t<T>,
+	         typename Constructor = default_constructor<T>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_class;
 
@@ -257,7 +256,7 @@ namespace daw::json {
 	 * default supports normal and aggregate construction
 	 */
 	template<JSONNAMETYPE Name, typename T,
-	         typename Constructor = daw::construct_a_t<T>>
+	         typename Constructor = nullable_constructor<T>>
 	using json_class_null =
 	  json_class<Name, T, Constructor, JsonNullable::Nullable>;
 
@@ -274,17 +273,18 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename JsonElement, typename Container,
-		         typename Constructor = daw::construct_a_t<Container>,
+		         typename Constructor = default_constructor<Container>,
 		         JsonNullable Nullable = JsonNullable::Never>
 		struct json_array_detect;
 
 		namespace vector_detect {
+			struct not_vector {};
 			template<typename T, typename... Alloc>
 			[[maybe_unused]] auto vector_test( daw::tag_t<std::vector<T, Alloc...>> )
 			  -> T;
 
 			template<typename T>
-			[[maybe_unused]] int vector_test( daw::tag_t<T> );
+			[[maybe_unused]] not_vector vector_test( daw::tag_t<T> );
 
 			template<typename T>
 			using detector =
@@ -292,74 +292,132 @@ namespace daw::json {
 		} // namespace vector_detect
 
 		template<typename T>
-		using is_vector = daw::is_detected<vector_detect::detector, T>;
+		using is_vector = daw::not_trait<
+		  std::is_same<vector_detect::detector<T>, vector_detect::not_vector>>;
 	} // namespace json_details
 
-	/***
-	 * This mapping class allows for a quick mapping of fundamental types
-	 * to their JSON link counterparts
-	 * @tparam Name Name of current member
-	 * @tparam T type of value
-	 */
-	template<JSONNAMETYPE Name, typename T>
-	struct json_link_quick_map : std::false_type {
-		using mapped_type = void;
+	template<typename>
+	struct json_link_basic_type_map {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unknown;
 	};
 
-	/***
-	 * This mapping class allows for a quick mapping of bool to json_bool
-	 * @tparam Name Name of current member
-	 */
-	template<JSONNAMETYPE Name>
-	struct json_link_quick_map<Name, bool> : std::true_type {
-		using mapped_type = json_bool<Name>;
+	template<>
+	struct json_link_basic_type_map<daw::string_view> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::StringRaw;
 	};
 
-	/***
-	 * This mapping class allows for a quick mapping of std::string_view to
-	 * json_string_raw as it can only view the JSON data already there
-	 * @tparam Name Name of current member
-	 */
-	template<JSONNAMETYPE Name>
-	struct json_link_quick_map<Name, std::string> : std::true_type {
-		using mapped_type = json_string<Name>;
+	template<>
+	struct json_link_basic_type_map<std::string_view> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::StringRaw;
 	};
 
-	/***
-	 * This mapping class allows for a quick mapping of std::string_view to
-	 * json_string_raw as it can only view the JSON data already there
-	 * @tparam Name Name of current member
-	 */
-	template<JSONNAMETYPE Name>
-	struct json_link_quick_map<Name, std::string_view> : std::true_type {
-		using mapped_type = json_string_raw<Name, std::string_view>;
+	template<>
+	struct json_link_basic_type_map<std::string> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::StringEscaped;
 	};
 
-	/***
-	 * This mapping class allows for a quick mapping of daw::string_view to
-	 * json_string_raw as it can only view the JSON data already there
-	 * @tparam Name Name of current member
-	 */
-	template<JSONNAMETYPE Name>
-	struct json_link_quick_map<Name, daw::string_view> : std::true_type {
-		using mapped_type = json_string_raw<Name, daw::string_view>;
+	template<>
+	struct json_link_basic_type_map<bool> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Bool;
 	};
 
-	/***
-	 * Check if the current type has a quick map specialized for it
-	 */
-	template<typename T>
-	inline constexpr bool has_json_link_quick_map_v =
-	  json_link_quick_map<no_name, T>::value;
+	template<>
+	struct json_link_basic_type_map<short> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
+	};
 
-	/***
-	 * Get the quick mapped json type for type T
-	 */
-	template<JSONNAMETYPE Name, typename T>
-	using json_link_quick_map_t =
-	  typename json_link_quick_map<Name, T>::mapped_type;
+	template<>
+	struct json_link_basic_type_map<int> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
+	};
+
+	template<>
+	struct json_link_basic_type_map<long> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
+	};
+
+	template<>
+	struct json_link_basic_type_map<long long> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
+	};
+
+	template<>
+	struct json_link_basic_type_map<unsigned short> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
+	};
+
+	template<>
+	struct json_link_basic_type_map<unsigned int> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
+	};
+
+	template<>
+	struct json_link_basic_type_map<unsigned long> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
+	};
+
+	template<>
+	struct json_link_basic_type_map<unsigned long long> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
+	};
+
+	template<>
+	struct json_link_basic_type_map<float> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
+	};
+
+	template<>
+	struct json_link_basic_type_map<double> {
+		constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
+	};
 
 	namespace json_details {
+		template<typename T>
+		inline constexpr bool has_basic_type_map_v =
+		  daw::is_detected_v<::daw::json::json_link_basic_type_map, T>;
+
+		template<typename Mapped, bool Found = true>
+		struct json_link_quick_map_type : std::bool_constant<Found> {
+			using mapped_type = Mapped;
+		};
+
+		template<JSONNAMETYPE Name, typename T>
+		DAW_ATTRIBUTE_HIDDEN inline constexpr auto json_link_quick_map( ) {
+			if constexpr( has_basic_type_map_v<T> ) {
+				constexpr auto mapped_type = json_link_basic_type_map<T>::parse_type;
+				if constexpr( mapped_type == JsonParseTypes::StringRaw ) {
+					return json_link_quick_map_type<json_string_raw<Name, T>>{ };
+				} else if constexpr( mapped_type == JsonParseTypes::StringEscaped ) {
+					return json_link_quick_map_type<json_string<Name, T>>{ };
+				} else if constexpr( mapped_type == JsonParseTypes::Bool ) {
+					return json_link_quick_map_type<json_bool<Name, T>>{ };
+				} else if constexpr( mapped_type == JsonParseTypes::Signed ) {
+					return json_link_quick_map_type<json_number<Name, T>>{ };
+				} else if constexpr( mapped_type == JsonParseTypes::Unsigned ) {
+					return json_link_quick_map_type<json_number<Name, T>>{ };
+				} else if constexpr( mapped_type == JsonParseTypes::Real ) {
+					return json_link_quick_map_type<json_number<Name, T>>{ };
+				} else {
+					return json_link_quick_map_type<void, false>{ };
+				}
+			} else {
+				return json_link_quick_map_type<void, false>{ };
+			}
+		}
+		/***
+		 * Check if the current type has a quick map specialized for it
+		 */
+		template<typename T>
+		inline constexpr bool has_json_link_quick_map_v =
+		  decltype( json_link_quick_map<no_name, T>( ) )::value;
+
+		/***
+		 * Get the quick mapped json type for type T
+		 */
+		template<JSONNAMETYPE Name, typename T>
+		using json_link_quick_map_t =
+		  typename decltype( json_link_quick_map<Name, T>( ) )::mapped_type;
+
 		template<typename T, JSONNAMETYPE Name = no_name>
 		using unnamed_default_type_mapping = daw::if_t<
 		  json_details::is_a_json_type_v<T>, T,
@@ -378,6 +436,10 @@ namespace daw::json {
 		using has_unnamed_default_type_mapping = daw::not_trait<
 		  std::is_same<unnamed_default_type_mapping<T>,
 		               daw::json::missing_json_data_contract_for<T>>>;
+
+		template<typename T>
+		inline constexpr bool has_unnamed_default_type_mapping_v =
+		  has_unnamed_default_type_mapping<T>::value;
 	} // namespace json_details
 
 	/***
@@ -406,7 +468,7 @@ namespace daw::json {
 	         typename Container =
 	           std::vector<typename json_details::unnamed_default_type_mapping<
 	             JsonElement>::parse_to_t>,
-	         typename Constructor = daw::construct_a_t<Container>,
+	         typename Constructor = default_constructor<Container>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_array;
 
@@ -424,7 +486,7 @@ namespace daw::json {
 	         typename Container =
 	           std::vector<typename json_details::unnamed_default_type_mapping<
 	             JsonElement>::parse_to_t>,
-	         typename Constructor = daw::construct_a_t<Container>>
+	         typename Constructor = nullable_constructor<Container>>
 	using json_array_null = json_array<Name, JsonElement, Container, Constructor,
 	                                   JsonNullable::Nullable>;
 
@@ -444,7 +506,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType = json_string<no_name>,
-	         typename Constructor = daw::construct_a_t<Container>,
+	         typename Constructor = default_constructor<Container>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_key_value;
 
@@ -463,7 +525,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType = json_string<no_name>,
-	         typename Constructor = daw::construct_a_t<Container>>
+	         typename Constructor = nullable_constructor<Container>>
 	using json_key_value_null =
 	  json_key_value<Name, Container, JsonValueType, JsonKeyType, Constructor,
 	                 JsonNullable::Nullable>;
@@ -485,7 +547,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType,
-	         typename Constructor = daw::construct_a_t<Container>,
+	         typename Constructor = default_constructor<Container>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_key_value_array;
 
@@ -505,7 +567,7 @@ namespace daw::json {
 	 */
 	template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 	         typename JsonKeyType,
-	         typename Constructor = daw::construct_a_t<Container>>
+	         typename Constructor = nullable_constructor<Container>>
 	using json_key_value_array_null =
 	  json_key_value_array<Name, Container, JsonValueType, JsonKeyType,
 	                       Constructor, JsonNullable::Nullable>;
@@ -575,7 +637,7 @@ namespace daw::json {
 	 * @tparam Nullable Can the member be missing or have a null value	 *
 	 */
 	template<JSONNAMETYPE Name, typename T, typename JsonElements,
-	         typename Constructor = daw::construct_a_t<T>,
+	         typename Constructor = default_constructor<T>,
 	         JsonNullable Nullable = JsonNullable::Never>
 	struct json_variant;
 
@@ -589,7 +651,7 @@ namespace daw::json {
 	 * default supports normal and aggregate construction
 	 */
 	template<JSONNAMETYPE Name, typename T, typename JsonElements,
-	         typename Constructor = daw::construct_a_t<T>>
+	         typename Constructor = nullable_constructor<T>>
 	using json_variant_null =
 	  json_variant<Name, T, JsonElements, Constructor, JsonNullable::Nullable>;
 
@@ -659,7 +721,7 @@ namespace daw::json {
 	  JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
 	  typename JsonElements =
 	    json_details::determine_variant_element_types<JsonNullable::Never, T>,
-	  typename Constructor = daw::construct_a_t<T>,
+	  typename Constructor = default_constructor<T>,
 	  JsonNullable Nullable = JsonNullable::Never>
 	struct json_tagged_variant;
 
@@ -681,7 +743,7 @@ namespace daw::json {
 	  JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
 	  typename JsonElements =
 	    json_details::determine_variant_element_types<JsonNullable::Nullable, T>,
-	  typename Constructor = daw::construct_a_t<T>>
+	  typename Constructor = nullable_constructor<T>>
 	using json_tagged_variant_null =
 	  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements, Constructor,
 	                      JsonNullable::Nullable>;

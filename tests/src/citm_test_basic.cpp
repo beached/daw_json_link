@@ -13,18 +13,22 @@
 
 #include "defines.h"
 
-#include "citm_test.h"
+#include "citm_test_json.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 #include <daw/daw_string_view.h>
-#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_from_json.h>
 
 #include <fstream>
 #include <iostream>
 #include <streambuf>
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";
 		exit( 1 );
@@ -36,12 +40,15 @@ int main( int argc, char **argv ) try {
 
 	auto citm_result = daw::json::from_json<daw::citm::citm_object_t>( json_sv1 );
 	daw::do_not_optimize( citm_result );
-	daw_json_assert( citm_result.areaNames.size( ) > 0, "Expected values" );
-	daw_json_assert( citm_result.areaNames.count( 205706005 ) == 1,
-	                 "Expected value" );
-	daw_json_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
-	                 "Incorrect value" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( not citm_result.areaNames.empty( ), "Expected values" );
+	test_assert( citm_result.areaNames.count( 205706005 ) == 1,
+	             "Expected value" );
+	test_assert( citm_result.areaNames[205706005] == "1er balcon jardin",
+	             "Incorrect value" );
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

@@ -75,16 +75,18 @@ $(function() {
 <div class="title">daw_json_link.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="daw__json__iterator__range_8h_source.html">impl/daw_json_iterator_range.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__link__impl_8h_source.html">impl/daw_json_link_impl.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="daw__json__link__impl_8h_source.html">impl/daw_json_link_impl.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__link__types__fwd_8h_source.html">impl/daw_json_link_types_fwd.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__parse__policy_8h_source.html">impl/daw_json_parse_policy.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__serialize__impl_8h_source.html">impl/daw_json_serialize_impl.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__traits_8h_source.html">impl/daw_json_traits.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__value_8h_source.html">impl/daw_json_value.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_array.h&gt;</code><br />
 <code>#include &lt;daw/daw_bounded_string.h&gt;</code><br />
 <code>#include &lt;daw/daw_parser_helper_sv.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;daw/daw_utility.h&gt;</code><br />
+<code>#include &lt;daw/daw_visit.h&gt;</code><br />
 <code>#include &lt;daw/iterator/daw_back_inserter.h&gt;</code><br />
 <code>#include &lt;array&gt;</code><br />
 <code>#include &lt;iterator&gt;</code><br />
@@ -121,9 +123,11 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1json__ordered__member__list.html">daw::json::json_ordered_member_list&lt; JsonMembers &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1json__string.html">daw::json::json_string&lt; Name, String, Constructor, Appender, EmptyStringNull, EightBitMode, Nullable &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1json__string.html">daw::json::json_string&lt; Name, String, Constructor, EmptyStringNull, EightBitMode, Nullable &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1json__string__raw.html">daw::json::json_string_raw&lt; Name, String, Constructor, EmptyStringNull, EightBitMode, Nullable, AllowEscape &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1json__submember__tagged__variant.html">daw::json::json_submember_tagged_variant&lt; TagMember, Switcher, JsonClasses &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1json__tagged__variant.html">daw::json::json_tagged_variant&lt; Name, T, TagMember, Switcher, JsonElements, Constructor, Nullable &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,6 +166,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a1fe54999e4957eff6bc3603fa6f9cd6c"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , typename ParsePolicy  = NoCommentSkippingPolicyChecked, bool KnownBounds = false&gt; </td></tr>
 <tr class="memitem:a1fe54999e4957eff6bc3603fa6f9cd6c"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a1fe54999e4957eff6bc3603fa6f9cd6c">daw::json::from_json</a> (std::string_view json_data, std::string_view member_path)</td></tr>
 <tr class="separator:a1fe54999e4957eff6bc3603fa6f9cd6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59032cb96343942fa704536a02b1056d"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , typename ParsePolicy  = NoCommentSkippingPolicyChecked, bool KnownBounds = false, typename Allocator &gt; </td></tr>
+<tr class="memitem:a59032cb96343942fa704536a02b1056d"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#a59032cb96343942fa704536a02b1056d">daw::json::from_json_alloc</a> (std::string_view json_data, Allocator &amp;alloc)</td></tr>
+<tr class="separator:a59032cb96343942fa704536a02b1056d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac73a97088ae8b5e76708f3967d95e9d7"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , typename ParsePolicy  = NoCommentSkippingPolicyChecked, bool KnownBounds = false, typename Allocator &gt; </td></tr>
+<tr class="memitem:ac73a97088ae8b5e76708f3967d95e9d7"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#ac73a97088ae8b5e76708f3967d95e9d7">daw::json::from_json_alloc</a> (std::string_view json_data, std::string_view member_path, Allocator &amp;alloc)</td></tr>
+<tr class="separator:ac73a97088ae8b5e76708f3967d95e9d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea1e5787af357107d9220896fe090b84"><td class="memTemplParams" colspan="2">template&lt;typename JsonElement , typename Container  = std::vector&lt;typename json_details::unnamed_default_type_mapping&lt;	             JsonElement&gt;::parse_to_t&gt;, typename ParsePolicy  = NoCommentSkippingPolicyChecked, typename Constructor  = daw::construct_a_t&lt;Container&gt;, bool KnownBounds = false&gt; </td></tr>
 <tr class="memitem:aea1e5787af357107d9220896fe090b84"><td class="memTemplItemLeft" align="right" valign="top">constexpr Container&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json.html#aea1e5787af357107d9220896fe090b84">daw::json::from_json_array</a> (std::string_view json_data, std::string_view member_path=&quot;&quot;)</td></tr>
 <tr class="separator:aea1e5787af357107d9220896fe090b84"><td class="memSeparator" colspan="2">&#160;</td></tr>

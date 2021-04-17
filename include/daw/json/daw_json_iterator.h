@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include "daw_json_link.h"
 #include "impl/daw_json_link_impl.h"
+#include "impl/daw_json_link_types_fwd.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_array.h>
-#include <daw/daw_bounded_string.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_exception.h>
+#include <daw/daw_move.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_scope_guard.h>
 #include <daw/daw_traits.h>
@@ -36,7 +36,7 @@ namespace daw::json {
 	/***
 	 * Iterator for iterating over JSON array's
 	 * @tparam JsonElement type under underlying element in array. If
-	 * heterogenous, a basic_json_value_iterator may be more appropriate
+	 * heterogeneous, a basic_json_value_iterator may be more appropriate
 	 * @tparam ParsePolicy Parsing policy type
 	 */
 	template<typename JsonElement,
@@ -47,10 +47,10 @@ namespace daw::json {
 		static inline constexpr ParsePolicy
 		get_range( String &&data, std::string_view member_path ) {
 			auto [is_found, result] = json_details::find_range<ParsePolicy>(
-			  std::forward<String>( data ),
-			  { member_path.data( ), member_path.size( ) } );
-			daw_json_assert( is_found, "Could not find path to member", result );
-			daw_json_assert( result.front( ) == '[', "Member is not an array",
+			  DAW_FWD( data ),
+			  { std::data( member_path ), std::size( member_path ) } );
+			daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
+			daw_json_assert( result.front( ) == '[', ErrorReason::InvalidArrayStart,
 			                 result );
 			return result;
 		}
@@ -83,15 +83,14 @@ namespace daw::json {
 		         daw::enable_when_t<not std::is_same_v<
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		inline constexpr explicit json_array_iterator( String &&jd )
-		  : m_state(
-		      ParsePolicy( std::data( jd ), std::data( jd ) + std::size( jd ) ) ) {
+		  : m_state( ParsePolicy( std::data( jd ), daw::data_end( jd ) ) ) {
 
 			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
 			  "StringRaw must be like a string_view" );
 			m_state.trim_left( );
 			daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-			                      "Arrays are expected to start with a [", m_state );
+			                      ErrorReason::InvalidArrayStart, m_state );
 
 			m_state.remove_prefix( );
 			m_state.trim_left( );
@@ -102,14 +101,14 @@ namespace daw::json {
 		           json_array_iterator, daw::remove_cvref_t<String>>> = nullptr>
 		inline constexpr explicit json_array_iterator( String &&jd,
 		                                               std::string_view start_path )
-		  : m_state( get_range( std::forward<String>( jd ), start_path ) ) {
+		  : m_state( get_range( DAW_FWD( jd ), start_path ) ) {
 
 			static_assert(
 			  daw::traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
 			  "StringRaw must be like a string_view" );
 			m_state.trim_left( );
 			daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
-			                      "Arrays are expected to start with a [", m_state );
+			                      ErrorReason::InvalidArrayStart, m_state );
 
 			m_state.remove_prefix( );
 			m_state.trim_left( );
@@ -122,7 +121,7 @@ namespace daw::json {
 		 */
 		[[nodiscard]] inline constexpr value_type operator*( ) const {
 			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-			                      "Unexpected end of stream", m_state );
+			                      ErrorReason::UnexpectedEndOfData, m_state );
 
 			auto tmp = m_state;
 
@@ -156,7 +155,7 @@ namespace daw::json {
 		 */
 		inline constexpr json_array_iterator &operator++( ) {
 			daw_json_assert_weak( m_state.has_more( ) and m_state.front( ) != ']',
-			                      "Unexpected end of stream", m_state );
+			                      ErrorReason::UnexpectedEndOfData, m_state );
 			if( m_can_skip ) {
 				m_state.first = m_can_skip;
 				m_can_skip = nullptr;
@@ -248,14 +247,14 @@ namespace daw::json {
 		         daw::enable_when_t<not std::is_same_v<
 		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr explicit json_array_range( String &&jd )
-		  : m_first( std::forward<String>( jd ) ) {}
+		  : m_first( DAW_FWD( jd ) ) {}
 
 		template<typename String,
 		         daw::enable_when_t<not std::is_same_v<
 		           json_array_range, daw::remove_cvref_t<String>>> = nullptr>
 		constexpr explicit json_array_range( String &&jd,
 		                                     std::string_view start_path )
-		  : m_first( std::forward<String>( jd ), start_path ) {}
+		  : m_first( DAW_FWD( jd ), start_path ) {}
 
 		/***
 		 * @return first item in range

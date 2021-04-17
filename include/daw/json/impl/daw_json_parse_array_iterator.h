@@ -10,8 +10,10 @@
 
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
-#include "daw_json_iterator_range.h"
+#include "daw_json_parse_policy.h"
 #include "daw_json_parse_value_fwd.h"
+
+#include <ciso646>
 
 namespace daw::json::json_details {
 	template<typename Range, bool>
@@ -39,11 +41,12 @@ namespace daw::json::json_details {
 		}
 	};
 
-	template<typename JsonMember, typename Range, bool IsKnown>
+	template<typename JsonMember, typename Range, bool KnownBounds>
 	struct json_parse_array_iterator
-	  : json_parse_array_iterator_base<Range, can_random_v<IsKnown>> {
+	  : json_parse_array_iterator_base<Range, can_random_v<KnownBounds>> {
 
-		using base = json_parse_array_iterator_base<Range, can_random_v<IsKnown>>;
+		using base =
+		  json_parse_array_iterator_base<Range, can_random_v<KnownBounds>>;
 		using iterator_category = typename base::iterator_category;
 		using element_t = typename JsonMember::json_element_t;
 		using value_type = typename element_t::parse_to_t;
@@ -51,13 +54,13 @@ namespace daw::json::json_details {
 		using pointer = arrow_proxy<value_type>;
 		using iterator_range_t = Range;
 		using difference_type = typename base::difference_type;
-
+		bool at_first = true;
 		inline constexpr json_parse_array_iterator( ) = default;
 
 		inline constexpr explicit json_parse_array_iterator( iterator_range_t &r )
 		  : base{ &r } {
 			if( base::rng->front( ) == ']' ) {
-				if constexpr( not IsKnown ) {
+				if constexpr( not KnownBounds ) {
 					// Cleanup at end of value
 					base::rng->remove_prefix( );
 					base::rng->trim_left_checked( );
@@ -69,23 +72,57 @@ namespace daw::json::json_details {
 
 		inline constexpr value_type operator*( ) {
 			daw_json_assert_weak( base::rng and base::rng->has_more( ),
-			                      "Expected data to parse", *base::rng );
-			return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
-			                               *base::rng );
+			                      ErrorReason::UnexpectedEndOfData, *base::rng );
+			at_first = false;
+			if constexpr( KnownBounds ) {
+				if constexpr( is_guaranteed_rvo_v<Range> ) {
+					struct cleanup_t {
+						Range *ptr;
+						std::size_t counter;
+						CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
+#ifdef HAS_CPP20CONSTEXPR
+							if( std::is_constant_evaluated( ) ) {
+#endif
+								if( std::uncaught_exceptions( ) == 0 ) {
+									ptr->counter = counter;
+								}
+#ifdef HAS_CPP20CONSTEXPR
+							} else {
+								ptr->counter = counter;
+							}
+#endif
+						}
+					} const run_after_parse{ base::rng, base::rng->counter };
+					(void)run_after_parse;
+					return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
+					                               *base::rng );
+				} else {
+					auto const cnt = base::rng->counter;
+					auto result = parse_value<element_t>(
+					  ParseTag<element_t::expected_type>{ }, *base::rng );
+					base::rng->counter = cnt;
+					return result;
+				}
+			} else {
+				return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
+				                               *base::rng );
+			}
 		}
 
 		inline constexpr json_parse_array_iterator &operator++( ) {
-			//daw_json_assert_weak( base::rng, "Unexpected increment", *base::rng );
-			base::rng->clean_tail( );
-			daw_json_assert_weak( base::rng->has_more( ), "Unexpected end of data", *base::rng );
+			// daw_json_assert_weak( base::rng, "Unexpected increment", *base::rng );
+			base::rng->template clean_end_of_value<']'>( at_first );
+			daw_json_assert_weak( base::rng->has_more( ),
+			                      ErrorReason::UnexpectedEndOfData, *base::rng );
 			if( base::rng->front( ) == ']' ) {
 #ifndef NDEBUG
 				if constexpr( base::has_counter ) {
 					daw_json_assert_weak( base::rng->counter == 0,
-					                      "Unexpected item count", *base::rng );
+					                      ErrorReason::AttemptToAccessPastEndOfValue,
+					                      *base::rng );
 				}
 #endif
-				if constexpr( not IsKnown ) {
+				if constexpr( not KnownBounds ) {
 					// Cleanup at end of value
 					base::rng->remove_prefix( );
 					base::rng->trim_left_checked( );
@@ -97,7 +134,8 @@ namespace daw::json::json_details {
 			if constexpr( base::has_counter ) {
 				if( base::rng ) {
 					daw_json_assert_weak( base::rng->counter > 0,
-					                      "Unexpected item count", *base::rng );
+					                      ErrorReason::AttemptToAccessPastEndOfValue,
+					                      *base::rng );
 					base::rng->counter--;
 				}
 			}

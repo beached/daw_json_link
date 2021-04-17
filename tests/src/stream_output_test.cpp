@@ -10,11 +10,9 @@
 
 #include "daw/json/daw_json_link.h"
 
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-#include <sstream>
 #include <string>
 
 namespace daw::cookbook_class1 {
@@ -53,7 +51,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	std::string_view data = R"(
 {
   "member0": "this is a test",
@@ -62,13 +64,12 @@ int main( int, char ** ) try {
 }
 )";
 
-	daw::cookbook_class1::MyClass1 const cls =
-	  daw::json::from_json<daw::cookbook_class1::MyClass1>(
-	    std::string_view( data.data( ), data.size( ) ) );
+	auto const cls = daw::json::from_json<daw::cookbook_class1::MyClass1>(
+	  std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.member_0 == "this is a test", "Unexpected value" );
-	daw_json_assert( cls.member_1 == 314159, "Unexpected value" );
-	daw_json_assert( cls.member_2 == true, "Unexpected value" );
+	test_assert( cls.member_0 == "this is a test", "Unexpected value" );
+	test_assert( cls.member_1 == 314159, "Unexpected value" );
+	test_assert( cls.member_2, "Unexpected value" );
 
 	std::stringstream ss{ };
 	auto it = std::ostreambuf_iterator<char>( ss );
@@ -76,7 +77,8 @@ int main( int, char ** ) try {
 	(void)daw::json::to_json( cls, it );
 	std::string const str = ss.str( );
 	puts( str.c_str( ) );
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

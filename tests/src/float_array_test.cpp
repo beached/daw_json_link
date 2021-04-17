@@ -24,7 +24,7 @@
 #if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 250;
 #else
-static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
@@ -85,7 +85,7 @@ void test_func( ) {
 		result.resize( result.size( ) + 16U );
 		/*
 		if constexpr( NUMVALUES < 1500 ) {
-			std::cout << "Class data: " << result << '\n';
+		  std::cout << "Class data: " << result << '\n';
 		}
 		*/
 		return result;
@@ -101,7 +101,7 @@ void test_func( ) {
 		result.resize( result.size( ) + 16U );
 		/*
 		if constexpr( NUMVALUES < 1500 ) {
-			std::cout << "Class data: " << result << '\n';
+		  std::cout << "Class data: " << result << '\n';
 		}
 		*/
 		return result;
@@ -485,13 +485,20 @@ void test_func( ) {
 #endif
 }
 
-int main( int argc, char ** ) try {
+int main( int argc, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc > 1 ) {
 		test_func<1'000'000ULL>( );
 	} else {
 		test_func<1'000ULL>( );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

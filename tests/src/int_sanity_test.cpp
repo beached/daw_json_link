@@ -44,7 +44,7 @@ void test( ) {
 		std::vector<unsigned> const parsed_1 =
 		  from_json_array<json_number<no_name, unsigned>, std::vector<unsigned>,
 		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
-		daw_json_assert( parsed_1 == data, "Failure to parse unsigned" );
+		test_assert( parsed_1 == data, "Failure to parse unsigned" );
 	}
 
 	{
@@ -58,18 +58,23 @@ void test( ) {
 		std::vector<signed> const parsed_1 =
 		  from_json_array<json_number<no_name, signed>, std::vector<signed>,
 		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
-		daw_json_assert( parsed_1 == data, "Failure to parse signed" );
+		test_assert( parsed_1 == data, "Failure to parse signed" );
 	}
 }
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	test<daw::json::constexpr_exec_tag, 1000>( );
 	test<daw::json::runtime_exec_tag, 1000>( );
 	if constexpr( not std::is_same_v<daw::json::simd_exec_tag,
 	                                 daw::json::runtime_exec_tag> ) {
 		test<daw::json::simd_exec_tag, 1000>( );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

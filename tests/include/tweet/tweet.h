@@ -15,12 +15,12 @@
 
 namespace daw::twitter {
 	struct tweet {
+		std::uint32_t retweet_count;
 		twitter_user user;
-		std::uint64_t id;
-		std::string_view text;
 		std::string_view created_at;
 		std::uint64_t in_reply_to_status_id;
-		std::uint32_t retweet_count;
 		std::uint32_t favorite_count;
+		std::uint64_t id;
+		std::string_view text;
 	};
 } // namespace daw::twitter

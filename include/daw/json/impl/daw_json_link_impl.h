@@ -10,7 +10,6 @@
 
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
-#include "daw_json_iterator_range.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_iso8601_utils.h"
 #include "daw_json_parse_value.h"
@@ -30,6 +29,7 @@
 
 #include <array>
 #include <chrono>
+#include <ciso646>
 #include <cstdint>
 #include <cstdlib>
 #include <iterator>
@@ -113,7 +113,7 @@ namespace daw::json::json_details {
 		Range location{ };
 		std::size_t count = 0;
 
-		explicit constexpr location_info_t( daw::string_view const *Name ) noexcept
+		explicit constexpr location_info_t( daw::string_view const *Name )
 		  : hash_value( daw::name_hash( *Name ) )
 		  , name( Name ) {}
 
@@ -125,10 +125,10 @@ namespace daw::json::json_details {
 	template<typename Range>
 	struct location_info_t<false, Range> {
 		UInt32 hash_value = 0_u32;
-		Range location{ };
+		typename Range::without_allocator_type location{ };
 		std::size_t count = 0;
 
-		explicit constexpr location_info_t( daw::string_view const *Name ) noexcept
+		explicit constexpr location_info_t( daw::string_view const *Name )
 		  : hash_value( daw::name_hash( *Name ) ) {}
 
 		[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
@@ -138,14 +138,14 @@ namespace daw::json::json_details {
 
 	/***
 	 * Contains an array of member location_info mapped in a json_class
-	 * @tparam N Number of mapped members from json_class
+	 * @tparam MemberCount Number of mapped members from json_class
 	 * @tparam Range see IteratorRange
 	 */
-	template<std::size_t N, typename Range, bool HasCollisions = true>
+	template<std::size_t MemberCount, typename Range, bool HasCollisions = true>
 	struct locations_info_t {
 		using value_type = location_info_t<HasCollisions, Range>;
 		static constexpr bool has_collisons = HasCollisions;
-		std::array<value_type, N> names;
+		std::array<value_type, MemberCount> names;
 
 		constexpr location_info_t<HasCollisions, Range> const &
 		operator[]( std::size_t idx ) const {
@@ -157,8 +157,8 @@ namespace daw::json::json_details {
 			return names[idx];
 		}
 
-		static constexpr std::size_t size( ) noexcept {
-			return N;
+		static constexpr std::size_t size( ) {
+			return MemberCount;
 		}
 
 		template<std::size_t start_pos>
@@ -168,9 +168,9 @@ namespace daw::json::json_details {
 #if defined( _MSC_VER ) and not defined( __clang__ )
 			// MSVC has a bug where the list initialization isn't sequenced in order
 			// of appearance.
-			for( std::size_t n = 0; n < N; ++n ) {
+			for( std::size_t n = 0; n < MemberCount; ++n ) {
 #else
-			for( std::size_t n = start_pos; n < N; ++n ) {
+			for( std::size_t n = start_pos; n < MemberCount; ++n ) {
 #endif
 				if( names[n].hash_value == hash ) {
 					if constexpr( has_collisons ) {
@@ -181,21 +181,23 @@ namespace daw::json::json_details {
 					return n;
 				}
 			}
-			return N;
+			return MemberCount;
 		}
 	};
 
+	// Should never be called outsite a consteval context
 	template<typename... MemberNames>
-	constexpr bool do_hashes_collide( ) noexcept {
+	static constexpr bool do_hashes_collide( ) {
 		std::array<UInt32, sizeof...( MemberNames )> hashes{
 		  name_hash( MemberNames::name )... };
 
-		daw::sort( hashes.data( ), hashes.data( ) + hashes.size( ) );
+		daw::sort( std::data( hashes ), daw::data_end( hashes ) );
 		return daw::algorithm::adjacent_find(
 		         hashes.begin( ), hashes.end( ),
 		         []( UInt32 l, UInt32 r ) { return l == r; } ) != hashes.end( );
 	}
 
+	// Should never be called outsite a consteval context
 	template<typename Range, typename... JsonMembers>
 	constexpr auto make_locations_info( ) {
 		constexpr bool hashes_collide =
@@ -207,39 +209,37 @@ namespace daw::json::json_details {
 	/***
 	 * Get the position from already seen JSON members or move the parser
 	 * forward until we reach the end of the class or the member.
-	 * @tparam pos JsonMember's position in locations
-	 * @tparam JsonMember current member in json_class
 	 * @tparam N Number of members in json_class
 	 * @tparam Range see IteratorRange
 	 * @param locations members location and names
 	 * @param rng Current JSON data
 	 * @return IteratorRange with begin( ) being start of value
 	 */
-	template<std::size_t pos, typename JsonMember, std::size_t N, typename Range,
-	         bool B>
-	[[nodiscard]] inline constexpr Range
-	find_class_member( locations_info_t<N, Range, B> &locations, Range &rng ) {
+	template<std::size_t pos, std::size_t N, typename Range, bool B>
+	[[nodiscard]] static inline constexpr Range
+	find_class_member( locations_info_t<N, Range, B> &locations, Range &rng,
+	                   bool is_nullable, daw::string_view member_name ) {
 
-		daw_json_assert_weak(
-		  ( is_json_nullable_v<JsonMember> or not locations[pos].missing( ) or
-		    not rng.is_closing_brace_checked( ) ),
-		  "Unexpected end of class.  Non-nullable members still not found", rng );
+		daw_json_assert_weak( is_nullable or ( not locations[pos].missing( ) ) or
+		                        ( not rng.is_closing_brace_checked( ) ),
+		                      missing_member( member_name ), rng );
 
 		rng.trim_left_unchecked( );
 		// TODO: should we check for end
 		while( locations[pos].missing( ) & ( rng.front( ) != '}' ) ) {
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of stream", rng );
+			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      rng );
 			// TODO: fully unescape name
 			auto const name = parse_name( rng );
 			auto const name_pos = locations.template find_name<pos>( name );
-			if( name_pos >= locations.size( ) ) {
+			if( name_pos >= std::size( locations ) ) {
 				// This is not a member we are concerned with
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				continue;
 			}
 			if( name_pos == pos ) {
-				locations[pos].location = rng;
+				locations[pos].location = Range::without_allocator( rng );
 				break;
 			} else {
 				// We are out of order, store position for later
@@ -250,12 +250,12 @@ namespace daw::json::json_details {
 				// RESULT: storing preparsed is slower, don't try 3 times
 				// it also limits the type of things we can parse potentially
 				// Using locations to switch on BaseType is slower too
-				locations[name_pos].location = skip_value( rng );
+				locations[name_pos].location = skip_value( rng ).without_allocator( );
 
 				rng.clean_tail( );
 			}
 		}
-		return locations[pos].location;
+		return locations[pos].location.with_allocator( rng );
 	}
 
 	namespace pocm_details {
@@ -266,20 +266,24 @@ namespace daw::json::json_details {
 		 * @param current_position current member index
 		 * @param desired_position desired member index
 		 */
-		template<typename Range>
+		template<bool Nullable, typename Range>
 		constexpr void maybe_skip_members( Range &rng,
 		                                   std::size_t &current_position,
 		                                   std::size_t desired_position ) {
 
 			rng.clean_tail( );
-			daw_json_assert_weak( rng.has_more( ), "Unexpected end of range", rng );
+			daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+			                      rng );
 			daw_json_assert_weak( current_position <= desired_position,
-			                      "Order of ordered members must be ascending", rng );
-			while( current_position < desired_position and rng.front( ) != ']' ) {
+			                      ErrorReason::OutOfOrderOrderedMembers, rng );
+			constexpr bool skip_check_end = Range::is_unchecked_input and Nullable;
+			while( ( current_position < desired_position ) &
+			       ( skip_check_end or rng.front( ) != ']' ) ) {
 				(void)skip_value( rng );
 				rng.clean_tail( );
 				++current_position;
-				daw_json_assert_weak( rng.has_more( ), "Unexpected end of range", rng );
+				daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+				                      rng );
 			}
 		}
 	} // namespace pocm_details
@@ -288,38 +292,47 @@ namespace daw::json::json_details {
 	 * Parse a class member in an order json class(class as array)
 	 * @tparam JsonMember type description of member to parse
 	 * @tparam Range see IteratorRange
-	 * @param member_position current position in array
+	 * @param member_index current position in array
 	 * @param rng JSON data
 	 * @return A reified value of type JsonMember::parse_to_t
 	 */
 	template<typename JsonMember, typename Range>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr auto
-	parse_ordered_class_member( std::size_t &member_position, Range &rng ) {
+	[[nodiscard]] constexpr json_result<JsonMember>
+	parse_ordered_class_member( std::size_t &member_index, Range &rng ) {
 
+		using json_member_t = ordered_member_subtype_t<JsonMember>;
 		/***
 		 * Some members specify their index so there may be gaps between member
 		 * data elements in the array.
 		 */
 		if constexpr( is_an_ordered_member_v<JsonMember> ) {
-			pocm_details::maybe_skip_members( rng, member_position,
-			                                  JsonMember::member_index );
+			pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
+			  rng, member_index, JsonMember::member_index );
 		} else {
 			rng.clean_tail( );
 		}
-		using json_member_type = ordered_member_subtype_t<JsonMember>;
 
 		// this is an out value, get position ready
-		++member_position;
-		if( DAW_JSON_UNLIKELY( rng.front( ) == ']' ) ) {
-			if constexpr( is_json_nullable_v<ordered_member_subtype_t<JsonMember>> ) {
-				using constructor_t = typename json_member_type::constructor_t;
-				return constructor_t{ }( );
-			} else if constexpr( is_json_nullable_v<json_member_type> ) {
-				daw_json_error( missing_member( "ordered_class_member" ) );
+		++member_index;
+		if constexpr( Range::is_unchecked_input ) {
+			if constexpr( is_json_nullable_v<json_member_t> ) {
+				if( rng.front( ) == ']' ) {
+					using constructor_t = typename json_member_t::constructor_t;
+					return constructor_t{ }( );
+				}
+			}
+		} else {
+			if( DAW_JSON_UNLIKELY( rng.front( ) == ']' ) ) {
+				if constexpr( is_json_nullable_v<json_member_t> ) {
+					using constructor_t = typename json_member_t::constructor_t;
+					return constructor_t{ }( );
+				} else {
+					daw_json_error( missing_member( "ordered_class_member" ), rng );
+				}
 			}
 		}
-		return parse_value<json_member_type>(
-		  ParseTag<json_member_type::expected_type>{ }, rng );
+		return parse_value<json_member_t>(
+		  ParseTag<json_member_t::expected_type>{ }, rng );
 	}
 
 	/***
@@ -334,43 +347,54 @@ namespace daw::json::json_details {
 	 */
 	template<std::size_t member_position, typename JsonMember, std::size_t N,
 	         typename Range, bool B>
-	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr json_result<JsonMember>
+	[[nodiscard]] constexpr json_result<JsonMember>
 	parse_class_member( locations_info_t<N, Range, B> &locations, Range &rng ) {
 		rng.clean_tail( );
 		static_assert( not is_no_name<JsonMember>,
 		               "Array processing should never call parse_class_member" );
 
 		daw_json_assert_weak( rng.is_at_next_class_member( ),
-		                      "Expected end of class or start of member", rng );
-		auto loc = find_class_member<member_position, JsonMember>( locations, rng );
+		                      ErrorReason::MissingMemberNameOrEndOfClass, rng );
+		Range loc = [&] {
+			if constexpr( Range::has_allocator ) {
+				return find_class_member<member_position>(
+				         locations, rng, is_json_nullable_v<JsonMember>,
+				         JsonMember::name )
+				  .with_allocator( rng.get_allocator( ) );
+			} else {
+				return find_class_member<member_position>(
+				  locations, rng, is_json_nullable_v<JsonMember>, JsonMember::name );
+			}
+		}( );
 
 		// If the member was found loc will have it's position
 		if( loc.first == rng.first ) {
 			return parse_value<JsonMember>( ParseTag<JsonMember::expected_type>{ },
 			                                rng );
 		}
-		if( not loc.is_null( ) ) {
-			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::expected_type>{ }, loc );
-		}
 		// We cannot find the member, check if the member is nullable
 		if constexpr( is_json_nullable_v<JsonMember> ) {
-			return parse_value<JsonMember, true>(
-			  ParseTag<JsonMember::expected_type>{ }, loc );
+			if( loc.is_null( ) ) {
+				return parse_value<JsonMember, true>(
+				  ParseTag<JsonMember::expected_type>{ }, loc );
+			}
 		} else {
-			daw_json_error( missing_member( std::string_view(
-			  JsonMember::name.data( ), JsonMember::name.size( ) ) ) );
+			daw_json_assert_weak(
+			  not loc.is_null( ),
+			  missing_member( std::string_view( std::data( JsonMember::name ),
+			                                    std::size( JsonMember::name ) ) ),
+			  rng );
 		}
+		return parse_value<JsonMember, true>(
+		  ParseTag<JsonMember::expected_type>{ }, loc );
 	}
 
 	template<typename Range>
 	DAW_ATTRIBUTE_FLATTEN inline constexpr void class_cleanup_now( Range &rng ) {
-		if( not rng.has_more( ) ) {
-			return;
-		}
+		daw_json_assert_weak( rng.has_more( ), ErrorReason::UnexpectedEndOfData,
+		                      rng );
 		rng.clean_tail( );
 		// If we fulfill the contract before all values are parses
-		daw_json_assert_weak( rng.has_more( ), "Unexpected end of range", rng );
 		rng.move_to_next_class_member( );
 		(void)rng.skip_class( );
 		// Yes this must be checked.  We maybe at the end of document.  After the
@@ -387,21 +411,23 @@ namespace daw::json::json_details {
 	 */
 	template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
 	         typename Range>
-	[[nodiscard]] inline constexpr JsonClass
+	[[nodiscard]] static constexpr JsonClass
 	parse_json_class( Range &rng, std::index_sequence<Is...> ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
 		rng.trim_left( );
+		// TODO, use member name
 		daw_json_assert_weak( rng.is_opening_brace_checked( ),
-		                      "Expected start of class", rng );
+		                      ErrorReason::InvalidClassStart, rng );
 		rng.set_class_position( );
 		rng.remove_prefix( );
-		rng.move_to_next_class_member( );
+		rng.trim_left( );
 
 		if constexpr( sizeof...( JsonMembers ) == 0 ) {
 			// Clang-CL with MSVC has issues if we don't do empties this way
 			class_cleanup_now( rng );
-			return daw::construct_a<JsonClass>( );
+			return construct_value<JsonClass>( json_class_constructor<JsonClass>,
+			                                   rng );
 		} else {
 
 #if not defined( _MSC_VER ) or defined( __clang__ )
@@ -420,24 +446,38 @@ namespace daw::json::json_details {
 			if constexpr( is_guaranteed_rvo_v<Range> ) {
 				struct cleanup_t {
 					Range *rng_ptr;
-					CPP20CONSTEXPR inline ~cleanup_t( ) {
-						class_cleanup_now( *rng_ptr );
+					CPP20CONSTEXPR
+					inline ~cleanup_t( ) noexcept( false ) {
+#ifdef HAS_CPP20CONSTEXPR
+						if( not std::is_constant_evaluated( ) ) {
+#endif
+							if( std::uncaught_exceptions( ) == 0 ) {
+								class_cleanup_now( *rng_ptr );
+							}
+#ifdef HAS_CPP20CONSTEXPR
+						} else {
+							class_cleanup_now( *rng_ptr );
+						}
+#endif
 					}
 				} const run_after_parse{ &rng };
+				(void)run_after_parse;
 				/*
 				 * Rather than call directly use apply/tuple to evaluate left->right
 				 */
-				if constexpr( daw::json::force_aggregate_constrution<
+				if constexpr( daw::json::force_aggregate_construction<
 				                JsonClass>::value ) {
 					return JsonClass{
 					  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... };
 				} else {
+
 					using tp_t = decltype( std::forward_as_tuple(
 					  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... ) );
+
 					return std::apply(
-					  daw::construct_a<JsonClass>,
+					  json_class_constructor<JsonClass>,
 					  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 					    known_locations, rng )... } );
 				}
@@ -446,7 +486,7 @@ namespace daw::json::json_details {
 				  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 				    known_locations, rng )... ) );
 				JsonClass result = std::apply(
-				  daw::construct_a<JsonClass>,
+				  json_class_constructor<JsonClass>,
 				  tp_t{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 				    known_locations, rng )... } );
 				class_cleanup_now( rng );
@@ -460,38 +500,51 @@ namespace daw::json::json_details {
 	 * JSON array. Often this is used for geometric types like Point
 	 */
 	template<typename JsonClass, typename... JsonMembers, typename Range>
-	[[nodiscard]] inline constexpr JsonClass
+	[[nodiscard]] static constexpr JsonClass
 	parse_ordered_json_class( Range &rng ) {
 		static_assert( has_json_data_contract_trait_v<JsonClass>,
 		               "Unexpected type" );
 		static_assert(
-		  can_construct_a_v<JsonClass, typename JsonMembers::parse_to_t...>,
-		  "Supplied types cannot be used for	construction of this type" );
+		  std::is_invocable_v<json_class_constructor_t<JsonClass>,
+		                      typename JsonMembers::parse_to_t...>,
+		  "Supplied types cannot be used for construction of this type" );
 
-		rng.trim_left( );
+		rng.trim_left( ); // Move to array start '['
 		daw_json_assert_weak( rng.is_opening_bracket_checked( ),
-		                      "Expected start of array", rng );
+		                      ErrorReason::InvalidArrayStart, rng );
 		rng.set_class_position( );
 		rng.remove_prefix( );
 		rng.trim_left( );
 
 		size_t current_idx = 0;
-		using tp_t = std::tuple<decltype(
-		  parse_ordered_class_member<JsonMembers>( current_idx, rng ) )...>;
+
+		using tp_t = decltype( std::forward_as_tuple(
+		  parse_ordered_class_member<JsonMembers>( current_idx, rng )... ) );
 
 		if constexpr( is_guaranteed_rvo_v<Range> ) {
 			struct cleanup_t {
 				Range *ptr;
-				CPP20CONSTEXPR inline ~cleanup_t( ) {
-					(void)ptr->skip_array( );
+				CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
+#ifdef HAS_CPP20CONSTEXPR
+					if( not std::is_constant_evaluated( ) ) {
+#endif
+						if( std::uncaught_exceptions( ) == 0 ) {
+							(void)ptr->skip_array( );
+						}
+#ifdef HAS_CPP20CONSTEXPR
+					} else {
+						(void)ptr->skip_array( );
+					}
+#endif
 				}
 			} const run_after_parse{ &rng };
-			return std::apply( daw::construct_a<JsonClass>,
+			(void)run_after_parse;
+			return std::apply( json_class_constructor<JsonClass>,
 			                   tp_t{ parse_ordered_class_member<JsonMembers>(
 			                     current_idx, rng )... } );
 		} else {
 			JsonClass result =
-			  std::apply( daw::construct_a<JsonClass>,
+			  std::apply( json_class_constructor<JsonClass>,
 			              tp_t{ parse_ordered_class_member<JsonMembers>( current_idx,
 			                                                             rng )... } );
 

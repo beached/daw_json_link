@@ -3,7 +3,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-# Official repository: https://github.com/beached/utf_range
+# Official repository: https://github.com/beached/daw_json_link
 #
 
 # This prevents tests running on dependencies
@@ -14,15 +14,16 @@ endif( )
 
 include( FetchContent )
 set( FETCHCONTENT_UPDATES_DISCONNECTED ON )
+
 FetchContent_Declare(
 	daw_header_libraries
 	GIT_REPOSITORY https://github.com/beached/header_libraries.git
 )
-FetchContent_MakeAvailable(daw_header_libraries)
 
 FetchContent_Declare(
 	daw_utf_range
 	GIT_REPOSITORY https://github.com/beached/utf_range.git
 )
-FetchContent_MakeAvailable(daw_utf_range)
+
+FetchContent_MakeAvailable(daw_header_libraries daw_utf_range)
 

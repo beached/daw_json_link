@@ -67,7 +67,11 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 	}
 };
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to optional_tagged_variant.json file\n" );
 		exit( EXIT_FAILURE );
@@ -83,8 +87,9 @@ int main( int argc, char **argv ) try {
 	std::vector<daw::cookbook_variant2::MyClass> values2 =
 	  daw::json::from_json_array<daw::cookbook_variant2::MyClass>( json_str );
 
-	daw_json_assert( values1 == values2, "Error in round tripping" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( values1 == values2, "Error in round tripping" );
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

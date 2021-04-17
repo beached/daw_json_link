@@ -39,7 +39,11 @@ namespace daw::json {
 	}; // namespace daw::json
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to small_test.json file\n" );
 		exit( EXIT_FAILURE );
@@ -49,8 +53,9 @@ int main( int argc, char **argv ) try {
 	auto const cls = daw::json::from_json<daw::Data>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.a == 12345, "Unexpected value" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( cls.a == 12345, "Unexpected value" );
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

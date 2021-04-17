@@ -12,7 +12,7 @@ namespace daw::json::json_details {
 	struct arrow_proxy {
 		T value;
 
-		[[nodiscard]] constexpr T *operator->( ) {
+		[[nodiscard]] constexpr T *operator->( ) && {
 			return &value;
 		}
 	};

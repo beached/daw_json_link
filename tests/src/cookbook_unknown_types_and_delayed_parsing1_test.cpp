@@ -18,7 +18,11 @@
 #include <iostream>
 #include <string>
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts(
 		  "Must supply path to cookbook_unknown_types_and_delayed_parsing1.json "
@@ -39,7 +43,8 @@ int main( int argc, char **argv ) try {
 		std::cout << to_string( member.value.type( ) ) << " with a value of "
 		          << member.value.get_string_view( ) << '\n';
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

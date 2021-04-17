@@ -57,7 +57,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_array3.json file\n" );
 		exit( EXIT_FAILURE );
@@ -69,15 +73,18 @@ int main( int argc, char **argv ) try {
 	auto const my_array_class = from_json<daw::cookbook_array3::MyArrayClass1>(
 	  { data.data( ), data.size( ) } );
 
-	daw_json_assert( my_array_class.member1.size( ) == 5, "Expected 5 items" );
-	daw_json_assert( my_array_class.member2.size( ) == 2, "Expected 2 items" );
+	test_assert( my_array_class.member1.size( ) == 5, "Expected 5 items" );
+	test_assert( my_array_class.member2.size( ) == 2, "Expected 2 items" );
 	auto const str = to_json( my_array_class );
 	puts( str.c_str( ) );
 	auto const my_array_class2 = from_json<daw::cookbook_array3::MyArrayClass1>(
 	  { str.data( ), str.size( ) } );
 
-	daw_json_assert( my_array_class == my_array_class2, "Round trip failed" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( my_array_class == my_array_class2, "Round trip failed" );
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

@@ -12,12 +12,14 @@
 #include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
 
+#include <ciso646>
+#include <cstddef>
 #include <cstdint>
+#include <iterator>
 
 namespace daw {
 	namespace murmur3_details {
-		[[nodiscard]] inline constexpr UInt32
-		murmur3_32_scramble( UInt32 k ) noexcept {
+		[[nodiscard]] inline constexpr UInt32 murmur3_32_scramble( UInt32 k ) {
 			k *= 0xcc9e'2d51_u32;
 			k = rotate_left<15>( k );
 			k *= 0x1b87'3593_u32;
@@ -27,7 +29,7 @@ namespace daw {
 
 	template<typename StringView>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr UInt32
-	fnv1a_32( StringView key ) noexcept {
+	fnv1a_32( StringView &&key ) {
 		std::size_t const len = std::size( key );
 		char const *ptr = std::data( key );
 		UInt32 hash = 0x811c'9dc5_u32;
@@ -39,18 +41,28 @@ namespace daw {
 	}
 
 	template<typename StringView>
-	[[nodiscard]] constexpr UInt32 name_hash( StringView key,
-	                                          std::uint32_t seed = 0 ) noexcept {
+	[[nodiscard]] constexpr UInt32 name_hash( StringView &&key,
+	                                          std::uint32_t seed = 0 ) {
 		(void)seed;
+		auto const Sz = std::size( key );
+		if( Sz <= sizeof( UInt32 ) ) {
+			auto result = 0_u32;
+			for( std::size_t n = 0; n < Sz; ++n ) {
+				result <<= 8U;
+				result |= static_cast<unsigned char>( key[n] );
+			}
+			return result;
+		}
 		return fnv1a_32( key );
 	}
+
 	template<typename StringView>
 	[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr UInt32
-	murmur3_32( StringView key, std::uint32_t seed = 0 ) noexcept {
+	murmur3_32( StringView &&key, std::uint32_t seed = 0 ) {
 		UInt32 h = to_uint32( seed );
 		UInt32 k = 0_u32;
 		char const *first = std::data( key );
-		char const *const last = std::data( key ) + std::size( key );
+		char const *const last = daw::data_end( key );
 		while( ( last - first ) >= 4 ) {
 			// Here is a source of differing results across endiannesses.
 			// A swap here has no effects on hash properties though.

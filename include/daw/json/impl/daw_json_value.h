@@ -12,6 +12,12 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_name.h"
 
+#include <daw/daw_move.h>
+
+#include <ciso646>
+#include <cstddef>
+#include <optional>
+#include <string_view>
 #include <tuple>
 
 namespace daw::json {
@@ -56,9 +62,9 @@ namespace daw::json {
 	constexpr decltype( auto ) get( basic_json_pair<Range> &&rng ) {
 		static_assert( Idx < 2 );
 		if constexpr( Idx == 0 ) {
-			return std::move( rng.name );
+			return daw::move( rng.name );
 		} else {
-			return std::move( rng.value );
+			return daw::move( rng.value );
 		}
 	}
 } // namespace daw::json
@@ -113,13 +119,13 @@ namespace daw::json {
 		 * Name of member
 		 * @return The name, if any, of the current member
 		 */
-		constexpr std::optional<std::string_view> name( ) const {
+		[[nodiscard]] constexpr std::optional<std::string_view> name( ) const {
 			if( is_array( ) ) {
 				return { };
 			}
 			auto rng = m_state;
 			auto result = json_details::parse_name( rng );
-			return std::string_view( result.data( ), result.size( ) );
+			return std::string_view( std::data( result ), std::size( result ) );
 		}
 
 		/***
@@ -146,7 +152,7 @@ namespace daw::json {
 			}
 			auto rng = m_state;
 			auto name = json_details::parse_name( rng );
-			return { std::string_view( name.data( ), name.size( ) ),
+			return { std::string_view( std::data( name ), std::size( name ) ),
 			         Range( rng.first, rng.last ) };
 		}
 
@@ -205,7 +211,7 @@ namespace daw::json {
 		 * Can we increment more
 		 * @return True if safe to increment more
 		 */
-		constexpr bool good( ) const {
+		[[nodiscard]] constexpr bool good( ) const {
 			if( not m_state.has_more( ) or m_state.is_null( ) ) {
 				return false;
 			}
@@ -228,15 +234,18 @@ namespace daw::json {
 			case 'f':
 			case 'n':
 				return true;
+			case '}':
+			case ']':
+				return false;
 			}
-			return false;
+			daw_json_error( ErrorReason::ExpectedTokenNotFound, m_state );
 		}
 
 		/***
 		 * Can we increment more
 		 * @return True if safe to increment more
 		 */
-		constexpr explicit operator bool( ) const {
+		[[nodiscard]] constexpr explicit operator bool( ) const {
 			return good( );
 		}
 
@@ -245,7 +254,7 @@ namespace daw::json {
 		 * @param rhs iterator to compare for equivilence with
 		 * @return true if both are equivilent
 		 */
-		constexpr bool
+		[[nodiscard]] constexpr bool
 		operator==( basic_json_value_iterator<Range> const &rhs ) const {
 			if( good( ) ) {
 				if( rhs.good( ) ) {
@@ -261,7 +270,7 @@ namespace daw::json {
 		 * @param rhs iterator to compare for equivilence with
 		 * @return true if the rhs is not equivilent
 		 */
-		constexpr bool
+		[[nodiscard]] constexpr bool
 		operator!=( basic_json_value_iterator<Range> const &rhs ) const {
 			return not operator==( rhs );
 		}
@@ -273,10 +282,10 @@ namespace daw::json {
 		iterator first;
 		iterator last;
 
-		constexpr iterator begin( ) {
+		[[nodiscard]] constexpr iterator begin( ) {
 			return first;
 		}
-		constexpr iterator end( ) {
+		[[nodiscard]] constexpr iterator end( ) {
 			return last;
 		}
 	};
@@ -301,7 +310,7 @@ namespace daw::json {
 		 * @param rng string data where start is the start of our value
 		 */
 		inline constexpr basic_json_value( Range rng )
-		  : m_rng( std::move( rng ) ) {
+		  : m_rng( daw::move( rng ) ) {
 			// Ensure we are at the actual value
 			m_rng.trim_left( );
 		}
@@ -310,7 +319,7 @@ namespace daw::json {
 		 * Construct from std::string_view
 		 */
 		explicit inline constexpr basic_json_value( std::string_view sv )
-		  : m_rng( sv.data( ), sv.data( ) + sv.size( ) ) {}
+		  : m_rng( std::data( sv ), daw::data_end( sv ) ) {}
 
 		/***
 		 * Construct from char const *, std::size_t
@@ -400,8 +409,8 @@ namespace daw::json {
 					return JsonBaseParseTypes::Bool;
 				}
 			case 'n':
-				daw_json_assert_weak( m_rng.starts_with( "null" ), "Expected a null",
-				                      m_rng );
+				daw_json_assert_weak( m_rng.starts_with( "null" ),
+				                      ErrorReason::InvalidNull, m_rng );
 				return JsonBaseParseTypes::Null;
 			}
 			return JsonBaseParseTypes::None;
@@ -411,14 +420,14 @@ namespace daw::json {
 		 * Get the JSON data
 		 * @return the JSON data as a std::string_view
 		 */
-		constexpr std::string_view get_string_view( ) const {
+		[[nodiscard]] constexpr std::string_view get_string_view( ) const {
 			auto rng = m_rng;
 			auto result = json_details::skip_value( rng );
 			if( is_string( ) ) {
 				--result.first;
 				++result.last;
 			}
-			return { result.first, result.size( ) };
+			return { std::data( result ), std::size( result ) };
 		}
 
 		/***
@@ -427,7 +436,7 @@ namespace daw::json {
 		 */
 		template<typename Allocator = std::allocator<char>,
 		         typename Traits = std::char_traits<char>>
-		std::basic_string<char, Traits, Allocator>
+		[[nodiscard]] std::basic_string<char, Traits, Allocator>
 		get_string( Allocator const &alloc = std::allocator<char>( ) ) const {
 			auto rng = m_rng;
 			auto result = json_details::skip_value( rng );
@@ -435,14 +444,14 @@ namespace daw::json {
 				--result.first;
 				++result.last;
 			}
-			return { result.first, result.size( ), alloc };
+			return { std::data( result ), std::size( result ), alloc };
 		}
 
 		/***
 		 * Is the JSON value a null literal
 		 * @return true if the value is a null literal
 		 */
-		constexpr bool is_null( ) const {
+		[[nodiscard]] constexpr bool is_null( ) const {
 			return ( m_rng.starts_with( "null" ) );
 		}
 
@@ -450,7 +459,7 @@ namespace daw::json {
 		 * Is the JSON value a class
 		 * @return true if the value is a class
 		 */
-		constexpr bool is_class( ) const {
+		[[nodiscard]] constexpr bool is_class( ) const {
 			return m_rng.is_opening_brace_checked( );
 		}
 
@@ -458,7 +467,7 @@ namespace daw::json {
 		 * Is the JSON value a array
 		 * @return true if the value is a array
 		 */
-		constexpr bool is_array( ) const {
+		[[nodiscard]] constexpr bool is_array( ) const {
 			return m_rng.is_opening_bracket_checked( );
 		}
 
@@ -466,7 +475,7 @@ namespace daw::json {
 		 * Is the JSON value a number literal
 		 * @return true if the value is a number literal
 		 */
-		constexpr bool is_number( ) const {
+		[[nodiscard]] constexpr bool is_number( ) const {
 			if( not m_rng.has_more( ) ) {
 				return false;
 			}
@@ -492,7 +501,7 @@ namespace daw::json {
 		 * Is the JSON value a string
 		 * @return true if the value is a string
 		 */
-		inline constexpr bool is_string( ) const {
+		[[nodiscard]] inline constexpr bool is_string( ) const {
 			return m_rng.is_quotes_checked( );
 		}
 
@@ -500,7 +509,7 @@ namespace daw::json {
 		 * Is the JSON value a boolean
 		 * @return true if the value is a boolean
 		 */
-		constexpr bool is_bool( ) const {
+		[[nodiscard]] constexpr bool is_bool( ) const {
 			if( not m_rng.has_more( ) ) {
 				return false;
 			}
@@ -526,7 +535,7 @@ namespace daw::json {
 		 * ",[,{,0,1,2,3,4,5,6,7,8,9,-,t,f, or n and this does not
 		 * @return true if the parser is unsure what the data is
 		 */
-		inline constexpr bool is_unknown( ) const {
+		[[nodiscard]] inline constexpr bool is_unknown( ) const {
 			return type( ) == JsonBaseParseTypes::None;
 		}
 
@@ -535,7 +544,7 @@ namespace daw::json {
 			auto new_range = NewRange( m_rng.first, m_rng.last );
 			new_range.class_first = m_rng.class_first;
 			new_range.class_last = m_rng.class_last;
-			return basic_json_value<NewRange>( std::move( new_range ) );
+			return basic_json_value<NewRange>( daw::move( new_range ) );
 		}
 	};
 } // namespace daw::json

@@ -8,15 +8,13 @@
 
 #include "defines.h"
 
-#include "citm_test.h"
-#include "geojson.h"
-#include "twitter_test2.h"
-
-#include "daw/json/daw_json_link.h"
+#include "citm_test_json.h"
+#include "geojson_json.h"
+#include "twitter_test2_json.h"
 
 #include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
-#include <daw/daw_string_view.h>
+#include <daw/json/daw_from_json.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -26,12 +24,16 @@
 #if not defined( DEBUG ) or defined( NDEBUG )
 static inline constexpr std::size_t DAW_NUM_RUNS = 250;
 #else
-static inline constexpr std::size_t DAW_NUM_RUNS = 1;
+static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	try {
 		using namespace daw::json;
 #if defined( NDEBUG ) and not defined( DEBUG )
@@ -58,21 +60,21 @@ int main( int argc, char **argv ) try {
 
 		std::cout << std::flush;
 
-		std::optional<daw::twitter::twitter_object_t> twitter_result{ };
+		std::optional<daw::twitter2::twitter_object_t> twitter_result{ };
 		std::optional<daw::citm::citm_object_t> citm_result{ };
 		std::optional<daw::geojson::Polygon> canada_result{ };
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_twitter bench", json_sv1.size( ),
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result =
-			    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
+			    daw::json::from_json<daw::twitter2::twitter_object_t>( f1 );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( twitter_result );
-		daw_json_assert( twitter_result, "Missing value -> twitter_result" );
-		daw_json_assert( twitter_result->statuses.size( ) > 0,
-		                 "Expected values: twitter_result is empty" );
-		daw_json_assert(
+		test_assert( twitter_result, "Missing value -> twitter_result" );
+		test_assert( not twitter_result->statuses.empty( ),
+		             "Expected values: twitter_result is empty" );
+		test_assert(
 		  twitter_result->statuses.front( ).user.id == "1186275104",
 		  std::string( "Expected values: user_id had wrong value, "
 		               "expected 1186275104.  Got " ) +
@@ -85,15 +87,15 @@ int main( int argc, char **argv ) try {
 		  "nativejson_twitter bench trusted", json_sv1.size( ),
 		  [&twitter_result]( auto f1 ) {
 			  twitter_result =
-			    daw::json::from_json<daw::twitter::twitter_object_t,
+			    daw::json::from_json<daw::twitter2::twitter_object_t,
 			                         NoCommentSkippingPolicyUnchecked>( f1 );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( twitter_result );
-		daw_json_assert( twitter_result, "Missing value" );
-		daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-		daw_json_assert( twitter_result->statuses.front( ).user.id == "1186275104",
-		                 "Expected values" );
+		test_assert( twitter_result, "Missing value" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( twitter_result->statuses.front( ).user.id == "1186275104",
+		             "Expected values" );
 		twitter_result.reset( );
 
 		std::cout << std::flush;
@@ -105,12 +107,12 @@ int main( int argc, char **argv ) try {
 		  },
 		  json_sv2 );
 		daw::do_not_optimize( citm_result );
-		daw_json_assert( citm_result, "Missing value" );
-		daw_json_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
-		daw_json_assert( citm_result->areaNames.count( 205706005 ) == 1,
-		                 "Expected value" );
-		daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-		                 "Incorrect value" );
+		test_assert( citm_result, "Missing value" );
+		test_assert( not citm_result->areaNames.empty( ), "Expected values" );
+		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
+		             "Expected value" );
+		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+		             "Incorrect value" );
 		citm_result.reset( );
 
 		std::cout << std::flush;
@@ -123,12 +125,12 @@ int main( int argc, char **argv ) try {
 			                         NoCommentSkippingPolicyUnchecked>( f2 );
 		  },
 		  json_sv2 );
-		daw_json_assert( citm_result, "Missing value" );
-		daw_json_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
-		daw_json_assert( citm_result->areaNames.count( 205706005 ) == 1,
-		                 "Expected value" );
-		daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-		                 "Incorrect value" );
+		test_assert( citm_result, "Missing value" );
+		test_assert( not citm_result->areaNames.empty( ), "Expected values" );
+		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
+		             "Expected value" );
+		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+		             "Incorrect value" );
 		citm_result.reset( );
 
 		std::cout << std::flush;
@@ -141,7 +143,7 @@ int main( int argc, char **argv ) try {
 		  },
 		  json_sv3 );
 		daw::do_not_optimize( canada_result );
-		daw_json_assert( canada_result, "Missing value" );
+		test_assert( canada_result, "Missing value" );
 		canada_result.reset( );
 
 		std::cout << std::flush;
@@ -155,7 +157,7 @@ int main( int argc, char **argv ) try {
 		  },
 		  json_sv3 );
 		daw::do_not_optimize( canada_result );
-		daw_json_assert( canada_result, "Missing value" );
+		test_assert( canada_result, "Missing value" );
 		canada_result.reset( );
 
 		std::cout << std::flush;
@@ -164,7 +166,7 @@ int main( int argc, char **argv ) try {
 		  "nativejson bench", sz,
 		  [&]( auto f1, auto f2, auto f3 ) {
 			  twitter_result =
-			    daw::json::from_json<daw::twitter::twitter_object_t>( f1 );
+			    daw::json::from_json<daw::twitter2::twitter_object_t>( f1 );
 			  citm_result = daw::json::from_json<daw::citm::citm_object_t>( f2 );
 			  canada_result = daw::json::from_json<daw::geojson::Polygon>(
 			    f3, "features[0].geometry" );
@@ -176,17 +178,17 @@ int main( int argc, char **argv ) try {
 		daw::do_not_optimize( twitter_result );
 		daw::do_not_optimize( citm_result );
 		daw::do_not_optimize( canada_result );
-		daw_json_assert( twitter_result, "Missing value" );
-		daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-		daw_json_assert( twitter_result->statuses.front( ).user.id == "1186275104",
-		                 "Missing value" );
-		daw_json_assert( citm_result, "Missing value" );
-		daw_json_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
-		daw_json_assert( citm_result->areaNames.count( 205706005 ) == 1,
-		                 "Expected value" );
-		daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-		                 "Incorrect value" );
-		daw_json_assert( canada_result, "Missing value" );
+		test_assert( twitter_result, "Missing value" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( twitter_result->statuses.front( ).user.id == "1186275104",
+		             "Missing value" );
+		test_assert( citm_result, "Missing value" );
+		test_assert( not citm_result->areaNames.empty( ), "Expected values" );
+		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
+		             "Expected value" );
+		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+		             "Incorrect value" );
+		test_assert( canada_result, "Missing value" );
 		twitter_result.reset( );
 		citm_result.reset( );
 		canada_result.reset( );
@@ -195,7 +197,7 @@ int main( int argc, char **argv ) try {
 		  "nativejson bench trusted", sz,
 		  [&]( auto f1, auto f2, auto f3 ) {
 			  twitter_result =
-			    daw::json::from_json<daw::twitter::twitter_object_t,
+			    daw::json::from_json<daw::twitter2::twitter_object_t,
 			                         NoCommentSkippingPolicyUnchecked>( f1 );
 			  citm_result =
 			    daw::json::from_json<daw::citm::citm_object_t,
@@ -212,22 +214,23 @@ int main( int argc, char **argv ) try {
 		daw::do_not_optimize( citm_result );
 		daw::do_not_optimize( canada_result );
 
-		daw_json_assert( twitter_result, "Missing value" );
-		daw_json_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
-		daw_json_assert( twitter_result->statuses.front( ).user.id == "1186275104",
-		                 "Missing value" );
-		daw_json_assert( citm_result, "Missing value" );
-		daw_json_assert( citm_result->areaNames.size( ) > 0, "Expected values" );
-		daw_json_assert( citm_result->areaNames.count( 205706005 ) == 1,
-		                 "Expected value" );
-		daw_json_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
-		                 "Incorrect value" );
-		daw_json_assert( canada_result, "Missing value" );
+		test_assert( twitter_result, "Missing value" );
+		test_assert( not twitter_result->statuses.empty( ), "Expected values" );
+		test_assert( twitter_result->statuses.front( ).user.id == "1186275104",
+		             "Missing value" );
+		test_assert( citm_result, "Missing value" );
+		test_assert( not citm_result->areaNames.empty( ), "Expected values" );
+		test_assert( citm_result->areaNames.count( 205706005 ) == 1,
+		             "Expected value" );
+		test_assert( citm_result->areaNames[205706005] == "1er balcon jardin",
+		             "Incorrect value" );
+		test_assert( canada_result, "Missing value" );
 	} catch( daw::json::json_exception const &je ) {
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
-} catch( daw::json::json_exception const &jex ) {
+}
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

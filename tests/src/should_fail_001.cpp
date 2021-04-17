@@ -60,7 +60,7 @@ namespace tests {
 		static DAW_CONSTEXPR std::string_view data =
 		  R"({"lat": "55.55", "lng": "12.34" })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -70,7 +70,7 @@ namespace tests {
 		static DAW_CONSTEXPR std::string_view data =
 		  R"({"lat": true, "lng": false })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -80,7 +80,7 @@ namespace tests {
 		static DAW_CONSTEXPR std::string_view data =
 		  R"({"lat": 1.23b34, "lng": 1234.4 })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -89,7 +89,7 @@ namespace tests {
 	bool missing_value_001( ) {
 		static DAW_CONSTEXPR std::string_view data = R"({"lat": 1.23, "lng": })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -98,7 +98,7 @@ namespace tests {
 	bool missing_value_002( ) {
 		static DAW_CONSTEXPR std::string_view data = R"({"lat": , "lng": 1.23 })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -108,7 +108,7 @@ namespace tests {
 		static DAW_CONSTEXPR std::string_view data =
 		  R"({"name": "lat": 1.23, "lng": 1.34 })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -117,7 +117,7 @@ namespace tests {
 	bool missing_member( ) {
 		static DAW_CONSTEXPR std::string_view data = R"({"lng": 1.23 })";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -127,7 +127,7 @@ namespace tests {
 		static DAW_CONSTEXPR std::string_view data =
 		  R"({"lng": 1.23, "lat": 1.22 )";
 		try {
-			Coordinate c = daw::json::from_json<tests::Coordinate>( data );
+			auto const c = daw::json::from_json<tests::Coordinate>( data );
 			(void)c;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -137,7 +137,7 @@ namespace tests {
 		std::string data =
 		  R"({"uris": [ "http://www.example.com", "http://www.example.com/missing_quote ] })";
 		try {
-			UriList ul = daw::json::from_json<tests::UriList>( data );
+			auto const ul = daw::json::from_json<tests::UriList>( data );
 			(void)ul;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -147,9 +147,16 @@ namespace tests {
 		std::string data =
 		  R"({"uris": [ "http://www.ex\u4"\"ample.com", "http://www.example.com/missing_quote ] })";
 		try {
-			UriList ul = daw::json::from_json<tests::UriList>( data );
+			auto const ul = daw::json::from_json<tests::UriList>( data );
 			(void)ul;
-		} catch( daw::json::json_exception const & ) { return true; }
+		} catch( daw::json::json_exception const &jex ) {
+			if( jex.parse_location( ) and
+			    ( jex.parse_location( ) - data.data( ) == 29 ) ) {
+				return true;
+			}
+			std::cerr << "Wrong exception: " << jex.reason( ) << '\n'
+			          << to_formatted_string( jex ) << '\n';
+		}
 		return false;
 	}
 
@@ -217,14 +224,37 @@ namespace tests {
 		return false;
 	}
 } // namespace tests
+static bool has_uncaught_except = false;
 
-#define expect_fail( Bool, Reason )                                            \
-	if( not static_cast<bool>( Bool ) ) {                                        \
-		std::cerr << "Fail: " << ( Reason ) << '\n';                               \
-	}                                                                            \
+#ifdef DAW_USE_JSON_EXCEPTIONS
+#define expect_fail( Bool, Reason )                                          \
+	do {                                                                       \
+		std::cout << "testing: "                                                 \
+		          << "" #Bool "\n";                                              \
+		try {                                                                    \
+			if( not static_cast<bool>( Bool ) ) {                                  \
+				std::cerr << "Fail: " << ( Reason ) << '\n';                         \
+			}                                                                      \
+		} catch( std::exception const &ex ) {                                    \
+			std::cout << "Fail: " << ( Reason ) << "\nUnexpected std::exception\n" \
+			          << ex.what( ) << '\n';                                       \
+			has_uncaught_except = true;                                            \
+		} catch( ... ) {                                                         \
+			std::cout << "Fail: " << ( Reason ) << "\nUnknown exception\n";        \
+			has_uncaught_except = true;                                            \
+		}                                                                        \
+	} while( false )
+#else
+#define expect_fail( Bool, Reason )              \
+	std::cout << "testing: "                       \
+	          << "" #Bool "\n";                    \
+	if( not static_cast<bool>( Bool ) ) {          \
+		std::cerr << "Fail: " << ( Reason ) << '\n'; \
+	}                                              \
 	while( false )
+#endif
 
-int main( int, char ** ) try {
+int main( int, char ** ) {
 	expect_fail( tests::quotes_in_numbers( ),
 	             "Failed to find unexpected quotes in numbers" );
 	expect_fail( tests::bool_in_numbers( ),
@@ -264,8 +294,8 @@ int main( int, char ** ) try {
 	             "Incomplete false in array not caught" );
 
 	expect_fail( tests::bad_true( ), "bad true value not caught" );
-
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
-	exit( 1 );
+	if( has_uncaught_except ) {
+		return 1;
+	}
+	return 0;
 }

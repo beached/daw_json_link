@@ -51,7 +51,11 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-int main( int argc, char **argv ) try {
+int main( int argc, char **argv )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_enums2.json file\n" );
 		exit( EXIT_FAILURE );
@@ -61,22 +65,25 @@ int main( int argc, char **argv ) try {
 	auto const cls = daw::json::from_json<daw::cookbook_enums2::MyClass1>(
 	  std::string_view( data.data( ), data.size( ) ) );
 
-	daw_json_assert( cls.member0[0] == daw::cookbook_enums2::Colours::red,
-	                 "Unexpected value" );
-	daw_json_assert( cls.member0[1] == daw::cookbook_enums2::Colours::green,
-	                 "Unexpected value" );
-	daw_json_assert( cls.member0[2] == daw::cookbook_enums2::Colours::blue,
-	                 "Unexpected value" );
-	daw_json_assert( cls.member0[3] == daw::cookbook_enums2::Colours::black,
-	                 "Unexpected value" );
+	test_assert( cls.member0[0] == daw::cookbook_enums2::Colours::red,
+	             "Unexpected value" );
+	test_assert( cls.member0[1] == daw::cookbook_enums2::Colours::green,
+	             "Unexpected value" );
+	test_assert( cls.member0[2] == daw::cookbook_enums2::Colours::blue,
+	             "Unexpected value" );
+	test_assert( cls.member0[3] == daw::cookbook_enums2::Colours::black,
+	             "Unexpected value" );
 	auto const str = daw::json::to_json( cls );
 	puts( str.c_str( ) );
 
 	auto const cls2 = daw::json::from_json<daw::cookbook_enums2::MyClass1>(
 	  std::string_view( str.data( ), str.size( ) ) );
 
-	daw_json_assert( cls == cls2, "Unexpected round trip error" );
-} catch( daw::json::json_exception const &jex ) {
+	test_assert( cls == cls2, "Unexpected round trip error" );
+}
+#ifdef DAW_USE_JSON_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

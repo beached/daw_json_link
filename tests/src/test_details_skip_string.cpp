@@ -142,28 +142,35 @@ bool test_escaped_quote_004( ) {
 	return v.size( ) == 66;
 }
 
-#define do_test( ... )                                                         \
-	try {                                                                        \
-		daw_json_assert( __VA_ARGS__, "" #__VA_ARGS__ );                    \
-	} catch( daw::json::json_exception const &jex ) {                            \
-		std::cerr << "Unexpected exception thrown by parser in test '"             \
-		          << "" #__VA_ARGS__ << "': " << to_formatted_string( jex )        \
-		          << '\n';                                                         \
-		exit( 1 );                                                                 \
-	}                                                                            \
-	do {                                                                         \
+#define do_test( ... )                                                 \
+	try {                                                                \
+		if( not( __VA_ARGS__ ) ) {                                         \
+			std::cerr << "Error while testing: " #__VA_ARGS__ << '\n';       \
+			exit( 1 );                                                       \
+		}                                                                  \
+	} catch( daw::json::json_exception const &jex ) {                    \
+		std::cerr << "Unexpected exception thrown by parser in test '"     \
+		          << "" #__VA_ARGS__                                       \
+		          << "': " << to_formatted_string( jex, nullptr ) << '\n'; \
+		exit( 1 );                                                         \
+	}                                                                    \
+	do {                                                                 \
 	} while( false )
 
-#define do_fail_test( ... )                                                    \
-	do {                                                                         \
-		try {                                                                      \
-			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ );                  \
-		} catch( daw::json::json_exception const & ) { break; }                    \
-		std::cerr << "Expected exception, but none thrown in '"                    \
-		          << "" #__VA_ARGS__ << "'\n";                                     \
+#define do_fail_test( ... )                                   \
+	do {                                                        \
+		try {                                                     \
+			daw::expecting_message( __VA_ARGS__, "" #__VA_ARGS__ ); \
+		} catch( daw::json::json_exception const & ) { break; }   \
+		std::cerr << "Expected exception, but none thrown in '"   \
+		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
 
-int main( int, char ** ) try {
+int main( int, char ** )
+#ifdef DAW_USE_JSON_EXCEPTIONS
+  try
+#endif
+{
 	do_test( test_empty( ) );
 	do_test( test_quoted_number( ) );
 	do_test( test_empty_quoted( ) );
@@ -185,8 +192,9 @@ int main( int, char ** ) try {
 	do_fail_test( test_missing_quotes_001( ) );
 	do_fail_test( test_missing_quotes_002( ) );
 	do_fail_test( test_missing_quotes_003( ) );
-} catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << to_formatted_string( jex )
-	          << '\n';
+}
+catch( daw::json::json_exception const &jex ) {
+	std::cerr << "Exception thrown by parser: "
+	          << to_formatted_string( jex, nullptr ) << '\n';
 	exit( 1 );
 }

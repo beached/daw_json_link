@@ -10,7 +10,7 @@
 
 #include "defines.h"
 
-#include <daw/json/daw_json_link.h>
+#include <daw/json/daw_from_json_fwd.h>
 
 #include <array>
 #include <cstdint>
@@ -18,12 +18,6 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-
-#ifdef __GNUC__
-#define DAW_HIDDEN __attribute__( ( visibility( "hidden" ) ) )
-#else
-#define DAW_HIDDEN
-#endif
 
 namespace daw::geojson {
 	struct Property {
@@ -54,106 +48,69 @@ namespace daw::geojson {
 		std::string_view type;
 		std::vector<Feature> features;
 	}; // FeatureCollection
-
-	template<typename T>
-	struct array_appender {
-		T *ptr;
-
-		template<size_t N>
-		explicit DAW_CONSTEXPR array_appender( std::array<T, N> &ary ) noexcept
-		  : ptr( ary.data( ) ) {}
-
-		template<typename U>
-		DAW_CONSTEXPR void operator( )( U &&item ) noexcept {
-			*ptr++ = std::forward<U>( item );
-		}
-	};
 } // namespace daw::geojson
 
 namespace daw::json {
-	template<>
-	struct DAW_HIDDEN json_data_contract<daw::geojson::Point> {
-		using type = json_ordered_member_list<double, double>;
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyChecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data,
+	                                             std::string_view path );
 
-		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
-		to_json_data( daw::geojson::Point const &p ) {
-			return std::forward_as_tuple( p.x, p.y );
-		}
-	};
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data,
+	                                             std::string_view path );
 
-	template<>
-	struct DAW_HIDDEN json_data_contract<daw::geojson::Property> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_string_raw<"name", std::string_view>>;
-#else
-		static constexpr char const type_sym[] = "type";
-		static constexpr char const name[] = "name";
-		using type = json_member_list<json_string_raw<name, std::string_view>>;
-#endif
-		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
-		to_json_data( daw::geojson::Property const &value ) {
-			return std::forward_as_tuple( value.name );
-		}
-	};
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
 
-	template<>
-	struct DAW_HIDDEN json_data_contract<daw::geojson::Polygon> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<
-		  json_string_raw<"type", std::string_view>,
-		  json_array<"coordinates", std::vector<daw::geojson::Point>>>;
-#else
-		static constexpr char const type_sym[] = "type";
-		static constexpr char const coordinates[] = "coordinates";
-		using type = json_member_list<
-		  json_string_raw<type_sym, std::string_view>,
-		  json_array<coordinates, std::vector<daw::geojson::Point>>>;
-#endif
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::runtime_exec_tag>>( std::string_view json_data,
+	                                           std::string_view path );
 
-		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
-		to_json_data( daw::geojson::Polygon const &value ) {
-			return std::forward_as_tuple( value.type, value.coordinates );
-		}
-	};
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
 
-	template<>
-	struct DAW_HIDDEN json_data_contract<daw::geojson::Feature> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_string_raw<"type", std::string_view>,
-		                   json_class<"properties", daw::geojson::Property>,
-		                   json_class<"geometry", daw::geojson::Polygon>>;
-#else
-		static constexpr char const type_sym[] = "type";
-		static constexpr char const properties[] = "properties";
-		static constexpr char const geometry[] = "geometry";
-		using type =
-		  json_member_list<json_string_raw<type_sym, std::string_view>,
-		                   json_class<properties, daw::geojson::Property>,
-		                   json_class<geometry, daw::geojson::Polygon>>;
-#endif
-		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
-		to_json_data( daw::geojson::Feature const &value ) {
-			return std::forward_as_tuple( value.type, value.properties,
-			                              value.geometry );
-		}
-	};
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
 
-	template<>
-	struct DAW_HIDDEN json_data_contract<daw::geojson::FeatureCollection> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_string_raw<"type", std::string_view>,
-		                   json_array<"features", daw::geojson::Feature>>;
-#else
-		static constexpr char const type_sym[] = "type";
-		static constexpr char const features[] = "features";
-		using type = json_member_list<json_string_raw<type_sym, std::string_view>,
-		                              json_array<features, daw::geojson::Feature>>;
-#endif
-		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
-		to_json_data( daw::geojson::FeatureCollection const &value ) {
-			return std::forward_as_tuple( value.type, value.features );
-		}
-	};
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyChecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
+
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
+
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::runtime_exec_tag>>(
+	  std::string_view json_data );
+
+	extern template daw::geojson::Polygon
+	from_json<daw::geojson::Polygon,
+	          daw::json::SIMDNoCommentSkippingPolicyUnchecked<
+	            daw::json::runtime_exec_tag>>( std::string_view json_data );
+
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data );
+
+	extern template daw::geojson::Polygon from_json<
+	  daw::geojson::Polygon,
+	  daw::json::SIMDNoCommentSkippingPolicyUnchecked<daw::json::simd_exec_tag>>(
+	  std::string_view json_data );
 } // namespace daw::json
