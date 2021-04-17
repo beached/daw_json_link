@@ -516,8 +516,12 @@ namespace daw::json::json_details {
 		                      ErrorReason::InvalidArrayStart, rng );
 		rng.remove_prefix( );
 		rng.trim_left_unchecked( );
+#if defined( __GNUC__ ) or defined( __clang__ )
 		using iterator_t =
 		  json_parse_array_iterator<JsonMember, Range, KnownBounds>;
+#else
+		using iterator_t = json_parse_array_iterator<JsonMember, Range, false>;
+#endif
 		using constructor_t = typename JsonMember::constructor_t;
 		return construct_value<json_result<JsonMember>>(
 		  constructor_t{ }, rng, iterator_t( rng ), iterator_t( ) );
