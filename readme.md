@@ -7,8 +7,6 @@
 
 [![Build Status Windows - MSVC](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows)
 
-[![Build Status Windows - ClangCL](https://github.com/beached/daw_json_link/workflows/Windows_ClangCl/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows_ClangCl)
-
 ## Content 
 * [Intro](#intro)
   * [Default Mapping of Types](#default-mapping-of-types)
