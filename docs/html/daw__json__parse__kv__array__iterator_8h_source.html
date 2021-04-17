@@ -172,7 +172,7 @@ $(function() {
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                std::size_t counter;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                <a class="code" href="daw__json__parse__common_8h.html#a3280ece7a36714608b5f84386378dd9c">CPP20CONSTEXPR</a> <span class="keyword">inline</span> ~cleanup_t( ) noexcept( <span class="keyword">false</span> ) {</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#ifdef HAS_CPP20CONSTEXPR</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                  <span class="keywordflow">if</span>( std::is_constant_evaluated( ) ) {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                  <span class="keywordflow">if</span>( not std::is_constant_evaluated( ) ) {</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                    <span class="keywordflow">if</span>( std::uncaught_exceptions( ) == 0 ) {</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                      ptr-&gt;counter = counter;</div>

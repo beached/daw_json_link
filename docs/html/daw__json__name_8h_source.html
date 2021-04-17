@@ -159,8 +159,8 @@ $(function() {
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keyword">template</span>&lt;std::<span class="keywordtype">size_t</span> N&gt;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    json_name( <span class="keywordtype">char</span> <span class="keyword">const</span> ( &amp; )[N] ) -&gt; json_name&lt;N&gt;;</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#define JSONNAMETYPE json_name</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="comment">// Convienience for array members that are required to be unnamed</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#define JSONNAMETYPE ::daw::json::json_name</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="comment">// Convenience for array members that are required to be unnamed</span></div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keyword">inline</span> constexpr <a class="code" href="daw__json__name_8h.html#acfb619fe070194ca3766d9ddbc96cb41">JSONNAMETYPE</a> <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a922bb1b4e6e7243e15691c63597dbe9b">no_name</a>{ <span class="stringliteral">&quot;\a&quot;</span> };</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">namespace </span>json_details {</div>

@@ -304,9 +304,9 @@ namespace daw::json {
 
 				size_t current_idx = 0;
 
-				using tp_t = decltype(
-				  std::forward_as_tuple( parse_ordered_class_member<JsonMembers>(
-				    current_idx, parse_state )... ) );
+				using tp_t = decltype( std::forward_as_tuple(
+				  parse_ordered_class_member<JsonMembers>( current_idx,
+				                                           parse_state )... ) );
 
 				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 					struct cleanup_t {

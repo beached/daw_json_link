@@ -34,7 +34,6 @@ namespace daw::json {
 				constexpr handler_result_holder( bool b )
 				  : value( b ? Continue : Complete ) {}
 
-
 				constexpr handler_result_holder( json_parse_handler_result r )
 				  : value( r ) {}
 
