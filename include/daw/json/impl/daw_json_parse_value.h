@@ -512,12 +512,13 @@ namespace daw::json {
 				parse_state.remove_prefix( );
 				// We are inside a KV map, we can expected a quoted name next
 				parse_state.template move_to_next_of<'"'>( );
-#if defined( _MSC_VER ) and not defined( __clang__ )
-				using iter_t =
-				  json_parse_kv_class_iterator<JsonMember, ParseState, false>;
-#else
+
+#if defined( __GNUC__ ) or defined( __clang__ )
 				using iter_t =
 				  json_parse_kv_class_iterator<JsonMember, ParseState, KnownBounds>;
+#else
+				using iter_t =
+				  json_parse_kv_class_iterator<JsonMember, ParseState, false>;
 #endif
 				using constructor_t = typename JsonMember::constructor_t;
 				return construct_value<json_result<JsonMember>>(
