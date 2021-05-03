@@ -30,10 +30,10 @@ namespace daw::json {
 			struct missing_member {
 				char const *member_name;
 
-				template<
-				  typename StringView,
-				  std::enable_if_t<(traits::not_same_v<StringView, missing_member>),
-				                   std::nullptr_t> = nullptr>
+				template<typename StringView,
+				         std::enable_if_t<
+				           ( traits::not_same<StringView, missing_member>::value ),
+				           std::nullptr_t> = nullptr>
 				explicit constexpr missing_member( StringView name )
 				  : member_name( std::data( name ) ) {}
 

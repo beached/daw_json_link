@@ -271,8 +271,9 @@ namespace daw::json {
 
 				return daw::visit_nt( v, [&]( auto const &alternative ) {
 					using Alternative = daw::remove_cvref_t<decltype( alternative )>;
-					static_assert( ( std::is_same_v<Alternative, JsonClasses> or ... ),
-					               "Unexpected alternative type" );
+					static_assert(
+					  ( std::is_same<Alternative, JsonClasses>::value or ... ),
+					  "Unexpected alternative type" );
 					static_assert( json_details::has_json_to_json_data_v<Alternative>,
 					               "Alternative type does not have a to_json_data_member "
 					               "in it's json_data_contract specialization" );
@@ -346,7 +347,7 @@ namespace daw::json {
 			using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 			static_assert(
 			  Nullable == JsonNullable::Never or
-			    std::is_same_v<parse_to_t, std::invoke_result_t<Constructor>>,
+			    std::is_same<parse_to_t, std::invoke_result_t<Constructor>>::value,
 			  "Default ctor of constructor must match that of base" );
 			using constructor_t = Constructor;
 			static constexpr daw::string_view name = Name;
@@ -460,7 +461,7 @@ namespace daw::json {
 			               "Failed to detect base type" );
 			// using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 			static_assert(
-			  std::is_invocable_v<Constructor, char const *, char const *> );
+			  std::is_invocable<Constructor, char const *, char const *>::value );
 
 			using parse_to_t =
 			  std::invoke_result_t<Constructor, char const *, char const *>;
@@ -590,9 +591,9 @@ namespace daw::json {
 		         typename Constructor, JsonNullable Nullable>
 		struct json_variant {
 			using i_am_a_json_type = void;
-			static_assert(
-			  std::is_same_v<typename JsonElements::i_am_variant_type_list, void>,
-			  "Expected a json_variant_type_list" );
+			static_assert( std::is_same<typename JsonElements::i_am_variant_type_list,
+			                            void>::value,
+			               "Expected a json_variant_type_list" );
 			using wrapped_type = T;
 			using base_type = json_details::unwrap_type<T, Nullable>;
 			using constructor_t =
@@ -633,13 +634,14 @@ namespace daw::json {
 			using i_am_a_json_type = void;
 			using i_am_a_tagged_variant = void;
 			static_assert(
-			  std::is_same_v<typename JsonElements::i_am_tagged_variant_type_list,
-			                 void>,
+			  std::is_same<typename JsonElements::i_am_tagged_variant_type_list,
+			               void>::value,
 			  "Expected a json_member_list" );
 
-			static_assert( std::is_same_v<typename TagMember::i_am_a_json_type, void>,
-			               "JSON member types must be passed as "
-			               "TagMember" );
+			static_assert(
+			  std::is_same<typename TagMember::i_am_a_json_type, void>::value,
+			  "JSON member types must be passed as "
+			  "TagMember" );
 			using wrapped_type = T;
 			using tag_member = TagMember;
 			using switcher = Switcher;
@@ -683,12 +685,13 @@ namespace daw::json {
 			               "Failed to detect base type" );
 			using parse_to_t =
 			  std::invoke_result_t<FromJsonConverter, std::string_view>;
-			static_assert( std::is_invocable_v<FromJsonConverter, std::string_view>,
-			               "FromConverter must be callable with a std::string_view" );
 			static_assert(
-			  std::is_invocable_v<ToJsonConverter, parse_to_t> or
-			    std::is_invocable_r_v<char const *, ToJsonConverter, char const *,
-			                          parse_to_t>,
+			  std::is_invocable<FromJsonConverter, std::string_view>::value,
+			  "FromConverter must be callable with a std::string_view" );
+			static_assert(
+			  std::is_invocable<ToJsonConverter, parse_to_t>::value or
+			    std::is_invocable_r<char const *, ToJsonConverter, char const *,
+			                        parse_to_t>::value,
 			  "ToConverter must be callable with T or T and and OutputIterator" );
 			static constexpr daw::string_view name = Name;
 			static constexpr JsonParseTypes expected_type =

@@ -25,7 +25,7 @@ namespace daw::json {
 		template<typename Value, typename JsonClass, typename OutputIterator>
 		[[maybe_unused]] constexpr OutputIterator to_json( Value const &value,
 		                                                   OutputIterator out_it ) {
-			if constexpr( std::is_pointer_v<OutputIterator> ) {
+			if constexpr( std::is_pointer<OutputIterator>::value ) {
 				daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 			}
 			out_it = json_details::member_to_string<JsonClass>( out_it, value );
@@ -47,7 +47,7 @@ namespace daw::json {
 			  traits::is_container_like_v<daw::remove_cvref_t<Container>>,
 			  "Supplied container must support begin( )/end( )" );
 
-			if constexpr( std::is_pointer_v<OutputIterator> ) {
+			if constexpr( std::is_pointer<OutputIterator>::value ) {
 				daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 			}
 			*out_it++ = '[';
@@ -55,17 +55,18 @@ namespace daw::json {
 			for( auto const &v : c ) {
 				using v_type = daw::remove_cvref_t<decltype( v )>;
 				constexpr bool is_auto_detect_v =
-				  std::is_same_v<JsonElement, json_details::auto_detect_array_element>;
+				  std::is_same<JsonElement,
+				               json_details::auto_detect_array_element>::value;
 				using JsonMember =
 				  std::conditional_t<is_auto_detect_v,
 				                     json_details::unnamed_default_type_mapping<v_type>,
 				                     JsonElement>;
 
 				static_assert(
-				  traits::not_same_v<JsonMember,
-				                     missing_json_data_contract_for<JsonElement>>,
+				  traits::not_same<JsonMember,
+				                   missing_json_data_contract_for<JsonElement>>::value,
 				  "Unable to detect unnamed mapping" );
-				static_assert( traits::not_same_v<JsonElement, JsonMember> );
+				static_assert( traits::not_same<JsonElement, JsonMember>::value );
 				if( is_first ) {
 					is_first = false;
 				} else {

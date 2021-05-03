@@ -301,7 +301,7 @@ namespace daw::json {
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using element_type =
 			  json_details::unnamed_default_type_mapping<JsonElement>;
-			static_assert( traits::not_same_v<element_type, void>,
+			static_assert( traits::not_same<element_type, void>::value,
 			               "Unknown JsonElement type." );
 
 			using parser_t = json_array<no_name, JsonElement, Container, Constructor>;

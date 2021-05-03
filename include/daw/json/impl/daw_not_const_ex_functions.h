@@ -353,9 +353,10 @@ namespace daw::json {
 				}
 			}
 
-			template<bool is_unchecked_input, typename ExecTag,
-			         std::enable_if_t<std::is_base_of_v<runtime_exec_tag, ExecTag>,
-			                          std::nullptr_t> = nullptr>
+			template<
+			  bool is_unchecked_input, typename ExecTag,
+			  std::enable_if_t<std::is_base_of<runtime_exec_tag, ExecTag>::value,
+			                   std::nullptr_t> = nullptr>
 			DAW_ATTRIBUTE_FLATTEN static inline char const *
 			mem_skip_string( ExecTag const &tag, char const *first,
 			                 char const *const last ) {
@@ -363,9 +364,10 @@ namespace daw::json {
 				                                                           last );
 			}
 
-			template<bool is_unchecked_input, typename ExecTag,
-			         std::enable_if_t<std::is_base_of_v<runtime_exec_tag, ExecTag>,
-			                          std::nullptr_t> = nullptr>
+			template<
+			  bool is_unchecked_input, typename ExecTag,
+			  std::enable_if_t<std::is_base_of<runtime_exec_tag, ExecTag>::value,
+			                   std::nullptr_t> = nullptr>
 			DAW_ATTRIBUTE_FLATTEN static inline char const *
 			mem_skip_until_end_of_string( ExecTag const &tag, char const *first,
 			                              char const *const last ) {

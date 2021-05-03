@@ -64,7 +64,7 @@ namespace daw::json {
 				// will be calculated in terms of that
 				constexpr int max_dbl_exp = std::numeric_limits<double>::max_exponent10;
 				constexpr int max_exp =
-				  std::is_same_v<Result, float>
+				  std::is_same<Result, float>::value
 				    ? std::min( max_dbl_exp,
 				                std::numeric_limits<float>::max_exponent10 )
 				    : max_dbl_exp;
@@ -104,8 +104,8 @@ namespace daw::json {
 			template<typename Result, typename Unsigned>
 			DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
 			power10( runtime_exec_tag, Result result, Unsigned p ) {
-				if constexpr( std::is_same_v<Result, double> or
-				              std::is_same_v<Result, float> ) {
+				if constexpr( std::disjunction<std::is_same<Result, double>,
+				                               std::is_same<Result, float>>::value ) {
 					return power10( constexpr_exec_tag{ }, result,
 					                static_cast<std::int32_t>( p ) );
 				} else {

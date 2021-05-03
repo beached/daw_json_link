@@ -70,8 +70,8 @@ namespace daw::json {
 			move_to_next_of( ParseState &parse_state ) {
 				static_assert( sizeof...( keys ) <= 16 );
 
-				if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
-				                                 constexpr_exec_tag> ) {
+				if constexpr( traits::not_same<typename ParseState::exec_tag_t,
+				                               constexpr_exec_tag>::value ) {
 					parse_state.first =
 					  json_details::mem_move_to_next_of<ParseState::is_unchecked_input,
 					                                    keys...>(
@@ -129,8 +129,8 @@ namespace daw::json {
 							break;
 						case '"':
 							++ptr_first;
-							if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
-							                                 constexpr_exec_tag> ) {
+							if constexpr( traits::not_same<typename ParseState::exec_tag_t,
+							                               constexpr_exec_tag>::value ) {
 								ptr_first = json_details::mem_skip_until_end_of_string<
 								  ParseState::is_unchecked_input>(
 								  ParseState::exec_tag, ptr_first, parse_state.last );
@@ -190,8 +190,8 @@ namespace daw::json {
 							break;
 						case '"':
 							++ptr_first;
-							if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
-							                                 constexpr_exec_tag> ) {
+							if constexpr( traits::not_same<typename ParseState::exec_tag_t,
+							                               constexpr_exec_tag>::value ) {
 								ptr_first = json_details::mem_skip_until_end_of_string<
 								  ParseState::is_unchecked_input>(
 								  ParseState::exec_tag, ptr_first, parse_state.last );
@@ -276,8 +276,8 @@ namespace daw::json {
 						break;
 					case '"':
 						++ptr_first;
-						if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
-						                                 constexpr_exec_tag> ) {
+						if constexpr( traits::not_same<typename ParseState::exec_tag_t,
+						                               constexpr_exec_tag>::value ) {
 							ptr_first = json_details::mem_skip_until_end_of_string<
 							  ParseState::is_unchecked_input>( ParseState::exec_tag,
 							                                   ptr_first, parse_state.last );

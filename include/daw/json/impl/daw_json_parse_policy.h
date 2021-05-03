@@ -134,7 +134,7 @@ namespace daw::json {
 			                                 ExecMode, AllowEscapedNames, Alloc>
 			                  p ) const {
 
-				if constexpr( std::is_same_v<Alloc, json_details::NoAllocator> ) {
+				if constexpr( std::is_same<Alloc, json_details::NoAllocator>::value ) {
 					return *this;
 				} else {
 					auto result = with_allocator( first, last, class_first, class_last,

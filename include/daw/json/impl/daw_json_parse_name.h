@@ -178,7 +178,7 @@ namespace daw::json {
 			[[nodiscard]] constexpr std::pair<bool, ParsePolicy>
 			find_range( String &&str, daw::string_view start_path ) {
 				static_assert(
-				  std::is_same_v<char const *, typename ParsePolicy::iterator>,
+				  std::is_same<char const *, typename ParsePolicy::iterator>::value,
 				  "Only char const * ranges are currently supported" );
 				auto parse_state =
 				  ParsePolicy( std::data( str ), daw::data_end( str ) );
@@ -196,7 +196,7 @@ namespace daw::json {
 			                                         daw::string_view start_path,
 			                                         Allocator &alloc ) {
 				static_assert(
-				  std::is_same_v<char const *, typename ParsePolicy::iterator>,
+				  std::is_same<char const *, typename ParsePolicy::iterator>::value,
 				  "Only char const * ranges are currently supported" );
 				auto parse_state = ParsePolicy::with_allocator(
 				  std::data( str ), daw::data_end( str ), alloc );

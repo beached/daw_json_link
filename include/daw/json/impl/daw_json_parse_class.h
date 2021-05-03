@@ -292,7 +292,8 @@ namespace daw::json {
 				using Constructor = typename JsonClass::constructor_t;
 				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
 				static_assert(
-				  std::is_invocable_v<Constructor, typename JsonMembers::parse_to_t...>,
+				  std::is_invocable<Constructor,
+				                    typename JsonMembers::parse_to_t...>::value,
 				  "Supplied types cannot be used for construction of this type" );
 
 				parse_state.trim_left( ); // Move to array start '['

@@ -133,7 +133,7 @@ namespace daw::json {
 				return std::chrono::duration_cast<Duration>(
 				  std::chrono::clock_cast<Clock>( result ) );
 #else
-				if constexpr( std::is_same_v<Clock, std::chrono::system_clock> ) {
+				if constexpr( std::is_same<Clock, std::chrono::system_clock>::value ) {
 					return result;
 				} else {
 					// This is a guess and will not be constexpr

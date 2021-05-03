@@ -412,7 +412,7 @@ namespace daw::json {
 
 			template<typename... Ts>
 			[[maybe_unused]] constexpr std::conditional_t<
-			  std::conjunction_v<has_unnamed_default_type_mapping<Ts>...>,
+			  std::conjunction<has_unnamed_default_type_mapping<Ts>...>::value,
 			  json_tagged_variant_type_list<unnamed_default_type_mapping<Ts>...>,
 			  missing_default_type_mapping<unnamed_default_type_mapping<Ts>...>>
 			get_variant_type_list( std::variant<Ts...> const * );
@@ -426,7 +426,7 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool is_nullable_type =
-			  daw::is_detected_v<underlying_nullable_type, T>;
+			  daw::is_detected<underlying_nullable_type, T>::value;
 
 			template<typename T>
 			[[maybe_unused]] constexpr unknown_variant_type<T>

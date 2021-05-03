@@ -213,8 +213,8 @@ namespace daw::json {
 					{
 						char const *first = parse_state.first;
 						char const *const last = parse_state.last;
-						if constexpr( std::is_same_v<typename ParseState::exec_tag_t,
-						                             constexpr_exec_tag> ) {
+						if constexpr( std::is_same<typename ParseState::exec_tag_t,
+						                           constexpr_exec_tag>::value ) {
 							while( not key_table<'"', '\\'>[*first] ) {
 								++first;
 								daw_json_assert_weak( KnownBounds or first < last,
@@ -288,8 +288,8 @@ namespace daw::json {
 				daw_json_assert_weak( std::size( result ) >= sz,
 				                      ErrorReason::InvalidString, parse_state );
 				result.resize( sz );
-				if constexpr( std::is_convertible_v<string_type,
-				                                    json_result<JsonMember>> ) {
+				if constexpr( std::is_convertible<string_type,
+				                                  json_result<JsonMember>>::value ) {
 					return result;
 				} else {
 					using constructor_t = typename JsonMember::constructor_t;

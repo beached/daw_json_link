@@ -43,14 +43,14 @@ namespace daw::json {
 		                                   OutputIterator out_it ) {
 			// TODO: Customization point, add to readme
 #ifndef DAW_JSON_CUSTOM_D2S
-			if constexpr( std::is_same_v<Real, float> ) {
+			if constexpr( std::is_same<Real, float>::value ) {
 				return jkj::dragonbox::to_chars_n( value, out_it );
 			} else {
 				return jkj::dragonbox::to_chars_n( static_cast<double>( value ),
 				                                   out_it );
 			}
 #else
-			if constexpr( std::is_same_v<Real, float> ) {
+			if constexpr( std::is_same<Real, float>::value ) {
 				return d2s( value, out_it );
 			} else {
 				return d2s( static_cast<double>( value ), out_it );
@@ -91,9 +91,9 @@ namespace daw::json {
 
 		template<typename T>
 		struct custom_to_converter_t {
-			template<typename U,
-			         std::enable_if_t<json_details::to_strings::has_to_string_v<U>,
-			                          std::nullptr_t> = nullptr>
+			template<typename U, std::enable_if_t<
+			                       json_details::to_strings::has_to_string<U>::value,
+			                       std::nullptr_t> = nullptr>
 			[[nodiscard]] inline constexpr decltype( auto )
 			operator( )( U &&value ) const {
 				using std::to_string;
@@ -462,7 +462,7 @@ namespace daw::json {
 			         typename parse_to_t>
 			constexpr void to_variant_string( OutputIterator &it,
 			                                  parse_to_t const &value ) {
-				if constexpr( idx < std::variant_size_v<parse_to_t> ) {
+				if constexpr( idx < std::variant_size<parse_to_t>::value ) {
 					if( value.index( ) != idx ) {
 						to_variant_string<idx + 1, JsonMembers>( it, value );
 						return;
@@ -508,7 +508,7 @@ namespace daw::json {
 
 			template<typename Optional>
 			inline constexpr bool is_valid_optional_v =
-			  daw::is_detected_v<deref_t, Optional>;
+			  daw::is_detected<deref_t, Optional>::value;
 
 			template<typename JsonMember, typename OutputIterator, typename Optional>
 			[[nodiscard]] inline constexpr OutputIterator
@@ -527,11 +527,12 @@ namespace daw::json {
 			                    parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible<parse_to_t,
+				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
-				if constexpr( std::is_floating_point_v<
-				                typename JsonMember::parse_to_t> ) {
+				if constexpr( std::is_floating_point<
+				                typename JsonMember::parse_to_t>::value ) {
 					if( std::isnan( value ) ) {
 						if constexpr( JsonMember::literal_as_string ==
 						              LiteralAsStringOpt::Never ) {
@@ -561,7 +562,7 @@ namespace daw::json {
 				}
 				if constexpr( daw::is_floating_point_v<parse_to_t> ) {
 					static_assert( sizeof( parse_to_t ) <= sizeof( double ) );
-					if constexpr( std::is_same_v<OutputIterator, char *> ) {
+					if constexpr( std::is_same<OutputIterator, char *>::value ) {
 						it = real2string( value, it );
 					} else {
 						char buff[50];
@@ -594,7 +595,7 @@ namespace daw::json {
 
 			template<typename T>
 			using base_int_type_t =
-			  typename base_int_type_impl<T, std::is_enum_v<T>>::type;
+			  typename base_int_type_impl<T, std::is_enum<T>::value>::type;
 
 			inline constexpr auto digits100 = [] {
 				std::array<char[2], 100> result{ };
@@ -614,7 +615,8 @@ namespace daw::json {
 			                    parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible<parse_to_t,
+				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
 				using std::to_string;
@@ -625,8 +627,8 @@ namespace daw::json {
 				              LiteralAsStringOpt::Always ) {
 					*it++ = '"';
 				}
-				if constexpr( std::is_enum_v<parse_to_t> or
-				              daw::is_integral_v<parse_to_t> ) {
+				if constexpr( std::disjunction<std::is_enum<parse_to_t>,
+				                               daw::is_integral<parse_to_t>>::value ) {
 					auto v = static_cast<under_type>( value );
 
 					char buff[daw::numeric_limits<under_type>::digits10 + 1]{ };
@@ -683,7 +685,8 @@ namespace daw::json {
 			                    parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible<parse_to_t,
+				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
 				using std::to_string;
@@ -694,8 +697,8 @@ namespace daw::json {
 				              LiteralAsStringOpt::Always ) {
 					*it++ = '"';
 				}
-				if constexpr( std::is_enum_v<parse_to_t> or
-				              daw::is_integral_v<parse_to_t> ) {
+				if constexpr( std::disjunction<std::is_enum<parse_to_t>,
+				                               daw::is_integral<parse_to_t>>::value ) {
 					auto v = static_cast<under_type>( value );
 					daw_json_assert( v >= 0, ErrorReason::NumberOutOfRange );
 					char buff[daw::numeric_limits<under_type>::digits10 + 1]{ };
@@ -766,7 +769,8 @@ namespace daw::json {
 			                    OutputIterator it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible<parse_to_t,
+				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
 				constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
@@ -786,8 +790,9 @@ namespace daw::json {
 
 				/* TODO is something like this necessary
 				 static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
-				  "value must be convertible to specified type in class contract" );
+				  std::is_convertible<parse_to_t, typename
+				 JsonMember::parse_to_t>::value, "value must be convertible to specified
+				 type in class contract" );
 				  */
 
 				constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
@@ -814,7 +819,8 @@ namespace daw::json {
 			                    parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible<parse_to_t,
+				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
 				using json_details::is_null;
@@ -875,7 +881,8 @@ namespace daw::json {
 			                    parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible<parse_to_t,
+				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
 				if constexpr( has_json_to_json_data_v<parse_to_t> ) {
@@ -894,15 +901,16 @@ namespace daw::json {
 			                    parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible<parse_to_t,
+				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
 				if constexpr( JsonMember::custom_json_type !=
 				              CustomJsonTypes::Literal ) {
 					*it++ = '"';
-					if constexpr( std::is_invocable_r_v<
+					if constexpr( std::is_invocable_r<
 					                OutputIterator, typename JsonMember::to_converter_t,
-					                OutputIterator, parse_to_t> ) {
+					                OutputIterator, parse_to_t>::value ) {
 
 						it = typename JsonMember::to_converter_t{ }( it, value );
 					} else {
@@ -924,7 +932,8 @@ namespace daw::json {
 			                    parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible<parse_to_t,
+				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
 				*it++ = '[';
@@ -961,7 +970,8 @@ namespace daw::json {
 			                    OutputIterator it, parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible<parse_to_t,
+				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 				using key_t = typename JsonMember::json_key_t;
 				using value_t = typename JsonMember::json_value_t;
@@ -1006,7 +1016,8 @@ namespace daw::json {
 			                    parse_to_t const &value ) {
 
 				static_assert(
-				  std::is_convertible_v<parse_to_t, typename JsonMember::parse_to_t>,
+				  std::is_convertible<parse_to_t,
+				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
 				*it++ = '{';
@@ -1041,7 +1052,8 @@ namespace daw::json {
 
 			template<typename JsonMember>
 			inline constexpr bool has_tag_member_v =
-			  daw::is_detected_v<tag_member_t, JsonMember>;
+			  daw::is_detected<tag_member_t, JsonMember>::value;
+
 			template<std::size_t, typename JsonMember, typename OutputIterator,
 			         typename Value, typename VisitedMembers,
 			         std::enable_if_t<not has_tag_member_v<JsonMember>,

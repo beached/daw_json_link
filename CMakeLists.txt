@@ -6,7 +6,7 @@
 # Official repository: https://github.com/beached/daw_json_link
 #
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
 project("json_link"
         VERSION "1.9.0"

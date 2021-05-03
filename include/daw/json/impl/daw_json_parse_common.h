@@ -65,7 +65,8 @@ namespace daw::json {
 
 			template<typename T>
 			using ordered_member_subtype_t =
-			  typename ordered_member_subtype<T, is_an_ordered_member_v<T>>::type;
+			  typename ordered_member_subtype<T,
+			                                  is_an_ordered_member<T>::value>::type;
 
 			template<typename T>
 			inline constexpr auto json_class_constructor =
@@ -80,7 +81,8 @@ namespace daw::json {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
 					auto alloc = parse_state.template get_allocator_for<Value>( );
-					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
+					if constexpr( std::is_invocable<Constructor, Args...,
+					                                alloc_t>::value ) {
 						return ctor( DAW_FWD( args )..., DAW_MOVE( alloc ) );
 					} else if constexpr( daw::traits::is_callable_v<Constructor,
 					                                                std::allocator_arg_t,
@@ -88,12 +90,12 @@ namespace daw::json {
 						return ctor( std::allocator_arg, DAW_MOVE( alloc ),
 						             DAW_FWD( args )... );
 					} else {
-						static_assert( std::is_invocable_v<Constructor, Args...> );
+						static_assert( std::is_invocable<Constructor, Args...>::value );
 						return ctor( DAW_FWD( args )... );
 					}
 				} else {
-					static_assert( std::is_invocable_v<Constructor, Args...> );
-					if constexpr( std::is_invocable_v<Constructor, Args...> ) {
+					static_assert( std::is_invocable<Constructor, Args...>::value );
+					if constexpr( std::is_invocable<Constructor, Args...>::value ) {
 						return ctor( DAW_FWD( args )... );
 					}
 				}
@@ -108,7 +110,8 @@ namespace daw::json {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
 					auto alloc = parse_state.template get_allocator_for<Value>( );
-					if constexpr( std::is_invocable_v<Constructor, Args..., alloc_t> ) {
+					if constexpr( std::is_invocable<Constructor, Args...,
+					                                alloc_t>::value ) {
 						return std::apply( ctor, std::tuple_cat( DAW_MOVE( tp_args ),
 						                                         std::forward_as_tuple(
 						                                           DAW_MOVE( alloc ) ) ) );
@@ -120,11 +123,11 @@ namespace daw::json {
 						                                               DAW_MOVE( alloc ) ),
 						                        DAW_MOVE( tp_args ) ) );
 					} else {
-						static_assert( std::is_invocable_v<Constructor, Args...> );
+						static_assert( std::is_invocable<Constructor, Args...>::value );
 						return std::apply( ctor, DAW_MOVE( tp_args ) );
 					}
 				} else {
-					static_assert( std::is_invocable_v<Constructor, Args...> );
+					static_assert( std::is_invocable<Constructor, Args...>::value );
 					return std::apply( ctor, DAW_MOVE( tp_args ) );
 				}
 			}
@@ -139,15 +142,15 @@ namespace daw::json {
 			    static_cast<void *>( nullptr ), size_t{ 1 } ) );
 
 			template<typename Allocator>
-			inline constexpr bool is_allocator_v =
-			  daw::is_detected_v<has_allocate_test, Allocator>
-			    and daw::is_detected_v<has_deallocate_test, Allocator>;
+			inline constexpr bool is_allocator_v = std::conjunction<
+			  daw::is_detected<has_allocate_test, Allocator>,
+			  daw::is_detected<has_deallocate_test, Allocator>>::value;
 
 			template<typename T>
 			struct has_json_data_contract_trait
-			  : std::bool_constant<not std::is_same_v<
-			      missing_json_data_contract_for<T>, json_data_contract_trait_t<T>>> {
-			};
+			  : std::bool_constant<
+			      not std::is_same<missing_json_data_contract_for<T>,
+			                       json_data_contract_trait_t<T>>::value> {};
 
 			template<typename T>
 			inline constexpr bool has_json_data_contract_trait_v =
@@ -163,11 +166,11 @@ namespace daw::json {
 
 			template<typename Container, typename Value>
 			inline constexpr bool has_push_back_v =
-			  daw::is_detected_v<detect_push_back, Container, Value>;
+			  daw::is_detected<detect_push_back, Container, Value>::value;
 
 			template<typename Container, typename Value>
 			inline constexpr bool has_insert_end_v =
-			  daw::is_detected_v<detect_insert_end, Container, Value>;
+			  daw::is_detected<detect_insert_end, Container, Value>::value;
 
 			template<typename JsonMember>
 			using json_result = typename JsonMember::parse_to_t;
@@ -205,10 +208,11 @@ namespace daw::json {
 					}
 				}
 
-				template<typename Value,
-				         std::enable_if_t<not std::is_same_v<
-				                            basic_appender, daw::remove_cvref_t<Value>>,
-				                          std::nullptr_t> = nullptr>
+				template<
+				  typename Value,
+				  std::enable_if_t<
+				    not std::is_same<basic_appender, daw::remove_cvref_t<Value>>::value,
+				    std::nullptr_t> = nullptr>
 				inline constexpr basic_appender &operator=( Value &&v ) {
 					operator( )( DAW_FWD( v ) );
 					return *this;
@@ -233,7 +237,7 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool has_json_to_json_data_v =
-			  daw::is_detected_v<json_parser_to_json_data_t, T>;
+			  daw::is_detected<json_parser_to_json_data_t, T>::value;
 
 			template<typename T>
 			using is_submember_tagged_variant_t =
@@ -241,7 +245,7 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool is_submember_tagged_variant_v =
-			  daw::is_detected_v<is_submember_tagged_variant_t, T>;
+			  daw::is_detected<is_submember_tagged_variant_t, T>::value;
 
 			template<typename>
 			inline constexpr std::size_t parse_space_needed_v = 1U;
@@ -263,9 +267,8 @@ namespace daw::json {
 
 			template<typename T, JsonNullable Nullable>
 			using unwrap_type = std::conditional_t<
-			  std::conjunction_v<
-			    std::bool_constant<Nullable == JsonNullable::Nullable>,
-			    daw::is_detected<dereffed_type, T>>,
+			  std::conjunction<std::bool_constant<Nullable == JsonNullable::Nullable>,
+			                   daw::is_detected<dereffed_type, T>>::value,
 			  daw::detected_t<dereffed_type, T>, T>;
 		} // namespace json_details
 
@@ -368,25 +371,25 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
-				static_assert( daw::is_arithmetic_v<T>, "Unexpected non-number" );
-				if constexpr( daw::is_floating_point_v<T> ) {
+				static_assert( daw::is_arithmetic<T>::value, "Unexpected non-number" );
+				if constexpr( daw::is_floating_point<T>::value ) {
 					return JsonParseTypes::Real;
-				} else if constexpr( daw::is_signed_v<T> ) {
+				} else if constexpr( daw::is_signed<T>::value ) {
 					return JsonParseTypes::Signed;
-				} else if constexpr( daw::is_unsigned_v<T> ) {
+				} else if constexpr( daw::is_unsigned<T>::value ) {
 					return JsonParseTypes::Unsigned;
 				}
 			}( );
 
 			template<typename T>
 			constexpr auto number_parse_type_test( )
-			  -> std::enable_if_t<std::is_enum_v<T>, JsonParseTypes> {
+			  -> std::enable_if_t<std::is_enum<T>::value, JsonParseTypes> {
 
 				return number_parse_type_impl_v<std::underlying_type_t<T>>;
 			}
 			template<typename T>
 			constexpr auto number_parse_type_test( )
-			  -> std::enable_if_t<not std::is_enum_v<T>, JsonParseTypes> {
+			  -> std::enable_if_t<not std::is_enum<T>::value, JsonParseTypes> {
 
 				return number_parse_type_impl_v<T>;
 			}
@@ -474,7 +477,7 @@ namespace daw::json {
 		namespace json_details {
 			template<typename T>
 			inline constexpr bool has_basic_type_map_v =
-			  daw::is_detected_v<json_link_basic_type_map, T>;
+			  daw::is_detected<json_link_basic_type_map, T>::value;
 
 			template<typename Mapped, bool Found = true>
 			struct json_link_quick_map_type : std::bool_constant<Found> {
@@ -560,9 +563,9 @@ namespace daw::json {
 			    daw::if_t<
 			      has_json_link_quick_map_v<T>, json_link_quick_map_t<Name, T>,
 			      daw::if_t<
-			        std::disjunction_v<daw::is_arithmetic<T>, std::is_enum<T>>,
+			        std::disjunction<daw::is_arithmetic<T>, std::is_enum<T>>::value,
 			        json_number<Name, T>,
-			        daw::if_t<std::conjunction_v<cant_deref<T>, is_vector<T>>,
+			        daw::if_t<std::conjunction<cant_deref<T>, is_vector<T>>::value,
 			                  json_array_detect<Name, vector_detect::detector<T>, T>,
 			                  missing_json_data_contract_for<T>>>>>>;
 
@@ -593,7 +596,7 @@ namespace daw::json {
 
 			template<typename Constructor, typename... Members>
 			inline constexpr bool can_defer_construction_v =
-			  std::is_invocable_v<Constructor, typename Members::parse_to_t...>;
+			  std::is_invocable<Constructor, typename Members::parse_to_t...>::value;
 		} // namespace json_details
 
 		template<typename T>
@@ -605,8 +608,8 @@ namespace daw::json {
 			using difference_type = std::ptrdiff_t;
 		};
 		static_assert(
-		  std::is_same_v<
+		  std::is_same<
 		    typename std::iterator_traits<TestInputIteratorType<int>>::value_type,
-		    int> );
+		    int>::value );
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

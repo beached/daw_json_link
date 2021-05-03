@@ -58,8 +58,10 @@ namespace daw::json {
 		template<typename T>
 		struct custom_from_converter_t {
 			[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {
-				if constexpr( std::is_same_v<T, std::string_view> or
-				              std::is_same_v<T, std::optional<std::string_view>> ) {
+				if constexpr( std::disjunction<
+				                std::is_same<T, std::string_view>,
+				                std::is_same<T, std::optional<std::string_view>>>::
+				                value ) {
 					return std::string_view{ };
 				} else {
 					// Use ADL customization point
@@ -69,8 +71,10 @@ namespace daw::json {
 
 			[[nodiscard]] inline constexpr decltype( auto )
 			operator( )( std::string_view sv ) {
-				if constexpr( std::is_same_v<T, std::string_view> or
-				              std::is_same_v<T, std::optional<std::string_view>> ) {
+				if constexpr( std::disjunction<
+				                std::is_same<T, std::string_view>,
+				                std::is_same<T, std::optional<std::string_view>>>::
+				                value ) {
 					return sv;
 				} else {
 					// Use ADL customization point

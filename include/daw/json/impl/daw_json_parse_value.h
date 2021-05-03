@@ -99,7 +99,8 @@ namespace daw::json {
 			parse_value( ParseTag<JsonParseTypes::Signed>, ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
-				static_assert( daw::is_signed_v<element_t>, "Expected signed type" );
+				static_assert( daw::is_signed<element_t>::value,
+				               "Expected signed type" );
 				if constexpr( KnownBounds ) {
 					daw_json_assert_weak(
 					  parse_policy_details::is_number_start( parse_state.front( ) ),
@@ -374,11 +375,11 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool has_json_member_constructor_v =
-			  daw::is_detected_v<json_member_constructor_t, T>;
+			  daw::is_detected<json_member_constructor_t, T>::value;
 
 			template<typename T>
 			inline constexpr bool has_json_member_parse_to_v =
-			  daw::is_detected_v<json_member_constructor_t, T>;
+			  daw::is_detected<json_member_constructor_t, T>::value;
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
 			[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
@@ -582,8 +583,8 @@ namespace daw::json {
 				constexpr std::size_t idx =
 				  element_t::base_map[static_cast<int_fast8_t>( BPT )];
 
-				if constexpr( idx <
-				              std::tuple_size_v<typename element_t::element_map_t> ) {
+				if constexpr( idx < std::tuple_size<
+				                      typename element_t::element_map_t>::value ) {
 					using JsonMember =
 					  std::tuple_element_t<idx, typename element_t::element_map_t>;
 					return parse_value<JsonMember>(
@@ -644,7 +645,7 @@ namespace daw::json {
 					return { parse_value<JsonMember>(
 					  ParseTag<JsonMember::expected_type>{ }, parse_state ) };
 				}
-				if constexpr( pos + 1 < std::tuple_size_v<TypeList> ) {
+				if constexpr( pos + 1 < std::tuple_size<TypeList>::value ) {
 					return parse_visit<Result, TypeList, pos + 1>( idx, parse_state );
 				} else {
 					daw_json_error( ErrorReason::MissingMemberNameOrEndOfClass,
