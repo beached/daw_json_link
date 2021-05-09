@@ -56,7 +56,7 @@ The above JSON object has 2 members, both numbers but one is expected to always 
 
 Below is the C++ data structure and trait to map the structure to the JSON object.
 To see a working example using this code, refer to [cookbook_numbers2_test.cpp](../tests/src/cookbook_numbers2_test.cpp) 
-```
+```c++
 struct MyClass2 {
   unsigned member_unsigned;
   signed member_signed;

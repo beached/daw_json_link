@@ -52,6 +52,7 @@ namespace daw::json {
 			static constexpr bool allow_escaped_names = AllowEscapedNames;
 			static constexpr bool force_name_equal_check = false;
 			static constexpr bool is_zero_terminated_string = IsZeroTerminated;
+			static constexpr bool precise_ieee754 = false;
 			using CharT = char;
 
 			using as_unchecked = BasicParsePolicy<true, CommentPolicy, exec_tag_t,
@@ -119,7 +120,7 @@ namespace daw::json {
 			template<typename Alloc>
 			using with_allocator_type =
 			  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
-			                   AllowEscapedNames, Alloc>;
+			                   AllowEscapedNames, Alloc, is_zero_terminated_string>;
 
 			template<typename Alloc>
 			static inline constexpr with_allocator_type<Alloc>
@@ -129,10 +130,10 @@ namespace daw::json {
 			}
 
 			template<typename Alloc>
-			constexpr auto
-			with_allocator( BasicParsePolicy<IsUncheckedInput, CommentPolicy,
-			                                 ExecMode, AllowEscapedNames, Alloc>
-			                  p ) const {
+			constexpr auto with_allocator(
+			  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
+			                   AllowEscapedNames, Alloc, is_zero_terminated_string>
+			    p ) const {
 
 				if constexpr( std::is_same<Alloc, json_details::NoAllocator>::value ) {
 					return *this;
@@ -155,7 +156,8 @@ namespace daw::json {
 
 			using without_allocator_type =
 			  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
-			                   AllowEscapedNames, json_details::NoAllocator>;
+			                   AllowEscapedNames, json_details::NoAllocator,
+			                   is_zero_terminated_string>;
 
 			static inline constexpr without_allocator_type
 			without_allocator( BasicParsePolicy p ) {
@@ -218,11 +220,7 @@ namespace daw::json {
 
 			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
 			has_more( ) const {
-				if constexpr( is_zero_terminated_string ) {
-					return first < last and *first != '\0';
-				} else {
-					return first < last;
-				}
+				return first < last;
 			}
 
 			template<std::size_t N>
@@ -458,10 +456,20 @@ namespace daw::json {
 		};
 
 		using NoCommentSkippingPolicyChecked =
-		  BasicParsePolicy<false, NoCommentSkippingPolicy, default_exec_tag, false>;
+		  BasicParsePolicy<false, NoCommentSkippingPolicy, default_exec_tag, false,
+		                   json_details::NoAllocator, false>;
+
+		using NoCommentZeroSkippingPolicyChecked =
+		  BasicParsePolicy<false, NoCommentSkippingPolicy, default_exec_tag, false,
+		                   json_details::NoAllocator, true>;
 
 		using NoCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<true, NoCommentSkippingPolicy, default_exec_tag, false>;
+		  BasicParsePolicy<true, NoCommentSkippingPolicy, default_exec_tag, false,
+		                   json_details::NoAllocator, false>;
+
+		using NoCommentZeroSkippingPolicyUnchecked =
+		  BasicParsePolicy<true, NoCommentSkippingPolicy, default_exec_tag, false,
+		                   json_details::NoAllocator, true>;
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDNoCommentSkippingPolicyChecked =

@@ -25,5 +25,5 @@ FetchContent_Declare(
 	GIT_REPOSITORY https://github.com/beached/utf_range.git
 )
 
-FetchContent_MakeAvailable(daw_header_libraries daw_utf_range)
+FetchContent_MakeAvailable(daw_header_libraries daw_utf_range )
 

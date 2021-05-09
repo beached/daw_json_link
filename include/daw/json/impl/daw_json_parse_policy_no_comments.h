@@ -40,12 +40,15 @@ namespace daw::json {
 					char const *const last = parse_state.last;
 					if constexpr( ParseState::is_zero_terminated_string ) {
 						// Ensure that zero terminator isn't included in skipable value
-						while( ( static_cast<unsigned char>( *first ) - 1U ) < 0x20U ) {
+						while( DAW_JSON_UNLIKELY(
+						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
+						    1U ) < 0x20U ) ) {
 							++first;
 						}
 					} else {
 						while( DAW_JSON_LIKELY( first < last ) and
-						       static_cast<unsigned char>( *first ) <= 0x20U ) {
+						       DAW_JSON_UNLIKELY( static_cast<unsigned char>( *first ) <=
+						                          0x20U ) ) {
 							++first;
 						}
 					}
@@ -58,7 +61,8 @@ namespace daw::json {
 			trim_left_unchecked( ParseState &parse_state ) {
 				if constexpr( not document_is_minified ) {
 					char const *first = parse_state.first;
-					while( static_cast<unsigned char>( *first ) <= 0x20 ) {
+					while( DAW_JSON_UNLIKELY( static_cast<unsigned char>( *first ) <=
+					                          0x20 ) ) {
 						++first;
 					}
 					parse_state.first = first;
@@ -135,10 +139,12 @@ namespace daw::json {
 								  ParseState::is_unchecked_input>(
 								  ParseState::exec_tag, ptr_first, parse_state.last );
 							} else {
-								while( ( *ptr_first != '\0' ) & ( *ptr_first != '"' ) ) {
-									if( *ptr_first == '\\' ) {
+								char c = *ptr_first;
+								while( ( c != '\0' ) & ( c != '"' ) ) {
+									if( c == '\\' ) {
 										if( ptr_first + 1 < ptr_last ) {
 											ptr_first += 2;
+											c = *ptr_first;
 											continue;
 										} else {
 											ptr_first = ptr_last;
@@ -146,10 +152,10 @@ namespace daw::json {
 										}
 									}
 									++ptr_first;
+									c = *ptr_first;
 								}
 							}
-							daw_json_assert( ptr_first < ptr_last and *ptr_first != '\0' and
-							                   *ptr_first == '"',
+							daw_json_assert( ( *ptr_first != '\0' ) & ( *ptr_first == '"' ),
 							                 ErrorReason::UnexpectedEndOfData, parse_state );
 							break;
 						case ',':

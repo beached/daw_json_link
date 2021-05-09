@@ -82,8 +82,9 @@ namespace daw::json {
 
 			template<
 			  typename String,
-			  daw::enable_when_t<traits::not_same<
-			    json_array_iterator, daw::remove_cvref_t<String>>::value> = nullptr>
+			  std::enable_if_t<traits::not_same<json_array_iterator,
+			                                    daw::remove_cvref_t<String>>::value,
+			                   std::nullptr_t> = nullptr>
 			inline constexpr explicit json_array_iterator( String &&jd )
 			  : m_state( ParsePolicy( std::data( jd ), daw::data_end( jd ) ) ) {
 
@@ -100,8 +101,9 @@ namespace daw::json {
 
 			template<
 			  typename String,
-			  daw::enable_when_t<traits::not_same<
-			    json_array_iterator, daw::remove_cvref_t<String>>::value> = nullptr>
+			  std::enable_if_t<traits::not_same<json_array_iterator,
+			                                    daw::remove_cvref_t<String>>::value,
+			                   std::nullptr_t> = nullptr>
 			inline constexpr explicit json_array_iterator(
 			  String &&jd, std::string_view start_path )
 			  : m_state( get_range( DAW_FWD( jd ), start_path ) ) {
@@ -249,15 +251,17 @@ namespace daw::json {
 
 			template<
 			  typename String,
-			  daw::enable_when_t<traits::not_same<
-			    json_array_range, daw::remove_cvref_t<String>>::value> = nullptr>
+			  std::enable_if_t<traits::not_same<json_array_range,
+			                                    daw::remove_cvref_t<String>>::value,
+			                   std::nullptr_t> = nullptr>
 			constexpr explicit json_array_range( String &&jd )
 			  : m_first( DAW_FWD( jd ) ) {}
 
 			template<
 			  typename String,
-			  daw::enable_when_t<traits::not_same<
-			    json_array_range, daw::remove_cvref_t<String>>::value> = nullptr>
+			  std::enable_if_t<traits::not_same<json_array_range,
+			                                    daw::remove_cvref_t<String>>::value,
+			                   std::nullptr_t> = nullptr>
 			constexpr explicit json_array_range( String &&jd,
 			                                     std::string_view start_path )
 			  : m_first( DAW_FWD( jd ), start_path ) {}

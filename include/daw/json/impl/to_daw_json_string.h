@@ -262,8 +262,9 @@ namespace daw::json {
 			template<bool do_escape = false,
 			         EightBitModes EightBitMode = EightBitModes::AllowFull,
 			         typename OutputIterator, typename Container,
-			         daw::enable_when_t<traits::is_container_like_v<
-			           daw::remove_cvref_t<Container>>> = nullptr>
+			         std::enable_if_t<
+			           traits::is_container_like_v<daw::remove_cvref_t<Container>>,
+			           std::nullptr_t> = nullptr>
 			[[nodiscard]] constexpr OutputIterator
 			copy_to_iterator( OutputIterator it, Container const &container ) {
 				if constexpr( do_escape ) {

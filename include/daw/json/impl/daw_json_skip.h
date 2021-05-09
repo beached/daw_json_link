@@ -119,16 +119,13 @@ namespace daw::json {
 				return result;
 			}
 
-			template<bool is_unchecked_input>
+			template<bool skip_end_check>
 			DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr char const *
 			skip_digits( char const *first, char const *const last ) {
-				if( DAW_JSON_UNLIKELY( first >= last ) ) {
-					return first;
-				}
 				unsigned dig = parse_digit( *first );
 				while( dig < 10 ) {
 					++first;
-					if constexpr( not is_unchecked_input ) {
+					if constexpr( not skip_end_check ) {
 						if( DAW_JSON_UNLIKELY( first >= last ) ) {
 							break;
 						}
@@ -152,13 +149,17 @@ namespace daw::json {
 				if( *first == '-' ) {
 					++first;
 				}
-				first = skip_digits<ParseState::is_unchecked_input>( first, last );
+				if( DAW_JSON_LIKELY( first < last ) ) {
+					first = skip_digits<ParseState::is_unchecked_input>( first, last );
+				}
 				char const *decimal = nullptr;
 				if( ( ParseState::is_unchecked_input or first < last ) and
 				    ( *first == '.' ) ) {
 					decimal = first;
 					++first;
-					first = skip_digits<ParseState::is_unchecked_input>( first, last );
+					if( DAW_JSON_LIKELY( first < last ) ) {
+						first = skip_digits<ParseState::is_unchecked_input>( first, last );
+					}
 				}
 				char const *exp = nullptr;
 				unsigned dig = parse_digit( *first );
@@ -178,7 +179,9 @@ namespace daw::json {
 					    ( dig == parsed_constants::minus_char ) ) {
 						++first;
 					}
-					first = skip_digits<ParseState::is_unchecked_input>( first, last );
+					if( DAW_JSON_LIKELY( first < last ) ) {
+						first = skip_digits<ParseState::is_unchecked_input>( first, last );
+					}
 				}
 
 				parse_state.first = first;
