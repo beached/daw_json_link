@@ -103,8 +103,8 @@ namespace daw::fast_double_parser {
 		return ( middle << 32 ) | static_cast<std::uint32_t>( p00 );
 	}
 
-	DAW_ATTRIBUTE_FLATTEN inline value128 full_multiplication( std::uint64_t value1,
-	                                                    std::uint64_t value2 ) {
+	DAW_ATTRIBUTE_FLATTEN inline value128
+	full_multiplication( std::uint64_t value1, std::uint64_t value2 ) {
 		value128 answer;
 #ifdef FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO
 #ifdef _M_ARM64
@@ -129,8 +129,7 @@ namespace daw::fast_double_parser {
 	}
 
 	/* result might be undefined when input_num is zero */
-	DAW_ATTRIBUTE_FLATTEN constexpr int
-	leading_zeroes( std::uint64_t input_num ) {
+	DAW_ATTRIBUTE_FLATTEN inline int leading_zeroes( std::uint64_t input_num ) {
 #ifdef _MSC_VER
 		unsigned long leading_zero = 0;
 		// Search the mask data from most significant bit (MSB)
