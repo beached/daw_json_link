@@ -120,7 +120,7 @@ namespace daw::json {
 			}
 #endif
 
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if true or ( defined( _MSC_VER ) and not defined( __clang__ ) )
 			DAW_ATTRIBUTE_FLATTEN inline int
 			leading_zeroes( runtime_exec_tag const &, std::uint64_t input_num ) {
 				/* result might be undefined when input_num is zero */
@@ -132,6 +132,12 @@ namespace daw::json {
 				} else {
 					return 64;
 				}
+			}
+
+			DAW_ATTRIBUTE_FLATTEN inline constexpr int
+			leading_zeroes( constexpr_exec_tag const &, std::uint64_t input_num ) {
+				return static_cast<int>(
+				  daw::cxmath::cxmath_impl::count_leading_zeroes( input_num ) );
 			}
 #else
 			DAW_ATTRIBUTE_FLATTEN inline constexpr int
