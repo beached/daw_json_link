@@ -1,90 +1,22 @@
 // Forked from https://github.com/lemire/fast_double_parser/ BSL 1.0 License
 // Copyright (c) Daniel Lemire
+// Darrell Wright
 
 #pragma once
 
 #include "../daw_json_exception.h"
 
 #include <daw/daw_bit_cast.h>
+#include <daw/daw_cxmath.h>
 
 #include <cfloat>
 #include <cinttypes>
+#include <ciso646>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <locale.h>
-
-#if( defined( sun ) || defined( __sun ) )
-#define FAST_DOUBLE_PARSER_SOLARIS
-#endif
-
-#if defined( __CYGWIN__ ) || defined( __MINGW32__ ) || defined( __MINGW64__ )
-#define FAST_DOUBLE_PARSER_CYGWIN
-#endif
-
-/**
- * Determining whether we should import xlocale.h or not is
- * a bit of a nightmare.
- */
-#if defined( FAST_DOUBLE_PARSER_SOLARIS ) || \
-  defined( FAST_DOUBLE_PARSER_CYGWIN )
-// Anything at all that is related to cygwin, msys, solaris and so forth will
-// always use this fallback because we cannot rely on it behaving as normal
-// gcc.
-#include <locale>
-#include <sstream>
-// workaround for CYGWIN
-static inline double cygwin_strtod_l( const char *start, char **end ) {
-	double d;
-	std::stringstream ss;
-	ss.imbue( std::locale::classic( ) );
-	ss << start;
-	ss >> d;
-	if( ss.fail( ) ) {
-		*end = nullptr;
-	}
-	if( ss.eof( ) ) {
-		ss.clear( );
-	}
-	auto nread = ss.tellg( );
-	*end = const_cast<char *>( start ) + nread;
-	return d;
-}
-#else
-
-#ifdef __has_include
-// This is the easy case: we have __has_include and can check whether
-// xlocale is available. If so, we load it up.
-#if __has_include( <xlocale.h>)
-
-#include <xlocale.h>
-
-#endif // __has_include
-#else  // We do not have __has_include
-
-#ifdef __GLIBC__
-#include <features.h>
-#if !( ( __GLIBC__ > 2 ) || ( ( __GLIBC__ == 2 ) && ( __GLIBC_MINOR__ > 25 ) ) )
-#include <xlocale.h> // old glibc
-#endif
-#else // not glibc
-#if !( defined( _WIN32 ) || ( __FreeBSD_version < 1000010 ) )
-#include <xlocale.h>
-#endif
-#endif
-#endif // __has_include
-
-#endif //  defined(FAST_DOUBLE_PARSER_SOLARIS) ||
-       //  defined(FAST_DOUBLE_PARSER_CYGWIN)
-
-#ifdef _MSC_VER
-#include <intrin.h>
-#define WARN_UNUSED
-#else
-#define WARN_UNUSED __attribute__( ( warn_unused_result ) )
-#endif
 
 namespace daw::fast_double_parser {
 
@@ -108,22 +40,6 @@ namespace daw::fast_double_parser {
  */
 #define FASTFLOAT_SMALLEST_POWER -325
 #define FASTFLOAT_LARGEST_POWER 308
-
-#ifdef _MSC_VER
-#ifndef really_inline
-#define really_inline __forceinline
-#endif // really_inline
-#ifndef unlikely
-#define unlikely( x ) x
-#endif // unlikely
-#else  // _MSC_VER
-#ifndef unlikely
-#define unlikely( x ) __builtin_expect( !!( x ), 0 )
-#endif // unlikely
-#ifndef really_inline
-#define really_inline __attribute__( ( always_inline ) ) inline
-#endif // really_inline
-#endif // _MSC_VER
 
 	struct value128 {
 		uint64_t low;
@@ -163,8 +79,9 @@ namespace daw::fast_double_parser {
 	// We need a backup on old systems.
 	// credit:
 	// https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication
-	really_inline uint64_t Emulate64x64to128( uint64_t &r_hi, const uint64_t x,
-	                                          const uint64_t y ) {
+	DAW_ATTRIBUTE_FLATTEN std::uint64_t
+	Emulate64x64to128( std::uint64_t &r_hi, std::uint64_t const x,
+	                   std::uint64_t const y ) {
 		std::uint64_t const x0 = static_cast<std::uint32_t>( x );
 		std::uint64_t const x1 = x >> 32;
 		std::uint64_t const y0 = static_cast<std::uint32_t>( y );
@@ -185,8 +102,8 @@ namespace daw::fast_double_parser {
 		return ( middle << 32 ) | static_cast<std::uint32_t>( p00 );
 	}
 
-	really_inline value128 full_multiplication( uint64_t value1,
-	                                            uint64_t value2 ) {
+	DAW_ATTRIBUTE_FLATTEN value128 full_multiplication( std::uint64_t value1,
+	                                                    std::uint64_t value2 ) {
 		value128 answer;
 #ifdef FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO
 #ifdef _M_ARM64
@@ -211,7 +128,8 @@ namespace daw::fast_double_parser {
 	}
 
 	/* result might be undefined when input_num is zero */
-	constexpr int leading_zeroes( std::uint64_t input_num ) {
+	DAW_ATTRIBUTE_FLATTEN constexpr int
+	leading_zeroes( std::uint64_t input_num ) {
 #ifdef _MSC_VER
 		unsigned long leading_zero = 0;
 		// Search the mask data from most significant bit (MSB)
@@ -224,11 +142,6 @@ namespace daw::fast_double_parser {
 #else
 		return __builtin_clzll( input_num );
 #endif // _MSC_VER
-	}
-
-	constexpr bool is_integer( char c ) {
-		return ( c >= '0' && c <= '9' );
-		// this gets compiled to (uint8_t)(c - '0') <= 9 on all decent compilers
 	}
 
 	/**
