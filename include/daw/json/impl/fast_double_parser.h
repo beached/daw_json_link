@@ -45,7 +45,6 @@ namespace daw::json {
  * of 5 greater than 308.
  */
 #define FASTFLOAT_SMALLEST_POWER -325
-#define FASTFLOAT_LARGEST_POWER 308
 
 			struct value128 {
 				std::uint64_t low;
