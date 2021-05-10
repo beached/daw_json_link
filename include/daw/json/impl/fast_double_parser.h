@@ -95,7 +95,9 @@ namespace daw::json {
 			DAW_ATTRIBUTE_FLATTEN inline constexpr value128
 			full_multiplication( constexpr_exec_tag const &, std::uint64_t value1,
 			                     std::uint64_t value2 ) {
-				return value128{ Emulate64x64to128( answer.high, value1, value2 ), 0 };
+				value128 answer{ };
+				answer.low = Emulate64x64to128( answer.high, value1, value2 );
+				return answer;
 			}
 #endif
 
