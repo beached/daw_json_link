@@ -19,7 +19,6 @@
 #include "version.h"
 
 #include <daw/daw_traits.h>
-#include <daw/daw_tuple.h>
 
 #include <ciso646>
 #include <cstddef>
@@ -255,7 +254,7 @@ namespace daw::json {
 							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 							    known_locations, parse_state )... };
 						} else {
-							using tp_t = decltype( daw::forward_as_tuple(
+							using tp_t = decltype( std::forward_as_tuple(
 							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 							    known_locations, parse_state )... ) );
 
@@ -266,7 +265,7 @@ namespace daw::json {
 							      known_locations, parse_state )... } );
 						}
 					} else {
-						using tp_t = decltype( daw::forward_as_tuple(
+						using tp_t = decltype( std::forward_as_tuple(
 						  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
 						    known_locations, parse_state )... ) );
 						auto result = construct_value_tp<T>(
@@ -305,7 +304,7 @@ namespace daw::json {
 
 				size_t current_idx = 0;
 
-				using tp_t = decltype( daw::forward_as_tuple(
+				using tp_t = decltype( std::forward_as_tuple(
 				  parse_ordered_class_member<JsonMembers>( current_idx,
 				                                           parse_state )... ) );
 
