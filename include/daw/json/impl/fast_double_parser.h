@@ -57,8 +57,9 @@ namespace daw::fast_double_parser {
 #endif // __clang__
 #endif // _MSC_VER
 
-#if defined( FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO ) && \
-  !defined( _M_X64 ) && !defined( _M_ARM64 ) // _umul128 for x86, arm
+#if defined( FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO ) and \
+  not defined( _M_X64 ) and not defined( _M_ARM64 )
+	// _umul128 for x86, arm
 	// this is a slow emulation routine for 32-bit Windows
 	//
 	static inline uint64_t __emulu( uint32_t x, uint32_t y ) {
@@ -79,7 +80,7 @@ namespace daw::fast_double_parser {
 	// We need a backup on old systems.
 	// credit:
 	// https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication
-	DAW_ATTRIBUTE_FLATTEN std::uint64_t
+	DAW_ATTRIBUTE_FLATTEN inline std::uint64_t
 	Emulate64x64to128( std::uint64_t &r_hi, std::uint64_t const x,
 	                   std::uint64_t const y ) {
 		std::uint64_t const x0 = static_cast<std::uint32_t>( x );
@@ -102,7 +103,7 @@ namespace daw::fast_double_parser {
 		return ( middle << 32 ) | static_cast<std::uint32_t>( p00 );
 	}
 
-	DAW_ATTRIBUTE_FLATTEN value128 full_multiplication( std::uint64_t value1,
+	DAW_ATTRIBUTE_FLATTEN inline value128 full_multiplication( std::uint64_t value1,
 	                                                    std::uint64_t value2 ) {
 		value128 answer;
 #ifdef FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO
