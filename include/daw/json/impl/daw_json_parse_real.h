@@ -150,7 +150,7 @@ namespace daw::json {
 				if constexpr( ParseState::precise_ieee754 and
 				              ( std::is_same_v<Result, double> or
 				                std::is_same_v<Result, float> ) ) {
-					return daw::fast_double_parser::compute_float_64(
+					return fast_double_parser::compute_float_64(
 					  exponent, significant_digits, sign );
 				} else {
 					return daw::cxmath::copy_sign(
@@ -285,7 +285,7 @@ namespace daw::json {
 				if constexpr( ParseState::precise_ieee754 and
 				              ( std::is_same_v<Result, double> or
 				                std::is_same_v<Result, float> ) ) {
-					return daw::fast_double_parser::compute_float_64(
+					return fast_double_parser::compute_float_64(
 					  exponent, significant_digits, sign );
 				} else {
 					return daw::cxmath::copy_sign(
