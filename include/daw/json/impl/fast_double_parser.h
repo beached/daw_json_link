@@ -18,6 +18,10 @@
 #include <cstdlib>
 #include <cstring>
 
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
+
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace fast_double_parser {
@@ -44,46 +48,14 @@ namespace daw::json {
 #define FASTFLOAT_LARGEST_POWER 308
 
 			struct value128 {
-				uint64_t low;
-				uint64_t high;
+				std::uint64_t low;
+				std::uint64_t high;
 			};
-
-#ifdef _MSC_VER
-#define FAST_DOUBLE_PARSER_VISUAL_STUDIO 1
-#ifdef __clang__
-			// clang under visual studio
-#define FAST_DOUBLE_PARSER_CLANG_VISUAL_STUDIO 1
-#else
-			// just regular visual studio (best guess)
-#define FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO 1
-#endif // __clang__
-#endif // _MSC_VER
-
-#if defined( FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO ) and \
-  not defined( _M_X64 ) and not defined( _M_ARM64 )
-			// _umul128 for x86, arm
-			// this is a slow emulation routine for 32-bit Windows
-			//
-			static inline uint64_t __emulu( uint32_t x, uint32_t y ) {
-				return x * (uint64_t)y;
-			}
-			static inline uint64_t _umul128( uint64_t ab, uint64_t cd,
-			                                 uint64_t *hi ) {
-				uint64_t ad = __emulu( (uint32_t)( ab >> 32 ), (uint32_t)cd );
-				uint64_t bd = __emulu( (uint32_t)ab, (uint32_t)cd );
-				uint64_t adbc = ad + __emulu( (uint32_t)ab, (uint32_t)( cd >> 32 ) );
-				uint64_t adbc_carry = !!( adbc < ad );
-				uint64_t lo = bd + ( adbc << 32 );
-				*hi = __emulu( (uint32_t)( ab >> 32 ), (uint32_t)( cd >> 32 ) ) +
-				      ( adbc >> 32 ) + ( adbc_carry << 32 ) + !!( lo < bd );
-				return lo;
-			}
-#endif
 
 			// We need a backup on old systems.
 			// credit:
 			// https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication
-			DAW_ATTRIBUTE_FLATTEN inline std::uint64_t
+			DAW_ATTRIBUTE_FLATTEN inline constexpr std::uint64_t
 			Emulate64x64to128( std::uint64_t &r_hi, std::uint64_t const x,
 			                   std::uint64_t const y ) {
 				std::uint64_t const x0 = static_cast<std::uint32_t>( x );
@@ -96,7 +68,7 @@ namespace daw::json {
 				std::uint64_t const p00 = x0 * y0;
 
 				// 64-bit product + two 32-bit values
-				const uint64_t middle =
+				std::uint64_t const middle =
 				  p10 + ( p00 >> 32 ) + static_cast<std::uint32_t>( p01 );
 
 				// 64-bit product + two 32-bit values
@@ -106,37 +78,50 @@ namespace daw::json {
 				return ( middle << 32 ) | static_cast<std::uint32_t>( p00 );
 			}
 
+#if not defined( DAW_JSON_NO_INT128 ) and defined( __SIZEOF_INT128__ ) and \
+  ( not defined( _MSC_VER ) )
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+			DAW_ATTRIBUTE_FLATTEN inline constexpr value128
+			full_multiplication( constexpr_exec_tag const &, std::uint64_t value1,
+			                     std::uint64_t value2 ) {
+				__uint128_t const r = static_cast<__uint128_t>( value1 ) * value2;
+				return value128{ static_cast<std::uint64_t>( r ),
+				                 static_cast<std::uint64_t>( r >> 64 ) };
+			}
+#else
+			DAW_ATTRIBUTE_FLATTEN inline constexpr value128
+			full_multiplication( constexpr_exec_tag const &, std::uint64_t value1,
+			                     std::uint64_t value2 ) {
+				return value128{ Emulate64x64to128( answer.high, value1, value2 ), 0 };
+			}
+#endif
+
+#if defined( _MSC_VER )
 			DAW_ATTRIBUTE_FLATTEN inline value128
-			full_multiplication( std::uint64_t value1, std::uint64_t value2 ) {
-				value128 answer;
-#ifdef FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO
+			full_multiplication( runtime_exec_tag const &, std::uint64_t value1,
+			                     std::uint64_t value2 ) {
 #ifdef _M_ARM64
 				// ARM64 has native support for 64-bit multiplications, no need to
 				// emultate
-				answer.high = __umulh( value1, value2 );
-				answer.low = value1 * value2;
+				return value128 {
+					value1 *value2;
+					__umulh( value1, value2 )
+				};
 #else
-				answer.low =
-				  _umul128( value1, value2,
-				            &answer.high ); // _umul128 not available on ARM64
-#endif                   // _M_ARM64
-#else                    // SIMDJSON_REGULAR_VISUAL_STUDIO
-#ifdef __SIZEOF_INT128__ // this is what we have on most 32-bit systems
-				__uint128_t r = static_cast<__uint128_t>( value1 ) * value2;
-				answer.low = uint64_t( r );
-				answer.high = uint64_t( r >> 64 );
-#else
-				// fallback
-				answer.low = Emulate64x64to128( answer.high, value1, value2 );
-#endif
-#endif
+				value128 answer;
+				answer.low = _umul128( value1, value2, &answer.high );
 				return answer;
+#endif
 			}
+#endif
 
-			/* result might be undefined when input_num is zero */
+#if defined( _MSC_VER ) and not defined( __clang__ )
 			DAW_ATTRIBUTE_FLATTEN inline int
-			leading_zeroes( std::uint64_t input_num ) {
-#ifdef _MSC_VER
+			leading_zeroes( runtime_exec_tag const &, std::uint64_t input_num ) {
+				/* result might be undefined when input_num is zero */
 				unsigned long leading_zero = 0;
 				// Search the mask data from most significant bit (MSB)
 				// to least significant bit (LSB) for a set bit (1).
@@ -145,10 +130,13 @@ namespace daw::json {
 				} else {
 					return 64;
 				}
-#else
-				return __builtin_clzll( input_num );
-#endif // _MSC_VER
 			}
+#else
+			DAW_ATTRIBUTE_FLATTEN inline constexpr int
+			leading_zeroes( constexpr_exec_tag const &, std::uint64_t input_num ) {
+				return __builtin_clzll( input_num );
+			}
+#endif
 
 			/**
 			 * When mapping numbers from decimal to binary,
@@ -169,8 +157,8 @@ namespace daw::json {
 				  1e16, 1e17, 1e18, 1e19, 1e20, 1e21, 1e22 };
 
 				// The mantissas of powers of ten from -308 to 308, extended out to
-				// sixty four bits. The array contains the powers of ten approximated as
-				// a 64-bit mantissa. It goes from 10^FASTFLOAT_SMALLEST_POWER to
+				// sixty four bits. The array contains the powers of ten approximated
+				// as a 64-bit mantissa. It goes from 10^FASTFLOAT_SMALLEST_POWER to
 				// 10^FASTFLOAT_LARGEST_POWER (inclusively).
 				// The mantissa is truncated, and
 				// never rounded up. Uses about 5KB.
@@ -1031,11 +1019,12 @@ namespace daw::json {
 			// Attempts to compute i * 10^(power) exactly; and if "negative" is
 			// true, negate the result.
 			// This function will only work in some cases, when it does not work,
-			// success is set to false. This should work *most of the time* (like 99%
-			// of the time). We assume that power is in the [FASTFLOAT_SMALLEST_POWER,
-			// FASTFLOAT_LARGEST_POWER] interval: the caller is responsible for this
-			// check.
-			constexpr double compute_float_64( std::int64_t power,
+			// success is set to false. This should work *most of the time* (like
+			// 99% of the time). We assume that power is in the
+			// [FASTFLOAT_SMALLEST_POWER, FASTFLOAT_LARGEST_POWER] interval: the
+			// caller is responsible for this check.
+			template<typename ExecTag>
+			constexpr double compute_float_64( ExecTag exec_tag, std::int64_t power,
 			                                   std::uint64_t whole, double sign ) {
 
 				auto const whole_orig = whole;
@@ -1043,8 +1032,7 @@ namespace daw::json {
 				    ( power > daw::numeric_limits<double>::max_exponent10 ) ) {
 					return daw::cxmath::copy_sign(
 					  daw::json::json_details::power10<double>(
-					    daw::json::constexpr_exec_tag{ },
-					    static_cast<double>( whole_orig ), power ),
+					    exec_tag, static_cast<double>( whole_orig ), power ),
 					  sign );
 				}
 				// we start with a fast path
@@ -1064,14 +1052,12 @@ namespace daw::json {
 					//
 					// The general idea is as follows.
 					// If 0 <= s < 2^53 and if 10^0 <= p <= 10^22 then
-					// 1) Both s and p can be represented exactly as 64-bit floating-point
-					// values
-					// (binary64).
-					// 2) Because s and p can be represented exactly as floating-point
-					// values, then s * p and s / p will produce correctly rounded values.
+					// 1) Both s and p can be represented exactly as 64-bit
+					// floating-point values (binary64). 2) Because s and p can be
+					// represented exactly as floating-point values, then s * p and s /
+					// p will produce correctly rounded values.
 					//
-					d = daw::json::json_details::power10(
-					  daw::json::constexpr_exec_tag{ }, d, power );
+					d = daw::json::json_details::power10( exec_tag, d, power );
 					return daw::cxmath::copy_sign( d, sign );
 				}
 				// When 22 < power && power <  22 + 16, we could
@@ -1086,17 +1072,18 @@ namespace daw::json {
 				// You need  22 < power *and* power <  22 + 16 *and* (i * 10^(x-22) <
 				// 2^53) for this second fast path to work. If you you have 22 < power
 				// *and* power <  22 + 16, and then you optimistically compute "i *
-				// 10^(x-22)", there is still a chance that you have wasted your time if
-				// i * 10^(x-22) >= 2^53. It makes the use cases of this optimization
-				// maybe less common than we would like. Source:
+				// 10^(x-22)", there is still a chance that you have wasted your time
+				// if i * 10^(x-22) >= 2^53. It makes the use cases of this
+				// optimization maybe less common than we would like. Source:
 				// http://www.exploringbinary.com/fast-path-decimal-to-floating-point-conversion/
 				// also used in RapidJSON: https://rapidjson.org/strtod_8h_source.html
 
 				// The fast path has now failed, so we are failing back on the slower
 				// path.
 
-				// In the slow path, we need to adjust i so that it is > 1<<63 which is
-				// always possible, except if i == 0, so we handle i == 0 separately.
+				// In the slow path, we need to adjust i so that it is > 1<<63 which
+				// is always possible, except if i == 0, so we handle i == 0
+				// separately.
 				if( whole == 0 ) {
 					return daw::cxmath::copy_sign( 0.0, sign );
 				}
@@ -1104,8 +1091,8 @@ namespace daw::json {
 				// We are going to need to do some 64-bit arithmetic to get a more
 				// precise product. We use a table lookup approach. It is safe because
 				// power >= FASTFLOAT_SMALLEST_POWER and power <=
-				// FASTFLOAT_LARGEST_POWER We recover the mantissa of the power, it has
-				// a leading 1. It is always rounded down.
+				// FASTFLOAT_LARGEST_POWER We recover the mantissa of the power, it
+				// has a leading 1. It is always rounded down.
 
 				std::uint64_t factor_mantissa =
 				  math_const::mantissa_64[power - FASTFLOAT_SMALLEST_POWER];
@@ -1137,15 +1124,16 @@ namespace daw::json {
 				// The 1<<16 value is a power of two; we could use a
 				// larger power of 2 if we wanted to.
 				//
-				std::int64_t exponent =
+				std::int64_t const exponent =
 				  ( ( ( 152170 + 65536 ) * power ) >> 16 ) + 1024 + 63;
 				// We want the most significant bit of i to be 1. Shift if needed.
-				int lz = leading_zeroes( whole );
+				int lz = leading_zeroes( exec_tag, whole );
 				whole <<= lz;
 				// We want the most significant 64 bits of the product. We know
 				// this will be non-zero because the most significant bit of i is
 				// 1.
-				value128 product = full_multiplication( whole, factor_mantissa );
+				value128 product =
+				  full_multiplication( exec_tag, whole, factor_mantissa );
 				std::uint64_t lower = product.low;
 				std::uint64_t upper = product.high;
 				// We know that upper has at most one leading zero because
@@ -1157,18 +1145,18 @@ namespace daw::json {
 				// 55 bits because any imprecision would play out as a +1, in
 				// the worst case.
 				// Having 55 bits is necessary because
-				// we need 53 bits for the mantissa but we have to have one rounding bit
-				// and we can waste a bit if the most significant bit of the product is
-				// zero. We expect this next branch to be rarely taken (say 1% of the
-				// time). When (upper & 0x1FF) == 0x1FF, it can be common for lower + i
-				// < lower to be true (proba. much higher than 1%).
+				// we need 53 bits for the mantissa but we have to have one rounding
+				// bit and we can waste a bit if the most significant bit of the
+				// product is zero. We expect this next branch to be rarely taken (say
+				// 1% of the time). When (upper & 0x1FF) == 0x1FF, it can be common
+				// for lower + i < lower to be true (proba. much higher than 1%).
 				if( DAW_JSON_UNLIKELY( ( upper & 0x1FF ) == 0x1FF ) &
 				    ( lower + whole < lower ) ) {
 					std::uint64_t factor_mantissa_low =
 					  math_const::mantissa_128[power - FASTFLOAT_SMALLEST_POWER];
 					// next, we compute the 64-bit x 128-bit multiplication, getting a
 					// 192-bit result (three 64-bit values)
-					product = full_multiplication( whole, factor_mantissa_low );
+					product = full_multiplication( exec_tag, whole, factor_mantissa_low );
 					std::uint64_t product_low = product.low;
 					std::uint64_t product_middle2 = product.high;
 					std::uint64_t product_middle1 = lower;
@@ -1185,8 +1173,7 @@ namespace daw::json {
 					        product_low ) ) ) { // let us be prudent and bail out.
 						return daw::cxmath::copy_sign(
 						  daw::json::json_details::power10<double>(
-						    daw::json::constexpr_exec_tag{ },
-						    static_cast<double>( whole_orig ), power ),
+						    exec_tag, static_cast<double>( whole_orig ), power ),
 						  sign );
 					}
 					upper = product_high;
@@ -1217,18 +1204,16 @@ namespace daw::json {
 				//
 				// So if the last significant bit is 1, we can safely round up.
 				// Hence we only need to bail out if (mantissa & 3) == 1.
-				// Otherwise we may need more accuracy or analysis to determine whether
-				// we are exactly between two floating-point numbers.
-				// It can be triggered with 1e23.
-				// Note: because the factor_mantissa and factor_mantissa_low are
-				// almost always rounded down (except for small positive powers),
-				// almost always should round up.
+				// Otherwise we may need more accuracy or analysis to determine
+				// whether we are exactly between two floating-point numbers. It can
+				// be triggered with 1e23. Note: because the factor_mantissa and
+				// factor_mantissa_low are almost always rounded down (except for
+				// small positive powers), almost always should round up.
 				if( DAW_JSON_UNLIKELY( ( lower == 0 ) & ( ( upper & 0x1FF ) == 0 ) &
 				                       ( ( mantissa & 3 ) == 1 ) ) ) {
 					return daw::cxmath::copy_sign(
 					  daw::json::json_details::power10<double>(
-					    daw::json::constexpr_exec_tag{ },
-					    static_cast<double>( whole_orig ), power ),
+					    exec_tag, static_cast<double>( whole_orig ), power ),
 					  sign );
 				}
 
@@ -1237,7 +1222,8 @@ namespace daw::json {
 				// Here we have mantissa < (1<<53), unless there was an overflow
 				if( mantissa >= ( 1ULL << 53 ) ) {
 					//////////
-					// This will happen when parsing values such as 7.2057594037927933e+16
+					// This will happen when parsing values such
+					// as 7.2057594037927933e+16
 					////////
 					mantissa = ( 1ULL << 52 );
 					lz--; // undo previous addition
@@ -1250,8 +1236,7 @@ namespace daw::json {
 				                       ( real_exponent > 2046 ) ) ) {
 					return daw::cxmath::copy_sign(
 					  daw::json::json_details::power10<double>(
-					    daw::json::constexpr_exec_tag{ },
-					    static_cast<double>( whole_orig ), power ),
+					    exec_tag, static_cast<double>( whole_orig ), power ),
 					  sign );
 				}
 

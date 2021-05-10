@@ -150,14 +150,13 @@ namespace daw::json {
 				if constexpr( ParseState::precise_ieee754 and
 				              ( std::is_same_v<Result, double> or
 				                std::is_same_v<Result, float> ) ) {
-					return fast_double_parser::compute_float_64(
-					  exponent, significant_digits, sign );
+					return static_cast<Result>( fast_double_parser::compute_float_64(
+					  ParseState::exec_tag, exponent, significant_digits,
+					  static_cast<double>( sign ) ) );
 				} else {
-					return daw::cxmath::copy_sign(
-					  power10<Result>( ParseState::exec_tag,
-					                   static_cast<Result>( significant_digits ),
-					                   exponent ),
-					  sign );
+					return sign * power10<Result>(
+					                ParseState::exec_tag,
+					                static_cast<Result>( significant_digits ), exponent );
 				}
 			}
 
@@ -285,14 +284,13 @@ namespace daw::json {
 				if constexpr( ParseState::precise_ieee754 and
 				              ( std::is_same_v<Result, double> or
 				                std::is_same_v<Result, float> ) ) {
-					return fast_double_parser::compute_float_64(
-					  exponent, significant_digits, sign );
+					return static_cast<Result>( fast_double_parser::compute_float_64(
+					  ParseState::exec_tag, exponent, significant_digits,
+					  static_cast<double>( sign ) ) );
 				} else {
-					return daw::cxmath::copy_sign(
-					  power10<Result>( ParseState::exec_tag,
-					                   static_cast<Result>( significant_digits ),
-					                   exponent ),
-					  sign );
+					return sign * power10<Result>(
+					                ParseState::exec_tag,
+					                static_cast<Result>( significant_digits ), exponent );
 				}
 			}
 		} // namespace json_details

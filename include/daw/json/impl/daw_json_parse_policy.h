@@ -52,7 +52,7 @@ namespace daw::json {
 			static constexpr bool allow_escaped_names = AllowEscapedNames;
 			static constexpr bool force_name_equal_check = false;
 			static constexpr bool is_zero_terminated_string = IsZeroTerminated;
-			static constexpr bool precise_ieee754 = false;
+			static constexpr bool precise_ieee754 = true;
 			using CharT = char;
 
 			using as_unchecked = BasicParsePolicy<true, CommentPolicy, exec_tag_t,
