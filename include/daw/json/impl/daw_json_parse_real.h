@@ -26,14 +26,24 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename Value>
+			template<bool IsZeroTerminated, typename Value>
 			DAW_ATTRIBUTE_FLATTEN static inline constexpr void
 			parse_digits( char const *first, char const *const last, Value &v ) {
 				Value value = v;
-				while( DAW_JSON_LIKELY( first < last ) ) {
-					value *= 10U;
-					value += parse_digit( *first );
-					++first;
+				if constexpr( IsZeroTerminated ) {
+					auto dig = parse_digit( *first );
+					while( dig < 10U ) {
+						value *= 10U;
+						value += dig;
+						++first;
+						dig = parse_digit( *first );
+					}
+				} else {
+					while( DAW_JSON_LIKELY( first < last ) ) {
+						value *= 10U;
+						value += parse_digit( *first );
+						++first;
+					}
 				}
 				v = value;
 			}
@@ -119,9 +129,11 @@ namespace daw::json {
 				}
 
 				unsigned_t significant_digits = 0;
-				parse_digits( whole_first, whole_last, significant_digits );
+				parse_digits<ParseState::is_zero_terminated_string>(
+				  whole_first, whole_last, significant_digits );
 				if( fract_first ) {
-					parse_digits( fract_first, fract_last, significant_digits );
+					parse_digits<ParseState::is_zero_terminated_string>(
+					  fract_first, fract_last, significant_digits );
 				}
 
 				if( exp_first and ( exp_last - exp_first ) > 0 ) {

@@ -1034,12 +1034,11 @@ namespace daw::json {
 			constexpr double compute_float_64( ExecTag exec_tag, std::int64_t power,
 			                                   std::uint64_t whole, double sign ) {
 
-				auto const whole_orig = whole;
 				if( ( power < daw::numeric_limits<double>::min_exponent10 ) |
 				    ( power > daw::numeric_limits<double>::max_exponent10 ) ) {
 					return daw::cxmath::copy_sign(
 					  daw::json::json_details::power10<double>(
-					    exec_tag, static_cast<double>( whole_orig ), power ),
+					    exec_tag, static_cast<double>( whole ), power ),
 					  sign );
 				}
 				// we start with a fast path
@@ -1048,15 +1047,13 @@ namespace daw::json {
 				// ACM SIGPLAN Notices. 1990
 #if( FLT_EVAL_METHOD != 1 ) and ( FLT_EVAL_METHOD != 0 )
 				// we do not trust the divisor
-				if( ( 0 <= power ) & ( power <= 22 ) & ( i <= 9007199254740991 ) ) {
+				if( ( 0 <= power ) & ( power <= 22 ) & ( whole <= 9007199254740991 ) ) {
 #else
-				if( ( -22 <= power ) & ( power <= 22 ) &
-				    ( whole <= 9007199254740991 ) ) {
+				if( ( ( -22 <= power ) & ( power <= 22 ) ) &
+				    ( whole <= 9'007'199'254'740'991 ) ) {
 #endif
 					// convert the integer into a double. This is lossless since
 					// 0 <= i <= 2^53 - 1.
-					double d = static_cast<double>( whole );
-					//
 					// The general idea is as follows.
 					// If 0 <= s < 2^53 and if 10^0 <= p <= 10^22 then
 					// 1) Both s and p can be represented exactly as 64-bit
@@ -1064,8 +1061,10 @@ namespace daw::json {
 					// represented exactly as floating-point values, then s * p and s /
 					// p will produce correctly rounded values.
 					//
-					d = daw::json::json_details::power10( exec_tag, d, power );
-					return daw::cxmath::copy_sign( d, sign );
+					return daw::cxmath::copy_sign(
+					  daw::json::json_details::power10<double>(
+					    exec_tag, static_cast<double>( whole ), power ),
+					  sign );
 				}
 				// When 22 < power && power <  22 + 16, we could
 				// hope for another, secondary fast path.  It wa
@@ -1094,7 +1093,6 @@ namespace daw::json {
 				if( whole == 0 ) {
 					return daw::cxmath::copy_sign( 0.0, sign );
 				}
-
 				// We are going to need to do some 64-bit arithmetic to get a more
 				// precise product. We use a table lookup approach. It is safe because
 				// power >= FASTFLOAT_SMALLEST_POWER and power <=
@@ -1132,17 +1130,17 @@ namespace daw::json {
 				// larger power of 2 if we wanted to.
 				//
 				std::int64_t const exponent =
-				  ( ( ( 152170 + 65536 ) * power ) >> 16 ) + 1024 + 63;
+				  ( ( ( 152'170 + 65'536 ) * power ) >> 16 ) + 1024 + 63;
 				// We want the most significant bit of i to be 1. Shift if needed.
 				int lz = leading_zeroes( exec_tag, whole );
+				auto const whole_orig = whole;
 				whole <<= lz;
 				// We want the most significant 64 bits of the product. We know
 				// this will be non-zero because the most significant bit of i is
 				// 1.
-				value128 product =
+
+				auto [upper, lower] =
 				  full_multiplication( exec_tag, whole, factor_mantissa );
-				std::uint64_t lower = product.low;
-				std::uint64_t upper = product.high;
 				// We know that upper has at most one leading zero because
 				// both i and  factor_mantissa have a leading one. This means
 				// that the result is at least as large as ((1<<63)*(1<<63))/(1<<64).
@@ -1163,12 +1161,14 @@ namespace daw::json {
 					  math_const::mantissa_128[power - FASTFLOAT_SMALLEST_POWER];
 					// next, we compute the 64-bit x 128-bit multiplication, getting a
 					// 192-bit result (three 64-bit values)
-					product = full_multiplication( exec_tag, whole, factor_mantissa_low );
-					std::uint64_t product_low = product.low;
-					std::uint64_t product_middle2 = product.high;
-					std::uint64_t product_middle1 = lower;
+
+					auto const [product_low, product_middle2] =
+					  full_multiplication( exec_tag, whole, factor_mantissa_low );
+					std::uint64_t const product_middle1 = lower;
 					std::uint64_t product_high = upper;
-					std::uint64_t product_middle = product_middle1 + product_middle2;
+					std::uint64_t const product_middle =
+					  product_middle1 + product_middle2;
+
 					if( product_middle < product_middle1 ) {
 						product_high++; // overflow carry
 					}
@@ -1189,7 +1189,7 @@ namespace daw::json {
 				// The final mantissa should be 53 bits with a leading 1.
 				// We shift it so that it occupies 54 bits with a leading 1.
 				///////
-				std::uint64_t upperbit = upper >> 63;
+				std::uint64_t const upperbit = upper >> 63;
 				std::uint64_t mantissa = upper >> ( upperbit + 9 );
 				lz += static_cast<int>( 1 ^ upperbit );
 				// Here we have mantissa < (1<<54).
