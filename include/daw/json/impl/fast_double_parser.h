@@ -120,7 +120,7 @@ namespace daw::json {
 			}
 #endif
 
-#if true or ( defined( _MSC_VER ) and not defined( __clang__ ) )
+#if defined( _MSC_VER ) and not defined( __clang__ )
 			DAW_ATTRIBUTE_FLATTEN inline int
 			leading_zeroes( runtime_exec_tag const &, std::uint64_t input_num ) {
 				/* result might be undefined when input_num is zero */
@@ -128,7 +128,7 @@ namespace daw::json {
 				// Search the mask data from most significant bit (MSB)
 				// to least significant bit (LSB) for a set bit (1).
 				if( _BitScanReverse64( &leading_zero, input_num ) ) {
-					return (int)( 63 - leading_zero );
+					return static_cast<int>( 63 - leading_zero );
 				} else {
 					return 64;
 				}
