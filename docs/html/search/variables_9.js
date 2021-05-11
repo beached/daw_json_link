@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['last_661',['last',['../structdaw_1_1json_1_1_basic_parse_policy.html#ac58e2eb4bdf59b191af06598f99dfaa3',1,'daw::json::BasicParsePolicy::last()'],['../structdaw_1_1json_1_1basic__json__value__iterator__range.html#a0dbaa50f66d61cbf7aa9a9cc1dea92c5',1,'daw::json::basic_json_value_iterator_range::last()']]],
-  ['literal_5fas_5fstring_662',['literal_as_string',['../structdaw_1_1json_1_1json__number.html#a41f5d8618a8006f1629ab7f700609da0',1,'daw::json::json_number::literal_as_string()'],['../structdaw_1_1json_1_1json__bool.html#a33ee9e1668fba4e9f1317325a88543cb',1,'daw::json::json_bool::literal_as_string()']]]
+  ['json_5fclass_5fconstructor_1331',['json_class_constructor',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#acbb9db054148c09e59194f82cb285d01',1,'daw::json::DAW_JSON_VER::json_details']]]
 ];

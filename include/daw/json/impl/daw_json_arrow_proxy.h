@@ -7,13 +7,19 @@
 //
 #pragma once
 
-namespace daw::json::json_details {
-	template<typename T>
-	struct arrow_proxy {
-		T value;
+#include "version.h"
 
-		[[nodiscard]] constexpr T *operator->( ) && {
-			return &value;
-		}
-	};
-} // namespace daw::json::json_details
+namespace daw::json {
+	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			template<typename T>
+			struct arrow_proxy {
+				T value;
+
+				[[nodiscard]] constexpr T *operator->( ) && {
+					return &value;
+				}
+			};
+		} // namespace json_details
+	}   // namespace DAW_JSON_VER
+} // namespace daw::json

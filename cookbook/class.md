@@ -118,5 +118,27 @@ namespace daw::json {
 
 Only the `"a"` member is mapped, the `"b"` member of the JSON object is ignored.
 
+## Alternate Class Mappings
 
+If a type is already mapped or has many possible JSON mappings you can provide an alternate mapping.  This is accomplished by mapping to the `daw::json::json_alt<Type, Index>` type.  The optional index allows for any number of mappings that fit into a `std::size_t`.
+
+To see a working example using this code, refer to [cookbook_class_alternate1_test.cpp](../tests/src/cookbook_class_alternate1_test.cpp)
+```c++
+struct Thing {
+	int a;
+};
+namespace daw::json {
+	template<>
+	struct json_data_contract<Thing> {
+		using type = json_member_list<json_number<"a", int>>;
+	};
+	
+	struct json_data_contract<json_alt<Thing>> {
+		using type = json_ordered_member_list<int>; 
+	};
+}
+//...
+Thing a = daw::json::from_json<Thing>( json_string_a );
+Thing b = daw::json::from_json<daw::json::json_alt<Thing>>( json_string_b );
+```
 

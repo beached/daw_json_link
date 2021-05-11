@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['maybe_781',['Maybe',['../namespacedaw_1_1json.html#a713c6c85e86696909be442b84c8ec135a80ba31cc9d111c8ef880737a23ab0c54',1,'daw::json']]]
+  ['literal_1557',['Literal',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ade673bffb256d9fec110219127313254ad7da1b76e5799f53a399b7a96ba67437',1,'daw::json::DAW_JSON_VER']]]
 ];

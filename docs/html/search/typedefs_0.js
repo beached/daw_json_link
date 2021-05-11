@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['as_5fchecked_678',['as_checked',['../structdaw_1_1json_1_1_basic_parse_policy.html#add04a161fcdc0f96d27aa7c6dba54d28',1,'daw::json::BasicParsePolicy']]],
-  ['as_5funchecked_679',['as_unchecked',['../structdaw_1_1json_1_1_basic_parse_policy.html#adb099e3b878fb2a5e7ce2d0f51306bd7',1,'daw::json::BasicParsePolicy']]]
+  ['allocator_5ftype_1370',['allocator_type',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1_allocator_wrapper.html#a41921b628864694bf04e23ee39372e64',1,'daw::json::DAW_JSON_VER::json_details::AllocatorWrapper::allocator_type()'],['../classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1_allocator_wrapper_3_01_no_allocator_01_4.html#a63f0cd8512a54c329824bc4c982dcbc7',1,'daw::json::DAW_JSON_VER::json_details::AllocatorWrapper&lt; NoAllocator &gt;::allocator_type()']]],
+  ['allocator_5ftype_5fas_1371',['allocator_type_as',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1_allocator_wrapper.html#a119f0e62f4332a0a4492cbc905235873',1,'daw::json::DAW_JSON_VER::json_details::AllocatorWrapper::allocator_type_as()'],['../classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1_allocator_wrapper_3_01_no_allocator_01_4.html#a9bf800b843657fa46012aaf974b353a8',1,'daw::json::DAW_JSON_VER::json_details::AllocatorWrapper&lt; NoAllocator &gt;::allocator_type_as()']]],
+  ['as_5fchecked_1372',['as_checked',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_parse_policy.html#a9b28019b2d6d6df38dcf0341eada6ffd',1,'daw::json::DAW_JSON_VER::BasicParsePolicy']]],
+  ['as_5funchecked_1373',['as_unchecked',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_parse_policy.html#ab8fbae91a2796f94c08532c3a09d19f3',1,'daw::json::DAW_JSON_VER::BasicParsePolicy']]]
 ];

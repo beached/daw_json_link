@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['year_402',['year',['../structdaw_1_1json_1_1datetime_1_1date__parts.html#ab253a041c92658d71b1c7cdfdd64200a',1,'daw::json::datetime::date_parts::year()'],['../structdaw_1_1json_1_1datetime_1_1ymdhms.html#a9a083ac5e7ae0fbae9a922e823564d1f',1,'daw::json::datetime::ymdhms::year()']]],
-  ['ymdhms_403',['ymdhms',['../structdaw_1_1json_1_1datetime_1_1ymdhms.html',1,'daw::json::datetime']]]
+  ['zeroterminatedstring_791',['ZeroTerminatedString',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ae0c6d3e444c6fe8528452c264004e9d9',1,'daw::json::ZeroTerminatedString()'],['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ae0c6d3e444c6fe8528452c264004e9d9',1,'daw::json::DAW_JSON_VER::ZeroTerminatedString()']]]
 ];

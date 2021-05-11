@@ -75,7 +75,7 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cities.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-	auto file_data = *daw::read_file( argv[1] );
+	auto const file_data = *daw::read_file( argv[1] );
 	auto const json_data =
 	  std::string_view( file_data.data( ), file_data.size( ) );
 

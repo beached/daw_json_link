@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['literal_780',['Literal',['../namespacedaw_1_1json.html#a36083c9f336bce20bf3f0df6ee32aa1aad7da1b76e5799f53a399b7a96ba67437',1,'daw::json']]]
+  ['keyvalue_1555',['KeyValue',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119acb89e84207636fa99103a0873bf81d9a',1,'daw::json::DAW_JSON_VER']]],
+  ['keyvaluearray_1556',['KeyValueArray',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a2d8dc828ac9e8e4958f911c3c20c5ba3',1,'daw::json::DAW_JSON_VER']]]
 ];

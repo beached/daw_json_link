@@ -10,14 +10,16 @@
 
 #include <daw/json/daw_from_json.h>
 
+#include <string_view>
+
 namespace daw::json {
-	template daw::twitter2::twitter_object_t from_json<
-	  daw::twitter2::twitter_object_t,
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
+	template daw::twitter2::twitter_object_t
+	from_json<daw::twitter2::twitter_object_t,
+	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>>(
 	  std::string_view json_data, std::string_view path );
 
-	template daw::twitter2::twitter_object_t from_json<
-	  daw::twitter2::twitter_object_t,
-	  daw::json::SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
+	template daw::twitter2::twitter_object_t
+	from_json<daw::twitter2::twitter_object_t,
+	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>>(
 	  std::string_view json_data );
 } // namespace daw::json

@@ -11,7 +11,9 @@
 #include "daw_json_exception.h"
 #include "daw_json_link_types.h"
 #include "daw_to_json.h"
+#include "impl/daw_json_alternate_mapping.h"
 #include "impl/daw_json_value.h"
+#include "impl/version.h"
 
 #if not defined( DAW_JSON_DISABLE_JSON_STRING_LITERAL )
 

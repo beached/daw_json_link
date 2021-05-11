@@ -32,6 +32,7 @@ struct B {
 namespace daw::json {
 	template<>
 	struct json_data_contract<A> {
+		using force_aggregate_construction = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"some_num", int>>;
 
@@ -46,6 +47,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<B> {
+		using force_aggregate_construction = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_class<"a", A>>;
 
@@ -57,9 +59,6 @@ namespace daw::json {
 			return std::forward_as_tuple( v.a );
 		}
 	};
-
-	template<>
-	struct force_aggregate_construction<B> : std::true_type {};
 } // namespace daw::json
 
 int main( int, char ** )

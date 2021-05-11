@@ -51,9 +51,9 @@
 ## Intro 
 ###### [Top](#content)
 
-The DAW JSON Link library provides multiple ways to serialization/deserialization JSON documents in C++.  The primary one is parsing of JSON directly to your C++ data structures.  This allows the known structure of the document to be exploited for greater checking and performance.  Alternatively, there is an event passing(SAX) interface that can parse to generic types(double, string, bool,...) or can use the same type restricted parsers as the static parser previously mentioned.  A generic DOM(lazy) based parser is provided that can be iterate over the document structure too, again it can use the generic parsers or the type based restricted versions.  One can mix the three modes of parsing to form more complicated systems.  For serialization, the first static mapping method is required, there is no json value type in the library. The library is, also, non-intrusive into your data structures and does not require member's to be declared/defined within them. This allows keeping the mapping in a separate header file from the data structures themselves.
+The DAW JSON Link library declarative mappings of JSON to your C++ data structures, in addition to other ways of serialization/deserialization.  The primary one is parsing of JSON directly to your C++ data structures.  This allows the known structure of the document to be exploited for greater checking and performance.  Alternatively, there is an event passing(SAX) interface that can parse to generic types(double, string, bool,...) or can use the same type restricted parsers as the static parser previously mentioned.  A generic DOM(lazy) based parser is provided that iterates over the document structure too, again it can use the generic parsers or the type based restricted versions.  One can mix the three modes of parsing to form more complicated systems.  For serialization, the first declarative mapping method is required, there is no json value type in the library. The library is, also, non-intrusive into your data structures and does not require member's to be declared/defined within them. This allows keeping the mapping in a separate header file from the data structures themselves.
 
-The library is using the [BSL](LICENSE) licensed
+The library is using the [BSL](LICENSE) license
 
 When the structure of the JSON document is known, parsing is like the following:
 ```c++
@@ -83,8 +83,8 @@ The event based parser(SAX) can be called via `daw::json::json_event_parser`.  I
 * handle_on_error
 
 ## Code Examples
-* The  [Cookbook](cookbook/readme.md) section has precanned tasks and working code examples
-* [Tests](tests/) provide another source of working code samples. 
+* The  [Cookbook](cookbook/readme.md) section has pre-canned tasks and working code examples
+* [Tests](tests) provide another source of working code samples. 
 * Some video walkthroughs
   * [Making a config parser](https://youtu.be/iiRDn0CR_sU)
   * [I Like BigInt's](https://www.youtube.com/watch?v=mhlrYvd1qso)
@@ -213,11 +213,9 @@ After the build there the individual examples can be tested too. ```city_test_bi
 The order of the members in the data structures should generally match that of the JSON data. The parser is faster if it doesn't have to back track for values. Optional values, when missing in the JSON data, can slow down the parsing too. If possible have them sent as null. The parser does not allocate. The parsed to data types may and this allows one to use custom allocators or a mix as their data structures will do the allocation. The defaults for arrays is to use the std::vector<T> and if this isn't desirable, you must supply the type.
 
 ### Benchmarks
-* [Kostya results](kostya_benchmark_results.md) using [test_dawjsonlink.cpp](tests/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks) for latest results.
+* [Kostya results](kostya_benchmark_results.md) using [test_dawjsonlink.cpp](tests/src/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks#json) for latest results.
 
-![chart desribing kostya benmark results](images/kostya_bench_chart.png)
-
-* [Parial NativeJson](partial_nativejson_benchmark.md)
+![chart describing kostya benmark results](images/kostya_bench_chart_2021_04_03.png)
 
 ## Escaping/Unescaping of member names
 ###### [Top](#content)
@@ -575,7 +573,7 @@ A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_jso
 ## Build configuration points
 There are a few defines that affect how JSON Link operates
 * `DAW_JSON_DONT_USE_EXCEPTIONS` - Controls if exceptions are allowed. If they are not, an `std::terminate()` on errors will occur
-* `DAW_ALLOW_SSE42` - Allow experimental SSE3 mode
+* `DAW_ALLOW_SSE42` - Allow experimental SSE42 mode, generally the constexpr mode is faster
 * `DAW_JSON_NO_CONST_EXPR` - This can be used to allow classes without move/copy special members to be constructed from JSON data prior to C++ 20. This mode does not work in a constant expression prior to C++20 when this flag is no longer needed. 
 
 ## Requirements

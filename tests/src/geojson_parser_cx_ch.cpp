@@ -10,14 +10,15 @@
 
 #include <daw/json/daw_from_json.h>
 
+#include <string_view>
+
 namespace daw::json {
 	template daw::geojson::Polygon
 	from_json<daw::geojson::Polygon,
-	          daw::json::SIMDNoCommentSkippingPolicyChecked<
-	            daw::json::constexpr_exec_tag>>( std::string_view json_data,
-	                                             std::string_view path );
+	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>>(
+	  std::string_view json_data, std::string_view path );
 	template daw::geojson::Polygon
 	from_json<daw::geojson::Polygon,
-	          daw::json::SIMDNoCommentSkippingPolicyChecked<
-	            daw::json::constexpr_exec_tag>>( std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>>(
+	  std::string_view json_data );
 } // namespace daw::json

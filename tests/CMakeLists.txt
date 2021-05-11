@@ -1,6 +1,7 @@
 # TODO clean this up, but for now it makes tests get approprait options
 
-find_package(Boost COMPONENTS container)
+# 1.71 has MP issues, seting to 1.72 hoping that fixes them.  At the least it prevents compiling on Ubuntu 20.04
+find_package(Boost 1.72.0 COMPONENTS container)
 add_subdirectory(extern)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF CACHE STRING "Enable LTO")
 if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
@@ -120,7 +121,7 @@ add_test(NAME float_array_test COMMAND float_array_test)
 add_dependencies(full float_array_test)
 
 add_executable(float_array_basic_test src/float_array_basic_test.cpp)
-target_link_libraries(float_array_basic_test json_test)
+target_link_libraries(float_array_basic_test json_test nanobench)
 add_test(NAME float_array_basic_test COMMAND float_array_basic_test)
 add_dependencies(full float_array_basic_test)
 
@@ -207,9 +208,9 @@ target_link_libraries(twitter_test_alloc json_test)
 add_dependencies(full twitter_test_alloc)
 
 if (Boost_FOUND)
-    add_executable(twitter_test_pmr EXCLUDE_FROM_ALL src/twitter_test_pmr.cpp)
-    target_link_libraries(twitter_test_pmr json_test Boost::headers Boost::container)
-    add_dependencies(full twitter_test_pmr)
+	add_executable(twitter_test_pmr EXCLUDE_FROM_ALL src/twitter_test_pmr.cpp)
+	target_link_libraries(twitter_test_pmr json_test Boost::headers Boost::container)
+	add_dependencies(full twitter_test_pmr)
 endif ()
 
 add_executable(twitter_test2 src/twitter_test2.cpp)
@@ -465,6 +466,13 @@ target_link_libraries(cookbook_numbers2_test json_test)
 add_test(NAME cookbook_numbers2_test COMMAND cookbook_numbers2_test ./cookbook_numbers2.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_numbers2_test)
 
+if (Boost_FOUND)
+	add_executable(cookbook_numbers3_test src/cookbook_numbers3_test.cpp)
+	target_link_libraries(cookbook_numbers3_test json_test Boost::headers)
+	add_test(NAME cookbook_numbers3_test COMMAND cookbook_numbers3_test ./cookbook_numbers3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+	add_dependencies(full cookbook_numbers3_test)
+endif( )
+
 add_executable(cookbook_unknown_types_and_delayed_parsing1_test src/cookbook_unknown_types_and_delayed_parsing1_test.cpp)
 target_link_libraries(cookbook_unknown_types_and_delayed_parsing1_test json_test)
 add_test(NAME cookbook_unknown_types_and_delayed_parsing1_test COMMAND cookbook_unknown_types_and_delayed_parsing1_test ./cookbook_unknown_types_and_delayed_parsing1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
@@ -479,6 +487,16 @@ add_executable(cookbook_unknown_types_and_delayed_parsing3_test src/cookbook_unk
 target_link_libraries(cookbook_unknown_types_and_delayed_parsing3_test json_test)
 add_test(NAME cookbook_unknown_types_and_delayed_parsing3_test COMMAND cookbook_unknown_types_and_delayed_parsing3_test)
 add_dependencies(full cookbook_unknown_types_and_delayed_parsing3_test)
+
+add_executable(cookbook_class_from_json_mapping_test src/cookbook_class_from_json_mapping_test.cpp)
+target_link_libraries(cookbook_class_from_json_mapping_test json_test)
+add_test(NAME cookbook_class_from_json_mapping_test COMMAND cookbook_class_from_json_mapping_test ./cookbook_class_from_json_mapping1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_class_from_json_mapping_test)
+
+add_executable(cookbook_class_alternate_test src/cookbook_class_alternate1_test.cpp)
+target_link_libraries(cookbook_class_alternate_test json_test)
+add_test(NAME cookbook_class_alternate_test COMMAND cookbook_class_alternate_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_class_alternate_test)
 
 add_executable(stream_output_test src/stream_output_test.cpp)
 target_link_libraries(stream_output_test json_test)
@@ -588,17 +606,20 @@ add_executable(daw_json_minify_full src/daw_json_minify_full.cpp)
 target_link_libraries(daw_json_minify_full json_test)
 add_dependencies(full daw_json_minify_full)
 
-
 add_executable(test_array_of_ordered src/test_array_of_ordered.cpp)
 target_link_libraries(test_array_of_ordered json_test)
 add_dependencies(full test_array_of_ordered)
+
+add_executable(test_details_parse_options src/test_details_parse_options.cpp)
+target_link_libraries(test_details_parse_options json_test)
+add_dependencies(full test_details_parse_options)
 
 
 # **************************************************
 # JSON Benchmark
 # **************************************************
 
-message( "Git revision: ${SOURCE_CONTROL_REVISION}" )
+message("Git revision: ${SOURCE_CONTROL_REVISION}")
 add_executable(json_benchmark src/json_benchmark.cpp)
 include(./cmake/git_properties.cmake)
 target_link_libraries(json_benchmark apache_builds_parser_cx_ch apache_builds_parser_rn_ch apache_builds_parser_si_ch apache_builds_parser_cx_unch apache_builds_parser_rn_unch apache_builds_parser_si_unch twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test json_test)
