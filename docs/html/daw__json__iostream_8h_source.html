@@ -102,11 +102,11 @@ $(function() {
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a04386f07f11e914a84393aa04a9bac0a">   32</a></span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a04386f07f11e914a84393aa04a9bac0a">is_opted_into_json_iostreams_v</a> =</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        daw::is_detected_v&lt;is_opted_into_json_iostreams, T&gt;;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        daw::is_detected&lt;is_opted_into_json_iostreams, T&gt;::value;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a0e7240b35bb06ba195f61f7a9a4d35d6">   36</a></span>&#160;      <span class="keyword">inline</span> constexpr <span class="keywordtype">bool</span> <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a0e7240b35bb06ba195f61f7a9a4d35d6">is_container_opted_into_json_iostreams_v</a> =</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        daw::is_detected_v&lt;is_container_opted_into_json_iostreams, T&gt;;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        daw::is_detected&lt;is_container_opted_into_json_iostreams, T&gt;::value;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    } <span class="comment">// namespace json_details</span></div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;} <span class="comment">// namespace daw::json</span></div>

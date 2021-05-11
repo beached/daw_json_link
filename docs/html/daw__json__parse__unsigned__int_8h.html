@@ -100,9 +100,9 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a7ecebd6f1ddfae1f7007f58fb658be7c"><td class="memTemplParams" colspan="2">template&lt;JsonRangeCheck RangeCheck, typename Unsigned , typename MaxArithUnsigned &gt; </td></tr>
-<tr class="memitem:a7ecebd6f1ddfae1f7007f58fb658be7c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7ecebd6f1ddfae1f7007f58fb658be7c">daw::json::DAW_JSON_VER::json_details::max_unsigned_t</a> = std::conditional_t&lt;(daw::is_integral_v&lt; Unsigned &gt; or std::is_enum_v&lt; Unsigned &gt;), std::conditional_t&lt;(sizeof(Unsigned) &gt; sizeof(MaxArithUnsigned)), Unsigned, MaxArithUnsigned &gt;, Unsigned &gt;</td></tr>
-<tr class="separator:a7ecebd6f1ddfae1f7007f58fb658be7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75f2066cdfe670cbb71b9c94d2cf802f"><td class="memTemplParams" colspan="2">template&lt;JsonRangeCheck RangeCheck, typename Unsigned , typename MaxArithUnsigned &gt; </td></tr>
+<tr class="memitem:a75f2066cdfe670cbb71b9c94d2cf802f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a75f2066cdfe670cbb71b9c94d2cf802f">daw::json::DAW_JSON_VER::json_details::max_unsigned_t</a> = std::conditional_t&lt; std::disjunction&lt; daw::is_integral&lt; Unsigned &gt;, std::is_enum&lt; Unsigned &gt; &gt;::value, std::conditional_t&lt;(sizeof(Unsigned) &gt; sizeof(MaxArithUnsigned)), Unsigned, MaxArithUnsigned &gt;, Unsigned &gt;</td></tr>
+<tr class="separator:a75f2066cdfe670cbb71b9c94d2cf802f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>

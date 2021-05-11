@@ -102,10 +102,10 @@ $(function() {
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;      <span class="keyword">struct </span>missing_member {</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <span class="keywordtype">char</span> <span class="keyword">const</span> *member_name;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keyword">template</span>&lt;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;          <span class="keyword">typename</span> StringView,</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;          std::enable_if_t&lt;(traits::not_same_v&lt;StringView, missing_member&gt;),</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                           std::nullptr_t&gt; = <span class="keyword">nullptr</span>&gt;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> StringView,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                 std::enable_if_t&lt;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                   ( traits::not_same&lt;StringView, missing_member&gt;::value ),</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                   std::nullptr_t&gt; = <span class="keyword">nullptr</span>&gt;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keyword">explicit</span> constexpr missing_member( StringView name )</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;          : member_name( std::data( name ) ) {}</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>

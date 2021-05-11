@@ -87,7 +87,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a9c4f690aaf726d7fa0af5ad649d3763f"><td class="memTemplParams" colspan="2">template&lt;bool do_escape = false, EightBitModes EightBitMode = EightBitModes::AllowFull, typename OutputIterator &gt; </td></tr>
 <tr class="memitem:a9c4f690aaf726d7fa0af5ad649d3763f"><td class="memTemplItemLeft" align="right" valign="top">constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1utils.html#a9c4f690aaf726d7fa0af5ad649d3763f">copy_to_iterator</a> (OutputIterator it, char const *ptr)</td></tr>
 <tr class="separator:a9c4f690aaf726d7fa0af5ad649d3763f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf4054227a903f9c264cfa104144e0a7"><td class="memTemplParams" colspan="2">template&lt;bool do_escape = false, EightBitModes EightBitMode = EightBitModes::AllowFull, typename OutputIterator , typename Container , daw::enable_when_t&lt; traits::is_container_like_v&lt; daw::remove_cvref_t&lt; Container &gt;&gt;&gt;  = nullptr&gt; </td></tr>
+<tr class="memitem:adf4054227a903f9c264cfa104144e0a7"><td class="memTemplParams" colspan="2">template&lt;bool do_escape = false, EightBitModes EightBitMode = EightBitModes::AllowFull, typename OutputIterator , typename Container , std::enable_if_t&lt; traits::is_container_like_v&lt; daw::remove_cvref_t&lt; Container &gt;&gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
 <tr class="memitem:adf4054227a903f9c264cfa104144e0a7"><td class="memTemplItemLeft" align="right" valign="top">constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1utils.html#adf4054227a903f9c264cfa104144e0a7">copy_to_iterator</a> (OutputIterator it, Container const &amp;container)</td></tr>
 <tr class="separator:adf4054227a903f9c264cfa104144e0a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e10e5d69b8bf6ff25c08229bc4a2b53"><td class="memTemplParams" colspan="2">template&lt;typename Integer , typename OutputIterator &gt; </td></tr>
@@ -177,7 +177,7 @@ template&lt;bool do_escape = false, EightBitModes EightBitMode = EightBitModes::
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool do_escape = false, EightBitModes EightBitMode = EightBitModes::AllowFull, typename OutputIterator , typename Container , daw::enable_when_t&lt; traits::is_container_like_v&lt; daw::remove_cvref_t&lt; Container &gt;&gt;&gt;  = nullptr&gt; </div>
+template&lt;bool do_escape = false, EightBitModes EightBitMode = EightBitModes::AllowFull, typename OutputIterator , typename Container , std::enable_if_t&lt; traits::is_container_like_v&lt; daw::remove_cvref_t&lt; Container &gt;&gt;, std::nullptr_t &gt;  = nullptr&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">

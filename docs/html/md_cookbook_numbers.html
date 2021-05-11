@@ -110,7 +110,8 @@ Specific numeric type parsing</h1>
 <div class="line">  &quot;member_signed&quot;: -12345</div>
 <div class="line">}</div>
 </div><!-- fragment --><p> The above JSON object has 2 members, both numbers but one is expected to always be an unsigned, the other a signed integer</p>
-<p>Below is the C++ data structure and trait to map the structure to the JSON object. To see a working example using this code, refer to <a href="../tests/src/cookbook_numbers2_test.cpp">cookbook_numbers2_test.cpp</a> </p><div class="fragment"><div class="line">struct MyClass2 {</div>
+<p>Below is the C++ data structure and trait to map the structure to the JSON object. To see a working example using this code, refer to <a href="../tests/src/cookbook_numbers2_test.cpp">cookbook_numbers2_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
+<div class="line">struct MyClass2 {</div>
 <div class="line">  unsigned member_unsigned;</div>
 <div class="line">  signed member_signed;</div>
 <div class="line">};</div>

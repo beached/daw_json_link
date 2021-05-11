@@ -68,18 +68,18 @@ $(function() {
 <div class="contents">
 <div class="textblock"><p>The default parser policy is validating and disallows comments. The <code>Unchecked</code> variants will skip most error checks and can give a good performance boost; this is useful when you can trust and know the data will be free of malicious errors.</p>
 <p>The predefined policies are:</p><ul>
-<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a174b50a340af5676c9acd97d4d2e7a21">daw::json::NoCommentSkippingPolicyChecked</a></code> (default)</li>
-<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9c8039e79fc0636c200af2b52f165df9">daw::json::NoCommentSkippingPolicyUnchecked</a></code></li>
+<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#afae8df22a40cbd08f16d1dc3280f72a1">daw::json::NoCommentSkippingPolicyChecked</a></code> (default)</li>
+<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ab3e518e43509ee84f198d8392281ecb7">daw::json::NoCommentSkippingPolicyUnchecked</a></code></li>
 </ul>
 <p>Hash comments, a <code>#</code> in whitespace until end of line is comment.</p><ul>
-<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ab97ebc2b1055ffae64cc4d0b7287073f">daw::json::HashCommentSkippingPolicyChecked</a></code></li>
-<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a17cc3572439fab5e2f1baa3092457879">daw::json::HashCommentSkippingPolicyUnchecked</a></code> <div class="fragment"><div class="line">{</div>
+<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#afd989b59b414dc17a25d00f49b3f8dfc">daw::json::HashCommentSkippingPolicyChecked</a></code></li>
+<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af8c5af48b747b9653e0a580324a9e326">daw::json::HashCommentSkippingPolicyUnchecked</a></code> <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;a&quot;: 234, # This is comment</div>
 <div class="line">  &quot;b&quot;: &quot;This is not a comment&quot;</div>
 <div class="line">}</div>
 </div><!-- fragment --> C++ comments, either a <code>//</code> in whitespace until end of line, or between <code>/*</code> and <code>*/</code> in whitespace, are commments.</li>
-<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ac46cabb842d252b316eadc8caf50c92e">daw::json::CppCommentSkippingPolicyChecked</a></code></li>
-<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ae7b8d64d0023cae91bfe2392928ac1ad">daw::json::CppCommentSkippingPolicyUnchecked</a></code> <div class="fragment"><div class="line">{</div>
+<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a50e7470f01f9b3e7682e82b227da21d0">daw::json::CppCommentSkippingPolicyChecked</a></code></li>
+<li><code><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ad65aced03754d6345c8c6974432b14f7">daw::json::CppCommentSkippingPolicyUnchecked</a></code> <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;a&quot;: 234, // This is comment</div>
 <div class="line">  &quot;b&quot;: &quot;This is not a comment&quot;, /* but these</div>
 <div class="line">       are part of the same comment */ &quot;c&quot;: &quot;value over here&quot;</div>

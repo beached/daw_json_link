@@ -86,10 +86,10 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9dbcf7f0579fed2fec0cd71510bff030"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__array__range.html#a9dbcf7f0579fed2fec0cd71510bff030">json_array_range</a> ()=default</td></tr>
 <tr class="separator:a9dbcf7f0579fed2fec0cd71510bff030"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3796687762238c6def51c0421a877956"><td class="memTemplParams" colspan="2">template&lt;typename String , daw::enable_when_t&lt; traits::not_same_v&lt; json_array_range, daw::remove_cvref_t&lt; String &gt;&gt;&gt;  = nullptr&gt; </td></tr>
+<tr class="memitem:a3796687762238c6def51c0421a877956"><td class="memTemplParams" colspan="2">template&lt;typename String , std::enable_if_t&lt; traits::not_same&lt; json_array_range, daw::remove_cvref_t&lt; String &gt;&gt;::value, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
 <tr class="memitem:a3796687762238c6def51c0421a877956"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__array__range.html#a3796687762238c6def51c0421a877956">json_array_range</a> (String &amp;&amp;jd)</td></tr>
 <tr class="separator:a3796687762238c6def51c0421a877956"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73f39c4b125ccd49d3351e0dc711fc85"><td class="memTemplParams" colspan="2">template&lt;typename String , daw::enable_when_t&lt; traits::not_same_v&lt; json_array_range, daw::remove_cvref_t&lt; String &gt;&gt;&gt;  = nullptr&gt; </td></tr>
+<tr class="memitem:a73f39c4b125ccd49d3351e0dc711fc85"><td class="memTemplParams" colspan="2">template&lt;typename String , std::enable_if_t&lt; traits::not_same&lt; json_array_range, daw::remove_cvref_t&lt; String &gt;&gt;::value, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
 <tr class="memitem:a73f39c4b125ccd49d3351e0dc711fc85"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__array__range.html#a73f39c4b125ccd49d3351e0dc711fc85">json_array_range</a> (String &amp;&amp;jd, std::string_view start_path)</td></tr>
 <tr class="separator:a73f39c4b125ccd49d3351e0dc711fc85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0aa4d849e87f3051e1690a4bef45e87"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__array__range.html#adb019379af127024d32b0b6ae827098d">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__array__range.html#ae0aa4d849e87f3051e1690a4bef45e87">begin</a> ()</td></tr>
@@ -152,7 +152,7 @@ template&lt;typename JsonElement , typename ParsePolicy  = NoCommentSkippingPoli
 <div class="memtemplate">
 template&lt;typename JsonElement , typename ParsePolicy  = NoCommentSkippingPolicyChecked&gt; </div>
 <div class="memtemplate">
-template&lt;typename String , daw::enable_when_t&lt; traits::not_same_v&lt; json_array_range, daw::remove_cvref_t&lt; String &gt;&gt;&gt;  = nullptr&gt; </div>
+template&lt;typename String , std::enable_if_t&lt; traits::not_same&lt; json_array_range, daw::remove_cvref_t&lt; String &gt;&gt;::value, std::nullptr_t &gt;  = nullptr&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -182,7 +182,7 @@ template&lt;typename String , daw::enable_when_t&lt; traits::not_same_v&lt; json
 <div class="memtemplate">
 template&lt;typename JsonElement , typename ParsePolicy  = NoCommentSkippingPolicyChecked&gt; </div>
 <div class="memtemplate">
-template&lt;typename String , daw::enable_when_t&lt; traits::not_same_v&lt; json_array_range, daw::remove_cvref_t&lt; String &gt;&gt;&gt;  = nullptr&gt; </div>
+template&lt;typename String , std::enable_if_t&lt; traits::not_same&lt; json_array_range, daw::remove_cvref_t&lt; String &gt;&gt;::value, std::nullptr_t &gt;  = nullptr&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">

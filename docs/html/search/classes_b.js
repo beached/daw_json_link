@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['runtime_5fexec_5ftag_845',['runtime_exec_tag',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1runtime__exec__tag.html',1,'daw::json::DAW_JSON_VER::runtime_exec_tag'],['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1runtime__exec__tag.html',1,'daw::json::runtime_exec_tag']]]
+  ['policy_5fbits_5fstart_5fimpl_902',['policy_bits_start_impl',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1policy__bits__start__impl.html',1,'daw::json::DAW_JSON_VER::json_details']]]
 ];

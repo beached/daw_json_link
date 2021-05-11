@@ -112,295 +112,301 @@ $(function() {
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;          <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> last = parse_state.last;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;          <span class="keywordflow">if</span> constexpr( ParseState::is_zero_terminated_string ) {</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <span class="comment">// Ensure that zero terminator isn&#39;t included in skipable value</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordflow">while</span>( ( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( *first ) - 1U ) &lt; 0x20U ) {</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;              ++first;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            }</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordflow">while</span>( <a class="code" href="daw__json__defs_8h.html#a082cf03a74704f531a43d012c84cdbb1">DAW_JSON_LIKELY</a>( first &lt; last ) and</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                   <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( *first ) &lt;= 0x20U ) {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;              ++first;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;          }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;          parse_state.first = first;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      DAW_ATTRIBUTE_FLATTEN <span class="keyword">static</span> constexpr <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a86246022bbfb39e49fb62eb7d74def98">   58</a></span>&#160;      <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a86246022bbfb39e49fb62eb7d74def98">trim_left_unchecked</a>( ParseState &amp;parse_state ) {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">if</span> constexpr( not <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a4bd6b46dfac74b86f5602bd5657d8647">document_is_minified</a> ) {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;          <span class="keywordtype">char</span> <span class="keyword">const</span> *first = parse_state.first;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;          <span class="keywordflow">while</span>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( *first ) &lt;= 0x20 ) {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            ++first;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;          }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;          parse_state.first = first;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        }</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span>... keys, <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      DAW_ATTRIBUTE_FLATTEN <span class="keyword">static</span> constexpr <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a88bfbdb04689abf0f91fe289b89f2c85">   70</a></span>&#160;      <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a88bfbdb04689abf0f91fe289b89f2c85">move_to_next_of</a>( ParseState &amp;parse_state ) {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        static_assert( <span class="keyword">sizeof</span>...( keys ) &lt;= 16 );</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordflow">if</span> constexpr( traits::not_same_v&lt;<span class="keyword">typename</span> ParseState::exec_tag_t,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                         <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>&gt; ) {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;          parse_state.first =</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ab4a678212a1b87a4f5923414a1e6c552">json_details::mem_move_to_next_of</a>&lt;ParseState::is_unchecked_input,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                                              keys...&gt;(</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;              ParseState::exec_tag, parse_state.first, parse_state.last );</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;          <span class="keywordtype">char</span> <span class="keyword">const</span> *first = parse_state.first;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;          <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> last = parse_state.last;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;          <span class="keywordflow">if</span>( ParseState::is_zero_terminated_string ) {</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( first &lt; last and *first != <span class="charliteral">&#39;\0&#39;</span>,</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                                  ErrorReason::UnexpectedEndOfData,</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                                  parse_state );</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;            <span class="keywordflow">while</span>( not parse_policy_details::in&lt;keys...&gt;( *first ) ) {</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;              ++first;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;            }</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;              first &lt; last, ErrorReason::UnexpectedEndOfData, parse_state );</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            <span class="keywordflow">while</span>( not parse_policy_details::in&lt;keys...&gt;( *first ) ) {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;              ++first;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;              <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                first &lt; last, ErrorReason::UnexpectedEndOfData, parse_state );</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;            }</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;          }</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;          parse_state.first = first;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        }</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      }</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a9d8ea4b6643c117dd95664fc73855e90">  102</a></span>&#160;      DAW_ATTRIBUTE_FLATTEN <span class="keyword">static</span> constexpr <span class="keywordtype">bool</span> <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a9d8ea4b6643c117dd95664fc73855e90">is_literal_end</a>( <span class="keywordtype">char</span> c ) {</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="keywordflow">return</span> c == <span class="charliteral">&#39;\0&#39;</span> or c == <span class="charliteral">&#39;,&#39;</span> or c == <span class="charliteral">&#39;]&#39;</span> or c == <span class="charliteral">&#39;}&#39;</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordflow">while</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>(</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;              ( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( *first ) ) -</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                1U ) &lt; 0x20U ) ) {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;              ++first;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="keywordflow">while</span>( <a class="code" href="daw__json__defs_8h.html#a082cf03a74704f531a43d012c84cdbb1">DAW_JSON_LIKELY</a>( first &lt; last ) and</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                   <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( *first ) &lt;=</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                      0x20U ) ) {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;              ++first;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            }</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;          }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;          parse_state.first = first;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ParseState&gt;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      DAW_ATTRIBUTE_FLATTEN <span class="keyword">static</span> constexpr <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a86246022bbfb39e49fb62eb7d74def98">   61</a></span>&#160;      <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a86246022bbfb39e49fb62eb7d74def98">trim_left_unchecked</a>( ParseState &amp;parse_state ) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keywordflow">if</span> constexpr( not <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a4bd6b46dfac74b86f5602bd5657d8647">document_is_minified</a> ) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;          <span class="keywordtype">char</span> <span class="keyword">const</span> *first = parse_state.first;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;          <span class="keywordflow">while</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>( *first ) &lt;=</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                                    0x20 ) ) {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;            ++first;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;          }</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;          parse_state.first = first;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        }</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      }</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span>... keys, <span class="keyword">typename</span> ParseState&gt;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      DAW_ATTRIBUTE_FLATTEN <span class="keyword">static</span> constexpr <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a88bfbdb04689abf0f91fe289b89f2c85">   74</a></span>&#160;      <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a88bfbdb04689abf0f91fe289b89f2c85">move_to_next_of</a>( ParseState &amp;parse_state ) {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        static_assert( <span class="keyword">sizeof</span>...( keys ) &lt;= 16 );</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keywordflow">if</span> constexpr( traits::not_same&lt;<span class="keyword">typename</span> ParseState::exec_tag_t,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                                       <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>&gt;::value ) {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;          parse_state.first =</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ab4a678212a1b87a4f5923414a1e6c552">json_details::mem_move_to_next_of</a>&lt;ParseState::is_unchecked_input,</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                                              keys...&gt;(</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;              ParseState::exec_tag, parse_state.first, parse_state.last );</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;          <span class="keywordtype">char</span> <span class="keyword">const</span> *first = parse_state.first;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;          <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> last = parse_state.last;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;          <span class="keywordflow">if</span>( ParseState::is_zero_terminated_string ) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( first &lt; last and *first != <span class="charliteral">&#39;\0&#39;</span>,</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                                  ErrorReason::UnexpectedEndOfData,</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                                  parse_state );</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            <span class="keywordflow">while</span>( not parse_policy_details::in&lt;keys...&gt;( *first ) ) {</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;              ++first;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;              first &lt; last, ErrorReason::UnexpectedEndOfData, parse_state );</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;            <span class="keywordflow">while</span>( not parse_policy_details::in&lt;keys...&gt;( *first ) ) {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;              ++first;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;              <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                first &lt; last, ErrorReason::UnexpectedEndOfData, parse_state );</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            }</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;          }</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;          parse_state.first = first;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        }</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      }</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span> PrimLeft, <span class="keywordtype">char</span> PrimRight, <span class="keywordtype">char</span> SecLeft, <span class="keywordtype">char</span> SecRight,</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;               <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      <a class="code" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> <span class="keyword">static</span> constexpr ParseState</div>
-<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a3f856b60ad504348a60f31568d63e8d0">  109</a></span>&#160;      <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a3f856b60ad504348a60f31568d63e8d0">skip_bracketed_item_checked</a>( ParseState &amp;parse_state ) {</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        <span class="comment">// Not checking for Left as it is required to be skipped already</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;        <span class="keyword">auto</span> result = parse_state;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        std::size_t cnt = 0;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        std::uint32_t prime_bracket_count = 1;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        std::uint32_t second_bracket_count = 0;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr_first = parse_state.first;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> ptr_last = parse_state.last;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <span class="keywordflow">if</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( ptr_first &gt;= ptr_last ) ) {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;          <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        }</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <span class="keywordflow">if</span>( *ptr_first == PrimLeft ) {</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;          ++ptr_first;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        }</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        <span class="keywordflow">if</span> constexpr( ParseState::is_zero_terminated_string ) {</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;          <span class="keywordflow">while</span>( *ptr_first != <span class="charliteral">&#39;\0&#39;</span> ) {</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;            <span class="keywordflow">switch</span>( *ptr_first ) {</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;              ++ptr_first;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;              ++ptr_first;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;              <span class="keywordflow">if</span> constexpr( traits::not_same_v&lt;<span class="keyword">typename</span> ParseState::exec_tag_t,</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                                               <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>&gt; ) {</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;                ptr_first = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3538e1b77d953da4ac435d209bde1052">json_details::mem_skip_until_end_of_string</a>&lt;</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;                  ParseState::is_unchecked_input&gt;(</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;                  ParseState::exec_tag, ptr_first, parse_state.last );</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;              } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;                <span class="keywordflow">while</span>( ( *ptr_first != <span class="charliteral">&#39;\0&#39;</span> ) &amp; ( *ptr_first != <span class="charliteral">&#39;&quot;&#39;</span> ) ) {</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                  <span class="keywordflow">if</span>( *ptr_first == <span class="charliteral">&#39;\\&#39;</span> ) {</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;                    <span class="keywordflow">if</span>( ptr_first + 1 &lt; ptr_last ) {</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;                      ptr_first += 2;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;                      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;                    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;                      ptr_first = ptr_last;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;                      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;                    }</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                  }</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;                  ++ptr_first;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;                }</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;              }</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;              <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( ptr_first &lt; ptr_last and *ptr_first != <span class="charliteral">&#39;\0&#39;</span> and</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                                 *ptr_first == <span class="charliteral">&#39;&quot;&#39;</span>,</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                               ErrorReason::UnexpectedEndOfData, parse_state );</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;,&#39;</span>:</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;              <span class="keywordflow">if</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( ( prime_bracket_count == 1 ) &amp;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;                                     ( second_bracket_count == 0 ) ) ) {</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;                ++cnt;</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;              }</div>
+<div class="line"><a name="l00106"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a9d8ea4b6643c117dd95664fc73855e90">  106</a></span>&#160;      DAW_ATTRIBUTE_FLATTEN <span class="keyword">static</span> constexpr <span class="keywordtype">bool</span> <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a9d8ea4b6643c117dd95664fc73855e90">is_literal_end</a>( <span class="keywordtype">char</span> c ) {</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        <span class="keywordflow">return</span> c == <span class="charliteral">&#39;\0&#39;</span> or c == <span class="charliteral">&#39;,&#39;</span> or c == <span class="charliteral">&#39;]&#39;</span> or c == <span class="charliteral">&#39;}&#39;</span>;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      }</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span> PrimLeft, <span class="keywordtype">char</span> PrimRight, <span class="keywordtype">char</span> SecLeft, <span class="keywordtype">char</span> SecRight,</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;               <span class="keyword">typename</span> ParseState&gt;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;      <a class="code" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> <span class="keyword">static</span> constexpr ParseState</div>
+<div class="line"><a name="l00113"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a3f856b60ad504348a60f31568d63e8d0">  113</a></span>&#160;      <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a3f856b60ad504348a60f31568d63e8d0">skip_bracketed_item_checked</a>( ParseState &amp;parse_state ) {</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        <span class="comment">// Not checking for Left as it is required to be skipped already</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <span class="keyword">auto</span> result = parse_state;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        std::size_t cnt = 0;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        std::uint32_t prime_bracket_count = 1;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        std::uint32_t second_bracket_count = 0;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr_first = parse_state.first;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <span class="keywordtype">char</span> <span class="keyword">const</span> *<span class="keyword">const</span> ptr_last = parse_state.last;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        <span class="keywordflow">if</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( ptr_first &gt;= ptr_last ) ) {</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;          <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        }</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <span class="keywordflow">if</span>( *ptr_first == PrimLeft ) {</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;          ++ptr_first;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        }</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordflow">if</span> constexpr( ParseState::is_zero_terminated_string ) {</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;          <span class="keywordflow">while</span>( *ptr_first != <span class="charliteral">&#39;\0&#39;</span> ) {</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;            <span class="keywordflow">switch</span>( *ptr_first ) {</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;              ++ptr_first;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;              ++ptr_first;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;              <span class="keywordflow">if</span> constexpr( traits::not_same&lt;<span class="keyword">typename</span> ParseState::exec_tag_t,</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;                                             <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>&gt;::value ) {</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;                ptr_first = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3538e1b77d953da4ac435d209bde1052">json_details::mem_skip_until_end_of_string</a>&lt;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                  ParseState::is_unchecked_input&gt;(</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;                  ParseState::exec_tag, ptr_first, parse_state.last );</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;              } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;                <span class="keywordtype">char</span> c = *ptr_first;</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;                <span class="keywordflow">while</span>( ( c != <span class="charliteral">&#39;\0&#39;</span> ) &amp; ( c != <span class="charliteral">&#39;&quot;&#39;</span> ) ) {</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;                  <span class="keywordflow">if</span>( c == <span class="charliteral">&#39;\\&#39;</span> ) {</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;                    <span class="keywordflow">if</span>( ptr_first + 1 &lt; ptr_last ) {</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;                      ptr_first += 2;</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                      c = *ptr_first;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;                      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;                    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;                      ptr_first = ptr_last;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                    }</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                  }</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;                  ++ptr_first;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                  c = *ptr_first;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;                }</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;              }</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;              <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( ( *ptr_first != <span class="charliteral">&#39;\0&#39;</span> ) &amp; ( *ptr_first == <span class="charliteral">&#39;&quot;&#39;</span> ),</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;                               ErrorReason::UnexpectedEndOfData, parse_state );</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;            <span class="keywordflow">case</span> PrimLeft:</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;              ++prime_bracket_count;</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;            <span class="keywordflow">case</span> PrimRight:</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;              --prime_bracket_count;</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;              <span class="keywordflow">if</span>( prime_bracket_count == 0 ) {</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;                ++ptr_first;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;                <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( second_bracket_count == 0,</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;                                 ErrorReason::InvalidBracketing, parse_state );</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;                result.last = ptr_first;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;                result.counter = cnt;</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;                parse_state.first = ptr_first;</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;                <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;              }</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;            <span class="keywordflow">case</span> SecLeft:</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;              ++second_bracket_count;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;            <span class="keywordflow">case</span> SecRight:</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;              --second_bracket_count;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;,&#39;</span>:</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;              <span class="keywordflow">if</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( ( prime_bracket_count == 1 ) &amp;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;                                     ( second_bracket_count == 0 ) ) ) {</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                ++cnt;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;              }</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;            <span class="keywordflow">case</span> PrimLeft:</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;              ++prime_bracket_count;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;            <span class="keywordflow">case</span> PrimRight:</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;              --prime_bracket_count;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;              <span class="keywordflow">if</span>( prime_bracket_count == 0 ) {</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;                ++ptr_first;</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;                <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( second_bracket_count == 0,</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;                                 ErrorReason::InvalidBracketing, parse_state );</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;                result.last = ptr_first;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;                result.counter = cnt;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;                parse_state.first = ptr_first;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;                <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;              }</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;            }</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;            ++ptr_first;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;          }</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;          <span class="keywordflow">while</span>( <a class="code" href="daw__json__defs_8h.html#a082cf03a74704f531a43d012c84cdbb1">DAW_JSON_LIKELY</a>( ptr_first &lt; ptr_last ) ) {</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;            <span class="keywordflow">switch</span>( *ptr_first ) {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;              ++ptr_first;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;              ++ptr_first;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;              <span class="keywordflow">if</span> constexpr( traits::not_same_v&lt;<span class="keyword">typename</span> ParseState::exec_tag_t,</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;                                               <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>&gt; ) {</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;                ptr_first = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3538e1b77d953da4ac435d209bde1052">json_details::mem_skip_until_end_of_string</a>&lt;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;                  ParseState::is_unchecked_input&gt;(</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;                  ParseState::exec_tag, ptr_first, parse_state.last );</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;              } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;                <span class="keywordflow">while</span>( <a class="code" href="daw__json__defs_8h.html#a082cf03a74704f531a43d012c84cdbb1">DAW_JSON_LIKELY</a>( ptr_first &lt; ptr_last ) and</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;                       *ptr_first != <span class="charliteral">&#39;&quot;&#39;</span> ) {</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;                  <span class="keywordflow">if</span>( *ptr_first == <span class="charliteral">&#39;\\&#39;</span> ) {</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;                    <span class="keywordflow">if</span>( ptr_first + 1 &lt; ptr_last ) {</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;                      ptr_first += 2;</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;                      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;                      ptr_first = ptr_last;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;                    }</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;                  }</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;                  ++ptr_first;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;                }</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;              }</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;              <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( ptr_first &lt; ptr_last and *ptr_first == <span class="charliteral">&#39;&quot;&#39;</span>,</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;                               ErrorReason::UnexpectedEndOfData, parse_state );</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;,&#39;</span>:</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;              <span class="keywordflow">if</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( ( prime_bracket_count == 1 ) &amp;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;                                     ( second_bracket_count == 0 ) ) ) {</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;                ++cnt;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;              }</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;            <span class="keywordflow">case</span> SecLeft:</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;              ++second_bracket_count;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;            <span class="keywordflow">case</span> SecRight:</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;              --second_bracket_count;</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;            }</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;            ++ptr_first;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;          }</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;          <span class="keywordflow">while</span>( <a class="code" href="daw__json__defs_8h.html#a082cf03a74704f531a43d012c84cdbb1">DAW_JSON_LIKELY</a>( ptr_first &lt; ptr_last ) ) {</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;            <span class="keywordflow">switch</span>( *ptr_first ) {</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;              ++ptr_first;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;              ++ptr_first;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;              <span class="keywordflow">if</span> constexpr( traits::not_same&lt;<span class="keyword">typename</span> ParseState::exec_tag_t,</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;                                             <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>&gt;::value ) {</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;                ptr_first = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3538e1b77d953da4ac435d209bde1052">json_details::mem_skip_until_end_of_string</a>&lt;</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;                  ParseState::is_unchecked_input&gt;(</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;                  ParseState::exec_tag, ptr_first, parse_state.last );</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;              } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                <span class="keywordflow">while</span>( <a class="code" href="daw__json__defs_8h.html#a082cf03a74704f531a43d012c84cdbb1">DAW_JSON_LIKELY</a>( ptr_first &lt; ptr_last ) and</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;                       *ptr_first != <span class="charliteral">&#39;&quot;&#39;</span> ) {</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                  <span class="keywordflow">if</span>( *ptr_first == <span class="charliteral">&#39;\\&#39;</span> ) {</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;                    <span class="keywordflow">if</span>( ptr_first + 1 &lt; ptr_last ) {</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;                      ptr_first += 2;</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;                      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;                    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;                      ptr_first = ptr_last;</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;                      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;                    }</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;                  }</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;                  ++ptr_first;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;                }</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;              }</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;              <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( ptr_first &lt; ptr_last and *ptr_first == <span class="charliteral">&#39;&quot;&#39;</span>,</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;                               ErrorReason::UnexpectedEndOfData, parse_state );</div>
 <div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;            <span class="keywordflow">case</span> PrimLeft:</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;              ++prime_bracket_count;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;            <span class="keywordflow">case</span> PrimRight:</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;              --prime_bracket_count;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;              <span class="keywordflow">if</span>( prime_bracket_count == 0 ) {</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;                ++ptr_first;</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;                <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( second_bracket_count == 0,</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;                                 ErrorReason::InvalidBracketing, parse_state );</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;                result.last = ptr_first;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;                result.counter = cnt;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;                parse_state.first = ptr_first;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;                <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;              }</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;            <span class="keywordflow">case</span> SecLeft:</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;              ++second_bracket_count;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;            <span class="keywordflow">case</span> SecRight:</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;              --second_bracket_count;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;            <span class="keywordflow">case</span> <span class="charliteral">&#39;,&#39;</span>:</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;              <span class="keywordflow">if</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( ( prime_bracket_count == 1 ) &amp;</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;                                     ( second_bracket_count == 0 ) ) ) {</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;                ++cnt;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;              }</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;            <span class="keywordflow">case</span> PrimLeft:</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;              ++prime_bracket_count;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;            <span class="keywordflow">case</span> PrimRight:</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;              --prime_bracket_count;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;              <span class="keywordflow">if</span>( prime_bracket_count == 0 ) {</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;                ++ptr_first;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;                <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( second_bracket_count == 0,</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;                                 ErrorReason::InvalidBracketing, parse_state );</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;                result.last = ptr_first;</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;                result.counter = cnt;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;                parse_state.first = ptr_first;</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;                <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;              }</div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;              <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;            }</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;            ++ptr_first;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;          }</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        }</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( ( prime_bracket_count == 0 ) &amp;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;                           ( second_bracket_count == 0 ),</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;                         ErrorReason::InvalidBracketing, parse_state );</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        <span class="comment">// We include the close primary bracket in the range so that subsequent</span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        <span class="comment">// parsers have a terminator inside their range</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        result.last = ptr_first;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        result.counter = cnt;</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        parse_state.first = ptr_first;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;      }</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160; </div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span> PrimLeft, <span class="keywordtype">char</span> PrimRight, <span class="keywordtype">char</span> SecLeft, <span class="keywordtype">char</span> SecRight,</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;               <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;      <a class="code" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> <span class="keyword">static</span> constexpr ParseState</div>
-<div class="line"><a name="l00261"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#ac07c3586d1b4eeff7f39048e2725082c">  261</a></span>&#160;      <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#ac07c3586d1b4eeff7f39048e2725082c">skip_bracketed_item_unchecked</a>( ParseState &amp;parse_state ) {</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        <span class="comment">// Not checking for Left as it is required to be skipped already</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        <span class="keyword">auto</span> result = parse_state;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        std::size_t cnt = 0;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        std::uint32_t prime_bracket_count = 1;</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        std::uint32_t second_bracket_count = 0;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr_first = parse_state.first;</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160; </div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        <span class="keywordflow">if</span>( *ptr_first == PrimLeft ) {</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;          ++ptr_first;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        }</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        <span class="keywordflow">while</span>( <span class="keyword">true</span> ) {</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;          <span class="keywordflow">switch</span>( *ptr_first ) {</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;            ++ptr_first;</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;            ++ptr_first;</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;            <span class="keywordflow">if</span> constexpr( traits::not_same_v&lt;<span class="keyword">typename</span> ParseState::exec_tag_t,</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                                             <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>&gt; ) {</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;              ptr_first = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3538e1b77d953da4ac435d209bde1052">json_details::mem_skip_until_end_of_string</a>&lt;</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;                ParseState::is_unchecked_input&gt;( ParseState::exec_tag,</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;                                                 ptr_first, parse_state.last );</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;              <span class="keywordflow">while</span>( *ptr_first != <span class="charliteral">&#39;&quot;&#39;</span> ) {</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;                <span class="keywordflow">if</span>( *ptr_first == <span class="charliteral">&#39;\\&#39;</span> ) {</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;                  ++ptr_first;</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;                }</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;                ++ptr_first;</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;              }</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;            }</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;,&#39;</span>:</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;            <span class="keywordflow">if</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( ( prime_bracket_count == 1 ) &amp;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;                                   ( second_bracket_count == 0 ) ) ) {</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;              ++cnt;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;            <span class="keywordflow">case</span> SecLeft:</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;              ++second_bracket_count;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;            <span class="keywordflow">case</span> SecRight:</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;              --second_bracket_count;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;              <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;            }</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;            ++ptr_first;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;          }</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        }</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a>( ( prime_bracket_count == 0 ) &amp;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;                           ( second_bracket_count == 0 ),</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                         ErrorReason::InvalidBracketing, parse_state );</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        <span class="comment">// We include the close primary bracket in the range so that subsequent</span></div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="comment">// parsers have a terminator inside their range</span></div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        result.last = ptr_first;</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        result.counter = cnt;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        parse_state.first = ptr_first;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;      }</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160; </div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;      <span class="keyword">template</span>&lt;<span class="keywordtype">char</span> PrimLeft, <span class="keywordtype">char</span> PrimRight, <span class="keywordtype">char</span> SecLeft, <span class="keywordtype">char</span> SecRight,</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;               <span class="keyword">typename</span> ParseState&gt;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;      <a class="code" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> <span class="keyword">static</span> constexpr ParseState</div>
+<div class="line"><a name="l00267"></a><span class="lineno"><a class="line" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#ac07c3586d1b4eeff7f39048e2725082c">  267</a></span>&#160;      <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#ac07c3586d1b4eeff7f39048e2725082c">skip_bracketed_item_unchecked</a>( ParseState &amp;parse_state ) {</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="comment">// Not checking for Left as it is required to be skipped already</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        <span class="keyword">auto</span> result = parse_state;</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        std::size_t cnt = 0;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        std::uint32_t prime_bracket_count = 1;</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        std::uint32_t second_bracket_count = 0;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;        <span class="keywordtype">char</span> <span class="keyword">const</span> *ptr_first = parse_state.first;</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160; </div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        <span class="keywordflow">if</span>( *ptr_first == PrimLeft ) {</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;          ++ptr_first;</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        }</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        <span class="keywordflow">while</span>( <span class="keyword">true</span> ) {</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;          <span class="keywordflow">switch</span>( *ptr_first ) {</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;\\&#39;</span>:</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;            ++ptr_first;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;&quot;&#39;</span>:</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;            ++ptr_first;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;            <span class="keywordflow">if</span> constexpr( traits::not_same&lt;<span class="keyword">typename</span> ParseState::exec_tag_t,</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;                                           <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1constexpr__exec__tag.html">constexpr_exec_tag</a>&gt;::value ) {</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;              ptr_first = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3538e1b77d953da4ac435d209bde1052">json_details::mem_skip_until_end_of_string</a>&lt;</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;                ParseState::is_unchecked_input&gt;( ParseState::exec_tag,</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;                                                 ptr_first, parse_state.last );</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;              <span class="keywordflow">while</span>( *ptr_first != <span class="charliteral">&#39;&quot;&#39;</span> ) {</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;                <span class="keywordflow">if</span>( *ptr_first == <span class="charliteral">&#39;\\&#39;</span> ) {</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;                  ++ptr_first;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;                }</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;                ++ptr_first;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;              }</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;            }</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;          <span class="keywordflow">case</span> PrimLeft:</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;            ++prime_bracket_count;</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;          <span class="keywordflow">case</span> PrimRight:</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;            --prime_bracket_count;</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;            <span class="keywordflow">if</span>( prime_bracket_count == 0 ) {</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;              ++ptr_first;</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;              <span class="comment">// We include the close primary bracket in the range so that</span></div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;              <span class="comment">// subsequent parsers have a terminator inside their range</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;              result.last = ptr_first;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;              result.counter = cnt;</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;              parse_state.first = ptr_first;</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;              <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;            }</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;          <span class="keywordflow">case</span> SecLeft:</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;            ++second_bracket_count;</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;          <span class="keywordflow">case</span> SecRight:</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;            --second_bracket_count;</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;          <span class="keywordflow">case</span> <span class="charliteral">&#39;,&#39;</span>:</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;            <span class="keywordflow">if</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( ( prime_bracket_count == 1 ) &amp;</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;                                   ( second_bracket_count == 0 ) ) ) {</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;              ++cnt;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;            }</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;          <span class="keywordflow">case</span> PrimLeft:</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;            ++prime_bracket_count;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;          <span class="keywordflow">case</span> PrimRight:</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;            --prime_bracket_count;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;            <span class="keywordflow">if</span>( prime_bracket_count == 0 ) {</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;              ++ptr_first;</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;              <span class="comment">// We include the close primary bracket in the range so that</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;              <span class="comment">// subsequent parsers have a terminator inside their range</span></div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;              result.last = ptr_first;</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;              result.counter = cnt;</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;              parse_state.first = ptr_first;</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;              <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;            }</div>
 <div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;          }</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;          ++ptr_first;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        }</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        <span class="comment">// Should never get here, only loop exit is when PrimaryRight is found</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        <span class="comment">// and count == 0</span></div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        DAW_UNREACHABLE( );</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;      }</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    };</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160; </div>
-<div class="line"><a name="l00329"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a3fd3275ed7f32e21ca52ffb2fbfdd3c1">  329</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html">NoCommentSkippingPolicy</a> = <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html">BasicNoCommentSkippingPolicy&lt;false&gt;</a>;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;          <span class="keywordflow">case</span> SecLeft:</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;            ++second_bracket_count;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;          <span class="keywordflow">case</span> SecRight:</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;            --second_bracket_count;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;          }</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;          ++ptr_first;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;        }</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;        <span class="comment">// Should never get here, only loop exit is when PrimaryRight is found</span></div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        <span class="comment">// and count == 0</span></div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        DAW_UNREACHABLE( );</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;      }</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    };</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160; </div>
+<div class="line"><a name="l00335"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a3fd3275ed7f32e21ca52ffb2fbfdd3c1">  335</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html">NoCommentSkippingPolicy</a> = <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html">BasicNoCommentSkippingPolicy&lt;false&gt;</a>;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:203</div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_a7eec2e453676338364b2bb153a5fce45"><div class="ttname"><a href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a></div><div class="ttdeci">#define daw_json_assert(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:193</div></div>
@@ -410,16 +416,16 @@ $(function() {
 <div class="ttc" id="adaw__json__parse__common_8h_html"><div class="ttname"><a href="daw__json__parse__common_8h.html">daw_json_parse_common.h</a></div></div>
 <div class="ttc" id="adaw__json__parse__policy__policy__details_8h_html"><div class="ttname"><a href="daw__json__parse__policy__policy__details_8h.html">daw_json_parse_policy_policy_details.h</a></div></div>
 <div class="ttc" id="adaw__not__const__ex__functions_8h_html"><div class="ttname"><a href="daw__not__const__ex__functions_8h.html">daw_not_const_ex_functions.h</a></div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a3538e1b77d953da4ac435d209bde1052"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3538e1b77d953da4ac435d209bde1052">daw::json::DAW_JSON_VER::json_details::mem_skip_until_end_of_string</a></div><div class="ttdeci">static DAW_ATTRIBUTE_FLATTEN char const  * mem_skip_until_end_of_string(ExecTag const &amp;tag, char const *first, char const *const last)</div><div class="ttdef"><b>Definition:</b> daw_not_const_ex_functions.h:370</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a3538e1b77d953da4ac435d209bde1052"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3538e1b77d953da4ac435d209bde1052">daw::json::DAW_JSON_VER::json_details::mem_skip_until_end_of_string</a></div><div class="ttdeci">static DAW_ATTRIBUTE_FLATTEN char const  * mem_skip_until_end_of_string(ExecTag const &amp;tag, char const *first, char const *const last)</div><div class="ttdef"><b>Definition:</b> daw_not_const_ex_functions.h:372</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_ab4a678212a1b87a4f5923414a1e6c552"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ab4a678212a1b87a4f5923414a1e6c552">daw::json::DAW_JSON_VER::json_details::mem_move_to_next_of</a></div><div class="ttdeci">static DAW_ATTRIBUTE_FLATTEN char const  * mem_move_to_next_of(runtime_exec_tag, char const *first, char const *last)</div><div class="ttdef"><b>Definition:</b> daw_not_const_ex_functions.h:332</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> daw_from_json.h:22</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html">daw::json::BasicNoCommentSkippingPolicy</a></div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:29</div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_a3f856b60ad504348a60f31568d63e8d0"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a3f856b60ad504348a60f31568d63e8d0">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::skip_bracketed_item_checked</a></div><div class="ttdeci">static constexpr DAW_ONLY_FLATTEN ParseState skip_bracketed_item_checked(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:109</div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_a3f856b60ad504348a60f31568d63e8d0"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a3f856b60ad504348a60f31568d63e8d0">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::skip_bracketed_item_checked</a></div><div class="ttdeci">static constexpr DAW_ONLY_FLATTEN ParseState skip_bracketed_item_checked(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:113</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_a4bd6b46dfac74b86f5602bd5657d8647"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a4bd6b46dfac74b86f5602bd5657d8647">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::document_is_minified</a></div><div class="ttdeci">static constexpr bool document_is_minified</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:33</div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_a86246022bbfb39e49fb62eb7d74def98"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a86246022bbfb39e49fb62eb7d74def98">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::trim_left_unchecked</a></div><div class="ttdeci">static constexpr DAW_ATTRIBUTE_FLATTEN void trim_left_unchecked(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:58</div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_a88bfbdb04689abf0f91fe289b89f2c85"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a88bfbdb04689abf0f91fe289b89f2c85">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::move_to_next_of</a></div><div class="ttdeci">static constexpr DAW_ATTRIBUTE_FLATTEN void move_to_next_of(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:70</div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_a9d8ea4b6643c117dd95664fc73855e90"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a9d8ea4b6643c117dd95664fc73855e90">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::is_literal_end</a></div><div class="ttdeci">static constexpr DAW_ATTRIBUTE_FLATTEN bool is_literal_end(char c)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:102</div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_ac07c3586d1b4eeff7f39048e2725082c"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#ac07c3586d1b4eeff7f39048e2725082c">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::skip_bracketed_item_unchecked</a></div><div class="ttdeci">static constexpr DAW_ONLY_FLATTEN ParseState skip_bracketed_item_unchecked(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:261</div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_a86246022bbfb39e49fb62eb7d74def98"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a86246022bbfb39e49fb62eb7d74def98">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::trim_left_unchecked</a></div><div class="ttdeci">static constexpr DAW_ATTRIBUTE_FLATTEN void trim_left_unchecked(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:61</div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_a88bfbdb04689abf0f91fe289b89f2c85"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a88bfbdb04689abf0f91fe289b89f2c85">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::move_to_next_of</a></div><div class="ttdeci">static constexpr DAW_ATTRIBUTE_FLATTEN void move_to_next_of(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:74</div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_a9d8ea4b6643c117dd95664fc73855e90"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#a9d8ea4b6643c117dd95664fc73855e90">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::is_literal_end</a></div><div class="ttdeci">static constexpr DAW_ATTRIBUTE_FLATTEN bool is_literal_end(char c)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:106</div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_ac07c3586d1b4eeff7f39048e2725082c"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#ac07c3586d1b4eeff7f39048e2725082c">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::skip_bracketed_item_unchecked</a></div><div class="ttdeci">static constexpr DAW_ONLY_FLATTEN ParseState skip_bracketed_item_unchecked(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:267</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy_html_afdaf0c60739cfcb05d42ea8cf82136d9"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_no_comment_skipping_policy.html#afdaf0c60739cfcb05d42ea8cf82136d9">daw::json::DAW_JSON_VER::BasicNoCommentSkippingPolicy::trim_left_checked</a></div><div class="ttdeci">static constexpr DAW_ATTRIBUTE_FLATTEN void trim_left_checked(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_policy_no_comments.h:36</div></div>
 <div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1constexpr__exec__tag_html"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1constexpr__exec__tag.html">daw::json::DAW_JSON_VER::constexpr_exec_tag</a></div><div class="ttdef"><b>Definition:</b> daw_json_exec_modes.h:21</div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
