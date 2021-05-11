@@ -32,6 +32,7 @@ struct B {
 namespace daw::json {
 	template<>
 	struct json_data_contract<A> {
+		using force_aggregate_construction = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"some_num", int>>;
 

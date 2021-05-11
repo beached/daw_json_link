@@ -163,12 +163,29 @@ namespace daw::json {
 			}
 
 			template<typename Policy>
-			constexpr void get_bits( std::uint32_t value ) {
+			constexpr std::uint32_t set_bits( std::uint32_t const &v, Policy e ) {
+				auto value = v;
+				unsigned new_bits = static_cast<unsigned>( e );
 				constexpr unsigned mask = ( 1U << policy_bits<Policy>::width ) - 1U;
+				new_bits &= mask;
+				new_bits <<= policy_bits<Policy>::start;
+				value &= ~mask;
+				value |= new_bits;
+				return value;
+			}
+
+			template<typename Policy>
+			constexpr Policy get_bits( std::uint32_t value ) {
+				constexpr unsigned mask = ( 1U << ( policy_bits<Policy>::start +
+				                                    policy_bits<Policy>::width ) ) -
+				                          1U;
 				value &= mask;
 				value >>= policy_bits<Policy>::start;
 				return Policy{ value };
 			}
+
+			template<std::size_t Idx, typename... Ts>
+			using switch_t = std::tuple_element_t<Idx, std::tuple<Ts...>>;
 		} // namespace json_details
 
 		template<typename... Policies>
@@ -209,27 +226,43 @@ namespace daw::json {
 		 * @tparam AllowEscapedNames Are escapes allowed in member names.  When
 		 * true, the slower string parser is used
 		 */
-		template<bool IsUncheckedInput, typename CommentPolicy, typename ExecMode,
-		         bool AllowEscapedNames,
-		         typename Allocator = json_details::NoAllocator,
-		         bool IsZeroTerminated = false, bool PreciseIEEE754 = false>
+		template<std::uint32_t PolicyFlags = 0,
+		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 			using iterator = char const *;
-			static constexpr bool is_unchecked_input = IsUncheckedInput;
-			using exec_tag_t = ExecMode;
+			static constexpr bool is_unchecked_input = static_cast<bool>(
+			  json_details::get_bits<CheckedParseMode>( PolicyFlags ) );
+			using exec_tag_t = json_details::switch_t<
+			  static_cast<std::size_t>(
+			    json_details::get_bits<ExecModeTypes>( PolicyFlags ) ),
+			  constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
+
 			static constexpr exec_tag_t exec_tag = exec_tag_t{ };
-			static constexpr bool allow_escaped_names = AllowEscapedNames;
+
+			static constexpr bool allow_escaped_names = static_cast<bool>(
+			  json_details::get_bits<EscapedNamePolicy>( PolicyFlags ) );
 			static constexpr bool force_name_equal_check = false;
-			static constexpr bool is_zero_terminated_string = IsZeroTerminated;
-			static constexpr bool precise_ieee754 = PreciseIEEE754;
+			static constexpr bool is_zero_terminated_string = static_cast<bool>(
+			  json_details::get_bits<ZeroTerminatedString>( PolicyFlags ) );
+
+			static constexpr bool precise_ieee754 = static_cast<bool>(
+			  json_details::get_bits<IEEE754Precise>( PolicyFlags ) );
 			using CharT = char;
 
 			using as_unchecked =
-			  BasicParsePolicy<true, CommentPolicy, exec_tag_t, allow_escaped_names,
-			                   Allocator, is_zero_terminated_string>;
+			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>(
+			                     PolicyFlags, CheckedParseMode::no ),
+			                   Allocator>;
 			using as_checked =
-			  BasicParsePolicy<false, CommentPolicy, exec_tag_t, allow_escaped_names,
-			                   Allocator, is_zero_terminated_string>;
+			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>(
+			                     PolicyFlags, CheckedParseMode::yes ),
+			                   Allocator>;
+
+			using CommentPolicy = json_details::switch_t<
+			  static_cast<std::size_t>(
+			    json_details::get_bits<PolicyCommentTypes>( PolicyFlags ) ),
+			  NoCommentSkippingPolicy, CppCommentSkippingPolicy,
+			  HashCommentSkippingPolicy>;
 
 			iterator first{ };
 			iterator last{ };
@@ -289,9 +322,7 @@ namespace daw::json {
 			}
 
 			template<typename Alloc>
-			using with_allocator_type =
-			  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
-			                   AllowEscapedNames, Alloc, is_zero_terminated_string>;
+			using with_allocator_type = BasicParsePolicy<PolicyFlags, Alloc>;
 
 			template<typename Alloc>
 			static inline constexpr with_allocator_type<Alloc>
@@ -301,10 +332,8 @@ namespace daw::json {
 			}
 
 			template<typename Alloc>
-			constexpr auto with_allocator(
-			  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
-			                   AllowEscapedNames, Alloc, is_zero_terminated_string>
-			    p ) const {
+			constexpr auto
+			with_allocator( BasicParsePolicy<PolicyFlags, Alloc> p ) const {
 
 				if constexpr( std::is_same<Alloc, json_details::NoAllocator>::value ) {
 					return *this;
@@ -326,9 +355,7 @@ namespace daw::json {
 			}
 
 			using without_allocator_type =
-			  BasicParsePolicy<IsUncheckedInput, CommentPolicy, ExecMode,
-			                   AllowEscapedNames, json_details::NoAllocator,
-			                   is_zero_terminated_string>;
+			  BasicParsePolicy<PolicyFlags, json_details::NoAllocator>;
 
 			static inline constexpr without_allocator_type
 			without_allocator( BasicParsePolicy p ) {
@@ -482,7 +509,7 @@ namespace daw::json {
 			inline constexpr void move_to_end_of_literal( ) {
 				char const *f = first;
 				char const *const l = last;
-				if constexpr( IsUncheckedInput ) {
+				if constexpr( is_unchecked_input ) {
 					while( ( static_cast<unsigned char>( *f ) > 0x20U ) &
 					       not CommentPolicy::is_literal_end( *f ) ) {
 						++f;
@@ -626,96 +653,78 @@ namespace daw::json {
 			}
 		};
 
-		template<std::size_t Idx, typename... Ts>
-		using switch_t = std::tuple_element_t<Idx, std::tuple<Ts...>>;
+		using NoCommentSkippingPolicyChecked = BasicParsePolicy<parse_options( )>;
 
-		template<typename Unsigned>
-		constexpr Unsigned get_bits( Unsigned u, unsigned first_bit,
-		                             unsigned width = 1 ) {
-			u >>= first_bit;
-			u &= ( 1U << ( width - 1U ) ) - 1U;
-			return u;
-		}
-		/*
-		template<bool IsUncheckedInput, typename CommentPolicy, typename ExecMode,
-		         bool AllowEscapedNames,
-		         typename Allocator = json_details::NoAllocator,
-		         bool IsZeroTerminated = false, bool PreciseIEEE754 = false>
-		         */
-		template<std::uint32_t polmodes = 0>
-		using ParsePolicy = BasicParsePolicy<
-		  static_cast<bool>( get_bits( polmodes, 5 ) ) /* checked_mode */,
-		  switch_t<get_bits( polmodes, 3, 2 ), NoCommentSkippingPolicy,
-		           CppCommentSkippingPolicy,
-		           HashCommentSkippingPolicy> /*Comment Policy*/,
-		  switch_t<get_bits( polmodes, 0, 2 ), constexpr_exec_tag, runtime_exec_tag,
-		           simd_exec_tag> /* exec_mode */,
-		  false /*AllowEscapedNames*/, json_details::NoAllocator,
-		  static_cast<bool>( get_bits( polmodes, 2 ) ) /*IsZeroTerminated*/,
-		  false /* PreciseIEEE754 */>;
-
-		using NoCommentSkippingPolicyChecked = ParsePolicy<parse_options( )>;
-		/*
-		  BasicParsePolicy<false, NoCommentSkippingPolicy, default_exec_tag, false,
-		                   json_details::NoAllocator, true>;
-		*/
-		using NoCommentNoZeroSkippingPolicyChecked =
-		  ParsePolicy<parse_options( CheckedParseMode::no )>;
-		/*
-		BasicParsePolicy<false, NoCommentSkippingPolicy, default_exec_tag, false,
-		                 json_details::NoAllocator, false>;
-		                 */
+		using NoCommentZeroSkippingPolicyChecked =
+		  BasicParsePolicy<parse_options( ZeroTerminatedString::yes )>;
 
 		using NoCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<true, NoCommentSkippingPolicy, default_exec_tag, false,
-		                   json_details::NoAllocator, false>;
+		  BasicParsePolicy<parse_options( CheckedParseMode::no )>;
 
-		using NoCommentZeroSkippingPolicyUnchecked =
-		  BasicParsePolicy<true, NoCommentSkippingPolicy, default_exec_tag, false,
-		                   json_details::NoAllocator, true>;
+		using NoCommentZeroSkippingPolicyUnchecked = BasicParsePolicy<parse_options(
+		  CheckedParseMode::no, ZeroTerminatedString::yes )>;
+
+		namespace json_details {
+			template<typename ExecTag>
+			inline constexpr ExecModeTypes exec_mode_from_tag =
+			  ExecModeTypes::compile_time;
+
+			template<>
+			inline constexpr ExecModeTypes exec_mode_from_tag<runtime_exec_tag> =
+			  ExecModeTypes::runtime;
+
+			template<>
+			inline constexpr ExecModeTypes exec_mode_from_tag<simd_exec_tag> =
+			  ExecModeTypes::simd;
+		} // namespace json_details
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
-		using SIMDNoCommentSkippingPolicyChecked =
-		  BasicParsePolicy<false, NoCommentSkippingPolicy, ExecTag, false,
-		                   Allocator>;
+		using SIMDNoCommentSkippingPolicyChecked = BasicParsePolicy<
+		  parse_options( json_details::exec_mode_from_tag<ExecTag> ), Allocator>;
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDNoCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<true, NoCommentSkippingPolicy, ExecTag, false,
+		  BasicParsePolicy<parse_options(
+		                     CheckedParseMode::no,
+		                     json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
 		using HashCommentSkippingPolicyChecked =
-		  BasicParsePolicy<false, HashCommentSkippingPolicy, default_exec_tag,
-		                   false>;
+		  BasicParsePolicy<parse_options( PolicyCommentTypes::hash )>;
 
-		using HashCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<true, HashCommentSkippingPolicy, default_exec_tag,
-		                   false>;
+		using HashCommentSkippingPolicyUnchecked = BasicParsePolicy<parse_options(
+		  CheckedParseMode::no, PolicyCommentTypes::hash )>;
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDHashCommentSkippingPolicyChecked =
-		  BasicParsePolicy<false, HashCommentSkippingPolicy, ExecTag, false,
+		  BasicParsePolicy<parse_options(
+		                     PolicyCommentTypes::hash,
+		                     json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDHashCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<true, HashCommentSkippingPolicy, ExecTag, false,
+		  BasicParsePolicy<parse_options(
+		                     CheckedParseMode::no, PolicyCommentTypes::hash,
+		                     json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
 		using CppCommentSkippingPolicyChecked =
-		  BasicParsePolicy<false, CppCommentSkippingPolicy, default_exec_tag,
-		                   false>;
+		  BasicParsePolicy<parse_options( PolicyCommentTypes::cpp )>;
 
-		using CppCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<true, CppCommentSkippingPolicy, default_exec_tag, false>;
+		using CppCommentSkippingPolicyUnchecked = BasicParsePolicy<parse_options(
+		  CheckedParseMode::no, PolicyCommentTypes::cpp )>;
 
 		/***
 		 * Parse using SIMD instructions if available, allow C++ comments and fully
 		 * check input
 		 */
+
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDCppCommentSkippingPolicyChecked =
-		  BasicParsePolicy<false, CppCommentSkippingPolicy, ExecTag, false,
+		  BasicParsePolicy<parse_options(
+		                     PolicyCommentTypes::cpp,
+		                     json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
 		/***
@@ -724,7 +733,9 @@ namespace daw::json {
 		 */
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDCppCommentSkippingPolicyUnchecked =
-		  BasicParsePolicy<true, CppCommentSkippingPolicy, ExecTag, false,
+		  BasicParsePolicy<parse_options(
+		                     CheckedParseMode::no, PolicyCommentTypes::cpp,
+		                     json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
 		namespace json_details {

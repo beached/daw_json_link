@@ -265,23 +265,29 @@ namespace daw::json {
 							      known_locations, parse_state )... } );
 						}
 					} else {
-						using tp_t = decltype( std::forward_as_tuple(
-						  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
-						    known_locations, parse_state )... ) );
-						auto result = construct_value_tp<T>(
-						  Constructor{ }, parse_state,
-						  tp_t{
-						    parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
-						      known_locations, parse_state )... } );
-						class_cleanup_now( parse_state );
-						return result;
+						if constexpr( force_aggregate_construction_v<T> ) {
+							return T{
+							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
+							    known_locations, parse_state )... };
+						} else {
+							using tp_t = decltype( std::forward_as_tuple(
+							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
+							    known_locations, parse_state )... ) );
+							auto result = construct_value_tp<T>(
+							  Constructor{ }, parse_state,
+							  tp_t{
+							    parse_class_member<Is, traits::nth_type<Is, JsonMembers...>>(
+							      known_locations, parse_state )... } );
+							class_cleanup_now( parse_state );
+							return result;
+						}
 					}
 				}
 			}
 
 			/***
-			 * Parse to a class where the members are constructed from the values of a
-			 * JSON array. Often this is used for geometric types like Point
+			 * Parse to a class where the members are constructed from the values of
+			 * a JSON array. Often this is used for geometric types like Point
 			 */
 			template<typename JsonClass, typename... JsonMembers, typename ParseState>
 			[[nodiscard]] static constexpr json_result<JsonClass>

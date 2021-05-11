@@ -39,9 +39,9 @@ namespace daw::json {
 			static constexpr bool always_rvo = true;
 			static constexpr bool can_constexpr = false;
 		};
-		using simd_exec_tag = sse42_exec_tag;
+		using simd_exec_tag = sse42_exec_tag{ };
 #else
-		using simd_exec_tag = runtime_exec_tag;
+		struct simd_exec_tag : runtime_exec_tag {};
 #endif
 		using default_exec_tag = constexpr_exec_tag;
 	} // namespace DAW_JSON_VER

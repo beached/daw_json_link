@@ -47,6 +47,7 @@ namespace daw::json {
 		using json_data_contract_trait_t = typename json_data_contract<T>::type;
 
 		namespace json_details {
+			/*
 			template<typename T>
 			auto force_aggregate_construction_func( ) ->
 			  typename json_data_contract<T>::force_aggregate_construction;
@@ -54,6 +55,10 @@ namespace daw::json {
 			template<typename T>
 			using force_aggregate_construction_test =
 			  decltype( force_aggregate_construction_func<T>( ) );
+			*/
+			template<typename T>
+			using force_aggregate_construction_test =
+			  typename json_data_contract<T>::force_aggregate_construction;
 
 		} // namespace json_details
 		/***
