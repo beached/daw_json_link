@@ -36,7 +36,11 @@ namespace daw::json {
 			inline constexpr unsigned policy_bits_width = 0;
 
 			template<typename>
-			inline constexpr int default_policy_value = 0;
+			inline constexpr auto default_policy_value = [] {
+				struct unknown_policy {};
+				return unknown_policy{ };
+			}( );
+
 		} // namespace json_details
 
 		enum class ExecModeTypes : unsigned {
