@@ -126,7 +126,7 @@ namespace daw::json {
 
 		template<>
 		inline constexpr auto json_details::default_policy_value<IEEE754Precise> =
-		  IEEE754Precise::yes;
+		  IEEE754Precise::no;
 
 		/***
 		 * If the hashes of all members being looked are unique, the lookup of names

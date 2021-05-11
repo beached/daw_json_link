@@ -45,10 +45,16 @@ namespace daw::json {
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 			using iterator = char const *;
+			/***
+			 * see CheckedParseMode
+			 */
 			static constexpr bool is_unchecked_input =
 			  json_details::get_bits<CheckedParseMode>( PolicyFlags ) ==
 			  CheckedParseMode::no;
 
+			/***
+			 * See ExecModeTypes
+			 */
 			using exec_tag_t = json_details::switch_t<
 			  json_details::get_bits<ExecModeTypes, std::size_t>( PolicyFlags ),
 			  constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
