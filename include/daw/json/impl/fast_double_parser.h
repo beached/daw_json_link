@@ -1099,8 +1099,10 @@ namespace daw::json {
 				// FASTFLOAT_LARGEST_POWER We recover the mantissa of the power, it
 				// has a leading 1. It is always rounded down.
 
-				std::uint64_t factor_mantissa =
-				  math_const::mantissa_64[power - FASTFLOAT_SMALLEST_POWER];
+				std::uint64_t factor_mantissa = [&] {
+					auto const idx = power - FASTFLOAT_SMALLEST_POWER;
+					return math_const::mantissa_64[idx];
+				}( );
 
 				// The exponent is 1024 + 63 + power
 				//     + floor(log(5**power)/log(2)).
@@ -1139,11 +1141,11 @@ namespace daw::json {
 				// this will be non-zero because the most significant bit of i is
 				// 1.
 
-				auto [upper, lower] =
+				auto [lower, upper] =
 				  full_multiplication( exec_tag, whole, factor_mantissa );
-				// We know that upper has at most one leading zero because
-				// both i and  factor_mantissa have a leading one. This means
-				// that the result is at least as large as ((1<<63)*(1<<63))/(1<<64).
+				//  We know that upper has at most one leading zero because
+				//  both i and  factor_mantissa have a leading one. This means
+				//  that the result is at least as large as ((1<<63)*(1<<63))/(1<<64).
 
 				// As long as the first 9 bits of "upper" are not "1", then we
 				// know that we have an exact computed value for the leading

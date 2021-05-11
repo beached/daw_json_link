@@ -11,6 +11,7 @@
 #include "daw_json_allocator_wrapper.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
+#include "daw_json_parse_options.h"
 #include "daw_json_parse_policy_cpp_comments.h"
 #include "daw_json_parse_policy_hash_comments.h"
 #include "daw_json_parse_policy_no_comments.h"
@@ -29,226 +30,18 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		namespace json_details {
-			using policy_options_t = std::uint32_t;
-
-			template<typename>
-			inline constexpr unsigned policy_bits_width = 0;
-
-			template<typename>
-			inline constexpr auto default_policy_value = [] {
-				struct unknown_policy {};
-				return unknown_policy{ };
-			}( );
-
-		} // namespace json_details
-
-		enum class ExecModeTypes : unsigned {
-			compile_time,
-			runtime,
-			simd
-		}; // 2bits
-		namespace json_details {
-			template<>
-			inline constexpr unsigned policy_bits_width<ExecModeTypes> = 2;
-
-			template<>
-			inline constexpr auto default_policy_value<ExecModeTypes> =
-			  ExecModeTypes::compile_time;
-		} // namespace json_details
-
-		enum class ZeroTerminatedString : unsigned { no, yes }; // 1bit
-		namespace json_details {
-			template<>
-			inline constexpr unsigned policy_bits_width<ZeroTerminatedString> = 1;
-
-			template<>
-			inline constexpr auto default_policy_value<ZeroTerminatedString> =
-			  ZeroTerminatedString::no;
-		} // namespace json_details
-
-		enum class PolicyCommentTypes : unsigned { none, cpp, hash }; // 2bits
-		namespace json_details {
-			template<>
-			inline constexpr unsigned policy_bits_width<PolicyCommentTypes> = 2;
-
-			template<>
-			inline constexpr auto default_policy_value<PolicyCommentTypes> =
-			  PolicyCommentTypes::none;
-		} // namespace json_details
-
-		enum class CheckedParseMode : unsigned { yes, no }; // 1bit
-		namespace json_details {
-			template<>
-			inline constexpr unsigned policy_bits_width<CheckedParseMode> = 1;
-
-			template<>
-			inline constexpr auto default_policy_value<CheckedParseMode> =
-			  CheckedParseMode::yes;
-		} // namespace json_details
-
-		enum class AllowEscapedNames : unsigned { no, yes }; // 1bit
-		namespace json_details {
-			template<>
-			inline constexpr unsigned policy_bits_width<AllowEscapedNames> = 1;
-
-			template<>
-			inline constexpr auto default_policy_value<AllowEscapedNames> =
-			  AllowEscapedNames::no;
-		} // namespace json_details
-
-		enum class IEEE754Precise : unsigned { no, yes }; // 1bit
-		namespace json_details {
-			template<>
-			inline constexpr unsigned policy_bits_width<IEEE754Precise> = 1;
-
-			template<>
-			inline constexpr auto default_policy_value<IEEE754Precise> =
-			  IEEE754Precise::no;
-		} // namespace json_details
-
-		enum class ForceFullNameCheck : unsigned { no, yes }; // 1bit
-
-		namespace json_details {
-			template<>
-			inline constexpr unsigned policy_bits_width<ForceFullNameCheck> = 1;
-
-			template<>
-			inline constexpr auto default_policy_value<ForceFullNameCheck> =
-			  ForceFullNameCheck::no;
-
-			template<typename Policy, typename Policies>
-			struct policy_bits_start_impl;
-
-			template<typename Policy, typename... Policies>
-			struct policy_bits_start_impl<Policy, std::tuple<Policies...>> {
-				static constexpr auto idx =
-				  traits::pack_index_of_v<Policy, Policies...>;
-				static_assert( idx >= 0, "Policy is not registered" );
-				using tp_policies = std::tuple<Policies...>;
-
-				template<std::size_t Pos, int End>
-				static constexpr unsigned do_step( ) {
-					if constexpr( Pos >= static_cast<std::size_t>( End ) ) {
-						return 0U;
-					}
-					return policy_bits_width<std::tuple_element_t<Pos, tp_policies>>;
-				}
-
-				template<std::size_t... Is>
-				static constexpr unsigned calc( std::index_sequence<Is...> ) {
-					return ( do_step<Is, idx>( ) + ... );
-				}
-			};
-
-			using policy_list =
-			  std::tuple<ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
-			             CheckedParseMode, AllowEscapedNames, IEEE754Precise,
-			             ForceFullNameCheck>;
-
-			template<typename Policy, typename Policies>
-			inline constexpr unsigned basic_policy_bits_start =
-			  policy_bits_start_impl<Policy, Policies>::template calc(
-			    std::make_index_sequence<std::tuple_size_v<Policies>>{ } );
-
-			template<typename Policy>
-			inline constexpr unsigned policy_bits_start =
-			  basic_policy_bits_start<Policy, policy_list>;
-
-			template<typename Policy>
-			inline constexpr bool is_policy_flag = policy_bits_width<Policy> > 0;
-
-			// struct is_policy_flag<PolicyCommentTypes> : std::true_type {};
-
-		} // namespace json_details
-
-		namespace json_details {
-			template<typename Policy, typename... Policies>
-			constexpr Policy get_policy_or( std::tuple<Policies...> const &pols ) {
-				constexpr int const pack_idx =
-				  daw::traits::pack_index_of_v<Policy, Policies...>;
-
-				if constexpr( pack_idx != -1 ) {
-					return std::get<static_cast<std::size_t>( pack_idx )>( pols );
-				} else {
-					return json_details::default_policy_value<Policy>;
-				}
-			}
-
-			template<typename Policy>
-			constexpr void set_bits( policy_options_t &value, Policy e ) {
-				static_assert( is_policy_flag<Policy>,
-				               "Only registered policy types are allowed" );
-				unsigned new_bits = static_cast<unsigned>( e );
-				constexpr unsigned mask = (1U << policy_bits_width<Policy>)-1U;
-				new_bits &= mask;
-				new_bits <<= policy_bits_start<Policy>;
-				value &= ~mask;
-				value |= new_bits;
-			}
-
-			template<typename Policy>
-			constexpr policy_options_t set_bits( policy_options_t const &v,
-			                                     Policy e ) {
-				static_assert( is_policy_flag<Policy>,
-				               "Only registered policy types are allowed" );
-				auto value = v;
-				unsigned new_bits = static_cast<unsigned>( e );
-				constexpr unsigned mask = (1U << policy_bits_width<Policy>)-1U;
-				new_bits &= mask;
-				new_bits <<= policy_bits_start<Policy>;
-				value &= ~mask;
-				value |= new_bits;
-				return value;
-			}
-
-			template<typename Policy>
-			constexpr policy_options_t set_bits_for( Policy e ) {
-				static_assert( is_policy_flag<Policy>,
-				               "Only registered policy types are allowed" );
-				policy_options_t new_bits = static_cast<unsigned>( e );
-				new_bits <<= policy_bits_start<Policy>;
-				return new_bits;
-			}
-
-			template<typename Policy, typename Result = Policy>
-			constexpr Result get_bits( policy_options_t value ) {
-				static_assert( is_policy_flag<Policy>,
-				               "Only registered policy types are allowed" );
-				constexpr unsigned mask =
-				  ( 1U << (policy_bits_start<Policy> + policy_bits_width<Policy>)) - 1U;
-				value &= mask;
-				value >>= policy_bits_start<Policy>;
-				return static_cast<Result>( Policy{ value } );
-			}
-
-			template<std::size_t Idx, typename... Ts>
-			using switch_t = std::tuple_element_t<Idx, std::tuple<Ts...>>;
-		} // namespace json_details
-
-		template<typename... Policies>
-		constexpr json_details::policy_options_t
-		parse_options( Policies... policies ) {
-			static_assert( ( json_details::is_policy_flag<Policies> and ... ),
-			               "Invalid policy flag types" );
-			if constexpr( sizeof...( Policies ) > 0 ) {
-				return ( json_details::set_bits_for( policies ) | ... );
-			}
-			return 0;
-		}
-
 		/***
 		 * Handles the bounds and policy items for parsing execution and comments.
-		 * @tparam IsUncheckedInput If true, do not perform all validity checks on
-		 * input.  This implies that we can trust the source to be perfect
-		 * @tparam CommentPolicy The policy that handles skipping whitespace where
-		 * comments may or may not be allowed:w
-		 * @tparam ExecMode A Policy type for selecting if we must be constexpr, can
-		 * use C/C++ runtime only methods, or if SIMD intrinsics are allowed
-		 * @tparam AllowEscapedNames Are escapes allowed in member names.  When
-		 * true, the slower string parser is used
+		 * @tparam PolicyFlags set via parse_options method to change compile time
+		 * parser options
+		 * @tparam Allocator An optional Allocator to allow for passing to objects
+		 * created while parsing if they support the Allocator protocol of either
+		 * the Allocator argument being last or with a first argument of
+		 * std::allocator_arg_t followed by the allocator.`Thing( args..., alloc )`
+		 * or `Thing( std::allocator_arg, alloc, args... )`
 		 */
-		template<json_details::policy_options_t PolicyFlags = 0,
+		template<json_details::policy_options_t PolicyFlags =
+		           json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 			using iterator = char const *;
@@ -262,18 +55,30 @@ namespace daw::json {
 
 			static constexpr exec_tag_t exec_tag = exec_tag_t{ };
 
+			/***
+			 * see AllowEscapedNames
+			 */
 			static constexpr bool allow_escaped_names =
 			  json_details::get_bits<AllowEscapedNames>( PolicyFlags ) ==
 			  AllowEscapedNames::yes;
 
+			/***
+			 * see ForceFullNameCheck
+			 */
 			static constexpr bool force_name_equal_check =
 			  json_details::get_bits<ForceFullNameCheck>( PolicyFlags ) ==
 			  ForceFullNameCheck::yes;
 
+			/***
+			 * see ZeroTerminatedString
+			 */
 			static constexpr bool is_zero_terminated_string =
 			  json_details::get_bits<ZeroTerminatedString>( PolicyFlags ) ==
 			  ZeroTerminatedString::yes;
 
+			/***
+			 * See IEEE754Precise
+			 */
 			static constexpr bool precise_ieee754 =
 			  json_details::get_bits<IEEE754Precise>( PolicyFlags ) ==
 			  IEEE754Precise::yes;
@@ -683,7 +488,7 @@ namespace daw::json {
 			}
 		};
 
-		using NoCommentSkippingPolicyChecked = BasicParsePolicy<parse_options( )>;
+		using NoCommentSkippingPolicyChecked = BasicParsePolicy<>;
 
 		using NoCommentZeroSkippingPolicyChecked =
 		  BasicParsePolicy<parse_options( ZeroTerminatedString::yes )>;
