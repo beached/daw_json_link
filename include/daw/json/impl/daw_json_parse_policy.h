@@ -31,7 +31,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			template<typename>
-			struct policy_bits;
+			inline constexpr unsigned policy_bits_width = 0;
 
 			template<typename>
 			struct is_policy_flag : std::false_type {};
@@ -50,13 +50,10 @@ namespace daw::json {
 			struct is_policy_flag<ExecModeTypes> : std::true_type {};
 
 			template<>
-			struct policy_bits<ExecModeTypes> {
-				static constexpr unsigned start = 0;
-				static constexpr unsigned width = 2;
-			};
+			inline constexpr unsigned policy_bits_width<ExecModeTypes> = 2;
 
 			template<>
-			inline constexpr ExecModeTypes default_policy_value<ExecModeTypes> =
+			inline constexpr auto default_policy_value<ExecModeTypes> =
 			  ExecModeTypes::compile_time;
 		} // namespace json_details
 
@@ -66,14 +63,11 @@ namespace daw::json {
 			struct is_policy_flag<ZeroTerminatedString> : std::true_type {};
 
 			template<>
-			struct policy_bits<ZeroTerminatedString> {
-				static constexpr unsigned start = 2;
-				static constexpr unsigned width = 1;
-			};
+			inline constexpr unsigned policy_bits_width<ZeroTerminatedString> = 1;
 
 			template<>
-			inline constexpr ZeroTerminatedString
-			  default_policy_value<ZeroTerminatedString> = ZeroTerminatedString::no;
+			inline constexpr auto default_policy_value<ZeroTerminatedString> =
+			  ZeroTerminatedString::no;
 		} // namespace json_details
 
 		enum class PolicyCommentTypes : unsigned { none, cpp, hash }; // 2bits
@@ -83,14 +77,11 @@ namespace daw::json {
 			struct is_policy_flag<PolicyCommentTypes> : std::true_type {};
 
 			template<>
-			struct policy_bits<PolicyCommentTypes> {
-				static constexpr unsigned start = 3;
-				static constexpr unsigned width = 2;
-			};
+			inline constexpr unsigned policy_bits_width<PolicyCommentTypes> = 2;
 
 			template<>
-			inline constexpr PolicyCommentTypes
-			  default_policy_value<PolicyCommentTypes> = PolicyCommentTypes::none;
+			inline constexpr auto default_policy_value<PolicyCommentTypes> =
+			  PolicyCommentTypes::none;
 		} // namespace json_details
 
 		enum class CheckedParseMode : unsigned { yes, no }; // 1bit
@@ -99,30 +90,24 @@ namespace daw::json {
 			struct is_policy_flag<CheckedParseMode> : std::true_type {};
 
 			template<>
-			struct policy_bits<CheckedParseMode> {
-				static constexpr unsigned start = 5;
-				static constexpr unsigned width = 1;
-			};
+			inline constexpr unsigned policy_bits_width<CheckedParseMode> = 1;
 
 			template<>
-			inline constexpr CheckedParseMode default_policy_value<CheckedParseMode> =
+			inline constexpr auto default_policy_value<CheckedParseMode> =
 			  CheckedParseMode::yes;
 		} // namespace json_details
 
-		enum class EscapedNamePolicy : unsigned { disallow, allow };
+		enum class AllowEscapedNames : unsigned { no, yes };
 		namespace json_details {
 			template<>
-			struct is_policy_flag<EscapedNamePolicy> : std::true_type {};
+			struct is_policy_flag<AllowEscapedNames> : std::true_type {};
 
 			template<>
-			struct policy_bits<EscapedNamePolicy> {
-				static constexpr unsigned start = 6;
-				static constexpr unsigned width = 1;
-			};
+			inline constexpr unsigned policy_bits_width<AllowEscapedNames> = 1;
 
 			template<>
-			inline constexpr EscapedNamePolicy
-			  default_policy_value<EscapedNamePolicy> = EscapedNamePolicy::disallow;
+			inline constexpr auto default_policy_value<AllowEscapedNames> =
+			  AllowEscapedNames::no;
 		} // namespace json_details
 
 		enum class IEEE754Precise : unsigned { no, yes };
@@ -131,15 +116,63 @@ namespace daw::json {
 			struct is_policy_flag<IEEE754Precise> : std::true_type {};
 
 			template<>
-			struct policy_bits<IEEE754Precise> {
-				static constexpr unsigned start = 7;
-				static constexpr unsigned width = 1;
-			};
+			inline constexpr unsigned policy_bits_width<IEEE754Precise> = 1;
 
 			template<>
-			inline constexpr IEEE754Precise default_policy_value<IEEE754Precise> =
+			inline constexpr auto default_policy_value<IEEE754Precise> =
 			  IEEE754Precise::no;
+		} // namespace json_details
 
+		enum class ForceFullNameCheck : unsigned { no, yes };
+
+		namespace json_details {
+			template<>
+			struct is_policy_flag<ForceFullNameCheck> : std::true_type {};
+
+			template<>
+			inline constexpr unsigned policy_bits_width<ForceFullNameCheck> = 1;
+
+			template<>
+			inline constexpr auto default_policy_value<ForceFullNameCheck> =
+			  ForceFullNameCheck::no;
+
+			template<typename Policy, typename... Policies>
+			struct policy_bits_start_impl {
+				static constexpr auto idx =
+				  traits::pack_index_of_v<Policy, Policies...>;
+				static_assert( idx >= 0, "Policy is not registered" );
+				using tp_policies = std::tuple<Policies...>;
+
+				template<std::size_t Pos, int End>
+				static constexpr unsigned do_step( ) {
+					if constexpr( Pos >= static_cast<std::size_t>( End ) ) {
+						return 0U;
+					}
+					return policy_bits_width<std::tuple_element_t<Pos, tp_policies>>;
+				}
+
+				template<std::size_t... Is>
+				static constexpr unsigned calc( std::index_sequence<Is...> ) {
+					return ( do_step<Is, idx>( ) + ... );
+				}
+			};
+
+			template<typename Policy, typename... Policies>
+			inline constexpr unsigned basic_policy_bits_start =
+			  policy_bits_start_impl<Policy, Policies...>::template calc(
+			    std::index_sequence_for<Policies...>{ } );
+
+			template<typename Policy>
+			inline constexpr unsigned policy_bits_start =
+			  basic_policy_bits_start<Policy, ExecModeTypes, ZeroTerminatedString,
+			                          PolicyCommentTypes, CheckedParseMode,
+			                          AllowEscapedNames, IEEE754Precise,
+			                          ForceFullNameCheck>;
+			// struct is_policy_flag<PolicyCommentTypes> : std::true_type {};
+
+		} // namespace json_details
+
+		namespace json_details {
 			template<typename Policy, typename... Policies>
 			constexpr Policy get_policy_or( std::tuple<Policies...> const &pols ) {
 				constexpr int const pack_idx =
@@ -154,34 +187,39 @@ namespace daw::json {
 
 			template<typename Policy>
 			constexpr void set_bits( std::uint32_t &value, Policy e ) {
+				static_assert( policy_bits_width<Policy> > 0,
+				               "Only registered policy types are allowed" );
 				unsigned new_bits = static_cast<unsigned>( e );
-				constexpr unsigned mask = ( 1U << policy_bits<Policy>::width ) - 1U;
+				constexpr unsigned mask = (1U << policy_bits_width<Policy>)-1U;
 				new_bits &= mask;
-				new_bits <<= policy_bits<Policy>::start;
+				new_bits <<= policy_bits_start<Policy>;
 				value &= ~mask;
 				value |= new_bits;
 			}
 
 			template<typename Policy>
 			constexpr std::uint32_t set_bits( std::uint32_t const &v, Policy e ) {
+				static_assert( policy_bits_width<Policy> > 0,
+				               "Only registered policy types are allowed" );
 				auto value = v;
 				unsigned new_bits = static_cast<unsigned>( e );
-				constexpr unsigned mask = ( 1U << policy_bits<Policy>::width ) - 1U;
+				constexpr unsigned mask = (1U << policy_bits_width<Policy>)-1U;
 				new_bits &= mask;
-				new_bits <<= policy_bits<Policy>::start;
+				new_bits <<= policy_bits_start<Policy>;
 				value &= ~mask;
 				value |= new_bits;
 				return value;
 			}
 
-			template<typename Policy>
-			constexpr Policy get_bits( std::uint32_t value ) {
-				constexpr unsigned mask = ( 1U << ( policy_bits<Policy>::start +
-				                                    policy_bits<Policy>::width ) ) -
-				                          1U;
+			template<typename Policy, typename Result = Policy>
+			constexpr Result get_bits( std::uint32_t value ) {
+				static_assert( policy_bits_width<Policy> > 0,
+				               "Only registered policy types are allowed" );
+				constexpr unsigned mask =
+				  ( 1U << (policy_bits_start<Policy> + policy_bits_width<Policy>)) - 1U;
 				value &= mask;
-				value >>= policy_bits<Policy>::start;
-				return Policy{ value };
+				value >>= policy_bits_start<Policy>;
+				return static_cast<Result>( Policy{ value } );
 			}
 
 			template<std::size_t Idx, typename... Ts>
@@ -230,23 +268,32 @@ namespace daw::json {
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
 			using iterator = char const *;
-			static constexpr bool is_unchecked_input = static_cast<bool>(
-			  json_details::get_bits<CheckedParseMode>( PolicyFlags ) );
+			static constexpr bool is_unchecked_input =
+			  json_details::get_bits<CheckedParseMode>( PolicyFlags ) ==
+			  CheckedParseMode::no;
+
 			using exec_tag_t = json_details::switch_t<
-			  static_cast<std::size_t>(
-			    json_details::get_bits<ExecModeTypes>( PolicyFlags ) ),
+			  json_details::get_bits<ExecModeTypes, std::size_t>( PolicyFlags ),
 			  constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
 
 			static constexpr exec_tag_t exec_tag = exec_tag_t{ };
 
-			static constexpr bool allow_escaped_names = static_cast<bool>(
-			  json_details::get_bits<EscapedNamePolicy>( PolicyFlags ) );
-			static constexpr bool force_name_equal_check = false;
-			static constexpr bool is_zero_terminated_string = static_cast<bool>(
-			  json_details::get_bits<ZeroTerminatedString>( PolicyFlags ) );
+			static constexpr bool allow_escaped_names =
+			  json_details::get_bits<AllowEscapedNames>( PolicyFlags ) ==
+			  AllowEscapedNames::yes;
 
-			static constexpr bool precise_ieee754 = static_cast<bool>(
-			  json_details::get_bits<IEEE754Precise>( PolicyFlags ) );
+			static constexpr bool force_name_equal_check =
+			  json_details::get_bits<ForceFullNameCheck>( PolicyFlags ) ==
+			  ForceFullNameCheck::yes;
+
+			static constexpr bool is_zero_terminated_string =
+			  json_details::get_bits<ZeroTerminatedString>( PolicyFlags ) ==
+			  ZeroTerminatedString::yes;
+
+			static constexpr bool precise_ieee754 =
+			  json_details::get_bits<IEEE754Precise>( PolicyFlags ) ==
+			  IEEE754Precise::yes;
+
 			using CharT = char;
 
 			using as_unchecked =
@@ -259,8 +306,7 @@ namespace daw::json {
 			                   Allocator>;
 
 			using CommentPolicy = json_details::switch_t<
-			  static_cast<std::size_t>(
-			    json_details::get_bits<PolicyCommentTypes>( PolicyFlags ) ),
+			  json_details::get_bits<PolicyCommentTypes, std::size_t>( PolicyFlags ),
 			  NoCommentSkippingPolicy, CppCommentSkippingPolicy,
 			  HashCommentSkippingPolicy>;
 
