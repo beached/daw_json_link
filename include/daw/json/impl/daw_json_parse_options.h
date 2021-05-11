@@ -47,13 +47,15 @@ namespace daw::json {
 			runtime, /* testing */
 			simd     /* testing */
 		};         // 2bits
-		template<>
-		inline constexpr unsigned json_details::policy_bits_width<ExecModeTypes> =
-		  2;
 
-		template<>
-		inline constexpr auto json_details::default_policy_value<ExecModeTypes> =
-		  ExecModeTypes::compile_time;
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<ExecModeTypes> = 2;
+
+			template<>
+			inline constexpr auto default_policy_value<ExecModeTypes> =
+			  ExecModeTypes::compile_time;
+		} // namespace json_details
 
 		/***
 		 * Input is a zero terminated string.  If this cannot be detected, you can
@@ -62,14 +64,14 @@ namespace daw::json {
 		 * buffer does not end in zero.
 		 */
 		enum class ZeroTerminatedString : unsigned { no, yes }; // 1bit
-		template<>
-		inline constexpr unsigned
-		  json_details::policy_bits_width<ZeroTerminatedString> = 1;
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<ZeroTerminatedString> = 1;
 
-		template<>
-		inline constexpr auto
-		  json_details::default_policy_value<ZeroTerminatedString> =
-		    ZeroTerminatedString::no;
+			template<>
+			inline constexpr auto default_policy_value<ZeroTerminatedString> =
+			  ZeroTerminatedString::no;
+		} // namespace json_details
 
 		/***
 		 * Allow comments in JSON.  The supported modes are none, C++ style
@@ -77,27 +79,27 @@ namespace daw::json {
 		 * allowed
 		 */
 		enum class PolicyCommentTypes : unsigned { none, cpp, hash }; // 2bits
-		template<>
-		inline constexpr unsigned
-		  json_details::policy_bits_width<PolicyCommentTypes> = 2;
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<PolicyCommentTypes> = 2;
 
-		template<>
-		inline constexpr auto
-		  json_details::default_policy_value<PolicyCommentTypes> =
-		    PolicyCommentTypes::none;
-
+			template<>
+			inline constexpr auto default_policy_value<PolicyCommentTypes> =
+			  PolicyCommentTypes::none;
+		} // namespace json_details
 		/***
 		 * Enable all structure, buffer, and type checking.  The default is yes, but
 		 * no still does some checking and can be faster.
 		 */
 		enum class CheckedParseMode : unsigned { yes, no }; // 1bit
-		template<>
-		inline constexpr unsigned
-		  json_details::policy_bits_width<CheckedParseMode> = 1;
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<CheckedParseMode> = 1;
 
-		template<>
-		inline constexpr auto json_details::default_policy_value<CheckedParseMode> =
-		  CheckedParseMode::yes;
+			template<>
+			inline constexpr auto default_policy_value<CheckedParseMode> =
+			  CheckedParseMode::yes;
+		} // namespace json_details
 
 		/***
 		 * Allow the escape character '\' in names.  This forces a slower parser and
@@ -105,14 +107,14 @@ namespace daw::json {
 		 * matching only needs to look for a `"`, not skip `\"` in names.
 		 */
 		enum class AllowEscapedNames : unsigned { no, yes }; // 1bit
-		template<>
-		inline constexpr unsigned
-		  json_details::policy_bits_width<AllowEscapedNames> = 1;
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<AllowEscapedNames> = 1;
 
-		template<>
-		inline constexpr auto
-		  json_details::default_policy_value<AllowEscapedNames> =
-		    AllowEscapedNames::no;
+			template<>
+			inline constexpr auto default_policy_value<AllowEscapedNames> =
+			  AllowEscapedNames::no;
+		} // namespace json_details
 
 		/***
 		 * Testing
@@ -120,13 +122,14 @@ namespace daw::json {
 		 * results is much faster parsing with very small errors of 0-2ulp.
 		 */
 		enum class IEEE754Precise : unsigned { no, yes }; // 1bit
-		template<>
-		inline constexpr unsigned json_details::policy_bits_width<IEEE754Precise> =
-		  1;
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<IEEE754Precise> = 1;
 
-		template<>
-		inline constexpr auto json_details::default_policy_value<IEEE754Precise> =
-		  IEEE754Precise::no;
+			template<>
+			inline constexpr auto default_policy_value<IEEE754Precise> =
+			  IEEE754Precise::no;
+		} // namespace json_details
 
 		/***
 		 * If the hashes of all members being looked are unique, the lookup of names
@@ -134,15 +137,14 @@ namespace daw::json {
 		 * can force a full string check by setting to yes.
 		 */
 		enum class ForceFullNameCheck : unsigned { no, yes }; // 1bit
-		template<>
-		inline constexpr unsigned
-		  json_details::policy_bits_width<ForceFullNameCheck> = 1;
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<ForceFullNameCheck> = 1;
 
-		template<>
-		inline constexpr auto
-		  json_details::default_policy_value<ForceFullNameCheck> =
-		    ForceFullNameCheck::no;
-
+			template<>
+			inline constexpr auto default_policy_value<ForceFullNameCheck> =
+			  ForceFullNameCheck::no;
+		} // namespace json_details
 		/* *****************************************
 		 * Implementation details
 		 */
