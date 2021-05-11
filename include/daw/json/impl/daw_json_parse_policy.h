@@ -117,8 +117,11 @@ namespace daw::json {
 			inline constexpr auto default_policy_value<ForceFullNameCheck> =
 			  ForceFullNameCheck::no;
 
+			template<typename Policy, typename Policies>
+			struct policy_bits_start_impl;
+
 			template<typename Policy, typename... Policies>
-			struct policy_bits_start_impl {
+			struct policy_bits_start_impl<Policy, std::tuple<Policies...>> {
 				static constexpr auto idx =
 				  traits::pack_index_of_v<Policy, Policies...>;
 				static_assert( idx >= 0, "Policy is not registered" );
@@ -138,17 +141,19 @@ namespace daw::json {
 				}
 			};
 
-			template<typename Policy, typename... Policies>
+			using policy_list =
+			  std::tuple<ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
+			             CheckedParseMode, AllowEscapedNames, IEEE754Precise,
+			             ForceFullNameCheck>;
+
+			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =
-			  policy_bits_start_impl<Policy, Policies...>::template calc(
-			    std::index_sequence_for<Policies...>{ } );
+			  policy_bits_start_impl<Policy, Policies>::template calc(
+			    std::make_index_sequence<std::tuple_size_v<Policies>>{ } );
 
 			template<typename Policy>
 			inline constexpr unsigned policy_bits_start =
-			  basic_policy_bits_start<Policy, ExecModeTypes, ZeroTerminatedString,
-			                          PolicyCommentTypes, CheckedParseMode,
-			                          AllowEscapedNames, IEEE754Precise,
-			                          ForceFullNameCheck>;
+			  basic_policy_bits_start<Policy, policy_list>;
 
 			template<typename Policy>
 			inline constexpr bool is_policy_flag = policy_bits_width<Policy> > 0;
@@ -197,6 +202,15 @@ namespace daw::json {
 				return value;
 			}
 
+			template<typename Policy>
+			constexpr policy_options_t set_bits_for( Policy e ) {
+				static_assert( is_policy_flag<Policy>,
+				               "Only registered policy types are allowed" );
+				policy_options_t new_bits = static_cast<unsigned>( e );
+				new_bits <<= policy_bits_start<Policy>;
+				return new_bits;
+			}
+
 			template<typename Policy, typename Result = Policy>
 			constexpr Result get_bits( policy_options_t value ) {
 				static_assert( is_policy_flag<Policy>,
@@ -217,24 +231,10 @@ namespace daw::json {
 		parse_options( Policies... policies ) {
 			static_assert( ( json_details::is_policy_flag<Policies> and ... ),
 			               "Invalid policy flag types" );
-			json_details::policy_options_t result = 0;
 			if constexpr( sizeof...( Policies ) > 0 ) {
-				auto const pols = std::tuple{ policies... };
-				auto const exec_mode =
-				  json_details::get_policy_or<ExecModeTypes>( pols );
-				auto const zero_mode =
-				  json_details::get_policy_or<ZeroTerminatedString>( pols );
-				auto const comment_type =
-				  json_details::get_policy_or<PolicyCommentTypes>( pols );
-				auto const checked_mode =
-				  json_details::get_policy_or<CheckedParseMode>( pols );
-
-				json_details::set_bits( result, exec_mode );
-				json_details::set_bits( result, zero_mode );
-				json_details::set_bits( result, comment_type );
-				json_details::set_bits( result, checked_mode );
+				return ( json_details::set_bits_for( policies ) | ... );
 			}
-			return result;
+			return 0;
 		}
 
 		/***
