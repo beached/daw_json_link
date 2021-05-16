@@ -16,6 +16,7 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_bounded_vector.h>
+#include <daw/daw_cxmath.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
 #include <utf8/unchecked.h>
@@ -39,8 +40,8 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		template<typename Real, typename OutputIterator>
-		inline OutputIterator real2string( Real const &value,
-		                                   OutputIterator out_it ) {
+		constexpr OutputIterator real2string( Real const &value,
+		                                      OutputIterator out_it ) {
 			// TODO: Customization point, add to readme
 #ifndef DAW_JSON_CUSTOM_D2S
 			if constexpr( std::is_same<Real, float>::value ) {
@@ -155,7 +156,7 @@ namespace daw::json {
 
 			template<typename JsonMember, typename OutputIterator,
 			         typename parse_to_t>
-			[[nodiscard]] OutputIterator
+			[[nodiscard]] inline OutputIterator
 			to_daw_json_string( ParseTag<JsonParseTypes::Real>, OutputIterator it,
 			                    parse_to_t const &value );
 
@@ -534,7 +535,7 @@ namespace daw::json {
 
 				if constexpr( std::is_floating_point<
 				                typename JsonMember::parse_to_t>::value ) {
-					if( std::isnan( value ) ) {
+					if( daw::cxmath::is_nan( value ) ) {
 						if constexpr( JsonMember::literal_as_string ==
 						              LiteralAsStringOpt::Never ) {
 							daw_json_error( ErrorReason::NumberIsNaN );
@@ -544,7 +545,7 @@ namespace daw::json {
 							*it++ = '"';
 							return it;
 						}
-					} else if( std::isinf( value ) ) {
+					} else if( daw::cxmath::is_inf( value ) ) {
 						if constexpr( JsonMember::literal_as_string ==
 						              LiteralAsStringOpt::Never ) {
 							daw_json_error( ErrorReason::NumberIsInf );
@@ -566,7 +567,7 @@ namespace daw::json {
 					if constexpr( std::is_same<OutputIterator, char *>::value ) {
 						it = real2string( value, it );
 					} else {
-						char buff[50];
+						char buff[50]{ };
 						buff[49] = 0;
 						char *ptr = buff;
 						ptr = real2string( value, ptr );
@@ -1056,20 +1057,29 @@ namespace daw::json {
 			  daw::is_detected<tag_member_t, JsonMember>::value;
 
 			template<std::size_t, typename JsonMember, typename OutputIterator,
-			         typename Value, typename VisitedMembers,
+			         typename TpArgs, typename Value, typename VisitedMembers,
 			         std::enable_if_t<not has_tag_member_v<JsonMember>,
 			                          std::nullptr_t> = nullptr>
 			inline constexpr void tags_to_json_str( bool &, OutputIterator const &,
-			                                        Value const &,
-			                                        VisitedMembers const & ) {}
+			                                        TpArgs const &, Value const &,
+			                                        VisitedMembers const & ) {
+
+				// This is empty so that the call is able to be put into a pack
+			}
 			template<std::size_t pos, typename JsonMember, typename OutputIterator,
-			         typename Value, typename VisitedMembers,
+			         typename TpArgs, typename Value, typename VisitedMembers,
 			         std::enable_if_t<has_tag_member_v<JsonMember>, std::nullptr_t> =
 			           nullptr>
 			constexpr void tags_to_json_str( bool &is_first, OutputIterator it,
-			                                 Value const &v,
+			                                 TpArgs const &args, Value const &v,
 			                                 VisitedMembers &visited_members ) {
 				using tag_member = tag_member_t<JsonMember>;
+				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
+				if constexpr( is_json_nullable_v<JsonMember> ) {
+					if( not std::get<pos>( args ) ) {
+						return;
+					}
+				}
 				constexpr auto tag_member_name = daw::string_view(
 				  std::data( tag_member::name ), std::size( tag_member::name ) );
 				if( daw::algorithm::contains( std::data( visited_members ),

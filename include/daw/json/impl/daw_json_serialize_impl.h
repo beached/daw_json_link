@@ -45,15 +45,24 @@ namespace daw::json {
 				                        sizeof...( JsonMembers ) * 2U>{ };
 				// Tag Members, if any.  Putting them ahead means we can parse this
 				// faster in the future
-				(void)( ( tags_to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
-				            is_first, it, value, visited_members ),
-				          ... ),
-				        0 );
+
+				{
+					int tmp[sizeof...( JsonMembers ) + 1]{
+					  ( tags_to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
+					      is_first, it, args, value, visited_members ),
+					    0 )...,
+					  0 };
+					(void)tmp;
+				}
 				// Regular Members
-				(void)( ( to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
-				            is_first, it, args, value, visited_members ),
-				          ... ),
-				        0 );
+				{
+					int tmp[sizeof...( JsonMembers ) + 1]{
+					  ( to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
+					      is_first, it, args, value, visited_members ),
+					    0 )...,
+					  0 };
+					(void)tmp;
+				}
 
 				*it++ = '}';
 				return it;
