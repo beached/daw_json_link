@@ -99,7 +99,12 @@ namespace daw::json {
 			parse_value( ParseTag<JsonParseTypes::Signed>, ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
-				static_assert( daw::is_signed<element_t>::value,
+				using int_type =
+				  typename std::conditional_t<std::is_enum_v<element_t>,
+				                              std::underlying_type<element_t>,
+				                              daw::traits::identity<element_t>>::type;
+
+				static_assert( daw::is_signed<int_type>::value,
 				               "Expected signed type" );
 				if constexpr( KnownBounds ) {
 					daw_json_assert_weak(
@@ -117,7 +122,7 @@ namespace daw::json {
 					  parse_policy_details::is_number_start( parse_state.front( ) ),
 					  ErrorReason::InvalidNumberStart, parse_state );
 				}
-				element_t sign = 1;
+				int_type sign = 1;
 				if( parse_state.front( ) == '-' ) {
 					parse_state.remove_prefix( );
 					sign = -1;
@@ -127,15 +132,19 @@ namespace daw::json {
 
 					return construct_value<json_result<JsonMember>>(
 					  constructor_t{ }, parse_state,
-					  sign *
-					    unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
-					      ParseState::exec_tag, parse_state ) );
+					  static_cast<element_t>(
+					    sign * static_cast<int_type>(
+					             unsigned_parser<element_t, JsonMember::range_check,
+					                             KnownBounds>( ParseState::exec_tag,
+					                                           parse_state ) ) ) );
 				} else {
 					auto result = construct_value<json_result<JsonMember>>(
 					  constructor_t{ }, parse_state,
-					  sign *
-					    unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
-					      ParseState::exec_tag, parse_state ) );
+					  static_cast<element_t>(
+					    sign * static_cast<int_type>(
+					             unsigned_parser<element_t, JsonMember::range_check,
+					                             KnownBounds>( ParseState::exec_tag,
+					                                           parse_state ) ) ) );
 					if constexpr( JsonMember::literal_as_string !=
 					              LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
