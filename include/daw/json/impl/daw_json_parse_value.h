@@ -91,7 +91,12 @@ namespace daw::json::json_details {
 	parse_value( ParseTag<JsonParseTypes::Signed>, Range &rng ) {
 		using constructor_t = typename JsonMember::constructor_t;
 		using element_t = typename JsonMember::base_type;
-		static_assert( daw::is_signed_v<element_t>, "Expected signed type" );
+		using int_type =
+		  typename std::conditional_t<std::is_enum_v<element_t>,
+		                              std::underlying_type<element_t>,
+		                              daw::traits::identity<element_t>>::type;
+
+		static_assert( daw::is_signed_v<int_type>, "Expected signed type" );
 		if constexpr( KnownBounds ) {
 			daw_json_assert_weak(
 			  parse_policy_details::is_number_start( rng.front( ) ),
@@ -107,23 +112,28 @@ namespace daw::json::json_details {
 			  parse_policy_details::is_number_start( rng.front( ) ),
 			  ErrorReason::InvalidNumberStart, rng );
 		}
-		element_t sign = 1;
+
+		int_type sign = 1;
 		if( rng.front( ) == '-' ) {
 			rng.remove_prefix( );
 			sign = -1;
 		}
 
 		if constexpr( KnownBounds ) {
-
 			return construct_value<json_result<JsonMember>>(
 			  constructor_t{ }, rng,
-			  sign * unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
-			           Range::exec_tag, rng ) );
+			  sign *
+			    static_cast<int_type>(
+			      unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
+			        Range::exec_tag, rng ) ) );
 		} else {
 			auto result = construct_value<json_result<JsonMember>>(
 			  constructor_t{ }, rng,
-			  sign * unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
-			           Range::exec_tag, rng ) );
+			  static_cast<element_t>(
+			    sign *
+			    static_cast<int_type>(
+			      unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
+			        Range::exec_tag, rng ) ) ) );
 			if constexpr( JsonMember::literal_as_string !=
 			              LiteralAsStringOpt::Never ) {
 				skip_quote_when_literal_as_string<JsonMember::literal_as_string>( rng );
