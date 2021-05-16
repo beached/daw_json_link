@@ -158,7 +158,7 @@ add_dependencies(full coords_test2)
 
 add_executable(nativejson_bench src/nativejson_bench.cpp)
 target_link_libraries(nativejson_bench twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test)
-add_test(NAME nativejson_bench COMMAND nativejson_bench ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+#add_test(NAME nativejson_bench COMMAND nativejson_bench ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_bench)
 
 add_executable(nativejson_bench_alloc EXCLUDE_FROM_ALL src/nativejson_bench_alloc.cpp)
