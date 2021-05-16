@@ -22,7 +22,7 @@
 #include <unordered_map>
 
 namespace daw::cookbook_enums2 {
-	enum class Colours : uint8_t { red, green, blue, black };
+	enum class Colours : int8_t { red, green, blue, black };
 
 	struct MyClass1 {
 		std::vector<Colours> member0;
