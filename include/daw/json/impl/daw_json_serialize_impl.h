@@ -40,7 +40,7 @@ namespace daw::json::json_details {
 		// in the future
 		(void)( ( tags_to_json_str<Is,
 		                           daw::traits::nth_element<Is, JsonMembers...>>(
-		            is_first, it, value, visited_members ),
+		            is_first, it, args, value, visited_members ),
 		          ... ),
 		        0 );
 		// Regular Members
