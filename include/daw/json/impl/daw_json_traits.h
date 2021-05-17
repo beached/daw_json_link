@@ -296,6 +296,7 @@ namespace daw::json {
 			    and daw::is_detected_v<is_string_like_impl::has_size_test, T>;
 
 			static_assert( is_string_view_like_v<std::string_view> );
+
 		} // namespace json_details
 
 		/***
@@ -309,5 +310,12 @@ namespace daw::json {
 		inline constexpr bool
 		  is_zero_terminated_string_v<std::basic_string<CharT, Traits, Alloc>> =
 		    true;
+
+		namespace json_details {
+			template<typename ParsePolicy, typename String, auto Option>
+			using apply_zstring_policy_option_t = std::conditional_t<
+			  is_zero_terminated_string_v<daw::remove_cvref_t<String>>,
+			  typename ParsePolicy::template SetPolicyOption<Option>, ParsePolicy>;
+		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

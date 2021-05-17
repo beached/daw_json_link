@@ -31,16 +31,14 @@ static_assert( DAW_NUM_RUNS > 0 );
 
 template<typename ExecTag>
 void test( char **argv ) {
-	auto const json_data1 = *daw::read_file( argv[1] );
-	auto const json_data2 = *daw::read_file( argv[2] );
-	auto const json_data3 = *daw::read_file( argv[3] );
-	auto json_sv1 = std::string_view( json_data1.data( ), json_data1.size( ) );
-	auto json_sv2 = std::string_view( json_data2.data( ), json_data2.size( ) );
-	auto json_sv3 = std::string_view( json_data3.data( ), json_data3.size( ) );
+	auto const json_sv1 = *daw::read_file( argv[1] );
+	auto const json_sv2 = *daw::read_file( argv[2] );
+	auto const json_sv3 = *daw::read_file( argv[3] );
 
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
-	auto const sz = json_sv1.size( ) + json_sv2.size( ) + json_sv3.size( );
+	auto const sz =
+	  std::size( json_sv1 ) + std::size( json_sv2 ) + std::size( json_sv3 );
 	std::cout << "Processing: " << daw::utility::to_bytes_per_second( sz )
 	          << '\n';
 
@@ -51,8 +49,8 @@ void test( char **argv ) {
 	std::optional<daw::geojson::Polygon> canada_result{ };
 	try {
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-		  "nativejson_twitter bench", json_sv1.size( ),
-		  [&twitter_result]( auto f1 ) {
+		  "nativejson_twitter bench", std::size( json_sv1 ),
+		  [&twitter_result]( auto const &f1 ) {
 			  twitter_result = daw::json::from_json<
 			    daw::twitter::twitter_object_t,
 			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
@@ -75,8 +73,8 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_twitter bench trusted", json_sv1.size( ),
-	  [&twitter_result]( auto f1 ) {
+	  "nativejson_twitter bench trusted", std::size( json_sv1 ),
+	  [&twitter_result]( auto const &f1 ) {
 		  {
 			  twitter_result = daw::json::from_json<
 			    daw::twitter::twitter_object_t,
@@ -95,8 +93,8 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_citm bench", json_sv2.size( ),
-	  [&citm_result]( auto f2 ) {
+	  "nativejson_citm bench", std::size( json_sv2 ),
+	  [&citm_result]( auto const &f2 ) {
 		  citm_result = daw::json::from_json<
 		    daw::citm::citm_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2 );
@@ -114,8 +112,8 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_citm bench trusted", json_sv2.size( ),
-	  [&citm_result]( auto f2 ) {
+	  "nativejson_citm bench trusted", std::size( json_sv2 ),
+	  [&citm_result]( auto const &f2 ) {
 		  citm_result = daw::json::from_json<
 		    daw::citm::citm_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2 );
@@ -132,8 +130,8 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_canada bench", json_sv3.size( ),
-	  [&canada_result]( auto f3 ) {
+	  "nativejson_canada bench", std::size( json_sv3 ),
+	  [&canada_result]( auto const &f3 ) {
 		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
@@ -147,8 +145,8 @@ void test( char **argv ) {
 	std::cout << std::flush;
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "nativejson_canada bench trusted", json_sv3.size( ),
-	  [&canada_result]( auto f3 ) {
+	  "nativejson_canada bench trusted", std::size( json_sv3 ),
+	  [&canada_result]( auto const &f3 ) {
 		  canada_result = daw::json::from_json<
 		    daw::geojson::Polygon,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
@@ -163,7 +161,7 @@ void test( char **argv ) {
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench", sz,
-	  [&]( auto f1, auto f2, auto f3 ) {
+	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
@@ -200,7 +198,7 @@ void test( char **argv ) {
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench trusted", sz,
-	  [&]( auto f1, auto f2, auto f3 ) {
+	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
 		  twitter_result = daw::json::from_json<
 		    daw::twitter::twitter_object_t,
 		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
@@ -262,8 +260,7 @@ int main( int argc, char **argv )
 		std::cerr << "Unexpected error while testing: " << je.reason( ) << '\n';
 		exit( EXIT_FAILURE );
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

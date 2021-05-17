@@ -112,6 +112,11 @@ namespace daw::json {
 			std::size_t counter = 0;
 			using ParseState = BasicParsePolicy;
 
+			template<auto PolicyOption>
+			using SetPolicyOption =
+			  BasicParsePolicy<json_details::set_bits( PolicyFlags, PolicyOption ),
+			                   Allocator>;
+
 			inline constexpr BasicParsePolicy( ) = default;
 
 			inline constexpr BasicParsePolicy( iterator f, iterator l )

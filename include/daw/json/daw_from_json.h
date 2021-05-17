@@ -48,11 +48,14 @@ namespace daw::json {
 			using json_member =
 			  json_details::unnamed_default_type_mapping<JsonMember>;
 
+			using policy_t =
+			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
+			                                      ZeroTerminatedString::yes>;
 			auto parse_state =
-			  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) );
+			  policy_t( std::data( json_data ), daw::data_end( json_data ) );
 
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
-			                ParsePolicy> ) {
+			                policy_t> ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  ParseTag<json_member::expected_type>{ }, parse_state );
 				parse_state.trim_left( );
@@ -100,9 +103,12 @@ namespace daw::json {
 			char const *f = std::data( json_data );
 			char const *l = daw::data_end( json_data );
 			Allocator a = alloc;
-			auto parse_state = ParsePolicy::with_allocator( f, l, a );
+			using policy_t =
+			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
+			                                      ZeroTerminatedString::yes>;
+			auto parse_state = policy_t::with_allocator( f, l, a );
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
-			                ParsePolicy> ) {
+			                policy_t> ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  ParseTag<json_member::expected_type>{ }, parse_state );
 				parse_state.trim_left( );
@@ -148,7 +154,10 @@ namespace daw::json {
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
+			using policy_t =
+			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
+			                                      ZeroTerminatedString::yes>;
+			auto [is_found, parse_state] = json_details::find_range<policy_t>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
@@ -158,7 +167,7 @@ namespace daw::json {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 			}
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
-			                ParsePolicy> ) {
+			                policy_t> ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  ParseTag<json_member::expected_type>{ }, parse_state );
 				parse_state.trim_left( );
@@ -204,7 +213,11 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			Allocator a = alloc;
-			auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
+			using policy_t =
+			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
+			                                      ZeroTerminatedString::yes>;
+
+			auto [is_found, parse_state] = json_details::find_range<policy_t>(
 			  json_data, { std::data( member_path ), std::size( member_path ) }, a );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
@@ -215,7 +228,7 @@ namespace daw::json {
 			}
 
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
-			                ParsePolicy> ) {
+			                policy_t> ) {
 
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  ParseTag<json_member::expected_type>{ }, parse_state );
@@ -338,7 +351,10 @@ namespace daw::json {
 
 			using parser_t = json_array<no_name, JsonElement, Container, Constructor>;
 
-			auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
+			using policy_t =
+			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
+			                                      ZeroTerminatedString::yes>;
+			auto [is_found, parse_state] = json_details::find_range<policy_t>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
 
 			if constexpr( parser_t::expected_type == JsonParseTypes::Null ) {
@@ -359,7 +375,7 @@ namespace daw::json {
 			                      ErrorReason::InvalidArrayStart, parse_state );
 #endif
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
-			                ParsePolicy> ) {
+			                policy_t> ) {
 				auto result = json_details::parse_value<parser_t, KnownBounds>(
 				  ParseTag<JsonParseTypes::Array>{ }, parse_state );
 				parse_state.trim_left( );
