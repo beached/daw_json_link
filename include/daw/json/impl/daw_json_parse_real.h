@@ -241,7 +241,8 @@ namespace daw::json {
 						// room in a std::uint64_t
 						char const *ptr =
 						  skip_digits<( ParseState::is_zero_terminated_string or
-						                ParseState::is_unchecked_input )>(
+						                ParseState::is_unchecked_input or
+						                ParseState::is_zero_terminated_string )>(
 						    last_char, parse_state.last );
 						auto const diff = ptr - last_char;
 						last_char = ptr;
@@ -260,7 +261,8 @@ namespace daw::json {
 					if( exponent != 0 ) {
 						if( first < parse_state.last ) {
 							first = skip_digits<( ParseState::is_zero_terminated_string or
-							                      ParseState::is_unchecked_input )>(
+							                      ParseState::is_unchecked_input or
+							                      ParseState::is_zero_terminated_string )>(
 							  first, parse_state.last );
 						}
 					} else {
@@ -277,9 +279,10 @@ namespace daw::json {
 						exponent -= static_cast<signed_t>( last_char - first );
 						first = last_char;
 						if( ( first >= fract_last ) & ( first < parse_state.last ) ) {
-							first =
-							  skip_digits < ParseState::is_zero_terminated_string or
-							  ParseState::is_unchecked_input > ( first, parse_state.last );
+							first = skip_digits<( ParseState::is_zero_terminated_string or
+							                      ParseState::is_unchecked_input or
+							                      ParseState::is_zero_terminated_string )>(
+							  first, parse_state.last );
 						}
 					}
 				}

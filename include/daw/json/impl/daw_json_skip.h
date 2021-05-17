@@ -63,7 +63,9 @@ namespace daw::json {
 			[[nodiscard]] static constexpr ParseState
 			skip_true( ParseState &parse_state ) {
 				auto result = parse_state;
-				if constexpr( ParseState::is_unchecked_input ) {
+				if constexpr( ( ParseState::is_zero_terminated_string or
+				                ParseState::is_unchecked_input or
+				                ParseState::is_zero_terminated_string ) ) {
 					parse_state.remove_prefix( 4 );
 				} else {
 					parse_state.remove_prefix( );
@@ -82,7 +84,9 @@ namespace daw::json {
 			[[nodiscard]] static constexpr ParseState
 			skip_false( ParseState &parse_state ) {
 				auto result = parse_state;
-				if constexpr( ParseState::is_unchecked_input ) {
+				if constexpr( ( ParseState::is_zero_terminated_string or
+				                ParseState::is_unchecked_input or
+				                ParseState::is_zero_terminated_string ) ) {
 					parse_state.remove_prefix( 5 );
 				} else {
 					parse_state.remove_prefix( );
@@ -100,7 +104,9 @@ namespace daw::json {
 			template<typename ParseState>
 			[[nodiscard]] static constexpr ParseState
 			skip_null( ParseState &parse_state ) {
-				if constexpr( ParseState::is_unchecked_input ) {
+				if constexpr( ( ParseState::is_zero_terminated_string or
+				                ParseState::is_unchecked_input or
+				                ParseState::is_zero_terminated_string ) ) {
 					parse_state.remove_prefix( 4 );
 				} else {
 					parse_state.remove_prefix( );
@@ -141,29 +147,42 @@ namespace daw::json {
 			template<typename ParseState>
 			[[nodiscard]] static constexpr ParseState
 			skip_number( ParseState &parse_state ) {
+				daw_json_assert_weak( parse_state.has_more( ),
+				                      ErrorReason::UnexpectedEndOfData, parse_state );
+
 				auto result = parse_state;
 				char const *first = parse_state.first;
 				char const *const last = parse_state.last;
-				daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,
-				                      parse_state );
 				if( *first == '-' ) {
 					++first;
 				}
 				if( DAW_JSON_LIKELY( first < last ) ) {
-					first = skip_digits<ParseState::is_unchecked_input>( first, last );
+					first = skip_digits<( ParseState::is_zero_terminated_string or
+					                      ParseState::is_unchecked_input or
+					                      ParseState::is_zero_terminated_string )>(
+					  first, last );
 				}
 				char const *decimal = nullptr;
-				if( ( ParseState::is_unchecked_input or first < last ) and
+				if( ( ( ParseState::is_zero_terminated_string or
+				        ParseState::is_unchecked_input or
+				        ParseState::is_zero_terminated_string ) or
+				      first < last ) and
 				    ( *first == '.' ) ) {
 					decimal = first;
 					++first;
 					if( DAW_JSON_LIKELY( first < last ) ) {
-						first = skip_digits<ParseState::is_unchecked_input>( first, last );
+						first = skip_digits<( ParseState::is_zero_terminated_string or
+						                      ParseState::is_unchecked_input or
+						                      ParseState::is_zero_terminated_string )>(
+						  first, last );
 					}
 				}
 				char const *exp = nullptr;
 				unsigned dig = parse_digit( *first );
-				if( ( ParseState::is_unchecked_input or ( first < last ) ) &
+				if( ( ( ParseState::is_zero_terminated_string or
+				        ParseState::is_unchecked_input or
+				        ParseState::is_zero_terminated_string ) or
+				      ( first < last ) ) &
 				    ( ( dig == parsed_constants::e_char ) |
 				      ( dig == parsed_constants::E_char ) ) ) {
 					exp = first;
@@ -180,7 +199,10 @@ namespace daw::json {
 						++first;
 					}
 					if( DAW_JSON_LIKELY( first < last ) ) {
-						first = skip_digits<ParseState::is_unchecked_input>( first, last );
+						first = skip_digits<( ParseState::is_zero_terminated_string or
+						                      ParseState::is_unchecked_input or
+						                      ParseState::is_zero_terminated_string )>(
+						  first, last );
 					}
 				}
 
@@ -231,7 +253,9 @@ namespace daw::json {
 				case '9':
 					return skip_number( parse_state );
 				}
-				if constexpr( ParseState::is_unchecked_input ) {
+				if constexpr( ( ParseState::is_zero_terminated_string or
+				                ParseState::is_unchecked_input or
+				                ParseState::is_zero_terminated_string ) ) {
 					DAW_UNREACHABLE( );
 				} else {
 					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
