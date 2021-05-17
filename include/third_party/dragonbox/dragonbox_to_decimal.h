@@ -15,8 +15,10 @@
 // is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.
 
-#ifndef JKJ_DRAGONBOX
-#define JKJ_DRAGONBOX
+#pragma once
+
+#include <daw/daw_algorithm.h>
+#include <daw/daw_bit_cast.h>
 
 #include <cassert>
 #include <cstdint>
@@ -100,15 +102,12 @@ namespace jkj::dragonbox {
 		static constexpr int carrier_bits =
 		  static_cast<int>( detail::physical_bits<carrier_uint> );
 
-		static inline T carrier_to_float( carrier_uint u ) noexcept {
-			T x;
-			std::memcpy( &x, &u, sizeof( carrier_uint ) );
-			return x;
+		static inline constexpr T carrier_to_float( carrier_uint u ) noexcept {
+			return DAW_BIT_CAST( T, u );
 		}
-		static inline carrier_uint float_to_carrier( T x ) noexcept {
-			carrier_uint u;
-			std::memcpy( &u, &x, sizeof( carrier_uint ) );
-			return u;
+
+		static inline constexpr carrier_uint float_to_carrier( T x ) noexcept {
+			return DAW_BIT_CAST( carrier_uint, x );
 		}
 
 		static inline constexpr unsigned int
@@ -321,18 +320,18 @@ namespace jkj::dragonbox {
 				int count = int( value_bits<UInt> );
 
 				auto n32 = std::uint32_t( n );
-				if constexpr( value_bits<UInt> > 32 ) {
+				if constexpr( value_bits < UInt >> 32 ) {
 					if( n32 == 0 ) {
 						n32 = std::uint32_t( n >> 32 );
 					} else if( n == n32 ) {
 						count -= ( value_bits<UInt> - 32 );
 					}
 				}
-				if constexpr( value_bits<UInt> > 16 ) {
+				if constexpr( value_bits < UInt >> 16 ) {
 					if( ( n32 & 0x0000ffff ) != 0 )
 						count -= 16;
 				}
-				if constexpr( value_bits<UInt> > 8 ) {
+				if constexpr( value_bits < UInt >> 8 ) {
 					if( ( n32 & 0x00ff00ff ) != 0 )
 						count -= 8;
 				}
@@ -356,7 +355,7 @@ namespace jkj::dragonbox {
 			struct uint128 {
 				uint128( ) = default;
 
-#if( defined( __GNUC__ ) || defined( __clang__ ) ) &&                          \
+#if( defined( __GNUC__ ) || defined( __clang__ ) ) && \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -417,7 +416,7 @@ namespace jkj::dragonbox {
 			// Get 128-bit result of multiplication of two 64-bit unsigned integers
 			JKJ_SAFEBUFFERS inline uint128 umul128( std::uint64_t x,
 			                                        std::uint64_t y ) noexcept {
-#if( defined( __GNUC__ ) || defined( __clang__ ) ) &&                          \
+#if( defined( __GNUC__ ) || defined( __clang__ ) ) && \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -454,7 +453,7 @@ namespace jkj::dragonbox {
 
 			JKJ_SAFEBUFFERS inline std::uint64_t
 			umul128_upper64( std::uint64_t x, std::uint64_t y ) noexcept {
-#if( defined( __GNUC__ ) || defined( __clang__ ) ) &&                          \
+#if( defined( __GNUC__ ) || defined( __clang__ ) ) && \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -558,7 +557,8 @@ namespace jkj::dragonbox {
 				return shift_amount == 0
 				         ? static_cast<std::int32_t>( integer_part )
 				         : static_cast<std::int32_t>(
-				             ( integer_part << static_cast<std::uint32_t>( shift_amount ) ) |
+				             ( integer_part
+				               << static_cast<std::uint32_t>( shift_amount ) ) |
 				             ( fractional_digits >> ( 64U - shift_amount ) ) );
 			}
 
@@ -2163,7 +2163,7 @@ namespace jkj::dragonbox {
 				struct assert_finite : base {
 					using input_validation_policy = assert_finite;
 					template<class Float>
-					static inline void
+					static inline constexpr void
 					validate_input( [[maybe_unused]] ieee754_bits<Float> br ) noexcept {
 						assert( br.is_finite( ) );
 					}
@@ -2549,7 +2549,7 @@ namespace jkj::dragonbox {
 
 			template<class TrailingZeroPolicy, class CorrectRoundingPolicy,
 			         class CachePolicy, class ReturnType, class IntervalType>
-			JKJ_FORCEINLINE JKJ_SAFEBUFFERS static void
+			JKJ_FORCEINLINE JKJ_SAFEBUFFERS static constexpr void
 			shorter_interval_case( ReturnType &ret_value, int const exponent,
 			                       IntervalType const interval_type ) noexcept {
 				// Compute k and beta
@@ -2868,8 +2868,10 @@ namespace jkj::dragonbox {
 					}
 
 					// Otherwise, work with the remainder
-					auto quotient = static_cast<std::uint32_t>( div::divide_by_pow10<8, 54, 0>( n ) );
-					auto remainder = static_cast<std::uint32_t>( static_cast<unsigned>( n ) - 1'0000'0000 * quotient );
+					auto quotient =
+					  static_cast<std::uint32_t>( div::divide_by_pow10<8, 54, 0>( n ) );
+					auto remainder = static_cast<std::uint32_t>(
+					  static_cast<unsigned>( n ) - 1'0000'0000 * quotient );
 
 					constexpr auto mod_inverse = std::uint32_t( divtable.mod_inv[1] );
 					constexpr auto max_quotient =
@@ -2921,7 +2923,7 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static inline carrier_uint
+			static inline constexpr carrier_uint
 			compute_mul( carrier_uint u, cache_entry_type const &cache ) noexcept {
 				if constexpr( format == ieee754_format::binary32 ) {
 					return wuint::umul96_upper32( u, cache );
@@ -2930,8 +2932,8 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static inline std::uint32_t compute_delta( cache_entry_type const &cache,
-			                                           int beta_minus_1 ) noexcept {
+			static inline std::uint32_t constexpr compute_delta(
+			  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
 				if constexpr( format == ieee754_format::binary32 ) {
 					return std::uint32_t( cache >> ( cache_bits - 1 - beta_minus_1 ) );
 				} else {
@@ -2940,9 +2942,9 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static inline bool compute_mul_parity( carrier_uint two_f,
-			                                       cache_entry_type const &cache,
-			                                       int beta_minus_1 ) noexcept {
+			static inline constexpr bool
+			compute_mul_parity( carrier_uint two_f, cache_entry_type const &cache,
+			                    int beta_minus_1 ) noexcept {
 				assert( beta_minus_1 >= 1 );
 				assert( beta_minus_1 < 64 );
 
@@ -2957,7 +2959,7 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static inline carrier_uint
+			static inline constexpr carrier_uint
 			compute_left_endpoint_for_shorter_interval_case(
 			  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
 				if constexpr( format == ieee754_format::binary32 ) {
@@ -2971,7 +2973,7 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static inline carrier_uint
+			static inline constexpr carrier_uint
 			compute_right_endpoint_for_shorter_interval_case(
 			  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
 				if constexpr( format == ieee754_format::binary32 ) {
@@ -2985,7 +2987,7 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static inline carrier_uint
+			static inline constexpr carrier_uint
 			compute_round_up_for_shorter_interval_case( cache_entry_type const &cache,
 			                                            int beta_minus_1 ) noexcept {
 				if constexpr( format == ieee754_format::binary32 ) {
@@ -3001,14 +3003,14 @@ namespace jkj::dragonbox {
 				}
 			}
 
-			static inline bool
+			static inline constexpr bool
 			is_right_endpoint_integer_shorter_interval( int exponent ) noexcept {
 				return exponent >=
 				         case_shorter_interval_right_endpoint_lower_threshold &&
 				       exponent <= case_shorter_interval_right_endpoint_upper_threshold;
 			}
 
-			static inline bool
+			static inline constexpr bool
 			is_left_endpoint_integer_shorter_interval( int exponent ) noexcept {
 				return exponent >=
 				         case_shorter_interval_left_endpoint_lower_threshold &&
@@ -3017,8 +3019,9 @@ namespace jkj::dragonbox {
 
 			enum class integer_check_case_id { fc_pm_half, fc };
 			template<integer_check_case_id case_id>
-			static inline bool is_product_integer( carrier_uint two_f, int exponent,
-			                                       int minus_k ) noexcept {
+			static inline constexpr bool is_product_integer( carrier_uint two_f,
+			                                                 int exponent,
+			                                                 int minus_k ) noexcept {
 				// Case I: f = fc +- 1/2
 				if constexpr( case_id == integer_check_case_id::fc_pm_half ) {
 					if( exponent < case_fc_pm_half_lower_threshold ) {
@@ -3285,5 +3288,3 @@ namespace jkj::dragonbox {
 #undef JKJ_HAS_COUNTR_ZERO_INTRINSIC
 #undef JKJ_FORCEINLINE
 #undef JKJ_SAFEBUFFERS
-
-#endif

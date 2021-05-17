@@ -15,20 +15,22 @@
 // is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.
 
-#ifndef JKJ_DRAGONBOX_FP_TO_CHARS
-#define JKJ_DRAGONBOX_FP_TO_CHARS
+#pragma once
 
 #include "dragonbox_to_decimal.h"
 
+#include <daw/daw_algorithm.h>
+
 namespace jkj::dragonbox {
 	namespace to_chars_detail {
-		char *to_chars( unsigned_fp_t<float> v, char *buffer );
-		char *to_chars( unsigned_fp_t<double> v, char *buffer );
+		inline char *to_chars( unsigned_fp_t<float> v, char *buffer );
+		inline char *to_chars( unsigned_fp_t<double> v, char *buffer );
 	} // namespace to_chars_detail
 
 	// Returns the next-to-end position
 	template<class Float, class... Policies>
-	inline char *to_chars_n( Float x, char *buffer, Policies... policies ) {
+	inline char *to_chars_n( Float x, char *buffer,
+	                                   Policies... policies ) {
 		using namespace jkj::dragonbox::detail::policy_impl;
 		using policy_holder = decltype( make_policy_holder(
 		  base_default_pair_list<
@@ -60,19 +62,19 @@ namespace jkj::dragonbox {
 				              typename policy_holder::cache_policy{ } ),
 				  buffer );
 			} else {
-				std::memcpy( buffer, "0E0", 3 );
+				daw::algorithm::copy_n( "0E0", buffer, 3 );
 				return buffer + 3;
 			}
 		} else {
 			if( ( br.u << ( ieee754_format_info::exponent_bits + 1 ) ) != 0 ) {
-				std::memcpy( buffer, "NaN", 3 );
+				daw::algorithm::copy_n( "NaN", buffer, 3 );
 				return buffer + 3;
 			} else {
 				if( br.is_negative( ) ) {
 					*buffer = '-';
 					++buffer;
 				}
-				std::memcpy( buffer, "Infinity", 8 );
+				daw::algorithm::copy_n( "Infinity", buffer, 8 );
 				return buffer + 8;
 			}
 		}
@@ -80,11 +82,10 @@ namespace jkj::dragonbox {
 
 	// Null-terminate and bypass the return value of fp_to_chars_n
 	template<class Float, class... Policies>
-	inline char *to_chars( Float x, char *buffer, Policies... policies ) {
+	inline char *to_chars( Float x, char *buffer,
+	                                 Policies... policies ) {
 		auto ptr = to_chars_n( x, buffer, policies... );
 		*ptr = '\0';
 		return ptr;
 	}
 } // namespace jkj::dragonbox
-
-#endif

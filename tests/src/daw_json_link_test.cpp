@@ -433,29 +433,28 @@ void test128( ) {
 #endif
 #endif
 
-template<bool KnownBounds = false>
+template<bool KnownBounds = false, bool Precise = false>
 unsigned long long test_dblparse( std::string_view num,
                                   bool always_disp = false ) {
 	if( always_disp ) {
 		std::cout << "testing: '" << num << '\'';
 	}
-	double lib_parse_dbl = [&] {
-		if constexpr( KnownBounds ) {
-			auto rng = daw::json::NoCommentSkippingPolicyChecked(
-			  num.data( ), num.data( ) + num.size( ) );
-			rng = daw::json::json_details::skip_number( rng );
-			using json_member =
-			  daw::json::json_details::unnamed_default_type_mapping<double>;
-			return daw::json::json_details::parse_value<json_member, KnownBounds>(
-			  daw::json::ParseTag<json_member::expected_type>{ }, rng );
-		} else {
-			return daw::json::from_json<
-			  double, daw::json::NoCommentSkippingPolicyChecked, KnownBounds>( num );
-		}
-	}( );
 	char *nend = nullptr;
 	double const strod_parse_dbl = std::strtod( num.data( ), &nend );
 
+	constexpr auto dbl_lib_parser = []( std::string_view number ) {
+		using namespace daw::json;
+		auto rng = BasicParsePolicy<parse_options( Precise ? IEEE754Precise::yes
+		                                                   : IEEE754Precise::no )>(
+		  std::data( number ), daw::data_end( number ) );
+		if constexpr( KnownBounds ) {
+			rng = json_details::skip_number( rng );
+		}
+		using json_member = json_details::unnamed_default_type_mapping<double>;
+		return json_details::parse_value<json_member, KnownBounds>(
+		  ParseTag<json_member::expected_type>{ }, rng );
+	};
+	auto lib_parse_dbl = dbl_lib_parser( num );
 	std::uint64_t const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
 	std::uint64_t const ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
 	auto const diff = std::max( ui0, ui1 ) - std::min( ui0, ui1 );
@@ -466,25 +465,12 @@ unsigned long long test_dblparse( std::string_view num,
 		std::cout.precision( old_precision );
 	}
 #ifndef NDEBUG
-	if( diff > 2 ) {
+	if( diff > ( Precise ? 1 : 2 ) ) {
 		auto const old_precision = std::cout.precision( );
 		// Do again to do it from debugger
 
-		lib_parse_dbl = [&] {
-			if constexpr( KnownBounds ) {
-				auto rng = daw::json::NoCommentSkippingPolicyChecked(
-				  num.data( ), num.data( ) + num.size( ) );
-				rng = daw::json::json_details::skip_number( rng );
-				using json_member =
-				  daw::json::json_details::unnamed_default_type_mapping<double>;
-				return daw::json::json_details::parse_value<json_member, KnownBounds>(
-				  daw::json::ParseTag<json_member::expected_type>{ }, rng );
-			} else {
-				return daw::json::from_json<
-				  double, daw::json::NoCommentSkippingPolicyChecked, KnownBounds>(
-				  num );
-			}
-		}( );
+		lib_parse_dbl = dbl_lib_parser( num );
+
 		std::cout.precision( std::numeric_limits<double>::max_digits10 );
 		std::cout << "orig: " << num << '\n';
 		std::cout << "daw_json_link: " << lib_parse_dbl << '\n'
@@ -575,7 +561,8 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 	return diff;
 }
 
-template<bool KnownBounds = false, int NUM_VALS = 1'000'000>
+template<bool KnownBounds = false, bool Precise = false,
+         int NUM_VALS = 1'000'000>
 void test_lots_of_doubles( ) {
 	auto rd = std::random_device( );
 	auto rng = std::mt19937_64( rd( ) );
@@ -606,7 +593,7 @@ void test_lots_of_doubles( ) {
 		char *nend = nullptr;
 		double const strod_parse_dbl = std::strtod( buffer, &nend );
 
-		dist[test_dblparse<KnownBounds>( buffer )].add( strod_parse_dbl );
+		dist[test_dblparse<KnownBounds, Precise>( buffer )].add( strod_parse_dbl );
 	}
 	std::cout << std::dec << "distribution of diff:\n";
 	for( auto const &p : dist ) {
@@ -801,6 +788,7 @@ int main( int, char ** )
 	test_dblparse( "5.9409999999999999999996e-324", true );
 	test_dblparse( "9728625633136924125.18356202983677566044e-308", true );
 	test_dblparse( "9728625633136924125.18356202983677566044e-500", true );
+	test_dblparse( "10199214983525025199.13135016100190689227e308", true );
 	test_dblparse( "10199214983525025199.13135016100190689227e-308", true );
 	test_dblparse( "0.000000000000000000000000000000000000001e-308", true );
 	test_dblparse( "6372891218502368041059e64", true );
@@ -835,8 +823,16 @@ int main( int, char ** )
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
 	std::cout << "result: " << from_json<long double>( "0.9868011474609375" )
 	          << '\n';
+	std::cout << "Default FP Parse\n";
+	std::cout << "Unknown Bounds\n";
 	test_lots_of_doubles( );
+	std::cout << "Known Bounds\n";
 	test_lots_of_doubles<true>( );
+	std::cout << "Precise FP Parse\n";
+	std::cout << "Unknown Bounds\n";
+	test_lots_of_doubles<false, true>( );
+	std::cout << "Known Bounds\n";
+	test_lots_of_doubles<true, true>( );
 	if constexpr( sizeof( double ) < sizeof( long double ) ) {
 		std::cout << "long double test\n";
 		std::cout << std::setprecision(

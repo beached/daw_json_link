@@ -8,11 +8,11 @@
 
 #pragma once
 
+#include "daw_fp_fallback.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_policy.h"
 #include "daw_json_parse_real_power10.h"
 #include "daw_json_parse_unsigned_int.h"
-#include "fast_double_parser.h"
 #include "version.h"
 
 #include <daw/daw_cxmath.h>
@@ -95,6 +95,19 @@ namespace daw::json {
 					fract_last = parse_state.last;
 				}
 
+				constexpr auto max_storage_digits = static_cast<std::ptrdiff_t>(
+				  daw::numeric_limits<std::uint64_t>::digits10 );
+				bool use_strtod = [&] {
+					if constexpr( std::is_floating_point_v<Result> and
+					              ParseState::precise_ieee754 ) {
+						return DAW_UNLIKELY( ( ( whole_last - whole_first ) +
+						                       ( fract_first ? fract_last - fract_first
+						                                     : 0 ) ) > max_storage_digits );
+					} else {
+						return false;
+					}
+				}( );
+
 				Result const sign = [&] {
 					if( *whole_first == '-' ) {
 						++whole_first;
@@ -102,8 +115,6 @@ namespace daw::json {
 					}
 					return static_cast<Result>( 1.0 );
 				}( );
-				constexpr auto max_storage_digits = static_cast<std::ptrdiff_t>(
-				  daw::numeric_limits<std::uint64_t>::digits10 );
 				constexpr auto max_exponent = static_cast<std::ptrdiff_t>(
 				  daw::numeric_limits<Result>::max_digits10 + 1 );
 				using unsigned_t =
@@ -114,6 +125,7 @@ namespace daw::json {
 				std::ptrdiff_t fract_exponent_available =
 				  fract_first ? fract_last - fract_first : 0;
 				std::ptrdiff_t exponent = 0;
+
 				if( whole_exponent_available > max_exponent ) {
 					whole_last = whole_first + max_exponent;
 					whole_exponent_available -= max_exponent;
@@ -122,6 +134,11 @@ namespace daw::json {
 					exponent = whole_exponent_available;
 				} else {
 					whole_exponent_available = max_exponent - whole_exponent_available;
+					if constexpr( ParseState::precise_ieee754 ) {
+						use_strtod =
+						  DAW_UNLIKELY( use_strtod | ( fract_exponent_available >
+						                               whole_exponent_available ) );
+					}
 					fract_exponent_available =
 					  std::min( fract_exponent_available, whole_exponent_available );
 					exponent = -fract_exponent_available;
@@ -159,12 +176,16 @@ namespace daw::json {
 						return r;
 					}( );
 				}
-				if constexpr( ParseState::precise_ieee754 and
+				if constexpr( std::is_floating_point_v<Result> and
+				              ParseState::precise_ieee754 and
 				              ( std::is_same_v<Result, double> or
 				                std::is_same_v<Result, float> ) ) {
-					return static_cast<Result>( fast_double_parser::compute_float_64(
-					  ParseState::exec_tag, exponent, significant_digits,
-					  static_cast<double>( sign ) ) );
+					if( DAW_UNLIKELY( use_strtod or exponent > 22 or exponent < -22 ) ) {
+						return json_details::parse_with_strtod<Result>( parse_state.first );
+					}
+					return sign * power10<Result>(
+					                ParseState::exec_tag,
+					                static_cast<Result>( significant_digits ), exponent );
 				} else {
 					return sign * power10<Result>(
 					                ParseState::exec_tag,
@@ -183,6 +204,7 @@ namespace daw::json {
 				    parse_policy_details::is_number_start( parse_state.front( ) ),
 				  ErrorReason::InvalidNumberStart, parse_state );
 
+				char const *const orig_first = parse_state.first;
 				Result const sign = [&] {
 					if( parse_state.front( ) == '-' ) {
 						parse_state.remove_prefix( );
@@ -206,18 +228,21 @@ namespace daw::json {
 				  std::min( parse_state.last - parse_state.first, max_exponent );
 
 				unsigned_t significant_digits = 0;
-				char const *last_char = parse_real_digits_while_number <
-				                          ParseState::is_zero_terminated_string or
-				                        ParseState::is_unchecked_input >
-				                          ( first, whole_last, significant_digits );
-
+				char const *last_char = parse_real_digits_while_number<(
+				  ParseState::is_zero_terminated_string or
+				  ParseState::is_unchecked_input )>( first, whole_last,
+				                                     significant_digits );
+				std::ptrdiff_t sig_digit_count = last_char - parse_state.first;
+				bool use_strtod = DAW_UNLIKELY( sig_digit_count < max_storage_digits );
 				signed_t exponent = [&] {
-					if( last_char >= whole_last ) {
+					if( DAW_UNLIKELY( last_char >= whole_last ) ) {
+						use_strtod = true;
 						// We have sig digits we cannot parse because there isn't enough
 						// room in a std::uint64_t
 						char const *ptr =
-						  skip_digits < ParseState::is_zero_terminated_string or
-						  ParseState::is_unchecked_input > ( last_char, parse_state.last );
+						  skip_digits<( ParseState::is_zero_terminated_string or
+						                ParseState::is_unchecked_input )>(
+						    last_char, parse_state.last );
 						auto const diff = ptr - last_char;
 						last_char = ptr;
 						return static_cast<signed_t>( diff );
@@ -234,9 +259,9 @@ namespace daw::json {
 					++first;
 					if( exponent != 0 ) {
 						if( first < parse_state.last ) {
-							first =
-							  skip_digits < ParseState::is_zero_terminated_string or
-							  ParseState::is_unchecked_input > ( first, parse_state.last );
+							first = skip_digits<( ParseState::is_zero_terminated_string or
+							                      ParseState::is_unchecked_input )>(
+							  first, parse_state.last );
 						}
 					} else {
 						char const *fract_last =
@@ -248,6 +273,7 @@ namespace daw::json {
 						last_char =
 						  parse_real_digits_while_number<ParseState::is_unchecked_input>(
 						    first, fract_last, significant_digits );
+						sig_digit_count += last_char - first;
 						exponent -= static_cast<signed_t>( last_char - first );
 						first = last_char;
 						if( ( first >= fract_last ) & ( first < parse_state.last ) ) {
@@ -293,12 +319,19 @@ namespace daw::json {
 					return static_cast<signed_t>( 0 );
 				}( );
 				parse_state.first = first;
-				if constexpr( ParseState::precise_ieee754 and
+
+				if constexpr( std::is_floating_point_v<Result> and
+				              ParseState::precise_ieee754 and
 				              ( std::is_same_v<Result, double> or
 				                std::is_same_v<Result, float> ) ) {
-					return static_cast<Result>( fast_double_parser::compute_float_64(
-					  ParseState::exec_tag, exponent, significant_digits,
-					  static_cast<double>( sign ) ) );
+					if( DAW_UNLIKELY( not use_strtod and exponent <= 22 and
+					                  exponent <= -22 ) ) {
+						return sign *
+						       power10<Result>( ParseState::exec_tag,
+						                        static_cast<Result>( significant_digits ),
+						                        exponent );
+					}
+					return json_details::parse_with_strtod<Result>( orig_first );
 				} else {
 					return sign * power10<Result>(
 					                ParseState::exec_tag,

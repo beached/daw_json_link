@@ -37,11 +37,15 @@
 //  These modifications, together with other contents of this file may be used
 //  under the same terms as the original contents.
 
+#pragma once
+
 #include "dragonbox_to_chars.h"
+
+#include <daw/daw_algorithm.h>
 
 namespace jkj::dragonbox {
 	namespace to_chars_detail {
-		static constexpr char radix_100_table[] = {
+		inline constexpr char radix_100_table[] = {
 		  '0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6', '0',
 		  '7', '0', '8', '0', '9', '1', '0', '1', '1', '1', '2', '1', '3', '1', '4',
 		  '1', '5', '1', '6', '1', '7', '1', '8', '1', '9', '2', '0', '2', '1', '2',
@@ -149,7 +153,8 @@ namespace jkj::dragonbox {
 		}
 
 		template<class Float>
-		static inline char *to_chars_impl( unsigned_fp_t<Float> v, char *buffer ) {
+		inline char *to_chars_impl( unsigned_fp_t<Float> v,
+		                                      char *buffer ) {
 			auto output = v.significand;
 			auto const olength = decimal_length( output );
 
@@ -181,10 +186,14 @@ namespace jkj::dragonbox {
 					const std::uint32_t c1 = ( c / 100 ) << 1;
 					const std::uint32_t d0 = ( d % 100 ) << 1;
 					const std::uint32_t d1 = ( d / 100 ) << 1;
-					memcpy( buffer + olength - i - 1, radix_100_table + c0, 2 );
-					memcpy( buffer + olength - i - 3, radix_100_table + c1, 2 );
-					memcpy( buffer + olength - i - 5, radix_100_table + d0, 2 );
-					memcpy( buffer + olength - i - 7, radix_100_table + d1, 2 );
+					daw::algorithm::copy_n( radix_100_table + c0,
+					                        buffer + olength - i - 1, 2 );
+					daw::algorithm::copy_n( radix_100_table + c1,
+					                        buffer + olength - i - 3, 2 );
+					daw::algorithm::copy_n( radix_100_table + d0,
+					                        buffer + olength - i - 5, 2 );
+					daw::algorithm::copy_n( radix_100_table + d1,
+					                        buffer + olength - i - 7, 2 );
 					i += 8;
 				}
 			}
@@ -199,14 +208,17 @@ namespace jkj::dragonbox {
 				output2 /= 10000;
 				const std::uint32_t c0 = ( c % 100 ) << 1;
 				const std::uint32_t c1 = ( c / 100 ) << 1;
-				memcpy( buffer + olength - i - 1, radix_100_table + c0, 2 );
-				memcpy( buffer + olength - i - 3, radix_100_table + c1, 2 );
+				daw::algorithm::copy_n( radix_100_table + c0, buffer + olength - i - 1,
+				                        2 );
+				daw::algorithm::copy_n( radix_100_table + c1, buffer + olength - i - 3,
+				                        2 );
 				i += 4;
 			}
 			if( output2 >= 100 ) {
 				const std::uint32_t c = ( output2 % 100 ) << 1;
 				output2 /= 100;
-				memcpy( buffer + olength - i - 1, radix_100_table + c, 2 );
+				daw::algorithm::copy_n( radix_100_table + c, buffer + olength - i - 1,
+				                        2 );
 				i += 2;
 			}
 			if( output2 >= 10 ) {
@@ -239,11 +251,15 @@ namespace jkj::dragonbox {
 			if constexpr( sizeof( Float ) == 8 ) {
 				if( exp >= 100 ) {
 					const std::int32_t c = exp % 10;
-					memcpy( buffer, radix_100_table + static_cast<std::ptrdiff_t>( 2 * ( exp / 10 )), 2 );
+					daw::algorithm::copy_n(
+					  radix_100_table + static_cast<std::ptrdiff_t>( 2 * ( exp / 10 ) ),
+					  buffer, 2 );
 					buffer[2] = static_cast<char>( '0' + c );
 					buffer += 3;
 				} else if( exp >= 10 ) {
-					memcpy( buffer, radix_100_table + static_cast<std::ptrdiff_t>( 2 * exp), 2 );
+					daw::algorithm::copy_n( radix_100_table +
+					                          static_cast<std::ptrdiff_t>( 2 * exp ),
+					                        buffer, 2 );
 					buffer += 2;
 				} else {
 					*buffer = static_cast<char>( '0' + exp );
@@ -251,7 +267,9 @@ namespace jkj::dragonbox {
 				}
 			} else {
 				if( exp >= 10 ) {
-					memcpy( buffer, radix_100_table + static_cast<std::ptrdiff_t>(2 * exp), 2 );
+					daw::algorithm::copy_n( radix_100_table +
+					                          static_cast<std::ptrdiff_t>( 2 * exp ),
+					                        buffer, 2 );
 					buffer += 2;
 				} else {
 					*buffer = static_cast<char>( '0' + exp );
