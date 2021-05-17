@@ -8,12 +8,13 @@
 
 #pragma once
 
-#include "daw_json_skip.h"
 #include "version.h"
 
 #include "daw_json_arrow_proxy.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_name.h"
+#include "daw_json_skip.h"
+#include "daw_json_traits.h"
 
 #include <daw/daw_move.h>
 
@@ -559,5 +560,10 @@ namespace daw::json {
 				return basic_json_value<NewParseState>( DAW_MOVE( new_range ) );
 			}
 		};
+
+		namespace json_details {
+			template<typename T>
+			inline constexpr bool is_string_view_like_v<basic_json_value<T>> = false;
+		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

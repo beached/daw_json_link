@@ -14,7 +14,8 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
       message("Clang ${CMAKE_CXX_COMPILER_VERSION} detected")
 			add_compile_options( 
 				-Wall -Wextra -pedantic -Weverything 
-				-Wunreachable-code 
+				-Wunreachable-code
+				-Wconversion
 				-Wzero-as-null-pointer-constant 
 				-ftemplate-backtrace-limit=0 
 				-Wno-c++98-compat 
@@ -75,8 +76,9 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	add_compile_options(--param max-gcse-memory=260000000 
 		-Wall 
 		-Wextra 
-		-pedantic 
-		-Wno-deprecated-declarations 
+		-pedantic
+		-Wconversion
+		-Wno-deprecated-declarations
 		-Wduplicated-cond 
 		-Wlogical-op 
 		-Wold-style-cast 

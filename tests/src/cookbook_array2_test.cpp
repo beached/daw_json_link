@@ -69,14 +69,12 @@ int main( int argc, char **argv )
 
 	using namespace daw::json;
 
-	auto const ve = from_json_array<daw::cookbook_array2::MyClass4>(
-	  { data.data( ), data.size( ) } );
+	auto const ve = from_json_array<daw::cookbook_array2::MyClass4>( data );
 
 	test_assert( ve.size( ) == 2, "Expected 2 items" );
 	auto const str = to_json_array( ve );
 	puts( str.c_str( ) );
-	auto const ve2 = from_json_array<daw::cookbook_array2::MyClass4>(
-	  { str.data( ), str.size( ) } );
+	auto const ve2 = from_json_array<daw::cookbook_array2::MyClass4>( str );
 
 	test_assert( ve == ve2, "Roundtrip failed" );
 }

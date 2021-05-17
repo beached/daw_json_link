@@ -73,61 +73,67 @@ namespace daw::citm {
 namespace daw::json {
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>>(
-	  std::string_view json_data, std::string_view path );
+	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data,
+	                                     std::string_view path );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>>(
-	  std::string_view json_data, std::string_view path );
+	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data,
+	                                     std::string_view path );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>>(
-	  std::string_view json_data, std::string_view path );
+	          SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data,
+	                                     std::string_view path );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>>(
-	  std::string_view json_data, std::string_view path );
+	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data,
+	                                     std::string_view path );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>>(
-	  std::string_view json_data, std::string_view path );
+	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data,
+	                                     std::string_view path );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>>(
-	  std::string_view json_data, std::string_view path );
+	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data,
+	                                     std::string_view path );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>>(
-	  std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyChecked<constexpr_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>>(
-	  std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>>(
-	  std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>>(
-	  std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>>(
-	  std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyChecked<simd_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data );
 
 	extern template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
-	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>>(
-	  std::string_view json_data );
+	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>, false,
+	          daw::citm::citm_object_t>( std::string_view const &json_data );
 } // namespace daw::json

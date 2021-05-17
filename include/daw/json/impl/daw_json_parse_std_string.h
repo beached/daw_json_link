@@ -2,6 +2,7 @@
 
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
+#include "daw_not_const_ex_functions.h"
 #include "version.h"
 
 #include <ciso646>

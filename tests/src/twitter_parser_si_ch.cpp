@@ -16,10 +16,10 @@ namespace daw::json {
 	template daw::twitter::twitter_object_t
 	from_json<daw::twitter::twitter_object_t,
 	          SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
-	  std::string_view json_data, std::string_view path );
+	  std::string_view const & json_data, std::string_view path );
 
 	template daw::twitter::twitter_object_t
 	from_json<daw::twitter::twitter_object_t,
 	          SIMDNoCommentSkippingPolicyChecked<daw::json::simd_exec_tag>>(
-	  std::string_view json_data );
+	  std::string_view const & json_data );
 } // namespace daw::json

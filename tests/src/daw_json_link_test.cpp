@@ -24,6 +24,7 @@
 #include <optional>
 #include <random>
 #include <sstream>
+#include <string_view>
 #include <vector>
 
 static_assert( daw::is_arithmetic_v<int> );
@@ -219,7 +220,7 @@ namespace daw::json {
 	}; // namespace daw::json
 } // namespace daw::json
 
-DAW_CONSTEXPR auto const test_001_t_json_data =
+DAW_CONSTEXPR char const test_001_t_json_data[] =
   R"({
 	    "d": -1.234e+3,
 	    "i": 55,
@@ -797,6 +798,7 @@ int main( int, char ** )
 	test_dblparse( "9223372036854776000e+20", true );
 	test_dblparse( "9223372036854776000e-2000", true );
 	test_dblparse( "2e-1000", true );
+	test_dblparse( "42.69", true );
 	test_dblparse( "1e-1000", true );
 	test_dblparse( "78146521210545563.1397450998275178158e-308", true );
 	test_dblparse( "8725540998407961.3743556965848965343e-308", true );

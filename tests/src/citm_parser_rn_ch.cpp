@@ -15,10 +15,10 @@ namespace daw::json {
 	template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
 	          SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>>(
-	  std::string_view json_data, std::string_view path );
+	  std::string_view const & json_data, std::string_view path );
 
 	template daw::citm::citm_object_t
 	from_json<daw::citm::citm_object_t,
 	          SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>>(
-	  std::string_view json_data );
+	  std::string_view const & json_data );
 } // namespace daw::json

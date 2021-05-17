@@ -282,6 +282,32 @@ namespace daw::json {
 			using json_class_constructor_t = std::conditional_t<
 			  daw::is_detected<json_data_contract_constructor_t, T>::value,
 			  json_data_contract_constructor_t<T>, Default>;
+
+			namespace is_string_like_impl {
+				template<typename T>
+				using has_data_test = decltype( std::data( std::declval<T>( ) ) );
+
+				template<typename T>
+				using has_size_test = decltype( std::size( std::declval<T>( ) ) );
+			} // namespace is_string_like_impl
+			template<typename T>
+			inline constexpr bool is_string_view_like_v =
+			  daw::is_detected_v<is_string_like_impl::has_data_test, T>
+			    and daw::is_detected_v<is_string_like_impl::has_size_test, T>;
+
+			static_assert( is_string_view_like_v<std::string_view> );
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+
+		/***
+		 * Trait for passively exploiting the zero termination when the type
+		 * guarantees it.
+		 */
+		template<typename>
+		inline constexpr bool is_zero_terminated_string_v = false;
+
+		template<typename CharT, typename Traits, typename Alloc>
+		inline constexpr bool
+		  is_zero_terminated_string_v<std::basic_string<CharT, Traits, Alloc>> =
+		    true;
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

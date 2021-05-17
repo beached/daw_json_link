@@ -32,10 +32,15 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-		         typename Result>
-		[[maybe_unused, nodiscard]] constexpr Result
-		from_json( std::string_view json_data ) {
-			daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
+		         typename Result, typename String>
+		[[maybe_unused, nodiscard]] constexpr auto from_json( String &&json_data )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+
+			daw_json_assert( std::size( json_data ) != 0,
+			                 ErrorReason::EmptyJSONDocument );
+			daw_json_assert( std::data( json_data ) != nullptr,
+			                 ErrorReason::EmptyJSONPath );
+
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 			  "Missing specialization of daw::json::json_data_contract for class "
@@ -71,12 +76,18 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-		         typename Result, typename Allocator>
-		[[maybe_unused, nodiscard]] constexpr Result
-		from_json_alloc( std::string_view json_data, Allocator const &alloc ) {
+		         typename Result, typename String, typename Allocator>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json_alloc( String &&json_data, Allocator const &alloc )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+
+			daw_json_assert( std::size( json_data ) != 0,
+			                 ErrorReason::EmptyJSONDocument );
+			daw_json_assert( std::data( json_data ) != nullptr,
+			                 ErrorReason::EmptyJSONPath );
+
 			using json_member =
 			  json_details::unnamed_default_type_mapping<JsonMember>;
-			daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
 			using json_member =
 			  json_details::unnamed_default_type_mapping<JsonMember>;
 			static_assert(
@@ -117,12 +128,20 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-		         typename Result>
-		[[maybe_unused, nodiscard]] constexpr Result
-		from_json( std::string_view json_data, std::string_view member_path ) {
+		         typename Result, typename String>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json( String &&json_data, std::string_view member_path )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+
+			daw_json_assert( std::size( json_data ) != 0,
+			                 ErrorReason::EmptyJSONDocument );
+			daw_json_assert( std::data( json_data ) != nullptr,
+			                 ErrorReason::EmptyJSONPath );
+			daw_json_assert( std::data( member_path ) != nullptr,
+			                 ErrorReason::EmptyJSONPath );
+
 			using json_member =
 			  json_details::unnamed_default_type_mapping<JsonMember>;
-			daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
 			using json_member =
 			  json_details::unnamed_default_type_mapping<JsonMember>;
 			static_assert(
@@ -165,11 +184,19 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonMember, typename ParsePolicy, bool KnownBounds,
-		         typename Result, typename Allocator>
-		[[maybe_unused, nodiscard]] constexpr Result
-		from_json_alloc( std::string_view json_data, std::string_view member_path,
-		                 Allocator const &alloc ) {
-			daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
+		         typename Result, typename String, typename Allocator>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json_alloc( String &&json_data, std::string_view member_path,
+		                 Allocator const &alloc )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
+
+			daw_json_assert( std::size( json_data ) != 0,
+			                 ErrorReason::EmptyJSONDocument );
+			daw_json_assert( std::data( json_data ) != nullptr,
+			                 ErrorReason::EmptyJSONDocument );
+			daw_json_assert( std::data( member_path ) != nullptr,
+			                 ErrorReason::EmptyJSONPath );
+
 			using json_member =
 			  json_details::unnamed_default_type_mapping<JsonMember>;
 			static_assert(
@@ -288,11 +315,16 @@ namespace daw::json {
 		 * @throws daw::json::json_exception
 		 */
 		template<typename JsonElement, typename Container, typename ParsePolicy,
-		         typename Constructor, bool KnownBounds>
-		[[maybe_unused, nodiscard]] constexpr Container
-		from_json_array( std::string_view json_data,
-		                 std::string_view member_path ) {
-			daw_json_assert( not json_data.empty( ), ErrorReason::EmptyJSONDocument );
+		         typename Constructor, bool KnownBounds, typename String>
+		[[maybe_unused, nodiscard]] constexpr auto
+		from_json_array( String &&json_data, std::string_view member_path )
+		  -> std::enable_if_t<json_details::is_string_view_like_v<String>,
+		                      Container> {
+
+			daw_json_assert( std::size( json_data ) != 0,
+			                 ErrorReason::EmptyJSONDocument );
+			daw_json_assert( std::data( json_data ) != nullptr,
+			                 ErrorReason::EmptyJSONPath );
 			daw_json_assert( std::data( member_path ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
 			static_assert(
