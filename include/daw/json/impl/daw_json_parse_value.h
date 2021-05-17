@@ -122,10 +122,11 @@ namespace daw::json::json_details {
 		if constexpr( KnownBounds ) {
 			return construct_value<json_result<JsonMember>>(
 			  constructor_t{ }, rng,
-			  sign *
+			  static_cast<element_t>(
+			    sign *
 			    static_cast<int_type>(
 			      unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
-			        Range::exec_tag, rng ) ) );
+			        Range::exec_tag, rng ) ) ) );
 		} else {
 			auto result = construct_value<json_result<JsonMember>>(
 			  constructor_t{ }, rng,
