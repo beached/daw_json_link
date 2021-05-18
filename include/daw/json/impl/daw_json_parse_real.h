@@ -310,9 +310,11 @@ namespace daw::json {
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
 						unsigned_t exp_tmp = 0;
-						last_char =
-						  parse_real_digits_while_number<ParseState::is_unchecked_input>(
-						    first, parse_state.last, exp_tmp );
+						last_char = parse_real_digits_while_number<(
+						  ParseState::is_zero_terminated_string or
+						  ParseState::is_unchecked_input or
+						  ParseState::is_zero_terminated_string )>( first, parse_state.last,
+						                                            exp_tmp );
 						first = last_char;
 						if( exp_sign ) {
 							return -static_cast<signed_t>( exp_tmp );
@@ -324,17 +326,13 @@ namespace daw::json {
 				parse_state.first = first;
 
 				if constexpr( std::is_floating_point_v<Result> and
-				              ParseState::precise_ieee754 and
-				              ( std::is_same_v<Result, double> or
-				                std::is_same_v<Result, float> ) ) {
-					if( DAW_UNLIKELY( not use_strtod and exponent <= 22 and
-					                  exponent <= -22 ) ) {
-						return sign *
-						       power10<Result>( ParseState::exec_tag,
-						                        static_cast<Result>( significant_digits ),
-						                        exponent );
+				              ParseState::precise_ieee754 ) {
+					if( DAW_UNLIKELY( use_strtod or exponent > 22 or exponent < -22 ) ) {
+						return json_details::parse_with_strtod<Result>( orig_first );
 					}
-					return json_details::parse_with_strtod<Result>( orig_first );
+					return sign * power10<Result>(
+					                ParseState::exec_tag,
+					                static_cast<Result>( significant_digits ), exponent );
 				} else {
 					return sign * power10<Result>(
 					                ParseState::exec_tag,
