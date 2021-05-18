@@ -27,7 +27,7 @@ namespace daw::json {
 			 * Skip a string, after the initial quote has been skipped already
 			 */
 			template<typename ParseState>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
 			skip_string_nq( ParseState &parse_state ) {
 				auto result = parse_state;
 				result.counter =
@@ -44,7 +44,7 @@ namespace daw::json {
 			 * Skip a string and store the first escaped element's position, if any
 			 */
 			template<typename ParseState>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
 			skip_string( ParseState &parse_state ) {
 				if( parse_state.empty( ) ) {
 					return parse_state;
@@ -60,8 +60,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] static constexpr ParseState
-			skip_true( ParseState &parse_state ) {
+			[[nodiscard]] constexpr ParseState skip_true( ParseState &parse_state ) {
 				auto result = parse_state;
 				if constexpr( ( ParseState::is_zero_terminated_string or
 				                ParseState::is_unchecked_input ) ) {
@@ -80,8 +79,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] static constexpr ParseState
-			skip_false( ParseState &parse_state ) {
+			[[nodiscard]] constexpr ParseState skip_false( ParseState &parse_state ) {
 				auto result = parse_state;
 				if constexpr( ( ParseState::is_zero_terminated_string or
 				                ParseState::is_unchecked_input ) ) {
@@ -100,8 +98,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			[[nodiscard]] static constexpr ParseState
-			skip_null( ParseState &parse_state ) {
+			[[nodiscard]] constexpr ParseState skip_null( ParseState &parse_state ) {
 				if constexpr( ( ParseState::is_zero_terminated_string or
 				                ParseState::is_unchecked_input ) ) {
 					parse_state.remove_prefix( 4 );
@@ -123,7 +120,7 @@ namespace daw::json {
 			}
 
 			template<bool skip_end_check>
-			DAW_ATTRIBUTE_FLATTEN [[nodiscard]] static inline constexpr char const *
+			DAW_ATTRIBUTE_FLATTEN [[nodiscard]] inline constexpr char const *
 			skip_digits( char const *first, char const *const last ) {
 				unsigned dig = parse_digit( *first );
 				while( dig < 10 ) {
@@ -142,7 +139,7 @@ namespace daw::json {
 			 * ParseState
 			 */
 			template<typename ParseState>
-			[[nodiscard]] static constexpr ParseState
+			[[nodiscard]] constexpr ParseState
 			skip_number( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
@@ -212,7 +209,7 @@ namespace daw::json {
 			 * the member should be if that can increase performance
 			 */
 			template<typename ParseState>
-			[[nodiscard]] static inline constexpr ParseState
+			[[nodiscard]] inline constexpr ParseState
 			skip_value( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
@@ -244,9 +241,10 @@ namespace daw::json {
 				case '8':
 				case '9':
 					return skip_number( parse_state );
+				case '\0':
+					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
 				}
-				if constexpr( ( ParseState::is_zero_terminated_string or
-				                ParseState::is_unchecked_input ) ) {
+				if constexpr( ParseState::is_unchecked_input ) {
 					DAW_UNREACHABLE( );
 				} else {
 					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
