@@ -214,19 +214,23 @@ namespace daw::json {
 				value |= new_bits;
 			}
 
-			template<typename Policy>
-			constexpr policy_options_t set_bits( policy_options_t const &v,
-			                                     Policy e ) {
-				static_assert( is_policy_flag<Policy>,
+			template<typename Policy, typename... Policies>
+			constexpr policy_options_t set_bits( policy_options_t value, Policy pol,
+			                                     Policies... pols ) {
+				static_assert( ( is_policy_flag<Policies> and ... ),
 				               "Only registered policy types are allowed" );
-				auto value = v;
-				unsigned new_bits = static_cast<unsigned>( e );
+
+				unsigned new_bits = static_cast<unsigned>( pol );
 				constexpr unsigned mask = (1U << policy_bits_width<Policy>)-1U;
 				new_bits &= mask;
 				new_bits <<= policy_bits_start<Policy>;
 				value &= ~mask;
 				value |= new_bits;
-				return value;
+				if constexpr( sizeof...( Policies ) > 0 ) {
+					return set_bits( value, pols... );
+				} else {
+					return value;
+				}
 			}
 
 			template<typename Policy>

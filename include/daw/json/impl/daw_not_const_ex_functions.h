@@ -327,11 +327,11 @@ namespace daw::json {
 			}
 
 #endif
+			// TODO use zstring opt
 			template<bool is_unchecked_input, char... keys>
 			DAW_ATTRIBUTE_FLATTEN static inline char const *
 			mem_move_to_next_of( runtime_exec_tag, char const *first,
 			                     char const *last ) {
-
 				if( sizeof...( keys ) == 1 ) {
 					char const key[]{ keys... };
 					char const *ptr = reinterpret_cast<char const *>( std::memchr(

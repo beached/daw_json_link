@@ -90,6 +90,8 @@ namespace daw::json {
 						while( not parse_policy_details::in<keys...>( *first ) ) {
 							++first;
 						}
+						daw_json_assert_weak( *first != 0, ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
 					} else {
 						daw_json_assert_weak(
 						  first < last, ErrorReason::UnexpectedEndOfData, parse_state );
@@ -126,7 +128,9 @@ namespace daw::json {
 					++ptr_first;
 				}
 				if constexpr( ParseState::is_zero_terminated_string ) {
-					while( *ptr_first != '\0' ) {
+					daw_json_assert( ptr_first < ptr_last,
+					                 ErrorReason::UnexpectedEndOfData, parse_state );
+					while( *ptr_first != 0 ) {
 						switch( *ptr_first ) {
 						case '\\':
 							++ptr_first;
