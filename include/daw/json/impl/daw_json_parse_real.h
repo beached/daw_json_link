@@ -193,7 +193,8 @@ namespace daw::json {
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754 ) {
 					if( DAW_UNLIKELY( use_strtod or exponent > 22 or exponent < -22 ) ) {
-						return json_details::parse_with_strtod<Result>( parse_state.first );
+						return json_details::parse_with_strtod<Result>( parse_state.first,
+						                                                parse_state.last );
 					}
 					return sign * power10<Result>(
 					                ParseState::exec_tag,
@@ -216,6 +217,7 @@ namespace daw::json {
 				  ErrorReason::InvalidNumberStart, parse_state );
 
 				char const *const orig_first = parse_state.first;
+				char const *const orig_last = parse_state.last;
 				Result const sign = [&] {
 					if( parse_state.front( ) == '-' ) {
 						parse_state.remove_prefix( );
@@ -338,7 +340,8 @@ namespace daw::json {
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754 ) {
 					if( DAW_UNLIKELY( use_strtod or exponent > 22 or exponent < -22 ) ) {
-						return json_details::parse_with_strtod<Result>( orig_first );
+						return json_details::parse_with_strtod<Result>( orig_first,
+						                                                orig_last );
 					}
 					return sign * power10<Result>(
 					                ParseState::exec_tag,
