@@ -80,7 +80,7 @@ namespace daw::json {
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
-					auto alloc = parse_state.template get_allocator_for<Value>( );
+					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
 					if constexpr( std::is_invocable<Constructor, Args...,
 					                                alloc_t>::value ) {
 						return ctor( DAW_FWD( args )..., DAW_MOVE( alloc ) );
@@ -103,7 +103,7 @@ namespace daw::json {
 
 			struct construct_value_tp_invoke_t {
 				template<typename Func, typename... TArgs, std::size_t... Is>
-				constexpr decltype( auto )
+				DAW_ATTRIBUTE_FLATTEN inline constexpr decltype( auto )
 				operator( )( Func &&f, std::tuple<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
 					return DAW_FWD( f )( DAW_MOVE( std::get<Is>( tp ) )... );
@@ -111,7 +111,7 @@ namespace daw::json {
 
 				template<typename Func, typename... TArgs, typename Allocator,
 				         std::size_t... Is>
-				constexpr decltype( auto )
+				DAW_ATTRIBUTE_FLATTEN inline constexpr decltype( auto )
 				operator( )( Func &&f, std::tuple<TArgs...> &&tp, Allocator &alloc,
 				             std::index_sequence<Is...> ) const {
 					return DAW_FWD( f )( DAW_MOVE( std::get<Is>( tp ) )...,
@@ -120,7 +120,7 @@ namespace daw::json {
 
 				template<typename Alloc, typename Func, typename... TArgs,
 				         std::size_t... Is>
-				constexpr decltype( auto )
+				DAW_ATTRIBUTE_FLATTEN inline constexpr decltype( auto )
 				operator( )( Func &&f, std::allocator_arg_t, Alloc &&alloc,
 				             std::tuple<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
@@ -139,7 +139,7 @@ namespace daw::json {
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
-					auto alloc = parse_state.template get_allocator_for<Value>( );
+					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
 					if constexpr( std::is_invocable<Constructor, Args...,
 					                                alloc_t>::value ) {
 						return construct_value_tp_invoke(
@@ -222,7 +222,8 @@ namespace daw::json {
 				  : m_container( &container ) {}
 
 				template<typename Value>
-				inline constexpr void operator( )( Value &&value ) const {
+				DAW_ATTRIBUTE_FLATTEN inline constexpr void
+				operator( )( Value &&value ) const {
 					if constexpr( has_push_back_v<Container,
 					                              daw::remove_cvref_t<Value>> ) {
 						m_container->push_back( DAW_FWD( value ) );

@@ -21,17 +21,14 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			class location_info_t {
+			template<bool FullNameMatch>
+			struct location_info_t {
 				daw::string_view name;
 				char const *first = nullptr;
 				char const *last = nullptr;
 				char const *class_first = nullptr;
 				char const *class_last = nullptr;
 				std::size_t counter = 0;
-
-			public:
-				explicit constexpr location_info_t( daw::string_view Name )
-				  : name( Name ) {}
 
 				[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
 					return first == nullptr;
@@ -47,7 +44,37 @@ namespace daw::json {
 				}
 
 				template<typename ParseState>
-				constexpr auto get_range( ) const {
+				constexpr auto get_range( template_param<ParseState> ) const {
+					using range_t = typename ParseState::without_allocator_type;
+					auto result = range_t( first, last, class_first, class_last );
+					result.counter = counter;
+					return result;
+				}
+			};
+
+			template<>
+			struct location_info_t<false> {
+				char const *first = nullptr;
+				char const *last = nullptr;
+				char const *class_first = nullptr;
+				char const *class_last = nullptr;
+				std::size_t counter = 0;
+
+				[[maybe_unused, nodiscard]] inline constexpr bool missing( ) const {
+					return first == nullptr;
+				}
+
+				template<typename ParseState>
+				constexpr void set_range( ParseState parse_state ) {
+					first = parse_state.first;
+					last = parse_state.last;
+					class_first = parse_state.class_first;
+					class_last = parse_state.class_last;
+					counter = parse_state.counter;
+				}
+
+				template<typename ParseState>
+				constexpr auto get_range( template_param<ParseState> ) const {
 					using range_t = typename ParseState::without_allocator_type;
 					auto result = range_t( first, last, class_first, class_last );
 					result.counter = counter;
@@ -59,12 +86,12 @@ namespace daw::json {
 			 * Contains an array of member location_info mapped in a json_class
 			 * @tparam MemberCount Number of mapped members from json_class
 			 */
-			template<std::size_t MemberCount, bool HasCollisions = true>
+			template<std::size_t MemberCount, bool DoFullNameMatch = true>
 			struct locations_info_t {
-				using value_type = location_info_t;
+				using value_type = location_info_t<DoFullNameMatch>;
 				using reference = value_type &;
 				using const_reference = value_type const &;
-				static constexpr bool has_collisions = HasCollisions;
+				static constexpr bool do_full_name_match = DoFullNameMatch;
 				daw::UInt32 hashes[MemberCount];
 				value_type names[MemberCount];
 
@@ -92,7 +119,7 @@ namespace daw::json {
 					for( std::size_t n = start_pos; n < MemberCount; ++n ) {
 #endif
 						if( hashes[n] == hash ) {
-							if constexpr( has_collisions ) {
+							if constexpr( do_full_name_match ) {
 								if( DAW_JSON_UNLIKELY( key != names[n].name ) ) {
 									continue;
 								}
@@ -104,9 +131,9 @@ namespace daw::json {
 				}
 			};
 
-			// Should never be called outsite a consteval context
+			// Should never be called outside a consteval context
 			template<typename... MemberNames>
-			static inline constexpr bool do_hashes_collide( ) {
+			inline constexpr bool do_hashes_collide( ) {
 				daw::UInt32 hashes[sizeof...( MemberNames )]{
 				  name_hash( MemberNames::name )... };
 
@@ -118,14 +145,21 @@ namespace daw::json {
 				                                      } ) != daw::data_end( hashes );
 			}
 
-			// Should never be called outsite a consteval context
+			// Should never be called outside a consteval context
 			template<typename ParseState, typename... JsonMembers>
 			constexpr auto make_locations_info( ) {
-				constexpr bool hashes_collide = ParseState::force_name_equal_check or
-				                                do_hashes_collide<JsonMembers...>( );
-				return locations_info_t<sizeof...( JsonMembers ), hashes_collide>{
+#if defined( __MSC_VER ) and not defined( __clang__ )
+				constexpr bool do_full_name_match = true;
+				return locations_info_t<sizeof...( JsonMembers ), do_full_name_match>{
 				  { daw::name_hash( JsonMembers::name )... },
-				  { location_info_t( JsonMembers::name )... } };
+				  { location_info_t<do_full_name_match>{ JsonMembers::name }... } };
+#else
+				constexpr bool do_full_name_match =
+				  ParseState::force_name_equal_check or
+				  do_hashes_collide<JsonMembers...>( );
+				return locations_info_t<sizeof...( JsonMembers ), do_full_name_match>{
+				  { daw::name_hash( JsonMembers::name )... }, {} };
+#endif
 			}
 
 			/***
@@ -139,7 +173,7 @@ namespace daw::json {
 			 */
 			template<std::size_t pos, bool from_start = false, std::size_t N,
 			         typename ParseState, bool B>
-			[[nodiscard]] static inline constexpr ParseState
+			[[nodiscard]] inline constexpr ParseState
 			find_class_member( locations_info_t<N, B> &locations,
 			                   ParseState &parse_state, bool is_nullable,
 			                   daw::string_view member_name ) {
@@ -150,7 +184,6 @@ namespace daw::json {
 				                      missing_member( member_name ), parse_state );
 
 				parse_state.trim_left_unchecked( );
-				// TODO: should we check for end
 				while( locations[pos].missing( ) & ( parse_state.front( ) != '}' ) ) {
 					daw_json_assert_weak( parse_state.has_more( ),
 					                      ErrorReason::UnexpectedEndOfData, parse_state );
@@ -172,7 +205,7 @@ namespace daw::json {
 						// OLDTODO:	use type knowledge to speed up skip
 						// OLDTODO:	on skipped classes see if way to store
 						// 				member positions so that we don't have to
-						//				reparse them after
+						//				re-parse them after
 						// RESULT: storing preparsed is slower, don't try 3 times
 						// it also limits the type of things we can parse potentially
 						// Using locations to switch on BaseType is slower too
@@ -181,8 +214,9 @@ namespace daw::json {
 						parse_state.clean_tail( );
 					}
 				}
-				return locations[pos].template get_range<ParseState>( ).with_allocator(
-				  parse_state );
+				return locations[pos]
+				  .get_range( template_arg<ParseState> )
+				  .with_allocator( parse_state );
 			}
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER

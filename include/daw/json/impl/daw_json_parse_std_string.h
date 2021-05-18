@@ -184,7 +184,7 @@ namespace daw::json {
 				using string_type = json_base_type<JsonMember>;
 				string_type result =
 				  string_type( std::size( parse_state ), '\0',
-				               parse_state.template get_allocator_for<char>( ) );
+				               parse_state.get_allocator_for( template_arg<char> ) );
 
 				char *it = std::data( result );
 
@@ -224,8 +224,10 @@ namespace daw::json {
 							}
 						} else {
 							first =
-							  mem_move_to_next_of<ParseState::is_unchecked_input, '"', '\\'>(
-							    ParseState::exec_tag, first, last );
+							  mem_move_to_next_of<( ParseState::is_unchecked_input or
+							                        ParseState::is_zero_terminated_string ),
+							                      '"', '\\'>( ParseState::exec_tag, first,
+							                                  last );
 						}
 						it = std::copy( parse_state.first, first, it );
 						parse_state.first = first;

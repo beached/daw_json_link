@@ -88,7 +88,8 @@ namespace daw::json {
 			template<typename... Args,
 			         std::enable_if_t<std::is_constructible<T, Args...>::value,
 			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] inline constexpr T operator( )( Args &&...args ) const {
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr T
+			operator( )( Args &&...args ) const {
 
 				return T( DAW_FWD( args )... );
 			}
@@ -99,7 +100,8 @@ namespace daw::json {
 			             daw::not_trait<std::is_constructible<T, Args...>>,
 			             daw::traits::is_list_constructible<T, Args...>>::value,
 			           std::nullptr_t> = nullptr>
-			[[nodiscard]] inline constexpr T operator( )( Args &&...args ) const
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr T
+			operator( )( Args &&...args ) const
 			  noexcept( noexcept( T{ DAW_FWD( args )... } ) ) {
 
 				return T{ DAW_FWD( args )... };
@@ -108,13 +110,13 @@ namespace daw::json {
 
 		template<typename K, typename V, typename H, typename E, typename Alloc>
 		struct default_constructor<std::unordered_map<K, V, H, E, Alloc>> {
-			inline std::unordered_map<K, V, H, E, Alloc> operator( )( ) const
+			DAW_ATTRIBUTE_FLATTEN inline std::unordered_map<K, V, H, E, Alloc> operator( )( ) const
 			  noexcept( noexcept( std::unordered_map<K, V, H, E, Alloc>( ) ) ) {
 				return { };
 			}
 
 			template<typename Iterator>
-			inline std::unordered_map<K, V, H, E, Alloc>
+			DAW_ATTRIBUTE_FLATTEN inline std::unordered_map<K, V, H, E, Alloc>
 			operator( )( Iterator first, Iterator last,
 			             Alloc const &alloc = Alloc{ } ) const
 			  noexcept( noexcept( std::unordered_map<K, V, H, E, Alloc>(
@@ -174,7 +176,7 @@ namespace daw::json {
 		struct nullable_constructor<std::unique_ptr<T, Deleter>> {
 			using value_type = T;
 
-			constexpr std::unique_ptr<T, Deleter> operator( )( ) const noexcept {
+			DAW_ATTRIBUTE_FLATTEN inline constexpr std::unique_ptr<T, Deleter> operator( )( ) const noexcept {
 				return std::unique_ptr<T, Deleter>{ };
 			}
 

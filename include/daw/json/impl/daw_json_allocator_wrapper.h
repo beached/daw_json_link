@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include <daw/cpp_17.h>
+#include <daw/daw_traits.h>
 
 #include <cstddef>
 #include <memory>
@@ -81,7 +82,7 @@ namespace daw::json {
 				                     allocator_type>;
 
 				template<typename T>
-				auto get_allocator_for( ) const {
+				auto get_allocator_for( template_param<T> ) const {
 					return static_cast<allocator_type_as<T>>( this->get_allocator( ) );
 				}
 			};
@@ -99,7 +100,7 @@ namespace daw::json {
 				using allocator_type_as = std::allocator<T>;
 
 				template<typename T>
-				auto get_allocator_for( ) const {
+				auto get_allocator_for( template_param<T> ) const {
 					return std::allocator<T>( );
 				}
 			};

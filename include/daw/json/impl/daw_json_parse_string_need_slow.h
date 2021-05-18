@@ -20,7 +20,7 @@ namespace daw::json {
 			 * value
 			 */
 			template<typename ParseState>
-			constexpr inline bool needs_slow_path( ParseState const &parse_state ) {
+			inline constexpr bool needs_slow_path( ParseState const &parse_state ) {
 				return static_cast<std::ptrdiff_t>( parse_state.counter ) >= 0;
 			}
 		} // namespace json_details

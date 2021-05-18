@@ -94,6 +94,7 @@ namespace daw::json {
 				template<typename ParseState>
 				[[nodiscard]] static constexpr auto parse_nq( ParseState &parse_state )
 				  -> std::enable_if_t<ParseState::is_unchecked_input, std::size_t> {
+
 					std::ptrdiff_t need_slow_path = -1;
 					char const *first = parse_state.first;
 					char const *const last = parse_state.last;
@@ -149,19 +150,37 @@ namespace daw::json {
 						} else if( last - first >= 4 ) {
 							skip_to_first4( first, l );
 						}
-						while( first < last and *first != '"' ) {
-							while( ( first < last ) and
-							       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
-								++first;
-							}
-
-							if( ( first < last and *first == '\\' ) ) {
-								if( need_slow_path < 0 ) {
-									need_slow_path = first - parse_state.first;
+						if constexpr( ParseState::is_zero_terminated_string ) {
+							while( ( *first != 0 ) & ( *first != '"' ) ) {
+								while( ( *first != 0 ) & ( *first != '"' ) &
+								       ( *first != '\\' ) ) {
+									++first;
 								}
-								first += 2;
-							} else {
-								break;
+
+								if( ( ( *first != 0 ) & ( *first == '\\' ) ) ) {
+									if( need_slow_path < 0 ) {
+										need_slow_path = first - parse_state.first;
+									}
+									first += 2;
+								} else {
+									break;
+								}
+							}
+						} else {
+							while( first < last and *first != '"' ) {
+								while( first < last and
+								       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
+									++first;
+								}
+
+								if( first < last and *first == '\\' ) {
+									if( need_slow_path < 0 ) {
+										need_slow_path = first - parse_state.first;
+									}
+									first += 2;
+								} else {
+									break;
+								}
 							}
 						}
 					}

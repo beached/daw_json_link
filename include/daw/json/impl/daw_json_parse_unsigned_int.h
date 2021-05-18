@@ -70,23 +70,23 @@ namespace daw::json {
 				auto const chunk = daw::to_uint64_buffer( str );
 				// 1-byte mask trick (works on 4 pairs of single digits)
 				auto const lower_digits =
-				  ( chunk & 0x0f'00'0f'00'0f'00'0f'00_u64 ) >> 8U;
+				  ( chunk & 0x0F'00'0F'00'0F'00'0F'00_u64 ) >> 8U;
 				auto const upper_digits =
-				  ( chunk & 0x00'0f'00'0f'00'0f'00'0f_u64 ) * 10U;
+				  ( chunk & 0x00'0F'00'0F'00'0F'00'0F_u64 ) * 10U;
 				auto const chunk2 = lower_digits + upper_digits;
 
 				// 2-byte mask trick (works on 2 pairs of two digits)
 				auto const lower_digits2 =
-				  ( chunk2 & 0x00'ff'00'00'00'ff'00'00_u64 ) >> 16U;
+				  ( chunk2 & 0x00'FF'00'00'00'FF'00'00_u64 ) >> 16U;
 				auto const upper_digits2 =
-				  ( chunk2 & 0x00'00'00'ff'00'00'00'ff_u64 ) * 100U;
+				  ( chunk2 & 0x00'00'00'FF'00'00'00'FF_u64 ) * 100U;
 				auto const chunk3 = lower_digits2 + upper_digits2;
 
 				// 4-byte mask trick (works on pair of four digits)
 				auto const lower_digits3 =
-				  ( chunk3 & 0x00'00'ff'ff'00'00'00'00_u64 ) >> 32U;
+				  ( chunk3 & 0x00'00'FF'FF'00'00'00'00_u64 ) >> 32U;
 				auto const upper_digits3 =
-				  ( chunk3 & 0x00'00'00'00'00'00'ff'ff_u64 ) * 10000U;
+				  ( chunk3 & 0x00'00'00'00'00'00'FF'FF_u64 ) * 10000U;
 				auto const chunk4 = lower_digits3 + upper_digits3;
 
 				return chunk4 & 0xFFFF'FFFF_u64;

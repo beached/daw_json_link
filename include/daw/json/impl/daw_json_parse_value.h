@@ -129,7 +129,6 @@ namespace daw::json {
 				}
 
 				if constexpr( KnownBounds ) {
-
 					return construct_value<json_result<JsonMember>>(
 					  constructor_t{ }, parse_state,
 					  static_cast<element_t>(
@@ -479,25 +478,26 @@ namespace daw::json {
 					if constexpr( not KnownBounds ) {
 						auto const oe =
 						  daw::on_exit_success( [&] { parse_state.trim_left_checked( ); } );
-						return json_data_contract_trait_t<
-						  element_t>::template parse_to_class<JsonMember>( parse_state );
+						return json_data_contract_trait_t<element_t>::parse_to_class(
+						  template_arg<JsonMember>, parse_state );
 					} else {
-						return json_data_contract_trait_t<
-						  element_t>::template parse_to_class<JsonMember>( parse_state );
+						return json_data_contract_trait_t<element_t>::parse_to_class(
+						  template_arg<JsonMember>, parse_state );
 					}
 				} else {
 					if constexpr( KnownBounds ) {
-						return json_data_contract_trait_t<
-						  element_t>::template parse_to_class<JsonMember>( parse_state );
+						return json_data_contract_trait_t<element_t>::parse_to_class(
+						  template_arg<JsonMember>, parse_state );
 					} else {
 						if constexpr( force_aggregate_construction_v<element_t> ) {
 							auto const oe = daw::on_exit_success(
 							  [&] { parse_state.trim_left_checked( ); } );
-							return json_data_contract_trait_t<
-							  element_t>::template parse_to_class<JsonMember>( parse_state );
+							return json_data_contract_trait_t<element_t>::parse_to_class(
+							  template_arg<JsonMember>, parse_state );
 						} else {
-							auto result = json_data_contract_trait_t<
-							  element_t>::template parse_to_class<JsonMember>( parse_state );
+							auto result =
+							  json_data_contract_trait_t<element_t>::parse_to_class(
+							    template_arg<JsonMember>, parse_state );
 							// TODO: make trim_left
 							parse_state.trim_left_checked( );
 							return result;

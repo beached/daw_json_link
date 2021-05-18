@@ -74,7 +74,7 @@ namespace daw::json {
 			[[maybe_unused,
 			  nodiscard]] DAW_ONLY_FLATTEN static inline constexpr json_details::
 			  json_result<JsonClass>
-			  parse_to_class( ParseState &parse_state ) {
+			  parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
@@ -120,7 +120,7 @@ namespace daw::json {
 			[[maybe_unused,
 			  nodiscard]] DAW_ONLY_FLATTEN static constexpr json_details::
 			  json_result<JsonClass>
-			  parse_to_class( ParseState &parse_state ) {
+			  parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
@@ -232,7 +232,7 @@ namespace daw::json {
 			template<typename JsonClass, typename ParseState>
 			[[maybe_unused,
 			  nodiscard]] static inline constexpr json_details::json_result<JsonClass>
-			parse_to_class( ParseState &parse_state ) {
+			parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
@@ -300,7 +300,7 @@ namespace daw::json {
 			template<typename JsonClass, typename ParseState>
 			[[maybe_unused, nodiscard]] static inline constexpr json_details::
 			  from_json_result_t<JsonClass>
-			  parse_to_class( ParseState &parse_state ) {
+			  parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,

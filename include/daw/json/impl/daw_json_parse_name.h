@@ -8,10 +8,11 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_assert.h"
 #include "daw_json_parse_std_string.h"
 #include "daw_not_const_ex_functions.h"
-#include "version.h"
 
 #include <ciso646>
 
@@ -36,7 +37,6 @@ namespace daw::json {
 			template<typename ParseState>
 			[[nodiscard, maybe_unused]] inline constexpr daw::string_view
 			parse_nq( ParseState &parse_state ) {
-
 				if constexpr( ParseState::allow_escaped_names ) {
 					auto r = skip_string_nq( parse_state );
 					trim_end_of_name( parse_state );

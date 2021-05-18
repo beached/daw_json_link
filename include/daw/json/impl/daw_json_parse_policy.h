@@ -264,7 +264,8 @@ namespace daw::json {
 			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
 			has_more( ) const {
 				if constexpr( is_zero_terminated_string ) {
-					return *first != 0;
+					// return *first != 0;
+					return first < last;
 				} else {
 					return first < last;
 				}
