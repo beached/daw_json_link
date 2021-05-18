@@ -26,11 +26,12 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<bool IsZeroTerminated, typename Value>
+			template<bool skip_end_check, typename Unsigned>
 			DAW_ATTRIBUTE_FLATTEN static inline constexpr void
-			parse_digits( char const *first, char const *const last, Value &v ) {
-				Value value = v;
-				if constexpr( IsZeroTerminated ) {
+			parse_digits_until_last( char const *first, char const *const last,
+			                         Unsigned &v ) {
+				Unsigned value = v;
+				if constexpr( skip_end_check ) {
 					auto dig = parse_digit( *first );
 					while( dig < 10U ) {
 						value *= 10U;
@@ -50,15 +51,25 @@ namespace daw::json {
 
 			template<bool skip_end_check, typename Unsigned>
 			DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
-			parse_real_digits_while_number( char const *first, char const *const last,
-			                                Unsigned &v ) {
-				auto value = v;
-				unsigned dig = 0;
-				while( ( skip_end_check or DAW_JSON_LIKELY( first < last ) ) and
-				       ( dig = parse_digit( *first ) ) < 10U ) {
-					value *= 10U;
-					value += dig;
-					++first;
+			parse_digits_while_number( char const *first, char const *const last,
+			                           Unsigned &v ) {
+				Unsigned value = v;
+				if constexpr( skip_end_check ) {
+					auto dig = parse_digit( *first );
+					while( dig < 10U ) {
+						value *= 10U;
+						value += dig;
+						++first;
+						dig = parse_digit( *first );
+					}
+				} else {
+					unsigned dig = 0;
+					while( DAW_JSON_LIKELY( first < last ) and
+					       ( dig = parse_digit( *first ) ) < 10U ) {
+						value *= 10U;
+						value += dig;
+						++first;
+					}
 				}
 				v = value;
 				return first;
@@ -146,10 +157,12 @@ namespace daw::json {
 				}
 
 				unsigned_t significant_digits = 0;
-				parse_digits<ParseState::is_zero_terminated_string>(
+				parse_digits_until_last<( ParseState::is_zero_terminated_string or
+				                          ParseState::is_unchecked_input )>(
 				  whole_first, whole_last, significant_digits );
 				if( fract_first ) {
-					parse_digits<ParseState::is_zero_terminated_string>(
+					parse_digits_until_last<( ParseState::is_zero_terminated_string or
+					                          ParseState::is_unchecked_input )>(
 					  fract_first, fract_last, significant_digits );
 				}
 
@@ -168,6 +181,7 @@ namespace daw::json {
 					}( );
 					exponent += exp_sign * [&] {
 						std::ptrdiff_t r = 0;
+						// TODO use zstring opt
 						while( exp_first < exp_last ) {
 							r *= static_cast<std::ptrdiff_t>( 10 );
 							r += static_cast<std::ptrdiff_t>( parse_digit( *exp_first ) );
@@ -177,9 +191,7 @@ namespace daw::json {
 					}( );
 				}
 				if constexpr( std::is_floating_point_v<Result> and
-				              ParseState::precise_ieee754 and
-				              ( std::is_same_v<Result, double> or
-				                std::is_same_v<Result, float> ) ) {
+				              ParseState::precise_ieee754 ) {
 					if( DAW_UNLIKELY( use_strtod or exponent > 22 or exponent < -22 ) ) {
 						return json_details::parse_with_strtod<Result>( parse_state.first );
 					}
@@ -199,8 +211,7 @@ namespace daw::json {
 			parse_real( ParseState &parse_state ) {
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 				daw_json_assert_weak(
-				  ( ParseState::is_zero_terminated_string or
-				    parse_state.has_more( ) ) and
+				  parse_state.has_more( ) and
 				    parse_policy_details::is_number_start( parse_state.front( ) ),
 				  ErrorReason::InvalidNumberStart, parse_state );
 
@@ -228,10 +239,10 @@ namespace daw::json {
 				  std::min( parse_state.last - parse_state.first, max_exponent );
 
 				unsigned_t significant_digits = 0;
-				char const *last_char = parse_real_digits_while_number<(
-				  ParseState::is_zero_terminated_string or
-				  ParseState::is_unchecked_input )>( first, whole_last,
-				                                     significant_digits );
+				char const *last_char =
+				  parse_digits_while_number<( ParseState::is_zero_terminated_string or
+				                              ParseState::is_unchecked_input )>(
+				    first, whole_last, significant_digits );
 				std::ptrdiff_t sig_digit_count = last_char - parse_state.first;
 				bool use_strtod = DAW_UNLIKELY( sig_digit_count < max_storage_digits );
 				signed_t exponent = [&] {
@@ -241,8 +252,7 @@ namespace daw::json {
 						// room in a std::uint64_t
 						char const *ptr =
 						  skip_digits<( ParseState::is_zero_terminated_string or
-						                ParseState::is_unchecked_input or
-						                ParseState::is_zero_terminated_string )>(
+						                ParseState::is_unchecked_input )>(
 						    last_char, parse_state.last );
 						auto const diff = ptr - last_char;
 						last_char = ptr;
@@ -254,15 +264,15 @@ namespace daw::json {
 					exponent = 0;
 				}
 				first = last_char;
-				if( ( ( ParseState::is_unchecked_input or
-				        DAW_JSON_LIKELY( first < parse_state.last ) ) and
-				      *first == '.' ) ) {
+				if( ( ParseState::is_zero_terminated_string or
+				      ParseState::is_unchecked_input or
+				      DAW_JSON_LIKELY( first < parse_state.last ) ) and
+				    *first == '.' ) {
 					++first;
 					if( exponent != 0 ) {
 						if( first < parse_state.last ) {
 							first = skip_digits<( ParseState::is_zero_terminated_string or
-							                      ParseState::is_unchecked_input or
-							                      ParseState::is_zero_terminated_string )>(
+							                      ParseState::is_unchecked_input )>(
 							  first, parse_state.last );
 						}
 					} else {
@@ -272,16 +282,16 @@ namespace daw::json {
 						            static_cast<std::ptrdiff_t>(
 						              max_exponent - ( first - parse_state.first ) ) );
 
-						last_char =
-						  parse_real_digits_while_number<ParseState::is_unchecked_input>(
-						    first, fract_last, significant_digits );
+						last_char = parse_digits_while_number<(
+						  ParseState::is_zero_terminated_string or
+						  ParseState::is_unchecked_input )>( first, fract_last,
+						                                     significant_digits );
 						sig_digit_count += last_char - first;
 						exponent -= static_cast<signed_t>( last_char - first );
 						first = last_char;
 						if( ( first >= fract_last ) & ( first < parse_state.last ) ) {
 							first = skip_digits<( ParseState::is_zero_terminated_string or
-							                      ParseState::is_unchecked_input or
-							                      ParseState::is_zero_terminated_string )>(
+							                      ParseState::is_unchecked_input )>(
 							  first, parse_state.last );
 						}
 					}
@@ -292,7 +302,8 @@ namespace daw::json {
 					    ( ( *first | 0x20 ) == 'e' ) ) {
 						++first;
 						bool const exp_sign = [&] {
-							daw_json_assert_weak( first < parse_state.last,
+							daw_json_assert_weak( ( ParseState::is_zero_terminated_string or
+							                        first < parse_state.last ),
 							                      ErrorReason::UnexpectedEndOfData,
 							                      parse_state.copy( first ) );
 							switch( *first ) {
@@ -310,11 +321,10 @@ namespace daw::json {
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
 						unsigned_t exp_tmp = 0;
-						last_char = parse_real_digits_while_number<(
+						last_char = parse_digits_while_number<(
 						  ParseState::is_zero_terminated_string or
-						  ParseState::is_unchecked_input or
-						  ParseState::is_zero_terminated_string )>( first, parse_state.last,
-						                                            exp_tmp );
+						  ParseState::is_unchecked_input )>( first, parse_state.last,
+						                                     exp_tmp );
 						first = last_char;
 						if( exp_sign ) {
 							return -static_cast<signed_t>( exp_tmp );
