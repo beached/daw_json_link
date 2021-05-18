@@ -23,7 +23,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			using policy_options_t = std::uint32_t;
+			using policy_options_t = daw::UInt32;
 
 			template<typename>
 			inline constexpr unsigned policy_bits_width = 0;
@@ -237,7 +237,7 @@ namespace daw::json {
 			constexpr policy_options_t set_bits_for( Policy e ) {
 				static_assert( is_policy_flag<Policy>,
 				               "Only registered policy types are allowed" );
-				policy_options_t new_bits = static_cast<unsigned>( e );
+				policy_options_t new_bits = static_cast<policy_options_t>( e );
 				new_bits <<= policy_bits_start<Policy>;
 				return new_bits;
 			}

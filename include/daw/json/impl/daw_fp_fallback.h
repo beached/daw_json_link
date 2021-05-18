@@ -8,12 +8,21 @@
 
 #pragma once
 
+#include "daw_json_assert.h"
+
 #include <daw/daw_bit_cast.h>
 
 #include <boost/multiprecision/cpp_bin_float.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
+#if __has_include( <version> )
+#include <version>
+#endif
+
+#if defined( __cpp_lib_to_chars )
+#include <charconv>
+#endif
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -67,15 +76,24 @@ namespace daw::json {
 
 			template<typename Real, std::enable_if_t<std::is_floating_point_v<Real>,
 			                                         std::nullptr_t> = nullptr>
-			inline Real parse_with_strtod( char const *orig_first ) {
+			inline Real parse_with_strtod( char const *first, char const *last ) {
+#if defined( __cpp_lib_to_chars )
+				Real result;
+				std::from_chars_result fc_res = std::from_chars( first, last, result );
+				daw_json_assert( fc_res.ec == std::errc( ),
+				                 ErrorReason::InvalidNumber );
+				return result;
+#else
+				(void)last;
 				char **end = nullptr;
 				if constexpr( std::is_same_v<Real, float> ) {
-					return strtof( orig_first, end );
+					return strtof( first, end );
 				} else if( std::is_same_v<Real, double> ) {
-					return strtod( orig_first, end );
+					return strtod( first, end );
 				} else {
-					return static_cast<Real>( strtold( orig_first, end ) );
+					return static_cast<Real>( strtold( first, end ) );
 				}
+#endif
 			}
 
 		} // namespace json_details
