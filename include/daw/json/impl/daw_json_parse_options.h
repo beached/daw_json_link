@@ -203,7 +203,7 @@ namespace daw::json {
 			}
 
 			template<typename Policy>
-			constexpr void set_bits( policy_options_t &value, Policy e ) {
+			constexpr void set_bits_in( policy_options_t &value, Policy e ) {
 				static_assert( is_policy_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				unsigned new_bits = static_cast<unsigned>( e );
