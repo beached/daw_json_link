@@ -62,7 +62,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-namespace {
+inline namespace {
 	daw::bench::bench_result
 	make_bench_result( std::string const &name, std::size_t data_size,
 	                   std::vector<std::chrono::nanoseconds> run_times ) {

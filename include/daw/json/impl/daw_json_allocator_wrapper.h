@@ -100,7 +100,8 @@ namespace daw::json {
 				using allocator_type_as = std::allocator<T>;
 
 				template<typename T>
-				auto get_allocator_for( template_param<T> ) const {
+				[[maybe_unused]] inline std::allocator<T>
+				get_allocator_for( template_param<T> ) const {
 					return std::allocator<T>( );
 				}
 			};

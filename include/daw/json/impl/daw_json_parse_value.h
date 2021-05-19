@@ -62,7 +62,7 @@ namespace daw::json {
 				using element_t = typename JsonMember::base_type;
 
 				daw_json_assert_weak( parse_state.has_more( ),
-															ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				if constexpr( KnownBounds ) {
 					return construct_value<json_result<JsonMember>>(
 					  constructor_t{ }, parse_state,
@@ -360,19 +360,17 @@ namespace daw::json {
 				}
 			}
 
-			namespace {
-				/***
-				 * We know that we are constructing a std::string or
-				 * std::optional<std::string> We can take advantage of this and reduce
-				 * the allocator time by presizing the string up front and then using a
-				 * pointer to the data( ).
-				 */
-				template<typename JsonMember>
-				struct can_parse_to_stdstring_fast
-				  : std::disjunction<
-				      can_single_allocation_string<json_result<JsonMember>>,
-				      can_single_allocation_string<json_base_type<JsonMember>>> {};
-			} // namespace
+			/***
+			 * We know that we are constructing a std::string or
+			 * std::optional<std::string> We can take advantage of this and reduce
+			 * the allocator time by presizing the string up front and then using a
+			 * pointer to the data( ).
+			 */
+			template<typename JsonMember>
+			struct can_parse_to_stdstring_fast
+			  : std::disjunction<
+			      can_single_allocation_string<json_result<JsonMember>>,
+			      can_single_allocation_string<json_base_type<JsonMember>>> {};
 
 			template<typename T>
 			using json_member_constructor_t = typename T::constructor_t;
@@ -506,8 +504,8 @@ namespace daw::json {
 			}
 
 			/**
-			 * Parse a key_value pair encoded as a json object where the keys are the
-			 * member names
+			 * Parse a key_value pair encoded as a json object where the keys are
+			 * the member names
 			 * @tparam JsonMember json_key_value type
 			 * @tparam ParseState Input range type
 			 * @param parse_state ParseState of input to parse
@@ -542,8 +540,8 @@ namespace daw::json {
 			}
 
 			/**
-			 * Parse a key_value pair encoded as a json object where the keys are the
-			 * member names
+			 * Parse a key_value pair encoded as a json object where the keys are
+			 * the member names
 			 * @tparam JsonMember json_key_value type
 			 * @tparam ParseState Input ParseState type
 			 * @param parse_state ParseState of input to parse

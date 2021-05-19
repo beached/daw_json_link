@@ -102,7 +102,6 @@ namespace daw::json {
 				}
 #endif
 			}
-
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

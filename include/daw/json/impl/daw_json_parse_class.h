@@ -76,8 +76,8 @@ namespace daw::json {
 
 				using json_member_t = ordered_member_subtype_t<JsonMember>;
 				/***
-				 * Some members specify their index so there may be gaps between member
-				 * data elements in the array.
+				 * Some members specify their index so there may be gaps between
+				 * member data elements in the array.
 				 */
 				if constexpr( is_an_ordered_member_v<JsonMember> ) {
 					pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
@@ -184,8 +184,8 @@ namespace daw::json {
 
 			/***
 			 * Parse to the user supplied class.  The parser will run left->right if
-			 * it can when the JSON document's order matches that of the order of the
-			 * supplied classes ctor.  If there is an order mismatch, store the
+			 * it can when the JSON document's order matches that of the order of
+			 * the supplied classes ctor.  If there is an order mismatch, store the
 			 * start/finish of JSON members we are interested in and return that to
 			 * the members parser when needed.
 			 */
@@ -247,7 +247,8 @@ namespace daw::json {
 						} const run_after_parse{ &parse_state };
 						(void)run_after_parse;
 						/*
-						 * Rather than call directly use apply/tuple to evaluate left->right
+						 * Rather than call directly use apply/tuple to evaluate
+						 * left->right
 						 */
 						if constexpr( force_aggregate_construction_v<T> ) {
 							return T{

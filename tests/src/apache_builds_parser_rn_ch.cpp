@@ -16,10 +16,10 @@ namespace daw::json {
 	template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
 	          SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>>(
-	  std::string_view const & json_data, std::string_view json_path );
+	  std::string_view const &json_data, std::string_view json_path );
 
 	template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
 	          SIMDNoCommentSkippingPolicyChecked<runtime_exec_tag>>(
-	  std::string_view const & json_data );
+	  std::string_view const &json_data );
 } // namespace daw::json
