@@ -61,13 +61,13 @@ namespace daw::json {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
 
+				daw_json_assert_weak( parse_state.has_more( ),
+															ErrorReason::UnexpectedEndOfData, parse_state );
 				if constexpr( KnownBounds ) {
 					return construct_value<json_result<JsonMember>>(
 					  constructor_t{ }, parse_state,
 					  parse_real<element_t, true>( parse_state ) );
 				} else {
-					daw_json_assert_weak( parse_state.has_more( ),
-					                      ErrorReason::UnexpectedEndOfData, parse_state );
 					if constexpr( JsonMember::literal_as_string !=
 					              LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(

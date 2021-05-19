@@ -262,6 +262,9 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool empty( ) const {
+				if( not first ) {
+					return true;
+				}
 				if constexpr( is_zero_terminated_string ) {
 					return first >= last or *first == '\0';
 				} else {

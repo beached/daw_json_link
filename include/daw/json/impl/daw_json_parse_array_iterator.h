@@ -24,6 +24,7 @@ namespace daw::json {
 				using iterator_category = std::input_iterator_tag;
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = false;
+
 				ParseState *parse_state = nullptr;
 			};
 
@@ -33,11 +34,15 @@ namespace daw::json {
 				using iterator_category = std::random_access_iterator_tag;
 				using difference_type = std::ptrdiff_t;
 				static constexpr bool has_counter = true;
+
 				ParseState *parse_state = nullptr;
 
-				constexpr difference_type
+				inline constexpr difference_type
 				operator-( json_parse_array_iterator_base const &rhs ) const {
-					if( rhs.parse_state ) {
+					// rhs is the iterator with the parser in it.  We should know how many
+					// items are in play because we already counted them in the skip_array
+					// call. If it is null, that means it has hit the end of the array
+					if( DAW_LIKELY( rhs.parse_state ) ) {
 						return static_cast<difference_type>( rhs.parse_state->counter ) + 1;
 					}
 					return 0;
@@ -56,15 +61,14 @@ namespace daw::json {
 				using value_type = typename element_t::parse_to_t;
 				using reference = value_type;
 				using pointer = arrow_proxy<value_type>;
-				using iterator_range_t = ParseState;
+				using parse_state_t = ParseState;
 				using difference_type = typename base::difference_type;
 				bool at_first = true;
 				inline constexpr json_parse_array_iterator( ) = default;
 
-				inline constexpr explicit json_parse_array_iterator(
-				  iterator_range_t &r )
+				inline constexpr explicit json_parse_array_iterator( parse_state_t &r )
 				  : base{ &r } {
-					if( base::parse_state->front( ) == ']' ) {
+					if( DAW_UNLIKELY( base::parse_state->front( ) == ']' ) ) {
 						if constexpr( not KnownBounds ) {
 							// Cleanup at end of value
 							base::parse_state->remove_prefix( );
@@ -79,26 +83,27 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
+
 					at_first = false;
 					if constexpr( KnownBounds ) {
 						if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 							struct cleanup_t {
-								ParseState *ptr;
+								ParseState &p;
 								std::size_t counter;
 								CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
 #ifdef HAS_CPP20CONSTEXPR
 									if( not std::is_constant_evaluated( ) ) {
 #endif
-										if( std::uncaught_exceptions( ) == 0 ) {
-											ptr->counter = counter;
+										if( DAW_LIKELY( std::uncaught_exceptions( ) == 0 ) ) {
+											p.counter = counter;
 										}
 #ifdef HAS_CPP20CONSTEXPR
 									} else {
-										ptr->counter = counter;
+										ptr.counter = counter;
 									}
 #endif
 								}
-							} const run_after_parse{ base::parse_state,
+							} const run_after_parse{ *base::parse_state,
 							                         base::parse_state->counter };
 							(void)run_after_parse;
 							return parse_value<element_t>(
@@ -142,7 +147,7 @@ namespace daw::json {
 					}
 #ifndef NDEBUG
 					if constexpr( base::has_counter ) {
-						if( base::parse_state ) {
+						if( DAW_LIKELY( base::parse_state ) ) {
 							daw_json_assert_weak( base::parse_state->counter > 0,
 							                      ErrorReason::AttemptToAccessPastEndOfValue,
 							                      *base::parse_state );
@@ -153,14 +158,16 @@ namespace daw::json {
 					return *this;
 				}
 
-				inline constexpr bool
-				operator==( json_parse_array_iterator const &rhs ) const {
-					return base::parse_state == rhs.base::parse_state;
+				friend inline constexpr bool
+				operator==( json_parse_array_iterator const &lhs,
+				            json_parse_array_iterator const &rhs ) {
+					return lhs.parse_state == rhs.parse_state;
 				}
 
-				inline constexpr bool
-				operator!=( json_parse_array_iterator const &rhs ) const {
-					return base::parse_state != rhs.base::parse_state;
+				friend inline constexpr bool
+				operator!=( json_parse_array_iterator const &lhs,
+				            json_parse_array_iterator const &rhs ) {
+					return lhs.parse_state != rhs.parse_state;
 				}
 			};
 		} // namespace json_details
