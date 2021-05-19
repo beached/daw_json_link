@@ -76,7 +76,8 @@ namespace daw::json {
 
 			template<typename Real, std::enable_if_t<std::is_floating_point_v<Real>,
 			                                         std::nullptr_t> = nullptr>
-			inline Real parse_with_strtod( char const *first, char const *last ) {
+			DAW_JSON_NOINLINE Real parse_with_strtod( char const *first,
+			                                          char const *last ) {
 #if defined( __cpp_lib_to_chars )
 				Real result;
 				std::from_chars_result fc_res = std::from_chars( first, last, result );
@@ -84,7 +85,7 @@ namespace daw::json {
 					if( *first == '-' ) {
 						return -std::numeric_limits<Real>::infinity( );
 					}
-					return std::numeric_limits<Real>::infinity();
+					return std::numeric_limits<Real>::infinity( );
 				}
 				daw_json_assert( fc_res.ec == std::errc( ),
 				                 ErrorReason::InvalidNumber );

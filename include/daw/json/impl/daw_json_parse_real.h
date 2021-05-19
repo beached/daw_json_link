@@ -27,7 +27,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 			template<bool skip_end_check, typename Unsigned>
-			DAW_ATTRIBUTE_FLATTEN static inline constexpr void
+			DAW_ATTRIBUTE_FLATTEN inline constexpr void
 			parse_digits_until_last( char const *first, char const *const last,
 			                         Unsigned &v ) {
 				Unsigned value = v;
@@ -50,7 +50,7 @@ namespace daw::json {
 			}
 
 			template<bool skip_end_check, typename Unsigned>
-			DAW_ATTRIBUTE_FLATTEN static inline constexpr char const *
+			DAW_ATTRIBUTE_FLATTEN inline constexpr char const *
 			parse_digits_while_number( char const *first, char const *const last,
 			                           Unsigned &v ) {
 				Unsigned value = v;
@@ -77,7 +77,7 @@ namespace daw::json {
 
 			template<typename Result, bool KnownRange, typename ParseState,
 			         std::enable_if_t<KnownRange, std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
+			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr Result
 			parse_real( ParseState &parse_state ) {
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 				daw_json_assert_weak(
@@ -354,7 +354,7 @@ namespace daw::json {
 				              ParseState::precise_ieee754 ) {
 					use_strtod |= DAW_UNLIKELY( exponent > 22 );
 					use_strtod |= DAW_UNLIKELY( exponent < -22 );
-					if( use_strtod ) {
+					if( DAW_UNLIKELY( use_strtod ) ) {
 						return json_details::parse_with_strtod<Result>( orig_first,
 						                                                orig_last );
 					}
