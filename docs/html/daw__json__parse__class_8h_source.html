@@ -123,7 +123,7 @@ $(function() {
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            ParseState::is_unchecked_input and <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af4048fed315a6329c25e8a1653312f7ea46ad517b8b7aa4e368a7cc226533bfb6">Nullable</a>;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;          <span class="keywordflow">while</span>( ( current_position &lt; desired_position ) &amp;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                 ( skip_check_end or parse_state.front( ) != <span class="charliteral">&#39;]&#39;</span> ) ) {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            (void)<a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aad9eb7f7cb949a8ea8a7f48a2802532f">skip_value</a>( parse_state );</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            (void)<a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a37deb8833dac0493a08647dbc86a924c">skip_value</a>( parse_state );</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            parse_state.clean_tail( );</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            ++current_position;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.has_more( ),</div>
@@ -148,8 +148,8 @@ $(function() {
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keyword">using</span> json_member_t = <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a77f650512e7663f6beb10422a0c4a87c">ordered_member_subtype_t&lt;JsonMember&gt;</a>;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">        /***</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">         * Some members specify their index so there may be gaps between member</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">         * data elements in the array.</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">         * Some members specify their index so there may be gaps between</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">         * member data elements in the array.</span></div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">         */</span></div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        <span class="keywordflow">if</span> constexpr( is_an_ordered_member_v&lt;JsonMember&gt; ) {</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;          pocm_details::maybe_skip_members&lt;is_json_nullable_v&lt;json_member_t&gt;&gt;(</div>
@@ -256,8 +256,8 @@ $(function() {
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160; </div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment">      /***</span></div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment">       * Parse to the user supplied class.  The parser will run left-&gt;right if</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment">       * it can when the JSON document&#39;s order matches that of the order of the</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment">       * supplied classes ctor.  If there is an order mismatch, store the</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment">       * it can when the JSON document&#39;s order matches that of the order of</span></div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment">       * the supplied classes ctor.  If there is an order mismatch, store the</span></div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment">       * start/finish of JSON members we are interested in and return that to</span></div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment">       * the members parser when needed.</span></div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="comment">       */</span></div>
@@ -319,108 +319,109 @@ $(function() {
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            } <span class="keyword">const</span> run_after_parse{ &amp;parse_state };</div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            (void)run_after_parse;</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;            <span class="comment">/*</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="comment">             * Rather than call directly use apply/tuple to evaluate left-&gt;right</span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment">             */</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;            <span class="keywordflow">if</span> constexpr( force_aggregate_construction_v&lt;T&gt; ) {</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;              <span class="keywordflow">return</span> T{</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;                <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                  known_locations, parse_state )... };</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;              <span class="keyword">using</span> tp_t = decltype( std::forward_as_tuple(</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;                <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                  known_locations, parse_state )... ) );</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160; </div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;              <span class="keywordflow">return</span> construct_value_tp&lt;T&gt;(</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;                Constructor{ }, parse_state,</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;                tp_t{</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;                  <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;                    known_locations, parse_state )... } );</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;            }</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;            <span class="keywordflow">if</span> constexpr( force_aggregate_construction_v&lt;T&gt; ) {</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;              <span class="keywordflow">return</span> T{</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;                <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;                  known_locations, parse_state )... };</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;              <span class="keyword">using</span> tp_t = decltype( std::forward_as_tuple(</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;                <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;                  known_locations, parse_state )... ) );</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;              <span class="keyword">auto</span> result = construct_value_tp&lt;T&gt;(</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;                Constructor{ }, parse_state,</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;                tp_t{</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;                  <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                    known_locations, parse_state )... } );</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;              <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ab9252b209a844fa82bd3790e37155734">class_cleanup_now</a>( parse_state );</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;              <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;            }</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;          }</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;        }</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;      }</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160; </div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="comment">      /***</span></div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="comment">       * Parse to a class where the members are constructed from the values of</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="comment">       * a JSON array. Often this is used for geometric types like Point</span></div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="comment">       */</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonClass, <span class="keyword">typename</span>... JsonMembers, <span class="keyword">typename</span> ParseState&gt;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr json_result&lt;JsonClass&gt;</div>
-<div class="line"><a name="l00294"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a35008b8727a8d04875750975334d2d82">  294</a></span>&#160;      <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a35008b8727a8d04875750975334d2d82">parse_ordered_json_class</a>( ParseState &amp;parse_state ) {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;        static_assert( is_a_json_type_v&lt;JsonClass&gt; );</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        <span class="keyword">using</span> T = <span class="keyword">typename</span> JsonClass::base_type;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        <span class="keyword">using</span> Constructor = <span class="keyword">typename</span> JsonClass::constructor_t;</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;        static_assert( has_json_data_contract_trait_v&lt;T&gt;, <span class="stringliteral">&quot;Unexpected type&quot;</span> );</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        static_assert(</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;          std::is_invocable&lt;Constructor,</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;                            <span class="keyword">typename</span> JsonMembers::parse_to_t...&gt;::value,</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;          <span class="stringliteral">&quot;Supplied types cannot be used for construction of this type&quot;</span> );</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160; </div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;        parse_state.trim_left( ); <span class="comment">// Move to array start &#39;[&#39;</span></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.is_opening_bracket_checked( ),</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;                              ErrorReason::InvalidArrayStart, parse_state );</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        parse_state.set_class_position( );</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        parse_state.remove_prefix( );</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        parse_state.trim_left( );</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160; </div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        <span class="keywordtype">size_t</span> current_idx = 0;</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160; </div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        <span class="keyword">using</span> tp_t = decltype( std::forward_as_tuple(</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;          parse_ordered_class_member&lt;JsonMembers&gt;( current_idx,</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;                                                   parse_state )... ) );</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160; </div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        <span class="keywordflow">if</span> constexpr( is_guaranteed_rvo_v&lt;ParseState&gt; ) {</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;          <span class="keyword">struct </span>cleanup_t {</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;            ParseState *ptr;</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;            <a class="code" href="daw__json__parse__common_8h.html#a3280ece7a36714608b5f84386378dd9c">CPP20CONSTEXPR</a> <span class="keyword">inline</span> ~cleanup_t( ) noexcept( <span class="keyword">false</span> ) {</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="preprocessor">#ifdef HAS_CPP20CONSTEXPR</span></div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;              <span class="keywordflow">if</span>( not std::is_constant_evaluated( ) ) {</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;                <span class="keywordflow">if</span>( std::uncaught_exceptions( ) == 0 ) {</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;                  (void)ptr-&gt;skip_array( );</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;                }</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;<span class="preprocessor">#ifdef HAS_CPP20CONSTEXPR</span></div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;              } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;                (void)ptr-&gt;skip_array( );</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;              }</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;            }</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;          } <span class="keyword">const</span> run_after_parse{ &amp;parse_state };</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;          (void)run_after_parse;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;          <span class="keywordflow">return</span> construct_value_tp&lt;T&gt;(</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;            Constructor{ }, parse_state,</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;            tp_t{ parse_ordered_class_member&lt;JsonMembers&gt;( current_idx,</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;                                                           parse_state )... } );</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;          <span class="keyword">auto</span> result = construct_value_tp&lt;T&gt;(</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;            Constructor{ }, parse_state,</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;            tp_t{ parse_ordered_class_member&lt;JsonMembers&gt;( current_idx,</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;                                                           parse_state )... } );</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160; </div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;          (void)parse_state.skip_array( );</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;          <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;        }</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;      }</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="comment">             * Rather than call directly use apply/tuple to evaluate</span></div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment">             * left-&gt;right</span></div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment">             */</span></div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;            <span class="keywordflow">if</span> constexpr( force_aggregate_construction_v&lt;T&gt; ) {</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;              <span class="keywordflow">return</span> T{</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;                  known_locations, parse_state )... };</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;              <span class="keyword">using</span> tp_t = decltype( std::forward_as_tuple(</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;                  known_locations, parse_state )... ) );</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160; </div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;              <span class="keywordflow">return</span> construct_value_tp&lt;T&gt;(</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;                Constructor{ }, parse_state,</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;                tp_t{</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;                  <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;                    known_locations, parse_state )... } );</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;            }</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;            <span class="keywordflow">if</span> constexpr( force_aggregate_construction_v&lt;T&gt; ) {</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;              <span class="keywordflow">return</span> T{</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;                <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;                  known_locations, parse_state )... };</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;              <span class="keyword">using</span> tp_t = decltype( std::forward_as_tuple(</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;                <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;                  known_locations, parse_state )... ) );</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;              <span class="keyword">auto</span> result = construct_value_tp&lt;T&gt;(</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;                Constructor{ }, parse_state,</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;                tp_t{</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                  <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">parse_class_member</a>&lt;Is, traits::nth_type&lt;Is, JsonMembers...&gt;&gt;(</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;                    known_locations, parse_state )... } );</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;              <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ab9252b209a844fa82bd3790e37155734">class_cleanup_now</a>( parse_state );</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;              <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;            }</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;          }</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;        }</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;      }</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160; </div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="comment">      /***</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="comment">       * Parse to a class where the members are constructed from the values of</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="comment">       * a JSON array. Often this is used for geometric types like Point</span></div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;<span class="comment">       */</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span> JsonClass, <span class="keyword">typename</span>... JsonMembers, <span class="keyword">typename</span> ParseState&gt;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;      [[nodiscard]] <span class="keyword">static</span> constexpr json_result&lt;JsonClass&gt;</div>
+<div class="line"><a name="l00295"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a35008b8727a8d04875750975334d2d82">  295</a></span>&#160;      <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a35008b8727a8d04875750975334d2d82">parse_ordered_json_class</a>( ParseState &amp;parse_state ) {</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        static_assert( is_a_json_type_v&lt;JsonClass&gt; );</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        <span class="keyword">using</span> T = <span class="keyword">typename</span> JsonClass::base_type;</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;        <span class="keyword">using</span> Constructor = <span class="keyword">typename</span> JsonClass::constructor_t;</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        static_assert( has_json_data_contract_trait_v&lt;T&gt;, <span class="stringliteral">&quot;Unexpected type&quot;</span> );</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;        static_assert(</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;          std::is_invocable&lt;Constructor,</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                            <span class="keyword">typename</span> JsonMembers::parse_to_t...&gt;::value,</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;          <span class="stringliteral">&quot;Supplied types cannot be used for construction of this type&quot;</span> );</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160; </div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        parse_state.trim_left( ); <span class="comment">// Move to array start &#39;[&#39;</span></div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        <a class="code" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>( parse_state.is_opening_bracket_checked( ),</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;                              ErrorReason::InvalidArrayStart, parse_state );</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        parse_state.set_class_position( );</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        parse_state.remove_prefix( );</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        parse_state.trim_left( );</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160; </div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        <span class="keywordtype">size_t</span> current_idx = 0;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160; </div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;        <span class="keyword">using</span> tp_t = decltype( std::forward_as_tuple(</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;          parse_ordered_class_member&lt;JsonMembers&gt;( current_idx,</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;                                                   parse_state )... ) );</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160; </div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;        <span class="keywordflow">if</span> constexpr( is_guaranteed_rvo_v&lt;ParseState&gt; ) {</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;          <span class="keyword">struct </span>cleanup_t {</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;            ParseState *ptr;</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;            <a class="code" href="daw__json__parse__common_8h.html#a3280ece7a36714608b5f84386378dd9c">CPP20CONSTEXPR</a> <span class="keyword">inline</span> ~cleanup_t( ) noexcept( <span class="keyword">false</span> ) {</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;<span class="preprocessor">#ifdef HAS_CPP20CONSTEXPR</span></div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;              <span class="keywordflow">if</span>( not std::is_constant_evaluated( ) ) {</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;                <span class="keywordflow">if</span>( std::uncaught_exceptions( ) == 0 ) {</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;                  (void)ptr-&gt;skip_array( );</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;                }</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;<span class="preprocessor">#ifdef HAS_CPP20CONSTEXPR</span></div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;              } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;                (void)ptr-&gt;skip_array( );</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;              }</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;            }</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;          } <span class="keyword">const</span> run_after_parse{ &amp;parse_state };</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;          (void)run_after_parse;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;          <span class="keywordflow">return</span> construct_value_tp&lt;T&gt;(</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;            Constructor{ }, parse_state,</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;            tp_t{ parse_ordered_class_member&lt;JsonMembers&gt;( current_idx,</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;                                                           parse_state )... } );</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;          <span class="keyword">auto</span> result = construct_value_tp&lt;T&gt;(</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;            Constructor{ }, parse_state,</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;            tp_t{ parse_ordered_class_member&lt;JsonMembers&gt;( current_idx,</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;                                                           parse_state )... } );</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160; </div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;          (void)parse_state.skip_array( );</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;          <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;        }</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;      }</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;} <span class="comment">// namespace daw::json</span></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
 <div class="ttc" id="adaw__json__assert_8h_html_a728389a742b837d2170f62d34d78ddf4"><div class="ttname"><a href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a></div><div class="ttdeci">#define daw_json_assert_weak(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:203</div></div>
 <div class="ttc" id="adaw__json__defs_8h_html"><div class="ttname"><a href="daw__json__defs_8h.html">daw_json_defs.h</a></div></div>
@@ -433,18 +434,18 @@ $(function() {
 <div class="ttc" id="adaw__json__skip_8h_html"><div class="ttname"><a href="daw__json__skip_8h.html">daw_json_skip.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1pocm__details_html_a3991f3166e6ee31ec6d99638fca75206"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1pocm__details.html#a3991f3166e6ee31ec6d99638fca75206">daw::json::DAW_JSON_VER::json_details::pocm_details::maybe_skip_members</a></div><div class="ttdeci">constexpr void maybe_skip_members(ParseState &amp;parse_state, std::size_t &amp;current_position, std::size_t desired_position)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_class.h:40</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a10ec2a9c60f05bb24814056d64e0779c"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10ec2a9c60f05bb24814056d64e0779c">daw::json::DAW_JSON_VER::json_details::parse_class_member</a></div><div class="ttdeci">constexpr json_result&lt; JsonMember &gt; parse_class_member(locations_info_t&lt; N, B &gt; &amp;locations, ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_class.h:126</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a35008b8727a8d04875750975334d2d82"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a35008b8727a8d04875750975334d2d82">daw::json::DAW_JSON_VER::json_details::parse_ordered_json_class</a></div><div class="ttdeci">static constexpr json_result&lt; JsonClass &gt; parse_ordered_json_class(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_class.h:294</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a59622f3c66c8dfb60b584a07325ed2a9"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a59622f3c66c8dfb60b584a07325ed2a9">daw::json::DAW_JSON_VER::json_details::make_locations_info</a></div><div class="ttdeci">constexpr auto make_locations_info()</div><div class="ttdef"><b>Definition:</b> daw_json_location_info.h:123</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a35008b8727a8d04875750975334d2d82"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a35008b8727a8d04875750975334d2d82">daw::json::DAW_JSON_VER::json_details::parse_ordered_json_class</a></div><div class="ttdeci">static constexpr json_result&lt; JsonClass &gt; parse_ordered_json_class(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_class.h:295</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a37deb8833dac0493a08647dbc86a924c"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a37deb8833dac0493a08647dbc86a924c">daw::json::DAW_JSON_VER::json_details::skip_value</a></div><div class="ttdeci">constexpr ParseState skip_value(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_skip.h:213</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a59622f3c66c8dfb60b584a07325ed2a9"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a59622f3c66c8dfb60b584a07325ed2a9">daw::json::DAW_JSON_VER::json_details::make_locations_info</a></div><div class="ttdeci">constexpr auto make_locations_info()</div><div class="ttdef"><b>Definition:</b> daw_json_location_info.h:150</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a77f650512e7663f6beb10422a0c4a87c"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a77f650512e7663f6beb10422a0c4a87c">daw::json::DAW_JSON_VER::json_details::ordered_member_subtype_t</a></div><div class="ttdeci">typename ordered_member_subtype&lt; T, is_an_ordered_member&lt; T &gt;::value &gt;::type ordered_member_subtype_t</div><div class="ttdef"><b>Definition:</b> daw_json_parse_common.h:69</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a9df73c70428763cb710f3674bfe3b252"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a9df73c70428763cb710f3674bfe3b252">daw::json::DAW_JSON_VER::json_details::parse_json_class</a></div><div class="ttdeci">static constexpr json_result&lt; JsonClass &gt; parse_json_class(ParseState &amp;parse_state, std::index_sequence&lt; Is... &gt;)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_class.h:195</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_aad9eb7f7cb949a8ea8a7f48a2802532f"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aad9eb7f7cb949a8ea8a7f48a2802532f">daw::json::DAW_JSON_VER::json_details::skip_value</a></div><div class="ttdeci">static constexpr ParseState skip_value(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_skip.h:202</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_ab9252b209a844fa82bd3790e37155734"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ab9252b209a844fa82bd3790e37155734">daw::json::DAW_JSON_VER::json_details::class_cleanup_now</a></div><div class="ttdeci">constexpr DAW_ATTRIBUTE_FLATTEN void class_cleanup_now(ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_class.h:173</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_aca895dea7ef47a342b564f937a883c2a"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aca895dea7ef47a342b564f937a883c2a">daw::json::DAW_JSON_VER::json_details::parse_ordered_class_member</a></div><div class="ttdeci">constexpr json_result&lt; JsonMember &gt; parse_ordered_class_member(std::size_t &amp;member_index, ParseState &amp;parse_state)</div><div class="ttdef"><b>Definition:</b> daw_json_parse_class.h:74</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_a317072e892b979b5a98b7b8665c6d293"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a317072e892b979b5a98b7b8665c6d293">daw::json::DAW_JSON_VER::daw_json_error</a></div><div class="ttdeci">DAW_JSON_NOINLINE void daw_json_error(ErrorReason reason)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:54</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_a6ed292879fc9e71e921223931120965b"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a6ed292879fc9e71e921223931120965b">daw::json::DAW_JSON_VER::ParseTag</a></div><div class="ttdeci">std::integral_constant&lt; JsonParseTypes, v &gt; ParseTag</div><div class="ttdef"><b>Definition:</b> daw_json_enums.h:90</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_af4048fed315a6329c25e8a1653312f7ea46ad517b8b7aa4e368a7cc226533bfb6"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af4048fed315a6329c25e8a1653312f7ea46ad517b8b7aa4e368a7cc226533bfb6">daw::json::DAW_JSON_VER::JsonNullable::Nullable</a></div><div class="ttdeci">@ Nullable</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> daw_from_json.h:22</div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1locations__info__t_html"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1locations__info__t.html">daw::json::DAW_JSON_VER::json_details::locations_info_t</a></div><div class="ttdef"><b>Definition:</b> daw_json_location_info.h:63</div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1locations__info__t_html"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1locations__info__t.html">daw::json::DAW_JSON_VER::json_details::locations_info_t</a></div><div class="ttdef"><b>Definition:</b> daw_json_location_info.h:90</div></div>
 <div class="ttc" id="aversion_8h_html"><div class="ttname"><a href="version_8h.html">version.h</a></div></div>
 <div class="ttc" id="aversion_8h_html_a2f2fb61b85313c7d8d05a24bc00fbf15"><div class="ttname"><a href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a></div><div class="ttdeci">#define DAW_JSON_VER</div><div class="ttdef"><b>Definition:</b> version.h:11</div></div>
 </div><!-- fragment --></div><!-- contents -->

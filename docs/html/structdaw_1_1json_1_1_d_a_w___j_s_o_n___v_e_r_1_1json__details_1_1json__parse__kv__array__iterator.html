@@ -69,6 +69,8 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator&lt; JsonMember, ParseState, KnownBounds &gt; Struct Template Reference</div>  </div>
@@ -94,14 +96,14 @@ Public Types</h2></td></tr>
 <tr class="separator:aa357c63ddef7ae619742bb1f7d179260"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa417fe52059d318f740558b528862fa0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#aa417fe52059d318f740558b528862fa0">iterator_category</a> = typename <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator__base.html#a56c3e8f8b4f46620d8f0dc835ec2d899">base::iterator_category</a></td></tr>
 <tr class="separator:aa417fe52059d318f740558b528862fa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a593c5793835cd66049c4869f1aeabf"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a2a593c5793835cd66049c4869f1aeabf">iterator_range_t</a> = ParseState</td></tr>
-<tr class="separator:a2a593c5793835cd66049c4869f1aeabf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca90b1b00d742bbb238fc9d57abe86a1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#aca90b1b00d742bbb238fc9d57abe86a1">json_class_type</a> = typename JsonMember::json_class_t</td></tr>
 <tr class="separator:aca90b1b00d742bbb238fc9d57abe86a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af88f79f491317a796d2bc1f3df85eeb8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#af88f79f491317a796d2bc1f3df85eeb8">json_element_t</a> = typename JsonMember::json_value_t</td></tr>
 <tr class="separator:af88f79f491317a796d2bc1f3df85eeb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef5ec911d8314c220815f65f9f389291"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#aef5ec911d8314c220815f65f9f389291">json_key_t</a> = typename JsonMember::json_key_t</td></tr>
 <tr class="separator:aef5ec911d8314c220815f65f9f389291"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41fbac788e59c6f4ebf82cbe6df09533"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a41fbac788e59c6f4ebf82cbe6df09533">parse_state_t</a> = ParseState</td></tr>
+<tr class="separator:a41fbac788e59c6f4ebf82cbe6df09533"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa069e23c99269125da08c188b645a856"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#aa069e23c99269125da08c188b645a856">pointer</a> = <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1arrow__proxy.html">arrow_proxy</a>&lt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ab876bc383bec955e36d0dd34758b349f">value_type</a> &gt;</td></tr>
 <tr class="separator:aa069e23c99269125da08c188b645a856"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a692937d47e90c6a831a4fc9acff8d13b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a692937d47e90c6a831a4fc9acff8d13b">reference</a> = <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ab876bc383bec955e36d0dd34758b349f">value_type</a></td></tr>
@@ -118,18 +120,24 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a129f7337c73ad2623c62843d814962b1"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a129f7337c73ad2623c62843d814962b1">json_parse_kv_array_iterator</a> ()=default</td></tr>
 <tr class="separator:a129f7337c73ad2623c62843d814962b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88e5a5cc56a39c8ea28627c818ffb6c7"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a88e5a5cc56a39c8ea28627c818ffb6c7">json_parse_kv_array_iterator</a> (<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a2a593c5793835cd66049c4869f1aeabf">iterator_range_t</a> &amp;r)</td></tr>
-<tr class="separator:a88e5a5cc56a39c8ea28627c818ffb6c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada69686dac7c054b03ad8a2df006b7bf"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ada69686dac7c054b03ad8a2df006b7bf">operator!=</a> (<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a> const &amp;rhs) const</td></tr>
-<tr class="separator:ada69686dac7c054b03ad8a2df006b7bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25d149be1f1ab287594c97348bcc0237"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ab876bc383bec955e36d0dd34758b349f">value_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a25d149be1f1ab287594c97348bcc0237">operator*</a> ()</td></tr>
-<tr class="separator:a25d149be1f1ab287594c97348bcc0237"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cd9d06d170f8eb440a85d49386bb38b"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a7cd9d06d170f8eb440a85d49386bb38b">operator++</a> ()</td></tr>
-<tr class="separator:a7cd9d06d170f8eb440a85d49386bb38b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32357c248ab0947f03e24608fc044b3b"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a32357c248ab0947f03e24608fc044b3b">operator++</a> (int)</td></tr>
-<tr class="separator:a32357c248ab0947f03e24608fc044b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f140db9c2306c9c49b5b9beccabe162"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a0f140db9c2306c9c49b5b9beccabe162">operator==</a> (<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a> const &amp;rhs) const</td></tr>
-<tr class="separator:a0f140db9c2306c9c49b5b9beccabe162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a374ed0091ebc339c5f46052d9839a67c"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a374ed0091ebc339c5f46052d9839a67c">json_parse_kv_array_iterator</a> (<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a41fbac788e59c6f4ebf82cbe6df09533">parse_state_t</a> &amp;r)</td></tr>
+<tr class="separator:a374ed0091ebc339c5f46052d9839a67c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1c93d6e48a30ed8f3e6db667730aba2"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ab876bc383bec955e36d0dd34758b349f">value_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ad1c93d6e48a30ed8f3e6db667730aba2">operator*</a> ()</td></tr>
+<tr class="separator:ad1c93d6e48a30ed8f3e6db667730aba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9f0ea13dddf1454404dd6901115bb0e"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ab9f0ea13dddf1454404dd6901115bb0e">operator++</a> ()</td></tr>
+<tr class="separator:ab9f0ea13dddf1454404dd6901115bb0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a7be5d54d53216651856812e59f2cb216"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ab876bc383bec955e36d0dd34758b349f">value_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a7be5d54d53216651856812e59f2cb216">get_pair</a> (typename json_class_type::parse_to_t &amp;&amp;v)</td></tr>
+<tr class="separator:a7be5d54d53216651856812e59f2cb216"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:aae05e0af950c50fb69187f0c9cee66dc"><td class="memItemLeft" align="right" valign="top">constexpr friend bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#aae05e0af950c50fb69187f0c9cee66dc">operator!=</a> (<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a> const &amp;lhs, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a> const &amp;rhs)</td></tr>
+<tr class="separator:aae05e0af950c50fb69187f0c9cee66dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a984171297f26687f931cf0a3e86467eb"><td class="memItemLeft" align="right" valign="top">constexpr friend bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a984171297f26687f931cf0a3e86467eb">operator==</a> (<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a> const &amp;lhs, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a> const &amp;rhs)</td></tr>
+<tr class="separator:a984171297f26687f931cf0a3e86467eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -189,22 +197,6 @@ template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </d
 
 </div>
 </div>
-<a id="a2a593c5793835cd66049c4869f1aeabf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a593c5793835cd66049c4869f1aeabf">&#9670;&nbsp;</a></span>iterator_range_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a2a593c5793835cd66049c4869f1aeabf">iterator_range_t</a> =  ParseState</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="aca90b1b00d742bbb238fc9d57abe86a1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aca90b1b00d742bbb238fc9d57abe86a1">&#9670;&nbsp;</a></span>json_class_type</h2>
 
@@ -247,6 +239,22 @@ template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </d
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#aef5ec911d8314c220815f65f9f389291">json_key_t</a> =  typename JsonMember::json_key_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a41fbac788e59c6f4ebf82cbe6df09533"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41fbac788e59c6f4ebf82cbe6df09533">&#9670;&nbsp;</a></span>parse_state_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a41fbac788e59c6f4ebf82cbe6df09533">parse_state_t</a> =  ParseState</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -329,8 +337,8 @@ template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </d
 
 </div>
 </div>
-<a id="a88e5a5cc56a39c8ea28627c818ffb6c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88e5a5cc56a39c8ea28627c818ffb6c7">&#9670;&nbsp;</a></span>json_parse_kv_array_iterator() <span class="overload">[2/2]</span></h2>
+<a id="a374ed0091ebc339c5f46052d9839a67c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a374ed0091ebc339c5f46052d9839a67c">&#9670;&nbsp;</a></span>json_parse_kv_array_iterator() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -343,7 +351,7 @@ template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </d
         <tr>
           <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a> </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a2a593c5793835cd66049c4869f1aeabf">iterator_range_t</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#a41fbac788e59c6f4ebf82cbe6df09533">parse_state_t</a> &amp;&#160;</td>
           <td class="paramname"><em>r</em></td><td>)</td>
           <td></td>
         </tr>
@@ -358,8 +366,8 @@ template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </d
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ada69686dac7c054b03ad8a2df006b7bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada69686dac7c054b03ad8a2df006b7bf">&#9670;&nbsp;</a></span>operator!=()</h2>
+<a id="a7be5d54d53216651856812e59f2cb216"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7be5d54d53216651856812e59f2cb216">&#9670;&nbsp;</a></span>get_pair()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -370,78 +378,117 @@ template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </d
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::operator!= </td>
+          <td class="memname">static constexpr <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ab876bc383bec955e36d0dd34758b349f">value_type</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::get_pair </td>
+          <td>(</td>
+          <td class="paramtype">typename json_class_type::parse_to_t &amp;&amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad1c93d6e48a30ed8f3e6db667730aba2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1c93d6e48a30ed8f3e6db667730aba2">&#9670;&nbsp;</a></span>operator*()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ab876bc383bec955e36d0dd34758b349f">value_type</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::operator* </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9f0ea13dddf1454404dd6901115bb0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9f0ea13dddf1454404dd6901115bb0e">&#9670;&nbsp;</a></span>operator++()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="daw__json__defs_8h.html#a7d3f93de85912db08c641259e6b368fd">DAW_ONLY_INLINE</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a>&amp; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::operator++ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="aae05e0af950c50fb69187f0c9cee66dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae05e0af950c50fb69187f0c9cee66dc">&#9670;&nbsp;</a></span>operator!=</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr friend bool operator!= </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt; const &amp;&#160;</td>
-          <td class="paramname"><em>rhs</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>lhs</em>, </td>
         </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a25d149be1f1ab287594c97348bcc0237"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25d149be1f1ab287594c97348bcc0237">&#9670;&nbsp;</a></span>operator*()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html#ab876bc383bec955e36d0dd34758b349f">value_type</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::operator* </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
         </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a7cd9d06d170f8eb440a85d49386bb38b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7cd9d06d170f8eb440a85d49386bb38b">&#9670;&nbsp;</a></span>operator++() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a>&amp; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::operator++ </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
           <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a32357c248ab0947f03e24608fc044b3b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a32357c248ab0947f03e24608fc044b3b">&#9670;&nbsp;</a></span>operator++() <span class="overload">[2/2]</span></h2>
+<a id="a984171297f26687f931cf0a3e86467eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a984171297f26687f931cf0a3e86467eb">&#9670;&nbsp;</a></span>operator==</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -452,44 +499,26 @@ template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </d
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::operator++ </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0f140db9c2306c9c49b5b9beccabe162"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0f140db9c2306c9c49b5b9beccabe162">&#9670;&nbsp;</a></span>operator==()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename JsonMember , typename ParseState , bool KnownBounds&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">daw::json::DAW_JSON_VER::json_details::json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt;::operator== </td>
+          <td class="memname">constexpr friend bool operator== </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt; const &amp;&#160;</td>
-          <td class="paramname"><em>rhs</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__parse__kv__array__iterator.html">json_parse_kv_array_iterator</a>&lt; JsonMember, ParseState, KnownBounds &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

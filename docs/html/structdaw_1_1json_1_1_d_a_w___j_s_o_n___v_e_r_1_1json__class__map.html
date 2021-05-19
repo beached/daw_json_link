@@ -89,9 +89,9 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:abab34efaa0051feb8940c6c963e6fef2"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename ParseState &gt; </td></tr>
-<tr class="memitem:abab34efaa0051feb8940c6c963e6fef2"><td class="memTemplItemLeft" align="right" valign="top">static constexpr <a class="el" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ac9a88410139fc9fcafcdd47c1aa2d5bb">json_details::json_result</a>&lt; JsonClass &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__class__map.html#abab34efaa0051feb8940c6c963e6fef2">parse_to_class</a> (ParseState &amp;parse_state)</td></tr>
-<tr class="separator:abab34efaa0051feb8940c6c963e6fef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5edff04585fb92b6148578b4ab096a1a"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename ParseState &gt; </td></tr>
+<tr class="memitem:a5edff04585fb92b6148578b4ab096a1a"><td class="memTemplItemLeft" align="right" valign="top">static constexpr <a class="el" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ac9a88410139fc9fcafcdd47c1aa2d5bb">json_details::json_result</a>&lt; JsonClass &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__class__map.html#a5edff04585fb92b6148578b4ab096a1a">parse_to_class</a> (template_param&lt; JsonClass &gt;, ParseState &amp;parse_state)</td></tr>
+<tr class="separator:a5edff04585fb92b6148578b4ab096a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af26d22e536223aae9dd5bfbed3f11b25"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator , typename Member , typename Value &gt; </td></tr>
 <tr class="memitem:af26d22e536223aae9dd5bfbed3f11b25"><td class="memTemplItemLeft" align="right" valign="top">static constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__class__map.html#af26d22e536223aae9dd5bfbed3f11b25">serialize</a> (OutputIterator it, Member const &amp;m, Value const &amp;)</td></tr>
 <tr class="separator:af26d22e536223aae9dd5bfbed3f11b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -148,8 +148,8 @@ template&lt;typename Constructor &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="abab34efaa0051feb8940c6c963e6fef2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abab34efaa0051feb8940c6c963e6fef2">&#9670;&nbsp;</a></span>parse_to_class()</h2>
+<a id="a5edff04585fb92b6148578b4ab096a1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5edff04585fb92b6148578b4ab096a1a">&#9670;&nbsp;</a></span>parse_to_class()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -164,9 +164,19 @@ template&lt;typename JsonClass , typename ParseState &gt; </div>
         <tr>
           <td class="memname">static constexpr <a class="el" href="daw__json__defs_8h.html#a208633065534baa32d8eb5c60d326a3b">DAW_ONLY_FLATTEN</a> json_details:: json_result&lt;JsonClass&gt; <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__class__map.html">daw::json::DAW_JSON_VER::json_class_map</a>&lt; JsonMember &gt;::parse_to_class </td>
           <td>(</td>
-          <td class="paramtype">ParseState &amp;&#160;</td>
-          <td class="paramname"><em>parse_state</em></td><td>)</td>
+          <td class="paramtype">template_param&lt; JsonClass &gt;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">ParseState &amp;&#160;</td>
+          <td class="paramname"><em>parse_state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>

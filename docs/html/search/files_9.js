@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['parser_5fpolicies_2emd_997',['parser_policies.md',['../parser__policies_8md.html',1,'']]],
-  ['parsing_5findividual_5fmembers_2emd_998',['parsing_individual_members.md',['../parsing__individual__members_8md.html',1,'']]]
+  ['readme_2emd_1025',['readme.md',['../readme_8md.html',1,'']]]
 ];

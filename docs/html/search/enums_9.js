@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zeroterminatedstring_1538',['ZeroTerminatedString',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ae0c6d3e444c6fe8528452c264004e9d9',1,'daw::json::ZeroTerminatedString()'],['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ae0c6d3e444c6fe8528452c264004e9d9',1,'daw::json::DAW_JSON_VER::ZeroTerminatedString()']]]
+  ['stackparsestatetype_1585',['StackParseStateType',['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#acca6c9e23097f25f4dae6311fd7825d9',1,'daw::json::StackParseStateType()'],['../namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#acca6c9e23097f25f4dae6311fd7825d9',1,'daw::json::DAW_JSON_VER::StackParseStateType()']]]
 ];
