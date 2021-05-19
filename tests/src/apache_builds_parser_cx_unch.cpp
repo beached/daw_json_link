@@ -15,11 +15,12 @@
 namespace daw::json {
 	template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
-	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>>(
-	  std::string_view const &json_data, std::string_view member_path );
+	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data,
+	                                         std::string_view member_path );
 
 	template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
-	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>>(
-	  std::string_view const &json_data );
+	          SIMDNoCommentSkippingPolicyUnchecked<constexpr_exec_tag>, false,
+	          apache_builds::apache_builds>( std::string_view const &json_data );
 } // namespace daw::json
