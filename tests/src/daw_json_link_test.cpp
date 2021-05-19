@@ -466,7 +466,7 @@ unsigned long long test_dblparse( std::string_view num,
 		std::cout.precision( old_precision );
 	}
 #ifndef NDEBUG
-	if( diff > ( Precise ? 1 : 2 ) ) {
+	if( diff > ( Precise ? 0 : 2 ) ) {
 		auto const old_precision = std::cout.precision( );
 		// Do again to do it from debugger
 
@@ -827,9 +827,9 @@ int main( int, char ** )
 	          << '\n';
 	std::cout << "Default FP Parse\n";
 	std::cout << "Unknown Bounds\n";
-	test_lots_of_doubles( );
+	test_lots_of_doubles<false, false>( );
 	std::cout << "Known Bounds\n";
-	test_lots_of_doubles<true>( );
+	test_lots_of_doubles<true, false>( );
 	std::cout << "Precise FP Parse\n";
 	std::cout << "Unknown Bounds\n";
 	test_lots_of_doubles<false, true>( );

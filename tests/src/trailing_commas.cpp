@@ -185,6 +185,8 @@ struct daw::json::json_data_contract<array_member_trail> {
 };
 
 bool test_array_member_trail( ) {
+	std::string a;
+
 	static DAW_CONSTEXPR std::string_view json_data =
 	  R"({"b": 5, "c": true, "a": [1,2,3,4], } )";
 	try {

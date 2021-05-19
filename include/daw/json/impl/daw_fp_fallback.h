@@ -80,6 +80,12 @@ namespace daw::json {
 #if defined( __cpp_lib_to_chars )
 				Real result;
 				std::from_chars_result fc_res = std::from_chars( first, last, result );
+				if( fc_res.ec == std::errc::result_out_of_range ) {
+					if( *first == '-' ) {
+						return -std::numeric_limits<Real>::infinity( );
+					}
+					return std::numeric_limits<Real>::infinity();
+				}
 				daw_json_assert( fc_res.ec == std::errc( ),
 				                 ErrorReason::InvalidNumber );
 				return result;
@@ -87,9 +93,9 @@ namespace daw::json {
 				(void)last;
 				char **end = nullptr;
 				if constexpr( std::is_same_v<Real, float> ) {
-					return strtof( first, end );
+					return static_cast<Real>( strtof( first, end ) );
 				} else if( std::is_same_v<Real, double> ) {
-					return strtod( first, end );
+					return static_cast<Real>( strtod( first, end ) );
 				} else {
 					return static_cast<Real>( strtold( first, end ) );
 				}
