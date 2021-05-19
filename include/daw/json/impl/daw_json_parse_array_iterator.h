@@ -99,7 +99,7 @@ namespace daw::json {
 										}
 #ifdef HAS_CPP20CONSTEXPR
 									} else {
-										ptr.counter = counter;
+										p.counter = counter;
 									}
 #endif
 								}
