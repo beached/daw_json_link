@@ -277,10 +277,6 @@ namespace daw::json {
 				    *first == '.' ) {
 					++first;
 					if( exponent != 0 ) {
-						if constexpr( std::is_floating_point_v<Result> and
-						              ParseState::precise_ieee754 ) {
-							use_strtod = true;
-						}
 						if( first < parse_state.last ) {
 							first = skip_digits<( ParseState::is_zero_terminated_string or
 							                      ParseState::is_unchecked_input )>(
@@ -301,13 +297,15 @@ namespace daw::json {
 						exponent -= static_cast<signed_t>( last_char - first );
 						first = last_char;
 						if( ( first >= fract_last ) & ( first < parse_state.last ) ) {
+							auto new_first =
+							  skip_digits<( ParseState::is_zero_terminated_string or
+							                ParseState::is_unchecked_input )>(
+							    first, parse_state.last );
 							if constexpr( std::is_floating_point_v<Result> and
 							              ParseState::precise_ieee754 ) {
-								use_strtod = true;
+								use_strtod |= new_first > first;
 							}
-							first = skip_digits<( ParseState::is_zero_terminated_string or
-							                      ParseState::is_unchecked_input )>(
-							  first, parse_state.last );
+							first = new_first;
 						}
 					}
 				}
