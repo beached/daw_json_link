@@ -4,8 +4,8 @@ on:
   push:
     branches: release, develop
   pull_request:
-    push:
-      branches-ignore: develop
+    #    push:
+    #  branches-ignore: develop
     pull_request:
       branches-ignore: develop
 
