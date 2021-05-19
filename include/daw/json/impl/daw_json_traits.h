@@ -110,7 +110,8 @@ namespace daw::json {
 
 		template<typename K, typename V, typename H, typename E, typename Alloc>
 		struct default_constructor<std::unordered_map<K, V, H, E, Alloc>> {
-			DAW_ATTRIBUTE_FLATTEN inline std::unordered_map<K, V, H, E, Alloc> operator( )( ) const
+			DAW_ATTRIBUTE_FLATTEN inline std::unordered_map<K, V, H, E, Alloc>
+			operator( )( ) const
 			  noexcept( noexcept( std::unordered_map<K, V, H, E, Alloc>( ) ) ) {
 				return { };
 			}
@@ -176,7 +177,8 @@ namespace daw::json {
 		struct nullable_constructor<std::unique_ptr<T, Deleter>> {
 			using value_type = T;
 
-			DAW_ATTRIBUTE_FLATTEN inline constexpr std::unique_ptr<T, Deleter> operator( )( ) const noexcept {
+			DAW_ATTRIBUTE_FLATTEN inline constexpr std::unique_ptr<T, Deleter>
+			operator( )( ) const noexcept {
 				return std::unique_ptr<T, Deleter>{ };
 			}
 
@@ -317,7 +319,7 @@ namespace daw::json {
 			template<typename ParsePolicy, typename String, auto Option>
 			using apply_zstring_policy_option_t = std::conditional_t<
 			  is_zero_terminated_string_v<daw::remove_cvref_t<String>>,
-			  typename ParsePolicy::template SetPolicyOption<Option>, ParsePolicy>;
+			  typename ParsePolicy::template SetPolicyOptions<Option>, ParsePolicy>;
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

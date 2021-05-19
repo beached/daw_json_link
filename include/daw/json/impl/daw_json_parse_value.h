@@ -77,7 +77,6 @@ namespace daw::json {
 					  parse_policy_details::is_number_start( parse_state.front( ) ),
 					  ErrorReason::InvalidNumberStart, parse_state );
 
-					// TODO allow for guaranteed copy elision
 					auto result = construct_value<json_result<JsonMember>>(
 					  constructor_t{ }, parse_state,
 					  parse_real<element_t, false>( parse_state ) );

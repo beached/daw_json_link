@@ -121,7 +121,7 @@ namespace daw::json {
 			using ParseState = BasicParsePolicy;
 
 			template<auto... PolicyOptions>
-			using SetPolicyOption = BasicParsePolicy<
+			using SetPolicyOptions = BasicParsePolicy<
 			  json_details::set_bits( PolicyFlags, PolicyOptions... ), Allocator>;
 
 			inline constexpr BasicParsePolicy( ) = default;

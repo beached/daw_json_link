@@ -102,7 +102,7 @@ namespace daw::json {
 			}
 
 			DAW_ATTRIBUTE_FLATTEN static constexpr bool is_literal_end( char c ) {
-				return c == '\0' or c == ',' or c == ']' or c == '}';
+				return ( c == '\0' ) | ( c == ',' ) | ( c == ']' ) | ( c == '}' );
 			}
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
