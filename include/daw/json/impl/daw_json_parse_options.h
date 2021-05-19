@@ -227,7 +227,11 @@ namespace daw::json {
 				value &= ~mask;
 				value |= new_bits;
 				if constexpr( sizeof...( Policies ) > 0 ) {
-					return set_bits( value, pols... );
+					if constexpr( sizeof...( pols ) > 0 ) {
+						return set_bits( value, pols... );
+					} else {
+						return value;
+					}
 				} else {
 					return value;
 				}
