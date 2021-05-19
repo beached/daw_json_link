@@ -102,6 +102,20 @@ namespace daw::json {
 		} // namespace json_details
 
 		/***
+		 * When document is minified, it is assumed that there is no whitespace in
+		 * the document. Not all policies support this.
+		 */
+		enum class MinifiedDocument : unsigned { no, yes }; // 1 bit
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<MinifiedDocument> = 1;
+
+			template<>
+			inline constexpr auto default_policy_value<MinifiedDocument> =
+			  MinifiedDocument::no;
+		} // namespace json_details
+
+		/***
 		 * Allow the escape character '\' in names.  This forces a slower parser and
 		 * is generally not needed.  The default is no, and the end of string
 		 * matching only needs to look for a `"`, not skip `\"` in names.
@@ -176,7 +190,7 @@ namespace daw::json {
 			using policy_list =
 			  std::tuple<ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
 			             CheckedParseMode, AllowEscapedNames, IEEE754Precise,
-			             ForceFullNameCheck>;
+			             ForceFullNameCheck, MinifiedDocument>;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =
@@ -262,7 +276,7 @@ namespace daw::json {
 			  default_policy_flag_t<policy_list>::value;
 
 			template<typename Policy, typename Result = Policy>
-			constexpr Result get_bits( policy_options_t value ) {
+			constexpr Result get_bits_for( policy_options_t value ) {
 				static_assert( is_policy_flag<Policy>,
 				               "Only registered policy types are allowed" );
 				constexpr unsigned mask =

@@ -49,14 +49,14 @@ namespace daw::json {
 			 * see CheckedParseMode
 			 */
 			static constexpr bool is_unchecked_input =
-			  json_details::get_bits<CheckedParseMode>( PolicyFlags ) ==
+			  json_details::get_bits_for<CheckedParseMode>( PolicyFlags ) ==
 			  CheckedParseMode::no;
 
 			/***
 			 * See ExecModeTypes
 			 */
 			using exec_tag_t = json_details::switch_t<
-			  json_details::get_bits<ExecModeTypes, std::size_t>( PolicyFlags ),
+			  json_details::get_bits_for<ExecModeTypes, std::size_t>( PolicyFlags ),
 			  constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
 
 			static constexpr exec_tag_t exec_tag = exec_tag_t{ };
@@ -65,29 +65,36 @@ namespace daw::json {
 			 * see AllowEscapedNames
 			 */
 			static constexpr bool allow_escaped_names =
-			  json_details::get_bits<AllowEscapedNames>( PolicyFlags ) ==
+			  json_details::get_bits_for<AllowEscapedNames>( PolicyFlags ) ==
 			  AllowEscapedNames::yes;
 
 			/***
 			 * see ForceFullNameCheck
 			 */
 			static constexpr bool force_name_equal_check =
-			  json_details::get_bits<ForceFullNameCheck>( PolicyFlags ) ==
+			  json_details::get_bits_for<ForceFullNameCheck>( PolicyFlags ) ==
 			  ForceFullNameCheck::yes;
 
 			/***
 			 * see ZeroTerminatedString
 			 */
 			static constexpr bool is_zero_terminated_string =
-			  json_details::get_bits<ZeroTerminatedString>( PolicyFlags ) ==
+			  json_details::get_bits_for<ZeroTerminatedString>( PolicyFlags ) ==
 			  ZeroTerminatedString::yes;
 
 			/***
 			 * See IEEE754Precise
 			 */
 			static constexpr bool precise_ieee754 =
-			  json_details::get_bits<IEEE754Precise>( PolicyFlags ) ==
+			  json_details::get_bits_for<IEEE754Precise>( PolicyFlags ) ==
 			  IEEE754Precise::yes;
+
+			/***
+			 * See MinifiedDocument
+			 */
+			static constexpr bool minified_document =
+			  json_details::get_bits_for<MinifiedDocument>( PolicyFlags ) ==
+			  MinifiedDocument::yes;
 
 			using CharT = char;
 
@@ -101,7 +108,8 @@ namespace daw::json {
 			                   Allocator>;
 
 			using CommentPolicy = json_details::switch_t<
-			  json_details::get_bits<PolicyCommentTypes, std::size_t>( PolicyFlags ),
+			  json_details::get_bits_for<PolicyCommentTypes, std::size_t>(
+			    PolicyFlags ),
 			  NoCommentSkippingPolicy, CppCommentSkippingPolicy,
 			  HashCommentSkippingPolicy>;
 

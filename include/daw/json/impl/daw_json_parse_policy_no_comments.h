@@ -25,16 +25,12 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		template<bool DocumentIsMinified>
-		struct BasicNoCommentSkippingPolicy final {
-			/***
-			 * The document has no whitespace between members(minified)
-			 */
-			static constexpr bool document_is_minified = DocumentIsMinified;
+		struct NoCommentSkippingPolicy final {
+
 			template<typename ParseState>
 			DAW_ATTRIBUTE_FLATTEN static constexpr void
 			trim_left_checked( ParseState &parse_state ) {
-				if constexpr( not document_is_minified ) {
+				if constexpr( not ParseState::minified_document ) {
 					// SIMD here was much slower, most JSON has very minimal whitespace
 					char const *first = parse_state.first;
 					char const *const last = parse_state.last;
@@ -59,7 +55,7 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIBUTE_FLATTEN static constexpr void
 			trim_left_unchecked( ParseState &parse_state ) {
-				if constexpr( not document_is_minified ) {
+				if constexpr( not ParseState::minified_document ) {
 					char const *first = parse_state.first;
 					while( DAW_JSON_UNLIKELY( static_cast<unsigned char>( *first ) <=
 					                          0x20 ) ) {
@@ -335,7 +331,5 @@ namespace daw::json {
 				DAW_UNREACHABLE( );
 			}
 		};
-
-		using NoCommentSkippingPolicy = BasicNoCommentSkippingPolicy<false>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
