@@ -15,11 +15,12 @@
 namespace daw::json {
 	template daw::geojson::Polygon
 	from_json<daw::geojson::Polygon,
-	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>>(
-	  std::string_view const & json_data, std::string_view path );
+	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>, false,
+	          daw::geojson::Polygon>( std::string_view const &json_data,
+	                                  std::string_view path );
 
 	template daw::geojson::Polygon
 	from_json<daw::geojson::Polygon,
-	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>>(
-	  std::string_view const & json_data );
+	          SIMDNoCommentSkippingPolicyUnchecked<runtime_exec_tag>, false,
+	          daw::geojson::Polygon>( std::string_view const &json_data );
 } // namespace daw::json
