@@ -201,10 +201,7 @@ namespace daw::json {
 				}
 				constexpr auto pred = []( auto const &r ) {
 					if constexpr( ParseState::is_unchecked_input ) {
-						return r.front( ) != '"';
-					} else if constexpr( ParseState::is_zero_terminated_string ) {
-						char const c = r.front( );
-						return DAW_JSON_LIKELY( c != '\0' ) & ( c != '"' );
+						return DAW_JSON_LIKELY( r.front( ) != '"' );
 					} else {
 						return DAW_JSON_LIKELY( r.has_more( ) ) & ( r.front( ) != '"' );
 					}
@@ -229,14 +226,14 @@ namespace daw::json {
 							                      '"', '\\'>( ParseState::exec_tag, first,
 							                                  last );
 						}
-						it = std::copy( parse_state.first, first, it );
+						it = daw::algorithm::copy( parse_state.first, first, it );
 						parse_state.first = first;
 					}
 					if( parse_state.front( ) == '\\' ) {
+						parse_state.remove_prefix( );
 						daw_json_assert_weak( not parse_state.is_space_unchecked( ),
 						                      ErrorReason::InvalidUTFCodepoint,
 						                      parse_state );
-						parse_state.remove_prefix( );
 						switch( parse_state.front( ) ) {
 						case 'b':
 							*it++ = '\b';

@@ -173,15 +173,17 @@ namespace tests {
 			auto const ul = daw::json::from_json<tests::UriList>( data );
 			(void)ul;
 		} catch( daw::json::json_exception const &jex ) {
-			if( jex.parse_location( ) and
-			    ( jex.parse_location( ) - data.data( ) == 29 ) ) {
-				return true;
+			if( jex.parse_location( ) ) {
+				auto const pos = jex.parse_location( ) - std::data( data );
+				if( pos == 29 ) {
+					return true;
+				}
 			}
 			std::cerr << "Wrong exception: " << jex.reason( ) << '\n'
 			          << to_formatted_string( jex ) << '\n';
-		} catch(...) {
 			return false;
-		}
+		} catch( ... ) { return false; }
+		// Should never reach here
 		return false;
 	}
 
