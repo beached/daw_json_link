@@ -392,12 +392,14 @@ namespace daw::json {
 			is_space_checked( ) const {
 				daw_json_assert_weak( has_more( ), ErrorReason::UnexpectedEndOfData,
 				                      *this );
-				return static_cast<unsigned char>( *first ) <= 0x20U;
+				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
+				         1U ) <= 0x1FU;
 			}
 
 			DAW_ATTRIBUTE_FLATTEN [[nodiscard]] inline constexpr bool
 			is_space_unchecked( ) const {
-				return static_cast<unsigned char>( *first ) <= 0x20U;
+				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
+				         1U ) <= 0x1FU;
 			}
 
 			[[nodiscard]] inline constexpr bool is_opening_bracket_checked( ) const {

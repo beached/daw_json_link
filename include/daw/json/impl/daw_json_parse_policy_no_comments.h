@@ -38,13 +38,15 @@ namespace daw::json {
 						// Ensure that zero terminator isn't included in skipable value
 						while( DAW_JSON_UNLIKELY(
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-						    1U ) < 0x20U ) ) {
+						    1U ) <= 0x1F ) ) {
+
 							++first;
 						}
 					} else {
-						while( DAW_JSON_LIKELY( first < last ) and
-						       DAW_JSON_UNLIKELY( static_cast<unsigned char>( *first ) <=
-						                          0x20U ) ) {
+						while(
+						  DAW_JSON_LIKELY( first < last ) and
+						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
+						    1U ) <= 0x1F ) {
 							++first;
 						}
 					}
@@ -57,8 +59,10 @@ namespace daw::json {
 			trim_left_unchecked( ParseState &parse_state ) {
 				if constexpr( not ParseState::minified_document ) {
 					char const *first = parse_state.first;
-					while( DAW_JSON_UNLIKELY( static_cast<unsigned char>( *first ) <=
-					                          0x20 ) ) {
+					while( DAW_JSON_UNLIKELY(
+					  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
+					    1U ) <= 0x1F ) ) {
+
 						++first;
 					}
 					parse_state.first = first;

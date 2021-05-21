@@ -67,7 +67,6 @@ int main( int, char ** )
 	  }
 	*/
 	auto const json_data = *daw::read_file( "/tmp/1.json" );
-	auto const json_sv = std::string_view( json_data.data( ), json_data.size( ) );
 
 	using range_t =
 	  daw::json::json_array_range<coordinate_t, NoCommentSkippingPolicyUnchecked>;
@@ -78,7 +77,7 @@ int main( int, char ** )
 	uint_fast32_t sz = 0U;
 
 	// first will be json_array_iterator to the array coordinates in root object
-	for( auto c : range_t( json_sv, "coordinates" ) ) {
+	for( auto c : range_t( json_data, "coordinates" ) ) {
 		++sz;
 		x += c.x;
 		y += c.y;
@@ -89,8 +88,7 @@ int main( int, char ** )
 	std::cout << x / dsz << '\n';
 	std::cout << y / dsz << '\n';
 	std::cout << z / dsz << '\n';
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
