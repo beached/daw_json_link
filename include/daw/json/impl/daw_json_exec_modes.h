@@ -10,6 +10,8 @@
 
 #include "version.h"
 
+#include <daw/daw_likely.h>
+
 #include <string_view>
 
 #if defined( __has_include ) and __has_include( <version> )

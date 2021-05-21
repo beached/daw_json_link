@@ -12,6 +12,7 @@
 #include "impl/daw_json_traits.h"
 #include "impl/version.h"
 
+#include <daw/daw_attributes.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_visit.h>
@@ -72,7 +73,7 @@ namespace daw::json {
 			 */
 			template<typename JsonClass, typename ParseState>
 			[[maybe_unused,
-			  nodiscard]] DAW_ONLY_FLATTEN static inline constexpr json_details::
+			  nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
 			  json_result<JsonClass>
 			  parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
@@ -118,7 +119,7 @@ namespace daw::json {
 
 			template<typename JsonClass, typename ParseState>
 			[[maybe_unused,
-			  nodiscard]] DAW_ONLY_FLATTEN static constexpr json_details::
+			  nodiscard]] DAW_ATTRIB_FLATTEN static constexpr json_details::
 			  json_result<JsonClass>
 			  parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );

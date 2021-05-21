@@ -10,6 +10,8 @@
 
 #include "daw_json_assert.h"
 
+#include <daw/daw_attributes.h>
+
 #include <cstdint>
 #if __has_include( <version> )
 #include <version>
@@ -25,8 +27,8 @@ namespace daw::json {
 
 			template<typename Real, std::enable_if_t<std::is_floating_point_v<Real>,
 			                                         std::nullptr_t> = nullptr>
-			DAW_JSON_NOINLINE Real parse_with_strtod( char const *first,
-			                                          char const *last ) {
+			DAW_ATTRIB_NOINLINE Real parse_with_strtod( char const *first,
+			                                            char const *last ) {
 #if defined( __cpp_lib_to_chars )
 				Real result;
 				std::from_chars_result fc_res = std::from_chars( first, last, result );

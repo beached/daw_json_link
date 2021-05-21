@@ -15,6 +15,7 @@
 #include "version.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_likely.h>
 #include <daw/daw_unreachable.h>
 
 #include <ciso646>
@@ -126,7 +127,7 @@ namespace daw::json {
 				while( dig < 10 ) {
 					++first;
 					if constexpr( not skip_end_check ) {
-						if( DAW_JSON_UNLIKELY( first >= last ) ) {
+						if( DAW_UNLIKELY( first >= last ) ) {
 							break;
 						}
 					}
@@ -150,7 +151,7 @@ namespace daw::json {
 				if( *first == '-' ) {
 					++first;
 				}
-				if( DAW_JSON_LIKELY( first < last ) ) {
+				if( DAW_LIKELY( first < last ) ) {
 					first =
 					  skip_digits<( ParseState::is_zero_terminated_string or
 					                ParseState::is_unchecked_input )>( first, last );
@@ -162,7 +163,7 @@ namespace daw::json {
 				    ( *first == '.' ) ) {
 					decimal = first;
 					++first;
-					if( DAW_JSON_LIKELY( first < last ) ) {
+					if( DAW_LIKELY( first < last ) ) {
 						first =
 						  skip_digits<( ParseState::is_zero_terminated_string or
 						                ParseState::is_unchecked_input )>( first, last );
@@ -188,7 +189,7 @@ namespace daw::json {
 					    ( dig == parsed_constants::minus_char ) ) {
 						++first;
 					}
-					if( DAW_JSON_LIKELY( first < last ) ) {
+					if( DAW_LIKELY( first < last ) ) {
 						first =
 						  skip_digits<( ParseState::is_zero_terminated_string or
 						                ParseState::is_unchecked_input )>( first, last );

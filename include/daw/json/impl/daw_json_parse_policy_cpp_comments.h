@@ -15,6 +15,7 @@
 #include "version.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 
 #include <ciso646>
@@ -147,13 +148,13 @@ namespace daw::json {
 				std::uint32_t second_bracket_count = 0;
 				char const *ptr_first = parse_state.first;
 				char const *const ptr_last = parse_state.last;
-				if( DAW_JSON_UNLIKELY( ptr_first >= ptr_last ) ) {
+				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
 				}
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}
-				while( DAW_JSON_LIKELY( ptr_first < ptr_last ) ) {
+				while( DAW_LIKELY( ptr_first < ptr_last ) ) {
 					switch( *ptr_first ) {
 					case '\\':
 						++ptr_first;

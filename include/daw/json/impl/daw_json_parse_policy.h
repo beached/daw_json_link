@@ -20,6 +20,7 @@
 #include "version.h"
 #include <daw/cpp_17.h>
 #include <daw/daw_attributes.h>
+#include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 
 #include <cassert>
@@ -318,7 +319,7 @@ namespace daw::json {
 					daw_json_assert( first != nullptr, json_details::missing_token( c ),
 					                 *this );
 				} else {
-					while( DAW_JSON_LIKELY( first < last ) and *first != c ) {
+					while( DAW_LIKELY( first < last ) and *first != c ) {
 						++first;
 					}
 				}
@@ -403,19 +404,19 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] inline constexpr bool is_opening_bracket_checked( ) const {
-				return DAW_JSON_LIKELY( first < last ) and *first == '[';
+				return DAW_LIKELY( first < last ) and *first == '[';
 			}
 
 			[[nodiscard]] inline constexpr bool is_opening_brace_checked( ) const {
-				return DAW_JSON_LIKELY( first < last ) and *first == '{';
+				return DAW_LIKELY( first < last ) and *first == '{';
 			}
 
 			[[nodiscard]] inline constexpr bool is_closing_brace_checked( ) const {
-				return DAW_JSON_LIKELY( first < last ) and *first == '}';
+				return DAW_LIKELY( first < last ) and *first == '}';
 			}
 
 			[[nodiscard]] inline constexpr bool is_quotes_checked( ) const {
-				return DAW_JSON_LIKELY( first < last ) and *first == '"';
+				return DAW_LIKELY( first < last ) and *first == '"';
 			}
 
 			inline constexpr void trim_left( ) {
@@ -459,7 +460,7 @@ namespace daw::json {
 
 			inline constexpr void clean_tail_checked( ) {
 				trim_left_checked( );
-				if( DAW_JSON_LIKELY( first < last ) and *first == ',' ) {
+				if( DAW_LIKELY( first < last ) and *first == ',' ) {
 					++first;
 					trim_left_checked( );
 				}

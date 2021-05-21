@@ -10,7 +10,6 @@
 
 #include "../daw_json_exception.h"
 #include "daw_json_assert.h"
-#include "daw_json_defs.h"
 #include "daw_json_location_info.h"
 #include "daw_json_name.h"
 #include "daw_json_parse_common.h"
@@ -18,6 +17,7 @@
 #include "daw_json_skip.h"
 #include "version.h"
 
+#include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 
 #include <ciso646>
@@ -96,7 +96,7 @@ namespace daw::json {
 						}
 					}
 				} else {
-					if( DAW_JSON_UNLIKELY( parse_state.front( ) == ']' ) ) {
+					if( DAW_UNLIKELY( parse_state.front( ) == ']' ) ) {
 						if constexpr( is_json_nullable_v<json_member_t> ) {
 							using constructor_t = typename json_member_t::constructor_t;
 							return constructor_t{ }( );

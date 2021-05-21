@@ -12,6 +12,7 @@
 #include "version.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_likely.h>
 #include <daw/daw_uint_buffer.h>
 
 #if defined( DAW_ALLOW_SSE42 )
@@ -250,8 +251,8 @@ namespace daw::json {
 						first += 2;
 					}
 				} else {
-					while( DAW_JSON_LIKELY( first < last ) and *first != '"' ) {
-						while( DAW_JSON_LIKELY( first < last ) and
+					while( DAW_LIKELY( first < last ) and *first != '"' ) {
+						while( DAW_LIKELY( first < last ) and
 						       not key_table<'"', '\\'>[*first] ) {
 							++first;
 						}
@@ -264,7 +265,7 @@ namespace daw::json {
 						first += 2;
 					}
 				}
-				return ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) ? first
+				return ( is_unchecked_input or DAW_LIKELY( first < last ) ) ? first
 				                                                                 : last;
 			}
 
@@ -305,8 +306,8 @@ namespace daw::json {
 						first += 2;
 					}
 				} else {
-					while( DAW_JSON_LIKELY( first < last ) and *first != '"' ) {
-						while( DAW_JSON_LIKELY( first < last ) and
+					while( DAW_LIKELY( first < last ) and *first != '"' ) {
+						while( DAW_LIKELY( first < last ) and
 						       not key_table<'"', '\\'>[*first] ) {
 							++first;
 						}
@@ -322,7 +323,7 @@ namespace daw::json {
 						first += 2;
 					}
 				}
-				return ( is_unchecked_input or DAW_JSON_LIKELY( first < last ) ) ? first
+				return ( is_unchecked_input or DAW_LIKELY( first < last ) ) ? first
 				                                                                 : last;
 			}
 

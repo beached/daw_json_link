@@ -11,6 +11,7 @@
 #include "daw_murmur3.h"
 #include "version.h"
 
+#include <daw/daw_likely.h>
 #include <daw/daw_sort_n.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
@@ -120,7 +121,7 @@ namespace daw::json {
 #endif
 						if( hashes[n] == hash ) {
 							if constexpr( do_full_name_match ) {
-								if( DAW_JSON_UNLIKELY( key != names[n].name ) ) {
+								if( DAW_UNLIKELY( key != names[n].name ) ) {
 									continue;
 								}
 							}

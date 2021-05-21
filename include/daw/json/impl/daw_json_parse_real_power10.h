@@ -9,6 +9,7 @@
 #pragma once
 
 #include <daw/daw_cxmath.h>
+#include <daw/daw_likely.h>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -59,7 +60,7 @@ namespace daw::json {
 				    : max_dbl_exp;
 				constexpr auto max_v = static_cast<Result>( dpow10_tbl[max_exp] );
 
-				if( DAW_JSON_UNLIKELY( p > max_exp ) ) {
+				if( DAW_UNLIKELY( p > max_exp ) ) {
 					Result exp2 = max_v;
 					p -= max_exp;
 					while( p > max_exp ) {
@@ -69,7 +70,7 @@ namespace daw::json {
 					return static_cast<Result>( result ) *
 					       ( exp2 * static_cast<Result>(
 					                  dpow10_tbl[static_cast<std::size_t>( p )] ) );
-				} else if( DAW_JSON_UNLIKELY( p < -max_exp ) ) {
+				} else if( DAW_UNLIKELY( p < -max_exp ) ) {
 					Result exp2 = max_v;
 					p += max_exp;
 					while( p < -max_exp ) {
@@ -104,5 +105,5 @@ namespace daw::json {
 				}
 			}
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

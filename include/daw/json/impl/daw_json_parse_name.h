@@ -121,7 +121,7 @@ namespace daw::json {
 			// Ensures that the stream is left at the position of the associated
 			// value(e.g after the colon(:) and trimmed)
 			template<typename ParseState>
-			[[nodiscard]] DAW_ONLY_FLATTEN constexpr daw::string_view
+			[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr daw::string_view
 			parse_name( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.is_quotes_checked( ),
 				                      ErrorReason::InvalidMemberName, parse_state );

@@ -13,6 +13,7 @@
 #include "daw_json_parse_value_fwd.h"
 #include "version.h"
 
+#include <daw/daw_attributes.h>
 #include <daw/daw_move.h>
 
 #include <ciso646>
@@ -89,7 +90,7 @@ namespace daw::json {
 					                   std::get<1>( DAW_MOVE( v.members ) ) );
 				}
 
-				DAW_ONLY_INLINE inline constexpr value_type operator*( ) {
+				DAW_ATTRIB_INLINE inline constexpr value_type operator*( ) {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
@@ -130,7 +131,7 @@ namespace daw::json {
 					}
 				}
 
-				DAW_ONLY_INLINE inline constexpr json_parse_kv_array_iterator &
+				DAW_ATTRIB_INLINE inline constexpr json_parse_kv_array_iterator &
 				operator++( ) {
 					daw_json_assert_weak( base::parse_state,
 					                      ErrorReason::UnexpectedEndOfData );

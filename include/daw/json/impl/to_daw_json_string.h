@@ -17,6 +17,7 @@
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_bounded_vector.h>
 #include <daw/daw_cxmath.h>
+#include <daw/daw_likely.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
 #include <utf8/unchecked.h>

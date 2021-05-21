@@ -16,6 +16,7 @@
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_function_table.h>
+#include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 
 #include <ciso646>
@@ -36,7 +37,7 @@ namespace daw::json {
 					char const *const last = parse_state.last;
 					if constexpr( ParseState::is_zero_terminated_string ) {
 						// Ensure that zero terminator isn't included in skipable value
-						while( DAW_JSON_UNLIKELY(
+						while( DAW_UNLIKELY(
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 						    1U ) <= 0x1F ) ) {
 
@@ -44,7 +45,7 @@ namespace daw::json {
 						}
 					} else {
 						while(
-						  DAW_JSON_LIKELY( first < last ) and
+						  DAW_LIKELY( first < last ) and
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 						    1U ) <= 0x1F ) {
 							++first;
@@ -59,7 +60,7 @@ namespace daw::json {
 			trim_left_unchecked( ParseState &parse_state ) {
 				if constexpr( not ParseState::minified_document ) {
 					char const *first = parse_state.first;
-					while( DAW_JSON_UNLIKELY(
+					while( DAW_UNLIKELY(
 					  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 					    1U ) <= 0x1F ) ) {
 
@@ -111,7 +112,7 @@ namespace daw::json {
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
 			         typename ParseState>
-			DAW_ONLY_FLATTEN static constexpr ParseState
+			DAW_ATTRIB_FLATTEN static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
@@ -121,7 +122,7 @@ namespace daw::json {
 				char const *ptr_first = parse_state.first;
 				char const *const ptr_last = parse_state.last;
 
-				if( DAW_JSON_UNLIKELY( ptr_first >= ptr_last ) ) {
+				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
 				}
 				if( *ptr_first == PrimLeft ) {
@@ -163,8 +164,8 @@ namespace daw::json {
 							                 ErrorReason::UnexpectedEndOfData, parse_state );
 							break;
 						case ',':
-							if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
-							                       ( second_bracket_count == 0 ) ) ) {
+							if( DAW_UNLIKELY( ( prime_bracket_count == 1 ) &
+							                  ( second_bracket_count == 0 ) ) ) {
 								++cnt;
 							}
 							break;
@@ -193,7 +194,7 @@ namespace daw::json {
 						++ptr_first;
 					}
 				} else {
-					while( DAW_JSON_LIKELY( ptr_first < ptr_last ) ) {
+					while( DAW_LIKELY( ptr_first < ptr_last ) ) {
 						switch( *ptr_first ) {
 						case '\\':
 							++ptr_first;
@@ -206,7 +207,7 @@ namespace daw::json {
 								  ParseState::is_unchecked_input>(
 								  ParseState::exec_tag, ptr_first, parse_state.last );
 							} else {
-								while( DAW_JSON_LIKELY( ptr_first < ptr_last ) and
+								while( DAW_LIKELY( ptr_first < ptr_last ) and
 								       *ptr_first != '"' ) {
 									if( *ptr_first == '\\' ) {
 										if( ptr_first + 1 < ptr_last ) {
@@ -224,8 +225,8 @@ namespace daw::json {
 							                 ErrorReason::UnexpectedEndOfData, parse_state );
 							break;
 						case ',':
-							if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
-							                       ( second_bracket_count == 0 ) ) ) {
+							if( DAW_UNLIKELY( ( prime_bracket_count == 1 ) &
+							                  ( second_bracket_count == 0 ) ) ) {
 								++cnt;
 							}
 							break;
@@ -267,7 +268,7 @@ namespace daw::json {
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
 			         typename ParseState>
-			DAW_ONLY_FLATTEN static constexpr ParseState
+			DAW_ATTRIB_FLATTEN static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
@@ -301,8 +302,8 @@ namespace daw::json {
 						}
 						break;
 					case ',':
-						if( DAW_JSON_UNLIKELY( ( prime_bracket_count == 1 ) &
-						                       ( second_bracket_count == 0 ) ) ) {
+						if( DAW_UNLIKELY( ( prime_bracket_count == 1 ) &
+						                  ( second_bracket_count == 0 ) ) ) {
 							++cnt;
 						}
 						break;

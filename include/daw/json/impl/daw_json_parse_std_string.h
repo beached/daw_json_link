@@ -1,9 +1,12 @@
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_not_const_ex_functions.h"
-#include "version.h"
+
+#include <daw/daw_likely.h>
 
 #include <ciso646>
 #include <string>
@@ -201,9 +204,9 @@ namespace daw::json {
 				}
 				constexpr auto pred = []( auto const &r ) {
 					if constexpr( ParseState::is_unchecked_input ) {
-						return DAW_JSON_LIKELY( r.front( ) != '"' );
+						return DAW_LIKELY( r.front( ) != '"' );
 					} else {
-						return DAW_JSON_LIKELY( r.has_more( ) ) & ( r.front( ) != '"' );
+						return DAW_LIKELY( r.has_more( ) ) & ( r.front( ) != '"' );
 					}
 				};
 

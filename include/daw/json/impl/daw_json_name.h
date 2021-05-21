@@ -10,6 +10,8 @@
 
 #include "version.h"
 
+#include <daw/daw_likely.h>
+
 #include <cstddef>
 #include <string_view>
 #include <utility>

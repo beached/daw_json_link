@@ -16,6 +16,7 @@
 #include "version.h"
 
 #include <daw/daw_cxmath.h>
+#include <daw/daw_likely.h>
 
 #include <ciso646>
 #include <cstddef>
@@ -40,7 +41,7 @@ namespace daw::json {
 						dig = parse_digit( *first );
 					}
 				} else {
-					while( DAW_JSON_LIKELY( first < last ) ) {
+					while( DAW_LIKELY( first < last ) ) {
 						value *= 10U;
 						value += parse_digit( *first );
 						++first;
@@ -64,7 +65,7 @@ namespace daw::json {
 					}
 				} else {
 					unsigned dig = 0;
-					while( DAW_JSON_LIKELY( first < last ) and
+					while( DAW_LIKELY( first < last ) and
 					       ( dig = parse_digit( *first ) ) < 10U ) {
 						value *= 10U;
 						value += dig;
@@ -273,7 +274,7 @@ namespace daw::json {
 				first = last_char;
 				if( ( ParseState::is_zero_terminated_string or
 				      ParseState::is_unchecked_input or
-				      DAW_JSON_LIKELY( first < parse_state.last ) ) and
+				      DAW_LIKELY( first < parse_state.last ) ) and
 				    *first == '.' ) {
 					++first;
 					if( exponent != 0 ) {
