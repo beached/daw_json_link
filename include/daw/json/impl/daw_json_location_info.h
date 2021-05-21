@@ -172,8 +172,10 @@ namespace daw::json {
 			 * @param parse_state Current JSON data
 			 * @return IteratorRange with begin( ) being start of value
 			 */
-			template<std::size_t pos, bool from_start = false, std::size_t N,
-			         typename ParseState, bool B>
+			enum class AllMembersMustExist { yes, no };
+			template<std::size_t pos, AllMembersMustExist must_exist,
+			         bool from_start = false, std::size_t N, typename ParseState,
+			         bool B>
 			[[nodiscard]] inline constexpr ParseState
 			find_class_member( locations_info_t<N, B> &locations,
 			                   ParseState &parse_state, bool is_nullable,
@@ -192,11 +194,16 @@ namespace daw::json {
 					auto const name = parse_name( parse_state );
 					auto const name_pos =
 					  locations.template find_name<( from_start ? 0 : pos )>( name );
-					if( name_pos >= std::size( locations ) ) {
-						// This is not a member we are concerned with
-						(void)skip_value( parse_state );
-						parse_state.clean_tail( );
-						continue;
+					if constexpr( must_exist == AllMembersMustExist::yes ) {
+						daw_json_assert_weak( name_pos < std::size( locations ),
+						                      ErrorReason::UnknownMember, parse_state );
+					} else {
+						if( name_pos >= std::size( locations ) ) {
+							// This is not a member we are concerned with
+							(void)skip_value( parse_state );
+							parse_state.clean_tail( );
+							continue;
+						}
 					}
 					if( name_pos == pos ) {
 						locations[pos].set_range( parse_state );

@@ -159,6 +159,22 @@ namespace daw::json {
 			inline constexpr auto default_policy_value<ForceFullNameCheck> =
 			  ForceFullNameCheck::no;
 		} // namespace json_details
+		/***
+		 * Set the default parser policy to require all JSON members in the parsed
+		 * object be mapped. See also, the ignore_unknown_members and
+		 * exact_class_mapping traits to set overrides
+		 */
+		enum class UseExactMappingsByDefault : unsigned { no, yes }; // 1bit
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<UseExactMappingsByDefault> =
+			  1;
+
+			template<>
+			inline constexpr auto default_policy_value<UseExactMappingsByDefault> =
+			  UseExactMappingsByDefault::no;
+		} // namespace json_details
+
 		/* *****************************************
 		 * Implementation details
 		 */
@@ -190,7 +206,8 @@ namespace daw::json {
 			using policy_list =
 			  std::tuple<ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
 			             CheckedParseMode, AllowEscapedNames, IEEE754Precise,
-			             ForceFullNameCheck, MinifiedDocument>;
+			             ForceFullNameCheck, MinifiedDocument,
+			             UseExactMappingsByDefault>;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =

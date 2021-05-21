@@ -266,7 +266,7 @@ namespace daw::json {
 					}
 				}
 				return ( is_unchecked_input or DAW_LIKELY( first < last ) ) ? first
-				                                                                 : last;
+				                                                            : last;
 			}
 
 			template<bool is_unchecked_input>
@@ -324,7 +324,7 @@ namespace daw::json {
 					}
 				}
 				return ( is_unchecked_input or DAW_LIKELY( first < last ) ) ? first
-				                                                                 : last;
+				                                                            : last;
 			}
 
 #endif

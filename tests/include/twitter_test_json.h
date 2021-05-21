@@ -170,6 +170,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::entities_t> {
+		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class_null<"url", std::optional<daw::twitter::url_t>>,
@@ -189,6 +190,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::user_t> {
+		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"name">,
@@ -338,6 +340,7 @@ namespace daw::json {
 
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::tweet_object_t> {
+		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
@@ -486,8 +489,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIB_HIDDEN
-	  json_data_contract<daw::twitter::media_element_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::media_element_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_number<"id", int64_t>, json_string<"id_str">,
@@ -606,8 +608,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIB_HIDDEN
-	  json_data_contract<daw::twitter::search_metadata_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::search_metadata_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_number<"completed_in">, json_number<"max_id", int64_t>,
@@ -641,8 +642,7 @@ namespace daw::json {
 	};
 
 	template<>
-	struct DAW_ATTRIB_HIDDEN
-	  json_data_contract<daw::twitter::twitter_object_t> {
+	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::twitter_object_t> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_array<"statuses", daw::twitter::tweet_object_t>,

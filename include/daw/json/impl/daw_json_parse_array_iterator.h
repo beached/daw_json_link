@@ -161,6 +161,13 @@ namespace daw::json {
 					return *this;
 				}
 
+				DAW_ATTRIB_INLINE inline constexpr json_parse_array_iterator
+				operator++( int ) {
+					auto result = *this;
+					operator++( );
+					return result;
+				}
+
 				friend inline constexpr bool
 				operator==( json_parse_array_iterator const &lhs,
 				            json_parse_array_iterator const &rhs ) {

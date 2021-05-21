@@ -43,6 +43,9 @@ namespace daw::json {
 			using type = missing_json_data_contract_for<T>;
 		};
 
+		/***
+		 * This trait gets us the mapping type from the contract.
+		 */
 		template<typename T>
 		using json_data_contract_trait_t = typename json_data_contract<T>::type;
 
@@ -320,6 +323,60 @@ namespace daw::json {
 			using apply_zstring_policy_option_t = std::conditional_t<
 			  is_zero_terminated_string_v<daw::remove_cvref_t<String>>,
 			  typename ParsePolicy::template SetPolicyOptions<Option>, ParsePolicy>;
+		}
+
+		/***
+		 * A trait to specify that this class, when parsed, will describe all
+		 * members of the JSON object. Anything not mapped is an error.
+		 * Either specialize the class daw::json::is_exact_class_mapping, the
+		 * variable is_exact_class_mapping_v, or have a type in your
+		 * json_data_contract named exact_class_mapping for your type
+		 */
+		template<typename>
+		struct is_exact_class_mapping : std::false_type {};
+
+		/***
+		 * Ignore unknown members trait allows the parser to skip unknown members
+		 * when the default is exact
+		 */
+		template<typename>
+		struct ignore_unknown_members : std::false_type {};
+
+		namespace json_details {
+			template<typename T>
+			using has_exact_mapping_trait_in_class_map =
+			  typename json_data_contract<T>::exact_class_mapping;
+
+			template<typename T>
+			using has_ignore_unknown_members_trait_in_class_map =
+			  typename json_data_contract<T>::ignore_unknown_members;
+		} // namespace json_details
+
+		template<typename T>
+		inline constexpr bool ignore_unknown_members_v = std::disjunction<
+		  ignore_unknown_members<T>,
+		  daw::is_detected<
+		    json_details::has_ignore_unknown_members_trait_in_class_map, T>>::value;
+
+		/***
+		 * A trait to specify that this class, when parsed, will describe all
+		 * members of the JSON object. Anything not mapped is an error.
+		 * Either specialize the class daw::json::is_exact_class_mapping, the
+		 * variable is_exact_class_mapping_v, or have a type in your
+		 * json_data_contract named exact_class_mapping for your type
+		 */
+		template<typename T>
+		inline constexpr bool is_exact_class_mapping_v = std::disjunction<
+		  is_exact_class_mapping<T>,
+		  daw::is_detected<json_details::has_exact_mapping_trait_in_class_map,
+		                   T>>::value;
+
+		namespace json_details {
+			template<typename T, typename ParseState>
+			inline constexpr bool all_json_members_must_exist_v =
+			  not ignore_unknown_members_v<T> and
+			  ( is_exact_class_mapping_v<T> or
+			    ParseState::use_exact_mappings_by_default );
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

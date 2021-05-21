@@ -52,8 +52,10 @@ namespace daw::json {
 			[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
 			serialize( OutputIterator it, std::tuple<Args...> const &args,
 			           Value const &v ) {
-				static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
-				               "Argument count is incorrect" );
+				static_assert(
+				  sizeof...( Args ) == sizeof...( JsonMembers ),
+				  "The method to_json_data in the json_data_contract does not match "
+				  "the mapping.  The number of members is not the same." );
 
 				return json_details::serialize_json_class<JsonMembers...>(
 				  it, std::index_sequence_for<Args...>{ }, args, v );
@@ -937,6 +939,31 @@ namespace daw::json {
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::None;
 			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+		};
+
+		template<typename T, std::size_t N, bool MustConsumeAll = false>
+		struct ArrayConstructor {
+			constexpr ArrayConstructor( ) = default;
+
+			constexpr std::array<T, 0> operator( )( ) const {
+				return { };
+			}
+
+			template<typename Iterator, typename Sentinel>
+			constexpr std::array<T, N> operator( )( Iterator first,
+			                                        Sentinel last ) const {
+				std::array<T, N> result{ };
+				std::size_t pos = 0;
+				while( ( pos < N ) & ( first != last ) ) {
+					result[pos++] = *first;
+					++first;
+				}
+				if constexpr( MustConsumeAll ) {
+					daw_json_assert( ( first == last ) & ( pos == N ),
+					                 ErrorReason::UnknownMember );
+				}
+				return result;
+			}
 		};
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

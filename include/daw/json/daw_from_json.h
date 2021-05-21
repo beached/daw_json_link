@@ -50,7 +50,7 @@ namespace daw::json {
 
 			using policy_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                      ZeroTerminatedString::yes>;
+			                                              ZeroTerminatedString::yes>;
 			auto parse_state =
 			  policy_t( std::data( json_data ), daw::data_end( json_data ) );
 
@@ -105,7 +105,7 @@ namespace daw::json {
 			Allocator a = alloc;
 			using policy_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                      ZeroTerminatedString::yes>;
+			                                              ZeroTerminatedString::yes>;
 			auto parse_state = policy_t::with_allocator( f, l, a );
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
 			                policy_t> ) {
@@ -156,7 +156,7 @@ namespace daw::json {
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using policy_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                      ZeroTerminatedString::yes>;
+			                                              ZeroTerminatedString::yes>;
 			auto [is_found, parse_state] = json_details::find_range<policy_t>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
@@ -215,7 +215,7 @@ namespace daw::json {
 			Allocator a = alloc;
 			using policy_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                      ZeroTerminatedString::yes>;
+			                                              ZeroTerminatedString::yes>;
 
 			auto [is_found, parse_state] = json_details::find_range<policy_t>(
 			  json_data, { std::data( member_path ), std::size( member_path ) }, a );
@@ -353,7 +353,7 @@ namespace daw::json {
 
 			using policy_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
-			                                      ZeroTerminatedString::yes>;
+			                                              ZeroTerminatedString::yes>;
 			auto [is_found, parse_state] = json_details::find_range<policy_t>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
 

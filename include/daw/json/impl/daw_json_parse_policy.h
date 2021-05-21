@@ -108,6 +108,10 @@ namespace daw::json {
 			                     PolicyFlags, CheckedParseMode::yes ),
 			                   Allocator>;
 
+			static constexpr bool use_exact_mappings_by_default =
+			  json_details::get_bits_for<UseExactMappingsByDefault>( PolicyFlags ) ==
+			  UseExactMappingsByDefault::yes;
+
 			using CommentPolicy = json_details::switch_t<
 			  json_details::get_bits_for<PolicyCommentTypes, std::size_t>(
 			    PolicyFlags ),

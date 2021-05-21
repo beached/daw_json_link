@@ -778,11 +778,10 @@ namespace daw::json {
 						  ParseTag<cur_json_class_t::base_expected_type>{ }, parse_state );
 					}
 					default:
-						if constexpr( sizeof...( JsonClasses ) > N + 7 ) {
+						if constexpr( sizeof...( JsonClasses ) >= N + 8 ) {
 							return parse_nth_class<N + 8, JsonClass, KnownBounds,
 							                       JsonClasses...>( idx, parse_state );
 						} else {
-							DAW_UNREACHABLE( );
 							DAW_UNREACHABLE( );
 						}
 					}
@@ -823,8 +822,6 @@ namespace daw::json {
 						return parse_value<cur_json_class_t>(
 						  ParseTag<cur_json_class_t::base_expected_type>{ }, parse_state );
 					}
-					default:
-						DAW_UNREACHABLE( );
 					}
 				} else if constexpr( sizeof...( JsonClasses ) == N + 6 ) {
 					switch( idx ) {
@@ -858,8 +855,6 @@ namespace daw::json {
 						return parse_value<cur_json_class_t>(
 						  ParseTag<cur_json_class_t::base_expected_type>{ }, parse_state );
 					}
-					default:
-						DAW_UNREACHABLE( );
 					}
 				} else if constexpr( sizeof...( JsonClasses ) == N + 5 ) {
 					switch( idx ) {
@@ -888,8 +883,6 @@ namespace daw::json {
 						return parse_value<cur_json_class_t>(
 						  ParseTag<cur_json_class_t::base_expected_type>{ }, parse_state );
 					}
-					default:
-						DAW_UNREACHABLE( );
 					}
 				} else if constexpr( sizeof...( JsonClasses ) == N + 4 ) {
 					switch( idx ) {
@@ -913,8 +906,6 @@ namespace daw::json {
 						return parse_value<cur_json_class_t>(
 						  ParseTag<cur_json_class_t::base_expected_type>{ }, parse_state );
 					}
-					default:
-						DAW_UNREACHABLE( );
 					}
 				} else if constexpr( sizeof...( JsonClasses ) == N + 3 ) {
 					switch( idx ) {
@@ -933,8 +924,6 @@ namespace daw::json {
 						return parse_value<cur_json_class_t>(
 						  ParseTag<cur_json_class_t::base_expected_type>{ }, parse_state );
 					}
-					default:
-						DAW_UNREACHABLE( );
 					}
 				} else if constexpr( sizeof...( JsonClasses ) == N + 2 ) {
 					if( idx == N ) {

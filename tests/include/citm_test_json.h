@@ -22,6 +22,7 @@
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::citm::events_value_t> {
+		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type =
 		  json_member_list<json_number<"id", std::int64_t>,
@@ -74,6 +75,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::areas_element_t> {
+		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_number<"areaId", std::int64_t>>;
 #else
@@ -106,6 +108,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::performances_element_t> {
+		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_number<"eventId", std::int64_t>, json_number<"id", std::int64_t>,
@@ -156,6 +159,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::citm::citm_object_t> {
+		using ignore_unknown_members = void;
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_key_value<
@@ -210,7 +214,7 @@ namespace daw::json {
 		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
 		  json_key_value<
 		    events, std::unordered_map<std::int64_t, daw::citm::events_value_t>,
-		    json_class<no_name, daw::citm::events_value_t>,
+		    daw::citm::events_value_t,
 		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
 		  json_array<performances, daw::citm::performances_element_t>,
 		  json_key_value<seatCategoryNames,
