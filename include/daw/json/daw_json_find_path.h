@@ -175,11 +175,11 @@ namespace daw::json {
 
 				[[nodiscard]] bool handle_on_number( json_value jv ) {
 					auto sv = std::string_view( );
-#if defined( DAW_USE_JSON_EXCEPTIONS )
+#if defined( DAW_USE_EXCEPTIONS )
 					try {
 #endif
 						sv = jv.get_string_view( );
-#if defined( DAW_USE_JSON_EXCEPTIONS )
+#if defined( DAW_USE_EXCEPTIONS )
 					} catch( json_exception const & ) {
 						parse_stack.push_back( state );
 						return false;
@@ -194,11 +194,11 @@ namespace daw::json {
 
 				[[nodiscard]] bool handle_on_bool( json_value jv ) {
 					auto sv = std::string_view( );
-#if defined( DAW_USE_JSON_EXCEPTIONS )
+#if defined( DAW_USE_EXCEPTIONS )
 					try {
 #endif
 						sv = jv.get_string_view( );
-#if defined( DAW_USE_JSON_EXCEPTIONS )
+#if defined( DAW_USE_EXCEPTIONS )
 					} catch( json_exception const & ) {
 						parse_stack.push_back( state );
 						return false;
@@ -213,11 +213,11 @@ namespace daw::json {
 
 				[[nodiscard]] bool handle_on_string( json_value jv ) {
 					auto sv = std::string_view( );
-#if defined( DAW_USE_JSON_EXCEPTIONS )
+#if defined( DAW_USE_EXCEPTIONS )
 					try {
 #endif
 						sv = jv.get_string_view( );
-#if defined( DAW_USE_JSON_EXCEPTIONS )
+#if defined( DAW_USE_EXCEPTIONS )
 					} catch( json_exception const & ) {
 						parse_stack.push_back( state );
 						return false;
@@ -232,11 +232,11 @@ namespace daw::json {
 
 				[[nodiscard]] bool handle_on_null( json_value jv ) {
 					auto sv = std::string_view( );
-#if defined( DAW_USE_JSON_EXCEPTIONS )
+#if defined( DAW_USE_EXCEPTIONS )
 					try {
 #endif
 						sv = jv.get_string_view( );
-#if defined( DAW_USE_JSON_EXCEPTIONS )
+#if defined( DAW_USE_EXCEPTIONS )
 					} catch( json_exception const & ) {
 						parse_stack.push_back( state );
 						return false;
@@ -250,11 +250,11 @@ namespace daw::json {
 				}
 			} handler{ doc_start, parse_location + 1 };
 
-#if defined( DAW_USE_JSON_EXCEPTIONS )
+#if defined( DAW_USE_EXCEPTIONS )
 			try {
 #endif
 				json_event_parser( doc_start, handler );
-#if defined( DAW_USE_JSON_EXCEPTIONS )
+#if defined( DAW_USE_EXCEPTIONS )
 			} catch( json_exception const & ) {
 				// Ignoring because we are only looking for the stack leading up to this
 				// and it may have come from an error

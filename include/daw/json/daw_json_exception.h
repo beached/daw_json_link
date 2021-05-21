@@ -10,7 +10,6 @@
 
 #include "impl/version.h"
 
-#include <daw/daw_hide.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_unreachable.h>

@@ -14,7 +14,7 @@
 #include "daw_json_parse_string_quote.h"
 #include "version.h"
 
-#include <daw/daw_hide.h>
+#include <daw/daw_attributes.h>
 #include <daw/daw_unreachable.h>
 
 #include <ciso646>
@@ -27,7 +27,7 @@ namespace daw::json {
 			 * Skip a string, after the initial quote has been skipped already
 			 */
 			template<typename ParseState>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
 			skip_string_nq( ParseState &parse_state ) {
 				auto result = parse_state;
 				result.counter =
@@ -44,7 +44,7 @@ namespace daw::json {
 			 * Skip a string and store the first escaped element's position, if any
 			 */
 			template<typename ParseState>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
 			skip_string( ParseState &parse_state ) {
 				if( parse_state.empty( ) ) {
 					return parse_state;
@@ -120,7 +120,7 @@ namespace daw::json {
 			}
 
 			template<bool skip_end_check>
-			DAW_ATTRIBUTE_FLATTEN [[nodiscard]] inline constexpr char const *
+			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr char const *
 			skip_digits( char const *first, char const *const last ) {
 				unsigned dig = parse_digit( *first );
 				while( dig < 10 ) {
@@ -256,7 +256,7 @@ namespace daw::json {
 			 * skipping
 			 */
 			template<typename JsonMember, typename ParseState>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
 			skip_known_value( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );

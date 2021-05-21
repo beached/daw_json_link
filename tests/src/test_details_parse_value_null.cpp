@@ -94,7 +94,7 @@ bool test_null_number_untrusted_known( ) {
 	} while( false )
 
 int main( )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -103,8 +103,7 @@ int main( )
 	do_test( test_null_number_untrusted( ) );
 	do_test( test_null_number_trusted( ) );
 	do_test( test_null_number_untrusted_known( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

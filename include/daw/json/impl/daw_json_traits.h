@@ -88,7 +88,7 @@ namespace daw::json {
 			template<typename... Args,
 			         std::enable_if_t<std::is_constructible<T, Args...>::value,
 			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr T
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr T
 			operator( )( Args &&...args ) const {
 
 				return T( DAW_FWD( args )... );
@@ -100,7 +100,7 @@ namespace daw::json {
 			             daw::not_trait<std::is_constructible<T, Args...>>,
 			             daw::traits::is_list_constructible<T, Args...>>::value,
 			           std::nullptr_t> = nullptr>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr T
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr T
 			operator( )( Args &&...args ) const
 			  noexcept( noexcept( T{ DAW_FWD( args )... } ) ) {
 
@@ -110,14 +110,14 @@ namespace daw::json {
 
 		template<typename K, typename V, typename H, typename E, typename Alloc>
 		struct default_constructor<std::unordered_map<K, V, H, E, Alloc>> {
-			DAW_ATTRIBUTE_FLATTEN inline std::unordered_map<K, V, H, E, Alloc>
+			DAW_ATTRIB_FLATINLINE inline std::unordered_map<K, V, H, E, Alloc>
 			operator( )( ) const
 			  noexcept( noexcept( std::unordered_map<K, V, H, E, Alloc>( ) ) ) {
 				return { };
 			}
 
 			template<typename Iterator>
-			DAW_ATTRIBUTE_FLATTEN inline std::unordered_map<K, V, H, E, Alloc>
+			DAW_ATTRIB_FLATINLINE inline std::unordered_map<K, V, H, E, Alloc>
 			operator( )( Iterator first, Iterator last,
 			             Alloc const &alloc = Alloc{ } ) const
 			  noexcept( noexcept( std::unordered_map<K, V, H, E, Alloc>(
@@ -140,13 +140,13 @@ namespace daw::json {
 		struct nullable_constructor<std::optional<T>> {
 			using value_type = T;
 
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN constexpr std::optional<T>
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr std::optional<T>
 			operator( )( ) const noexcept {
 				return std::optional<T>( );
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr auto
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr auto
 			operator( )( Args &&...args ) const
 			  noexcept( std::is_nothrow_constructible<
 			            std::optional<T>, std::in_place_t, Args...>::value )
@@ -159,7 +159,7 @@ namespace daw::json {
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr auto
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr auto
 			operator( )( Args &&...args ) const noexcept(
 			  std::conjunction<traits::is_nothrow_list_constructible<T, Args...>,
 			                   std::is_nothrow_move_constructible<T>>::value )
@@ -177,13 +177,13 @@ namespace daw::json {
 		struct nullable_constructor<std::unique_ptr<T, Deleter>> {
 			using value_type = T;
 
-			DAW_ATTRIBUTE_FLATTEN inline constexpr std::unique_ptr<T, Deleter>
+			DAW_ATTRIB_FLATINLINE inline constexpr std::unique_ptr<T, Deleter>
 			operator( )( ) const noexcept {
 				return std::unique_ptr<T, Deleter>{ };
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline auto
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline auto
 			operator( )( Args &&...args ) const
 			  noexcept( std::is_nothrow_constructible<T, Args...>::value )
 			    -> std::enable_if_t<( sizeof...( Args ) > 0 and
@@ -194,7 +194,7 @@ namespace daw::json {
 			}
 
 			template<typename... Args>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline auto
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline auto
 			operator( )( Args &&...args ) const
 			  noexcept( traits::is_nothrow_list_constructible<T, Args...>::value )
 			    -> std::enable_if_t<

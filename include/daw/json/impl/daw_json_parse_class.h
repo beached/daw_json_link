@@ -169,7 +169,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN inline constexpr void
+			DAW_ATTRIB_FLATINLINE inline constexpr void
 			class_cleanup_now( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );

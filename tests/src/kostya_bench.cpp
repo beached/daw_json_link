@@ -54,7 +54,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {

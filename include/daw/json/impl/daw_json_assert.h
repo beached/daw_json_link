@@ -13,7 +13,8 @@
 #include "version.h"
 
 #include <daw/daw_assume.h>
-#include <daw/daw_hide.h>
+#include <daw/daw_attributes.h>
+#include <daw/daw_check_exceptions.h>
 #include <daw/daw_string_view.h>
 
 #include <algorithm>
@@ -29,19 +30,7 @@
 #include <version>
 #endif
 
-#if not( defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \
-         defined( _CPPUNWIND ) ) or                                \
-  defined( DAW_DONT_USE_JSON_EXCEPTIONS )
-#ifdef DAW_USE_JSON_EXCEPTIONS
-#undef DAW_USE_JSON_EXCEPTIONS
-#endif
-#else
-#ifndef DAW_USE_JSON_EXCEPTIONS
-#define DAW_USE_JSON_EXCEPTIONS
-#endif
-#endif
-
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 inline constexpr bool use_daw_json_exceptions_v = true;
 #else
 inline constexpr bool use_daw_json_exceptions_v = false;
@@ -52,7 +41,7 @@ namespace daw::json {
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
 		[[maybe_unused, noreturn]] DAW_JSON_NOINLINE void
 		daw_json_error( ErrorReason reason ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				throw json_exception( reason );
 			} else {
@@ -60,7 +49,7 @@ namespace daw::json {
 				(void)ShouldThrow;
 				(void)reason;
 				std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			}
 #endif
 		}
@@ -68,7 +57,7 @@ namespace daw::json {
 		template<bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState>
 		[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 		daw_json_error( ErrorReason reason, ParseState const &location ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				if( location.first ) {
 					throw json_exception( reason, location.first );
@@ -83,7 +72,7 @@ namespace daw::json {
 				(void)reason;
 				(void)location;
 				std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			}
 #endif
 		}
@@ -91,7 +80,7 @@ namespace daw::json {
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
 		[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 		daw_json_error( json_details::missing_member reason ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				throw json_exception( reason );
 			} else {
@@ -99,7 +88,7 @@ namespace daw::json {
 				(void)ShouldThrow;
 				(void)reason;
 				std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			}
 #endif
 		}
@@ -107,7 +96,7 @@ namespace daw::json {
 		template<bool ShouldThrow = use_daw_json_exceptions_v>
 		[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 		daw_json_error( json_details::missing_token reason ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				throw json_exception( reason );
 			} else {
@@ -115,7 +104,7 @@ namespace daw::json {
 				(void)ShouldThrow;
 				(void)reason;
 				std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			}
 #endif
 		}
@@ -124,7 +113,7 @@ namespace daw::json {
 		[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 		daw_json_error( json_details::missing_member reason,
 		                ParseState const &location ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				using namespace std::string_literals;
 				if( location.class_first and location.first ) {
@@ -154,7 +143,7 @@ namespace daw::json {
 				(void)reason;
 				(void)location;
 				std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			}
 #endif
 		}
@@ -163,7 +152,7 @@ namespace daw::json {
 		[[maybe_unused, noreturn]] DAW_JSON_NOINLINE static void
 		daw_json_error( json_details::missing_token reason,
 		                ParseState const &location ) {
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			if constexpr( ShouldThrow ) {
 				using namespace std::string_literals;
 				if( location.first ) {
@@ -179,7 +168,7 @@ namespace daw::json {
 				(void)reason;
 				(void)location;
 				std::terminate( );
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 			}
 #endif
 		}

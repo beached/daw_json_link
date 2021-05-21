@@ -19,7 +19,7 @@
 
 #include "version.h"
 #include <daw/cpp_17.h>
-#include <daw/daw_hide.h>
+#include <daw/daw_attributes.h>
 #include <daw/daw_traits.h>
 
 #include <cassert>
@@ -241,27 +241,27 @@ namespace daw::json {
 				return { f, l, cf, cl };
 			}
 
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
 			data( ) const {
 				return first;
 			}
 
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
 			data_end( ) const {
 				return last;
 			}
 
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
 			begin( ) const {
 				return first;
 			}
 
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr iterator
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr iterator
 			end( ) const {
 				return last;
 			}
 
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool empty( ) const {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool empty( ) const {
 				if( not first ) {
 					return true;
 				}
@@ -272,7 +272,7 @@ namespace daw::json {
 				}
 			}
 
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr bool
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool
 			has_more( ) const {
 				if constexpr( is_zero_terminated_string ) {
 					// return *first != 0;
@@ -295,7 +295,7 @@ namespace daw::json {
 			}
 
 			template<char c>
-			DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of_unchecked( ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr void move_to_next_of_unchecked( ) {
 
 				if constexpr( traits::not_same_v<ParseState::exec_tag_t,
 				                                 constexpr_exec_tag> ) {
@@ -309,7 +309,7 @@ namespace daw::json {
 			}
 
 			template<char c>
-			DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of_checked( ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr void move_to_next_of_checked( ) {
 
 				if constexpr( traits::not_same_v<ParseState::exec_tag_t,
 				                                 constexpr_exec_tag> ) {
@@ -325,7 +325,7 @@ namespace daw::json {
 			}
 
 			template<char c>
-			DAW_ATTRIBUTE_FLATTEN inline constexpr void move_to_next_of( ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr void move_to_next_of( ) {
 				if( is_unchecked_input ) {
 					move_to_next_of_unchecked<c>( );
 				} else {
@@ -333,7 +333,7 @@ namespace daw::json {
 				}
 			}
 
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr char front( ) const {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr char front( ) const {
 				return *first;
 			}
 
@@ -345,11 +345,11 @@ namespace daw::json {
 				return first == nullptr;
 			}
 
-			DAW_ATTRIBUTE_FLATTEN inline constexpr void remove_prefix( ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr void remove_prefix( ) {
 				++first;
 			}
 
-			DAW_ATTRIBUTE_FLATTEN inline constexpr void
+			DAW_ATTRIB_FLATINLINE inline constexpr void
 			remove_prefix( std::size_t n ) {
 				first += static_cast<std::ptrdiff_t>( n );
 			}
@@ -388,7 +388,7 @@ namespace daw::json {
 				return CommentPolicy::is_literal_end( *first );
 			}
 
-			DAW_ATTRIBUTE_FLATTEN [[nodiscard]] inline constexpr bool
+			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr bool
 			is_space_checked( ) const {
 				daw_json_assert_weak( has_more( ), ErrorReason::UnexpectedEndOfData,
 				                      *this );
@@ -396,7 +396,7 @@ namespace daw::json {
 				         1U ) <= 0x1FU;
 			}
 
-			DAW_ATTRIBUTE_FLATTEN [[nodiscard]] inline constexpr bool
+			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr bool
 			is_space_unchecked( ) const {
 				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 				         1U ) <= 0x1FU;
@@ -465,7 +465,7 @@ namespace daw::json {
 				}
 			}
 
-			DAW_ATTRIBUTE_FLATTEN inline constexpr void clean_tail( ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr void clean_tail( ) {
 				if constexpr( is_unchecked_input ) {
 					clean_tail_unchecked( );
 				} else {
@@ -486,14 +486,14 @@ namespace daw::json {
 			}
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
 			skip_bracketed_item_checked( ) {
 				return CommentPolicy::template skip_bracketed_item_checked<
 				  PrimLeft, PrimRight, SecLeft, SecRight>( *this );
 			}
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight>
-			[[nodiscard]] DAW_ATTRIBUTE_FLATTEN inline constexpr ParseState
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr ParseState
 			skip_bracketed_item_unchecked( ) {
 				return CommentPolicy::template skip_bracketed_item_unchecked<
 				  PrimLeft, PrimRight, SecLeft, SecRight>( *this );

@@ -163,13 +163,13 @@ void test_lots_of_doubles( ) {
 }
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
 	test_lots_of_doubles( );
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

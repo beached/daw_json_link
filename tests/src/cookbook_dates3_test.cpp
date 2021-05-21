@@ -83,7 +83,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -105,7 +105,7 @@ int main( int argc, char **argv )
 
 	test_assert( cls == cls2, "Unexpected round trip error" );
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

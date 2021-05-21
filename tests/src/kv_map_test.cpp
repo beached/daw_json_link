@@ -57,7 +57,7 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -76,8 +76,7 @@ int main( int, char ** )
 	test_assert( kv2_test.kv["key0"] == 0, "Unexpected value" );
 	test_assert( kv2_test.kv["key1"] == 1, "Unexpected value" );
 	test_assert( kv2_test.kv["key2"] == 2, "Unexpected value" );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

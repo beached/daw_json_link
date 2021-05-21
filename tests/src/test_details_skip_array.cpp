@@ -133,7 +133,7 @@ bool test_embedded_arrays_broken_001( ) {
 	} while( false )
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -148,8 +148,7 @@ int main( int, char ** )
 	do_test( test_classes_002( ) );
 	do_test( test_embedded_arrays( ) );
 	do_fail_test( test_embedded_arrays_broken_001( ) );
-}
-catch( json_exception const &jex ) {
+} catch( json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

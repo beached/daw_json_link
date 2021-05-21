@@ -651,7 +651,7 @@ namespace daw::json {
 
 			template<typename Result, typename TypeList, std::size_t pos = 0,
 			         typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN constexpr Result
+			DAW_ATTRIB_FLATINLINE constexpr Result
 			parse_visit( std::size_t idx, ParseState &parse_state ) {
 				if( idx == pos ) {
 					using JsonMember = std::tuple_element_t<pos, TypeList>;
@@ -712,7 +712,7 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN constexpr json_result<JsonMember>
+			DAW_ATTRIB_FLATINLINE constexpr json_result<JsonMember>
 			parse_value( ParseTag<JsonParseTypes::Unknown>,
 			             ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;

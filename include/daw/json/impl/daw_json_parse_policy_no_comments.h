@@ -14,8 +14,8 @@
 #include "daw_not_const_ex_functions.h"
 #include "version.h"
 
+#include <daw/daw_attributes.h>
 #include <daw/daw_function_table.h>
-#include <daw/daw_hide.h>
 #include <daw/daw_traits.h>
 
 #include <ciso646>
@@ -28,7 +28,7 @@ namespace daw::json {
 		struct NoCommentSkippingPolicy final {
 
 			template<typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr void
+			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_checked( ParseState &parse_state ) {
 				if constexpr( not ParseState::minified_document ) {
 					// SIMD here was much slower, most JSON has very minimal whitespace
@@ -55,7 +55,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr void
+			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_unchecked( ParseState &parse_state ) {
 				if constexpr( not ParseState::minified_document ) {
 					char const *first = parse_state.first;
@@ -70,7 +70,7 @@ namespace daw::json {
 			}
 
 			template<char... keys, typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr void
+			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_to_next_of( ParseState &parse_state ) {
 				static_assert( sizeof...( keys ) <= 16 );
 
@@ -105,7 +105,7 @@ namespace daw::json {
 				}
 			}
 
-			DAW_ATTRIBUTE_FLATTEN static constexpr bool is_literal_end( char c ) {
+			DAW_ATTRIB_FLATINLINE static constexpr bool is_literal_end( char c ) {
 				return ( c == '\0' ) | ( c == ',' ) | ( c == ']' ) | ( c == '}' );
 			}
 

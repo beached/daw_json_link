@@ -101,14 +101,13 @@ bool array_with_closing_class_fail( ) {
 	} while( false )
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
 	do_test( empty_array_empty_json_array( ) );
 	do_fail_test( int_array_json_string_array_fail( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

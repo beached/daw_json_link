@@ -14,7 +14,7 @@
 #include "daw_not_const_ex_functions.h"
 #include "version.h"
 
-#include <daw/daw_hide.h>
+#include <daw/daw_attributes.h>
 #include <daw/daw_traits.h>
 
 #include <ciso646>
@@ -26,7 +26,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		class HashCommentSkippingPolicy final {
 			template<typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr void
+			DAW_ATTRIB_FLATINLINE static constexpr void
 			skip_comments_unchecked( ParseState &parse_state ) {
 				while( parse_state.front( ) == '#' ) {
 					parse_state.remove_prefix( );
@@ -36,7 +36,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr void
+			DAW_ATTRIB_FLATINLINE static constexpr void
 			skip_comments_checked( ParseState &parse_state ) {
 				while( parse_state.has_more( ) and parse_state.front( ) == '#' ) {
 					parse_state.remove_prefix( );
@@ -48,7 +48,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr void
+			DAW_ATTRIB_FLATINLINE static constexpr void
 			skip_comments( ParseState &parse_state ) {
 				if constexpr( ParseState::is_unchecked_input ) {
 					skip_comments_unchecked( parse_state );
@@ -59,7 +59,7 @@ namespace daw::json {
 
 		public:
 			template<typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr void
+			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_checked( ParseState &parse_state ) {
 				skip_comments_checked( parse_state );
 				while( parse_state.has_more( ) and parse_state.is_space_unchecked( ) ) {
@@ -69,7 +69,7 @@ namespace daw::json {
 			}
 
 			template<typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr void
+			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_unchecked( ParseState &parse_state ) {
 				skip_comments_unchecked( parse_state );
 				while( parse_state.is_space_unchecked( ) ) {
@@ -78,7 +78,7 @@ namespace daw::json {
 			}
 
 			template<char... keys, typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr void
+			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_to_next_of( ParseState &parse_state ) {
 				skip_comments( parse_state );
 
@@ -92,13 +92,13 @@ namespace daw::json {
 				}
 			}
 
-			DAW_ATTRIBUTE_FLATTEN static constexpr bool is_literal_end( char c ) {
+			DAW_ATTRIB_FLATINLINE static constexpr bool is_literal_end( char c ) {
 				return c == '\0' or c == ',' or c == ']' or c == '}' or c == '#';
 			}
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
 			         typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr ParseState
+			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
@@ -194,7 +194,7 @@ namespace daw::json {
 
 			template<char PrimLeft, char PrimRight, char SecLeft, char SecRight,
 			         typename ParseState>
-			DAW_ATTRIBUTE_FLATTEN static constexpr ParseState
+			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;

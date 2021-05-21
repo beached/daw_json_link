@@ -11,7 +11,7 @@
 #include "version.h"
 
 #include <daw/cpp_17.h>
-#include <daw/daw_hide.h>
+#include <daw/daw_attributes.h>
 #include <daw/daw_traits.h>
 
 #include <ciso646>

@@ -172,7 +172,7 @@ int main( int argc, char **argv ) {
 	}
 	auto data = daw::filesystem::memory_mapped_file_t<>( args[0].value );
 
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
 		if( args.size( ) > 1 and args[1].name.empty( ) ) {
@@ -184,7 +184,7 @@ int main( int argc, char **argv ) {
 		} else {
 			minify( args, data, std::ostreambuf_iterator<char>( std::cout ) );
 		}
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 	} catch( daw::json::json_exception const &jex ) {
 		std::cerr << "Exception thrown by parser\n"
 		          << to_formatted_string( jex, data.data( ) ) << '\n';

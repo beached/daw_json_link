@@ -31,7 +31,7 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 2;
 static_assert( DAW_NUM_RUNS > 0 );
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -92,7 +92,7 @@ int main( int argc, char **argv )
 	}
 #endif
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

@@ -67,7 +67,7 @@ struct daw::json::json_data_contract<daw::cookbook_variant2::MyClass> {
 };
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -87,8 +87,7 @@ int main( int argc, char **argv )
 	  daw::json::from_json_array<daw::cookbook_variant2::MyClass>( json_str );
 
 	test_assert( values1 == values2, "Error in round tripping" );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

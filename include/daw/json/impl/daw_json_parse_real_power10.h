@@ -47,7 +47,7 @@ namespace daw::json {
 			  1e300, 1e301, 1e302, 1e303, 1e304, 1e305, 1e306, 1e307, 1e308 };
 
 			template<typename Result, typename Unsigned>
-			DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
+			DAW_ATTRIB_FLATINLINE static inline constexpr Result
 			power10( constexpr_exec_tag, Result result, Unsigned p ) {
 				// We only have a double table, of which float is a subset.  Long double
 				// will be calculated in terms of that
@@ -91,7 +91,7 @@ namespace daw::json {
 			}
 
 			template<typename Result, typename Unsigned>
-			DAW_ATTRIBUTE_FLATTEN static inline constexpr Result
+			DAW_ATTRIB_FLATINLINE static inline constexpr Result
 			power10( runtime_exec_tag, Result result, Unsigned p ) {
 				if constexpr( std::disjunction<std::is_same<Result, double>,
 				                               std::is_same<Result, float>>::value ) {

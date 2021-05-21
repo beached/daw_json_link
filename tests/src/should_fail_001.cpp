@@ -253,7 +253,7 @@ namespace tests {
 } // namespace tests
 static bool has_uncaught_except = false;
 
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 #define expect_fail( Bool, Reason )                                          \
 	do {                                                                       \
 		std::cout << "testing: "                                                 \
@@ -282,7 +282,7 @@ static bool has_uncaught_except = false;
 #endif
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -333,7 +333,7 @@ int main( int, char ** )
 	}
 	return 0;
 }
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
 catch( ... ) {
 	std::cerr << "Uncaught exception reached the end scope of main\n"
 	          << std::flush;

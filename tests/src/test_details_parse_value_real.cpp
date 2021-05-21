@@ -119,7 +119,7 @@ bool test_bad_real_untrusted2( ) {
 	} while( false )
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -131,8 +131,7 @@ int main( int, char ** )
 	do_test( test_real_untrusted( ) );
 	do_fail_test( test_bad_real_untrusted( ) );*/
 	do_fail_test( test_bad_real_untrusted2( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

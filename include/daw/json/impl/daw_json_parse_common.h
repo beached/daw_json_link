@@ -74,7 +74,7 @@ namespace daw::json {
 
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
-			DAW_ATTRIBUTE_FLATTEN static inline constexpr auto
+			DAW_ATTRIB_FLATINLINE static inline constexpr auto
 			construct_value( Constructor &&ctor, ParseState &parse_state,
 			                 Args &&...args ) {
 				if constexpr( ParseState::has_allocator ) {
@@ -103,7 +103,7 @@ namespace daw::json {
 
 			struct construct_value_tp_invoke_t {
 				template<typename Func, typename... TArgs, std::size_t... Is>
-				DAW_ATTRIBUTE_FLATTEN inline constexpr decltype( auto )
+				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
 				operator( )( Func &&f, std::tuple<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
 					return DAW_FWD( f )( DAW_MOVE( std::get<Is>( tp ) )... );
@@ -111,7 +111,7 @@ namespace daw::json {
 
 				template<typename Func, typename... TArgs, typename Allocator,
 				         std::size_t... Is>
-				DAW_ATTRIBUTE_FLATTEN inline constexpr decltype( auto )
+				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
 				operator( )( Func &&f, std::tuple<TArgs...> &&tp, Allocator &alloc,
 				             std::index_sequence<Is...> ) const {
 					return DAW_FWD( f )( DAW_MOVE( std::get<Is>( tp ) )...,
@@ -120,7 +120,7 @@ namespace daw::json {
 
 				template<typename Alloc, typename Func, typename... TArgs,
 				         std::size_t... Is>
-				DAW_ATTRIBUTE_FLATTEN inline constexpr decltype( auto )
+				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
 				operator( )( Func &&f, std::allocator_arg_t, Alloc &&alloc,
 				             std::tuple<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
@@ -133,7 +133,7 @@ namespace daw::json {
 
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
-			DAW_ATTRIBUTE_FLATTEN static inline constexpr auto
+			DAW_ATTRIB_FLATINLINE static inline constexpr auto
 			construct_value_tp( Constructor &&ctor, ParseState &parse_state,
 			                    std::tuple<Args...> &&tp_args ) {
 				if constexpr( ParseState::has_allocator ) {
@@ -222,7 +222,7 @@ namespace daw::json {
 				  : m_container( &container ) {}
 
 				template<typename Value>
-				DAW_ATTRIBUTE_FLATTEN inline constexpr void
+				DAW_ATTRIB_FLATINLINE inline constexpr void
 				operator( )( Value &&value ) const {
 					if constexpr( has_push_back_v<Container,
 					                              daw::remove_cvref_t<Value>> ) {
@@ -517,7 +517,7 @@ namespace daw::json {
 			};
 
 			template<JSONNAMETYPE Name, typename T>
-			DAW_ATTRIBUTE_HIDDEN inline constexpr auto json_link_quick_map( ) {
+			inline constexpr auto json_link_quick_map( ) {
 				if constexpr( has_basic_type_map_v<T> ) {
 					constexpr auto mapped_type = json_link_basic_type_map<T>::parse_type;
 					if constexpr( mapped_type == JsonParseTypes::StringRaw ) {

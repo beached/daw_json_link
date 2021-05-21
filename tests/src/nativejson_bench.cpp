@@ -232,7 +232,7 @@ void test( char **argv ) {
 }
 
 int main( int argc, char **argv )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {

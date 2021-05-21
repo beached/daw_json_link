@@ -84,7 +84,7 @@ void test_func( ankerl::nanobench::Bench &b ) {
 }
 
 int main( int argc, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -99,8 +99,7 @@ int main( int argc, char ** )
 	} else {
 		test_func<1'000ULL>( b1 );
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }

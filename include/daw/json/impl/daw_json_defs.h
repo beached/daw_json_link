@@ -7,6 +7,7 @@
 //
 
 #pragma once
+#include <ciso646>
 
 #if defined( __GNUC__ ) or defined( __clang__ )
 #define DAW_JSON_LIKELY( Bool ) ( __builtin_expect( !!( Bool ), 1 ) )

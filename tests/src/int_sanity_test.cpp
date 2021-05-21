@@ -63,7 +63,7 @@ void test( ) {
 }
 
 int main( int, char ** )
-#ifdef DAW_USE_JSON_EXCEPTIONS
+#ifdef DAW_USE_EXCEPTIONS
   try
 #endif
 {
@@ -73,8 +73,7 @@ int main( int, char ** )
 	                                 daw::json::runtime_exec_tag> ) {
 		test<daw::json::simd_exec_tag, 1000>( );
 	}
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
