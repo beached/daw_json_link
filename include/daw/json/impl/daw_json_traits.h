@@ -125,8 +125,43 @@ namespace daw::json {
 			             Alloc const &alloc = Alloc{ } ) const
 			  noexcept( noexcept( std::unordered_map<K, V, H, E, Alloc>(
 			    first, last, 0, H{ }, E{ }, alloc ) ) ) {
-				return std::unordered_map<K, V, H, E, Alloc>( first, last, 0, H{ },
-				                                              E{ }, alloc );
+				if constexpr( std::is_same_v<std::random_access_iterator_tag,
+				                             typename std::iterator_traits<
+				                               Iterator>::iterator_category> ) {
+					return std::unordered_map<K, V, H, E, Alloc>(
+					  first, last, static_cast<std::size_t>( last - first ), H{ }, E{ },
+					  alloc );
+				} else {
+					return std::unordered_map<K, V, H, E, Alloc>( first, last, 256, H{ },
+					                                              E{ }, alloc );
+				}
+			}
+		};
+
+		template<typename T, typename Alloc>
+		struct default_constructor<std::vector<T, Alloc>> {
+			DAW_ATTRIB_FLATINLINE inline std::vector<T, Alloc> operator( )( ) const
+			  noexcept( noexcept( std::vector<T, Alloc>( ) ) ) {
+				return { };
+			}
+
+			template<typename Iterator>
+			DAW_ATTRIB_FLATINLINE inline std::vector<T, Alloc>
+			operator( )( Iterator first, Iterator last,
+			             Alloc const &alloc = Alloc{ } ) const
+			  noexcept( noexcept( std::vector<T, Alloc>( first, last, alloc ) ) ) {
+				if constexpr( std::is_same_v<std::random_access_iterator_tag,
+				                             typename std::iterator_traits<
+				                               Iterator>::iterator_category> ) {
+					return std::vector<T, Alloc>( first, last, alloc );
+				} else {
+					constexpr auto reserve_amount = 4096U / ( sizeof( T ) * 8U );
+					auto result = std::vector<T>( alloc );
+					// Lets use a WAG and go for a 4k page size
+					result.reserve( reserve_amount );
+					result.insert( result.end( ), first, last );
+					return result;
+				}
 			}
 		};
 
