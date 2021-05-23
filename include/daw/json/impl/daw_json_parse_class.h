@@ -106,7 +106,7 @@ namespace daw::json {
 						}
 					}
 				}
-				return parse_value<json_member_t>(
+				return parse_value<without_name<json_member_t>>(
 				  ParseTag<json_member_t::expected_type>{ }, parse_state );
 			}
 
@@ -127,9 +127,6 @@ namespace daw::json {
 			parse_class_member( locations_info_t<N, B> &locations,
 			                    ParseState &parse_state ) {
 				parse_state.clean_tail( );
-				static_assert(
-				  not is_no_name<JsonMember>,
-				  "Array processing should never call parse_class_member" );
 
 				daw_json_assert_weak( parse_state.is_at_next_class_member( ),
 				                      ErrorReason::MissingMemberNameOrEndOfClass,
@@ -149,13 +146,13 @@ namespace daw::json {
 
 				// If the member was found loc will have it's position
 				if( loc.first == parse_state.first ) {
-					return parse_value<JsonMember>(
+					return parse_value<without_name<JsonMember>>(
 					  ParseTag<JsonMember::expected_type>{ }, parse_state );
 				}
 				// We cannot find the member, check if the member is nullable
 				if constexpr( is_json_nullable_v<JsonMember> ) {
 					if( loc.is_null( ) ) {
-						return parse_value<JsonMember, true>(
+						return parse_value<without_name<JsonMember>, true>(
 						  ParseTag<JsonMember::expected_type>{ }, loc );
 					}
 				} else {
@@ -165,7 +162,7 @@ namespace daw::json {
 					                                    std::size( JsonMember::name ) ) ),
 					  parse_state );
 				}
-				return parse_value<JsonMember, true>(
+				return parse_value<without_name<JsonMember>, true>(
 				  ParseTag<JsonMember::expected_type>{ }, loc );
 			}
 
@@ -208,10 +205,11 @@ namespace daw::json {
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonClass>
 			parse_json_class( ParseState &parse_state, std::index_sequence<Is...> ) {
-				static_assert( is_a_json_type_v<JsonClass> );
+				static_assert( is_a_json_type<JsonClass>::value );
 				using T = typename JsonClass::base_type;
 				using Constructor = typename JsonClass::constructor_t;
-				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
+				static_assert( has_json_data_contract_trait<T>::value,
+				               "Unexpected type" );
 				constexpr AllMembersMustExist must_exist =
 				  json_details::all_json_members_must_exist_v<T, ParseState>
 				    ? AllMembersMustExist::yes
@@ -328,10 +326,11 @@ namespace daw::json {
 			template<typename JsonClass, typename... JsonMembers, typename ParseState>
 			[[nodiscard]] static constexpr json_result<JsonClass>
 			parse_ordered_json_class( ParseState &parse_state ) {
-				static_assert( is_a_json_type_v<JsonClass> );
+				static_assert( is_a_json_type<JsonClass>::value );
 				using T = typename JsonClass::base_type;
 				using Constructor = typename JsonClass::constructor_t;
-				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
+				static_assert( has_json_data_contract_trait<T>::value,
+				               "Unexpected type" );
 				static_assert(
 				  std::is_invocable<Constructor,
 				                    typename JsonMembers::parse_to_t...>::value,

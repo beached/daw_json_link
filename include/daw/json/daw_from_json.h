@@ -42,7 +42,7 @@ namespace daw::json {
 			                 ErrorReason::EmptyJSONPath );
 
 			static_assert(
-			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
+			  json_details::has_unnamed_default_type_mapping<JsonMember>::value,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using json_member =
@@ -99,7 +99,7 @@ namespace daw::json {
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using json_member =
 			  json_details::unnamed_default_type_mapping<JsonMember>;
-			// static_assert( json_details::is_allocator_v<Allocator> );
+			static_assert( json_details::is_allocator_v<Allocator> );
 			char const *f = std::data( json_data );
 			char const *l = daw::data_end( json_data );
 			Allocator a = alloc;

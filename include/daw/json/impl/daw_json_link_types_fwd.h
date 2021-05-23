@@ -492,5 +492,6 @@ namespace daw::json {
 		using json_tagged_variant_null =
 		  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements,
 		                      Constructor, JsonNullable::Nullable>;
+
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

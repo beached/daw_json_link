@@ -10,13 +10,13 @@
 
 #include "version.h"
 
+#include <daw/cpp_17.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
 
 #include <memory>
 #include <optional>
 #include <string>
-#include <type_traits>
 #include <unordered_map>
 #include <utility>
 
@@ -26,6 +26,18 @@
  */
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			template<typename JsonMember>
+			using without_name = typename JsonMember::template with_name<no_name>;
+
+			template<typename JsonMember, JSONNAMETYPE NewName, bool Cond>
+			using copy_name_when = std::conditional_t<
+			  Cond, typename JsonMember::template with_name<NewName>, JsonMember>;
+
+			template<typename JsonMember, JSONNAMETYPE NewName>
+			using copy_name_when_noname =
+			  copy_name_when<JsonMember, NewName, JsonMember::name == no_name>;
+		} // namespace json_details
 		/***
 		 * This class is used as a way to indicate that a json_data_contract
 		 * specialization has not been done for a user class.
@@ -73,9 +85,12 @@ namespace daw::json {
 		 * @tparam T type to specialize
 		 */
 		template<typename T>
+		using force_aggregate_construction =
+		  daw::is_detected<json_details::force_aggregate_construction_test, T>;
+
+		template<typename T>
 		inline constexpr bool force_aggregate_construction_v =
-		  daw::is_detected<json_details::force_aggregate_construction_test,
-		                   T>::value;
+		  force_aggregate_construction<T>::value;
 
 		namespace json_details {
 			template<typename T>
@@ -111,38 +126,25 @@ namespace daw::json {
 			}
 		};
 
-		template<typename K, typename V, typename H, typename E, typename Alloc>
-		struct default_constructor<std::unordered_map<K, V, H, E, Alloc>> {
-			DAW_ATTRIB_FLATINLINE inline std::unordered_map<K, V, H, E, Alloc>
-			operator( )( ) const
-			  noexcept( noexcept( std::unordered_map<K, V, H, E, Alloc>( ) ) ) {
-				return { };
-			}
+		namespace json_details {
+			template<typename>
+			struct is_std_allocator : std::false_type {};
 
-			template<typename Iterator>
-			DAW_ATTRIB_FLATINLINE inline std::unordered_map<K, V, H, E, Alloc>
-			operator( )( Iterator first, Iterator last,
-			             Alloc const &alloc = Alloc{ } ) const
-			  noexcept( noexcept( std::unordered_map<K, V, H, E, Alloc>(
-			    first, last, 0, H{ }, E{ }, alloc ) ) ) {
-				if constexpr( std::is_same_v<std::random_access_iterator_tag,
-				                             typename std::iterator_traits<
-				                               Iterator>::iterator_category> ) {
-					return std::unordered_map<K, V, H, E, Alloc>(
-					  first, last, static_cast<std::size_t>( last - first ), H{ }, E{ },
-					  alloc );
-				} else {
-					return std::unordered_map<K, V, H, E, Alloc>( first, last, 256, H{ },
-					                                              E{ }, alloc );
-				}
-			}
-		};
+			template<typename... Ts>
+			struct is_std_allocator<std::allocator<Ts...>> : std::true_type {};
+		} // namespace json_details
 
 		template<typename T, typename Alloc>
 		struct default_constructor<std::vector<T, Alloc>> {
 			DAW_ATTRIB_FLATINLINE inline std::vector<T, Alloc> operator( )( ) const
 			  noexcept( noexcept( std::vector<T, Alloc>( ) ) ) {
 				return { };
+			}
+
+			DAW_ATTRIB_FLATINLINE inline std::vector<T, Alloc> &&
+			operator( )( std::vector<T, Alloc> &&v ) const
+			  noexcept( noexcept( std::vector<T, Alloc>( v ) ) ) {
+				return DAW_MOVE( v );
 			}
 
 			template<typename Iterator>
@@ -152,14 +154,15 @@ namespace daw::json {
 			  noexcept( noexcept( std::vector<T, Alloc>( first, last, alloc ) ) ) {
 				if constexpr( std::is_same_v<std::random_access_iterator_tag,
 				                             typename std::iterator_traits<
-				                               Iterator>::iterator_category> ) {
+				                               Iterator>::iterator_category> or
+				              not json_details::is_std_allocator<Alloc>::value ) {
 					return std::vector<T, Alloc>( first, last, alloc );
 				} else {
 					constexpr auto reserve_amount = 4096U / ( sizeof( T ) * 8U );
-					auto result = std::vector<T>( alloc );
+					auto result = std::vector<T, Alloc>( alloc );
 					// Lets use a WAG and go for a 4k page size
 					result.reserve( reserve_amount );
-					result.insert( result.end( ), first, last );
+					result.assign( first, last );
 					return result;
 				}
 			}
@@ -264,8 +267,16 @@ namespace daw::json {
 			using json_type_t = typename T::i_am_a_json_type;
 
 			template<typename T>
-			inline constexpr bool is_a_json_type_v =
-			  daw::is_detected<json_type_t, T>::value;
+			using is_a_json_type =
+			  std::bool_constant<daw::is_detected_v<json_type_t, T>>;
+
+			template<typename T>
+			inline constexpr bool is_a_json_type_v = is_a_json_type<T>::value;
+
+			template<typename T>
+			struct ensure_json_type : std::true_type {
+				static_assert( is_a_json_type_v<T> );
+			};
 
 			template<typename T>
 			using ordered_member_t = typename T::i_am_an_ordered_member;
@@ -282,8 +293,12 @@ namespace daw::json {
 			  typename T::i_am_a_json_tagged_variant;
 
 			template<typename T>
+			using is_a_json_tagged_variant =
+			  daw::is_detected<is_a_json_tagged_variant_test, T>;
+
+			template<typename T>
 			inline constexpr bool is_a_json_tagged_variant_v =
-			  daw::is_detected<is_a_json_tagged_variant_test, T>::value;
+			  is_a_json_tagged_variant<T>::value;
 
 			template<typename T>
 			using must_verify_end_of_data_is_valid_t =
@@ -306,7 +321,8 @@ namespace daw::json {
 
 			template<typename T>
 			using has_json_data_constract_constructor_test =
-			  typename json_data_contract_trait_t<T>::constructor;
+			  decltype( decltype( std::declval<
+			                      json_data_contract_trait_t<T>> )::constructor );
 
 			template<typename T>
 			struct json_data_contract_constructor_impl<T, true, true> {
@@ -314,16 +330,20 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			using json_data_contract_constructor_t =
-			  typename json_data_contract_constructor_impl<
+			using json_data_contract_constructor =
+			  json_data_contract_constructor_impl<
 			    T, daw::is_detected<json_data_contract_trait_t, T>::value,
-			    daw::is_detected<has_json_data_constract_constructor_test,
-			                     T>::value>::type;
+			    daw::is_detected<has_json_data_constract_constructor_test, T>::value>;
+
+			template<typename T>
+			using json_data_contract_constructor_t =
+			  typename json_data_contract_constructor<T>::type;
 
 			template<typename T, typename Default = default_constructor<T>>
-			using json_class_constructor_t = std::conditional_t<
+			using json_class_constructor_t = typename std::conditional_t<
 			  daw::is_detected<json_data_contract_constructor_t, T>::value,
-			  json_data_contract_constructor_t<T>, Default>;
+			  json_data_contract_constructor<T>,
+			  daw::traits::identity<Default>>::type;
 
 			namespace is_string_like_impl {
 				template<typename T>

@@ -2,7 +2,9 @@
 
 # 1.71 has MP issues, seting to 1.72 hoping that fixes them.  At the least it prevents compiling on Ubuntu 20.04
 find_package(Boost 1.72.0 COMPONENTS container)
+
 add_subdirectory(extern)
+
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF CACHE STRING "Enable LTO")
 if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
     message("CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON: LTO is enabled")
@@ -208,9 +210,9 @@ target_link_libraries(twitter_test_alloc json_test)
 add_dependencies(full twitter_test_alloc)
 
 if (Boost_FOUND)
-	add_executable(twitter_test_pmr EXCLUDE_FROM_ALL src/twitter_test_pmr.cpp)
-	target_link_libraries(twitter_test_pmr json_test Boost::headers Boost::container)
-	add_dependencies(full twitter_test_pmr)
+    add_executable(twitter_test_pmr EXCLUDE_FROM_ALL src/twitter_test_pmr.cpp)
+    target_link_libraries(twitter_test_pmr json_test Boost::headers Boost::container)
+    add_dependencies(full twitter_test_pmr)
 endif ()
 
 add_executable(twitter_test2 src/twitter_test2.cpp)
@@ -467,11 +469,11 @@ add_test(NAME cookbook_numbers2_test COMMAND cookbook_numbers2_test ./cookbook_n
 add_dependencies(full cookbook_numbers2_test)
 
 if (Boost_FOUND)
-	add_executable(cookbook_numbers3_test src/cookbook_numbers3_test.cpp)
-	target_link_libraries(cookbook_numbers3_test json_test Boost::headers)
-	add_test(NAME cookbook_numbers3_test COMMAND cookbook_numbers3_test ./cookbook_numbers3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
-	add_dependencies(full cookbook_numbers3_test)
-endif( )
+    add_executable(cookbook_numbers3_test src/cookbook_numbers3_test.cpp)
+    target_link_libraries(cookbook_numbers3_test json_test Boost::headers)
+    add_test(NAME cookbook_numbers3_test COMMAND cookbook_numbers3_test ./cookbook_numbers3.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+    add_dependencies(full cookbook_numbers3_test)
+endif ()
 
 add_executable(cookbook_unknown_types_and_delayed_parsing1_test src/cookbook_unknown_types_and_delayed_parsing1_test.cpp)
 target_link_libraries(cookbook_unknown_types_and_delayed_parsing1_test json_test)
@@ -497,6 +499,11 @@ add_executable(cookbook_class_alternate_test src/cookbook_class_alternate1_test.
 target_link_libraries(cookbook_class_alternate_test json_test)
 add_test(NAME cookbook_class_alternate_test COMMAND cookbook_class_alternate_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_class_alternate_test)
+
+add_executable(gsoc_test src/gsoc_test.cpp)
+target_link_libraries(gsoc_test json_test)
+add_test(NAME gsoc_test COMMAND gsoc_test ./gsoc-2018.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full gsoc_test)
 
 add_executable(stream_output_test src/stream_output_test.cpp)
 target_link_libraries(stream_output_test json_test)

@@ -1075,8 +1075,9 @@ namespace daw::json {
 			                                 TpArgs const &args, Value const &v,
 			                                 VisitedMembers &visited_members ) {
 				using tag_member = tag_member_t<JsonMember>;
-				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
-				if constexpr( is_json_nullable_v<JsonMember> ) {
+				static_assert( is_a_json_type<JsonMember>::value,
+				               "Unsupported data type" );
+				if constexpr( is_json_nullable<JsonMember>::value ) {
 					if( not std::get<pos>( args ) ) {
 						return;
 					}
@@ -1116,8 +1117,9 @@ namespace daw::json {
 					return;
 				}
 				visited_members.push_back( json_member_name );
-				static_assert( is_a_json_type_v<JsonMember>, "Unsupported data type" );
-				if constexpr( is_json_nullable_v<JsonMember> ) {
+				static_assert( is_a_json_type<JsonMember>::value,
+				               "Unsupported data type" );
+				if constexpr( is_json_nullable<JsonMember>::value ) {
 					if( not std::get<pos>( tp ) ) {
 						return;
 					}
@@ -1142,12 +1144,12 @@ namespace daw::json {
 			                                    std::tuple<Args...> const &tp ) {
 
 				using json_member_type = ordered_member_subtype_t<JsonMember>;
-				static_assert( is_a_json_type_v<json_member_type>,
+				static_assert( is_a_json_type<json_member_type>::value,
 				               "Unsupported data type" );
 				// json_tagged_variant like members cannot work as we have no member
 				// names to work with
 				static_assert(
-				  not is_a_json_tagged_variant_v<json_member_type>,
+				  not is_a_json_tagged_variant<json_member_type>::value,
 				  "JSON tagged variant types are not supported when inside an array "
 				  "as an ordered structure" );
 

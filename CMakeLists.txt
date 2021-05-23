@@ -26,7 +26,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_subdirectory(extern)
 option(DAW_ENABLE_TESTING "Build unit tests" OFF)
 
-find_package(Boost 1.72.0)
+#find_package(Boost 1.72.0)
 
 include(GNUInstallDirs)
 set(json_link_INSTALL_CMAKEDIR
@@ -73,12 +73,12 @@ endif ()
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-if (Boost_FOUND)
-    target_compile_definitions( ${PROJECT_NAME} INTERFACE DAW_HAS_BOOST_MP)
-    target_link_libraries(${PROJECT_NAME} INTERFACE Boost::headers daw::header_libraries daw::utf_range)
-else( )
+#if (Boost_FOUND)
+#    target_compile_definitions( ${PROJECT_NAME} INTERFACE DAW_HAS_BOOST_MP)
+#    target_link_libraries(${PROJECT_NAME} INTERFACE Boost::headers daw::header_libraries daw::utf_range)
+#else( )
     target_link_libraries(${PROJECT_NAME} INTERFACE daw::header_libraries daw::utf_range)
-endif( )
+		#endif( )
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 target_include_directories(${PROJECT_NAME}
         INTERFACE

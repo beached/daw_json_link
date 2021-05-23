@@ -102,8 +102,6 @@ namespace daw::json {
 			inline constexpr JSONNAMETYPE default_value_name{ "value" };
 		} // namespace json_details
 
-		template<typename JsonMember>
-		inline constexpr bool is_no_name = ( JsonMember::name == no_name );
 #else
 #define JSONNAMETYPE char const *
 		// Convenience for array members that are required to be unnamed
@@ -114,9 +112,11 @@ namespace daw::json {
 			inline constexpr char const default_value_name[] = "value";
 
 		} // namespace json_details
+#endif
+		template<typename JsonMember>
+		using is_no_name = std::bool_constant<JsonMember::name == no_name>;
 
 		template<typename JsonMember>
-		inline constexpr bool is_no_name = JsonMember::name == no_name;
-#endif
+		inline constexpr bool is_no_name_v = is_no_name<JsonMember>::value;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
