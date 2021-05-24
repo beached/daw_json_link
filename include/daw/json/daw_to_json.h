@@ -28,7 +28,8 @@ namespace daw::json {
 			if constexpr( std::is_pointer<OutputIterator>::value ) {
 				daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 			}
-			out_it = json_details::member_to_string<JsonClass>( out_it, value );
+			out_it = json_details::member_to_string( template_arg<JsonClass>, out_it,
+			                                         value );
 			return out_it;
 		}
 
@@ -38,8 +39,8 @@ namespace daw::json {
 			if constexpr( std::is_same_v<Result, std::string> ) {
 				result.reserve( 4096 );
 			}
-			(void)json_details::member_to_string<JsonClass>(
-			  std::back_inserter( result ), value );
+			(void)json_details::member_to_string(
+			  template_arg<JsonClass>, std::back_inserter( result ), value );
 			if constexpr( std::is_same_v<Result, std::string> ) {
 				result.shrink_to_fit( );
 			}
@@ -78,7 +79,8 @@ namespace daw::json {
 				} else {
 					*out_it++ = ',';
 				}
-				out_it = json_details::member_to_string<JsonMember>( out_it, v );
+				out_it =
+				  json_details::member_to_string( template_arg<JsonMember>, out_it, v );
 			}
 			// The last character will be a ',' prior to this
 			*out_it++ = ']';

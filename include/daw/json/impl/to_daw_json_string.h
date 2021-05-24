@@ -1045,7 +1045,8 @@ namespace daw::json {
 
 			template<typename JsonMember, typename OutputIterator, typename T>
 			[[nodiscard]] inline constexpr OutputIterator
-			member_to_string( OutputIterator it, T const &value ) {
+			member_to_string( template_param<JsonMember>, OutputIterator it,
+			                  T const &value ) {
 				return to_daw_json_string<JsonMember>(
 				  ParseTag<JsonMember::expected_type>{ }, DAW_MOVE( it ), value );
 			}
@@ -1099,8 +1100,8 @@ namespace daw::json {
 				  it, tag_member_name );
 				it =
 				  utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
-				it = member_to_string<tag_member>(
-				  DAW_MOVE( it ), typename JsonMember::switcher{ }( v ) );
+				it = member_to_string( template_arg<tag_member>, DAW_MOVE( it ),
+				                       typename JsonMember::switcher{ }( v ) );
 			}
 
 			template<std::size_t pos, typename JsonMember, typename OutputIterator,
@@ -1133,8 +1134,8 @@ namespace daw::json {
 				  it, JsonMember::name );
 				it =
 				  utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
-				it =
-				  member_to_string<JsonMember>( DAW_MOVE( it ), std::get<pos>( tp ) );
+				it = member_to_string( template_arg<JsonMember>, DAW_MOVE( it ),
+				                       std::get<pos>( tp ) );
 			}
 
 			template<size_t TupleIdx, typename JsonMember, typename OutputIterator,
@@ -1167,7 +1168,8 @@ namespace daw::json {
 				if( array_idx > 0 ) {
 					*it++ = ',';
 				}
-				it = member_to_string<json_member_type>( it, std::get<TupleIdx>( tp ) );
+				it = member_to_string( template_arg<json_member_type>, it,
+				                       std::get<TupleIdx>( tp ) );
 				++array_idx;
 			}
 		} // namespace json_details

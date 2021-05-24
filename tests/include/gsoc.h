@@ -37,9 +37,8 @@ namespace daw::gsoc {
 		sponsor_t sponsor;
 		author_t author;
 	};
-	// using gsoc_object_t = std::vector<std::pair<std::uint64_t,
-	// gsoc_element_t>>;
-	using gsoc_object_t = std::unordered_map<std::uint64_t, gsoc_element_t>;
+	using gsoc_object_t = std::vector<std::pair<std::uint64_t, gsoc_element_t>>;
+	// using gsoc_object_t = std::unordered_map<std::uint64_t, gsoc_element_t>;
 } // namespace daw::gsoc
 
 namespace daw::json {

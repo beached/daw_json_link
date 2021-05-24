@@ -296,9 +296,9 @@ namespace daw::json {
 					return result;
 				} else {
 					using constructor_t = typename JsonMember::constructor_t;
-					construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state, std::data( result ),
-					  daw::data_end( result ) );
+					construct_value( template_arg<json_result<JsonMember>>,
+					                 constructor_t{ }, parse_state, std::data( result ),
+					                 daw::data_end( result ) );
 				}
 			}
 		} // namespace json_details

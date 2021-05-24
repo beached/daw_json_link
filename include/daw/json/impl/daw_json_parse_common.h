@@ -53,20 +53,12 @@ namespace daw::json {
 		};
 
 		namespace json_details {
-			template<typename T, bool = false>
-			struct ordered_member_subtype {
-				using type = T;
-			};
-
 			template<typename T>
-			struct ordered_member_subtype<T, true> {
-				using type = typename T::json_member;
-			};
+			using ordered_member_subtype_test = typename T::json_member;
 
 			template<typename T>
 			using ordered_member_subtype_t =
-			  typename ordered_member_subtype<T,
-			                                  is_an_ordered_member<T>::value>::type;
+			  typename daw::detected_or_t<T, ordered_member_subtype_test, T>;
 
 			template<typename T>
 			inline constexpr auto json_class_constructor =
@@ -75,8 +67,8 @@ namespace daw::json {
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
 			DAW_ATTRIB_FLATINLINE static inline constexpr auto
-			construct_value( Constructor &&ctor, ParseState &parse_state,
-			                 Args &&...args ) {
+			construct_value( template_param<Value>, Constructor &&ctor,
+			                 ParseState &parse_state, Args &&...args ) {
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;

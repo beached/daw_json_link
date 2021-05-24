@@ -113,7 +113,8 @@ namespace daw::json {
 			template<typename OutputIterator, typename Member, typename Value>
 			[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
 			serialize( OutputIterator it, Member const &m, Value const & ) {
-				return json_details::member_to_string<json_member>( it, m );
+				return json_details::member_to_string( template_arg<json_member>, it,
+				                                       m );
 			}
 
 			template<typename Constructor>
@@ -133,8 +134,8 @@ namespace daw::json {
 				// construct our result and the Constructor maybe different.  This
 				// happens with BigInt and string.
 				using Constructor = typename JsonClass::constructor_t;
-				return json_details::construct_value<JsonClass>(
-				  Constructor{ }, parse_state,
+				return json_details::construct_value(
+				  template_arg<JsonClass>, Constructor{ }, parse_state,
 				  json_details::parse_value<json_member, false>(
 				    ParseTag<json_member::expected_type>{ }, parse_state ) );
 			}
@@ -171,14 +172,24 @@ namespace daw::json {
 		};
 
 		namespace json_details {
+			/*
 			template<typename JsonMember>
 			struct ordered_member_wrapper
 			  : json_details::unnamed_default_type_mapping<JsonMember> {
 				static_assert(
-				  json_details::has_unnamed_default_type_mapping<JsonMember>::value,
+				  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 				  "Missing specialization of daw::json::json_data_contract for class "
 				  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			};
+
+			template<std::size_t Index, typename JsonMember>
+			struct ordered_member_wrapper<ordered_json_member<Index, JsonMember>>
+			  : ordered_json_member<Index, JsonMember> {};
+			*/
+			template<typename JsonMember>
+			using ordered_member_wrapper =
+			  std::conditional_t<is_an_ordered_member_v<JsonMember>, JsonMember,
+			                     unnamed_default_type_mapping<JsonMember>>;
 		} // namespace json_details
 
 		/***
@@ -243,8 +254,10 @@ namespace daw::json {
 				static_assert( json_details::has_json_data_contract_trait<
 				                 typename JsonClass::base_type>::value,
 				               "Unexpected type" );
-				return json_details::parse_ordered_json_class<
-				  JsonClass, json_details::ordered_member_wrapper<JsonMembers>...>(
+
+				return json_details::parse_ordered_json_class(
+				  template_args<JsonClass,
+				                json_details::ordered_member_wrapper<JsonMembers>...>,
 				  parse_state );
 			}
 		};
@@ -284,8 +297,8 @@ namespace daw::json {
 					               "Alternative type does not have a to_json_data_member "
 					               "in it's json_data_contract specialization" );
 
-					return json_details::member_to_string<
-					  json_class<no_name, Alternative>>( it, alternative );
+					return json_details::member_to_string(
+					  template_arg<json_class<no_name, Alternative>>, it, alternative );
 				} );
 			}
 

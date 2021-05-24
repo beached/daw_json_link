@@ -71,7 +71,8 @@ namespace daw::json {
 			 */
 			template<typename JsonMember, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_ordered_class_member( std::size_t &member_index,
+			parse_ordered_class_member( template_param<JsonMember>,
+			                            std::size_t &member_index,
 			                            ParseState &parse_state ) {
 
 				using json_member_t = ordered_member_subtype_t<JsonMember>;
@@ -228,7 +229,8 @@ namespace daw::json {
 					class_cleanup_now<
 					  json_details::all_json_members_must_exist_v<T, ParseState>>(
 					  parse_state );
-					return construct_value<T>( Constructor{ }, parse_state );
+					return construct_value( template_arg<T>, Constructor{ },
+					                        parse_state );
 				} else {
 
 #if defined( __GNUC__ ) or defined( __clang__ )
@@ -325,7 +327,8 @@ namespace daw::json {
 			 */
 			template<typename JsonClass, typename... JsonMembers, typename ParseState>
 			[[nodiscard]] static constexpr json_result<JsonClass>
-			parse_ordered_json_class( ParseState &parse_state ) {
+			parse_ordered_json_class( template_params<JsonClass, JsonMembers...>,
+			                          ParseState &parse_state ) {
 				static_assert( is_a_json_type<JsonClass>::value );
 				using T = typename JsonClass::base_type;
 				using Constructor = typename JsonClass::constructor_t;
@@ -345,9 +348,9 @@ namespace daw::json {
 
 				size_t current_idx = 0;
 
-				using tp_t = decltype( std::forward_as_tuple(
-				  parse_ordered_class_member<JsonMembers>( current_idx,
-				                                           parse_state )... ) );
+				using tp_t =
+				  decltype( std::forward_as_tuple( parse_ordered_class_member(
+				    template_arg<JsonMembers>, current_idx, parse_state )... ) );
 
 				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 					struct cleanup_t {
@@ -387,13 +390,13 @@ namespace daw::json {
 					(void)run_after_parse;
 					return construct_value_tp<T>(
 					  Constructor{ }, parse_state,
-					  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx,
-					                                                 parse_state )... } );
+					  tp_t{ parse_ordered_class_member( template_arg<JsonMembers>,
+					                                    current_idx, parse_state )... } );
 				} else {
 					auto result = construct_value_tp<T>(
 					  Constructor{ }, parse_state,
-					  tp_t{ parse_ordered_class_member<JsonMembers>( current_idx,
-					                                                 parse_state )... } );
+					  tp_t{ parse_ordered_class_member( template_arg<JsonMembers>,
+					                                    current_idx, parse_state )... } );
 					if constexpr( json_details::all_json_members_must_exist_v<
 					                T, ParseState> ) {
 						parse_state.trim_left( );

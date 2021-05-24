@@ -67,9 +67,9 @@ namespace daw::json {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				if constexpr( KnownBounds ) {
-					return construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state,
-					  parse_real<element_t, true>( parse_state ) );
+					return construct_value( template_arg<json_result<JsonMember>>,
+					                        constructor_t{ }, parse_state,
+					                        parse_real<element_t, true>( parse_state ) );
 				} else {
 					if constexpr( JsonMember::literal_as_string !=
 					              LiteralAsStringOpt::Never ) {
@@ -80,9 +80,9 @@ namespace daw::json {
 					  parse_policy_details::is_number_start( parse_state.front( ) ),
 					  ErrorReason::InvalidNumberStart, parse_state );
 
-					auto result = construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state,
-					  parse_real<element_t, false>( parse_state ) );
+					auto result = construct_value(
+					  template_arg<json_result<JsonMember>>, constructor_t{ },
+					  parse_state, parse_real<element_t, false>( parse_state ) );
 					if constexpr( JsonMember::literal_as_string !=
 					              LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
@@ -131,16 +131,18 @@ namespace daw::json {
 				}
 
 				if constexpr( KnownBounds ) {
-					return construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state,
+					return construct_value(
+					  template_arg<json_result<JsonMember>>, constructor_t{ },
+					  parse_state,
 					  static_cast<element_t>(
 					    sign * static_cast<int_type>(
 					             unsigned_parser<element_t, JsonMember::range_check,
 					                             KnownBounds>( ParseState::exec_tag,
 					                                           parse_state ) ) ) );
 				} else {
-					auto result = construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state,
+					auto result = construct_value(
+					  template_arg<json_result<JsonMember>>, constructor_t{ },
+					  parse_state,
 					  static_cast<element_t>(
 					    sign * static_cast<int_type>(
 					             unsigned_parser<element_t, JsonMember::range_check,
@@ -176,8 +178,9 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  parse_policy_details::is_number( parse_state.front( ) ),
 					  ErrorReason::InvalidNumber, parse_state );
-					return construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state,
+					return construct_value(
+					  template_arg<json_result<JsonMember>>, constructor_t{ },
+					  parse_state,
 					  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 					    ParseState::exec_tag, parse_state ) );
 				} else {
@@ -188,8 +191,9 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  parse_policy_details::is_number( parse_state.front( ) ),
 					  ErrorReason::InvalidNumber, parse_state );
-					auto result = construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state,
+					auto result = construct_value(
+					  template_arg<json_result<JsonMember>>, constructor_t{ },
+					  parse_state,
 					  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 					    ParseState::exec_tag, parse_state ) );
 					if constexpr( JsonMember::literal_as_string !=
@@ -212,21 +216,21 @@ namespace daw::json {
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( KnownBounds ) {
 					if( parse_state.is_null( ) ) {
-						return construct_value<json_result<JsonMember>>( constructor_t{ },
-						                                                 parse_state );
+						return construct_value( template_arg<json_result<JsonMember>>,
+						                        constructor_t{ }, parse_state );
 					}
 					return parse_value<JsonMember, true>(
 					  ParseTag<JsonMember::base_expected_type>{ }, parse_state );
 				} else if constexpr( ParseState::is_unchecked_input ) {
 					if( not parse_state.has_more( ) ) {
-						return construct_value<json_result<JsonMember>>( constructor_t{ },
-						                                                 parse_state );
+						return construct_value( template_arg<json_result<JsonMember>>,
+						                        constructor_t{ }, parse_state );
 					} else if( parse_state.front( ) == 'n' ) {
 						parse_state.remove_prefix( 4 );
 						parse_state.trim_left_unchecked( );
 						parse_state.remove_prefix( );
-						return construct_value<json_result<JsonMember>>( constructor_t{ },
-						                                                 parse_state );
+						return construct_value( template_arg<json_result<JsonMember>>,
+						                        constructor_t{ }, parse_state );
 					}
 					return parse_value<JsonMember>(
 					  ParseTag<JsonMember::base_expected_type>{ }, parse_state );
@@ -237,8 +241,8 @@ namespace daw::json {
 						  parse_policy_details::at_end_of_item( parse_state.front( ) ),
 						  ErrorReason::InvalidLiteral, parse_state );
 						parse_state.trim_left_checked( );
-						return construct_value<json_result<JsonMember>>( constructor_t{ },
-						                                                 parse_state );
+						return construct_value( template_arg<json_result<JsonMember>>,
+						                        constructor_t{ }, parse_state );
 					}
 					return parse_value<JsonMember>(
 					  ParseTag<JsonMember::base_expected_type>{ }, parse_state );
@@ -261,11 +265,11 @@ namespace daw::json {
 					} else {
 						switch( parse_state.front( ) ) {
 						case 't':
-							return construct_value<json_result<JsonMember>>(
-							  constructor_t{ }, parse_state, true );
+							return construct_value( template_arg<json_result<JsonMember>>,
+							                        constructor_t{ }, parse_state, true );
 						case 'f':
-							return construct_value<json_result<JsonMember>>(
-							  constructor_t{ }, parse_state, false );
+							return construct_value( template_arg<json_result<JsonMember>>,
+							                        constructor_t{ }, parse_state, false );
 						}
 						daw_json_error( ErrorReason::InvalidLiteral, parse_state );
 					}
@@ -302,8 +306,8 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  parse_policy_details::at_end_of_item( parse_state.front( ) ),
 					  ErrorReason::InvalidEndOfValue, parse_state );
-					return construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state, result );
+					return construct_value( template_arg<json_result<JsonMember>>,
+					                        constructor_t{ }, parse_state, result );
 				}
 			}
 
@@ -317,13 +321,13 @@ namespace daw::json {
 				if constexpr( KnownBounds ) {
 					if constexpr( JsonMember::empty_is_null == JsonNullable::Nullable ) {
 						if( parse_state.empty( ) ) {
-							return construct_value<json_result<JsonMember>>( constructor_t{ },
-							                                                 parse_state );
+							return construct_value( template_arg<json_result<JsonMember>>,
+							                        constructor_t{ }, parse_state );
 						}
 					}
-					return construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state, std::data( parse_state ),
-					  std::size( parse_state ) );
+					return construct_value(
+					  template_arg<json_result<JsonMember>>, constructor_t{ },
+					  parse_state, std::data( parse_state ), std::size( parse_state ) );
 				} else {
 					if constexpr( JsonMember::allow_escape_character ==
 					              AllowEscapeCharacter::Allow ) {
@@ -331,13 +335,13 @@ namespace daw::json {
 						if constexpr( JsonMember::empty_is_null ==
 						              JsonNullable::Nullable ) {
 							if( str.empty( ) ) {
-								return construct_value<json_result<JsonMember>>(
-								  constructor_t{ }, parse_state );
+								return construct_value( template_arg<json_result<JsonMember>>,
+								                        constructor_t{ }, parse_state );
 							}
 						}
-						return construct_value<json_result<JsonMember>>(
-						  constructor_t{ }, parse_state, std::data( str ),
-						  std::size( str ) );
+						return construct_value( template_arg<json_result<JsonMember>>,
+						                        constructor_t{ }, parse_state,
+						                        std::data( str ), std::size( str ) );
 					} else {
 						parse_state.remove_prefix( );
 
@@ -348,16 +352,16 @@ namespace daw::json {
 						if constexpr( JsonMember::empty_is_null ==
 						              JsonNullable::Nullable ) {
 							if( first == last ) {
-								return construct_value<json_result<JsonMember>>(
-								  constructor_t{ }, parse_state );
+								return construct_value( template_arg<json_result<JsonMember>>,
+								                        constructor_t{ }, parse_state );
 							}
-							return construct_value<json_result<JsonMember>>(
-							  constructor_t{ }, parse_state, first,
-							  static_cast<std::size_t>( last - first ) );
+							return construct_value(
+							  template_arg<json_result<JsonMember>>, constructor_t{ },
+							  parse_state, first, static_cast<std::size_t>( last - first ) );
 						} else {
-							return construct_value<json_result<JsonMember>>(
-							  constructor_t{ }, parse_state, first,
-							  static_cast<std::size_t>( last - first ) );
+							return construct_value(
+							  template_arg<json_result<JsonMember>>, constructor_t{ },
+							  parse_state, first, static_cast<std::size_t>( last - first ) );
 						}
 					}
 				}
@@ -410,9 +414,10 @@ namespace daw::json {
 					}
 					// There are no escapes in the string, we can just use the ptr/size
 					// ctor
-					return construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state, std::data( parse_state2 ),
-					  daw::data_end( parse_state2 ) );
+					return construct_value( template_arg<json_result<JsonMember>>,
+					                        constructor_t{ }, parse_state,
+					                        std::data( parse_state2 ),
+					                        daw::data_end( parse_state2 ) );
 				} else {
 					auto parse_state2 =
 					  KnownBounds ? parse_state : skip_string( parse_state );
@@ -425,9 +430,10 @@ namespace daw::json {
 					}
 					// There are no escapes in the string, we can just use the ptr/size
 					// ctor
-					return construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state, std::data( parse_state2 ),
-					  daw::data_end( parse_state2 ) );
+					return construct_value( template_arg<json_result<JsonMember>>,
+					                        constructor_t{ }, parse_state,
+					                        std::data( parse_state2 ),
+					                        daw::data_end( parse_state2 ) );
 				}
 			}
 
@@ -440,8 +446,9 @@ namespace daw::json {
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				auto str = skip_string( parse_state );
 				using constructor_t = typename JsonMember::constructor_t;
-				return construct_value<json_result<JsonMember>>(
-				  constructor_t{ }, parse_state, std::data( str ), std::size( str ) );
+				return construct_value( template_arg<json_result<JsonMember>>,
+				                        constructor_t{ }, parse_state, std::data( str ),
+				                        std::size( str ) );
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
@@ -457,8 +464,8 @@ namespace daw::json {
 				auto const str = skip_value( parse_state );
 
 				using constructor_t = typename JsonMember::from_converter_t;
-				return construct_value<json_result<JsonMember>>(
-				  constructor_t{ }, parse_state,
+				return construct_value(
+				  template_arg<json_result<JsonMember>>, constructor_t{ }, parse_state,
 				  std::string_view( std::data( str ), std::size( str ) ) );
 			}
 
@@ -538,8 +545,9 @@ namespace daw::json {
 				  json_parse_kv_class_iterator<JsonMember, ParseState, false>;
 #endif
 				using constructor_t = typename JsonMember::constructor_t;
-				return construct_value<json_result<JsonMember>>(
-				  constructor_t{ }, parse_state, iter_t( parse_state ), iter_t( ) );
+				return construct_value( template_arg<json_result<JsonMember>>,
+				                        constructor_t{ }, parse_state,
+				                        iter_t( parse_state ), iter_t( ) );
 			}
 
 			/**
@@ -568,8 +576,9 @@ namespace daw::json {
 				using iter_t =
 				  json_parse_kv_array_iterator<JsonMember, ParseState, KnownBounds>;
 				using constructor_t = typename JsonMember::constructor_t;
-				return construct_value<json_result<JsonMember>>(
-				  constructor_t{ }, parse_state, iter_t( parse_state ), iter_t( ) );
+				return construct_value( template_arg<json_result<JsonMember>>,
+				                        constructor_t{ }, parse_state,
+				                        iter_t( parse_state ), iter_t( ) );
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
@@ -584,9 +593,9 @@ namespace daw::json {
 				using iterator_t =
 				  json_parse_array_iterator<JsonMember, ParseState, KnownBounds>;
 				using constructor_t = typename JsonMember::constructor_t;
-				return construct_value<json_result<JsonMember>>(
-				  constructor_t{ }, parse_state, iterator_t( parse_state ),
-				  iterator_t( ) );
+				return construct_value( template_arg<json_result<JsonMember>>,
+				                        constructor_t{ }, parse_state,
+				                        iterator_t( parse_state ), iterator_t( ) );
 			}
 
 			template<JsonBaseParseTypes BPT, typename JsonMembers,
@@ -720,14 +729,15 @@ namespace daw::json {
 			             ParseState &parse_state ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( KnownBounds ) {
-					return construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state, std::data( parse_state ),
-					  std::size( parse_state ) );
+					return construct_value(
+					  template_arg<json_result<JsonMember>>, constructor_t{ },
+					  parse_state, std::data( parse_state ), std::size( parse_state ) );
 				} else {
 					auto value_parse_state = skip_value( parse_state );
-					return construct_value<json_result<JsonMember>>(
-					  constructor_t{ }, parse_state, std::data( value_parse_state ),
-					  std::size( value_parse_state ) );
+					return construct_value( template_arg<json_result<JsonMember>>,
+					                        constructor_t{ }, parse_state,
+					                        std::data( value_parse_state ),
+					                        std::size( value_parse_state ) );
 				}
 			}
 
