@@ -55,32 +55,5 @@ namespace daw::json {
 			}
 		};
 
-		template<typename T>
-		struct custom_from_converter_t {
-			[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {
-				if constexpr( std::disjunction<
-				                std::is_same<T, std::string_view>,
-				                std::is_same<T, std::optional<std::string_view>>>::
-				                value ) {
-					return std::string_view{ };
-				} else {
-					// Use ADL customization point
-					return from_string( daw::tag<T> );
-				}
-			}
-
-			[[nodiscard]] inline constexpr decltype( auto )
-			operator( )( std::string_view sv ) {
-				if constexpr( std::disjunction<
-				                std::is_same<T, std::string_view>,
-				                std::is_same<T, std::optional<std::string_view>>>::
-				                value ) {
-					return sv;
-				} else {
-					// Use ADL customization point
-					return from_string( daw::tag<T>, sv );
-				}
-			}
-		};
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -137,12 +137,14 @@ namespace daw::json {
 				template<typename ParseState>
 				[[nodiscard]] static constexpr auto parse_nq( ParseState &parse_state )
 				  -> std::enable_if_t<not ParseState::is_unchecked_input, std::size_t> {
+
 					std::ptrdiff_t need_slow_path = -1;
 					char const *first = parse_state.first;
 					char const *const last = parse_state.class_last;
 					if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
 					                                 constexpr_exec_tag> ) {
-						first = mem_skip_until_end_of_string<false>(
+						first = mem_skip_until_end_of_string<
+						  ParseState::is_zero_terminated_string>(
 						  ParseState::exec_tag, first, last, need_slow_path );
 					} else {
 						if( char const *const l = parse_state.last; l - first >= 8 ) {
@@ -184,8 +186,13 @@ namespace daw::json {
 							}
 						}
 					}
-					daw_json_assert_weak( first < last and *first == '"',
-					                      ErrorReason::InvalidString, parse_state );
+					if constexpr( ParseState::is_zero_terminated_string ) {
+						daw_json_assert_weak( *first == '"', ErrorReason::InvalidString,
+						                      parse_state );
+					} else {
+						daw_json_assert_weak( first < last and *first == '"',
+						                      ErrorReason::InvalidString, parse_state );
+					}
 					parse_state.first = first;
 					return static_cast<std::size_t>( need_slow_path );
 				}

@@ -13,6 +13,7 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <vector>
 
 namespace daw::gsoc {
 	struct sponsor_t {

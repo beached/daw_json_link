@@ -25,13 +25,12 @@
 #include <cstddef>
 #include <iterator>
 
-#if defined( __has_include ) and __has_include( <version> )
+#if __has_include( <version> )
 #include <version>
 #endif
 
 #if defined( __cpp_constexpr_dynamic_alloc )
 #define CPP20CONSTEXPR constexpr
-#define HAS_CPP20CONSTEXPR
 #else
 #define CPP20CONSTEXPR
 #endif
@@ -120,6 +119,7 @@ namespace daw::json {
 					                     DAW_MOVE( std::get<Is>( tp ) )... );
 				}
 			};
+
 			inline constexpr construct_value_tp_invoke_t construct_value_tp_invoke =
 			  construct_value_tp_invoke_t{ };
 
@@ -170,14 +170,9 @@ namespace daw::json {
 			  daw::is_detected<has_deallocate_test, Allocator>>::value;
 
 			template<typename T>
-			struct has_json_data_contract_trait
-			  : std::bool_constant<
-			      not std::is_same<missing_json_data_contract_for<T>,
-			                       json_data_contract_trait_t<T>>::value> {};
-
-			template<typename T>
 			inline constexpr bool has_json_data_contract_trait_v =
-			  has_json_data_contract_trait<T>::value;
+			  not std::is_same_v<missing_json_data_contract_for<T>,
+			                     json_data_contract_trait_t<T>>;
 
 			template<typename Container, typename Value>
 			using detect_push_back = decltype( std::declval<Container &>( ).push_back(

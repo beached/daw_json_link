@@ -15,8 +15,10 @@
 #include "version.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_is_constant_evaluated.h>
 
 #include <ciso646>
+#include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -94,13 +96,13 @@ namespace daw::json {
 								ParseState &p;
 								std::size_t counter;
 								CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
-#ifdef HAS_CPP20CONSTEXPR
-									if( not std::is_constant_evaluated( ) ) {
+#if defined( DAW_IS_CONSTANT_EVALUATED )
+									if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
 #endif
 										if( DAW_LIKELY( std::uncaught_exceptions( ) == 0 ) ) {
 											p.counter = counter;
 										}
-#ifdef HAS_CPP20CONSTEXPR
+#if defined( DAW_IS_CONSTANT_EVALUATED )
 									} else {
 										p.counter = counter;
 									}

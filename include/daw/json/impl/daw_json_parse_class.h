@@ -17,6 +17,7 @@
 #include "daw_json_skip.h"
 #include "version.h"
 
+#include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 
@@ -209,8 +210,7 @@ namespace daw::json {
 				static_assert( is_a_json_type<JsonClass>::value );
 				using T = typename JsonClass::base_type;
 				using Constructor = typename JsonClass::constructor_t;
-				static_assert( has_json_data_contract_trait<T>::value,
-				               "Unexpected type" );
+				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
 				constexpr AllMembersMustExist must_exist =
 				  json_details::all_json_members_must_exist_v<T, ParseState>
 				    ? AllMembersMustExist::yes
@@ -255,8 +255,8 @@ namespace daw::json {
 							ParseState *parse_state_ptr;
 							CPP20CONSTEXPR
 							inline ~cleanup_t( ) noexcept( false ) {
-#ifdef HAS_CPP20CONSTEXPR
-								if( not std::is_constant_evaluated( ) ) {
+#if defined( DAW_IS_CONSTANT_EVALUATED )
+								if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
 #endif
 									if( std::uncaught_exceptions( ) == 0 ) {
 										class_cleanup_now<
@@ -264,7 +264,7 @@ namespace daw::json {
 										                                              ParseState>>(
 										  *parse_state_ptr );
 									}
-#ifdef HAS_CPP20CONSTEXPR
+#if defined( DAW_IS_CONSTANT_EVALUATED )
 								} else {
 									class_cleanup_now<is_exact_class_mapping_v<T>>(
 									  *parse_state_ptr );
@@ -332,8 +332,7 @@ namespace daw::json {
 				static_assert( is_a_json_type<JsonClass>::value );
 				using T = typename JsonClass::base_type;
 				using Constructor = typename JsonClass::constructor_t;
-				static_assert( has_json_data_contract_trait<T>::value,
-				               "Unexpected type" );
+				static_assert( has_json_data_contract_trait_v<T>, "Unexpected type" );
 				static_assert(
 				  std::is_invocable<Constructor,
 				                    typename JsonMembers::parse_to_t...>::value,
@@ -356,8 +355,8 @@ namespace daw::json {
 					struct cleanup_t {
 						ParseState *ptr;
 						CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
-#ifdef HAS_CPP20CONSTEXPR
-							if( not std::is_constant_evaluated( ) ) {
+#if defined( DAW_IS_CONSTANT_EVALUATED )
+							if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
 #endif
 								if( std::uncaught_exceptions( ) == 0 ) {
 									if constexpr( json_details::all_json_members_must_exist_v<
@@ -371,7 +370,7 @@ namespace daw::json {
 										(void)ptr->skip_array( );
 									}
 								}
-#ifdef HAS_CPP20CONSTEXPR
+#if defined( DAW_IS_CONSTANT_EVALUATED )
 							} else {
 								if constexpr( json_details::all_json_members_must_exist_v<
 								                T, ParseState> ) {

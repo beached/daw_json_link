@@ -558,6 +558,8 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 		std::cout << std::dec << "unsigned diff: " << diff << '\n';
 		std::terminate( );
 	}
+#else
+	(void)orig;
 #endif
 	return diff;
 }

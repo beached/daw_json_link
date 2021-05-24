@@ -89,13 +89,6 @@ namespace daw::json {
 			}
 		};
 
-		namespace json_details {
-			template<typename T>
-			struct json_identity {
-				using type = T;
-			};
-		} // namespace json_details
-
 		template<typename JsonMember>
 		struct json_class_map {
 			using i_am_a_json_member_list = void;
@@ -172,20 +165,6 @@ namespace daw::json {
 		};
 
 		namespace json_details {
-			/*
-			template<typename JsonMember>
-			struct ordered_member_wrapper
-			  : json_details::unnamed_default_type_mapping<JsonMember> {
-				static_assert(
-				  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
-				  "Missing specialization of daw::json::json_data_contract for class "
-				  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			};
-
-			template<std::size_t Index, typename JsonMember>
-			struct ordered_member_wrapper<ordered_json_member<Index, JsonMember>>
-			  : ordered_json_member<Index, JsonMember> {};
-			*/
 			template<typename JsonMember>
 			using ordered_member_wrapper =
 			  std::conditional_t<is_an_ordered_member_v<JsonMember>, JsonMember,
@@ -251,8 +230,8 @@ namespace daw::json {
 			  nodiscard]] static inline constexpr json_details::json_result<JsonClass>
 			parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type<JsonClass>::value );
-				static_assert( json_details::has_json_data_contract_trait<
-				                 typename JsonClass::base_type>::value,
+				static_assert( json_details::has_json_data_contract_trait_v<
+				                 typename JsonClass::base_type>,
 				               "Unexpected type" );
 
 				return json_details::parse_ordered_json_class(
@@ -302,7 +281,6 @@ namespace daw::json {
 				} );
 			}
 
-			// TODO: use Constructor result
 			template<typename Constructor>
 			using result_type = json_details::json_class_parse_result_t<
 			  Constructor, json_details::unnamed_default_type_mapping<
@@ -321,8 +299,8 @@ namespace daw::json {
 			  from_json_result_t<JsonClass>
 			  parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
 				static_assert( json_details::is_a_json_type<JsonClass>::value );
-				static_assert( json_details::has_json_data_contract_trait<
-				                 typename JsonClass::base_type>::value,
+				static_assert( json_details::has_json_data_contract_trait_v<
+				                 typename JsonClass::base_type>,
 				               "Unexpected type" );
 				using tag_class_t = tuple_json_mapping<TagMember>;
 				std::size_t const idx = [parse_state]( ) mutable {
@@ -568,8 +546,8 @@ namespace daw::json {
 			using data_contract = json_data_contract_trait_t<base_type>;
 			using parse_to_t = typename std::conditional_t<
 			  force_aggregate_construction<base_type>::value,
-			  json_details::json_identity<base_type>,
-			  json_details::json_identity<
+			  daw::traits::identity<base_type>,
+			  daw::traits::identity<
 			    typename data_contract::template result_type<constructor_t>>>::type;
 
 			static constexpr daw::string_view name = Name;

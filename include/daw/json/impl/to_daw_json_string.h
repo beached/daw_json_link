@@ -91,6 +91,13 @@ namespace daw::json {
 			}
 		} // namespace json_details::to_strings
 
+		/***
+		 * This is the default ToJsonConverter for json_custom. By default is will
+		 * return the stringified version of the value if, to_string( T ) exists.
+		 * Otherwise it will fallback to an std::ostream converter for T if it
+		 * exists.
+		 * @tparam T type of value to convert to a string
+		 */
 		template<typename T>
 		struct custom_to_converter_t {
 			template<typename U, std::enable_if_t<
@@ -109,6 +116,41 @@ namespace daw::json {
 				std::stringstream ss;
 				ss << DAW_FWD( value );
 				return ss.str( );
+			}
+		};
+
+		/***
+		 * Default FromJsonConverter for json_custom. Uses ADL customization point
+		 * from_string( daw::tag<T> ) for null values, and from_string( daw::tag<T>,
+		 * std::string_view )
+		 * @tparam T the result type
+		 */
+		template<typename T>
+		struct custom_from_converter_t {
+			[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {
+				if constexpr( std::disjunction<
+				                std::is_same<T, std::string_view>,
+				                std::is_same<T, std::optional<std::string_view>>>::
+				                value ) {
+					// TODO, comment on why this is here
+					return std::string_view{ };
+				} else {
+					// Use ADL customization point
+					return from_string( daw::tag<T> );
+				}
+			}
+
+			[[nodiscard]] inline constexpr decltype( auto )
+			operator( )( std::string_view sv ) {
+				if constexpr( std::disjunction<
+				                std::is_same<T, std::string_view>,
+				                std::is_same<T, std::optional<std::string_view>>>::
+				                value ) {
+					return sv;
+				} else {
+					// Use ADL customization point
+					return from_string( daw::tag<T>, sv );
+				}
 			}
 		};
 
@@ -586,19 +628,13 @@ namespace daw::json {
 				return it;
 			}
 
-			template<typename T, bool>
-			struct base_int_type_impl {
-				using type = T;
-			};
-
 			template<typename T>
-			struct base_int_type_impl<T, true> {
-				using type = std::underlying_type_t<T>;
-			};
+			using base_int_type_impl = std::underlying_type<T>;
 
 			template<typename T>
 			using base_int_type_t =
-			  typename base_int_type_impl<T, std::is_enum<T>::value>::type;
+			  typename std::conditional_t<std::is_enum_v<T>, base_int_type_impl<T>,
+			                              daw::traits::identity<T>>::type;
 
 			inline constexpr auto digits100 = [] {
 				std::array<char[2], 100> result{ };

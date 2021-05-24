@@ -60,14 +60,16 @@ namespace daw::json {
 		} // namespace json_details::name::name_parser
 
 		namespace json_details {
+			struct pop_json_path_result {
+				daw::string_view current{ };
+				char found_char = 0;
+			};
 			// Paths are specified with dot separators, if the name has a dot in it,
 			// it must be escaped
 			// memberA.memberB.member\.C has 3 parts['memberA', 'memberB', 'member.C']
-			[[nodiscard]] constexpr auto pop_json_path( daw::string_view &path ) {
-				struct pop_json_path_result {
-					daw::string_view current{ };
-					char found_char = 0;
-				} result{ };
+			[[nodiscard]] constexpr pop_json_path_result
+			pop_json_path( daw::string_view &path ) {
+				auto result = pop_json_path_result{ };
 				if( path.empty( ) ) {
 					return result;
 				}
