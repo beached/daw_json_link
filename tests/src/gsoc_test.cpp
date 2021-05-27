@@ -36,7 +36,7 @@ int main( int argc, char **argv )
 		exit( 1 );
 	}
 
-	auto const json_data1 = *daw::read_file( argv[1] );
+	std::string const json_data1 = *daw::read_file( argv[1] );
 	assert( json_data1.size( ) > 2 and "Minimum json data size is 2 '{}'" );
 
 	auto const sz = json_data1.size( );
@@ -45,20 +45,22 @@ int main( int argc, char **argv )
 	using namespace daw::json;
 
 	std::optional<daw::gsoc::gsoc_object_t> gsoc_result;
+	using nc_checked_policy_t = NoCommentSkippingPolicyChecked;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "gsoc bench(checked)", sz,
-	  [&gsoc_result]( auto const &f1 ) {
-		  gsoc_result = from_json<daw::gsoc::gsoc_object_t>( f1 );
+	  [&]( std::string const &jd ) {
+		  gsoc_result =
+		    from_json<daw::gsoc::gsoc_object_t, nc_checked_policy_t>( jd );
 		  daw::do_not_optimize( gsoc_result );
 	  },
 	  json_data1 );
 
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "gsoc bench(unchecked)", sz,
-	  [&gsoc_result]( auto const &f1 ) {
+	  [&gsoc_result]( std::string const &jd ) {
 		  gsoc_result =
 		    from_json<daw::gsoc::gsoc_object_t, NoCommentSkippingPolicyUnchecked>(
-		      f1 );
+		      jd );
 		  daw::do_not_optimize( gsoc_result );
 	  },
 	  json_data1 );
@@ -66,6 +68,7 @@ int main( int argc, char **argv )
 	std::cout
 	  << "to_json testing\n*********************************************\n";
 	std::string str{ };
+	str.reserve( 4U * 1024U * 1024U );
 	{
 		auto const gsoc_result2 = from_json<daw::gsoc::gsoc_object_t>( json_data1 );
 		auto out_it = std::back_inserter( str );

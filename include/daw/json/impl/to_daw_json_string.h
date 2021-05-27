@@ -16,6 +16,7 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_bounded_vector.h>
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_move.h>
@@ -27,9 +28,10 @@
 #include <optional>
 #include <sstream>
 #include <string>
+
 #ifndef DAW_JSON_CUSTOM_D2S
 #include <third_party/dragonbox/dragonbox.h>
-#elif __has_include( "custom_d2s.h" )
+#elif DAW_HAS_INCLUDE( "custom_d2s.h" )
 #include "custom_d2s.h"
 #else
 #error Request for local d2s, but no custom_d2s.h supplied with char * d2s( Real const & value, char * ); declaration/definition in namespace daw::json

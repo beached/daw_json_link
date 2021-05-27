@@ -43,10 +43,15 @@ namespace daw::json {
 		template<typename JsonElement,
 		         typename ParsePolicy = NoCommentSkippingPolicyChecked>
 		class json_array_iterator {
+			using CharT = typename ParsePolicy::CharT;
 
 			template<typename String>
 			static inline constexpr ParsePolicy
 			get_range( String &&data, std::string_view member_path ) {
+				static_assert(
+				  std::is_convertible_v<decltype( std::data( data ) ), CharT *>,
+				  "Attempt to assign a const char * to a char *" );
+
 				auto [is_found, result] = json_details::find_range<ParsePolicy>(
 				  DAW_FWD( data ),
 				  { std::data( member_path ), std::size( member_path ) } );
@@ -75,7 +80,7 @@ namespace daw::json {
 			 * This lets us fastpath and just skip n characters as we have already
 			 * parsed them
 			 */
-			mutable char const *m_can_skip = nullptr;
+			mutable CharT *m_can_skip = nullptr;
 
 		public:
 			inline constexpr json_array_iterator( ) = default;
@@ -87,7 +92,8 @@ namespace daw::json {
 			                   std::nullptr_t> = nullptr>
 			inline constexpr explicit json_array_iterator( String &&jd )
 			  : m_state( ParsePolicy( std::data( jd ), daw::data_end( jd ) ) ) {
-
+				static_assert(
+				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );
 				static_assert(
 				  traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
 				  "StringRaw must be like a string_view" );
@@ -107,6 +113,9 @@ namespace daw::json {
 			inline constexpr explicit json_array_iterator(
 			  String &&jd, std::string_view start_path )
 			  : m_state( get_range( DAW_FWD( jd ), start_path ) ) {
+				static_assert(
+				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *>,
+				  "Attempt to assign a const char * to a char *" );
 
 				static_assert(
 				  traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
@@ -168,7 +177,7 @@ namespace daw::json {
 				} else {
 					(void)json_details::skip_known_value<element_type>( m_state );
 				}
-				m_state.clean_tail( );
+				m_state.move_next_member_or_end( );
 				return *this;
 			}
 
@@ -241,6 +250,7 @@ namespace daw::json {
 		         typename ParsePolicy = NoCommentSkippingPolicyChecked>
 		struct json_array_range {
 			using iterator = json_array_iterator<JsonElement, ParsePolicy>;
+			using CharT = typename ParsePolicy::CharT;
 
 		private:
 			iterator m_first{ };
@@ -255,7 +265,10 @@ namespace daw::json {
 			                                    daw::remove_cvref_t<String>>::value,
 			                   std::nullptr_t> = nullptr>
 			constexpr explicit json_array_range( String &&jd )
-			  : m_first( DAW_FWD( jd ) ) {}
+			  : m_first( DAW_FWD( jd ) ) {
+				static_assert(
+				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );
+			}
 
 			template<
 			  typename String,
@@ -264,7 +277,11 @@ namespace daw::json {
 			                   std::nullptr_t> = nullptr>
 			constexpr explicit json_array_range( String &&jd,
 			                                     std::string_view start_path )
-			  : m_first( DAW_FWD( jd ), start_path ) {}
+			  : m_first( DAW_FWD( jd ), start_path ) {
+				static_assert(
+				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *>,
+				  "Attempt to assign a const char * to a char *" );
+			}
 
 			/***
 			 * @return first item in range

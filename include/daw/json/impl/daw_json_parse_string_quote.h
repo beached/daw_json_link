@@ -25,21 +25,21 @@ namespace daw::json {
 			template<std::size_t N, char c>
 			inline constexpr UInt8 test_at_byte( UInt64 b ) {
 				auto const lhs = b & ( 0xFF_u64 << ( N * 8U ) );
-				auto const rhs = to_uint64( static_cast<unsigned char>( c ) )
-				                 << ( N * 8U );
+				constexpr auto rhs = to_uint64( static_cast<unsigned char>( c ) )
+				                     << ( N * 8U );
 				return to_uint8( not( lhs - rhs ) );
 			}
 
 			template<std::size_t N, char c>
-			inline constexpr UInt8 test_at_byte( UInt32 b ) {
+			DAW_ATTRIB_INLINE inline constexpr UInt8 test_at_byte( UInt32 b ) {
 				auto const lhs = b & ( 0xFF_u32 << ( N * 8U ) );
-				auto const rhs = to_uint32( static_cast<unsigned char>( c ) )
-				                 << ( N * 8U );
+				constexpr auto rhs = to_uint32( static_cast<unsigned char>( c ) )
+				                     << ( N * 8U );
 				return to_uint8( not( lhs - rhs ) );
 			}
 
-			inline constexpr void skip_to_first8( char const *&first,
-			                                      char const *const last ) {
+			template<typename CharT>
+			inline constexpr void skip_to_first8( CharT *&first, CharT *const last ) {
 				bool keep_going = last - first >= 8;
 				while( keep_going ) {
 					auto buff = daw::to_uint64_buffer( first );
@@ -59,17 +59,17 @@ namespace daw::json {
 					auto const s2 = test_at_byte<2U, '\\'>( buff );
 					auto const s1 = test_at_byte<1U, '\\'>( buff );
 					auto const s0 = test_at_byte<0U, '\\'>( buff );
+
 					keep_going = not( q0 | q1 | q2 | q3 | q4 | q5 | q6 | q7 | s0 | s1 |
 					                  s2 | s3 | s4 | s5 | s6 | s7 );
-					keep_going =
-					  keep_going & static_cast<bool>( last - ( first + 8 ) >= 8 );
+					keep_going = keep_going & static_cast<bool>( last - first >= 16 );
 					first += static_cast<int>( keep_going ) * 8;
 				}
 				first -= *( first - 1 ) == '\\' ? 1 : 0;
 			}
 
-			inline constexpr void skip_to_first4( char const *&first,
-			                                      char const *const last ) {
+			template<typename CharT>
+			inline constexpr void skip_to_first4( CharT *&first, CharT *const last ) {
 				bool keep_going = last - first >= 4;
 				while( keep_going ) {
 					// Need to look for escapes as this is fast path
@@ -83,8 +83,7 @@ namespace daw::json {
 					auto const s1 = test_at_byte<1U, '\\'>( buff );
 					auto const s0 = test_at_byte<0U, '\\'>( buff );
 					keep_going = not( q0 | q1 | q2 | q3 | s0 | s1 | s2 | s3 );
-					keep_going =
-					  keep_going & static_cast<bool>( last - ( first + 4 ) >= 4 );
+					keep_going = keep_going & static_cast<bool>( last - first >= 8 );
 					first += static_cast<int>( keep_going ) * 4;
 				}
 				first -= *( first - 1 ) == '\\' ? 1 : 0;
@@ -95,9 +94,10 @@ namespace daw::json {
 				[[nodiscard]] static constexpr auto parse_nq( ParseState &parse_state )
 				  -> std::enable_if_t<ParseState::is_unchecked_input, std::size_t> {
 
+					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
-					char const *first = parse_state.first;
-					char const *const last = parse_state.last;
+					CharT *first = parse_state.first;
+					CharT *const last = parse_state.last;
 					// This is a logic error to happen.
 					// daw_json_assert_weak( first != '"', "Unexpected quote", parse_state
 					// );
@@ -138,16 +138,16 @@ namespace daw::json {
 				[[nodiscard]] static constexpr auto parse_nq( ParseState &parse_state )
 				  -> std::enable_if_t<not ParseState::is_unchecked_input, std::size_t> {
 
+					using CharT = typename ParseState::CharT;
 					std::ptrdiff_t need_slow_path = -1;
-					char const *first = parse_state.first;
-					char const *const last = parse_state.class_last;
+					CharT *first = parse_state.first;
+					CharT *const last = parse_state.class_last;
 					if constexpr( traits::not_same_v<typename ParseState::exec_tag_t,
 					                                 constexpr_exec_tag> ) {
-						first = mem_skip_until_end_of_string<
-						  ParseState::is_zero_terminated_string>(
+						first = mem_skip_until_end_of_string<false>(
 						  ParseState::exec_tag, first, last, need_slow_path );
 					} else {
-						if( char const *const l = parse_state.last; l - first >= 8 ) {
+						if( CharT *const l = parse_state.last; l - first >= 8 ) {
 							skip_to_first8( first, l );
 						} else if( last - first >= 4 ) {
 							skip_to_first4( first, l );

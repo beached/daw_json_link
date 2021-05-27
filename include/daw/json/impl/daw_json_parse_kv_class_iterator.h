@@ -99,7 +99,7 @@ namespace daw::json {
 					daw_json_assert_weak( base::parse_state,
 					                      ErrorReason::AttemptToAccessPastEndOfValue,
 					                      *base::parse_state );
-					base::parse_state->clean_tail( );
+					base::parse_state->move_next_member_or_end( );
 					daw_json_assert_weak( base::parse_state->has_more( ),
 					                      ErrorReason::UnexpectedEndOfData,
 					                      *base::parse_state );

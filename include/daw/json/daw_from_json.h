@@ -48,9 +48,22 @@ namespace daw::json {
 			using json_member =
 			  json_details::unnamed_default_type_mapping<JsonMember>;
 
-			using policy_t =
+			/***
+			 * If the string is known to have a trailing zero, allow optimization on
+			 * that
+			 */
+			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
 			                                              ZeroTerminatedString::yes>;
+
+			/***
+			 * In cases where we own the buffer or when requested and can, allow
+			 * temporarily mutating it to reduce search costs
+			 */
+			using policy_t =
+			  json_details::apply_mutable_policy<policy_zstring_t, String,
+			                                     TemporarilyMutateBuffer::yes,
+			                                     TemporarilyMutateBuffer::no>;
 			auto parse_state =
 			  policy_t( std::data( json_data ), daw::data_end( json_data ) );
 
@@ -103,9 +116,24 @@ namespace daw::json {
 			char const *f = std::data( json_data );
 			char const *l = daw::data_end( json_data );
 			Allocator a = alloc;
-			using policy_t =
+
+			/***
+			 * If the string is known to have a trailing zero, allow optimization on
+			 * that
+			 */
+			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
 			                                              ZeroTerminatedString::yes>;
+
+			/***
+			 * In cases where we own the buffer or when requested and can, allow
+			 * temporarily mutating it to reduce search costs
+			 */
+			using policy_t =
+			  json_details::apply_mutable_policy<policy_zstring_t, String,
+			                                     TemporarilyMutateBuffer::yes,
+			                                     TemporarilyMutateBuffer::no>;
+
 			auto parse_state = policy_t::with_allocator( f, l, a );
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
 			                policy_t> ) {
@@ -154,9 +182,24 @@ namespace daw::json {
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			using policy_t =
+
+			/***
+			 * If the string is known to have a trailing zero, allow optimization on
+			 * that
+			 */
+			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
 			                                              ZeroTerminatedString::yes>;
+
+			/***
+			 * In cases where we own the buffer or when requested and can, allow
+			 * temporarily mutating it to reduce search costs
+			 */
+			using policy_t =
+			  json_details::apply_mutable_policy<policy_zstring_t, String,
+			                                     TemporarilyMutateBuffer::yes,
+			                                     TemporarilyMutateBuffer::no>;
+
 			auto [is_found, parse_state] = json_details::find_range<policy_t>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
@@ -213,9 +256,23 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			Allocator a = alloc;
-			using policy_t =
+
+			/***
+			 * If the string is known to have a trailing zero, allow optimization on
+			 * that
+			 */
+			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
 			                                              ZeroTerminatedString::yes>;
+
+			/***
+			 * In cases where we own the buffer or when requested and can, allow
+			 * temporarily mutating it to reduce search costs
+			 */
+			using policy_t =
+			  json_details::apply_mutable_policy<policy_zstring_t, String,
+			                                     TemporarilyMutateBuffer::yes,
+			                                     TemporarilyMutateBuffer::no>;
 
 			auto [is_found, parse_state] = json_details::find_range<policy_t>(
 			  json_data, { std::data( member_path ), std::size( member_path ) }, a );
@@ -298,7 +355,7 @@ namespace daw::json {
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using json_member =
 			  json_details::unnamed_default_type_mapping<JsonMember>;
-			auto const json_data = value.get_string_view( );
+			auto json_data = value.get_state( );
 			auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
@@ -351,9 +408,23 @@ namespace daw::json {
 
 			using parser_t = json_array<no_name, JsonElement, Container, Constructor>;
 
-			using policy_t =
+			/***
+			 * If the string is known to have a trailing zero, allow optimization on
+			 * that
+			 */
+			using policy_zstring_t =
 			  json_details::apply_zstring_policy_option_t<ParsePolicy, String,
 			                                              ZeroTerminatedString::yes>;
+
+			/***
+			 * In cases where we own the buffer or when requested and can, allow
+			 * temporarily mutating it to reduce search costs
+			 */
+			using policy_t =
+			  json_details::apply_mutable_policy<policy_zstring_t, String,
+			                                     TemporarilyMutateBuffer::yes,
+			                                     TemporarilyMutateBuffer::no>;
+
 			auto [is_found, parse_state] = json_details::find_range<policy_t>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
 

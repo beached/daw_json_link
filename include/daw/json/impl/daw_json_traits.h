@@ -371,11 +371,44 @@ namespace daw::json {
 		    true;
 
 		namespace json_details {
+			template<typename ParsePolicy, auto Option>
+			using apply_policy_option_t =
+			  typename ParsePolicy::template SetPolicyOptions<Option>;
+
 			template<typename ParsePolicy, typename String, auto Option>
 			using apply_zstring_policy_option_t = std::conditional_t<
 			  is_zero_terminated_string_v<daw::remove_cvref_t<String>>,
-			  typename ParsePolicy::template SetPolicyOptions<Option>, ParsePolicy>;
-		}
+			  apply_policy_option_t<ParsePolicy, Option>, ParsePolicy>;
+
+			template<typename String>
+			inline constexpr bool is_mutable_string_v =
+			  not std::is_const_v<std::remove_pointer_t<std::remove_reference_t<
+			    decltype( std::data( std::declval<String &&>( ) ) )>>>;
+
+			template<typename String>
+			constexpr bool is_mutable_string =
+			  json_details::is_mutable_string_v<String>;
+
+			template<typename String>
+			constexpr bool is_rvalue_string = std::is_rvalue_reference_v<String>;
+
+			template<typename String>
+			constexpr bool is_ref_string =
+			  not is_rvalue_string<String> and
+			  std::is_const_v<std::remove_reference_t<String>>;
+
+			template<typename ParsePolicy, typename String, auto OptionMutable,
+			         auto OptionImmutable>
+			using apply_mutable_policy = std::conditional_t<
+			  ParsePolicy::allow_temporarily_mutating_buffer,
+			  std::conditional_t<is_mutable_string_v<String>,
+			                     apply_policy_option_t<ParsePolicy, OptionMutable>,
+			                     apply_policy_option_t<ParsePolicy, OptionImmutable>>,
+			  std::conditional_t<
+			    (is_rvalue_string<String> and is_mutable_string_v<String>),
+			    apply_policy_option_t<ParsePolicy, OptionMutable>,
+			    apply_policy_option_t<ParsePolicy, OptionImmutable>>>;
+		} // namespace json_details
 
 		/***
 		 * A trait to specify that this class, when parsed, will describe all

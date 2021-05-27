@@ -26,10 +26,6 @@
 #include <string>
 #include <string_view>
 
-#if defined( __has_include ) and __has_include( <version> )
-#include <version>
-#endif
-
 #ifdef DAW_USE_EXCEPTIONS
 inline constexpr bool use_daw_json_exceptions_v = true;
 #else

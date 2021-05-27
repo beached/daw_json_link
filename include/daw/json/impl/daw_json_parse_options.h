@@ -15,6 +15,7 @@
 #include <daw/daw_traits.h>
 
 #include <ciso646>
+#include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <tuple>
@@ -175,6 +176,20 @@ namespace daw::json {
 			  UseExactMappingsByDefault::no;
 		} // namespace json_details
 
+		/***
+		 * When enabled, the parser can temporarily set a character to the desired
+		 * token. This allows for safe searching without bounds checking.  If the
+		 * buffer is not mutable, it will not be enabled.
+		 */
+		enum class TemporarilyMutateBuffer : unsigned { no, yes }; // 1bit
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<TemporarilyMutateBuffer> = 1;
+
+			template<>
+			inline constexpr auto default_policy_value<TemporarilyMutateBuffer> =
+			  TemporarilyMutateBuffer::no;
+		} // namespace json_details
 		/* *****************************************
 		 * Implementation details
 		 */
@@ -203,11 +218,22 @@ namespace daw::json {
 				}
 			};
 
-			using policy_list =
-			  std::tuple<ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
-			             CheckedParseMode, AllowEscapedNames, IEEE754Precise,
-			             ForceFullNameCheck, MinifiedDocument,
-			             UseExactMappingsByDefault>;
+			template<typename... Policies>
+			struct policy_list_impl {
+				using type = std::tuple<Policies...>;
+
+				static_assert(
+				  ( policy_bits_width<Policies> + ... ) <=
+				    ( sizeof( policy_options_t ) * CHAR_BIT ),
+				  "The size of policy_options_t is not large enough "
+				  "to safely hold all the bits of state.  Use a larger size." );
+			};
+
+			using policy_list = typename policy_list_impl<
+			  ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
+			  CheckedParseMode, AllowEscapedNames, IEEE754Precise, ForceFullNameCheck,
+			  MinifiedDocument, UseExactMappingsByDefault,
+			  TemporarilyMutateBuffer>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =

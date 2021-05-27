@@ -67,7 +67,6 @@ namespace daw::json {
 				using pointer = arrow_proxy<value_type>;
 				using parse_state_t = ParseState;
 				using difference_type = typename base::difference_type;
-				bool at_first = true;
 				inline constexpr json_parse_array_iterator( ) = default;
 
 				inline constexpr explicit json_parse_array_iterator( parse_state_t &r )
@@ -88,8 +87,6 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
-
-					at_first = false;
 					if constexpr( KnownBounds ) {
 						if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 							struct cleanup_t {
@@ -128,9 +125,7 @@ namespace daw::json {
 
 				DAW_ATTRIB_INLINE inline constexpr json_parse_array_iterator &
 				operator++( ) {
-					// daw_json_assert_weak( base::parse_state, "Unexpected increment",
-					// *base::parse_state );
-					base::parse_state->template clean_end_of_value<']'>( at_first );
+					base::parse_state->move_next_member_or_end( );
 					daw_json_assert_weak( base::parse_state->has_more( ),
 					                      ErrorReason::UnexpectedEndOfData,
 					                      *base::parse_state );

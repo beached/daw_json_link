@@ -11,11 +11,7 @@
 #include "daw_json_assert.h"
 
 #include <daw/daw_attributes.h>
-
-#include <cstdint>
-#if __has_include( <version> )
-#include <version>
-#endif
+#include <daw/daw_cpp_feature_check.h>
 
 #if defined( __cpp_lib_to_chars )
 #include <charconv>

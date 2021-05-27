@@ -13,6 +13,7 @@
 #include "version.h"
 
 #include <daw/daw_arith_traits.h>
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_uint_buffer.h>
@@ -20,10 +21,6 @@
 #include <chrono>
 #include <ciso646>
 #include <cstdint>
-
-#if defined( __has_include ) and __has_include( <version> )
-#include <version>
-#endif
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

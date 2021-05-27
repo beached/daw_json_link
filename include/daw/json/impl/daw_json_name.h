@@ -10,15 +10,12 @@
 
 #include "version.h"
 
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_likely.h>
 
 #include <cstddef>
 #include <string_view>
 #include <utility>
-
-#if defined( __has_include ) and __has_include( <version> )
-#include <version>
-#endif
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {

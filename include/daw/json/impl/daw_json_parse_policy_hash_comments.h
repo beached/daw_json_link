@@ -78,6 +78,12 @@ namespace daw::json {
 				}
 			}
 
+			template<typename ParseState>
+			DAW_ATTRIB_FLATINLINE static constexpr void
+			move_next_member_unchecked( ParseState &parse_state ) {
+				parse_state.move_next_member_or_end_unchecked( );
+			}
+
 			template<char... keys, typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_to_next_of( ParseState &parse_state ) {
@@ -101,13 +107,14 @@ namespace daw::json {
 			         typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
+				using CharT = typename ParseState::CharT;
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				char const *ptr_first = parse_state.first;
-				char const *const ptr_last = parse_state.last;
+				CharT *ptr_first = parse_state.first;
+				CharT *const ptr_last = parse_state.last;
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
 				}
@@ -198,11 +205,12 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
+				using CharT = typename ParseState::CharT;
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				char const *ptr_first = parse_state.first;
+				CharT *ptr_first = parse_state.first;
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;
 				}

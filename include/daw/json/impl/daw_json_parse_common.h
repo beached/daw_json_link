@@ -16,6 +16,7 @@
 #include "version.h"
 
 #include <daw/daw_arith_traits.h>
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_move.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_string_view.h>
@@ -24,10 +25,6 @@
 #include <ciso646>
 #include <cstddef>
 #include <iterator>
-
-#if __has_include( <version> )
-#include <version>
-#endif
 
 #if defined( __cpp_constexpr_dynamic_alloc )
 #define CPP20CONSTEXPR constexpr

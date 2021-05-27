@@ -33,8 +33,16 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<LiteralAsStringOpt literal_as_string, bool KnownBounds = false,
-			         typename ParseState>
+			/***
+			 * Depending on the type of literal, it may always be quoted, sometimes,
+			 * or never.  This method handles the always and sometimes cases.
+			 * In checked input, ensures State has more data.
+			 * @tparam literal_as_string Is the literal being parsed enclosed in
+			 * quotes.
+			 * @tparam ParseState ParseState idiom
+			 * @param parse_state Current parsing state
+			 */
+			template<LiteralAsStringOpt literal_as_string, typename ParseState>
 			DAW_ATTRIB_INLINE inline constexpr void
 			skip_quote_when_literal_as_string( ParseState &parse_state ) {
 				if constexpr( literal_as_string == LiteralAsStringOpt::Always ) {
@@ -42,17 +50,11 @@ namespace daw::json {
 					                      ErrorReason::InvalidNumberUnexpectedQuoting,
 					                      parse_state );
 					parse_state.remove_prefix( );
-					if constexpr( KnownBounds ) {
-						parse_state.last = std::prev( parse_state.last );
-					}
 				} else if constexpr( literal_as_string == LiteralAsStringOpt::Maybe ) {
 					daw_json_assert_weak( parse_state.has_more( ),
 					                      ErrorReason::UnexpectedEndOfData, parse_state );
 					if( parse_state.front( ) == '"' ) {
 						parse_state.remove_prefix( );
-						if constexpr( KnownBounds ) {
-							parse_state.last = std::prev( parse_state.last );
-						}
 					}
 				}
 			}
@@ -64,8 +66,6 @@ namespace daw::json {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
 
-				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				if constexpr( KnownBounds ) {
 					return construct_value( template_arg<json_result<JsonMember>>,
 					                        constructor_t{ }, parse_state,
@@ -77,7 +77,8 @@ namespace daw::json {
 						  parse_state );
 					}
 					daw_json_assert_weak(
-					  parse_policy_details::is_number_start( parse_state.front( ) ),
+					  parse_state.has_more( ) and
+					    parse_policy_details::is_number_start( parse_state.front( ) ),
 					  ErrorReason::InvalidNumberStart, parse_state );
 
 					auto result = construct_value(
@@ -113,12 +114,14 @@ namespace daw::json {
 					  parse_policy_details::is_number_start( parse_state.front( ) ),
 					  ErrorReason::InvalidNumberStart, parse_state );
 				} else {
-					daw_json_assert_weak( parse_state.has_more( ),
-					                      ErrorReason::UnexpectedEndOfData, parse_state );
 					if constexpr( JsonMember::literal_as_string !=
 					              LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
+					} else if constexpr( not ParseState::is_zero_terminated_string ) {
+						daw_json_assert_weak( parse_state.has_more( ),
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
 					}
 					daw_json_assert_weak(
 					  parse_policy_details::is_number_start( parse_state.front( ) ),
@@ -184,10 +187,20 @@ namespace daw::json {
 					  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
 					    ParseState::exec_tag, parse_state ) );
 				} else {
-					daw_json_assert_weak( parse_state.has_more( ),
-					                      ErrorReason::UnexpectedEndOfData, parse_state );
-					skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
-					  parse_state );
+					if constexpr( JsonMember::literal_as_string !=
+					              LiteralAsStringOpt::Never ) {
+						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
+						  parse_state );
+						if constexpr( not ParseState::is_zero_terminated_string ) {
+							daw_json_assert_weak( parse_state.has_more( ),
+							                      ErrorReason::UnexpectedEndOfData,
+							                      parse_state );
+						}
+					} else if constexpr( not ParseState::is_zero_terminated_string ) {
+						daw_json_assert_weak( parse_state.has_more( ),
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
+					}
 					daw_json_assert_weak(
 					  parse_policy_details::is_number( parse_state.front( ) ),
 					  ErrorReason::InvalidNumber, parse_state );
@@ -200,6 +213,11 @@ namespace daw::json {
 					              LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
+						if constexpr( not ParseState::is_zero_terminated_string ) {
+							daw_json_assert_weak( parse_state.has_more( ),
+							                      ErrorReason::UnexpectedEndOfData,
+							                      parse_state );
+						}
 					}
 					daw_json_assert_weak(
 					  parse_policy_details::at_end_of_item( parse_state.front( ) ),
@@ -253,9 +271,6 @@ namespace daw::json {
 			[[nodiscard,
 			  maybe_unused]] DAW_ATTRIB_INLINE inline constexpr json_result<JsonMember>
 			parse_value( ParseTag<JsonParseTypes::Bool>, ParseState &parse_state ) {
-				daw_json_assert_weak( std::size( parse_state ) >= 4,
-				                      ErrorReason::InvalidLiteral, parse_state );
-
 				using constructor_t = typename JsonMember::constructor_t;
 
 				if constexpr( KnownBounds ) {
@@ -274,6 +289,7 @@ namespace daw::json {
 						daw_json_error( ErrorReason::InvalidLiteral, parse_state );
 					}
 				} else {
+					// Beginning quotes
 					if constexpr( JsonMember::literal_as_string !=
 					              LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
@@ -297,6 +313,7 @@ namespace daw::json {
 							daw_json_error( ErrorReason::InvalidLiteral, parse_state );
 						}
 					}
+					// Trailing quotes
 					if constexpr( JsonMember::literal_as_string !=
 					              LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
@@ -615,7 +632,11 @@ namespace daw::json {
 					return parse_value<JsonMember>(
 					  ParseTag<JsonMember::base_expected_type>{ }, parse_state );
 				} else {
-					daw_json_error( ErrorReason::UnexpectedJSONVariantType );
+					if constexpr( ParseState::is_unchecked_input ) {
+						DAW_UNREACHABLE( );
+					} else {
+						daw_json_error( ErrorReason::UnexpectedJSONVariantType );
+					}
 				}
 			}
 
@@ -667,14 +688,23 @@ namespace daw::json {
 			parse_visit( std::size_t idx, ParseState &parse_state ) {
 				if( idx == pos ) {
 					using JsonMember = std::tuple_element_t<pos, TypeList>;
-					return { parse_value<JsonMember>(
-					  ParseTag<JsonMember::expected_type>{ }, parse_state ) };
+					if constexpr( std::is_same_v<json_result<JsonMember>, Result> ) {
+						return parse_value<JsonMember>(
+						  ParseTag<JsonMember::expected_type>{ }, parse_state );
+					} else {
+						return { parse_value<JsonMember>(
+						  ParseTag<JsonMember::expected_type>{ }, parse_state ) };
+					}
 				}
 				if constexpr( pos + 1 < std::tuple_size<TypeList>::value ) {
 					return parse_visit<Result, TypeList, pos + 1>( idx, parse_state );
 				} else {
-					daw_json_error( ErrorReason::MissingMemberNameOrEndOfClass,
-					                parse_state );
+					if constexpr( ParseState::is_unchecked_input ) {
+						DAW_UNREACHABLE( );
+					} else {
+						daw_json_error( ErrorReason::MissingMemberNameOrEndOfClass,
+						                parse_state );
+					}
 				}
 			}
 
@@ -686,9 +716,7 @@ namespace daw::json {
 
 				using tag_member = typename JsonMember::tag_member;
 				auto [is_found, parse_state2] = find_range<ParseState>(
-				  daw::string_view( parse_state.class_first,
-				                    static_cast<std::size_t>(
-				                      parse_state.last - parse_state.class_first ) ),
+				  ParseState( parse_state.class_first, parse_state.last ),
 				  tag_member::name );
 
 				daw_json_assert( is_found, ErrorReason::TagMemberNotFound,
@@ -708,9 +736,7 @@ namespace daw::json {
 			             ParseState &parse_state ) {
 				using tag_member = typename JsonMember::tag_member;
 				auto [is_found, parse_state2] = find_range<ParseState>(
-				  daw::string_view( parse_state.class_first,
-				                    static_cast<std::size_t>(
-				                      parse_state.last - parse_state.class_first ) ),
+				  ParseState( parse_state.class_first, parse_state.last ),
 				  tag_member::name );
 
 				daw_json_assert( is_found, ErrorReason::TagMemberNotFound,

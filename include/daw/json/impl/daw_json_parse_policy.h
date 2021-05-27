@@ -45,7 +45,18 @@ namespace daw::json {
 		           json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
-			using iterator = char const *;
+			/***
+			 * Allow temporarily setting a sentinel in the buffer to reduce range
+			 * checking costs
+			 */
+			static constexpr bool allow_temporarily_mutating_buffer =
+			  json_details::get_bits_for<TemporarilyMutateBuffer>( PolicyFlags ) ==
+			  TemporarilyMutateBuffer::yes;
+
+			using CharT =
+			  std::conditional_t<allow_temporarily_mutating_buffer, char, char const>;
+			using iterator = CharT *;
+
 			/***
 			 * see CheckedParseMode
 			 */
@@ -96,8 +107,6 @@ namespace daw::json {
 			static constexpr bool minified_document =
 			  json_details::get_bits_for<MinifiedDocument>( PolicyFlags ) ==
 			  MinifiedDocument::yes;
-
-			using CharT = char;
 
 			using as_unchecked =
 			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>(
@@ -279,12 +288,7 @@ namespace daw::json {
 
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool
 			has_more( ) const {
-				if constexpr( is_zero_terminated_string ) {
-					// return *first != 0;
-					return first < last;
-				} else {
-					return first < last;
-				}
+				return first < last;
 			}
 
 			template<std::size_t N>
@@ -304,7 +308,7 @@ namespace daw::json {
 
 				if constexpr( traits::not_same_v<ParseState::exec_tag_t,
 				                                 constexpr_exec_tag> ) {
-					first = reinterpret_cast<char const *>( std::memchr(
+					first = reinterpret_cast<CharT *>( std::memchr(
 					  first, c, static_cast<std::size_t>( class_last - first ) ) );
 				} else {
 					while( *first != c ) {
@@ -318,7 +322,7 @@ namespace daw::json {
 
 				if constexpr( traits::not_same_v<ParseState::exec_tag_t,
 				                                 constexpr_exec_tag> ) {
-					first = reinterpret_cast<char const *>( std::memchr(
+					first = reinterpret_cast<CharT *>( std::memchr(
 					  first, c, static_cast<std::size_t>( class_last - first ) ) );
 					daw_json_assert( first != nullptr, json_details::missing_token( c ),
 					                 *this );
@@ -373,8 +377,8 @@ namespace daw::json {
 			}
 
 			inline constexpr void move_to_end_of_literal( ) {
-				char const *f = first;
-				char const *const l = last;
+				CharT *f = first;
+				CharT *const l = last;
 				if constexpr( is_unchecked_input ) {
 					while( ( static_cast<unsigned char>( *f ) > 0x20U ) &
 					       not CommentPolicy::is_literal_end( *f ) ) {
@@ -431,7 +435,7 @@ namespace daw::json {
 				}
 			}
 
-			inline constexpr void clean_tail_unchecked( ) {
+			inline constexpr void move_next_member_or_end_unchecked( ) {
 				trim_left_unchecked( );
 				if( *first == ',' ) {
 					++first;
@@ -439,42 +443,36 @@ namespace daw::json {
 				}
 			}
 
-			template<char EndChar = '\0'>
-			inline constexpr void clean_end_of_value( bool at_first ) {
-				trim_left( );
-				if constexpr( is_unchecked_input ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr void
+			move_next_member_or_end_checked( ) {
+				trim_left_checked( );
+				if constexpr( is_zero_terminated_string ) {
 					if( *first == ',' ) {
 						++first;
 						trim_left( );
 					}
 				} else {
-					if( ( not at_first ) & ( first < last ) ) {
-						if( *first == ',' ) {
-							++first;
-							trim_left( );
-						} else {
-							if constexpr( EndChar != '\0' ) {
-								daw_json_assert( *first == EndChar,
-								                 ErrorReason::ExpectedTokenNotFound, *this );
-							}
-						}
+					if( DAW_LIKELY( first < last ) and *first == ',' ) {
+						++first;
+						trim_left( );
 					}
 				}
 			}
 
-			inline constexpr void clean_tail_checked( ) {
-				trim_left_checked( );
-				if( DAW_LIKELY( first < last ) and *first == ',' ) {
-					++first;
-					trim_left_checked( );
+			DAW_ATTRIB_FLATINLINE inline constexpr void move_next_member_or_end( ) {
+				if constexpr( is_unchecked_input ) {
+					move_next_member_or_end_unchecked( );
+				} else {
+					move_next_member_or_end_checked( );
 				}
 			}
 
-			DAW_ATTRIB_FLATINLINE inline constexpr void clean_tail( ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr void move_next_member( ) {
 				if constexpr( is_unchecked_input ) {
-					clean_tail_unchecked( );
+					CommentPolicy::move_next_member_unchecked( *this );
 				} else {
-					clean_tail_checked( );
+					// We have no guarantee that all members are available
+					move_next_member_or_end_checked( );
 				}
 			}
 

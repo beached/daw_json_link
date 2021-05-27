@@ -37,7 +37,22 @@ namespace daw {
 	template<typename T, typename Deleter = DefaultDeleter<T>>
 	struct ref_counted_ptr {
 		T *ptr = nullptr;
-		std::size_t *count = nullptr;
+		std::size_t *count = &init_count;
+
+		static inline std::size_t init_count = 0xBEEF'FEEDULL;
+		static inline std::size_t deleted_count = 0xDEAD'BEEFULL;
+
+		std::size_t *inc_count( ) const {
+			assert( count );
+			++( *count );
+			return count;
+		}
+
+		std::size_t *dec_count( ) const {
+			assert( count );
+			--( *count );
+			return count;
+		}
 
 		constexpr ref_counted_ptr( ) noexcept = default;
 
@@ -51,16 +66,7 @@ namespace daw {
 
 		constexpr ref_counted_ptr( ref_counted_ptr const &other )
 		  : ptr{ other.ptr }
-		  , count{ &( ++( *other.count ) ) } {}
-
-		constexpr ref_counted_ptr &operator=( T *p ) noexcept {
-			if( ptr != p ) {
-				release( );
-				ptr = p;
-				count = new std::size_t{ 1 };
-			}
-			return *this;
-		}
+		  , count{ other.inc_count( ) } {}
 
 		constexpr ref_counted_ptr &operator=( ref_counted_ptr const &rhs ) {
 			if( this != &rhs ) {
@@ -74,27 +80,13 @@ namespace daw {
 			return *this;
 		}
 
-		/*
-		constexpr ref_counted_ptr( ref_counted_ptr &&other ) noexcept
-		  : ptr( std::exchange( other.ptr, nullptr ) )
-		  , count( std::exchange( other.count, nullptr ) ) {}
-
-		constexpr ref_counted_ptr &operator=( ref_counted_ptr &&rhs ) noexcept {
-		  if( this != &rhs ) {
-		    release( );
-		    ptr = std::exchange( rhs.ptr, nullptr );
-		    count = std::exchange( rhs.count, nullptr );
-		  }
-		  return *this;
-		}*/
-
 		constexpr void release( ) {
 			if( ptr ) {
-				if( --( *count ) == 0 ) {
+				if( *dec_count( ) == 0 ) {
 					Deleter{ }( ptr );
 					delete count;
 					ptr = nullptr;
-					count = nullptr;
+					count = &deleted_count;
 				}
 			}
 		}

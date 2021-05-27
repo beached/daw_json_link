@@ -185,7 +185,7 @@ namespace daw::json {
 						(void)json_details::parse_name( m_state );
 					}
 					(void)json_details::skip_value( m_state );
-					m_state.clean_tail( );
+					m_state.move_next_member_or_end( );
 				}
 				return *this;
 			}
@@ -288,6 +288,7 @@ namespace daw::json {
 		template<typename ParseState>
 		struct basic_json_value_iterator_range {
 			using iterator = basic_json_value_iterator<ParseState>;
+			using CharT = typename ParseState::CharT;
 			iterator first;
 			iterator last;
 
@@ -312,6 +313,7 @@ namespace daw::json {
 			ParseState m_parse_state{ };
 
 		public:
+			using CharT = typename ParseState::CharT;
 			using iterator = basic_json_value_iterator<ParseState>;
 
 			/***
@@ -327,21 +329,22 @@ namespace daw::json {
 			/***
 			 * Construct from std::string_view
 			 */
-			explicit inline constexpr basic_json_value( std::string_view sv )
+			template<typename String,
+			         std::enable_if_t<json_details::is_string_view_like_v<String>,
+			                          std::nullptr_t> = nullptr>
+			explicit inline constexpr basic_json_value( String &&sv )
 			  : m_parse_state( std::data( sv ), daw::data_end( sv ) ) {}
 
 			/***
-			 * Construct from char const *, std::size_t
+			 * Construct from CharT *, std::size_t
 			 */
-			explicit inline constexpr basic_json_value( char const *first,
-			                                            std::size_t sz )
+			explicit inline constexpr basic_json_value( CharT *first, std::size_t sz )
 			  : m_parse_state( first, first + static_cast<std::ptrdiff_t>( sz ) ) {}
 
 			/***
-			 * Construct from char const *, char const *
+			 * Construct from CharT *, CharT *
 			 */
-			explicit inline constexpr basic_json_value( char const *first,
-			                                            char const *last )
+			explicit inline constexpr basic_json_value( CharT *first, CharT *last )
 			  : m_parse_state( first, last ) {}
 
 			/***
@@ -439,6 +442,16 @@ namespace daw::json {
 					++result.last;
 				}
 				return { std::data( result ), std::size( result ) };
+			}
+
+			[[nodiscard]] constexpr ParseState get_state( ) const {
+				auto parse_state = m_parse_state;
+				auto result = json_details::skip_value( parse_state );
+				if( is_string( ) ) {
+					--result.first;
+					++result.last;
+				}
+				return result;
 			}
 
 			/***

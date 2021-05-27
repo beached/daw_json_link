@@ -120,9 +120,9 @@ namespace daw::json {
 				return result;
 			}
 
-			template<bool skip_end_check>
-			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr char const *
-			skip_digits( char const *first, char const *const last ) {
+			template<bool skip_end_check, typename CharT>
+			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr CharT *
+			skip_digits( CharT *first, CharT *const last ) {
 				unsigned dig = parse_digit( *first );
 				while( dig < 10 ) {
 					++first;
@@ -142,12 +142,13 @@ namespace daw::json {
 			template<typename ParseState>
 			[[nodiscard]] constexpr ParseState
 			skip_number( ParseState &parse_state ) {
+				using CharT = typename ParseState::CharT;
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 
 				auto result = parse_state;
-				char const *first = parse_state.first;
-				char const *const last = parse_state.last;
+				CharT *first = parse_state.first;
+				CharT *const last = parse_state.last;
 				if( *first == '-' ) {
 					++first;
 				}
@@ -156,7 +157,7 @@ namespace daw::json {
 					  skip_digits<( ParseState::is_zero_terminated_string or
 					                ParseState::is_unchecked_input )>( first, last );
 				}
-				char const *decimal = nullptr;
+				CharT *decimal = nullptr;
 				if( ( ( ParseState::is_zero_terminated_string or
 				        ParseState::is_unchecked_input ) or
 				      first < last ) and
@@ -169,7 +170,7 @@ namespace daw::json {
 						                ParseState::is_unchecked_input )>( first, last );
 					}
 				}
-				char const *exp = nullptr;
+				CharT *exp = nullptr;
 				unsigned dig = parse_digit( *first );
 				if( ( ( ParseState::is_zero_terminated_string or
 				        ParseState::is_unchecked_input ) or

@@ -42,7 +42,7 @@ namespace daw::json {
 				                                   std::size_t &current_position,
 				                                   std::size_t desired_position ) {
 
-					parse_state.clean_tail( );
+					parse_state.move_next_member_or_end( );
 					daw_json_assert_weak( parse_state.has_more( ),
 					                      ErrorReason::UnexpectedEndOfData, parse_state );
 					daw_json_assert_weak( current_position <= desired_position,
@@ -53,7 +53,7 @@ namespace daw::json {
 					while( ( current_position < desired_position ) &
 					       ( skip_check_end or parse_state.front( ) != ']' ) ) {
 						(void)skip_value( parse_state );
-						parse_state.clean_tail( );
+						parse_state.move_next_member_or_end( );
 						++current_position;
 						daw_json_assert_weak( parse_state.has_more( ),
 						                      ErrorReason::UnexpectedEndOfData,
@@ -85,7 +85,7 @@ namespace daw::json {
 					pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
 					  parse_state, member_index, JsonMember::member_index );
 				} else {
-					parse_state.clean_tail( );
+					parse_state.move_next_member_or_end( );
 				}
 
 				// this is an out value, get position ready
@@ -124,27 +124,30 @@ namespace daw::json {
 			 */
 			template<std::size_t member_position, typename JsonMember,
 			         AllMembersMustExist must_exist, std::size_t N,
-			         typename ParseState, bool B>
+			         typename ParseState, bool B, typename CharT>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_class_member( locations_info_t<N, B> &locations,
+			parse_class_member( locations_info_t<N, CharT, B> &locations,
 			                    ParseState &parse_state ) {
-				parse_state.clean_tail( );
+				parse_state.move_next_member_or_end( );
 
 				daw_json_assert_weak( parse_state.is_at_next_class_member( ),
 				                      ErrorReason::MissingMemberNameOrEndOfClass,
 				                      parse_state );
-				ParseState loc = [&] {
-					if constexpr( ParseState::has_allocator ) {
-						return find_class_member<member_position, must_exist>(
-						         locations, parse_state, is_json_nullable_v<JsonMember>,
-						         JsonMember::name )
-						  .with_allocator( parse_state.get_allocator( ) );
-					} else {
-						return find_class_member<member_position, must_exist>(
-						  locations, parse_state, is_json_nullable_v<JsonMember>,
-						  JsonMember::name );
-					}
-				}( );
+				/*ParseState loc = [&] {
+				  if constexpr( ParseState::has_allocator ) {
+				    return find_class_member<member_position, must_exist>(
+				             locations, parse_state, is_json_nullable_v<JsonMember>,
+				             JsonMember::name )
+				      .with_allocator( parse_state.get_allocator( ) );
+				  } else {
+				    return find_class_member<member_position, must_exist>(
+				      locations, parse_state, is_json_nullable_v<JsonMember>,
+				      JsonMember::name );
+				  }
+				}( );*/
+				auto loc = find_class_member<member_position, must_exist>(
+				  locations, parse_state, is_json_nullable_v<JsonMember>,
+				  JsonMember::name );
 
 				// If the member was found loc will have it's position
 				if( loc.first == parse_state.first ) {
@@ -173,7 +176,7 @@ namespace daw::json {
 			class_cleanup_now( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
-				parse_state.clean_tail( );
+				parse_state.move_next_member_or_end( );
 				// If we fulfill the contract before all values are parses
 				parse_state.move_to_next_class_member( );
 				if constexpr( IsExactClass ) {

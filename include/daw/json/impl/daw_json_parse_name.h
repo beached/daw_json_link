@@ -154,7 +154,7 @@ namespace daw::json {
 							                    ( parse_state.front( ) != ',' ) ) ) {
 								return false;
 							}
-							parse_state.clean_tail( );
+							parse_state.move_next_member_or_end( );
 						}
 					} else {
 						daw_json_assert_weak( parse_state.is_opening_brace_checked( ),
@@ -164,7 +164,7 @@ namespace daw::json {
 						auto name = parse_name( parse_state );
 						while( not json_path_compare( pop_result.current, name ) ) {
 							(void)skip_value( parse_state );
-							parse_state.clean_tail( );
+							parse_state.move_next_member_or_end( );
 							if( parse_state.empty( ) or parse_state.front( ) != '"' ) {
 								return false;
 							}
@@ -179,18 +179,18 @@ namespace daw::json {
 			template<typename ParsePolicy, typename String>
 			[[nodiscard]] constexpr std::pair<bool, ParsePolicy>
 			find_range( String &&str, daw::string_view start_path ) {
-				static_assert(
-				  std::is_same<char const *, typename ParsePolicy::iterator>::value,
-				  "Only char const * ranges are currently supported" );
+				static_assert( std::is_convertible_v<decltype( std::data( str ) ),
+				                                     typename ParsePolicy::CharT *> );
+
 				auto parse_state =
 				  ParsePolicy( std::data( str ), daw::data_end( str ) );
 				parse_state.trim_left_checked( );
 				if( parse_state.has_more( ) and not start_path.empty( ) ) {
 					if( not find_range2( parse_state, start_path ) ) {
-						return { false, parse_state };
+						return std::pair<bool, ParsePolicy>( false, parse_state );
 					}
 				}
-				return { true, parse_state };
+				return std::pair<bool, ParsePolicy>( true, parse_state );
 			}
 
 			template<typename ParsePolicy, typename String, typename Allocator>

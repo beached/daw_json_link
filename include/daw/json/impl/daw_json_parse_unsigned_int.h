@@ -107,6 +107,7 @@ namespace daw::json {
 			         std::enable_if_t<KnownBounds, std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr Unsigned
 			unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
+				using CharT = typename ParseState::CharT;
 				// We know how many digits are in the number
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 				static_assert(
@@ -114,8 +115,8 @@ namespace daw::json {
 				    std::is_same<result_t, UInt64>::value,
 				  "Range checking is only supported for std integral types" );
 
-				char const *first = parse_state.first;
-				char const *const last = parse_state.last;
+				CharT *first = parse_state.first;
+				CharT *const last = parse_state.last;
 				result_t result = result_t( );
 
 				while( last - first >= 16 ) {
@@ -166,6 +167,7 @@ namespace daw::json {
 			         std::enable_if_t<not KnownBounds, std::nullptr_t> = nullptr>
 			[[nodiscard]] static constexpr Unsigned
 			unsigned_parser( constexpr_exec_tag, ParseState &parse_state ) {
+				using CharT = typename ParseState::CharT;
 				// We do not know how long the string is
 				using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
 				static_assert(
@@ -174,9 +176,9 @@ namespace daw::json {
 				  "Range checking is only supported for std integral types" );
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
-				char const *first = parse_state.first;
-				char const *const orig_first = first;
-				char const *const last = parse_state.last;
+				CharT *first = parse_state.first;
+				CharT *const orig_first = first;
+				CharT *const last = parse_state.last;
 				result_t result = result_t( );
 				bool has_eight =
 				  last - first >= 8 ? is_made_of_eight_digits_cx( first ) : false;
@@ -304,8 +306,8 @@ namespace daw::json {
 			  daw_json_assert_weak( parse_state.has_more( ),
 			ErrorRange::UnexpectedEndOfData, parse_state
 			); using result_t = max_unsigned_t<RangeChecked, Unsigned, UInt64>;
-			result_t result = result_t( ); char const *first = parse_state.first; char
-			const *const last = parse_state.last; char const *const orig_first =
+			result_t result = result_t( ); CharT *first = parse_state.first; CharT
+			 *const last = parse_state.last; CharT *const orig_first =
 			first;
 			  {
 			    auto sz = last - first;

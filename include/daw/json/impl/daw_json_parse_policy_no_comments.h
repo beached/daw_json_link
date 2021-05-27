@@ -27,19 +27,22 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		struct NoCommentSkippingPolicy final {
-
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_checked( ParseState &parse_state ) {
-				if constexpr( not ParseState::minified_document ) {
+				if constexpr( ParseState::minified_document ) {
+					return;
+				} else {
+					using CharT = typename ParseState::CharT;
 					// SIMD here was much slower, most JSON has very minimal whitespace
-					char const *first = parse_state.first;
-					char const *const last = parse_state.last;
+					CharT *first = parse_state.first;
+					CharT *const last = parse_state.last;
+
 					if constexpr( ParseState::is_zero_terminated_string ) {
 						// Ensure that zero terminator isn't included in skipable value
 						while( DAW_UNLIKELY(
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-						    1U ) <= 0x1F ) ) {
+						    1U ) <= 0x1FU ) ) {
 
 							++first;
 						}
@@ -47,7 +50,7 @@ namespace daw::json {
 						while(
 						  DAW_LIKELY( first < last ) and
 						  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
-						    1U ) <= 0x1F ) {
+						    1U ) <= 0x1FU ) {
 							++first;
 						}
 					}
@@ -58,8 +61,11 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			trim_left_unchecked( ParseState &parse_state ) {
-				if constexpr( not ParseState::minified_document ) {
-					char const *first = parse_state.first;
+				if constexpr( ParseState::minified_document ) {
+					return;
+				} else {
+					using CharT = typename ParseState::CharT;
+					CharT *first = parse_state.first;
 					while( DAW_UNLIKELY(
 					  ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 					    1U ) <= 0x1F ) ) {
@@ -70,10 +76,24 @@ namespace daw::json {
 				}
 			}
 
+			template<typename ParseState>
+			DAW_ATTRIB_FLATINLINE static constexpr void
+			move_next_member_unchecked( ParseState &parse_state ) {
+				using CharT = typename ParseState::CharT;
+				CharT *first = parse_state.first;
+				while( *first != '"' ) {
+					++first;
+				}
+				parse_state.first = first;
+			}
+
 			template<char... keys, typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_to_next_of( ParseState &parse_state ) {
+				static_assert( sizeof...( keys ) > 0 );
 				static_assert( sizeof...( keys ) <= 16 );
+
+				using CharT = typename ParseState::CharT;
 
 				if constexpr( traits::not_same<typename ParseState::exec_tag_t,
 				                               constexpr_exec_tag>::value ) {
@@ -82,8 +102,9 @@ namespace daw::json {
 					                                    keys...>(
 					    ParseState::exec_tag, parse_state.first, parse_state.last );
 				} else {
-					char const *first = parse_state.first;
-					char const *const last = parse_state.last;
+					CharT *first = parse_state.first;
+					CharT *const last = parse_state.last;
+
 					if( ParseState::is_zero_terminated_string ) {
 						daw_json_assert_weak( first < last and *first != '\0',
 						                      ErrorReason::UnexpectedEndOfData,
@@ -114,13 +135,14 @@ namespace daw::json {
 			         typename ParseState>
 			DAW_ATTRIB_FLATTEN static constexpr ParseState
 			skip_bracketed_item_checked( ParseState &parse_state ) {
+				using CharT = typename ParseState::CharT;
 				// Not checking for Left as it is required to be skipped already
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				char const *ptr_first = parse_state.first;
-				char const *const ptr_last = parse_state.last;
+				CharT *ptr_first = parse_state.first;
+				CharT *const ptr_last = parse_state.last;
 
 				if( DAW_UNLIKELY( ptr_first >= ptr_last ) ) {
 					return result;
@@ -271,11 +293,12 @@ namespace daw::json {
 			DAW_ATTRIB_FLATTEN static constexpr ParseState
 			skip_bracketed_item_unchecked( ParseState &parse_state ) {
 				// Not checking for Left as it is required to be skipped already
+				using CharT = typename ParseState::CharT;
 				auto result = parse_state;
 				std::size_t cnt = 0;
 				std::uint32_t prime_bracket_count = 1;
 				std::uint32_t second_bracket_count = 0;
-				char const *ptr_first = parse_state.first;
+				CharT *ptr_first = parse_state.first;
 
 				if( *ptr_first == PrimLeft ) {
 					++ptr_first;

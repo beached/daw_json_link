@@ -50,9 +50,9 @@ namespace daw::json {
 				v = value;
 			}
 
-			template<bool skip_end_check, typename Unsigned>
-			DAW_ATTRIB_FLATINLINE inline constexpr char const *
-			parse_digits_while_number( char const *first, char const *const last,
+			template<bool skip_end_check, typename Unsigned, typename CharT>
+			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
+			parse_digits_while_number( CharT *first, CharT *const last,
 			                           Unsigned &v ) {
 				Unsigned value = v;
 				if constexpr( skip_end_check ) {
@@ -80,22 +80,22 @@ namespace daw::json {
 			         std::enable_if_t<KnownRange, std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
 			parse_real( ParseState &parse_state ) {
+				using CharT = typename ParseState::CharT;
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
 				daw_json_assert_weak(
 				  parse_state.has_more( ) and
 				    parse_policy_details::is_number_start( parse_state.front( ) ),
 				  ErrorReason::InvalidNumberStart, parse_state );
 
-				char const *whole_first = parse_state.first;
-				char const *whole_last = parse_state.class_first
-				                           ? parse_state.class_first
-				                           : parse_state.class_last;
-				char const *fract_first =
+				CharT *whole_first = parse_state.first;
+				CharT *whole_last = parse_state.class_first ? parse_state.class_first
+				                                            : parse_state.class_last;
+				CharT *fract_first =
 				  parse_state.class_first ? parse_state.class_first + 1 : nullptr;
-				char const *fract_last = parse_state.class_last;
-				char const *exp_first =
+				CharT *fract_last = parse_state.class_last;
+				CharT *exp_first =
 				  parse_state.class_last ? parse_state.class_last + 1 : nullptr;
-				char const *const exp_last = parse_state.last;
+				CharT *const exp_last = parse_state.last;
 
 				if( parse_state.class_first == nullptr ) {
 					if( parse_state.class_last == nullptr ) {
@@ -211,13 +211,14 @@ namespace daw::json {
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr Result
 			parse_real( ParseState &parse_state ) {
 				// [-]WHOLE[.FRACTION][(e|E)[+|-]EXPONENT]
+				using CharT = typename ParseState::CharT;
 				daw_json_assert_weak(
 				  parse_state.has_more( ) and
 				    parse_policy_details::is_number_start( parse_state.front( ) ),
 				  ErrorReason::InvalidNumberStart, parse_state );
 
-				char const *const orig_first = parse_state.first;
-				char const *const orig_last = parse_state.last;
+				CharT *const orig_first = parse_state.first;
+				CharT *const orig_last = parse_state.last;
 				Result const sign = [&] {
 					if( parse_state.front( ) == '-' ) {
 						parse_state.remove_prefix( );
@@ -235,13 +236,13 @@ namespace daw::json {
 				using signed_t =
 				  std::conditional_t<max_storage_digits >= max_exponent, int, Result>;
 
-				char const *first = parse_state.first;
-				char const *const whole_last =
+				CharT *first = parse_state.first;
+				CharT *const whole_last =
 				  parse_state.first +
 				  std::min( parse_state.last - parse_state.first, max_exponent );
 
 				unsigned_t significant_digits = 0;
-				char const *last_char =
+				CharT *last_char =
 				  parse_digits_while_number<( ParseState::is_zero_terminated_string or
 				                              ParseState::is_unchecked_input )>(
 				    first, whole_last, significant_digits );
@@ -257,10 +258,9 @@ namespace daw::json {
 						}
 						// We have sig digits we cannot parse because there isn't enough
 						// room in a std::uint64_t
-						char const *ptr =
-						  skip_digits<( ParseState::is_zero_terminated_string or
-						                ParseState::is_unchecked_input )>(
-						    last_char, parse_state.last );
+						CharT *ptr = skip_digits<( ParseState::is_zero_terminated_string or
+						                           ParseState::is_unchecked_input )>(
+						  last_char, parse_state.last );
 						auto const diff = ptr - last_char;
 
 						last_char = ptr;
@@ -284,7 +284,7 @@ namespace daw::json {
 							  first, parse_state.last );
 						}
 					} else {
-						char const *fract_last =
+						CharT *fract_last =
 						  first +
 						  std::min( parse_state.last - first,
 						            static_cast<std::ptrdiff_t>(
