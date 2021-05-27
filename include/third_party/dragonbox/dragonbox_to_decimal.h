@@ -696,7 +696,8 @@ namespace jkj::dragonbox {
 			template<std::size_t table_size, class UInt>
 			inline constexpr bool divisible_by_power_of_5( UInt x,
 			                                               unsigned exp ) noexcept {
-				auto const &table = table_holder<UInt, 5, table_size>::table;
+				auto const &table =
+				  table_holder<UInt, 5, static_cast<int>( table_size )>::table;
 				assert( exp < static_cast<unsigned>( table.size ) );
 				return ( x * table.mod_inv[exp] ) <= table.max_quotients[exp];
 			}
