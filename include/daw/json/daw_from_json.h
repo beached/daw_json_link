@@ -70,14 +70,14 @@ namespace daw::json {
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
 			                policy_t> ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  ParseTag<json_member::expected_type>{ }, parse_state );
+				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
 				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
 				return json_details::parse_value<json_member, KnownBounds>(
-				  ParseTag<json_member::expected_type>{ }, parse_state );
+				  parse_state, ParseTag<json_member::expected_type>{ } );
 			}
 		}
 
@@ -138,14 +138,14 @@ namespace daw::json {
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
 			                policy_t> ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  ParseTag<json_member::expected_type>{ }, parse_state );
+				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
 				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
 				return json_details::parse_value<json_member, KnownBounds>(
-				  ParseTag<json_member::expected_type>{ }, parse_state );
+				  parse_state, ParseTag<json_member::expected_type>{ } );
 			}
 		}
 
@@ -212,14 +212,14 @@ namespace daw::json {
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
 			                policy_t> ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  ParseTag<json_member::expected_type>{ }, parse_state );
+				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
 				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
 				return json_details::parse_value<json_member, KnownBounds>(
-				  ParseTag<json_member::expected_type>{ }, parse_state );
+				  parse_state, ParseTag<json_member::expected_type>{ } );
 			}
 		}
 
@@ -288,14 +288,14 @@ namespace daw::json {
 			                policy_t> ) {
 
 				auto result = json_details::parse_value<json_member, KnownBounds>(
-				  ParseTag<json_member::expected_type>{ }, parse_state );
+				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
 				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
 				return json_details::parse_value<json_member, KnownBounds>(
-				  ParseTag<json_member::expected_type>{ }, parse_state );
+				  parse_state, ParseTag<json_member::expected_type>{ } );
 			}
 		}
 
@@ -325,7 +325,7 @@ namespace daw::json {
 			  ParsePolicy( std::data( json_data ), daw::data_end( json_data ) );
 
 			return json_details::parse_value<json_member, KnownBounds>(
-			  ParseTag<json_member::expected_type>{ }, parse_state );
+			  parse_state, ParseTag<json_member::expected_type>{ } );
 		}
 
 		/***
@@ -366,7 +366,7 @@ namespace daw::json {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 			}
 			return json_details::parse_value<json_member, KnownBounds>(
-			  ParseTag<json_member::expected_type>{ }, parse_state );
+			  parse_state, ParseTag<json_member::expected_type>{ } );
 		}
 
 		/**
@@ -448,14 +448,14 @@ namespace daw::json {
 			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
 			                policy_t> ) {
 				auto result = json_details::parse_value<parser_t, KnownBounds>(
-				  ParseTag<JsonParseTypes::Array>{ }, parse_state );
+				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
 				parse_state.trim_left( );
 				daw_json_assert( parse_state.empty( ), ErrorReason::InvalidEndOfValue,
 				                 parse_state );
 				return result;
 			} else {
 				return json_details::parse_value<parser_t, KnownBounds>(
-				  ParseTag<JsonParseTypes::Array>{ }, parse_state );
+				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
 			}
 		}
 	} // namespace DAW_JSON_VER

@@ -20,93 +20,94 @@ namespace daw::json {
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Real>, ParseState &parse_state );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Real> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Signed>, ParseState &parse_state );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Signed> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Unsigned>,
-			             ParseState &parse_state );
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::Unsigned> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Null>, ParseState &parse_state );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Null> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Bool>, ParseState &parse_state );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Bool> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::StringRaw>,
-			             ParseState &parse_state );
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::StringRaw> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::StringEscaped>,
-			             ParseState &parse_state );
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::StringEscaped> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Date>, ParseState &parse_state );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Date> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Custom>, ParseState &parse_state );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Custom> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Class>, ParseState &parse_state );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Class> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Array>, ParseState & );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::KeyValue>,
-			             ParseState &parse_state );
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::KeyValue> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::KeyValueArray>,
-			             ParseState &parse_state );
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::KeyValueArray> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Variant>, ParseState &parse_state );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Variant> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::VariantTagged>,
-			             ParseState &parse_state );
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::VariantTagged> );
 
 			template<typename JsonMember, bool KnownBounds = false, std::size_t N,
 			         typename ParseState, bool B>
 			[[nodiscard]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::VariantTagged>, ParseState & );
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::VariantTagged> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
-			parse_value( ParseTag<JsonParseTypes::Unknown>, ParseState &parse_state );
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Unknown> );
 
 #if( defined( _MSC_VER ) and not defined( __clang__ ) )
 			// Lying to MSVC about being a random iterator causes issues I have not

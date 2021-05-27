@@ -140,13 +140,14 @@ namespace daw::json {
 				auto tmp = m_state;
 
 				if constexpr( json_details::is_guaranteed_rvo_v<ParsePolicy> ) {
-					auto const ae =
+					auto const run_after_parse =
 					  daw::on_exit_success( [&] { m_can_skip = tmp.first; } );
+					(void)run_after_parse;
 					return json_details::parse_value<element_type>(
-					  ParseTag<element_type::expected_type>{ }, tmp );
+					  tmp, ParseTag<element_type::expected_type>{ } );
 				} else {
 					auto result = json_details::parse_value<element_type>(
-					  ParseTag<element_type::expected_type>{ }, tmp );
+					  tmp, ParseTag<element_type::expected_type>{ } );
 
 					m_can_skip = tmp.first;
 					return result;

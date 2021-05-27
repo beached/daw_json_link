@@ -36,7 +36,7 @@ namespace daw::json {
 				}
 
 				template<typename ParseState>
-				constexpr void set_range( ParseState parse_state ) {
+				constexpr void set_range( ParseState const &parse_state ) {
 					first = parse_state.first;
 					last = parse_state.last;
 					class_first = parse_state.class_first;
@@ -66,7 +66,7 @@ namespace daw::json {
 				}
 
 				template<typename ParseState>
-				constexpr void set_range( ParseState parse_state ) {
+				constexpr void set_range( ParseState &parse_state ) {
 					first = parse_state.first;
 					last = parse_state.last;
 					class_first = parse_state.class_first;
@@ -192,9 +192,9 @@ namespace daw::json {
 			         bool from_start = false, std::size_t N, typename ParseState,
 			         bool B, typename CharT>
 			[[nodiscard]] inline constexpr ParseState
-			find_class_member( locations_info_t<N, CharT, B> &locations,
-			                   ParseState &parse_state, bool is_nullable,
-			                   daw::string_view member_name ) {
+			find_class_member( ParseState &parse_state,
+			                   locations_info_t<N, CharT, B> &locations,
+			                   bool is_nullable, daw::string_view member_name ) {
 
 				daw_json_assert_weak( is_nullable | ( not locations[pos].missing( ) ) |
 				                        ( not parse_state.is_closing_brace_checked( ) ),

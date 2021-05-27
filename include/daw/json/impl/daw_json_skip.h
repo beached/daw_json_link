@@ -76,6 +76,7 @@ namespace daw::json {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_at_token_after_value( ),
 				                      ErrorReason::InvalidEndOfValue, parse_state );
+				result.counter = static_cast<bool>( true );
 				return result;
 			}
 
@@ -95,6 +96,7 @@ namespace daw::json {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_at_token_after_value( ),
 				                      ErrorReason::InvalidEndOfValue, parse_state );
+				result.counter = static_cast<bool>( false );
 				return result;
 			}
 

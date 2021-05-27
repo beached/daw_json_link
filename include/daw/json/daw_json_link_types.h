@@ -79,7 +79,7 @@ namespace daw::json {
 			[[maybe_unused,
 			  nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
 			  json_result<JsonClass>
-			  parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
+			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
@@ -118,7 +118,7 @@ namespace daw::json {
 			[[maybe_unused,
 			  nodiscard]] DAW_ATTRIB_FLATTEN static constexpr json_details::
 			  json_result<JsonClass>
-			  parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
+			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
@@ -128,9 +128,9 @@ namespace daw::json {
 				// happens with BigInt and string.
 				using Constructor = typename JsonClass::constructor_t;
 				return json_details::construct_value(
-				  template_arg<JsonClass>, Constructor{ }, parse_state,
+				  template_args<JsonClass, Constructor>, parse_state,
 				  json_details::parse_value<json_member, false>(
-				    ParseTag<json_member::expected_type>{ }, parse_state ) );
+				    parse_state, ParseTag<json_member::expected_type>{ } ) );
 			}
 		};
 
@@ -228,7 +228,7 @@ namespace daw::json {
 			template<typename JsonClass, typename ParseState>
 			[[maybe_unused,
 			  nodiscard]] static inline constexpr json_details::json_result<JsonClass>
-			parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
+			parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type<JsonClass>::value );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
@@ -297,7 +297,7 @@ namespace daw::json {
 			template<typename JsonClass, typename ParseState>
 			[[maybe_unused, nodiscard]] static inline constexpr json_details::
 			  from_json_result_t<JsonClass>
-			  parse_to_class( template_param<JsonClass>, ParseState &parse_state ) {
+			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
 				static_assert( json_details::is_a_json_type<JsonClass>::value );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
@@ -306,7 +306,7 @@ namespace daw::json {
 				std::size_t const idx = [parse_state]( ) mutable {
 					return Switcher{ }( std::get<0>(
 					  json_details::parse_value<json_class<no_name, tag_class_t>>(
-					    ParseTag<JsonParseTypes::Class>{ }, parse_state )
+					    parse_state, ParseTag<JsonParseTypes::Class>{ } )
 					    .members ) );
 				}( );
 				return json_details::parse_nth_class<

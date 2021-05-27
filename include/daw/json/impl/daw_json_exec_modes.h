@@ -10,8 +10,7 @@
 
 #include "version.h"
 
-#include <daw/daw_cpp_feature_check.h>
-#include <daw/daw_likely.h>
+#include <daw/daw_scope_guard.h>
 
 #include <string_view>
 
@@ -19,8 +18,7 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		struct constexpr_exec_tag {
 			static constexpr std::string_view name = "constexpr";
-#if defined( __cpp_constexpr_dynamic_alloc ) or \
-  defined( DAW_JSON_NO_CONST_EXPR )
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 			static constexpr bool always_rvo = true;
 #else
 			static constexpr bool always_rvo = false;

@@ -453,7 +453,7 @@ unsigned long long test_dblparse( std::string_view num,
 		}
 		using json_member = json_details::unnamed_default_type_mapping<double>;
 		return json_details::parse_value<json_member, KnownBounds>(
-		  ParseTag<json_member::expected_type>{ }, rng );
+		  rng, ParseTag<json_member::expected_type>{ } );
 	};
 	auto lib_parse_dbl = dbl_lib_parser( num );
 	std::uint64_t const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
@@ -500,7 +500,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 			using json_member =
 			  daw::json::json_details::unnamed_default_type_mapping<double>;
 			return daw::json::json_details::parse_value<json_member, KnownBounds>(
-			  daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			  rng, daw::json::ParseTag<json_member::expected_type>{ } );
 		} else {
 			return daw::json::from_json<
 			  double, daw::json::NoCommentSkippingPolicyChecked, KnownBounds>( num );
@@ -541,7 +541,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 				using json_member =
 				  daw::json::json_details::unnamed_default_type_mapping<double>;
 				return daw::json::json_details::parse_value<json_member, KnownBounds>(
-				  daw::json::ParseTag<json_member::expected_type>{ }, rng );
+				  rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			} else {
 				return daw::json::from_json<
 				  double, daw::json::NoCommentSkippingPolicyChecked, KnownBounds>(

@@ -40,16 +40,21 @@ namespace daw::json {
 				static constexpr bool has_counter = true;
 
 				ParseState *parse_state = nullptr;
+				difference_type counter = 0;
+
+				constexpr json_parse_array_iterator_base( ) noexcept = default;
+
+				inline constexpr json_parse_array_iterator_base(
+				  ParseState *pd ) noexcept
+				  : parse_state( pd )
+				  , counter( static_cast<difference_type>( pd->counter ) ) {}
 
 				inline constexpr difference_type
 				operator-( json_parse_array_iterator_base const &rhs ) const {
 					// rhs is the iterator with the parser in it.  We should know how many
 					// items are in play because we already counted them in the skip_array
-					// call. If it is null, that means it has hit the end of the array
-					if( DAW_LIKELY( rhs.parse_state ) ) {
-						return static_cast<difference_type>( rhs.parse_state->counter ) + 1;
-					}
-					return 0;
+					// call.
+					return rhs.counter;
 				}
 			};
 
@@ -87,40 +92,9 @@ namespace daw::json {
 					daw_json_assert_weak(
 					  base::parse_state and base::parse_state->has_more( ),
 					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
-					if constexpr( KnownBounds ) {
-						if constexpr( is_guaranteed_rvo_v<ParseState> ) {
-							struct cleanup_t {
-								ParseState &p;
-								std::size_t counter;
-								CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
-#if defined( DAW_IS_CONSTANT_EVALUATED )
-									if( not DAW_IS_CONSTANT_EVALUATED( ) ) {
-#endif
-										if( DAW_LIKELY( std::uncaught_exceptions( ) == 0 ) ) {
-											p.counter = counter;
-										}
-#if defined( DAW_IS_CONSTANT_EVALUATED )
-									} else {
-										p.counter = counter;
-									}
-#endif
-								}
-							} const run_after_parse{ *base::parse_state,
-							                         base::parse_state->counter };
-							(void)run_after_parse;
-							return parse_value<element_t>(
-							  ParseTag<element_t::expected_type>{ }, *base::parse_state );
-						} else {
-							auto const cnt = base::parse_state->counter;
-							auto result = parse_value<element_t>(
-							  ParseTag<element_t::expected_type>{ }, *base::parse_state );
-							base::parse_state->counter = cnt;
-							return result;
-						}
-					} else {
-						return parse_value<element_t>(
-						  ParseTag<element_t::expected_type>{ }, *base::parse_state );
-					}
+
+					return parse_value<element_t>(
+					  *base::parse_state, ParseTag<element_t::expected_type>{ } );
 				}
 
 				DAW_ATTRIB_INLINE inline constexpr json_parse_array_iterator &
@@ -132,7 +106,7 @@ namespace daw::json {
 					if( base::parse_state->front( ) == ']' ) {
 #ifndef NDEBUG
 						if constexpr( base::has_counter ) {
-							daw_json_assert_weak( base::parse_state->counter == 0,
+							daw_json_assert_weak( base::counter == 0,
 							                      ErrorReason::AttemptToAccessPastEndOfValue,
 							                      *base::parse_state );
 						}
@@ -144,17 +118,16 @@ namespace daw::json {
 							// Ensure we are equal to default
 						}
 						base::parse_state = nullptr;
-					}
+					} else {
 #ifndef NDEBUG
-					if constexpr( base::has_counter ) {
-						if( DAW_LIKELY( base::parse_state ) ) {
-							daw_json_assert_weak( base::parse_state->counter > 0,
+						if constexpr( base::has_counter ) {
+							daw_json_assert_weak( base::counter > 0,
 							                      ErrorReason::AttemptToAccessPastEndOfValue,
 							                      *base::parse_state );
-							base::parse_state->counter--;
+							--base::counter;
 						}
-					}
 #endif
+					}
 					return *this;
 				}
 

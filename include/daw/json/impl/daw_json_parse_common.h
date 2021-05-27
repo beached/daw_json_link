@@ -63,7 +63,7 @@ namespace daw::json {
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
 			DAW_ATTRIB_FLATINLINE static inline constexpr auto
-			construct_value( template_param<Value>, Constructor &&ctor,
+			construct_value( template_params<Value, Constructor>,
 			                 ParseState &parse_state, Args &&...args ) {
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
@@ -71,20 +71,20 @@ namespace daw::json {
 					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
 					if constexpr( std::is_invocable<Constructor, Args...,
 					                                alloc_t>::value ) {
-						return ctor( DAW_FWD( args )..., DAW_MOVE( alloc ) );
+						return Constructor{ }( DAW_FWD( args )..., DAW_MOVE( alloc ) );
 					} else if constexpr( daw::traits::is_callable_v<Constructor,
 					                                                std::allocator_arg_t,
 					                                                alloc_t, Args...> ) {
-						return ctor( std::allocator_arg, DAW_MOVE( alloc ),
-						             DAW_FWD( args )... );
+						return Constructor{ }( std::allocator_arg, DAW_MOVE( alloc ),
+						                       DAW_FWD( args )... );
 					} else {
 						static_assert( std::is_invocable<Constructor, Args...>::value );
-						return ctor( DAW_FWD( args )... );
+						return Constructor{ }( DAW_FWD( args )... );
 					}
 				} else {
 					static_assert( std::is_invocable<Constructor, Args...>::value );
 					if constexpr( std::is_invocable<Constructor, Args...>::value ) {
-						return ctor( DAW_FWD( args )... );
+						return Constructor{ }( DAW_FWD( args )... );
 					}
 				}
 			}

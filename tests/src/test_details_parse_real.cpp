@@ -73,7 +73,7 @@ void test_lots_of_doubles( ) {
 			  using json_member =
 			    daw::json::json_details::unnamed_default_type_mapping<float>;
 			  auto const r = daw::json::json_details::parse_value<json_member, false>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -87,7 +87,7 @@ void test_lots_of_doubles( ) {
 			  using json_member =
 			    daw::json::json_details::unnamed_default_type_mapping<double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, false>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -101,7 +101,7 @@ void test_lots_of_doubles( ) {
 			  using json_member =
 			    daw::json::json_details::unnamed_default_type_mapping<long double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, false>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -115,7 +115,7 @@ void test_lots_of_doubles( ) {
 			  using json_member =
 			    daw::json::json_details::unnamed_default_type_mapping<float>;
 			  auto const r = daw::json::json_details::parse_value<json_member, true>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -129,7 +129,7 @@ void test_lots_of_doubles( ) {
 			  using json_member =
 			    daw::json::json_details::unnamed_default_type_mapping<double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, true>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
@@ -143,7 +143,7 @@ void test_lots_of_doubles( ) {
 			  using json_member =
 			    daw::json::json_details::unnamed_default_type_mapping<long double>;
 			  auto const r = daw::json::json_details::parse_value<json_member, true>(
-			    daw::json::ParseTag<json_member::expected_type>{ }, rng );
+			    rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			  daw::do_not_optimize( r );
 		  }
 	  },
