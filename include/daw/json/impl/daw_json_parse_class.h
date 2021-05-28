@@ -42,9 +42,6 @@ namespace daw::json {
 				                                   std::size_t &current_position,
 				                                   std::size_t desired_position ) {
 
-					parse_state.move_next_member_or_end( );
-					daw_json_assert_weak( parse_state.has_more( ),
-					                      ErrorReason::UnexpectedEndOfData, parse_state );
 					daw_json_assert_weak( current_position <= desired_position,
 					                      ErrorReason::OutOfOrderOrderedMembers,
 					                      parse_state );
@@ -77,6 +74,8 @@ namespace daw::json {
 			                            ParseState &parse_state ) {
 
 				using json_member_t = ordered_member_subtype_t<JsonMember>;
+
+				parse_state.move_next_member_or_end( );
 				/***
 				 * Some members specify their index so there may be gaps between
 				 * member data elements in the array.
@@ -85,27 +84,22 @@ namespace daw::json {
 					pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
 					  parse_state, member_index, JsonMember::member_index );
 				} else {
-					parse_state.move_next_member_or_end( );
+					daw_json_assert_weak( parse_state.has_more( ),
+					                      ErrorReason::UnexpectedEndOfData, parse_state );
 				}
 
 				// this is an out value, get position ready
 				++member_index;
-				if constexpr( ParseState::is_unchecked_input ) {
+
+				if( DAW_UNLIKELY( parse_state.front( ) == ']' ) ) {
 					if constexpr( is_json_nullable_v<json_member_t> ) {
-						if( parse_state.front( ) == ']' ) {
-							using constructor_t = typename json_member_t::constructor_t;
-							return constructor_t{ }( );
-						}
-					}
-				} else {
-					if( DAW_UNLIKELY( parse_state.front( ) == ']' ) ) {
-						if constexpr( is_json_nullable_v<json_member_t> ) {
-							using constructor_t = typename json_member_t::constructor_t;
-							return constructor_t{ }( );
-						} else {
-							daw_json_error( missing_member( "ordered_class_member" ),
-							                parse_state );
-						}
+						using constructor_t = typename json_member_t::constructor_t;
+						return construct_value(
+						  template_args<json_result<json_member_t>, constructor_t>,
+						  parse_state );
+					} else {
+						daw_json_error( missing_member( "ordered_class_member" ),
+						                parse_state );
 					}
 				}
 				return parse_value<without_name<json_member_t>>(
@@ -144,17 +138,16 @@ namespace daw::json {
 					  parse_state, ParseTag<JsonMember::expected_type>{ } );
 				}
 				// We cannot find the member, check if the member is nullable
-				if constexpr( is_json_nullable_v<JsonMember> ) {
-					if( loc.is_null( ) ) {
+				if( loc.is_null( ) ) {
+					if constexpr( is_json_nullable_v<JsonMember> ) {
 						return parse_value<without_name<JsonMember>, true>(
 						  loc, ParseTag<JsonMember::expected_type>{ } );
+					} else {
+						daw_json_error( missing_member( std::string_view(
+						                  std::data( JsonMember::name ),
+						                  std::size( JsonMember::name ) ) ),
+						                parse_state );
 					}
-				} else {
-					daw_json_assert_weak(
-					  not loc.is_null( ),
-					  missing_member( std::string_view( std::data( JsonMember::name ),
-					                                    std::size( JsonMember::name ) ) ),
-					  parse_state );
 				}
 				return parse_value<without_name<JsonMember>, true>(
 				  loc, ParseTag<JsonMember::expected_type>{ } );
