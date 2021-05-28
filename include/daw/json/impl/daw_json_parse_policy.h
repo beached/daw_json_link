@@ -199,13 +199,12 @@ namespace daw::json {
 			static inline constexpr with_allocator_type<Alloc>
 			with_allocator( iterator f, iterator l, iterator cf, iterator cl,
 			                Alloc &alloc ) {
-				return { f, l, cf, cl, alloc };
+				return with_allocator_type<Alloc>{ f, l, cf, cl, alloc };
 			}
 
 			template<typename Alloc>
 			constexpr auto
 			with_allocator( BasicParsePolicy<PolicyFlags, Alloc> p ) const {
-
 				if constexpr( std::is_same<Alloc, json_details::NoAllocator>::value ) {
 					return *this;
 				} else {
@@ -540,22 +539,36 @@ namespace daw::json {
 		  CheckedParseMode::no, ZeroTerminatedString::yes )>;
 
 		namespace json_details {
-			template<typename ExecTag>
+			template<typename>
+			struct exec_mode_from_tag_t;
+
+			template<>
+			struct exec_mode_from_tag_t<constexpr_exec_tag> {
+				static inline constexpr ExecModeTypes value =
+				  ExecModeTypes::compile_time;
+			};
+
+			template<>
+			struct exec_mode_from_tag_t<runtime_exec_tag> {
+				static inline constexpr ExecModeTypes value = ExecModeTypes::runtime;
+			};
+
+			template<>
+			struct exec_mode_from_tag_t<simd_exec_tag> {
+				static inline constexpr ExecModeTypes value = ExecModeTypes::simd;
+			};
+
+			template<typename ExecMode>
 			inline constexpr ExecModeTypes exec_mode_from_tag =
-			  ExecModeTypes::compile_time;
-
-			template<>
-			inline constexpr ExecModeTypes exec_mode_from_tag<runtime_exec_tag> =
-			  ExecModeTypes::runtime;
-
-			template<>
-			inline constexpr ExecModeTypes exec_mode_from_tag<simd_exec_tag> =
-			  ExecModeTypes::simd;
+			  exec_mode_from_tag_t<ExecMode>::value;
 		} // namespace json_details
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDNoCommentSkippingPolicyChecked = BasicParsePolicy<
 		  parse_options( json_details::exec_mode_from_tag<ExecTag> ), Allocator>;
+
+		static_assert( SIMDNoCommentSkippingPolicyChecked<
+		               runtime_exec_tag>::exec_tag_t::always_rvo );
 
 		template<typename ExecTag, typename Allocator = json_details::NoAllocator>
 		using SIMDNoCommentSkippingPolicyUnchecked =

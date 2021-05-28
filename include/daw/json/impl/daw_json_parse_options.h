@@ -293,7 +293,8 @@ namespace daw::json {
 				               "Only registered policy types are allowed" );
 
 				unsigned new_bits = static_cast<unsigned>( pol );
-				constexpr unsigned mask = (1U << policy_bits_width<Policy>)-1U;
+				constexpr unsigned mask = ( (1U << policy_bits_width<Policy>)-1U )
+				                          << policy_bits_start<Policy>;
 				new_bits &= mask;
 				new_bits <<= policy_bits_start<Policy>;
 				value &= ~mask;

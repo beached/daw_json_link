@@ -325,16 +325,27 @@ namespace daw::json {
 						}
 					} );
 					(void)run_after_parse;
-
-					return construct_value_tp<T, Constructor>(
-					  parse_state,
-					  tp_t{ parse_ordered_class_member( template_arg<JsonMembers>,
-					                                    current_idx, parse_state )... } );
+					if constexpr( force_aggregate_construction_v<T> ) {
+						return T{ parse_ordered_class_member(
+						  template_arg<JsonMembers>, current_idx, parse_state )... };
+					} else {
+						return construct_value_tp<T, Constructor>(
+						  parse_state,
+						  tp_t{ parse_ordered_class_member(
+						    template_arg<JsonMembers>, current_idx, parse_state )... } );
+					}
 				} else {
-					auto result = construct_value_tp<T, Constructor>(
-					  parse_state,
-					  tp_t{ parse_ordered_class_member( template_arg<JsonMembers>,
-					                                    current_idx, parse_state )... } );
+					auto result = [&] {
+						if constexpr( force_aggregate_construction_v<T> ) {
+							return T{ parse_ordered_class_member(
+							  template_arg<JsonMembers>, current_idx, parse_state )... };
+						} else {
+							return construct_value_tp<T, Constructor>(
+							  parse_state,
+							  tp_t{ parse_ordered_class_member(
+							    template_arg<JsonMembers>, current_idx, parse_state )... } );
+						}
+					}( );
 					if constexpr( json_details::all_json_members_must_exist_v<
 					                T, ParseState> ) {
 						parse_state.trim_left( );

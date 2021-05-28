@@ -76,6 +76,7 @@ namespace daw::json {
 
 				template<typename ParseState>
 				constexpr auto get_range( template_param<ParseState> ) const {
+					// Not copying allocator as it may contain state that needs copying in
 					using range_t = typename ParseState::without_allocator_type;
 					auto result = range_t( first, last, class_first, class_last );
 					result.counter = counter;
