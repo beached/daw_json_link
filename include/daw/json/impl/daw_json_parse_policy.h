@@ -520,6 +520,7 @@ namespace daw::json {
 		};
 
 		using NoCommentSkippingPolicyChecked = BasicParsePolicy<>;
+		using DefaultParsePolicy = BasicParsePolicy<>;
 
 		using NoCommentZeroSkippingPolicyChecked =
 		  BasicParsePolicy<parse_options( ZeroTerminatedString::yes )>;

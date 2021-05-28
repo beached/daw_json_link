@@ -66,7 +66,7 @@ namespace daw::json {
 				}
 
 				template<typename ParseState>
-				constexpr void set_range( ParseState &parse_state ) {
+				constexpr void set_range( ParseState const &parse_state ) {
 					first = parse_state.first;
 					last = parse_state.last;
 					class_first = parse_state.class_first;
@@ -162,7 +162,7 @@ namespace daw::json {
 #else
 				// DAW
 				constexpr bool do_full_name_match =
-				  true or ParseState::force_name_equal_check or
+				  ParseState::force_name_equal_check or
 				  do_hashes_collide<JsonMembers...>( );
 				if constexpr( do_full_name_match ) {
 					return locations_info_t<sizeof...( JsonMembers ), CharT,
