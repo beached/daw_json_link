@@ -172,14 +172,13 @@ namespace daw::json {
 				}
 				parse_state.trim_left_checked( );
 			}
-#if defined( __GNUC__ ) or defined( __clang__ )
+
 			// Prior to C++20, this will guarantee the data structure is
 			// initialized at compile time.  In the future, constinit should be
 			// fine.
 			template<typename ParseState, typename... JsonMembers>
 			inline constexpr auto
 			  known_locations_v = make_locations_info<ParseState, JsonMembers...>( );
-#endif
 
 			/***
 			 * Parse to the user supplied class.  The parser will run left->right if
