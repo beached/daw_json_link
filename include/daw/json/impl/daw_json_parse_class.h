@@ -218,23 +218,8 @@ namespace daw::json {
 					return construct_value( template_args<T, Constructor>, parse_state );
 				} else {
 
-#if defined( __GNUC__ ) or defined( __clang__ )
-					// Prior to C++20, this will guarantee the data structure is
-					// initialized at compile time.  In the future, constinit should be
-					// fine.
-					/*
-					constexpr auto known_locations_v =
-					  make_locations_info<ParseState, JsonMembers...>( );
-					  */
-
 					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
-#else
-					// MSVC is doing the murmur3 hash at compile time incorrectly
-					// this puts it at runtime.
-					auto known_locations =
-					  make_locations_info<ParseState, JsonMembers...>( );
 
-#endif
 					if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 						auto const run_after_parse = daw::on_exit_success( [&] {
 							class_cleanup_now<
