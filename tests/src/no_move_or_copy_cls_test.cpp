@@ -66,17 +66,19 @@ int main( int, char ** )
   try
 #endif
 {
-	constexpr std::string_view json_data = R"({ "some_num": 1234 } )";
-	daw::expecting(
-	  daw::json::from_json<A, daw::json::SIMDNoCommentSkippingPolicyChecked<
-	                            daw::json::runtime_exec_tag>>( json_data )
-	    .member == 1234 );
+	std::string const json_data = R"({ "some_num": 1234 } )";
 
-	constexpr std::string_view json_data2 = R"({ "a": { "some_num": 1234 } } )";
-	daw::expecting(
-	  daw::json::from_json<B, daw::json::SIMDNoCommentSkippingPolicyChecked<
-	                            daw::json::runtime_exec_tag>>( json_data2 )
-	    .a.member == 1234 );
+	// Need runtime exec mode or constexpr with C++20 constexpr
+	// destructors/is_constant_evaluated to ensure that rvo path is taken
+	using policy_t = daw::json::BasicParsePolicy<daw::json::parse_options(
+	  daw::json::ExecModeTypes::runtime )>;
+
+	daw::expecting( daw::json::from_json<A, policy_t>( json_data ).member ==
+	                1234 );
+
+	std::string const json_data2 = R"({ "a": { "some_num": 1234 } } )";
+	daw::expecting( daw::json::from_json<B, policy_t>( json_data2 ).a.member ==
+	                1234 );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );

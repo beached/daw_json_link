@@ -92,11 +92,15 @@ namespace daw::json {
 			                   std::nullptr_t> = nullptr>
 			inline constexpr explicit json_array_iterator( String &&jd )
 			  : m_state( ParsePolicy( std::data( jd ), daw::data_end( jd ) ) ) {
+
+				static_assert(
+					traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
+					"String requires being able to call std::data/std::size.  char const "
+					"* are not able to do this, pass a string_view for char const * to "
+					"ensure you are aware of the strlen cost" );
+
 				static_assert(
 				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );
-				static_assert(
-				  traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
-				  "StringRaw must be like a string_view" );
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, m_state );
@@ -113,13 +117,17 @@ namespace daw::json {
 			inline constexpr explicit json_array_iterator(
 			  String &&jd, std::string_view start_path )
 			  : m_state( get_range( DAW_FWD( jd ), start_path ) ) {
+
+				static_assert(
+				  traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
+				  "String requires being able to call std::data/std::size.  char const "
+				  "* are not able to do this, pass a string_view for char const * to "
+				  "ensure you are aware of the strlen cost" );
+
 				static_assert(
 				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *>,
 				  "Attempt to assign a const char * to a char *" );
 
-				static_assert(
-				  traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
-				  "StringRaw must be like a string_view" );
 				m_state.trim_left( );
 				daw_json_assert_weak( m_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, m_state );
