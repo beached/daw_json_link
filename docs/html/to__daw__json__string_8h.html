@@ -83,7 +83,9 @@ $(function() {
 <code>#include &lt;daw/daw_algorithm.h&gt;</code><br />
 <code>#include &lt;daw/daw_arith_traits.h&gt;</code><br />
 <code>#include &lt;daw/daw_bounded_vector.h&gt;</code><br />
+<code>#include &lt;daw/daw_cpp_feature_check.h&gt;</code><br />
 <code>#include &lt;daw/daw_cxmath.h&gt;</code><br />
+<code>#include &lt;daw/daw_likely.h&gt;</code><br />
 <code>#include &lt;daw/daw_move.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;utf8/unchecked.h&gt;</code><br />
@@ -101,9 +103,7 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1base__int__type__impl.html">daw::json::DAW_JSON_VER::json_details::base_int_type_impl&lt; T, bool &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1base__int__type__impl_3_01_t_00_01true_01_4.html">daw::json::DAW_JSON_VER::json_details::base_int_type_impl&lt; T, true &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1custom__from__converter__t.html">daw::json::DAW_JSON_VER::custom_from_converter_t&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1custom__to__converter__t.html">daw::json::DAW_JSON_VER::custom_to_converter_t&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,9 +131,12 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a51176bd4c4f6522d136b7645787d8bdb"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a51176bd4c4f6522d136b7645787d8bdb"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a51176bd4c4f6522d136b7645787d8bdb">daw::json::DAW_JSON_VER::json_details::base_int_type_t</a> = typename base_int_type_impl&lt; T, std::is_enum&lt; T &gt;::value &gt;::type</td></tr>
-<tr class="separator:a51176bd4c4f6522d136b7645787d8bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79bf61aa956f188ffdac743c3e04f340"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a79bf61aa956f188ffdac743c3e04f340"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a79bf61aa956f188ffdac743c3e04f340">daw::json::DAW_JSON_VER::json_details::base_int_type_impl</a> = std::underlying_type&lt; T &gt;</td></tr>
+<tr class="separator:a79bf61aa956f188ffdac743c3e04f340"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e8bcdfecac62c47881e89a6febca7a0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a9e8bcdfecac62c47881e89a6febca7a0"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a9e8bcdfecac62c47881e89a6febca7a0">daw::json::DAW_JSON_VER::json_details::base_int_type_t</a> = typename std::conditional_t&lt; std::is_enum_v&lt; T &gt;, base_int_type_impl&lt; T &gt;, daw::traits::identity&lt; T &gt; &gt;::type</td></tr>
+<tr class="separator:a9e8bcdfecac62c47881e89a6febca7a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f3649999b90f568e237d50ef06fb249"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a1f3649999b90f568e237d50ef06fb249"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a1f3649999b90f568e237d50ef06fb249">daw::json::DAW_JSON_VER::json_details::deref_t</a> = daw::remove_cvref_t&lt; decltype(deref_detect(std::declval&lt; T &gt;()))&gt;</td></tr>
 <tr class="separator:a1f3649999b90f568e237d50ef06fb249"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -178,9 +181,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a36a66ffa0c66880d15a2a35a353c0881"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
 <tr class="memitem:a36a66ffa0c66880d15a2a35a353c0881"><td class="memTemplItemLeft" align="right" valign="top">constexpr Value const  &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a36a66ffa0c66880d15a2a35a353c0881">daw::json::DAW_JSON_VER::json_details::json_get_value</a> (std::pair&lt; Key, Value &gt; const &amp;kv)</td></tr>
 <tr class="separator:a36a66ffa0c66880d15a2a35a353c0881"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d5219a62bfe54f2fa33245fe44a455c"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , typename OutputIterator , typename T &gt; </td></tr>
-<tr class="memitem:a0d5219a62bfe54f2fa33245fe44a455c"><td class="memTemplItemLeft" align="right" valign="top">constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a0d5219a62bfe54f2fa33245fe44a455c">daw::json::DAW_JSON_VER::json_details::member_to_string</a> (OutputIterator it, T const &amp;value)</td></tr>
-<tr class="separator:a0d5219a62bfe54f2fa33245fe44a455c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b80e765ada9b9c937477201572ea62c"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , typename OutputIterator , typename T &gt; </td></tr>
+<tr class="memitem:a3b80e765ada9b9c937477201572ea62c"><td class="memTemplItemLeft" align="right" valign="top">constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3b80e765ada9b9c937477201572ea62c">daw::json::DAW_JSON_VER::json_details::member_to_string</a> (template_param&lt; JsonMember &gt;, OutputIterator it, T const &amp;value)</td></tr>
+<tr class="separator:a3b80e765ada9b9c937477201572ea62c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2bd8e868c5061d7999f7221922583ee"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator &gt; </td></tr>
 <tr class="memitem:ab2bd8e868c5061d7999f7221922583ee"><td class="memTemplItemLeft" align="right" valign="top">constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ab2bd8e868c5061d7999f7221922583ee">daw::json::DAW_JSON_VER::json_details::output_hex</a> (std::uint16_t c, OutputIterator it)</td></tr>
 <tr class="separator:ab2bd8e868c5061d7999f7221922583ee"><td class="memSeparator" colspan="2">&#160;</td></tr>

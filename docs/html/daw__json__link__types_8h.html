@@ -77,6 +77,7 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="daw__json__link__types__fwd_8h_source.html">impl/daw_json_link_types_fwd.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__traits_8h_source.html">impl/daw_json_traits.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="version_8h_source.html">impl/version.h</a>&quot;</code><br />
+<code>#include &lt;daw/daw_attributes.h&gt;</code><br />
 <code>#include &lt;daw/daw_string_view.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;daw/daw_visit.h&gt;</code><br />
@@ -89,6 +90,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_array_constructor.html">daw::json::DAW_JSON_VER::ArrayConstructor&lt; T, N, MustConsumeAll &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__array.html">daw::json::DAW_JSON_VER::json_array&lt; Name, JsonElement, Container, Constructor, Nullable &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__array__detect.html">daw::json::DAW_JSON_VER::json_details::json_array_detect&lt; Name, JsonElement, Container, Constructor, Nullable &gt;</a></td></tr>
@@ -106,8 +109,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__date.html">daw::json::DAW_JSON_VER::json_date&lt; Name, T, Constructor, Nullable &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html">daw::json::DAW_JSON_VER::json_delayed&lt; Name, T, Constructor, Nullable &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1json__identity.html">daw::json::DAW_JSON_VER::json_details::json_identity&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__key__value.html">daw::json::DAW_JSON_VER::json_key_value&lt; Name, Container, JsonValueType, JsonKeyType, Constructor, Nullable &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,7 +134,7 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1ordered__json__member.html">daw::json::DAW_JSON_VER::ordered_json_member&lt; Index, JsonMember &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1ordered__member__wrapper.html">daw::json::DAW_JSON_VER::json_details::ordered_member_wrapper&lt; JsonMember &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__json__mapping.html">daw::json::DAW_JSON_VER::tuple_json_mapping&lt; Members &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -153,6 +154,9 @@ Typedefs</h2></td></tr>
 <tr class="separator:a2fcabfde1fdd58d5c6953462a6ea047c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae19f177ce73a48571cd981975969a2fe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ae19f177ce73a48571cd981975969a2fe">daw::json::DAW_JSON_VER::json_value</a> = basic_json_value&lt; NoCommentSkippingPolicyChecked &gt;</td></tr>
 <tr class="separator:ae19f177ce73a48571cd981975969a2fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab745d435a53d7bbd1d74e7337d19af6b"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember &gt; </td></tr>
+<tr class="memitem:ab745d435a53d7bbd1d74e7337d19af6b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ab745d435a53d7bbd1d74e7337d19af6b">daw::json::DAW_JSON_VER::json_details::ordered_member_wrapper</a> = std::conditional_t&lt; is_an_ordered_member_v&lt; JsonMember &gt;, JsonMember, unnamed_default_type_mapping&lt; JsonMember &gt; &gt;</td></tr>
+<tr class="separator:ab745d435a53d7bbd1d74e7337d19af6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

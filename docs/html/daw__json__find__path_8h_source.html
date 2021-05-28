@@ -235,11 +235,11 @@ $(function() {
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160; </div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a8d31e0ea1cf820680ea0388081ab2d74">handle_on_number</a>( <a class="code" href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html">json_value</a> jv ) {</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;          <span class="keyword">auto</span> sv = std::string_view( );</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="preprocessor">#if defined( DAW_USE_JSON_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;          <span class="keywordflow">try</span> {</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;            sv = jv.<a class="code" href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html#a1fcf00986a34a886181c511498f7fd13">get_string_view</a>( );</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="preprocessor">#if defined( DAW_USE_JSON_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;          } <span class="keywordflow">catch</span>( json_exception <span class="keyword">const</span> &amp; ) {</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;            parse_stack.push_back( state );</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -254,11 +254,11 @@ $(function() {
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160; </div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a65bc6d95ea29cbd2970ea513aae6461d">handle_on_bool</a>( <a class="code" href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html">json_value</a> jv ) {</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;          <span class="keyword">auto</span> sv = std::string_view( );</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="preprocessor">#if defined( DAW_USE_JSON_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;          <span class="keywordflow">try</span> {</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;            sv = jv.<a class="code" href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html#a1fcf00986a34a886181c511498f7fd13">get_string_view</a>( );</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="preprocessor">#if defined( DAW_USE_JSON_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;          } <span class="keywordflow">catch</span>( json_exception <span class="keyword">const</span> &amp; ) {</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;            parse_stack.push_back( state );</div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -273,11 +273,11 @@ $(function() {
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160; </div>
 <div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a4d21b92b1f78d0f1de5e68ddc0b5e70a">handle_on_string</a>( <a class="code" href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html">json_value</a> jv ) {</div>
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;          <span class="keyword">auto</span> sv = std::string_view( );</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="preprocessor">#if defined( DAW_USE_JSON_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;          <span class="keywordflow">try</span> {</div>
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;            sv = jv.<a class="code" href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html#a1fcf00986a34a886181c511498f7fd13">get_string_view</a>( );</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<span class="preprocessor">#if defined( DAW_USE_JSON_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;          } <span class="keywordflow">catch</span>( json_exception <span class="keyword">const</span> &amp; ) {</div>
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;            parse_stack.push_back( state );</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -292,11 +292,11 @@ $(function() {
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160; </div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a196957d6eebd76e4864ed3354c0fd7bc">handle_on_null</a>( <a class="code" href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html">json_value</a> jv ) {</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;          <span class="keyword">auto</span> sv = std::string_view( );</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="preprocessor">#if defined( DAW_USE_JSON_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;          <span class="keywordflow">try</span> {</div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;            sv = jv.<a class="code" href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html#a1fcf00986a34a886181c511498f7fd13">get_string_view</a>( );</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="preprocessor">#if defined( DAW_USE_JSON_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;          } <span class="keywordflow">catch</span>( json_exception <span class="keyword">const</span> &amp; ) {</div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;            parse_stack.push_back( state );</div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -310,11 +310,11 @@ $(function() {
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        }</div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;      } handler{ doc_start, parse_location + 1 };</div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160; </div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="preprocessor">#if defined( DAW_USE_JSON_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;      <span class="keywordflow">try</span> {</div>
 <div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a55cee69e5ab298cfaf8ba1ce44ed2807">json_event_parser</a>( doc_start, handler );</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="preprocessor">#if defined( DAW_USE_JSON_EXCEPTIONS )</span></div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="preprocessor">#if defined( DAW_USE_EXCEPTIONS )</span></div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;      } <span class="keywordflow">catch</span>( json_exception <span class="keyword">const</span> &amp; ) {</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        <span class="comment">// Ignoring because we are only looking for the stack leading up to this</span></div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        <span class="comment">// and it may have come from an error</span></div>
@@ -386,8 +386,8 @@ $(function() {
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    }</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  } <span class="comment">// namespace DAW_JSON_VER</span></div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;} <span class="comment">// namespace daw::json</span></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value_html"><div class="ttname"><a href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html">daw::json::DAW_JSON_VER::basic_json_value</a></div><div class="ttdef"><b>Definition:</b> daw_json_value.h:311</div></div>
-<div class="ttc" id="aclassdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value_html_a1fcf00986a34a886181c511498f7fd13"><div class="ttname"><a href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html#a1fcf00986a34a886181c511498f7fd13">daw::json::DAW_JSON_VER::basic_json_value::get_string_view</a></div><div class="ttdeci">constexpr std::string_view get_string_view() const</div><div class="ttdef"><b>Definition:</b> daw_json_value.h:434</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value_html"><div class="ttname"><a href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html">daw::json::DAW_JSON_VER::basic_json_value</a></div><div class="ttdef"><b>Definition:</b> daw_json_value.h:312</div></div>
+<div class="ttc" id="aclassdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value_html_a1fcf00986a34a886181c511498f7fd13"><div class="ttname"><a href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1basic__json__value.html#a1fcf00986a34a886181c511498f7fd13">daw::json::DAW_JSON_VER::basic_json_value::get_string_view</a></div><div class="ttdeci">constexpr std::string_view get_string_view() const</div><div class="ttdef"><b>Definition:</b> daw_json_value.h:437</div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__path__node_html"><div class="ttname"><a href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__path__node.html">daw::json::DAW_JSON_VER::json_path_node</a></div><div class="ttdef"><b>Definition:</b> daw_json_find_path.h:36</div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__path__node_html_a1829438c4d481d3a6b66acb2098082e5"><div class="ttname"><a href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__path__node.html#a1829438c4d481d3a6b66acb2098082e5">daw::json::DAW_JSON_VER::json_path_node::type</a></div><div class="ttdeci">constexpr JsonBaseParseTypes type() const</div><div class="ttdoc">What type of value is represented.</div><div class="ttdef"><b>Definition:</b> daw_json_find_path.h:56</div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__path__node_html_a7413db377bd9988812f077e1538c7dae"><div class="ttname"><a href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__path__node.html#a7413db377bd9988812f077e1538c7dae">daw::json::DAW_JSON_VER::json_path_node::name</a></div><div class="ttdeci">constexpr std::string_view name() const</div><div class="ttdoc">The member name, only value for submembers of Class types.</div><div class="ttdef"><b>Definition:</b> daw_json_find_path.h:61</div></div>
@@ -395,7 +395,7 @@ $(function() {
 <div class="ttc" id="aclassdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__path__node_html_a922bf463efae1a0c53981dd012725d22"><div class="ttname"><a href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__path__node.html#a922bf463efae1a0c53981dd012725d22">daw::json::DAW_JSON_VER::json_path_node::index</a></div><div class="ttdeci">constexpr long long index() const</div><div class="ttdoc">The element index, only valid for elements of Array types.</div><div class="ttdef"><b>Definition:</b> daw_json_find_path.h:66</div></div>
 <div class="ttc" id="aclassdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__path__node_html_a9d0a8364630870acc95b0bb290f1f70f"><div class="ttname"><a href="classdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__path__node.html#a9d0a8364630870acc95b0bb290f1f70f">daw::json::DAW_JSON_VER::json_path_node::find_json_path_stack_to</a></div><div class="ttdeci">friend std::vector&lt; json_path_node &gt; find_json_path_stack_to(char const *parse_location, char const *doc_start)</div><div class="ttdoc">Get the json_path_nodes representing the path to the nearest value's position in the document.</div><div class="ttdef"><b>Definition:</b> daw_json_find_path.h:99</div></div>
 <div class="ttc" id="adaw__json__assert_8h_html"><div class="ttname"><a href="daw__json__assert_8h.html">daw_json_assert.h</a></div></div>
-<div class="ttc" id="adaw__json__assert_8h_html_a7eec2e453676338364b2bb153a5fce45"><div class="ttname"><a href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a></div><div class="ttdeci">#define daw_json_assert(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:193</div></div>
+<div class="ttc" id="adaw__json__assert_8h_html_a7eec2e453676338364b2bb153a5fce45"><div class="ttname"><a href="daw__json__assert_8h.html#a7eec2e453676338364b2bb153a5fce45">daw_json_assert</a></div><div class="ttdeci">#define daw_json_assert(Bool,...)</div><div class="ttdef"><b>Definition:</b> daw_json_assert.h:178</div></div>
 <div class="ttc" id="adaw__json__event__parser_8h_html"><div class="ttname"><a href="daw__json__event__parser_8h.html">daw_json_event_parser.h</a></div></div>
 <div class="ttc" id="adaw__json__link__types_8h_html"><div class="ttname"><a href="daw__json__link__types_8h.html">daw_json_link_types.h</a></div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a196957d6eebd76e4864ed3354c0fd7bc"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a196957d6eebd76e4864ed3354c0fd7bc">daw::json::DAW_JSON_VER::json_details::handle_on_null</a></div><div class="ttdeci">constexpr handler_result_holder handle_on_null(Handler &amp;&amp;handler, basic_json_value&lt; ParseState &gt; &amp;jv)</div><div class="ttdef"><b>Definition:</b> daw_json_event_parser.h:295</div></div>

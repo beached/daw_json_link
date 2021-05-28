@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['unknown_5fvariant_5ftype_936',['unknown_variant_type',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1unknown__variant__type.html',1,'daw::json::DAW_JSON_VER::json_details']]]
+  ['testinputiteratortype_973',['TestInputIteratorType',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_test_input_iterator_type.html',1,'daw::json::DAW_JSON_VER::TestInputIteratorType&lt; T &gt;'],['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_test_input_iterator_type.html',1,'daw::json::TestInputIteratorType&lt; T &gt;']]],
+  ['time_5fparts_974',['time_parts',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1datetime_1_1time__parts.html',1,'daw::json::DAW_JSON_VER::datetime']]],
+  ['tuple_5fjson_5fmapping_975',['tuple_json_mapping',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__json__mapping.html',1,'daw::json::DAW_JSON_VER::tuple_json_mapping&lt; Members &gt;'],['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__json__mapping.html',1,'daw::json::tuple_json_mapping&lt; Members &gt;']]]
 ];

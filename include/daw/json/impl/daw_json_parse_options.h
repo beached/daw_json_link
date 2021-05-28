@@ -205,6 +205,7 @@ namespace daw::json {
 			inline constexpr auto default_policy_value<TemporarilyMutateBuffer> =
 			  TemporarilyMutateBuffer::no;
 		} // namespace json_details
+
 		/* *****************************************
 		 * Implementation details
 		 */

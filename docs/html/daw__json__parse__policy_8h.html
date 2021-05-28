@@ -85,7 +85,8 @@ $(function() {
 <code>#include &quot;<a class="el" href="daw__json__parse__policy__policy__details_8h_source.html">daw_json_parse_policy_policy_details.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
 <code>#include &lt;daw/cpp_17.h&gt;</code><br />
-<code>#include &lt;daw/daw_hide.h&gt;</code><br />
+<code>#include &lt;daw/daw_attributes.h&gt;</code><br />
+<code>#include &lt;daw/daw_likely.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
@@ -98,6 +99,12 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_basic_parse_policy.html">daw::json::DAW_JSON_VER::BasicParsePolicy&lt; PolicyFlags, Allocator &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1exec__mode__from__tag__t_3_01constexpr__exec__tag_01_4.html">daw::json::DAW_JSON_VER::json_details::exec_mode_from_tag_t&lt; constexpr_exec_tag &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1exec__mode__from__tag__t_3_01runtime__exec__tag_01_4.html">daw::json::DAW_JSON_VER::json_details::exec_mode_from_tag_t&lt; runtime_exec_tag &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1exec__mode__from__tag__t_3_01simd__exec__tag_01_4.html">daw::json::DAW_JSON_VER::json_details::exec_mode_from_tag_t&lt; simd_exec_tag &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -117,6 +124,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:a50e7470f01f9b3e7682e82b227da21d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad65aced03754d6345c8c6974432b14f7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ad65aced03754d6345c8c6974432b14f7">daw::json::DAW_JSON_VER::CppCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; parse_options(CheckedParseMode::no, PolicyCommentTypes::cpp)&gt;</td></tr>
 <tr class="separator:ad65aced03754d6345c8c6974432b14f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdf97d71d4c8cba3639ac7325f7ff844"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#acdf97d71d4c8cba3639ac7325f7ff844">daw::json::DAW_JSON_VER::DefaultParsePolicy</a> = BasicParsePolicy&lt;&gt;</td></tr>
+<tr class="separator:acdf97d71d4c8cba3639ac7325f7ff844"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd989b59b414dc17a25d00f49b3f8dfc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#afd989b59b414dc17a25d00f49b3f8dfc">daw::json::DAW_JSON_VER::HashCommentSkippingPolicyChecked</a> = BasicParsePolicy&lt; parse_options(PolicyCommentTypes::hash)&gt;</td></tr>
 <tr class="separator:afd989b59b414dc17a25d00f49b3f8dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8c5af48b747b9653e0a580324a9e326"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af8c5af48b747b9653e0a580324a9e326">daw::json::DAW_JSON_VER::HashCommentSkippingPolicyUnchecked</a> = BasicParsePolicy&lt; parse_options(CheckedParseMode::no, PolicyCommentTypes::hash)&gt;</td></tr>
@@ -150,15 +159,9 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:ac1aa92d67e0325b485a1c055bdf19de8"><td class="memTemplParams" colspan="2">template&lt;typename ExecTag &gt; </td></tr>
+<tr class="memitem:ac1aa92d67e0325b485a1c055bdf19de8"><td class="memTemplParams" colspan="2">template&lt;typename ExecMode &gt; </td></tr>
 <tr class="memitem:ac1aa92d67e0325b485a1c055bdf19de8"><td class="memTemplItemLeft" align="right" valign="top">constexpr ExecModeTypes&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ac1aa92d67e0325b485a1c055bdf19de8">daw::json::DAW_JSON_VER::json_details::exec_mode_from_tag</a></td></tr>
 <tr class="separator:ac1aa92d67e0325b485a1c055bdf19de8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf0a85811548f3379177ef6760fadbf0"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:abf0a85811548f3379177ef6760fadbf0"><td class="memTemplItemLeft" align="right" valign="top">constexpr ExecModeTypes&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#abf0a85811548f3379177ef6760fadbf0">daw::json::DAW_JSON_VER::json_details::exec_mode_from_tag&lt; runtime_exec_tag &gt;</a></td></tr>
-<tr class="separator:abf0a85811548f3379177ef6760fadbf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33cb1f178f9c0f6266f0bef57b065639"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a33cb1f178f9c0f6266f0bef57b065639"><td class="memTemplItemLeft" align="right" valign="top">constexpr ExecModeTypes&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a33cb1f178f9c0f6266f0bef57b065639">daw::json::DAW_JSON_VER::json_details::exec_mode_from_tag&lt; simd_exec_tag &gt;</a></td></tr>
-<tr class="separator:a33cb1f178f9c0f6266f0bef57b065639"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a680e3f355a88e01914516d6ddf1d6d82"><td class="memTemplParams" colspan="2">template&lt;typename ParsePolicy &gt; </td></tr>
 <tr class="memitem:a680e3f355a88e01914516d6ddf1d6d82"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a680e3f355a88e01914516d6ddf1d6d82">daw::json::DAW_JSON_VER::json_details::is_guaranteed_rvo_v</a></td></tr>
 <tr class="separator:a680e3f355a88e01914516d6ddf1d6d82"><td class="memSeparator" colspan="2">&#160;</td></tr>

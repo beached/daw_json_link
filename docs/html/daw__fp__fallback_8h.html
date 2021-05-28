@@ -68,18 +68,14 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">daw_fp_fallback.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="daw__json__assert_8h_source.html">daw_json_assert.h</a>&quot;</code><br />
-<code>#include &lt;daw/daw_bit_cast.h&gt;</code><br />
-<code>#include &lt;boost/multiprecision/cpp_bin_float.hpp&gt;</code><br />
-<code>#include &lt;boost/multiprecision/cpp_dec_float.hpp&gt;</code><br />
-<code>#include &lt;boost/multiprecision/cpp_int.hpp&gt;</code><br />
-<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;daw/daw_attributes.h&gt;</code><br />
+<code>#include &lt;daw/daw_cpp_feature_check.h&gt;</code><br />
 </div>
 <p><a href="daw__fp__fallback_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -93,28 +89,12 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html">daw::json::DAW_JSON_VER::json_details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1math"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1math.html">daw::json::DAW_JSON_VER::json_details::math</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a04d830bf643749f4d3f25695073bdf15"><td class="memTemplParams" colspan="2">template&lt;unsigned Bits&gt; </td></tr>
-<tr class="memitem:a04d830bf643749f4d3f25695073bdf15"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1math.html#a04d830bf643749f4d3f25695073bdf15">daw::json::DAW_JSON_VER::json_details::math::basic_bigint_t</a> = boost::multiprecision::number&lt; boost::multiprecision::cpp_int_backend&lt; Bits, Bits, boost::multiprecision::signed_magnitude, boost::multiprecision::unchecked, void &gt; &gt;</td></tr>
-<tr class="separator:a04d830bf643749f4d3f25695073bdf15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5046443685e6f290c6d0dc1afccf439"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1math.html#af5046443685e6f290c6d0dc1afccf439">daw::json::DAW_JSON_VER::json_details::math::bigfloat_t</a> = boost::multiprecision::cpp_dec_float&lt; 1000 &gt;</td></tr>
-<tr class="separator:af5046443685e6f290c6d0dc1afccf439"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d474deabe171189096170f467449aab"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1math.html#a0d474deabe171189096170f467449aab">daw::json::DAW_JSON_VER::json_details::math::bigint_t</a> = basic_bigint_t&lt; 3328U &gt;</td></tr>
-<tr class="separator:a0d474deabe171189096170f467449aab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a891efb4d271d3fe2facbb0915b42b4a7"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1math.html#a891efb4d271d3fe2facbb0915b42b4a7">daw::json::DAW_JSON_VER::json_details::math::get_msb</a> (bigint_t const &amp;num)</td></tr>
-<tr class="separator:a891efb4d271d3fe2facbb0915b42b4a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fedc159e6ff3b3a99448453f628377e"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1math.html#a6fedc159e6ff3b3a99448453f628377e">daw::json::DAW_JSON_VER::json_details::math::min3</a> (std::int32_t a, std::int32_t b, std::int32_t c)</td></tr>
-<tr class="separator:a6fedc159e6ff3b3a99448453f628377e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fbcd9a6b0c56c2d4c768e94c3d6b88d"><td class="memTemplParams" colspan="2">template&lt;typename Real , std::enable_if_t&lt; std::is_floating_point_v&lt; Real &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
-<tr class="memitem:a1fbcd9a6b0c56c2d4c768e94c3d6b88d"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="daw__json__defs_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> Real&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a1fbcd9a6b0c56c2d4c768e94c3d6b88d">daw::json::DAW_JSON_VER::json_details::parse_with_strtod</a> (char const *first, char const *last)</td></tr>
-<tr class="separator:a1fbcd9a6b0c56c2d4c768e94c3d6b88d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb334873b05fb457082bf2b93540f582"><td class="memTemplParams" colspan="2">template&lt;typename Real , std::enable_if_t&lt; std::is_floating_point_v&lt; Real &gt;, std::nullptr_t &gt;  = nullptr&gt; </td></tr>
+<tr class="memitem:aeb334873b05fb457082bf2b93540f582"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_NOINLINE Real&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aeb334873b05fb457082bf2b93540f582">daw::json::DAW_JSON_VER::json_details::parse_with_strtod</a> (char const *first, char const *last)</td></tr>
+<tr class="separator:aeb334873b05fb457082bf2b93540f582"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

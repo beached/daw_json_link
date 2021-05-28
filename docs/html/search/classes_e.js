@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['testinputiteratortype_933',['TestInputIteratorType',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_test_input_iterator_type.html',1,'daw::json::DAW_JSON_VER::TestInputIteratorType&lt; T &gt;'],['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1_test_input_iterator_type.html',1,'daw::json::TestInputIteratorType&lt; T &gt;']]],
-  ['time_5fparts_934',['time_parts',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1datetime_1_1time__parts.html',1,'daw::json::DAW_JSON_VER::datetime']]],
-  ['tuple_5fjson_5fmapping_935',['tuple_json_mapping',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__json__mapping.html',1,'daw::json::DAW_JSON_VER::tuple_json_mapping&lt; Members &gt;'],['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__json__mapping.html',1,'daw::json::tuple_json_mapping&lt; Members &gt;']]]
+  ['simd_5fexec_5ftag_971',['simd_exec_tag',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1simd__exec__tag.html',1,'daw::json::DAW_JSON_VER::simd_exec_tag'],['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1simd__exec__tag.html',1,'daw::json::simd_exec_tag']]],
+  ['string_5fquote_5fparser_972',['string_quote_parser',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1string__quote_1_1string__quote__parser.html',1,'daw::json::DAW_JSON_VER::json_details::string_quote']]]
 ];

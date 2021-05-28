@@ -76,10 +76,11 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="daw__json__exception_8h_source.html">../daw_json_exception.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="daw__json__defs_8h_source.html">daw_json_defs.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_assume.h&gt;</code><br />
-<code>#include &lt;daw/daw_hide.h&gt;</code><br />
+<code>#include &lt;daw/daw_attributes.h&gt;</code><br />
+<code>#include &lt;daw/daw_check_exceptions.h&gt;</code><br />
+<code>#include &lt;daw/daw_likely.h&gt;</code><br />
 <code>#include &lt;daw/daw_string_view.h&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
@@ -107,33 +108,31 @@ Macros</h2></td></tr>
 <tr class="separator:a7eec2e453676338364b2bb153a5fce45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a728389a742b837d2170f62d34d78ddf4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a728389a742b837d2170f62d34d78ddf4">daw_json_assert_weak</a>(Bool, ...)</td></tr>
 <tr class="separator:a728389a742b837d2170f62d34d78ddf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab4d7faa2d24e5d5b828e8b013eb8289"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#aab4d7faa2d24e5d5b828e8b013eb8289">DAW_USE_JSON_EXCEPTIONS</a></td></tr>
-<tr class="separator:aab4d7faa2d24e5d5b828e8b013eb8289"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a317072e892b979b5a98b7b8665c6d293"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
-<tr class="memitem:a317072e892b979b5a98b7b8665c6d293"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="daw__json__defs_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a317072e892b979b5a98b7b8665c6d293">daw::json::DAW_JSON_VER::daw_json_error</a> (ErrorReason reason)</td></tr>
-<tr class="separator:a317072e892b979b5a98b7b8665c6d293"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42a4fb9a7fedba9b047e426bfef9bc35"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState &gt; </td></tr>
-<tr class="memitem:a42a4fb9a7fedba9b047e426bfef9bc35"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__defs_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a42a4fb9a7fedba9b047e426bfef9bc35">daw::json::DAW_JSON_VER::daw_json_error</a> (ErrorReason reason, ParseState const &amp;location)</td></tr>
-<tr class="separator:a42a4fb9a7fedba9b047e426bfef9bc35"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29de9b4819e340bea2f729877578122c"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
-<tr class="memitem:a29de9b4819e340bea2f729877578122c"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__defs_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a29de9b4819e340bea2f729877578122c">daw::json::DAW_JSON_VER::daw_json_error</a> (json_details::missing_member reason)</td></tr>
-<tr class="separator:a29de9b4819e340bea2f729877578122c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c1627d74eeaec59511e9aae95d16725"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState &gt; </td></tr>
-<tr class="memitem:a8c1627d74eeaec59511e9aae95d16725"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__defs_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a8c1627d74eeaec59511e9aae95d16725">daw::json::DAW_JSON_VER::daw_json_error</a> (json_details::missing_member reason, ParseState const &amp;location)</td></tr>
-<tr class="separator:a8c1627d74eeaec59511e9aae95d16725"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0b5cd0c9407ee073294abff9ee03a6f"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
-<tr class="memitem:ae0b5cd0c9407ee073294abff9ee03a6f"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__defs_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ae0b5cd0c9407ee073294abff9ee03a6f">daw::json::DAW_JSON_VER::daw_json_error</a> (json_details::missing_token reason)</td></tr>
-<tr class="separator:ae0b5cd0c9407ee073294abff9ee03a6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a144240afe95e9840b6f4e10c0770a2f1"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState &gt; </td></tr>
-<tr class="memitem:a144240afe95e9840b6f4e10c0770a2f1"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="daw__json__defs_8h.html#adf37d1f6b1961417726ac65a35ce8978">DAW_JSON_NOINLINE</a> void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a144240afe95e9840b6f4e10c0770a2f1">daw::json::DAW_JSON_VER::daw_json_error</a> (json_details::missing_token reason, ParseState const &amp;location)</td></tr>
-<tr class="separator:a144240afe95e9840b6f4e10c0770a2f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9972e119a5a943da8e6375234236763a"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
+<tr class="memitem:a9972e119a5a943da8e6375234236763a"><td class="memTemplItemLeft" align="right" valign="top">DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9972e119a5a943da8e6375234236763a">daw::json::DAW_JSON_VER::daw_json_error</a> (ErrorReason reason)</td></tr>
+<tr class="separator:a9972e119a5a943da8e6375234236763a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1df06d2f5331fda767f4634b5c0d5fe1"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState &gt; </td></tr>
+<tr class="memitem:a1df06d2f5331fda767f4634b5c0d5fe1"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a1df06d2f5331fda767f4634b5c0d5fe1">daw::json::DAW_JSON_VER::daw_json_error</a> (ErrorReason reason, ParseState const &amp;location)</td></tr>
+<tr class="separator:a1df06d2f5331fda767f4634b5c0d5fe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ec8902fa39877faf98aef1d511c433e"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
+<tr class="memitem:a7ec8902fa39877faf98aef1d511c433e"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7ec8902fa39877faf98aef1d511c433e">daw::json::DAW_JSON_VER::daw_json_error</a> (json_details::missing_member reason)</td></tr>
+<tr class="separator:a7ec8902fa39877faf98aef1d511c433e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a600e3e23d196f421c0e8fa11965b58d1"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState &gt; </td></tr>
+<tr class="memitem:a600e3e23d196f421c0e8fa11965b58d1"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a600e3e23d196f421c0e8fa11965b58d1">daw::json::DAW_JSON_VER::daw_json_error</a> (json_details::missing_member reason, ParseState const &amp;location)</td></tr>
+<tr class="separator:a600e3e23d196f421c0e8fa11965b58d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b3ca283d7d53a456330c30cd2393417"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v&gt; </td></tr>
+<tr class="memitem:a8b3ca283d7d53a456330c30cd2393417"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a8b3ca283d7d53a456330c30cd2393417">daw::json::DAW_JSON_VER::daw_json_error</a> (json_details::missing_token reason)</td></tr>
+<tr class="separator:a8b3ca283d7d53a456330c30cd2393417"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2b060f3af724dfd052e875b1bccb46c"><td class="memTemplParams" colspan="2">template&lt;bool ShouldThrow = use_daw_json_exceptions_v, typename ParseState &gt; </td></tr>
+<tr class="memitem:ac2b060f3af724dfd052e875b1bccb46c"><td class="memTemplItemLeft" align="right" valign="top">static DAW_ATTRIB_NOINLINE void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ac2b060f3af724dfd052e875b1bccb46c">daw::json::DAW_JSON_VER::daw_json_error</a> (json_details::missing_token reason, ParseState const &amp;location)</td></tr>
+<tr class="separator:ac2b060f3af724dfd052e875b1bccb46c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a236cef0d7e6c40781c19e4ebcd63aa5b"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a236cef0d7e6c40781c19e4ebcd63aa5b">use_daw_json_exceptions_v</a> = true</td></tr>
+<tr class="memitem:a236cef0d7e6c40781c19e4ebcd63aa5b"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="daw__json__assert_8h.html#a236cef0d7e6c40781c19e4ebcd63aa5b">use_daw_json_exceptions_v</a> = false</td></tr>
 <tr class="separator:a236cef0d7e6c40781c19e4ebcd63aa5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -162,11 +161,10 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">if</span>( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( not( Bool ) ) ) { \</div>
-<div class="line">    daw_json_error( __VA_ARGS__ );         \</div>
-<div class="line">  }                                        \</div>
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">if</span>( DAW_UNLIKELY( not( Bool ) ) ) { \</div>
+<div class="line">    daw_json_error( __VA_ARGS__ );    \</div>
+<div class="line">  }                                   \</div>
 <div class="line">  while( <span class="keyword">false</span> )</div>
-<div class="ttc" id="adaw__json__defs_8h_html_a043f9b7b84dd49e87d2b0114f7dc4d42"><div class="ttname"><a href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a></div><div class="ttdeci">#define DAW_JSON_UNLIKELY(Bool)</div><div class="ttdef"><b>Definition:</b> daw_json_defs.h:22</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -196,26 +194,12 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">if</span> constexpr( not ParseState::is_unchecked_input ) { \</div>
-<div class="line">    if( <a class="code" href="daw__json__defs_8h.html#a043f9b7b84dd49e87d2b0114f7dc4d42">DAW_JSON_UNLIKELY</a>( not( Bool ) ) ) {           \</div>
+<div class="line">    if( DAW_UNLIKELY( not( Bool ) ) ) {                \</div>
 <div class="line">      daw_json_error( __VA_ARGS__ );                   \</div>
 <div class="line">    }                                                  \</div>
 <div class="line">  }                                                    \</div>
 <div class="line">  while( <span class="keyword">false</span> )</div>
 </div><!-- fragment -->
-</div>
-</div>
-<a id="aab4d7faa2d24e5d5b828e8b013eb8289"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aab4d7faa2d24e5d5b828e8b013eb8289">&#9670;&nbsp;</a></span>DAW_USE_JSON_EXCEPTIONS</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define DAW_USE_JSON_EXCEPTIONS</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
@@ -229,7 +213,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool use_daw_json_exceptions_v = true</td>
+          <td class="memname">constexpr bool use_daw_json_exceptions_v = false</td>
         </tr>
       </table>
   </td>
