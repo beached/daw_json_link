@@ -34,20 +34,6 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		/***
-		 *
-		 * Allows specifying an unnamed json mapping where the
-		 * result is a tuple
-		 */
-		template<typename... Members>
-		struct tuple_json_mapping {
-			std::tuple<typename Members::parse_to_t...> members;
-
-			template<typename... Ts>
-			constexpr tuple_json_mapping( Ts &&...values )
-			  : members{ DAW_FWD( values )... } {}
-		};
-
 		namespace json_details {
 			template<typename T>
 			using ordered_member_subtype_test = typename T::json_member;
@@ -238,7 +224,7 @@ namespace daw::json {
 					return *this;
 				}
 
-				inline constexpr basic_appender operator++( int ) const {
+				inline constexpr basic_appender operator++( int ) {
 					return *this;
 				}
 

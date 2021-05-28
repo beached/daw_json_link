@@ -216,7 +216,11 @@ namespace daw::json {
 						char const *const last = parse_state.last;
 						if constexpr( std::is_same<typename ParseState::exec_tag_t,
 						                           constexpr_exec_tag>::value ) {
-							while( not key_table<'"', '\\'>[*first] ) {
+
+							daw_json_assert_weak( KnownBounds or first < last,
+							                      ErrorReason::UnexpectedEndOfData,
+							                      parse_state );
+							while( *first != '"' and *first != '\\' ) {
 								++first;
 								daw_json_assert_weak( KnownBounds or first < last,
 								                      ErrorReason::UnexpectedEndOfData,

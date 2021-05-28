@@ -46,22 +46,6 @@ namespace daw::json {
 				return *( ptr - 2 ) != '\\';
 			}
 
-			struct key_table_t {
-				alignas( 16 ) bool values[256] = { };
-
-				constexpr bool operator[]( char idx ) const {
-					return values[static_cast<unsigned char>( idx )];
-				}
-			};
-
-			template<char... keys>
-			constexpr inline key_table_t key_table = [] {
-				auto result = key_table_t{ };
-				(void)( ( result.values[static_cast<unsigned char>( keys )] = true ) |
-				        ... );
-				return result;
-			}( );
-
 			inline std::ptrdiff_t find_lsb_set( runtime_exec_tag, UInt32 value ) {
 #if defined( __GNUC__ ) or defined( __clang__ )
 				return __builtin_ffs( static_cast<int>( value ) ) - 1;

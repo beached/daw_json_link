@@ -134,6 +134,20 @@ namespace daw::json {
 			}
 		};
 
+		/***
+		 *
+		 * Allows specifying an unnamed json mapping where the
+		 * result is a tuple
+		 */
+		template<typename... Members>
+		struct tuple_json_mapping {
+			std::tuple<typename Members::parse_to_t...> members;
+
+			template<typename... Ts>
+			constexpr tuple_json_mapping( Ts &&...values )
+			  : members{ DAW_FWD( values )... } {}
+		};
+
 		template<typename... Members>
 		struct json_data_contract<tuple_json_mapping<Members...>> {
 			using type = json_member_list<Members...>;
