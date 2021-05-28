@@ -15,6 +15,9 @@
 
 #include <daw/json/daw_json_link.h>
 
+#ifdef DAW_USE_EXCEPTIONS
+#include <exception>
+#endif
 #include <iostream>
 #include <optional>
 #include <string_view>
@@ -157,9 +160,11 @@ namespace tests {
 			auto const ul = daw::json::from_json<tests::UriList>( data );
 			(void)ul;
 		} catch( daw::json::json_exception const &jex ) {
-			if( jex.parse_location( ) and
-			    ( jex.parse_location( ) - data.data( ) == 29 ) ) {
-				return true;
+			if( jex.parse_location( ) ) {
+				auto const dist = jex.parse_location( ) - data.data( );
+				if( dist == 29 ) {
+					return true;
+				}
 			}
 			std::cerr << "Wrong exception: " << jex.reason( ) << '\n'
 			          << to_formatted_string( jex ) << '\n';
@@ -251,7 +256,7 @@ namespace tests {
 		return false;
 	}
 } // namespace tests
-static bool has_uncaught_except = false;
+static std::exception_ptr last_uncaught_except = nullptr;
 
 #ifdef DAW_USE_EXCEPTIONS
 #define expect_fail( Bool, Reason )                                          \
@@ -265,10 +270,10 @@ static bool has_uncaught_except = false;
 		} catch( std::exception const &ex ) {                                    \
 			std::cout << "Fail: " << ( Reason ) << "\nUnexpected std::exception\n" \
 			          << ex.what( ) << '\n';                                       \
-			has_uncaught_except = true;                                            \
+			last_uncaught_except = std::make_exception_ptr( ex );                  \
 		} catch( ... ) {                                                         \
 			std::cout << "Fail: " << ( Reason ) << "\nUnknown exception\n";        \
-			has_uncaught_except = true;                                            \
+			last_uncaught_except = std::current_exception( );                      \
 		}                                                                        \
 	} while( false )
 #else
@@ -328,8 +333,8 @@ int main( int, char ** )
 	             "Incomplete false in array not caught" );
 
 	expect_fail( tests::bad_true( ), "bad true value not caught" );
-	if( has_uncaught_except ) {
-		return 1;
+	if( last_uncaught_except ) {
+		std::rethrow_exception( last_uncaught_except );
 	}
 	return 0;
 }

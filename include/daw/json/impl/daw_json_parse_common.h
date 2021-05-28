@@ -89,41 +89,41 @@ namespace daw::json {
 				}
 			}
 
+			template<typename Constructor>
 			struct construct_value_tp_invoke_t {
-				template<typename Func, typename... TArgs, std::size_t... Is>
+				template<typename... TArgs, std::size_t... Is>
 				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
-				operator( )( Func &&f, std::tuple<TArgs...> &&tp,
+				operator( )( std::tuple<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
-					return DAW_FWD( f )( DAW_MOVE( std::get<Is>( tp ) )... );
+					return Constructor{ }( DAW_MOVE( std::get<Is>( tp ) )... );
 				}
 
-				template<typename Func, typename... TArgs, typename Allocator,
-				         std::size_t... Is>
+				template<typename... TArgs, typename Allocator, std::size_t... Is>
 				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
-				operator( )( Func &&f, std::tuple<TArgs...> &&tp, Allocator &alloc,
+				operator( )( std::tuple<TArgs...> &&tp, Allocator &alloc,
 				             std::index_sequence<Is...> ) const {
-					return DAW_FWD( f )( DAW_MOVE( std::get<Is>( tp ) )...,
-					                     DAW_FWD( alloc ) );
+					return Constructor{ }( DAW_MOVE( std::get<Is>( tp ) )...,
+					                       DAW_FWD( alloc ) );
 				}
 
-				template<typename Alloc, typename Func, typename... TArgs,
-				         std::size_t... Is>
+				template<typename Alloc, typename... TArgs, std::size_t... Is>
 				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
-				operator( )( Func &&f, std::allocator_arg_t, Alloc &&alloc,
+				operator( )( std::allocator_arg_t, Alloc &&alloc,
 				             std::tuple<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
-					return DAW_FWD( f )( std::allocator_arg, DAW_FWD( alloc ),
-					                     DAW_MOVE( std::get<Is>( tp ) )... );
+					return Constructor{ }( std::allocator_arg, DAW_FWD( alloc ),
+					                       DAW_MOVE( std::get<Is>( tp ) )... );
 				}
 			};
 
-			inline constexpr construct_value_tp_invoke_t construct_value_tp_invoke =
-			  construct_value_tp_invoke_t{ };
+			template<typename Constructor>
+			inline constexpr auto construct_value_tp_invoke =
+			  construct_value_tp_invoke_t<Constructor>{ };
 
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
 			DAW_ATTRIB_FLATINLINE static inline constexpr auto
-			construct_value_tp( Constructor &&ctor, ParseState &parse_state,
+			construct_value_tp( ParseState &parse_state,
 			                    std::tuple<Args...> &&tp_args ) {
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
@@ -131,24 +131,24 @@ namespace daw::json {
 					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
 					if constexpr( std::is_invocable<Constructor, Args...,
 					                                alloc_t>::value ) {
-						return construct_value_tp_invoke(
-						  ctor, DAW_MOVE( tp_args ), DAW_MOVE( alloc ),
+						return construct_value_tp_invoke<Constructor>(
+						  DAW_MOVE( tp_args ), DAW_MOVE( alloc ),
 						  std::index_sequence_for<Args...>{ } );
 					} else if constexpr( daw::traits::is_callable_v<Constructor,
 					                                                std::allocator_arg_t,
 					                                                alloc_t, Args...> ) {
-						return construct_value_tp_invoke(
-						  ctor, std::allocator_arg, DAW_MOVE( alloc ), DAW_MOVE( tp_args ),
+						return construct_value_tp_invoke<Constructor>(
+						  std::allocator_arg, DAW_MOVE( alloc ), DAW_MOVE( tp_args ),
 						  std::index_sequence_for<Args...>{ } );
 					} else {
 						static_assert( std::is_invocable<Constructor, Args...>::value );
-						return construct_value_tp_invoke(
-						  ctor, DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
+						return construct_value_tp_invoke<Constructor>(
+						  DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
 					}
 				} else {
 					static_assert( std::is_invocable<Constructor, Args...>::value );
-					return construct_value_tp_invoke(
-					  ctor, DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
+					return construct_value_tp_invoke<Constructor>(
+					  DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
 				}
 			}
 

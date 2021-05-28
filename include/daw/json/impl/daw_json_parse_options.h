@@ -177,6 +177,21 @@ namespace daw::json {
 		} // namespace json_details
 
 		/***
+		 * Continue checking that the data is whitespace or empty after the end of
+		 * top level object is parsed from from_json
+		 */
+		enum class MustVerifyEndOfDataIsValid : unsigned { no, yes };
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<MustVerifyEndOfDataIsValid> =
+			  1;
+
+			template<>
+			inline constexpr auto default_policy_value<MustVerifyEndOfDataIsValid> =
+			  MustVerifyEndOfDataIsValid::no;
+		} // namespace json_details
+
+		/***
 		 * When enabled, the parser can temporarily set a character to the desired
 		 * token. This allows for safe searching without bounds checking.  If the
 		 * buffer is not mutable, it will not be enabled.
@@ -232,8 +247,8 @@ namespace daw::json {
 			using policy_list = typename policy_list_impl<
 			  ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
 			  CheckedParseMode, AllowEscapedNames, IEEE754Precise, ForceFullNameCheck,
-			  MinifiedDocument, UseExactMappingsByDefault,
-			  TemporarilyMutateBuffer>::type;
+			  MinifiedDocument, UseExactMappingsByDefault, TemporarilyMutateBuffer,
+			  MustVerifyEndOfDataIsValid>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =

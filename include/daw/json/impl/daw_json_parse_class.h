@@ -265,8 +265,8 @@ namespace daw::json {
 							                     must_exist>( parse_state,
 							                                  known_locations )... ) );
 
-							return construct_value_tp<T>(
-							  Constructor{ }, parse_state,
+							return construct_value_tp<T, Constructor>(
+							  parse_state,
 							  tp_t{
 							    parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
 							                       must_exist>( parse_state,
@@ -283,8 +283,8 @@ namespace daw::json {
 							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
 							                     must_exist>( parse_state,
 							                                  known_locations )... ) );
-							auto result = construct_value_tp<T>(
-							  Constructor{ }, parse_state,
+							auto result = construct_value_tp<T, Constructor>(
+							  parse_state,
 							  tp_t{
 							    parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
 							                       must_exist>( parse_state,
@@ -344,13 +344,13 @@ namespace daw::json {
 					} );
 					(void)run_after_parse;
 
-					return construct_value_tp<T>(
-					  Constructor{ }, parse_state,
+					return construct_value_tp<T, Constructor>(
+					  parse_state,
 					  tp_t{ parse_ordered_class_member( template_arg<JsonMembers>,
 					                                    current_idx, parse_state )... } );
 				} else {
-					auto result = construct_value_tp<T>(
-					  Constructor{ }, parse_state,
+					auto result = construct_value_tp<T, Constructor>(
+					  parse_state,
 					  tp_t{ parse_ordered_class_member( template_arg<JsonMembers>,
 					                                    current_idx, parse_state )... } );
 					if constexpr( json_details::all_json_members_must_exist_v<

@@ -109,6 +109,13 @@ namespace daw::json {
 				operator++( ) {
 					daw_json_assert_weak( base::parse_state,
 					                      ErrorReason::UnexpectedEndOfData );
+					base::parse_state->trim_left( );
+
+					daw_json_assert_weak(
+					  base::parse_state->has_more( ) and
+					    base::parse_state->is_at_next_array_element( ),
+					  ErrorReason::UnexpectedEndOfData, *base::parse_state );
+
 					base::parse_state->move_next_member_or_end( );
 					daw_json_assert_weak( base::parse_state->has_more( ),
 					                      ErrorReason::UnexpectedEndOfData );

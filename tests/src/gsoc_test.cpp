@@ -55,6 +55,8 @@ int main( int argc, char **argv )
 	  },
 	  json_data1 );
 
+	daw::do_not_optimize( json_data1 );
+
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "gsoc bench(unchecked)", sz,
 	  [&gsoc_result]( std::string const &jd ) {

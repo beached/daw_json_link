@@ -121,6 +121,10 @@ namespace daw::json {
 			  json_details::get_bits_for<UseExactMappingsByDefault>( PolicyFlags ) ==
 			  UseExactMappingsByDefault::yes;
 
+			static constexpr bool must_verify_end_of_data_is_valid =
+			  json_details::get_bits_for<MustVerifyEndOfDataIsValid>( PolicyFlags ) ==
+			  MustVerifyEndOfDataIsValid::yes;
+
 			using CommentPolicy = json_details::switch_t<
 			  json_details::get_bits_for<PolicyCommentTypes, std::size_t>(
 			    PolicyFlags ),
@@ -482,6 +486,10 @@ namespace daw::json {
 
 			[[nodiscard]] inline constexpr bool is_at_next_class_member( ) const {
 				return parse_policy_details::in<'"', '}'>( *first );
+			}
+
+			[[nodiscard]] inline constexpr bool is_at_next_array_element( ) const {
+				return parse_policy_details::in<',', ']'>( *first );
 			}
 
 			[[nodiscard]] inline constexpr bool is_at_token_after_value( ) const {

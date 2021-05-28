@@ -36,10 +36,10 @@ namespace daw::json {
 		[[maybe_unused, nodiscard]] constexpr auto from_json( String &&json_data )
 		  -> std::enable_if_t<json_details::is_string_view_like_v<String>, Result> {
 
-			daw_json_assert( std::size( json_data ) != 0,
-			                 ErrorReason::EmptyJSONDocument );
 			daw_json_assert( std::data( json_data ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
+			daw_json_assert( std::size( json_data ) != 0,
+			                 ErrorReason::EmptyJSONDocument );
 
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping<JsonMember>::value,
@@ -67,8 +67,7 @@ namespace daw::json {
 			auto parse_state =
 			  policy_t( std::data( json_data ), daw::data_end( json_data ) );
 
-			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
-			                policy_t> ) {
+			if constexpr( policy_t::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
@@ -135,8 +134,7 @@ namespace daw::json {
 			                                     TemporarilyMutateBuffer::no>;
 
 			auto parse_state = policy_t::with_allocator( f, l, a );
-			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
-			                policy_t> ) {
+			if constexpr( policy_t::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
@@ -209,8 +207,8 @@ namespace daw::json {
 			} else {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 			}
-			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
-			                policy_t> ) {
+
+			if constexpr( policy_t::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
@@ -284,9 +282,7 @@ namespace daw::json {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 			}
 
-			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
-			                policy_t> ) {
-
+			if constexpr( policy_t::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
@@ -445,8 +441,7 @@ namespace daw::json {
 			daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 			                      ErrorReason::InvalidArrayStart, parse_state );
 #endif
-			if constexpr( json_details::must_verify_end_of_data_is_valid_v<
-			                policy_t> ) {
+			if constexpr( policy_t::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<parser_t, KnownBounds>(
 				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
 				parse_state.trim_left( );
