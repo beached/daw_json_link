@@ -251,10 +251,15 @@ namespace daw::json {
 						}
 					} else {
 						if constexpr( force_aggregate_construction_v<T> ) {
-							return T{
-							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
-							                     must_exist>( parse_state,
-							                                  known_locations )... };
+							auto result =
+							  T{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
+							                        must_exist>( parse_state,
+							                                     known_locations )... };
+
+							class_cleanup_now<
+							  json_details::all_json_members_must_exist_v<T, ParseState>>(
+							  parse_state );
+							return result;
 						} else {
 							using tp_t = decltype( std::forward_as_tuple(
 							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
