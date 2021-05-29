@@ -44,7 +44,7 @@ namespace daw::json {
 
 				constexpr json_parse_array_iterator_base( ) noexcept = default;
 
-				inline constexpr json_parse_array_iterator_base(
+				explicit inline constexpr json_parse_array_iterator_base(
 				  ParseState *pd ) noexcept
 				  : parse_state( pd )
 				  , counter( static_cast<difference_type>( pd->counter ) ) {}
@@ -139,13 +139,6 @@ namespace daw::json {
 #endif
 					}
 					return *this;
-				}
-
-				DAW_ATTRIB_INLINE inline constexpr json_parse_array_iterator
-				operator++( int ) {
-					auto result = *this;
-					operator++( );
-					return result;
 				}
 
 				friend inline constexpr bool

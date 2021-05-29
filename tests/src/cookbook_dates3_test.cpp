@@ -13,6 +13,7 @@
 #include <daw/daw_read_file.h>
 
 #include "daw/json/daw_json_link.h"
+#include <daw/daw_fnv1a_hash.h>
 
 #include <chrono>
 #include <cstdint>

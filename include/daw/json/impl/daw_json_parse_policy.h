@@ -173,7 +173,7 @@ namespace daw::json {
 			  , class_first( cf )
 			  , class_last( cl ) {}
 
-			inline constexpr BasicParsePolicy
+			[[nodiscard]] inline constexpr BasicParsePolicy
 			copy( iterator f = iterator{ }, iterator l = iterator{ },
 			      iterator cf = iterator{ }, iterator cl = iterator{ } ) const {
 				BasicParsePolicy result = *this;
@@ -196,14 +196,14 @@ namespace daw::json {
 			using with_allocator_type = BasicParsePolicy<PolicyFlags, Alloc>;
 
 			template<typename Alloc>
-			static inline constexpr with_allocator_type<Alloc>
+			[[nodiscard]] static inline constexpr with_allocator_type<Alloc>
 			with_allocator( iterator f, iterator l, iterator cf, iterator cl,
 			                Alloc &alloc ) {
 				return with_allocator_type<Alloc>{ f, l, cf, cl, alloc };
 			}
 
 			template<typename Alloc>
-			constexpr auto
+			[[nodiscard]] constexpr auto
 			with_allocator( BasicParsePolicy<PolicyFlags, Alloc> p ) const {
 				if constexpr( std::is_same<Alloc, json_details::NoAllocator>::value ) {
 					return *this;
@@ -216,7 +216,7 @@ namespace daw::json {
 			}
 
 			template<typename Alloc>
-			inline constexpr with_allocator_type<Alloc>
+			[[nodiscard]] inline constexpr with_allocator_type<Alloc>
 			with_allocator( Alloc &alloc ) const {
 				auto result =
 				  with_allocator( first, last, class_first, class_last, alloc );
@@ -227,7 +227,7 @@ namespace daw::json {
 			using without_allocator_type =
 			  BasicParsePolicy<PolicyFlags, json_details::NoAllocator>;
 
-			static inline constexpr without_allocator_type
+			[[nodiscard]] static inline constexpr without_allocator_type
 			without_allocator( BasicParsePolicy p ) {
 				auto result = without_allocator_type( p.first, p.last, p.class_first,
 				                                      p.class_last );
@@ -235,7 +235,8 @@ namespace daw::json {
 				return result;
 			}
 
-			inline constexpr without_allocator_type without_allocator( ) const {
+			[[nodiscard]] inline constexpr without_allocator_type
+			without_allocator( ) const {
 				auto result =
 				  without_allocator_type( first, last, class_first, class_last );
 				result.counter = counter;
@@ -243,17 +244,17 @@ namespace daw::json {
 			}
 
 			template<typename Alloc>
-			static inline constexpr with_allocator_type<Alloc>
+			[[nodiscard]] static inline constexpr with_allocator_type<Alloc>
 			with_allocator( iterator f, iterator l, Alloc &alloc ) {
 				return { f, l, f, l, alloc };
 			}
 
-			static inline constexpr without_allocator_type
+			[[nodiscard]] static inline constexpr without_allocator_type
 			without_allocator( iterator f, iterator l ) {
 				return { f, l };
 			}
 
-			static inline constexpr without_allocator_type
+			[[nodiscard]] static inline constexpr without_allocator_type
 			without_allocator( iterator f, iterator l, iterator cf, iterator cl ) {
 				return { f, l, cf, cl };
 			}

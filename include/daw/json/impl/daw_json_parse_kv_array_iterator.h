@@ -41,7 +41,7 @@ namespace daw::json {
 
 				constexpr json_parse_kv_array_iterator_base( ) = default;
 
-				inline constexpr json_parse_kv_array_iterator_base(
+				explicit inline constexpr json_parse_kv_array_iterator_base(
 				  ParseState *pd ) noexcept
 				  : parse_state( pd )
 				  , counter( static_cast<difference_type>( pd->counter ) ) {}
@@ -143,14 +143,6 @@ namespace daw::json {
 #endif
 					return *this;
 				}
-
-				/*
-				inline constexpr json_parse_kv_array_iterator operator++( int ) {
-				  auto result = *this;
-				  (void)this->operator++( );
-				  return result;
-				}
-				 */
 
 				friend inline constexpr bool
 				operator==( json_parse_kv_array_iterator const &lhs,

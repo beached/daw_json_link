@@ -151,7 +151,7 @@ namespace daw::json {
 
 			// Should never be called outside a consteval context
 			template<typename ParseState, typename... JsonMembers>
-			constexpr auto make_locations_info( ) {
+			DAW_ATTRIB_FLATINLINE inline constexpr auto make_locations_info( ) {
 				using CharT = typename ParseState::CharT;
 #if defined( __MSC_VER ) and not defined( __clang__ )
 				constexpr bool do_full_name_match = true;

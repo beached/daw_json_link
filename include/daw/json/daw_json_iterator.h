@@ -194,7 +194,7 @@ namespace daw::json {
 			 * Move the parse state to the next element
 			 * @return iterator prior to moving
 			 */
-			inline constexpr json_array_iterator operator++( int ) {
+			inline constexpr json_array_iterator operator++( int ) & {
 				auto tmp = *this;
 				(void)operator++( );
 				return tmp;

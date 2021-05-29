@@ -26,7 +26,7 @@ namespace daw::json {
 				allocator_t *allocator_ptr;
 
 			public:
-				AllocatorWrapperBase( allocator_t &alloc ) noexcept
+				explicit AllocatorWrapperBase( allocator_t &alloc ) noexcept
 				  : allocator_ptr( &alloc ) {}
 
 				allocator_t &get_allocator( ) const {
@@ -41,7 +41,7 @@ namespace daw::json {
 
 			public:
 				constexpr AllocatorWrapperBase( ) = default;
-				constexpr AllocatorWrapperBase( allocator_t & ) noexcept {}
+				explicit constexpr AllocatorWrapperBase( allocator_t & ) noexcept {}
 
 				allocator_t &get_allocator( ) const {
 					return allocator;
@@ -53,7 +53,7 @@ namespace daw::json {
 			  : AllocatorWrapperBase<Alloc, std::is_empty<Alloc>::value> {
 				using allocator_type = std::remove_reference_t<Alloc>;
 
-				AllocatorWrapper( allocator_type &alloc ) noexcept
+				explicit AllocatorWrapper( allocator_type &alloc ) noexcept
 				  : AllocatorWrapperBase<allocator_type,
 				                         std::is_empty<allocator_type>::value>(
 				      alloc ) {}

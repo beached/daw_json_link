@@ -317,7 +317,7 @@ namespace daw::json {
 			mem_move_to_next_of( runtime_exec_tag, CharT *first, CharT *last ) {
 				if( sizeof...( keys ) == 1 ) {
 					char const key[]{ keys... };
-					CharT *ptr = reinterpret_cast<CharT *>( std::memchr(
+					auto *ptr = reinterpret_cast<CharT *>( std::memchr(
 					  first, key[0], static_cast<std::size_t>( last - first ) ) );
 					if( ptr == nullptr ) {
 						ptr = last;

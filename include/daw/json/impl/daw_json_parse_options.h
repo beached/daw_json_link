@@ -279,7 +279,7 @@ namespace daw::json {
 			constexpr void set_bits_in( policy_options_t &value, Policy e ) {
 				static_assert( is_policy_flag<Policy>,
 				               "Only registered policy types are allowed" );
-				unsigned new_bits = static_cast<unsigned>( e );
+				auto new_bits = static_cast<unsigned>( e );
 				constexpr unsigned mask = (1U << policy_bits_width<Policy>)-1U;
 				new_bits &= mask;
 				new_bits <<= policy_bits_start<Policy>;
@@ -293,7 +293,7 @@ namespace daw::json {
 				static_assert( ( is_policy_flag<Policies> and ... ),
 				               "Only registered policy types are allowed" );
 
-				unsigned new_bits = static_cast<unsigned>( pol );
+				auto new_bits = static_cast<unsigned>( pol );
 				constexpr unsigned mask = ( (1U << policy_bits_width<Policy>)-1U );
 				new_bits &= mask;
 				new_bits <<= policy_bits_start<Policy>;
@@ -314,7 +314,7 @@ namespace daw::json {
 			constexpr policy_options_t set_bits_for( Policy e ) {
 				static_assert( is_policy_flag<Policy>,
 				               "Only registered policy types are allowed" );
-				policy_options_t new_bits = static_cast<policy_options_t>( e );
+				auto new_bits = static_cast<policy_options_t>( e );
 				new_bits <<= policy_bits_start<Policy>;
 				return new_bits;
 			}

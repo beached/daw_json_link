@@ -135,12 +135,6 @@ namespace daw::json {
 					return *this;
 				}
 
-				inline constexpr json_parse_kv_class_iterator operator++( int ) {
-					auto result = *this;
-					(void)this->operator++( );
-					return result;
-				}
-
 				inline constexpr bool
 				operator==( json_parse_kv_class_iterator const &rhs ) const {
 					// using identity as equality
