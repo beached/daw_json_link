@@ -192,6 +192,8 @@ namespace daw::json {
 					    ( dig == parsed_constants::minus_char ) ) {
 						++first;
 					}
+					daw_json_assert_weak( first < last and parse_digit( *first ) < 10U,
+					                      ErrorReason::InvalidNumber );
 					if( DAW_LIKELY( first < last ) ) {
 						first =
 						  skip_digits<( ParseState::is_zero_terminated_string or

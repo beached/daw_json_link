@@ -112,9 +112,12 @@ void minify( daw::Arguments const &args, std::string_view data,
 
 	bool const has_out_file = args.size( ) > 1 and args[1].name.empty( );
 	auto handler = JSONMinifyHandler( out_it );
+
 	if( auto pos = args.find_argument_position( "verbose" ); pos ) {
-		auto const time =
-		  daw::benchmark( [&] { daw::json::json_event_parser( data, handler ); } );
+		auto const time = daw::benchmark( [&] {
+			daw::json::json_event_parser<daw::json::ConformancePolicy>( data,
+			                                                            handler );
+		} );
 		if( not has_out_file ) {
 			std::cout << '\n';
 		}
@@ -125,7 +128,7 @@ void minify( daw::Arguments const &args, std::string_view data,
 		               static_cast<double>( data.size( ) ) / time, 2 )
 		          << "/s\n";
 	} else {
-		daw::json::json_event_parser( data, handler );
+		daw::json::json_event_parser<daw::json::ConformancePolicy>( data, handler );
 		if( not has_out_file ) {
 			std::cout << '\n';
 		}

@@ -627,6 +627,10 @@ namespace daw::json {
 		                     json_details::exec_mode_from_tag<ExecTag> ),
 		                   Allocator>;
 
+		using ConformancePolicy = BasicParsePolicy<parse_options(
+		  daw::json::AllowEscapedNames::yes,
+		  daw::json::MustVerifyEndOfDataIsValid::yes )>;
+
 		namespace json_details {
 			/***
 			 * We are either not in a constexpr context or we have constexpr dtors.

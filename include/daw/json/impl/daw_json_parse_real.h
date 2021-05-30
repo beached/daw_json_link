@@ -171,8 +171,12 @@ namespace daw::json {
 						switch( *exp_first ) {
 						case '-':
 							++exp_first;
+							daw_json_assert_weak( exp_first < exp_last,
+							                      ErrorReason::InvalidNumber );
 							return -1;
 						case '+':
+							daw_json_assert_weak( exp_first < exp_last,
+							                      ErrorReason::InvalidNumber );
 							++exp_first;
 							return 1;
 						default:
@@ -181,11 +185,31 @@ namespace daw::json {
 					}( );
 					exponent += exp_sign * [&] {
 						std::ptrdiff_t r = 0;
-						// TODO use zstring opt
-						while( exp_first < exp_last ) {
-							r *= static_cast<std::ptrdiff_t>( 10 );
-							r += static_cast<std::ptrdiff_t>( parse_digit( *exp_first ) );
-							++exp_first;
+						// TODO use zstringopt
+						if constexpr( ParseState::is_zero_terminated_string ) {
+							auto dig = parse_digit( *exp_first );
+							while( dig < 10U ) {
+								++exp_first;
+								r *= 10U;
+								r += dig;
+								dig = parse_digit( *exp_first );
+							}
+						} else {
+							if( exp_first < exp_last ) {
+								auto dig = parse_digit( *exp_first );
+								do {
+									if( dig >= 10U ) {
+										break;
+									}
+									++exp_first;
+									r *= 10U;
+									r += dig;
+									if( exp_first >= exp_last ) {
+										break;
+									}
+									dig = parse_digit( *exp_first );
+								} while( true );
+							}
 						}
 						return r;
 					}( );
@@ -323,9 +347,15 @@ namespace daw::json {
 							switch( *first ) {
 							case '+':
 								++first;
+								daw_json_assert_weak( first < parse_state.last and
+								                        parse_digit( *first ) < 10U,
+								                      ErrorReason::InvalidNumber );
 								return false;
 							case '-':
 								++first;
+								daw_json_assert_weak( first < parse_state.last and
+								                        parse_digit( *first ) < 10U,
+								                      ErrorReason::InvalidNumber );
 								return true;
 							default:
 								return false;
