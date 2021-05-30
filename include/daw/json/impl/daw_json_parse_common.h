@@ -454,6 +454,46 @@ namespace daw::json {
 		  json_string_raw<Name, String, Constructor, EmptyStringNull, EightBitMode,
 		                  JsonNullable::Nullable, AllowEscape>;
 
+		/** Map a KV type json class { "Key StringRaw": ValueType, ... }
+		 *  to a c++ class.  Keys are Always string like and the destination
+		 *  needs to be constructable with a pointer, size
+		 *  @tparam Name name of JSON member to link to
+		 *  @tparam Container type to put values in
+		 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
+		 *  json_string, ... ). It also supports basic types like numbers, bool, and
+		 * mapped classes and enums(mapped to numbers)
+		 *  @tparam JsonKeyType type of key in kv pair.  As with value it supports
+		 * basic types too
+		 *  @tparam Constructor A callable used to make Container, default will use
+		 * the Containers constructor.  Both normal and aggregate are supported
+		 * @tparam Nullable Can the member be missing or have a null value
+		 */
+		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
+		         typename JsonKeyType = json_string<no_name>,
+		         typename Constructor = default_constructor<Container>,
+		         JsonNullable Nullable = JsonNullable::Never>
+		struct json_key_value;
+
+		/** Map a nullable KV type json class { "Key StringRaw": ValueType, ... }
+		 *  to a c++ class.  Keys are Always string like and the destination
+		 *  needs to be constructable with a pointer, size
+		 *  @tparam Name name of JSON member to link to
+		 *  @tparam Container type to put values in
+		 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
+		 *  json_string, ... ). It also supports basic types like numbers, bool, and
+		 * mapped classes and enums(mapped to numbers)
+		 *  @tparam JsonKeyType type of key in kv pair.  As with value it supports
+		 * basic types too
+		 *  @tparam Constructor A callable used to make Container, default will use
+		 * the Containers constructor.  Both normal and aggregate are supported
+		 */
+		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
+		         typename JsonKeyType = json_string<no_name>,
+		         typename Constructor = nullable_constructor<Container>>
+		using json_key_value_null =
+		  json_key_value<Name, Container, JsonValueType, JsonKeyType, Constructor,
+		                 JsonNullable::Nullable>;
+
 		namespace json_details {
 			template<typename T>
 			using can_deref =
@@ -586,23 +626,27 @@ namespace daw::json {
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
 		};
 
-		template<typename... Ts>
-		struct json_link_basic_type_map<std::map<Ts...>> {
+		template<typename K, typename V, typename... Ts>
+		struct json_link_basic_type_map<std::map<K, V, Ts...>> {
 			constexpr static bool is_null = false;
+			using key = K;
+			using value = V;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::KeyValue;
 		};
 
-		template<typename... Ts>
-		struct json_link_basic_type_map<std::unordered_map<Ts...>> {
+		template<typename K, typename V, typename... Ts>
+		struct json_link_basic_type_map<std::unordered_map<K, V, Ts...>> {
 			constexpr static bool is_null = false;
+			using key = K;
+			using value = V;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::KeyValue;
 		};
 
 		template<typename T>
 		struct json_link_basic_type_map<std::optional<T>> {
 			constexpr static bool is_null = true;
-			constexpr static JsonParseTypes parse_type =
-			  json_link_basic_type_map<T>::parse_type;
+			using type = json_link_basic_type_map<T>;
+			constexpr static JsonParseTypes parse_type = type::parse_type;
 		};
 
 		namespace json_details {
@@ -658,12 +702,19 @@ namespace daw::json {
 						} else {
 							return json_link_quick_map_type<json_number<no_name, T>>{ };
 						}
-					/*} else if constexpr( mapped_type == JsonParseTypes::KeyValue ) {
+					} else if constexpr( mapped_type == JsonParseTypes::KeyValue ) {
 						if constexpr( is_null ) {
-
+							using b_t = typename mapped_type_t::base_type;
+							using k_t = typename b_t::key;
+							using v_t = typename b_t::value;
+							return json_link_quick_map_type<
+							  json_key_value_null<no_name, T, v_t, k_t>>{ };
 						} else {
-
-						}*/
+							using k_t = typename mapped_type_t::key;
+							using v_t = typename mapped_type_t::value;
+							return json_link_quick_map_type<
+							  json_key_value<no_name, T, v_t, k_t>>{ };
+						}
 					} else {
 						return json_link_quick_map_type<void, false>{ };
 					}

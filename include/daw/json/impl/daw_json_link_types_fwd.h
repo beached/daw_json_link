@@ -147,46 +147,6 @@ namespace daw::json {
 		using json_array_null = json_array<Name, JsonElement, Container,
 		                                   Constructor, JsonNullable::Nullable>;
 
-		/** Map a KV type json class { "Key StringRaw": ValueType, ... }
-		 *  to a c++ class.  Keys are Always string like and the destination
-		 *  needs to be constructable with a pointer, size
-		 *  @tparam Name name of JSON member to link to
-		 *  @tparam Container type to put values in
-		 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
-		 *  json_string, ... ). It also supports basic types like numbers, bool, and
-		 * mapped classes and enums(mapped to numbers)
-		 *  @tparam JsonKeyType type of key in kv pair.  As with value it supports
-		 * basic types too
-		 *  @tparam Constructor A callable used to make Container, default will use
-		 * the Containers constructor.  Both normal and aggregate are supported
-		 * @tparam Nullable Can the member be missing or have a null value
-		 */
-		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
-		         typename JsonKeyType = json_string<no_name>,
-		         typename Constructor = default_constructor<Container>,
-		         JsonNullable Nullable = JsonNullable::Never>
-		struct json_key_value;
-
-		/** Map a nullable KV type json class { "Key StringRaw": ValueType, ... }
-		 *  to a c++ class.  Keys are Always string like and the destination
-		 *  needs to be constructable with a pointer, size
-		 *  @tparam Name name of JSON member to link to
-		 *  @tparam Container type to put values in
-		 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
-		 *  json_string, ... ). It also supports basic types like numbers, bool, and
-		 * mapped classes and enums(mapped to numbers)
-		 *  @tparam JsonKeyType type of key in kv pair.  As with value it supports
-		 * basic types too
-		 *  @tparam Constructor A callable used to make Container, default will use
-		 * the Containers constructor.  Both normal and aggregate are supported
-		 */
-		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
-		         typename JsonKeyType = json_string<no_name>,
-		         typename Constructor = nullable_constructor<Container>>
-		using json_key_value_null =
-		  json_key_value<Name, Container, JsonValueType, JsonKeyType, Constructor,
-		                 JsonNullable::Nullable>;
-
 		/**
 		 * Map a KV type json array [ {"key": ValueOfKeyType, "value":
 		 * ValueOfValueType},... ] to a c++ class. needs to be constructable with a

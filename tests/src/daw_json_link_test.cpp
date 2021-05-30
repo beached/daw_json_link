@@ -610,8 +610,6 @@ bool test_optional_array( ) {
 	std::string_view const json_data = "[null,5]";
 	using namespace daw::json;
 	auto result = from_json_array<std::optional<int>>( json_data );
-	// from_json_array<json_number_null<no_name, std::optional<int>>>( json_data
-	// );
 	daw_json_assert( result.size( ) == 2 and not result[0] and result[1] == 5,
 	                 ErrorReason::Unknown );
 	std::string str{ };
@@ -619,6 +617,19 @@ bool test_optional_array( ) {
 	  result, std::back_inserter( str ) );
 	auto result2 =
 	  from_json_array<json_number_null<no_name, std::optional<int>>>( str );
+	return result == result2;
+}
+
+bool test_key_value( ) {
+	std::string_view const json_data = R"({"a":0,"b":1})";
+	using namespace daw::json;
+	auto const result = from_json<std::map<std::string, int>>( json_data );
+	daw_json_assert( result.size( ) == 2 and result.at( "a" ) == 0 and
+	                   result.at( "b" ) == 1,
+	                 ErrorReason::Unknown );
+	std::string str{ };
+	to_json( result, std::back_inserter( str ) );
+	auto result2 = from_json<std::map<std::string, int>>( str );
 	return result == result2;
 }
 
@@ -886,6 +897,7 @@ int main( int, char ** )
 	}
 
 	test_optional_array( );
+	test_key_value( );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
