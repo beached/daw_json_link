@@ -566,18 +566,16 @@ namespace daw::json {
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Bool;
 		};
 
-		template<>
-		struct json_link_basic_type_map<typename std::vector<bool>::reference> {
-			constexpr static bool is_null = false;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::Bool;
-		};
-
+		// This accounts for serializing of vector<bool> and the reference not being
+		// bool or a known mapping.  However on MS STL it is bool
+#if not defined( _MSC_VER )
 		template<>
 		struct json_link_basic_type_map<
 		  typename std::vector<bool>::const_reference> {
 			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Bool;
 		};
+#endif
 
 		template<>
 		struct json_link_basic_type_map<short> {
