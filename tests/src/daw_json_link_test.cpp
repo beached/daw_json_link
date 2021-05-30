@@ -609,15 +609,16 @@ void test_lots_of_doubles( ) {
 bool test_optional_array( ) {
 	std::string_view const json_data = "[null,5]";
 	using namespace daw::json;
-	auto result =
-	  from_json_array<json_number_null<no_name, std::optional<int>>>( json_data );
+	auto result = from_json_array<std::optional<int>>( json_data );
+	// from_json_array<json_number_null<no_name, std::optional<int>>>( json_data
+	// );
 	daw_json_assert( result.size( ) == 2 and not result[0] and result[1] == 5,
 	                 ErrorReason::Unknown );
 	std::string str{ };
 	to_json_array<json_number_null<no_name, std::optional<int>>>(
 	  result, std::back_inserter( str ) );
 	auto result2 =
-		from_json_array<json_number_null<no_name, std::optional<int>>>( str );
+	  from_json_array<json_number_null<no_name, std::optional<int>>>( str );
 	return result == result2;
 }
 

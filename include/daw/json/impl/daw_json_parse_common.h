@@ -25,6 +25,11 @@
 #include <ciso646>
 #include <cstddef>
 #include <iterator>
+#include <map>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <vector>
 
 #if defined( __cpp_constexpr_dynamic_alloc )
 #define CPP20CONSTEXPR constexpr
@@ -292,6 +297,19 @@ namespace daw::json {
 		struct json_class;
 
 		/**
+		 * Link to a nullable JSON class
+		 * @tparam Name name of JSON member to link to
+		 * @tparam T type that has specialization of
+		 * daw::json::json_data_contract
+		 * @tparam Constructor A callable used to construct T.  The
+		 * default supports normal and aggregate construction
+		 */
+		template<JSONNAMETYPE Name, typename T,
+		         typename Constructor = nullable_constructor<T>>
+		using json_class_null =
+		  json_class<Name, T, Constructor, JsonNullable::Nullable>;
+
+		/**
 		 * The member is a number
 		 * @tparam Name name of json member
 		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
@@ -309,6 +327,22 @@ namespace daw::json {
 		struct json_number;
 
 		/**
+		 * The member is a nullable number
+		 * @tparam Name name of json member
+		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+		 * Constructor
+		 * @tparam LiteralAsString Could this number be embedded in a string
+		 * @tparam Constructor Callable used to construct result
+		 * @tparam RangeCheck Check if thevalue will fit in the result
+		 */
+		template<JSONNAMETYPE Name, typename T = std::optional<double>,
+		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
+		         typename Constructor = nullable_constructor<T>,
+		         JsonRangeCheck RangeCheck = JsonRangeCheck::Never>
+		using json_number_null = json_number<Name, T, LiteralAsString, Constructor,
+		                                     RangeCheck, JsonNullable::Nullable>;
+
+		/**
 		 * The member is a boolean
 		 * @tparam Name name of json member
 		 * @tparam T result type to pass to Constructor
@@ -321,6 +355,19 @@ namespace daw::json {
 		         typename Constructor = default_constructor<T>,
 		         JsonNullable Nullable = JsonNullable::Never>
 		struct json_bool;
+
+		/**
+		 * The member is a nullable boolean
+		 * @tparam Name name of json member
+		 * @tparam T result type to pass to Constructor
+		 * @tparam LiteralAsString Could this number be embedded in a string
+		 * @tparam Constructor Callable used to construct result
+		 */
+		template<JSONNAMETYPE Name, typename T = std::optional<bool>,
+		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
+		         typename Constructor = nullable_constructor<T>>
+		using json_bool_null =
+		  json_bool<Name, T, LiteralAsString, Constructor, JsonNullable::Nullable>;
 
 		/**
 		 * Member is an escaped string and requires unescaping and escaping of
@@ -340,6 +387,26 @@ namespace daw::json {
 		         EightBitModes EightBitMode = EightBitModes::AllowFull,
 		         JsonNullable Nullable = JsonNullable::Never>
 		struct json_string;
+
+		/**
+		 * Member is a nullable escaped string and requires unescaping and escaping
+		 * of string data
+		 * @tparam Name of json member
+		 * @tparam String result type constructed by Constructor
+		 * @tparam Constructor a callable taking as arguments ( InputIterator,
+		 * InputIterator ).  If others are needed use the Constructor callable
+		 * convert
+		 * @tparam EmptyStringNull if string is empty, call Constructor with no
+		 * arguments
+		 * @tparam EightBitMode Allow filtering of characters with the MSB set
+		 */
+		template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
+		         typename Constructor = nullable_constructor<String>,
+		         JsonNullable EmptyStringNull = JsonNullable::Never,
+		         EightBitModes EightBitMode = EightBitModes::AllowFull>
+		using json_string_null =
+		  json_string<Name, String, Constructor, EmptyStringNull, EightBitMode,
+		              JsonNullable::Nullable>;
 
 		/**
 		 * Member is an escaped string and requires unescaping and escaping of
@@ -363,6 +430,29 @@ namespace daw::json {
 		         JsonNullable Nullable = JsonNullable::Never,
 		         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
 		struct json_string_raw;
+
+		/**
+		 * Member is a nullable escaped string and requires unescaping and escaping
+		 * of string data.  Not all invalid codepoints are detected
+		 * @tparam Name of json member
+		 * @tparam String result type constructed by Constructor
+		 * @tparam Constructor a callable taking as arguments ( char const *,
+		 * std::size_t )
+		 * @tparam EmptyStringNull if string is empty, call Constructor with no
+		 * arguments
+		 * @tparam EightBitMode Allow filtering of characters with the MSB set
+		 * arguments
+		 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
+		 * data
+		 */
+		template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
+		         typename Constructor = nullable_constructor<String>,
+		         JsonNullable EmptyStringNull = JsonNullable::Nullable,
+		         EightBitModes EightBitMode = EightBitModes::AllowFull,
+		         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
+		using json_string_raw_null =
+		  json_string_raw<Name, String, Constructor, EmptyStringNull, EightBitMode,
+		                  JsonNullable::Nullable, AllowEscape>;
 
 		namespace json_details {
 			template<typename T>
@@ -407,78 +497,112 @@ namespace daw::json {
 
 		template<typename>
 		struct json_link_basic_type_map {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Unknown;
 		};
 
 		template<>
 		struct json_link_basic_type_map<daw::string_view> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::StringRaw;
 		};
 
 		template<>
 		struct json_link_basic_type_map<std::string_view> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::StringRaw;
 		};
 
 		template<>
 		struct json_link_basic_type_map<std::string> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type =
 			  JsonParseTypes::StringEscaped;
 		};
 
 		template<>
 		struct json_link_basic_type_map<bool> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Bool;
 		};
 
 		template<>
 		struct json_link_basic_type_map<short> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
 		};
 
 		template<>
 		struct json_link_basic_type_map<int> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
 		};
 
 		template<>
 		struct json_link_basic_type_map<long> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
 		};
 
 		template<>
 		struct json_link_basic_type_map<long long> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
 		};
 
 		template<>
 		struct json_link_basic_type_map<unsigned short> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
 		};
 
 		template<>
 		struct json_link_basic_type_map<unsigned int> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
 		};
 
 		template<>
 		struct json_link_basic_type_map<unsigned long> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
 		};
 
 		template<>
 		struct json_link_basic_type_map<unsigned long long> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
 		};
 
 		template<>
 		struct json_link_basic_type_map<float> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
 		};
 
 		template<>
 		struct json_link_basic_type_map<double> {
+			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
+		};
+
+		template<typename... Ts>
+		struct json_link_basic_type_map<std::map<Ts...>> {
+			constexpr static bool is_null = false;
+			constexpr static JsonParseTypes parse_type = JsonParseTypes::KeyValue;
+		};
+
+		template<typename... Ts>
+		struct json_link_basic_type_map<std::unordered_map<Ts...>> {
+			constexpr static bool is_null = false;
+			constexpr static JsonParseTypes parse_type = JsonParseTypes::KeyValue;
+		};
+
+		template<typename T>
+		struct json_link_basic_type_map<std::optional<T>> {
+			constexpr static bool is_null = true;
+			constexpr static JsonParseTypes parse_type =
+			  json_link_basic_type_map<T>::parse_type;
 		};
 
 		namespace json_details {
@@ -494,19 +618,52 @@ namespace daw::json {
 			template<typename T>
 			inline constexpr auto json_link_quick_map( ) {
 				if constexpr( has_basic_type_map_v<T> ) {
-					constexpr auto mapped_type = json_link_basic_type_map<T>::parse_type;
+					using mapped_type_t = json_link_basic_type_map<T>;
+					constexpr auto mapped_type = mapped_type_t::parse_type;
+					constexpr bool is_null = mapped_type_t::is_null;
 					if constexpr( mapped_type == JsonParseTypes::StringRaw ) {
-						return json_link_quick_map_type<json_string_raw<no_name, T>>{ };
+						if constexpr( is_null ) {
+							return json_link_quick_map_type<
+							  json_string_raw_null<no_name, T>>{ };
+						} else {
+							return json_link_quick_map_type<json_string_raw<no_name, T>>{ };
+						}
 					} else if constexpr( mapped_type == JsonParseTypes::StringEscaped ) {
-						return json_link_quick_map_type<json_string<no_name, T>>{ };
+						if constexpr( is_null ) {
+							return json_link_quick_map_type<json_string_null<no_name, T>>{ };
+						} else {
+							return json_link_quick_map_type<json_string<no_name, T>>{ };
+						}
 					} else if constexpr( mapped_type == JsonParseTypes::Bool ) {
-						return json_link_quick_map_type<json_bool<no_name, T>>{ };
+						if constexpr( is_null ) {
+							return json_link_quick_map_type<json_bool_null<no_name, T>>{ };
+						} else {
+							return json_link_quick_map_type<json_bool<no_name, T>>{ };
+						}
 					} else if constexpr( mapped_type == JsonParseTypes::Signed ) {
-						return json_link_quick_map_type<json_number<no_name, T>>{ };
+						if constexpr( is_null ) {
+							return json_link_quick_map_type<json_number_null<no_name, T>>{ };
+						} else {
+							return json_link_quick_map_type<json_number<no_name, T>>{ };
+						}
 					} else if constexpr( mapped_type == JsonParseTypes::Unsigned ) {
-						return json_link_quick_map_type<json_number<no_name, T>>{ };
+						if constexpr( is_null ) {
+							return json_link_quick_map_type<json_number_null<no_name, T>>{ };
+						} else {
+							return json_link_quick_map_type<json_number<no_name, T>>{ };
+						}
 					} else if constexpr( mapped_type == JsonParseTypes::Real ) {
-						return json_link_quick_map_type<json_number<no_name, T>>{ };
+						if constexpr( is_null ) {
+							return json_link_quick_map_type<json_number_null<no_name, T>>{ };
+						} else {
+							return json_link_quick_map_type<json_number<no_name, T>>{ };
+						}
+					/*} else if constexpr( mapped_type == JsonParseTypes::KeyValue ) {
+						if constexpr( is_null ) {
+
+						} else {
+
+						}*/
 					} else {
 						return json_link_quick_map_type<void, false>{ };
 					}

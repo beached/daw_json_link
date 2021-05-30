@@ -36,22 +36,6 @@ namespace daw::json {
 		 */
 
 		/**
-		 * The member is a nullable number
-		 * @tparam Name name of json member
-		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
-		 * Constructor
-		 * @tparam LiteralAsString Could this number be embedded in a string
-		 * @tparam Constructor Callable used to construct result
-		 * @tparam RangeCheck Check if thevalue will fit in the result
-		 */
-		template<JSONNAMETYPE Name, typename T = std::optional<double>,
-		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-		         typename Constructor = nullable_constructor<T>,
-		         JsonRangeCheck RangeCheck = JsonRangeCheck::Never>
-		using json_number_null = json_number<Name, T, LiteralAsString, Constructor,
-		                                     RangeCheck, JsonNullable::Nullable>;
-
-		/**
 		 * The member is a range checked number
 		 * @tparam Name name of json member
 		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
@@ -84,62 +68,6 @@ namespace daw::json {
 		              JsonRangeCheck::CheckForNarrowing, JsonNullable::Nullable>;
 
 		/**
-		 * The member is a nullable boolean
-		 * @tparam Name name of json member
-		 * @tparam T result type to pass to Constructor
-		 * @tparam LiteralAsString Could this number be embedded in a string
-		 * @tparam Constructor Callable used to construct result
-		 */
-		template<JSONNAMETYPE Name, typename T = std::optional<bool>,
-		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-		         typename Constructor = nullable_constructor<T>>
-		using json_bool_null =
-		  json_bool<Name, T, LiteralAsString, Constructor, JsonNullable::Nullable>;
-
-		/**
-		 * Member is a nullable escaped string and requires unescaping and escaping
-		 * of string data.  Not all invalid codepoints are detected
-		 * @tparam Name of json member
-		 * @tparam String result type constructed by Constructor
-		 * @tparam Constructor a callable taking as arguments ( char const *,
-		 * std::size_t )
-		 * @tparam EmptyStringNull if string is empty, call Constructor with no
-		 * arguments
-		 * @tparam EightBitMode Allow filtering of characters with the MSB set
-		 * arguments
-		 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
-		 * data
-		 */
-		template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
-		         typename Constructor = nullable_constructor<String>,
-		         JsonNullable EmptyStringNull = JsonNullable::Nullable,
-		         EightBitModes EightBitMode = EightBitModes::AllowFull,
-		         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
-		using json_string_raw_null =
-		  json_string_raw<Name, String, Constructor, EmptyStringNull, EightBitMode,
-		                  JsonNullable::Nullable, AllowEscape>;
-
-		/**
-		 * Member is a nullable escaped string and requires unescaping and escaping
-		 * of string data
-		 * @tparam Name of json member
-		 * @tparam String result type constructed by Constructor
-		 * @tparam Constructor a callable taking as arguments ( InputIterator,
-		 * InputIterator ).  If others are needed use the Constructor callable
-		 * convert
-		 * @tparam EmptyStringNull if string is empty, call Constructor with no
-		 * arguments
-		 * @tparam EightBitMode Allow filtering of characters with the MSB set
-		 */
-		template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
-		         typename Constructor = nullable_constructor<String>,
-		         JsonNullable EmptyStringNull = JsonNullable::Never,
-		         EightBitModes EightBitMode = EightBitModes::AllowFull>
-		using json_string_null =
-		  json_string<Name, String, Constructor, EmptyStringNull, EightBitMode,
-		              JsonNullable::Nullable>;
-
-		/**
 		 * Link to a JSON string representing a date
 		 * @tparam Name name of JSON member to link to
 		 * @tparam T C++ type to construct, must be a std::chrono::time_point
@@ -170,19 +98,6 @@ namespace daw::json {
 		           construct_from_iso8601_timestamp<JsonNullable::Nullable>>
 		using json_date_null =
 		  json_date<Name, T, Constructor, JsonNullable::Nullable>;
-
-		/**
-		 * Link to a nullable JSON class
-		 * @tparam Name name of JSON member to link to
-		 * @tparam T type that has specialization of
-		 * daw::json::json_data_contract
-		 * @tparam Constructor A callable used to construct T.  The
-		 * default supports normal and aggregate construction
-		 */
-		template<JSONNAMETYPE Name, typename T,
-		         typename Constructor = nullable_constructor<T>>
-		using json_class_null =
-		  json_class<Name, T, Constructor, JsonNullable::Nullable>;
 
 		/***
 		 * A type to hold the types for parsing tagged variants.
