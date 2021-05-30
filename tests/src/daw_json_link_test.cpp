@@ -639,7 +639,7 @@ bool test_vector_of_bool( ) {
 	assert( rv0.size( ) == 3 and rv0.at( 0 ) and not rv0.at( 1 ) and
 	        rv0.at( 2 ) );
 	auto const str0 = daw::json::to_json_array( rv0 );
-	auto const rv1 = daw::json::from_json_array<bool>( str0 );
+	auto const rv1 = daw::json::from_json<std::vector<bool>>( str0 );
 	return rv0 == rv1;
 }
 
