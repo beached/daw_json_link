@@ -567,6 +567,19 @@ namespace daw::json {
 		};
 
 		template<>
+		struct json_link_basic_type_map<typename std::vector<bool>::reference> {
+			constexpr static bool is_null = false;
+			constexpr static JsonParseTypes parse_type = JsonParseTypes::Bool;
+		};
+
+		template<>
+		struct json_link_basic_type_map<
+		  typename std::vector<bool>::const_reference> {
+			constexpr static bool is_null = false;
+			constexpr static JsonParseTypes parse_type = JsonParseTypes::Bool;
+		};
+
+		template<>
 		struct json_link_basic_type_map<short> {
 			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;

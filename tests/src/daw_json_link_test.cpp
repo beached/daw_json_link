@@ -633,6 +633,16 @@ bool test_key_value( ) {
 	return result == result2;
 }
 
+bool test_vector_of_bool( ) {
+	std::string const json_data = "[true,false,true]";
+	auto const rv0 = daw::json::from_json_array<bool>( json_data );
+	assert( rv0.size( ) == 3 and rv0.at( 0 ) and not rv0.at( 1 ) and
+	        rv0.at( 2 ) );
+	auto const str0 = daw::json::to_json_array( rv0 );
+	auto const rv1 = daw::json::from_json_array<bool>( str0 );
+	return rv0 == rv1;
+}
+
 int main( int, char ** )
 #ifdef DAW_USE_EXCEPTIONS
   try
@@ -898,6 +908,7 @@ int main( int, char ** )
 
 	test_optional_array( );
 	test_key_value( );
+	test_vector_of_bool( );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
