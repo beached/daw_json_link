@@ -70,10 +70,10 @@ namespace daw::json {
 				                     JsonElement>;
 
 				static_assert(
-				  traits::not_same<JsonMember,
-				                   missing_json_data_contract_for<JsonElement>>::value,
+				  not std::is_same_v<JsonMember,
+				                     missing_json_data_contract_for<JsonElement>>,
 				  "Unable to detect unnamed mapping" );
-				static_assert( traits::not_same<JsonElement, JsonMember>::value );
+				//static_assert( not std::is_same_v<JsonElement, JsonMember> );
 				if( is_first ) {
 					is_first = false;
 				} else {

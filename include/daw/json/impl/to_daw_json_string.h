@@ -562,7 +562,11 @@ namespace daw::json {
 			to_daw_json_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 			                    Optional const &value ) {
 				static_assert( is_valid_optional_v<Optional> );
-				daw_json_assert( value, ErrorReason::UnexpectedNull );
+				if( not value ) {
+					return utils::copy_to_iterator( it, "null" );
+				}
+				// DAW
+				// daw_json_assert( value, ErrorReason::UnexpectedNull );
 				using tag_type = ParseTag<JsonMember::base_expected_type>;
 				return to_daw_json_string<JsonMember>( tag_type{ }, it, *value );
 			}
