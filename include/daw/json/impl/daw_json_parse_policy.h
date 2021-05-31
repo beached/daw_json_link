@@ -628,8 +628,7 @@ namespace daw::json {
 		                   Allocator>;
 
 		using ConformancePolicy = BasicParsePolicy<parse_options(
-		  daw::json::AllowEscapedNames::yes,
-		  daw::json::MustVerifyEndOfDataIsValid::yes )>;
+		  AllowEscapedNames::yes, MustVerifyEndOfDataIsValid::yes )>;
 
 		namespace json_details {
 			/***

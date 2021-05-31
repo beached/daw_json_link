@@ -14,6 +14,7 @@
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -133,6 +134,36 @@ namespace daw::json {
 			template<typename... Ts>
 			struct is_std_allocator<std::allocator<Ts...>> : std::true_type {};
 		} // namespace json_details
+
+		template<typename T, std::size_t Sz>
+		struct default_constructor<std::array<T, Sz>> {
+			DAW_ATTRIB_FLATINLINE constexpr std::array<T, Sz> operator( )( ) const
+			  noexcept( noexcept( std::array<T, Sz>{ } ) ) {
+				return { };
+			}
+
+			DAW_ATTRIB_FLATINLINE constexpr std::array<T, Sz> &&
+			operator( )( std::array<T, Sz> &&v ) const noexcept {
+				return DAW_MOVE( v );
+			}
+
+			template<typename Iterator, std::size_t... Is>
+			DAW_ATTRIB_FLATINLINE static constexpr std::array<T, Sz>
+			construct_array( Iterator first, std::index_sequence<Is...> ) {
+				auto const deref = [&]( std::size_t ) {
+					auto result = *first;
+					++first;
+					return result;
+				};
+				return std::array<T, Sz>{ deref( Is )... };
+			}
+
+			template<typename Iterator>
+			DAW_ATTRIB_FLATINLINE constexpr std::array<T, Sz>
+			operator( )( Iterator first, Iterator last ) const {
+				return construct_array( first, std::make_index_sequence<Sz>{ } );
+			}
+		};
 
 		template<typename T, typename Alloc>
 		struct default_constructor<std::vector<T, Alloc>> {

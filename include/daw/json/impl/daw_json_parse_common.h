@@ -69,11 +69,15 @@ namespace daw::json {
 						return Constructor{ }( std::allocator_arg, DAW_MOVE( alloc ),
 						                       DAW_FWD( args )... );
 					} else {
-						static_assert( std::is_invocable<Constructor, Args...>::value );
+						static_assert(
+						  std::is_invocable<Constructor, Args...>::value,
+						  "Unable to construct value with the supplied arguments" );
 						return Constructor{ }( DAW_FWD( args )... );
 					}
 				} else {
-					static_assert( std::is_invocable<Constructor, Args...>::value );
+					static_assert(
+					  std::is_invocable<Constructor, Args...>::value,
+					  "Unable to construct value with the supplied arguments" );
 					if constexpr( std::is_invocable<Constructor, Args...>::value ) {
 						return Constructor{ }( DAW_FWD( args )... );
 					}
@@ -132,12 +136,16 @@ namespace daw::json {
 						  std::allocator_arg, DAW_MOVE( alloc ), DAW_MOVE( tp_args ),
 						  std::index_sequence_for<Args...>{ } );
 					} else {
-						static_assert( std::is_invocable<Constructor, Args...>::value );
+						static_assert(
+						  std::is_invocable<Constructor, Args...>::value,
+						  "Unable to construct value with the supplied arguments" );
 						return construct_value_tp_invoke<Constructor>(
 						  DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
 					}
 				} else {
-					static_assert( std::is_invocable<Constructor, Args...>::value );
+					static_assert(
+					  std::is_invocable<Constructor, Args...>::value,
+					  "Unable to construct value with the supplied arguments" );
 					return construct_value_tp_invoke<Constructor>(
 					  DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
 				}
@@ -747,6 +755,24 @@ namespace daw::json {
 			using json_link_quick_map_t =
 			  typename decltype( json_link_quick_map<T>( ) )::mapped_type;
 
+			namespace container_detect {
+				template<typename, bool>
+				struct container_test : std::false_type {};
+
+				template<typename Container>
+				struct container_test<Container, true> : std::true_type {
+					using type = typename Container::value_type;
+				};
+
+				template<typename T>
+				using container_test_t = typename T::value_type;
+			} // namespace container_detect
+
+			template<typename Container>
+			using is_container = container_detect::container_test<
+			  Container,
+			  daw::is_detected_v<container_detect::container_test_t, Container>>;
+
 			namespace vector_detect {
 				template<typename T>
 				struct vector_test {
@@ -810,7 +836,8 @@ namespace daw::json {
 				using type = json_class<no_name, T, json_class_constructor_t<T>>;
 
 				static_assert(
-				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch> );
+				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
+				  "Detection failure" );
 			};
 
 			template<typename T, /* bool Contract, bool JsonType, */ bool QuickMap,
@@ -824,7 +851,8 @@ namespace daw::json {
 				                              daw::traits::identity<T>>::type;
 
 				static_assert(
-				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch> );
+				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
+				  "Detection failure" );
 			};
 
 			template<typename T, /* bool Contract, bool JsonType, bool QuickMap, */
@@ -834,7 +862,8 @@ namespace daw::json {
 				using type = json_link_quick_map_t<T>;
 
 				static_assert(
-				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch> );
+				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
+				  "Detection failure" );
 			};
 
 			template<typename T, /* bool Contract, bool JsonType, bool QuickMap,
@@ -845,7 +874,8 @@ namespace daw::json {
 				using type = json_number<no_name, T>;
 
 				static_assert(
-				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch> );
+				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
+				  "Detection failure" );
 			};
 
 			template<typename T /*, bool JsonType, bool Contract, bool QuickMap,
@@ -853,9 +883,12 @@ namespace daw::json {
 			struct unnamed_default_type_mapping_test<T, false, false, false, false,
 			                                         true> {
 				using type =
-				  json_array_detect<no_name, vector_detect::vector_test_t<T>, T>;
+				  // DAW  json_array_detect<no_name, vector_detect::vector_test_t<T>,
+				  // T>;
+				  json_array_detect<no_name, container_detect::container_test_t<T>, T>;
 				static_assert(
-				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch> );
+				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
+				  "Detection failure" );
 			};
 
 			template<typename T>
@@ -864,7 +897,8 @@ namespace daw::json {
 			    T, has_json_data_contract_trait_v<T>,
 			    json_details::is_a_json_type_v<T>, has_json_link_quick_map_v<T>,
 			    std::disjunction_v<daw::is_arithmetic<T>, std::is_enum<T>>,
-			    is_vector<T>::value>::type;
+			    // DAW			    is_vector<T>::value>::type;
+			    is_container<T>::value>::type;
 
 			template<typename T>
 			using has_unnamed_default_type_mapping =

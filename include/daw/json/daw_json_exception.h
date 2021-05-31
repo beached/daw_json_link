@@ -91,7 +91,8 @@ namespace daw::json {
 			TagMemberNotFound,
 			ExpectedMemberNotFound,
 			ExpectedTokenNotFound,
-			UnexpectedJSONVariantType
+			UnexpectedJSONVariantType,
+			TrailingComma
 		};
 
 		constexpr std::string_view reason_message( ErrorReason er ) {
@@ -187,6 +188,8 @@ namespace daw::json {
 				return "Expected token missing"sv;
 			case ErrorReason::UnexpectedJSONVariantType:
 				return "Unexpected JSON Variant Type"sv;
+			case ErrorReason::TrailingComma:
+				return "Trailing comma"sv;
 			}
 			DAW_UNREACHABLE( );
 		}

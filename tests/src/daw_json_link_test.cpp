@@ -20,7 +20,9 @@
 #include <cassert>
 #include <chrono>
 #include <cstdint>
+#include <deque>
 #include <iostream>
+#include <list>
 #include <optional>
 #include <random>
 #include <sstream>
@@ -648,6 +650,7 @@ int main( int, char ** )
   try
 #endif
 {
+	using namespace std::string_literals;
 	std::cout << ( sizeof( std::size_t ) * 8U ) << "bit architecture\n";
 	using namespace daw::json;
 	daw::expecting(
@@ -731,7 +734,7 @@ int main( int, char ** )
 			"c": [1,2,3] }}})";
 
 	using iterator2_t = daw::json::json_array_iterator<int>;
-	using namespace std::string_literals;
+	using namespace std::string_view_literals;
 
 	auto first = iterator2_t( json_data2, "a.b\\.hi.c" );
 	auto sum = 0;
@@ -909,6 +912,26 @@ int main( int, char ** )
 	test_optional_array( );
 	test_key_value( );
 	test_vector_of_bool( );
+	static_assert( from_json<bool>( "true" ) );
+	static_assert( not from_json<bool>( "false" ) );
+	static_assert( not *from_json<std::optional<bool>>( "false" ) );
+	static_assert( not from_json<std::optional<bool>>( "null" ) );
+	static_assert( from_json<signed char>( "-1" ) == -1 );
+	static_assert( from_json<short>( "-1" ) == -1 );
+	static_assert( from_json<int>( "-1" ) == -1 );
+	static_assert( from_json<long>( "-1" ) == -1 );
+	static_assert( from_json<long long>( "-1" ) == -1 );
+	static_assert( from_json<unsigned char>( "1" ) == 1 );
+	static_assert( from_json<unsigned short>( "1" ) == 1 );
+	static_assert( from_json<unsigned int>( "1" ) == 1 );
+	static_assert( from_json<unsigned long>( "1" ) == 1 );
+	static_assert( from_json<unsigned long long>( "1" ) == 1 );
+	assert( from_json<std::string>( R"("hello world")" ) == "hello world" );
+	assert( from_json<std::deque<int>>( "[1,2,3]"s ).at( 1 ) == 2 );
+	assert( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
+	assert( ( from_json<json_array<no_name, char, std::string>>(
+	            "[97,98,99]"s ) == "abc" ) );
+	static_assert( from_json<std::array<int, 3>>( "[1,2,3]"sv )[1] == 2 );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
