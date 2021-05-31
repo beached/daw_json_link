@@ -845,6 +845,7 @@ int main( int, char ** )
 	test_dblparse( "78146521210545563.1397450998275178158e-308", true );
 	test_dblparse( "8725540998407961.3743556965848965343e-308", true );
 	test_dblparse( "1e-10000", true );
+	test_dblparse<false, true>( "0.9868011474609375", true );
 	std::cout.precision( std::numeric_limits<double>::max_digits10 );
 	std::cout << "result: " << from_json<long double>( "1e-10000" ) << '\n';
 	test_dblparse( "1e-214748364", true );

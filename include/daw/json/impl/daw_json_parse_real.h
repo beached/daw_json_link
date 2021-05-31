@@ -216,18 +216,17 @@ namespace daw::json {
 				}
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754 ) {
-					if( DAW_UNLIKELY( use_strtod or exponent > 22 or exponent < -22 ) ) {
+					use_strtod |= DAW_UNLIKELY( exponent > 22 );
+					use_strtod |= DAW_UNLIKELY( exponent < -22 );
+					use_strtod |= DAW_UNLIKELY( significant_digits > 9007199254740992 );
+					if( DAW_UNLIKELY( use_strtod ) ) {
 						return json_details::parse_with_strtod<Result>( parse_state.first,
 						                                                parse_state.last );
 					}
-					return sign * power10<Result>(
-					                ParseState::exec_tag,
-					                static_cast<Result>( significant_digits ), exponent );
-				} else {
-					return sign * power10<Result>(
-					                ParseState::exec_tag,
-					                static_cast<Result>( significant_digits ), exponent );
 				}
+				return sign * power10<Result>(
+				                ParseState::exec_tag,
+				                static_cast<Result>( significant_digits ), exponent );
 			}
 
 			template<typename Result, bool KnownRange, typename ParseState,
@@ -385,18 +384,16 @@ namespace daw::json {
 				              ParseState::precise_ieee754 ) {
 					use_strtod |= DAW_UNLIKELY( exponent > 22 );
 					use_strtod |= DAW_UNLIKELY( exponent < -22 );
+					use_strtod |=
+					  DAW_UNLIKELY( significant_digits > 9007199254740992ULL );
 					if( DAW_UNLIKELY( use_strtod ) ) {
 						return json_details::parse_with_strtod<Result>( orig_first,
 						                                                orig_last );
 					}
-					return sign * power10<Result>(
-					                ParseState::exec_tag,
-					                static_cast<Result>( significant_digits ), exponent );
-				} else {
-					return sign * power10<Result>(
-					                ParseState::exec_tag,
-					                static_cast<Result>( significant_digits ), exponent );
 				}
+				return sign * power10<Result>(
+				                ParseState::exec_tag,
+				                static_cast<Result>( significant_digits ), exponent );
 			}
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
