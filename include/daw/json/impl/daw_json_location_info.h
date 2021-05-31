@@ -118,6 +118,7 @@ namespace daw::json {
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					// MSVC has a bug where the list initialization isn't sequenced in
 					// order of appearance.
+					(void)start_pos;
 					for( std::size_t n = 0; n < MemberCount; ++n ) {
 #else
 					for( std::size_t n = start_pos; n < MemberCount; ++n ) {

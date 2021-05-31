@@ -315,7 +315,7 @@ namespace daw::json {
 			template<bool is_unchecked_input, char... keys, typename CharT>
 			DAW_ATTRIB_FLATINLINE inline CharT *
 			mem_move_to_next_of( runtime_exec_tag, CharT *first, CharT *last ) {
-				if( sizeof...( keys ) == 1 ) {
+				if constexpr( sizeof...( keys ) == 1 ) {
 					char const key[]{ keys... };
 					auto *ptr = reinterpret_cast<CharT *>( std::memchr(
 					  first, key[0], static_cast<std::size_t>( last - first ) ) );
