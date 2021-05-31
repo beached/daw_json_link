@@ -143,6 +143,8 @@ namespace daw::json {
 						  DAW_MOVE( tp_args ), std::index_sequence_for<Args...>{ } );
 					}
 				} else {
+					// Silence MSVC warning, used in other if constexpr case
+					(void)parse_state;
 					static_assert(
 					  std::is_invocable<Constructor, Args...>::value,
 					  "Unable to construct value with the supplied arguments" );
