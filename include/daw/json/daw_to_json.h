@@ -59,7 +59,10 @@ namespace daw::json {
 			}
 			*out_it++ = '[';
 			bool is_first = true;
-			for( auto const &v : c ) {
+			// Not const & as some types(vector<bool>::const_reference are not ref
+			// types
+			for( auto &&v : c ) {
+
 				using v_type = daw::remove_cvref_t<decltype( v )>;
 				constexpr bool is_auto_detect_v =
 				  std::is_same<JsonElement,
@@ -73,7 +76,7 @@ namespace daw::json {
 				  not std::is_same_v<JsonMember,
 				                     missing_json_data_contract_for<JsonElement>>,
 				  "Unable to detect unnamed mapping" );
-				//static_assert( not std::is_same_v<JsonElement, JsonMember> );
+				// static_assert( not std::is_same_v<JsonElement, JsonMember> );
 				if( is_first ) {
 					is_first = false;
 				} else {
