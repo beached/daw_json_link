@@ -580,7 +580,7 @@ There are a few defines that affect how JSON Link operates
 ###### [Top](#content)
 
 * C++ 17 compiler 
-* GCC(8/9)/Clang(7/8/9/10) have been tested. 
+* GCC(8/9.3.0/10.2.1)/Clang(7/8/9/10) have been tested. 
 * MSVC 19.21 has been tested. 
 
 ### For building tests
