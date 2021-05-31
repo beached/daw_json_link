@@ -153,7 +153,7 @@ namespace daw::json {
 				friend inline constexpr bool
 				operator!=( json_parse_kv_array_iterator const &lhs,
 				            json_parse_kv_array_iterator const &rhs ) {
-					return lhs.parse_state != rhs.parse_state;
+					return not( lhs == rhs );
 				}
 			};
 		} // namespace json_details

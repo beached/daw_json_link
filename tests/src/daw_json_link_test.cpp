@@ -931,7 +931,7 @@ int main( int, char ** )
 	assert( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
 	assert( ( from_json<json_array<no_name, char, std::string>>(
 	            "[97,98,99]"s ) == "abc" ) );
-	static_assert( from_json<std::array<int, 3>>( "[1,2,3]"sv )[1] == 2 );
+	static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

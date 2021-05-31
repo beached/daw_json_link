@@ -627,7 +627,6 @@ namespace daw::json {
 			[[nodiscard,
 			  maybe_unused]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMembers>
 			parse_variant_value( ParseState &parse_state ) {
-
 				using element_t = typename JsonMembers::json_elements;
 				constexpr std::size_t idx =
 				  element_t::base_map[static_cast<int_fast8_t>( BPT )];
@@ -652,7 +651,6 @@ namespace daw::json {
 			  maybe_unused]] DAW_ATTRIB_INLINE constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::Variant> ) {
-
 				switch( parse_state.front( ) ) {
 				case '{':
 					return parse_variant_value<JsonBaseParseTypes::Class, JsonMember>(
@@ -720,7 +718,6 @@ namespace daw::json {
 			  maybe_unused]] DAW_ATTRIB_INLINE inline constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::VariantTagged> ) {
-
 				using tag_member = typename JsonMember::tag_member;
 				auto [is_found, parse_state2] = find_range<ParseState>(
 				  ParseState( parse_state.class_first, parse_state.last ),

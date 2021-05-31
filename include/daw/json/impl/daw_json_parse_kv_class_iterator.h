@@ -135,16 +135,17 @@ namespace daw::json {
 					return *this;
 				}
 
-				inline constexpr bool
-				operator==( json_parse_kv_class_iterator const &rhs ) const {
+				friend inline constexpr bool
+				operator==( json_parse_kv_class_iterator const &lhs,
+				            json_parse_kv_class_iterator const &rhs ) {
 					// using identity as equality
-					return base::parse_state == rhs.base::parse_state;
+					return lhs.parse_state == rhs.base::parse_state;
 				}
 
-				inline constexpr bool
-				operator!=( json_parse_kv_class_iterator const &rhs ) const {
-					// using identity as equality
-					return base::parse_state != rhs.base::parse_state;
+				friend inline constexpr bool
+				operator!=( json_parse_kv_class_iterator const &lhs,
+				            json_parse_kv_class_iterator const &rhs ) {
+					return not( lhs == rhs );
 				}
 			};
 		} // namespace json_details

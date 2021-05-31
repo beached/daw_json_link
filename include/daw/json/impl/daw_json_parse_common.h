@@ -766,12 +766,23 @@ namespace daw::json {
 
 				template<typename T>
 				using container_test_t = typename T::value_type;
+
+				template<typename T>
+				using begin_test_t = decltype( std::begin( std::declval<T>( ) ) );
+
+				template<typename T>
+				using end_test_t = decltype( std::end( std::declval<T>( ) ) );
+
+				template<typename T>
+				inline constexpr bool container_detect_v =
+				  std::conjunction_v<daw::is_detected<container_test_t, T>,
+				                     daw::is_detected<begin_test_t, T>,
+				                     daw::is_detected<end_test_t, T>>;
 			} // namespace container_detect
 
 			template<typename Container>
 			using is_container = container_detect::container_test<
-			  Container,
-			  daw::is_detected_v<container_detect::container_test_t, Container>>;
+			  Container, container_detect::container_detect_v<Container>>;
 
 			namespace vector_detect {
 				template<typename T>

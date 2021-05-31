@@ -147,21 +147,17 @@ namespace daw::json {
 				return DAW_MOVE( v );
 			}
 
-			template<typename Iterator, std::size_t... Is>
-			DAW_ATTRIB_FLATINLINE static constexpr std::array<T, Sz>
-			construct_array( Iterator first, std::index_sequence<Is...> ) {
-				auto const deref = [&]( std::size_t ) {
-					auto result = *first;
-					++first;
-					return result;
-				};
-				return std::array<T, Sz>{ deref( Is )... };
-			}
-
 			template<typename Iterator>
 			DAW_ATTRIB_FLATINLINE constexpr std::array<T, Sz>
 			operator( )( Iterator first, Iterator last ) const {
-				return construct_array( first, std::make_index_sequence<Sz>{ } );
+				auto result = std::array<T, Sz>{ };
+				std::size_t counter = 0;
+				while( ( counter < Sz ) & ( first != last ) ) {
+					result[counter] = *first;
+					++counter;
+					++first;
+				}
+				return result;
 			}
 		};
 
