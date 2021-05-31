@@ -108,6 +108,10 @@ namespace daw::json {
 					CharT *first = parse_state.first;
 					CharT *const last = parse_state.last;
 
+					// silencing gcc9 unused warning.  last is used inside if constexpr
+					// blocks
+					(void)last;
+
 					if( ParseState::is_zero_terminated_string ) {
 						daw_json_assert_weak( first < last and *first != '\0',
 						                      ErrorReason::UnexpectedEndOfData,

@@ -54,6 +54,11 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
 			parse_digits_while_number( CharT *first, CharT *const last,
 			                           Unsigned &v ) {
+
+				// silencing gcc9 unused warning.  last is used inside if constexpr
+				// blocks
+				(void)last;
+
 				Unsigned value = v;
 				if constexpr( skip_end_check ) {
 					auto dig = parse_digit( *first );

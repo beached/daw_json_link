@@ -200,6 +200,11 @@ namespace daw::json {
 				    ? AllMembersMustExist::yes
 				    : AllMembersMustExist::no;
 
+
+				// silencing gcc9 unused warning.  last is used inside if constexpr
+				// blocks
+				(void)must_exist;
+
 				parse_state.trim_left( );
 				// TODO, use member name
 				daw_json_assert_weak( parse_state.is_opening_brace_checked( ),
