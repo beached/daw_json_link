@@ -178,6 +178,7 @@ namespace daw::json {
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				CharT *first = parse_state.first;
 				CharT *const orig_first = first;
+				(void)orig_first; // only used inside if constexpr and gcc9 warns
 				CharT *const last = parse_state.last;
 				result_t result = result_t( );
 				bool has_eight =

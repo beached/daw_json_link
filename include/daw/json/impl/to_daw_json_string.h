@@ -682,7 +682,8 @@ namespace daw::json {
 						*it++ = '-';
 						// Do 1 round here just incase we are
 						// daw::numeric_limits<intmax_t>::min( ) and cannot negate
-						*ptr++ = '0' - static_cast<char>( v % 10 );
+						// This is a subtraction because v < 0 % 10 is negative
+						*ptr++ = static_cast<char>( '0' - static_cast<char>( v % 10 ) );
 						v /= -10;
 						if( v == 0 ) {
 							*it++ = buff[0];
@@ -704,7 +705,7 @@ namespace daw::json {
 						ptr += 2;
 					}
 					if( v > 0 ) {
-						*ptr++ = '0' + static_cast<char>( v );
+						*ptr++ = static_cast<char>( '0' + static_cast<char>( v ) );
 					}
 					--ptr;
 					*it++ = *ptr;

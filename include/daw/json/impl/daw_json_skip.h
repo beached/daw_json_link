@@ -125,6 +125,7 @@ namespace daw::json {
 			template<bool skip_end_check, typename CharT>
 			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr CharT *
 			skip_digits( CharT *first, CharT *const last ) {
+				(void)last;	// only used inside if constexpr and gcc9 warns
 				unsigned dig = parse_digit( *first );
 				while( dig < 10 ) {
 					++first;

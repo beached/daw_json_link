@@ -38,6 +38,9 @@ namespace daw::json {
 					CharT *first = parse_state.first;
 					CharT *const last = parse_state.last;
 
+					// only used when not zero terminated string and gcc9 warns
+					(void)last;
+
 					if constexpr( ParseState::is_zero_terminated_string ) {
 						// Ensure that zero terminator isn't included in skipable value
 						while( DAW_UNLIKELY(

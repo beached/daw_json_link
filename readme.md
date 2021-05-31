@@ -588,8 +588,13 @@ There are a few defines that affect how JSON Link operates
 * cmake
 
 #### Contact
-Darrell Wright
-json_link@dawdevel.ca
+* Darrell Wright
+* json_link@dawdevel.ca
 
 # Limitations
-* When parsing classes, the first member with a mapped name will be used. If you want to parse a class that can have more than one of any member by name, either parse as a `json_value` see or as a `json_key_value` that is mapped to a `std::multimap` or a `std::vector` with a pair of key type(`string`) and value type(s). [Cookbook Key Values](cookbook/key_values.md) demonstrates these methods. If a `json_key_value` is used and the mapped data type does not support duplicate keys, it will insert for each key. This may result in the last item being the value reflected after serializing. If the duplicate member is the tag type in a `json_tagged_variant`, it is undefined what the behaviour for parsing is.
+* When parsing classes, 
+  the default is unspecified when duplicate names are encounters as to which is used.  
+  One can guarantee that both can be parsed or order by using `json_key_value` parse type.  
+  When used with `std::multimap<std::string, T>` or `std::vector<std::pair<std::string, T>>` all members are preserved with the former in order.  Alternatively, the `json_value` type will allow iteration over the class members and lazy parsing of the correct one. 
+  See [Cookbook Key Values](cookbook/key_values.md) which demonstrates these methods.
+* Trailing commas, the parser makes no effort to detect trailing commas.
