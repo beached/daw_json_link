@@ -56,6 +56,8 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE static inline constexpr auto
 			construct_value( template_params<Value, Constructor>,
 			                 ParseState &parse_state, Args &&...args ) {
+				// Silence MSVC warning, used in other if constexpr case
+				(void)parse_state;
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;
