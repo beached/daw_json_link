@@ -253,13 +253,9 @@ namespace daw::json {
 				(void)orig_first;
 				(void)orig_last;
 
-				Result const sign = [&] {
-					if( parse_state.front( ) == '-' ) {
-						parse_state.remove_prefix( );
-						return static_cast<Result>( -1 );
-					}
-					return static_cast<Result>( 1 );
-				}( );
+				Result const sign =
+				  parse_policy_details::validate_signed_first( parse_state );
+
 				constexpr auto max_storage_digits = static_cast<std::ptrdiff_t>(
 				  daw::numeric_limits<std::uint64_t>::digits10 );
 				constexpr auto max_exponent = static_cast<std::ptrdiff_t>(

@@ -959,6 +959,18 @@ int main( int, char ** )
 		}
 	};
 	daw_json_assert( test_empty_map( ), ErrorReason::Unknown );
+
+	auto const test_leading_zero = []( auto i) {
+		using test_t = daw::remove_cvref_t<decltype(i)>;
+		try {
+			auto l0 = from_json<test_t>( "01.0"sv );
+			(void)l0;
+		} catch( daw::json::json_exception const & ) { return true; }
+		return false;
+	};
+	daw_json_assert( test_leading_zero( 0.0 ), ErrorReason::Unknown );
+	daw_json_assert( test_leading_zero( 0 ), ErrorReason::Unknown );
+	daw_json_assert( test_leading_zero( 0U ), ErrorReason::Unknown );
 	std::cout << "done";
 }
 #ifdef DAW_USE_EXCEPTIONS

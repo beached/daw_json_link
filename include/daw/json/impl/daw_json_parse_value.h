@@ -123,15 +123,9 @@ namespace daw::json {
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
 					}
-					daw_json_assert_weak(
-					  parse_policy_details::is_number_start( parse_state.front( ) ),
-					  ErrorReason::InvalidNumberStart, parse_state );
 				}
-				int_type sign = 1;
-				if( parse_state.front( ) == '-' ) {
-					parse_state.remove_prefix( );
-					sign = -1;
-				}
+				int_type const sign = static_cast<int_type>(
+				  parse_policy_details::validate_signed_first( parse_state ) );
 
 				if constexpr( KnownBounds ) {
 					return construct_value(
@@ -176,9 +170,8 @@ namespace daw::json {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
 					}
-					daw_json_assert_weak(
-					  parse_policy_details::is_number( parse_state.front( ) ),
-					  ErrorReason::InvalidNumber, parse_state );
+					parse_policy_details::validate_unsigned_first( parse_state );
+
 					return construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
 					  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(

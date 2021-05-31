@@ -11,6 +11,7 @@
 #include "../daw_json_exception.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_digit.h"
+#include "daw_json_parse_policy_policy_details.h"
 #include "daw_json_parse_string_quote.h"
 #include "version.h"
 
@@ -125,7 +126,7 @@ namespace daw::json {
 			template<bool skip_end_check, typename CharT>
 			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr CharT *
 			skip_digits( CharT *first, CharT *const last ) {
-				(void)last;	// only used inside if constexpr and gcc9 warns
+				(void)last; // only used inside if constexpr and gcc9 warns
 				unsigned dig = parse_digit( *first );
 				while( dig < 10 ) {
 					++first;
@@ -152,8 +153,25 @@ namespace daw::json {
 				auto result = parse_state;
 				CharT *first = parse_state.first;
 				CharT *const last = parse_state.last;
-				if( *first == '-' ) {
-					++first;
+				if constexpr( ParseState::is_unchecked_input ) {
+					if( *first == '-' ) {
+						++first;
+					}
+				} else {
+					switch( *first ) {
+					case '-':
+						++first;
+						break;
+					case '+':
+						daw_json_error( ErrorReason::InvalidNumberStart, parse_state );
+					case '0':
+						if( last - first > 1 ) {
+							daw_json_assert(
+							  not parse_policy_details::is_number( *std::next( first ) ),
+							  ErrorReason::InvalidNumberStart, parse_state );
+						}
+						break;
+					}
 				}
 				if( DAW_LIKELY( first < last ) ) {
 					first =
