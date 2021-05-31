@@ -556,8 +556,7 @@ namespace daw::json {
 				                      parse_state );
 
 				parse_state.remove_prefix( );
-				// We are inside a KV map, we can expected a quoted name next
-				parse_state.template move_to_next_of<'"'>( );
+				parse_state.trim_left( );
 
 #if defined( __GNUC__ ) or defined( __clang__ )
 				using iter_t =

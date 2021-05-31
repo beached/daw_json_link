@@ -458,8 +458,8 @@ unsigned long long test_dblparse( std::string_view num,
 		  rng, ParseTag<json_member::expected_type>{ } );
 	};
 	auto lib_parse_dbl = dbl_lib_parser( num );
-	std::uint64_t const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
-	std::uint64_t const ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
+	auto const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
+	auto ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
 	auto const diff = std::max( ui0, ui1 ) - std::min( ui0, ui1 );
 	if( always_disp ) {
 		auto const old_precision = std::cout.precision( );
@@ -940,8 +940,25 @@ int main( int, char ** )
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
 	};
-	(void)test_bad_float;
-	assert( test_bad_float( ) );
+	daw_json_assert( test_bad_float( ), ErrorReason::Unknown );
+
+	auto const test_empty_map = []( ) -> bool {
+		try {
+			auto m = from_json<std::map<std::string, std::string>>( "{}"sv );
+			if( not m.empty( ) ) {
+				return false;
+			}
+			auto s = to_json( m );
+			if( s != "{}" ) {
+				return false;
+			}
+			return true;
+		} catch( daw::json::json_exception const &jex ) {
+			std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+			throw;
+		}
+	};
+	daw_json_assert( test_empty_map( ), ErrorReason::Unknown );
 	std::cout << "done";
 }
 #ifdef DAW_USE_EXCEPTIONS
