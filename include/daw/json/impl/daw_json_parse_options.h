@@ -206,6 +206,18 @@ namespace daw::json {
 			  TemporarilyMutateBuffer::no;
 		} // namespace json_details
 
+		/***
+		 * Exclude characters under 0x20 that are not explicitly allowed.
+		 */
+		enum class ExcludeSpecialEscapes : unsigned { no, yes }; // 1bit
+		namespace json_details {
+			template<>
+			inline constexpr unsigned policy_bits_width<ExcludeSpecialEscapes> = 1;
+
+			template<>
+			inline constexpr auto default_policy_value<ExcludeSpecialEscapes> =
+			  ExcludeSpecialEscapes::no;
+		} // namespace json_details
 		/* *****************************************
 		 * Implementation details
 		 */
@@ -249,7 +261,7 @@ namespace daw::json {
 			  ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
 			  CheckedParseMode, AllowEscapedNames, IEEE754Precise, ForceFullNameCheck,
 			  MinifiedDocument, UseExactMappingsByDefault, TemporarilyMutateBuffer,
-			  MustVerifyEndOfDataIsValid>::type;
+			  MustVerifyEndOfDataIsValid, ExcludeSpecialEscapes>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =

@@ -18,48 +18,48 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
-		namespace json_details::name::name_parser {
-			/*
-			 * end of string " -> name value separating : -> any white space
-			 * the string can be escaped too
-			 */
-			template<typename ParseState>
-			[[maybe_unused]] static constexpr void
-			trim_end_of_name( ParseState &parse_state ) {
-				parse_state.trim_left( );
-				// TODO: should we check for end
-				daw_json_assert_weak( parse_state.front( ) == ':',
-				                      ErrorReason::InvalidMemberName, parse_state );
-				parse_state.remove_prefix( );
-				parse_state.trim_left( );
-			}
-
-			template<typename ParseState>
-			[[nodiscard, maybe_unused]] inline constexpr daw::string_view
-			parse_nq( ParseState &parse_state ) {
-				if constexpr( ParseState::allow_escaped_names ) {
-					auto r = skip_string_nq( parse_state );
-					trim_end_of_name( parse_state );
-					return daw::string_view( std::data( r ), std::size( r ) );
-				} else {
-					char const *const ptr = parse_state.first;
-					if constexpr( ParseState::is_unchecked_input ) {
-						parse_state.template move_to_next_of_unchecked<'"'>( );
-					} else {
-						parse_state.template move_to_next_of_checked<'"'>( );
-					}
-					daw_json_assert_weak( parse_state.is_quotes_checked( ) and
-					                        *std::prev( parse_state.first ) != '\\',
-					                      ErrorReason::InvalidString, parse_state );
-					auto result = daw::string_view( ptr, parse_state.first );
-					parse_state.remove_prefix( );
-					trim_end_of_name( parse_state );
-					return result;
-				}
-			}
-		} // namespace json_details::name::name_parser
-
 		namespace json_details {
+			namespace name::name_parser {
+				/*
+				 * end of string " -> name value separating : -> any white space
+				 * the string can be escaped too
+				 */
+				template<typename ParseState>
+				[[maybe_unused]] static constexpr void
+				trim_end_of_name( ParseState &parse_state ) {
+					parse_state.trim_left( );
+					// TODO: should we check for end
+					daw_json_assert_weak( parse_state.front( ) == ':',
+					                      ErrorReason::InvalidMemberName, parse_state );
+					parse_state.remove_prefix( );
+					parse_state.trim_left( );
+				}
+
+				template<typename ParseState>
+				[[nodiscard, maybe_unused]] inline constexpr daw::string_view
+				parse_nq( ParseState &parse_state ) {
+					if constexpr( ParseState::allow_escaped_names ) {
+						auto r = skip_string_nq( parse_state );
+						trim_end_of_name( parse_state );
+						return daw::string_view( std::data( r ), std::size( r ) );
+					} else {
+						char const *const ptr = parse_state.first;
+						if constexpr( ParseState::is_unchecked_input ) {
+							parse_state.template move_to_next_of_unchecked<'"'>( );
+						} else {
+							parse_state.template move_to_next_of_checked<'"'>( );
+						}
+						daw_json_assert_weak( parse_state.is_quotes_checked( ) and
+						                        *std::prev( parse_state.first ) != '\\',
+						                      ErrorReason::InvalidString, parse_state );
+						auto result = daw::string_view( ptr, parse_state.first );
+						parse_state.remove_prefix( );
+						trim_end_of_name( parse_state );
+						return result;
+					}
+				}
+			} // namespace name::name_parser
+
 			struct pop_json_path_result {
 				daw::string_view current{ };
 				char found_char = 0;

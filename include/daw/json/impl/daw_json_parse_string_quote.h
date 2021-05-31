@@ -106,6 +106,7 @@ namespace daw::json {
 						first = mem_skip_until_end_of_string<true>(
 						  ParseState::exec_tag, first, last, need_slow_path );
 					} else {
+
 						{
 							auto const sz = last - first;
 							if( sz >= 8 ) {
@@ -147,41 +148,111 @@ namespace daw::json {
 						first = mem_skip_until_end_of_string<false>(
 						  ParseState::exec_tag, first, last, need_slow_path );
 					} else {
-						if( CharT *const l = parse_state.last; l - first >= 8 ) {
-							skip_to_first8( first, l );
-						} else if( last - first >= 4 ) {
-							skip_to_first4( first, l );
+						if constexpr( not ParseState::exclude_special_escapes ) {
+							if( CharT *const l = parse_state.last; l - first >= 8 ) {
+								skip_to_first8( first, l );
+							} else if( last - first >= 4 ) {
+								skip_to_first4( first, l );
+							}
 						}
 						if constexpr( ParseState::is_zero_terminated_string ) {
-							while( ( *first != 0 ) & ( *first != '"' ) ) {
-								while( ( *first != 0 ) & ( *first != '"' ) &
-								       ( *first != '\\' ) ) {
+							if constexpr( ParseState::exclude_special_escapes ) {
+								while( *first != '\0' ) {
+									char c = *first;
+									daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
+									                 ErrorReason::InvalidString, parse_state );
+									if( c == '\\' ) {
+										daw_json_assert( last - first > 1,
+										                 ErrorReason::InvalidString, parse_state );
+										if( need_slow_path < 0 ) {
+											need_slow_path = first - parse_state.first;
+										}
+										++first;
+										c = *first;
+										switch( c ) {
+										case '"':
+										case '\\':
+										case '/':
+										case 'b':
+										case 'f':
+										case 'n':
+										case 'r':
+										case 't':
+										case 'u':
+											break;
+										default:
+											daw_json_error( ErrorReason::InvalidString, parse_state );
+										}
+									} else if( c == '"' ) {
+										break;
+									}
 									++first;
 								}
-
-								if( ( ( *first != 0 ) & ( *first == '\\' ) ) ) {
-									if( need_slow_path < 0 ) {
-										need_slow_path = first - parse_state.first;
+							} else {
+								while( ( *first != 0 ) & ( *first != '"' ) ) {
+									while( ( *first != 0 ) & ( *first != '"' ) &
+									       ( *first != '\\' ) ) {
+										++first;
 									}
-									first += 2;
-								} else {
-									break;
+
+									if( ( ( *first != 0 ) & ( *first == '\\' ) ) ) {
+										if( need_slow_path < 0 ) {
+											need_slow_path = first - parse_state.first;
+										}
+										first += 2;
+									} else {
+										break;
+									}
 								}
 							}
 						} else {
-							while( first < last and *first != '"' ) {
-								while( first < last and
-								       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
+							if constexpr( ParseState::exclude_special_escapes ) {
+								while( first < last ) {
+									char c = *first;
+									daw_json_assert( static_cast<unsigned char>( c ) >= 0x20U,
+									                 ErrorReason::InvalidString, parse_state );
+									if( c == '\\' ) {
+										daw_json_assert( last - first > 1,
+										                 ErrorReason::InvalidString, parse_state );
+										if( need_slow_path < 0 ) {
+											need_slow_path = first - parse_state.first;
+										}
+										++first;
+										c = *first;
+										switch( c ) {
+										case '"':
+										case '\\':
+										case '/':
+										case 'b':
+										case 'f':
+										case 'n':
+										case 'r':
+										case 't':
+										case 'u':
+											break;
+										default:
+											daw_json_error( ErrorReason::InvalidString, parse_state );
+										}
+									} else if( c == '"' ) {
+										break;
+									}
 									++first;
 								}
-
-								if( first < last and *first == '\\' ) {
-									if( need_slow_path < 0 ) {
-										need_slow_path = first - parse_state.first;
+							} else {
+								while( first < last and *first != '"' ) {
+									while( first < last and
+									       ( ( *first != '"' ) & ( *first != '\\' ) ) ) {
+										++first;
 									}
-									first += 2;
-								} else {
-									break;
+
+									if( first < last and *first == '\\' ) {
+										if( need_slow_path < 0 ) {
+											need_slow_path = first - parse_state.first;
+										}
+										first += 2;
+									} else {
+										break;
+									}
 								}
 							}
 						}

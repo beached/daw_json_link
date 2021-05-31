@@ -609,6 +609,10 @@ add_executable(daw_json_minify src/daw_json_minify.cpp)
 target_link_libraries(daw_json_minify json_test)
 add_dependencies(full daw_json_minify)
 
+add_executable(daw_json_roundtrip src/daw_json_roundtrip.cpp)
+target_link_libraries(daw_json_roundtrip json_test)
+add_dependencies(full daw_json_roundtrip)
+
 add_executable(daw_json_minify_full src/daw_json_minify_full.cpp)
 target_link_libraries(daw_json_minify_full json_test)
 add_dependencies(full daw_json_minify_full)

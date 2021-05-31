@@ -156,7 +156,7 @@ namespace daw::json {
 					                             ( t == JsonBaseParseTypes::Array );
 				                      }( ) ),
 				                      ErrorReason::ExpectedArrayOrClassStart,
-				                      val.get_range( ) );
+				                      val.get_raw_state() );
 			}
 
 			constexpr basic_stateful_json_value( )

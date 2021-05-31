@@ -90,7 +90,7 @@ public:
 			return true;
 		case daw::json::JsonBaseParseTypes::None:
 		default: {
-			auto rng = p.value.get_range( );
+			auto rng = p.value.get_raw_state( );
 			auto sv = daw::string_view( rng.first, rng.size( ) ).pop_front( 10 );
 			std::cerr << "Unknown JSON value type near\n" << sv << "\n\n";
 			std::terminate( );

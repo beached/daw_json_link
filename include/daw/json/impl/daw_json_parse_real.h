@@ -358,10 +358,12 @@ namespace daw::json {
 								                      ErrorReason::InvalidNumber );
 								return true;
 							default:
+								daw_json_assert_weak( parse_policy_details::is_number( *first ),
+								                      ErrorReason::InvalidNumber );
 								return false;
 							}
 						}( );
-						daw_json_assert_weak( parse_state.has_more( ),
+						daw_json_assert_weak( first < parse_state.last,
 						                      ErrorReason::UnexpectedEndOfData,
 						                      parse_state );
 						unsigned_t exp_tmp = 0;

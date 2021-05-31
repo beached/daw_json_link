@@ -39,7 +39,7 @@ namespace daw::json {
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr bool
 			is_number_start( char c ) {
 				switch( c ) {
-				case '0':
+				case '0': // TODO: CONFORMANCE We are accepting starting with zero for now
 				case '1':
 				case '2':
 				case '3':

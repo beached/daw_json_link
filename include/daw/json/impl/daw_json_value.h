@@ -258,10 +258,14 @@ namespace daw::json {
 				return good( );
 			}
 
+			[[nodiscard]] constexpr ParseState const &get_raw_state( ) const {
+				return m_state;
+			}
+
 			/***
-			 * Check for equivilence with rhs iterator
-			 * @param rhs iterator to compare for equivilence with
-			 * @return true if both are equivilent
+			 * Check for equivalence with rhs iterator
+			 * @param rhs iterator to compare for equivalence with
+			 * @return true if both are equivalent
 			 */
 			[[nodiscard]] constexpr bool
 			operator==( basic_json_value_iterator<ParseState> const &rhs ) const {
@@ -348,10 +352,10 @@ namespace daw::json {
 			  : m_parse_state( first, last ) {}
 
 			/***
-			 * Get a copy of the underlying range
+			 * Get a copy of the underlying parse state
 			 * @return IteratorRange containing values JSON data
 			 */
-			[[nodiscard]] inline constexpr ParseState get_range( ) const {
+			[[nodiscard]] inline constexpr ParseState get_raw_state( ) const {
 				return m_parse_state;
 			}
 

@@ -188,11 +188,11 @@ namespace daw::json {
 				return value;
 			}
 
-			template<typename Handler, typename ParsePolicy>
+			template<typename Handler, typename ParseState>
 			inline constexpr handler_result_holder
-			handle_on_value( Handler &&handler, basic_json_pair<ParsePolicy> p ) {
+			handle_on_value( Handler &&handler, basic_json_pair<ParseState> p ) {
 				if constexpr( hnd_checks::has_on_value_handler_v<Handler,
-				                                                 ParsePolicy> ) {
+				                                                 ParseState> ) {
 					return handler.handle_on_value( DAW_MOVE( p ) );
 				} else {
 					(void)p;
@@ -318,9 +318,9 @@ namespace daw::json {
 		} // namespace json_details
 		enum class StackParseStateType { Class, Array };
 
-		template<typename ParsePolicy>
+		template<typename ParseState>
 		struct JsonEventParserStackValue {
-			using iterator = basic_json_value_iterator<ParsePolicy>;
+			using iterator = basic_json_value_iterator<ParseState>;
 			StackParseStateType type;
 			std::pair<iterator, iterator> value;
 		};
@@ -358,18 +358,20 @@ namespace daw::json {
 			}
 		};
 
-		template<typename ParsePolicy = NoCommentSkippingPolicyChecked,
+		template<typename ParseState = NoCommentSkippingPolicyChecked,
 		         typename StackContainerPolicy = DefaultJsonEventParserStackPolicy<
-		           JsonEventParserStackValue<ParsePolicy>>,
+		           JsonEventParserStackValue<ParseState>>,
 		         typename Handler>
 		inline constexpr void
-		json_event_parser( basic_json_value<ParsePolicy> jvalue,
+		json_event_parser( basic_json_value<ParseState> jvalue,
 		                   Handler &&handler ) {
-			using iterator = basic_json_value_iterator<ParsePolicy>;
-			using json_value_t = basic_json_pair<ParsePolicy>;
-			using stack_value_t = JsonEventParserStackValue<ParsePolicy>;
+			using iterator = basic_json_value_iterator<ParseState>;
+			using json_value_t = basic_json_pair<ParseState>;
+			using stack_value_t = JsonEventParserStackValue<ParseState>;
 
 			auto parent_stack = StackContainerPolicy( );
+			long long class_depth = 0;
+			long long array_depth = 0;
 
 			auto const move_to_last = [&]( ) {
 				parent_stack.back( ).value.first = parent_stack.back( ).value.second;
@@ -393,6 +395,7 @@ namespace daw::json {
 				auto &jv = p.value;
 				switch( jv.type( ) ) {
 				case JsonBaseParseTypes::Array: {
+					++array_depth;
 					auto result = json_details::handle_on_array_start( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
@@ -409,6 +412,7 @@ namespace daw::json {
 					    std::pair<iterator, iterator>( jv.begin( ), jv.end( ) ) } );
 				} break;
 				case JsonBaseParseTypes::Class: {
+					++class_depth;
 					auto result = json_details::handle_on_class_start( handler, jv );
 					switch( result.value ) {
 					case json_parse_handler_result::Complete:
@@ -502,6 +506,12 @@ namespace daw::json {
 				} else {
 					switch( v.type ) {
 					case StackParseStateType::Class: {
+						daw_json_assert_weak(
+						  ( class_depth > 0 ) &
+						    ( v.value.first.get_raw_state( ).has_more( ) and
+						      v.value.first.get_raw_state( ).front( ) == '}' ),
+						  ErrorReason::InvalidEndOfValue );
+						--class_depth;
 						auto result = json_details::handle_on_class_end( handler );
 						switch( result.value ) {
 						case json_parse_handler_result::Complete:
@@ -513,6 +523,12 @@ namespace daw::json {
 						}
 					} break;
 					case StackParseStateType::Array: {
+						daw_json_assert_weak(
+						  ( array_depth > 0 ) &
+						    ( v.value.first.get_raw_state( ).has_more( ) and
+						      v.value.first.get_raw_state( ).front( ) == ']' ),
+						  ErrorReason::InvalidEndOfValue );
+						--array_depth;
 						auto result = json_details::handle_on_array_end( handler );
 						switch( result.value ) {
 						case json_parse_handler_result::Complete:
@@ -534,6 +550,8 @@ namespace daw::json {
 				parent_stack.pop_back( );
 				process_range( v );
 			}
+			daw_json_assert( class_depth == 0 and array_depth == 0,
+			                 ErrorReason::InvalidEndOfValue );
 		}
 
 		template<typename ParsePolicy = NoCommentSkippingPolicyChecked,

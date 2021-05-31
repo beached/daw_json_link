@@ -123,7 +123,7 @@ namespace daw::json {
 				}
 
 				[[nodiscard]] bool handle_on_value( json_pair jp ) {
-					if( auto const range = jp.value.get_range( );
+					if( auto const range = jp.value.get_raw_state( );
 					    range.empty( ) or last <= std::data( range ) ) {
 						return false;
 					}
@@ -137,7 +137,7 @@ namespace daw::json {
 						state.m_name = { };
 						state.m_index = -1;
 					}
-					state.m_value_start = jp.value.get_range( ).first;
+					state.m_value_start = jp.value.get_raw_state( ).first;
 					state.m_type = jp.value.type( );
 					last_popped = std::nullopt;
 					return true;

@@ -108,6 +108,13 @@ namespace daw::json {
 			  json_details::get_bits_for<MinifiedDocument>( PolicyFlags ) ==
 			  MinifiedDocument::yes;
 
+			/***
+			 * See ExcludeSpecialEscapes
+			 */
+			static constexpr bool exclude_special_escapes =
+			  json_details::get_bits_for<ExcludeSpecialEscapes>( PolicyFlags ) ==
+			  ExcludeSpecialEscapes::yes;
+
 			using as_unchecked =
 			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>(
 			                     PolicyFlags, CheckedParseMode::no ),
@@ -628,7 +635,8 @@ namespace daw::json {
 		                   Allocator>;
 
 		using ConformancePolicy = BasicParsePolicy<parse_options(
-		  AllowEscapedNames::yes, MustVerifyEndOfDataIsValid::yes )>;
+		  AllowEscapedNames::yes, MustVerifyEndOfDataIsValid::yes,
+		  IEEE754Precise::yes, AllowEscapedNames::yes, ExcludeSpecialEscapes::yes )>;
 
 		namespace json_details {
 			/***

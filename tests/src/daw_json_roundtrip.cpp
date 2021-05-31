@@ -53,14 +53,29 @@ public:
 		return true;
 	}
 
-	bool handle_on_string( std::string const & s ) {
-		write_str( s );
+	template<typename ParseState>
+	bool handle_on_string( daw::json::basic_json_value<ParseState> jv ) {
+		std::string const r = daw::json::from_json<std::string>( jv );
+		out_it = daw::json::to_json( r, out_it );
+		return true;
+	}
+
+	bool handle_on_null( ) {
+		write_str( "null" );
+		return true;
+	}
+
+	bool handle_on_bool( bool b ) {
+		if( b ) {
+			write_str( "true" );
+		} else {
+			write_str( "false" );
+		}
 		return true;
 	}
 
 	template<typename ParsePolicy>
 	bool handle_on_value( daw::json::basic_json_pair<ParsePolicy> p ) {
-		daw::json::JsonBaseParseTypes const v_type = p.value.type( );
 		if( member_count_stack.empty( ) ) {
 			member_count_stack.emplace_back( p.value.is_class( ) );
 		}
@@ -75,12 +90,6 @@ public:
 			write_str( *p.name );
 			write_str( "\":" );
 		}
-		if( ( v_type == daw::json::JsonBaseParseTypes::Class ) |
-		    ( v_type == daw::json::JsonBaseParseTypes::Array ) |
-		    ( v_type == daw::json::JsonBaseParseTypes::Number ) ) {
-			return true;
-		}
-		write_str( p.value.get_string_view( ) );
 		return true;
 	}
 

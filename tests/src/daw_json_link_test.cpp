@@ -932,6 +932,16 @@ int main( int, char ** )
 	assert( ( from_json<json_array<no_name, char, std::string>>(
 	            "[97,98,99]"s ) == "abc" ) );
 	static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
+
+	auto const test_bad_float = []( ) -> bool {
+		try {
+			(void)from_json<double>( "0e "sv );
+		} catch( daw::json::json_exception const & ) { return true; }
+		return false;
+	};
+	(void)test_bad_float;
+	assert( test_bad_float( ) );
+	std::cout << "done";
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
