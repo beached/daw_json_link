@@ -5,6 +5,7 @@ find_package(Boost 1.72.0 COMPONENTS container)
 
 add_subdirectory(extern)
 
+
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF CACHE STRING "Enable LTO")
 if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
     message("CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON: LTO is enabled")
