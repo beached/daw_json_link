@@ -253,8 +253,8 @@ namespace daw::json {
 				(void)orig_first;
 				(void)orig_last;
 
-				Result const sign =
-				  parse_policy_details::validate_signed_first( parse_state );
+				auto const sign = static_cast<Result>(
+				  parse_policy_details::validate_signed_first( parse_state ) );
 
 				constexpr auto max_storage_digits = static_cast<std::ptrdiff_t>(
 				  daw::numeric_limits<std::uint64_t>::digits10 );
