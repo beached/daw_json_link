@@ -242,6 +242,12 @@ namespace daw::json {
 
 				CharT *const orig_first = parse_state.first;
 				CharT *const orig_last = parse_state.last;
+
+				// silencing gcc9 warning as these are only used when precise ieee is in
+				// play.
+				(void)orig_first;
+				(void)orig_last;
+
 				Result const sign = [&] {
 					if( parse_state.front( ) == '-' ) {
 						parse_state.remove_prefix( );

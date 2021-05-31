@@ -760,7 +760,7 @@ namespace daw::json {
 						ptr += 2;
 					}
 					if( v > 0 ) {
-						*ptr++ = '0' + static_cast<char>( v );
+						*ptr++ = static_cast<char>( '0' + static_cast<char>( v ) );
 					}
 					--ptr;
 					*it++ = *ptr;

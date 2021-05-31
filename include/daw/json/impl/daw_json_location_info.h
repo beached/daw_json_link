@@ -197,6 +197,10 @@ namespace daw::json {
 			                   locations_info_t<N, CharT, B> &locations,
 			                   bool is_nullable, daw::string_view member_name ) {
 
+				// silencing gcc9 warning as these are selectively used
+				(void)is_nullable;
+				(void)member_name;
+
 				daw_json_assert_weak( is_nullable | ( not locations[pos].missing( ) ) |
 				                        ( not parse_state.is_closing_brace_checked( ) ),
 				                      missing_member( member_name ), parse_state );
