@@ -19,6 +19,7 @@
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_move.h>
 #include <daw/daw_parser_helper_sv.h>
+#include <daw/daw_scope_guard.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_traits.h>
 
@@ -588,62 +589,19 @@ namespace daw::json {
 		};
 #endif
 
-		template<>
-		struct json_link_basic_type_map<short> {
+		template<typename Integer>
+		struct json_link_basic_type_map<
+		  Integer, std::enable_if_t<daw::is_integral_v<Integer>>> {
 			constexpr static bool is_null = false;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
+			constexpr static JsonParseTypes parse_type = daw::is_signed_v<Integer>
+			                                               ? JsonParseTypes::Signed
+			                                               : JsonParseTypes::Unsigned;
 		};
 
-		template<>
-		struct json_link_basic_type_map<int> {
-			constexpr static bool is_null = false;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
-		};
-
-		template<>
-		struct json_link_basic_type_map<long> {
-			constexpr static bool is_null = false;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
-		};
-
-		template<>
-		struct json_link_basic_type_map<long long> {
-			constexpr static bool is_null = false;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::Signed;
-		};
-
-		template<>
-		struct json_link_basic_type_map<unsigned short> {
-			constexpr static bool is_null = false;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
-		};
-
-		template<>
-		struct json_link_basic_type_map<unsigned int> {
-			constexpr static bool is_null = false;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
-		};
-
-		template<>
-		struct json_link_basic_type_map<unsigned long> {
-			constexpr static bool is_null = false;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
-		};
-
-		template<>
-		struct json_link_basic_type_map<unsigned long long> {
-			constexpr static bool is_null = false;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::Unsigned;
-		};
-
-		template<>
-		struct json_link_basic_type_map<float> {
-			constexpr static bool is_null = false;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
-		};
-
-		template<>
-		struct json_link_basic_type_map<double> {
+		template<typename FloatingPoint>
+		struct json_link_basic_type_map<
+		  FloatingPoint,
+		  std::enable_if_t<daw::is_floating_point_v<FloatingPoint>>> {
 			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
 		};

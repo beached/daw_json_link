@@ -154,8 +154,7 @@ namespace daw::json {
 			                 std::index_sequence<Is...> ) {
 				auto const get_result = [&]( std::size_t ) {
 					if( first != last ) {
-						if constexpr( std::is_move_constructible_v<T> or
-						              std::is_copy_constructible_v<T> ) {
+						if constexpr( std::is_move_constructible_v<T> ) {
 							auto result = *first;
 							++first;
 							return result;
