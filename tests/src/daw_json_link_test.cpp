@@ -960,8 +960,8 @@ int main( int, char ** )
 	};
 	daw_json_assert( test_empty_map( ), ErrorReason::Unknown );
 
-	auto const test_leading_zero = []( auto i) {
-		using test_t = daw::remove_cvref_t<decltype(i)>;
+	auto const test_leading_zero = []( auto i ) {
+		using test_t = daw::remove_cvref_t<decltype( i )>;
 		try {
 			auto l0 = from_json<test_t>( "01.0"sv );
 			(void)l0;
@@ -971,6 +971,12 @@ int main( int, char ** )
 	daw_json_assert( test_leading_zero( 0.0 ), ErrorReason::Unknown );
 	daw_json_assert( test_leading_zero( 0 ), ErrorReason::Unknown );
 	daw_json_assert( test_leading_zero( 0U ), ErrorReason::Unknown );
+
+	static_assert(
+	  from_json<
+	    json_key_value<no_name, std::array<std::pair<std::string_view, int>, 2>,
+	                   int, std::string_view>>( R"({"a":0,"b":1})" )[1]
+	    .second == 1 );
 	std::cout << "done";
 }
 #ifdef DAW_USE_EXCEPTIONS

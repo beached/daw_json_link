@@ -25,10 +25,8 @@
 #include <ciso646>
 #include <cstddef>
 #include <iterator>
-#include <map>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
 
 #if defined( __cpp_constexpr_dynamic_alloc )
@@ -499,8 +497,9 @@ namespace daw::json {
 		 *  @tparam Constructor A callable used to make Container, default will use
 		 * the Containers constructor.  Both normal and aggregate are supported
 		 */
-		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
-		         typename JsonKeyType = json_string<no_name>,
+		template<JSONNAMETYPE Name, typename Container,
+		         typename JsonValueType = typename Container::mapped_type,
+		         typename JsonKeyType = typename Container::key_type,
 		         typename Constructor = nullable_constructor<Container>>
 		using json_key_value_null =
 		  json_key_value<Name, Container, JsonValueType, JsonKeyType, Constructor,
@@ -547,7 +546,7 @@ namespace daw::json {
 			  number_parse_type_v = number_parse_type_test<T>( );
 		} // namespace json_details
 
-		template<typename>
+		template<typename, typename = void>
 		struct json_link_basic_type_map {
 			constexpr static bool is_null = false;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Unknown;
@@ -649,19 +648,34 @@ namespace daw::json {
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::Real;
 		};
 
-		template<typename K, typename V, typename... Ts>
-		struct json_link_basic_type_map<std::map<K, V, Ts...>> {
-			constexpr static bool is_null = false;
-			using key = K;
-			using value = V;
-			constexpr static JsonParseTypes parse_type = JsonParseTypes::KeyValue;
-		};
+		namespace json_details {
+			template<typename AssociativeContainer>
+			using container_key_type = typename AssociativeContainer::key_type;
 
-		template<typename K, typename V, typename... Ts>
-		struct json_link_basic_type_map<std::unordered_map<K, V, Ts...>> {
+			template<typename AssociativeContainer>
+			using container_mapped_type = typename AssociativeContainer::mapped_type;
+
+			template<typename AssociativeContainer>
+			inline constexpr bool is_associative_container_v =
+			  daw::is_detected_v<container_key_type, AssociativeContainer>
+			    and daw::is_detected_v<container_mapped_type, AssociativeContainer>;
+
+			template<typename AssociativeContainer,
+			         typename K = typename AssociativeContainer::key_type,
+			         typename V = typename AssociativeContainer::mapped_type>
+			struct associative_container_wrapper {
+				using type = AssociativeContainer;
+			};
+		} // namespace json_details
+
+		template<typename AssociativeContainer>
+		struct json_link_basic_type_map<
+		  AssociativeContainer,
+		  std::enable_if_t<
+		    json_details::is_associative_container_v<AssociativeContainer>>> {
 			constexpr static bool is_null = false;
-			using key = K;
-			using value = V;
+			using key = typename AssociativeContainer::key_type;
+			using value = typename AssociativeContainer::mapped_type;
 			constexpr static JsonParseTypes parse_type = JsonParseTypes::KeyValue;
 		};
 

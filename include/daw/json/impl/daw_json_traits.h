@@ -12,6 +12,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_move.h>
+#include <daw/daw_scope_guard.h>
 #include <daw/daw_traits.h>
 
 #include <array>
@@ -147,17 +148,32 @@ namespace daw::json {
 				return DAW_MOVE( v );
 			}
 
+			template<typename Iterator, std::size_t... Is>
+			DAW_ATTRIB_FLATINLINE static constexpr std::array<T, Sz>
+			construct_array( Iterator first, Iterator last,
+			                 std::index_sequence<Is...> ) {
+				auto const get_result = [&]( std::size_t ) {
+					if( first != last ) {
+						if constexpr( std::is_move_constructible_v<T> or
+						              std::is_copy_constructible_v<T> ) {
+							auto result = *first;
+							++first;
+							return result;
+						} else {
+							auto const run_after_parse =
+							  daw::on_exit_success( [&] { ++first; } );
+							return *first;
+						}
+					}
+					return T{ };
+				};
+				return std::array<T, Sz>{ get_result( Is )... };
+			}
+
 			template<typename Iterator>
 			DAW_ATTRIB_FLATINLINE constexpr std::array<T, Sz>
 			operator( )( Iterator first, Iterator last ) const {
-				auto result = std::array<T, Sz>{ };
-				std::size_t counter = 0;
-				while( ( counter < Sz ) & ( first != last ) ) {
-					result[counter] = *first;
-					++counter;
-					++first;
-				}
-				return result;
+				return construct_array( first, last, std::make_index_sequence<Sz>{ } );
 			}
 		};
 

@@ -16,15 +16,12 @@
 #include <daw/daw_move.h>
 
 #include <ciso646>
+#include <cstddef>
+#include <iterator>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename... Args>
-			[[maybe_unused]] void test_map( std::map<Args...> const & );
-
-			template<typename... Args>
-			[[maybe_unused]] void test_map( std::unordered_map<Args...> const & );
 			template<typename ParseState, bool>
 			struct json_parse_kv_class_iterator_base {
 				using iterator_category = std::input_iterator_tag;
