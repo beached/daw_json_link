@@ -12,9 +12,11 @@
 #include "version.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_do_n.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_uint_buffer.h>
+#include <daw/daw_unreachable.h>
 
 #if defined( DAW_ALLOW_SSE42 )
 #include <emmintrin.h>
@@ -53,6 +55,9 @@ namespace daw::json {
 				unsigned long index;
 				_BitScanForward( &index, static_cast<int>( value ) );
 				return static_cast<std::ptrdiff_t>( index );
+#elif
+				(void)value;
+				DAW_BUILTIN_UNREACHABLE( );
 #endif
 			}
 
