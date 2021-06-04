@@ -39,7 +39,7 @@ namespace daw::json {
 				 * @param desired_position desired member index
 				 */
 				template<bool Nullable, typename ParseState>
-				constexpr void maybe_skip_members( ParseState &parse_state,
+				DAW_ATTRIB_INLINE inline constexpr void maybe_skip_members( ParseState &parse_state,
 				                                   std::size_t &current_position,
 				                                   std::size_t desired_position ) {
 

@@ -22,6 +22,7 @@
 #include <daw/daw_likely.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
+#include <daw/daw_visit.h>
 #include <utf8/unchecked.h>
 
 #include <array>
@@ -516,12 +517,10 @@ namespace daw::json {
 					}
 					using element_t = typename JsonMembers::json_elements;
 					using JsonMember =
-					  typename pack_element<idx,
-					                            typename element_t::element_map_t>::type;
-
+					  typename pack_element<idx, typename element_t::element_map_t>::type;
 					it = to_daw_json_string<JsonMember>(
 					  ParseTag<JsonMember::base_expected_type>{ }, it,
-					  std::get<idx>( value ) );
+					  daw::get_nt<idx>( value ) );
 				}
 			}
 
@@ -531,6 +530,7 @@ namespace daw::json {
 			to_daw_json_string( ParseTag<JsonParseTypes::Variant>, OutputIterator it,
 			                    parse_to_t const &value ) {
 
+				assert( value.index( ) >= 0 );
 				to_variant_string<0, JsonMember>( it, value );
 				return it;
 			}
@@ -748,27 +748,29 @@ namespace daw::json {
 				if constexpr( std::disjunction<std::is_enum<parse_to_t>,
 				                               daw::is_integral<parse_to_t>>::value ) {
 					auto v = static_cast<under_type>( value );
-					daw_json_assert( v >= 0, ErrorReason::NumberOutOfRange );
-					char buff[daw::numeric_limits<under_type>::digits10 + 1]{ };
-					char *ptr = buff;
-					if( v == 0 ) {
-						*ptr++ = '0';
-					}
-					while( v >= 10 ) {
-						auto const tmp = static_cast<std::size_t>( v % 100 );
-						v /= 100;
-						ptr[0] = digits100[tmp][0];
-						ptr[1] = digits100[tmp][1];
-						ptr += 2;
-					}
-					if( v > 0 ) {
-						*ptr++ = static_cast<char>( '0' + static_cast<char>( v ) );
-					}
-					--ptr;
-					*it++ = *ptr;
-					while( ptr != buff ) {
+
+					if( DAW_UNLIKELY( v == 0 ) ) {
+						*it++ = '0';
+					} else {
+						daw_json_assert( v > 0, ErrorReason::NumberOutOfRange );
+						char buff[daw::numeric_limits<under_type>::digits10 + 1]{ };
+						char *ptr = buff;
+						while( v >= 10 ) {
+							auto const tmp = static_cast<std::size_t>( v % 100 );
+							v /= 100;
+							ptr[0] = digits100[tmp][0];
+							ptr[1] = digits100[tmp][1];
+							ptr += 2;
+						}
+						if( v > 0 ) {
+							*ptr++ = static_cast<char>( '0' + static_cast<char>( v ) );
+						}
 						--ptr;
 						*it++ = *ptr;
+						while( ptr != buff ) {
+							--ptr;
+							*it++ = *ptr;
+						}
 					}
 				} else {
 					// Fallback to ADL
@@ -839,8 +841,8 @@ namespace daw::json {
 				/* TODO is something like this necessary
 				 static_assert(
 				  std::is_convertible<parse_to_t, typename
-				 JsonMember::parse_to_t>::value, "value must be convertible to specified
-				 type in class contract" );
+				 JsonMember::parse_to_t>::value, "value must be convertible to
+				 specified type in class contract" );
 				  */
 
 				constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
@@ -1124,7 +1126,7 @@ namespace daw::json {
 				static_assert( is_a_json_type<JsonMember>::value,
 				               "Unsupported data type" );
 				if constexpr( is_json_nullable<JsonMember>::value ) {
-					if( not std::get<pos>( args ) ) {
+					if( not get<pos>( args ) ) {
 						return;
 					}
 				}
