@@ -50,9 +50,10 @@ namespace daw::json {
 			 * @param v value to be serialized as JSON object
 			 * @return the OutputIterator it at final position
 			 */
-			template<typename OutputIterator, typename Value, typename... Args>
+			template<typename OutputIterator, typename Value,
+			         template<class...> class Tuple, typename... Args>
 			[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
-			serialize( OutputIterator it, std::tuple<Args...> const &args,
+			serialize( OutputIterator it, Tuple<Args...> const &args,
 			           Value const &v ) {
 				static_assert(
 				  sizeof...( Args ) == sizeof...( JsonMembers ),
@@ -144,7 +145,7 @@ namespace daw::json {
 			std::tuple<typename Members::parse_to_t...> members;
 
 			template<typename... Ts>
-			constexpr tuple_json_mapping( Ts &&...values )
+			explicit constexpr tuple_json_mapping( Ts &&...values )
 			  : members{ DAW_FWD( values )... } {}
 		};
 
@@ -209,9 +210,10 @@ namespace daw::json {
 			 * @param args members from C++ class
 			 * @return the OutputIterator it
 			 */
-			template<typename OutputIterator, typename Value, typename... Args>
+			template<typename OutputIterator, typename Value,
+			         template<class...> class Tuple, typename... Args>
 			[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
-			serialize( OutputIterator it, std::tuple<Args...> const &args,
+			serialize( OutputIterator it, Tuple<Args...> const &args,
 			           Value const &v ) {
 				static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
 				               "Argument count is incorrect" );
@@ -317,6 +319,7 @@ namespace daw::json {
 				                 typename JsonClass::base_type>,
 				               "Unexpected type" );
 				using tag_class_t = tuple_json_mapping<TagMember>;
+
 				std::size_t const idx = [parse_state]( ) mutable {
 					return Switcher{ }( std::get<0>(
 					  json_details::parse_value<json_class<no_name, tag_class_t>>(
@@ -594,7 +597,7 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using element_map_t =
-			  std::tuple<json_details::unnamed_default_type_mapping<JsonElements>...>;
+			  fwd_pack<json_details::unnamed_default_type_mapping<JsonElements>...>;
 			static constexpr std::size_t base_map[5] = {
 			  json_details::find_json_element<JsonBaseParseTypes::Number>(
 			    { json_details::unnamed_default_type_mapping<

@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_assert.h"
 #include "daw_json_parse_digit.h"
-#include "version.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cpp_feature_check.h>

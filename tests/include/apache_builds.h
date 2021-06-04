@@ -42,6 +42,8 @@ namespace apache_builds {
 	};
 } // namespace apache_builds
 
+#if not defined( DAW_JSON_TEST_NO_EXTERN_TEMPLATE )
+
 namespace daw::json {
 	extern template apache_builds::apache_builds
 	from_json<apache_builds::apache_builds,
@@ -109,3 +111,4 @@ namespace daw::json {
 	          SIMDNoCommentSkippingPolicyUnchecked<simd_exec_tag>, false,
 	          apache_builds::apache_builds>( std::string_view const &json_data );
 } // namespace daw::json
+#endif

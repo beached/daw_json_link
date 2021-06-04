@@ -18,6 +18,7 @@
 
 #include <daw/cpp_17.h>
 #include <daw/daw_arith_traits.h>
+#include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_traits.h>
 #include <daw/daw_utility.h>
 
@@ -107,7 +108,7 @@ namespace daw::json {
 		struct json_tagged_variant_type_list {
 			using i_am_tagged_variant_type_list = void;
 			using element_map_t =
-			  std::tuple<json_details::unnamed_default_type_mapping<JsonElements>...>;
+			  fwd_pack<json_details::unnamed_default_type_mapping<JsonElements>...>;
 		};
 
 		/** Link to a JSON array

@@ -17,6 +17,7 @@
 #include "daw_json_skip.h"
 #include "version.h"
 
+#include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
@@ -200,7 +201,6 @@ namespace daw::json {
 				    ? AllMembersMustExist::yes
 				    : AllMembersMustExist::no;
 
-
 				// silencing gcc9 unused warning.  last is used inside if constexpr
 				// blocks
 				(void)must_exist;
@@ -242,14 +242,9 @@ namespace daw::json {
 							                     must_exist>( parse_state,
 							                                  known_locations )... };
 						} else {
-							using tp_t = decltype( std::forward_as_tuple(
-							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
-							                     must_exist>( parse_state,
-							                                  known_locations )... ) );
-
 							return construct_value_tp<T, Constructor>(
 							  parse_state,
-							  tp_t{
+							  fwd_pack{
 							    parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
 							                       must_exist>( parse_state,
 							                                    known_locations )... } );
@@ -266,13 +261,9 @@ namespace daw::json {
 							  parse_state );
 							return result;
 						} else {
-							using tp_t = decltype( std::forward_as_tuple(
-							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
-							                     must_exist>( parse_state,
-							                                  known_locations )... ) );
 							auto result = construct_value_tp<T, Constructor>(
 							  parse_state,
-							  tp_t{
+							  fwd_pack{
 							    parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
 							                       must_exist>( parse_state,
 							                                    known_locations )... } );
@@ -312,10 +303,6 @@ namespace daw::json {
 
 				size_t current_idx = 0;
 
-				using tp_t =
-				  decltype( std::forward_as_tuple( parse_ordered_class_member(
-				    template_arg<JsonMembers>, current_idx, parse_state )... ) );
-
 				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 					auto const run_after_parse = daw::on_exit_success( [&] {
 						if constexpr( json_details::all_json_members_must_exist_v<
@@ -336,7 +323,7 @@ namespace daw::json {
 					} else {
 						return construct_value_tp<T, Constructor>(
 						  parse_state,
-						  tp_t{ parse_ordered_class_member(
+						  fwd_pack{ parse_ordered_class_member(
 						    template_arg<JsonMembers>, current_idx, parse_state )... } );
 					}
 				} else {
@@ -347,7 +334,7 @@ namespace daw::json {
 						} else {
 							return construct_value_tp<T, Constructor>(
 							  parse_state,
-							  tp_t{ parse_ordered_class_member(
+							  fwd_pack{ parse_ordered_class_member(
 							    template_arg<JsonMembers>, current_idx, parse_state )... } );
 						}
 					}( );

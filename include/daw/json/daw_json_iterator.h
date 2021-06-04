@@ -24,13 +24,13 @@
 #include <daw/iterator/daw_back_inserter.h>
 
 #include <array>
-#include <chrono>
+#include <cstddef>
 #include <cstdlib>
 #include <iterator>
 #include <limits>
 #include <string>
 #include <string_view>
-#include <tuple>
+#include <type_traits>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -94,10 +94,10 @@ namespace daw::json {
 			  : m_state( ParsePolicy( std::data( jd ), daw::data_end( jd ) ) ) {
 
 				static_assert(
-					traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
-					"String requires being able to call std::data/std::size.  char const "
-					"* are not able to do this, pass a string_view for char const * to "
-					"ensure you are aware of the strlen cost" );
+				  traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
+				  "String requires being able to call std::data/std::size.  char const "
+				  "* are not able to do this, pass a string_view for char const * to "
+				  "ensure you are aware of the strlen cost" );
 
 				static_assert(
 				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );

@@ -18,7 +18,6 @@
 #include <climits>
 #include <cstddef>
 #include <cstdint>
-#include <tuple>
 #include <utility>
 
 namespace daw::json {
@@ -226,18 +225,18 @@ namespace daw::json {
 			struct policy_bits_start_impl;
 
 			template<typename Policy, typename... Policies>
-			struct policy_bits_start_impl<Policy, std::tuple<Policies...>> {
+			struct policy_bits_start_impl<Policy, pack_list<Policies...>> {
 				static constexpr auto idx =
 				  traits::pack_index_of_v<Policy, Policies...>;
 				static_assert( idx >= 0, "Policy is not registered" );
-				using tp_policies = std::tuple<Policies...>;
+				using tp_policies = pack_list<Policies...>;
 
 				template<std::size_t Pos, int End>
 				static constexpr unsigned do_step( ) {
 					if constexpr( Pos >= static_cast<std::size_t>( End ) ) {
 						return 0U;
 					}
-					return policy_bits_width<std::tuple_element_t<Pos, tp_policies>>;
+					return policy_bits_width<pack_element_t<Pos, tp_policies>>;
 				}
 
 				template<std::size_t... Is>
@@ -248,7 +247,7 @@ namespace daw::json {
 
 			template<typename... Policies>
 			struct policy_list_impl {
-				using type = std::tuple<Policies...>;
+				using type = pack_list<Policies...>;
 
 				static_assert(
 				  ( policy_bits_width<Policies> + ... ) <=
@@ -266,7 +265,7 @@ namespace daw::json {
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =
 			  policy_bits_start_impl<Policy, Policies>::template calc(
-			    std::make_index_sequence<std::tuple_size_v<Policies>>{ } );
+			    std::make_index_sequence<pack_size_v<Policies>>{ } );
 
 			template<typename Policy>
 			inline constexpr unsigned policy_bits_start =
@@ -274,18 +273,6 @@ namespace daw::json {
 
 			template<typename Policy>
 			inline constexpr bool is_policy_flag = policy_bits_width<Policy> > 0;
-
-			template<typename Policy, typename... Policies>
-			constexpr Policy get_policy_or( std::tuple<Policies...> const &pols ) {
-				constexpr int const pack_idx =
-				  daw::traits::pack_index_of_v<Policy, Policies...>;
-
-				if constexpr( pack_idx != -1 ) {
-					return std::get<static_cast<std::size_t>( pack_idx )>( pols );
-				} else {
-					return json_details::default_policy_value<Policy>;
-				}
-			}
 
 			template<typename Policy>
 			constexpr void set_bits_in( policy_options_t &value, Policy e ) {
@@ -335,7 +322,7 @@ namespace daw::json {
 			struct default_policy_flag_t;
 
 			template<typename... Policies>
-			struct default_policy_flag_t<std::tuple<Policies...>> {
+			struct default_policy_flag_t<pack_list<Policies...>> {
 				static constexpr policy_options_t value =
 				  ( set_bits_for<Policies>( default_policy_value<Policies> ) | ... );
 			};
@@ -356,9 +343,6 @@ namespace daw::json {
 				value >>= policy_bits_start<Policy>;
 				return static_cast<Result>( Policy{ value } );
 			}
-
-			template<std::size_t Idx, typename... Ts>
-			using switch_t = std::tuple_element_t<Idx, std::tuple<Ts...>>;
 		} // namespace json_details
 		// ***********************************************
 

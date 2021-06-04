@@ -186,6 +186,7 @@ namespace daw::twitter {
 	}; // twitter_object_t
 } // namespace daw::twitter
 
+#if not defined( DAW_JSON_TEST_NO_EXTERN_TEMPLATE )
 namespace daw::json {
 	extern template daw::twitter::twitter_object_t
 	from_json<daw::twitter::twitter_object_t,
@@ -259,3 +260,4 @@ namespace daw::json {
 	          daw::twitter::twitter_object_t>(
 	  std::string_view const &json_data );
 } // namespace daw::json
+#endif

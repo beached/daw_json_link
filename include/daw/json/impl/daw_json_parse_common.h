@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_assert.h"
 #include "daw_json_enums.h"
 #include "daw_json_exec_modes.h"
@@ -17,6 +19,7 @@
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cpp_feature_check.h>
+#include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_move.h>
 #include <daw/daw_parser_helper_sv.h>
 #include <daw/daw_scope_guard.h>
@@ -89,26 +92,27 @@ namespace daw::json {
 			struct construct_value_tp_invoke_t {
 				template<typename... TArgs, std::size_t... Is>
 				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
-				operator( )( std::tuple<TArgs...> &&tp,
+				operator( )( fwd_pack<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
-					return Constructor{ }( DAW_MOVE( std::get<Is>( tp ) )... );
+					return Constructor{ }( get<Is>( DAW_MOVE( tp ) )... );
 				}
 
 				template<typename... TArgs, typename Allocator, std::size_t... Is>
 				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
-				operator( )( std::tuple<TArgs...> &&tp, Allocator &alloc,
+				operator( )( fwd_pack<TArgs...> &&tp, Allocator &alloc,
 				             std::index_sequence<Is...> ) const {
-					return Constructor{ }( DAW_MOVE( std::get<Is>( tp ) )...,
+					return Constructor{ }( get<Is>( DAW_MOVE( tp ) )...,
 					                       DAW_FWD( alloc ) );
 				}
 
 				template<typename Alloc, typename... TArgs, std::size_t... Is>
 				DAW_ATTRIB_FLATINLINE inline constexpr decltype( auto )
 				operator( )( std::allocator_arg_t, Alloc &&alloc,
-				             std::tuple<TArgs...> &&tp,
+				             fwd_pack<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
+
 					return Constructor{ }( std::allocator_arg, DAW_FWD( alloc ),
-					                       DAW_MOVE( std::get<Is>( tp ) )... );
+					                       get<Is>( DAW_MOVE( tp ) )... );
 				}
 			};
 
@@ -120,7 +124,7 @@ namespace daw::json {
 			         typename... Args>
 			DAW_ATTRIB_FLATINLINE static inline constexpr auto
 			construct_value_tp( ParseState &parse_state,
-			                    std::tuple<Args...> &&tp_args ) {
+			                    fwd_pack<Args...> &&tp_args ) {
 				if constexpr( ParseState::has_allocator ) {
 					using alloc_t =
 					  typename ParseState::template allocator_type_as<Value>;

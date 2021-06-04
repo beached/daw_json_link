@@ -1,48 +1,35 @@
-// The MIT License (MIT)
+// Copyright (c) Darrell Wright
 //
-// Copyright (c) 2020 Darrell Wright
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files( the "Software" ), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and / or
-#include "defines.h"
+// Official repository: https://github.com/beached/daw_json_link
+//
 
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+#include "defines.h"
 
 #include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
 
-#include <fstream>
+#include <daw/daw_memory_mapped_file.h>
+
 #include <iostream>
 #include <sstream>
 #include <string_view>
 #include <unistd.h>
-
-using namespace std;
+#include <vector>
 
 struct coordinate_t {
 	double x;
 	double y;
 	double z;
 
-	auto operator!=( const coordinate_t &rhs ) const {
+	constexpr bool operator!=( coordinate_t const &rhs ) const noexcept {
 		return x != rhs.x and y != rhs.y and z != rhs.z;
 	}
 
-	friend ostream &operator<<( ostream &out, const coordinate_t &point ) {
+	friend std::ostream &operator<<( std::ostream &out,
+	                                 coordinate_t const &point ) {
 		out << "coordinate_t {x: " << point.x << ", y: " << point.y
 		    << ", z: " << point.z << "}";
 		return out;
@@ -50,34 +37,26 @@ struct coordinate_t {
 };
 
 struct coordinates_t {
-	vector<coordinate_t> coordinates;
+	std::vector<coordinate_t> coordinates;
 };
 
 namespace daw::json {
 	template<>
 	struct json_data_contract<coordinate_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
-#else
 		constexpr inline static char const x[] = "x";
 		constexpr inline static char const y[] = "y";
 		constexpr inline static char const z[] = "z";
 		using type =
 		  json_member_list<json_number<x>, json_number<y>, json_number<z>>;
-#endif
 	};
 } // namespace daw::json
 
-string read_file( const string &filename ) {
-	ifstream f( filename );
-	if( !f ) {
-		return { };
-	}
-	return string( istreambuf_iterator<char>( f ), istreambuf_iterator<char>( ) );
+std::string read_file( std::string const &filename ) {
+	auto mmf = daw::filesystem::memory_mapped_file_t<char>( filename );
+	return std::string( mmf.data( ), mmf.data( ) + mmf.size( ) );
 }
 
-coordinate_t calc( const string &text ) {
+coordinate_t calc( std::string const &text ) {
 	auto x = 0.0, y = 0.0, z = 0.0;
 	auto len = 0;
 
@@ -100,11 +79,11 @@ int main( ) {
 	auto left = calc( R"({"coordinates":[{"x":1.1,"y":2.2,"z":3.3}]})" );
 	auto right = coordinate_t{ 1.1, 2.2, 3.3 };
 	if( left != right ) {
-		cerr << left << " != " << right << endl;
+		std::cerr << left << " != " << right << '\n';
 		exit( EXIT_FAILURE );
 	}
 
-	string const text = read_file( "/tmp/1.json" );
+	std::string const text = read_file( "/tmp/1.json" );
 
-	cout << calc( text ) << '\n';
+	std::cout << calc( text ) << '\n';
 }

@@ -67,9 +67,10 @@ namespace daw::json {
 			/***
 			 * See ExecModeTypes
 			 */
-			using exec_tag_t = json_details::switch_t<
-			  json_details::get_bits_for<ExecModeTypes, std::size_t>( PolicyFlags ),
-			  constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
+			using exec_tag_t =
+			  switch_t<json_details::get_bits_for<ExecModeTypes, std::size_t>(
+			             PolicyFlags ),
+			           constexpr_exec_tag, runtime_exec_tag, simd_exec_tag>;
 
 			static constexpr exec_tag_t exec_tag = exec_tag_t{ };
 
@@ -115,6 +116,8 @@ namespace daw::json {
 			  json_details::get_bits_for<ExcludeSpecialEscapes>( PolicyFlags ) ==
 			  ExcludeSpecialEscapes::yes;
 
+			static constexpr bool allow_leading_zero_plus = true;
+
 			using as_unchecked =
 			  BasicParsePolicy<json_details::set_bits<CheckedParseMode>(
 			                     PolicyFlags, CheckedParseMode::no ),
@@ -132,11 +135,11 @@ namespace daw::json {
 			  json_details::get_bits_for<MustVerifyEndOfDataIsValid>( PolicyFlags ) ==
 			  MustVerifyEndOfDataIsValid::yes;
 
-			using CommentPolicy = json_details::switch_t<
-			  json_details::get_bits_for<PolicyCommentTypes, std::size_t>(
-			    PolicyFlags ),
-			  NoCommentSkippingPolicy, CppCommentSkippingPolicy,
-			  HashCommentSkippingPolicy>;
+			using CommentPolicy =
+			  switch_t<json_details::get_bits_for<PolicyCommentTypes, std::size_t>(
+			             PolicyFlags ),
+			           NoCommentSkippingPolicy, CppCommentSkippingPolicy,
+			           HashCommentSkippingPolicy>;
 
 			iterator first{ };
 			iterator last{ };
@@ -636,7 +639,8 @@ namespace daw::json {
 
 		using ConformancePolicy = BasicParsePolicy<parse_options(
 		  AllowEscapedNames::yes, MustVerifyEndOfDataIsValid::yes,
-		  IEEE754Precise::yes, AllowEscapedNames::yes, ExcludeSpecialEscapes::yes )>;
+		  IEEE754Precise::yes, AllowEscapedNames::yes,
+		  ExcludeSpecialEscapes::yes )>;
 
 		namespace json_details {
 			/***

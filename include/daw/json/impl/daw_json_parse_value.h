@@ -23,12 +23,12 @@
 #include "daw_json_parse_value_fwd.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_traits.h>
 
 #include <ciso646>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
-#include <tuple>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
@@ -623,10 +623,9 @@ namespace daw::json {
 				constexpr std::size_t idx =
 				  element_t::base_map[static_cast<int_fast8_t>( BPT )];
 
-				if constexpr( idx < std::tuple_size<
-				                      typename element_t::element_map_t>::value ) {
+				if constexpr( idx < pack_size_v<typename element_t::element_map_t> ) {
 					using JsonMember =
-					  std::tuple_element_t<idx, typename element_t::element_map_t>;
+					  pack_element_t<idx, typename element_t::element_map_t>;
 					return parse_value<JsonMember>(
 					  parse_state, ParseTag<JsonMember::base_expected_type>{ } );
 				} else {
@@ -684,7 +683,7 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE constexpr Result
 			parse_visit( std::size_t idx, ParseState &parse_state ) {
 				if( idx == pos ) {
-					using JsonMember = std::tuple_element_t<pos, TypeList>;
+					using JsonMember = pack_element_t<pos, TypeList>;
 					if constexpr( std::is_same_v<json_result<JsonMember>, Result> ) {
 						return parse_value<JsonMember>(
 						  parse_state, ParseTag<JsonMember::expected_type>{ } );
@@ -693,7 +692,7 @@ namespace daw::json {
 						  parse_state, ParseTag<JsonMember::expected_type>{ } ) };
 					}
 				}
-				if constexpr( pos + 1 < std::tuple_size<TypeList>::value ) {
+				if constexpr( pos + 1 < pack_size_v<TypeList> ) {
 					return parse_visit<Result, TypeList, pos + 1>( idx, parse_state );
 				} else {
 					if constexpr( ParseState::is_unchecked_input ) {

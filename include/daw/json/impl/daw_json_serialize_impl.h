@@ -33,7 +33,7 @@ namespace daw::json {
 			 */
 			template<typename... JsonMembers, typename OutputIterator,
 			         std::size_t... Is, typename Tuple, typename Value>
-			[[nodiscard]] inline constexpr OutputIterator
+			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr OutputIterator
 			serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
 			                      Tuple const &args, Value const &value ) {
 
@@ -47,21 +47,22 @@ namespace daw::json {
 				// faster in the future
 
 				{
-					int tmp[sizeof...( JsonMembers ) + 1]{
+					// Using list init to ensure serialization happens in order
+					int const expander[sizeof...( JsonMembers ) + 1]{
 					  ( tags_to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
 					      is_first, it, args, value, visited_members ),
 					    0 )...,
 					  0 };
-					(void)tmp;
+					(void)expander;
 				}
 				// Regular Members
 				{
-					int tmp[sizeof...( JsonMembers ) + 1]{
+					int const expander[sizeof...( JsonMembers ) + 1]{
 					  ( to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
 					      is_first, it, args, value, visited_members ),
 					    0 )...,
 					  0 };
-					(void)tmp;
+					(void)expander;
 				}
 
 				*it++ = '}';
@@ -78,11 +79,14 @@ namespace daw::json {
 				*it++ = '[';
 				size_t array_idx = 0;
 				Unused( value );
-				(void)std::array{
-				  ( to_json_ordered_str<Is, traits::nth_element<Is, JsonMembers...>>(
-				      array_idx, it, args ),
-				    0 )... };
-
+				{
+					int const expander[sizeof...( JsonMembers ) + 1]{
+					  ( to_json_ordered_str<Is, traits::nth_element<Is, JsonMembers...>>(
+					      array_idx, it, args ),
+					    0 )...,
+					  0 };
+					(void)expander;
+				}
 				*it++ = ']';
 				return it;
 			}

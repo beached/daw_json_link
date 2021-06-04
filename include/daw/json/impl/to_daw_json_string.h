@@ -8,10 +8,11 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "daw_json_assert.h"
 #include "daw_json_parse_iso8601_utils.h"
 #include "daw_json_value.h"
-#include "version.h"
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
@@ -36,7 +37,6 @@
 #else
 #error Request for local d2s, but no custom_d2s.h supplied with char * d2s( Real const & value, char * ); declaration/definition in namespace daw::json
 #endif
-#include <tuple>
 #include <type_traits>
 #include <variant>
 
@@ -515,8 +515,10 @@ namespace daw::json {
 						return;
 					}
 					using element_t = typename JsonMembers::json_elements;
-					using JsonMember = typename std::tuple_element<
-					  idx, typename element_t::element_map_t>::type;
+					using JsonMember =
+					  typename pack_element<idx,
+					                            typename element_t::element_map_t>::type;
+
 					it = to_daw_json_string<JsonMember>(
 					  ParseTag<JsonMember::base_expected_type>{ }, it,
 					  std::get<idx>( value ) );
@@ -1148,11 +1150,11 @@ namespace daw::json {
 			}
 
 			template<std::size_t pos, typename JsonMember, typename OutputIterator,
-			         typename... Args, typename Value, typename Visited>
-			inline constexpr void to_json_str( bool &is_first, OutputIterator &it,
-			                                   std::tuple<Args...> const &tp,
-			                                   Value const &,
-			                                   Visited &visited_members ) {
+			         template<class...> class Tuple, typename... Args, typename Value,
+			         typename Visited>
+			inline constexpr void
+			to_json_str( bool &is_first, OutputIterator &it, Tuple<Args...> const &tp,
+			             Value const &, Visited &visited_members ) {
 				constexpr auto json_member_name = daw::string_view(
 				  std::data( JsonMember::name ), std::size( JsonMember::name ) );
 				if( daw::algorithm::contains( std::data( visited_members ),
@@ -1164,7 +1166,7 @@ namespace daw::json {
 				static_assert( is_a_json_type<JsonMember>::value,
 				               "Unsupported data type" );
 				if constexpr( is_json_nullable<JsonMember>::value ) {
-					if( not std::get<pos>( tp ) ) {
+					if( not get<pos>( tp ) ) {
 						return;
 					}
 				}
@@ -1178,14 +1180,14 @@ namespace daw::json {
 				it =
 				  utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
 				it = member_to_string( template_arg<JsonMember>, DAW_MOVE( it ),
-				                       std::get<pos>( tp ) );
+				                       get<pos>( tp ) );
 			}
 
 			template<size_t TupleIdx, typename JsonMember, typename OutputIterator,
-			         typename... Args>
+			         template<class...> class Tuple, typename... Args>
 			constexpr void to_json_ordered_str( std::size_t &array_idx,
 			                                    OutputIterator &it,
-			                                    std::tuple<Args...> const &tp ) {
+			                                    Tuple<Args...> const &tp ) {
 
 				using json_member_type = ordered_member_subtype_t<JsonMember>;
 				static_assert( is_a_json_type<json_member_type>::value,
@@ -1212,7 +1214,7 @@ namespace daw::json {
 					*it++ = ',';
 				}
 				it = member_to_string( template_arg<json_member_type>, it,
-				                       std::get<TupleIdx>( tp ) );
+				                       get<TupleIdx>( tp ) );
 				++array_idx;
 			}
 		} // namespace json_details

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "../daw_json_exception.h"
+#include "daw_count_digits.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_digit.h"
 #include "daw_json_parse_policy_policy_details.h"
@@ -143,7 +144,56 @@ namespace daw::json {
 			 * Skip a number and store the position of it's components in the returned
 			 * ParseState
 			 */
-			template<typename ParseState>
+
+			template<typename ParseState,
+			         std::enable_if_t<( ParseState::is_unchecked_input or
+			                            ParseState::is_zero_terminated_string ),
+			                          std::nullptr_t> = nullptr>
+			[[nodiscard]] constexpr ParseState
+			skip_number( ParseState &parse_state ) {
+				using CharT = typename ParseState::CharT;
+
+				auto result = parse_state;
+				CharT *first = parse_state.first;
+				CharT *const last = parse_state.last;
+
+				if( *first == '-' ) {
+					++first;
+				}
+
+				first = count_digits( first, last );
+
+				CharT *decimal = nullptr;
+				if( *first == '.' ) {
+					decimal = first++;
+					first = count_digits( first, last );
+				}
+
+				CharT *exp = nullptr;
+				char const maybe_e = *first;
+				if( ( maybe_e == 'e' ) | ( maybe_e == 'E' ) ) {
+					exp = ++first;
+					char const maybe_sign = *first;
+					if( ( maybe_sign == '+' ) | ( maybe_sign == '-' ) ) {
+						++first;
+					}
+					first = count_digits( first, last );
+				}
+
+				daw_json_assert_weak( first < last, ErrorReason::InvalidNumber );
+
+				parse_state.first = first;
+				result.last = first;
+				result.class_first = decimal;
+				result.class_last = exp;
+				return result;
+			}
+
+			template<typename ParseState,
+			         std::enable_if_t<not( ParseState::is_unchecked_input or
+			                               ParseState::is_zero_terminated_string ),
+			                          std::nullptr_t> = nullptr>
+			// template<typename ParseState>
 			[[nodiscard]] constexpr ParseState
 			skip_number( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
@@ -153,7 +203,7 @@ namespace daw::json {
 				auto result = parse_state;
 				CharT *first = parse_state.first;
 				CharT *const last = parse_state.last;
-				if constexpr( ParseState::is_unchecked_input ) {
+				if constexpr( ParseState::allow_leading_zero_plus ) {
 					if( *first == '-' ) {
 						++first;
 					}
@@ -173,11 +223,13 @@ namespace daw::json {
 						break;
 					}
 				}
+
 				if( DAW_LIKELY( first < last ) ) {
 					first =
 					  skip_digits<( ParseState::is_zero_terminated_string or
 					                ParseState::is_unchecked_input )>( first, last );
 				}
+
 				CharT *decimal = nullptr;
 				if( ( ( ParseState::is_zero_terminated_string or
 				        ParseState::is_unchecked_input ) or
@@ -213,6 +265,7 @@ namespace daw::json {
 					}
 					daw_json_assert_weak( first < last and parse_digit( *first ) < 10U,
 					                      ErrorReason::InvalidNumber );
+
 					if( DAW_LIKELY( first < last ) ) {
 						first =
 						  skip_digits<( ParseState::is_zero_terminated_string or
