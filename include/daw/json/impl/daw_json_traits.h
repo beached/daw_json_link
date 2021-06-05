@@ -29,6 +29,47 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+			template<typename T>
+			using has_op_bool_test =
+			  decltype( static_cast<bool>( std::declval<T>( ) ) );
+
+			template<typename T>
+			inline constexpr bool has_op_bool_v =
+			  daw::is_detected_v<has_op_bool_test, T>;
+
+			template<typename T>
+			using has_op_star_test = decltype( *std::declval<T>( ) );
+
+			template<typename T>
+			inline constexpr bool has_op_star_v =
+			  daw::is_detected_v<has_op_star_test, T>;
+
+			template<typename T>
+			using has_empty_member_test = decltype( std::declval<T>( ).empty( ) );
+
+			template<typename T>
+			inline constexpr bool has_empty_member_v =
+			  daw::is_detected_v<has_empty_member_test, T>;
+
+			template<typename T>
+			inline constexpr bool is_readable_v =
+			  has_op_bool_v<T> or has_empty_member_v<T>;
+
+			template<typename T>
+			constexpr auto has_value( T const &v )
+			  -> std::enable_if_t<is_readable_v<T>, bool> {
+
+				if constexpr( has_op_bool_v<T> ) {
+					return not v;
+				} else if constexpr( has_empty_member_v<T> ) {
+					return not v.empty( );
+				}
+				DAW_UNREACHABLE( );
+			}
+
+		} // namespace json_details
+
+		namespace json_details {
 			template<typename JsonMember>
 			using without_name = typename JsonMember::template with_name<no_name>;
 

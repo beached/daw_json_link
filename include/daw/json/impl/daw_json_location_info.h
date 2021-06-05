@@ -19,6 +19,11 @@
 #include <ciso646>
 #include <cstddef>
 
+#if defined( DAW_JSON_PARSER_DIAGNOSTICS )
+#include <cmath>
+#include <iostream>
+#endif
+
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
@@ -154,7 +159,8 @@ namespace daw::json {
 			template<typename ParseState, typename... JsonMembers>
 			DAW_ATTRIB_FLATINLINE inline constexpr auto make_locations_info( ) {
 				using CharT = typename ParseState::CharT;
-#if defined( __MSC_VER ) and not defined( __clang__ )
+#if defined( DAW_JSON_PARSER_DIAGNOSTICS ) or \
+  ( defined( __MSC_VER ) and not defined( __clang__ ) )
 				constexpr bool do_full_name_match = true;
 				return locations_info_t<sizeof...( JsonMembers ), CharT,
 				                        do_full_name_match>{
@@ -217,6 +223,9 @@ namespace daw::json {
 						daw_json_assert_weak( name_pos < std::size( locations ),
 						                      ErrorReason::UnknownMember, parse_state );
 					} else {
+#if defined( DAW_JSON_PARSER_DIAGNOSTICS )
+						std::cerr << "DEBUG: Unknown member '" << name << '\n';
+#endif
 						if( name_pos >= std::size( locations ) ) {
 							// This is not a member we are concerned with
 							(void)skip_value( parse_state );
@@ -228,6 +237,15 @@ namespace daw::json {
 						locations[pos].set_range( parse_state );
 						break;
 					} else {
+#if defined( DAW_JSON_PARSER_DIAGNOSTICS )
+						std::cerr << "DEBUG:	Out of order member '"
+						          << locations.names[name_pos].name
+						          << "' found, looking for '" << locations.names[pos].name
+						          << ". It is "
+						          << std::abs( static_cast<long long>( pos ) -
+						                       static_cast<long long>( name_pos ) )
+						          << " members ahead in constructor\n";
+#endif
 						// We are out of order, store position for later
 						// OLDTODO:	use type knowledge to speed up skip
 						// OLDTODO:	on skipped classes see if way to store

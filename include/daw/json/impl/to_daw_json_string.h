@@ -564,13 +564,18 @@ namespace daw::json {
 			to_daw_json_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 			                    Optional const &value ) {
 				static_assert( is_valid_optional_v<Optional> );
-				if( not value ) {
+
+				if( not json_details::has_value( value ) ) {
 					return utils::copy_to_iterator( it, "null" );
 				}
 				// DAW
 				// daw_json_assert( value, ErrorReason::UnexpectedNull );
 				using tag_type = ParseTag<JsonMember::base_expected_type>;
-				return to_daw_json_string<JsonMember>( tag_type{ }, it, *value );
+				if constexpr( json_details::has_op_star_v<Optional> ) {
+					return to_daw_json_string<JsonMember>( tag_type{ }, it, *value );
+				} else {
+					return to_daw_json_string<JsonMember>( tag_type{ }, it, value );
+				}
 			}
 
 			template<typename JsonMember, typename OutputIterator,
@@ -1168,7 +1173,8 @@ namespace daw::json {
 				static_assert( is_a_json_type<JsonMember>::value,
 				               "Unsupported data type" );
 				if constexpr( is_json_nullable<JsonMember>::value ) {
-					if( not get<pos>( tp ) ) {
+					// TODO: allow expressing null
+					if( json_details::has_value( get<pos>( tp ) ) ) {
 						return;
 					}
 				}

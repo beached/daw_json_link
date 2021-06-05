@@ -25,6 +25,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_subdirectory(extern)
 option(DAW_ENABLE_TESTING "Build unit tests" OFF)
+option(DAW_JSON_PARSER_DIAGNOSTICS "Output debug info while parsing" ON)
+if( DAW_JSON_PARSER_DIAGNOSTICS )
+    message( "Building with parser diagnostics enabled" )
+    add_compile_definitions( DAW_JSON_PARSER_DIAGNOSTICS )
+endif( )
 
 #find_package(Boost 1.72.0)
 
