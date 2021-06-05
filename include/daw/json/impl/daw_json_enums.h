@@ -65,10 +65,35 @@ namespace daw::json {
 			}
 		}
 
-		enum class JsonNullable { Never = false, Nullable = true };
+		/***
+		 * Control whether a type can be missing or null.
+		 * MustExist - members make it an error if their value is null or they are
+		 * missing
+		 * Nullable - members can have a value of null or be missing
+		 * NullVisible - members must exist but can have a value of null
+		 */
+		enum class JsonNullable { MustExist, Nullable, NullVisible };
+
+		template<JsonNullable nullable>
+		inline constexpr bool is_nullable_json_value_v =
+		  nullable != JsonNullable::MustExist;
+
+		/***
+		 * When not MustExist, the default Null type for unspecified _null json
+		 * types
+		 */
+		inline constexpr JsonNullable JsonNullDefault = JsonNullable::Nullable;
+		/***
+		 * Check if the result of a numeric parse is within the range of the type
+		 */
 		enum class JsonRangeCheck { Never = false, CheckForNarrowing = true };
+
 		enum class EightBitModes { DisallowHigh = false, AllowFull = true };
-		enum class CustomJsonTypes { Literal, String, Either };
+
+		/***
+		 * Custom JSON types can be Strings(default), unquoted Literals, or a mix
+		 */
+		enum class CustomJsonTypes { String, Literal, Either };
 
 		/***
 		 * In RAW String processing, if we know that there are no escaped double
@@ -81,7 +106,7 @@ namespace daw::json {
 
 		template<JsonParseTypes ParseType, JsonNullable Nullable>
 		inline constexpr JsonParseTypes get_parse_type_v =
-		  Nullable == JsonNullable::Never ? ParseType : JsonParseTypes::Null;
+		  is_nullable_json_value_v<Nullable> ? JsonParseTypes::Null : ParseType;
 
 		/**
 		 * Tag lookup for parsing overload selection

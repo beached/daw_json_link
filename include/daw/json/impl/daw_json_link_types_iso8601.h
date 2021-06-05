@@ -25,21 +25,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		template<JsonNullable>
-		struct construct_from_iso8601_timestamp;
-
-		template<>
-		struct construct_from_iso8601_timestamp<JsonNullable::Never> {
-			using result_type = std::chrono::time_point<std::chrono::system_clock,
-			                                            std::chrono::milliseconds>;
-
-			[[maybe_unused, nodiscard]] inline constexpr result_type
-			operator( )( char const *ptr, std::size_t sz ) const {
-				return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
-			}
-		};
-
-		template<>
-		struct construct_from_iso8601_timestamp<JsonNullable::Nullable> {
+		struct construct_from_iso8601_timestamp {
 			using result_type =
 			  std::optional<std::chrono::time_point<std::chrono::system_clock,
 			                                        std::chrono::milliseconds>>;
@@ -48,6 +34,17 @@ namespace daw::json {
 			operator( )( ) const {
 				return { };
 			}
+
+			[[maybe_unused, nodiscard]] inline constexpr result_type
+			operator( )( char const *ptr, std::size_t sz ) const {
+				return datetime::parse_iso8601_timestamp( daw::string_view( ptr, sz ) );
+			}
+		};
+
+		template<>
+		struct construct_from_iso8601_timestamp<JsonNullable::MustExist> {
+			using result_type = std::chrono::time_point<std::chrono::system_clock,
+			                                            std::chrono::milliseconds>;
 
 			[[maybe_unused, nodiscard]] inline constexpr result_type
 			operator( )( char const *ptr, std::size_t sz ) const {

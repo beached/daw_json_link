@@ -86,7 +86,8 @@ namespace daw::json {
 					auto key = parse_value<key_t>( *base::parse_state,
 					                               ParseTag<key_t::expected_type>{ } );
 					name::name_parser::trim_end_of_name( *base::parse_state );
-					return json_class_constructor<value_type>(
+					return json_class_constructor<value_type,
+					                              default_constructor<value_type>>(
 					  DAW_MOVE( key ),
 					  parse_value<value_t>( *base::parse_state,
 					                        ParseTag<value_t::expected_type>{ } ) );

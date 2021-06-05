@@ -14,7 +14,6 @@
 #include "version.h"
 
 #include <daw/daw_attributes.h>
-#include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_move.h>
 
 #include <ciso646>

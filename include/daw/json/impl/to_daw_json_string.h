@@ -87,7 +87,7 @@ namespace daw::json {
 			template<typename T>
 			[[nodiscard, maybe_unused]] auto to_string( std::optional<T> const &v )
 			  -> decltype( to_string( *v ) ) {
-				if( not v ) {
+				if( not has_value( v ) ) {
 					return { "null" };
 				}
 				return to_string( *v );
@@ -568,8 +568,6 @@ namespace daw::json {
 				if( not json_details::has_value( value ) ) {
 					return utils::copy_to_iterator( it, "null" );
 				}
-				// DAW
-				// daw_json_assert( value, ErrorReason::UnexpectedNull );
 				using tag_type = ParseTag<JsonMember::base_expected_type>;
 				if constexpr( json_details::has_op_star_v<Optional> ) {
 					return to_daw_json_string<JsonMember>( tag_type{ }, it, *value );
@@ -1130,8 +1128,10 @@ namespace daw::json {
 				using tag_member = tag_member_t<JsonMember>;
 				static_assert( is_a_json_type<JsonMember>::value,
 				               "Unsupported data type" );
-				if constexpr( is_json_nullable<JsonMember>::value ) {
-					if( not get<pos>( args ) ) {
+				if constexpr( is_json_nullable<JsonMember>::value and
+				              JsonMember::nullable == JsonNullable::Nullable ) {
+					if( not get<pos>( args ) and
+					    JsonMember::nullable == JsonNullable::Nullable ) {
 						return;
 					}
 				}
@@ -1172,9 +1172,9 @@ namespace daw::json {
 				visited_members.push_back( json_member_name );
 				static_assert( is_a_json_type<JsonMember>::value,
 				               "Unsupported data type" );
-				if constexpr( is_json_nullable<JsonMember>::value ) {
-					// TODO: allow expressing null
-					if( json_details::has_value( get<pos>( tp ) ) ) {
+				if constexpr( is_json_nullable<JsonMember>::value and
+				              JsonMember::nullable == JsonNullable::Nullable ) {
+					if( not json_details::has_value( get<pos>( tp ) ) ) {
 						return;
 					}
 				}

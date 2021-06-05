@@ -49,9 +49,9 @@ namespace daw::json {
 			using ordered_member_subtype_t =
 			  typename daw::detected_or_t<T, ordered_member_subtype_test, T>;
 
-			template<typename T>
+			template<typename T, typename Default>
 			inline constexpr auto json_class_constructor =
-			  json_class_constructor_t<T>{ };
+			  json_class_constructor_t<T, Default>{ };
 
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
@@ -293,7 +293,7 @@ namespace daw::json {
 
 			template<typename T, JsonNullable Nullable>
 			using unwrap_type =
-			  typename std::conditional_t<Nullable == JsonNullable::Nullable,
+			  typename std::conditional_t<is_nullable_json_value_v<Nullable>,
 			                              dereffed_type<T>, T>;
 		} // namespace json_details
 
@@ -308,7 +308,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         typename Constructor = default_constructor<T>,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_class;
 
 		/**
@@ -321,8 +321,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         typename Constructor = nullable_constructor<T>>
-		using json_class_null =
-		  json_class<Name, T, Constructor, JsonNullable::Nullable>;
+		using json_class_null = json_class<Name, T, Constructor, JsonNullDefault>;
 
 		/**
 		 * The member is a number
@@ -338,7 +337,7 @@ namespace daw::json {
 		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 		         typename Constructor = default_constructor<T>,
 		         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_number;
 
 		/**
@@ -368,7 +367,7 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T = bool,
 		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 		         typename Constructor = default_constructor<T>,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_bool;
 
 		/**
@@ -398,9 +397,9 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename String = std::string,
 		         typename Constructor = default_constructor<String>,
-		         JsonNullable EmptyStringNull = JsonNullable::Never,
+		         JsonNullable EmptyStringNull = JsonNullable::MustExist,
 		         EightBitModes EightBitMode = EightBitModes::AllowFull,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_string;
 
 		/**
@@ -417,7 +416,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
 		         typename Constructor = nullable_constructor<String>,
-		         JsonNullable EmptyStringNull = JsonNullable::Never,
+		         JsonNullable EmptyStringNull = JsonNullable::MustExist,
 		         EightBitModes EightBitMode = EightBitModes::AllowFull>
 		using json_string_null =
 		  json_string<Name, String, Constructor, EmptyStringNull, EightBitMode,
@@ -440,9 +439,9 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename String = std::string,
 		         typename Constructor = default_constructor<String>,
-		         JsonNullable EmptyStringNull = JsonNullable::Never,
+		         JsonNullable EmptyStringNull = JsonNullable::MustExist,
 		         EightBitModes EightBitMode = EightBitModes::AllowFull,
-		         JsonNullable Nullable = JsonNullable::Never,
+		         JsonNullable Nullable = JsonNullable::MustExist,
 		         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
 		struct json_string_raw;
 
@@ -486,7 +485,7 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType = json_string<no_name>,
 		         typename Constructor = default_constructor<Container>,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_key_value;
 
 		/** Map a nullable KV type json class { "Key StringRaw": ValueType, ... }
@@ -798,7 +797,7 @@ namespace daw::json {
 			 */
 			template<JSONNAMETYPE Name, typename JsonElement, typename Container,
 			         typename Constructor = default_constructor<Container>,
-			         JsonNullable Nullable = JsonNullable::Never>
+			         JsonNullable Nullable = JsonNullable::MustExist>
 			struct json_array_detect;
 
 			template<typename JsonType>
@@ -824,7 +823,9 @@ namespace daw::json {
 			struct unnamed_default_type_mapping_test<T, true, JsonType, QuickMap,
 			                                         IsNumeric, IsVector> {
 
-				using type = json_class<no_name, T, json_class_constructor_t<T>>;
+				using type =
+				  json_class<no_name, T,
+				             json_class_constructor_t<T, default_constructor<T>>>;
 
 				static_assert(
 				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,

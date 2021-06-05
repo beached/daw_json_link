@@ -222,18 +222,31 @@ namespace daw::json {
 
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( KnownBounds ) {
+					// skip_value will leave a null parse_state
 					if( parse_state.is_null( ) ) {
-						return construct_value(
-						  template_args<json_result<JsonMember>, constructor_t>,
-						  parse_state );
+						if constexpr( JsonMember::nullable == JsonNullable::Nullable ) {
+							return construct_value(
+							  template_args<json_result<JsonMember>, constructor_t>,
+							  parse_state );
+						} else {
+							daw_json_error( missing_member(
+							  std::string_view( std::data( JsonMember::name ),
+							                    std::size( JsonMember::name ) ) ) );
+						}
 					}
 					return parse_value<JsonMember, true>(
 					  parse_state, ParseTag<JsonMember::base_expected_type>{ } );
 				} else if constexpr( ParseState::is_unchecked_input ) {
 					if( not parse_state.has_more( ) ) {
-						return construct_value(
-						  template_args<json_result<JsonMember>, constructor_t>,
-						  parse_state );
+						if constexpr( JsonMember::nullable == JsonNullable::Nullable ) {
+							return construct_value(
+							  template_args<json_result<JsonMember>, constructor_t>,
+							  parse_state );
+						} else {
+							daw_json_error( missing_member(
+							  std::string_view( std::data( JsonMember::name ),
+							                    std::size( JsonMember::name ) ) ) );
+						}
 					} else if( parse_state.front( ) == 'n' ) {
 						parse_state.remove_prefix( 4 );
 						parse_state.trim_left_unchecked( );

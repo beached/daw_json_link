@@ -360,7 +360,7 @@ namespace daw::json {
 			               "json_number requires an arithmetic type" );
 			using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 			static_assert(
-			  Nullable == JsonNullable::Never or
+			  not is_nullable_json_value_v<Nullable> or
 			    std::is_same<parse_to_t, std::invoke_result_t<Constructor>>::value,
 			  "Default ctor of constructor must match that of base" );
 			using constructor_t = Constructor;
@@ -377,7 +377,7 @@ namespace daw::json {
 			static constexpr JsonRangeCheck range_check = RangeCheck;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::Number;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_number<NewName, T, LiteralAsString, Constructor,
@@ -410,7 +410,7 @@ namespace daw::json {
 			static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::Bool;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
@@ -451,9 +451,9 @@ namespace daw::json {
 			  JsonParseTypes::StringRaw;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::String;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
-			static constexpr JsonNullable empty_is_null = JsonNullable::Never;
+			static constexpr JsonNullable empty_is_null = JsonNullable::MustExist;
 			static constexpr EightBitModes eight_bit_mode = EightBitMode;
 			static constexpr AllowEscapeCharacter allow_escape_character =
 			  AllowEscape;
@@ -503,7 +503,7 @@ namespace daw::json {
 			static constexpr EightBitModes eight_bit_mode = EightBitMode;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::String;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_string<NewName, String, Constructor,
@@ -535,7 +535,7 @@ namespace daw::json {
 			static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Date;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::String;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_date<NewName, T, Constructor, Nullable>;
@@ -574,7 +574,7 @@ namespace daw::json {
 			  JsonParseTypes::Class;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::Class;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_class<NewName, T, Constructor, Nullable>;
@@ -635,7 +635,7 @@ namespace daw::json {
 			using wrapped_type = T;
 			using base_type = json_details::unwrap_type<T, Nullable>;
 			using constructor_t =
-			  json_details::json_class_constructor_t<base_type, Constructor>;
+			  json_details::json_class_constructor_t<T, Constructor>;
 			static_assert( traits::not_same<void, base_type>::value,
 			               "Failed to detect base type" );
 			using parse_to_t = T;
@@ -648,7 +648,7 @@ namespace daw::json {
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::None;
 			using json_elements = JsonElements;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
@@ -688,8 +688,7 @@ namespace daw::json {
 			using tag_member = TagMember;
 			using switcher = Switcher;
 			using base_type = json_details::unwrap_type<T, Nullable>;
-			using constructor_t =
-			  json_details::json_class_constructor_t<base_type, Constructor>;
+			using constructor_t = json_details::json_class_constructor_t<T, Constructor>;
 			static_assert( traits::not_same<void, base_type>::value,
 			               "Failed to detect base type" );
 			using parse_to_t = T;
@@ -701,7 +700,7 @@ namespace daw::json {
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::None;
 			using json_elements = JsonElements;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
@@ -748,7 +747,7 @@ namespace daw::json {
 			static constexpr CustomJsonTypes custom_json_type = CustomJsonType;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::String;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_custom<NewName, T, FromJsonConverter,
@@ -786,7 +785,7 @@ namespace daw::json {
 				               "All elements of json_array must be have no_name" );
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::Array;
-				static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+				static constexpr JsonNullable nullable = Nullable;
 
 				template<JSONNAMETYPE NewName>
 				using with_name = json_array_detect<NewName, JsonElement, Container,
@@ -835,7 +834,7 @@ namespace daw::json {
 			               "All elements of json_array must be have no_name" );
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::Array;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
@@ -901,7 +900,7 @@ namespace daw::json {
 			  JsonParseTypes::KeyValue;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::Class;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_key_value<NewName, Container, JsonValueType,
@@ -965,7 +964,7 @@ namespace daw::json {
 			  JsonParseTypes::KeyValueArray;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::Array;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
@@ -996,7 +995,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T = json_value,
 		         typename Constructor = daw::construct_a_t<T>,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullDefault>
 		struct json_delayed {
 			using i_am_a_json_type = void;
 			using wrapped_type = json_value;
@@ -1015,7 +1014,7 @@ namespace daw::json {
 
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::None;
-			static constexpr bool nullable = Nullable == JsonNullable::Nullable;
+			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_delayed<NewName, T, Constructor, Nullable>;

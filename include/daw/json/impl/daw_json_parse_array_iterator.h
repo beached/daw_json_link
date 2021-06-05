@@ -15,7 +15,6 @@
 #include "version.h"
 
 #include <daw/daw_attributes.h>
-#include <daw/daw_is_constant_evaluated.h>
 
 #include <ciso646>
 #include <type_traits>

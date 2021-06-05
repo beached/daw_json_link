@@ -18,7 +18,6 @@
 #include "version.h"
 
 #include <daw/daw_fwd_pack_apply.h>
-#include <daw/daw_is_constant_evaluated.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_traits.h>
 

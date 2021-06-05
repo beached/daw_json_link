@@ -60,7 +60,7 @@ namespace daw::json {
 			  -> std::enable_if_t<is_readable_v<T>, bool> {
 
 				if constexpr( has_op_bool_v<T> ) {
-					return not v;
+					return static_cast<bool>( v );
 				} else if constexpr( has_empty_member_v<T> ) {
 					return not v.empty( );
 				}
@@ -146,8 +146,13 @@ namespace daw::json {
 		 */
 		template<typename T>
 		struct default_constructor {
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr T
+			operator( )( ) const {
+				return T{ };
+			}
 			template<typename... Args,
-			         std::enable_if_t<std::is_constructible<T, Args...>::value,
+			         std::enable_if_t<( std::is_constructible<T, Args...>::value and
+			                            sizeof...( Args ) > 0 ),
 			                          std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr T
 			operator( )( Args &&...args ) const {
@@ -405,7 +410,7 @@ namespace daw::json {
 			using json_data_contract_constructor_t =
 			  typename json_data_contract_constructor<T>::type;
 
-			template<typename T, typename Default = default_constructor<T>>
+			template<typename T, typename Default>
 			using json_class_constructor_t = typename std::conditional_t<
 			  daw::is_detected<json_data_contract_constructor_t, T>::value,
 			  json_data_contract_constructor<T>,

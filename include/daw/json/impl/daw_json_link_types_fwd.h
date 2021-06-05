@@ -48,7 +48,7 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T = double,
 		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
 		         typename Constructor = default_constructor<T>,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		using json_checked_number =
 		  json_number<Name, T, LiteralAsString, Constructor,
 		              JsonRangeCheck::CheckForNarrowing, Nullable>;
@@ -66,7 +66,7 @@ namespace daw::json {
 		         typename Constructor = nullable_constructor<T>>
 		using json_checked_number_null =
 		  json_number<Name, T, LiteralAsString, Constructor,
-		              JsonRangeCheck::CheckForNarrowing, JsonNullable::Nullable>;
+		              JsonRangeCheck::CheckForNarrowing, JsonNullDefault>;
 
 		/**
 		 * Link to a JSON string representing a date
@@ -81,8 +81,8 @@ namespace daw::json {
 		         typename T = std::chrono::time_point<std::chrono::system_clock,
 		                                              std::chrono::milliseconds>,
 		         typename Constructor =
-		           construct_from_iso8601_timestamp<JsonNullable::Never>,
-		         JsonNullable Nullable = JsonNullable::Never>
+		           construct_from_iso8601_timestamp<JsonNullable::MustExist>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_date;
 
 		/**
@@ -96,9 +96,8 @@ namespace daw::json {
 		         typename T = std::optional<std::chrono::time_point<
 		           std::chrono::system_clock, std::chrono::milliseconds>>,
 		         typename Constructor =
-		           construct_from_iso8601_timestamp<JsonNullable::Nullable>>
-		using json_date_null =
-		  json_date<Name, T, Constructor, JsonNullable::Nullable>;
+		           construct_from_iso8601_timestamp<JsonNullDefault>>
+		using json_date_null = json_date<Name, T, Constructor, JsonNullDefault>;
 
 		/***
 		 * A type to hold the types for parsing tagged variants.
@@ -127,7 +126,7 @@ namespace daw::json {
 		           std::vector<typename json_details::unnamed_default_type_mapping<
 		             JsonElement>::parse_to_t>,
 		         typename Constructor = default_constructor<Container>,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_array;
 
 		/** Link to a nullable JSON array
@@ -145,8 +144,8 @@ namespace daw::json {
 		           std::vector<typename json_details::unnamed_default_type_mapping<
 		             JsonElement>::parse_to_t>,
 		         typename Constructor = nullable_constructor<Container>>
-		using json_array_null = json_array<Name, JsonElement, Container,
-		                                   Constructor, JsonNullable::Nullable>;
+		using json_array_null =
+		  json_array<Name, JsonElement, Container, Constructor, JsonNullDefault>;
 
 		/**
 		 * Map a KV type json array [ {"key": ValueOfKeyType, "value":
@@ -166,7 +165,7 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType,
 		         typename Constructor = default_constructor<Container>,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_key_value_array;
 
 		/**
@@ -188,7 +187,7 @@ namespace daw::json {
 		         typename Constructor = nullable_constructor<Container>>
 		using json_key_value_array_null =
 		  json_key_value_array<Name, Container, JsonValueType, JsonKeyType,
-		                       Constructor, JsonNullable::Nullable>;
+		                       Constructor, JsonNullDefault>;
 
 		/**
 		 * Allow parsing of a type that does not fit
@@ -207,7 +206,7 @@ namespace daw::json {
 		         typename FromJsonConverter = custom_from_converter_t<T>,
 		         typename ToJsonConverter = custom_to_converter_t<T>,
 		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Either,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_custom;
 
 		/**
@@ -223,9 +222,8 @@ namespace daw::json {
 		         typename FromConverter = custom_from_converter_t<T>,
 		         typename ToConverter = custom_to_converter_t<T>,
 		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Either>
-		using json_custom_null =
-		  json_custom<Name, T, FromConverter, ToConverter, CustomJsonType,
-		              JsonNullable::Nullable>;
+		using json_custom_null = json_custom<Name, T, FromConverter, ToConverter,
+		                                     CustomJsonType, JsonNullDefault>;
 
 		namespace json_details {
 
@@ -258,7 +256,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T, typename JsonElements,
 		         typename Constructor = default_constructor<T>,
-		         JsonNullable Nullable = JsonNullable::Never>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_variant;
 
 		/***
@@ -273,7 +271,7 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T, typename JsonElements,
 		         typename Constructor = nullable_constructor<T>>
 		using json_variant_null =
-		  json_variant<Name, T, JsonElements, Constructor, JsonNullable::Nullable>;
+		  json_variant<Name, T, JsonElements, Constructor, JsonNullDefault>;
 
 		namespace json_details {
 			template<typename T>
@@ -312,7 +310,7 @@ namespace daw::json {
 
 			template<JsonNullable Nullable, typename Variant>
 			using determine_variant_element_types = std::conditional_t<
-			  Nullable == JsonNullable::Never or not is_nullable_type<Variant>,
+			  not is_nullable_json_value_v<Nullable> or not is_nullable_type<Variant>,
 			  std::remove_reference_t<decltype( get_variant_type_list(
 			    std::declval<Variant const *>( ) ) )>,
 			  std::conditional_t<
@@ -341,9 +339,9 @@ namespace daw::json {
 		template<
 		  JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
 		  typename JsonElements =
-		    json_details::determine_variant_element_types<JsonNullable::Never, T>,
+		    json_details::determine_variant_element_types<JsonNullable::MustExist, T>,
 		  typename Constructor = default_constructor<T>,
-		  JsonNullable Nullable = JsonNullable::Never>
+		  JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_tagged_variant;
 
 		/***
@@ -362,12 +360,12 @@ namespace daw::json {
 		 */
 		template<
 		  JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
-		  typename JsonElements = json_details::determine_variant_element_types<
-		    JsonNullable::Nullable, T>,
+		  typename JsonElements =
+		    json_details::determine_variant_element_types<JsonNullDefault, T>,
 		  typename Constructor = nullable_constructor<T>>
 		using json_tagged_variant_null =
 		  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements,
-		                      Constructor, JsonNullable::Nullable>;
+		                      Constructor, JsonNullDefault>;
 
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

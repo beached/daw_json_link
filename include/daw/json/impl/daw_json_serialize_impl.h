@@ -46,24 +46,19 @@ namespace daw::json {
 				// Tag Members, if any.  Putting them ahead means we can parse this
 				// faster in the future
 
-				{
-					// Using list init to ensure serialization happens in order
-					int const expander[sizeof...( JsonMembers ) + 1]{
-					  ( tags_to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
-					      is_first, it, args, value, visited_members ),
-					    0 )...,
-					  0 };
-					(void)expander;
-				}
+				// Using list init to ensure serialization happens in order
+				(void)daw::expander{
+				  ( tags_to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
+				      is_first, it, args, value, visited_members ),
+				    0 )...,
+				  0 };
+
 				// Regular Members
-				{
-					int const expander[sizeof...( JsonMembers ) + 1]{
-					  ( to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
-					      is_first, it, args, value, visited_members ),
-					    0 )...,
-					  0 };
-					(void)expander;
-				}
+				(void)daw::expander{
+				  ( to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
+				      is_first, it, args, value, visited_members ),
+				    0 )...,
+				  0 };
 
 				*it++ = '}';
 				return it;
