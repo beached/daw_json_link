@@ -164,8 +164,11 @@ namespace daw::json {
 		 * the Containers constructor.  Both normal and aggregate are supported
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
-		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
-		         typename JsonKeyType,
+		template<JSONNAMETYPE Name, typename Container,
+		         typename JsonValueType = json_details::
+		           unnamed_default_type_mapping<typename Container::mapped_type>,
+		         typename JsonKeyType = json_details::unnamed_default_type_mapping<
+		           typename Container::key_type>,
 		         typename Constructor = default_constructor<Container>,
 		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_key_value_array;

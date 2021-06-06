@@ -34,14 +34,12 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_kv2::MyKeyValue2> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
-		  json_key_value_array<"kv", std::unordered_map<intmax_t, std::string>,
-		                       json_string_raw<"value">, intmax_t>>;
+		  json_key_value_array<"kv", std::unordered_map<intmax_t, std::string>>>;
 #else
 		static constexpr char const kv[] = "kv";
 		static constexpr char const value[] = "value";
 		using type = json_member_list<
-		  json_key_value_array<kv, std::unordered_map<intmax_t, std::string>,
-		                       json_string_raw<value>, intmax_t>>;
+		  json_key_value_array<kv, std::unordered_map<intmax_t, std::string>>>;
 #endif
 		static inline auto to_json_data( daw::cookbook_kv2::MyKeyValue2 const &v ) {
 			return std::forward_as_tuple( v.kv );
