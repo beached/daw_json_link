@@ -729,11 +729,13 @@ namespace daw::json {
 			using base_type = json_details::unwrap_type<T, Nullable>;
 			static_assert( traits::not_same<void, base_type>::value,
 			               "Failed to detect base type" );
-			using parse_to_t =
-			  std::invoke_result_t<FromJsonConverter, std::string_view>;
 			static_assert(
 			  std::is_invocable<FromJsonConverter, std::string_view>::value,
 			  "FromConverter must be callable with a std::string_view" );
+
+			using parse_to_t =
+			std::invoke_result_t<FromJsonConverter, std::string_view>;
+
 			static_assert(
 			  std::is_invocable_v<ToJsonConverter, parse_to_t> or
 			    std::is_invocable_r<char const *, ToJsonConverter, char const *,

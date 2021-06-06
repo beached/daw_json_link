@@ -188,7 +188,6 @@ namespace daw::json {
 				string_type result =
 				  string_type( std::size( parse_state ), '\0',
 				               parse_state.get_allocator_for( template_arg<char> ) );
-
 				char *it = std::data( result );
 
 				bool const has_quote = parse_state.front( ) == '"';

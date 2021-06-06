@@ -94,6 +94,16 @@ namespace daw::json {
 			}
 		} // namespace json_details::to_strings
 
+		namespace json_details {
+			template<typename T>
+			using has_ostream_op_test =
+			  decltype( std::declval<std::stringstream &>( ) << std::declval<T>( ) );
+
+			template<typename T>
+			inline constexpr bool has_ostream_op_v =
+			  daw::is_detected_v<has_op_bool_test, T>;
+		} // namespace json_details
+
 		/***
 		 * This is the default ToJsonConverter for json_custom. By default is will
 		 * return the stringified version of the value if, to_string( T ) exists.
@@ -103,20 +113,27 @@ namespace daw::json {
 		 */
 		template<typename T>
 		struct custom_to_converter_t {
-			template<typename U, std::enable_if_t<
-			                       json_details::to_strings::has_to_string<U>::value,
-			                       std::nullptr_t> = nullptr>
+			template<typename U,
+			         std::enable_if_t<json_details::to_strings::has_to_string_v<
+			                            std::remove_reference_t<U>>,
+			                          std::nullptr_t> = nullptr>
 			[[nodiscard]] inline constexpr decltype( auto )
 			operator( )( U &&value ) const {
 				using std::to_string;
 				return to_string( DAW_FWD( value ) );
 			}
 
-			template<typename U, std::enable_if_t<
-			                       not json_details::to_strings::has_to_string_v<U>,
-			                       std::nullptr_t> = nullptr>
-			[[nodiscard]] inline std::string operator( )( U &&value ) const {
-				std::stringstream ss;
+			template<typename U,
+			         std::enable_if_t<not json_details::to_strings::has_to_string_v<
+			                            std::remove_reference_t<U>>,
+			                          std::nullptr_t> = nullptr>
+			[[nodiscard]] inline decltype( auto ) operator( )( U &&value ) const {
+				static_assert(
+				  json_details::has_ostream_op_v<std::remove_reference_t<U>>,
+				  "Default custom_to_converter_t requires either to_string( T ) or "
+				  "operator<<( ostream &, T )" );
+
+				std::stringstream ss{ };
 				ss << DAW_FWD( value );
 				return ss.str( );
 			}
