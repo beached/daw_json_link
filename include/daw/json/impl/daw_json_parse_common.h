@@ -14,8 +14,9 @@
 #include "daw_json_enums.h"
 #include "daw_json_exec_modes.h"
 #include "daw_json_name.h"
+#include "daw_json_option_bits.h"
 #include "daw_json_traits.h"
-#include "version.h"
+#include "daw_json_type_options.h"
 
 #include <daw/daw_arith_traits.h>
 #include <daw/daw_cpp_feature_check.h>
@@ -55,7 +56,7 @@ namespace daw::json {
 
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
-			DAW_ATTRIB_FLATINLINE static inline constexpr auto
+			[[maybe_unused]] DAW_ATTRIB_FLATINLINE static inline constexpr auto
 			construct_value( template_params<Value, Constructor>,
 			                 ParseState &parse_state, Args &&...args ) {
 				// Silence MSVC warning, used in other if constexpr case
@@ -122,7 +123,7 @@ namespace daw::json {
 
 			template<typename Value, typename Constructor, typename ParseState,
 			         typename... Args>
-			DAW_ATTRIB_FLATINLINE static inline constexpr auto
+			[[maybe_unused]] DAW_ATTRIB_FLATINLINE static inline constexpr auto
 			construct_value_tp( ParseState &parse_state,
 			                    fwd_pack<Args...> &&tp_args ) {
 				if constexpr( ParseState::has_allocator ) {
@@ -334,10 +335,8 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T = double,
-		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-		         typename Constructor = default_constructor<T>,
-		         JsonRangeCheck RangeCheck = JsonRangeCheck::Never,
-		         JsonNullable Nullable = JsonNullable::MustExist>
+		         json_details::json_options_t Options = number_opts_def,
+		         typename Constructor = default_constructor<T>>
 		struct json_number;
 
 		/**
@@ -350,11 +349,11 @@ namespace daw::json {
 		 * @tparam RangeCheck Check if thevalue will fit in the result
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<double>,
-		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-		         typename Constructor = nullable_constructor<T>,
-		         JsonRangeCheck RangeCheck = JsonRangeCheck::Never>
-		using json_number_null = json_number<Name, T, LiteralAsString, Constructor,
-		                                     RangeCheck, JsonNullable::Nullable>;
+		         json_details::json_options_t Options = number_opts_def,
+		         typename Constructor = nullable_constructor<T>>
+		using json_number_null =
+		  json_number<Name, T, set_bits( number_opts, Options, JsonNullDefault ),
+		              Constructor>;
 
 		/**
 		 * The member is a boolean
@@ -365,9 +364,8 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T = bool,
-		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-		         typename Constructor = default_constructor<T>,
-		         JsonNullable Nullable = JsonNullable::MustExist>
+		         json_details::json_options_t Options = bool_opts_def,
+		         typename Constructor = default_constructor<T>>
 		struct json_bool;
 
 		/**
@@ -378,10 +376,11 @@ namespace daw::json {
 		 * @tparam Constructor Callable used to construct result
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<bool>,
-		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-		         typename Constructor = nullable_constructor<T>>
+		         json_details::json_options_t Options = bool_opts_def,
+		         typename Constructor = default_constructor<T>>
 		using json_bool_null =
-		  json_bool<Name, T, LiteralAsString, Constructor, JsonNullable::Nullable>;
+		  json_bool<Name, T, set_bits( bool_opts, Options, JsonNullDefault ),
+		            Constructor>;
 
 		/**
 		 * Member is an escaped string and requires unescaping and escaping of
@@ -396,10 +395,8 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename String = std::string,
-		         typename Constructor = default_constructor<String>,
-		         JsonNullable EmptyStringNull = JsonNullable::MustExist,
-		         EightBitModes EightBitMode = EightBitModes::AllowFull,
-		         JsonNullable Nullable = JsonNullable::MustExist>
+		         json_details::json_options_t Options = string_opts_def,
+		         typename Constructor = default_constructor<String>>
 		struct json_string;
 
 		/**
@@ -415,12 +412,12 @@ namespace daw::json {
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 */
 		template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
-		         typename Constructor = nullable_constructor<String>,
-		         JsonNullable EmptyStringNull = JsonNullable::MustExist,
-		         EightBitModes EightBitMode = EightBitModes::AllowFull>
+		         json_details::json_options_t Options = string_opts_def,
+		         typename Constructor = nullable_constructor<String>>
 		using json_string_null =
-		  json_string<Name, String, Constructor, EmptyStringNull, EightBitMode,
-		              JsonNullable::Nullable>;
+		  json_string<Name, String,
+		              set_bits( string_opts, Options, JsonNullDefault ),
+		              Constructor>;
 
 		/**
 		 * Member is an escaped string and requires unescaping and escaping of
@@ -438,11 +435,8 @@ namespace daw::json {
 		 * data
 		 */
 		template<JSONNAMETYPE Name, typename String = std::string,
-		         typename Constructor = default_constructor<String>,
-		         JsonNullable EmptyStringNull = JsonNullable::MustExist,
-		         EightBitModes EightBitMode = EightBitModes::AllowFull,
-		         JsonNullable Nullable = JsonNullable::MustExist,
-		         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
+		         json_details::json_options_t Options = string_raw_opts_def,
+		         typename Constructor = default_constructor<String>>
 		struct json_string_raw;
 
 		/**
@@ -460,13 +454,12 @@ namespace daw::json {
 		 * data
 		 */
 		template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
-		         typename Constructor = nullable_constructor<String>,
-		         JsonNullable EmptyStringNull = JsonNullable::Nullable,
-		         EightBitModes EightBitMode = EightBitModes::AllowFull,
-		         AllowEscapeCharacter AllowEscape = AllowEscapeCharacter::Allow>
+		         json_details::json_options_t Options = string_raw_opts_def,
+		         typename Constructor = nullable_constructor<String>>
 		using json_string_raw_null =
-		  json_string_raw<Name, String, Constructor, EmptyStringNull, EightBitMode,
-		                  JsonNullable::Nullable, AllowEscape>;
+		  json_string_raw<Name, String,
+		                  set_bits( string_raw_opts, Options, JsonNullDefault ),
+		                  Constructor>;
 
 		/** Map a KV type json class { "Key StringRaw": ValueType, ... }
 		 *  to a c++ class.  Keys are Always string like and the destination
@@ -507,7 +500,7 @@ namespace daw::json {
 		         typename Constructor = nullable_constructor<Container>>
 		using json_key_value_null =
 		  json_key_value<Name, Container, JsonValueType, JsonKeyType, Constructor,
-		                 JsonNullable::Nullable>;
+		                 JsonNullDefault>;
 
 		namespace json_details {
 			template<typename T>

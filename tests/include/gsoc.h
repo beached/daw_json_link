@@ -100,9 +100,10 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<daw::gsoc::gsoc_object_t> {
-		using type = json_class_map<json_key_value<
-		  no_name, daw::gsoc::gsoc_object_t, gsoc::gsoc_element_t,
-		  json_number<no_name, std::uint64_t, LiteralAsStringOpt::Always>>>;
+		using type = json_class_map<
+		  json_key_value<no_name, daw::gsoc::gsoc_object_t, gsoc::gsoc_element_t,
+		                 json_number<no_name, std::uint64_t,
+		                             number_opt( LiteralAsStringOpt::Always )>>>;
 
 		static inline auto const &
 		to_json_data( daw::gsoc::gsoc_object_t const &v ) {

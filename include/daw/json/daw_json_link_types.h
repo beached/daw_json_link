@@ -346,13 +346,17 @@ namespace daw::json {
 		 * @tparam Constructor Callable used to construct result
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
-		template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
-		         typename Constructor, JsonRangeCheck RangeCheck,
-		         JsonNullable Nullable>
+		/*		template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt
+		   LiteralAsString, typename Constructor, JsonRangeCheck RangeCheck,
+		             JsonNullable Nullable>*/
+		template<JSONNAMETYPE Name, typename T,
+		         json_details::json_options_t Options, typename Constructor>
 		struct json_number {
 			using i_am_a_json_type = void;
 			using wrapped_type = T;
-			using base_type = json_details::unwrap_type<T, Nullable>;
+			static constexpr JsonNullable nullable =
+			  json_details::get_bits_for<JsonNullable>( number_opts, Options );
+			using base_type = json_details::unwrap_type<T, nullable>;
 			static_assert( traits::not_same<void, base_type>::value,
 			               "Failed to detect base type" );
 
@@ -360,7 +364,7 @@ namespace daw::json {
 			               "json_number requires an arithmetic type" );
 			using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 			static_assert(
-			  not is_nullable_json_value_v<Nullable> or
+			  not is_nullable_json_value_v<nullable> or
 			    std::is_same<parse_to_t, std::invoke_result_t<Constructor>>::value,
 			  "Default ctor of constructor must match that of base" );
 			using constructor_t = Constructor;
@@ -368,20 +372,22 @@ namespace daw::json {
 
 			static constexpr JsonParseTypes expected_type =
 			  get_parse_type_v<json_details::number_parse_type_v<base_type>,
-			                   Nullable>;
+			                   nullable>;
 
 			static constexpr JsonParseTypes base_expected_type =
 			  json_details::number_parse_type_v<base_type>;
 
-			static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
-			static constexpr JsonRangeCheck range_check = RangeCheck;
+			static constexpr LiteralAsStringOpt literal_as_string =
+			  json_details::get_bits_for<LiteralAsStringOpt>( number_opts, Options );
+
+			static constexpr JsonRangeCheck range_check =
+			  json_details::get_bits_for<JsonRangeCheck>( number_opts, Options );
+
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::Number;
-			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
-			using with_name = json_number<NewName, T, LiteralAsString, Constructor,
-			                              RangeCheck, Nullable>;
+			using with_name = json_number<NewName, T, Options, Constructor>;
 		};
 
 		/**
@@ -391,30 +397,32 @@ namespace daw::json {
 		 * @tparam LiteralAsString Could this number be embedded in a string
 		 * @tparam Constructor Callable used to construct result
 		 */
-		template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString,
-		         typename Constructor, JsonNullable Nullable>
+		template<JSONNAMETYPE Name, typename T,
+		         json_details::json_options_t Options, typename Constructor>
 		struct json_bool {
 			using i_am_a_json_type = void;
+			static constexpr JsonNullable nullable =
+			  json_details::get_bits_for<JsonNullable>( bool_opts, Options );
 			using wrapped_type = T;
-			using base_type = json_details::unwrap_type<T, Nullable>;
+			using base_type = json_details::unwrap_type<T, nullable>;
 			static_assert( traits::not_same<void, base_type>::value,
 			               "Failed to detect base type" );
 			using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 			using constructor_t = Constructor;
 
 			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::Bool, Nullable>;
+			  get_parse_type_v<JsonParseTypes::Bool, nullable>;
 			static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Bool;
 
 			static constexpr daw::string_view name = Name;
-			static constexpr LiteralAsStringOpt literal_as_string = LiteralAsString;
+			static constexpr LiteralAsStringOpt literal_as_string =
+			  json_details::get_bits_for<LiteralAsStringOpt>( bool_opts, Options );
+
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::Bool;
-			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
-			using with_name =
-			  json_bool<NewName, T, LiteralAsString, Constructor, Nullable>;
+			using with_name = json_bool<NewName, T, Options, Constructor>;
 		};
 
 		/**
@@ -432,36 +440,38 @@ namespace daw::json {
 		 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
 		 * data
 		 */
-		template<JSONNAMETYPE Name, typename String, typename Constructor,
-		         JsonNullable EmptyStringNull, EightBitModes EightBitMode,
-		         JsonNullable Nullable, AllowEscapeCharacter AllowEscape>
+		template<JSONNAMETYPE Name, typename String,
+		         json_details::json_options_t Options, typename Constructor>
 		struct json_string_raw {
 			using i_am_a_json_type = void;
+			static constexpr JsonNullable nullable =
+			  json_details::get_bits_for<JsonNullable>( string_raw_opts, Options );
 			using constructor_t = Constructor;
 			using wrapped_type = String;
-			using base_type = json_details::unwrap_type<String, Nullable>;
+			using base_type = json_details::unwrap_type<String, nullable>;
 			static_assert( traits::not_same<void, base_type>::value,
 			               "Failed to detect base type" );
 			using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 
 			static constexpr daw::string_view name = Name;
 			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::StringRaw, Nullable>;
+			  get_parse_type_v<JsonParseTypes::StringRaw, nullable>;
 			static constexpr JsonParseTypes base_expected_type =
 			  JsonParseTypes::StringRaw;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::String;
-			static constexpr JsonNullable nullable = Nullable;
 
-			static constexpr JsonNullable empty_is_null = JsonNullable::MustExist;
-			static constexpr EightBitModes eight_bit_mode = EightBitMode;
+			static constexpr EmptyStringNull empty_is_null =
+			  json_details::get_bits_for<EmptyStringNull>( string_raw_opts, Options );
+			static constexpr EightBitModes eight_bit_mode =
+			  json_details::get_bits_for<EightBitModes>( string_raw_opts, Options );
+
 			static constexpr AllowEscapeCharacter allow_escape_character =
-			  AllowEscape;
+			  json_details::get_bits_for<AllowEscapeCharacter>( string_raw_opts,
+			                                                    Options );
 
 			template<JSONNAMETYPE NewName>
-			using with_name =
-			  json_string_raw<NewName, String, Constructor, EmptyStringNull,
-			                  EightBitMode, Nullable, AllowEscape>;
+			using with_name = json_string_raw<NewName, String, Options, Constructor>;
 		};
 
 		/**
@@ -477,14 +487,15 @@ namespace daw::json {
 		 * @tparam EightBitMode Allow filtering of characters with the MSB set
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
-		template<JSONNAMETYPE Name, typename String, typename Constructor,
-		         JsonNullable EmptyStringNull, EightBitModes EightBitMode,
-		         JsonNullable Nullable>
+		template<JSONNAMETYPE Name, typename String,
+		         json_details::json_options_t Options, typename Constructor>
 		struct json_string {
 			using i_am_a_json_type = void;
+			static constexpr JsonNullable nullable =
+			  json_details::get_bits_for<JsonNullable>( string_opts, Options );
 			using constructor_t = Constructor;
 			using wrapped_type = String;
-			using base_type = json_details::unwrap_type<String, Nullable>;
+			using base_type = json_details::unwrap_type<String, nullable>;
 			static_assert( traits::not_same<void, base_type>::value,
 			               "Failed to detect base type" );
 			// using parse_to_t = std::invoke_result_t<Constructor, base_type>;
@@ -496,18 +507,19 @@ namespace daw::json {
 
 			static constexpr daw::string_view name = Name;
 			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::StringEscaped, Nullable>;
+			  get_parse_type_v<JsonParseTypes::StringEscaped, nullable>;
 			static constexpr JsonParseTypes base_expected_type =
 			  JsonParseTypes::StringEscaped;
-			static constexpr JsonNullable empty_is_null = EmptyStringNull;
-			static constexpr EightBitModes eight_bit_mode = EightBitMode;
+			static constexpr EmptyStringNull empty_is_null =
+			  json_details::get_bits_for<EmptyStringNull>( string_opts, Options );
+			static constexpr EightBitModes eight_bit_mode =
+			  json_details::get_bits_for<EightBitModes>( string_opts, Options );
+
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::String;
-			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
-			using with_name = json_string<NewName, String, Constructor,
-			                              EmptyStringNull, EightBitMode, Nullable>;
+			using with_name = json_string<NewName, String, Options, Constructor>;
 		};
 
 		/**
@@ -688,7 +700,8 @@ namespace daw::json {
 			using tag_member = TagMember;
 			using switcher = Switcher;
 			using base_type = json_details::unwrap_type<T, Nullable>;
-			using constructor_t = json_details::json_class_constructor_t<T, Constructor>;
+			using constructor_t =
+			  json_details::json_class_constructor_t<T, Constructor>;
 			static_assert( traits::not_same<void, base_type>::value,
 			               "Failed to detect base type" );
 			using parse_to_t = T;
@@ -734,7 +747,7 @@ namespace daw::json {
 			  "FromConverter must be callable with a std::string_view" );
 
 			using parse_to_t =
-			std::invoke_result_t<FromJsonConverter, std::string_view>;
+			  std::invoke_result_t<FromJsonConverter, std::string_view>;
 
 			static_assert(
 			  std::is_invocable_v<ToJsonConverter, parse_to_t> or

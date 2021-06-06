@@ -75,22 +75,16 @@ namespace daw::cookbook_optional_values1 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_optional_values1::MyOptionalStuff1> {
-#if defined( __cpp_nontype_template_parameter_class )
-		using type = json_member_list<
-		  json_number_null<"member0", std::optional<int>>, json_string<"member1">,
-		  json_bool_null<
-		    "member2", std::unique_ptr<bool>, LiteralAsStringOpt::Never,
-		    daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
-#else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member1[] = "member1";
 		static constexpr char const member2[] = "member2";
 		using type = json_member_list<
 		  json_number_null<member0, std::optional<int>>, json_string<member1>,
-		  json_bool<member2, std::unique_ptr<bool>, LiteralAsStringOpt::Never,
-		            daw::cookbook_optional_values1::UniquePtrConstructor<bool>,
-		            JsonNullable::NullVisible>>;
-#endif
+		  json_bool<member2, std::unique_ptr<bool>,
+		            bool_opt( LiteralAsStringOpt::Never,
+		                      JsonNullable::NullVisible ),
+		            daw::cookbook_optional_values1::UniquePtrConstructor<bool>>>;
+
 		static inline auto to_json_data(
 		  daw::cookbook_optional_values1::MyOptionalStuff1 const &value ) {
 			return std::forward_as_tuple( value.member0, value.member1,

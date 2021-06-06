@@ -764,7 +764,8 @@ int main( int, char ** )
 	std::cout << daw::json::to_json_array( a ) << '\n';
 
 	using namespace daw::json;
-	using num_t = json_number<no_name, double, LiteralAsStringOpt::Always>;
+	using num_t =
+	  json_number<no_name, double, number_opt( LiteralAsStringOpt::Always )>;
 	std::cout << "Inf double: "
 	          << to_json<std::string, double, num_t>(
 	               std::numeric_limits<double>::infinity( ) )

@@ -26,21 +26,21 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<City> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_string_raw<"country", std::string_view>,
-		                   json_string_raw<"name", std::string_view>,
-		                   json_number<"lat", float, LiteralAsStringOpt::Always>,
-		                   json_number<"lng", float, LiteralAsStringOpt::Always>>;
+		using type = json_member_list<
+		  json_string_raw<"country", std::string_view>,
+		  json_string_raw<"name", std::string_view>,
+		  json_number<"lat", float, number_opt( LiteralAsStringOpt::Always )>,
+		  json_number<"lng", float, number_opt( LiteralAsStringOpt::Always )>>;
 #else
 		static constexpr char const country[] = "country";
 		static constexpr char const name[] = "name";
 		static constexpr char const lat[] = "lat";
 		static constexpr char const lng[] = "lng";
-		using type =
-		  json_member_list<json_string_raw<country, std::string_view>,
-		                   json_string_raw<name, std::string_view>,
-		                   json_number<lat, float, LiteralAsStringOpt::Always>,
-		                   json_number<lng, float, LiteralAsStringOpt::Always>>;
+		using type = json_member_list<
+		  json_string_raw<country, std::string_view>,
+		  json_string_raw<name, std::string_view>,
+		  json_number<lat, float, number_opt( LiteralAsStringOpt::Always )>,
+		  json_number<lng, float, number_opt( LiteralAsStringOpt::Always )>>;
 #endif
 		static DAW_CONSTEXPR auto to_json_data( City const &c ) {
 			return std::forward_as_tuple( c.country, c.name, c.lat, c.lng );

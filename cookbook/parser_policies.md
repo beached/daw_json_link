@@ -1,4 +1,4 @@
-# Parser Policies
+# Parser Options
 
 The default parser policy is validating and disallows comments.  The `Unchecked` variants will skip most error checks and can give a good performance boost; this is useful when you can trust and know the data will be free of malicious errors.
 

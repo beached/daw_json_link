@@ -142,18 +142,20 @@ namespace daw::json {
 		static inline constexpr char const venueNames[] = "venueNames";
 
 		using type = json_member_list<
-		  json_key_value<
-		    areaNames, daw::citm::Map<std::int64_t, std::string_view>,
-		    std::string_view,
-		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
-		  json_key_value<
-		    audienceSubCategoryNames,
-		    daw::citm::Map<std::int64_t, std::string_view>, std::string_view,
-		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
-		  json_key_value<
-		    events, daw::citm::Map<std::int64_t, daw::citm::events_value_t>,
-		    json_class<no_name, daw::citm::events_value_t>,
-		    json_number<no_name, std::int64_t, LiteralAsStringOpt::Always>>,
+		  json_key_value<areaNames, daw::citm::Map<std::int64_t, std::string_view>,
+		                 std::string_view,
+		                 json_number<no_name, std::int64_t,
+		                             number_opt( LiteralAsStringOpt::Always )>>,
+		  json_key_value<audienceSubCategoryNames,
+		                 daw::citm::Map<std::int64_t, std::string_view>,
+		                 std::string_view,
+		                 json_number<no_name, std::int64_t,
+		                             number_opt( LiteralAsStringOpt::Always )>>,
+		  json_key_value<events,
+		                 daw::citm::Map<std::int64_t, daw::citm::events_value_t>,
+		                 json_class<no_name, daw::citm::events_value_t>,
+		                 json_number<no_name, std::int64_t,
+		                             number_opt( LiteralAsStringOpt::Always )>>,
 		  json_array<performances, daw::citm::performances_element_t,
 		             daw::citm::Vector<daw::citm::performances_element_t>>,
 		  json_key_value<seatCategoryNames,

@@ -46,12 +46,13 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T = double,
-		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
-		         typename Constructor = default_constructor<T>,
-		         JsonNullable Nullable = JsonNullable::MustExist>
+		         json_details::json_options_t Options = number_opts_def,
+		         typename Constructor = default_constructor<T>>
 		using json_checked_number =
-		  json_number<Name, T, LiteralAsString, Constructor,
-		              JsonRangeCheck::CheckForNarrowing, Nullable>;
+		  json_number<Name, T,
+		              set_bits( number_opts, Options,
+		                        JsonRangeCheck::CheckForNarrowing ),
+		              Constructor>;
 
 		/**
 		 * The member is a nullable range checked number
@@ -62,11 +63,13 @@ namespace daw::json {
 		 * @tparam Constructor Callable used to construct result
 		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<double>,
-		         LiteralAsStringOpt LiteralAsString = LiteralAsStringOpt::Never,
+		         json_details::json_options_t Options = number_opts_def,
 		         typename Constructor = nullable_constructor<T>>
 		using json_checked_number_null =
-		  json_number<Name, T, LiteralAsString, Constructor,
-		              JsonRangeCheck::CheckForNarrowing, JsonNullDefault>;
+		  json_number_null<Name, T,
+		                   set_bits( number_opts, Options,
+		                             JsonRangeCheck::CheckForNarrowing ),
+		                   Constructor>;
 
 		/**
 		 * Link to a JSON string representing a date
@@ -338,8 +341,8 @@ namespace daw::json {
 		 */
 		template<
 		  JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
-		  typename JsonElements =
-		    json_details::determine_variant_element_types<JsonNullable::MustExist, T>,
+		  typename JsonElements = json_details::determine_variant_element_types<
+		    JsonNullable::MustExist, T>,
 		  typename Constructor = default_constructor<T>,
 		  JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_tagged_variant;

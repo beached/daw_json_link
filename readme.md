@@ -22,7 +22,7 @@
   * [Numbers](cookbook/numbers.md)
   * [Optional/Nullable Values](cookbook/optional_values.md)
   * [Parsing Individual Members](cookbook/parsing_individual_members.md)
-  * [Parser Policies](cookbook/parser_policies.md)
+  * [Parser Options](cookbook/parser_policies.md)
   * [Strings](cookbook/strings.md)
   * [Unknown JSON and Delayed Parsing](cookbook/unknown_types_and_delayed_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
   * [Variant](cookbook/variant.md)
@@ -296,7 +296,7 @@ std::string my_json_data = to_json_array( arry );
 ## Parsing call
 ###### [Top](#content)
 
-Error checking can be modified on a per parse basis.  the from_json/from_json_array calls can be supplied a Parser Policy.  The current policies are
+Error checking can be modified on a per parse basis.  the from_json/from_json_array calls can be supplied a Parser Option.  The current policies are
 
 * `NoCommentSkippingPolicyChecked` - No comments allowed, checks enabled
 * `NoCommentSkippingPolicyUnchecked` - No comments allowed, assumes perfect JSON

@@ -49,10 +49,12 @@ std::size_t test( std::string_view json_data ) {
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
 	using namespace daw::json;
-	using JString = json_string_raw<
-	  no_name, std::string_view, daw::construct_a_t<std::string_view>,
-	  JsonNullable::MustExist, EightBitModes::AllowFull, JsonNullable::MustExist,
-	  AllowEscapeCharacter::NotBeforeDblQuote>;
+	using JString =
+	  json_string_raw<no_name, std::string_view,
+	                  string_raw_opt( JsonNullable::MustExist,
+	                                  EightBitModes::AllowFull,
+	                                  AllowEscapeCharacter::NotBeforeDblQuote ),
+	                  daw::construct_a_t<std::string_view>>;
 
 	std::vector<std::string_view> values =
 	  from_json_array<JString, std::vector<std::string_view>,

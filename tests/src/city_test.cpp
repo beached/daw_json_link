@@ -45,19 +45,19 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<City> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_string<"country">, json_string<"name">,
-		                   json_number<"lat", float, LiteralAsStringOpt::Always>,
-		                   json_number<"lng", float, LiteralAsStringOpt::Always>>;
+		using type = json_member_list<
+		  json_string<"country">, json_string<"name">,
+		  json_number<"lat", float, number_opt( LiteralAsStringOpt::Always )>,
+		  json_number<"lng", float, number_opt( LiteralAsStringOpt::Always )>>;
 #else
 		static constexpr char const country[] = "country";
 		static constexpr char const name[] = "name";
 		static constexpr char const lat[] = "lat";
 		static constexpr char const lng[] = "lng";
-		using type =
-		  json_member_list<json_string<country>, json_string<name>,
-		                   json_number<lat, float, LiteralAsStringOpt::Always>,
-		                   json_number<lng, float, LiteralAsStringOpt::Always>>;
+		using type = json_member_list<
+		  json_string<country>, json_string<name>,
+		  json_number<lat, float, number_opt( LiteralAsStringOpt::Always )>,
+		  json_number<lng, float, number_opt( LiteralAsStringOpt::Always )>>;
 #endif
 
 		static inline auto to_json_data( City const &c ) {

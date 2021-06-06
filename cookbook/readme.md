@@ -12,7 +12,7 @@ This folder contains examples of various JSON constructs and how to create a C++
 * [Numbers](numbers.md)
 * [Optional/Nullable Values](optional_values.md)
 * [Parsing Individual Members](parsing_individual_members.md)
-* [Parser Policies](parser_policies.md)
+* [Parser Options](parser_policies.md)
 * [Strings](strings.md)
 * [Unknown JSON and Delayed Parsing](unknown_types_and_delayed_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
 * [Variant](variant.md)

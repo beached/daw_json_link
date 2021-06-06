@@ -41,7 +41,7 @@ namespace daw::json {
 		 * std::allocator_arg_t followed by the allocator.`Thing( args..., alloc )`
 		 * or `Thing( std::allocator_arg, alloc, args... )`
 		 */
-		template<json_details::policy_options_t PolicyFlags =
+		template<json_details::json_options_t PolicyFlags =
 		           json_details::default_policy_flag,
 		         typename Allocator = json_details::NoAllocator>
 		struct BasicParsePolicy : json_details::AllocatorWrapper<Allocator> {
