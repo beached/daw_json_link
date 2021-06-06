@@ -737,7 +737,7 @@ namespace daw::json {
 			std::invoke_result_t<FromJsonConverter, std::string_view>;
 
 			static_assert(
-			  std::is_invocable_v<ToJsonConverter, parse_to_t> or
+			  not std::is_invocable_v<ToJsonConverter, parse_to_t> or
 			    std::is_invocable_r<char *, ToJsonConverter, char *,
 			                        parse_to_t>::value,
 			  "ToConverter must be callable with T or T and and OutputIterator" );
