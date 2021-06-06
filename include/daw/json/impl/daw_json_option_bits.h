@@ -96,22 +96,10 @@ namespace daw::json {
 					return new_bits;
 				}
 
-				template<typename>
-				struct default_option_flag_t;
-
-				template<typename... Options>
-				struct default_option_flag_t<pack_list<Options...>> {
-					static constexpr json_options_t value =
-					  ( set_bits_for<Options>( default_json_option_value<Options> ) |
-					    ... );
-				};
-
-				/***
-				 * The defaults for all known policies encoded as a json_options_t
-				 */
-				static inline constexpr json_options_t default_option_flag =
-				  default_option_flag_t<OptionList>::value;
-
+				static constexpr json_options_t default_option_flag =
+				  ( set_bits_for<JsonOptions>(
+				      default_json_option_value<JsonOptions> ) |
+				    ... );
 				/***
 				 * Create the parser options flag for BasicParseOption
 				 * @tparam Options Option types that satisfy the `is_option_flag`
@@ -199,6 +187,25 @@ namespace daw::json {
 			                                      Options... options ) {
 				return JsonOptionList<OptionList...>::template options( options... );
 			}
+
+			template<typename>
+			struct default_option_flag_t;
+
+			template<template<class...> class OptionList, typename... Options>
+			struct default_option_flag_t<OptionList<Options...>> {
+				static constexpr json_options_t value =
+				  ( OptionList<Options...>::template set_bits_for<Options>(
+				      default_json_option_value<Options> ) |
+				    ... );
+			};
+
+			/***
+			 * The defaults for all known policies encoded as a json_options_t
+			 */
+			template<typename OptionList>
+			static inline constexpr json_options_t default_option_flag =
+			  default_option_flag_t<OptionList>::value;
+
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json
