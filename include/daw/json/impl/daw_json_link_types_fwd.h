@@ -48,11 +48,10 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T = double,
 		         json_details::json_options_t Options = number_opts_def,
 		         typename Constructor = default_constructor<T>>
-		using json_checked_number =
-		  json_number<Name, T,
-		              set_bits( number_opts, Options,
-		                        JsonRangeCheck::CheckForNarrowing ),
-		              Constructor>;
+		using json_checked_number = json_number<
+		  Name, T,
+		  json_details::number_opts_set<Options, JsonRangeCheck::CheckForNarrowing>,
+		  Constructor>;
 
 		/**
 		 * The member is a nullable range checked number
@@ -65,11 +64,11 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T = std::optional<double>,
 		         json_details::json_options_t Options = number_opts_def,
 		         typename Constructor = nullable_constructor<T>>
-		using json_checked_number_null =
-		  json_number_null<Name, T,
-		                   set_bits( number_opts, Options,
-		                             JsonRangeCheck::CheckForNarrowing ),
-		                   Constructor>;
+		using json_checked_number_null = json_number<
+		  Name, T,
+		  json_details::number_opts_set<Options, JsonRangeCheck::CheckForNarrowing,
+		                                JsonNullDefault>,
+		  Constructor>;
 
 		/**
 		 * Link to a JSON string representing a date

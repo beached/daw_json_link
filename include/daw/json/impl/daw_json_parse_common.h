@@ -339,6 +339,12 @@ namespace daw::json {
 		         typename Constructor = default_constructor<T>>
 		struct json_number;
 
+		namespace json_details {
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t number_opts_set =
+			  set_bits( number_opts, CurrentOptions, option, options... );
+		} // namespace json_details
+
 		/**
 		 * The member is a nullable number
 		 * @tparam Name name of json member
@@ -352,7 +358,8 @@ namespace daw::json {
 		         json_details::json_options_t Options = number_opts_def,
 		         typename Constructor = nullable_constructor<T>>
 		using json_number_null =
-		  json_number<Name, T, set_bits( number_opts, Options, JsonNullDefault ),
+		  json_number<Name, T,
+		              json_details::number_opts_set<Options, JsonNullDefault>,
 		              Constructor>;
 
 		/**
@@ -368,6 +375,12 @@ namespace daw::json {
 		         typename Constructor = default_constructor<T>>
 		struct json_bool;
 
+		namespace json_details {
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t bool_opts_set =
+			  set_bits( bool_opts, CurrentOptions, option, options... );
+		} // namespace json_details
+
 		/**
 		 * The member is a nullable boolean
 		 * @tparam Name name of json member
@@ -379,7 +392,7 @@ namespace daw::json {
 		         json_details::json_options_t Options = bool_opts_def,
 		         typename Constructor = default_constructor<T>>
 		using json_bool_null =
-		  json_bool<Name, T, set_bits( bool_opts, Options, JsonNullDefault ),
+		  json_bool<Name, T, json_details::bool_opts_set<Options, JsonNullDefault>,
 		            Constructor>;
 
 		/**
@@ -399,6 +412,11 @@ namespace daw::json {
 		         typename Constructor = default_constructor<String>>
 		struct json_string;
 
+		namespace json_details {
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t string_opts_set =
+			  set_bits( string_opts, CurrentOptions, option, options... );
+		} // namespace json_details
 		/**
 		 * Member is a nullable escaped string and requires unescaping and escaping
 		 * of string data
@@ -416,7 +434,7 @@ namespace daw::json {
 		         typename Constructor = nullable_constructor<String>>
 		using json_string_null =
 		  json_string<Name, String,
-		              set_bits( string_opts, Options, JsonNullDefault ),
+		              json_details::string_opts_set<Options, JsonNullDefault>,
 		              Constructor>;
 
 		/**
@@ -439,6 +457,12 @@ namespace daw::json {
 		         typename Constructor = default_constructor<String>>
 		struct json_string_raw;
 
+		namespace json_details {
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t string_raw_opts_set =
+			  set_bits( string_raw_opts, CurrentOptions, option, options... );
+		} // namespace json_details
+
 		/**
 		 * Member is a nullable escaped string and requires unescaping and escaping
 		 * of string data.  Not all invalid codepoints are detected
@@ -456,10 +480,9 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
 		         json_details::json_options_t Options = string_raw_opts_def,
 		         typename Constructor = nullable_constructor<String>>
-		using json_string_raw_null =
-		  json_string_raw<Name, String,
-		                  set_bits( string_raw_opts, Options, JsonNullDefault ),
-		                  Constructor>;
+		using json_string_raw_null = json_string_raw<
+		  Name, String, json_details::string_raw_opts_set<Options, JsonNullDefault>,
+		  Constructor>;
 
 		/** Map a KV type json class { "Key StringRaw": ValueType, ... }
 		 *  to a c++ class.  Keys are Always string like and the destination

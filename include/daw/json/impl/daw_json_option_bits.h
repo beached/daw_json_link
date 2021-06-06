@@ -149,11 +149,7 @@ namespace daw::json {
 				              OptionList...>::template option_bits_start<Option> );
 				value |= new_bits;
 				if constexpr( sizeof...( Options ) > 0 ) {
-					if constexpr( sizeof...( pols ) > 0 ) {
-						return set_bits<JsonOptionList<OptionList...>>( value, pols... );
-					} else {
-						return value;
-					}
+					return set_bits( JsonOptionList<OptionList...>{ }, value, pols... );
 				} else {
 					return value;
 				}
