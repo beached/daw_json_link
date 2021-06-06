@@ -1,6 +1,15 @@
 set(DAW_JSON_USE_SANITIZERS OFF CACHE STRING "Enable address and undefined sanitizers")
 set(DAW_WERROR OFF CACHE STRING "Enable WError for test builds")
 
+option(DAW_FORCE_COLOUR_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." FALSE)
+if(${FORCE_COLOUR_OUTPUT})
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+       add_compile_options (-fdiagnostics-color=always)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+       add_compile_options (-fcolor-diagnostics)
+    endif ()
+endif ()
+
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
     if (MSVC)
         message("Clang-CL ${CMAKE_CXX_COMPILER_VERSION} detected")

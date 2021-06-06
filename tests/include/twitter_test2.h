@@ -28,6 +28,7 @@ struct opt_construct_a {
 		  daw::construct_a<T>( std::forward<Args>( args )... ) );
 	}
 };
+
 namespace daw::twitter2 {
 	struct metadata_t {
 		std::string_view result_type;

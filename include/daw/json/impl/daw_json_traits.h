@@ -424,9 +424,13 @@ namespace daw::json {
 				using has_size_test = decltype( std::size( std::declval<T>( ) ) );
 			} // namespace is_string_like_impl
 			template<typename T>
+			using is_string_view_like = std::conjunction<
+			  daw::is_detected<is_string_like_impl::has_data_test, T>,
+			  daw::is_detected<is_string_like_impl::has_size_test, T>>;
+
+			template<typename T>
 			inline constexpr bool is_string_view_like_v =
-			  daw::is_detected_v<is_string_like_impl::has_data_test, T>
-			    and daw::is_detected_v<is_string_like_impl::has_size_test, T>;
+			  is_string_view_like<T>::value;
 
 			static_assert( is_string_view_like_v<std::string_view> );
 

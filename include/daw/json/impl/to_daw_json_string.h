@@ -64,9 +64,18 @@ namespace daw::json {
 		}
 
 		namespace json_details::to_strings {
+			using std::to_string;
 			// Need to use ADL to_string in unevaluated contexts.  Limiting to it's
 			// own namespace
-			using std::to_string;
+			template<typename T>
+			[[nodiscard, maybe_unused]] constexpr auto
+			to_string( std::optional<T> const &v ) -> decltype( to_string( *v ) ) {
+				if( not has_value( v ) ) {
+					return { "null" };
+				}
+				return to_string( *v );
+			}
+
 			namespace to_string_test {
 				template<typename T>
 				[[maybe_unused]] auto to_string_test( T &&v )
@@ -84,14 +93,6 @@ namespace daw::json {
 			template<typename T>
 			inline constexpr bool has_to_string_v = has_to_string<T>::value;
 
-			template<typename T>
-			[[nodiscard, maybe_unused]] auto to_string( std::optional<T> const &v )
-			  -> decltype( to_string( *v ) ) {
-				if( not has_value( v ) ) {
-					return { "null" };
-				}
-				return to_string( *v );
-			}
 		} // namespace json_details::to_strings
 
 		namespace json_details {
@@ -114,37 +115,73 @@ namespace daw::json {
 		template<typename T>
 		struct custom_to_converter_t {
 			template<typename U,
-			         std::enable_if_t<json_details::to_strings::has_to_string_v<
-			                            std::remove_reference_t<U>>,
-			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] inline constexpr decltype( auto )
-			operator( )( U &&value ) const {
-				using std::to_string;
-				return to_string( DAW_FWD( value ) );
+			         std::enable_if_t<
+			           std::disjunction_v<json_details::is_string_view_like<U>,
+			                              json_details::to_strings::has_to_string<U>>,
+			           std::nullptr_t> = nullptr>
+			[[nodiscard]] inline constexpr auto operator( )( U const &value ) const {
+				if constexpr( json_details::is_string_view_like_v<
+				                daw::remove_cvref_t<U>> ) {
+					return std::string_view( std::data( value ), std::size( value ) );
+				} else {
+					using json_details::to_strings::to_string;
+					return to_string( DAW_FWD( value ) );
+				}
 			}
 
 			template<typename U,
-			         std::enable_if_t<not json_details::to_strings::has_to_string_v<
-			                            std::remove_reference_t<U>>,
+			         std::enable_if_t<(json_details::is_string_view_like_v<
+			                             daw::remove_cvref_t<U>> and
+			                           not json_details::to_strings::has_to_string_v<
+			                             daw::remove_cvref_t<U>>),
 			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] inline decltype( auto ) operator( )( U &&value ) const {
+			inline constexpr std::string_view
+			operator( )( std::optional<U> const &v ) {
+				if( v ) {
+					return { std::data( v ), std::size( v ) };
+				}
+				return std::string_view( "null" );
+			}
+
+			template<typename U,
+			         std::enable_if_t<not std::disjunction_v<
+			                            json_details::is_string_view_like<U>,
+			                            json_details::to_strings::has_to_string<U>>,
+			                          std::nullptr_t> = nullptr>
+			[[nodiscard]] inline std::string operator( )( U const &value ) const {
 				static_assert(
 				  json_details::has_ostream_op_v<std::remove_reference_t<U>>,
-				  "Default custom_to_converter_t requires either to_string( T ) or "
+				  "Default custom_to_converter_t requires either to_string( T "
+				  ") or "
 				  "operator<<( ostream &, T )" );
 
 				std::stringstream ss{ };
-				ss << DAW_FWD( value );
-				return ss.str( );
+				ss << value;
+				return DAW_MOVE( ss ).str( );
+			}
+
+			template<typename U,
+			         std::enable_if_t<not std::disjunction_v<
+			                            json_details::is_string_view_like<U>,
+			                            json_details::to_strings::has_to_string<U>>,
+			                          std::nullptr_t> = nullptr>
+			[[nodiscard]] inline std::string
+			operator( )( std::optional<U> const &value ) const {
+				static_assert(
+				  json_details::has_ostream_op_v<std::remove_reference_t<U>>,
+				  "Default custom_to_converter_t requires either to_string( T "
+				  ") or "
+				  "operator<<( ostream &, T )" );
+				if( value ) {
+					std::stringstream ss{ };
+					ss << value;
+					return DAW_MOVE( ss ).str( );
+				} else {
+					return std::string( "null" );
+				}
 			}
 		};
 
-		/***
-		 * Default FromJsonConverter for json_custom. Uses ADL customization point
-		 * from_string( daw::tag<T> ) for null values, and from_string( daw::tag<T>,
-		 * std::string_view )
-		 * @tparam T the result type
-		 */
 		template<typename T>
 		struct custom_from_converter_t {
 			[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {

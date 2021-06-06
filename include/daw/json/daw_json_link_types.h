@@ -738,7 +738,7 @@ namespace daw::json {
 
 			static_assert(
 			  std::is_invocable_v<ToJsonConverter, parse_to_t> or
-			    std::is_invocable_r<char const *, ToJsonConverter, char const *,
+			    std::is_invocable_r<char *, ToJsonConverter, char *,
 			                        parse_to_t>::value,
 			  "ToConverter must be callable with T or T and and OutputIterator" );
 			static constexpr daw::string_view name = Name;
