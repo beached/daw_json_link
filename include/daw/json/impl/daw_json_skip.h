@@ -371,11 +371,14 @@ namespace daw::json {
 					                      ErrorReason::InvalidClassStart, parse_state );
 					return parse_state.skip_class( );
 				} else {
+					return skip_value( parse_state );
+					/*
 					// Woah there
 					static_assert( JsonMember::expected_type == JsonParseTypes::Class,
 					               "Unknown JsonParseTypes value.  This is a programmer "
 					               "error and the preceding did not check for it" );
 					DAW_UNREACHABLE( );
+					 */
 				}
 			}
 		} // namespace json_details

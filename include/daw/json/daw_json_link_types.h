@@ -563,11 +563,13 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T, typename Constructor,
-		         JsonNullable Nullable>
+		         json_details::json_options_t Options>
 		struct json_class {
 			using i_am_a_json_type = void;
 			using wrapped_type = T;
-			using base_type = json_details::unwrap_type<T, Nullable>;
+			static constexpr JsonNullable nullable =
+			  json_details::get_bits_for<JsonNullable>( class_opts, Options );
+			using base_type = json_details::unwrap_type<T, nullable>;
 			using constructor_t =
 			  json_details::json_class_constructor_t<base_type, Constructor>;
 			static_assert( traits::not_same<void, base_type>::value,
@@ -581,15 +583,14 @@ namespace daw::json {
 
 			static constexpr daw::string_view name = Name;
 			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::Class, Nullable>;
+			  get_parse_type_v<JsonParseTypes::Class, nullable>;
 			static constexpr JsonParseTypes base_expected_type =
 			  JsonParseTypes::Class;
 			static constexpr JsonBaseParseTypes underlying_json_type =
 			  JsonBaseParseTypes::Class;
-			static constexpr JsonNullable nullable = Nullable;
 
 			template<JSONNAMETYPE NewName>
-			using with_name = json_class<NewName, T, Constructor, Nullable>;
+			using with_name = json_class<NewName, T, Constructor, Options>;
 		};
 
 		/***

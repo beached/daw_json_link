@@ -309,8 +309,14 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         typename Constructor = default_constructor<T>,
-		         JsonNullable Nullable = JsonNullable::MustExist>
+		         json_details::json_options_t Options = class_opts_def>
 		struct json_class;
+
+		namespace json_details {
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t class_opts_set =
+			  set_bits( class_opts, CurrentOptions, option, options... );
+		} // namespace json_details
 
 		/**
 		 * Link to a nullable JSON class
@@ -321,8 +327,11 @@ namespace daw::json {
 		 * default supports normal and aggregate construction
 		 */
 		template<JSONNAMETYPE Name, typename T,
-		         typename Constructor = nullable_constructor<T>>
-		using json_class_null = json_class<Name, T, Constructor, JsonNullDefault>;
+		         typename Constructor = nullable_constructor<T>,
+		         json_details::json_options_t Options = class_opts_def>
+		using json_class_null =
+		  json_class<Name, T, Constructor,
+		             json_details::class_opts_set<Options, JsonNullDefault>>;
 
 		/**
 		 * The member is a number

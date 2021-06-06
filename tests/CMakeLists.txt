@@ -631,8 +631,6 @@ target_link_libraries(utf16_string_test json_test)
 add_test(NAME utf16_string_test COMMAND utf16_string_test ./utf16_test.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full utf16_string_test)
 
-
-
 # **************************************************
 # JSON Benchmark
 # **************************************************

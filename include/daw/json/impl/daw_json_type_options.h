@@ -70,13 +70,7 @@ namespace daw::json {
 		inline constexpr auto number_opts = number_opts_t{ };
 		inline constexpr json_details::json_options_t number_opts_def =
 		  number_opts_t::default_option_flag;
-		/***
-		 * Create the parser options flag for BasicParseOption
-		 * @tparam Options Option types that satisfy the `is_option_flag`
-		 * trait.
-		 * @param policies A list of parser options to change from the defaults.
-		 * @return A json_options_t that encodes the options for the parser
-		 */
+
 		template<typename... Options>
 		constexpr json_details::json_options_t number_opt( Options... options ) {
 			return number_opts_t::options( options... );
@@ -90,13 +84,6 @@ namespace daw::json {
 		inline constexpr json_details::json_options_t bool_opts_def =
 		  bool_opts_t::default_option_flag;
 
-		/***
-		 * Create the parser options flag for BasicParseOption
-		 * @tparam Options Option types that satisfy the `is_option_flag`
-		 * trait.
-		 * @param policies A list of parser options to change from the defaults.
-		 * @return A json_options_t that encodes the options for the parser
-		 */
 		template<typename... Options>
 		constexpr json_details::json_options_t bool_opt( Options... options ) {
 			return bool_opts_t::options( options... );
@@ -116,9 +103,6 @@ namespace daw::json {
 			  EmptyStringNull::no;
 		} // namespace json_details
 
-		/***
-		 *
-		 */
 		enum class EightBitModes : unsigned {
 			DisallowHigh = false,
 			AllowFull = true
@@ -141,13 +125,7 @@ namespace daw::json {
 		inline constexpr auto string_opts = string_opts_t{ };
 		inline constexpr json_details::json_options_t string_opts_def =
 		  string_opts_t::default_option_flag;
-		/***
-		 * Create the parser options flag for BasicParseOption
-		 * @tparam Options Option types that satisfy the `is_option_flag`
-		 * trait.
-		 * @param policies A list of parser options to change from the defaults.
-		 * @return A json_options_t that encodes the options for the parser
-		 */
+
 		template<typename... Options>
 		constexpr json_details::json_options_t string_opt( Options... options ) {
 			return string_opts_t::options( options... );
@@ -179,18 +157,22 @@ namespace daw::json {
 		inline constexpr auto string_raw_opts = string_raw_opts_t{ };
 		inline constexpr json_details::json_options_t string_raw_opts_def =
 		  string_raw_opts_t::default_option_flag;
-		/***
-		 * Create the parser options flag for BasicParseOption
-		 * @tparam Options Option types that satisfy the `is_option_flag`
-		 * trait.
-		 * @param policies A list of parser options to change from the defaults.
-		 * @return A json_options_t that encodes the options for the parser
-		 */
+
 		template<typename... Options>
 		constexpr json_details::json_options_t
 		string_raw_opt( Options... options ) {
 			return string_raw_opts_t::options( options... );
 		}
 
+		// json_class
+		using class_opts_t = json_details::JsonOptionList<JsonNullable>;
+		inline constexpr auto class_opts = class_opts_t{ };
+		inline constexpr json_details::json_options_t class_opts_def =
+		  class_opts_t::default_option_flag;
+
+		template<typename... Options>
+		constexpr json_details::json_options_t class_opt( Options... options ) {
+			return class_opts_t::options( options... );
+		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
