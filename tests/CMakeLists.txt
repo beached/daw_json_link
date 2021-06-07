@@ -631,6 +631,12 @@ target_link_libraries(utf16_string_test json_test)
 add_test(NAME utf16_string_test COMMAND utf16_string_test ./utf16_test.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full utf16_string_test)
 
+add_executable(json_member_test src/json_member_test.cpp)
+target_link_libraries(json_member_test json_test)
+add_test(NAME json_member_test COMMAND json_member_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full json_member_test)
+
+
 # **************************************************
 # JSON Benchmark
 # **************************************************

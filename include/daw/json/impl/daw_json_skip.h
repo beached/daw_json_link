@@ -180,7 +180,7 @@ namespace daw::json {
 					first = count_digits( first, last );
 				}
 
-				daw_json_assert_weak( first < last, ErrorReason::InvalidNumber );
+				daw_json_assert_weak( first <= last, ErrorReason::UnexpectedEndOfData );
 
 				parse_state.first = first;
 				result.last = first;
@@ -372,13 +372,43 @@ namespace daw::json {
 					return parse_state.skip_class( );
 				} else {
 					return skip_value( parse_state );
-					/*
-					// Woah there
-					static_assert( JsonMember::expected_type == JsonParseTypes::Class,
-					               "Unknown JsonParseTypes value.  This is a programmer "
-					               "error and the preceding did not check for it" );
+				}
+			}
+
+			template<typename ParseState>
+			[[nodiscard]] inline constexpr ParseState
+			skip_literal( ParseState &parse_state ) {
+				daw_json_assert_weak( parse_state.has_more( ),
+															ErrorReason::UnexpectedEndOfData, parse_state );
+
+				// reset counter
+				parse_state.counter = 0;
+				switch( parse_state.front( ) ) {
+				case 't':
+					return skip_true( parse_state );
+				case 'f':
+					return skip_false( parse_state );
+				case 'n':
+					return skip_null( parse_state );
+				case '-':
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+					return skip_number( parse_state );
+				case '\0':
+					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
+				}
+				if constexpr( ParseState::is_unchecked_input ) {
 					DAW_UNREACHABLE( );
-					 */
+				} else {
+					daw_json_error( ErrorReason::InvalidStartOfValue, parse_state );
 				}
 			}
 		} // namespace json_details

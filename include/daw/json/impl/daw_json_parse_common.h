@@ -900,8 +900,6 @@ namespace daw::json {
 			struct unnamed_default_type_mapping_test<T, false, false, false, false,
 			                                         true> {
 				using type =
-				  // DAW  json_array_detect<no_name, vector_detect::vector_test_t<T>,
-				  // T>;
 				  json_array_detect<no_name, container_detect::container_test_t<T>, T>;
 				static_assert(
 				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,

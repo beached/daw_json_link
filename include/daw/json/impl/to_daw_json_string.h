@@ -94,15 +94,31 @@ namespace daw::json {
 			inline constexpr bool has_to_string_v = has_to_string<T>::value;
 
 		} // namespace json_details::to_strings
-
 		namespace json_details {
+			template<typename T>
+			using from_string_test = decltype( from_string(
+			  std::declval<daw::tag_t<T>>( ), std::declval<std::string_view>( ) ) );
+
+			template<typename T>
+			inline constexpr bool has_from_string_v =
+			  daw::is_detected_v<from_string_test, T>;
+
 			template<typename T, typename U>
 			using has_lshift_test = decltype( operator<<(
+			  std::declval<T &>( ), std::declval<U const &>( ) ) );
+
+			template<typename T, typename U>
+			using has_rshift_test = decltype( operator>>(
 			  std::declval<T &>( ), std::declval<U const &>( ) ) );
 
 			template<typename T>
 			inline constexpr bool has_ostream_op_v =
 			  daw::is_detected_v<has_lshift_test, std::stringstream, T>;
+
+			template<typename T>
+			inline constexpr bool has_istream_op_v =
+			  daw::is_detected_v<has_rshift_test, std::stringstream, T>;
+
 		} // namespace json_details
 
 		/***
@@ -113,7 +129,7 @@ namespace daw::json {
 		 * @tparam T type of value to convert to a string
 		 */
 		template<typename T>
-		struct custom_to_converter_t {
+		struct default_to_json_converter_t {
 			template<typename U>
 			[[nodiscard]] static inline auto use_stream( U const &v ) {
 				std::stringstream ss{ };
@@ -130,6 +146,10 @@ namespace daw::json {
 					return to_string( DAW_FWD( value ) );
 				} else if constexpr( json_details::has_ostream_op_v<U> ) {
 					return use_stream( value );
+				} else if constexpr( std::is_convertible_v<U, std::string_view> ) {
+					return static_cast<std::string_view>( value );
+				} else if constexpr( std::is_convertible_v<U, std::string> ) {
+					return static_cast<std::string>( value );
 				} else if constexpr( json_details::can_deref_v<U> ) {
 					static_assert( json_details::has_op_bool_v<U>,
 					               "default_to_converter cannot work with type" );
@@ -150,20 +170,42 @@ namespace daw::json {
 							  daw::remove_cvref_t<decltype( to_string( *value ) )>;
 							return result_t{ "null" };
 						}
-					}
-				} else {
-					if( value ) {
-						return use_stream( *value );
-					} else {
+					} else if constexpr( std::is_convertible_v<deref_t,
+					                                           std::string_view> ) {
+						if( value ) {
+							return static_cast<std::string_view>( value );
+						}
+						return std::string_view{ "null" };
+					} else if constexpr( std::is_convertible_v<deref_t, std::string> ) {
+						if( value ) {
+							return static_cast<std::string>( value );
+						}
 						return std::string( "null" );
+					} else {
+						if( value ) {
+							return use_stream( *value );
+						} else {
+							return std::string( "null" );
+						}
 					}
 				}
 			}
 		};
 
+		namespace from_json_conv_details {
+			template<typename T>
+			[[nodiscard]] inline auto use_stream( std::string_view sv ) {
+				std::stringstream ss{ };
+				ss << sv;
+				T result;
+				ss >> result;
+				return result;
+			}
+		} // namespace from_json_conv_details
+
 		template<typename T>
-		struct custom_from_converter_t {
-			[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) {
+		struct default_from_json_converter_t {
+			[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) const {
 				if constexpr( std::disjunction<
 				                std::is_same<T, std::string_view>,
 				                std::is_same<T, std::optional<std::string_view>>>::
@@ -177,15 +219,26 @@ namespace daw::json {
 			}
 
 			[[nodiscard]] inline constexpr decltype( auto )
-			operator( )( std::string_view sv ) {
+			operator( )( std::string_view sv ) const {
 				if constexpr( std::disjunction<
 				                std::is_same<T, std::string_view>,
 				                std::is_same<T, std::optional<std::string_view>>>::
 				                value ) {
 					return sv;
-				} else {
-					// Use ADL customization point
+				} else if constexpr( json_details::has_from_string_v<T> ) {
 					return from_string( daw::tag<T>, sv );
+				} else if constexpr( std::is_convertible_v<std::string_view, T> ) {
+					return static_cast<T>( sv );
+				} else if constexpr( std::is_convertible_v<std::string, T> ) {
+					return static_cast<T>( static_cast<std::string>( sv ) );
+				} else {
+					static_assert( json_details::has_istream_op_v<T>,
+					               "Unsupported type in default to converter.  Must "
+					               "supply a custom one" );
+					static_assert( std::is_default_constructible_v<T>,
+					               "Unsupported type in default to converter.  Must "
+					               "supply a custom one" );
+					return from_json_conv_details::use_stream<T>( sv );
 				}
 			}
 		};

@@ -87,7 +87,7 @@ namespace daw::json {
 		/***
 		 * Custom JSON types can be Strings(default), unquoted Literals, or a mix
 		 */
-		enum class CustomJsonTypes { String, Literal, Either };
+		enum class CustomJsonTypes { String, Literal, Any };
 
 
 		template<JsonParseTypes ParseType, JsonNullable Nullable>

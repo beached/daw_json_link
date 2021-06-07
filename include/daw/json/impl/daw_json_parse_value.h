@@ -124,7 +124,7 @@ namespace daw::json {
 						                      parse_state );
 					}
 				}
-				int_type const sign = static_cast<int_type>(
+				auto const sign = static_cast<int_type>(
 				  parse_policy_details::validate_signed_first( parse_state ) );
 
 				if constexpr( KnownBounds ) {
@@ -486,8 +486,26 @@ namespace daw::json {
 				      ( *std::prev( parse_state.first ) == '"' ) ) ) {
 					parse_state.first = std::prev( parse_state.first );
 				}
-				auto const str = skip_value( parse_state );
-
+				auto const str = [&] {
+					if constexpr( JsonMember::custom_json_type ==
+					              CustomJsonTypes::String ) {
+						return skip_string( parse_state );
+					} else if constexpr( JsonMember::custom_json_type ==
+					                     CustomJsonTypes::Literal ) {
+						return skip_literal( parse_state );
+					} else {
+						if constexpr( ParseState::is_unchecked_input ) {
+							return skip_value( parse_state );
+						} else {
+							auto result = skip_value( parse_state );
+							daw_json_assert_weak(
+							  result.has_more( ) and
+							    not( result.front( ) == '[' or result.front( ) == '{' ),
+							  ErrorReason::InvalidStartOfValue, result );
+							return result;
+						}
+					}
+				}( );
 				using constructor_t = typename JsonMember::from_converter_t;
 				return construct_value(
 				  template_args<json_result<JsonMember>, constructor_t>, parse_state,

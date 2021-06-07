@@ -211,9 +211,9 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T,
-		         typename FromJsonConverter = custom_from_converter_t<T>,
-		         typename ToJsonConverter = custom_to_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Either,
+		         typename FromJsonConverter = default_from_json_converter_t<T>,
+		         typename ToJsonConverter = default_to_json_converter_t<T>,
+		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Any,
 		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_custom;
 
@@ -227,9 +227,9 @@ namespace daw::json {
 		 * @tparam CustomJsonType JSON type value is encoded as literal/string
 		 */
 		template<JSONNAMETYPE Name, typename T,
-		         typename FromConverter = custom_from_converter_t<T>,
-		         typename ToConverter = custom_to_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Either>
+		         typename FromConverter = default_from_json_converter_t<T>,
+		         typename ToConverter = default_to_json_converter_t<T>,
+		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Any>
 		using json_custom_null = json_custom<Name, T, FromConverter, ToConverter,
 		                                     CustomJsonType, JsonNullDefault>;
 
@@ -375,5 +375,11 @@ namespace daw::json {
 		  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements,
 		                      Constructor, JsonNullDefault>;
 
+		/***
+		 * This allows naming of well known types and using them to map members
+		 */
+		template<JSONNAMETYPE Name, typename T>
+		using json_member = typename json_details::unnamed_default_type_mapping<
+		  T>::template with_name<Name>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
