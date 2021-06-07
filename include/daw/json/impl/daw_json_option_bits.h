@@ -12,6 +12,7 @@
 #include <daw/daw_attributes.h>
 #include <daw/daw_traits.h>
 
+#include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <utility>

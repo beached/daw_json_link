@@ -187,8 +187,11 @@ namespace daw::json {
 		 *  @tparam Constructor A callable used to make Container, default will use
 		 * the Containers constructor.  Both normal and aggregate are supported
 		 */
-		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
-		         typename JsonKeyType,
+		template<JSONNAMETYPE Name, typename Container,
+		         typename JsonValueType = json_details::
+		           unnamed_default_type_mapping<typename Container::mapped_type>,
+		         typename JsonKeyType = json_details::unnamed_default_type_mapping<
+		           typename Container::key_type>,
 		         typename Constructor = nullable_constructor<Container>>
 		using json_key_value_array_null =
 		  json_key_value_array<Name, Container, JsonValueType, JsonKeyType,

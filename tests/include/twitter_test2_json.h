@@ -474,7 +474,7 @@ namespace daw::json {
 		  json_string_raw<"media_url_https", std::string_view>,
 		  json_string_raw<"url", std::string_view>,
 		  json_string_raw<"display_url", std::string_view>,
-		  json_string_raw<"expanded_url", std::string_view, std::string_view>,
+		  json_string_raw<"expanded_url", std::string_view>,
 		  json_string_raw<"type", std::string_view>,
 		  json_class<"sizes", daw::twitter2::sizes_t>>;
 #else

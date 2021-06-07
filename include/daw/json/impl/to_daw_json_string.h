@@ -96,13 +96,13 @@ namespace daw::json {
 		} // namespace json_details::to_strings
 
 		namespace json_details {
-			template<typename T>
-			using has_ostream_op_test =
-			  decltype( std::declval<std::stringstream &>( ) << std::declval<T>( ) );
+			template<typename T, typename U>
+			using has_lshift_test = decltype( operator<<(
+			  std::declval<T &>( ), std::declval<U const &>( ) ) );
 
 			template<typename T>
 			inline constexpr bool has_ostream_op_v =
-			  daw::is_detected_v<has_op_bool_test, T>;
+			  daw::is_detected_v<has_lshift_test, std::stringstream, T>;
 		} // namespace json_details
 
 		/***
@@ -114,70 +114,49 @@ namespace daw::json {
 		 */
 		template<typename T>
 		struct custom_to_converter_t {
-			template<typename U,
-			         std::enable_if_t<
-			           std::disjunction_v<json_details::is_string_view_like<U>,
-			                              json_details::to_strings::has_to_string<U>>,
-			           std::nullptr_t> = nullptr>
-			[[nodiscard]] inline constexpr auto operator( )( U const &value ) const {
-				if constexpr( json_details::is_string_view_like_v<
-				                daw::remove_cvref_t<U>> ) {
-					return std::string_view( std::data( value ), std::size( value ) );
-				} else {
-					using json_details::to_strings::to_string;
-					return to_string( DAW_FWD( value ) );
-				}
-			}
-
-			template<typename U,
-			         std::enable_if_t<(json_details::is_string_view_like_v<
-			                             daw::remove_cvref_t<U>> and
-			                           not json_details::to_strings::has_to_string_v<
-			                             daw::remove_cvref_t<U>>),
-			                          std::nullptr_t> = nullptr>
-			inline constexpr std::string_view
-			operator( )( std::optional<U> const &v ) {
-				if( v ) {
-					return { std::data( v ), std::size( v ) };
-				}
-				return std::string_view( "null" );
-			}
-
-			template<typename U,
-			         std::enable_if_t<not std::disjunction_v<
-			                            json_details::is_string_view_like<U>,
-			                            json_details::to_strings::has_to_string<U>>,
-			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] inline std::string operator( )( U const &value ) const {
-				static_assert(
-				  json_details::has_ostream_op_v<std::remove_reference_t<U>>,
-				  "Default custom_to_converter_t requires either to_string( T "
-				  ") or "
-				  "operator<<( ostream &, T )" );
-
+			template<typename U>
+			[[nodiscard]] static inline auto use_stream( U const &v ) {
 				std::stringstream ss{ };
-				ss << value;
+				ss << v;
 				return DAW_MOVE( ss ).str( );
 			}
 
-			template<typename U,
-			         std::enable_if_t<not std::disjunction_v<
-			                            json_details::is_string_view_like<U>,
-			                            json_details::to_strings::has_to_string<U>>,
-			                          std::nullptr_t> = nullptr>
-			[[nodiscard]] inline std::string
-			operator( )( std::optional<U> const &value ) const {
-				static_assert(
-				  json_details::has_ostream_op_v<std::remove_reference_t<U>>,
-				  "Default custom_to_converter_t requires either to_string( T "
-				  ") or "
-				  "operator<<( ostream &, T )" );
-				if( value ) {
-					std::stringstream ss{ };
-					ss << value;
-					return DAW_MOVE( ss ).str( );
+			template<typename U>
+			[[nodiscard]] inline constexpr auto operator( )( U const &value ) const {
+				if constexpr( json_details::is_string_view_like_v<U> ) {
+					return std::string_view( std::data( value ), std::size( value ) );
+				} else if constexpr( json_details::to_strings::has_to_string_v<U> ) {
+					using json_details::to_strings::to_string;
+					return to_string( DAW_FWD( value ) );
+				} else if constexpr( json_details::has_ostream_op_v<U> ) {
+					return use_stream( value );
+				} else if constexpr( json_details::can_deref_v<U> ) {
+					static_assert( json_details::has_op_bool_v<U>,
+					               "default_to_converter cannot work with type" );
+					using deref_t = daw::remove_cvref_t<decltype( *value )>;
+					if constexpr( json_details::is_string_view_like_v<deref_t> ) {
+						if( value ) {
+							auto const &v = *value;
+							return std::string_view( std::data( v ), std::size( v ) );
+						}
+						return std::string_view( "null", 4 );
+					} else if constexpr( json_details::to_strings::has_to_string_v<
+					                       deref_t> ) {
+						if( value ) {
+							using json_details::to_strings::to_string;
+							return to_string( *value );
+						} else {
+							using result_t =
+							  daw::remove_cvref_t<decltype( to_string( *value ) )>;
+							return result_t{ "null" };
+						}
+					}
 				} else {
-					return std::string( "null" );
+					if( value ) {
+						return use_stream( *value );
+					} else {
+						return std::string( "null" );
+					}
 				}
 			}
 		};
