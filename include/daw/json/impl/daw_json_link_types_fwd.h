@@ -375,11 +375,22 @@ namespace daw::json {
 		  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements,
 		                      Constructor, JsonNullDefault>;
 
+		namespace json_details {
+			template<typename T>
+			struct ensure_mapped {
+				static_assert( is_a_json_type_v<T>,
+				               "The supplied type does not have a json_data_contract" );
+				using type = T;
+			};
+
+			template<typename T>
+			using ensure_mapped_t = typename ensure_mapped<T>::type;
+		} // namespace json_details
 		/***
 		 * This allows naming of well known types and using them to map members
 		 */
 		template<JSONNAMETYPE Name, typename T>
-		using json_member = typename json_details::unnamed_default_type_mapping<
-		  T>::template with_name<Name>;
+		using json_member = typename json_details::ensure_mapped_t<
+		  json_details::unnamed_default_type_mapping<T>>::template with_name<Name>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
