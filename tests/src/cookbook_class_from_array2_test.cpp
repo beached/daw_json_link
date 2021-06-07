@@ -37,7 +37,7 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_class_from_array2::Point> {
 		using type =
 		  json_ordered_member_list<double,
-		                           ordered_json_member<5, json_number<no_name>>>;
+		                           ordered_json_member<5, json_link<no_name, double>>>;
 
 		static inline auto
 		to_json_data( daw::cookbook_class_from_array2::Point const &p ) {

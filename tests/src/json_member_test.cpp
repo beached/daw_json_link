@@ -27,8 +27,8 @@ namespace daw::json {
 		static constexpr char const b[] = "b";
 		static constexpr char const c[] = "c";
 		using type = json_member_list<
-		  json_member<a, int>, json_member<b, std::string>,
-		  json_member<c, std::vector<std::map<std::string, double>>>>;
+		  json_link<a, int>, json_link<b, std::string>,
+		  json_link<c, std::vector<std::map<std::string, double>>>>;
 
 		static constexpr auto to_json_data( Foo const &f ) {
 			return std::forward_as_tuple( f.a, f.b, f.c );

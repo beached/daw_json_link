@@ -390,7 +390,7 @@ namespace daw::json {
 		 * This allows naming of well known types and using them to map members
 		 */
 		template<JSONNAMETYPE Name, typename T>
-		using json_member = typename json_details::ensure_mapped_t<
+		using json_link = typename json_details::ensure_mapped_t<
 		  json_details::unnamed_default_type_mapping<T>>::template with_name<Name>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

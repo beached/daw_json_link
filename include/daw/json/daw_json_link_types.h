@@ -93,6 +93,7 @@ namespace daw::json {
 		template<typename JsonMember>
 		struct json_class_map {
 			using i_am_a_json_member_list = void;
+			using i_am_a_json_map_alias = void;
 			using json_member =
 			  json_details::unnamed_default_type_mapping<JsonMember>;
 			static_assert( json_details::is_a_json_type_v<json_member>,
@@ -124,7 +125,7 @@ namespace daw::json {
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
 				               "Unexpected type" );
-				// Using construct_value here as the result of alised type is used to
+				// Using construct_value here as the result of aliased type is used to
 				// construct our result and the Constructor maybe different.  This
 				// happens with BigInt and string.
 				using Constructor = typename JsonClass::constructor_t;
@@ -346,9 +347,6 @@ namespace daw::json {
 		 * @tparam Constructor Callable used to construct result
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
-		/*		template<JSONNAMETYPE Name, typename T, LiteralAsStringOpt
-		   LiteralAsString, typename Constructor, JsonRangeCheck RangeCheck,
-		             JsonNullable Nullable>*/
 		template<JSONNAMETYPE Name, typename T,
 		         json_details::json_options_t Options, typename Constructor>
 		struct json_number {

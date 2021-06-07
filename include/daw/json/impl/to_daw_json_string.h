@@ -910,7 +910,7 @@ namespace daw::json {
 				static_assert(
 				  std::is_convertible<parse_to_t,
 				                      typename JsonMember::parse_to_t>::value,
-				  "value must be convertible to specified type in class contract" );
+				  "Value must be convertible to specialized type in json_data_contract" );
 
 				constexpr EightBitModes eight_bit_mode = JsonMember::eight_bit_mode;
 				*it++ = '"';
@@ -1027,6 +1027,9 @@ namespace daw::json {
 				if constexpr( has_json_to_json_data_v<parse_to_t> ) {
 					return json_data_contract_trait_t<parse_to_t>::serialize(
 					  it, json_data_contract<parse_to_t>::to_json_data( value ), value );
+				} else if constexpr( is_json_map_alias_v<parse_to_t> ) {
+					return json_data_contract_trait_t<parse_to_t>::serialize( it, value,
+					                                                          value );
 				} else {
 					static_assert( is_submember_tagged_variant_v<parse_to_t> );
 					return json_data_contract_trait_t<parse_to_t>::serialize( it, value );
