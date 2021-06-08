@@ -95,7 +95,7 @@ namespace daw::json {
 			using i_am_a_json_member_list = void;
 			using i_am_a_json_map_alias = void;
 			using json_member =
-			  json_details::unnamed_default_type_mapping<JsonMember>;
+			  json_details::json_deduced_type<JsonMember>;
 			static_assert( json_details::is_a_json_type_v<json_member>,
 			               "Only JSON Link mapping types can appear in a "
 			               "json_class_map(e.g. json_number, json_string...)" );
@@ -172,11 +172,11 @@ namespace daw::json {
 			using i_am_a_json_type = void;
 			static constexpr std::size_t member_index = Index;
 			static_assert(
-			  json_details::has_unnamed_default_type_mapping<JsonMember>::value,
+			  json_details::has_json_deduced_type<JsonMember>::value,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using json_member =
-			  json_details::unnamed_default_type_mapping<JsonMember>;
+			  json_details::json_deduced_type<JsonMember>;
 			using parse_to_t = typename json_member::parse_to_t;
 		};
 
@@ -184,7 +184,7 @@ namespace daw::json {
 			template<typename JsonMember>
 			using ordered_member_wrapper =
 			  std::conditional_t<is_an_ordered_member_v<JsonMember>, JsonMember,
-			                     unnamed_default_type_mapping<JsonMember>>;
+			                     json_deduced_type<JsonMember>>;
 		} // namespace json_details
 
 		/***
@@ -232,7 +232,7 @@ namespace daw::json {
 			using result_type = json_details::json_class_parse_result_t<
 			  Constructor,
 			  json_details::ordered_member_subtype_t<
-			    json_details::unnamed_default_type_mapping<JsonMembers>>...>;
+			    json_details::json_deduced_type<JsonMembers>>...>;
 			/**
 			 *
 			 * Parse JSON data and construct a C++ class.  This is used by parse_value
@@ -300,7 +300,7 @@ namespace daw::json {
 
 			template<typename Constructor>
 			using result_type = json_details::json_class_parse_result_t<
-			  Constructor, json_details::unnamed_default_type_mapping<
+			  Constructor, json_details::json_deduced_type<
 			                 daw::traits::first_type<JsonClasses...>>>;
 			/**
 			 *
@@ -603,27 +603,27 @@ namespace daw::json {
 			  sizeof...( JsonElements ) <= 5U,
 			  "There can be at most 5 items, one for each JsonBaseParseTypes" );
 			static_assert(
-			  std::conjunction<json_details::has_unnamed_default_type_mapping<
+			  std::conjunction<json_details::has_json_deduced_type<
 			    JsonElements>...>::value,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using element_map_t =
-			  fwd_pack<json_details::unnamed_default_type_mapping<JsonElements>...>;
+			  fwd_pack<json_details::json_deduced_type<JsonElements>...>;
 			static constexpr std::size_t base_map[5] = {
 			  json_details::find_json_element<JsonBaseParseTypes::Number>(
-			    { json_details::unnamed_default_type_mapping<
+			    { json_details::json_deduced_type<
 			      JsonElements>::underlying_json_type... } ),
 			  json_details::find_json_element<JsonBaseParseTypes::Bool>(
-			    { json_details::unnamed_default_type_mapping<
+			    { json_details::json_deduced_type<
 			      JsonElements>::underlying_json_type... } ),
 			  json_details::find_json_element<JsonBaseParseTypes::String>(
-			    { json_details::unnamed_default_type_mapping<
+			    { json_details::json_deduced_type<
 			      JsonElements>::underlying_json_type... } ),
 			  json_details::find_json_element<JsonBaseParseTypes::Class>(
-			    { json_details::unnamed_default_type_mapping<
+			    { json_details::json_deduced_type<
 			      JsonElements>::underlying_json_type... } ),
 			  json_details::find_json_element<JsonBaseParseTypes::Array>(
-			    { json_details::unnamed_default_type_mapping<
+			    { json_details::json_deduced_type<
 			      JsonElements>::underlying_json_type... } ) };
 		};
 
@@ -778,7 +778,7 @@ namespace daw::json {
 				  "Missing specialization of daw::json::json_data_contract for class "
 				  "mapping or specialization of daw::json::json_link_basic_type_map" );
 				using json_element_t =
-				  json_details::unnamed_default_type_mapping<JsonElement>;
+				  json_details::json_deduced_type<JsonElement>;
 				static_assert( traits::not_same_v<json_element_t, void>,
 				               "Unknown JsonElement type." );
 				static_assert( json_details::ensure_json_type<json_element_t>::value,
@@ -827,7 +827,7 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using json_element_t =
-			  json_details::unnamed_default_type_mapping<JsonElement>;
+			  json_details::json_deduced_type<JsonElement>;
 			static_assert( traits::not_same_v<json_element_t, void>,
 			               "Unknown JsonElement type." );
 			static_assert( json_details::is_a_json_type_v<json_element_t>,
@@ -888,7 +888,7 @@ namespace daw::json {
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 
 			using json_element_t =
-			  json_details::unnamed_default_type_mapping<JsonValueType>;
+			  json_details::json_deduced_type<JsonValueType>;
 
 			static_assert( traits::not_same_v<json_element_t, void>,
 			               "Unknown JsonValueType type." );
@@ -900,7 +900,7 @@ namespace daw::json {
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 
 			using json_key_t =
-			  json_details::unnamed_default_type_mapping<JsonKeyType>;
+			  json_details::json_deduced_type<JsonKeyType>;
 
 			static_assert( traits::not_same_v<json_key_t, void>,
 			               "Unknown JsonKeyType type." );
@@ -949,7 +949,7 @@ namespace daw::json {
 			using parse_to_t = std::invoke_result_t<Constructor>;
 
 			using json_key_t = json_details::copy_name_when_noname<
-			  json_details::unnamed_default_type_mapping<JsonKeyType>,
+			  json_details::json_deduced_type<JsonKeyType>,
 			  json_details::default_key_name>;
 
 			static_assert( traits::not_same_v<json_key_t, void>,
@@ -958,7 +958,7 @@ namespace daw::json {
 			                 daw::string_view( no_name ),
 			               "Must supply a valid key member name" );
 			using json_value_t = json_details::copy_name_when_noname<
-			  json_details::unnamed_default_type_mapping<JsonValueType>,
+			  json_details::json_deduced_type<JsonValueType>,
 			  json_details::default_value_name>;
 
 			using json_class_t =
@@ -1058,5 +1058,12 @@ namespace daw::json {
 				return result;
 			}
 		};
+
+		/***
+		 * This allows naming of well known types and using them to map members
+		 */
+		template<JSONNAMETYPE Name, typename T>
+		using json_link = typename json_details::ensure_mapped_t<
+		  json_details::json_deduced_type<T>>::template with_name<Name>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

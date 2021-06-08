@@ -63,7 +63,7 @@ namespace daw::json {
 
 		public:
 			using element_type =
-			  json_details::unnamed_default_type_mapping<JsonElement>;
+			  json_details::json_deduced_type<JsonElement>;
 			static_assert( traits::not_same<element_type, void>::value,
 			               "Unknown JsonElement type." );
 			using value_type = typename element_type::parse_to_t;

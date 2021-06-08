@@ -69,7 +69,7 @@ namespace daw::json {
 				               json_details::auto_detect_array_element>::value;
 				using JsonMember =
 				  std::conditional_t<is_auto_detect_v,
-				                     json_details::unnamed_default_type_mapping<v_type>,
+				                     json_details::json_deduced_type<v_type>,
 				                     JsonElement>;
 
 				static_assert(

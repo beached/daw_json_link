@@ -23,7 +23,7 @@ namespace daw::json {
 		 */
 		template<typename Value,
 		         typename JsonClass =
-		           typename json_details::unnamed_default_type_mapping<Value>,
+		           typename json_details::json_deduced_type<Value>,
 		         typename OutputIterator>
 		[[maybe_unused]] constexpr OutputIterator to_json( Value const &value,
 		                                                   OutputIterator out_it );
@@ -40,7 +40,7 @@ namespace daw::json {
 		 */
 		template<typename Result = std::string, typename Value,
 		         typename JsonClass =
-		           typename json_details::unnamed_default_type_mapping<Value>>
+		           typename json_details::json_deduced_type<Value>>
 		[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value );
 
 		namespace json_details {

@@ -174,9 +174,12 @@ namespace daw::json {
 			  daw::is_detected<has_deallocate_test, Allocator>>::value;
 
 			template<typename T>
+			using has_json_data_contract_trait =
+			  not_trait<std::is_same<missing_json_data_contract_for<T>,
+			                         json_data_contract_trait_t<T>>>;
+			template<typename T>
 			inline constexpr bool has_json_data_contract_trait_v =
-			  not std::is_same_v<missing_json_data_contract_for<T>,
-			                     json_data_contract_trait_t<T>>;
+			  has_json_data_contract_trait<T>::value;
 
 			template<typename Container, typename Value>
 			using detect_push_back = decltype( std::declval<Container &>( ).push_back(
@@ -576,7 +579,7 @@ namespace daw::json {
 		} // namespace json_details
 
 		template<typename, typename = void>
-		struct json_link_basic_type_map {
+		struct json_deduced_type_map {
 			static constexpr bool is_null = false;
 			static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
 
@@ -584,7 +587,7 @@ namespace daw::json {
 		};
 
 		template<typename JsonType>
-		struct json_link_basic_type_map<
+		struct json_deduced_type_map<
 		  JsonType, std::enable_if_t<json_details::is_a_json_type_v<JsonType>>> {
 			static constexpr bool is_null = false;
 			static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
@@ -594,7 +597,7 @@ namespace daw::json {
 		};
 
 		template<typename T>
-		struct json_link_basic_type_map<
+		struct json_deduced_type_map<
 		  T, std::enable_if_t<json_details::has_json_data_contract_trait_v<T>>> {
 			static constexpr bool is_null = false;
 			using type = typename json_data_contract<T>::type;
@@ -604,7 +607,7 @@ namespace daw::json {
 		};
 
 		template<>
-		struct json_link_basic_type_map<daw::string_view> {
+		struct json_deduced_type_map<daw::string_view> {
 			static constexpr bool is_null = false;
 			static constexpr JsonParseTypes parse_type = JsonParseTypes::StringRaw;
 
@@ -612,7 +615,7 @@ namespace daw::json {
 		};
 
 		template<>
-		struct json_link_basic_type_map<std::string_view> {
+		struct json_deduced_type_map<std::string_view> {
 			static constexpr bool is_null = false;
 			static constexpr JsonParseTypes parse_type = JsonParseTypes::StringRaw;
 
@@ -620,7 +623,7 @@ namespace daw::json {
 		};
 
 		template<>
-		struct json_link_basic_type_map<std::string> {
+		struct json_deduced_type_map<std::string> {
 			static constexpr bool is_null = false;
 			static constexpr JsonParseTypes parse_type =
 			  JsonParseTypes::StringEscaped;
@@ -629,7 +632,7 @@ namespace daw::json {
 		};
 
 		template<>
-		struct json_link_basic_type_map<bool> {
+		struct json_deduced_type_map<bool> {
 			static constexpr bool is_null = false;
 			static constexpr JsonParseTypes parse_type = JsonParseTypes::Bool;
 
@@ -640,8 +643,7 @@ namespace daw::json {
 		// bool https://bugs.llvm.org/show_bug.cgi?id=16077
 #if defined( _LIBCPP_VERSION )
 		template<>
-		struct json_link_basic_type_map<
-		  typename std::vector<bool>::const_reference> {
+		struct json_deduced_type_map<typename std::vector<bool>::const_reference> {
 			static constexpr bool is_null = false;
 			static constexpr JsonParseTypes parse_type = JsonParseTypes::Bool;
 
@@ -650,7 +652,7 @@ namespace daw::json {
 #endif
 
 		template<typename Integer>
-		struct json_link_basic_type_map<
+		struct json_deduced_type_map<
 		  Integer, std::enable_if_t<(
 		             not json_details::has_json_data_contract_trait_v<Integer> and
 		             daw::is_integral_v<Integer> )>> {
@@ -663,7 +665,7 @@ namespace daw::json {
 		};
 
 		template<typename Enum>
-		struct json_link_basic_type_map<
+		struct json_deduced_type_map<
 		  Enum, std::enable_if_t<(
 		          not json_details::has_json_data_contract_trait_v<Enum> and
 		          std::is_enum_v<Enum> )>> {
@@ -676,7 +678,7 @@ namespace daw::json {
 		};
 
 		template<typename FloatingPoint>
-		struct json_link_basic_type_map<
+		struct json_deduced_type_map<
 		  FloatingPoint,
 		  std::enable_if_t<(
 		    not json_details::has_json_data_contract_trait_v<FloatingPoint> and
@@ -712,6 +714,10 @@ namespace daw::json {
 				template<typename AssociativeContainer>
 				using container_mapped_type =
 				  typename AssociativeContainer::mapped_type;
+
+				template<typename T>
+				using is_value_type_char = std::is_same<char, container_value_type<T>>;
+
 			} // namespace container_detect
 			template<typename T>
 			using is_container = std::conjunction<
@@ -722,13 +728,25 @@ namespace daw::json {
 			template<typename Container>
 			inline constexpr bool is_container_v = is_container<Container>::value;
 
+			template<typename String>
+			using is_string =
+			  std::conjunction<is_container<String>,
+			                   container_detect::is_value_type_char<String>>;
+
+			template<typename String>
+			inline constexpr bool is_string_v = is_string<String>::value;
+
 			template<typename AssociativeContainer>
-			inline constexpr bool is_associative_container_v = std::conjunction_v<
+			using is_associative_container = std::conjunction<
 			  is_container<AssociativeContainer>,
 			  daw::is_detected<container_detect::container_key_type,
 			                   AssociativeContainer>,
 			  daw::is_detected<container_detect::container_mapped_type,
 			                   AssociativeContainer>>;
+
+			template<typename AssociativeContainer>
+			inline constexpr bool is_associative_container_v =
+			  is_associative_container<AssociativeContainer>::value;
 
 			template<typename AssociativeContainer,
 			         typename /*K*/ = typename AssociativeContainer::key_type,
@@ -739,12 +757,13 @@ namespace daw::json {
 		} // namespace json_details
 
 		template<typename AssociativeContainer>
-		struct json_link_basic_type_map<
+		struct json_deduced_type_map<
 		  AssociativeContainer,
-		  std::enable_if_t<(
-		    not json_details::has_json_data_contract_trait_v<
-		      AssociativeContainer> and
-		    json_details::is_associative_container_v<AssociativeContainer> )>> {
+		  std::enable_if_t<std::conjunction_v<
+		    not_trait<
+		      json_details::has_json_data_contract_trait<AssociativeContainer>>,
+		    json_details::is_associative_container<AssociativeContainer>>>> {
+
 			static constexpr bool is_null = false;
 			using key = typename AssociativeContainer::key_type;
 			using value = typename AssociativeContainer::mapped_type;
@@ -753,22 +772,60 @@ namespace daw::json {
 			static constexpr bool type_map_found = true;
 		};
 
-		// Todo SFINAE on the mapping of T
-		template<typename T>
-		struct json_link_basic_type_map<
-		  std::optional<T>,
-		  std::enable_if_t<not json_details::has_json_data_contract_trait_v<T>>> {
-			static constexpr bool is_null = true;
-			using type = json_link_basic_type_map<T>;
-			static constexpr JsonParseTypes parse_type = type::parse_type;
+		template<typename Container>
+		struct json_deduced_type_map<
+		  Container,
+		  std::enable_if_t<std::conjunction_v<
+		    not_trait<json_details::has_json_data_contract_trait<Container>>,
+		    not_trait<json_details::is_associative_container<Container>>,
+		    json_details::is_container<Container>,
+		    not_trait<json_details::is_string<Container>>>>> {
+
+			static constexpr bool is_null = false;
+			using value = typename Container::value_type;
+			static constexpr JsonParseTypes parse_type = JsonParseTypes::Array;
 
 			static constexpr bool type_map_found = true;
 		};
 
+		// Todo SFINAE on the mapping of T
+		template<typename T>
+		struct json_deduced_type_map<
+		  std::optional<T>,
+		  std::enable_if_t<not json_details::has_json_data_contract_trait_v<T>>> {
+			static constexpr bool is_null = true;
+			using type = json_deduced_type_map<T>;
+			static constexpr JsonParseTypes parse_type = type::parse_type;
+
+			static constexpr bool type_map_found = true;
+		};
 		namespace json_details {
+
+			/** Link to a JSON array that has been detected
+			 * @tparam Name name of JSON member to link to
+			 * @tparam Container type of C++ container being constructed(e.g.
+			 * vector<int>)
+			 * @tparam JsonElement Json type being parsed e.g. json_number,
+			 * json_string...
+			 * @tparam Constructor A callable used to make Container,
+			 * default will use the Containers constructor.  Both normal and aggregate
+			 * are supported
+			 * @tparam Nullable Can the member be missing or have a null value
+			 */
+			template<JSONNAMETYPE Name, typename JsonElement, typename Container,
+			         typename Constructor = default_constructor<Container>,
+			         JsonNullable Nullable = JsonNullable::MustExist>
+			struct json_array_detect;
+
+			template<JSONNAMETYPE Name, typename JsonElement, typename Container,
+			         typename Constructor = default_constructor<Container>>
+			using json_array_detect_null =
+			  json_array_detect<Name, JsonElement, Container, Constructor,
+			                    JsonNullDefault>;
+
 			template<typename T>
-			inline constexpr bool has_basic_type_map_v =
-			  json_link_basic_type_map<T>::type_map_found;
+			inline constexpr bool has_deduced_type_mapping_v =
+			  json_deduced_type_map<T>::type_map_found;
 
 			template<typename Mapped, bool Found = true>
 			struct json_link_quick_map_type : std::bool_constant<Found> {
@@ -777,8 +834,8 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr auto json_link_quick_map( ) {
-				if constexpr( has_basic_type_map_v<T> ) {
-					using mapped_type_t = json_link_basic_type_map<T>;
+				if constexpr( has_deduced_type_mapping_v<T> ) {
+					using mapped_type_t = json_deduced_type_map<T>;
 					constexpr auto mapped_type = mapped_type_t::parse_type;
 					constexpr bool is_null = mapped_type_t::is_null;
 					if constexpr( mapped_type == JsonParseTypes::Unknown ) {
@@ -834,6 +891,17 @@ namespace daw::json {
 							return json_link_quick_map_type<
 							  json_key_value<no_name, T, v_t, k_t>>{ };
 						}
+					} else if constexpr( mapped_type == JsonParseTypes::Array ) {
+						if constexpr( is_null ) {
+							using b_t = typename mapped_type_t::base_type;
+							using v_t = typename b_t::value;
+							return json_link_quick_map_type<
+							  json_array_detect_null<no_name, v_t, T>>{ };
+						} else {
+							using v_t = typename mapped_type_t::value;
+							return json_link_quick_map_type<
+							  json_array_detect<no_name, v_t, T>>{ };
+						}
 					} else {
 						return json_link_quick_map_type<void, false>{ };
 					}
@@ -841,12 +909,16 @@ namespace daw::json {
 					return json_link_quick_map_type<void, false>{ };
 				}
 			}
+
 			/***
 			 * Check if the current type has a quick map specialized for it
 			 */
 			template<typename T>
+			using has_json_link_quick_map = decltype( json_link_quick_map<T>( ) );
+
+			template<typename T>
 			inline constexpr bool has_json_link_quick_map_v =
-			  decltype( json_link_quick_map<T>( ) )::value;
+			  has_json_link_quick_map<T>::value;
 
 			/***
 			 * Get the quick mapped json type for type T
@@ -876,21 +948,6 @@ namespace daw::json {
 			template<typename T>
 			using is_vector =
 			  std::bool_constant<vector_detect::vector_test<T>::value>;
-			/** Link to a JSON array that has been detected
-			 * @tparam Name name of JSON member to link to
-			 * @tparam Container type of C++ container being constructed(e.g.
-			 * vector<int>)
-			 * @tparam JsonElement Json type being parsed e.g. json_number,
-			 * json_string...
-			 * @tparam Constructor A callable used to make Container,
-			 * default will use the Containers constructor.  Both normal and aggregate
-			 * are supported
-			 * @tparam Nullable Can the member be missing or have a null value
-			 */
-			template<JSONNAMETYPE Name, typename JsonElement, typename Container,
-			         typename Constructor = default_constructor<Container>,
-			         JsonNullable Nullable = JsonNullable::MustExist>
-			struct json_array_detect;
 
 			template<typename JsonType>
 			using is_json_class_map_test = typename JsonType::json_member;
@@ -905,81 +962,89 @@ namespace daw::json {
 			  daw::is_detected_v<is_json_class_map_test, JsonType>;
 
 			template<typename T, bool Contract, bool JsonType, bool QuickMap,
-			         bool IsVector>
-			struct unnamed_default_type_mapping_test {
+			         bool Container>
+			struct json_type_deducer {
 				using type = missing_json_data_contract_for<T>;
 			};
 
-			template<typename T, /* bool Contract, */ bool JsonType, bool QuickMap,
-			         bool IsVector>
-			struct unnamed_default_type_mapping_test<T, true, JsonType, QuickMap,
-			                                         IsVector> {
+			template<typename T, /*typename Contract,*/ bool JsonType, bool QuickMap,
+			         bool Container>
+			struct json_type_deducer<T, true, JsonType, QuickMap, Container> {
 
 				using type =
 				  json_class<no_name, T,
 				             json_class_constructor_t<T, default_constructor<T>>>;
 
+				static_assert( not std::is_same_v<T, void> );
+				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+				               "Detection failure" );
 				static_assert(
 				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
 				  "Detection failure" );
 			};
 
-			template<typename T, /* bool Contract, bool JsonType, */ bool QuickMap,
-			         bool IsVector>
-			struct unnamed_default_type_mapping_test<T, false, true, QuickMap,
-			                                         IsVector> {
-
+			template<typename T,
+			         /*bool Contract, bool JsonType,*/ bool QuickMap, bool Container>
+			struct json_type_deducer<T, false, true, QuickMap, Container> {
 				using type =
 				  typename std::conditional_t<is_json_class_map_v<T>,
 				                              json_class_map_type<T>,
 				                              daw::traits::identity<T>>::type;
 
+				static_assert( not std::is_same_v<T, void> );
+				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+				               "Detection failure" );
 				static_assert(
 				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
 				  "Detection failure" );
 			};
 
-			template<typename T, /* bool Contract, bool JsonType, bool QuickMap, */
-			         bool IsVector>
-			struct unnamed_default_type_mapping_test<T, false, false, true,
-			                                         IsVector> {
+			template<typename T /*bool Contract, bool JsonType, bool QuickMap*/,
+			         bool Container>
+			struct json_type_deducer<T, false, false, true, Container> {
 				using type = json_link_quick_map_t<T>;
 
+				static_assert( not std::is_same_v<T, void> );
+				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+				               "Detection failure" );
 				static_assert(
 				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
 				  "Detection failure" );
+				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+				               "Detection failure" );
 			};
 
-			template<typename T /*, bool JsonType, bool Contract, bool QuickMap, bool IsVector*/ >
-			struct unnamed_default_type_mapping_test<T, false, false, false,
-			                                         true> {
-				using type =
-				  json_array_detect<no_name, container_detect::container_value_type<T>,
-				                    T>;
+			template<typename T
+			         /*bool Contract, bool JsonType, bool QuickMap,bool Container*/>
+			struct json_type_deducer<T, false, false, false, true> {
+				using type = json_array_detect<no_name, typename T::value_type, T>;
+				static_assert( not std::is_same_v<T, void> );
+				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+				               "Detection failure" );
 				static_assert(
 				  not std::is_same_v<daw::remove_cvref_t<type>, daw::nonesuch>,
 				  "Detection failure" );
+				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
+				               "Detection failure" );
 			};
 
 			template<typename T>
-			using unnamed_default_type_mapping =
-			  typename unnamed_default_type_mapping_test<
-			    T, has_json_data_contract_trait_v<T>,
-			    json_details::is_a_json_type_v<T>, has_json_link_quick_map_v<T>,
-			    is_container<T>::value>::type;
+			using json_deduced_type = typename json_type_deducer<
+			  T, has_json_data_contract_trait_v<T>, json_details::is_a_json_type_v<T>,
+			  has_json_link_quick_map_v<T>, is_container_v<T>>::type;
 
 			template<typename T>
-			using has_unnamed_default_type_mapping =
-			  daw::not_trait<std::is_same<unnamed_default_type_mapping<T>,
+			using has_json_deduced_type =
+			  daw::not_trait<std::is_same<json_deduced_type<T>,
 			                              missing_json_data_contract_for<T>>>;
 
 			template<typename T>
 			inline constexpr bool has_unnamed_default_type_mapping_v =
-			  has_unnamed_default_type_mapping<T>::value;
+			  has_json_deduced_type<T>::value;
 
 			template<typename JsonMember>
 			using from_json_result_t =
-			  json_result<unnamed_default_type_mapping<JsonMember>>;
+			  json_result<json_deduced_type<JsonMember>>;
 
 			template<typename Constructor, typename... Members>
 			using json_class_parse_result_impl2 = decltype(

@@ -109,7 +109,7 @@ namespace daw::json {
 		struct json_tagged_variant_type_list {
 			using i_am_tagged_variant_type_list = void;
 			using element_map_t =
-			  fwd_pack<json_details::unnamed_default_type_mapping<JsonElements>...>;
+			  fwd_pack<json_details::json_deduced_type<JsonElements>...>;
 		};
 
 		/** Link to a JSON array
@@ -125,7 +125,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename JsonElement,
 		         typename Container =
-		           std::vector<typename json_details::unnamed_default_type_mapping<
+		           std::vector<typename json_details::json_deduced_type<
 		             JsonElement>::parse_to_t>,
 		         typename Constructor = default_constructor<Container>,
 		         JsonNullable Nullable = JsonNullable::MustExist>
@@ -143,7 +143,7 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename JsonElement,
 		         typename Container =
-		           std::vector<typename json_details::unnamed_default_type_mapping<
+		           std::vector<typename json_details::json_deduced_type<
 		             JsonElement>::parse_to_t>,
 		         typename Constructor = nullable_constructor<Container>>
 		using json_array_null =
@@ -165,9 +165,8 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename Container,
-		         typename JsonValueType = json_details::
-		           unnamed_default_type_mapping<typename Container::mapped_type>,
-		         typename JsonKeyType = json_details::unnamed_default_type_mapping<
+		         typename JsonValueType = json_details::json_deduced_type<typename Container::mapped_type>,
+		         typename JsonKeyType = json_details::json_deduced_type<
 		           typename Container::key_type>,
 		         typename Constructor = default_constructor<Container>,
 		         JsonNullable Nullable = JsonNullable::MustExist>
@@ -188,9 +187,8 @@ namespace daw::json {
 		 * the Containers constructor.  Both normal and aggregate are supported
 		 */
 		template<JSONNAMETYPE Name, typename Container,
-		         typename JsonValueType = json_details::
-		           unnamed_default_type_mapping<typename Container::mapped_type>,
-		         typename JsonKeyType = json_details::unnamed_default_type_mapping<
+		         typename JsonValueType = json_details::json_deduced_type<typename Container::mapped_type>,
+		         typename JsonKeyType = json_details::json_deduced_type<
 		           typename Container::key_type>,
 		         typename Constructor = nullable_constructor<Container>>
 		using json_key_value_array_null =
@@ -294,9 +292,9 @@ namespace daw::json {
 
 			template<typename... Ts>
 			[[maybe_unused]] constexpr std::conditional_t<
-			  std::conjunction<has_unnamed_default_type_mapping<Ts>...>::value,
-			  json_tagged_variant_type_list<unnamed_default_type_mapping<Ts>...>,
-			  missing_default_type_mapping<unnamed_default_type_mapping<Ts>...>>
+			  std::conjunction<has_json_deduced_type<Ts>...>::value,
+			  json_tagged_variant_type_list<json_deduced_type<Ts>...>,
+			  missing_default_type_mapping<json_deduced_type<Ts>...>>
 			get_variant_type_list( std::variant<Ts...> const * );
 
 			template<typename T>
@@ -386,11 +384,6 @@ namespace daw::json {
 			template<typename T>
 			using ensure_mapped_t = typename ensure_mapped<T>::type;
 		} // namespace json_details
-		/***
-		 * This allows naming of well known types and using them to map members
-		 */
-		template<JSONNAMETYPE Name, typename T>
-		using json_link = typename json_details::ensure_mapped_t<
-		  json_details::unnamed_default_type_mapping<T>>::template with_name<Name>;
+
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
