@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unknown_5ftypes_5fand_5fdelayed_5fparsing_1730',['unknown_types_and_delayed_parsing',['../md_cookbook_unknown_types_and_delayed_parsing.html',1,'']]]
+  ['strings_1933',['Strings',['../md_cookbook_strings.html',1,'']]]
 ];

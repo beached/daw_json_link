@@ -70,13 +70,14 @@ $(function() {
 <h1><a class="anchor" id="autotoc_md22"></a>
 As Class</h1>
 <p>Keys are stored as member names and Values as their value. This is very common, but limits the Key type to strings in JSON. However, numbers and other literals are able to be encoded as strings.</p>
-<div class="fragment"><div class="line">{ </div>
-<div class="line">  &quot;kv&quot;:  {</div>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;kv&quot;: {</div>
 <div class="line">    &quot;key0&quot;: 353434,</div>
-<div class="line">    &quot;key1&quot;: 314159 </div>
+<div class="line">    &quot;key1&quot;: 314159</div>
 <div class="line">  }</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_kv1_test.cpp">cookbook_kv1_test.cpp</a> Below the JSON object is mapped to a <code>std::unordered_map&lt;std::string, int&gt;</code> </p><div class="fragment"><div class="line"> {c++}</div>
+</div><!-- fragment --><p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_kv1_test.cpp">cookbook_kv1_test.cpp</a> Below the JSON object is mapped to a <code>std::unordered_map&lt;std::string, int&gt;</code></p>
+<div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyKeyValue {</div>
 <div class="line">  std::map&lt;std::string, int&gt; kv;</div>
 <div class="line">};</div>
@@ -99,12 +100,19 @@ As Array</h1>
 <p>Key/Values are stored as JSON objects in an array. Generally the key member's name is <code>"key"</code> and the value members name is <code>"value"</code></p>
 <div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;kv&quot;: [</div>
-<div class="line">    { &quot;key&quot;: 0, &quot;value&quot;: &quot;test_001&quot; },</div>
-<div class="line">    { &quot;key&quot;: 1, &quot;value&quot;: &quot;test_002&quot; }</div>
+<div class="line">    {</div>
+<div class="line">      &quot;key&quot;: 0,</div>
+<div class="line">      &quot;value&quot;: &quot;test_001&quot;</div>
+<div class="line">    },</div>
+<div class="line">    {</div>
+<div class="line">      &quot;key&quot;: 1,</div>
+<div class="line">      &quot;value&quot;: &quot;test_002&quot;</div>
+<div class="line">    }</div>
 <div class="line">  ]</div>
 <div class="line">}</div>
-</div><!-- fragment --><p> The above JSON document an array member named <code>"kv"</code> whose element is an object with int keys, named <code>"key"</code> and string values named <code>"value"</code>.</p>
-<p>Below it is mapped to a <code>std::unorderd_map&lt;intmax_t, std::string&gt;</code> Too see a working example using this code, refer to <a href="../tests/src/cookbook_kv2_test.cpp">cookbook_kv2_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>
+</div><!-- fragment --><p>The above JSON document an array member named <code>"kv"</code> whose element is an object with int keys, named <code>"key"</code> and string values named <code>"value"</code>.</p>
+<p>Below it is mapped to a <code>std::unorderd_map&lt;intmax_t, std::string&gt;</code> Too see a working example using this code, refer to <a href="../tests/src/cookbook_kv2_test.cpp">cookbook_kv2_test.cpp</a></p>
+<div class="fragment"><div class="line"> {c++}</div>
 <div class="line">struct MyKeyValue2 {</div>
 <div class="line">  std::unordered_map&lt;intmax_t, std::string&gt; kv;</div>
 <div class="line">};</div>
@@ -113,8 +121,7 @@ As Array</h1>
 <div class="line">  template&lt;&gt;</div>
 <div class="line">  struct json_data_contract&lt;MyKeyValue2&gt; {</div>
 <div class="line">    using type = json_member_list&lt;</div>
-<div class="line">      json_key_value_array&lt;&quot;kv&quot;, std::unordered_map&lt;intmax_t, std::string&gt;,</div>
-<div class="line">        json_string_raw&lt;&quot;value&quot;&gt;, intmax_t&gt;&gt;;</div>
+<div class="line">      json_key_value_array&lt;&quot;kv&quot;, std::unordered_map&lt;intmax_t, std::string&gt;&gt;&gt;;</div>
 <div class="line"> </div>
 <div class="line">    static inline auto to_json_data( MyKeyValue2 const &amp;v ) {</div>
 <div class="line">      return std::forward_as_tuple( v.kv );</div>
@@ -125,7 +132,7 @@ As Array</h1>
 MultiMap</h1>
 <p>It is possible to parse/serialize Multimap likes types. A JSON document, such as</p>
 <div class="fragment"><div class="line">{</div>
-<div class="line">  &quot;kv&quot;: { </div>
+<div class="line">  &quot;kv&quot;: {</div>
 <div class="line">    &quot;firstName&quot;: &quot;Jane&quot;,</div>
 <div class="line">    &quot;firstName&quot;: &quot;John&quot;</div>
 <div class="line">  }</div>
@@ -152,8 +159,9 @@ MultiMap</h1>
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">} </div>
-</div><!-- fragment --><p> Alternatively, a type like <code>std::vector&lt;std::pair&lt;Key, Value&gt;&gt;</code> would work in the above example too.</p>
-<p>If the root object has duplicate keys, one needs to use the <code>json_value</code> interface and then use <code>from_json</code> to parse it. </p><div class="fragment"><div class="line">{</div>
+</div><!-- fragment --><p>Alternatively, a type like <code>std::vector&lt;std::pair&lt;Key, Value&gt;&gt;</code> would work in the above example too.</p>
+<p>If the root object has duplicate keys, one needs to use the <code>json_value</code> interface and then use <code>from_json</code> to parse it.</p>
+<div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;firstName&quot;: &quot;Jane&quot;,</div>
 <div class="line">  &quot;firstName&quot;: &quot;John&quot;</div>
 <div class="line">}</div>

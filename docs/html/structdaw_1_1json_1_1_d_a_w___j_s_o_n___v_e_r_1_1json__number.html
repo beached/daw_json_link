@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DAW JSON Link: daw::json::DAW_JSON_VER::json_number&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt; Struct Template Reference</title>
+<title>DAW JSON Link: daw::json::DAW_JSON_VER::json_number&lt; Name, T, Options, Constructor &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,7 +71,7 @@ $(function() {
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">daw::json::DAW_JSON_VER::json_number&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt; Struct Template Reference</div>  </div>
+<div class="title">daw::json::DAW_JSON_VER::json_number&lt; Name, T, Options, Constructor &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -79,40 +79,40 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ac265d860696361928dfc3ba0dc72cc92"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ac265d860696361928dfc3ba0dc72cc92">base_type</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a24d58026110c00cd97c97e2383595517">json_details::unwrap_type</a>&lt; T, Nullable &gt;</td></tr>
-<tr class="separator:ac265d860696361928dfc3ba0dc72cc92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4603fe6740e2e79fae59878b27aa34b5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a4603fe6740e2e79fae59878b27aa34b5">constructor_t</a> = Constructor</td></tr>
-<tr class="separator:a4603fe6740e2e79fae59878b27aa34b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a693644b3ca6ad0e06024efddd19e6b74"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a693644b3ca6ad0e06024efddd19e6b74">i_am_a_json_type</a> = void</td></tr>
-<tr class="separator:a693644b3ca6ad0e06024efddd19e6b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ac2824f3085554bde27bfed1d0f4777"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a7ac2824f3085554bde27bfed1d0f4777">parse_to_t</a> = std::invoke_result_t&lt; Constructor, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ac265d860696361928dfc3ba0dc72cc92">base_type</a> &gt;</td></tr>
-<tr class="separator:a7ac2824f3085554bde27bfed1d0f4777"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24679f33fe1c9e461e956205b5c554b2"><td class="memTemplParams" colspan="2">template&lt;JSONNAMETYPE NewName&gt; </td></tr>
-<tr class="memitem:a24679f33fe1c9e461e956205b5c554b2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a24679f33fe1c9e461e956205b5c554b2">with_name</a> = <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">json_number</a>&lt; NewName, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;</td></tr>
-<tr class="separator:a24679f33fe1c9e461e956205b5c554b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac09750fe00b94273699c073d7fe4fe7f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ac09750fe00b94273699c073d7fe4fe7f">wrapped_type</a> = T</td></tr>
-<tr class="separator:ac09750fe00b94273699c073d7fe4fe7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8279541a9eec8e97c47822dd30b12c7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ad8279541a9eec8e97c47822dd30b12c7">base_type</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae45720d29a145b4067fbf3bf445dbb8b">json_details::unwrap_type</a>&lt; T, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a8e25675751f42a7e342a6a5f19edc17c">nullable</a> &gt;</td></tr>
+<tr class="separator:ad8279541a9eec8e97c47822dd30b12c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24f849568eace065e78fee133c315014"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a24f849568eace065e78fee133c315014">constructor_t</a> = Constructor</td></tr>
+<tr class="separator:a24f849568eace065e78fee133c315014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a904870fa52fb26db1365666cd3e59635"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a904870fa52fb26db1365666cd3e59635">i_am_a_json_type</a> = void</td></tr>
+<tr class="separator:a904870fa52fb26db1365666cd3e59635"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51e0e66e4ed1e318da25444685a05158"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a51e0e66e4ed1e318da25444685a05158">parse_to_t</a> = std::invoke_result_t&lt; Constructor, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ad8279541a9eec8e97c47822dd30b12c7">base_type</a> &gt;</td></tr>
+<tr class="separator:a51e0e66e4ed1e318da25444685a05158"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7631d2271cf491da6512e2b09796ee61"><td class="memTemplParams" colspan="2">template&lt;JSONNAMETYPE NewName&gt; </td></tr>
+<tr class="memitem:a7631d2271cf491da6512e2b09796ee61"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a7631d2271cf491da6512e2b09796ee61">with_name</a> = <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">json_number</a>&lt; NewName, T, Options, Constructor &gt;</td></tr>
+<tr class="separator:a7631d2271cf491da6512e2b09796ee61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1d7dca62e6651d106acb1cc15acbe99"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ab1d7dca62e6651d106acb1cc15acbe99">wrapped_type</a> = T</td></tr>
+<tr class="separator:ab1d7dca62e6651d106acb1cc15acbe99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a968d5cd990f3900803e4af8800235369"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a968d5cd990f3900803e4af8800235369">base_expected_type</a></td></tr>
-<tr class="separator:a968d5cd990f3900803e4af8800235369"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e48056f9843c93e20e483c0960b3c80"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a3e48056f9843c93e20e483c0960b3c80">expected_type</a></td></tr>
-<tr class="separator:a3e48056f9843c93e20e483c0960b3c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a325347fafe59ac8f79fc59a02b506b56"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af4bd1b07caf6fd70684088942b7065da">LiteralAsStringOpt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a325347fafe59ac8f79fc59a02b506b56">literal_as_string</a> = LiteralAsString</td></tr>
-<tr class="separator:a325347fafe59ac8f79fc59a02b506b56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4da29d97a9d306e1652d548c5a68e9ef"><td class="memItemLeft" align="right" valign="top">static constexpr daw::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a4da29d97a9d306e1652d548c5a68e9ef">name</a> = Name</td></tr>
-<tr class="separator:a4da29d97a9d306e1652d548c5a68e9ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a94a1f96540008782fab07879edf59b52"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a94a1f96540008782fab07879edf59b52">nullable</a> = Nullable == <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af4048fed315a6329c25e8a1653312f7ea46ad517b8b7aa4e368a7cc226533bfb6">JsonNullable::Nullable</a></td></tr>
-<tr class="separator:a94a1f96540008782fab07879edf59b52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb716e42e3aec954c7500ce72b001f86"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9c70ce5d1f209b9e9bc08fa7afaeae01">JsonRangeCheck</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#aeb716e42e3aec954c7500ce72b001f86">range_check</a> = RangeCheck</td></tr>
-<tr class="separator:aeb716e42e3aec954c7500ce72b001f86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a411505fb64539300cacba60145c4ff62"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">JsonBaseParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a411505fb64539300cacba60145c4ff62">underlying_json_type</a></td></tr>
-<tr class="separator:a411505fb64539300cacba60145c4ff62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97fd69e4e834ca326644239506c3506b"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a97fd69e4e834ca326644239506c3506b">base_expected_type</a></td></tr>
+<tr class="separator:a97fd69e4e834ca326644239506c3506b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0df50a78001e66e0c63a3c6e2fc65dd"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ab0df50a78001e66e0c63a3c6e2fc65dd">expected_type</a></td></tr>
+<tr class="separator:ab0df50a78001e66e0c63a3c6e2fc65dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01753fa03169e3c70e258fd79f976655"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a1876c85bb815e8e479663320478b91fa">LiteralAsStringOpt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a01753fa03169e3c70e258fd79f976655">literal_as_string</a></td></tr>
+<tr class="separator:a01753fa03169e3c70e258fd79f976655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae97b0150bec0f2bf3334da733df4ef9a"><td class="memItemLeft" align="right" valign="top">static constexpr daw::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ae97b0150bec0f2bf3334da733df4ef9a">name</a> = Name</td></tr>
+<tr class="separator:ae97b0150bec0f2bf3334da733df4ef9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e25675751f42a7e342a6a5f19edc17c"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a8e25675751f42a7e342a6a5f19edc17c">nullable</a></td></tr>
+<tr class="separator:a8e25675751f42a7e342a6a5f19edc17c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6792119264d6ded3960036093be8598"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ab978f9e438a6cb64c17bd40c82b7c86d">JsonRangeCheck</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ac6792119264d6ded3960036093be8598">range_check</a></td></tr>
+<tr class="separator:ac6792119264d6ded3960036093be8598"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbb72672de116d28e83c0bc7cab4c403"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">JsonBaseParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#afbb72672de116d28e83c0bc7cab4c403">underlying_json_type</a></td></tr>
+<tr class="separator:afbb72672de116d28e83c0bc7cab4c403"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;JSONNAMETYPE Name, typename T, LiteralAsStringOpt LiteralAsString, typename Constructor, JsonRangeCheck RangeCheck, JsonNullable Nullable&gt;<br />
-struct daw::json::DAW_JSON_VER::json_number&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;</h3>
+<div class="textblock"><h3>template&lt;JSONNAMETYPE Name, typename T, json_details::json_options_t Options, typename Constructor&gt;<br />
+struct daw::json::DAW_JSON_VER::json_number&lt; Name, T, Options, Constructor &gt;</h3>
 
 <p>The member is a range checked number </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
@@ -136,98 +136,98 @@ struct daw::json::DAW_JSON_VER::json_number&lt; Name, T, LiteralAsString, Constr
   </dd>
 </dl>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="ac265d860696361928dfc3ba0dc72cc92"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac265d860696361928dfc3ba0dc72cc92">&#9670;&nbsp;</a></span>base_type</h2>
+<a id="ad8279541a9eec8e97c47822dd30b12c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8279541a9eec8e97c47822dd30b12c7">&#9670;&nbsp;</a></span>base_type</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ac265d860696361928dfc3ba0dc72cc92">base_type</a> =  <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a24d58026110c00cd97c97e2383595517">json_details::unwrap_type</a>&lt;T, Nullable&gt;</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ad8279541a9eec8e97c47822dd30b12c7">base_type</a> =  <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae45720d29a145b4067fbf3bf445dbb8b">json_details::unwrap_type</a>&lt;T, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a8e25675751f42a7e342a6a5f19edc17c">nullable</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a4603fe6740e2e79fae59878b27aa34b5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4603fe6740e2e79fae59878b27aa34b5">&#9670;&nbsp;</a></span>constructor_t</h2>
+<a id="a24f849568eace065e78fee133c315014"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24f849568eace065e78fee133c315014">&#9670;&nbsp;</a></span>constructor_t</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a4603fe6740e2e79fae59878b27aa34b5">constructor_t</a> =  Constructor</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a24f849568eace065e78fee133c315014">constructor_t</a> =  Constructor</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a693644b3ca6ad0e06024efddd19e6b74"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a693644b3ca6ad0e06024efddd19e6b74">&#9670;&nbsp;</a></span>i_am_a_json_type</h2>
+<a id="a904870fa52fb26db1365666cd3e59635"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a904870fa52fb26db1365666cd3e59635">&#9670;&nbsp;</a></span>i_am_a_json_type</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a693644b3ca6ad0e06024efddd19e6b74">i_am_a_json_type</a> =  void</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a904870fa52fb26db1365666cd3e59635">i_am_a_json_type</a> =  void</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a7ac2824f3085554bde27bfed1d0f4777"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ac2824f3085554bde27bfed1d0f4777">&#9670;&nbsp;</a></span>parse_to_t</h2>
+<a id="a51e0e66e4ed1e318da25444685a05158"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51e0e66e4ed1e318da25444685a05158">&#9670;&nbsp;</a></span>parse_to_t</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a7ac2824f3085554bde27bfed1d0f4777">parse_to_t</a> =  std::invoke_result_t&lt;Constructor, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ac265d860696361928dfc3ba0dc72cc92">base_type</a>&gt;</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a51e0e66e4ed1e318da25444685a05158">parse_to_t</a> =  std::invoke_result_t&lt;Constructor, <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ad8279541a9eec8e97c47822dd30b12c7">base_type</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a24679f33fe1c9e461e956205b5c554b2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24679f33fe1c9e461e956205b5c554b2">&#9670;&nbsp;</a></span>with_name</h2>
+<a id="a7631d2271cf491da6512e2b09796ee61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7631d2271cf491da6512e2b09796ee61">&#9670;&nbsp;</a></span>with_name</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
 <div class="memtemplate">
 template&lt;JSONNAMETYPE NewName&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a24679f33fe1c9e461e956205b5c554b2">with_name</a> =  <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">json_number</a>&lt;NewName, T, LiteralAsString, Constructor, RangeCheck, Nullable&gt;</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a7631d2271cf491da6512e2b09796ee61">with_name</a> =  <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">json_number</a>&lt;NewName, T, Options, Constructor&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="ac09750fe00b94273699c073d7fe4fe7f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac09750fe00b94273699c073d7fe4fe7f">&#9670;&nbsp;</a></span>wrapped_type</h2>
+<a id="ab1d7dca62e6651d106acb1cc15acbe99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1d7dca62e6651d106acb1cc15acbe99">&#9670;&nbsp;</a></span>wrapped_type</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ac09750fe00b94273699c073d7fe4fe7f">wrapped_type</a> =  T</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#ab1d7dca62e6651d106acb1cc15acbe99">wrapped_type</a> =  T</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -235,19 +235,19 @@ template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a968d5cd990f3900803e4af8800235369"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a968d5cd990f3900803e4af8800235369">&#9670;&nbsp;</a></span>base_expected_type</h2>
+<a id="a97fd69e4e834ca326644239506c3506b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97fd69e4e834ca326644239506c3506b">&#9670;&nbsp;</a></span>base_expected_type</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::base_expected_type</td>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::base_expected_type</td>
         </tr>
       </table>
   </td>
@@ -261,19 +261,19 @@ template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, 
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a3e48056f9843c93e20e483c0960b3c80"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3e48056f9843c93e20e483c0960b3c80">&#9670;&nbsp;</a></span>expected_type</h2>
+<a id="ab0df50a78001e66e0c63a3c6e2fc65dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0df50a78001e66e0c63a3c6e2fc65dd">&#9670;&nbsp;</a></span>expected_type</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::expected_type</td>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119">JsonParseTypes</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::expected_type</td>
         </tr>
       </table>
   </td>
@@ -284,24 +284,51 @@ template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, 
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
 <div class="line">        get_parse_type_v&lt;json_details::number_parse_type_v&lt;base_type&gt;,</div>
-<div class="line">                         <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af4048fed315a6329c25e8a1653312f7ea46ad517b8b7aa4e368a7cc226533bfb6">Nullable</a>&gt;</div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_af4048fed315a6329c25e8a1653312f7ea46ad517b8b7aa4e368a7cc226533bfb6"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af4048fed315a6329c25e8a1653312f7ea46ad517b8b7aa4e368a7cc226533bfb6">daw::json::DAW_JSON_VER::JsonNullable::Nullable</a></div><div class="ttdeci">@ Nullable</div></div>
+<div class="line">                         <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a8e25675751f42a7e342a6a5f19edc17c">nullable</a>&gt;</div>
+<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number_html_a8e25675751f42a7e342a6a5f19edc17c"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html#a8e25675751f42a7e342a6a5f19edc17c">daw::json::DAW_JSON_VER::json_number::nullable</a></div><div class="ttdeci">static constexpr JsonNullable nullable</div><div class="ttdef"><b>Definition:</b> daw_json_link_types.h:353</div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a325347fafe59ac8f79fc59a02b506b56"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a325347fafe59ac8f79fc59a02b506b56">&#9670;&nbsp;</a></span>literal_as_string</h2>
+<a id="a01753fa03169e3c70e258fd79f976655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01753fa03169e3c70e258fd79f976655">&#9670;&nbsp;</a></span>literal_as_string</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af4bd1b07caf6fd70684088942b7065da">LiteralAsStringOpt</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::literal_as_string = LiteralAsString</td>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a1876c85bb815e8e479663320478b91fa">LiteralAsStringOpt</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::literal_as_string</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        json_details::get_bits_for&lt;LiteralAsStringOpt&gt;( <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af689b2053a986b8d441e0cb6f20a9871">number_opts</a>, Options )</div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_html_af689b2053a986b8d441e0cb6f20a9871"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af689b2053a986b8d441e0cb6f20a9871">daw::json::DAW_JSON_VER::number_opts</a></div><div class="ttdeci">constexpr auto number_opts</div><div class="ttdef"><b>Definition:</b> daw_json_type_options.h:68</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae97b0150bec0f2bf3334da733df4ef9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae97b0150bec0f2bf3334da733df4ef9a">&#9670;&nbsp;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr daw::string_view <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::name = Name</td>
         </tr>
       </table>
   </td>
@@ -313,19 +340,19 @@ template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, 
 
 </div>
 </div>
-<a id="a4da29d97a9d306e1652d548c5a68e9ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4da29d97a9d306e1652d548c5a68e9ef">&#9670;&nbsp;</a></span>name</h2>
+<a id="a8e25675751f42a7e342a6a5f19edc17c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e25675751f42a7e342a6a5f19edc17c">&#9670;&nbsp;</a></span>nullable</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr daw::string_view <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::name = Name</td>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::nullable</td>
         </tr>
       </table>
   </td>
@@ -334,22 +361,24 @@ template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, 
   </tr>
 </table>
 </div><div class="memdoc">
-
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        json_details::get_bits_for&lt;JsonNullable&gt;( <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af689b2053a986b8d441e0cb6f20a9871">number_opts</a>, Options )</div>
+</div><!-- fragment -->
 </div>
 </div>
-<a id="a94a1f96540008782fab07879edf59b52"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a94a1f96540008782fab07879edf59b52">&#9670;&nbsp;</a></span>nullable</h2>
+<a id="ac6792119264d6ded3960036093be8598"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6792119264d6ded3960036093be8598">&#9670;&nbsp;</a></span>range_check</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::nullable = Nullable == <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af4048fed315a6329c25e8a1653312f7ea46ad517b8b7aa4e368a7cc226533bfb6">JsonNullable::Nullable</a></td>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ab978f9e438a6cb64c17bd40c82b7c86d">JsonRangeCheck</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::range_check</td>
         </tr>
       </table>
   </td>
@@ -358,46 +387,24 @@ template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, 
   </tr>
 </table>
 </div><div class="memdoc">
-
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        json_details::get_bits_for&lt;JsonRangeCheck&gt;( <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af689b2053a986b8d441e0cb6f20a9871">number_opts</a>, Options )</div>
+</div><!-- fragment -->
 </div>
 </div>
-<a id="aeb716e42e3aec954c7500ce72b001f86"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb716e42e3aec954c7500ce72b001f86">&#9670;&nbsp;</a></span>range_check</h2>
+<a id="afbb72672de116d28e83c0bc7cab4c403"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbb72672de116d28e83c0bc7cab4c403">&#9670;&nbsp;</a></span>underlying_json_type</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T , json_details::json_options_t Options, typename Constructor &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9c70ce5d1f209b9e9bc08fa7afaeae01">JsonRangeCheck</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::range_check = RangeCheck</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a411505fb64539300cacba60145c4ff62"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a411505fb64539300cacba60145c4ff62">&#9670;&nbsp;</a></span>underlying_json_type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T , LiteralAsStringOpt LiteralAsString, typename Constructor , JsonRangeCheck RangeCheck, JsonNullable Nullable&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">JsonBaseParseTypes</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, LiteralAsString, Constructor, RangeCheck, Nullable &gt;::underlying_json_type</td>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">JsonBaseParseTypes</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__number.html">daw::json::DAW_JSON_VER::json_number</a>&lt; Name, T, Options, Constructor &gt;::underlying_json_type</td>
         </tr>
       </table>
   </td>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['numbers_1725',['Numbers',['../md_cookbook_numbers.html',1,'']]]
+  ['mapping_5fdeduction_1928',['mapping_deduction',['../md_cookbook_mapping_deduction.html',1,'']]]
 ];

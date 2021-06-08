@@ -87,14 +87,14 @@ $(function() {
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">inline</span> <span class="keyword">namespace </span><a class="code" href="version_8h.html#a2f2fb61b85313c7d8d05a24bc00fbf15">DAW_JSON_VER</a> {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Value,</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;             <span class="keyword">typename</span> JsonClass =</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;               <span class="keyword">typename</span> json_details::unnamed_default_type_mapping&lt;Value&gt;,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;               <span class="keyword">typename</span> json_details::json_deduced_type&lt;Value&gt;,</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;             <span class="keyword">typename</span> OutputIterator&gt;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    [[maybe_unused]] constexpr OutputIterator <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a3ab6b09777eb76d887bcc879d60f1d9d">to_json</a>( Value <span class="keyword">const</span> &amp;value,</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                                                       OutputIterator out_it );</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Result = std::string, <span class="keyword">typename</span> Value,</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;             <span class="keyword">typename</span> JsonClass =</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;               <span class="keyword">typename</span> json_details::unnamed_default_type_mapping&lt;Value&gt;&gt;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;               <span class="keyword">typename</span> json_details::json_deduced_type&lt;Value&gt;&gt;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    [[maybe_unused, nodiscard]] constexpr Result <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a3ab6b09777eb76d887bcc879d60f1d9d">to_json</a>( Value <span class="keyword">const</span> &amp;value );</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">namespace </span>json_details {</div>

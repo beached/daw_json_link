@@ -85,7 +85,7 @@ $(function() {
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;daw/daw_attributes.h&gt;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;daw/daw_cpp_feature_check.h&gt;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#if defined( __cpp_lib_to_chars )</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#if not defined( DAW_JSON_USE_STRTOD ) and defined( __cpp_lib_to_chars )</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;charconv&gt;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
@@ -97,7 +97,7 @@ $(function() {
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                               std::<span class="keywordtype">nullptr</span>_t&gt; = <span class="keywordtype">nullptr</span>&gt;</div>
 <div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aeb334873b05fb457082bf2b93540f582">   26</a></span>&#160;      DAW_ATTRIB_NOINLINE <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a7f80fcc452c2f1ed2bb51b39d0864df1">Real</a> <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aeb334873b05fb457082bf2b93540f582">parse_with_strtod</a>( <span class="keywordtype">char</span> <span class="keyword">const</span> *first,</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                                                  <span class="keywordtype">char</span> <span class="keyword">const</span> *last ) {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#if defined( __cpp_lib_to_chars )</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#if not defined( DAW_JSON_USE_STRTOD ) and defined( __cpp_lib_to_chars )</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a08a2ab70588cc1921dda10f110406119a7f80fcc452c2f1ed2bb51b39d0864df1">Real</a> result;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        std::from_chars_result fc_res = std::from_chars( first, last, result );</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <span class="keywordflow">if</span>( fc_res.ec == std::errc::result_out_of_range ) {</div>

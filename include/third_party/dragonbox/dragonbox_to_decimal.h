@@ -2055,7 +2055,8 @@ namespace jkj::dragonbox {
 					static constexpr auto tag = tag_t::away_from_zero;
 
 					template<class Fp>
-					static constexpr inline void break_rounding_tie( Fp &/*fp*/ ) noexcept {}
+					static constexpr inline void
+					break_rounding_tie( Fp & /*fp*/ ) noexcept {}
 				};
 
 				struct toward_zero : base {

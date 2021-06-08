@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['parser_20policies_1727',['Parser Policies',['../md_cookbook_parser_policies.html',1,'']]],
-  ['parsing_20individual_20members_1728',['Parsing Individual Members',['../md_cookbook_parsing_individual_members.html',1,'']]]
+  ['optional_20values_1930',['Optional Values',['../md_cookbook_optional_values.html',1,'']]]
 ];

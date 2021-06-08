@@ -90,9 +90,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aab1755ce43dd0ba63265f3676ef19250"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename ParseState &gt; </td></tr>
 <tr class="memitem:aab1755ce43dd0ba63265f3676ef19250"><td class="memTemplItemLeft" align="right" valign="top">static constexpr DAW_ATTRIB_FLATTEN <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ac9a88410139fc9fcafcdd47c1aa2d5bb">json_details::json_result</a>&lt; JsonClass &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__member__list.html#aab1755ce43dd0ba63265f3676ef19250">parse_to_class</a> (ParseState &amp;parse_state, template_param&lt; JsonClass &gt;)</td></tr>
 <tr class="separator:aab1755ce43dd0ba63265f3676ef19250"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8515eb7374a309077d356fc6ef496059"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator , typename Value , typename... Args&gt; </td></tr>
-<tr class="memitem:a8515eb7374a309077d356fc6ef496059"><td class="memTemplItemLeft" align="right" valign="top">static constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__member__list.html#a8515eb7374a309077d356fc6ef496059">serialize</a> (OutputIterator it, std::tuple&lt; Args... &gt; const &amp;args, Value const &amp;v)</td></tr>
-<tr class="separator:a8515eb7374a309077d356fc6ef496059"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a598e4dc12fafb8d6f12b2315843767d3"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator , typename Value , template&lt; class... &gt; class Tuple, typename... Args&gt; </td></tr>
+<tr class="memitem:a598e4dc12fafb8d6f12b2315843767d3"><td class="memTemplItemLeft" align="right" valign="top">static constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__member__list.html#a598e4dc12fafb8d6f12b2315843767d3">serialize</a> (OutputIterator it, Tuple&lt; Args... &gt; const &amp;args, Value const &amp;v)</td></tr>
+<tr class="separator:a598e4dc12fafb8d6f12b2315843767d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename... JsonMembers&gt;<br />
@@ -194,15 +194,15 @@ template&lt;typename JsonClass , typename ParseState &gt; </div>
 
 </div>
 </div>
-<a id="a8515eb7374a309077d356fc6ef496059"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8515eb7374a309077d356fc6ef496059">&#9670;&nbsp;</a></span>serialize()</h2>
+<a id="a598e4dc12fafb8d6f12b2315843767d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a598e4dc12fafb8d6f12b2315843767d3">&#9670;&nbsp;</a></span>serialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename... JsonMembers&gt; </div>
 <div class="memtemplate">
-template&lt;typename OutputIterator , typename Value , typename... Args&gt; </div>
+template&lt;typename OutputIterator , typename Value , template&lt; class... &gt; class Tuple, typename... Args&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -216,7 +216,7 @@ template&lt;typename OutputIterator , typename Value , typename... Args&gt; </di
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::tuple&lt; Args... &gt; const &amp;&#160;</td>
+          <td class="paramtype">Tuple&lt; Args... &gt; const &amp;&#160;</td>
           <td class="paramname"><em>args</em>, </td>
         </tr>
         <tr>

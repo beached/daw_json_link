@@ -78,6 +78,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="version_8h_source.html">version.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__option__bits_8h_source.html">daw_json_option_bits.h</a>&quot;</code><br />
 <code>#include &lt;daw/cpp_17.h&gt;</code><br />
 <code>#include &lt;daw/daw_attributes.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
@@ -85,14 +86,13 @@ $(function() {
 <code>#include &lt;climits&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
-<code>#include &lt;tuple&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 </div>
 <p><a href="daw__json__parse__options_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1policy__list__impl.html">daw::json::DAW_JSON_VER::json_details::policy_list_impl&lt; Policies &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1default__policy__flag__t_3_01p87202b4a0bc1c61aa36fc7ed2a7f4973.html">daw::json::DAW_JSON_VER::json_details::default_policy_flag_t&lt; pack_list&lt; Policies... &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -108,13 +108,8 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:af27afee84a33a880b64b893a4df40550"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af27afee84a33a880b64b893a4df40550">daw::json::DAW_JSON_VER::json_details::policy_list</a> = typename policy_list_impl&lt; ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes, CheckedParseMode, AllowEscapedNames, IEEE754Precise, ForceFullNameCheck, MinifiedDocument, UseExactMappingsByDefault, TemporarilyMutateBuffer, MustVerifyEndOfDataIsValid &gt;::type</td></tr>
-<tr class="separator:af27afee84a33a880b64b893a4df40550"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acdb99c64e057aec5967748913ce64847"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#acdb99c64e057aec5967748913ce64847">daw::json::DAW_JSON_VER::json_details::policy_options_t</a> = std::uint32_t</td></tr>
-<tr class="separator:acdb99c64e057aec5967748913ce64847"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb051113c1e9767a19a0d50cd7c84fc8"><td class="memTemplParams" colspan="2">template&lt;std::size_t Idx, typename... Ts&gt; </td></tr>
-<tr class="memitem:afb051113c1e9767a19a0d50cd7c84fc8"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#afb051113c1e9767a19a0d50cd7c84fc8">daw::json::DAW_JSON_VER::json_details::switch_t</a> = std::tuple_element_t&lt; Idx, std::tuple&lt; Ts... &gt; &gt;</td></tr>
-<tr class="separator:afb051113c1e9767a19a0d50cd7c84fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c788d5bc4dd29613ef3c8b706db3d2d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a0c788d5bc4dd29613ef3c8b706db3d2d">daw::json::DAW_JSON_VER::json_details::policy_list</a> = typename option_list_impl&lt; ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes, CheckedParseMode, AllowEscapedNames, IEEE754Precise, ForceFullNameCheck, MinifiedDocument, UseExactMappingsByDefault, TemporarilyMutateBuffer, MustVerifyEndOfDataIsValid, ExcludeSpecialEscapes &gt;::type</td></tr>
+<tr class="separator:a0c788d5bc4dd29613ef3c8b706db3d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -126,6 +121,10 @@ Enumerations</h2></td></tr>
 , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a319337e34fd0fd41bf626c4a3c6fd23fa7fa3b767c460b54a2be4d49030b349c7">daw::json::DAW_JSON_VER::no</a>
  }</td></tr>
 <tr class="separator:a319337e34fd0fd41bf626c4a3c6fd23f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add2dd2a05a2004feb9258b35e7f978a8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#add2dd2a05a2004feb9258b35e7f978a8">daw::json::DAW_JSON_VER::ExcludeSpecialEscapes</a> : unsigned { <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#add2dd2a05a2004feb9258b35e7f978a8a7fa3b767c460b54a2be4d49030b349c7">daw::json::DAW_JSON_VER::no</a>
+, <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#add2dd2a05a2004feb9258b35e7f978a8aa6105c0a611b41b08f1209506350279e">daw::json::DAW_JSON_VER::yes</a>
+ }</td></tr>
+<tr class="separator:add2dd2a05a2004feb9258b35e7f978a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54815d846b87e4fa7226e92f2d52bc1e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a54815d846b87e4fa7226e92f2d52bc1e">daw::json::DAW_JSON_VER::ExecModeTypes</a> : unsigned { <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a54815d846b87e4fa7226e92f2d52bc1eab250279541a3374d775a8d26f33cbeb4">daw::json::DAW_JSON_VER::compile_time</a>
 , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a54815d846b87e4fa7226e92f2d52bc1eab4a619251c5c397f26d05c9b0e7bf97a">daw::json::DAW_JSON_VER::runtime</a>
 , <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a54815d846b87e4fa7226e92f2d52bc1ea7d7a2801c20c340ab157aa1e9339c543">daw::json::DAW_JSON_VER::simd</a>
@@ -167,110 +166,104 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:af5718653fc07413820a1e427b15a3707"><td class="memTemplParams" colspan="2">template&lt;typename Policy , typename Result  = Policy&gt; </td></tr>
-<tr class="memitem:af5718653fc07413820a1e427b15a3707"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af5718653fc07413820a1e427b15a3707">daw::json::DAW_JSON_VER::json_details::get_bits_for</a> (policy_options_t value)</td></tr>
-<tr class="separator:af5718653fc07413820a1e427b15a3707"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1468fca0dec6f0ef8c42d0b35dc4ff96"><td class="memTemplParams" colspan="2">template&lt;typename Policy , typename... Policies&gt; </td></tr>
-<tr class="memitem:a1468fca0dec6f0ef8c42d0b35dc4ff96"><td class="memTemplItemLeft" align="right" valign="top">constexpr Policy&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a1468fca0dec6f0ef8c42d0b35dc4ff96">daw::json::DAW_JSON_VER::json_details::get_policy_or</a> (std::tuple&lt; Policies... &gt; const &amp;pols)</td></tr>
-<tr class="separator:a1468fca0dec6f0ef8c42d0b35dc4ff96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a259f83f4c4665243b877a6cb79b1f2f2"><td class="memTemplParams" colspan="2">template&lt;typename... Policies&gt; </td></tr>
-<tr class="memitem:a259f83f4c4665243b877a6cb79b1f2f2"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_details::policy_options_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a259f83f4c4665243b877a6cb79b1f2f2">daw::json::DAW_JSON_VER::parse_options</a> (Policies... policies)</td></tr>
-<tr class="separator:a259f83f4c4665243b877a6cb79b1f2f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2993ee11382580a8add01890d39b3e8"><td class="memTemplParams" colspan="2">template&lt;typename Policy , typename... Policies&gt; </td></tr>
-<tr class="memitem:ad2993ee11382580a8add01890d39b3e8"><td class="memTemplItemLeft" align="right" valign="top">constexpr policy_options_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ad2993ee11382580a8add01890d39b3e8">daw::json::DAW_JSON_VER::json_details::set_bits</a> (policy_options_t value, Policy pol, Policies... pols)</td></tr>
-<tr class="separator:ad2993ee11382580a8add01890d39b3e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdf69a75cc123af456fa62ca93c6a83a"><td class="memTemplParams" colspan="2">template&lt;typename Policy &gt; </td></tr>
-<tr class="memitem:abdf69a75cc123af456fa62ca93c6a83a"><td class="memTemplItemLeft" align="right" valign="top">constexpr policy_options_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#abdf69a75cc123af456fa62ca93c6a83a">daw::json::DAW_JSON_VER::json_details::set_bits_for</a> (Policy e)</td></tr>
-<tr class="separator:abdf69a75cc123af456fa62ca93c6a83a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24b20a49f904f3b41813875fc3f0f28a"><td class="memTemplParams" colspan="2">template&lt;typename Policy &gt; </td></tr>
-<tr class="memitem:a24b20a49f904f3b41813875fc3f0f28a"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a24b20a49f904f3b41813875fc3f0f28a">daw::json::DAW_JSON_VER::json_details::set_bits_in</a> (policy_options_t &amp;value, Policy e)</td></tr>
-<tr class="separator:a24b20a49f904f3b41813875fc3f0f28a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a813143c0daa0dff72a04b91cf1b5387c"><td class="memTemplParams" colspan="2">template&lt;typename Policy , typename Result  = Policy&gt; </td></tr>
+<tr class="memitem:a813143c0daa0dff72a04b91cf1b5387c"><td class="memTemplItemLeft" align="right" valign="top">constexpr Result&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a813143c0daa0dff72a04b91cf1b5387c">daw::json::DAW_JSON_VER::json_details::get_bits_for</a> (json_options_t value)</td></tr>
+<tr class="separator:a813143c0daa0dff72a04b91cf1b5387c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20899ff7aafcc860840e6c636f66c8e2"><td class="memTemplParams" colspan="2">template&lt;typename... Policies&gt; </td></tr>
+<tr class="memitem:a20899ff7aafcc860840e6c636f66c8e2"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_details::json_options_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a20899ff7aafcc860840e6c636f66c8e2">daw::json::DAW_JSON_VER::parse_options</a> (Policies... policies)</td></tr>
+<tr class="separator:a20899ff7aafcc860840e6c636f66c8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3772d74b56cc4aedff56acda804b8500"><td class="memTemplParams" colspan="2">template&lt;typename Policy , typename... Policies&gt; </td></tr>
+<tr class="memitem:a3772d74b56cc4aedff56acda804b8500"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_options_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3772d74b56cc4aedff56acda804b8500">daw::json::DAW_JSON_VER::json_details::set_bits</a> (json_options_t value, Policy pol, Policies... pols)</td></tr>
+<tr class="separator:a3772d74b56cc4aedff56acda804b8500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ce324a6c3167e1215140d46a533b67c"><td class="memTemplParams" colspan="2">template&lt;typename Policy &gt; </td></tr>
+<tr class="memitem:a5ce324a6c3167e1215140d46a533b67c"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_options_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a5ce324a6c3167e1215140d46a533b67c">daw::json::DAW_JSON_VER::json_details::set_bits_for</a> (Policy e)</td></tr>
+<tr class="separator:a5ce324a6c3167e1215140d46a533b67c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b06a4eed412e594a6e68d558741f337"><td class="memTemplParams" colspan="2">template&lt;typename Policy &gt; </td></tr>
+<tr class="memitem:a2b06a4eed412e594a6e68d558741f337"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a2b06a4eed412e594a6e68d558741f337">daw::json::DAW_JSON_VER::json_details::set_bits_in</a> (json_options_t &amp;value, Policy e)</td></tr>
+<tr class="separator:a2b06a4eed412e594a6e68d558741f337"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a0d8a2cac651efc48da11e037ae157a54"><td class="memTemplParams" colspan="2">template&lt;typename Policy , typename Policies &gt; </td></tr>
 <tr class="memitem:a0d8a2cac651efc48da11e037ae157a54"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a0d8a2cac651efc48da11e037ae157a54">daw::json::DAW_JSON_VER::json_details::basic_policy_bits_start</a></td></tr>
 <tr class="separator:a0d8a2cac651efc48da11e037ae157a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a9eab276fa3f1d1b46e3fc220cc0216"><td class="memItemLeft" align="right" valign="top">static constexpr policy_options_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a6a9eab276fa3f1d1b46e3fc220cc0216">daw::json::DAW_JSON_VER::json_details::default_policy_flag</a></td></tr>
-<tr class="separator:a6a9eab276fa3f1d1b46e3fc220cc0216"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa161e8d0136006a8217d3fb2cfa49ff4"><td class="memTemplParams" colspan="2">template&lt;typename &gt; </td></tr>
-<tr class="memitem:aa161e8d0136006a8217d3fb2cfa49ff4"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa161e8d0136006a8217d3fb2cfa49ff4">daw::json::DAW_JSON_VER::json_details::default_policy_value</a></td></tr>
-<tr class="separator:aa161e8d0136006a8217d3fb2cfa49ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd9a423a575eb6dd124d3f68a772506f"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:abd9a423a575eb6dd124d3f68a772506f"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#abd9a423a575eb6dd124d3f68a772506f">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; AllowEscapedNames &gt;</a></td></tr>
-<tr class="separator:abd9a423a575eb6dd124d3f68a772506f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ace7cb51aa4351b42ff5b2df513f7f8"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a7ace7cb51aa4351b42ff5b2df513f7f8"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7ace7cb51aa4351b42ff5b2df513f7f8">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; CheckedParseMode &gt;</a></td></tr>
-<tr class="separator:a7ace7cb51aa4351b42ff5b2df513f7f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a273429af6cf3598a73dd08c7e7376737"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a273429af6cf3598a73dd08c7e7376737"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a273429af6cf3598a73dd08c7e7376737">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; ExecModeTypes &gt;</a></td></tr>
-<tr class="separator:a273429af6cf3598a73dd08c7e7376737"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee8ad7fac621d23d29b4231e3156d06b"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:aee8ad7fac621d23d29b4231e3156d06b"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aee8ad7fac621d23d29b4231e3156d06b">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; ForceFullNameCheck &gt;</a></td></tr>
-<tr class="separator:aee8ad7fac621d23d29b4231e3156d06b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a966faa886487c1774a25c5581af0a4d5"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a966faa886487c1774a25c5581af0a4d5"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a966faa886487c1774a25c5581af0a4d5">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; IEEE754Precise &gt;</a></td></tr>
-<tr class="separator:a966faa886487c1774a25c5581af0a4d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a728f72e05a8e728a3716410fa7f97cc6"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a728f72e05a8e728a3716410fa7f97cc6"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a728f72e05a8e728a3716410fa7f97cc6">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; MinifiedDocument &gt;</a></td></tr>
-<tr class="separator:a728f72e05a8e728a3716410fa7f97cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38303e5f3c4c4537025f9a92092c5314"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a38303e5f3c4c4537025f9a92092c5314"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a38303e5f3c4c4537025f9a92092c5314">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; MustVerifyEndOfDataIsValid &gt;</a></td></tr>
-<tr class="separator:a38303e5f3c4c4537025f9a92092c5314"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a621162320d97d3052f887c892b4f8218"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a621162320d97d3052f887c892b4f8218"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a621162320d97d3052f887c892b4f8218">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; PolicyCommentTypes &gt;</a></td></tr>
-<tr class="separator:a621162320d97d3052f887c892b4f8218"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65b12097999fe464d67584eeb9b0a640"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a65b12097999fe464d67584eeb9b0a640"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a65b12097999fe464d67584eeb9b0a640">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; TemporarilyMutateBuffer &gt;</a></td></tr>
-<tr class="separator:a65b12097999fe464d67584eeb9b0a640"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9cb9597e1fa6f821d7a657d759270c3b"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a9cb9597e1fa6f821d7a657d759270c3b"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a9cb9597e1fa6f821d7a657d759270c3b">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; UseExactMappingsByDefault &gt;</a></td></tr>
-<tr class="separator:a9cb9597e1fa6f821d7a657d759270c3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18b851ebea169669da0059adadbcecc7"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a18b851ebea169669da0059adadbcecc7"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a18b851ebea169669da0059adadbcecc7">daw::json::DAW_JSON_VER::json_details::default_policy_value&lt; ZeroTerminatedString &gt;</a></td></tr>
-<tr class="separator:a18b851ebea169669da0059adadbcecc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe121442eccc6278cab31849ea7d6aff"><td class="memTemplParams" colspan="2">template&lt;typename Policy &gt; </td></tr>
-<tr class="memitem:afe121442eccc6278cab31849ea7d6aff"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#afe121442eccc6278cab31849ea7d6aff">daw::json::DAW_JSON_VER::json_details::is_policy_flag</a> = policy_bits_width&lt;Policy&gt; &gt; 0</td></tr>
-<tr class="separator:afe121442eccc6278cab31849ea7d6aff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb759547a10d1bc5feb09e20e16bcef6"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:acb759547a10d1bc5feb09e20e16bcef6"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#acb759547a10d1bc5feb09e20e16bcef6">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; AllowEscapedNames &gt;</a></td></tr>
+<tr class="separator:acb759547a10d1bc5feb09e20e16bcef6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f7683b062f884b514e445d23f30cbae"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a5f7683b062f884b514e445d23f30cbae"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a5f7683b062f884b514e445d23f30cbae">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; CheckedParseMode &gt;</a></td></tr>
+<tr class="separator:a5f7683b062f884b514e445d23f30cbae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcabccf658a4a2c98c1c810d9ccaa5f0"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:afcabccf658a4a2c98c1c810d9ccaa5f0"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#afcabccf658a4a2c98c1c810d9ccaa5f0">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; ExcludeSpecialEscapes &gt;</a></td></tr>
+<tr class="separator:afcabccf658a4a2c98c1c810d9ccaa5f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a354d095a842b5b94e1b1ce4d0f27f0fd"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a354d095a842b5b94e1b1ce4d0f27f0fd"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a354d095a842b5b94e1b1ce4d0f27f0fd">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; ExecModeTypes &gt;</a></td></tr>
+<tr class="separator:a354d095a842b5b94e1b1ce4d0f27f0fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f569fd17df37488c73af66445ea4d4c"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a6f569fd17df37488c73af66445ea4d4c"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a6f569fd17df37488c73af66445ea4d4c">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; ForceFullNameCheck &gt;</a></td></tr>
+<tr class="separator:a6f569fd17df37488c73af66445ea4d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a377ebe3ee592798144b2877c8d9b9d82"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a377ebe3ee592798144b2877c8d9b9d82"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a377ebe3ee592798144b2877c8d9b9d82">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; IEEE754Precise &gt;</a></td></tr>
+<tr class="separator:a377ebe3ee592798144b2877c8d9b9d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31b3a088462586fe9747cbab2b26afde"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a31b3a088462586fe9747cbab2b26afde"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a31b3a088462586fe9747cbab2b26afde">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; MinifiedDocument &gt;</a></td></tr>
+<tr class="separator:a31b3a088462586fe9747cbab2b26afde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e25ad47ea8ae7202841f1f00e9e14f7"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a3e25ad47ea8ae7202841f1f00e9e14f7"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a3e25ad47ea8ae7202841f1f00e9e14f7">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; MustVerifyEndOfDataIsValid &gt;</a></td></tr>
+<tr class="separator:a3e25ad47ea8ae7202841f1f00e9e14f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0027882f3d091edd03b8848d243b2669"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a0027882f3d091edd03b8848d243b2669"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a0027882f3d091edd03b8848d243b2669">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; PolicyCommentTypes &gt;</a></td></tr>
+<tr class="separator:a0027882f3d091edd03b8848d243b2669"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69e7169d3de853b4d94ddb45c6f04e27"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a69e7169d3de853b4d94ddb45c6f04e27"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a69e7169d3de853b4d94ddb45c6f04e27">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; TemporarilyMutateBuffer &gt;</a></td></tr>
+<tr class="separator:a69e7169d3de853b4d94ddb45c6f04e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a234074b10697da89873b8d50393d31d2"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a234074b10697da89873b8d50393d31d2"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a234074b10697da89873b8d50393d31d2">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; UseExactMappingsByDefault &gt;</a></td></tr>
+<tr class="separator:a234074b10697da89873b8d50393d31d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad428526eab02bfffaefb01426b06fb11"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:ad428526eab02bfffaefb01426b06fb11"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ad428526eab02bfffaefb01426b06fb11">daw::json::DAW_JSON_VER::json_details::default_json_option_value&lt; ZeroTerminatedString &gt;</a></td></tr>
+<tr class="separator:ad428526eab02bfffaefb01426b06fb11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c93dd7d949c23be0934b5e53360f78b"><td class="memItemLeft" align="right" valign="top">static constexpr json_options_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a8c93dd7d949c23be0934b5e53360f78b">daw::json::DAW_JSON_VER::json_details::default_policy_flag</a></td></tr>
+<tr class="separator:a8c93dd7d949c23be0934b5e53360f78b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff4708de8f727e4ab3f7269c31857b3f"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:aff4708de8f727e4ab3f7269c31857b3f"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aff4708de8f727e4ab3f7269c31857b3f">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; AllowEscapedNames &gt;</a> = 1</td></tr>
+<tr class="separator:aff4708de8f727e4ab3f7269c31857b3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e7296b646b08d82a44512ac7f2c64e0"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a7e7296b646b08d82a44512ac7f2c64e0"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a7e7296b646b08d82a44512ac7f2c64e0">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; CheckedParseMode &gt;</a> = 1</td></tr>
+<tr class="separator:a7e7296b646b08d82a44512ac7f2c64e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58722cb1a1b8fd79f0bebdac4872cfea"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a58722cb1a1b8fd79f0bebdac4872cfea"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a58722cb1a1b8fd79f0bebdac4872cfea">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; ExcludeSpecialEscapes &gt;</a></td></tr>
+<tr class="separator:a58722cb1a1b8fd79f0bebdac4872cfea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a810ec788eefae6ecf7d6e4e67b8dc0cf"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a810ec788eefae6ecf7d6e4e67b8dc0cf"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a810ec788eefae6ecf7d6e4e67b8dc0cf">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; ExecModeTypes &gt;</a> = 2</td></tr>
+<tr class="separator:a810ec788eefae6ecf7d6e4e67b8dc0cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a272714d11cbc841c47095e44ccae95"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a9a272714d11cbc841c47095e44ccae95"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a9a272714d11cbc841c47095e44ccae95">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; ForceFullNameCheck &gt;</a> = 1</td></tr>
+<tr class="separator:a9a272714d11cbc841c47095e44ccae95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8df9867faa788b8251a19d566dd382e8"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a8df9867faa788b8251a19d566dd382e8"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a8df9867faa788b8251a19d566dd382e8">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; IEEE754Precise &gt;</a> = 1</td></tr>
+<tr class="separator:a8df9867faa788b8251a19d566dd382e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8acc2204fdc6c897a54b25e67073210c"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a8acc2204fdc6c897a54b25e67073210c"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a8acc2204fdc6c897a54b25e67073210c">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; MinifiedDocument &gt;</a> = 1</td></tr>
+<tr class="separator:a8acc2204fdc6c897a54b25e67073210c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea465f05ed3345d23b9bd19654543d35"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:aea465f05ed3345d23b9bd19654543d35"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aea465f05ed3345d23b9bd19654543d35">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; MustVerifyEndOfDataIsValid &gt;</a> = 1</td></tr>
+<tr class="separator:aea465f05ed3345d23b9bd19654543d35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4bc99f176fd13d012abfce07b3c3118"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:ac4bc99f176fd13d012abfce07b3c3118"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ac4bc99f176fd13d012abfce07b3c3118">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; PolicyCommentTypes &gt;</a> = 2</td></tr>
+<tr class="separator:ac4bc99f176fd13d012abfce07b3c3118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92f0ba01acda11c766058599e9e67872"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a92f0ba01acda11c766058599e9e67872"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a92f0ba01acda11c766058599e9e67872">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; TemporarilyMutateBuffer &gt;</a> = 1</td></tr>
+<tr class="separator:a92f0ba01acda11c766058599e9e67872"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cf1c8db5ffb38020178dab7a24a809b"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a5cf1c8db5ffb38020178dab7a24a809b"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a5cf1c8db5ffb38020178dab7a24a809b">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; UseExactMappingsByDefault &gt;</a> = 1</td></tr>
+<tr class="separator:a5cf1c8db5ffb38020178dab7a24a809b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc15551a08ec35656179bb1a7d801f08"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:adc15551a08ec35656179bb1a7d801f08"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#adc15551a08ec35656179bb1a7d801f08">daw::json::DAW_JSON_VER::json_details::json_option_bits_width&lt; ZeroTerminatedString &gt;</a></td></tr>
+<tr class="separator:adc15551a08ec35656179bb1a7d801f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed6acbd834d55d5a8165c99f683f2f8f"><td class="memTemplParams" colspan="2">template&lt;typename Policy &gt; </td></tr>
 <tr class="memitem:aed6acbd834d55d5a8165c99f683f2f8f"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aed6acbd834d55d5a8165c99f683f2f8f">daw::json::DAW_JSON_VER::json_details::policy_bits_start</a></td></tr>
 <tr class="separator:aed6acbd834d55d5a8165c99f683f2f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4e8452df52e800736f4192ce97d4233"><td class="memTemplParams" colspan="2">template&lt;typename &gt; </td></tr>
-<tr class="memitem:ae4e8452df52e800736f4192ce97d4233"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae4e8452df52e800736f4192ce97d4233">daw::json::DAW_JSON_VER::json_details::policy_bits_width</a> = 0</td></tr>
-<tr class="separator:ae4e8452df52e800736f4192ce97d4233"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a425a72c2a066ad3eb43018462a0772"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a1a425a72c2a066ad3eb43018462a0772"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a1a425a72c2a066ad3eb43018462a0772">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; AllowEscapedNames &gt;</a> = 1</td></tr>
-<tr class="separator:a1a425a72c2a066ad3eb43018462a0772"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac279ae786a1bd4888f2b968ea543092e"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:ac279ae786a1bd4888f2b968ea543092e"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ac279ae786a1bd4888f2b968ea543092e">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; CheckedParseMode &gt;</a> = 1</td></tr>
-<tr class="separator:ac279ae786a1bd4888f2b968ea543092e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13250298433788dd809f922b1bfb24e8"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a13250298433788dd809f922b1bfb24e8"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a13250298433788dd809f922b1bfb24e8">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; ExecModeTypes &gt;</a> = 2</td></tr>
-<tr class="separator:a13250298433788dd809f922b1bfb24e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37ee4844dcdbd2eda2b45d170629378a"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a37ee4844dcdbd2eda2b45d170629378a"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a37ee4844dcdbd2eda2b45d170629378a">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; ForceFullNameCheck &gt;</a> = 1</td></tr>
-<tr class="separator:a37ee4844dcdbd2eda2b45d170629378a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3ec9dfa824bfb75c58bff72aa0667f7"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:aa3ec9dfa824bfb75c58bff72aa0667f7"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa3ec9dfa824bfb75c58bff72aa0667f7">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; IEEE754Precise &gt;</a> = 1</td></tr>
-<tr class="separator:aa3ec9dfa824bfb75c58bff72aa0667f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae706d478a0238eefb3e8986cd3b9e6bd"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:ae706d478a0238eefb3e8986cd3b9e6bd"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae706d478a0238eefb3e8986cd3b9e6bd">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; MinifiedDocument &gt;</a> = 1</td></tr>
-<tr class="separator:ae706d478a0238eefb3e8986cd3b9e6bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a31c7659ef23887406742ce83e12a46"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a8a31c7659ef23887406742ce83e12a46"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a8a31c7659ef23887406742ce83e12a46">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; MustVerifyEndOfDataIsValid &gt;</a></td></tr>
-<tr class="separator:a8a31c7659ef23887406742ce83e12a46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0568dca32cbd200ed5b91d9f5fd243df"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a0568dca32cbd200ed5b91d9f5fd243df"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a0568dca32cbd200ed5b91d9f5fd243df">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; PolicyCommentTypes &gt;</a> = 2</td></tr>
-<tr class="separator:a0568dca32cbd200ed5b91d9f5fd243df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26cc005bb7bdbdeed82bae2f80e553c4"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a26cc005bb7bdbdeed82bae2f80e553c4"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a26cc005bb7bdbdeed82bae2f80e553c4">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; TemporarilyMutateBuffer &gt;</a> = 1</td></tr>
-<tr class="separator:a26cc005bb7bdbdeed82bae2f80e553c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa17346c5659d46a039624af828d239f7"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:aa17346c5659d46a039624af828d239f7"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#aa17346c5659d46a039624af828d239f7">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; UseExactMappingsByDefault &gt;</a></td></tr>
-<tr class="separator:aa17346c5659d46a039624af828d239f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5164c794c34533b0f2003efe7a4c2bb"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:ad5164c794c34533b0f2003efe7a4c2bb"><td class="memTemplItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ad5164c794c34533b0f2003efe7a4c2bb">daw::json::DAW_JSON_VER::json_details::policy_bits_width&lt; ZeroTerminatedString &gt;</a> = 1</td></tr>
-<tr class="separator:ad5164c794c34533b0f2003efe7a4c2bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

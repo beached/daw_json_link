@@ -153,8 +153,7 @@ namespace jkj::dragonbox {
 		}
 
 		template<class Float>
-		inline char *to_chars_impl( unsigned_fp_t<Float> v,
-		                                      char *buffer ) {
+		inline char *to_chars_impl( unsigned_fp_t<Float> v, char *buffer ) {
 			auto output = v.significand;
 			auto const olength = decimal_length( output );
 

@@ -79,7 +79,7 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:af8b2573393e152cb9ada0b5a934c26cc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#af8b2573393e152cb9ada0b5a934c26cc">base_type</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a24d58026110c00cd97c97e2383595517">json_details::unwrap_type</a>&lt; T, Nullable &gt;</td></tr>
+<tr class="memitem:af8b2573393e152cb9ada0b5a934c26cc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#af8b2573393e152cb9ada0b5a934c26cc">base_type</a> = <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae45720d29a145b4067fbf3bf445dbb8b">json_details::unwrap_type</a>&lt; T, Nullable &gt;</td></tr>
 <tr class="separator:af8b2573393e152cb9ada0b5a934c26cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0af7830a71e48996f15dc2a86bde4894"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#a0af7830a71e48996f15dc2a86bde4894">constructor_t</a> = Constructor</td></tr>
 <tr class="separator:a0af7830a71e48996f15dc2a86bde4894"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -101,8 +101,8 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:aa3904b2e79c2a7a5edca78deab1e9f6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7867b6f6742acab0810d3b7486c0a718"><td class="memItemLeft" align="right" valign="top">static constexpr daw::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#a7867b6f6742acab0810d3b7486c0a718">name</a> = Name</td></tr>
 <tr class="separator:a7867b6f6742acab0810d3b7486c0a718"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a815f8655fb6e19cf199c7f412e129653"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#a815f8655fb6e19cf199c7f412e129653">nullable</a> = Nullable == <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af4048fed315a6329c25e8a1653312f7ea46ad517b8b7aa4e368a7cc226533bfb6">JsonNullable::Nullable</a></td></tr>
-<tr class="separator:a815f8655fb6e19cf199c7f412e129653"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a6e214faea6aa90c357e2521c7a6697"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#a4a6e214faea6aa90c357e2521c7a6697">nullable</a> = Nullable</td></tr>
+<tr class="separator:a4a6e214faea6aa90c357e2521c7a6697"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9929e61c3e5ab500f930a6a61666e08"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a9fa3d743161867acbc830a21ef6a9487">JsonBaseParseTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#ab9929e61c3e5ab500f930a6a61666e08">underlying_json_type</a></td></tr>
 <tr class="separator:ab9929e61c3e5ab500f930a6a61666e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -113,10 +113,10 @@ Static Public Attributes</h2></td></tr>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html">daw::json::DAW_JSON_VER::json_delayed</a>&lt; Name, T, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#af8b2573393e152cb9ada0b5a934c26cc">base_type</a> =  <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a24d58026110c00cd97c97e2383595517">json_details::unwrap_type</a>&lt;T, Nullable&gt;</td>
+          <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html">daw::json::DAW_JSON_VER::json_delayed</a>&lt; Name, T, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#af8b2573393e152cb9ada0b5a934c26cc">base_type</a> =  <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae45720d29a145b4067fbf3bf445dbb8b">json_details::unwrap_type</a>&lt;T, Nullable&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -129,7 +129,7 @@ template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  =
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html">daw::json::DAW_JSON_VER::json_delayed</a>&lt; Name, T, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#a0af7830a71e48996f15dc2a86bde4894">constructor_t</a> =  Constructor</td>
@@ -145,7 +145,7 @@ template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  =
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html">daw::json::DAW_JSON_VER::json_delayed</a>&lt; Name, T, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#a468e340d14c4ae6b6061fcede268d73a">i_am_a_json_type</a> =  void</td>
@@ -161,7 +161,7 @@ template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  =
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html">daw::json::DAW_JSON_VER::json_delayed</a>&lt; Name, T, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#a3086c77700edbad4221060890a631f06">parse_to_t</a> =  std::invoke_result_t&lt;Constructor, char const *, char const *&gt;</td>
@@ -177,7 +177,7 @@ template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  =
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
 <div class="memtemplate">
 template&lt;JSONNAMETYPE NewName&gt; </div>
       <table class="memname">
@@ -195,7 +195,7 @@ template&lt;JSONNAMETYPE NewName&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html">daw::json::DAW_JSON_VER::json_delayed</a>&lt; Name, T, Constructor, Nullable &gt;::<a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html#a396fd48c66aa9f070c46541c9ffa4bfa">wrapped_type</a> =  <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#ae19f177ce73a48571cd981975969a2fe">json_value</a></td>
@@ -212,7 +212,7 @@ template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  =
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -239,7 +239,7 @@ template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  =
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -263,7 +263,7 @@ template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  =
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -281,19 +281,19 @@ template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  =
 
 </div>
 </div>
-<a id="a815f8655fb6e19cf199c7f412e129653"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a815f8655fb6e19cf199c7f412e129653">&#9670;&nbsp;</a></span>nullable</h2>
+<a id="a4a6e214faea6aa90c357e2521c7a6697"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a6e214faea6aa90c357e2521c7a6697">&#9670;&nbsp;</a></span>nullable</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html">daw::json::DAW_JSON_VER::json_delayed</a>&lt; Name, T, Constructor, Nullable &gt;::nullable = Nullable == <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#af4048fed315a6329c25e8a1653312f7ea46ad517b8b7aa4e368a7cc226533bfb6">JsonNullable::Nullable</a></td>
+          <td class="memname">constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r.html#a7e6893cf505e9df2b452921587a35881">JsonNullable</a> <a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__delayed.html">daw::json::DAW_JSON_VER::json_delayed</a>&lt; Name, T, Constructor, Nullable &gt;::nullable = Nullable</td>
         </tr>
       </table>
   </td>
@@ -311,7 +311,7 @@ template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  =
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullable::Never&gt; </div>
+template&lt;JSONNAMETYPE Name, typename T  = json_value, typename Constructor  = daw::construct_a_t&lt;T&gt;, JsonNullable Nullable = JsonNullDefault&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">

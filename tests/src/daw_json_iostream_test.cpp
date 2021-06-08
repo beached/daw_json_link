@@ -19,12 +19,10 @@ namespace daw::json {
 		// ostream &, NumberX const & ) is available.  When used, it will output the
 		// JSON serialization
 		using opt_into_iostreams = void;
-#ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_number<"x", int>>;
-#else
+
 		static constexpr char const x[] = "x";
-		using type = json_member_list<json_number<x, int>>;
-#endif
+		using type = json_member_list<json_link<x, int>>;
+
 		static constexpr auto to_json_data( NumberX const &v ) {
 			return std::forward_as_tuple( v.x );
 		}
@@ -43,14 +41,12 @@ int main( ) {
 
 	DAW_CONSTEXPR std::string_view const numberx_in_json_array =
 	  R"([{"x":1},{"x":2},{"x":3}])";
-	std::vector<NumberX> vec_nx =
+	auto const vec_nx =
 	  daw::json::from_json_array<NumberX>( numberx_in_json_array );
-	std::deque<NumberX> deq_nx =
-	  daw::json::from_json_array<NumberX, std::deque<NumberX>>(
-	    numberx_in_json_array );
-	std::list<NumberX> lst_nx =
-	  daw::json::from_json_array<NumberX, std::list<NumberX>>(
-	    numberx_in_json_array );
+	auto const deq_nx = daw::json::from_json_array<NumberX, std::deque<NumberX>>(
+	  numberx_in_json_array );
+	auto const lst_nx = daw::json::from_json_array<NumberX, std::list<NumberX>>(
+	  numberx_in_json_array );
 
 	std::cout << nx << '\n';
 	std::cout << vec_nx << '\n';

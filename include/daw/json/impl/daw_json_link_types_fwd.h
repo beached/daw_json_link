@@ -123,12 +123,12 @@ namespace daw::json {
 		 * are supported
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
-		template<JSONNAMETYPE Name, typename JsonElement,
-		         typename Container =
-		           std::vector<typename json_details::json_deduced_type<
-		             JsonElement>::parse_to_t>,
-		         typename Constructor = default_constructor<Container>,
-		         JsonNullable Nullable = JsonNullable::MustExist>
+		template<
+		  JSONNAMETYPE Name, typename JsonElement,
+		  typename Container = std::vector<
+		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
+		  typename Constructor = default_constructor<Container>,
+		  JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_array;
 
 		/** Link to a nullable JSON array
@@ -141,11 +141,11 @@ namespace daw::json {
 		 * default will use the Containers constructor.  Both normal and aggregate
 		 * are supported
 		 */
-		template<JSONNAMETYPE Name, typename JsonElement,
-		         typename Container =
-		           std::vector<typename json_details::json_deduced_type<
-		             JsonElement>::parse_to_t>,
-		         typename Constructor = nullable_constructor<Container>>
+		template<
+		  JSONNAMETYPE Name, typename JsonElement,
+		  typename Container = std::vector<
+		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
+		  typename Constructor = nullable_constructor<Container>>
 		using json_array_null =
 		  json_array<Name, JsonElement, Container, Constructor, JsonNullDefault>;
 
@@ -165,9 +165,10 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename Container,
-		         typename JsonValueType = json_details::json_deduced_type<typename Container::mapped_type>,
-		         typename JsonKeyType = json_details::json_deduced_type<
-		           typename Container::key_type>,
+		         typename JsonValueType =
+		           json_details::json_deduced_type<typename Container::mapped_type>,
+		         typename JsonKeyType =
+		           json_details::json_deduced_type<typename Container::key_type>,
 		         typename Constructor = default_constructor<Container>,
 		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_key_value_array;
@@ -187,9 +188,10 @@ namespace daw::json {
 		 * the Containers constructor.  Both normal and aggregate are supported
 		 */
 		template<JSONNAMETYPE Name, typename Container,
-		         typename JsonValueType = json_details::json_deduced_type<typename Container::mapped_type>,
-		         typename JsonKeyType = json_details::json_deduced_type<
-		           typename Container::key_type>,
+		         typename JsonValueType =
+		           json_details::json_deduced_type<typename Container::mapped_type>,
+		         typename JsonKeyType =
+		           json_details::json_deduced_type<typename Container::key_type>,
 		         typename Constructor = nullable_constructor<Container>>
 		using json_key_value_array_null =
 		  json_key_value_array<Name, Container, JsonValueType, JsonKeyType,

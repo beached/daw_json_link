@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['parser_5fpolicies_2emd_1067',['parser_policies.md',['../parser__policies_8md.html',1,'']]],
-  ['parsing_5findividual_5fmembers_2emd_1068',['parsing_individual_members.md',['../parsing__individual__members_8md.html',1,'']]]
+  ['optional_5fvalues_2emd_1167',['optional_values.md',['../optional__values_8md.html',1,'']]]
 ];

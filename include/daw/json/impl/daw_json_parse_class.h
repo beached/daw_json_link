@@ -38,9 +38,10 @@ namespace daw::json {
 				 * @param desired_position desired member index
 				 */
 				template<bool Nullable, typename ParseState>
-				DAW_ATTRIB_INLINE inline constexpr void maybe_skip_members( ParseState &parse_state,
-				                                   std::size_t &current_position,
-				                                   std::size_t desired_position ) {
+				DAW_ATTRIB_INLINE inline constexpr void
+				maybe_skip_members( ParseState &parse_state,
+				                    std::size_t &current_position,
+				                    std::size_t desired_position ) {
 
 					daw_json_assert_weak( current_position <= desired_position,
 					                      ErrorReason::OutOfOrderOrderedMembers,

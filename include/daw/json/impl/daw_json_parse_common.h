@@ -1051,5 +1051,5 @@ namespace daw::json {
 			inline constexpr bool can_defer_construction_v =
 			  std::is_invocable_v<Constructor, typename Members::parse_to_t...>;
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

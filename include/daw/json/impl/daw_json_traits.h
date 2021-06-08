@@ -105,11 +105,13 @@ namespace daw::json {
 		using json_data_contract_trait_t = typename json_data_contract<T>::type;
 
 		namespace json_details {
-				template<typename T>
-				using json_map_alias_test = typename json_data_contract_trait_t<T>::i_am_a_json_map_alias;
+			template<typename T>
+			using json_map_alias_test =
+			  typename json_data_contract_trait_t<T>::i_am_a_json_map_alias;
 
-			  template<typename T>
-			  inline constexpr bool is_json_map_alias_v = daw::is_detected_v<json_map_alias_test, T>;
+			template<typename T>
+			inline constexpr bool is_json_map_alias_v =
+			  daw::is_detected_v<json_map_alias_test, T>;
 
 			template<typename T>
 			using force_aggregate_construction_test =
