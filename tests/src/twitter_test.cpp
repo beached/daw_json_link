@@ -54,7 +54,7 @@ inline namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty( ), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 
@@ -70,7 +70,7 @@ inline namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty(), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 
@@ -86,7 +86,7 @@ inline namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty(), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
@@ -102,7 +102,7 @@ inline namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty(), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 #endif
@@ -118,7 +118,7 @@ inline namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty(), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 #if not defined( _MSC_VER ) or defined( __clang__ )
@@ -134,7 +134,7 @@ inline namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty(), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 #endif
@@ -151,7 +151,7 @@ inline namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty(), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 
@@ -167,7 +167,7 @@ inline namespace {
 			  json_data );
 			daw::do_not_optimize( twitter_result );
 			test_assert( twitter_result, "Missing value" );
-			test_assert( twitter_result->statuses.size( ) > 0, "Expected values" );
+			test_assert( not twitter_result->statuses.empty(), "Expected values" );
 			test_assert( twitter_result->statuses.front( ).user.id == 1186275104,
 			             "Missing value" );
 #if defined( __cpp_exceptions ) or defined( __EXCEPTIONS ) or \

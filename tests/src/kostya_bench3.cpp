@@ -57,8 +57,10 @@ std::string read_file( std::string const &filename ) {
 }
 
 coordinate_t calc( std::string const &text ) {
-	auto x = 0.0, y = 0.0, z = 0.0;
-	auto len = 0;
+	double x = 0.0;
+	double y = 0.0;
+	double z = 0.0;
+	std::size_t len = 0;
 
 	using namespace daw::json;
 	using range_t =
@@ -72,7 +74,8 @@ coordinate_t calc( std::string const &text ) {
 		z += c.z;
 	}
 
-	return coordinate_t{ x / len, y / len, z / len };
+	double const dlen = static_cast<double>( len );
+	return coordinate_t{ x / dlen, y / dlen, z / dlen };
 }
 
 int main( ) {

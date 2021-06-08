@@ -38,7 +38,7 @@ int main( int argc, char **argv ) {
 
 			auto new_json_result = std::string( );
 			new_json_result.resize( ( json_data.size( ) * 15U ) / 10U );
-			auto last = daw::json::to_json( canada_result, new_json_result.data( ) );
+			auto *last = daw::json::to_json( canada_result, new_json_result.data( ) );
 			(void)last;
 			// new_json_result.resize( std::distance( new_json_result.data( ), last )
 			// );

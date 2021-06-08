@@ -25,7 +25,7 @@ class JSONMinifyHandler {
 		bool is_class;
 		bool is_first = true;
 
-		constexpr stack_value( bool isClass )
+		explicit constexpr stack_value( bool isClass )
 		  : is_class( isClass ) {}
 	};
 	std::vector<stack_value> member_count_stack{ };
@@ -45,7 +45,7 @@ class JSONMinifyHandler {
 	}
 
 public:
-	JSONMinifyHandler( OutputIterator it )
+	explicit JSONMinifyHandler( OutputIterator it )
 	  : out_it( std::move( it ) ) {}
 
 	template<typename ParsePolicy>

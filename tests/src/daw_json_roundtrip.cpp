@@ -45,7 +45,7 @@ class JSONMinifyHandler {
 	}
 
 public:
-	JSONMinifyHandler( OutputIterator it )
+	explicit JSONMinifyHandler( OutputIterator it )
 	  : out_it( std::move( it ) ) {}
 
 	bool handle_on_number( double d ) {
@@ -55,7 +55,7 @@ public:
 
 	template<typename ParseState>
 	bool handle_on_string( daw::json::basic_json_value<ParseState> jv ) {
-		std::string const r = daw::json::from_json<std::string>( jv );
+		auto const r = daw::json::from_json<std::string>( jv );
 		out_it = daw::json::to_json( r, out_it );
 		return true;
 	}

@@ -499,8 +499,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 			auto rng = daw::json::NoCommentSkippingPolicyChecked(
 			  num.data( ), num.data( ) + num.size( ) );
 			rng = daw::json::json_details::skip_number( rng );
-			using json_member =
-			  daw::json::json_details::json_deduced_type<double>;
+			using json_member = daw::json::json_details::json_deduced_type<double>;
 			return daw::json::json_details::parse_value<json_member, KnownBounds>(
 			  rng, daw::json::ParseTag<json_member::expected_type>{ } );
 		} else {
@@ -512,8 +511,8 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 	char *nend = nullptr;
 	double const strod_parse_dbl = std::strtod( num.data( ), &nend );
 
-	std::uint64_t const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
-	std::uint64_t const ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
+	auto const ui0 = daw::bit_cast<std::uint64_t>( lib_parse_dbl );
+	auto const ui1 = daw::bit_cast<std::uint64_t>( strod_parse_dbl );
 	auto const diff = std::max( ui0, ui1 ) - std::min( ui0, ui1 );
 	if( always_disp ) {
 		auto const old_precision = std::cout.precision( );
@@ -540,8 +539,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 				auto rng = daw::json::NoCommentSkippingPolicyChecked(
 				  num.data( ), num.data( ) + num.size( ) );
 				rng = daw::json::json_details::skip_number( rng );
-				using json_member =
-				  daw::json::json_details::json_deduced_type<double>;
+				using json_member = daw::json::json_details::json_deduced_type<double>;
 				return daw::json::json_details::parse_value<json_member, KnownBounds>(
 				  rng, daw::json::ParseTag<json_member::expected_type>{ } );
 			} else {
@@ -949,11 +947,9 @@ int main( int, char ** )
 			if( not m.empty( ) ) {
 				return false;
 			}
-			auto s = to_json( m );
-			if( s != "{}" ) {
-				return false;
-			}
-			return true;
+			auto const s = to_json( m );
+
+			return s == "{}";
 		} catch( daw::json::json_exception const &jex ) {
 			std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 			throw;
