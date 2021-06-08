@@ -8,17 +8,23 @@
 
 #pragma once
 
+#include "version.h"
+
 #include "../daw_json_exception.h"
-#include "daw_count_digits.h"
 #include "daw_json_assert.h"
 #include "daw_json_parse_digit.h"
 #include "daw_json_parse_policy_policy_details.h"
 #include "daw_json_parse_string_quote.h"
-#include "version.h"
 
 #include <daw/daw_attributes.h>
+#include <daw/daw_bit_cast.h>
 #include <daw/daw_likely.h>
 #include <daw/daw_unreachable.h>
+
+
+#if defined( DAW_CX_BIT_CAST )
+#include "daw_count_digits.h"
+#endif
 
 #include <ciso646>
 #include <iterator>
@@ -145,6 +151,7 @@ namespace daw::json {
 			 * ParseState
 			 */
 
+#if false and defined( DAW_CX_BIT_CAST )
 			template<typename ParseState,
 			         std::enable_if_t<( ParseState::is_unchecked_input or
 			                            ParseState::is_zero_terminated_string ),
@@ -193,7 +200,9 @@ namespace daw::json {
 			         std::enable_if_t<not( ParseState::is_unchecked_input or
 			                               ParseState::is_zero_terminated_string ),
 			                          std::nullptr_t> = nullptr>
-			// template<typename ParseState>
+#else
+			template<typename ParseState>
+#endif
 			[[nodiscard]] constexpr ParseState
 			skip_number( ParseState &parse_state ) {
 				using CharT = typename ParseState::CharT;
@@ -379,7 +388,7 @@ namespace daw::json {
 			[[nodiscard]] inline constexpr ParseState
 			skip_literal( ParseState &parse_state ) {
 				daw_json_assert_weak( parse_state.has_more( ),
-															ErrorReason::UnexpectedEndOfData, parse_state );
+				                      ErrorReason::UnexpectedEndOfData, parse_state );
 
 				// reset counter
 				parse_state.counter = 0;
