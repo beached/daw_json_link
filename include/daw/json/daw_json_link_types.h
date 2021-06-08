@@ -37,9 +37,10 @@ namespace daw::json {
 			  "Only JSON Link mapping types can appear in a "
 			  "json_member_list(e.g. json_number, json_string...)" );
 
-			static_assert( not std::disjunction_v<is_no_name<JsonMembers>...>,
-			               "All members must have a name and not no_name in a "
-			               "json_member_list" );
+			static_assert(
+			  not std::disjunction_v<json_details::is_no_name<JsonMembers>...>,
+			  "All members must have a name and not no_name in a "
+			  "json_member_list" );
 			/**
 			 * Serialize a C++ class to JSON data
 			 * @tparam OutputIterator An output iterator with a char value_type
@@ -94,14 +95,13 @@ namespace daw::json {
 		struct json_class_map {
 			using i_am_a_json_member_list = void;
 			using i_am_a_json_map_alias = void;
-			using json_member =
-			  json_details::json_deduced_type<JsonMember>;
+			using json_member = json_details::json_deduced_type<JsonMember>;
 			static_assert( json_details::is_a_json_type_v<json_member>,
 			               "Only JSON Link mapping types can appear in a "
 			               "json_class_map(e.g. json_number, json_string...)" );
 
 			static_assert(
-			  is_no_name_v<json_member>,
+			  json_details::is_no_name_v<json_member>,
 			  "The JSONMember cannot be named, it does not make sense in "
 			  "this context" );
 
@@ -175,8 +175,7 @@ namespace daw::json {
 			  json_details::has_json_deduced_type<JsonMember>::value,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			using json_member =
-			  json_details::json_deduced_type<JsonMember>;
+			using json_member = json_details::json_deduced_type<JsonMember>;
 			using parse_to_t = typename json_member::parse_to_t;
 		};
 
@@ -230,9 +229,8 @@ namespace daw::json {
 
 			template<typename Constructor>
 			using result_type = json_details::json_class_parse_result_t<
-			  Constructor,
-			  json_details::ordered_member_subtype_t<
-			    json_details::json_deduced_type<JsonMembers>>...>;
+			  Constructor, json_details::ordered_member_subtype_t<
+			                 json_details::json_deduced_type<JsonMembers>>...>;
 			/**
 			 *
 			 * Parse JSON data and construct a C++ class.  This is used by parse_value
@@ -362,8 +360,9 @@ namespace daw::json {
 			               "json_number requires an arithmetic type" );
 			using parse_to_t = std::invoke_result_t<Constructor, base_type>;
 			static_assert(
-			  not is_nullable_json_value_v<nullable> or
-			    std::is_same<parse_to_t, std::invoke_result_t<Constructor>>::value,
+			  std::disjunction_v<
+			    not_trait<json_details::is_nullable_json_value<nullable>>,
+			    std::is_same<parse_to_t, std::invoke_result_t<Constructor>>>,
 			  "Default ctor of constructor must match that of base" );
 			using constructor_t = Constructor;
 			static constexpr daw::string_view name = Name;
@@ -603,8 +602,8 @@ namespace daw::json {
 			  sizeof...( JsonElements ) <= 5U,
 			  "There can be at most 5 items, one for each JsonBaseParseTypes" );
 			static_assert(
-			  std::conjunction<json_details::has_json_deduced_type<
-			    JsonElements>...>::value,
+			  std::conjunction<
+			    json_details::has_json_deduced_type<JsonElements>...>::value,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 			using element_map_t =
@@ -777,8 +776,7 @@ namespace daw::json {
 				  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
 				  "Missing specialization of daw::json::json_data_contract for class "
 				  "mapping or specialization of daw::json::json_link_basic_type_map" );
-				using json_element_t =
-				  json_details::json_deduced_type<JsonElement>;
+				using json_element_t = json_details::json_deduced_type<JsonElement>;
 				static_assert( traits::not_same_v<json_element_t, void>,
 				               "Unknown JsonElement type." );
 				static_assert( json_details::ensure_json_type<json_element_t>::value,
@@ -826,8 +824,7 @@ namespace daw::json {
 			  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			using json_element_t =
-			  json_details::json_deduced_type<JsonElement>;
+			using json_element_t = json_details::json_deduced_type<JsonElement>;
 			static_assert( traits::not_same_v<json_element_t, void>,
 			               "Unknown JsonElement type." );
 			static_assert( json_details::is_a_json_type_v<json_element_t>,
@@ -887,8 +884,7 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 
-			using json_element_t =
-			  json_details::json_deduced_type<JsonValueType>;
+			using json_element_t = json_details::json_deduced_type<JsonValueType>;
 
 			static_assert( traits::not_same_v<json_element_t, void>,
 			               "Unknown JsonValueType type." );
@@ -899,12 +895,11 @@ namespace daw::json {
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
 
-			using json_key_t =
-			  json_details::json_deduced_type<JsonKeyType>;
+			using json_key_t = json_details::json_deduced_type<JsonKeyType>;
 
 			static_assert( traits::not_same_v<json_key_t, void>,
 			               "Unknown JsonKeyType type." );
-			static_assert( is_no_name_v<json_key_t>,
+			static_assert( json_details::is_no_name_v<json_key_t>,
 			               "Key member name must be the default no_name" );
 
 			static constexpr daw::string_view name = Name;
@@ -1032,31 +1027,6 @@ namespace daw::json {
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_delayed<NewName, T, Constructor, Nullable>;
-		};
-
-		template<typename T, std::size_t N, bool MustConsumeAll = false>
-		struct ArrayConstructor {
-			constexpr ArrayConstructor( ) = default;
-
-			constexpr std::array<T, 0> operator( )( ) const {
-				return { };
-			}
-
-			template<typename Iterator, typename Sentinel>
-			constexpr std::array<T, N> operator( )( Iterator first,
-			                                        Sentinel last ) const {
-				std::array<T, N> result{ };
-				std::size_t pos = 0;
-				while( ( pos < N ) & ( first != last ) ) {
-					result[pos++] = *first;
-					++first;
-				}
-				if constexpr( MustConsumeAll ) {
-					daw_json_assert( ( first == last ) & ( pos == N ),
-					                 ErrorReason::UnknownMember );
-				}
-				return result;
-			}
 		};
 
 		/***

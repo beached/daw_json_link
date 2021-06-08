@@ -20,8 +20,6 @@ namespace daw::json {
 		 * Nullable - members can have a value of null or be missing
 		 * NullVisible - members must exist but can have a value of null
 		 */
-		// TODO: enum class JsonNullable: unsigned { MustExist, Nullable,
-		// NullVisible }; // 2bits
 		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<JsonNullable> = 2;

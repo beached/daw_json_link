@@ -279,9 +279,9 @@ namespace daw::json {
 			}
 
 			/***
-			 * Check if rhs is not equivilent to self
-			 * @param rhs iterator to compare for equivilence with
-			 * @return true if the rhs is not equivilent
+			 * Check if rhs is not equivalent to self
+			 * @param rhs iterator to compare for equivalence with
+			 * @return true if the rhs is not equivalent
 			 */
 			[[nodiscard]] constexpr bool
 			operator!=( basic_json_value_iterator<ParseState> const &rhs ) const {

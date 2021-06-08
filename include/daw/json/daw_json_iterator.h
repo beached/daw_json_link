@@ -163,8 +163,8 @@ namespace daw::json {
 			}
 
 			/***
-			 * A dereferenable value proxy holding the result of operator*
-			 * This is for compatability with the Iterator concepts and should be
+			 * A dereferencable value proxy holding the result of operator*
+			 * This is for compatibility with the Iterator concepts and should be
 			 * avoided
 			 * @pre good( ) returns true
 			 * @return an arrow_proxy of the operator* result
@@ -201,7 +201,7 @@ namespace daw::json {
 			}
 
 			/***
-			 * Is it ok to dereference itereator
+			 * Is it ok to dereference iterator
 			 * @return true when there is parse data available
 			 */
 			[[nodiscard]] inline constexpr bool good( ) const {
@@ -218,9 +218,9 @@ namespace daw::json {
 			}
 
 			/***
-			 * Compare rhs for equivilence
+			 * Compare rhs for equivalence
 			 * @param rhs Another json_array_iterator
-			 * @return true when equivilent to rhs
+			 * @return true when equivalent to rhs
 			 */
 			[[nodiscard]] inline constexpr bool
 			operator==( json_array_iterator const &rhs ) const {
@@ -234,9 +234,9 @@ namespace daw::json {
 			}
 
 			/***
-			 * Check if the other iterator is not equivilent
+			 * Check if the other iterator is not equivalent
 			 * @param rhs another json_array_iterator
-			 * @return true when rhs is not equivilent
+			 * @return true when rhs is not equivalent
 			 */
 			[[nodiscard]] inline constexpr bool
 			operator!=( json_array_iterator const &rhs ) const {

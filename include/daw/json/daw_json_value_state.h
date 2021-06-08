@@ -156,7 +156,7 @@ namespace daw::json {
 					                             ( t == JsonBaseParseTypes::Array );
 				                      }( ) ),
 				                      ErrorReason::ExpectedArrayOrClassStart,
-				                      val.get_raw_state() );
+				                      val.get_raw_state( ) );
 			}
 
 			constexpr basic_stateful_json_value( )
@@ -206,7 +206,7 @@ namespace daw::json {
 			 * Create a basic_json_member for the named member
 			 * @pre name must be valid
 			 * @param key name of member
-			 * @return a new basic_json_member for the JSON data or an emtpy one if
+			 * @return a new basic_json_member for the JSON data or an empty one if
 			 * the member does not exist
 			 */
 			[[nodiscard]] constexpr basic_json_value<ParseState>

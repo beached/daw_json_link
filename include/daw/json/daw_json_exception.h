@@ -213,9 +213,9 @@ namespace daw::json {
 				char const *pointer;
 				char token;
 
-				constexpr data_t( char const *p )
+				explicit constexpr data_t( char const *p )
 				  : pointer( p ) {}
-				constexpr data_t( char t )
+				explicit constexpr data_t( char t )
 				  : token( t ) {}
 			} m_data{ nullptr };
 			char const *m_parse_loc = nullptr;

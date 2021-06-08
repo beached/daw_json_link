@@ -65,7 +65,7 @@ namespace daw {
 		char const *first = std::data( key );
 		char const *const last = daw::data_end( key );
 		while( ( last - first ) >= 4 ) {
-			// Here is a source of differing results across endiannesses.
+			// Here is a source of differing results across endianness.
 			// A swap here has no effects on hash properties though.
 			k = daw::to_uint32_buffer( first );
 			first += 4;

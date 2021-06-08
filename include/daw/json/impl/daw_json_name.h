@@ -114,10 +114,12 @@ namespace daw::json {
 
 		} // namespace json_details
 #endif
-		template<typename JsonMember>
-		using is_no_name = std::bool_constant<JsonMember::name == no_name>;
+		namespace json_details {
+			template<typename JsonMember>
+			using is_no_name = std::bool_constant<JsonMember::name == no_name>;
 
-		template<typename JsonMember>
-		inline constexpr bool is_no_name_v = is_no_name<JsonMember>::value;
-	} // namespace DAW_JSON_VER
+			template<typename JsonMember>
+			inline constexpr bool is_no_name_v = is_no_name<JsonMember>::value;
+		} // namespace json_details
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

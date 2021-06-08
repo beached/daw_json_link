@@ -318,7 +318,6 @@ namespace daw::json {
 			}
 
 #endif
-			// TODO use zstring opt
 			template<bool is_unchecked_input, char... keys, typename CharT>
 			DAW_ATTRIB_FLATINLINE inline CharT *
 			mem_move_to_next_of( runtime_exec_tag, CharT *first, CharT *last ) {

@@ -110,8 +110,8 @@ namespace daw::twitter {
 
 namespace daw::json {
 	template<>
-	struct json_link_basic_type_map<daw::twitter::String> {
-		constexpr static JsonParseTypes parse_type = JsonParseTypes::StringEscaped;
+	struct json_data_contract<daw::twitter::String> {
+		using type = json_class_map<json_string_raw<no_name, daw::twitter::String>>;
 	};
 
 	template<>

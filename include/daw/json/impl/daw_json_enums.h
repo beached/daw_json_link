@@ -74,10 +74,6 @@ namespace daw::json {
 		 */
 		enum class JsonNullable : unsigned { MustExist, Nullable, NullVisible };
 
-		template<JsonNullable nullable>
-		inline constexpr bool is_nullable_json_value_v =
-		  nullable != JsonNullable::MustExist;
-
 		/***
 		 * When not MustExist, the default Null type for unspecified _null json
 		 * types
@@ -89,10 +85,22 @@ namespace daw::json {
 		 */
 		enum class CustomJsonTypes { String, Literal, Any };
 
+		namespace json_details {
+			template<JsonNullable nullable>
+			using is_nullable_json_value =
+			  std::bool_constant<nullable != JsonNullable::MustExist>;
 
-		template<JsonParseTypes ParseType, JsonNullable Nullable>
-		inline constexpr JsonParseTypes get_parse_type_v =
-		  is_nullable_json_value_v<Nullable> ? JsonParseTypes::Null : ParseType;
+			template<JsonNullable nullable>
+			inline constexpr bool is_nullable_json_value_v =
+			  is_nullable_json_value<nullable>::value;
+		} // namespace json_details
+
+		inline namespace details {
+			template<JsonParseTypes ParseType, JsonNullable Nullable>
+			inline constexpr JsonParseTypes get_parse_type_v =
+			  json_details::is_nullable_json_value_v<Nullable> ? JsonParseTypes::Null
+			                                                   : ParseType;
+		} // namespace details
 
 		/**
 		 * Tag lookup for parsing overload selection
