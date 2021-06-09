@@ -1,7 +1,7 @@
 // Copyright (c) Darrell Wright
 //
 // Distributed under the Boost Software License, version 1.0. (see accompanying
-// file license or copy at http://www.boost.org/license_1_0.txt)
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 // Official repository: https://github.com/beached/daw_json_link
 //
