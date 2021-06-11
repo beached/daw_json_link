@@ -10,7 +10,6 @@
 #include <daw/json/daw_json_link.h>
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <iostream>
 #include <limits>
@@ -28,7 +27,7 @@ struct Foo {
 	int *data;
 };
 
-template<typename T, std::size_t /*selector*/ = 0>
+template<JSONNAMETYPE, typename T>
 struct ArrayPointerConstructor {
 	inline static thread_local std::size_t size =
 	  std::numeric_limits<std::size_t>::max( );
@@ -59,21 +58,17 @@ struct ArrayPointerConstructor {
 	};
 };
 
-namespace member {
-	inline constexpr char const n[] = "n";
-	inline constexpr char const data[] = "data";
-} // namespace member
-
 namespace daw::json {
 	template<>
 	struct json_data_contract<Foo> {
-		using force_aggregate_construction = void;
+		static constexpr char const member_n[] = "n";
+		static constexpr char const member_data[] = "data";
 
-		using type =
-		  json_member_list<json_number<member::n, std::size_t, number_opts_def,
-		                               ArrayPointerConstructor<int>::SizeCtor>,
-		                   json_array<member::data, int, int *,
-		                              ArrayPointerConstructor<int>::ArrayCtor>>;
+		using type = json_member_list<
+		  json_number<member_n, std::size_t, number_opts_def,
+		              ArrayPointerConstructor<member_data, int>::SizeCtor>,
+		  json_array<member_data, int, int *,
+		             ArrayPointerConstructor<member_data, int>::ArrayCtor>>;
 
 		static auto to_json_data( Foo const &f ) {
 			std::vector<int> v;
