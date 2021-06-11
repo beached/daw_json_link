@@ -636,6 +636,11 @@ target_link_libraries(json_member_test json_test)
 add_test(NAME json_member_test COMMAND json_member_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full json_member_test)
 
+add_executable(int_ptr_test src/int_ptr_test.cpp)
+target_link_libraries(int_ptr_test json_test)
+add_test(NAME int_ptr_test COMMAND int_ptr_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full int_ptr_test)
+
 
 # **************************************************
 # JSON Benchmark

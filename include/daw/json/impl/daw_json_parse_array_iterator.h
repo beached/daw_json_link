@@ -71,6 +71,7 @@ namespace daw::json {
 				using pointer = arrow_proxy<value_type>;
 				using parse_state_t = ParseState;
 				using difference_type = typename base::difference_type;
+				using size_type = std::size_t;
 
 				inline constexpr json_parse_array_iterator( ) = default;
 
@@ -151,6 +152,14 @@ namespace daw::json {
 				operator!=( json_parse_array_iterator const &lhs,
 				            json_parse_array_iterator const &rhs ) {
 					return not( lhs == rhs );
+				}
+
+				constexpr json_parse_array_iterator &begin( ) {
+					return *this;
+				}
+
+				constexpr json_parse_array_iterator end( ) const {
+					return { };
 				}
 			};
 		} // namespace json_details

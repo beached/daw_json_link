@@ -570,6 +570,14 @@ std::cout << values << '\n';
 ```
 A working example can be found at [daw_json_iostream_test.cpp](tests/src/daw_json_iostream_test.cpp) 
 
+## Common errors
+* ```error: pointer to subobject of string literal is not allowed in a template argument```
+	* Your compiler does not support Class Non-Type Template Parameters, or is not in C++20 mode.  If you do not have compiler support, you can the C++17 naming style above 
+      * e.g. ```cpp
+		constexpr char const member_name[] = "member_name";
+		//...
+		json_link<member_name, Type>```
+
 ## Build configuration points
 There are a few defines that affect how JSON Link operates
 * `DAW_JSON_DONT_USE_EXCEPTIONS` - Controls if exceptions are allowed. If they are not, an `std::terminate()` on errors will occur

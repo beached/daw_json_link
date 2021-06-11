@@ -118,3 +118,5 @@ namespace daw::json {
 }
 ```
 
+### Pointer like arrays
+For dealing with pointer like arrays(T *, has element_type type alias) see [int_ptr_test](../tests/src/int_ptr_test.cpp)

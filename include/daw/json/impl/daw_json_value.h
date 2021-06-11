@@ -319,6 +319,9 @@ namespace daw::json {
 		public:
 			using CharT = typename ParseState::CharT;
 			using iterator = basic_json_value_iterator<ParseState>;
+			using value_type = basic_json_pair<ParseState>;
+			using size_type = std::size_t;
+			using difference_type = std::ptrdiff_t;
 
 			/***
 			 * Construct from IteratorRange

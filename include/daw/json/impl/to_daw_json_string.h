@@ -1074,10 +1074,19 @@ namespace daw::json {
 			to_daw_json_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,
 			                    parse_to_t const &value ) {
 
-				static_assert(
-				  std::is_convertible<parse_to_t,
-				                      typename JsonMember::parse_to_t>::value,
-				  "value must be convertible to specified type in class contract" );
+				using array_t = typename JsonMember::parse_to_t;
+				if constexpr( is_container_v<array_t> ) {
+					static_assert(
+					  std::is_convertible<parse_to_t, array_t>::value,
+					  "value must be convertible to specified type in class contract" );
+				} else {
+					static_assert(
+					  is_pointer_like<array_t>::value and is_container_v<parse_to_t>,
+					  "This is a special case for pointer like(T*, unique_ptr<T>, "
+					  "shared_ptr<T>) arrays.  In the to_json_data it is required to "
+					  "encode the size of the data with the pointer.  Will take any "
+					  "Container like type, but std::span like types work too" );
+				}
 
 				*it++ = '[';
 				if( not std::empty( value ) ) {

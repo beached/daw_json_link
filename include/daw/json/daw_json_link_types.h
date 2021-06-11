@@ -569,9 +569,12 @@ namespace daw::json {
 			using base_type = json_details::unwrap_type<T, nullable>;
 			using constructor_t =
 			  json_details::json_class_constructor_t<base_type, Constructor>;
+
 			static_assert( traits::not_same<void, base_type>::value,
 			               "Failed to detect base type" );
+
 			using data_contract = json_data_contract_trait_t<base_type>;
+
 			using parse_to_t = typename std::conditional_t<
 			  force_aggregate_construction<base_type>::value,
 			  daw::traits::identity<base_type>,
@@ -994,10 +997,9 @@ namespace daw::json {
 		/***
 		 * Do not parse this member but return a T that can be used to
 		 * parse later.  Any whitespace surrounding the value may not be preserved.
-		 *
 		 * @tparam Name name of JSON member to link to
 		 * @tparam T destination type.  Must be constructable from a char const *
-		 * and a std::size_t
+		 * and a std::size_t or have custom Construct parameter
 		 * @tparam Constructor A callable used to construct T.  The
 		 * @tparam Nullable Does the value have to exist in the document or can it
 		 * have a null value

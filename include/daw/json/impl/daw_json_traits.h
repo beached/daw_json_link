@@ -540,5 +540,19 @@ namespace daw::json {
 			  ( is_exact_class_mapping_v<T> or
 			    ParseState::use_exact_mappings_by_default );
 		}
+
+		/***
+		 * is_pointer_like is used in json_array to ensure that to_json_data returns
+		 * a Container/View of the data with the size encoded with it.
+		 * The std
+		 */
+		template<typename, typename = void>
+		struct is_pointer_like : std::false_type {};
+
+		template<typename T>
+		struct is_pointer_like<T *> : std::true_type {};
+
+		template<typename T>
+		struct is_pointer_like<T, typename T::element_type> : std::true_type {};
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

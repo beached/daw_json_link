@@ -1,0 +1,94 @@
+// Copyright (c) Darrell Wright
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Official repository: https://github.com/beached/
+//
+
+#include <daw/daw_span.h>
+#include <daw/json/daw_json_link.h>
+
+#include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <iostream>
+#include <limits>
+#include <memory>
+#include <vector>
+
+/***
+ * This example shows how one might encode a int * array type where another
+ * member has the size. In the future there will be a mapping type for this to
+ * make it explicit and declarative
+ */
+
+struct Foo {
+	std::size_t n;
+	int *data;
+};
+
+template<typename T, std::size_t /*selector*/ = 0>
+struct ArrayPointerConstructor {
+	inline static thread_local std::size_t size =
+	  std::numeric_limits<std::size_t>::max( );
+
+	struct SizeCtor {
+		std::size_t operator( )( ) const;
+
+		inline std::size_t operator( )( std::size_t v ) const noexcept {
+			size = v;
+			return v;
+		}
+	};
+
+	struct ArrayCtor {
+		int *operator( )( ) const;
+
+		template<typename Iterator>
+		T *operator( )( Iterator first, Iterator last ) const {
+			auto result = std::unique_ptr<T[]>( new T[size] );
+			T *ptr = result.get( );
+			while( first != last ) {
+				*ptr = *first;
+				++ptr;
+				++first;
+			}
+			return result.release( );
+		}
+	};
+};
+
+namespace member {
+	inline constexpr char const n[] = "n";
+	inline constexpr char const data[] = "data";
+} // namespace member
+
+namespace daw::json {
+	template<>
+	struct json_data_contract<Foo> {
+		using force_aggregate_construction = void;
+
+		using type =
+		  json_member_list<json_number<member::n, std::size_t, number_opts_def,
+		                               ArrayPointerConstructor<int>::SizeCtor>,
+		                   json_array<member::data, int, int *,
+		                              ArrayPointerConstructor<int>::ArrayCtor>>;
+
+		static auto to_json_data( Foo const &f ) {
+			std::vector<int> v;
+			v.resize( f.n );
+			std::copy_n( f.data, f.n, v.data( ) );
+			return std::tuple{ f.n, daw::span<int const>( f.data, f.n ) };
+		}
+	};
+} // namespace daw::json
+
+int main( ) {
+	std::string_view jdoc = R"({"n":5,"data":[1,2,3,4,5]})";
+	auto foo = daw::json::from_json<Foo>( jdoc );
+	std::cout << foo.n << '\n';
+
+	auto jdoc2 = daw::json::to_json( foo );
+	std::cout << jdoc2 << '\n';
+}
