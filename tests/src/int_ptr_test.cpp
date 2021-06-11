@@ -71,9 +71,6 @@ namespace daw::json {
 		             ArrayPointerConstructor<member_data, int>::ArrayCtor>>;
 
 		static auto to_json_data( Foo const &f ) {
-			std::vector<int> v;
-			v.resize( f.n );
-			std::copy_n( f.data, f.n, v.data( ) );
 			return std::tuple{ f.n, daw::span<int const>( f.data, f.n ) };
 		}
 	};
