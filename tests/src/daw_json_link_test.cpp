@@ -144,17 +144,6 @@ struct e_test_001_t {
 namespace daw::json {
 	template<>
 	struct json_data_contract<test_001_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type =
-		  json_member_list<json_number<"i", int>, json_number<"d">, json_bool<"b">,
-		                   json_string_raw<"s", std::string_view>,
-		                   json_string_raw<"s2", std::string_view>,
-		                   json_array<"y", int, daw::bounded_vector_t<int, 10>>,
-		                   json_number_null<"o", std::optional<int>>,
-		                   json_number_null<"o2", std::optional<int>>,
-		                   json_date<"dte">>;
-
-#else
 		static constexpr char const i[] = "i";
 		static constexpr char const d[] = "d";
 		static constexpr char const b[] = "b";
@@ -172,7 +161,7 @@ namespace daw::json {
 		                   json_number_null<o, std::optional<int>>,
 		                   json_number_null<o2, std::optional<int>>,
 		                   json_date<dte>>;
-#endif
+
 		static DAW_CONSTEXPR auto to_json_data( test_001_t const &v ) {
 			return std::forward_as_tuple( v.i, v.d, v.b, v.s, v.s2, v.y, v.o, v.o2,
 			                              v.dte );
@@ -209,12 +198,9 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<e_test_001_t> {
-#ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_custom<"a", blah_t>>;
-#else
 		static constexpr char const a[] = "a";
 		using type = json_member_list<json_custom<a, blah_t>>;
-#endif
+
 		static DAW_CONSTEXPR auto to_json_data( e_test_001_t const &v ) {
 			return std::forward_as_tuple( v.a );
 		}

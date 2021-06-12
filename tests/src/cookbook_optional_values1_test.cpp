@@ -20,6 +20,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace daw::cookbook_optional_values1 {
 	namespace details {
@@ -106,9 +107,8 @@ int main( int argc, char **argv )
 	puts( "Original" );
 	puts( std::string( data.data( ), data.size( ) ).c_str( ) );
 
-	std::vector<daw::cookbook_optional_values1::MyOptionalStuff1> stuff =
-	  daw::json::from_json_array<
-	    daw::cookbook_optional_values1::MyOptionalStuff1>( data );
+	auto stuff = daw::json::from_json_array<
+	  daw::cookbook_optional_values1::MyOptionalStuff1>( data );
 
 	test_assert( stuff.size( ) == 2, "Unexpected size" );
 	test_assert( not stuff.front( ).member2, "Unexpected value" );

@@ -68,7 +68,7 @@ else ()
     add_definitions(-DDAW_DONT_USE_EXCEPTIONS=true)
 endif ()
 
-set(DAW_NO_FLATTEN OFF CACHE STRING "Disable function flattening optimization")
+option(DAW_NO_FLATTEN OFF "Disable function flattening optimization")
 if (DAW_NO_FLATTEN)
     message("DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
     add_definitions(-DDAW_NO_FLATTEN=true)

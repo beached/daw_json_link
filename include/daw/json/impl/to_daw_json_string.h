@@ -150,6 +150,10 @@ namespace daw::json {
 					return static_cast<std::string_view>( value );
 				} else if constexpr( std::is_convertible_v<U, std::string> ) {
 					return static_cast<std::string>( value );
+				} else if constexpr( daw::is_arithmetic_v<U> ) {
+					return to_string( value );
+				} else if constexpr( std::is_enum_v<U> ) {
+					return to_string( static_cast<std::underlying_type_t<U>>( value ) );
 				} else if constexpr( json_details::can_deref_v<U> ) {
 					static_assert( json_details::has_op_bool_v<U>,
 					               "default_to_converter cannot work with type" );
@@ -205,18 +209,10 @@ namespace daw::json {
 
 		template<typename T>
 		struct default_from_json_converter_t {
-			[[nodiscard]] inline constexpr decltype( auto ) operator( )( ) const {
-				if constexpr( std::disjunction<
-				                std::is_same<T, std::string_view>,
-				                std::is_same<T, std::optional<std::string_view>>>::
-				                value ) {
-					// TODO, comment on why this is here
-					return std::string_view{ };
-				} else {
-					// Use ADL customization point
-					return from_string( daw::tag<T> );
-				}
-			}
+			/*
+			[[nodiscard]] inline constexpr auto operator( )( ) const {
+				return daw::construct_a<T>( );
+			}*/
 
 			[[nodiscard]] inline constexpr decltype( auto )
 			operator( )( std::string_view sv ) const {

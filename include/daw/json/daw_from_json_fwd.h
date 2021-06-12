@@ -13,6 +13,7 @@
 #include "impl/daw_json_traits.h"
 #include "impl/version.h"
 
+#include <ciso646>
 #include <string_view>
 
 namespace daw::json {
@@ -156,7 +157,7 @@ namespace daw::json {
 		         typename Container =
 		           std::vector<json_details::from_json_result_t<JsonElement>>,
 		         typename ParsePolicy = NoCommentSkippingPolicyChecked,
-		         typename Constructor = daw::construct_a_t<Container>,
+		         typename Constructor = default_constructor<Container>,
 		         bool KnownBounds = false, typename String>
 		[[maybe_unused, nodiscard]] constexpr auto
 		from_json_array( String &&json_data, std::string_view member_path = "" )

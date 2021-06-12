@@ -33,8 +33,6 @@ struct ArrayPointerConstructor {
 	  std::numeric_limits<std::size_t>::max( );
 
 	struct SizeCtor {
-		std::size_t operator( )( ) const;
-
 		inline std::size_t operator( )( std::size_t v ) const noexcept {
 			size = v;
 			return v;
@@ -42,8 +40,6 @@ struct ArrayPointerConstructor {
 	};
 
 	struct ArrayCtor {
-		int *operator( )( ) const;
-
 		template<typename Iterator>
 		T *operator( )( Iterator first, Iterator last ) const {
 			auto result = std::unique_ptr<T[]>( new T[size] );
@@ -70,7 +66,7 @@ namespace daw::json {
 		  json_array<member_data, int, int *,
 		             ArrayPointerConstructor<member_data, int>::ArrayCtor>>;
 
-		static auto to_json_data( Foo const &f ) {
+		static constexpr auto to_json_data( Foo const &f ) {
 			return std::tuple{ f.n, daw::span<int const>( f.data, f.n ) };
 		}
 	};

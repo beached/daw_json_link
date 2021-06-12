@@ -67,6 +67,33 @@ namespace daw::json {
 				DAW_UNREACHABLE( );
 			}
 
+			template<typename Constructor, typename... Args>
+			struct nullable_constructor_cannot_be_invoked;
+
+			template<typename Constructor, typename... Args>
+			struct constructor_cannot_be_invoked;
+
+			// clang-format off
+			template<bool Nullable, typename Constructor, typename... Args>
+			using construction_result =
+			  std::conditional_t<
+					Nullable,
+					std::conditional_t<
+						std::is_invocable_v<Constructor, Args...>,
+						std::conditional_t<
+								std::is_invocable_v<Constructor>,
+								std::invoke_result<Constructor>,
+								traits::identity<nullable_constructor_cannot_be_invoked<Constructor>>
+						>,
+						traits::identity<nullable_constructor_cannot_be_invoked<Constructor, Args...>>
+					>,
+					std::conditional_t<
+						std::is_invocable_v<Constructor, Args...>,
+						std::invoke_result<Constructor, Args...>,
+						traits::identity<constructor_cannot_be_invoked<Constructor, Args...>>
+          >
+			  >;
+			// clang-format on
 		} // namespace json_details
 
 		namespace json_details {
@@ -103,6 +130,10 @@ namespace daw::json {
 		 */
 		template<typename T>
 		using json_data_contract_trait_t = typename json_data_contract<T>::type;
+
+		template<typename T>
+		using test_valid_json_data_contract_trait_t =
+		  typename json_data_contract_trait_t<T>::i_am_a_json_member_list;
 
 		namespace json_details {
 			template<typename T>
@@ -149,6 +180,7 @@ namespace daw::json {
 			operator( )( ) const {
 				return T{ };
 			}
+
 			template<typename... Args,
 			         std::enable_if_t<( std::is_constructible<T, Args...>::value and
 			                            sizeof...( Args ) > 0 ),
@@ -223,6 +255,7 @@ namespace daw::json {
 
 		template<typename T, typename Alloc>
 		struct default_constructor<std::vector<T, Alloc>> {
+			// DAW
 			DAW_ATTRIB_FLATINLINE inline std::vector<T, Alloc> operator( )( ) const
 			  noexcept( noexcept( std::vector<T, Alloc>( ) ) ) {
 				return { };
@@ -237,8 +270,7 @@ namespace daw::json {
 			template<typename Iterator>
 			DAW_ATTRIB_FLATINLINE inline std::vector<T, Alloc>
 			operator( )( Iterator first, Iterator last,
-			             Alloc const &alloc = Alloc{ } ) const
-			  noexcept( noexcept( std::vector<T, Alloc>( first, last, alloc ) ) ) {
+			             Alloc const &alloc = Alloc{ } ) const {
 				if constexpr( std::is_same_v<std::random_access_iterator_tag,
 				                             typename std::iterator_traits<
 				                               Iterator>::iterator_category> or
@@ -539,7 +571,7 @@ namespace daw::json {
 			  not ignore_unknown_members_v<T> and
 			  ( is_exact_class_mapping_v<T> or
 			    ParseState::use_exact_mappings_by_default );
-		}
+		} // namespace json_details
 
 		/***
 		 * is_pointer_like is used in json_array to ensure that to_json_data returns
