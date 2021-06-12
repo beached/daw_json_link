@@ -209,11 +209,6 @@ namespace daw::json {
 
 		template<typename T>
 		struct default_from_json_converter_t {
-			/*
-			[[nodiscard]] inline constexpr auto operator( )( ) const {
-				return daw::construct_a<T>( );
-			}*/
-
 			[[nodiscard]] inline constexpr decltype( auto )
 			operator( )( std::string_view sv ) const {
 				if constexpr( std::disjunction<
