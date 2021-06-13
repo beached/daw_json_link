@@ -36,15 +36,13 @@
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
 
-struct Empty {};
-
 namespace daw::json {
 	template<>
-	struct json_data_contract<Empty> {
+	struct json_data_contract<daw::Empty> {
 		using type = json_member_list<>;
 
 		[[nodiscard, maybe_unused]] static inline auto
-		to_json_data( Empty const & ) {
+		to_json_data( daw::Empty const & ) {
 			return std::tuple( );
 		}
 	};
@@ -57,7 +55,7 @@ bool empty_class_empty_json_class( ) {
 	std::string_view sv = "{}";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_class_no_name<Empty>>(
+	auto v = parse_value<json_class_no_name<daw::Empty>>(
 	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;
@@ -70,7 +68,7 @@ bool empty_class_nonempty_json_class( ) {
 	std::string_view sv = R"({ "a": 12345, "b": {} })";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_class_no_name<Empty>>(
+	auto v = parse_value<json_class_no_name<daw::Empty>>(
 	  rng, ParseTag<JsonParseTypes::Class>{ } );
 	daw::do_not_optimize( v );
 	return true;

@@ -19,7 +19,7 @@
 
 namespace daw {
 	namespace murmur3_details {
-		[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr UInt32
+		[[nodiscard]] DAW_ATTRIB_FLATTEN inline constexpr UInt32
 		murmur3_32_scramble( UInt32 k ) {
 			k *= 0xcc9e'2d51_u32;
 			k = rotate_left<15>( k );
@@ -29,7 +29,7 @@ namespace daw {
 	} // namespace murmur3_details
 
 	template<typename StringView>
-	[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr UInt32
+	[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr UInt32
 	fnv1a_32( StringView &&key ) {
 		std::size_t const len = std::size( key );
 		char const *ptr = std::data( key );
@@ -42,8 +42,8 @@ namespace daw {
 	}
 
 	template<typename StringView>
-	[[nodiscard]] DAW_ATTRIB_FLATINLINE constexpr UInt32
-	name_hash( StringView &&key, std::uint32_t seed = 0 ) {
+	[[nodiscard]] constexpr UInt32 name_hash( StringView &&key,
+	                                          std::uint32_t seed = 0 ) {
 		(void)seed;
 		auto const Sz = std::size( key );
 		if( Sz <= sizeof( UInt32 ) ) {

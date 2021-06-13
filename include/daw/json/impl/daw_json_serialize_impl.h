@@ -47,19 +47,24 @@ namespace daw::json {
 				// faster in the future
 
 				// Using list init to ensure serialization happens in order
-				(void)daw::expander{
-				  ( tags_to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
-				      is_first, it, args, value, visited_members ),
-				    0 )...,
-				  0 };
+				{
+					daw::Empty const expander[]{
+					  ( tags_to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
+					      is_first, it, args, value, visited_members ),
+					    daw::Empty{ } )...,
+					  daw::Empty{} };
+					(void)expander;
+				}
 
 				// Regular Members
-				(void)daw::expander{
-				  ( to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
-				      is_first, it, args, value, visited_members ),
-				    0 )...,
-				  0 };
-
+				{
+					daw::Empty const expander[]{
+					  ( to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
+					      is_first, it, args, value, visited_members ),
+					    daw::Empty{ } )...,
+					  daw::Empty{} };
+					(void)expander;
+				}
 				*it++ = '}';
 				return it;
 			}
@@ -75,11 +80,11 @@ namespace daw::json {
 				size_t array_idx = 0;
 				Unused( value );
 				{
-					int const expander[sizeof...( JsonMembers ) + 1]{
+					daw::Empty const expander[]{
 					  ( to_json_ordered_str<Is, traits::nth_element<Is, JsonMembers...>>(
 					      array_idx, it, args ),
-					    0 )...,
-					  0 };
+					    daw::Empty{ } )...,
+					  daw::Empty{} };
 					(void)expander;
 				}
 				*it++ = ']';

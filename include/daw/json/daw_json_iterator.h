@@ -30,6 +30,28 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		inline namespace {
+			template<typename CharT, typename ParseState>
+			struct op_star_cleanup {
+				CharT *&m_can_skip;
+				ParseState &tmp;
+
+				DAW_ATTRIB_INLINE
+				DAW_SG_CXDTOR inline ~op_star_cleanup( ) noexcept( false ) {
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+						m_can_skip = tmp.first;
+					} else {
+#endif
+						if( std::uncaught_exceptions( ) == 0 ) {
+							m_can_skip = tmp.first;
+						}
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+					}
+#endif
+				}
+			};
+		} // namespace
 		/***
 		 * Iterator for iterating over JSON array's
 		 * @tparam JsonElement type under underlying element in array. If
@@ -145,7 +167,7 @@ namespace daw::json {
 
 				if constexpr( json_details::is_guaranteed_rvo_v<ParsePolicy> ) {
 					auto const run_after_parse =
-					  daw::on_exit_success( [&] { m_can_skip = tmp.first; } );
+					  op_star_cleanup<CharT, ParseState>{ m_can_skip, tmp };
 					(void)run_after_parse;
 					return json_details::parse_value<element_type>(
 					  tmp, ParseTag<element_type::expected_type>{ } );

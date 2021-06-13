@@ -213,6 +213,28 @@ namespace daw::json {
 			struct is_std_allocator<std::allocator<Ts...>> : std::true_type {};
 		} // namespace json_details
 
+		inline namespace {
+			template<typename Iterator>
+			struct construct_array_cleanup {
+				Iterator &it;
+
+				DAW_ATTRIB_INLINE
+				DAW_SG_CXDTOR inline ~construct_array_cleanup( ) noexcept( false ) {
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+						++it;
+					} else {
+#endif
+						if( std::uncaught_exceptions( ) == 0 ) {
+							++it;
+						}
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+					}
+#endif
+				}
+			};
+		} // namespace
+
 		template<typename T, std::size_t Sz>
 		struct default_constructor<std::array<T, Sz>> {
 			DAW_ATTRIB_FLATINLINE constexpr std::array<T, Sz> operator( )( ) const
@@ -236,8 +258,8 @@ namespace daw::json {
 							++first;
 							return result;
 						} else {
-							auto const run_after_parse =
-							  daw::on_exit_success( [&] { ++first; } );
+							auto const run_after_parse = construct_array_cleanup{ first };
+							(void)run_after_parse;
 							return *first;
 						}
 					}

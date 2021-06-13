@@ -512,6 +512,27 @@ namespace daw::json {
 				  std::string_view( std::data( str ), std::size( str ) ) );
 			}
 
+			inline namespace {
+				template<typename ParseState>
+				struct trim_left_cleanup {
+					ParseState &parse_state;
+
+					CPP20CONSTEXPR ~trim_left_cleanup( ) noexcept( false ) {
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+							parse_state.trim_left_checked( );
+						} else {
+#endif
+							if( std::uncaught_exceptions( ) == 0 ) {
+								parse_state.trim_left_checked( );
+							}
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+						}
+#endif
+					}
+				};
+			} // namespace
+
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
 			[[nodiscard,
 			  maybe_unused]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
@@ -527,7 +548,7 @@ namespace daw::json {
 					// construction of classes without move/copy special members
 					if constexpr( not KnownBounds ) {
 						auto const run_after_parse =
-						  daw::on_exit_success( [&] { parse_state.trim_left_checked( ); } );
+						  trim_left_cleanup<ParseState>{ parse_state };
 						(void)run_after_parse;
 						return json_data_contract_trait_t<element_t>::parse_to_class(
 						  parse_state, template_arg<JsonMember> );
@@ -541,8 +562,9 @@ namespace daw::json {
 						  parse_state, template_arg<JsonMember> );
 					} else {
 						if constexpr( force_aggregate_construction_v<element_t> ) {
-							auto const oe = daw::on_exit_success(
-							  [&] { parse_state.trim_left_checked( ); } );
+							auto const run_after_parse =
+							  trim_left_cleanup<ParseState>{ parse_state };
+							(void)run_after_parse;
 							return json_data_contract_trait_t<element_t>::parse_to_class(
 							  parse_state, template_arg<JsonMember> );
 						} else {

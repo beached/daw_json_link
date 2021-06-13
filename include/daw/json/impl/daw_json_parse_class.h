@@ -154,25 +154,47 @@ namespace daw::json {
 				  loc, ParseTag<JsonMember::expected_type>{ } );
 			}
 
-			template<bool IsExactClass, typename ParseState>
-			DAW_ATTRIB_FLATINLINE inline constexpr void
-			class_cleanup_now( ParseState &parse_state ) {
-				daw_json_assert_weak( parse_state.has_more( ),
-				                      ErrorReason::UnexpectedEndOfData, parse_state );
-				parse_state.move_next_member_or_end( );
-				// If we fulfill the contract before all values are parses
-				parse_state.move_to_next_class_member( );
-				if constexpr( IsExactClass ) {
-					daw_json_assert_weak( parse_state.front( ) == '}',
-					                      ErrorReason::UnknownMember, parse_state );
-					parse_state.remove_prefix( );
-				} else {
-					(void)parse_state.skip_class( );
-					// Yes this must be checked.  We maybe at the end of document.  After
-					// the 2nd try, give up
+			inline namespace {
+				template<bool IsExactClass, typename ParseState>
+				DAW_ATTRIB_INLINE inline constexpr void
+				class_cleanup_now( ParseState &parse_state ) {
+					daw_json_assert_weak( parse_state.has_more( ),
+					                      ErrorReason::UnexpectedEndOfData, parse_state );
+					parse_state.move_next_member_or_end( );
+					// If we fulfill the contract before all values are parses
+					parse_state.move_to_next_class_member( );
+					if constexpr( IsExactClass ) {
+						daw_json_assert_weak( parse_state.front( ) == '}',
+						                      ErrorReason::UnknownMember, parse_state );
+						parse_state.remove_prefix( );
+					} else {
+						(void)parse_state.skip_class( );
+						// Yes this must be checked.  We maybe at the end of document. After
+						// the 2nd try, give up
+					}
+					parse_state.trim_left_checked( );
 				}
-				parse_state.trim_left_checked( );
-			}
+
+				template<bool AllMembersMustExist, typename ParseState>
+				struct class_cleanup {
+					ParseState &parse_state;
+
+					DAW_ATTRIB_INLINE
+					  CPP20CONSTEXPR inline ~class_cleanup( ) noexcept( false ) {
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+							class_cleanup_now<AllMembersMustExist>( parse_state );
+						} else {
+#endif
+							if( std::uncaught_exceptions( ) == 0 ) {
+								class_cleanup_now<AllMembersMustExist>( parse_state );
+							}
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+						}
+#endif
+					}
+				};
+			} // namespace
 
 			// Prior to C++20, this will guarantee the data structure is
 			// initialized at compile time.  In the future, constinit should be
@@ -225,11 +247,9 @@ namespace daw::json {
 					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
 
 					if constexpr( is_guaranteed_rvo_v<ParseState> ) {
-						auto const run_after_parse = daw::on_exit_success( [&] {
-							class_cleanup_now<
-							  json_details::all_json_members_must_exist_v<T, ParseState>>(
-							  parse_state );
-						} );
+						auto const run_after_parse = class_cleanup<
+						  json_details::all_json_members_must_exist_v<T, ParseState>,
+						  ParseState>{ parse_state };
 						(void)run_after_parse;
 
 						/*
@@ -277,6 +297,42 @@ namespace daw::json {
 				}
 			}
 
+			template<bool AllMembersMustExist, typename ParseState>
+			struct ordered_class_cleanup {
+				ParseState &parse_state;
+
+				DAW_ATTRIB_INLINE
+				  CPP20CONSTEXPR inline ~ordered_class_cleanup( ) noexcept( false ) {
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
+						if constexpr( AllMembersMustExist ) {
+							parse_state.trim_left( );
+							daw_json_assert_weak( parse_state.front( ) == ']',
+							                      ErrorReason::UnknownMember, parse_state );
+							parse_state.remove_prefix( );
+							parse_state.trim_left_checked( );
+						} else {
+							(void)parse_state.skip_array( );
+						}
+					} else {
+#endif
+						if( std::uncaught_exceptions( ) == 0 ) {
+							if constexpr( AllMembersMustExist ) {
+								parse_state.trim_left( );
+								daw_json_assert_weak( parse_state.front( ) == ']',
+								                      ErrorReason::UnknownMember, parse_state );
+								parse_state.remove_prefix( );
+								parse_state.trim_left_checked( );
+							} else {
+								(void)parse_state.skip_array( );
+							}
+						}
+#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
+					}
+#endif
+				}
+			};
+
 			/***
 			 * Parse to a class where the members are constructed from the values of
 			 * a JSON array. Often this is used for geometric types like Point
@@ -304,18 +360,9 @@ namespace daw::json {
 				size_t current_idx = 0;
 
 				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
-					auto const run_after_parse = daw::on_exit_success( [&] {
-						if constexpr( json_details::all_json_members_must_exist_v<
-						                T, ParseState> ) {
-							parse_state.trim_left( );
-							daw_json_assert_weak( parse_state.front( ) == ']',
-							                      ErrorReason::UnknownMember, parse_state );
-							parse_state.remove_prefix( );
-							parse_state.trim_left_checked( );
-						} else {
-							(void)parse_state.skip_array( );
-						}
-					} );
+					auto const run_after_parse = ordered_class_cleanup<
+					  json_details::all_json_members_must_exist_v<T, ParseState>,
+					  ParseState>{ parse_state };
 					(void)run_after_parse;
 					if constexpr( force_aggregate_construction_v<T> ) {
 						return T{ parse_ordered_class_member(
