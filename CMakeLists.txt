@@ -18,6 +18,8 @@ set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requ
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+add_compile_definitions( DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD} )
+
 add_subdirectory(extern)
 option(DAW_ENABLE_TESTING "Build unit tests" OFF)
 option(DAW_JSON_PARSER_DIAGNOSTICS "Output debug info while parsing" OFF)

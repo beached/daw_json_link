@@ -175,20 +175,22 @@ namespace daw::json {
  * Ensure that Bool is true
  * If false pass rest of args to daw_json_error
  */
-#define daw_json_assert( Bool, ... )  \
-	if( DAW_UNLIKELY( not( Bool ) ) ) { \
-		daw_json_error( __VA_ARGS__ );    \
-	}                                   \
-	while( false )
+#define daw_json_assert( Bool, ... )    \
+	do {                                  \
+		if( DAW_UNLIKELY( not( Bool ) ) ) { \
+			daw_json_error( __VA_ARGS__ );    \
+		}                                   \
+	} while( false )
 
 /***
  * Ensure that Bool is true when in Checked Input mode
  * If false pass rest of args to daw_json_error
  */
-#define daw_json_assert_weak( Bool, ... )              \
-	if constexpr( not ParseState::is_unchecked_input ) { \
-		if( DAW_UNLIKELY( not( Bool ) ) ) {                \
-			daw_json_error( __VA_ARGS__ );                   \
-		}                                                  \
-	}                                                    \
-	while( false )
+#define daw_json_assert_weak( Bool, ... )                \
+	do {                                                   \
+		if constexpr( not ParseState::is_unchecked_input ) { \
+			if( DAW_UNLIKELY( not( Bool ) ) ) {                \
+				daw_json_error( __VA_ARGS__ );                   \
+			}                                                  \
+		}                                                    \
+	} while( false )

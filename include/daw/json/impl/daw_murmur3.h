@@ -42,7 +42,7 @@ namespace daw {
 	}
 
 	template<typename StringView>
-	[[nodiscard]] constexpr UInt32 name_hash( StringView &&key,
+	[[nodiscard]] constexpr UInt32 name_hash( StringView const &key,
 	                                          std::uint32_t seed = 0 ) {
 		(void)seed;
 		auto const Sz = std::size( key );

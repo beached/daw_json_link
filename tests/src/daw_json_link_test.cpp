@@ -28,6 +28,14 @@
 #include <string_view>
 #include <vector>
 
+/***
+Temporarily disable the constexpr tests in MSVC when C++20
+*/
+#if defined( _MSC_VER ) and not defined( __clang__ ) and \
+  defined( DAW_CXX_STANDARD ) and DAW_CXX_STANDARD == 20
+#define DAW_JSON_NO_CONST_EXPR
+#endif
+
 static_assert( daw::is_arithmetic_v<int> );
 
 struct NumberX {
@@ -236,9 +244,9 @@ DAW_CONSTEXPR bool test_006( ) {
 	return daw::json::from_json<int>( test_001_t_json_data, "y[2]" ) == 3;
 }
 
-#if not defined( DAW_JSON_NO_CONST_EXPR ) and                           \
-  ( ( defined( __GNUC__ ) and __GNUC__ > 8 ) or defined( __clang__ ) or \
-    defined( _MSC_VER ) )
+#if not defined( DAW_JSON_NO_CONST_EXPR ) and                              \
+  ( ( defined( __GNUC__ ) and __GNUC__ > 8 ) or defined( __clang__ ) ) and \
+  ( not defined( DAW_JSON_NO_CONST_EXPR ) )
 static_assert( test_004( ), "Unexpected value" );
 static_assert( test_005( ), "Unexpected value" );
 static_assert( test_006( ), "Unexpected value" );
@@ -362,8 +370,7 @@ namespace daw::json {
 		}
 	};
 } // namespace daw::json
-#if not defined( DAW_JSON_NO_CONST_EXPR ) and \
-  ( not defined( _MSC_VER ) or defined( __clang__ ) )
+#if not defined( DAW_JSON_NO_CONST_EXPR )
 static_assert( daw::json::from_json<Empty2>( empty_class_data ).c == 5 );
 #endif
 
@@ -385,8 +392,10 @@ namespace daw::json {
 	};
 } // namespace daw::json
 constexpr std::string_view optional_ordered1_data = "[1]";
+#if not defined( DAW_JSON_NO_CONST_EXPR )
 static_assert( static_cast<bool>(
   not daw::json::from_json<OptionalOrdered>( optional_ordered1_data ).b ) );
+#endif
 
 #if not defined( DAW_JSON_NO_INT128 ) and defined( __SIZEOF_INT128__ ) and \
   ( not defined( _MSC_VER ) )
@@ -663,7 +672,7 @@ int main( int, char ** )
 
 #if defined( __GNUC__ ) and __GNUC__ <= 9
 #define CX
-#elif defined( _MSC_VER ) and not defined( __clang__ )
+#elif defined( DAW_JSON_NO_CONST_EXPR )
 #define CX
 #else
 #define CX DAW_CONSTEXPR
@@ -914,8 +923,8 @@ int main( int, char ** )
 	assert( from_json<std::string>( R"("hello world")" ) == "hello world" );
 	assert( from_json<std::deque<int>>( "[1,2,3]"s ).at( 1 ) == 2 );
 	assert( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
-	assert( ( from_json<json_array_no_name<char, std::string>>(
-	            "[97,98,99]"s ) == "abc" ) );
+	assert( ( from_json<json_array_no_name<char, std::string>>( "[97,98,99]"s ) ==
+	          "abc" ) );
 	static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 
 	auto const test_bad_float = []( ) -> bool {
@@ -955,9 +964,9 @@ int main( int, char ** )
 	daw_json_assert( test_leading_zero( 0U ), ErrorReason::Unknown );
 
 	static_assert(
-	  from_json<
-	    json_key_value_no_name<std::array<std::pair<std::string_view, int>, 2>,
-	                   int, std::string_view>>( R"({"a":0,"b":1})" )[1]
+	  from_json<json_key_value_no_name<
+	    std::array<std::pair<std::string_view, int>, 2>, int, std::string_view>>(
+	    R"({"a":0,"b":1})" )[1]
 	    .second == 1 );
 	std::cout << "done";
 }
