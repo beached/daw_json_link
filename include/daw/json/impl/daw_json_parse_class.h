@@ -199,10 +199,10 @@ namespace daw::json {
 			// Prior to C++20, this will guarantee the data structure is
 			// initialized at compile time.  In the future, constinit should be
 			// fine.
-#if defined( _MSC_VER ) and not defined( __clang__ )
+#if not defined( _MSC_VER ) or defined( __clang__ )
 			template<typename ParseState, typename... JsonMembers>
-			inline constexpr auto known_locations_v =
-			  make_locations_info<ParseState, JsonMembers...>( );
+			inline constexpr auto
+			  known_locations_v = make_locations_info<ParseState, JsonMembers...>( );
 #endif
 			/***
 			 * Parse to the user supplied class.  The parser will run left->right if
