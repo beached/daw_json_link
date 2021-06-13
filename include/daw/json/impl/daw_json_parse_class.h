@@ -157,7 +157,7 @@ namespace daw::json {
 			inline namespace {
 				template<bool IsExactClass, typename ParseState>
 				DAW_ATTRIB_INLINE inline constexpr void
-				class_cleanup_now( ParseState &parse_state ) {
+				class_cleanup_now( ParseState &parse_state ) noexcept( false ) {
 					daw_json_assert_weak( parse_state.has_more( ),
 					                      ErrorReason::UnexpectedEndOfData, parse_state );
 					parse_state.move_next_member_or_end( );
@@ -180,7 +180,7 @@ namespace daw::json {
 					ParseState &parse_state;
 
 					DAW_ATTRIB_INLINE
-					  CPP20CONSTEXPR inline ~class_cleanup( ) noexcept( false ) {
+					CPP20CONSTEXPR inline ~class_cleanup( ) noexcept( false ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 							class_cleanup_now<AllMembersMustExist>( parse_state );
@@ -199,10 +199,11 @@ namespace daw::json {
 			// Prior to C++20, this will guarantee the data structure is
 			// initialized at compile time.  In the future, constinit should be
 			// fine.
+#if defined( _MSC_VER ) and not defined( __clang__ )
 			template<typename ParseState, typename... JsonMembers>
-			inline constexpr auto
-			  known_locations_v = make_locations_info<ParseState, JsonMembers...>( );
-
+			inline constexpr auto known_locations_v =
+			  make_locations_info<ParseState, JsonMembers...>( );
+#endif
 			/***
 			 * Parse to the user supplied class.  The parser will run left->right if
 			 * it can when the JSON document's order matches that of the order of
@@ -244,7 +245,12 @@ namespace daw::json {
 					return construct_value( template_args<T, Constructor>, parse_state );
 				} else {
 
+#if defined( _MSC_VER ) and not defined( __clang__ )
+					auto known_locations =
+					  make_locations_info<ParseState, JsonMembers...>( );
+#else
 					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
+#endif
 
 					if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 						auto const run_after_parse = class_cleanup<
@@ -302,7 +308,7 @@ namespace daw::json {
 				ParseState &parse_state;
 
 				DAW_ATTRIB_INLINE
-				  CPP20CONSTEXPR inline ~ordered_class_cleanup( ) noexcept( false ) {
+				CPP20CONSTEXPR inline ~ordered_class_cleanup( ) noexcept( false ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
 						if constexpr( AllMembersMustExist ) {
