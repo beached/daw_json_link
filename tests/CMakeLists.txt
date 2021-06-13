@@ -1,12 +1,14 @@
 # TODO clean this up, but for now it makes tests get approprait options
 
+cmake_policy(SET CMP0065 NEW)
+
 # 1.71 has MP issues, seting to 1.72 hoping that fixes them.  At the least it prevents compiling on Ubuntu 20.04
 find_package(Boost 1.72.0 COMPONENTS container)
 
 add_subdirectory(extern)
 
 
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF CACHE STRING "Enable LTO")
+option(CMAKE_INTERPROCEDURAL_OPTIMIZATION "Enable LTO" OFF)
 if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
     message("CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON: LTO is enabled")
 endif ()
@@ -17,7 +19,8 @@ if (DAW_NUM_RUNS)
     message("DAW_NUM_RUNS=${DAW_NUM_RUNS}: Overriding number of test runs")
     add_definitions(-DDAW_NUM_RUNS=${DAW_NUM_RUNS})
 endif ()
-set(DAW_JSON_USE_SANITIZERS OFF CACHE STRING "Enable address and undefined behaviour sanitizers")
+
+option(DAW_JSON_USE_SANITIZERS "Enable address and undefined behaviour sanitizers" OFF )
 if (DAW_JSON_USE_SANITIZERS)
     message("DAW_JSON_USE_SANITIZERS=ON: compiler sanitizers enabled")
     add_definitions(-DDAW_JSON_NO_INT128)

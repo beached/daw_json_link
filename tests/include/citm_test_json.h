@@ -141,7 +141,7 @@ namespace daw::json {
 		                   std::int64_t, number_opt( LiteralAsStringOpt::Always )>>,
 		  json_key_value<"audienceSubCategoryNames",
 		                 std::unordered_map<std::int64_t, std::string_view>,
-		                 json_string_raw_no_name<, std::string_view>,
+		                 json_string_raw_no_name<std::string_view>,
 		                 json_number_no_name<
 		                   std::int64_t, number_opt( LiteralAsStringOpt::Always )>>,
 		  json_key_value<

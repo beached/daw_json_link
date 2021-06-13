@@ -403,9 +403,11 @@ namespace daw::json {
 		struct json_number : json_base::json_number<T, Options, Constructor> {
 
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_number_no_name "
 			               "variant without a name argument" );
+#endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_number<NewName, T, Options, Constructor>;
@@ -504,9 +506,11 @@ namespace daw::json {
 		struct json_bool : json_base::json_bool<T, Options, Constructor> {
 
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_bool_no_name variant "
 			               "without a name argument" );
+#endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_bool<NewName, T, Options, Constructor>;
@@ -587,9 +591,11 @@ namespace daw::json {
 			using i_am_a_json_type = void;
 
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_string_raw_no_name "
 			               "variant without a name argument" );
+#endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_string_raw<NewName, String, Options, Constructor>;
@@ -664,9 +670,11 @@ namespace daw::json {
 		         json_details::json_options_t Options, typename Constructor>
 		struct json_string : json_base::json_string<String, Options, Constructor> {
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_string_no_name "
 			               "variant of mapping type" );
+#endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_string<NewName, String, Options, Constructor>;
@@ -726,9 +734,11 @@ namespace daw::json {
 		         JsonNullable Nullable>
 		struct json_date : json_base::json_date<T, Constructor, Nullable> {
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_date_no_name variant "
 			               "without a name argument" );
+#endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_date<NewName, T, Constructor, Nullable>;
@@ -796,10 +806,11 @@ namespace daw::json {
 		struct json_class : json_base::json_class<T, Constructor, Options> {
 
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_class_no_name variant "
 			               "without a name argument" );
-
+#endif
 			template<JSONNAMETYPE NewName>
 			using with_name = json_class<NewName, T, Constructor, Options>;
 
@@ -899,10 +910,11 @@ namespace daw::json {
 		struct json_variant
 		  : json_base::json_variant<T, JsonElements, Constructor, Nullable> {
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_variant_no_name "
 			               "variant without a name argument" );
-
+#endif
 			template<JSONNAMETYPE NewName>
 			using with_name =
 			  json_variant<NewName, T, JsonElements, Constructor, Nullable>;
@@ -988,10 +1000,12 @@ namespace daw::json {
 		                                   Constructor, Nullable> {
 
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert(
 			  name != no_name,
 			  "For no_name mappings, use the json_tagged_variant_no_name variant "
 			  "without a name argument" );
+#endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
@@ -1077,9 +1091,11 @@ namespace daw::json {
 		                           CustomJsonType, Nullable> {
 
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_custom_no_name "
 			               "variant without a name argument" );
+#endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_custom<NewName, T, FromJsonConverter,
@@ -1172,10 +1188,11 @@ namespace daw::json {
 		  : json_base::json_array<JsonElement, Container, Constructor, Nullable> {
 
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_array_no_name variant "
 			               "without a name argument" );
-
+#endif
 			template<JSONNAMETYPE NewName>
 			using with_name =
 			  json_array<NewName, JsonElement, Container, Constructor, Nullable>;
@@ -1283,9 +1300,11 @@ namespace daw::json {
 		                              Constructor, Nullable> {
 
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_key_value_no_name "
 			               "variant without a name argument" );
+#endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_key_value<NewName, Container, JsonValueType,
@@ -1394,10 +1413,12 @@ namespace daw::json {
 		                                    Constructor, Nullable> {
 
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert(
 			  name != no_name,
 			  "For no_name mappings, use the json_key_value_array_no_name variant "
 			  "without a name argument" );
+#endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
@@ -1486,9 +1507,11 @@ namespace daw::json {
 		         JsonNullable Nullable>
 		struct json_delayed : json_base::json_delayed<T, Constructor, Nullable> {
 			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
 			               "For no_name mappings, use the json_delayed_no_name "
 			               "variant without a name argument" );
+#endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_delayed<NewName, T, Constructor, Nullable>;

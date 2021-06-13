@@ -73,16 +73,17 @@ if (DAW_NO_FLATTEN)
     add_definitions(-DDAW_NO_FLATTEN)
 endif ()
 
+option(DAW_JSON_NO_FAIL_ON_NO_NAME_NAME "Ensure that no named mapping uses no_name as it's name.  Using it can slow down compilation" ON )
+if (DAW_JSON_NO_FAIL_ON_NO_NAME_NAME)
+    message("DAW_JSON_NO_FAIL_ON_NO_NAME_NAME=ON: Disabling check for no_name named members")
+    add_definitions(-DDAW_JSON_NO_FAIL_ON_NO_NAME_NAME)
+endif ()
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-#if (Boost_FOUND)
-#    target_compile_definitions( ${PROJECT_NAME} INTERFACE DAW_HAS_BOOST_MP)
-#    target_link_libraries(${PROJECT_NAME} INTERFACE Boost::headers daw::header_libraries daw::utf_range)
-#else( )
-    target_link_libraries(${PROJECT_NAME} INTERFACE daw::header_libraries daw::utf_range)
-		#endif( )
+target_link_libraries(${PROJECT_NAME} INTERFACE daw::header_libraries daw::utf_range)
+
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 target_include_directories(${PROJECT_NAME}
         INTERFACE
