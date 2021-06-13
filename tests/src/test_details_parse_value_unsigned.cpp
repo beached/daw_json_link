@@ -21,7 +21,7 @@ bool test_zero_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number<no_name, unsigned>;
+	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = "0,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
@@ -32,7 +32,7 @@ bool test_missing_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number<no_name, unsigned>;
+	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = " ,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
@@ -44,7 +44,7 @@ bool test_negative_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number<no_name, unsigned>;
+	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = "-1,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );
@@ -56,7 +56,7 @@ bool test_real_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 
-	using my_number = json_number<no_name, unsigned>;
+	using my_number = json_number_no_name<unsigned>;
 	DAW_CONSTEXPR std::string_view sv = "1.23,";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
 	auto v = parse_value<my_number>( rng, ParseTag<JsonParseTypes::Unsigned>{ } );

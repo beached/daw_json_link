@@ -17,10 +17,8 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
     else( )
       message("Clang ${CMAKE_CXX_COMPILER_VERSION} detected")
 			add_compile_options( 
-				-Wall -Wextra -pedantic -Weverything 
-				-Wunreachable-code
-				-Wconversion
-				-Wzero-as-null-pointer-constant 
+				-pedantic 
+				-Weverything 
 				-ftemplate-backtrace-limit=0 
 				-Wno-c++98-compat 
 				-Wno-covered-switch-default 
@@ -42,7 +40,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-documentation 
 				-Wno-undefined-inline 
 				-Wno-poison-system-directories
-				)
+			)
 			if( DAW_WERROR ) 
 				add_compile_options( -Werror -pedantic-errors )
 			endif( )
@@ -87,7 +85,8 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 		-Wlogical-op 
 		-Wold-style-cast 
 		-Wshadow 
-		-Wzero-as-null-pointer-constant)
+		-Wzero-as-null-pointer-constant
+	)
 	if( DAW_WERROR ) 
 		add_compile_options( -Werror -pedantic-errors )
 	endif( )

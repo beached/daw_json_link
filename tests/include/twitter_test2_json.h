@@ -47,7 +47,7 @@ namespace daw::json {
 		  json_string_raw<"url", std::string_view>,
 		  json_string_raw<"expanded_url", std::string_view>,
 		  json_string_raw<"display_url", std::string_view>,
-		  json_array<"indices", json_custom<no_name, std::string_view>>>;
+		  json_array<"indices", json_custom_no_name<std::string_view>>>;
 #else
 		static inline constexpr char const url[] = "url";
 		static inline constexpr char const expanded_url[] = "expanded_url";
@@ -57,7 +57,7 @@ namespace daw::json {
 		  json_string_raw<url, std::string_view>,
 		  json_string_raw<expanded_url, std::string_view>,
 		  json_string_raw<display_url, std::string_view>,
-		  json_array<indices, json_custom<no_name, std::string_view>>>;
+		  json_array<indices, json_custom_no_name<std::string_view>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::urls_element_t const &value ) {
@@ -248,13 +248,13 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_string_raw<"text", std::string_view>,
-		  json_array<"indices", json_custom<no_name, std::string_view>>>;
+		  json_array<"indices", json_custom_no_name<std::string_view>>>;
 #else
 		static inline constexpr char const text[] = "text";
 		static inline constexpr char const indices[] = "indices";
 		using type = json_member_list<
 		  json_string_raw<text, std::string_view>,
-		  json_array<indices, json_custom<no_name, std::string_view>>>;
+		  json_array<indices, json_custom_no_name<std::string_view>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::hashtags_element_t const &value ) {
@@ -338,7 +338,7 @@ namespace daw::json {
 		  json_string_raw<"name", std::string_view>,
 		  json_custom<"id", std::string_view>,
 		  json_string_raw<"id_str", std::string_view>,
-		  json_array<"indices", json_custom<no_name, std::string_view>>>;
+		  json_array<"indices", json_custom_no_name<std::string_view>>>;
 #else
 		static inline constexpr char const screen_name[] = "screen_name";
 		static inline constexpr char const name[] = "name";
@@ -350,7 +350,7 @@ namespace daw::json {
 		  json_string_raw<name, std::string_view>,
 		  json_custom<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
-		  json_array<indices, json_custom<no_name, std::string_view>>>;
+		  json_array<indices, json_custom_no_name<std::string_view>>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::user_mentions_element_t const &value ) {
@@ -469,7 +469,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_custom<"id", std::string_view>,
 		  json_string_raw<"id_str", std::string_view>,
-		  json_array<"indices", json_custom<no_name, std::string_view>>,
+		  json_array<"indices", json_custom_no_name<std::string_view>>,
 		  json_string_raw<"media_url", std::string_view>,
 		  json_string_raw<"media_url_https", std::string_view>,
 		  json_string_raw<"url", std::string_view>,
@@ -491,7 +491,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_custom<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
-		  json_array<indices, json_custom<no_name, std::string_view>>,
+		  json_array<indices, json_custom_no_name<std::string_view>>,
 		  json_string_raw<media_url, std::string_view>,
 		  json_string_raw<media_url_https, std::string_view>,
 		  json_string_raw<url, std::string_view>,

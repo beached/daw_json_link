@@ -61,10 +61,16 @@ else ()
     add_definitions(-DDAW_DONT_USE_EXCEPTIONS=true)
 endif ()
 
-option(DAW_NO_FLATTEN OFF "Disable function flattening optimization")
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+    # G++ has difficulty and takes too long to compile
+    option(DAW_NO_FLATTEN "Disable function flattening optimization" ON )
+else( )
+    option(DAW_NO_FLATTEN "Disable function flattening optimization" OFF )
+endif()
+
 if (DAW_NO_FLATTEN)
     message("DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
-    add_definitions(-DDAW_NO_FLATTEN=true)
+    add_definitions(-DDAW_NO_FLATTEN)
 endif ()
 
 

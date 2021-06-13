@@ -25,9 +25,8 @@ struct Fixed8JsonConverter {
 	}
 };
 
-template<JSONNAMETYPE name>
-using json_fixed8 = daw::json::json_custom<name, double, Fixed8JsonConverter,
-                                           Fixed8JsonConverter>;
+using json_fixed8 = daw::json::json_custom_no_name<double, Fixed8JsonConverter,
+                                                   Fixed8JsonConverter>;
 
 struct Change {
 	double rate;
@@ -37,8 +36,7 @@ struct Change {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Change> {
-		using type =
-		  json_ordered_member_list<json_fixed8<no_name>, json_fixed8<no_name>>;
+		using type = json_ordered_member_list<json_fixed8, json_fixed8>;
 	};
 } // namespace daw::json
 

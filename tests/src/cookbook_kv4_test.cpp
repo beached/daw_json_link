@@ -32,7 +32,7 @@ int main( int argc, char **argv )
 	using namespace daw::json;
 	auto val = json_value( json_data );
 	std::multimap<std::string, std::string> kv =
-	  from_json<json_key_value<no_name, std::multimap<std::string, std::string>,
+	  from_json<json_key_value_no_name<std::multimap<std::string, std::string>,
 	                           std::string>>( val );
 	test_assert( kv.size( ) == 2, "Expected data to have 2 items" );
 	test_assert( kv.begin( )->first == std::prev( kv.end( ) )->first,

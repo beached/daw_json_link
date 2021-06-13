@@ -118,8 +118,8 @@ namespace daw::json {
 			 * @return parsed value from JSON data
 			 */
 			template<std::size_t member_position, typename JsonMember,
-			         AllMembersMustExist must_exist, std::size_t N,
-			         typename ParseState, bool B, typename CharT>
+			         AllMembersMustExist must_exist, typename ParseState,
+			         std::size_t N, typename CharT, bool B>
 			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_class_member( ParseState &parse_state,
 			                    locations_info_t<N, CharT, B> &locations ) {
@@ -188,8 +188,8 @@ namespace daw::json {
 			 * start/finish of JSON members we are interested in and return that to
 			 * the members parser when needed.
 			 */
-			template<typename JsonClass, typename... JsonMembers, std::size_t... Is,
-			         typename ParseState>
+			template<typename JsonClass, typename... JsonMembers, typename ParseState,
+			         std::size_t... Is>
 			[[nodiscard]] constexpr json_result<JsonClass>
 			parse_json_class( ParseState &parse_state, std::index_sequence<Is...> ) {
 				static_assert( is_a_json_type<JsonClass>::value );

@@ -377,7 +377,7 @@ namespace daw::json {
 	struct json_data_contract<OptionalOrdered> {
 		using type =
 		  json_ordered_member_list<int,
-		                           json_number_null<no_name, std::optional<int>>>;
+		                           json_number_null_no_name<std::optional<int>>>;
 
 		static DAW_CONSTEXPR auto to_json_data( OptionalOrdered const &v ) {
 			return std::forward_as_tuple( v.a, v.b );
@@ -399,7 +399,7 @@ void test128( ) {
 	DAW_CONSTEXPR std::string_view very_big_int =
 	  "[170141183460469231731687303715884105727]";
 	std::cout << "Trying to parse large int '" << very_big_int << "'\n";
-	auto vec = from_json_array<json_number<no_name, __int128>>( very_big_int );
+	auto vec = from_json_array<json_number_no_name<__int128>>( very_big_int );
 	__int128 val = vec[0];
 	std::cout << "really big: " << std::hex
 	          << static_cast<std::uint64_t>( val >> 64U ) << ' '
@@ -409,7 +409,7 @@ void test128( ) {
 	  "[-170141183460469231731687303715884105728]";
 	std::cout << "Trying to parse large negative int '" << very_negative_int
 	          << "'\n";
-	vec = from_json_array<json_number<no_name, __int128>>( very_negative_int );
+	vec = from_json_array<json_number_no_name<__int128>>( very_negative_int );
 	val = vec[0];
 	std::cout << "really negative: " << std::hex
 	          << static_cast<std::uint64_t>( val >> 64U ) << ' '
@@ -598,10 +598,10 @@ bool test_optional_array( ) {
 	daw_json_assert( result.size( ) == 2 and not result[0] and result[1] == 5,
 	                 ErrorReason::Unknown );
 	std::string str{ };
-	to_json_array<json_number_null<no_name, std::optional<int>>>(
+	to_json_array<json_number_null_no_name<std::optional<int>>>(
 	  result, std::back_inserter( str ) );
 	auto result2 =
-	  from_json_array<json_number_null<no_name, std::optional<int>>>( str );
+	  from_json_array<json_number_null_no_name<std::optional<int>>>( str );
 	return result == result2;
 }
 
@@ -748,7 +748,7 @@ int main( int, char ** )
 
 	using namespace daw::json;
 	using num_t =
-	  json_number<no_name, double, number_opt( LiteralAsStringOpt::Always )>;
+	  json_number_no_name<double, number_opt( LiteralAsStringOpt::Always )>;
 	std::cout << "Inf double: "
 	          << to_json<std::string, double, num_t>(
 	               std::numeric_limits<double>::infinity( ) )
@@ -914,7 +914,7 @@ int main( int, char ** )
 	assert( from_json<std::string>( R"("hello world")" ) == "hello world" );
 	assert( from_json<std::deque<int>>( "[1,2,3]"s ).at( 1 ) == 2 );
 	assert( from_json<std::list<int>>( "[1,2,3]"s ).size( ) == 3 );
-	assert( ( from_json<json_array<no_name, char, std::string>>(
+	assert( ( from_json<json_array_no_name<char, std::string>>(
 	            "[97,98,99]"s ) == "abc" ) );
 	static_assert( from_json<std::array<int, 4>>( "[1,2,3]"sv )[1] == 2 );
 
@@ -956,7 +956,7 @@ int main( int, char ** )
 
 	static_assert(
 	  from_json<
-	    json_key_value<no_name, std::array<std::pair<std::string_view, int>, 2>,
+	    json_key_value_no_name<std::array<std::pair<std::string_view, int>, 2>,
 	                   int, std::string_view>>( R"({"a":0,"b":1})" )[1]
 	    .second == 1 );
 	std::cout << "done";

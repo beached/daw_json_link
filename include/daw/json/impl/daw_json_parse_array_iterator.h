@@ -65,7 +65,7 @@ namespace daw::json {
 				using base =
 				  json_parse_array_iterator_base<ParseState, can_random_v<KnownBounds>>;
 				using iterator_category = typename base::iterator_category;
-				using element_t = typename JsonMember::json_element_t;
+				using element_t = typename JsonMember::json_element_t::without_name;
 				using value_type = typename element_t::parse_to_t;
 				using reference = value_type;
 				using pointer = arrow_proxy<value_type>;

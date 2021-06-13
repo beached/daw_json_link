@@ -50,7 +50,7 @@ std::size_t test( std::string_view json_data ) {
 	          << " exec model\n*********************************************\n";
 	using namespace daw::json;
 	using JString =
-	  json_string_raw<no_name, std::string_view,
+	  json_string_raw_no_name<std::string_view,
 	                  string_raw_opt( JsonNullable::MustExist,
 	                                  EightBitModes::AllowFull,
 	                                  AllowEscapeCharacter::NotBeforeDblQuote ),

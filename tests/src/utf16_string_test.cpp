@@ -47,11 +47,10 @@ struct FromConverter {
 	}
 };
 
-template<JSONNAMETYPE Name,
-         daw::json::JsonNullable Nullable = daw::json::JsonNullable::MustExist>
 using json_u16string =
-  daw::json::json_custom<Name, std::u16string, ToConverter, FromConverter,
-                         daw::json::CustomJsonTypes::String, Nullable>;
+  daw::json::json_custom_no_name<std::u16string, ToConverter, FromConverter,
+                                 daw::json::CustomJsonTypes::String,
+                                 daw::json::JsonNullable::MustExist>;
 
 int main( int, char ** ) {
 	std::string in_str = R"(["testing🎉", "🙈monkey"])";
@@ -60,13 +59,11 @@ int main( int, char ** ) {
 	puts( in_str.c_str( ) );
 
 	std::vector<std::u16string> ary =
-	  daw::json::from_json_array<json_u16string<daw::json::no_name>>( in_str );
+	  daw::json::from_json_array<json_u16string>( in_str );
 
 	assert( ary.size( ) == 2 );
 
-	auto out_str =
-	  daw::json::to_json_array<std::string, json_u16string<daw::json::no_name>>(
-	    ary );
+	auto out_str = daw::json::to_json_array<std::string, json_u16string>( ary );
 
 	puts( "After" );
 	puts( out_str.c_str( ) );

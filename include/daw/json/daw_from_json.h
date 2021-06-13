@@ -101,12 +101,11 @@ namespace daw::json {
 			                 ErrorReason::EmptyJSONPath );
 
 			using json_member = json_details::json_deduced_type<JsonMember>;
-			using json_member = json_details::json_deduced_type<JsonMember>;
+
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			using json_member = json_details::json_deduced_type<JsonMember>;
 
 			char const *f = std::data( json_data );
 			char const *l = daw::data_end( json_data );
@@ -168,7 +167,6 @@ namespace daw::json {
 			daw_json_assert( std::data( member_path ) != nullptr,
 			                 ErrorReason::EmptyJSONPath );
 
-			using json_member = json_details::json_deduced_type<JsonMember>;
 			using json_member = json_details::json_deduced_type<JsonMember>;
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
@@ -302,7 +300,6 @@ namespace daw::json {
 		[[maybe_unused, nodiscard]] inline constexpr Result
 		from_json( basic_json_value<ParseState> value ) {
 			using json_member = json_details::json_deduced_type<JsonMember>;
-			using json_member = json_details::json_deduced_type<JsonMember>;
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 			  "Missing specialization of daw::json::json_data_contract for class "
@@ -333,12 +330,10 @@ namespace daw::json {
 		from_json( basic_json_value<ParseState> value,
 		           std::string_view member_path ) {
 			using json_member = json_details::json_deduced_type<JsonMember>;
-			using json_member = json_details::json_deduced_type<JsonMember>;
 			static_assert(
 			  json_details::has_unnamed_default_type_mapping_v<JsonMember>,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			using json_member = json_details::json_deduced_type<JsonMember>;
 			auto json_data = value.get_state( );
 			auto [is_found, parse_state] = json_details::find_range<ParsePolicy>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
@@ -389,7 +384,8 @@ namespace daw::json {
 			static_assert( traits::not_same<element_type, void>::value,
 			               "Unknown JsonElement type." );
 
-			using parser_t = json_array<no_name, JsonElement, Container, Constructor>;
+			using parser_t =
+			  json_base::json_array<JsonElement, Container, Constructor>;
 
 			/***
 			 * If the string is known to have a trailing zero, allow optimization on

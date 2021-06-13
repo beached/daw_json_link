@@ -208,7 +208,7 @@ namespace tests {
 		try {
 			using namespace daw::json;
 			std::vector<intmax_t> numbers =
-			  from_json_array<json_checked_number<no_name, intmax_t>>( data );
+			  from_json_array<json_checked_number_no_name<intmax_t>>( data );
 			(void)numbers;
 		} catch( daw::json::json_exception const & ) { return true; }
 		return false;
@@ -219,7 +219,7 @@ namespace tests {
 		try {
 			using namespace daw::json;
 			std::vector<std::optional<int>> numbers =
-			  from_json_array<json_checked_number_null<no_name, std::optional<int>>>(
+			  from_json_array<json_checked_number_null_no_name<std::optional<int>>>(
 			    data );
 			(void)numbers;
 		} catch( daw::json::json_exception const & ) { return true; }

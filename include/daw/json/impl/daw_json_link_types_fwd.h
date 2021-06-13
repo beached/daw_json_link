@@ -37,6 +37,66 @@ namespace daw::json {
 		 */
 
 		/**
+		 * Link to a JSON class
+		 * @tparam Name name of JSON member to link to
+		 * @tparam T type that has specialization of
+		 * daw::json::json_data_contract
+		 * @tparam Constructor A callable used to construct T.  The
+		 * default supports normal and aggregate construction
+		 * @tparam Nullable Can the member be missing or have a null value
+		 */
+		template<JSONNAMETYPE Name, typename T,
+		         typename Constructor = default_constructor<T>,
+		         json_details::json_options_t Options = class_opts_def>
+		struct json_class;
+
+		/**
+		 * Link to a nullable JSON class
+		 * @tparam Name name of JSON member to link to
+		 * @tparam T type that has specialization of
+		 * daw::json::json_data_contract
+		 * @tparam Constructor A callable used to construct T.  The
+		 * default supports normal and aggregate construction
+		 */
+		template<JSONNAMETYPE Name, typename T,
+		         typename Constructor = nullable_constructor<T>,
+		         json_details::json_options_t Options = class_opts_def>
+		using json_class_null =
+		  json_class<Name, T, Constructor,
+		             json_details::class_opts_set<Options, JsonNullDefault>>;
+
+		/**
+		 * The member is a number
+		 * @tparam Name name of json member
+		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+		 * Constructor
+		 * @tparam LiteralAsString Could this number be embedded in a string
+		 * @tparam Constructor Callable used to construct result
+		 * @tparam RangeCheck Check if the value will fit in the result
+		 * @tparam Nullable Can the member be missing or have a null value
+		 */
+		template<JSONNAMETYPE Name, typename T = double,
+		         json_details::json_options_t Options = number_opts_def,
+		         typename Constructor = default_constructor<T>>
+		struct json_number;
+		/**
+		 * The member is a nullable number
+		 * @tparam Name name of json member
+		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+		 * Constructor
+		 * @tparam LiteralAsString Could this number be embedded in a string
+		 * @tparam Constructor Callable used to construct result
+		 * @tparam RangeCheck Check if the value will fit in the result
+		 */
+		template<JSONNAMETYPE Name, typename T = std::optional<double>,
+		         json_details::json_options_t Options = number_opts_def,
+		         typename Constructor = nullable_constructor<T>>
+		using json_number_null =
+		  json_number<Name, T,
+		              json_details::number_opts_set<Options, JsonNullDefault>,
+		              Constructor>;
+
+		/**
 		 * The member is a range checked number
 		 * @tparam Name name of json member
 		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
@@ -51,6 +111,111 @@ namespace daw::json {
 		using json_checked_number = json_number<
 		  Name, T,
 		  json_details::number_opts_set<Options, JsonRangeCheck::CheckForNarrowing>,
+		  Constructor>;
+
+		/**
+		 * The member is a boolean
+		 * @tparam Name name of json member
+		 * @tparam T result type to pass to Constructor
+		 * @tparam LiteralAsString Could this number be embedded in a string
+		 * @tparam Constructor Callable used to construct result
+		 * @tparam Nullable Can the member be missing or have a null value
+		 */
+		template<JSONNAMETYPE Name, typename T = bool,
+		         json_details::json_options_t Options = bool_opts_def,
+		         typename Constructor = default_constructor<T>>
+		struct json_bool;
+
+		/**
+		 * The member is a nullable boolean
+		 * @tparam Name name of json member
+		 * @tparam T result type to pass to Constructor
+		 * @tparam LiteralAsString Could this number be embedded in a string
+		 * @tparam Constructor Callable used to construct result
+		 */
+		template<JSONNAMETYPE Name, typename T = std::optional<bool>,
+		         json_details::json_options_t Options = bool_opts_def,
+		         typename Constructor = default_constructor<T>>
+		using json_bool_null =
+		  json_bool<Name, T, json_details::bool_opts_set<Options, JsonNullDefault>,
+		            Constructor>;
+
+		/**
+		 * Member is an escaped string and requires unescaping and escaping of
+		 * string data
+		 * @tparam Name of json member
+		 * @tparam String result type constructed by Constructor
+		 * @tparam Constructor a callable taking as arguments ( char const *,
+		 * std::size_t )
+		 * @tparam EmptyStringNull if string is empty, call Constructor with no
+		 * arguments
+		 * @tparam EightBitMode Allow filtering of characters with the MSB set
+		 * @tparam Nullable Can the member be missing or have a null value
+		 */
+		template<JSONNAMETYPE Name, typename String = std::string,
+		         json_details::json_options_t Options = string_opts_def,
+		         typename Constructor = default_constructor<String>>
+		struct json_string;
+
+		/**
+		 * Member is a nullable escaped string and requires unescaping and escaping
+		 * of string data
+		 * @tparam Name of json member
+		 * @tparam String result type constructed by Constructor
+		 * @tparam Constructor a callable taking as arguments ( InputIterator,
+		 * InputIterator ).  If others are needed use the Constructor callable
+		 * convert
+		 * @tparam EmptyStringNull if string is empty, call Constructor with no
+		 * arguments
+		 * @tparam EightBitMode Allow filtering of characters with the MSB set
+		 */
+		template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
+		         json_details::json_options_t Options = string_opts_def,
+		         typename Constructor = nullable_constructor<String>>
+		using json_string_null =
+		  json_string<Name, String,
+		              json_details::string_opts_set<Options, JsonNullDefault>,
+		              Constructor>;
+
+		/**
+		 * Member is an escaped string and requires unescaping and escaping of
+		 * string data
+		 * @tparam Name of json member
+		 * @tparam String result type constructed by Constructor
+		 * @tparam Constructor a callable taking as arguments ( char const *,
+		 * std::size_t )
+		 * @tparam EmptyStringNull if string is empty, call Constructor with no
+		 * arguments
+		 * @tparam EightBitMode Allow filtering of characters with the MSB set
+		 * arguments
+		 * @tparam Nullable Can the member be missing or have a null value
+		 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
+		 * data
+		 */
+		template<JSONNAMETYPE Name, typename String = std::string,
+		         json_details::json_options_t Options = string_raw_opts_def,
+		         typename Constructor = default_constructor<String>>
+		struct json_string_raw;
+
+		/**
+		 * Member is a nullable escaped string and requires unescaping and escaping
+		 * of string data.  Not all invalid codepoints are detected
+		 * @tparam Name of json member
+		 * @tparam String result type constructed by Constructor
+		 * @tparam Constructor a callable taking as arguments ( char const *,
+		 * std::size_t )
+		 * @tparam EmptyStringNull if string is empty, call Constructor with no
+		 * arguments
+		 * @tparam EightBitMode Allow filtering of characters with the MSB set
+		 * arguments
+		 * @tparam AllowEscape Tell parser if we know a \ or escape will be in the
+		 * data
+		 */
+		template<JSONNAMETYPE Name, typename String = std::optional<std::string>,
+		         json_details::json_options_t Options = string_raw_opts_def,
+		         typename Constructor = nullable_constructor<String>>
+		using json_string_raw_null = json_string_raw<
+		  Name, String, json_details::string_raw_opts_set<Options, JsonNullDefault>,
 		  Constructor>;
 
 		/**
@@ -69,6 +234,48 @@ namespace daw::json {
 		  json_details::number_opts_set<Options, JsonRangeCheck::CheckForNarrowing,
 		                                JsonNullDefault>,
 		  Constructor>;
+
+		/** Map a KV type json class { "Key StringRaw": ValueType, ... }
+		 *  to a c++ class.  Keys are Always string like and the destination
+		 *  needs to be constructable with a pointer, size
+		 *  @tparam Name name of JSON member to link to
+		 *  @tparam Container type to put values in
+		 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
+		 *  json_string, ... ). It also supports basic types like numbers, bool, and
+		 * mapped classes and enums(mapped to numbers)
+		 *  @tparam JsonKeyType type of key in kv pair.  As with value it supports
+		 * basic types too
+		 *  @tparam Constructor A callable used to make Container, default will use
+		 * the Containers constructor.  Both normal and aggregate are supported
+		 * @tparam Nullable Can the member be missing or have a null value
+		 */
+		template<JSONNAMETYPE Name, typename Container,
+		         typename JsonValueType = typename Container::mapped_type,
+		         typename JsonKeyType = json_base::json_string<std::string>,
+		         typename Constructor = default_constructor<Container>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		struct json_key_value;
+
+		/** Map a nullable KV type json class { "Key StringRaw": ValueType, ... }
+		 *  to a c++ class.  Keys are Always string like and the destination
+		 *  needs to be constructable with a pointer, size
+		 *  @tparam Name name of JSON member to link to
+		 *  @tparam Container type to put values in
+		 *  @tparam JsonValueType Json type of value in kv pair( e.g. json_number,
+		 *  json_string, ... ). It also supports basic types like numbers, bool, and
+		 * mapped classes and enums(mapped to numbers)
+		 *  @tparam JsonKeyType type of key in kv pair.  As with value it supports
+		 * basic types too
+		 *  @tparam Constructor A callable used to make Container, default will use
+		 * the Containers constructor.  Both normal and aggregate are supported
+		 */
+		template<JSONNAMETYPE Name, typename Container,
+		         typename JsonValueType = typename Container::mapped_type,
+		         typename JsonKeyType = typename Container::key_type,
+		         typename Constructor = nullable_constructor<Container>>
+		using json_key_value_null =
+		  json_key_value<Name, Container, JsonValueType, JsonKeyType, Constructor,
+		                 JsonNullDefault>;
 
 		/**
 		 * Link to a JSON string representing a date
@@ -165,10 +372,8 @@ namespace daw::json {
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename Container,
-		         typename JsonValueType =
-		           json_details::json_deduced_type<typename Container::mapped_type>,
-		         typename JsonKeyType =
-		           json_details::json_deduced_type<typename Container::key_type>,
+		         typename JsonValueType = typename Container::mapped_type,
+		         typename JsonKeyType = typename Container::key_type,
 		         typename Constructor = default_constructor<Container>,
 		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_key_value_array;
@@ -188,10 +393,8 @@ namespace daw::json {
 		 * the Containers constructor.  Both normal and aggregate are supported
 		 */
 		template<JSONNAMETYPE Name, typename Container,
-		         typename JsonValueType =
-		           json_details::json_deduced_type<typename Container::mapped_type>,
-		         typename JsonKeyType =
-		           json_details::json_deduced_type<typename Container::key_type>,
+		         typename JsonValueType = typename Container::mapped_type,
+		         typename JsonKeyType = typename Container::key_type,
 		         typename Constructor = nullable_constructor<Container>>
 		using json_key_value_array_null =
 		  json_key_value_array<Name, Container, JsonValueType, JsonKeyType,
@@ -314,7 +517,8 @@ namespace daw::json {
 			[[maybe_unused]] constexpr unknown_variant_type<T>
 			get_variant_type_list( T const * );
 
-			struct cannot_deduce_variant_element_types {};
+			template<JsonNullable, typename>
+			struct cannot_deduce_variant_element_types;
 
 			template<JsonNullable Nullable, typename Variant>
 			using determine_variant_element_types = std::conditional_t<
@@ -326,7 +530,7 @@ namespace daw::json {
 			    std::remove_reference_t<decltype( get_variant_type_list(
 			      std::declval<
 			        detected_underlying_nullable_type<Variant> const *>( ) ) )>,
-			    cannot_deduce_variant_element_types>>;
+			    cannot_deduce_variant_element_types<Nullable, Variant>>>;
 		} // namespace json_details
 
 		/***

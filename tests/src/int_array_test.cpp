@@ -275,7 +275,7 @@ void test_func( ) {
 		  "int parsing 1", json_sv_intmax.size( ),
 		  []( auto &&sv ) noexcept {
 			  auto const data =
-			    from_json_array<json_checked_number<no_name, intmax_t>>( sv );
+			    from_json_array<json_checked_number_no_name<intmax_t>>( sv );
 			  daw::do_not_optimize( data );
 			  return data.size( );
 		  },
@@ -283,7 +283,7 @@ void test_func( ) {
 
 		std::cout << "element count: " << count << '\n';
 		using iterator_t =
-		  daw::json::json_array_iterator<json_checked_number<no_name, intmax_t>>;
+		  daw::json::json_array_iterator<json_checked_number_no_name<intmax_t>>;
 
 		auto data = std::vector<intmax_t>( );
 		data.reserve( NUMVALUES );
@@ -405,7 +405,7 @@ void test_func( ) {
 #ifdef DAW_ALLOW_SSE42
 	{
 		// Unsigned SSE42
-		using uint_type = json_number<no_name, uintmax_t>;
+		using uint_type = json_number_no_name<uintmax_t>;
 		auto const json_sv = make_int_array_data<NUMVALUES, uintmax_t>( );
 
 		{
@@ -427,7 +427,7 @@ void test_func( ) {
 	std::cout << "Checked unsigned sse3\n";
 	{
 		// Unsigned SSE42
-		using uint_type = json_number<no_name, uintmax_t>;
+		using uint_type = json_number_no_name<uintmax_t>;
 		using iterator_t = daw::json::json_array_iterator<
 		  uint_type, SIMDNoCommentSkippingPolicyChecked<sse42_exec_tag>>;
 
@@ -449,7 +449,7 @@ void test_func( ) {
 	}
 	{
 		// Unsigned SSE42
-		using uint_type = json_number<no_name, uint32_t>;
+		using uint_type = json_number_no_name<uint32_t>;
 		auto const json_sv = make_int_array_data<NUMVALUES, uint32_t>( );
 
 		{

@@ -82,6 +82,7 @@ namespace daw::json {
 			  nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
 			  json_result<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
+				static_assert( json_details::is_no_name_v<JsonClass> );
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
 				                 typename JsonClass::base_type>,
@@ -292,7 +293,7 @@ namespace daw::json {
 					               "in it's json_data_contract specialization" );
 
 					return json_details::member_to_string(
-					  template_arg<json_class<no_name, Alternative>>, it, alternative );
+					  template_arg<json_base::json_class<Alternative>>, it, alternative );
 				} );
 			}
 
@@ -321,12 +322,12 @@ namespace daw::json {
 
 				std::size_t const idx = [parse_state]( ) mutable {
 					return Switcher{ }( std::get<0>(
-					  json_details::parse_value<json_class<no_name, tag_class_t>>(
+					  json_details::parse_value<json_base::json_class<tag_class_t>>(
 					    parse_state, ParseTag<JsonParseTypes::Class>{ } )
 					    .members ) );
 				}( );
 				return json_details::parse_nth_class<
-				  0, JsonClass, false, json_class<no_name, JsonClasses>...>(
+				  0, JsonClass, false, json_base::json_class<JsonClasses>...>(
 				  idx, parse_state );
 			}
 		};
@@ -335,6 +336,58 @@ namespace daw::json {
 		 * Member types - These are the mapping classes to
 		 * describe the constructor of your classes
 		 **************************************************/
+
+		namespace json_base {
+			template<typename T, json_details::json_options_t Options,
+			         typename Constructor>
+			struct json_number {
+				using i_am_a_json_type = void;
+				using wrapped_type = T;
+				static constexpr daw::string_view name = no_name;
+
+				static constexpr JsonNullable nullable =
+				  json_details::get_bits_for<JsonNullable>( number_opts, Options );
+				using base_type = json_details::unwrap_type<T, nullable>;
+				static_assert( traits::not_same<void, base_type>::value,
+				               "Failed to detect base type" );
+
+				static_assert( daw::is_arithmetic<base_type>::value,
+				               "json_number requires an arithmetic type" );
+
+				using parse_to_t = typename json_details::construction_result<
+				  nullable != JsonNullable::MustExist, Constructor, base_type>::type;
+
+				static_assert(
+				  std::disjunction_v<
+				    not_trait<json_details::is_nullable_json_value<nullable>>,
+				    typename std::is_invocable_r<parse_to_t, Constructor>::type>,
+				  "Default ctor of constructor must match that of base" );
+				using constructor_t = Constructor;
+
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<json_details::number_parse_type_v<base_type>,
+				                   nullable>;
+
+				static constexpr JsonParseTypes base_expected_type =
+				  json_details::number_parse_type_v<base_type>;
+
+				static constexpr LiteralAsStringOpt literal_as_string =
+				  json_details::get_bits_for<LiteralAsStringOpt>( number_opts,
+				                                                  Options );
+
+				static constexpr JsonRangeCheck range_check =
+				  json_details::get_bits_for<JsonRangeCheck>( number_opts, Options );
+
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::Number;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_number<NewName, T, Options, Constructor>;
+				using without_name = json_number;
+			};
+
+		} // namespace json_base
 
 		/**
 		 * The member is a range checked number
@@ -347,48 +400,97 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         json_details::json_options_t Options, typename Constructor>
-		struct json_number {
-			using i_am_a_json_type = void;
-			using wrapped_type = T;
-			static constexpr JsonNullable nullable =
-			  json_details::get_bits_for<JsonNullable>( number_opts, Options );
-			using base_type = json_details::unwrap_type<T, nullable>;
-			static_assert( traits::not_same<void, base_type>::value,
-			               "Failed to detect base type" );
+		struct json_number : json_base::json_number<T, Options, Constructor> {
 
-			static_assert( daw::is_arithmetic<base_type>::value,
-			               "json_number requires an arithmetic type" );
-
-			using parse_to_t = typename json_details::construction_result<
-			  nullable != JsonNullable::MustExist, Constructor, base_type>::type;
-
-			static_assert(
-			  std::disjunction_v<
-			    not_trait<json_details::is_nullable_json_value<nullable>>,
-			    typename std::is_invocable_r<parse_to_t, Constructor>::type>,
-			  "Default ctor of constructor must match that of base" );
-			using constructor_t = Constructor;
 			static constexpr daw::string_view name = Name;
-
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<json_details::number_parse_type_v<base_type>,
-			                   nullable>;
-
-			static constexpr JsonParseTypes base_expected_type =
-			  json_details::number_parse_type_v<base_type>;
-
-			static constexpr LiteralAsStringOpt literal_as_string =
-			  json_details::get_bits_for<LiteralAsStringOpt>( number_opts, Options );
-
-			static constexpr JsonRangeCheck range_check =
-			  json_details::get_bits_for<JsonRangeCheck>( number_opts, Options );
-
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::Number;
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_number_no_name "
+			               "variant without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_number<NewName, T, Options, Constructor>;
+			using without_name = json_base::json_number<T, Options, Constructor>;
 		};
+
+		template<typename T = double,
+		         json_details::json_options_t Options = number_opts_def,
+		         typename Constructor = default_constructor<T>>
+		using json_number_no_name = json_base::json_number<T, Options, Constructor>;
+
+		template<typename T = std::optional<double>,
+		         json_details::json_options_t Options = number_opts_def,
+		         typename Constructor = nullable_constructor<T>>
+		using json_number_null_no_name = json_base::json_number<
+		  T, json_details::number_opts_set<Options, JsonNullDefault>, Constructor>;
+
+		/**
+		 * The member is a range checked number
+		 * @tparam T type of number(e.g. double, int, unsigned...) to pass to
+		 * Constructor
+		 * @tparam LiteralAsString Could this number be embedded in a string
+		 * @tparam Constructor Callable used to construct result
+		 * @tparam Nullable Can the member be missing or have a null value
+		 */
+		template<typename T = double,
+		         json_details::json_options_t Options = number_opts_def,
+		         typename Constructor = default_constructor<T>>
+		using json_checked_number_no_name = json_base::json_number<
+		  T,
+		  json_details::number_opts_set<Options, JsonRangeCheck::CheckForNarrowing>,
+		  Constructor>;
+
+		/**
+		 * The member is a nullable range checked number
+		 * @tparam Name name of json member
+		 * @tparam T type of number(e.g. optional<double>, optional<int>,
+		 * optional<unsigned>...) to pass to Constructor
+		 * @tparam LiteralAsString Could this number be embedded in a string
+		 * @tparam Constructor Callable used to construct result
+		 */
+		template<typename T = std::optional<double>,
+		         json_details::json_options_t Options = number_opts_def,
+		         typename Constructor = nullable_constructor<T>>
+		using json_checked_number_null_no_name = json_base::json_number<
+		  T,
+		  json_details::number_opts_set<Options, JsonRangeCheck::CheckForNarrowing,
+		                                JsonNullDefault>,
+		  Constructor>;
+
+		namespace json_base {
+			template<typename T, json_details::json_options_t Options,
+			         typename Constructor>
+			struct json_bool {
+				using i_am_a_json_type = void;
+				static constexpr daw::string_view name = no_name;
+				static constexpr JsonNullable nullable =
+				  json_details::get_bits_for<JsonNullable>( bool_opts, Options );
+				using wrapped_type = T;
+				using base_type = json_details::unwrap_type<T, nullable>;
+				static_assert( traits::not_same<void, base_type>::value,
+				               "Failed to detect base type" );
+
+				using parse_to_t = typename json_details::construction_result<
+				  nullable != JsonNullable::MustExist, Constructor, base_type>::type;
+
+				using constructor_t = Constructor;
+
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::Bool, nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::Bool;
+
+				static constexpr LiteralAsStringOpt literal_as_string =
+				  json_details::get_bits_for<LiteralAsStringOpt>( bool_opts, Options );
+
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::Bool;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_bool<NewName, T, Options, Constructor>;
+				using without_name = json_bool;
+			};
+		} // namespace json_base
 
 		/**
 		 * The member is a nullable boolean
@@ -399,34 +501,69 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         json_details::json_options_t Options, typename Constructor>
-		struct json_bool {
-			using i_am_a_json_type = void;
-			static constexpr JsonNullable nullable =
-			  json_details::get_bits_for<JsonNullable>( bool_opts, Options );
-			using wrapped_type = T;
-			using base_type = json_details::unwrap_type<T, nullable>;
-			static_assert( traits::not_same<void, base_type>::value,
-			               "Failed to detect base type" );
-
-			using parse_to_t = typename json_details::construction_result<
-			  nullable != JsonNullable::MustExist, Constructor, base_type>::type;
-
-			using constructor_t = Constructor;
-
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::Bool, nullable>;
-			static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Bool;
+		struct json_bool : json_base::json_bool<T, Options, Constructor> {
 
 			static constexpr daw::string_view name = Name;
-			static constexpr LiteralAsStringOpt literal_as_string =
-			  json_details::get_bits_for<LiteralAsStringOpt>( bool_opts, Options );
-
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::Bool;
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_bool_no_name variant "
+			               "without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_bool<NewName, T, Options, Constructor>;
+			using without_name = json_base::json_bool<T, Options, Constructor>;
 		};
+
+		template<typename T = bool,
+		         json_details::json_options_t Options = bool_opts_def,
+		         typename Constructor = default_constructor<T>>
+		using json_bool_no_name = json_base::json_bool<T, Options, Constructor>;
+
+		template<typename T = std::optional<bool>,
+		         json_details::json_options_t Options = bool_opts_def,
+		         typename Constructor = nullable_constructor<T>>
+		using json_bool_null_no_name = json_base::json_bool<
+		  T, json_details::bool_opts_set<Options, JsonNullDefault>, Constructor>;
+
+		namespace json_base {
+			template<typename String, json_details::json_options_t Options,
+			         typename Constructor>
+			struct json_string_raw {
+				using i_am_a_json_type = void;
+				static constexpr JsonNullable nullable =
+				  json_details::get_bits_for<JsonNullable>( string_raw_opts, Options );
+				using constructor_t = Constructor;
+				using wrapped_type = String;
+				using base_type = json_details::unwrap_type<String, nullable>;
+				static_assert( traits::not_same<void, base_type>::value,
+				               "Failed to detect base type" );
+
+				using parse_to_t = typename json_details::construction_result<
+				  nullable != JsonNullable::MustExist, Constructor, base_type>::type;
+
+				static constexpr daw::string_view name = no_name;
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::StringRaw, nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::StringRaw;
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::String;
+
+				static constexpr EmptyStringNull empty_is_null =
+				  json_details::get_bits_for<EmptyStringNull>( string_raw_opts,
+				                                               Options );
+				static constexpr EightBitModes eight_bit_mode =
+				  json_details::get_bits_for<EightBitModes>( string_raw_opts, Options );
+
+				static constexpr AllowEscapeCharacter allow_escape_character =
+				  json_details::get_bits_for<AllowEscapeCharacter>( string_raw_opts,
+				                                                    Options );
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_string_raw<NewName, String, Options, Constructor>;
+				using without_name = json_string_raw;
+			};
+		} // namespace json_base
 
 		/**
 		 * Member is an escaped string and requires unescaping and escaping of
@@ -445,39 +582,70 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename String,
 		         json_details::json_options_t Options, typename Constructor>
-		struct json_string_raw {
+		struct json_string_raw
+		  : json_base::json_string_raw<String, Options, Constructor> {
 			using i_am_a_json_type = void;
-			static constexpr JsonNullable nullable =
-			  json_details::get_bits_for<JsonNullable>( string_raw_opts, Options );
-			using constructor_t = Constructor;
-			using wrapped_type = String;
-			using base_type = json_details::unwrap_type<String, nullable>;
-			static_assert( traits::not_same<void, base_type>::value,
-			               "Failed to detect base type" );
-
-			using parse_to_t = typename json_details::construction_result<
-			  nullable != JsonNullable::MustExist, Constructor, base_type>::type;
 
 			static constexpr daw::string_view name = Name;
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::StringRaw, nullable>;
-			static constexpr JsonParseTypes base_expected_type =
-			  JsonParseTypes::StringRaw;
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::String;
-
-			static constexpr EmptyStringNull empty_is_null =
-			  json_details::get_bits_for<EmptyStringNull>( string_raw_opts, Options );
-			static constexpr EightBitModes eight_bit_mode =
-			  json_details::get_bits_for<EightBitModes>( string_raw_opts, Options );
-
-			static constexpr AllowEscapeCharacter allow_escape_character =
-			  json_details::get_bits_for<AllowEscapeCharacter>( string_raw_opts,
-			                                                    Options );
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_string_raw_no_name "
+			               "variant without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_string_raw<NewName, String, Options, Constructor>;
+			using without_name =
+			  json_base::json_string_raw<String, Options, Constructor>;
 		};
+
+		template<typename T = std::string,
+		         json_details::json_options_t Options = string_raw_opts_def,
+		         typename Constructor = default_constructor<T>>
+		using json_string_raw_no_name =
+		  json_base::json_string_raw<T, Options, Constructor>;
+
+		template<typename T = std::optional<std::string>,
+		         json_details::json_options_t Options = string_raw_opts_def,
+		         typename Constructor = nullable_constructor<T>>
+		using json_string_raw_null_no_name = json_base::json_string_raw<
+		  T, json_details::string_raw_opts_set<Options, JsonNullDefault>,
+		  Constructor>;
+
+		namespace json_base {
+			template<typename String, json_details::json_options_t Options,
+			         typename Constructor>
+			struct json_string {
+				using i_am_a_json_type = void;
+				static constexpr JsonNullable nullable =
+				  json_details::get_bits_for<JsonNullable>( string_opts, Options );
+				using constructor_t = Constructor;
+				using wrapped_type = String;
+				using base_type = json_details::unwrap_type<String, nullable>;
+				static_assert( traits::not_same<void, base_type>::value,
+				               "Failed to detect base type" );
+
+				using parse_to_t = typename json_details::construction_result<
+				  nullable != JsonNullable::MustExist, Constructor, char const *,
+				  char const *>::type;
+
+				static constexpr daw::string_view name = no_name;
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::StringEscaped, nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::StringEscaped;
+				static constexpr EmptyStringNull empty_is_null =
+				  json_details::get_bits_for<EmptyStringNull>( string_opts, Options );
+				static constexpr EightBitModes eight_bit_mode =
+				  json_details::get_bits_for<EightBitModes>( string_opts, Options );
+
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::String;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_string<NewName, String, Options, Constructor>;
+				using without_name = json_string;
+			};
+		} // namespace json_base
 
 		/**
 		 * Member is an escaped string and requires unescaping and escaping of
@@ -494,36 +662,58 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename String,
 		         json_details::json_options_t Options, typename Constructor>
-		struct json_string {
-			using i_am_a_json_type = void;
-			static constexpr JsonNullable nullable =
-			  json_details::get_bits_for<JsonNullable>( string_opts, Options );
-			using constructor_t = Constructor;
-			using wrapped_type = String;
-			using base_type = json_details::unwrap_type<String, nullable>;
-			static_assert( traits::not_same<void, base_type>::value,
-			               "Failed to detect base type" );
-
-			using parse_to_t = typename json_details::construction_result<
-			  nullable != JsonNullable::MustExist, Constructor, char const *,
-			  char const *>::type;
-
+		struct json_string : json_base::json_string<String, Options, Constructor> {
 			static constexpr daw::string_view name = Name;
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::StringEscaped, nullable>;
-			static constexpr JsonParseTypes base_expected_type =
-			  JsonParseTypes::StringEscaped;
-			static constexpr EmptyStringNull empty_is_null =
-			  json_details::get_bits_for<EmptyStringNull>( string_opts, Options );
-			static constexpr EightBitModes eight_bit_mode =
-			  json_details::get_bits_for<EightBitModes>( string_opts, Options );
-
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::String;
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_string_no_name "
+			               "variant of mapping type" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_string<NewName, String, Options, Constructor>;
+
+			using without_name = json_base::json_string<String, Options, Constructor>;
 		};
+
+		template<typename T = std::string,
+		         json_details::json_options_t Options = string_opts_def,
+		         typename Constructor = default_constructor<T>>
+		using json_string_no_name = json_base::json_string<T, Options, Constructor>;
+
+		template<typename T = std::optional<std::string>,
+		         json_details::json_options_t Options = string_opts_def,
+		         typename Constructor = nullable_constructor<T>>
+		using json_string_null_no_name = json_base::json_string<
+		  T, json_details::string_opts_set<Options, JsonNullDefault>, Constructor>;
+
+		namespace json_base {
+			template<typename T, typename Constructor, JsonNullable Nullable>
+			struct json_date {
+				using i_am_a_json_type = void;
+				using constructor_t = Constructor;
+				using wrapped_type = T;
+				using base_type = json_details::unwrap_type<T, Nullable>;
+				static_assert( traits::not_same<void, base_type>::value,
+				               "Failed to detect base type" );
+
+				using parse_to_t = typename json_details::construction_result<
+				  Nullable != JsonNullable::MustExist, Constructor, char const *,
+				  std::size_t>::type;
+
+				static constexpr daw::string_view name = no_name;
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::Date, Nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::Date;
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::String;
+				static constexpr JsonNullable nullable = Nullable;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_date<NewName, T, Constructor, Nullable>;
+				using without_name = json_date;
+			};
+		} // namespace json_base
 
 		/**
 		 * Link to a JSON string representing a nullable date
@@ -534,29 +724,63 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T, typename Constructor,
 		         JsonNullable Nullable>
-		struct json_date {
-			using i_am_a_json_type = void;
-			using constructor_t = Constructor;
-			using wrapped_type = T;
-			using base_type = json_details::unwrap_type<T, Nullable>;
-			static_assert( traits::not_same<void, base_type>::value,
-			               "Failed to detect base type" );
-
-			using parse_to_t = typename json_details::construction_result<
-			  Nullable != JsonNullable::MustExist, Constructor, char const *,
-			  std::size_t>::type;
-
+		struct json_date : json_base::json_date<T, Constructor, Nullable> {
 			static constexpr daw::string_view name = Name;
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::Date, Nullable>;
-			static constexpr JsonParseTypes base_expected_type = JsonParseTypes::Date;
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::String;
-			static constexpr JsonNullable nullable = Nullable;
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_date_no_name variant "
+			               "without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_date<NewName, T, Constructor, Nullable>;
+
+			using without_name = json_base::json_date<T, Constructor, Nullable>;
 		};
+
+		template<typename T, typename Constructor = default_constructor<T>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		using json_date_no_name = json_base::json_date<T, Constructor, Nullable>;
+
+		template<typename T, typename Constructor = nullable_constructor<T>>
+		using json_date_null_no_name =
+		  json_base::json_date<T, Constructor, JsonNullDefault>;
+
+		namespace json_base {
+			template<typename T, typename Constructor,
+			         json_details::json_options_t Options>
+			struct json_class {
+				using i_am_a_json_type = void;
+				static constexpr daw::string_view name = no_name;
+				using wrapped_type = T;
+				static constexpr JsonNullable nullable =
+				  json_details::get_bits_for<JsonNullable>( class_opts, Options );
+				using base_type = json_details::unwrap_type<T, nullable>;
+				using constructor_t =
+				  json_details::json_class_constructor_t<base_type, Constructor>;
+
+				static_assert( traits::not_same<void, base_type>::value,
+				               "Failed to detect base type" );
+
+				using data_contract = json_data_contract_trait_t<base_type>;
+
+				using parse_to_t = typename std::conditional_t<
+				  force_aggregate_construction<base_type>::value,
+				  daw::traits::identity<base_type>,
+				  daw::traits::identity<
+				    typename data_contract::template result_type<constructor_t>>>::type;
+
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::Class, nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::Class;
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::Class;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_class<NewName, T, Constructor, Options>;
+				using without_name = json_class;
+			};
+		} // namespace json_base
 
 		/**
 		 * Link to a JSON class
@@ -569,37 +793,27 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T, typename Constructor,
 		         json_details::json_options_t Options>
-		struct json_class {
-			using i_am_a_json_type = void;
-			using wrapped_type = T;
-			static constexpr JsonNullable nullable =
-			  json_details::get_bits_for<JsonNullable>( class_opts, Options );
-			using base_type = json_details::unwrap_type<T, nullable>;
-			using constructor_t =
-			  json_details::json_class_constructor_t<base_type, Constructor>;
-
-			static_assert( traits::not_same<void, base_type>::value,
-			               "Failed to detect base type" );
-
-			using data_contract = json_data_contract_trait_t<base_type>;
-
-			using parse_to_t = typename std::conditional_t<
-			  force_aggregate_construction<base_type>::value,
-			  daw::traits::identity<base_type>,
-			  daw::traits::identity<
-			    typename data_contract::template result_type<constructor_t>>>::type;
+		struct json_class : json_base::json_class<T, Constructor, Options> {
 
 			static constexpr daw::string_view name = Name;
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::Class, nullable>;
-			static constexpr JsonParseTypes base_expected_type =
-			  JsonParseTypes::Class;
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::Class;
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_class_no_name variant "
+			               "without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_class<NewName, T, Constructor, Options>;
+
+			using without_name = json_base::json_class<T, Constructor, Options>;
 		};
+
+		template<typename T, typename Constructor = default_constructor<T>,
+		         json_details::json_options_t Options = class_opts_def>
+		using json_class_no_name = json_base::json_class<T, Constructor, Options>;
+
+		template<typename T, typename Constructor = nullable_constructor<T>,
+		         json_details::json_options_t Options = class_opts_def>
+		using json_class_null_no_name = json_base::json_class<
+		  T, Constructor, json_details::class_opts_set<Options, JsonNullDefault>>;
 
 		/***
 		 * A type to hold the types for parsing variants.
@@ -637,6 +851,40 @@ namespace daw::json {
 			      JsonElements>::underlying_json_type... } ) };
 		};
 
+		namespace json_base {
+			template<typename T, typename JsonElements, typename Constructor,
+			         JsonNullable Nullable>
+			struct json_variant {
+				using i_am_a_json_type = void;
+				static_assert(
+				  std::is_same<typename JsonElements::i_am_variant_type_list,
+				               void>::value,
+				  "Expected a json_variant_type_list" );
+				using wrapped_type = T;
+				using base_type = json_details::unwrap_type<T, Nullable>;
+				using constructor_t =
+				  json_details::json_class_constructor_t<T, Constructor>;
+				static_assert( traits::not_same<void, base_type>::value,
+				               "Failed to detect base type" );
+				using parse_to_t = T;
+				static constexpr daw::string_view name = no_name;
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::Variant, Nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::Variant;
+
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::None;
+				using json_elements = JsonElements;
+				static constexpr JsonNullable nullable = Nullable;
+
+				template<JSONNAMETYPE NewName>
+				using with_name = daw::json::json_variant<NewName, T, JsonElements,
+				                                          Constructor, Nullable>;
+				using without_name = json_variant;
+			};
+		} // namespace json_base
+
 		/***
 		 * Link to a nullable JSON variant
 		 * @tparam Name name of JSON member to link to
@@ -648,33 +896,75 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T, typename JsonElements,
 		         typename Constructor, JsonNullable Nullable>
-		struct json_variant {
-			using i_am_a_json_type = void;
-			static_assert( std::is_same<typename JsonElements::i_am_variant_type_list,
-			                            void>::value,
-			               "Expected a json_variant_type_list" );
-			using wrapped_type = T;
-			using base_type = json_details::unwrap_type<T, Nullable>;
-			using constructor_t =
-			  json_details::json_class_constructor_t<T, Constructor>;
-			static_assert( traits::not_same<void, base_type>::value,
-			               "Failed to detect base type" );
-			using parse_to_t = T;
+		struct json_variant
+		  : json_base::json_variant<T, JsonElements, Constructor, Nullable> {
 			static constexpr daw::string_view name = Name;
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::Variant, Nullable>;
-			static constexpr JsonParseTypes base_expected_type =
-			  JsonParseTypes::Variant;
-
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::None;
-			using json_elements = JsonElements;
-			static constexpr JsonNullable nullable = Nullable;
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_variant_no_name "
+			               "variant without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
 			  json_variant<NewName, T, JsonElements, Constructor, Nullable>;
+
+			using without_name =
+			  json_base::json_variant<T, JsonElements, Constructor, Nullable>;
 		};
+
+		template<typename T, typename JsonElements,
+		         typename Constructor = default_constructor<T>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		using json_variant_no_name =
+		  json_base::json_variant<T, JsonElements, Constructor,
+		                          JsonNullable::MustExist>;
+
+		template<typename T, typename JsonElements,
+		         typename Constructor = nullable_constructor<T>>
+		using json_variant_null_no_name =
+		  json_base::json_variant<T, JsonElements, Constructor, JsonNullDefault>;
+
+		namespace json_base {
+			template<typename T, typename TagMember, typename Switcher,
+			         typename JsonElements, typename Constructor,
+			         JsonNullable Nullable>
+			struct json_tagged_variant {
+				using i_am_a_json_type = void;
+				using i_am_a_tagged_variant = void;
+				static_assert(
+				  std::is_same<typename JsonElements::i_am_tagged_variant_type_list,
+				               void>::value,
+				  "Expected a json_member_list" );
+
+				static_assert(
+				  std::is_same<typename TagMember::i_am_a_json_type, void>::value,
+				  "JSON member types must be passed as "
+				  "TagMember" );
+				using wrapped_type = T;
+				using tag_member = TagMember;
+				using switcher = Switcher;
+				using base_type = json_details::unwrap_type<T, Nullable>;
+				using constructor_t =
+				  json_details::json_class_constructor_t<T, Constructor>;
+				static_assert( traits::not_same<void, base_type>::value,
+				               "Failed to detect base type" );
+				using parse_to_t = T;
+				static constexpr daw::string_view name = no_name;
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::VariantTagged, Nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::VariantTagged;
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::None;
+				using json_elements = JsonElements;
+				static constexpr JsonNullable nullable = Nullable;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_tagged_variant<NewName, T, TagMember, Switcher,
+				                                 JsonElements, Constructor, Nullable>;
+				using without_name = json_tagged_variant;
+			};
+		} // namespace json_base
 
 		/***
 		 * Link to a nullable variant like data type that is discriminated via
@@ -693,42 +983,82 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T, typename TagMember,
 		         typename Switcher, typename JsonElements, typename Constructor,
 		         JsonNullable Nullable>
-		struct json_tagged_variant {
-			using i_am_a_json_type = void;
-			using i_am_a_tagged_variant = void;
-			static_assert(
-			  std::is_same<typename JsonElements::i_am_tagged_variant_type_list,
-			               void>::value,
-			  "Expected a json_member_list" );
+		struct json_tagged_variant
+		  : json_base::json_tagged_variant<T, TagMember, Switcher, JsonElements,
+		                                   Constructor, Nullable> {
 
-			static_assert(
-			  std::is_same<typename TagMember::i_am_a_json_type, void>::value,
-			  "JSON member types must be passed as "
-			  "TagMember" );
-			using wrapped_type = T;
-			using tag_member = TagMember;
-			using switcher = Switcher;
-			using base_type = json_details::unwrap_type<T, Nullable>;
-			using constructor_t =
-			  json_details::json_class_constructor_t<T, Constructor>;
-			static_assert( traits::not_same<void, base_type>::value,
-			               "Failed to detect base type" );
-			using parse_to_t = T;
 			static constexpr daw::string_view name = Name;
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::VariantTagged, Nullable>;
-			static constexpr JsonParseTypes base_expected_type =
-			  JsonParseTypes::VariantTagged;
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::None;
-			using json_elements = JsonElements;
-			static constexpr JsonNullable nullable = Nullable;
+			static_assert(
+			  name != no_name,
+			  "For no_name mappings, use the json_tagged_variant_no_name variant "
+			  "without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
 			  json_tagged_variant<NewName, T, TagMember, Switcher, JsonElements,
 			                      Constructor, Nullable>;
+
+			using without_name =
+			  json_base::json_tagged_variant<T, TagMember, Switcher, JsonElements,
+			                                 Constructor, Nullable>;
 		};
+
+		template<typename T, typename TagMember, typename Switcher,
+		         typename JsonElements = json_details::
+		           determine_variant_element_types<JsonNullable::MustExist, T>,
+		         typename Constructor = default_constructor<T>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		using json_tagged_variant_no_name =
+		  json_base::json_tagged_variant<T, TagMember, Switcher, JsonElements,
+		                                 Constructor, Nullable>;
+
+		template<typename T, typename TagMember, typename Switcher,
+		         typename JsonElements = json_details::
+		           determine_variant_element_types<JsonNullable::MustExist, T>,
+		         typename Constructor = default_constructor<T>>
+		using json_tagged_variant_null_no_name =
+		  json_base::json_tagged_variant<T, TagMember, Switcher, JsonElements,
+		                                 Constructor, JsonNullDefault>;
+
+		namespace json_base {
+			template<typename T, typename FromJsonConverter, typename ToJsonConverter,
+			         CustomJsonTypes CustomJsonType, JsonNullable Nullable>
+			struct json_custom {
+				using i_am_a_json_type = void;
+				using to_converter_t = ToJsonConverter;
+				using from_converter_t = FromJsonConverter;
+				using constructor_t = FromJsonConverter;
+
+				using base_type = json_details::unwrap_type<T, Nullable>;
+				static_assert( traits::not_same<void, base_type>::value,
+				               "Failed to detect base type" );
+
+				using parse_to_t = typename json_details::construction_result<
+				  Nullable != JsonNullable::MustExist, FromJsonConverter,
+				  std::string_view>::type;
+
+				static_assert(
+				  std::is_invocable_v<ToJsonConverter, parse_to_t> or
+				    std::is_invocable_r<char *, ToJsonConverter, char *,
+				                        parse_to_t>::value,
+				  "ToConverter must be callable with T or T and and OutputIterator" );
+				static constexpr daw::string_view name = no_name;
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::Custom, Nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::Custom;
+				static constexpr CustomJsonTypes custom_json_type = CustomJsonType;
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::String;
+				static constexpr JsonNullable nullable = Nullable;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_custom<NewName, T, FromJsonConverter, ToJsonConverter,
+				                         CustomJsonType, Nullable>;
+				using without_name = json_custom;
+			};
+		} // namespace json_base
 
 		/**
 		 * Allow parsing of a nullable type that does not fit
@@ -742,44 +1072,45 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
 		         typename ToJsonConverter, CustomJsonTypes CustomJsonType,
 		         JsonNullable Nullable>
-		struct json_custom {
-			using i_am_a_json_type = void;
-			using to_converter_t = ToJsonConverter;
-			using from_converter_t = FromJsonConverter;
-			using constructor_t = FromJsonConverter;
+		struct json_custom
+		  : json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
+		                           CustomJsonType, Nullable> {
 
-			using base_type = json_details::unwrap_type<T, Nullable>;
-			static_assert( traits::not_same<void, base_type>::value,
-			               "Failed to detect base type" );
-
-			using parse_to_t = typename json_details::construction_result<
-			  Nullable != JsonNullable::MustExist, FromJsonConverter,
-			  std::string_view>::type;
-
-			static_assert(
-			  std::is_invocable_v<ToJsonConverter, parse_to_t> or
-			    std::is_invocable_r<char *, ToJsonConverter, char *,
-			                        parse_to_t>::value,
-			  "ToConverter must be callable with T or T and and OutputIterator" );
 			static constexpr daw::string_view name = Name;
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::Custom, Nullable>;
-			static constexpr JsonParseTypes base_expected_type =
-			  JsonParseTypes::Custom;
-			static constexpr CustomJsonTypes custom_json_type = CustomJsonType;
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::String;
-			static constexpr JsonNullable nullable = Nullable;
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_custom_no_name "
+			               "variant without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_custom<NewName, T, FromJsonConverter,
 			                              ToJsonConverter, CustomJsonType, Nullable>;
+
+			using without_name =
+			  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
+			                         CustomJsonType, Nullable>;
 		};
 
-		namespace json_details {
-			template<JSONNAMETYPE Name, typename JsonElement, typename Container,
-			         typename Constructor, JsonNullable Nullable>
-			struct json_array_detect {
+		template<typename T,
+		         typename FromJsonConverter = default_from_json_converter_t<T>,
+		         typename ToJsonConverter = default_to_json_converter_t<T>,
+		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Any,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		using json_custom_no_name =
+		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
+		                         CustomJsonType, Nullable>;
+
+		template<typename T,
+		         typename FromJsonConverter = default_from_json_converter_t<T>,
+		         typename ToJsonConverter = default_to_json_converter_t<T>,
+		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Any>
+		using json_custom_null_no_name =
+		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
+		                         CustomJsonType, JsonNullDefault>;
+
+		namespace json_base {
+			template<typename JsonElement, typename Container, typename Constructor,
+			         JsonNullable Nullable>
+			struct json_array {
 				using i_am_a_json_type = void;
 				static_assert(
 				  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
@@ -790,7 +1121,7 @@ namespace daw::json {
 
 				static_assert( traits::not_same_v<json_element_t, void>,
 				               "Unknown JsonElement type." );
-				static_assert( json_details::ensure_json_type<json_element_t>::value,
+				static_assert( json_details::is_a_json_type_v<json_element_t>,
 				               "Error determining element type" );
 				using constructor_t = Constructor;
 
@@ -803,9 +1134,11 @@ namespace daw::json {
 				  json_element_parse_to_t const *,
 				  json_element_parse_to_t const *>::type;
 
-				static constexpr daw::string_view name = Name;
+				static constexpr daw::string_view name = no_name;
+
 				static constexpr JsonParseTypes expected_type =
 				  get_parse_type_v<JsonParseTypes::Array, Nullable>;
+
 				static constexpr JsonParseTypes base_expected_type =
 				  JsonParseTypes::Array;
 
@@ -816,10 +1149,11 @@ namespace daw::json {
 				static constexpr JsonNullable nullable = Nullable;
 
 				template<JSONNAMETYPE NewName>
-				using with_name = json_array_detect<NewName, JsonElement, Container,
-				                                    Constructor, Nullable>;
+				using with_name = daw::json::json_array<NewName, JsonElement, Container,
+				                                        Constructor, Nullable>;
+				using without_name = json_array;
 			};
-		} // namespace json_details
+		} // namespace json_base
 
 		/** Link to a JSON array
 		 * @tparam Name name of JSON member to link to
@@ -834,47 +1168,99 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename JsonElement, typename Container,
 		         typename Constructor, JsonNullable Nullable>
-		struct json_array {
-			using i_am_a_json_type = void;
-			static_assert(
-			  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
-			  "Missing specialization of daw::json::json_data_contract for class "
-			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			using json_element_t = json_details::json_deduced_type<JsonElement>;
-			using json_element_parse_to_t = typename json_element_t::parse_to_t;
-
-			static_assert( traits::not_same_v<json_element_t, void>,
-			               "Unknown JsonElement type." );
-			static_assert( json_details::is_a_json_type_v<json_element_t>,
-			               "Error determining element type" );
-			using constructor_t = Constructor;
-
-			using base_type = json_details::unwrap_type<Container, Nullable>;
-			static_assert( traits::not_same_v<void, base_type>,
-			               "Failed to detect base type" );
-
-			using parse_to_t = typename json_details::construction_result<
-			  Nullable != JsonNullable::MustExist, Constructor,
-			  json_element_parse_to_t const *, json_element_parse_to_t const *>::type;
+		struct json_array
+		  : json_base::json_array<JsonElement, Container, Constructor, Nullable> {
 
 			static constexpr daw::string_view name = Name;
-
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::Array, Nullable>;
-
-			static constexpr JsonParseTypes base_expected_type =
-			  JsonParseTypes::Array;
-
-			static_assert( json_element_t::name == no_name,
-			               "All elements of json_array must be have no_name" );
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::Array;
-			static constexpr JsonNullable nullable = Nullable;
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_array_no_name variant "
+			               "without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
 			  json_array<NewName, JsonElement, Container, Constructor, Nullable>;
+
+			using without_name =
+			  json_base::json_array<JsonElement, Container, Constructor, Nullable>;
 		};
+
+		template<
+		  typename JsonElement,
+		  typename Container = std::vector<
+		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
+		  typename Constructor = default_constructor<Container>,
+		  JsonNullable Nullable = JsonNullable::MustExist>
+		using json_array_no_name =
+		  json_base::json_array<JsonElement, Container, Constructor, Nullable>;
+
+		template<
+		  typename JsonElement,
+		  typename Container = std::vector<
+		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
+		  typename Constructor = nullable_constructor<Container>>
+		using json_array_null_no_name =
+		  json_base::json_array<JsonElement, Container, Constructor,
+		                        JsonNullDefault>;
+
+		namespace json_base {
+			template<typename Container, typename JsonValueType, typename JsonKeyType,
+			         typename Constructor, JsonNullable Nullable>
+			struct json_key_value {
+
+				using i_am_a_json_type = void;
+				using base_type = json_details::unwrap_type<Container, Nullable>;
+				using constructor_t =
+				  json_details::json_class_constructor_t<base_type, Constructor>;
+
+				static_assert( traits::not_same_v<void, base_type>,
+				               "Failed to detect base type" );
+
+				static_assert(
+				  json_details::has_unnamed_default_type_mapping_v<JsonValueType>,
+				  "Missing specialization of daw::json::json_data_contract for class "
+				  "mapping or specialization of daw::json::json_link_basic_type_map" );
+
+				using json_element_t = json_details::json_deduced_type<JsonValueType>;
+
+				static_assert( traits::not_same_v<json_element_t, void>,
+				               "Unknown JsonValueType type." );
+				static_assert( json_element_t::name == no_name,
+				               "Value member name must be the default no_name" );
+				static_assert(
+				  json_details::has_unnamed_default_type_mapping_v<JsonKeyType>,
+				  "Missing specialization of daw::json::json_data_contract for class "
+				  "mapping or specialization of daw::json::json_link_basic_type_map" );
+
+				using json_key_t = json_details::json_deduced_type<JsonKeyType>;
+
+				static_assert( traits::not_same_v<json_key_t, void>,
+				               "Unknown JsonKeyType type." );
+				static_assert( json_details::is_no_name_v<json_key_t>,
+				               "Key member name must be the default no_name" );
+
+				using parse_to_t = typename json_details::construction_result<
+				  Nullable != JsonNullable::MustExist, Constructor,
+				  std::pair<typename json_key_t::parse_to_t const,
+				            typename json_element_t::parse_to_t> const *,
+				  std::pair<typename json_key_t::parse_to_t const,
+				            typename json_element_t::parse_to_t> const *>::type;
+
+				static constexpr daw::string_view name = no_name;
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::KeyValue, Nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::KeyValue;
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::Class;
+				static constexpr JsonNullable nullable = Nullable;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_key_value<NewName, Container, JsonValueType,
+				                            JsonKeyType, Constructor, Nullable>;
+				using without_name = json_key_value;
+			};
+		} // namespace json_base
 
 		/** Map a KV type json class { "Key StringRaw": ValueType, ... }
 		 *  to a c++ class.  Keys are Always string like and the destination
@@ -892,59 +1278,99 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType, typename Constructor, JsonNullable Nullable>
-		struct json_key_value {
-
-			using i_am_a_json_type = void;
-			using base_type = json_details::unwrap_type<Container, Nullable>;
-			using constructor_t =
-			  json_details::json_class_constructor_t<base_type, Constructor>;
-
-			static_assert( traits::not_same_v<void, base_type>,
-			               "Failed to detect base type" );
-
-			static_assert(
-			  json_details::has_unnamed_default_type_mapping_v<JsonValueType>,
-			  "Missing specialization of daw::json::json_data_contract for class "
-			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-
-			using json_element_t = json_details::json_deduced_type<JsonValueType>;
-
-			static_assert( traits::not_same_v<json_element_t, void>,
-			               "Unknown JsonValueType type." );
-			static_assert( json_element_t::name == no_name,
-			               "Value member name must be the default no_name" );
-			static_assert(
-			  json_details::has_unnamed_default_type_mapping_v<JsonKeyType>,
-			  "Missing specialization of daw::json::json_data_contract for class "
-			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-
-			using json_key_t = json_details::json_deduced_type<JsonKeyType>;
-
-			static_assert( traits::not_same_v<json_key_t, void>,
-			               "Unknown JsonKeyType type." );
-			static_assert( json_details::is_no_name_v<json_key_t>,
-			               "Key member name must be the default no_name" );
-
-			using parse_to_t = typename json_details::construction_result<
-			  Nullable != JsonNullable::MustExist, Constructor,
-			  std::pair<typename json_key_t::parse_to_t const,
-			            typename json_element_t::parse_to_t> const *,
-			  std::pair<typename json_key_t::parse_to_t const,
-			            typename json_element_t::parse_to_t> const *>::type;
+		struct json_key_value
+		  : json_base::json_key_value<Container, JsonValueType, JsonKeyType,
+		                              Constructor, Nullable> {
 
 			static constexpr daw::string_view name = Name;
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::KeyValue, Nullable>;
-			static constexpr JsonParseTypes base_expected_type =
-			  JsonParseTypes::KeyValue;
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::Class;
-			static constexpr JsonNullable nullable = Nullable;
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_key_value_no_name "
+			               "variant without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_key_value<NewName, Container, JsonValueType,
 			                                 JsonKeyType, Constructor, Nullable>;
+			using without_name =
+			  json_base::json_key_value<Container, JsonValueType, JsonKeyType,
+			                            Constructor, Nullable>;
 		};
+
+		template<typename Container,
+		         typename JsonValueType = typename Container::mapped_type,
+		         typename JsonKeyType = typename Container::key_type,
+		         typename Constructor = default_constructor<Container>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		using json_key_value_no_name =
+		  json_base::json_key_value<Container, JsonValueType, JsonKeyType,
+		                            Constructor, Nullable>;
+
+		template<typename Container,
+		         typename JsonValueType = typename Container::mapped_type,
+		         typename JsonKeyType = typename Container::key_type,
+		         typename Constructor = nullable_constructor<Container>>
+		using json_key_value_null_no_name =
+		  json_base::json_key_value<Container, JsonValueType, JsonKeyType,
+		                            Constructor, JsonNullDefault>;
+
+		namespace json_base {
+			template<typename Container, typename JsonValueType, typename JsonKeyType,
+			         typename Constructor, JsonNullable Nullable>
+			struct json_key_value_array {
+
+				using i_am_a_json_type = void;
+				using base_type = json_details::unwrap_type<Container, Nullable>;
+				using constructor_t =
+				  json_details::json_class_constructor_t<base_type, Constructor>;
+				static_assert( traits::not_same_v<void, base_type>,
+				               "Failed to detect base type" );
+
+				using parse_to_t = typename json_details::construction_result<
+				  Nullable != JsonNullable::MustExist, Constructor, base_type>::type;
+
+				using json_key_t = json_details::copy_name_when_noname<
+				  json_details::json_deduced_type<JsonKeyType>,
+				  json_details::default_key_name>;
+
+				static_assert( traits::not_same_v<json_key_t, void>,
+				               "Unknown JsonKeyType type." );
+				static_assert( daw::string_view( json_key_t::name ) !=
+				                 daw::string_view( no_name ),
+				               "Must supply a valid key member name" );
+				using json_value_t = json_details::copy_name_when_noname<
+				  json_details::json_deduced_type<JsonValueType>,
+				  json_details::default_value_name>;
+
+				using json_class_t = json_class<
+				  tuple_json_mapping<json_key_t, json_value_t>,
+				  std::conditional_t<
+				    ( Nullable == JsonNullable::MustExist ),
+				    default_constructor<tuple_json_mapping<json_key_t, json_value_t>>,
+				    nullable_constructor<tuple_json_mapping<json_key_t, json_value_t>>>,
+				  class_opts_def>;
+				static_assert( traits::not_same_v<json_value_t, void>,
+				               "Unknown JsonValueType type." );
+				static_assert( daw::string_view( json_value_t::name ) !=
+				                 daw::string_view( no_name ),
+				               "Must supply a valid value member name" );
+				static_assert( daw::string_view( json_key_t::name ) !=
+				                 daw::string_view( json_value_t::name ),
+				               "Key and Value member names cannot be the same" );
+				static constexpr daw::string_view name = no_name;
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::KeyValueArray, Nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::KeyValueArray;
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::Array;
+				static constexpr JsonNullable nullable = Nullable;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_key_value_array<NewName, Container, JsonValueType,
+				                                  JsonKeyType, Constructor, Nullable>;
+				using without_name = json_key_value_array;
+			};
+		} // namespace json_base
 
 		/**
 		 * Map a KV type json array [ {"key": ValueOfKeyType, "value":
@@ -963,55 +1389,41 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename Container, typename JsonValueType,
 		         typename JsonKeyType, typename Constructor, JsonNullable Nullable>
-		struct json_key_value_array {
+		struct json_key_value_array
+		  : json_base::json_key_value_array<Container, JsonValueType, JsonKeyType,
+		                                    Constructor, Nullable> {
 
-			using i_am_a_json_type = void;
-			using base_type = json_details::unwrap_type<Container, Nullable>;
-			using constructor_t =
-			  json_details::json_class_constructor_t<base_type, Constructor>;
-			static_assert( traits::not_same_v<void, base_type>,
-			               "Failed to detect base type" );
-
-			using parse_to_t = typename json_details::construction_result<
-			  Nullable != JsonNullable::MustExist, Constructor, base_type>::type;
-
-			using json_key_t = json_details::copy_name_when_noname<
-			  json_details::json_deduced_type<JsonKeyType>,
-			  json_details::default_key_name>;
-
-			static_assert( traits::not_same_v<json_key_t, void>,
-			               "Unknown JsonKeyType type." );
-			static_assert( daw::string_view( json_key_t::name ) !=
-			                 daw::string_view( no_name ),
-			               "Must supply a valid key member name" );
-			using json_value_t = json_details::copy_name_when_noname<
-			  json_details::json_deduced_type<JsonValueType>,
-			  json_details::default_value_name>;
-
-			using json_class_t =
-			  json_class<no_name, tuple_json_mapping<json_key_t, json_value_t>>;
-			static_assert( traits::not_same_v<json_value_t, void>,
-			               "Unknown JsonValueType type." );
-			static_assert( daw::string_view( json_value_t::name ) !=
-			                 daw::string_view( no_name ),
-			               "Must supply a valid value member name" );
-			static_assert( daw::string_view( json_key_t::name ) !=
-			                 daw::string_view( json_value_t::name ),
-			               "Key and Value member names cannot be the same" );
 			static constexpr daw::string_view name = Name;
-			static constexpr JsonParseTypes expected_type =
-			  get_parse_type_v<JsonParseTypes::KeyValueArray, Nullable>;
-			static constexpr JsonParseTypes base_expected_type =
-			  JsonParseTypes::KeyValueArray;
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::Array;
-			static constexpr JsonNullable nullable = Nullable;
+			static_assert(
+			  name != no_name,
+			  "For no_name mappings, use the json_key_value_array_no_name variant "
+			  "without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
 			  json_key_value_array<NewName, Container, JsonValueType, JsonKeyType,
 			                       Constructor, Nullable>;
+			using without_name =
+			  json_base::json_key_value_array<Container, JsonValueType, JsonKeyType,
+			                                  Constructor, Nullable>;
 		};
+
+		template<typename Container,
+		         typename JsonValueType = typename Container::mapped_type,
+		         typename JsonKeyType = typename Container::key_type,
+		         typename Constructor = default_constructor<Container>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		using json_key_value_array_no_name =
+		  json_base::json_key_value_array<Container, JsonValueType, JsonKeyType,
+		                                  Constructor, Nullable>;
+
+		template<typename Container,
+		         typename JsonValueType = typename Container::mapped_type,
+		         typename JsonKeyType = typename Container::key_type,
+		         typename Constructor = nullable_constructor<Container>>
+		using json_key_value_array_null_no_name =
+		  json_base::json_key_value_array<Container, JsonValueType, JsonKeyType,
+		                                  Constructor, JsonNullDefault>;
 
 		/***
 		 * An untyped JSON value
@@ -1023,6 +1435,42 @@ namespace daw::json {
 		 */
 		using json_pair = basic_json_pair<NoCommentSkippingPolicyChecked>;
 
+		template<JSONNAMETYPE Name, typename T = json_value,
+		         typename Constructor = default_constructor<T>,
+		         JsonNullable Nullable = JsonNullDefault>
+		struct json_delayed;
+
+		namespace json_base {
+			template<typename T, typename Constructor, JsonNullable Nullable>
+			struct json_delayed {
+				using i_am_a_json_type = void;
+				using wrapped_type = json_value;
+				using constructor_t = Constructor;
+				using base_type = json_details::unwrap_type<T, Nullable>;
+				static_assert( traits::not_same_v<void, base_type>,
+				               "Failed to detect base type" );
+
+				using parse_to_t = typename json_details::construction_result<
+				  Nullable != JsonNullable::MustExist, Constructor, char const *,
+				  char const *>::type;
+
+				static constexpr daw::string_view name = no_name;
+
+				static constexpr JsonParseTypes expected_type = JsonParseTypes::Unknown;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::Unknown;
+
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::None;
+				static constexpr JsonNullable nullable = Nullable;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_delayed<NewName, T, Constructor, Nullable>;
+				using without_name = json_delayed;
+			};
+		} // namespace json_base
+
 		/***
 		 * Do not parse this member but return a T that can be used to
 		 * parse later.  Any whitespace surrounding the value may not be preserved.
@@ -1033,34 +1481,31 @@ namespace daw::json {
 		 * @tparam Nullable Does the value have to exist in the document or can it
 		 * have a null value
 		 */
-		template<JSONNAMETYPE Name, typename T = json_value,
-		         typename Constructor = default_constructor<T>,
-		         JsonNullable Nullable = JsonNullDefault>
-		struct json_delayed {
-			using i_am_a_json_type = void;
-			using wrapped_type = json_value;
-			using constructor_t = Constructor;
-			using base_type = json_details::unwrap_type<T, Nullable>;
-			static_assert( traits::not_same_v<void, base_type>,
-			               "Failed to detect base type" );
 
-			using parse_to_t = typename json_details::construction_result<
-			  Nullable != JsonNullable::MustExist, Constructor, char const *,
-			  char const *>::type;
-
+		template<JSONNAMETYPE Name, typename T, typename Constructor,
+		         JsonNullable Nullable>
+		struct json_delayed : json_base::json_delayed<T, Constructor, Nullable> {
 			static constexpr daw::string_view name = Name;
-
-			static constexpr JsonParseTypes expected_type = JsonParseTypes::Unknown;
-			static constexpr JsonParseTypes base_expected_type =
-			  JsonParseTypes::Unknown;
-
-			static constexpr JsonBaseParseTypes underlying_json_type =
-			  JsonBaseParseTypes::None;
-			static constexpr JsonNullable nullable = Nullable;
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_delayed_no_name "
+			               "variant without a name argument" );
 
 			template<JSONNAMETYPE NewName>
 			using with_name = json_delayed<NewName, T, Constructor, Nullable>;
+
+			using without_name = json_base::json_delayed<T, Constructor, Nullable>;
 		};
+
+		template<typename T = json_value,
+		         typename Constructor = default_constructor<json_value>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		using json_delayed_no_name =
+		  json_base::json_delayed<T, Constructor, Nullable>;
+
+		template<typename T = std::optional<json_value>,
+		         typename Constructor = nullable_constructor<json_value>>
+		using json_delayed_null_no_name =
+		  json_base::json_delayed<T, Constructor, JsonNullDefault>;
 
 		/***
 		 * This allows naming of well known types and using them to map members
@@ -1068,5 +1513,9 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T>
 		using json_link = typename json_details::ensure_mapped_t<
 		  json_details::json_deduced_type<T>>::template with_name<Name>;
+
+		template<typename T>
+		using json_link_no_name =
+		  json_details::ensure_mapped_t<json_details::json_deduced_type<T>>;
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

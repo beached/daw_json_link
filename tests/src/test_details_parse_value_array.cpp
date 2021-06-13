@@ -23,7 +23,7 @@ bool empty_array_empty_json_array( ) {
 
 	DAW_CONSTEXPR std::string_view sv = "[]";
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_array<no_name, int>>(
+	auto v = parse_value<json_array_no_name<int>>(
 	  rng, ParseTag<JsonParseTypes::Array>{ } );
 	return v.empty( );
 }
@@ -35,7 +35,7 @@ bool int_array_json_string_array_fail( ) {
 	std::string_view sv = R"([ "this is strange" ])";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_array<no_name, int>>(
+	auto v = parse_value<json_array_no_name<int>>(
 	  rng, ParseTag<JsonParseTypes::Array>{ } );
 	daw::do_not_optimize( v );
 	return true;
@@ -74,7 +74,7 @@ bool array_with_closing_class_fail( ) {
 	std::string_view sv = R"([ {}}, ])";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_array<no_name, InlineClass<>>>(
+	auto v = parse_value<json_array_no_name<InlineClass<>>>(
 	  rng, ParseTag<JsonParseTypes::Array>{ } );
 	daw::do_not_optimize( v );
 	return true;

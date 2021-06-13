@@ -98,7 +98,7 @@ namespace daw::json {
 
 		namespace json_details {
 			template<typename JsonMember>
-			using without_name = typename JsonMember::template with_name<no_name>;
+			using without_name = typename JsonMember::without_name;
 
 			template<typename JsonMember, JSONNAMETYPE NewName, bool Cond>
 			using copy_name_when = std::conditional_t<

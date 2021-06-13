@@ -39,7 +39,7 @@ int main( int argc, char **argv )
 	test_assert( b_value == "found me", "Unexpected value" );
 
 	std::optional<std::string> opt_value =
-	  from_json<json_string_null<no_name>>( json_data, "a.b" );
+	  from_json<json_string_null_no_name<>>( json_data, "a.b" );
 
 	test_assert( not opt_value, "Did not expect a value" );
 } catch( daw::json::json_exception const &jex ) {

@@ -47,7 +47,7 @@ struct JSONToNano {
 		  sv.data( ), sv.data( ) + sv.size( ) );
 		return std::chrono::nanoseconds(
 		  daw::json::json_details::parse_value<
-		    daw::json::json_number<daw::json::no_name, long long>>(
+		    daw::json::json_number_no_name<long long>>(
 		    rng, daw::json::ParseTag<daw::json::JsonParseTypes::Signed>{ } ) );
 	}
 
@@ -60,6 +60,10 @@ namespace daw::json {
 	template<JSONNAMETYPE Name>
 	using json_nanosecond =
 	  json_custom<Name, std::chrono::nanoseconds, JSONToNano, JSONToNano,
+	              CustomJsonTypes::Literal>;
+
+	using json_nanosecond_no_name =
+	  json_custom_no_name<std::chrono::nanoseconds, JSONToNano, JSONToNano,
 	              CustomJsonTypes::Literal>;
 
 	template<>
@@ -89,7 +93,7 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_string<name>, json_date<test_time>,
 		  json_number<data_size, std::size_t>,
-		  json_array<run_times, json_nanosecond<no_name>>,
+		  json_array<run_times, json_nanosecond_no_name>,
 		  json_nanosecond<duration_min>, json_nanosecond<duration_25th_percentile>,
 		  json_nanosecond<duration_50th_percentile>,
 		  json_nanosecond<duration_75th_percentile>, json_nanosecond<duration_max>,

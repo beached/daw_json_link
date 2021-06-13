@@ -42,7 +42,7 @@ void test( ) {
 
 		json_data += "                "; // Ensure SIMD has enough rooom to go full
 		std::vector<unsigned> const parsed_1 =
-		  from_json_array<json_number<no_name, unsigned>, std::vector<unsigned>,
+		  from_json_array<json_number_no_name<unsigned>, std::vector<unsigned>,
 		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
 		test_assert( parsed_1 == data, "Failure to parse unsigned" );
 	}
@@ -56,7 +56,7 @@ void test( ) {
 
 		json_data += "        "; // so that SSE has enough room to safely parse
 		std::vector<signed> const parsed_1 =
-		  from_json_array<json_number<no_name, signed>, std::vector<signed>,
+		  from_json_array<json_number_no_name<signed>, std::vector<signed>,
 		                  SIMDNoCommentSkippingPolicyChecked<ExecTag>>( json_data );
 		test_assert( parsed_1 == data, "Failure to parse signed" );
 	}
