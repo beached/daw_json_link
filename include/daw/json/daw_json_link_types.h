@@ -148,7 +148,7 @@ namespace daw::json {
 
 			template<typename... Ts>
 			explicit constexpr tuple_json_mapping( Ts &&...values )
-			  : members{ DAW_FWD( values )... } {}
+			  : members{ DAW_FWD2( Ts, values )... } {}
 		};
 
 		template<typename... Members>

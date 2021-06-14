@@ -71,7 +71,7 @@ namespace daw::json {
 				  "Attempt to assign a const char * to a char *" );
 
 				auto [is_found, result] = json_details::find_range<ParsePolicy>(
-				  DAW_FWD( data ),
+				  DAW_FWD2( String, data ),
 				  { std::data( member_path ), std::size( member_path ) } );
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 				daw_json_assert( result.front( ) == '[', ErrorReason::InvalidArrayStart,
@@ -134,7 +134,7 @@ namespace daw::json {
 			                   std::nullptr_t> = nullptr>
 			inline constexpr explicit json_array_iterator(
 			  String &&jd, std::string_view start_path )
-			  : m_state( get_range( DAW_FWD( jd ), start_path ) ) {
+			  : m_state( get_range( DAW_FWD2( String, jd ), start_path ) ) {
 
 				static_assert(
 				  traits::is_string_view_like_v<daw::remove_cvref_t<String>>,
@@ -292,7 +292,7 @@ namespace daw::json {
 			                                    daw::remove_cvref_t<String>>::value,
 			                   std::nullptr_t> = nullptr>
 			constexpr explicit json_array_range( String &&jd )
-			  : m_first( DAW_FWD( jd ) ) {
+			  : m_first( DAW_FWD2( String, jd ) ) {
 				static_assert(
 				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *> );
 			}
@@ -304,7 +304,7 @@ namespace daw::json {
 			                   std::nullptr_t> = nullptr>
 			constexpr explicit json_array_range( String &&jd,
 			                                     std::string_view start_path )
-			  : m_first( DAW_FWD( jd ), start_path ) {
+			  : m_first( DAW_FWD2( String, jd ), start_path ) {
 				static_assert(
 				  std::is_convertible_v<decltype( std::data( jd ) ), CharT *>,
 				  "Attempt to assign a const char * to a char *" );

@@ -79,7 +79,7 @@ namespace daw::json {
 			namespace to_string_test {
 				template<typename T>
 				[[maybe_unused]] auto to_string_test( T &&v )
-				  -> decltype( to_string( DAW_FWD( v ) ) );
+				  -> decltype( to_string( DAW_FWD2( T, v ) ) );
 
 				template<typename T>
 				using to_string_result =
@@ -143,7 +143,7 @@ namespace daw::json {
 					return std::string_view( std::data( value ), std::size( value ) );
 				} else if constexpr( json_details::to_strings::has_to_string_v<U> ) {
 					using json_details::to_strings::to_string;
-					return to_string( DAW_FWD( value ) );
+					return to_string( value );
 				} else if constexpr( json_details::has_ostream_op_v<U> ) {
 					return use_stream( value );
 				} else if constexpr( std::is_convertible_v<U, std::string_view> ) {

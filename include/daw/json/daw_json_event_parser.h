@@ -559,7 +559,7 @@ namespace daw::json {
 		inline void json_event_parser( std::string_view json_document,
 		                               Handler &&handler ) {
 			return json_event_parser( basic_json_value<ParsePolicy>( json_document ),
-			                          DAW_FWD( handler ) );
+			                          DAW_FWD2( Handler, handler ) );
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

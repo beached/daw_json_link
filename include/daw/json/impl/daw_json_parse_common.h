@@ -67,24 +67,25 @@ namespace daw::json {
 					auto alloc = parse_state.get_allocator_for( template_arg<Value> );
 					if constexpr( std::is_invocable<Constructor, Args...,
 					                                alloc_t>::value ) {
-						return Constructor{ }( DAW_FWD( args )..., DAW_MOVE( alloc ) );
+						return Constructor{ }( DAW_FWD2( Args, args )...,
+						                       DAW_MOVE( alloc ) );
 					} else if constexpr( daw::traits::is_callable_v<Constructor,
 					                                                std::allocator_arg_t,
 					                                                alloc_t, Args...> ) {
 						return Constructor{ }( std::allocator_arg, DAW_MOVE( alloc ),
-						                       DAW_FWD( args )... );
+						                       DAW_FWD2( Args, args )... );
 					} else {
 						static_assert(
 						  std::is_invocable<Constructor, Args...>::value,
 						  "Unable to construct value with the supplied arguments" );
-						return Constructor{ }( DAW_FWD( args )... );
+						return Constructor{ }( DAW_FWD2( Args, args )... );
 					}
 				} else {
 					static_assert(
 					  std::is_invocable<Constructor, Args...>::value,
 					  "Unable to construct value with the supplied arguments" );
 					if constexpr( std::is_invocable<Constructor, Args...>::value ) {
-						return Constructor{ }( DAW_FWD( args )... );
+						return Constructor{ }( DAW_FWD2( Args, args )... );
 					}
 				}
 			}
@@ -103,7 +104,7 @@ namespace daw::json {
 				operator( )( fwd_pack<TArgs...> &&tp, Allocator &alloc,
 				             std::index_sequence<Is...> ) const {
 					return Constructor{ }( get<Is>( DAW_MOVE( tp ) )...,
-					                       DAW_FWD( alloc ) );
+					                       DAW_FWD2( Allocator, alloc ) );
 				}
 
 				template<typename Alloc, typename... TArgs, std::size_t... Is>
@@ -112,7 +113,7 @@ namespace daw::json {
 				             fwd_pack<TArgs...> &&tp,
 				             std::index_sequence<Is...> ) const {
 
-					return Constructor{ }( std::allocator_arg, DAW_FWD( alloc ),
+					return Constructor{ }( std::allocator_arg, DAW_FWD2( Alloc, alloc ),
 					                       get<Is>( DAW_MOVE( tp ) )... );
 				}
 			};
@@ -220,10 +221,11 @@ namespace daw::json {
 				operator( )( Value &&value ) const {
 					if constexpr( has_push_back_v<Container,
 					                              daw::remove_cvref_t<Value>> ) {
-						m_container->push_back( DAW_FWD( value ) );
+						m_container->push_back( DAW_FWD2( Value, value ) );
 					} else if constexpr( has_insert_end_v<Container,
 					                                      daw::remove_cvref_t<Value>> ) {
-						m_container->insert( std::end( *m_container ), DAW_FWD( value ) );
+						m_container->insert( std::end( *m_container ),
+						                     DAW_FWD2( Value, value ) );
 					} else {
 						static_assert(
 						  has_push_back_v<Container, daw::remove_cvref_t<Value>> or
@@ -240,7 +242,7 @@ namespace daw::json {
 				    not std::is_same<basic_appender, daw::remove_cvref_t<Value>>::value,
 				    std::nullptr_t> = nullptr>
 				inline constexpr basic_appender &operator=( Value &&v ) {
-					operator( )( DAW_FWD( v ) );
+					operator( )( DAW_FWD2( Value, v ) );
 					return *this;
 				}
 

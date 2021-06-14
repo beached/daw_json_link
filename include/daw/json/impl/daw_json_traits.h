@@ -188,7 +188,7 @@ namespace daw::json {
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr T
 			operator( )( Args &&...args ) const {
 
-				return T( DAW_FWD( args )... );
+				return T( DAW_FWD2( Args, args )... );
 			}
 
 			template<typename... Args,
@@ -199,9 +199,9 @@ namespace daw::json {
 			           std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr T
 			operator( )( Args &&...args ) const
-			  noexcept( noexcept( T{ DAW_FWD( args )... } ) ) {
+			  noexcept( noexcept( T{ DAW_FWD2( Args, args )... } ) ) {
 
-				return T{ DAW_FWD( args )... };
+				return T{ DAW_FWD2( Args, args )... };
 			}
 		};
 
@@ -337,7 +337,7 @@ namespace daw::json {
 			        std::is_constructible<T, std::in_place_t, Args...>::value ),
 			      std::optional<T>> {
 
-				return std::optional<T>( std::in_place, DAW_FWD( args )... );
+				return std::optional<T>( std::in_place, DAW_FWD2( Args, args )... );
 			}
 
 			template<typename... Args>
@@ -351,7 +351,7 @@ namespace daw::json {
 			      traits::is_list_constructible<T, Args...>::value ),
 			    std::optional<T>> {
 
-				return std::optional<T>( T{ DAW_FWD( args )... } );
+				return std::optional<T>( T{ DAW_FWD2( Args, args )... } );
 			}
 		};
 
@@ -372,7 +372,8 @@ namespace daw::json {
 			                          std::is_constructible<T, Args...>::value ),
 			                        std::unique_ptr<T, Deleter>> {
 
-				return std::unique_ptr<T, Deleter>( new T( DAW_FWD( args )... ) );
+				return std::unique_ptr<T, Deleter>(
+				  new T( DAW_FWD2( Args, args )... ) );
 			}
 
 			template<typename... Args>
@@ -385,7 +386,8 @@ namespace daw::json {
 			        traits::is_list_constructible<T, Args...>::value ),
 			      std::unique_ptr<T, Deleter>> {
 
-				return std::unique_ptr<T, Deleter>( new T{ DAW_FWD( args )... } );
+				return std::unique_ptr<T, Deleter>(
+				  new T{ DAW_FWD2( Args, args )... } );
 			}
 		};
 
