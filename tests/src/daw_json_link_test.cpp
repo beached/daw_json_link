@@ -32,7 +32,7 @@
 Temporarily disable the constexpr tests in MSVC when C++20
 */
 #if defined( _MSC_VER ) and not defined( __clang__ ) and \
-  defined( DAW_CXX_STANDARD ) and DAW_CXX_STANDARD == 20
+  __cplusplus > 201703L
 #define DAW_JSON_NO_CONST_EXPR
 #endif
 

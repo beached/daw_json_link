@@ -69,7 +69,7 @@ namespace daw::json {
 	struct json_data_contract<daw::cookbook_enums1::MyClass1> {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<json_array<
-		  "member0", json_custom_no_name<daw::cookbook_enums1::Colours>>>;
+		  "member0", json_raw_no_name<daw::cookbook_enums1::Colours>>>;
 #else
 		constexpr inline static char const member0[] = "member0";
 		using type = json_member_list<

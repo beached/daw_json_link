@@ -28,7 +28,7 @@ namespace daw::json {
 }
 ```
 
-Sometimes the members to extract are not contiguous and a specific index into the array is requried.  For this a member can be wrapped in a `ordered_json_member<size_t, JsonMember>` type. 
+Sometimes the members to extract are not contiguous and a specific index into the array is required.  For this a member can be wrapped in a `ordered_json_member<size_t, JsonMember>` type. 
 
 ```json
 [

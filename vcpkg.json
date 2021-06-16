@@ -1,0 +1,21 @@
+{
+  "name": "daw-json-link",
+  "version-semver": "2.9.5",
+  "dependencies": [
+    "daw-header-libraries",
+    "daw-utf-range"
+  ],
+  "default-features": [],
+  "features": {
+    "test": {
+      "description": "Dependencies for tests and benchmarks",
+      "dependencies": [
+        "boost-container",
+        "boost-math",
+        "boost-multiprecision",
+        "fmt",
+        "nanobench"
+      ]
+    }
+  }
+}

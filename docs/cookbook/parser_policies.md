@@ -15,7 +15,7 @@ Hash comments, a `#` in whitespace until end of line is comment.
   "b": "This is not a comment"
 }
 ```
-C++ comments, either a `//` in whitespace until end of line, or between `/*` and `*/` in whitespace, are commments.
+C++ comments, either a `//` in whitespace until end of line, or between `/*` and `*/` in whitespace, are comments.
 * `daw::json::CppCommentSkippingPolicyChecked`
 * `daw::json::CppCommentSkippingPolicyUnchecked`
 ```

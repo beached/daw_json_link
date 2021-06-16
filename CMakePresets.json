@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 14,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "vcpkg",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_OVERLAY_PORTS": "${sourceDir}/ports"
+      }
+    },
+    {
+      "name": "dev-mode",
+      "hidden": true,
+      "cacheVariables": {
+        "daw_json_link_DEVELOPER_MODE": "ON",
+        "VCPKG_MANIFEST_FEATURES": "test"
+      }
+    },
+    {
+      "name": "flags-unix",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic",
+        "CMAKE_CXX_EXTENSIONS": "OFF"
+      }
+    },
+    {
+      "name": "flags-windows",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "/W4 /wd4146 /permissive- /volatile:iso /EHsc /Zc:__cplusplus /Zc:throwingNew /bigobj /DNOMINMAX /D_WIN32_WINNT=0x0601"
+      }
+    },
+    {
+      "name": "ci-unix",
+      "generator": "Unix Makefiles",
+      "hidden": true,
+      "inherits": "flags-unix",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "ci-win64",
+      "inherits": "flags-windows",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "x64",
+      "hidden": true
+    },
+    {
+      "name": "coverage-unix",
+      "binaryDir": "${sourceDir}/build/coverage",
+      "inherits": "ci-unix",
+      "hidden": true,
+      "cacheVariables": {
+        "ENABLE_COVERAGE": "ON",
+        "CMAKE_BUILD_TYPE": "Coverage",
+        "CMAKE_CXX_FLAGS_COVERAGE": "-Og -g --coverage -fkeep-inline-functions -fkeep-static-functions",
+        "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage",
+        "CMAKE_SHARED_LINKER_FLAGS_COVERAGE": "--coverage"
+      }
+    },
+    {
+      "name": "ci-coverage",
+      "inherits": ["coverage-unix", "dev-mode", "vcpkg"],
+      "cacheVariables": {
+        "COVERAGE_HTML_COMMAND": ""
+      }
+    },
+    {
+      "name": "ci-sanitize",
+      "binaryDir": "${sourceDir}/build/sanitize",
+      "inherits": ["ci-unix", "dev-mode", "vcpkg"],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Sanitize",
+        "CMAKE_CXX_FLAGS_SANITIZE": "-O2 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fno-common -DDAW_JSON_NO_INT128"
+      }
+    },
+    {
+      "name": "ci-build",
+      "binaryDir": "${sourceDir}/build",
+      "hidden": true
+    },
+    {
+      "name": "ci-macos",
+      "inherits": ["ci-build", "ci-unix", "dev-mode", "vcpkg"]
+    },
+    {
+      "name": "ci-ubuntu",
+      "inherits": ["ci-build", "ci-unix", "dev-mode", "vcpkg"]
+    },
+    {
+      "name": "ci-windows",
+      "inherits": ["ci-build", "ci-win64", "dev-mode", "vcpkg"]
+    },
+    {
+      "name": "ci-clang",
+      "inherits": "ci-ubuntu",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -pedantic -Weverything -Wunreachable-code -Wzero-as-null-pointer-constant -ftemplate-backtrace-limit=0 -Wno-c++98-compat -Wno-covered-switch-default -Wno-padded -Wno-exit-time-destructors -Wno-c++98-compat-pedantic -Wno-unused-parameter -Wno-missing-prototypes -Wno-disabled-macro-expansion -Wno-missing-braces -Wno-unneeded-internal-declaration -Wno-tautological-type-limit-compare -Wno-return-std-move-in-c++11 -Wno-float-equal -Wno-unused-macros -Wno-global-constructors -Wno-used-but-marked-unused -Wno-weak-vtables -Wno-documentation -Wno-undefined-inline -Wno-poison-system-directories"
+      }
+    },
+    {
+      "name": "ci-gcc",
+      "inherits": "ci-ubuntu",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "--param max-gcse-memory=260000000 -Wall -Wextra -pedantic -Wno-deprecated-declarations -Wduplicated-cond -Wlogical-op -Wold-style-cast -Wshadow -Wzero-as-null-pointer-constant"
+      }
+    }
+  ]
+}

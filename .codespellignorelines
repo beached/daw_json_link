@@ -1,0 +1,3 @@
+					daw_json_assert( parse_state.starts_with( "alse" ),
+std::vector<MyClass> arry = ...;
+std::string my_json_data = to_json_array( arry );

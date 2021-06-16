@@ -181,7 +181,7 @@ namespace daw::json {
 			}
 
 			/***
-			 * A dereferencable value proxy holding the result of operator*
+			 * A dereferenceable value proxy holding the result of operator*
 			 * This is for compatibility with the Iterator concepts and should be
 			 * avoided
 			 * @pre good( ) returns true

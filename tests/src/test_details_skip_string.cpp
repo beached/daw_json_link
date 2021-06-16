@@ -50,8 +50,8 @@ bool test_embedded_quotes( ) {
 	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
-	DAW_CONSTEXPR std::string_view ans = R"(\"  \\ )";
-	return std::string_view( v.first, v.size( ) ) == ans;
+	DAW_CONSTEXPR std::string_view answer = R"(\"  \\ )";
+	return std::string_view( v.first, v.size( ) ) == answer;
 }
 
 bool test_missing_quotes_001( ) {

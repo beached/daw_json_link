@@ -1,8 +1,8 @@
 # Dates and Times
 
-Timestmaps are common in JSON datasets. DAW JSON Link has a convienience type to serialize/deserialize ISO8601 timestamps.
+Timestamps are common in JSON datasets. DAW JSON Link has a convenience type to serialize/deserialize ISO8601 timestamps.
 
-## ISO 8601 Timestamps 
+## ISO 8601 Timestamps
 
 ```json
 {
@@ -11,9 +11,9 @@ Timestmaps are common in JSON datasets. DAW JSON Link has a convienience type to
 }
 ```
 
-The above JSON object consists of a 2 string members, where the second stores an [ISO8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) combinded representation timestamp.
+The above JSON object consists of a 2 string members, where the second stores an [ISO8601](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) combined representation timestamp.
 
-Too see a working example using this code, refer to [cookbook_dates1_test.cpp](../tests/src/cookbook_dates1_test.cpp) 
+Too see a working example using this code, refer to [cookbook_dates1_test.cpp](../tests/src/cookbook_dates1_test.cpp)
 
 Below is code that code serialize/deserialize the above JSON using the `json_date` class.
 
@@ -33,7 +33,7 @@ namespace daw::json {
 
     static inline auto to_json_data( MyClass const & v ) {
       return std::forward_as_tuple( v.name, v.timestamp );
-    }   
+    }
   };
 }
 ```
@@ -47,13 +47,13 @@ namespace daw::json {
 }
 ```
 
-The above json is like the first example, but the timestamp format is not iso8601.  It is the date format used in some twitter JSON apis.  The string member will be a `json_string` and the timestmap will use `json_custom`.  This example is more involved and also outlines using `json_custom` to work with data that does not fit the other mappings.
+The above json is like the first example, but the timestamp format is not iso8601.  It is the date format used in some twitter JSON apis.  The string member will be a `json_string` and the timestamp will use `json_custom`.  This example is more involved and also outlines using `json_custom` to work with data that does not fit the other mappings.
 
 `json_custom` requires a callable FromJsonConverter and a callable ToJsonConverter type to convert to `T` from a `std::string_view` and to a string like type from a `T`.
 
 The To and From Converters can be the same type with different overloads for `operator()`.  T will be a `std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>`.
 
-Too see a working example using this code, refer to [cookbook_dates2_test.cpp](../tests/src/cookbook_dates2_test.cpp) 
+Too see a working example using this code, refer to [cookbook_dates2_test.cpp](../tests/src/cookbook_dates2_test.cpp)
 
 ```c++
 struct TimestampConverter {
@@ -78,16 +78,16 @@ namespace daw::json {
   struct json_data_contract<MyClass2> {
     using type = json_member_list<
       json_string<"name">,
-      json_custom<"timestamp", 
-        std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>, 
-        TimestampConverter, 
+      json_custom<"timestamp",
+        std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>,
+        TimestampConverter,
         TimestampConverter
       >
     >;
 
     static inline auto to_json_data( MyClass2 const & v ) {
       return std::forward_as_tuple( v.name, v.timestamp );
-    }   
+    }
   };
 }
 ```
@@ -107,7 +107,7 @@ A time_point can be encoded into JSON a the number of seconds since epoch(Jan 1,
 
 This example will use the constructor of the class to construct the `time_point` from the integer.  Otherwise, a `json_custom` type could be used here too.  It demonstrates using a constructor to do the data conversions, along with `to_json_data` to reverse the conversion.  Another alternative is to use the `Constructor` template argument to do the conversion of the integer to the `time_point`.  The `dateAdded` member shows parsing strings into numbers.  This is often done as numbers in JSON are double and can only hold integers as large as 2^53.
 
-Too see a working example using this code, refer to [cookbook_dates3_test.cpp](../tests/src/cookbook_dates3_test.cpp) 
+Too see a working example using this code, refer to [cookbook_dates3_test.cpp](../tests/src/cookbook_dates3_test.cpp)
 
 ```c++
 using my_timepoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
@@ -138,7 +138,7 @@ namespace daw::json {
   template<>
   struct json_data_contract<MyClass3> {
     using type = json_member_list<
-      json_string<"title">, 
+      json_string<"title">,
       json_number<"id", unsigned>,
     json_number<"dateAdded", int64_t, LiteralAsStringOpt::Always>,
     json_number<"lastModified", int64_t>>;
@@ -153,7 +153,7 @@ namespace daw::json {
 
 ### Microsoft AJAX DateTime.
 
-In some older MS implementations of AJAX, dates were encoded like 
+In some older MS implementations of AJAX, dates were encoded like
 ```json
 "/Date(725842800000+0100)/"
 ```
@@ -169,8 +169,8 @@ Taking the first example, modified the time to use the MS AJAX format, the times
 ```
 
 When parsing the `timestamp` member we need to skip the first 6 characters, optionally verifying it says `"/DATE(`. Then parse the number and add it to a `std::chrono` timestamp with the time of Unix Epoc, Midight January 1, 1970.
- 
-Too see a working example using this code, refer to [cookbook_dates4_test.cpp](../tests/src/cookbook_dates4_test.cpp) 
+
+Too see a working example using this code, refer to [cookbook_dates4_test.cpp](../tests/src/cookbook_dates4_test.cpp)
 
 ```c++
 using timepoint_t = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
@@ -204,16 +204,16 @@ namespace daw::json {
   struct json_data_contract<MyClass4> {
     using type = json_member_list<
       json_string<"name">,
-      json_custom<"timestamp", 
-        timepoint_t, 
-        TimestampConverter, 
+      json_custom<"timestamp",
+        timepoint_t,
+        TimestampConverter,
         TimestampConverter
       >
     >;
 
     static inline auto to_json_data( MyClass4 const & v ) {
       return std::forward_as_tuple( v.name, v.timestamp );
-    }   
+    }
   };
 }
 // ...

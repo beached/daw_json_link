@@ -2,7 +2,7 @@
 
 There is no direct support for enum's in JSON.  However, they are often encoded as a number or a string.
 
-## As StringRaw 
+## As StringRaw
 ```json
 {
   "member0": [ "red", "green", "blue", "black" ]
@@ -11,7 +11,7 @@ There is no direct support for enum's in JSON.  However, they are often encoded 
 The above JSON object has a member, `"member0"`, that is an array of strings.
 In order to store the enum as a JSON string, an overload for `to_string` and `from_string` are required. `to_string` is required to return a `Container` where the `begin( )` iterator's `value_type` is `char, not necessarily a `std::string`.
 
-To see a working example using this code, refer to [cookbook_enums1_test.cpp](../tests/src/cookbook_enums1_test.cpp) 
+To see a working example using this code, refer to [cookbook_enums1_test.cpp](../tests/src/cookbook_enums1_test.cpp)
 ```c++
 enum class Colours : uint8_t { red, green, blue, black };
 
@@ -74,7 +74,7 @@ enum class Colours : uint8_t { red = 0, green = 1, blue = 2, black = 3 };
 ```
 
 The enum type is encoded as the type in the `json_number` member type.
-To see a working example using this code, refer to [cookbook_enums2_test.cpp](../tests/src/cookbook_enums2_test.cpp) 
+To see a working example using this code, refer to [cookbook_enums2_test.cpp](../tests/src/cookbook_enums2_test.cpp)
 ```c++
 enum class Colours : uint8_t { red, green, blue, black };
 

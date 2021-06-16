@@ -1,0 +1,8 @@
+[codespell]
+builtin = clear,rare,names,informal,code
+check-filenames =
+check-hidden =
+skip = */.git,*/build,*/vcpkg,*/test_data,*/.codespellrc,*/docs
+quiet-level = 2
+ignore-regex = UInt
+exclude-file = .codespellignorelines
