@@ -23,8 +23,8 @@
  */
 
 struct Foo {
-	std::size_t n;
-	int *data;
+	std::size_t n = 0;
+	int *data = nullptr;
 };
 
 template<JSONNAMETYPE, typename T>
@@ -79,4 +79,5 @@ int main( ) {
 
 	auto jdoc2 = daw::json::to_json( foo );
 	std::cout << jdoc2 << '\n';
+	delete[] foo.data;
 }
