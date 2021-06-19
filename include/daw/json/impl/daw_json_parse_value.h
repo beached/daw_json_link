@@ -469,7 +469,7 @@ namespace daw::json {
 
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
-				auto str = skip_string( parse_state );
+				auto str = KnownBounds ? parse_state : skip_string( parse_state );
 				using constructor_t = typename JsonMember::constructor_t;
 				return construct_value(
 				  template_args<json_result<JsonMember>, constructor_t>, parse_state,
@@ -480,24 +480,28 @@ namespace daw::json {
 			[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Custom> ) {
 
-				if( ( ( parse_state.front( ) != '"' ) &
-				      ( parse_state.class_first != nullptr ) ) &
-				    ( ( parse_state.first > parse_state.class_first ) and
-				      ( *std::prev( parse_state.first ) == '"' ) ) ) {
-					parse_state.first = std::prev( parse_state.first );
-				}
 				auto const str = [&] {
 					if constexpr( JsonMember::custom_json_type ==
 					              CustomJsonTypes::String ) {
-						return skip_string( parse_state );
+						if constexpr( KnownBounds ) {
+							return parse_state;
+						} else {
+							return skip_string( parse_state );
+						}
 					} else if constexpr( JsonMember::custom_json_type ==
 					                     CustomJsonTypes::Literal ) {
-						return skip_literal( parse_state );
+						return KnownBounds ? parse_state : skip_literal( parse_state );
 					} else {
 						if constexpr( ParseState::is_unchecked_input ) {
-							return skip_value( parse_state );
+							return KnownBounds ? parse_state : skip_value( parse_state );
 						} else {
-							auto result = skip_value( parse_state );
+							auto result = [&] {
+								if constexpr( KnownBounds ) {
+									return parse_state;
+								} else {
+									return skip_value( parse_state );
+								}
+							}( );
 							daw_json_assert_weak(
 							  result.has_more( ) and
 							    not( result.front( ) == '[' or result.front( ) == '{' ),

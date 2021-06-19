@@ -955,44 +955,44 @@ namespace daw::json {
 				  "value must be convertible to specified type in class contract" );
 
 				using json_details::is_null;
+				// TODO: document customization point
 				if( is_null( value ) ) {
-					it = utils::copy_to_iterator( it, "null" );
-				} else {
-					*it++ = '"';
-					datetime::ymdhms const civil = datetime::time_point_to_civil( value );
-					it = utils::integer_to_string( it, civil.year );
-					*it++ = '-';
-					if( civil.month < 10 ) {
-						*it++ = '0';
-					}
-					it = utils::integer_to_string( it, civil.month );
-					*it++ = '-';
-					if( civil.day < 10 ) {
-						*it++ = '0';
-					}
-					it = utils::integer_to_string( it, civil.day );
-					*it++ = 'T';
-					if( civil.hour < 10 ) {
-						*it++ = '0';
-					}
-					it = utils::integer_to_string( it, civil.hour );
-					*it++ = ':';
-					if( civil.minute < 10 ) {
-						*it++ = '0';
-					}
-					it = utils::integer_to_string( it, civil.minute );
-					*it++ = ':';
-					if( civil.second < 10 ) {
-						*it++ = '0';
-					}
-					it = utils::integer_to_string( it, civil.second );
-					if( civil.millisecond > 0 ) {
-						*it++ = '.';
-						it = utils::integer_to_string( it, civil.millisecond );
-					}
-					*it++ = 'Z';
-					*it++ = '"';
+					return utils::copy_to_iterator( it, "null" );
 				}
+				*it++ = '"';
+				datetime::ymdhms const civil = datetime::time_point_to_civil( value );
+				it = utils::integer_to_string( it, civil.year );
+				*it++ = '-';
+				if( civil.month < 10 ) {
+					*it++ = '0';
+				}
+				it = utils::integer_to_string( it, civil.month );
+				*it++ = '-';
+				if( civil.day < 10 ) {
+					*it++ = '0';
+				}
+				it = utils::integer_to_string( it, civil.day );
+				*it++ = 'T';
+				if( civil.hour < 10 ) {
+					*it++ = '0';
+				}
+				it = utils::integer_to_string( it, civil.hour );
+				*it++ = ':';
+				if( civil.minute < 10 ) {
+					*it++ = '0';
+				}
+				it = utils::integer_to_string( it, civil.minute );
+				*it++ = ':';
+				if( civil.second < 10 ) {
+					*it++ = '0';
+				}
+				it = utils::integer_to_string( it, civil.second );
+				if( civil.millisecond > 0 ) {
+					*it++ = '.';
+					it = utils::integer_to_string( it, civil.millisecond );
+				}
+				*it++ = 'Z';
+				*it++ = '"';
 				return it;
 			}
 
@@ -1023,7 +1023,9 @@ namespace daw::json {
 					return json_data_contract_trait_t<parse_to_t>::serialize( it, value,
 					                                                          value );
 				} else {
-					static_assert( is_submember_tagged_variant_v<parse_to_t> );
+					static_assert( is_submember_tagged_variant_v<parse_to_t>,
+					               "Could not find appropriate mapping or to_json_data "
+					               "member of json_data_contract" );
 					return json_data_contract_trait_t<parse_to_t>::serialize( it, value );
 				}
 			}

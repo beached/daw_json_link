@@ -129,12 +129,12 @@ namespace daw::json {
 				                      ErrorReason::MissingMemberNameOrEndOfClass,
 				                      parse_state );
 
-				auto loc = find_class_member<member_position, must_exist>(
+				auto [loc, known] = find_class_member<member_position, must_exist>(
 				  parse_state, locations, is_json_nullable_v<JsonMember>,
 				  JsonMember::name );
 
 				// If the member was found loc will have it's position
-				if( loc.first == parse_state.first ) {
+				if( not known ) {
 					return parse_value<without_name<JsonMember>>(
 					  parse_state, ParseTag<JsonMember::expected_type>{ } );
 				}
@@ -150,6 +150,8 @@ namespace daw::json {
 						                parse_state );
 					}
 				}
+
+				// Member was previously skipped
 				return parse_value<without_name<JsonMember>, true>(
 				  loc, ParseTag<JsonMember::expected_type>{ } );
 			}

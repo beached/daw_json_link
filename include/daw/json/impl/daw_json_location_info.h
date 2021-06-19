@@ -199,7 +199,7 @@ namespace daw::json {
 			template<std::size_t pos, AllMembersMustExist must_exist,
 			         bool from_start = false, std::size_t N, typename ParseState,
 			         bool B, typename CharT>
-			[[nodiscard]] inline constexpr ParseState
+			[[nodiscard]] inline constexpr std::pair<ParseState, bool>
 			find_class_member( ParseState &parse_state,
 			                   locations_info_t<N, CharT, B> &locations,
 			                   bool is_nullable, daw::string_view member_name ) {
@@ -207,12 +207,17 @@ namespace daw::json {
 				// silencing gcc9 warning as these are selectively used
 				(void)is_nullable;
 				(void)member_name;
+				if( pos == 12 ) {
+					auto P = pos;
+					(void)P;
+				}
 
 				daw_json_assert_weak( is_nullable | ( not locations[pos].missing( ) ) |
 				                        ( not parse_state.is_closing_brace_checked( ) ),
 				                      missing_member( member_name ), parse_state );
 
 				parse_state.trim_left_unchecked( );
+				bool known = not locations[pos].missing( );
 				while( locations[pos].missing( ) & ( parse_state.front( ) != '}' ) ) {
 					// TODO: fully unescape name
 					// parse_name checks if we have more and are quotes
@@ -267,12 +272,18 @@ namespace daw::json {
 						}
 					}
 				}
+				if( locations[pos].missing( ) ) {
+					known = true;
+				}
 				if constexpr( ParseState::has_allocator ) {
-					return locations[pos]
-					  .get_range( template_arg<ParseState> )
-					  .with_allocator( parse_state );
+					return std::pair<ParseState, bool>{
+					  locations[pos]
+					    .get_range( template_arg<ParseState> )
+					    .with_allocator( parse_state ),
+					  known };
 				} else {
-					return locations[pos].get_range( template_arg<ParseState> );
+					return std::pair<ParseState, bool>{
+					  locations[pos].get_range( template_arg<ParseState> ), known };
 				}
 			}
 		} // namespace json_details

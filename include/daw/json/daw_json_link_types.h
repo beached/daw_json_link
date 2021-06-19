@@ -1109,7 +1109,7 @@ namespace daw::json {
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Any,
+		         CustomJsonTypes CustomJsonType = CustomJsonTypes::String,
 		         JsonNullable Nullable = JsonNullable::MustExist>
 		using json_custom_no_name =
 		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
@@ -1118,8 +1118,25 @@ namespace daw::json {
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Any>
+		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Literal,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		using json_custom_literal_no_name =
+		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
+		                         CustomJsonType, Nullable>;
+
+		template<typename T,
+		         typename FromJsonConverter = default_from_json_converter_t<T>,
+		         typename ToJsonConverter = default_to_json_converter_t<T>,
+		         CustomJsonTypes CustomJsonType = CustomJsonTypes::String>
 		using json_custom_null_no_name =
+		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
+		                         CustomJsonType, JsonNullDefault>;
+
+		template<typename T,
+		         typename FromJsonConverter = default_from_json_converter_t<T>,
+		         typename ToJsonConverter = default_to_json_converter_t<T>,
+		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Literal>
+		using json_custom_literal_null_no_name =
 		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
 		                         CustomJsonType, JsonNullDefault>;
 

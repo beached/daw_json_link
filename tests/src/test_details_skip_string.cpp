@@ -16,10 +16,9 @@
 #include <string_view>
 
 bool test_empty( ) {
-	DAW_CONSTEXPR std::string_view sv = "  ";
-	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv = "";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
+	  daw::json::DefaultParsePolicy( std::data( sv ), daw::data_end( sv ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	return v.empty( );
@@ -28,7 +27,7 @@ bool test_empty( ) {
 bool test_quoted_number( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "1234")";
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv.data( ) + 1, sv.data( ) + sv.size( ) );
+	  daw::json::DefaultParsePolicy( std::data( sv ) + 1, daw::data_end( sv ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	return std::string_view( v.first, v.size( ) ) == "1234";
@@ -36,9 +35,9 @@ bool test_quoted_number( ) {
 
 bool test_empty_quoted( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "")";
-	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
+	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	return v.empty( );
@@ -46,9 +45,9 @@ bool test_empty_quoted( ) {
 
 bool test_embedded_quotes( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "\"  \\ ")";
-	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
+	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	DAW_CONSTEXPR std::string_view ans = R"(\"  \\ )";
@@ -59,7 +58,7 @@ bool test_missing_quotes_001( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( ")";
 	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
+	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	(void)v;
@@ -68,9 +67,9 @@ bool test_missing_quotes_001( ) {
 
 bool test_missing_quotes_002( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "\")";
-	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
+	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	(void)v;
@@ -79,9 +78,9 @@ bool test_missing_quotes_002( ) {
 
 bool test_missing_quotes_003( ) {
 	DAW_CONSTEXPR std::string_view sv = R"( "\"]})";
-	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	auto rng =
-	  daw::json::DefaultParsePolicy( sv2.data( ), sv2.data( ) + sv2.size( ) );
+	  daw::json::DefaultParsePolicy( std::data( sv2 ), daw::data_end( sv2 ) );
 	using namespace daw::json::json_details;
 	auto v = skip_string( rng );
 	(void)v;
@@ -92,11 +91,11 @@ template<typename ExecTag>
 bool test_escaped_quote_001( ) {
 	std::string_view sv =
 	  R"( "abcdefghijklmnop\"qrstuvwxyz"                                        )";
-	std::string_view sv2 = sv.substr( 2 );
+	std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
-	  sv2.data( ), sv2.data( ) + sv2.size( ) );
+	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	auto const sz = v.size( );
 	return sz == 28;
@@ -106,11 +105,11 @@ template<typename ExecTag>
 bool test_escaped_quote_002( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "abcdefghijklmnop\"qrstuvwxy\\"                                        )";
-	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
-	  sv2.data( ), sv2.data( ) + sv2.size( ) );
+	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 29;
 }
@@ -119,11 +118,11 @@ template<typename ExecTag>
 bool test_escaped_quote_003( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "abcdefghijklmn\\\"qrstuvwxy\\"                                        )";
-	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
-	  sv2.data( ), sv2.data( ) + sv2.size( ) );
+	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 29;
 }
@@ -132,11 +131,11 @@ template<typename ExecTag>
 bool test_escaped_quote_004( ) {
 	DAW_CONSTEXPR std::string_view sv =
 	  R"( "<a href=\"http://twittbot.net/\" rel=\"nofollow\">twittbot.net</a>"                                 )";
-	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 2 );
+	DAW_CONSTEXPR std::string_view sv2 = sv.substr( 1 );
 	using namespace daw::json;
 	using namespace daw::json::json_details;
 	auto rng = daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>(
-	  sv2.data( ), sv2.data( ) + sv2.size( ) );
+	  std::data( sv2 ), daw::data_end( sv2 ) );
 	auto v = skip_string( rng );
 	return v.size( ) == 66;
 }

@@ -36,15 +36,6 @@ set(json_link_INSTALL_CMAKEDIR
 
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
-
-set(DAW_JSON_NO_CONST_EXPR OFF CACHE STRING "Ensure guaranteed copy elision in array/class types")
-if (DAW_JSON_NO_CONST_EXPR)
-    message("DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
-    add_definitions(-DDAW_JSON_NO_CONST_EXPR)
-else ()
-    message("DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
-endif ()
-
 set(DAW_JSON_FORCE_INT128 OFF CACHE STRING "Force support for 128bit int")
 if (DAW_JSON_FORCE_INT128)
     if (DAW_JSON_NO_INT128)

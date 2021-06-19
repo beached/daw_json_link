@@ -1,4 +1,4 @@
-# TODO clean this up, but for now it makes tests get approprait options
+# TODO clean this up, but for now it makes tests get appropriate options
 
 cmake_policy(SET CMP0065 NEW)
 
@@ -7,6 +7,13 @@ find_package(Boost 1.72.0 COMPONENTS container)
 
 add_subdirectory(extern)
 
+option(DAW_JSON_NO_CONST_EXPR "Ensure guaranteed copy elision in array/class types" OFF )
+if (DAW_JSON_NO_CONST_EXPR)
+    message("DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
+    add_definitions(-DDAW_JSON_NO_CONST_EXPR)
+else ()
+    message("DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
+endif ()
 
 option(CMAKE_INTERPROCEDURAL_OPTIMIZATION "Enable LTO" OFF)
 if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
@@ -14,7 +21,7 @@ if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
 endif ()
 message("CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
 
-set(DAW_NUM_RUNS OFF CACHE STRING "Enable address and undefined behaviour sanitizers")
+set(DAW_NUM_RUNS OFF CACHE STRING "Change the number of runs of some tests")
 if (DAW_NUM_RUNS)
     message("DAW_NUM_RUNS=${DAW_NUM_RUNS}: Overriding number of test runs")
     add_definitions(-DDAW_NUM_RUNS=${DAW_NUM_RUNS})
@@ -644,6 +651,10 @@ target_link_libraries(int_ptr_test json_test)
 add_test(NAME int_ptr_test COMMAND int_ptr_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full int_ptr_test)
 
+add_executable(json_schema_test src/json_schema_test.cpp)
+target_link_libraries(json_schema_test json_test)
+add_test(NAME json_schema_test COMMAND json_schema_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full json_schema_test)
 
 # **************************************************
 # JSON Benchmark

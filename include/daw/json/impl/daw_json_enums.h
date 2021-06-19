@@ -82,6 +82,13 @@ namespace daw::json {
 
 		/***
 		 * Custom JSON types can be Strings(default), unquoted Literals, or a mix
+		 * String - Parser always expects a JSON string.  Will surround serialized
+		 * value with double quotes
+		 * Literal - Parser will expect a valid JSON literal number, bool, null
+		 * Any - Experimental - Parser will return any valid JSON value excluding
+		 * leading whitespace. strings will be quoted. (TODO: Currently the quotedness of
+		 * strings is determined by whether the member was parsed in order or
+		 * previously skipped.
 		 */
 		enum class CustomJsonTypes { String, Literal, Any };
 

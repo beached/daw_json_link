@@ -57,11 +57,10 @@ namespace daw::json {
 				if( parse_state.empty( ) ) {
 					return parse_state;
 				}
-				if( *std::prev( parse_state.first ) != '"' ) {
-					daw_json_assert( parse_state.front( ) == '"',
-					                 ErrorReason::InvalidString, parse_state );
-					parse_state.remove_prefix( );
-				}
+				daw_json_assert( parse_state.front( ) == '"',
+				                 ErrorReason::InvalidString, parse_state );
+				parse_state.remove_prefix( );
+
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::InvalidString, parse_state );
 				return skip_string_nq( parse_state );
