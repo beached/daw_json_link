@@ -82,10 +82,10 @@ $(function() {
 <p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_variant1_test.cpp">cookbook_variant1_test.cpp</a></p>
 <p>The following C++ can provide a mapping. It, also, highlights that the types bool, integers, floating point, std:: string, and previously mapped types can be default mapped to elements that do not require a name. Such as variant, array, and some key_value's.</p>
 <div class="fragment"><div class="line">{c++}</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md41"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md42"></a>
 Important note:</h1>
 <p>The elements in the <code>json_variant_type_list</code> must have matching types in the variant alternatives. (e.g. std::string -&gt; json_string, bool -&gt; json_bool )</p>
-<h1><a class="anchor" id="autotoc_md42"></a>
+<h1><a class="anchor" id="autotoc_md43"></a>
 Tagged Variants</h1>
 <p>It is common to have a tag discriminator in JSON data. The <code>json_tagged_variant</code> member type allows using another parsed member to return an index in a member list to parse. This allows any number of types to be inside the variant.</p>
 <p>Below is a JSON array, containing a variant element where the <code>"type"</code> member determines the type of the <code>"value"</code> member. In many JSON documents, the discriminator will be a string.</p>
@@ -133,7 +133,7 @@ Tagged Variants</h1>
 <p>Too see a working example using this code, refer to <a href="../tests/src/cookbook_variant3_test.cpp">cookbook_variant3_test.cpp</a></p>
 <div class="fragment"><div class="line">{c++}</div>
 </div><!-- fragment --><p>As you can see, the json_tagged_variant_type_list can use terse type names for some, or the full names.</p>
-<h1><a class="anchor" id="autotoc_md43"></a>
+<h1><a class="anchor" id="autotoc_md44"></a>
 Submember as tag for tagged_variant</h1>
 <p>There are cases where a classes structure is determined by one of it's submembers. This comes up with file versioning.</p>
 <p>In our example we have two versions of a config file. The tag member <code>"version"</code> determines the layout of the other members in the example.</p>
@@ -187,7 +187,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line"><span class="keyword">namespace </span><a class="code" href="namespacedaw_1_1json.html">daw::json</a> {</div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;version1::Config&gt; {</div>
-<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__data__contract.html#a3efd58ae8ffeccc5d084eb1d006c5d9f">type</a> = json_member_list&lt;</div>
+<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__data__contract.html#afbfa638039d579d91108b4a1ebd5d56d">type</a> = json_member_list&lt;</div>
 <div class="line">      json_number&lt;<span class="stringliteral">&quot;version&quot;</span>, <span class="keywordtype">int</span>&gt;,  </div>
 <div class="line">      json_string&lt;<span class="stringliteral">&quot;name&quot;</span>&gt;,</div>
 <div class="line">      json_number&lt;<span class="stringliteral">&quot;value&quot;</span>, <span class="keywordtype">int</span>&gt;,</div>
@@ -201,7 +201,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line">  </div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;version2::Config&gt; {</div>
-<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__data__contract.html#a3efd58ae8ffeccc5d084eb1d006c5d9f">type</a> = json_member_list&lt;</div>
+<div class="line">    <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__data__contract.html#afbfa638039d579d91108b4a1ebd5d56d">type</a> = json_member_list&lt;</div>
 <div class="line">      json_number&lt;<span class="stringliteral">&quot;version&quot;</span>, <span class="keywordtype">int</span>&gt;,  </div>
 <div class="line">      json_key_value_array&lt;<span class="stringliteral">&quot;config_options&quot;</span>, </div>
 <div class="line">        std::map&lt;std::string, int&gt;,</div>
@@ -218,7 +218,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line">  </div>
 <div class="line">  <span class="keyword">template</span>&lt;&gt;</div>
 <div class="line">  <span class="keyword">struct </span>json_data_contract&lt;std::variant&lt;version1::Config, version2::Config&gt;&gt; {</div>
-<div class="line">      <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__data__contract.html#a3efd58ae8ffeccc5d084eb1d006c5d9f">type</a> = json_submember_tagged_variant&lt;</div>
+<div class="line">      <span class="keyword">using</span> <a class="code" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__data__contract.html#afbfa638039d579d91108b4a1ebd5d56d">type</a> = json_submember_tagged_variant&lt;</div>
 <div class="line">        json_number&lt;<span class="stringliteral">&quot;version&quot;</span>, <span class="keywordtype">int</span>&gt;,</div>
 <div class="line">        Switcher,   </div>
 <div class="line">        version1::Config,</div>
@@ -227,7 +227,7 @@ Submember as tag for tagged_variant</h1>
 <div class="line">  };</div>
 <div class="line">}</div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> daw_from_json.h:22</div></div>
-<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__data__contract_html_a3efd58ae8ffeccc5d084eb1d006c5d9f"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__data__contract.html#a3efd58ae8ffeccc5d084eb1d006c5d9f">daw::json::DAW_JSON_VER::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for&lt; T &gt; type</div><div class="ttdef"><b>Definition:</b> daw_json_traits.h:98</div></div>
+<div class="ttc" id="astructdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__data__contract_html_afbfa638039d579d91108b4a1ebd5d56d"><div class="ttname"><a href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__data__contract.html#afbfa638039d579d91108b4a1ebd5d56d">daw::json::DAW_JSON_VER::json_data_contract::type</a></div><div class="ttdeci">missing_json_data_contract_for&lt; T &gt; type</div><div class="ttdef"><b>Definition:</b> daw_json_traits.h:125</div></div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

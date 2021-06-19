@@ -77,19 +77,19 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a97c060f7aa9c58a9fc3cb0ee611b33f9"><td class="memTemplParams" colspan="2">template&lt;typename StringView &gt; </td></tr>
-<tr class="memitem:a97c060f7aa9c58a9fc3cb0ee611b33f9"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a97c060f7aa9c58a9fc3cb0ee611b33f9">fnv1a_32</a> (StringView &amp;&amp;key)</td></tr>
-<tr class="separator:a97c060f7aa9c58a9fc3cb0ee611b33f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52a08a7f1e900474d6a2dfeb9a56dde0"><td class="memTemplParams" colspan="2">template&lt;typename StringView &gt; </td></tr>
+<tr class="memitem:a52a08a7f1e900474d6a2dfeb9a56dde0"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATTEN UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a52a08a7f1e900474d6a2dfeb9a56dde0">fnv1a_32</a> (StringView &amp;&amp;key)</td></tr>
+<tr class="separator:a52a08a7f1e900474d6a2dfeb9a56dde0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99ff6e21be41997907855ab341849358"><td class="memTemplParams" colspan="2">template&lt;typename StringView &gt; </td></tr>
 <tr class="memitem:a99ff6e21be41997907855ab341849358"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a99ff6e21be41997907855ab341849358">murmur3_32</a> (StringView &amp;&amp;key, std::uint32_t seed=0)</td></tr>
 <tr class="separator:a99ff6e21be41997907855ab341849358"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72ec741e8cfe01e45a3fd3a76e3c4ba1"><td class="memTemplParams" colspan="2">template&lt;typename StringView &gt; </td></tr>
-<tr class="memitem:a72ec741e8cfe01e45a3fd3a76e3c4ba1"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#a72ec741e8cfe01e45a3fd3a76e3c4ba1">name_hash</a> (StringView &amp;&amp;key, std::uint32_t seed=0)</td></tr>
-<tr class="separator:a72ec741e8cfe01e45a3fd3a76e3c4ba1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac651c5fabdc8845987cb9c0a41cc74cb"><td class="memTemplParams" colspan="2">template&lt;typename StringView &gt; </td></tr>
+<tr class="memitem:ac651c5fabdc8845987cb9c0a41cc74cb"><td class="memTemplItemLeft" align="right" valign="top">constexpr UInt32&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw.html#ac651c5fabdc8845987cb9c0a41cc74cb">name_hash</a> (StringView const &amp;key, std::uint32_t seed=0)</td></tr>
+<tr class="separator:ac651c5fabdc8845987cb9c0a41cc74cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a97c060f7aa9c58a9fc3cb0ee611b33f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97c060f7aa9c58a9fc3cb0ee611b33f9">&#9670;&nbsp;</a></span>fnv1a_32()</h2>
+<a id="a52a08a7f1e900474d6a2dfeb9a56dde0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52a08a7f1e900474d6a2dfeb9a56dde0">&#9670;&nbsp;</a></span>fnv1a_32()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -100,7 +100,7 @@ template&lt;typename StringView &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIB_FLATINLINE UInt32 daw::fnv1a_32 </td>
+          <td class="memname">constexpr DAW_ATTRIB_FLATTEN UInt32 daw::fnv1a_32 </td>
           <td>(</td>
           <td class="paramtype">StringView &amp;&amp;&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
@@ -109,7 +109,7 @@ template&lt;typename StringView &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -154,8 +154,8 @@ template&lt;typename StringView &gt; </div>
 
 </div>
 </div>
-<a id="a72ec741e8cfe01e45a3fd3a76e3c4ba1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a72ec741e8cfe01e45a3fd3a76e3c4ba1">&#9670;&nbsp;</a></span>name_hash()</h2>
+<a id="ac651c5fabdc8845987cb9c0a41cc74cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac651c5fabdc8845987cb9c0a41cc74cb">&#9670;&nbsp;</a></span>name_hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -166,9 +166,9 @@ template&lt;typename StringView &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr DAW_ATTRIB_FLATINLINE UInt32 daw::name_hash </td>
+          <td class="memname">constexpr UInt32 daw::name_hash </td>
           <td>(</td>
-          <td class="paramtype">StringView &amp;&amp;&#160;</td>
+          <td class="paramtype">StringView const &amp;&#160;</td>
           <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>

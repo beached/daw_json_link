@@ -67,7 +67,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Arbitrary C++ data structures are supported and can be described using the trait <code>json_data_contract</code>.</p>
-<h1><a class="anchor" id="autotoc_md7"></a>
+<h1><a class="anchor" id="autotoc_md8"></a>
 Basic class mapping</h1>
 <p>Below is an ordinary JSON object </p><div class="fragment"><div class="line">{ </div>
 <div class="line">  &quot;member0&quot;: &quot;this is a test&quot;,</div>
@@ -100,7 +100,7 @@ Basic class mapping</h1>
 <div class="line">  };</div>
 <div class="line">}</div>
 </div><!-- fragment --><p> The above <code>json_data_contract</code> trait maps the JSON members to the constructor of <code>MyClass1</code> in the order specified. The arguments of type <code>std::string, int, bool</code> will be passed.</p>
-<h1><a class="anchor" id="autotoc_md8"></a>
+<h1><a class="anchor" id="autotoc_md9"></a>
 Class as a member</h1>
 <p>The serializing and deserializing is recursive. So if a class contains another class, the requirement is that that class has been mapped already. Assuming we already have the mapping above, lets embed that into another class</p>
 <div class="fragment"><div class="line">{</div>
@@ -133,7 +133,7 @@ Class as a member</h1>
 <div class="line">    }</div>
 <div class="line">  };</div>
 <div class="line">} // namespace daw::json</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md9"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md10"></a>
 Selective mapping</h1>
 <p>Not all of the JSON objects members need to be mapped. Below is the same JSON object as in the <code>MyClass2</code> example above. To see a working example using this code, refer to <a href="../tests/src/cookbook_class3_test.cpp">cookbook_class3_test.cpp</a> </p><div class="fragment"><div class="line">{</div>
 <div class="line">  &quot;a&quot;: {</div>
@@ -162,7 +162,7 @@ Selective mapping</h1>
 <div class="line">  };</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>Only the <code>"a"</code> member is mapped, the <code>"b"</code> member of the JSON object is ignored.</p>
-<h1><a class="anchor" id="autotoc_md10"></a>
+<h1><a class="anchor" id="autotoc_md11"></a>
 Alternate Class Mappings</h1>
 <p>If a type is already mapped or has many possible JSON mappings you can provide an alternate mapping. This is accomplished by mapping to the <code><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__alt.html">daw::json::json_alt</a>&lt;Type, Index&gt;</code> type. The optional index allows for any number of mappings that fit into a <code>std::size_t</code>.</p>
 <p>To see a working example using this code, refer to <a href="../tests/src/cookbook_class_alternate1_test.cpp">cookbook_class_alternate1_test.cpp</a> </p><div class="fragment"><div class="line"> {c++}</div>

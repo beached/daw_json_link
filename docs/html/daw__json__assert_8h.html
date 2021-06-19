@@ -161,10 +161,11 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">if</span>( DAW_UNLIKELY( not( Bool ) ) ) { \</div>
-<div class="line">    daw_json_error( __VA_ARGS__ );    \</div>
-<div class="line">  }                                   \</div>
-<div class="line">  while( <span class="keyword">false</span> )</div>
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">do</span> {                                  \</div>
+<div class="line">    if( DAW_UNLIKELY( not( Bool ) ) ) { \</div>
+<div class="line">      daw_json_error( __VA_ARGS__ );    \</div>
+<div class="line">    }                                   \</div>
+<div class="line">  } <span class="keywordflow">while</span>( <span class="keyword">false</span> )</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -193,12 +194,13 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">if</span> constexpr( not ParseState::is_unchecked_input ) { \</div>
-<div class="line">    if( DAW_UNLIKELY( not( Bool ) ) ) {                \</div>
-<div class="line">      daw_json_error( __VA_ARGS__ );                   \</div>
-<div class="line">    }                                                  \</div>
-<div class="line">  }                                                    \</div>
-<div class="line">  while( <span class="keyword">false</span> )</div>
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">do</span> {                                                   \</div>
+<div class="line">    if constexpr( not ParseState::is_unchecked_input ) { \</div>
+<div class="line">      if( DAW_UNLIKELY( not( Bool ) ) ) {                \</div>
+<div class="line">        daw_json_error( __VA_ARGS__ );                   \</div>
+<div class="line">      }                                                  \</div>
+<div class="line">    }                                                    \</div>
+<div class="line">  } <span class="keywordflow">while</span>( <span class="keyword">false</span> )</div>
 </div><!-- fragment -->
 </div>
 </div>

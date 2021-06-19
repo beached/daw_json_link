@@ -106,11 +106,11 @@ $(function() {
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... JsonMembers, <span class="keyword">typename</span> OutputIterator,</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;               std::size_t... Is, <span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Value&gt;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      [[nodiscard]] DAW_ATTRIB_INLINE <span class="keyword">inline</span> constexpr OutputIterator</div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af2e4156b45fb948d099fb484fbc9d935">   37</a></span>&#160;      <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af2e4156b45fb948d099fb484fbc9d935">serialize_json_class</a>( OutputIterator it, std::index_sequence&lt;Is...&gt;,</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af2e4156b45fb948d099fb484fbc9d935">   37</a></span>&#160;      <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af2e4156b45fb948d099fb484fbc9d935">serialize_json_class</a>( OutputIterator <a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>, std::index_sequence&lt;Is...&gt;,</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                            Tuple <span class="keyword">const</span> &amp;args, Value <span class="keyword">const</span> &amp;value ) {</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordtype">bool</span> is_first = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        *it++ = <span class="charliteral">&#39;{&#39;</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        *<a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>++ = <span class="charliteral">&#39;{&#39;</span>;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keyword">auto</span> visited_members =</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;          daw::bounded_vector_t&lt;daw::string_view,</div>
@@ -119,51 +119,57 @@ $(function() {
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="comment">// faster in the future</span></div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="comment">// Using list init to ensure serialization happens in order</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        (void)daw::expander{</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;          ( <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a46fd45d88a45c4cc3e605999b0303e83">tags_to_json_str</a>&lt;Is, traits::nth_element&lt;Is, JsonMembers...&gt;&gt;(</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;              is_first, it, args, value, visited_members ),</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            0 )...,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;          0 };</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="comment">// Regular Members</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        (void)daw::expander{</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;          ( <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae0b06940231a6dba294c95af49dc0f3e">to_json_str</a>&lt;Is, traits::nth_element&lt;Is, JsonMembers...&gt;&gt;(</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;              is_first, it, args, value, visited_members ),</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            0 )...,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;          0 };</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        *it++ = <span class="charliteral">&#39;}&#39;</span>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keywordflow">return</span> it;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      }</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... JsonMembers, <span class="keyword">typename</span> OutputIterator, <span class="keyword">typename</span> Tuple,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;               <span class="keyword">typename</span> Value, std::size_t... Is&gt;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr OutputIterator</div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af205131fcd69698d8e1c81a306074186">   70</a></span>&#160;      <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af205131fcd69698d8e1c81a306074186">serialize_ordered_json_class</a>( OutputIterator it,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                                    std::index_sequence&lt;Is...&gt;,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                                    Tuple <span class="keyword">const</span> &amp;args, Value <span class="keyword">const</span> &amp;value ) {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        *it++ = <span class="charliteral">&#39;[&#39;</span>;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordtype">size_t</span> array_idx = 0;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        Unused( value );</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        {</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;          <span class="keywordtype">int</span> <span class="keyword">const</span> expander[<span class="keyword">sizeof</span>...( JsonMembers ) + 1]{</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            ( <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a58168bd74184b324e02acc51df031ad0">to_json_ordered_str</a>&lt;Is, traits::nth_element&lt;Is, JsonMembers...&gt;&gt;(</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                array_idx, it, args ),</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;              0 )...,</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            0 };</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;          (void)expander;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        }</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        *it++ = <span class="charliteral">&#39;]&#39;</span>;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        <span class="keywordflow">return</span> it;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      }</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    } <span class="comment">// namespace json_details</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;} <span class="comment">// namespace daw::json</span></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a46fd45d88a45c4cc3e605999b0303e83"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a46fd45d88a45c4cc3e605999b0303e83">daw::json::DAW_JSON_VER::json_details::tags_to_json_str</a></div><div class="ttdeci">constexpr void tags_to_json_str(bool &amp;, OutputIterator const &amp;, TpArgs const &amp;, Value const &amp;, VisitedMembers const &amp;)</div><div class="ttdef"><b>Definition:</b> to_daw_json_string.h:1204</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a58168bd74184b324e02acc51df031ad0"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a58168bd74184b324e02acc51df031ad0">daw::json::DAW_JSON_VER::json_details::to_json_ordered_str</a></div><div class="ttdeci">constexpr void to_json_ordered_str(std::size_t &amp;array_idx, OutputIterator &amp;it, Tuple&lt; Args... &gt; const &amp;tp)</div><div class="ttdef"><b>Definition:</b> to_daw_json_string.h:1285</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_ae0b06940231a6dba294c95af49dc0f3e"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae0b06940231a6dba294c95af49dc0f3e">daw::json::DAW_JSON_VER::json_details::to_json_str</a></div><div class="ttdeci">constexpr void to_json_str(bool &amp;is_first, OutputIterator &amp;it, Tuple&lt; Args... &gt; const &amp;tp, Value const &amp;, Visited &amp;visited_members)</div><div class="ttdef"><b>Definition:</b> to_daw_json_string.h:1252</div></div>
-<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_af205131fcd69698d8e1c81a306074186"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af205131fcd69698d8e1c81a306074186">daw::json::DAW_JSON_VER::json_details::serialize_ordered_json_class</a></div><div class="ttdeci">constexpr OutputIterator serialize_ordered_json_class(OutputIterator it, std::index_sequence&lt; Is... &gt;, Tuple const &amp;args, Value const &amp;value)</div><div class="ttdef"><b>Definition:</b> daw_json_serialize_impl.h:70</div></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;          daw::Empty <span class="keyword">const</span> expander[]{</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            ( <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a46fd45d88a45c4cc3e605999b0303e83">tags_to_json_str</a>&lt;Is, traits::nth_element&lt;Is, JsonMembers...&gt;&gt;(</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                is_first, <a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>, args, value, visited_members ),</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;              daw::Empty{ } )...,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            daw::Empty{} };</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;          (void)expander;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="comment">// Regular Members</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;          daw::Empty <span class="keyword">const</span> expander[]{</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            ( <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae0b06940231a6dba294c95af49dc0f3e">to_json_str</a>&lt;Is, traits::nth_element&lt;Is, JsonMembers...&gt;&gt;(</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                is_first, <a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>, args, value, visited_members ),</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;              daw::Empty{ } )...,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            daw::Empty{} };</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;          (void)expander;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        }</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        *<a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>++ = <span class="charliteral">&#39;}&#39;</span>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      }</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... JsonMembers, <span class="keyword">typename</span> OutputIterator, <span class="keyword">typename</span> Tuple,</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;               <span class="keyword">typename</span> Value, std::size_t... Is&gt;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      [[nodiscard]] <span class="keyword">inline</span> constexpr OutputIterator</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af205131fcd69698d8e1c81a306074186">   75</a></span>&#160;      <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af205131fcd69698d8e1c81a306074186">serialize_ordered_json_class</a>( OutputIterator <a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                                    std::index_sequence&lt;Is...&gt;,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                                    Tuple <span class="keyword">const</span> &amp;args, Value <span class="keyword">const</span> &amp;value ) {</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        *<a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>++ = <span class="charliteral">&#39;[&#39;</span>;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordtype">size_t</span> array_idx = 0;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        Unused( value );</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        {</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;          daw::Empty <span class="keyword">const</span> expander[]{</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            ( <a class="code" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a58168bd74184b324e02acc51df031ad0">to_json_ordered_str</a>&lt;Is, traits::nth_element&lt;Is, JsonMembers...&gt;&gt;(</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                array_idx, <a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>, args ),</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;              daw::Empty{ } )...,</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;            daw::Empty{} };</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;          (void)expander;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        }</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        *<a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>++ = <span class="charliteral">&#39;]&#39;</span>;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    } <span class="comment">// namespace json_details</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  }   <span class="comment">// namespace DAW_JSON_VER</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;} <span class="comment">// namespace daw::json</span></div>
+<div class="ttc" id="adaw__json__traits_8h_html_ac431630602ea95459f51fee16fcd02ab"><div class="ttname"><a href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a></div><div class="ttdeci">Iterator &amp; it</div><div class="ttdef"><b>Definition:</b> daw_json_traits.h:219</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a46fd45d88a45c4cc3e605999b0303e83"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a46fd45d88a45c4cc3e605999b0303e83">daw::json::DAW_JSON_VER::json_details::tags_to_json_str</a></div><div class="ttdeci">constexpr void tags_to_json_str(bool &amp;, OutputIterator const &amp;, TpArgs const &amp;, Value const &amp;, VisitedMembers const &amp;)</div><div class="ttdef"><b>Definition:</b> to_daw_json_string.h:1206</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_a58168bd74184b324e02acc51df031ad0"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a58168bd74184b324e02acc51df031ad0">daw::json::DAW_JSON_VER::json_details::to_json_ordered_str</a></div><div class="ttdeci">constexpr void to_json_ordered_str(std::size_t &amp;array_idx, OutputIterator &amp;it, Tuple&lt; Args... &gt; const &amp;tp)</div><div class="ttdef"><b>Definition:</b> to_daw_json_string.h:1287</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_ae0b06940231a6dba294c95af49dc0f3e"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ae0b06940231a6dba294c95af49dc0f3e">daw::json::DAW_JSON_VER::json_details::to_json_str</a></div><div class="ttdeci">constexpr void to_json_str(bool &amp;is_first, OutputIterator &amp;it, Tuple&lt; Args... &gt; const &amp;tp, Value const &amp;, Visited &amp;visited_members)</div><div class="ttdef"><b>Definition:</b> to_daw_json_string.h:1254</div></div>
+<div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_af205131fcd69698d8e1c81a306074186"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af205131fcd69698d8e1c81a306074186">daw::json::DAW_JSON_VER::json_details::serialize_ordered_json_class</a></div><div class="ttdeci">constexpr OutputIterator serialize_ordered_json_class(OutputIterator it, std::index_sequence&lt; Is... &gt;, Tuple const &amp;args, Value const &amp;value)</div><div class="ttdef"><b>Definition:</b> daw_json_serialize_impl.h:75</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_html_af2e4156b45fb948d099fb484fbc9d935"><div class="ttname"><a href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#af2e4156b45fb948d099fb484fbc9d935">daw::json::DAW_JSON_VER::json_details::serialize_json_class</a></div><div class="ttdeci">constexpr DAW_ATTRIB_INLINE OutputIterator serialize_json_class(OutputIterator it, std::index_sequence&lt; Is... &gt;, Tuple const &amp;args, Value const &amp;value)</div><div class="ttdef"><b>Definition:</b> daw_json_serialize_impl.h:37</div></div>
 <div class="ttc" id="anamespacedaw_1_1json_html"><div class="ttname"><a href="namespacedaw_1_1json.html">daw::json</a></div><div class="ttdef"><b>Definition:</b> daw_from_json.h:22</div></div>
 <div class="ttc" id="ato__daw__json__string_8h_html"><div class="ttname"><a href="to__daw__json__string_8h.html">to_daw_json_string.h</a></div></div>
