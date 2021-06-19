@@ -491,24 +491,29 @@ namespace daw::json {
 					                     JsonRawTypes::Literal ) {
 						return KnownBounds ? parse_state : skip_literal( parse_state );
 					} else {
-						if constexpr( ParseState::is_unchecked_input ) {
-							return KnownBounds ? parse_state : skip_value( parse_state );
-						} else {
-							auto result = [&] {
-								if constexpr( KnownBounds ) {
-									return parse_state;
-								} else {
-									return skip_value( parse_state );
-								}
-							}( );
-							daw_json_assert_weak(
-							  result.has_more( ) and
-							    not( result.front( ) == '[' or result.front( ) == '{' ),
-							  ErrorReason::InvalidStartOfValue, result );
+						static_assert( JsonMember::custom_json_type == JsonRawTypes::Any );
+						// If we are a root object, parse_state will have the quotes and
+						// KnownBounds cannot be true This tells us that there is an array
+						// start '[' or a member name previous to current position
+						if constexpr( KnownBounds ) {
+							auto result = parse_state;
+							if( *( result.first - 1 ) == '"' ) {
+								result.first--;
+							}
 							return result;
+						} else {
+							if( parse_state.front( ) == '"' ) {
+								auto result = skip_string( parse_state );
+								result.first--;
+								return result;
+							}
+							return skip_value( parse_state );
 						}
 					}
 				}( );
+				daw_json_assert_weak(
+				  str.has_more( ) and not( str.front( ) == '[' or str.front( ) == '{' ),
+				  ErrorReason::InvalidStartOfValue, str );
 				using constructor_t = typename JsonMember::from_converter_t;
 				return construct_value(
 				  template_args<json_result<JsonMember>, constructor_t>, parse_state,
