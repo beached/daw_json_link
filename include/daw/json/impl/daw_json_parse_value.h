@@ -481,15 +481,14 @@ namespace daw::json {
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Custom> ) {
 
 				auto const str = [&] {
-					if constexpr( JsonMember::custom_json_type ==
-					              CustomJsonTypes::String ) {
+					if constexpr( JsonMember::custom_json_type == JsonRawTypes::String ) {
 						if constexpr( KnownBounds ) {
 							return parse_state;
 						} else {
 							return skip_string( parse_state );
 						}
 					} else if constexpr( JsonMember::custom_json_type ==
-					                     CustomJsonTypes::Literal ) {
+					                     JsonRawTypes::Literal ) {
 						return KnownBounds ? parse_state : skip_literal( parse_state );
 					} else {
 						if constexpr( ParseState::is_unchecked_input ) {

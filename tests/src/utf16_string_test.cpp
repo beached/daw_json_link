@@ -48,8 +48,8 @@ struct FromConverter {
 };
 
 using json_u16string =
-  daw::json::json_custom_no_name<std::u16string, ToConverter, FromConverter,
-                                 daw::json::CustomJsonTypes::String,
+  daw::json::json_raw_no_name<std::u16string, ToConverter, FromConverter,
+                                 daw::json::JsonRawTypes::String,
                                  daw::json::JsonNullable::MustExist>;
 
 int main( int, char ** ) {

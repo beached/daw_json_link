@@ -122,7 +122,7 @@ namespace daw::json {
 		} // namespace json_details
 
 		/***
-		 * This is the default ToJsonConverter for json_custom. By default is will
+		 * This is the default ToJsonConverter for json_raw. By default is will
 		 * return the stringified version of the value if, to_string( T ) exists.
 		 * Otherwise it will fallback to an std::ostream converter for T if it
 		 * exists.
@@ -1041,8 +1041,7 @@ namespace daw::json {
 				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
-				if constexpr( JsonMember::custom_json_type !=
-				              CustomJsonTypes::Literal ) {
+				if constexpr( JsonMember::custom_json_type != JsonRawTypes::Literal ) {
 					*it++ = '"';
 					if constexpr( std::is_invocable_r<
 					                OutputIterator, typename JsonMember::to_converter_t,

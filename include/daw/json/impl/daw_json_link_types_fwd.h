@@ -410,15 +410,34 @@ namespace daw::json {
 		 * @tparam ToJsonConverter Returns a string from the value.  The default
 		 * requires a to_string( T const & ) overload that returns a String like
 		 * type
-		 * @tparam CustomJsonType JSON type value is encoded as literal/string
+		 * @tparam JsonRawType JSON type value is encoded as literal/string
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Any,
+		         JsonRawTypes JsonRawType = JsonRawTypes::Any,
 		         JsonNullable Nullable = JsonNullable::MustExist>
-		struct json_custom;
+		struct json_raw;
+
+		template<JSONNAMETYPE Name, typename T,
+		         typename FromJsonConverter = default_from_json_converter_t<T>,
+		         typename ToJsonConverter = default_to_json_converter_t<T>,
+		         JsonRawTypes JsonRawType = JsonRawTypes::Any,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		using json_custom [[deprecated(
+		  "Use JsonRawTypes/json_raw... Removing in JSON Link v4" )]] =
+		  json_raw<Name, T, FromJsonConverter, ToJsonConverter, JsonRawType,
+		           Nullable>;
+
+		template<JSONNAMETYPE Name, typename T,
+		         typename FromConverter = default_from_json_converter_t<T>,
+		         typename ToConverter = default_to_json_converter_t<T>,
+		         JsonRawTypes JsonRawType = JsonRawTypes::String>
+		using json_custom_null [[deprecated(
+		  "Use JsonRawTypes/json_raw... Removing in JSON Link v4" )]] =
+		  json_raw<Name, T, FromConverter, ToConverter, JsonRawType,
+		           JsonNullDefault>;
 
 		/**
 		 * Allow parsing of a nullable type that does not fit
@@ -427,30 +446,29 @@ namespace daw::json {
 		 * @tparam FromConverter Callable that accepts a std::string_view of the
 		 * range to parse
 		 * @tparam ToConverter Returns a string from the value
-		 * @tparam CustomJsonType JSON type value is encoded as literal/string
+		 * @tparam JsonRawType JSON type value is encoded as literal/string
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromConverter = default_from_json_converter_t<T>,
 		         typename ToConverter = default_to_json_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::String>
-		using json_custom_null = json_custom<Name, T, FromConverter, ToConverter,
-		                                     CustomJsonType, JsonNullDefault>;
+		         JsonRawTypes JsonRawType = JsonRawTypes::String>
+		using json_raw_null = json_raw<Name, T, FromConverter, ToConverter,
+		                               JsonRawType, JsonNullDefault>;
 
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromConverter = default_from_json_converter_t<T>,
 		         typename ToConverter = default_to_json_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Literal,
+		         JsonRawTypes JsonRawType = JsonRawTypes::Literal,
 		         JsonNullable Nullable = JsonNullable::MustExist>
-		using json_custom_literal = json_custom<Name, T, FromConverter, ToConverter,
-		                                        CustomJsonType, Nullable>;
+		using json_raw_lit =
+		  json_raw<Name, T, FromConverter, ToConverter, JsonRawType, Nullable>;
 
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromConverter = default_from_json_converter_t<T>,
 		         typename ToConverter = default_to_json_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Literal>
-		using json_custom_literal_null =
-		  json_custom<Name, T, FromConverter, ToConverter, CustomJsonType,
-		              JsonNullDefault>;
+		         JsonRawTypes JsonRawType = JsonRawTypes::Literal>
+		using json_raw_lit_null = json_raw<Name, T, FromConverter, ToConverter,
+		                                   JsonRawType, JsonNullDefault>;
 		namespace json_details {
 
 			template<JsonBaseParseTypes PT>

@@ -1036,8 +1036,8 @@ namespace daw::json {
 
 		namespace json_base {
 			template<typename T, typename FromJsonConverter, typename ToJsonConverter,
-			         CustomJsonTypes CustomJsonType, JsonNullable Nullable>
-			struct json_custom {
+			         JsonRawTypes JsonRawType, JsonNullable Nullable>
+			struct json_raw {
 				using i_am_a_json_type = void;
 				using to_converter_t = ToJsonConverter;
 				using from_converter_t = FromJsonConverter;
@@ -1061,16 +1061,16 @@ namespace daw::json {
 				  get_parse_type_v<JsonParseTypes::Custom, Nullable>;
 				static constexpr JsonParseTypes base_expected_type =
 				  JsonParseTypes::Custom;
-				static constexpr CustomJsonTypes custom_json_type = CustomJsonType;
+				static constexpr JsonRawTypes custom_json_type = JsonRawType;
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::String;
 				static constexpr JsonNullable nullable = Nullable;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
-				  daw::json::json_custom<NewName, T, FromJsonConverter, ToJsonConverter,
-				                         CustomJsonType, Nullable>;
-				using without_name = json_custom;
+				  daw::json::json_raw<NewName, T, FromJsonConverter, ToJsonConverter,
+				                      JsonRawType, Nullable>;
+				using without_name = json_raw;
 			};
 		} // namespace json_base
 
@@ -1081,64 +1081,63 @@ namespace daw::json {
 		 * @tparam FromJsonConverter Callable that accepts a std::string_view of the
 		 * range to parse
 		 * @tparam ToJsonConverter Returns a string from the value
-		 * @tparam CustomJsonType JSON type value is encoded as literal/string
+		 * @tparam JsonRawType JSON type value is encoded as literal/string
 		 */
 		template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
-		         typename ToJsonConverter, CustomJsonTypes CustomJsonType,
+		         typename ToJsonConverter, JsonRawTypes JsonRawType,
 		         JsonNullable Nullable>
-		struct json_custom
-		  : json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
-		                           CustomJsonType, Nullable> {
+		struct json_raw : json_base::json_raw<T, FromJsonConverter, ToJsonConverter,
+		                                      JsonRawType, Nullable> {
 
 			static constexpr daw::string_view name = Name;
 #if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
-			               "For no_name mappings, use the json_custom_no_name "
+			               "For no_name mappings, use the json_raw_no_name "
 			               "variant without a name argument" );
 #endif
 
 			template<JSONNAMETYPE NewName>
-			using with_name = json_custom<NewName, T, FromJsonConverter,
-			                              ToJsonConverter, CustomJsonType, Nullable>;
+			using with_name = json_raw<NewName, T, FromJsonConverter, ToJsonConverter,
+			                           JsonRawType, Nullable>;
 
 			using without_name =
-			  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
-			                         CustomJsonType, Nullable>;
+			  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, JsonRawType,
+			                      Nullable>;
 		};
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::String,
+		         JsonRawTypes JsonRawType = JsonRawTypes::String,
 		         JsonNullable Nullable = JsonNullable::MustExist>
-		using json_custom_no_name =
-		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
-		                         CustomJsonType, Nullable>;
+		using json_raw_no_name =
+		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, JsonRawType,
+		                      Nullable>;
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Literal,
+		         JsonRawTypes JsonRawType = JsonRawTypes::Literal,
 		         JsonNullable Nullable = JsonNullable::MustExist>
-		using json_custom_literal_no_name =
-		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
-		                         CustomJsonType, Nullable>;
+		using json_raw_lit_no_name =
+		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, JsonRawType,
+		                      Nullable>;
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::String>
-		using json_custom_null_no_name =
-		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
-		                         CustomJsonType, JsonNullDefault>;
+		         JsonRawTypes JsonRawType = JsonRawTypes::String>
+		using json_raw_null_no_name =
+		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, JsonRawType,
+		                      JsonNullDefault>;
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         CustomJsonTypes CustomJsonType = CustomJsonTypes::Literal>
-		using json_custom_literal_null_no_name =
-		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter,
-		                         CustomJsonType, JsonNullDefault>;
+		         JsonRawTypes JsonRawType = JsonRawTypes::Literal>
+		using json_raw_lit_null_no_name =
+		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, JsonRawType,
+		                      JsonNullDefault>;
 
 		namespace json_base {
 			template<typename JsonElement, typename Container, typename Constructor,

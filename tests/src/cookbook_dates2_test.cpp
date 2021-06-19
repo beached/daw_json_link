@@ -124,7 +124,7 @@ namespace daw::cookbook_dates2 {
 
 	template<JSONNAMETYPE name>
 	using json_timestamp =
-	  daw::json::json_custom<name,
+	  daw::json::json_raw<name,
 	                         std::chrono::time_point<std::chrono::system_clock,
 	                                                 std::chrono::milliseconds>,
 	                         TimestampConverter, TimestampConverter>;

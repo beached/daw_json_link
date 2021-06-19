@@ -74,7 +74,7 @@ namespace daw::cookbook_dates4 {
 
 	template<JSONNAMETYPE name>
 	using json_timestamp =
-	  daw::json::json_custom<name, timepoint_t, TimestampConverter,
+	  daw::json::json_raw<name, timepoint_t, TimestampConverter,
 	                         TimestampConverter>;
 } // namespace daw::cookbook_dates4
 

@@ -25,7 +25,7 @@ struct Fixed8JsonConverter {
 	}
 };
 
-using json_fixed8 = daw::json::json_custom_no_name<double, Fixed8JsonConverter,
+using json_fixed8 = daw::json::json_raw_no_name<double, Fixed8JsonConverter,
                                                    Fixed8JsonConverter>;
 
 struct Change {

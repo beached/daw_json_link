@@ -58,13 +58,12 @@ struct JSONToNano {
 
 namespace daw::json {
 	template<JSONNAMETYPE Name>
-	using json_nanosecond =
-	  json_custom<Name, std::chrono::nanoseconds, JSONToNano, JSONToNano,
-	              CustomJsonTypes::Literal>;
+	using json_nanosecond = json_raw<Name, std::chrono::nanoseconds, JSONToNano, JSONToNano,
+	              JsonRawTypes::Literal>;
 
 	using json_nanosecond_no_name =
-	  json_custom_no_name<std::chrono::nanoseconds, JSONToNano, JSONToNano,
-	              CustomJsonTypes::Literal>;
+	  json_raw_no_name<std::chrono::nanoseconds, JSONToNano, JSONToNano,
+	                      JsonRawTypes::Literal>;
 
 	template<>
 	struct json_data_contract<daw::bench::bench_result> {
