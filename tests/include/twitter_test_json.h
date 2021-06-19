@@ -27,7 +27,6 @@ namespace daw::twitter {
 			daw_json_assert(
 			  sv.size( ) >= 26,
 			  daw::json::ErrorReason::InvalidTimestamp ); // Date format is always 26
-			                                              // characters long
 			// Skip Day of Week
 			sv.remove_prefix( 4 );
 			auto const mo = daw::json::datetime::parse_short_month( sv );
@@ -191,35 +190,7 @@ namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::twitter::user_t> {
 		using ignore_unknown_members = void;
-#ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<
-		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"name">,
-		  json_string<"screen_name">, json_string<"location">,
-		  json_string<"description">, json_string_null<"url">,
-		  json_class<"entities", daw::twitter::entities_t>, json_bool<"protected">,
-		  json_number<"followers_count", int32_t>,
-		  json_number<"friends_count", int32_t>,
-		  json_number<"listed_count", int32_t>,
-		  json_raw<"created_at", daw::twitter::twitter_tp,
-		              daw::twitter::TimestampConverter,
-		              daw::twitter::TimestampConverter>,
-		  json_number<"favourites_count", int32_t>, json_bool<"geo_enabled">,
-		  json_bool<"verified">, json_number<"statuses_count", int32_t>,
-		  json_string<"lang">, json_bool<"contributors_enabled">,
-		  json_bool<"is_translator">, json_bool<"is_translation_enabled">,
-		  json_string<"profile_background_color">,
-		  json_string<"profile_background_image_url">,
-		  json_string<"profile_background_image_url_https">,
-		  json_bool<"profile_background_tile">, json_string<"profile_image_url">,
-		  json_string<"profile_image_url_https">,
-		  json_string_null<"profile_banner_url">, json_string<"profile_link_color">,
-		  json_string<"profile_sidebar_border_color">,
-		  json_string<"profile_sidebar_fill_color">,
-		  json_string<"profile_text_color">,
-		  json_bool<"profile_use_background_image">, json_bool<"default_profile">,
-		  json_bool<"default_profile_image">, json_bool<"following">,
-		  json_bool<"follow_request_sent">, json_bool<"notifications">>;
-#else
+
 		static inline constexpr char const id[] = "id";
 		static inline constexpr char const id_str[] = "id_str";
 		static inline constexpr char const name[] = "name";
@@ -281,8 +252,8 @@ namespace daw::json {
 		  json_bool<_jsonprotected>, json_number<followers_count, int32_t>,
 		  json_number<friends_count, int32_t>, json_number<listed_count, int32_t>,
 		  json_raw<created_at, daw::twitter::twitter_tp,
-		              daw::twitter::TimestampConverter,
-		              daw::twitter::TimestampConverter>,
+		           daw::twitter::TimestampConverter,
+		           daw::twitter::TimestampConverter>,
 		  json_number<favourites_count, int32_t>, json_bool<geo_enabled>,
 		  json_bool<verified>, json_number<statuses_count, int32_t>,
 		  json_string<lang>, json_bool<contributors_enabled>,
@@ -298,7 +269,7 @@ namespace daw::json {
 		  json_bool<profile_use_background_image>, json_bool<default_profile>,
 		  json_bool<default_profile_image>, json_bool<following>,
 		  json_bool<follow_request_sent>, json_bool<notifications>>;
-#endif
+
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter::user_t const &value ) {
 			return std::forward_as_tuple(
@@ -345,8 +316,8 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
 		  json_raw<"created_at", daw::twitter::twitter_tp,
-		              daw::twitter::TimestampConverter,
-		              daw::twitter::TimestampConverter>,
+		           daw::twitter::TimestampConverter,
+		           daw::twitter::TimestampConverter>,
 		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
 		  json_string<"source">, json_bool<"truncated">,
 		  json_number_null<"in_reply_to_status_id", std::optional<int64_t>>,
@@ -390,8 +361,8 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_class<metadata, daw::twitter::metadata_t>,
 		  json_raw<created_at, daw::twitter::twitter_tp,
-		              daw::twitter::TimestampConverter,
-		              daw::twitter::TimestampConverter>,
+		           daw::twitter::TimestampConverter,
+		           daw::twitter::TimestampConverter>,
 		  json_number<id, int64_t>, json_string<id_str>, json_string<text>,
 		  json_string<source>, json_bool<truncated>,
 		  json_number_null<in_reply_to_status_id, std::optional<int64_t>>,
@@ -533,8 +504,8 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
 		  json_raw<"created_at", daw::twitter::twitter_tp,
-		              daw::twitter::TimestampConverter,
-		              daw::twitter::TimestampConverter>,
+		           daw::twitter::TimestampConverter,
+		           daw::twitter::TimestampConverter>,
 		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
 		  json_string<"source">, json_bool<"truncated">,
 		  json_number_null<"in_reply_to_status_id", std::optional<int64_t>>,
@@ -578,8 +549,8 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_class<metadata, daw::twitter::metadata_t>,
 		  json_raw<created_at, daw::twitter::twitter_tp,
-		              daw::twitter::TimestampConverter,
-		              daw::twitter::TimestampConverter>,
+		           daw::twitter::TimestampConverter,
+		           daw::twitter::TimestampConverter>,
 		  json_number<id, int64_t>, json_string<id_str>, json_string<text>,
 		  json_string<source>, json_bool<truncated>,
 		  json_number_null<in_reply_to_status_id, std::optional<int64_t>>,

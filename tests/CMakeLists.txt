@@ -651,7 +651,7 @@ target_link_libraries(int_ptr_test json_test)
 add_test(NAME int_ptr_test COMMAND int_ptr_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full int_ptr_test)
 
-add_executable(json_schema_test src/json_schema_test.cpp)
+add_executable(json_schema_test src/daw_json_schema_test.cpp)
 target_link_libraries(json_schema_test json_test)
 add_test(NAME json_schema_test COMMAND json_schema_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full json_schema_test)

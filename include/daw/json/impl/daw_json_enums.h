@@ -86,7 +86,9 @@ namespace daw::json {
 		 * value with double quotes
 		 * Literal - Parser will expect a valid JSON literal number, bool, null
 		 * Any - Experimental - Parser will return any valid JSON value excluding
-		 * leading whitespace. strings will be quoted
+		 * leading whitespace. strings will be quoted.  Any is suitable for
+		 * constructing a json_value to allow adhock parsing if json_delayed is not
+		 * suitable
 		 */
 		enum class JsonRawTypes { String, Literal, Any };
 		using CustomJsonTypes [[deprecated(

@@ -7,7 +7,7 @@
 //
 
 #include <daw/json/daw_json_link.h>
-#include <daw/json/to_json_schema.h>
+#include <daw/json/daw_json_schema.h>
 
 #include <cstdio>
 #include <string>

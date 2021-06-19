@@ -410,20 +410,20 @@ namespace daw::json {
 		 * @tparam ToJsonConverter Returns a string from the value.  The default
 		 * requires a to_string( T const & ) overload that returns a String like
 		 * type
-		 * @tparam JsonRawType JSON type value is encoded as literal/string
+		 * @tparam JsonRawType JSON type value is encoded as literal/string/any
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         JsonRawTypes JsonRawType = JsonRawTypes::Any,
+		         JsonRawTypes JsonRawType = JsonRawTypes::String,
 		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_raw;
 
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         JsonRawTypes JsonRawType = JsonRawTypes::Any,
+		         JsonRawTypes JsonRawType = JsonRawTypes::String,
 		         JsonNullable Nullable = JsonNullable::MustExist>
 		using json_custom [[deprecated(
 		  "Use JsonRawTypes/json_raw... Removing in JSON Link v4" )]] =
