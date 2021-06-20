@@ -325,6 +325,10 @@ namespace daw::json {
 			template<json_options_t CurrentOptions, auto option, auto... options>
 			inline constexpr json_options_t string_raw_opts_set =
 			  set_bits( string_raw_opts, CurrentOptions, option, options... );
+
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t json_raw_opts_set =
+				set_bits( json_raw_opts, CurrentOptions, option, options... );
 		} // namespace json_details
 
 		namespace json_base {

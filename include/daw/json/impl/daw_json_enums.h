@@ -80,21 +80,6 @@ namespace daw::json {
 		 */
 		inline constexpr JsonNullable JsonNullDefault = JsonNullable::Nullable;
 
-		/***
-		 * Custom JSON types can be Strings(default), unquoted Literals, or a mix
-		 * String - Parser always expects a JSON string.  Will surround serialized
-		 * value with double quotes
-		 * Literal - Parser will expect a valid JSON literal number, bool, null
-		 * Any - Experimental - Parser will return any valid JSON value excluding
-		 * leading whitespace. strings will be quoted.  Any is suitable for
-		 * constructing a json_value to allow adhock parsing if json_delayed is not
-		 * suitable
-		 */
-		enum class JsonRawTypes { String, Literal, Any };
-		using CustomJsonTypes [[deprecated(
-		  "Use JsonRawTypes/json_raw... Removing in JSON Link v4" )]] =
-		  JsonRawTypes;
-
 		namespace json_details {
 			template<JsonNullable nullable>
 			using is_nullable_json_value =

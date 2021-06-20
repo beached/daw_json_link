@@ -48,9 +48,7 @@ struct FromConverter {
 };
 
 using json_u16string =
-  daw::json::json_raw_no_name<std::u16string, ToConverter, FromConverter,
-                                 daw::json::JsonRawTypes::String,
-                                 daw::json::JsonNullable::MustExist>;
+  daw::json::json_raw_no_name<std::u16string, ToConverter, FromConverter>;
 
 int main( int, char ** ) {
 	std::string in_str = R"(["testing🎉", "🙈monkey"])";

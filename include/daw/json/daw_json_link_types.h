@@ -1036,19 +1036,22 @@ namespace daw::json {
 
 		namespace json_base {
 			template<typename T, typename FromJsonConverter, typename ToJsonConverter,
-			         JsonRawTypes JsonRawType, JsonNullable Nullable>
+			         json_details::json_options_t Options>
 			struct json_raw {
 				using i_am_a_json_type = void;
 				using to_converter_t = ToJsonConverter;
 				using from_converter_t = FromJsonConverter;
 				using constructor_t = FromJsonConverter;
 
-				using base_type = json_details::unwrap_type<T, Nullable>;
+				static constexpr JsonNullable nullable =
+				  json_details::get_bits_for<JsonNullable>( json_raw_opts, Options );
+
+				using base_type = json_details::unwrap_type<T, nullable>;
 				static_assert( traits::not_same<void, base_type>::value,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
-				  Nullable != JsonNullable::MustExist, FromJsonConverter,
+				  nullable != JsonNullable::MustExist, FromJsonConverter,
 				  std::string_view>::type;
 
 				static_assert(
@@ -1058,18 +1061,19 @@ namespace daw::json {
 				  "ToConverter must be callable with T or T and and OutputIterator" );
 				static constexpr daw::string_view name = no_name;
 				static constexpr JsonParseTypes expected_type =
-				  get_parse_type_v<JsonParseTypes::Custom, Nullable>;
+				  get_parse_type_v<JsonParseTypes::Custom, nullable>;
 				static constexpr JsonParseTypes base_expected_type =
 				  JsonParseTypes::Custom;
-				static constexpr JsonRawTypes custom_json_type = JsonRawType;
+
+				static constexpr JsonRawTypes custom_json_type =
+				  json_details::get_bits_for<JsonRawTypes>( json_raw_opts, Options );
+
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::String;
-				static constexpr JsonNullable nullable = Nullable;
 
 				template<JSONNAMETYPE NewName>
-				using with_name =
-				  daw::json::json_raw<NewName, T, FromJsonConverter, ToJsonConverter,
-				                      JsonRawType, Nullable>;
+				using with_name = daw::json::json_raw<NewName, T, FromJsonConverter,
+				                                      ToJsonConverter, Options>;
 				using without_name = json_raw;
 			};
 		} // namespace json_base
@@ -1084,10 +1088,9 @@ namespace daw::json {
 		 * @tparam JsonRawType JSON type value is encoded as literal/string
 		 */
 		template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
-		         typename ToJsonConverter, JsonRawTypes JsonRawType,
-		         JsonNullable Nullable>
-		struct json_raw : json_base::json_raw<T, FromJsonConverter, ToJsonConverter,
-		                                      JsonRawType, Nullable> {
+		         typename ToJsonConverter, json_details::json_options_t Options>
+		struct json_raw
+		  : json_base::json_raw<T, FromJsonConverter, ToJsonConverter, Options> {
 
 			static constexpr daw::string_view name = Name;
 #if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
@@ -1097,47 +1100,44 @@ namespace daw::json {
 #endif
 
 			template<JSONNAMETYPE NewName>
-			using with_name = json_raw<NewName, T, FromJsonConverter, ToJsonConverter,
-			                           JsonRawType, Nullable>;
+			using with_name =
+			  json_raw<NewName, T, FromJsonConverter, ToJsonConverter, Options>;
 
 			using without_name =
-			  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, JsonRawType,
-			                      Nullable>;
+			  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, Options>;
 		};
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         JsonRawTypes JsonRawType = JsonRawTypes::String,
-		         JsonNullable Nullable = JsonNullable::MustExist>
+		         json_details::json_options_t Options = json_raw_opts_def>
 		using json_raw_no_name =
-		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, JsonRawType,
-		                      Nullable>;
+		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, Options>;
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         JsonRawTypes JsonRawType = JsonRawTypes::Literal,
-		         JsonNullable Nullable = JsonNullable::MustExist>
-		using json_raw_lit_no_name =
-		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, JsonRawType,
-		                      Nullable>;
+		         json_details::json_options_t Options = json_raw_opts_def>
+		using json_raw_lit_no_name = json_base::json_raw<
+		  T, FromJsonConverter, ToJsonConverter,
+		  json_details::json_raw_opts_set<Options, JsonRawTypes::Literal>>;
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         JsonRawTypes JsonRawType = JsonRawTypes::String>
-		using json_raw_null_no_name =
-		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, JsonRawType,
-		                      JsonNullDefault>;
+		         json_details::json_options_t Options = json_raw_opts_def>
+		using json_raw_null_no_name = json_base::json_raw<
+		  T, FromJsonConverter, ToJsonConverter,
+		  json_details::json_raw_opts_set<Options, JsonNullDefault>>;
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         JsonRawTypes JsonRawType = JsonRawTypes::Literal>
+		         json_details::json_options_t Options = json_raw_opts_def>
 		using json_raw_lit_null_no_name =
-		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, JsonRawType,
-		                      JsonNullDefault>;
+		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter,
+		                      json_details::json_raw_opts_set<
+		                        Options, JsonRawTypes::Literal, JsonNullDefault>>;
 
 		namespace json_base {
 			template<typename JsonElement, typename Container, typename Constructor,

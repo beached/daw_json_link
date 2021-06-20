@@ -172,5 +172,42 @@ namespace daw::json {
 		constexpr json_details::json_options_t class_opt( Options... options ) {
 			return class_opts_t::options( options... );
 		}
+
+		/***
+		 * Custom JSON types can be Strings(default), unquoted Literals, or a mix
+		 * String - Parser always expects a JSON string.  Will surround serialized
+		 * value with double quotes
+		 * Literal - Parser will expect a valid JSON literal number, bool, null
+		 * Any - Experimental - Parser will return any valid JSON value excluding
+		 * leading whitespace. strings will be quoted.  Any is suitable for
+		 * constructing a json_value to allow adhock parsing if json_delayed is not
+		 * suitable
+		 */
+		enum class JsonRawTypes : unsigned { String, Literal, Any }; // 2 bits
+		using CustomJsonTypes [[deprecated(
+		  "Use JsonRawTypes/json_raw... Removing in JSON Link v4" )]] =
+		  JsonRawTypes;
+
+		namespace json_details {
+			template<>
+			inline constexpr unsigned json_option_bits_width<JsonRawTypes> = 2;
+
+			template<>
+			inline constexpr auto default_json_option_value<JsonRawTypes> =
+			  JsonRawTypes::String;
+		} // namespace json_details
+
+		// json_raw
+		using json_raw_opts_t =
+		  json_details::JsonOptionList<JsonNullable, JsonRawTypes>;
+
+		inline constexpr auto json_raw_opts = json_raw_opts_t{ };
+		inline constexpr json_details::json_options_t json_raw_opts_def =
+		  json_raw_opts_t::default_option_flag;
+
+		template<typename... Options>
+		constexpr json_details::json_options_t json_raw_opt( Options... options ) {
+			return json_raw_opts_t::options( options... );
+		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
