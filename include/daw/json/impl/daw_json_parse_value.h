@@ -680,7 +680,7 @@ namespace daw::json {
 			parse_variant_value( ParseState &parse_state ) {
 				using element_t = typename JsonMembers::json_elements;
 				constexpr std::size_t idx =
-				  element_t::base_map[static_cast<int_fast8_t>( BPT )];
+				  JsonMembers::base_map::base_map[static_cast<int_fast8_t>( BPT )];
 
 				if constexpr( idx < pack_size_v<typename element_t::element_map_t> ) {
 					using JsonMember =

@@ -313,8 +313,8 @@ namespace daw::json {
 		 * @tparam JsonElements a list of types that can be parsed,
 		 */
 		template<typename... JsonElements>
-		struct json_tagged_variant_type_list {
-			using i_am_tagged_variant_type_list = void;
+		struct json_variant_type_list {
+			using i_am_variant_type_list = void;
 			using element_map_t =
 			  fwd_pack<json_details::json_deduced_type<JsonElements>...>;
 		};
@@ -489,54 +489,20 @@ namespace daw::json {
 				return daw::numeric_limits<std::size_t>::max( );
 			}
 
-		} // namespace json_details
-
-		/***
-		 * Link to a variant like data type.  The JSON member can be any one of the
-		 * json types.  This precludes having more than one class type or array
-		 * type(including their specialized keyvalue mappings) or
-		 * string-enum/int-enum.
-		 * @tparam Name name of JSON member to link to
-		 * @tparam T type of value to construct
-		 * @tparam JsonElements a json_variant_type_list
-		 * @tparam Constructor A callable used to construct T.  The
-		 * default supports normal and aggregate construction
-		 * @tparam Nullable Can the member be missing or have a null value	 *
-		 */
-		template<JSONNAMETYPE Name, typename T, typename JsonElements,
-		         typename Constructor = default_constructor<T>,
-		         JsonNullable Nullable = JsonNullable::MustExist>
-		struct json_variant;
-
-		/***
-		 * Link to a nullable JSON variant
-		 * @tparam Name name of JSON member to link to
-		 * @tparam T type that has specialization of
-		 * daw::json::json_data_contract
-		 * @tparam JsonElements a json_variant_type_list
-		 * @tparam Constructor A callable used to construct T.  The
-		 * default supports normal and aggregate construction
-		 */
-		template<JSONNAMETYPE Name, typename T, typename JsonElements,
-		         typename Constructor = nullable_constructor<T>>
-		using json_variant_null =
-		  json_variant<Name, T, JsonElements, Constructor, JsonNullDefault>;
-
-		namespace json_details {
 			template<typename T>
 			struct unknown_variant_type {
-				using i_am_tagged_variant_type_list = void;
+				using i_am_variant_type_list = void;
 			};
 
 			template<typename... Ts>
 			struct missing_default_type_mapping {
-				using i_am_tagged_variant_type_list = void;
+				using i_am_variant_type_list = void;
 			};
 
 			template<typename... Ts>
 			[[maybe_unused]] constexpr std::conditional_t<
 			  std::conjunction<has_json_deduced_type<Ts>...>::value,
-			  json_tagged_variant_type_list<json_deduced_type<Ts>...>,
+			  json_variant_type_list<json_deduced_type<Ts>...>,
 			  missing_default_type_mapping<json_deduced_type<Ts>...>>
 			get_variant_type_list( std::variant<Ts...> const * );
 
@@ -570,6 +536,43 @@ namespace daw::json {
 			        detected_underlying_nullable_type<Variant> const *>( ) ) )>,
 			    cannot_deduce_variant_element_types<Nullable, Variant>>>;
 		} // namespace json_details
+
+		/***
+		 * Link to a variant like data type.  The JSON member can be any one of the
+		 * json types.  This precludes having more than one class type or array
+		 * type(including their specialized keyvalue mappings) or
+		 * string-enum/int-enum.
+		 * @tparam Name name of JSON member to link to
+		 * @tparam T type of value to construct
+		 * @tparam JsonElements a json_variant_type_list
+		 * @tparam Constructor A callable used to construct T.  The
+		 * default supports normal and aggregate construction
+		 * @tparam Nullable Can the member be missing or have a null value	 *
+		 */
+		template<
+		  JSONNAMETYPE Name, typename T,
+		  typename JsonElements =
+		    json_details::determine_variant_element_types<JsonNullDefault, T>,
+		  typename Constructor = default_constructor<T>,
+		  JsonNullable Nullable = JsonNullable::MustExist>
+		struct json_variant;
+
+		/***
+		 * Link to a nullable JSON variant
+		 * @tparam Name name of JSON member to link to
+		 * @tparam T type that has specialization of
+		 * daw::json::json_data_contract
+		 * @tparam JsonElements a json_variant_type_list
+		 * @tparam Constructor A callable used to construct T.  The
+		 * default supports normal and aggregate construction
+		 */
+		template<
+		  JSONNAMETYPE Name, typename T,
+		  typename JsonElements =
+		    json_details::determine_variant_element_types<JsonNullDefault, T>,
+		  typename Constructor = nullable_constructor<T>>
+		using json_variant_null =
+		  json_variant<Name, T, JsonElements, Constructor, JsonNullDefault>;
 
 		/***
 		 * Link to a variant like data type that is discriminated via another

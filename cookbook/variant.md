@@ -198,7 +198,7 @@ to [cookbook_variant3_test.cpp](../tests/src/cookbook_variant3_test.cpp)
 
 ```
 
-As you can see, the json_tagged_variant_type_list can use terse type names for some, or the full names.
+As you can see, the json_variant_type_list can use terse type names for some, or the full names.
 
 ## Submember as tag for tagged_variant
 

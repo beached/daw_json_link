@@ -61,7 +61,7 @@ struct daw::json::json_data_contract<daw::cookbook_variant3::MyClass> {
 	  json_tagged_variant<
 	    value, std::variant<std::string, int, bool>, json_number<type_mem, int>,
 	    daw::cookbook_variant3::MyClassSwitcher,
-	    json_tagged_variant_type_list<std::string, json_number_no_name<int>,
+	    json_variant_type_list<std::string, json_number_no_name<int>,
 	                                  json_bool_no_name<>>>>;
 #endif
 	static DAW_CONSTEXPR inline auto

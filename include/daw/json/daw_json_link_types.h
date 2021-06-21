@@ -194,7 +194,7 @@ namespace daw::json {
 		 * previous.  The first element in the list, unless it is specified as an
 		 * ordered_member, is 0.  A non-ordered_member item will be 1 more than the
 		 * previous item in the list.  All items must have an index greater than the
-		 * previous.
+		 * previous. In Javascript these are also called tuples.
 		 * @tparam JsonMembers A list of json_TYPE mappings or a json_TYPE mapping
 		 * wrapped into a ordered_json_member
 		 */
@@ -832,18 +832,26 @@ namespace daw::json {
 		 * string, object, or array
 		 */
 		template<typename... JsonElements>
-		struct json_variant_type_list {
-			using i_am_variant_type_list = void;
+		using json_tagged_variant_type_list
+		  [[deprecated( "Use json_variant_type list, removal in v4" )]] =
+		    json_variant_type_list<JsonElements...>;
+
+		template<typename>
+		struct non_discriminated_variant_base_map;
+
+		template<typename... JsonElements>
+		struct non_discriminated_variant_base_map<
+		  json_variant_type_list<JsonElements...>> {
 			static_assert(
 			  sizeof...( JsonElements ) <= 5U,
 			  "There can be at most 5 items, one for each JsonBaseParseTypes" );
+
 			static_assert(
 			  std::conjunction<
 			    json_details::has_json_deduced_type<JsonElements>...>::value,
 			  "Missing specialization of daw::json::json_data_contract for class "
 			  "mapping or specialization of daw::json::json_link_basic_type_map" );
-			using element_map_t =
-			  fwd_pack<json_details::json_deduced_type<JsonElements>...>;
+
 			static constexpr std::size_t base_map[5] = {
 			  json_details::find_json_element<JsonBaseParseTypes::Number>(
 			    { json_details::json_deduced_type<
@@ -887,6 +895,7 @@ namespace daw::json {
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::None;
 				using json_elements = JsonElements;
+				using base_map = non_discriminated_variant_base_map<json_elements>;
 				static constexpr JsonNullable nullable = Nullable;
 
 				template<JSONNAMETYPE NewName>
@@ -943,7 +952,7 @@ namespace daw::json {
 				using i_am_a_json_type = void;
 				using i_am_a_tagged_variant = void;
 				static_assert(
-				  std::is_same<typename JsonElements::i_am_tagged_variant_type_list,
+				  std::is_same<typename JsonElements::i_am_variant_type_list,
 				               void>::value,
 				  "Expected a json_member_list" );
 
