@@ -118,8 +118,8 @@ namespace daw::json {
 			 * @return parsed value from JSON data
 			 */
 			template<std::size_t member_position, typename JsonMember,
-			         AllMembersMustExist must_exist, typename ParseState,
-			         std::size_t N, typename CharT, bool B>
+			         AllMembersMustExist must_exist, bool NeedsClassPositions,
+			         typename ParseState, std::size_t N, typename CharT, bool B>
 			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_class_member( ParseState &parse_state,
 			                    locations_info_t<N, CharT, B> &locations ) {
@@ -135,8 +135,27 @@ namespace daw::json {
 
 				// If the member was found loc will have it's position
 				if( not known ) {
-					return parse_value<without_name<JsonMember>>(
-					  parse_state, ParseTag<JsonMember::expected_type>{ } );
+					if constexpr( NeedsClassPositions ) {
+						auto const cf = parse_state.class_first;
+						auto const cl = parse_state.class_last;
+						if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+							auto const after_parse = daw::on_scope_exit( [&] {
+								parse_state.class_first = cf;
+								parse_state.class_last = cl;
+							} );
+							return parse_value<without_name<JsonMember>>(
+							  parse_state, ParseTag<JsonMember::expected_type>{ } );
+						} else {
+							auto result = parse_value<without_name<JsonMember>>(
+							  parse_state, ParseTag<JsonMember::expected_type>{ } );
+							parse_state.class_first = cf;
+							parse_state.class_last = cl;
+							return result;
+						}
+					} else {
+						return parse_value<without_name<JsonMember>>(
+						  parse_state, ParseTag<JsonMember::expected_type>{ } );
+					}
 				}
 				// We cannot find the member, check if the member is nullable
 				if( loc.is_null( ) ) {
@@ -254,6 +273,10 @@ namespace daw::json {
 					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
 #endif
 
+					constexpr bool NeedClassPositions =
+					  ( ( JsonMembers::base_expected_type ==
+					      JsonParseTypes::VariantTagged ) or
+					    ... );
 					if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 						auto const run_after_parse = class_cleanup<
 						  json_details::all_json_members_must_exist_v<T, ParseState>,
@@ -267,22 +290,22 @@ namespace daw::json {
 						if constexpr( force_aggregate_construction_v<T> ) {
 							return T{
 							  parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
-							                     must_exist>( parse_state,
-							                                  known_locations )... };
+							                     must_exist, NeedClassPositions>(
+							    parse_state, known_locations )... };
 						} else {
 							return construct_value_tp<T, Constructor>(
 							  parse_state,
 							  fwd_pack{
 							    parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
-							                       must_exist>( parse_state,
-							                                    known_locations )... } );
+							                       must_exist, NeedClassPositions>(
+							      parse_state, known_locations )... } );
 						}
 					} else {
 						if constexpr( force_aggregate_construction_v<T> ) {
 							auto result =
 							  T{ parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
-							                        must_exist>( parse_state,
-							                                     known_locations )... };
+							                        must_exist, NeedClassPositions>(
+							    parse_state, known_locations )... };
 
 							class_cleanup_now<
 							  json_details::all_json_members_must_exist_v<T, ParseState>>(
@@ -293,8 +316,8 @@ namespace daw::json {
 							  parse_state,
 							  fwd_pack{
 							    parse_class_member<Is, traits::nth_type<Is, JsonMembers...>,
-							                       must_exist>( parse_state,
-							                                    known_locations )... } );
+							                       must_exist, NeedClassPositions>(
+							      parse_state, known_locations )... } );
 
 							class_cleanup_now<
 							  json_details::all_json_members_must_exist_v<T, ParseState>>(

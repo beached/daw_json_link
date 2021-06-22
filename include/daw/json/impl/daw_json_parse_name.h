@@ -186,12 +186,11 @@ namespace daw::json {
 				auto parse_state =
 				  ParsePolicy( std::data( str ), daw::data_end( str ) );
 				parse_state.trim_left_checked( );
+				bool found = true;
 				if( parse_state.has_more( ) and not start_path.empty( ) ) {
-					if( not find_range2( parse_state, start_path ) ) {
-						return std::pair<bool, ParsePolicy>( false, parse_state );
-					}
+					found = find_range2( parse_state, start_path );
 				}
-				return std::pair<bool, ParsePolicy>( true, parse_state );
+				return std::pair<bool, ParsePolicy>( found, parse_state );
 			}
 
 			template<typename ParsePolicy, typename String, typename Allocator>

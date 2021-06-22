@@ -22,7 +22,7 @@ namespace daw::json {
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
 				}
-				out_it = utils::copy_to_iterator( out_it, R"("type":"bool")" );
+				out_it = utils::copy_to_iterator( out_it, R"("type":"boolean")" );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -202,10 +202,23 @@ namespace daw::json {
 				static constexpr OutputIterator process( OutputIterator out_it ) {
 					out_it = utils::copy_to_iterator(
 					  out_it, R"("type":"object","properties":{)" );
-					out_it = output_member_types( out_it );
+					out_it = output_member_types(
+					  out_it, std::index_sequence_for<JsonMembers...>{ } );
 					out_it = utils::copy_to_iterator( out_it, R"(},"required":[)" );
 					out_it = output_required_members( out_it );
 					*out_it++ = ']';
+					if constexpr( ( ( json_link_no_name<
+					                    JsonMembers>::base_expected_type ==
+					                  JsonParseTypes::VariantTagged ) or
+					                ... ) ) {
+						out_it = utils::copy_to_iterator( out_it, R"(,"dependencies":{)" );
+						bool is_first = true;
+						out_it = static_cast<OutputIterator>(
+						  ( output_dependency<json_link_no_name<json_link_no_name<JsonMembers>>>( out_it,
+						                                                       is_first ),
+						    ... ) );
+						*out_it++ = '}';
+					}
 					return out_it;
 				}
 
@@ -213,9 +226,14 @@ namespace daw::json {
 				static constexpr auto indexer =
 				  std::index_sequence_for<JsonMembers...>{ };
 
-				template<typename JsonMember>
+				template<typename JsonMember, std::size_t Idx>
 				static constexpr OutputIterator
-				output_member_type( OutputIterator &out_it, bool &is_first ) {
+				output_member_type( OutputIterator &out_it, bool &is_first,
+				                    bool *seen ) {
+					if( seen[Idx] ) {
+						return out_it;
+					}
+					seen[Idx] = true;
 					if( not is_first ) {
 						*out_it++ = ',';
 					} else {
@@ -229,11 +247,15 @@ namespace daw::json {
 					return out_it;
 				}
 
+				template<std::size_t... Is>
 				static constexpr OutputIterator
-				output_member_types( OutputIterator &out_it ) {
+				output_member_types( OutputIterator &out_it,
+				                     std::index_sequence<Is...> ) {
 					bool is_first = true;
+					bool seen[sizeof...( JsonMembers )]{ };
 					return static_cast<OutputIterator>(
-					  ( output_member_type<JsonMembers>( out_it, is_first ), ... ) );
+					  ( output_member_type<JsonMembers, Is>( out_it, is_first, seen ),
+					    ... ) );
 				}
 
 				template<typename JsonMember>
@@ -252,10 +274,31 @@ namespace daw::json {
 					return out_it;
 				}
 
+				template<typename JsonMember>
+				static constexpr OutputIterator
+				output_dependency( OutputIterator &out_it, bool &is_first ) {
+					if constexpr( JsonMember::base_expected_type ==
+					              JsonParseTypes::VariantTagged ) {
+						if( not is_first ) {
+							*out_it++ = ',';
+						} else {
+							is_first = false;
+						}
+						*out_it++ = '"';
+						out_it = utils::copy_to_iterator( out_it, JsonMember::name );
+						out_it = utils::copy_to_iterator( out_it, R"(":[")" );
+						out_it =
+						  utils::copy_to_iterator( out_it, JsonMember::tag_member::name );
+						out_it = utils::copy_to_iterator( out_it, R"("])" );
+					}
+					return out_it;
+				}
+
 				static constexpr OutputIterator
 				output_required_members( OutputIterator &out_it ) {
 					bool is_first = true;
-					return ( output_required_member<JsonMembers>( out_it, is_first ),
+					return ( output_required_member<json_link_no_name<JsonMembers>>(
+					           out_it, is_first ),
 					         ... );
 				}
 			};
@@ -265,15 +308,43 @@ namespace daw::json {
 			                            json_ordered_member_list<JsonMembers...>> {
 
 				static constexpr OutputIterator process( OutputIterator out_it ) {
-					out_it = utils::copy_to_iterator(
-					  out_it, R"("type":"object","properties":{)" );
+
+					out_it =
+					  utils::copy_to_iterator( out_it, R"("type":"array","items":[)" );
 					out_it = output_member_types( out_it );
-					out_it = utils::copy_to_iterator( out_it, R"(},"required":[)" );
-					out_it = output_required_members( out_it );
 					*out_it++ = ']';
+
+					static_assert(
+					  not( ( json_link_no_name<JsonMembers>::base_expected_type ==
+					         JsonParseTypes::VariantTagged ) or
+					       ... ),
+					  "A tagged variant is not supported in a tuple/ordered json class" );
+					return out_it;
+				}
+
+				static constexpr OutputIterator
+				output_member_types( OutputIterator &out_it ) {
+					bool is_first = true;
+					return static_cast<OutputIterator>(
+					  ( output_member_type<json_link_no_name<JsonMembers>>( out_it,
+					                                                        is_first ),
+					    ... ) );
+				}
+
+				template<typename JsonMember>
+				static constexpr OutputIterator
+				output_member_type( OutputIterator &out_it, bool &is_first ) {
+					if( not is_first ) {
+						*out_it++ = ',';
+					} else {
+						is_first = false;
+					}
+					out_it = to_json_schema<JsonMember>(
+					  ParseTag<JsonMember::base_expected_type>{ }, out_it );
 					return out_it;
 				}
 			};
+
 			template<typename JsonMember, bool is_root, typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Class>,
 			                                         OutputIterator out_it ) {
@@ -310,12 +381,104 @@ namespace daw::json {
 				return out_it;
 			}
 
-		} // namespace json_details
-	}   // namespace DAW_JSON_VER
-} // namespace daw::json
+			template<typename JsonMember, bool is_root, typename OutputIterator>
+			constexpr OutputIterator
+			to_json_schema( ParseTag<JsonParseTypes::KeyValue>,
+			                OutputIterator out_it ) {
+				if constexpr( not is_root ) {
+					*out_it++ = '{';
+				}
+				out_it = utils::copy_to_iterator(
+				  out_it, R"("type":"object","additionalProperties":)" );
+				using element_t = typename JsonMember::json_element_t;
+				out_it = to_json_schema<element_t>(
+				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				if constexpr( not is_root ) {
+					*out_it++ = '}';
+				}
+				return out_it;
+			}
 
-namespace daw::json {
-	inline namespace DAW_JSON_VER {
+			template<typename JsonMember, bool is_root, typename OutputIterator>
+			constexpr OutputIterator
+			to_json_schema( ParseTag<JsonParseTypes::KeyValueArray>,
+			                OutputIterator out_it ) {
+				if constexpr( not is_root ) {
+					*out_it++ = '{';
+				}
+				out_it =
+				  utils::copy_to_iterator( out_it, R"("type":"array","items":)" );
+				using element_t = typename JsonMember::json_class_t;
+				out_it = to_json_schema<element_t>(
+				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				if constexpr( not is_root ) {
+					*out_it++ = '}';
+				}
+				return out_it;
+			}
+
+			template<typename...>
+			struct variant_element_types;
+
+			template<typename... JsonElements>
+			struct variant_element_types<json_variant_type_list<JsonElements...>> {
+
+				template<typename JsonElement, typename OutputIterator>
+				static constexpr OutputIterator output_element( OutputIterator out_it,
+				                                                bool &is_first ) {
+					if( not is_first ) {
+						*out_it++ = ',';
+					} else {
+						is_first = false;
+					}
+					return to_json_schema<JsonElement>(
+					  ParseTag<JsonElement::base_expected_type>{ }, out_it );
+				}
+
+				template<typename OutputIterator>
+				static constexpr OutputIterator
+				output_elements( OutputIterator out_it ) {
+					bool is_first = true;
+					return static_cast<OutputIterator>(
+					  ( output_element<JsonElements>( out_it, is_first ), ... ) );
+				}
+			};
+
+			template<typename JsonMember, bool is_root, typename OutputIterator>
+			constexpr OutputIterator
+			to_json_schema( ParseTag<JsonParseTypes::Variant>,
+			                OutputIterator out_it ) {
+				if constexpr( not is_root ) {
+					*out_it++ = '{';
+				}
+				out_it = utils::copy_to_iterator( out_it, R"("oneOf":[)" );
+				using elements_t = typename JsonMember::json_elements;
+				out_it = variant_element_types<elements_t>::output_elements( out_it );
+				*out_it++ = ']';
+				if constexpr( not is_root ) {
+					*out_it++ = '}';
+				}
+				return out_it;
+			}
+
+			template<typename JsonMember, bool is_root, typename OutputIterator>
+			constexpr OutputIterator
+			to_json_schema( ParseTag<JsonParseTypes::VariantTagged>,
+			                OutputIterator out_it ) {
+				static_assert( not is_root,
+				               "Attempt to have a tagged variant as root object.  This "
+				               "is unsupported" );
+				*out_it++ = '{';
+				out_it = utils::copy_to_iterator( out_it, R"("oneOf":[)" );
+				using elements_t = typename JsonMember::json_elements;
+				out_it = variant_element_types<elements_t>::output_elements( out_it );
+				*out_it++ = ']';
+				*out_it++ = '}';
+				return out_it;
+			}
+
+		} // namespace json_details
+
 		template<typename T, typename OutputIterator>
 		constexpr OutputIterator to_json_schema( OutputIterator out_it,
 		                                         std::string_view id,
@@ -343,6 +506,5 @@ namespace daw::json {
 			(void)to_json_schema<T>( std::back_inserter( result ), id, title );
 			return result;
 		}
-
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
