@@ -637,6 +637,18 @@ bool test_vector_of_bool( ) {
 	return rv0 == rv1;
 }
 
+struct empty_ordered {};
+namespace daw::json {
+	template<>
+	struct json_data_contract<empty_ordered> {
+		using type = json_ordered_member_list<>;
+
+		static constexpr std::tuple<> to_json_data( empty_ordered ) {
+			return { };
+		}
+	};
+} // namespace daw::json
+
 int main( int, char ** )
 #ifdef DAW_USE_EXCEPTIONS
   try
@@ -968,6 +980,13 @@ int main( int, char ** )
 	    std::array<std::pair<std::string_view, int>, 2>, int, std::string_view>>(
 	    R"({"a":0,"b":1})" )[1]
 	    .second == 1 );
+
+	auto v = from_json<tuple_json_mapping<>>( std::string_view( "{}" ) );
+	auto vstr = to_json( v );
+	(void)vstr;
+	auto v1 = from_json<empty_ordered>( std::string_view( "[]" ) );
+	auto v1str = to_json( v1 );
+	(void)v1str;
 	std::cout << "done";
 }
 #ifdef DAW_USE_EXCEPTIONS
