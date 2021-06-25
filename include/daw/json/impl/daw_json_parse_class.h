@@ -253,6 +253,7 @@ namespace daw::json {
 				// TODO, use member name
 				daw_json_assert_weak( parse_state.is_opening_brace_checked( ),
 				                      ErrorReason::InvalidClassStart, parse_state );
+
 				parse_state.set_class_position( );
 				parse_state.remove_prefix( );
 				parse_state.trim_left( );
@@ -265,6 +266,10 @@ namespace daw::json {
 
 					return construct_value( template_args<T, Constructor>, parse_state );
 				} else {
+					constexpr bool NeedClassPositions =
+					  ( ( JsonMembers::base_expected_type ==
+					      JsonParseTypes::VariantTagged ) or
+					    ... );
 
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					auto known_locations =
@@ -273,10 +278,6 @@ namespace daw::json {
 					auto known_locations = known_locations_v<ParseState, JsonMembers...>;
 #endif
 
-					constexpr bool NeedClassPositions =
-					  ( ( JsonMembers::base_expected_type ==
-					      JsonParseTypes::VariantTagged ) or
-					    ... );
 					if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 						auto const run_after_parse = class_cleanup<
 						  json_details::all_json_members_must_exist_v<T, ParseState>,

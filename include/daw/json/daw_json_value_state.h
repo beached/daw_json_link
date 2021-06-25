@@ -211,8 +211,7 @@ namespace daw::json {
 			 */
 			[[nodiscard]] constexpr basic_json_value<ParseState>
 			at( std::string_view key ) {
-				daw::string_view const k =
-				  daw::string_view( std::data( key ), std::size( key ) );
+				auto const k = std::string_view( std::data( key ), std::size( key ) );
 				std::size_t pos = move_to( k );
 				if( pos < std::size( m_locs ) ) {
 					return m_locs[pos].location->value;
@@ -245,8 +244,7 @@ namespace daw::json {
 			 * present
 			 */
 			[[nodiscard]] std::size_t index_of( std::string_view key ) {
-				daw::string_view const k =
-				  daw::string_view( std::data( key ), std::size( key ) );
+				auto const k = std::string_view( std::data( key ), std::size( key ) );
 				return move_to( k );
 			}
 
@@ -257,8 +255,8 @@ namespace daw::json {
 			 * @return true if the member is present
 			 */
 			[[nodiscard]] constexpr bool contains( std::string_view key ) {
-				daw::string_view const k =
-				  daw::string_view( std::data( key ), std::size( key ) );
+				auto const k =
+				  std::string_view( std::data( key ), std::size( key ) );
 				return move_to( k ) < std::size( m_locs );
 			}
 
