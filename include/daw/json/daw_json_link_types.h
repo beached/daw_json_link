@@ -1483,7 +1483,7 @@ namespace daw::json {
 
 		template<JSONNAMETYPE Name, typename T = json_value,
 		         typename Constructor = default_constructor<T>,
-		         JsonNullable Nullable = JsonNullDefault>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_delayed;
 
 		namespace json_base {
@@ -1544,14 +1544,19 @@ namespace daw::json {
 			using without_name = json_base::json_delayed<T, Constructor, Nullable>;
 		};
 
+		template<JSONNAMETYPE Name, typename T = std::optional<json_value>,
+		         typename Constructor = nullable_constructor<T>>
+		using json_delayed_null =
+		  json_delayed<Name, T, Constructor, JsonNullDefault>;
+
 		template<typename T = json_value,
-		         typename Constructor = default_constructor<json_value>,
+		         typename Constructor = default_constructor<T>,
 		         JsonNullable Nullable = JsonNullable::MustExist>
 		using json_delayed_no_name =
 		  json_base::json_delayed<T, Constructor, Nullable>;
 
 		template<typename T = std::optional<json_value>,
-		         typename Constructor = nullable_constructor<json_value>>
+		         typename Constructor = nullable_constructor<T>>
 		using json_delayed_null_no_name =
 		  json_base::json_delayed<T, Constructor, JsonNullDefault>;
 

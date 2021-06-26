@@ -457,7 +457,7 @@ namespace daw::json {
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
 		         JsonRawTypes JsonRawType = JsonRawTypes::String,
-		         JsonNullable Nullable = JsonNullDefault>
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		using json_custom [[deprecated(
 		  "Use JsonRawTypes/json_raw... Removing in JSON Link v4" )]] =
 		  json_raw<Name, T, FromJsonConverter, ToJsonConverter,
