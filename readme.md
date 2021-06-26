@@ -11,22 +11,22 @@
 * [Intro](#intro)
   * [Default Mapping of Types](#default-mapping-of-types)
 * [API Documentation](https://beached.github.io/daw_json_link/html/) - Member mapping classes and methods
-* [Cookbook](cookbook/readme.md) Get cooking and putting it all together 
-  * [Arrays](cookbook/array.md)
-  * [Classes](cookbook/class.md)
-  * [Class from Array](cookbook/class_from_array.md)
-  * [Dates](cookbook/dates.md)
-  * [Enums](cookbook/enums.md)
-  * [Graphs](cookbook/graphs.md)
-  * [Key Values](cookbook/key_values.md) - Map and Dictionary like things
-  * [Numbers](cookbook/numbers.md)
-  * [Optional/Nullable Values](cookbook/optional_values.md)
-  * [Parsing Individual Members](cookbook/parsing_individual_members.md)
-  * [Parser Options](cookbook/parser_policies.md)
-  * [Strings](cookbook/strings.md)
-  * [Unknown JSON and Delayed Parsing](cookbook/unknown_types_and_delayed_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
-  * [Variant](cookbook/variant.md)
-  * [Automatic Code Generation](cookbook/automated_code_generation.md)
+* [Cookbook](docs/cookbook/readme.md) Get cooking and putting it all together 
+  * [Arrays](docs/cookbook/array.md)
+  * [Classes](docs/cookbook/class.md)
+  * [Class from Array](docs/cookbook/class_from_array.md)
+  * [Dates](docs/cookbook/dates.md)
+  * [Enums](docs/cookbook/enums.md)
+  * [Graphs](docs/cookbook/graphs.md)
+  * [Key Values](docs/cookbook/key_values.md) - Map and Dictionary like things
+  * [Numbers](docs/cookbook/numbers.md)
+  * [Optional/Nullable Values](docs/cookbook/optional_values.md)
+  * [Parsing Individual Members](docs/cookbook/parsing_individual_members.md)
+  * [Parser Options](docs/cookbook/parser_policies.md)
+  * [Strings](docs/cookbook/strings.md)
+  * [Unknown JSON and Delayed Parsing](docs/cookbook/unknown_types_and_delayed_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
+  * [Variant](docs/cookbook/variant.md)
+  * [Automatic Code Generation](docs/cookbook/automated_code_generation.md)
 * [Intro](#intro)
 * [Installing/Using](#installingusing)
 * [Performance considerations](#performance-considerations)
@@ -83,7 +83,7 @@ The event based parser(SAX) can be called via `daw::json::json_event_parser`.  I
 * handle_on_error
 
 ## Code Examples
-* The  [Cookbook](cookbook/readme.md) section has pre-canned tasks and working code examples
+* The  [Cookbook](docs/cookbook/readme.md) section has pre-canned tasks and working code examples
 * [Tests](tests) provide another source of working code samples. 
 * Some video walkthroughs
   * [Making a config parser](https://youtu.be/iiRDn0CR_sU)
@@ -146,7 +146,7 @@ namespace daw::json {
  * Note: The return type of `to_json_data` does not have to return a tuple of references to the existing object members, but can return calculated values too.
 
 The parsers work by constructing each argument in place in the call to the classes constructor. The individual argument parsers can be tuned for the specified circumstances of the data(e.g. floating point and integral numbers). Then with our type trait defining the arguments needed to construct the C++ class and their order we are able to look at each member in the JSON. Now we construct the value with the result of each parser; similar to `T{ parse<0, json_string<"name">>( data ), parse<1, json_number<"age", unsigned>>( data ), parse<json_number<2, "number>>( data )}`. For each member, the data stream will be moved forward until we find the member we need to parse, storing interested locations for later parsing. This process allows us to parse other classes as members too via the `json_class<"member_name", Type>` mapping type. So that each mapping trait only has to deal with it's specific members and not their details.
-![general parsing flow](images/parse_flow.jpg)
+![general parsing flow](docs/images/parse_flow.jpg)
 
 ## Default mapping of types
 ###### [Top](#content)
@@ -215,7 +215,7 @@ The order of the members in the data structures should generally match that of t
 ### Benchmarks
 * [Kostya results](kostya_benchmark_results.md) using [test_dawjsonlink.cpp](tests/src/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks#json) for latest results.
 
-![chart describing kostya benmark results](images/kostya_bench_chart_2021_04_03.png)
+![chart describing kostya benmark results](docs/images/kostya_bench_chart_2021_04_03.png)
 
 ## Escaping/Unescaping of member names
 ###### [Top](#content)
@@ -604,5 +604,5 @@ There are a few defines that affect how JSON Link operates
   the default is unspecified when duplicate names are encounters as to which is used.  
   One can guarantee that both can be parsed or order by using `json_key_value` parse type.  
   When used with `std::multimap<std::string, T>` or `std::vector<std::pair<std::string, T>>` all members are preserved with the former in order.  Alternatively, the `json_value` type will allow iteration over the class members and lazy parsing of the correct one. 
-  See [Cookbook Key Values](cookbook/key_values.md) which demonstrates these methods.
+  See [Cookbook Key Values](docs/cookbook/key_values.md) which demonstrates these methods.
 * Trailing commas, the parser makes no effort to detect trailing commas.
