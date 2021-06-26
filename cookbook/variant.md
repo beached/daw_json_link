@@ -1,8 +1,12 @@
 # Variant Types
 
 Variant or sum types are where the json member can have more than one type(like string, number, class, or array).
+JSON Link supports several forms of variant types 
+  * An undiscriminated variant that is limited to a set of alternatives where there is up to one of each of the basic JSON types(array, object, string, number, bool, null).  
+  * A discriminated variant where the discriminator is another member of the same class.  e.g. ```json { "type": 1, "value": [] }``` where `"value"`'s type is determined by `"type"`
+  * A discriminated variant where the discriminator is a submember of the class type being parsed.  e.g ```json { "obj": { "type": 1 } }``` where "type" determines how the class itself will be parsed
 
-Take the following JSON
+Take the following JSON array:
 
 ```json
 [
