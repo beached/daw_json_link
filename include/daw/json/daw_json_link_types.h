@@ -326,6 +326,8 @@ namespace daw::json {
 					    parse_state, ParseTag<JsonParseTypes::Class>{ } )
 					    .members ) );
 				}( );
+				daw_json_assert_weak( idx < sizeof...( JsonClasses ),
+				                      ErrorReason::UnexpectedJSONVariantType );
 				return json_details::parse_nth_class<
 				  0, JsonClass, false, json_base::json_class<JsonClasses>...>(
 				  idx, parse_state );

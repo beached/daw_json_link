@@ -824,6 +824,8 @@ namespace daw::json {
 			         typename... JsonClasses, typename ParseState>
 			DAW_ATTRIB_FLATTEN constexpr json_result<JsonClass>
 			parse_nth_class( std::size_t idx, ParseState &parse_state ) {
+				// Precondition of caller to verify/ensure.
+				DAW_ASSUME( idx < sizeof...( JsonClasses ) );
 				if constexpr( sizeof...( JsonClasses ) >= N + 8 ) {
 					switch( idx ) {
 					case N + 0: {
@@ -906,7 +908,8 @@ namespace daw::json {
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
 					}
-					case N + 6: {
+					default: {
+						DAW_ASSUME( idx == N + 6 );
 						using cur_json_class_t = traits::nth_element<N + 6, JsonClasses...>;
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
@@ -939,7 +942,8 @@ namespace daw::json {
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
 					}
-					case N + 5: {
+					default: {
+						DAW_ASSUME( idx == N + 5 );
 						using cur_json_class_t = traits::nth_element<N + 5, JsonClasses...>;
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
@@ -967,7 +971,8 @@ namespace daw::json {
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
 					}
-					case N + 4: {
+					default: {
+						DAW_ASSUME( idx == N + 4 );
 						using cur_json_class_t = traits::nth_element<N + 4, JsonClasses...>;
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
@@ -990,7 +995,8 @@ namespace daw::json {
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
 					}
-					case N + 3: {
+					default: {
+						DAW_ASSUME( idx == N + 3 );
 						using cur_json_class_t = traits::nth_element<N + 3, JsonClasses...>;
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
@@ -1008,7 +1014,8 @@ namespace daw::json {
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
 					}
-					case N + 2: {
+					default: {
+						DAW_ASSUME( idx == N + 2 );
 						using cur_json_class_t = traits::nth_element<N + 2, JsonClasses...>;
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
@@ -1019,11 +1026,10 @@ namespace daw::json {
 						using cur_json_class_t = traits::nth_element<N + 0, JsonClasses...>;
 						return parse_value<cur_json_class_t>(
 						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
-					} else {
-						using cur_json_class_t = traits::nth_element<N + 1, JsonClasses...>;
-						return parse_value<cur_json_class_t>(
-						  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
 					}
+					using cur_json_class_t = traits::nth_element<N + 1, JsonClasses...>;
+					return parse_value<cur_json_class_t>(
+					  parse_state, ParseTag<cur_json_class_t::base_expected_type>{ } );
 				} else {
 					using cur_json_class_t = traits::nth_element<N + 0, JsonClasses...>;
 					return parse_value<cur_json_class_t>(
