@@ -83,12 +83,12 @@ int main( int argc, char **argv )
 		auto const j3 = daw::json::from_json<daw::geojson::Polygon,
 		                                     NoCommentSkippingPolicyChecked>(
 		  sv_canada, "features[0].geometry" );
-		daw::do_not_optimize( sv_twitter );
+		/*daw::do_not_optimize( sv_twitter );
 		daw::do_not_optimize( sv_citm );
 		daw::do_not_optimize( sv_canada );
 		daw::do_not_optimize( j1 );
 		daw::do_not_optimize( j2 );
-		daw::do_not_optimize( j3 );
+		daw::do_not_optimize( j3 );*/
 	}
 #endif
 }

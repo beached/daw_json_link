@@ -60,8 +60,7 @@ struct UniquePtrArrayCtor {
 	}
 
 	template<typename Iterator>
-	inline std::unique_ptr<T[]> operator( )( Iterator first, Iterator last ) {
-		auto const sz = last - first;
+	inline std::unique_ptr<T[]> operator( )( Iterator first, Iterator last, std::size_t sz ) {
 		assert( sz >= 0 );
 		auto result = std::unique_ptr<T[]>( new T[static_cast<std::size_t>( sz )] );
 		std::copy( first, last, result.get( ) );

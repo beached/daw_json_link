@@ -699,7 +699,6 @@ namespace daw::json {
 					daw_json_assert( sz >= 0 and ( cnt < 0 or parse_state.counter == sz ),
 					                 ErrorReason::NumberOutOfRange, parse_state );
 				}
-				parse_state.counter = static_cast<std::size_t>( sz );
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, parse_state );
@@ -708,11 +707,12 @@ namespace daw::json {
 				// TODO: add parse option to disable random access iterators. This is
 				// coding to the implementations
 				using iterator_t =
-				  json_parse_array_iterator<JsonMember, ParseState, KnownBounds, true>;
+				  json_parse_array_iterator<JsonMember, ParseState, false, false>;
 				using constructor_t = typename JsonMember::constructor_t;
 				return construct_value(
 				  template_args<json_result<JsonMember>, constructor_t>, parse_state,
-				  iterator_t( parse_state ), iterator_t( ) );
+				  iterator_t( parse_state ), iterator_t( ),
+				  static_cast<std::size_t>( sz ) );
 			}
 
 			template<JsonBaseParseTypes BPT, typename JsonMembers,
