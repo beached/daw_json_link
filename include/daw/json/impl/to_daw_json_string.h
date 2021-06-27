@@ -16,7 +16,6 @@
 
 #include <daw/daw_algorithm.h>
 #include <daw/daw_arith_traits.h>
-#include <daw/daw_bounded_vector.h>
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
@@ -1198,7 +1197,7 @@ namespace daw::json {
 				  ParseTag<JsonMember::expected_type>{ }, DAW_MOVE( it ), value );
 			}
 
-			template<std::size_t, typename JsonMember, typename NamePack,
+			template<std::size_t, typename JsonMember, typename /*NamePack*/,
 			         typename OutputIterator, typename TpArgs, typename Value,
 			         typename VisitedMembers,
 			         std::enable_if_t<not has_dependent_member_v<JsonMember>,
@@ -1263,22 +1262,21 @@ namespace daw::json {
 				it =
 				  utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
 				if constexpr( has_switcher_v<JsonMember> ) {
-					it = member_to_string( template_arg<dependent_member>, DAW_MOVE( it ),
+					it = member_to_string( template_arg<dependent_member>, it,
 					                       typename JsonMember::switcher{ }( v ) );
 				} else {
 					constexpr std::size_t dependent_member_pos =
 					  find_names_in_pack<dependent_member>( NamePack{ } );
-					it = member_to_string( template_arg<dependent_member>, DAW_MOVE( it ),
-					                       std::get<dependent_member_pos>( args ) );
+					it = member_to_string( template_arg<dependent_member>, it,
+					                       get<dependent_member_pos>( args ) );
 				}
 			}
 
 			template<std::size_t pos, typename JsonMember, typename OutputIterator,
-			         template<class...> class Tuple, typename... Args, typename Value,
-			         typename Visited>
-			inline constexpr void
-			to_json_str( bool &is_first, OutputIterator &it, Tuple<Args...> const &tp,
-			             Value const &, Visited &visited_members ) {
+			         typename Tuple, typename Value, typename Visited>
+			inline constexpr void to_json_str( bool &is_first, OutputIterator &it,
+			                                   Tuple const &tp, Value const &,
+			                                   Visited &visited_members ) {
 				constexpr auto json_member_name = daw::string_view(
 				  std::data( JsonMember::name ), std::size( JsonMember::name ) );
 				if( daw::algorithm::contains( std::data( visited_members ),
@@ -1302,6 +1300,7 @@ namespace daw::json {
 				*it++ = '"';
 				it = utils::copy_to_iterator<false, EightBitModes::AllowFull>(
 				  it, JsonMember::name );
+
 				it =
 				  utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
 				it = member_to_string( template_arg<JsonMember>, DAW_MOVE( it ),

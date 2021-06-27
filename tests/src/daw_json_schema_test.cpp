@@ -7,9 +7,9 @@
 //
 
 #include <daw/daw_span.h>
+#include <daw/daw_tuple_forward.h>
 #include <daw/json/daw_json_link.h>
 #include <daw/json/daw_json_schema.h>
-#include <daw/daw_tuple_helper.h>
 
 #include <cassert>
 #include <cstdio>
@@ -29,18 +29,18 @@ struct Umm {
 };
 
 struct Foo {
-	int a;
-	double b;
-	std::string c;
-	std::vector<int> d;
+	int a = 1;
+	double b = 2.2;
+	std::string c = "3";
+	std::vector<int> d = { 1, 2, 3, 4 };
 	Bar e;
 	std::map<std::string, Bar> f;
 	std::map<int, float> g;
 	std::variant<int, std::string, bool> h;
 	std::variant<int, std::string, bool, Bar, Umm> i;
 	std::optional<int> j;
-	int k;
 	std::unique_ptr<int[]> l = std::unique_ptr<int[]>( new int[0] );
+	int k;
 };
 
 struct IdentitySwitcher {
@@ -114,14 +114,15 @@ namespace daw::json {
 		  json_variant<h, std::variant<int, std::string, bool>>,
 		  json_tagged_variant<i, std::variant<int, std::string, bool, Bar, Umm>,
 		                      json_link<type_mem, std::size_t>, IdentitySwitcher>,
-		  json_link<j, std::optional<int>>, json_link<k, int>,
+		  json_link<j, std::optional<int>>,
 		  json_sized_array<l, int, json_link<k, int>, std::unique_ptr<int[]>,
-		                   UniquePtrArrayCtor<int>>>;
+		                   UniquePtrArrayCtor<int>>,
+		  json_link<k, int>>;
 
 		static inline auto to_json_data( Foo const &v ) {
-			return daw::forward_nontemp_as_tuple(
-			  v.a, v.b, v.c, v.d, v.e, v.f, v.g, v.h, v.i, v.j, v.k,
-			  daw::span( v.l.get( ), static_cast<std::size_t>( v.k ) ) );
+			return daw::forward_nonrvalue_as_tuple(
+			  v.a, v.b, v.c, v.d, v.e, v.f, v.g, v.h, v.i, v.j,
+			  daw::span( v.l.get( ), static_cast<std::size_t>( v.k ) ), v.k );
 		}
 	};
 } // namespace daw::json
@@ -131,8 +132,7 @@ int main( ) {
 	puts( result.c_str( ) );
 
 	puts( "----\n" );
-
-	auto json_str = daw::json::to_json( Foo{ } );
+	std::string json_str = daw::json::to_json( Foo{ } );
 	puts( json_str.c_str( ) );
 
 	auto foo2 = daw::json::from_json<Foo>( json_str );

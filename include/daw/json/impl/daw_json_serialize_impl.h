@@ -18,11 +18,60 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+
+			template<typename T, std::size_t Capacity>
+			struct basic_array_t {
+				static constexpr std::size_t capacity = Capacity;
+
+			private:
+				std::size_t position{ };
+				std::string_view array[capacity]{ };
+
+			public:
+				constexpr basic_array_t( ) = default;
+
+				constexpr T const *data( ) const {
+					return array;
+				}
+
+				constexpr T *data( ) {
+					return array;
+				}
+
+				constexpr std::size_t size( ) const {
+					return position;
+				}
+
+				constexpr void push_back( T const &v ) {
+					assert( position < capacity );
+					array[position] = v;
+					++position;
+				}
+			};
+			template<typename T>
+			struct basic_array_t<T, 0> {
+				static constexpr std::size_t capacity = 0;
+
+				constexpr basic_array_t( ) = default;
+
+				constexpr T const *data( ) const {
+					return nullptr;
+				}
+
+				constexpr T *data( ) {
+					return nullptr;
+				}
+
+				constexpr std::size_t size( ) const {
+					return 0;
+				}
+			};
+
 			/***
 			 * Serialize items to an output iterator as members of a class
 			 * @tparam JsonMembers member items in json_class
-			 * @tparam OutputIterator An Output Iterator that allows writing character
-			 * data
+			 * @tparam OutputIterator An Output Iterator that allows writing
+			 * character data
 			 * @tparam Is index_sequence index into JsonMembers
 			 * @tparam Tuple tuple type holding class members
 			 * @tparam Value mapped class type to serialize
@@ -33,16 +82,21 @@ namespace daw::json {
 			 */
 			template<typename... JsonMembers, typename OutputIterator,
 			         std::size_t... Is, typename Tuple, typename Value>
-			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr OutputIterator
-			serialize_json_class( OutputIterator it, std::index_sequence<Is...>,
-			                      Tuple const &args, Value const &value ) {
+			[[nodiscard]] inline constexpr OutputIterator
+			serialize_json_class( OutputIterator it, Tuple const &args,
+			                      Value const &value, std::index_sequence<Is...> ) {
 
 				bool is_first = true;
 				*it++ = '{';
 
+				using visit_size = std::integral_constant<
+				  std::size_t,
+				  ( sizeof...( JsonMembers ) +
+				    ( static_cast<std::size_t>( has_dependent_member_v<JsonMembers> ) +
+				      ... + 0 ) )>;
 				auto visited_members =
-				  daw::bounded_vector_t<daw::string_view,
-				                        sizeof...( JsonMembers ) * 2U>{ };
+				  basic_array_t<std::string_view, visit_size::value>{ };
+
 				// Tag Members, if any.  Putting them ahead means we can parse this
 				// faster in the future
 
@@ -74,9 +128,9 @@ namespace daw::json {
 			template<typename... JsonMembers, typename OutputIterator, typename Tuple,
 			         typename Value, std::size_t... Is>
 			[[nodiscard]] inline constexpr OutputIterator
-			serialize_ordered_json_class( OutputIterator it,
-			                              std::index_sequence<Is...>,
-			                              Tuple const &args, Value const &value ) {
+			serialize_ordered_json_class( OutputIterator it, Tuple const &args,
+			                              Value const &value,
+			                              std::index_sequence<Is...> ) {
 
 				*it++ = '[';
 				size_t array_idx = 0;

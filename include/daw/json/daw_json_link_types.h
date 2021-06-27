@@ -52,17 +52,21 @@ namespace daw::json {
 			 * @return the OutputIterator it at final position
 			 */
 			template<typename OutputIterator, typename Value,
-			         template<class...> class Tuple, typename... Args>
+			         template<class...> class Tuple, typename... Ts>
 			[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
-			serialize( OutputIterator it, Tuple<Args...> const &args,
-			           Value const &v ) {
+			serialize( OutputIterator it, Tuple<Ts...> const &args, Value const &v ) {
 				static_assert(
-				  sizeof...( Args ) == sizeof...( JsonMembers ),
+				  sizeof...( Ts ) == sizeof...( JsonMembers ),
 				  "The method to_json_data in the json_data_contract does not match "
 				  "the mapping.  The number of members is not the same." );
-
+				static_assert(
+				  ( (not std::is_rvalue_reference_v<Ts>)and... ),
+				  "The Tuple contains rvalue references.  The values "
+				  "passed are now dangling.  daw::forward_nonrvalue_as_tuple in "
+				  "<daw/daw_tuple_forward.h> can forward only non-rvalue refs and "
+				  "store the temporaries" );
 				return json_details::serialize_json_class<JsonMembers...>(
-				  it, std::index_sequence_for<Args...>{ }, args, v );
+				  it, args, v, std::index_sequence_for<Ts...>{ } );
 			}
 
 			template<typename Constructor>
@@ -212,20 +216,24 @@ namespace daw::json {
 			 * @return the OutputIterator it
 			 */
 			template<typename OutputIterator, typename Value,
-			         template<class...> class Tuple, typename... Args>
+			         template<class...> class Tuple, typename... Ts>
 			[[maybe_unused, nodiscard]] static inline constexpr OutputIterator
-			serialize( OutputIterator it, Tuple<Args...> const &args,
-			           Value const &v ) {
-				static_assert( sizeof...( Args ) == sizeof...( JsonMembers ),
+			serialize( OutputIterator it, Tuple<Ts...> const &args, Value const &v ) {
+				static_assert( sizeof...( Ts ) == sizeof...( JsonMembers ),
 				               "Argument count is incorrect" );
-
+				static_assert(
+				  ( (not std::is_rvalue_reference_v<Ts>)and... ),
+				  "The Tuple contains rvalue references.  The values "
+				  "passed are now dangling.  daw::forward_nonrvalue_as_tuple in "
+				  "<daw/daw_tuple_forward.h> can forward only non-rvalue refs and "
+				  "store the temporaries" );
 				static_assert(
 				  std::conjunction<json_details::is_a_json_type<
 				    json_details::ordered_member_wrapper<JsonMembers>>...>::value,
 				  "Only value JSON types can be used" );
 				return json_details::serialize_ordered_json_class<
 				  json_details::ordered_member_wrapper<JsonMembers>...>(
-				  it, std::index_sequence_for<Args...>{ }, args, v );
+				  it, args, v, std::index_sequence_for<Ts...>{ } );
 			}
 
 			template<typename Constructor>
