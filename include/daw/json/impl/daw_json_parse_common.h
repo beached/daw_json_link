@@ -328,7 +328,7 @@ namespace daw::json {
 
 			template<json_options_t CurrentOptions, auto option, auto... options>
 			inline constexpr json_options_t json_raw_opts_set =
-				set_bits( json_raw_opts, CurrentOptions, option, options... );
+			  set_bits( json_raw_opts, CurrentOptions, option, options... );
 		} // namespace json_details
 
 		namespace json_base {
@@ -884,6 +884,13 @@ namespace daw::json {
 			template<typename Constructor, typename... Members>
 			inline constexpr bool can_defer_construction_v =
 			  std::is_invocable_v<Constructor, typename Members::parse_to_t...>;
+
+			template<typename JsonMember>
+			using dependent_member_t = typename JsonMember::dependent_member;
+
+			template<typename JsonMember>
+			inline constexpr bool has_dependent_member_v =
+			  daw::is_detected_v<dependent_member_t, JsonMember>;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

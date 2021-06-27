@@ -598,12 +598,12 @@ namespace daw::json {
 		struct json_tagged_variant;
 
 		template<
-		  JSONNAMETYPE Name, typename JsonElement, typename JsonSizeMember,
+		  JSONNAMETYPE Name, typename JsonElement, typename SizeMember,
 		  typename Container = std::vector<
 		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
 		  typename Constructor = default_constructor<Container>,
 		  JsonNullable Nullable = JsonNullable::MustExist>
-		struct json_fixed_array;
+		struct json_sized_array;
 
 		/***
 		 * Link to a nullable variant like data type that is discriminated via

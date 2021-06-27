@@ -49,7 +49,8 @@ namespace daw::json {
 				// Using list init to ensure serialization happens in order
 				{
 					daw::Empty const expander[]{
-					  ( tags_to_json_str<Is, traits::nth_element<Is, JsonMembers...>>(
+					  ( dependent_member_to_json_str<
+					      Is, traits::nth_element<Is, JsonMembers...>>(
 					      is_first, it, args, value, visited_members ),
 					    daw::Empty{ } )...,
 					  daw::Empty{} };

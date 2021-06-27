@@ -214,8 +214,9 @@ namespace daw::json {
 						out_it = utils::copy_to_iterator( out_it, R"(,"dependencies":{)" );
 						bool is_first = true;
 						out_it = static_cast<OutputIterator>(
-						  ( output_dependency<json_link_no_name<json_link_no_name<JsonMembers>>>( out_it,
-						                                                       is_first ),
+						  ( output_dependency<
+						      json_link_no_name<json_link_no_name<JsonMembers>>>(
+						      out_it, is_first ),
 						    ... ) );
 						*out_it++ = '}';
 					}
@@ -287,8 +288,8 @@ namespace daw::json {
 						*out_it++ = '"';
 						out_it = utils::copy_to_iterator( out_it, JsonMember::name );
 						out_it = utils::copy_to_iterator( out_it, R"(":[")" );
-						out_it =
-						  utils::copy_to_iterator( out_it, JsonMember::tag_member::name );
+						out_it = utils::copy_to_iterator(
+						  out_it, dependent_member_t<JsonMember>::name );
 						out_it = utils::copy_to_iterator( out_it, R"("])" );
 					}
 					return out_it;

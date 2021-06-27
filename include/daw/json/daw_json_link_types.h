@@ -970,12 +970,15 @@ namespace daw::json {
 				               void>::value,
 				  "Expected a json_member_list" );
 
-				static_assert(
-				  std::is_same<typename TagMember::i_am_a_json_type, void>::value,
-				  "JSON member types must be passed as "
-				  "TagMember" );
 				using wrapped_type = T;
-				using tag_member = TagMember;
+
+				static_assert( json_details::is_a_json_type_v<TagMember>,
+				               "The TagMember type must have a name and be a "
+				               "member of the same object as this" );
+				static_assert( TagMember::nullable == JsonNullable::MustExist,
+				               "The TagMember cannot be a nullable type" );
+				using dependent_member = TagMember;
+
 				using switcher = Switcher;
 				using base_type = json_details::unwrap_type<T, Nullable>;
 				using constructor_t =
@@ -1261,9 +1264,9 @@ namespace daw::json {
 		                        JsonNullDefault>;
 
 		namespace json_base {
-			template<typename JsonElement, typename JsonSizeMember,
-			         typename Container, typename Constructor, JsonNullable Nullable>
-			struct json_fixed_array {
+			template<typename JsonElement, typename SizeMember, typename Container,
+			         typename Constructor, JsonNullable Nullable>
+			struct json_sized_array {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = true;
 				static_assert(
@@ -1271,10 +1274,14 @@ namespace daw::json {
 				  "Missing specialization of daw::json::json_data_contract for class "
 				  "mapping or specialization of daw::json::json_link_basic_type_map" );
 				using json_element_t = json_details::json_deduced_type<JsonElement>;
-				using size_member = JsonSizeMember;
-				static_assert( json_details::is_a_json_type<size_member>,
-				               "The JsonSizeMember type must have a name and be a "
+
+				static_assert( json_details::is_a_json_type_v<SizeMember>,
+				               "The SizeMember type must have a name and be a "
 				               "member of the same object as this" );
+				static_assert( SizeMember::nullable == JsonNullable::MustExist,
+				               "The SizeMember cannot be a nullable type" );
+				using dependent_member = SizeMember;
+
 				using json_element_parse_to_t = typename json_element_t::parse_to_t;
 
 				static_assert( traits::not_same_v<json_element_t, void>,
@@ -1308,52 +1315,52 @@ namespace daw::json {
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
-				  daw::json::json_fixed_array<NewName, JsonElement, Container,
-				                              Constructor, Nullable>;
-				using without_name = json_fixed_array;
+				  daw::json::json_sized_array<NewName, JsonElement, SizeMember,
+				                              Container, Constructor, Nullable>;
+				using without_name = json_sized_array;
 			};
 		} // namespace json_base
 
-		template<JSONNAMETYPE Name, typename JsonSizeMember, typename JsonElement,
+		template<JSONNAMETYPE Name, typename SizeMember, typename JsonElement,
 		         typename Container, typename Constructor, JsonNullable Nullable>
-		struct json_fixed_array
-		  : json_base::json_fixed_array<JsonElement, JsonSizeMember, Container,
+		struct json_sized_array
+		  : json_base::json_sized_array<JsonElement, SizeMember, Container,
 		                                Constructor, Nullable> {
 
 			static constexpr daw::string_view name = Name;
 #if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert(
 			  name != no_name,
-			  "For no_name mappings, use the json_fixed_array_no_name variant "
+			  "For no_name mappings, use the json_sized_array_no_name variant "
 			  "without a name argument" );
 #endif
 			template<JSONNAMETYPE NewName>
-			using with_name = json_fixed_array<NewName, JsonSizeMember, JsonElement,
+			using with_name = json_sized_array<NewName, SizeMember, JsonElement,
 			                                   Container, Constructor, Nullable>;
 
 			using without_name =
-			  json_base::json_fixed_array<JsonElement, JsonSizeMember, Container,
+			  json_base::json_sized_array<JsonElement, SizeMember, Container,
 			                              Constructor, Nullable>;
 		};
 
 		template<
-		  typename JsonElement, typename JsonSizeMember,
+		  typename JsonElement, typename SizeMember,
 		  typename Container = std::vector<
 		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
 		  typename Constructor = default_constructor<Container>,
 		  JsonNullable Nullable = JsonNullable::MustExist>
-		using json_fixed_array_no_name =
-		  json_base::json_fixed_array<JsonElement, JsonSizeMember, Container,
+		using json_sized_array_no_name =
+		  json_base::json_sized_array<JsonElement, SizeMember, Container,
 		                              Constructor, Nullable>;
 
 		template<
-		  typename JsonElement, typename JsonSizeMember,
+		  typename JsonElement, typename SizeMember,
 		  typename Container = std::vector<
 		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
 		  typename Constructor = nullable_constructor<Container>>
-		using json_array_null_no_name =
-		  json_base::json_array<JsonElement, JsonSizeMember, Container, Constructor,
-		                        JsonNullDefault>;
+		using json_sized_array_null_no_name =
+		  json_base::json_sized_array<JsonElement, SizeMember, Container,
+		                              Constructor, JsonNullDefault>;
 
 		namespace json_base {
 			template<typename Container, typename JsonValueType, typename JsonKeyType,

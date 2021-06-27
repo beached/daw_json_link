@@ -655,16 +655,11 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard,
-			  maybe_unused]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> ) {
+			[[nodiscard, maybe_unused]] DAW_ATTRIB_FLATTEN constexpr auto
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> )
+			  -> std::enable_if_t<not has_dependent_member_v<JsonMember>,
+			                      json_result<JsonMember>> {
 
-				if constexpr( is_fixed_array_v<JsonMember> ) {
-					using size_member = typename JsonMember::size_member;
-					auto [is_found, parse_state2] = find_range<ParseState>(
-					  ParseState( parse_state.class_first, parse_state.last ),
-					  size_member::name );
-				}
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, parse_state );
@@ -674,6 +669,47 @@ namespace daw::json {
 				// coding to the implementations
 				using iterator_t =
 				  json_parse_array_iterator<JsonMember, ParseState, KnownBounds>;
+				using constructor_t = typename JsonMember::constructor_t;
+				return construct_value(
+				  template_args<json_result<JsonMember>, constructor_t>, parse_state,
+				  iterator_t( parse_state ), iterator_t( ) );
+			}
+
+			template<typename JsonMember, bool KnownBounds, typename ParseState>
+			[[nodiscard, maybe_unused]] DAW_ATTRIB_FLATTEN constexpr auto
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> )
+			  -> std::enable_if_t<has_dependent_member_v<JsonMember>,
+			                      json_result<JsonMember>> {
+
+				using size_member = typename JsonMember::size_member;
+
+				auto [is_found, parse_state2] = find_range<ParseState>(
+				  ParseState( parse_state.class_first, parse_state.last ),
+				  size_member::name );
+
+				daw_json_assert( is_found, ErrorReason::TagMemberNotFound,
+				                 parse_state );
+				auto const sz =
+				  typename JsonMember::switcher{ }( parse_value<size_member>(
+				    parse_state2, ParseTag<size_member::expected_type>{ } ) );
+
+				if constexpr( KnownBounds and ParseState::is_unchecked_input ) {
+					// We have the requested size and the actual size.  Let's see if they
+					// match
+					auto cnt = static_cast<std::ptrdiff_t>( parse_state.counter );
+					daw_json_assert( cnt < 0 or parse_state.counter == sz,
+					                 ErrorReason::NumberOutOfRange, parse_state );
+				}
+				parse_state.counter = sz;
+				parse_state.trim_left( );
+				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
+				                      ErrorReason::InvalidArrayStart, parse_state );
+				parse_state.remove_prefix( );
+				parse_state.trim_left_unchecked( );
+				// TODO: add parse option to disable random access iterators. This is
+				// coding to the implementations
+				using iterator_t =
+				  json_parse_array_iterator<JsonMember, ParseState, KnownBounds, true>;
 				using constructor_t = typename JsonMember::constructor_t;
 				return construct_value(
 				  template_args<json_result<JsonMember>, constructor_t>, parse_state,
@@ -775,7 +811,7 @@ namespace daw::json {
 			  maybe_unused]] DAW_ATTRIB_INLINE inline constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::VariantTagged> ) {
-				using tag_member = typename JsonMember::tag_member;
+				using tag_member = dependent_member_t<JsonMember>;
 				auto [is_found, parse_state2] = find_range<ParseState>(
 				  ParseState( parse_state.class_first, parse_state.last ),
 				  tag_member::name );
@@ -795,7 +831,7 @@ namespace daw::json {
 			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::VariantTagged> ) {
-				using tag_member = typename JsonMember::tag_member;
+				using tag_member = dependent_member_t<JsonMember>;
 				auto [is_found, parse_state2] = find_range<ParseState>(
 				  ParseState( parse_state.class_first, parse_state.last ),
 				  tag_member::name );

@@ -1192,31 +1192,26 @@ namespace daw::json {
 				  ParseTag<JsonMember::expected_type>{ }, DAW_MOVE( it ), value );
 			}
 
-			template<typename JsonMember>
-			using tag_member_t = typename JsonMember::tag_member;
-
-			template<typename JsonMember>
-			inline constexpr bool has_tag_member_v =
-			  daw::is_detected<tag_member_t, JsonMember>::value;
-
 			template<std::size_t, typename JsonMember, typename OutputIterator,
 			         typename TpArgs, typename Value, typename VisitedMembers,
-			         std::enable_if_t<not has_tag_member_v<JsonMember>,
+			         std::enable_if_t<not has_dependent_member_v<JsonMember>,
 			                          std::nullptr_t> = nullptr>
-			inline constexpr void tags_to_json_str( bool &, OutputIterator const &,
-			                                        TpArgs const &, Value const &,
-			                                        VisitedMembers const & ) {
+			inline constexpr void
+			dependent_member_to_json_str( bool &, OutputIterator const &,
+			                              TpArgs const &, Value const &,
+			                              VisitedMembers const & ) {
 
 				// This is empty so that the call is able to be put into a pack
 			}
 			template<std::size_t pos, typename JsonMember, typename OutputIterator,
 			         typename TpArgs, typename Value, typename VisitedMembers,
-			         std::enable_if_t<has_tag_member_v<JsonMember>, std::nullptr_t> =
-			           nullptr>
-			constexpr void tags_to_json_str( bool &is_first, OutputIterator it,
-			                                 TpArgs const &args, Value const &v,
-			                                 VisitedMembers &visited_members ) {
-				using tag_member = tag_member_t<JsonMember>;
+			         std::enable_if_t<has_dependent_member_v<JsonMember>,
+			                          std::nullptr_t> = nullptr>
+			constexpr void
+			dependent_member_to_json_str( bool &is_first, OutputIterator it,
+			                              TpArgs const &args, Value const &v,
+			                              VisitedMembers &visited_members ) {
+				using dependent_member = dependent_member_t<JsonMember>;
 				static_assert( is_a_json_type<JsonMember>::value,
 				               "Unsupported data type" );
 				if constexpr( is_json_nullable<JsonMember>::value and
@@ -1226,24 +1221,25 @@ namespace daw::json {
 						return;
 					}
 				}
-				constexpr auto tag_member_name = daw::string_view(
-				  std::data( tag_member::name ), std::size( tag_member::name ) );
+				constexpr auto dependent_member_name =
+				  daw::string_view( std::data( dependent_member::name ),
+				                    std::size( dependent_member::name ) );
 				if( daw::algorithm::contains( std::data( visited_members ),
 				                              daw::data_end( visited_members ),
-				                              tag_member_name ) ) {
+				                              dependent_member_name ) ) {
 					return;
 				}
-				visited_members.push_back( tag_member_name );
+				visited_members.push_back( dependent_member_name );
 				if( not is_first ) {
 					*it++ = ',';
 				}
 				is_first = false;
 				*it++ = '"';
 				it = utils::copy_to_iterator<false, EightBitModes::AllowFull>(
-				  it, tag_member_name );
+				  it, dependent_member_name );
 				it =
 				  utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
-				it = member_to_string( template_arg<tag_member>, DAW_MOVE( it ),
+				it = member_to_string( template_arg<dependent_member>, DAW_MOVE( it ),
 				                       typename JsonMember::switcher{ }( v ) );
 			}
 
