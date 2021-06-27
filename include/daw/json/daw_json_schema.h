@@ -207,10 +207,7 @@ namespace daw::json {
 					out_it = utils::copy_to_iterator( out_it, R"(},"required":[)" );
 					out_it = output_required_members( out_it );
 					*out_it++ = ']';
-					if constexpr( ( ( json_link_no_name<
-					                    JsonMembers>::base_expected_type ==
-					                  JsonParseTypes::VariantTagged ) or
-					                ... ) ) {
+					if constexpr( ( has_dependent_member_v<JsonMembers> or ... ) ) {
 						out_it = utils::copy_to_iterator( out_it, R"(,"dependencies":{)" );
 						bool is_first = true;
 						out_it = static_cast<OutputIterator>(
@@ -278,8 +275,7 @@ namespace daw::json {
 				template<typename JsonMember>
 				static constexpr OutputIterator
 				output_dependency( OutputIterator &out_it, bool &is_first ) {
-					if constexpr( JsonMember::base_expected_type ==
-					              JsonParseTypes::VariantTagged ) {
+					if constexpr( has_dependent_member_v<JsonMember> ) {
 						if( not is_first ) {
 							*out_it++ = ',';
 						} else {

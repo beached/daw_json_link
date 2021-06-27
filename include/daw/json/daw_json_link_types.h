@@ -964,6 +964,7 @@ namespace daw::json {
 			struct json_tagged_variant {
 				using i_am_a_json_type = void;
 				using i_am_a_tagged_variant = void;
+				static constexpr JsonNullable nullable = Nullable;
 				static constexpr bool must_be_class_member = true;
 				static_assert(
 				  std::is_same<typename JsonElements::i_am_variant_type_list,
@@ -975,8 +976,9 @@ namespace daw::json {
 				static_assert( json_details::is_a_json_type_v<TagMember>,
 				               "The TagMember type must have a name and be a "
 				               "member of the same object as this" );
-				static_assert( TagMember::nullable == JsonNullable::MustExist,
-				               "The TagMember cannot be a nullable type" );
+				static_assert( json_details::is_nullability_compatable_v<
+				                 nullable, TagMember::nullable>,
+				               "The TagMember nullability mullable type" );
 				using dependent_member = TagMember;
 
 				using switcher = Switcher;
@@ -994,7 +996,6 @@ namespace daw::json {
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::None;
 				using json_elements = JsonElements;
-				static constexpr JsonNullable nullable = Nullable;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
@@ -1269,6 +1270,7 @@ namespace daw::json {
 			struct json_sized_array {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = true;
+				static constexpr JsonNullable nullable = Nullable;
 				static_assert(
 				  json_details::has_unnamed_default_type_mapping_v<JsonElement>,
 				  "Missing specialization of daw::json::json_data_contract for class "
@@ -1278,7 +1280,8 @@ namespace daw::json {
 				static_assert( json_details::is_a_json_type_v<SizeMember>,
 				               "The SizeMember type must have a name and be a "
 				               "member of the same object as this" );
-				static_assert( SizeMember::nullable == JsonNullable::MustExist,
+				static_assert( json_details::is_nullability_compatable_v<
+				                 nullable, SizeMember::nullable>,
 				               "The SizeMember cannot be a nullable type" );
 				using dependent_member = SizeMember;
 
@@ -1290,19 +1293,19 @@ namespace daw::json {
 				               "Error determining element type" );
 				using constructor_t = Constructor;
 
-				using base_type = json_details::unwrap_type<Container, Nullable>;
+				using base_type = json_details::unwrap_type<Container, nullable>;
 				static_assert( traits::not_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
-				  Nullable != JsonNullable::MustExist, Constructor,
+				  nullable != JsonNullable::MustExist, Constructor,
 				  json_element_parse_to_t const *,
 				  json_element_parse_to_t const *>::type;
 
 				static constexpr daw::string_view name = no_name;
 
 				static constexpr JsonParseTypes expected_type =
-				  get_parse_type_v<JsonParseTypes::Array, Nullable>;
+				  get_parse_type_v<JsonParseTypes::Array, nullable>;
 
 				static constexpr JsonParseTypes base_expected_type =
 				  JsonParseTypes::Array;
@@ -1311,17 +1314,16 @@ namespace daw::json {
 				               "All elements of json_array must be have no_name" );
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::Array;
-				static constexpr JsonNullable nullable = Nullable;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
 				  daw::json::json_sized_array<NewName, JsonElement, SizeMember,
-				                              Container, Constructor, Nullable>;
+				                              Container, Constructor, nullable>;
 				using without_name = json_sized_array;
 			};
 		} // namespace json_base
 
-		template<JSONNAMETYPE Name, typename SizeMember, typename JsonElement,
+		template<JSONNAMETYPE Name, typename JsonElement, typename SizeMember,
 		         typename Container, typename Constructor, JsonNullable Nullable>
 		struct json_sized_array
 		  : json_base::json_sized_array<JsonElement, SizeMember, Container,

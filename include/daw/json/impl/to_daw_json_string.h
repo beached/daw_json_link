@@ -1073,7 +1073,13 @@ namespace daw::json {
 					  "value must be convertible to specified type in class contract" );
 				} else {
 					static_assert(
-					  is_pointer_like<array_t>::value and is_container_v<parse_to_t>,
+					  is_pointer_like<array_t>::value,
+					  "This is a special case for pointer like(T*, unique_ptr<T>, "
+					  "shared_ptr<T>) arrays.  In the to_json_data it is required to "
+					  "encode the size of the data with the pointer.  Will take any "
+					  "Container like type, but std::span like types work too" );
+					static_assert(
+					  is_container_v<parse_to_t>,
 					  "This is a special case for pointer like(T*, unique_ptr<T>, "
 					  "shared_ptr<T>) arrays.  In the to_json_data it is required to "
 					  "encode the size of the data with the pointer.  Will take any "
@@ -1192,8 +1198,9 @@ namespace daw::json {
 				  ParseTag<JsonMember::expected_type>{ }, DAW_MOVE( it ), value );
 			}
 
-			template<std::size_t, typename JsonMember, typename OutputIterator,
-			         typename TpArgs, typename Value, typename VisitedMembers,
+			template<std::size_t, typename JsonMember, typename NamePack,
+			         typename OutputIterator, typename TpArgs, typename Value,
+			         typename VisitedMembers,
 			         std::enable_if_t<not has_dependent_member_v<JsonMember>,
 			                          std::nullptr_t> = nullptr>
 			inline constexpr void
@@ -1203,8 +1210,24 @@ namespace daw::json {
 
 				// This is empty so that the call is able to be put into a pack
 			}
-			template<std::size_t pos, typename JsonMember, typename OutputIterator,
-			         typename TpArgs, typename Value, typename VisitedMembers,
+
+			template<typename>
+			struct missing_required_mapping_for {};
+
+			template<typename Needle, typename... Haystack>
+			constexpr std::size_t find_names_in_pack( daw::fwd_pack<Haystack...> ) {
+				constexpr auto const names = std::array{ Haystack::name... };
+				for( size_t n = 0; n < sizeof...( Haystack ); ++n ) {
+					if( Needle::name == names[n] ) {
+						return n;
+					}
+				}
+				throw missing_required_mapping_for<Needle>{ };
+			}
+
+			template<std::size_t pos, typename JsonMember, typename NamePack,
+			         typename OutputIterator, typename TpArgs, typename Value,
+			         typename VisitedMembers,
 			         std::enable_if_t<has_dependent_member_v<JsonMember>,
 			                          std::nullptr_t> = nullptr>
 			constexpr void
@@ -1214,10 +1237,9 @@ namespace daw::json {
 				using dependent_member = dependent_member_t<JsonMember>;
 				static_assert( is_a_json_type<JsonMember>::value,
 				               "Unsupported data type" );
-				if constexpr( is_json_nullable<JsonMember>::value and
-				              JsonMember::nullable == JsonNullable::Nullable ) {
-					if( not get<pos>( args ) and
-					    JsonMember::nullable == JsonNullable::Nullable ) {
+				if constexpr( JsonMember::nullable == JsonNullable::Nullable ) {
+					// We have no requirement to output this member when it's null
+					if( not get<pos>( args ) ) {
 						return;
 					}
 				}
@@ -1227,6 +1249,7 @@ namespace daw::json {
 				if( daw::algorithm::contains( std::data( visited_members ),
 				                              daw::data_end( visited_members ),
 				                              dependent_member_name ) ) {
+					// Already outputted this member
 					return;
 				}
 				visited_members.push_back( dependent_member_name );
@@ -1239,8 +1262,15 @@ namespace daw::json {
 				  it, dependent_member_name );
 				it =
 				  utils::copy_to_iterator<false, EightBitModes::AllowFull>( it, "\":" );
-				it = member_to_string( template_arg<dependent_member>, DAW_MOVE( it ),
-				                       typename JsonMember::switcher{ }( v ) );
+				if constexpr( has_switcher_v<JsonMember> ) {
+					it = member_to_string( template_arg<dependent_member>, DAW_MOVE( it ),
+					                       typename JsonMember::switcher{ }( v ) );
+				} else {
+					constexpr std::size_t dependent_member_pos =
+					  find_names_in_pack<dependent_member>( NamePack{ } );
+					it = member_to_string( template_arg<dependent_member>, DAW_MOVE( it ),
+					                       std::get<dependent_member_pos>( args ) );
+				}
 			}
 
 			template<std::size_t pos, typename JsonMember, typename OutputIterator,
@@ -1257,9 +1287,9 @@ namespace daw::json {
 					return;
 				}
 				visited_members.push_back( json_member_name );
-				static_assert( is_a_json_type<JsonMember>::value,
+				static_assert( json_details::is_a_json_type<JsonMember>::value,
 				               "Unsupported data type" );
-				if constexpr( is_json_nullable<JsonMember>::value and
+				if constexpr( json_details::is_json_nullable<JsonMember>::value and
 				              JsonMember::nullable == JsonNullable::Nullable ) {
 					if( not json_details::has_value( get<pos>( tp ) ) ) {
 						return;

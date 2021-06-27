@@ -681,7 +681,7 @@ namespace daw::json {
 			  -> std::enable_if_t<has_dependent_member_v<JsonMember>,
 			                      json_result<JsonMember>> {
 
-				using size_member = typename JsonMember::size_member;
+				using size_member = dependent_member_t<JsonMember>;
 
 				auto [is_found, parse_state2] = find_range<ParseState>(
 				  ParseState( parse_state.class_first, parse_state.last ),
@@ -689,18 +689,17 @@ namespace daw::json {
 
 				daw_json_assert( is_found, ErrorReason::TagMemberNotFound,
 				                 parse_state );
-				auto const sz =
-				  typename JsonMember::switcher{ }( parse_value<size_member>(
-				    parse_state2, ParseTag<size_member::expected_type>{ } ) );
+				auto const sz = parse_value<size_member>(
+				  parse_state2, ParseTag<size_member::expected_type>{ } );
 
 				if constexpr( KnownBounds and ParseState::is_unchecked_input ) {
 					// We have the requested size and the actual size.  Let's see if they
 					// match
 					auto cnt = static_cast<std::ptrdiff_t>( parse_state.counter );
-					daw_json_assert( cnt < 0 or parse_state.counter == sz,
+					daw_json_assert( sz >= 0 and ( cnt < 0 or parse_state.counter == sz ),
 					                 ErrorReason::NumberOutOfRange, parse_state );
 				}
-				parse_state.counter = sz;
+				parse_state.counter = static_cast<std::size_t>( sz );
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, parse_state );

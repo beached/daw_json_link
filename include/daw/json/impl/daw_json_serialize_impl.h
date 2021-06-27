@@ -48,9 +48,10 @@ namespace daw::json {
 
 				// Using list init to ensure serialization happens in order
 				{
+					using Names = fwd_pack<JsonMembers...>;
 					daw::Empty const expander[]{
 					  ( dependent_member_to_json_str<
-					      Is, traits::nth_element<Is, JsonMembers...>>(
+					      Is, traits::nth_element<Is, JsonMembers...>, Names>(
 					      is_first, it, args, value, visited_members ),
 					    daw::Empty{ } )...,
 					  daw::Empty{} };

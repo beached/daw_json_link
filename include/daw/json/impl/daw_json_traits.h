@@ -148,6 +148,12 @@ namespace daw::json {
 			using force_aggregate_construction_test =
 			  typename json_data_contract<T>::force_aggregate_construction;
 
+			template<typename JsonMember>
+			using switcher_t = typename JsonMember::switcher;
+
+			template<typename JsonMember>
+			inline constexpr bool has_switcher_v =
+			  daw::is_detected_v<switcher_t, JsonMember>;
 		} // namespace json_details
 		/***
 		 * This trait can be specialized such that when class being returned has
@@ -595,6 +601,18 @@ namespace daw::json {
 			  not ignore_unknown_members_v<T> and
 			  ( is_exact_class_mapping_v<T> or
 			    ParseState::use_exact_mappings_by_default );
+
+			template<JsonNullable ClassNullability, JsonNullable DependentNullability>
+			inline constexpr bool is_nullability_compatable_v =
+			  ( DependentNullability == JsonNullable::MustExist ) or
+			  ( ClassNullability == JsonNullable::Nullable or
+			    ClassNullability == JsonNullable::NullVisible );
+
+			template<typename T>
+			using element_type_t = typename T::element_type;
+
+			template<typename T>
+			using has_element_type = daw::is_detected<element_type_t, T>;
 		} // namespace json_details
 
 		/***
@@ -602,13 +620,9 @@ namespace daw::json {
 		 * a Container/View of the data with the size encoded with it.
 		 * The std
 		 */
-		template<typename, typename = void>
-		struct is_pointer_like : std::false_type {};
-
 		template<typename T>
-		struct is_pointer_like<T *> : std::true_type {};
-
-		template<typename T>
-		struct is_pointer_like<T, typename T::element_type> : std::true_type {};
+		struct is_pointer_like
+		  : std::disjunction<std::is_pointer<T>,
+		                     json_details::has_element_type<T>> {};
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
