@@ -267,9 +267,7 @@ namespace daw::json {
 					return construct_value( template_args<T, Constructor>, parse_state );
 				} else {
 					constexpr bool NeedClassPositions =
-					  ( ( JsonMembers::base_expected_type ==
-					      JsonParseTypes::VariantTagged ) or
-					    ... );
+					  ( ( JsonMembers::must_be_class_member or ... ) );
 
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					auto known_locations =

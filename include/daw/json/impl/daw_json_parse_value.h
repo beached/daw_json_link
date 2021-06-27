@@ -658,6 +658,13 @@ namespace daw::json {
 			[[nodiscard,
 			  maybe_unused]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> ) {
+
+				if constexpr( is_fixed_array_v<JsonMember> ) {
+					using size_member = typename JsonMember::size_member;
+					auto [is_found, parse_state2] = find_range<ParseState>(
+					  ParseState( parse_state.class_first, parse_state.last ),
+					  size_member::name );
+				}
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, parse_state );

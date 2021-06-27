@@ -8,10 +8,10 @@
 [![Build Status Windows - MSVC](https://github.com/beached/daw_json_link/workflows/Windows/badge.svg)](https://github.com/beached/daw_json_link/actions?query=workflow%3AWindows)
 
 ## Content 
-* [Intro](#intro)
+  * [Intro](#intro)
   * [Default Mapping of Types](#default-mapping-of-types)
-* [API Documentation](https://beached.github.io/daw_json_link/html/) - Member mapping classes and methods
-* [Cookbook](docs/cookbook/readme.md) Get cooking and putting it all together 
+  * [API Documentation](https://beached.github.io/daw_json_link/html/) - Member mapping classes and methods
+  * [Cookbook](docs/cookbook/readme.md) Get cooking and putting it all together 
   * [Arrays](docs/cookbook/array.md)
   * [Classes](docs/cookbook/class.md)
   * [Class from Array](docs/cookbook/class_from_array.md)
@@ -27,25 +27,25 @@
   * [Unknown JSON and Delayed Parsing](docs/cookbook/unknown_types_and_delayed_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
   * [Variant](docs/cookbook/variant.md)
   * [Automatic Code Generation](docs/cookbook/automated_code_generation.md)
-* [Intro](#intro)
-* [Installing/Using](#installingusing)
-* [Performance considerations](#performance-considerations)
+  * [Intro](#intro)
+  * [Installing/Using](#installingusing)
+  * [Performance considerations](#performance-considerations)
   * [Benchmarks](#benchmarks)
-* [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
-* [Differences between C++17 and C++20](#differences-between-c17-and-c20)
+  * [Escaping/Unescaping of member names](#escapingunescaping-of-member-names)
+  * [Differences between C++17 and C++20](#differences-between-c17-and-c20)
   * [C++ 17 Naming of members](#naming-of-json-members)
   * [C++ 20 Naming of members](#c-20-naming-of-json-members)
-* [Using data types](#using-mapped-data-types)
-* [Error Handling](#error-handling)
+  * [Using data types](#using-mapped-data-types)
+  * [Error Handling](#error-handling)
   * [Parsing call](#parsing-call)
   * [Global](#global)
-* [Deserializing/Parsing](#deserializingparsing)
+  * [Deserializing/Parsing](#deserializingparsing)
   * [Member Paths](#member-paths) 
-* [Serialization](#serialization)
-* [Build Configuration Points](#build-configuration-points)
-* [Requirements](#requirements)
+  * [Serialization](#serialization)
+  * [Build Configuration Points](#build-configuration-points)
+  * [Requirements](#requirements)
   * [For building tests](#for-building-tests)
-* [Limitations](#limitations)
+  * [Limitations](#limitations)
 
 
 ## Intro 

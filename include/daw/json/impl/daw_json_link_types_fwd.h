@@ -597,6 +597,14 @@ namespace daw::json {
 		  JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_tagged_variant;
 
+		template<
+		  JSONNAMETYPE Name, typename JsonElement, typename JsonSizeMember,
+		  typename Container = std::vector<
+		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
+		  typename Constructor = default_constructor<Container>,
+		  JsonNullable Nullable = JsonNullable::MustExist>
+		struct json_fixed_array;
+
 		/***
 		 * Link to a nullable variant like data type that is discriminated via
 		 * another member.
@@ -631,5 +639,5 @@ namespace daw::json {
 			template<typename T>
 			using ensure_mapped_t = typename ensure_mapped<T>::type;
 		} // namespace json_details
-	} // namespace DAW_JSON_VER
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json
