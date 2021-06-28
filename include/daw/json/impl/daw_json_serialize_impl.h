@@ -86,7 +86,6 @@ namespace daw::json {
 			serialize_json_class( OutputIterator it, Tuple const &args,
 			                      Value const &value, std::index_sequence<Is...> ) {
 
-				bool is_first = true;
 				*it++ = '{';
 
 				using visit_size = std::integral_constant<
@@ -101,6 +100,7 @@ namespace daw::json {
 				// faster in the future
 
 				// Using list init to ensure serialization happens in order
+				bool is_first = true;
 				{
 					using Names = fwd_pack<JsonMembers...>;
 					daw::Empty const expander[]{

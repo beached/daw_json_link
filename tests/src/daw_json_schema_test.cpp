@@ -60,10 +60,17 @@ struct UniquePtrArrayCtor {
 	}
 
 	template<typename Iterator>
-	inline std::unique_ptr<T[]> operator( )( Iterator first, Iterator last, std::size_t sz ) {
+	inline std::unique_ptr<T[]> operator( )( Iterator first, Iterator last,
+	                                         std::size_t sz ) const {
 		assert( sz >= 0 );
 		auto result = std::unique_ptr<T[]>( new T[static_cast<std::size_t>( sz )] );
-		std::copy( first, last, result.get( ) );
+		auto out_last = std::copy( first, last, result.get( ) );
+		(void)out_last;
+		auto const elements_copied = out_last - result.get( );
+		(void)elements_copied;
+		assert( elements_copied >= 0 );
+		assert( static_cast<std::size_t>( elements_copied ) == sz );
+
 		return result;
 	}
 };
@@ -89,6 +96,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<Foo> {
+		using force_aggregate_construction = void;
 		static constexpr char const a[] = "a";
 		static constexpr char const b[] = "b";
 		static constexpr char const c[] = "c";
@@ -127,9 +135,9 @@ namespace daw::json {
 } // namespace daw::json
 
 int main( ) {
+
 	std::string result = daw::json::to_json_schema<Foo>( "", "Foo" );
 	puts( result.c_str( ) );
-
 	puts( "----\n" );
 	std::string json_str = daw::json::to_json( Foo{ } );
 	puts( json_str.c_str( ) );

@@ -171,6 +171,12 @@ namespace daw::json {
 			template<typename JsonMember, bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator
+			to_json_schema( ParseTag<JsonParseTypes::SizedArray>,
+			                OutputIterator out_it );
+
+			template<typename JsonMember, bool is_root = false,
+			         typename OutputIterator>
+			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::KeyValue>,
 			                OutputIterator out_it );
 
@@ -376,6 +382,14 @@ namespace daw::json {
 					*out_it++ = '}';
 				}
 				return out_it;
+			}
+
+			template<typename JsonMember, bool is_root, typename OutputIterator>
+			constexpr OutputIterator
+			to_json_schema( ParseTag<JsonParseTypes::SizedArray>,
+			                OutputIterator out_it ) {
+				return to_json_schema<JsonMember, is_root>(
+				  ParseTag<JsonParseTypes::Array>{ }, out_it );
 			}
 
 			template<typename JsonMember, bool is_root, typename OutputIterator>

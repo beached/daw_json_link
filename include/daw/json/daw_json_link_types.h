@@ -1300,23 +1300,22 @@ namespace daw::json {
 				static_assert( json_details::is_a_json_type_v<json_element_t>,
 				               "Error determining element type" );
 				using constructor_t = Constructor;
-
 				using base_type = json_details::unwrap_type<Container, nullable>;
 				static_assert( traits::not_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
 				  nullable != JsonNullable::MustExist, Constructor,
-				  json_element_parse_to_t const *,
-				  json_element_parse_to_t const *>::type;
+				  json_element_parse_to_t const *, json_element_parse_to_t const *,
+				  std::size_t>::type;
 
 				static constexpr daw::string_view name = no_name;
 
 				static constexpr JsonParseTypes expected_type =
-				  get_parse_type_v<JsonParseTypes::Array, nullable>;
+				  get_parse_type_v<JsonParseTypes::SizedArray, nullable>;
 
 				static constexpr JsonParseTypes base_expected_type =
-				  JsonParseTypes::Array;
+				  JsonParseTypes::SizedArray;
 
 				static_assert( json_element_t::name == no_name,
 				               "All elements of json_array must be have no_name" );

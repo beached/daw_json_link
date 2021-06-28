@@ -72,17 +72,14 @@ namespace daw::json {
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
-			[[nodiscard]] constexpr auto
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> )
-			  -> std::enable_if_t<not has_dependent_member_v<JsonMember>,
-			                      json_result<JsonMember>>;
+			[[nodiscard]] constexpr json_result<JsonMember>
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
-			[[nodiscard]] constexpr auto
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> )
-			  -> std::enable_if_t<has_dependent_member_v<JsonMember>,
-			                      json_result<JsonMember>>;
+			[[nodiscard]] constexpr json_result<JsonMember>
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::SizedArray> );
 
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>

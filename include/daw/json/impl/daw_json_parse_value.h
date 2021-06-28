@@ -655,11 +655,9 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard, maybe_unused]] DAW_ATTRIB_FLATTEN constexpr auto
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> )
-			  -> std::enable_if_t<not has_dependent_member_v<JsonMember>,
-			                      json_result<JsonMember>> {
-
+			[[nodiscard,
+			  maybe_unused]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> ) {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, parse_state );
@@ -676,10 +674,10 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
-			[[nodiscard, maybe_unused]] DAW_ATTRIB_FLATTEN constexpr auto
-			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Array> )
-			  -> std::enable_if_t<has_dependent_member_v<JsonMember>,
-			                      json_result<JsonMember>> {
+			[[nodiscard,
+			  maybe_unused]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMember>
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::SizedArray> ) {
 
 				using size_member = dependent_member_t<JsonMember>;
 

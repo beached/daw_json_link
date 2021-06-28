@@ -249,6 +249,12 @@ namespace daw::json {
 			template<typename JsonMember, typename OutputIterator,
 			         typename parse_to_t>
 			[[nodiscard]] constexpr OutputIterator
+			to_daw_json_string( ParseTag<JsonParseTypes::SizedArray>,
+			                    OutputIterator it, parse_to_t const &value );
+
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			[[nodiscard]] constexpr OutputIterator
 			to_daw_json_string( ParseTag<JsonParseTypes::KeyValueArray>,
 			                    OutputIterator it, parse_to_t const &value );
 
@@ -1098,6 +1104,15 @@ namespace daw::json {
 				}
 				*it++ = ']';
 				return it;
+			}
+
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			[[nodiscard]] constexpr OutputIterator
+			to_daw_json_string( ParseTag<JsonParseTypes::SizedArray>,
+			                    OutputIterator it, parse_to_t const &value ) {
+				return to_daw_json_string<JsonMember>(
+				  ParseTag<JsonParseTypes::Array>{ }, it, value );
 			}
 
 			template<typename Key, typename Value>
