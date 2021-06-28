@@ -57,11 +57,10 @@ namespace daw::json {
 				}
 			};
 
-			template<typename JsonMember, typename ParseState, bool KnownBounds,
-			         bool HasSize = KnownBounds>
+			template<typename JsonMember, typename ParseState, bool KnownBounds>
 			struct json_parse_array_iterator
-			  : json_parse_array_iterator_base<
-			      ParseState, ( can_random_v<KnownBounds> or HasSize )> {
+			  : json_parse_array_iterator_base<ParseState,
+			                                   can_random_v<KnownBounds>> {
 
 				using base =
 				  json_parse_array_iterator_base<ParseState, can_random_v<KnownBounds>>;
