@@ -55,7 +55,7 @@ namespace daw::json {
 				unsigned long index;
 				_BitScanForward( &index, static_cast<int>( value ) );
 				return static_cast<std::ptrdiff_t>( index );
-#elif
+#else
 				(void)value;
 				DAW_BUILTIN_UNREACHABLE( );
 #endif
