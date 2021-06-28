@@ -665,6 +665,7 @@ namespace daw::json {
 				parse_state.trim_left_unchecked( );
 				// TODO: add parse option to disable random access iterators. This is
 				// coding to the implementations
+
 				using iterator_t =
 				  json_parse_array_iterator<JsonMember, ParseState, KnownBounds>;
 				using constructor_t = typename JsonMember::constructor_t;
@@ -705,7 +706,7 @@ namespace daw::json {
 				// TODO: add parse option to disable random access iterators. This is
 				// coding to the implementations
 				using iterator_t =
-				  json_parse_array_iterator<JsonMember, ParseState, false, false>;
+				  json_parse_array_iterator<JsonMember, ParseState, false>;
 				using constructor_t = typename JsonMember::constructor_t;
 				return construct_value(
 				  template_args<json_result<JsonMember>, constructor_t>, parse_state,

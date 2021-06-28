@@ -31,7 +31,6 @@ namespace daw::json {
 				ParseState *parse_state = nullptr;
 			};
 
-#if not defined( _MSC_VER ) or not defined( __clang__ )
 			template<typename ParseState>
 			struct json_parse_array_iterator_base<ParseState, true> {
 				// We have to lie so that std::distance uses O(1) instead of O(N)
@@ -57,16 +56,14 @@ namespace daw::json {
 					return rhs.counter;
 				}
 			};
-#endif
 
-			template<typename JsonMember, typename ParseState, bool KnownBounds,
-			         bool HasSize = KnownBounds>
-			struct json_parse_array_iterator
-			  : private json_parse_array_iterator_base<
-			      ParseState, ( can_random_v<KnownBounds> or HasSize )> {
+			template<typename JsonMember, typename ParseState, bool KnownBounds>
+			struct json_parse_array_iterator final
+			  : private json_parse_array_iterator_base<ParseState,
+			                                           can_random_v<KnownBounds>> {
 
-				using base = json_parse_array_iterator_base<
-				  ParseState, ( can_random_v<KnownBounds> or HasSize )>;
+				using base =
+				  json_parse_array_iterator_base<ParseState, can_random_v<KnownBounds>>;
 
 				using iterator_category = typename base::iterator_category;
 				using element_t = typename JsonMember::json_element_t::without_name;
@@ -89,12 +86,6 @@ namespace daw::json {
 							// Ensure we are equal to default
 						}
 						base::parse_state = nullptr;
-					}
-				}
-
-				constexpr auto operator-( json_parse_array_iterator const &rhs ) const {
-					if constexpr( base::has_counter ) {
-						return base::operator-( rhs );
 					}
 				}
 
