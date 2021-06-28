@@ -101,6 +101,10 @@ namespace daw::json {
 
 				// Using list init to ensure serialization happens in order
 				bool is_first = true;
+
+				// gcc complains when JsonMembers is empty
+				(void)visited_members;
+				(void)is_first;
 				{
 					using Names = fwd_pack<JsonMembers...>;
 					daw::Empty const expander[]{
@@ -134,6 +138,7 @@ namespace daw::json {
 
 				*it++ = '[';
 				size_t array_idx = 0;
+				(void)array_idx; // gcc was complaining on empty pack
 				Unused( value );
 				{
 					daw::Empty const expander[]{
