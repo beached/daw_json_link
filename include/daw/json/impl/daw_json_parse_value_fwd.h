@@ -115,7 +115,7 @@ namespace daw::json {
 			[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Unknown> );
 
-#if( defined( _MSC_VER ) and not defined( __clang__ ) )
+#if defined( _MSC_VER ) and not defined( __clang__ )
 			// Lying to MSVC about being a random iterator causes issues I have not
 			// found yet
 			template<bool>
