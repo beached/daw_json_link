@@ -57,7 +57,7 @@ namespace daw::json {
 				return static_cast<std::ptrdiff_t>( index );
 #else
 				(void)value;
-				DAW_BUILTIN_UNREACHABLE( );
+				DAW_UNREACHABLE( );
 #endif
 			}
 
