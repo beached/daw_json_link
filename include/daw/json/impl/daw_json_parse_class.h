@@ -325,42 +325,6 @@ namespace daw::json {
 						}
 					}
 				}
-			}
-
-			template<bool AllMembersMustExist, typename ParseState>
-			struct ordered_class_cleanup {
-				ParseState &parse_state;
-
-				DAW_ATTRIB_INLINE
-				CPP20CONSTEXPR inline ~ordered_class_cleanup( ) noexcept( false ) {
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
-					if( DAW_IS_CONSTANT_EVALUATED( ) ) {
-						if constexpr( AllMembersMustExist ) {
-							parse_state.trim_left( );
-							daw_json_assert_weak( parse_state.front( ) == ']',
-							                      ErrorReason::UnknownMember, parse_state );
-							parse_state.remove_prefix( );
-							parse_state.trim_left_checked( );
-						} else {
-							(void)parse_state.skip_array( );
-						}
-					} else {
-#endif
-						if( std::uncaught_exceptions( ) == 0 ) {
-							if constexpr( AllMembersMustExist ) {
-								parse_state.trim_left( );
-								daw_json_assert_weak( parse_state.front( ) == ']',
-								                      ErrorReason::UnknownMember, parse_state );
-								parse_state.remove_prefix( );
-								parse_state.trim_left_checked( );
-							} else {
-								(void)parse_state.skip_array( );
-							}
-						}
-#if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
-					}
-#endif
-				}
 			};
 
 			/***

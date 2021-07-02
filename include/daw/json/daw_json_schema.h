@@ -170,6 +170,11 @@ namespace daw::json {
 
 			template<typename JsonMember, bool is_root = false,
 			         typename OutputIterator>
+			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Tuple>,
+			                                         OutputIterator out_it );
+
+			template<typename JsonMember, bool is_root = false,
+			         typename OutputIterator>
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::SizedArray>,
 			                OutputIterator out_it );
@@ -365,6 +370,50 @@ namespace daw::json {
 					*out_it++ = '}';
 				}
 				return out_it;
+			}
+
+			namespace json_details {
+				template<typename Tuple, bool is_root, typename OutputIterator,
+				         std::size_t... Is>
+				constexpr OutputIterator
+				to_json_tuple_schema( OutputIterator out_it,
+				                      std::index_sequence<Is...> ) {
+					if constexpr( not is_root ) {
+						*out_it++ = '{';
+					}
+
+					bool is_first = true;
+					auto const process_member = [&]( auto Idx ) {
+						if( not is_first ) {
+							*out_it++ = ',';
+						} else {
+							is_first = false;
+						}
+						using JsonMember = json_deduced_type<
+						  std::tuple_element_t<decltype( Idx )::value, Tuple>>;
+						out_it = to_json_schema<JsonMember>(
+						  ParseTag<JsonMember::base_expected_type>{ }, out_it );
+					};
+
+					daw::Empty expander[] = {
+					  ( process_member( std::integral_constant<std::size_t, Is>{ } ),
+					    daw::Empty{ } )...,
+					  daw::Empty{} };
+					(void)expander;
+
+					if constexpr( not is_root ) {
+						*out_it++ = '}';
+					}
+					return out_it;
+				}
+			} // namespace json_details
+
+			template<typename JsonMember, bool is_root, typename OutputIterator>
+			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Tuple>,
+			                                         OutputIterator out_it ) {
+				using tuple_t = typename JsonMember::base_type;
+				return json_details::to_json_tuple_schema<tuple_t, is_root>(
+				  out_it, std::make_index_sequence<std::tuple_size_v<tuple_t>>{ } );
 			}
 
 			template<typename JsonMember, bool is_root, typename OutputIterator>

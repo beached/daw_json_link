@@ -33,6 +33,7 @@ namespace daw::json {
 			Custom,
 			Variant,
 			VariantTagged,
+			Tuple,
 			Unknown
 		};
 

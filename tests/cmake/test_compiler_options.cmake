@@ -40,6 +40,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-documentation 
 				-Wno-undefined-inline 
 				-Wno-poison-system-directories
+				-Wno-newline-eof
 			)
 			if( DAW_WERROR ) 
 				add_compile_options( -Werror -pedantic-errors )

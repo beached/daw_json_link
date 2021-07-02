@@ -8,9 +8,9 @@
 
 #include "defines.h"
 
-#include <daw/daw_read_file.h>
-
 #include "daw/json/daw_json_link.h"
+
+#include <daw/daw_read_file.h>
 
 #include <boost/multiprecision/cpp_dec_float.hpp>
 #include <cstdint>
@@ -64,7 +64,10 @@ int main( int argc, char **argv )
 	             "Unexpected round trip error" );
 	test_assert( numbers.size( ) == numbers2.size( ),
 	             "Unexpected round trip error" );
-} catch( daw::json::json_exception const &jex ) {
+}
+#ifdef DAW_USE_EXCEPTIONS
+catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
+#endif

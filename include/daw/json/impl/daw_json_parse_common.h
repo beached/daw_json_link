@@ -329,6 +329,10 @@ namespace daw::json {
 			template<json_options_t CurrentOptions, auto option, auto... options>
 			inline constexpr json_options_t json_raw_opts_set =
 			  set_bits( json_raw_opts, CurrentOptions, option, options... );
+
+			template<json_options_t CurrentOptions, auto option, auto... options>
+			inline constexpr json_options_t tuple_opts_set =
+			  set_bits( tuple_opts, CurrentOptions, option, options... );
 		} // namespace json_details
 
 		namespace json_base {
@@ -401,6 +405,18 @@ namespace daw::json {
 			using json_key_value_null =
 			  json_key_value<Container, JsonValueType, JsonKeyType,
 			                 nullable_constructor<Container>, JsonNullDefault>;
+
+			template<typename Tuple,
+			         typename Constructor = default_constructor<Tuple>,
+			         json_details::json_options_t Options = tuple_opts_def>
+			struct json_tuple;
+
+			template<typename Tuple,
+			         typename Constructor = default_constructor<Tuple>,
+			         json_details::json_options_t Options = class_opts_def>
+			using json_tuple_null =
+			  json_tuple<Tuple, Constructor,
+			             json_details::tuple_opts_set<Options, JsonNullDefault>>;
 		} // namespace json_base
 
 		namespace json_details {
@@ -557,6 +573,17 @@ namespace daw::json {
 				static constexpr bool type_map_found = true;
 			};
 
+			template<typename Tuple>
+			struct json_deduced_type_map<
+			  Tuple, std::enable_if_t<std::conjunction_v<
+			           not_trait<json_details::has_json_data_contract_trait<Tuple>>,
+			           is_tuple<Tuple>>>> {
+				static constexpr bool is_null = false;
+				static constexpr JsonParseTypes parse_type = JsonParseTypes::Tuple;
+
+				static constexpr bool type_map_found = true;
+			};
+
 			namespace container_detect {
 				template<typename T>
 				using container_value_type = typename T::value_type;
@@ -705,6 +732,12 @@ namespace daw::json {
 						} else {
 							return json_link_quick_map_type<json_base::json_number<T>>{ };
 						}
+					} else if constexpr( mapped_type == JsonParseTypes::Tuple ) {
+						if constexpr( is_null ) {
+							return json_link_quick_map_type<json_base::json_tuple_null<T>>{ };
+						} else {
+							return json_link_quick_map_type<json_base::json_tuple<T>>{ };
+						}
 					} else if constexpr( mapped_type == JsonParseTypes::KeyValue ) {
 						if constexpr( is_null ) {
 							using b_t = typename mapped_type_t::base_type;
@@ -797,10 +830,9 @@ namespace daw::json {
 			         bool Container>
 			struct json_type_deducer<T, true, JsonType, QuickMap, Container> {
 
+				static_assert( not std::is_same_v<T, void> );
 				using type = json_base::json_class<
 				  T, json_class_constructor_t<T, default_constructor<T>>>;
-
-				static_assert( not std::is_same_v<T, void> );
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
 				static_assert(
@@ -811,12 +843,11 @@ namespace daw::json {
 			template<typename T,
 			         /*bool Contract, bool JsonType,*/ bool QuickMap, bool Container>
 			struct json_type_deducer<T, false, true, QuickMap, Container> {
+				static_assert( not std::is_same_v<T, void> );
 				using type =
 				  typename std::conditional_t<is_json_class_map_v<T>,
 				                              json_class_map_type<T>,
 				                              daw::traits::identity<T>>::type;
-
-				static_assert( not std::is_same_v<T, void> );
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
 				static_assert(
@@ -827,9 +858,8 @@ namespace daw::json {
 			template<typename T /*bool Contract, bool JsonType, bool QuickMap*/,
 			         bool Container>
 			struct json_type_deducer<T, false, false, true, Container> {
-				using type = json_link_quick_map_t<T>;
-
 				static_assert( not std::is_same_v<T, void> );
+				using type = json_link_quick_map_t<T>;
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
 				static_assert(
@@ -842,8 +872,8 @@ namespace daw::json {
 			template<typename T
 			         /*bool Contract, bool JsonType, bool QuickMap,bool Container*/>
 			struct json_type_deducer<T, false, false, false, true> {
-				using type = json_base::json_array<typename T::value_type, T>;
 				static_assert( not std::is_same_v<T, void> );
+				using type = json_base::json_array<typename T::value_type, T>;
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
 				static_assert(

@@ -1066,6 +1066,54 @@ namespace daw::json {
 			}
 
 			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t, std::size_t... Is>
+			OutputIterator to_daw_json_string_tuple( OutputIterator it,
+			                                         parse_to_t const &value,
+			                                         std::index_sequence<Is...> ) {
+
+				auto const to_daw_json_string_help = [&]( auto Idx, bool &is_first ) {
+					constexpr std::size_t index = decltype( Idx )::value;
+					using T = json_deduced_type<std::tuple_element_t<index, parse_to_t>>;
+					if( is_first ) {
+						is_first = false;
+					} else {
+						*it++ = ',';
+					}
+					it = to_daw_json_string<T>( ParseTag<T::expected_type>{ }, it,
+					                            std::get<index>( value ) );
+				};
+
+				bool is_first = true;
+				daw::Empty const expander[]{
+				  ( to_daw_json_string_help( std::integral_constant<std::size_t, Is>{ },
+				                             is_first ),
+				    daw::Empty{ } )...,
+				  daw::Empty{} };
+				(void)expander;
+
+				return it;
+			}
+
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			[[nodiscard]] constexpr OutputIterator
+			to_daw_json_string( ParseTag<JsonParseTypes::Tuple>, OutputIterator it,
+			                    parse_to_t const &value ) {
+
+				using tuple_t = typename JsonMember::parse_to_t;
+				static_assert( is_tuple_v<tuple_t>, "Expected tuple like type" );
+				static_assert(
+				  std::is_convertible<parse_to_t, tuple_t>::value,
+				  "value must be convertible to specified type in class contract" );
+
+				*it++ = '[';
+				it = to_daw_json_string_tuple<JsonMember>(
+				  it, value, std::make_index_sequence<JsonMember::member_count>{ } );
+				*it++ = ']';
+				return it;
+			}
+
+			template<typename JsonMember, typename OutputIterator,
 			         typename parse_to_t>
 			[[nodiscard]] constexpr OutputIterator
 			to_daw_json_string( ParseTag<JsonParseTypes::Array>, OutputIterator it,

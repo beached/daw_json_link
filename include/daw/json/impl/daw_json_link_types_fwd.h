@@ -628,6 +628,19 @@ namespace daw::json {
 		  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements,
 		                      Constructor, JsonNullDefault>;
 
+		template<JSONNAMETYPE Name, typename Tuple,
+		         typename Constructor = default_constructor<Tuple>,
+		         json_details::json_options_t Options = tuple_opts_def>
+		struct json_tuple;
+
+		template<JSONNAMETYPE Name, typename Tuple,
+		         typename Constructor = default_constructor<Tuple>,
+		         json_details::json_options_t Options = tuple_opts_def>
+
+		using json_tuple_null =
+		  json_tuple<Name, Tuple, Constructor,
+		             json_details::tuple_opts_set<Options, JsonNullDefault>>;
+
 		namespace json_details {
 			template<typename T>
 			struct ensure_mapped {

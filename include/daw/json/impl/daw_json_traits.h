@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include <daw/cpp_17.h>
+#include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_move.h>
 #include <daw/daw_scope_guard.h>
 #include <daw/daw_traits.h>
@@ -148,6 +149,10 @@ namespace daw::json {
 			using force_aggregate_construction_test =
 			  typename json_data_contract<T>::force_aggregate_construction;
 
+			template<typename T>
+			using force_aggregate_construction_test2 =
+			  decltype( T::force_aggregate_construction );
+
 			template<typename JsonMember>
 			using switcher_t = typename JsonMember::switcher;
 
@@ -164,8 +169,9 @@ namespace daw::json {
 		 * @tparam T type to specialize
 		 */
 		template<typename T>
-		using force_aggregate_construction =
-		  daw::is_detected<json_details::force_aggregate_construction_test, T>;
+		using force_aggregate_construction = std::bool_constant<std::disjunction_v<
+		  daw::is_detected<json_details::force_aggregate_construction_test, T>,
+		  daw::is_detected<json_details::force_aggregate_construction_test2, T>>>;
 
 		template<typename T>
 		inline constexpr bool force_aggregate_construction_v =
@@ -624,5 +630,32 @@ namespace daw::json {
 		struct is_pointer_like
 		  : std::disjunction<std::is_pointer<T>,
 		                     json_details::has_element_type<T>> {};
-	} // namespace DAW_JSON_VER
+		;
+
+		template<typename Tuple>
+		struct tuple_elements_pack;
+
+		template<typename... Ts>
+		struct tuple_elements_pack<std::tuple<Ts...>> {
+			using type = std::tuple<Ts...>;
+		};
+
+		template<typename... Ts>
+		struct tuple_elements_pack<daw::fwd_pack<Ts...>> {
+			using type = std::tuple<Ts...>;
+		};
+
+		namespace json_details {
+			template<typename T>
+			using tuple_test = typename tuple_elements_pack<T>::type;
+
+			/// Detect if T follows the tuple protocol
+			/// \tparam T
+			template<typename T>
+			using is_tuple = daw::is_detected<json_details::tuple_test, T>;
+
+			template<typename T>
+			inline constexpr bool is_tuple_v = is_tuple<T>::value;
+		} // namespace json_details
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

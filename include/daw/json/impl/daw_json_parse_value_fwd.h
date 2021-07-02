@@ -78,6 +78,11 @@ namespace daw::json {
 			template<typename JsonMember, bool KnownBounds = false,
 			         typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
+			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Tuple> );
+
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::SizedArray> );
 

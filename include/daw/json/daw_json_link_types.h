@@ -1598,6 +1598,82 @@ namespace daw::json {
 		  json_base::json_key_value_array<Container, JsonValueType, JsonKeyType,
 		                                  Constructor, JsonNullDefault>;
 
+		namespace json_base {
+			namespace json_tuple_impl {
+				using std::tuple_size;
+				template<typename T>
+				inline constexpr std::size_t json_tuple_member_count =
+				  tuple_size<T>::value;
+			} // namespace json_tuple_impl
+
+			template<typename Tuple, typename Constructor,
+			         json_details::json_options_t Options>
+			struct json_tuple {
+				using i_am_a_json_type = void;
+				static constexpr daw::string_view name = no_name;
+
+				using wrapped_type = Tuple;
+				static constexpr bool must_be_class_member = false;
+				static constexpr bool force_aggregate_construction = false;
+
+				static constexpr JsonNullable nullable =
+				  json_details::get_bits_for<JsonNullable>( tuple_opts, Options );
+
+				using base_type = json_details::unwrap_type<Tuple, nullable>;
+
+				static constexpr std::size_t member_count =
+				  json_tuple_impl::json_tuple_member_count<base_type>;
+
+				using constructor_t =
+				  json_details::json_class_constructor_t<base_type, Constructor>;
+
+				static_assert( traits::not_same<void, base_type>::value,
+				               "Failed to detect base type" );
+
+				using parse_to_t = typename json_details::construction_result<
+				  nullable != JsonNullable::MustExist, Constructor, base_type>::type;
+
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::Tuple, nullable>;
+				static constexpr JsonParseTypes base_expected_type =
+				  JsonParseTypes::Tuple;
+				static constexpr JsonBaseParseTypes underlying_json_type =
+				  JsonBaseParseTypes::Array;
+
+				template<JSONNAMETYPE NewName>
+				using with_name =
+				  daw::json::json_tuple<NewName, Tuple, Constructor, Options>;
+				using without_name = json_tuple;
+			};
+		} // namespace json_base
+
+		template<JSONNAMETYPE Name, typename Tuple, typename Constructor,
+		         json_details::json_options_t Options>
+		struct json_tuple : json_base::json_tuple<Tuple, Constructor, Options> {
+			static constexpr daw::string_view name = Name;
+#if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
+			static_assert( name != no_name,
+			               "For no_name mappings, use the json_tuple_no_name "
+			               "variant without a name argument" );
+#endif
+
+			template<JSONNAMETYPE NewName>
+			using with_name = json_tuple<NewName, Tuple, Constructor, Options>;
+
+			using without_name = json_base::json_tuple<Tuple, Constructor, Options>;
+		};
+
+		template<typename Tuple, typename Constructor = default_constructor<Tuple>,
+		         json_details::json_options_t Options = tuple_opts_def>
+		using json_tuple_no_name =
+		  json_base::json_tuple<Tuple, Constructor, Options>;
+
+		template<typename Tuple, typename Constructor = default_constructor<Tuple>,
+		         json_details::json_options_t Options = tuple_opts_def>
+		using json_tuple_null_no_name = json_base::json_tuple<
+		  Tuple, Constructor,
+		  json_details::tuple_opts_set<Options, JsonNullDefault>>;
+
 		/***
 		 * An untyped JSON value
 		 */

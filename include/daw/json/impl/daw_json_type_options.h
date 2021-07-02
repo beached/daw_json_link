@@ -173,6 +173,17 @@ namespace daw::json {
 			return class_opts_t::options( options... );
 		}
 
+		// json_tuple
+		using tuple_opts_t = json_details::JsonOptionList<JsonNullable>;
+		inline constexpr auto tuple_opts = tuple_opts_t{ };
+		inline constexpr json_details::json_options_t tuple_opts_def =
+		  tuple_opts_t::default_option_flag;
+
+		template<typename... Options>
+		constexpr json_details::json_options_t tuple_opt( Options... options ) {
+			return tuple_opts_t::options( options... );
+		}
+
 		/***
 		 * Custom JSON types can be Strings(default), unquoted Literals, or a mix
 		 * String - Parser always expects a JSON string.  Will surround serialized
