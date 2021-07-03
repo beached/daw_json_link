@@ -1082,8 +1082,9 @@ namespace daw::json {
 					} else {
 						*it++ = ',';
 					}
-					it = to_daw_json_string<T>( ParseTag<T::expected_type>{ }, it,
-					                            std::get<index>( value ) );
+					it =
+					  to_daw_json_string<T>( ParseTag<T::expected_type>{ }, it,
+					                         pack_element::template get<index>( value ) );
 				};
 
 				bool is_first = true;

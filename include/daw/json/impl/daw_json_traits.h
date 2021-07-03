@@ -645,6 +645,11 @@ namespace daw::json {
 
 			template<std::size_t Idx>
 			using element_t = std::tuple_element_t<Idx, type>;
+
+			template<std::size_t Idx, typename Tuple>
+			static constexpr decltype( auto ) get( Tuple &&tp ) {
+				return std::get<Idx>( DAW_FWD( tp ) );
+			}
 		};
 
 		template<typename... Ts>
@@ -655,6 +660,11 @@ namespace daw::json {
 
 			template<std::size_t Idx>
 			using element_t = typename daw::tuple_element<Idx, type>::type;
+
+			template<std::size_t Idx, typename Tuple>
+			static constexpr decltype( auto ) get( Tuple &&tp ) {
+				return DAW_FWD( tp ).template get<Idx>( );
+			}
 		};
 
 		namespace json_details {
