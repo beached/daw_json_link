@@ -955,8 +955,11 @@ namespace daw::json {
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
 			DAW_ATTRIB_FLATINLINE constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Tuple> ) {
+				using tuple_t = typename JsonMember::base_type;
+				using element_pack = tuple_elements_pack<tuple_t>;
+
 				return parse_tuple_value<JsonMember, KnownBounds>(
-				  parse_state, std::make_index_sequence<JsonMember::member_count>{ } );
+				  parse_state, std::make_index_sequence<element_pack::size>{ } );
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>

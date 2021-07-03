@@ -1599,13 +1599,6 @@ namespace daw::json {
 		                                  Constructor, JsonNullDefault>;
 
 		namespace json_base {
-			namespace json_tuple_impl {
-				using std::tuple_size;
-				template<typename T>
-				inline constexpr std::size_t json_tuple_member_count =
-				  tuple_size<T>::value;
-			} // namespace json_tuple_impl
-
 			template<typename Tuple, typename Constructor,
 			         json_details::json_options_t Options>
 			struct json_tuple {
@@ -1620,9 +1613,6 @@ namespace daw::json {
 				  json_details::get_bits_for<JsonNullable>( tuple_opts, Options );
 
 				using base_type = json_details::unwrap_type<Tuple, nullable>;
-
-				static constexpr std::size_t member_count =
-				  json_tuple_impl::json_tuple_member_count<base_type>;
 
 				using constructor_t =
 				  json_details::json_class_constructor_t<base_type, Constructor>;

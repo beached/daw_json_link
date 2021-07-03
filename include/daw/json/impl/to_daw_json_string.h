@@ -1104,6 +1104,8 @@ namespace daw::json {
 			                    parse_to_t const &value ) {
 
 				using tuple_t = typename JsonMember::parse_to_t;
+				using element_pack = tuple_elements_pack<tuple_t>;
+
 				static_assert( is_tuple_v<tuple_t>, "Expected tuple like type" );
 				static_assert(
 				  std::is_convertible<parse_to_t, tuple_t>::value,
@@ -1111,7 +1113,7 @@ namespace daw::json {
 
 				*it++ = '[';
 				it = to_daw_json_string_tuple<JsonMember>(
-				  it, value, std::make_index_sequence<JsonMember::member_count>{ } );
+				  it, value, std::make_index_sequence<element_pack::size>{ } );
 				*it++ = ']';
 				return it;
 			}

@@ -416,7 +416,8 @@ namespace daw::json {
 			                                         OutputIterator out_it ) {
 				using tuple_t = typename JsonMember::base_type;
 				return json_details::to_json_tuple_schema<tuple_t, is_root>(
-				  out_it, std::make_index_sequence<std::tuple_size_v<tuple_t>>{ } );
+				  out_it,
+				  std::make_index_sequence<tuple_elements_pack<tuple_t>::size>{ } );
 			}
 
 			template<typename JsonMember, bool is_root, typename OutputIterator>
