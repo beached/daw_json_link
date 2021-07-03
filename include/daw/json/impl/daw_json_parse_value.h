@@ -891,11 +891,11 @@ namespace daw::json {
 				parse_state.remove_prefix( );
 
 				using tuple_t = typename JsonMember::base_type;
-				using element_pack = tuple_elements_pack<tuple_t>;
 
 				auto const parse_value_help = [&]( auto Idx ) {
 					parse_state.move_next_member_or_end( );
 					constexpr std::size_t index = decltype( Idx )::value;
+					using element_pack = tuple_elements_pack<tuple_t>;
 					using T =
 					  json_deduced_type<typename element_pack::template element_t<index>>;
 					return parse_value<T>( parse_state, ParseTag<T::expected_type>{ } );
