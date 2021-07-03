@@ -632,17 +632,29 @@ namespace daw::json {
 		                     json_details::has_element_type<T>> {};
 		;
 
+		/// Allow tuple like types to be used in json_tuple
+		/// \tparam Tuple tuple like type to
 		template<typename Tuple>
 		struct tuple_elements_pack;
 
 		template<typename... Ts>
 		struct tuple_elements_pack<std::tuple<Ts...>> {
 			using type = std::tuple<Ts...>;
+
+			static constexpr std::size_t size = sizeof...( Ts );
+
+			template<std::size_t Idx>
+			using element_t = std::tuple_element_t<Idx, type>;
 		};
 
 		template<typename... Ts>
 		struct tuple_elements_pack<daw::fwd_pack<Ts...>> {
-			using type = std::tuple<Ts...>;
+			using type = daw::fwd_pack<Ts...>;
+
+			static constexpr std::size_t size = sizeof...( Ts );
+
+			template<std::size_t Idx>
+			using element_t = typename daw::tuple_element<Idx, type>::type;
 		};
 
 		namespace json_details {

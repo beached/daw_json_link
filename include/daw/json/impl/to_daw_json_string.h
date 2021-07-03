@@ -1073,7 +1073,10 @@ namespace daw::json {
 
 				auto const to_daw_json_string_help = [&]( auto Idx, bool &is_first ) {
 					constexpr std::size_t index = decltype( Idx )::value;
-					using T = json_deduced_type<std::tuple_element_t<index, parse_to_t>>;
+					using pack_element = tuple_elements_pack<parse_to_t>;
+					using T =
+					  json_deduced_type<typename pack_element::template element_t<index>>;
+
 					if( is_first ) {
 						is_first = false;
 					} else {

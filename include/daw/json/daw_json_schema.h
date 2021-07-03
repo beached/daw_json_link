@@ -389,8 +389,11 @@ namespace daw::json {
 						} else {
 							is_first = false;
 						}
+						static constexpr std::size_t index = decltype( Idx )::value;
+						using pack_element = tuple_elements_pack<Tuple>;
 						using JsonMember = json_deduced_type<
-						  std::tuple_element_t<decltype( Idx )::value, Tuple>>;
+						  typename pack_element::template element_t<index>>;
+
 						out_it = to_json_schema<JsonMember>(
 						  ParseTag<JsonMember::base_expected_type>{ }, out_it );
 					};

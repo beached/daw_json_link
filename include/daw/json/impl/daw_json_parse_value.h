@@ -890,23 +890,24 @@ namespace daw::json {
 				                      ErrorReason::InvalidArrayStart, parse_state );
 				parse_state.remove_prefix( );
 
-				auto const parse_value_help = [&]( auto Ident ) {
+				using tuple_t = typename JsonMember::base_type;
+				using element_pack = tuple_elements_pack<tuple_t>;
+
+				auto const parse_value_help = [&]( auto Idx ) {
 					parse_state.move_next_member_or_end( );
-					using T = json_deduced_type<typename decltype( Ident )::type>;
+					constexpr std::size_t index = decltype( Idx )::value;
+					using T =
+					  json_deduced_type<typename element_pack::template element_t<index>>;
 					return parse_value<T>( parse_state, ParseTag<T::expected_type>{ } );
 				};
 
 				static_assert( is_a_json_type<JsonMember>::value );
-				using tuple_t = typename JsonMember::base_type;
 				using Constructor = typename JsonMember::constructor_t;
 
-				using pack_t = typename tuple_elements_pack<tuple_t>::type;
-
 				static_assert(
-				  std::is_invocable<Constructor,
-				                    decltype( parse_value_help(
-				                      daw::traits::identity<typename std::tuple_element<
-				                        Is, pack_t>::type>{ } ) )...>::value,
+				  std::is_invocable<Constructor, decltype( parse_value_help(
+				                                   std::integral_constant<
+				                                     std::size_t, Is>{ } ) )...>::value,
 				  "Supplied types cannot be used for construction of this type" );
 
 				parse_state.trim_left( );
@@ -918,27 +919,23 @@ namespace daw::json {
 					(void)run_after_parse;
 					if constexpr( force_aggregate_construction_v<JsonMember> ) {
 						return tuple_t{ parse_value_help(
-						  daw::traits::identity<
-						    typename std::tuple_element<Is, pack_t>::type>{ } )... };
+						  std::integral_constant<std::size_t, Is>{ } )... };
 					} else {
 						return construct_value_tp<tuple_t, Constructor>(
 						  parse_state,
 						  fwd_pack{ parse_value_help(
-						    daw::traits::identity<
-						      typename std::tuple_element<Is, pack_t>::type>{ } )... } );
+						    std::integral_constant<std::size_t, Is>{ } )... } );
 					}
 				} else {
 					auto result = [&] {
 						if constexpr( force_aggregate_construction_v<JsonMember> ) {
 							return tuple_t{ parse_value_help(
-							  daw::traits::identity<
-							    typename std::tuple_element<Is, pack_t>::type>{ } )... };
+							  std::integral_constant<std::size_t, Is>{ } )... };
 						} else {
 							return construct_value_tp<tuple_t, Constructor>(
 							  parse_state,
 							  fwd_pack{ parse_value_help(
-							    daw::traits::identity<
-							      typename tuple_element<Is, tuple_t>::type>{ } )... } );
+							    std::integral_constant<std::size_t, Is>{ } )... } );
 						}
 					}( );
 					if constexpr( json_details::all_json_members_must_exist_v<
