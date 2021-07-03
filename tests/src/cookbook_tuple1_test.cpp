@@ -16,14 +16,18 @@
 #include <tuple>
 
 struct Foo {
-	std::tuple<int, double> a;
+	std::tuple<int, std::string> a;
+
+	inline bool operator==( Foo const & rhs ) const {
+		return a == rhs.a;
+	}
 };
 
 namespace daw::json {
 	template<>
 	struct json_data_contract<Foo> {
 		static constexpr char const a[] = "a";
-		using type = json_member_list<json_tuple<a, std::tuple<int, double>>>;
+		using type = json_member_list<json_tuple<a, std::tuple<int, std::string>>>;
 
 		static constexpr auto to_json_data( Foo const &f ) {
 			return std::forward_as_tuple( f.a );
@@ -42,8 +46,10 @@ int main( int argc, char **argv )
 	}
 	auto data = daw::read_file( argv[1] );
 	assert( data and not data->empty( ) );
-	auto f = daw::json::from_json<Foo>( *data );
-	(void)f;
+	Foo foo1 = daw::json::from_json<Foo>( *data );
+	std::string data2 = daw::json::to_json( foo1 );
+	Foo foo2 = daw::json::from_json<Foo>( data2 );
+	assert( foo1 == foo2 );
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
