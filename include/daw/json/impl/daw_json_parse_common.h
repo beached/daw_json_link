@@ -674,9 +674,10 @@ namespace daw::json {
 
 			template<typename T>
 			struct json_deduced_type_map<
-			  std::optional<T>, std::enable_if_t<std::conjunction_v<
-			                      not_trait<has_json_data_contract_trait<T>>,
-			                      daw::is_detected<json_deduced_type_map, T>>>> {
+			  std::optional<T>,
+			  std::enable_if_t<std::conjunction_v<
+			    not_trait<has_json_data_contract_trait<std::optional<T>>>,
+			    daw::is_detected<json_deduced_type_map, T>>>> {
 
 				static constexpr bool is_null = true;
 				using type = json_deduced_type_map<T>;
