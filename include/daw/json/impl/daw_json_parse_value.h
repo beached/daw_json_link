@@ -21,6 +21,8 @@
 #include "daw_json_parse_string_quote.h"
 #include "daw_json_parse_unsigned_int.h"
 #include "daw_json_parse_value_fwd.h"
+#include "daw_json_traits.h"
+
 
 #include <daw/daw_attributes.h>
 #include <daw/daw_traits.h>
@@ -897,7 +899,7 @@ namespace daw::json {
 					constexpr std::size_t index = decltype( Idx )::value;
 					using element_pack = tuple_elements_pack<tuple_t>;
 					using T =
-					  json_deduced_type<typename element_pack::template element_t<index>>;
+					  json_deduced_type<element_pack::template element_t<index>>;
 					return parse_value<T>( parse_state, ParseTag<T::expected_type>{ } );
 				};
 
