@@ -1755,6 +1755,12 @@ namespace daw::json {
 		using json_delayed_null_no_name =
 		  json_base::json_delayed<T, Constructor, JsonNullDefault>;
 
+		template<typename ParseState>
+		struct json_data_contract<basic_json_value<ParseState>> {
+			using type =
+			  json_class_map<json_delayed_no_name<basic_json_value<ParseState>>>;
+		};
+
 		/***
 		 * This allows naming of well known types and using them to map members
 		 */
