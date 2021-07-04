@@ -1686,27 +1686,28 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 				using wrapped_type = json_value;
 				using constructor_t = Constructor;
-				using base_type = json_details::unwrap_type<T, Nullable>;
+				static constexpr JsonNullable nullable = Nullable;
+				using base_type = json_details::unwrap_type<T, nullable>;
 				static_assert( traits::not_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
 				using parse_to_t = typename json_details::construction_result<
-				  Nullable != JsonNullable::MustExist, Constructor, char const *,
+				  nullable != JsonNullable::MustExist, Constructor, char const *,
 				  char const *>::type;
 
 				static constexpr daw::string_view name = no_name;
 
-				static constexpr JsonParseTypes expected_type = JsonParseTypes::Unknown;
+				static constexpr JsonParseTypes expected_type =
+				  get_parse_type_v<JsonParseTypes::Unknown, nullable>;
 				static constexpr JsonParseTypes base_expected_type =
 				  JsonParseTypes::Unknown;
 
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::None;
-				static constexpr JsonNullable nullable = Nullable;
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
-				  daw::json::json_delayed<NewName, T, Constructor, Nullable>;
+				  daw::json::json_delayed<NewName, T, Constructor, nullable>;
 				using without_name = json_delayed;
 			};
 		} // namespace json_base
