@@ -703,14 +703,6 @@ namespace daw::json {
 				static constexpr bool type_map_found = true;
 			};
 
-			template<typename ParseState>
-			struct json_deduced_type_map<basic_json_value<ParseState>> {
-				static constexpr bool is_null = false;
-				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
-
-				static constexpr bool type_map_found = true;
-			};
-
 			template<typename T>
 			inline constexpr bool has_deduced_type_mapping_v =
 			  json_deduced_type_map<T>::type_map_found;

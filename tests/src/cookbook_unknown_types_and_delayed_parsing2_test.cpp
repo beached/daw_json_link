@@ -22,26 +22,24 @@ struct MyClass2 {
 	int member0;
 	daw::json::json_value member_later;
 	std::string member1;
+	std::optional<daw::json::json_value> opt_member;
 };
 
 namespace daw::json {
 	template<>
 	struct json_data_contract<MyClass2> {
-#if defined( __cpp_nontype_template_parameter_class )
-		using type =
-		  json_member_list<json_number<"member0", int>,
-		                   json_delayed<"member_later">, json_string<"member1">>;
-#else
 		static constexpr char const member0[] = "member0";
 		static constexpr char const member_later[] = "member_later";
 		static constexpr char const member1[] = "member1";
+		static constexpr char const opt_member[] = "opt_member";
 		using type =
 		  json_member_list<json_number<member0, int>, json_delayed<member_later>,
-		                   json_string<member1>>;
-#endif
+		                   json_string<member1>,
+		                   json_link<opt_member, std::optional<json_value>>>;
+
 		static inline auto to_json_data( MyClass2 const &value ) {
 			return std::forward_as_tuple( value.member0, value.member_later,
-			                              value.member1 );
+			                              value.member1, value.opt_member );
 		}
 	};
 } // namespace daw::json
