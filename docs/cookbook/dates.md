@@ -47,9 +47,9 @@ namespace daw::json {
 }
 ```
 
-The above json is like the first example, but the timestamp format is not iso8601.  It is the date format used in some twitter JSON apis.  The string member will be a `json_string` and the timestmap will use `json_raw`.  This example is more involved and also outlines using `json_raw` to work with data that does not fit the other mappings.
+The above json is like the first example, but the timestamp format is not iso8601.  It is the date format used in some twitter JSON apis.  The string member will be a `json_string` and the timestmap will use `json_custom`.  This example is more involved and also outlines using `json_custom` to work with data that does not fit the other mappings.
 
-`json_raw` requires a callable FromJsonConverter and a callable ToJsonConverter type to convert to `T` from a `std::string_view` and to a string like type from a `T`.
+`json_custom` requires a callable FromJsonConverter and a callable ToJsonConverter type to convert to `T` from a `std::string_view` and to a string like type from a `T`.
 
 The To and From Converters can be the same type with different overloads for `operator()`.  T will be a `std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>`.
 
@@ -78,7 +78,7 @@ namespace daw::json {
   struct json_data_contract<MyClass2> {
     using type = json_member_list<
       json_string<"name">,
-      json_raw<"timestamp", 
+      json_custom<"timestamp", 
         std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>, 
         TimestampConverter, 
         TimestampConverter
@@ -105,7 +105,7 @@ A time_point can be encoded into JSON a the number of seconds since epoch(Jan 1,
 }
 ```
 
-This example will use the constructor of the class to construct the `time_point` from the integer.  Otherwise, a `json_raw` type could be used here too.  It demonstrates using a constructor to do the data conversions, along with `to_json_data` to reverse the conversion.  Another alternative is to use the `Constructor` template argument to do the conversion of the integer to the `time_point`.  The `dateAdded` member shows parsing strings into numbers.  This is often done as numbers in JSON are double and can only hold integers as large as 2^53.
+This example will use the constructor of the class to construct the `time_point` from the integer.  Otherwise, a `json_custom` type could be used here too.  It demonstrates using a constructor to do the data conversions, along with `to_json_data` to reverse the conversion.  Another alternative is to use the `Constructor` template argument to do the conversion of the integer to the `time_point`.  The `dateAdded` member shows parsing strings into numbers.  This is often done as numbers in JSON are double and can only hold integers as large as 2^53.
 
 Too see a working example using this code, refer to [cookbook_dates3_test.cpp](../tests/src/cookbook_dates3_test.cpp) 
 
@@ -204,7 +204,7 @@ namespace daw::json {
   struct json_data_contract<MyClass4> {
     using type = json_member_list<
       json_string<"name">,
-      json_raw<"timestamp", 
+      json_custom<"timestamp", 
         timepoint_t, 
         TimestampConverter, 
         TimestampConverter

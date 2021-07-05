@@ -207,7 +207,7 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<e_test_001_t> {
 		static constexpr char const a[] = "a";
-		using type = json_member_list<json_raw<a, blah_t>>;
+		using type = json_member_list<json_custom<a, blah_t>>;
 
 		static DAW_CONSTEXPR auto to_json_data( e_test_001_t const &v ) {
 			return std::forward_as_tuple( v.a );

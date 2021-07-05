@@ -50,7 +50,7 @@ namespace daw::json {
 		  json_string_raw<url, std::string_view>,
 		  json_string_raw<expanded_url, std::string_view>,
 		  json_string_raw<display_url, std::string_view>,
-		  json_array<indices, json_raw_lit_no_name<std::string_view>>>;
+		  json_array<indices, json_custom_lit_no_name<std::string_view>>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::urls_element_t const &value ) {
@@ -174,7 +174,7 @@ namespace daw::json {
 		  "follow_request_sent";
 		static inline constexpr char const notifications[] = "notifications";
 		using type = json_member_list<
-		  json_raw_lit<id, std::string_view>,
+		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
 		  json_string_raw<name, std::string_view>,
 		  json_string_raw<screen_name, std::string_view>,
@@ -185,18 +185,18 @@ namespace daw::json {
 		                       opt_construct_a<std::string_view>>,
 		  json_class<entities, daw::twitter2::entities_t>,
 		  json_bool<_jsonprotected>,
-		  json_raw_lit<followers_count, std::string_view>,
-		  json_raw_lit<friends_count, std::string_view>,
-		  json_raw_lit<listed_count, std::string_view>,
-		  json_raw<created_at, std::string_view>,
-		  json_raw_lit<favourites_count, std::string_view>,
-		  json_raw_lit_null<utc_offset, std::optional<std::string_view>,
+		  json_custom_lit<followers_count, std::string_view>,
+		  json_custom_lit<friends_count, std::string_view>,
+		  json_custom_lit<listed_count, std::string_view>,
+		  json_custom<created_at, std::string_view>,
+		  json_custom_lit<favourites_count, std::string_view>,
+		  json_custom_lit_null<utc_offset, std::optional<std::string_view>,
 		                    opt_construct_a<std::string_view>>,
 		  json_string_raw_null<time_zone, std::optional<std::string_view>,
 		                       string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
 		  json_bool<geo_enabled>, json_bool<verified>,
-		  json_raw_lit<statuses_count, std::string_view>,
+		  json_custom_lit<statuses_count, std::string_view>,
 		  json_string_raw<lang, std::string_view>, json_bool<contributors_enabled>,
 		  json_bool<is_translator>, json_bool<is_translation_enabled>,
 		  json_string_raw<profile_background_color, std::string_view>,
@@ -243,7 +243,7 @@ namespace daw::json {
 		static inline constexpr char const indices[] = "indices";
 		using type = json_member_list<
 		  json_string_raw<text, std::string_view>,
-		  json_array<indices, json_raw_lit_no_name<std::string_view>>>;
+		  json_array<indices, json_custom_lit_no_name<std::string_view>>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::hashtags_element_t const &value ) {
@@ -281,21 +281,21 @@ namespace daw::json {
 		static inline constexpr char const lang[] = "lang";
 		using type = json_member_list<
 		  json_class<metadata, daw::twitter2::metadata_t>,
-		  json_raw<created_at, std::string_view>,
-		  json_raw_lit<id, std::string_view>,
+		  json_custom<created_at, std::string_view>,
+		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
 		  json_string_raw<text, std::string_view>,
 		  json_string_raw<source, std::string_view>, json_bool<truncated>,
-		  json_raw_lit_null<in_reply_to_status_id, std::optional<std::string_view>,
+		  json_custom_lit_null<in_reply_to_status_id, std::optional<std::string_view>,
 		                    opt_construct_a<std::string_view>>,
 		  json_string_raw_null<in_reply_to_status_id_str,
 		                       std::optional<std::string_view>, string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
-		  json_raw_lit_null<
+		  json_custom_lit_null<
 		    in_reply_to_user_id, std::optional<std::string_view>,
 		    opt_construct_a<std::string_view>,
 		    default_to_json_converter_t<std::optional<std::string_view>>,
-		    json_raw_opt( JsonRawTypes::Literal )>,
+		    json_custom_opt( JsonRawTypes::Literal )>,
 		  json_string_raw_null<in_reply_to_user_id_str,
 		                       std::optional<std::string_view>, string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
@@ -303,8 +303,8 @@ namespace daw::json {
 		                       std::optional<std::string_view>, string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
 		  json_class<user, daw::twitter2::user_t>,
-		  json_raw_lit<retweet_count, std::string_view>,
-		  json_raw_lit<favorite_count, std::string_view>,
+		  json_custom_lit<retweet_count, std::string_view>,
+		  json_custom_lit<favorite_count, std::string_view>,
 		  json_class<entities, daw::twitter2::entities_t>, json_bool<favorited>,
 		  json_bool<retweeted>, json_bool_null<possibly_sensitive>,
 		  json_string_raw<lang, std::string_view>>;
@@ -332,9 +332,9 @@ namespace daw::json {
 		using type = json_member_list<
 		  json_string_raw<screen_name, std::string_view>,
 		  json_string_raw<name, std::string_view>,
-		  json_raw_lit<id, std::string_view>,
+		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
-		  json_array<indices, json_raw_lit_no_name<std::string_view>>>;
+		  json_array<indices, json_custom_lit_no_name<std::string_view>>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::twitter2::user_mentions_element_t const &value ) {
@@ -348,8 +348,8 @@ namespace daw::json {
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_raw_lit<w, std::string_view>,
-		                              json_raw_lit<h, std::string_view>,
+		using type = json_member_list<json_custom_lit<w, std::string_view>,
+		                              json_custom_lit<h, std::string_view>,
 		                              json_string_raw<resize, std::string_view>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
@@ -363,8 +363,8 @@ namespace daw::json {
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_raw_lit<w, std::string_view>,
-		                              json_raw_lit<h, std::string_view>,
+		using type = json_member_list<json_custom_lit<w, std::string_view>,
+		                              json_custom_lit<h, std::string_view>,
 		                              json_string_raw<resize, std::string_view>>;
 
 		[[nodiscard, maybe_unused]] static inline auto
@@ -376,15 +376,15 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::twitter2::thumb_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_raw<"w", std::string_view>,
-		                              json_raw<"h", std::string_view>,
+		using type = json_member_list<json_custom<"w", std::string_view>,
+		                              json_custom<"h", std::string_view>,
 		                              json_string_raw<"resize", std::string_view>>;
 #else
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_raw_lit<w, std::string_view>,
-		                              json_raw_lit<h, std::string_view>,
+		using type = json_member_list<json_custom_lit<w, std::string_view>,
+		                              json_custom_lit<h, std::string_view>,
 		                              json_string_raw<resize, std::string_view>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
@@ -396,15 +396,15 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<daw::twitter2::large_t> {
 #ifdef __cpp_nontype_template_parameter_class
-		using type = json_member_list<json_raw<"w", std::string_view>,
-		                              json_raw<"h", std::string_view>,
+		using type = json_member_list<json_custom<"w", std::string_view>,
+		                              json_custom<"h", std::string_view>,
 		                              json_string_raw<"resize", std::string_view>>;
 #else
 		static inline constexpr char const w[] = "w";
 		static inline constexpr char const h[] = "h";
 		static inline constexpr char const resize[] = "resize";
-		using type = json_member_list<json_raw_lit<w, std::string_view>,
-		                              json_raw_lit<h, std::string_view>,
+		using type = json_member_list<json_custom_lit<w, std::string_view>,
+		                              json_custom_lit<h, std::string_view>,
 		                              json_string_raw<resize, std::string_view>>;
 #endif
 		[[nodiscard, maybe_unused]] static inline auto
@@ -450,9 +450,9 @@ namespace daw::json {
 		static inline constexpr char const _jsontype[] = "type";
 		static inline constexpr char const sizes[] = "sizes";
 		using type = json_member_list<
-		  json_raw_lit<id, std::string_view>,
+		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
-		  json_array<indices, json_raw_lit_no_name<std::string_view>>,
+		  json_array<indices, json_custom_lit_no_name<std::string_view>>,
 		  json_string_raw<media_url, std::string_view>,
 		  json_string_raw<media_url_https, std::string_view>,
 		  json_string_raw<url, std::string_view>,
@@ -500,17 +500,17 @@ namespace daw::json {
 		static inline constexpr char const lang[] = "lang";
 		using type = json_member_list<
 		  json_class<metadata, daw::twitter2::metadata_t>,
-		  json_raw<created_at, std::string_view>,
-		  json_raw_lit<id, std::string_view>,
+		  json_custom<created_at, std::string_view>,
+		  json_custom_lit<id, std::string_view>,
 		  json_string_raw<id_str, std::string_view>,
 		  json_string_raw<text, std::string_view>,
 		  json_string_raw<source, std::string_view>, json_bool<truncated>,
-		  json_raw_lit_null<in_reply_to_status_id, std::optional<std::string_view>,
+		  json_custom_lit_null<in_reply_to_status_id, std::optional<std::string_view>,
 		                    opt_construct_a<std::string_view>>,
 		  json_string_raw_null<in_reply_to_status_id_str,
 		                       std::optional<std::string_view>, string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
-		  json_raw_lit_null<in_reply_to_user_id, std::optional<std::string_view>,
+		  json_custom_lit_null<in_reply_to_user_id, std::optional<std::string_view>,
 		                    opt_construct_a<std::string_view>>,
 		  json_string_raw_null<in_reply_to_user_id_str,
 		                       std::optional<std::string_view>, string_raw_opts_def,
@@ -519,8 +519,8 @@ namespace daw::json {
 		                       std::optional<std::string_view>, string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,
 		  json_class<user, daw::twitter2::user_t>,
-		  json_raw_lit<retweet_count, std::string_view>,
-		  json_raw_lit<favorite_count, std::string_view>,
+		  json_custom_lit<retweet_count, std::string_view>,
+		  json_custom_lit<favorite_count, std::string_view>,
 		  json_class<entities, daw::twitter2::entities_t>, json_bool<favorited>,
 		  json_bool<retweeted>, json_bool_null<possibly_sensitive>,
 		  json_string_raw<lang, std::string_view>>;
@@ -550,14 +550,14 @@ namespace daw::json {
 		static inline constexpr char const since_id[] = "since_id";
 		static inline constexpr char const since_id_str[] = "since_id_str";
 		using type =
-		  json_member_list<json_raw_lit<completed_in, std::string_view>,
-		                   json_raw_lit<max_id, std::string_view>,
+		  json_member_list<json_custom_lit<completed_in, std::string_view>,
+		                   json_custom_lit<max_id, std::string_view>,
 		                   json_string_raw<max_id_str, std::string_view>,
 		                   json_string_raw<next_results, std::string_view>,
 		                   json_string_raw<query, std::string_view>,
 		                   json_string_raw<refresh_url, std::string_view>,
-		                   json_raw_lit<count, std::string_view>,
-		                   json_raw_lit<since_id, std::string_view>,
+		                   json_custom_lit<count, std::string_view>,
+		                   json_custom_lit<since_id, std::string_view>,
 		                   json_string_raw<since_id_str, std::string_view>>;
 
 		[[nodiscard, maybe_unused]] static inline auto

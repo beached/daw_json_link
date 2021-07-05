@@ -1072,7 +1072,7 @@ namespace daw::json {
 		namespace json_base {
 			template<typename T, typename FromJsonConverter, typename ToJsonConverter,
 			         json_details::json_options_t Options>
-			struct json_raw {
+			struct json_custom {
 				using i_am_a_json_type = void;
 				using to_converter_t = ToJsonConverter;
 				using from_converter_t = FromJsonConverter;
@@ -1080,7 +1080,7 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 
 				static constexpr JsonNullable nullable =
-				  json_details::get_bits_for<JsonNullable>( json_raw_opts, Options );
+				  json_details::get_bits_for<JsonNullable>( json_custom_opts, Options );
 
 				using base_type = json_details::unwrap_type<T, nullable>;
 				static_assert( traits::not_same<void, base_type>::value,
@@ -1102,15 +1102,15 @@ namespace daw::json {
 				  JsonParseTypes::Custom;
 
 				static constexpr JsonRawTypes custom_json_type =
-				  json_details::get_bits_for<JsonRawTypes>( json_raw_opts, Options );
+				  json_details::get_bits_for<JsonRawTypes>( json_custom_opts, Options );
 
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::String;
 
 				template<JSONNAMETYPE NewName>
-				using with_name = daw::json::json_raw<NewName, T, FromJsonConverter,
-				                                      ToJsonConverter, Options>;
-				using without_name = json_raw;
+				using with_name = daw::json::json_custom<NewName, T, FromJsonConverter,
+				                                         ToJsonConverter, Options>;
+				using without_name = json_custom;
 			};
 		} // namespace json_base
 
@@ -1125,55 +1125,55 @@ namespace daw::json {
 		 */
 		template<JSONNAMETYPE Name, typename T, typename FromJsonConverter,
 		         typename ToJsonConverter, json_details::json_options_t Options>
-		struct json_raw
-		  : json_base::json_raw<T, FromJsonConverter, ToJsonConverter, Options> {
+		struct json_custom
+		  : json_base::json_custom<T, FromJsonConverter, ToJsonConverter, Options> {
 
 			static constexpr daw::string_view name = Name;
 #if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
-			               "For no_name mappings, use the json_raw_no_name "
+			               "For no_name mappings, use the json_custom_no_name "
 			               "variant without a name argument" );
 #endif
 
 			template<JSONNAMETYPE NewName>
 			using with_name =
-			  json_raw<NewName, T, FromJsonConverter, ToJsonConverter, Options>;
+			  json_custom<NewName, T, FromJsonConverter, ToJsonConverter, Options>;
 
 			using without_name =
-			  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, Options>;
+			  json_base::json_custom<T, FromJsonConverter, ToJsonConverter, Options>;
 		};
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         json_details::json_options_t Options = json_raw_opts_def>
-		using json_raw_no_name =
-		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter, Options>;
+		         json_details::json_options_t Options = json_custom_opts_def>
+		using json_custom_no_name =
+		  json_base::json_custom<T, FromJsonConverter, ToJsonConverter, Options>;
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         json_details::json_options_t Options = json_raw_opts_def>
-		using json_raw_lit_no_name = json_base::json_raw<
+		         json_details::json_options_t Options = json_custom_opts_def>
+		using json_custom_lit_no_name = json_base::json_custom<
 		  T, FromJsonConverter, ToJsonConverter,
-		  json_details::json_raw_opts_set<Options, JsonRawTypes::Literal>>;
+		  json_details::json_custom_opts_set<Options, JsonRawTypes::Literal>>;
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         json_details::json_options_t Options = json_raw_opts_def>
-		using json_raw_null_no_name = json_base::json_raw<
+		         json_details::json_options_t Options = json_custom_opts_def>
+		using json_custom_null_no_name = json_base::json_custom<
 		  T, FromJsonConverter, ToJsonConverter,
-		  json_details::json_raw_opts_set<Options, JsonNullDefault>>;
+		  json_details::json_custom_opts_set<Options, JsonNullDefault>>;
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         json_details::json_options_t Options = json_raw_opts_def>
-		using json_raw_lit_null_no_name =
-		  json_base::json_raw<T, FromJsonConverter, ToJsonConverter,
-		                      json_details::json_raw_opts_set<
-		                        Options, JsonRawTypes::Literal, JsonNullDefault>>;
+		         json_details::json_options_t Options = json_custom_opts_def>
+		using json_custom_lit_null_no_name = json_base::json_custom<
+		  T, FromJsonConverter, ToJsonConverter,
+		  json_details::json_custom_opts_set<Options, JsonRawTypes::Literal,
+		                                     JsonNullDefault>>;
 
 		namespace json_base {
 			template<typename JsonElement, typename Container, typename Constructor,

@@ -251,7 +251,7 @@ namespace daw::json {
 		  json_string_null<url>, json_class<entities, daw::twitter::entities_t>,
 		  json_bool<_jsonprotected>, json_number<followers_count, int32_t>,
 		  json_number<friends_count, int32_t>, json_number<listed_count, int32_t>,
-		  json_raw<created_at, daw::twitter::twitter_tp,
+		  json_custom<created_at, daw::twitter::twitter_tp,
 		           daw::twitter::TimestampConverter,
 		           daw::twitter::TimestampConverter>,
 		  json_number<favourites_count, int32_t>, json_bool<geo_enabled>,
@@ -315,7 +315,7 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
-		  json_raw<"created_at", daw::twitter::twitter_tp,
+		  json_custom<"created_at", daw::twitter::twitter_tp,
 		           daw::twitter::TimestampConverter,
 		           daw::twitter::TimestampConverter>,
 		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
@@ -360,7 +360,7 @@ namespace daw::json {
 		static inline constexpr char const lang[] = "lang";
 		using type = json_member_list<
 		  json_class<metadata, daw::twitter::metadata_t>,
-		  json_raw<created_at, daw::twitter::twitter_tp,
+		  json_custom<created_at, daw::twitter::twitter_tp,
 		           daw::twitter::TimestampConverter,
 		           daw::twitter::TimestampConverter>,
 		  json_number<id, int64_t>, json_string<id_str>, json_string<text>,
@@ -503,7 +503,7 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_class<"metadata", daw::twitter::metadata_t>,
-		  json_raw<"created_at", daw::twitter::twitter_tp,
+		  json_custom<"created_at", daw::twitter::twitter_tp,
 		           daw::twitter::TimestampConverter,
 		           daw::twitter::TimestampConverter>,
 		  json_number<"id", int64_t>, json_string<"id_str">, json_string<"text">,
@@ -548,7 +548,7 @@ namespace daw::json {
 		static inline constexpr char const lang[] = "lang";
 		using type = json_member_list<
 		  json_class<metadata, daw::twitter::metadata_t>,
-		  json_raw<created_at, daw::twitter::twitter_tp,
+		  json_custom<created_at, daw::twitter::twitter_tp,
 		           daw::twitter::TimestampConverter,
 		           daw::twitter::TimestampConverter>,
 		  json_number<id, int64_t>, json_string<id_str>, json_string<text>,

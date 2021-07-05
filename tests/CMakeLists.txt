@@ -516,6 +516,11 @@ target_link_libraries(cookbook_tuple1_test json_test)
 add_test(NAME cookbook_tuple1_test COMMAND cookbook_tuple1_test ./cookbook_tuple1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full cookbook_tuple1_test)
 
+add_executable(cookbook_inserting_extracting_raw_json1_test src/cookbook_inserting_extracting_raw_json1_test.cpp)
+target_link_libraries(cookbook_inserting_extracting_raw_json1_test json_test)
+add_test(NAME cookbook_inserting_extracting_raw_json1_test COMMAND cookbook_inserting_extracting_raw_json1_test ./cookbook_inserting_extracting_raw_json1.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+add_dependencies(full cookbook_inserting_extracting_raw_json1_test)
+
 add_executable(gsoc_test src/gsoc_test.cpp)
 target_link_libraries(gsoc_test json_test)
 add_test(NAME gsoc_test COMMAND gsoc_test ./gsoc-2018.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")

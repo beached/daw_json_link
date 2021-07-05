@@ -73,7 +73,7 @@ namespace daw::json {
 #else
 		constexpr inline static char const member0[] = "member0";
 		using type = json_member_list<
-		  json_array<member0, json_raw_no_name<daw::cookbook_enums1::Colours>>>;
+		  json_array<member0, json_custom_no_name<daw::cookbook_enums1::Colours>>>;
 #endif
 		static inline auto
 		to_json_data( daw::cookbook_enums1::MyClass1 const &value ) {

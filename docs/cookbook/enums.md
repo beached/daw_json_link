@@ -47,7 +47,7 @@ namespace daw::json {
   template<>
   struct json_data_contract<MyClass1> {
     using type = json_member_list<
-      json_array<"member0", json_raw<no_name, Colours>>
+      json_array<"member0", json_custom<no_name, Colours>>
     >;
 
     static inline auto

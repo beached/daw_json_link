@@ -416,8 +416,8 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         json_details::json_options_t Options = json_raw_opts_def>
-		struct json_raw;
+		         json_details::json_options_t Options = json_custom_opts_def>
+		struct json_custom;
 
 		/**
 		 * Allow parsing of a nullable type that does not fit
@@ -431,47 +431,25 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         json_details::json_options_t Options = json_raw_opts_def>
-		using json_raw_null =
-		  json_raw<Name, T, FromJsonConverter, ToJsonConverter,
-		           json_details::json_raw_opts_set<Options, JsonNullDefault>>;
+		         json_details::json_options_t Options = json_custom_opts_def>
+		using json_custom_null =
+		  json_custom<Name, T, FromJsonConverter, ToJsonConverter,
+		           json_details::json_custom_opts_set<Options, JsonNullDefault>>;
 
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         json_details::json_options_t Options = json_raw_opts_def>
-		using json_raw_lit =
-		  json_raw<Name, T, FromJsonConverter, ToJsonConverter,
-		           json_details::json_raw_opts_set<Options, JsonRawTypes::Literal>>;
+		         json_details::json_options_t Options = json_custom_opts_def>
+		using json_custom_lit = json_custom<Name, T, FromJsonConverter, ToJsonConverter,
+		           json_details::json_custom_opts_set<Options, JsonRawTypes::Literal>>;
 
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         json_details::json_options_t Options = json_raw_opts_def>
-		using json_raw_lit_null =
-		  json_raw<Name, T, FromJsonConverter, ToJsonConverter,
-		           json_details::json_raw_opts_set<Options, JsonRawTypes::Literal,
-		                                           JsonNullDefault>>;
-
-		template<JSONNAMETYPE Name, typename T,
-		         typename FromJsonConverter = default_from_json_converter_t<T>,
-		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         JsonRawTypes JsonRawType = JsonRawTypes::String,
-		         JsonNullable Nullable = JsonNullable::MustExist>
-		using json_custom [[deprecated(
-		  "Use JsonRawTypes/json_raw... Removing in JSON Link v4" )]] =
-		  json_raw<Name, T, FromJsonConverter, ToJsonConverter,
-		           json_details::json_raw_opts_set<json_raw_opts_def, JsonRawType,
-		                                           Nullable>>;
-
-		template<JSONNAMETYPE Name, typename T,
-		         typename FromJsonConverter = default_from_json_converter_t<T>,
-		         typename ToJsonConverter = default_to_json_converter_t<T>,
-		         JsonRawTypes JsonRawType = JsonRawTypes::String>
-		using json_custom_null [[deprecated(
-		  "Use JsonRawTypes/json_raw... Removing in JSON Link v4" )]] =
-		  json_raw<Name, T, FromJsonConverter, ToJsonConverter,
-		           json_details::json_raw_opts_set<json_raw_opts_def, JsonRawType,
+		         json_details::json_options_t Options = json_custom_opts_def>
+		using json_custom_lit_null =
+		  json_custom<Name, T, FromJsonConverter, ToJsonConverter,
+		           json_details::json_custom_opts_set<Options, JsonRawTypes::Literal,
 		                                           JsonNullDefault>>;
 
 		namespace json_details {

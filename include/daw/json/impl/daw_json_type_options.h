@@ -196,7 +196,7 @@ namespace daw::json {
 		 */
 		enum class JsonRawTypes : unsigned { String, Literal, Any }; // 2 bits
 		using CustomJsonTypes [[deprecated(
-		  "Use JsonRawTypes/json_raw... Removing in JSON Link v4" )]] =
+		  "Use JsonRawTypes/json_custom... Removing in JSON Link v4" )]] =
 		  JsonRawTypes;
 
 		namespace json_details {
@@ -208,17 +208,17 @@ namespace daw::json {
 			  JsonRawTypes::String;
 		} // namespace json_details
 
-		// json_raw
-		using json_raw_opts_t =
+		// json_custom
+		using json_custom_opts_t =
 		  json_details::JsonOptionList<JsonNullable, JsonRawTypes>;
 
-		inline constexpr auto json_raw_opts = json_raw_opts_t{ };
-		inline constexpr json_details::json_options_t json_raw_opts_def =
-		  json_raw_opts_t::default_option_flag;
+		inline constexpr auto json_custom_opts = json_custom_opts_t{ };
+		inline constexpr json_details::json_options_t json_custom_opts_def =
+		  json_custom_opts_t::default_option_flag;
 
 		template<typename... Options>
-		constexpr json_details::json_options_t json_raw_opt( Options... options ) {
-			return json_raw_opts_t::options( options... );
+		constexpr json_details::json_options_t json_custom_opt( Options... options ) {
+			return json_custom_opts_t::options( options... );
 		}
 	} // namespace DAW_JSON_VER
 } // namespace daw::json
