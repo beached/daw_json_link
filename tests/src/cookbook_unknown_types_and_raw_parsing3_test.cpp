@@ -7,7 +7,7 @@
 //
 #include "defines.h"
 // See cookbook/unknown_types_and_delayed_parsing.md for the 4th example
-// This example shows how to use the json_delayed type to store/retrieve raw
+// This example shows how to use the json_raw type to store/retrieve raw
 // json as a string
 
 #include "daw/json/daw_json_link.h"
@@ -28,14 +28,14 @@ namespace daw::json {
 	struct json_data_contract<Thing> {
 #if defined( __cpp_nontype_template_parameter_class )
 		using type = json_member_list<json_string<"name">, json_number<"type", int>,
-		                              json_delayed<"raw_json", std::string>>;
+		                              json_raw<"raw_json", std::string>>;
 #else
 		static constexpr char const name[] = "name";
 		static constexpr char const type_member[] = "type";
 		static constexpr char const raw_json[] = "raw_json";
 		using type =
 		  json_member_list<json_string<name>, json_number<type_member, int>,
-		                   json_delayed<raw_json, std::string>>;
+		                   json_raw<raw_json, std::string>>;
 #endif
 		static auto to_json_data( Thing const &value ) {
 			return std::forward_as_tuple( value.name, value.type, value.raw_json );

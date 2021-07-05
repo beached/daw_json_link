@@ -483,17 +483,19 @@ namespace daw::json {
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Custom> ) {
 
 				auto const str = [&] {
-					if constexpr( JsonMember::custom_json_type == JsonRawTypes::String ) {
+					if constexpr( JsonMember::custom_json_type ==
+					              JsonCustomTypes::String ) {
 						if constexpr( KnownBounds ) {
 							return parse_state;
 						} else {
 							return skip_string( parse_state );
 						}
 					} else if constexpr( JsonMember::custom_json_type ==
-					                     JsonRawTypes::Literal ) {
+					                     JsonCustomTypes::Literal ) {
 						return KnownBounds ? parse_state : skip_literal( parse_state );
 					} else {
-						static_assert( JsonMember::custom_json_type == JsonRawTypes::Any );
+						static_assert( JsonMember::custom_json_type ==
+						               JsonCustomTypes::Any );
 						// If we are a root object, parse_state will have the quotes and
 						// KnownBounds cannot be true This tells us that there is an array
 						// start '[' or a member name previous to current position

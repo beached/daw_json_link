@@ -1101,8 +1101,9 @@ namespace daw::json {
 				static constexpr JsonParseTypes base_expected_type =
 				  JsonParseTypes::Custom;
 
-				static constexpr JsonRawTypes custom_json_type =
-				  json_details::get_bits_for<JsonRawTypes>( json_custom_opts, Options );
+				static constexpr JsonCustomTypes custom_json_type =
+				  json_details::get_bits_for<JsonCustomTypes>( json_custom_opts,
+				                                               Options );
 
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::String;
@@ -1156,7 +1157,7 @@ namespace daw::json {
 		         json_details::json_options_t Options = json_custom_opts_def>
 		using json_custom_lit_no_name = json_base::json_custom<
 		  T, FromJsonConverter, ToJsonConverter,
-		  json_details::json_custom_opts_set<Options, JsonRawTypes::Literal>>;
+		  json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal>>;
 
 		template<typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
@@ -1172,7 +1173,7 @@ namespace daw::json {
 		         json_details::json_options_t Options = json_custom_opts_def>
 		using json_custom_lit_null_no_name = json_base::json_custom<
 		  T, FromJsonConverter, ToJsonConverter,
-		  json_details::json_custom_opts_set<Options, JsonRawTypes::Literal,
+		  json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal,
 		                                     JsonNullDefault>>;
 
 		namespace json_base {
@@ -1677,11 +1678,11 @@ namespace daw::json {
 		template<JSONNAMETYPE Name, typename T = json_value,
 		         typename Constructor = default_constructor<T>,
 		         JsonNullable Nullable = JsonNullable::MustExist>
-		struct json_delayed;
+		struct json_raw;
 
 		namespace json_base {
 			template<typename T, typename Constructor, JsonNullable Nullable>
-			struct json_delayed {
+			struct json_raw {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
 				using wrapped_type = json_value;
@@ -1707,8 +1708,8 @@ namespace daw::json {
 
 				template<JSONNAMETYPE NewName>
 				using with_name =
-				  daw::json::json_delayed<NewName, T, Constructor, nullable>;
-				using without_name = json_delayed;
+				  daw::json::json_raw<NewName, T, Constructor, nullable>;
+				using without_name = json_raw;
 			};
 		} // namespace json_base
 
@@ -1725,40 +1726,51 @@ namespace daw::json {
 
 		template<JSONNAMETYPE Name, typename T, typename Constructor,
 		         JsonNullable Nullable>
-		struct json_delayed : json_base::json_delayed<T, Constructor, Nullable> {
+		struct json_raw : json_base::json_raw<T, Constructor, Nullable> {
 			static constexpr daw::string_view name = Name;
 #if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
-			               "For no_name mappings, use the json_delayed_no_name "
+			               "For no_name mappings, use the json_raw_no_name "
 			               "variant without a name argument" );
 #endif
 
 			template<JSONNAMETYPE NewName>
-			using with_name = json_delayed<NewName, T, Constructor, Nullable>;
+			using with_name = json_raw<NewName, T, Constructor, Nullable>;
 
-			using without_name = json_base::json_delayed<T, Constructor, Nullable>;
+			using without_name = json_base::json_raw<T, Constructor, Nullable>;
 		};
+
+		template<JSONNAMETYPE Name, typename T = json_value,
+		         typename Constructor = default_constructor<T>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		using json_delayed
+		  [[deprecated( "Was renamed to json_raw, will be removed in v4" )]] =
+		    json_raw<Name, T, Constructor, Nullable>;
 
 		template<JSONNAMETYPE Name, typename T = std::optional<json_value>,
 		         typename Constructor = nullable_constructor<T>>
-		using json_delayed_null =
-		  json_delayed<Name, T, Constructor, JsonNullDefault>;
+		using json_raw_null = json_raw<Name, T, Constructor, JsonNullDefault>;
+
+		template<JSONNAMETYPE Name, typename T = std::optional<json_value>,
+		         typename Constructor = nullable_constructor<T>>
+		using json_delayed_null
+		  [[deprecated( "Was renamed to json_raw_null, will be removed in v4" )]] =
+		    json_raw_null<Name, T, Constructor>;
 
 		template<typename T = json_value,
 		         typename Constructor = default_constructor<T>,
 		         JsonNullable Nullable = JsonNullable::MustExist>
-		using json_delayed_no_name =
-		  json_base::json_delayed<T, Constructor, Nullable>;
+		using json_raw_no_name = json_base::json_raw<T, Constructor, Nullable>;
 
 		template<typename T = std::optional<json_value>,
 		         typename Constructor = nullable_constructor<T>>
-		using json_delayed_null_no_name =
-		  json_base::json_delayed<T, Constructor, JsonNullDefault>;
+		using json_raw_null_no_name =
+		  json_base::json_raw<T, Constructor, JsonNullDefault>;
 
 		template<typename ParseState>
 		struct json_data_contract<basic_json_value<ParseState>> {
 			using type =
-			  json_class_map<json_delayed_no_name<basic_json_value<ParseState>>>;
+			  json_class_map<json_raw_no_name<basic_json_value<ParseState>>>;
 		};
 
 		/***

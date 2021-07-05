@@ -295,7 +295,7 @@ namespace daw::json {
 		    in_reply_to_user_id, std::optional<std::string_view>,
 		    opt_construct_a<std::string_view>,
 		    default_to_json_converter_t<std::optional<std::string_view>>,
-		    json_custom_opt( JsonRawTypes::Literal )>,
+		    json_custom_opt( JsonCustomTypes::Literal )>,
 		  json_string_raw_null<in_reply_to_user_id_str,
 		                       std::optional<std::string_view>, string_raw_opts_def,
 		                       opt_construct_a<std::string_view>>,

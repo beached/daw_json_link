@@ -441,7 +441,7 @@ namespace daw::json {
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
 		         json_details::json_options_t Options = json_custom_opts_def>
 		using json_custom_lit = json_custom<Name, T, FromJsonConverter, ToJsonConverter,
-		           json_details::json_custom_opts_set<Options, JsonRawTypes::Literal>>;
+		           json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal>>;
 
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
@@ -449,7 +449,7 @@ namespace daw::json {
 		         json_details::json_options_t Options = json_custom_opts_def>
 		using json_custom_lit_null =
 		  json_custom<Name, T, FromJsonConverter, ToJsonConverter,
-		           json_details::json_custom_opts_set<Options, JsonRawTypes::Literal,
+		           json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal,
 		                                           JsonNullDefault>>;
 
 		namespace json_details {

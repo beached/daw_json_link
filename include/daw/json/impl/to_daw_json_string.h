@@ -1046,7 +1046,8 @@ namespace daw::json {
 				                      typename JsonMember::parse_to_t>::value,
 				  "value must be convertible to specified type in class contract" );
 
-				if constexpr( JsonMember::custom_json_type != JsonRawTypes::Literal ) {
+				if constexpr( JsonMember::custom_json_type !=
+				              JsonCustomTypes::Literal ) {
 					*it++ = '"';
 					if constexpr( std::is_invocable_r<
 					                OutputIterator, typename JsonMember::to_converter_t,

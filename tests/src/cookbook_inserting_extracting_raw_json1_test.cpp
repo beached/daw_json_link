@@ -24,7 +24,7 @@ namespace daw::json {
 		static constexpr char const bar[] = "bar";
 		static constexpr char const raw_json[] = "raw_json";
 		using type = json_member_list<json_link<bar, std::string>,
-		                              json_delayed<raw_json, std::string>>;
+		                              json_raw<raw_json, std::string>>;
 
 		static auto to_json_data( Foo const &v ) {
 			return std::forward_as_tuple( v.bar, v.raw_json );

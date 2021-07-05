@@ -1,4 +1,4 @@
-To parse/serialize raw JSON data, such as data from other libraries, one can use the `json_delayed` mapping type. The type requirement for mapping to `json_delayed` is constructable with a `char const *` and a `std::size_t`, along with supporting `std::begin`/`std::end`.
+To parse/serialize raw JSON data, such as data from other libraries, one can use the `json_raw` mapping type. The type requirement for mapping to `json_raw` is constructable with a `char const *` and a `std::size_t`, along with supporting `std::begin`/`std::end`.
 
 ```c++
 struct Foo {
@@ -11,7 +11,7 @@ namespace daw::json {
   struct json_data_contract<Foo> {
     using type = json_member_list<
       json_link<"bar", std::string>, 
-      json_delayed<"raw_json", std::string>
+      json_raw<"raw_json", std::string>
     >;
   
     static auto to_json_data( Foo const & v ) {

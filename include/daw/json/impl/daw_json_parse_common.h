@@ -430,10 +430,10 @@ namespace daw::json {
 
 			template<typename T, typename Constructor = default_constructor<T>,
 			         JsonNullable Nullable = JsonNullable::MustExist>
-			struct json_delayed;
+			struct json_raw;
 
 			template<typename T, typename Constructor = nullable_constructor<T>>
-			using json_delayed_null = json_delayed<T, Constructor, JsonNullDefault>;
+			using json_raw_null = json_raw<T, Constructor, JsonNullDefault>;
 		} // namespace json_base
 
 		namespace json_details {
@@ -722,10 +722,9 @@ namespace daw::json {
 					constexpr bool is_null = mapped_type_t::is_null;
 					if constexpr( mapped_type == JsonParseTypes::Unknown ) {
 						if constexpr( is_null ) {
-							return json_link_quick_map_type<
-							  json_base::json_delayed_null<T>>{ };
+							return json_link_quick_map_type<json_base::json_raw_null<T>>{ };
 						} else {
-							return json_link_quick_map_type<json_base::json_delayed<T>>{ };
+							return json_link_quick_map_type<json_base::json_raw<T>>{ };
 						}
 					} else if constexpr( mapped_type == JsonParseTypes::StringRaw ) {
 						if constexpr( is_null ) {

@@ -191,33 +191,31 @@ namespace daw::json {
 		 * Literal - Parser will expect a valid JSON literal number, bool, null
 		 * Any - Experimental - Parser will return any valid JSON value excluding
 		 * leading whitespace. strings will be quoted.  Any is suitable for
-		 * constructing a json_value to allow adhock parsing if json_delayed is not
+		 * constructing a json_value to allow adhock parsing if json_raw is not
 		 * suitable
 		 */
-		enum class JsonRawTypes : unsigned { String, Literal, Any }; // 2 bits
-		using CustomJsonTypes [[deprecated(
-		  "Use JsonRawTypes/json_custom... Removing in JSON Link v4" )]] =
-		  JsonRawTypes;
+		enum class JsonCustomTypes : unsigned { String, Literal, Any }; // 2 bits
 
 		namespace json_details {
 			template<>
-			inline constexpr unsigned json_option_bits_width<JsonRawTypes> = 2;
+			inline constexpr unsigned json_option_bits_width<JsonCustomTypes> = 2;
 
 			template<>
-			inline constexpr auto default_json_option_value<JsonRawTypes> =
-			  JsonRawTypes::String;
+			inline constexpr auto default_json_option_value<JsonCustomTypes> =
+			  JsonCustomTypes::String;
 		} // namespace json_details
 
 		// json_custom
 		using json_custom_opts_t =
-		  json_details::JsonOptionList<JsonNullable, JsonRawTypes>;
+		  json_details::JsonOptionList<JsonNullable, JsonCustomTypes>;
 
 		inline constexpr auto json_custom_opts = json_custom_opts_t{ };
 		inline constexpr json_details::json_options_t json_custom_opts_def =
 		  json_custom_opts_t::default_option_flag;
 
 		template<typename... Options>
-		constexpr json_details::json_options_t json_custom_opt( Options... options ) {
+		constexpr json_details::json_options_t
+		json_custom_opt( Options... options ) {
 			return json_custom_opts_t::options( options... );
 		}
 	} // namespace DAW_JSON_VER

@@ -35,7 +35,8 @@ namespace daw::json {
 			                                         OutputIterator out_it ) {
 				// TODO allow a trait to describe the valid literal types or if it
 				// matches one of the other predefined types
-				static_assert( JsonMember::custom_json_type == JsonRawTypes::String );
+				static_assert( JsonMember::custom_json_type ==
+				               JsonCustomTypes::String );
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
 				}
