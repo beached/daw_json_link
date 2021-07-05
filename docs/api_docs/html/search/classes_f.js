@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['time_5fparts_1106',['time_parts',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1datetime_1_1time__parts.html',1,'daw::json::DAW_JSON_VER::datetime']]],
-  ['tuple_5fjson_5fmapping_1107',['tuple_json_mapping',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__json__mapping.html',1,'daw::json::DAW_JSON_VER::tuple_json_mapping&lt; Members &gt;'],['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__json__mapping.html',1,'daw::json::tuple_json_mapping&lt; Members &gt;']]]
+  ['time_5fparts_1136',['time_parts',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1datetime_1_1time__parts.html',1,'daw::json::DAW_JSON_VER::datetime']]],
+  ['tuple_5felements_5fpack_1137',['tuple_elements_pack',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__elements__pack.html',1,'daw::json::DAW_JSON_VER::tuple_elements_pack&lt; Tuple &gt;'],['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__elements__pack.html',1,'daw::json::tuple_elements_pack&lt; Tuple &gt;']]],
+  ['tuple_5felements_5fpack_3c_20daw_3a_3afwd_5fpack_3c_20ts_2e_2e_2e_20_3e_20_3e_1138',['tuple_elements_pack&lt; daw::fwd_pack&lt; Ts... &gt; &gt;',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__elements__pack_3_01daw_1_1fwd__pack_3_01_ts_8_8_8_01_4_01_4.html',1,'daw::json::DAW_JSON_VER::tuple_elements_pack&lt; daw::fwd_pack&lt; Ts... &gt; &gt;'],['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__elements__pack_3_01daw_1_1fwd__pack_3_01_ts_8_8_8_01_4_01_4.html',1,'daw::json::tuple_elements_pack&lt; daw::fwd_pack&lt; Ts... &gt; &gt;']]],
+  ['tuple_5fjson_5fmapping_1139',['tuple_json_mapping',['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__json__mapping.html',1,'daw::json::DAW_JSON_VER::tuple_json_mapping&lt; Members &gt;'],['../structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1tuple__json__mapping.html',1,'daw::json::tuple_json_mapping&lt; Members &gt;']]]
 ];

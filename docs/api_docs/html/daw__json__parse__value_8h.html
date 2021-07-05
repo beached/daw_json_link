@@ -88,18 +88,22 @@ $(function() {
 <code>#include &quot;<a class="el" href="daw__json__parse__string__quote_8h_source.html">daw_json_parse_string_quote.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__unsigned__int_8h_source.html">daw_json_parse_unsigned_int.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="daw__json__parse__value__fwd_8h_source.html">daw_json_parse_value_fwd.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="daw__json__traits_8h_source.html">daw_json_traits.h</a>&quot;</code><br />
 <code>#include &lt;daw/daw_attributes.h&gt;</code><br />
 <code>#include &lt;daw/daw_traits.h&gt;</code><br />
 <code>#include &lt;ciso646&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;iterator&gt;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
 </div>
 <p><a href="daw__json__parse__value_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1can__parse__to__stdstring__fast.html">daw::json::DAW_JSON_VER::json_details::can_parse_to_stdstring_fast&lt; JsonMember &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details_1_1ordered__class__cleanup.html">daw::json::DAW_JSON_VER::json_details::ordered_class_cleanup&lt; AllMembersMustExist, ParseState &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -127,6 +131,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a4a6f62031e6c2effa714430859ead03a"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, typename JsonClass , bool KnownBounds, typename... JsonClasses, typename ParseState &gt; </td></tr>
 <tr class="memitem:a4a6f62031e6c2effa714430859ead03a"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATTEN json_result&lt; JsonClass &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a4a6f62031e6c2effa714430859ead03a">daw::json::DAW_JSON_VER::json_details::parse_nth_class</a> (std::size_t idx, ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>)</td></tr>
 <tr class="separator:a4a6f62031e6c2effa714430859ead03a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c8bad263a1393380610e24edb07b220"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename ParseState , std::size_t... Is&gt; </td></tr>
+<tr class="memitem:a6c8bad263a1393380610e24edb07b220"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a6c8bad263a1393380610e24edb07b220">daw::json::DAW_JSON_VER::json_details::parse_tuple_value</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, std::index_sequence&lt; Is... &gt;)</td></tr>
+<tr class="separator:a6c8bad263a1393380610e24edb07b220"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1280f8c97f8ea850b373e4d64714a2b8"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename ParseState &gt; </td></tr>
 <tr class="memitem:a1280f8c97f8ea850b373e4d64714a2b8"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATTEN json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a1280f8c97f8ea850b373e4d64714a2b8">daw::json::DAW_JSON_VER::json_details::parse_value</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, ParseTag&lt; JsonParseTypes::Array &gt;)</td></tr>
 <tr class="separator:a1280f8c97f8ea850b373e4d64714a2b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,12 +164,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a10b199d57ba99d8b3c9b563e3729b14d"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename ParseState &gt; </td></tr>
 <tr class="memitem:a10b199d57ba99d8b3c9b563e3729b14d"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_INLINE json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a10b199d57ba99d8b3c9b563e3729b14d">daw::json::DAW_JSON_VER::json_details::parse_value</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, ParseTag&lt; JsonParseTypes::Signed &gt;)</td></tr>
 <tr class="separator:a10b199d57ba99d8b3c9b563e3729b14d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a274b2368fe0da58f2d84ec70e3fc8bd8"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename ParseState &gt; </td></tr>
+<tr class="memitem:a274b2368fe0da58f2d84ec70e3fc8bd8"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATTEN json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a274b2368fe0da58f2d84ec70e3fc8bd8">daw::json::DAW_JSON_VER::json_details::parse_value</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, ParseTag&lt; JsonParseTypes::SizedArray &gt;)</td></tr>
+<tr class="separator:a274b2368fe0da58f2d84ec70e3fc8bd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21e426ce207afc482ad72f18f2dd2d67"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename ParseState &gt; </td></tr>
 <tr class="memitem:a21e426ce207afc482ad72f18f2dd2d67"><td class="memTemplItemLeft" align="right" valign="top">constexpr json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a21e426ce207afc482ad72f18f2dd2d67">daw::json::DAW_JSON_VER::json_details::parse_value</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, ParseTag&lt; JsonParseTypes::StringEscaped &gt;)</td></tr>
 <tr class="separator:a21e426ce207afc482ad72f18f2dd2d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09594339b380d2c7d4d7781fcc52612a"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename ParseState &gt; </td></tr>
 <tr class="memitem:a09594339b380d2c7d4d7781fcc52612a"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_INLINE json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a09594339b380d2c7d4d7781fcc52612a">daw::json::DAW_JSON_VER::json_details::parse_value</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, ParseTag&lt; JsonParseTypes::StringRaw &gt;)</td></tr>
 <tr class="separator:a09594339b380d2c7d4d7781fcc52612a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a008a6d14ddfb73ed7242d8e33454e667"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename ParseState &gt; </td></tr>
+<tr class="memitem:a008a6d14ddfb73ed7242d8e33454e667"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a008a6d14ddfb73ed7242d8e33454e667">daw::json::DAW_JSON_VER::json_details::parse_value</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, ParseTag&lt; JsonParseTypes::Tuple &gt;)</td></tr>
+<tr class="separator:a008a6d14ddfb73ed7242d8e33454e667"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18ec144f6dfb77b1473ae4bacf028dc1"><td class="memTemplParams" colspan="2">template&lt;typename JsonMember , bool KnownBounds, typename ParseState &gt; </td></tr>
 <tr class="memitem:a18ec144f6dfb77b1473ae4bacf028dc1"><td class="memTemplItemLeft" align="right" valign="top">constexpr DAW_ATTRIB_FLATINLINE json_result&lt; JsonMember &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#a18ec144f6dfb77b1473ae4bacf028dc1">daw::json::DAW_JSON_VER::json_details::parse_value</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, ParseTag&lt; JsonParseTypes::Unknown &gt;)</td></tr>
 <tr class="separator:a18ec144f6dfb77b1473ae4bacf028dc1"><td class="memSeparator" colspan="2">&#160;</td></tr>

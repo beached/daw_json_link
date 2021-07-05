@@ -428,10 +428,29 @@ namespace daw::json {
 			  json_tuple<Tuple, Constructor,
 			             json_details::tuple_opts_set<Options, JsonNullDefault>>;
 
+			/***
+			 * json_raw allows for raw JSON access to the member data. It requires a
+			 * type that is constructable from (char const *, std::size_t) arguments
+			 * and for serialization requires that it can be passed to
+			 * std::begin/std::end and the iterator returned has a value_type of char
+			 * @tparam T type to hold raw JSON data, defaults to json_value
+			 * @tparam Constructor A callable used to construct T.
+			 * @tparam Nullable Does the value have to exist in the document or can it
+			 * have a null value
+			 */
 			template<typename T, typename Constructor = default_constructor<T>,
 			         JsonNullable Nullable = JsonNullable::MustExist>
 			struct json_raw;
 
+			/***
+			 * json_raw_null allows for raw JSON access to the nullable member data.
+			 * It requires a type that is constructable from (char const *,
+			 * std::size_t) arguments and for serialization requires that it can be
+			 * passed to std::begin/std::end and the iterator returned has a
+			 * value_type of char
+			 * @tparam T type to hold raw JSON data, defaults to json_value
+			 * @tparam Constructor A callable used to construct T.
+			 */
 			template<typename T, typename Constructor = nullable_constructor<T>>
 			using json_raw_null = json_raw<T, Constructor, JsonNullDefault>;
 		} // namespace json_base

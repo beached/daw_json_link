@@ -1675,6 +1675,17 @@ namespace daw::json {
 		 */
 		using json_pair = basic_json_pair<NoCommentSkippingPolicyChecked>;
 
+		/***
+		 * json_raw allows for raw JSON access to the member data. It requires a
+		 * type that is constructable from (char const *, std::size_t) arguments and
+		 * for serialization requires that it can be passed to std::begin/std::end
+		 * and the iterator returned has a value_type of char
+		 * @tparam Name json member name
+		 * @tparam T type to hold raw JSON data, defaults to json_value
+		 * @tparam Constructor A callable used to construct T.
+		 * @tparam Nullable Does the value have to exist in the document or can it
+		 * have a null value
+		 */
 		template<JSONNAMETYPE Name, typename T = json_value,
 		         typename Constructor = default_constructor<T>,
 		         JsonNullable Nullable = JsonNullable::MustExist>
@@ -1714,16 +1725,18 @@ namespace daw::json {
 		} // namespace json_base
 
 		/***
-		 * Do not parse this member but return a T that can be used to
-		 * parse later.  Any whitespace surrounding the value may not be preserved.
-		 * @tparam Name name of JSON member to link to
-		 * @tparam T destination type.  Must be constructable from a char const *
-		 * and a std::size_t or have custom Construct parameter
-		 * @tparam Constructor A callable used to construct T.  The
+		 * json_raw allows for raw JSON access to the member data. It requires a
+		 * type that is constructable from (char const *, std::size_t) arguments and
+		 * for serialization requires that it can be passed to std::begin/std::end
+		 * and the iterator returned has a value_type of char. Any whitespace
+		 * surrounding the value may not be preserved.  The default T json_value
+		 * allows for delaying the parsing of this member until later
+		 * @tparam Name json member name
+		 * @tparam T type to hold raw JSON data, defaults to json_value
+		 * @tparam Constructor A callable used to construct T.
 		 * @tparam Nullable Does the value have to exist in the document or can it
 		 * have a null value
 		 */
-
 		template<JSONNAMETYPE Name, typename T, typename Constructor,
 		         JsonNullable Nullable>
 		struct json_raw : json_base::json_raw<T, Constructor, Nullable> {
@@ -1747,6 +1760,18 @@ namespace daw::json {
 		  [[deprecated( "Was renamed to json_raw, will be removed in v4" )]] =
 		    json_raw<Name, T, Constructor, Nullable>;
 
+		/***
+		 * json_raw_null allows for raw JSON access to the nullable member data.
+		 * It requires a type that is constructable from (char const *,
+		 * std::size_t) arguments and for serialization requires that it can be
+		 * passed to std::begin/std::end and the iterator returned has a
+		 * value_type of char. Any whitespace
+		 * surrounding the value may not be preserved.  The default T json_value
+		 * allows for delaying the parsing of this member until later
+		 * @tparam Name json member name
+		 * @tparam T type to hold raw JSON data, defaults to json_value
+		 * @tparam Constructor A callable used to construct T.
+		 */
 		template<JSONNAMETYPE Name, typename T = std::optional<json_value>,
 		         typename Constructor = nullable_constructor<T>>
 		using json_raw_null = json_raw<Name, T, Constructor, JsonNullDefault>;
@@ -1757,11 +1782,34 @@ namespace daw::json {
 		  [[deprecated( "Was renamed to json_raw_null, will be removed in v4" )]] =
 		    json_raw_null<Name, T, Constructor>;
 
+		/***
+		 * json_raw allows for raw JSON access to the member data. It requires a
+		 * type that is constructable from (char const *, std::size_t) arguments and
+		 * for serialization requires that it can be passed to std::begin/std::end
+		 * and the iterator returned has a value_type of char. Any whitespace
+		 * surrounding the value may not be preserved.  The default T json_value
+		 * allows for delaying the parsing of this member until later
+		 * @tparam T type to hold raw JSON data, defaults to json_value
+		 * @tparam Constructor A callable used to construct T.
+		 * @tparam Nullable Does the value have to exist in the document or can it
+		 * have a null value
+		 */
 		template<typename T = json_value,
 		         typename Constructor = default_constructor<T>,
 		         JsonNullable Nullable = JsonNullable::MustExist>
 		using json_raw_no_name = json_base::json_raw<T, Constructor, Nullable>;
 
+		/***
+		 * json_raw_null allows for raw JSON access to the nullable member data.
+		 * It requires a type that is constructable from (char const *,
+		 * std::size_t) arguments and for serialization requires that it can be
+		 * passed to std::begin/std::end and the iterator returned has a
+		 * value_type of char. Any whitespace
+		 * surrounding the value may not be preserved.  The default T json_value
+		 * allows for delaying the parsing of this member until later
+		 * @tparam T type to hold raw JSON data, defaults to json_value
+		 * @tparam Constructor A callable used to construct T.
+		 */
 		template<typename T = std::optional<json_value>,
 		         typename Constructor = nullable_constructor<T>>
 		using json_raw_null_no_name =

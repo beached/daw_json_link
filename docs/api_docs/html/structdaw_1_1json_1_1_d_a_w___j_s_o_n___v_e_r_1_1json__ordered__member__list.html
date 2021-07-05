@@ -92,9 +92,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ad3199c60a3a5ad437718958ea145fa81"><td class="memTemplParams" colspan="2">template&lt;typename JsonClass , typename ParseState &gt; </td></tr>
 <tr class="memitem:ad3199c60a3a5ad437718958ea145fa81"><td class="memTemplItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacedaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__details.html#ac9a88410139fc9fcafcdd47c1aa2d5bb">json_details::json_result</a>&lt; JsonClass &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__ordered__member__list.html#ad3199c60a3a5ad437718958ea145fa81">parse_to_class</a> (ParseState &amp;<a class="el" href="daw__json__parse__value_8h.html#adf9379e0004814bd4428417959b2f0d0">parse_state</a>, template_param&lt; JsonClass &gt;)</td></tr>
 <tr class="separator:ad3199c60a3a5ad437718958ea145fa81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec25ac905d52e548a7f3af08cd35ffc8"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator , typename Value , template&lt; class... &gt; class Tuple, typename... Args&gt; </td></tr>
-<tr class="memitem:aec25ac905d52e548a7f3af08cd35ffc8"><td class="memTemplItemLeft" align="right" valign="top">static constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__ordered__member__list.html#aec25ac905d52e548a7f3af08cd35ffc8">serialize</a> (OutputIterator <a class="el" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>, Tuple&lt; Args... &gt; const &amp;args, Value const &amp;v)</td></tr>
-<tr class="separator:aec25ac905d52e548a7f3af08cd35ffc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e7bee628f01c88f99e65ce438dd42bc"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator , typename Value , template&lt; class... &gt; class Tuple, typename... Ts&gt; </td></tr>
+<tr class="memitem:a5e7bee628f01c88f99e65ce438dd42bc"><td class="memTemplItemLeft" align="right" valign="top">static constexpr OutputIterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structdaw_1_1json_1_1_d_a_w___j_s_o_n___v_e_r_1_1json__ordered__member__list.html#a5e7bee628f01c88f99e65ce438dd42bc">serialize</a> (OutputIterator <a class="el" href="daw__json__traits_8h.html#ac431630602ea95459f51fee16fcd02ab">it</a>, Tuple&lt; Ts... &gt; const &amp;args, Value const &amp;v)</td></tr>
+<tr class="separator:a5e7bee628f01c88f99e65ce438dd42bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a1cab8a8596639c60341153e816de7c2d"></a>
@@ -202,15 +202,15 @@ template&lt;typename JsonClass , typename ParseState &gt; </div>
 
 </div>
 </div>
-<a id="aec25ac905d52e548a7f3af08cd35ffc8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aec25ac905d52e548a7f3af08cd35ffc8">&#9670;&nbsp;</a></span>serialize()</h2>
+<a id="a5e7bee628f01c88f99e65ce438dd42bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e7bee628f01c88f99e65ce438dd42bc">&#9670;&nbsp;</a></span>serialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename... JsonMembers&gt; </div>
 <div class="memtemplate">
-template&lt;typename OutputIterator , typename Value , template&lt; class... &gt; class Tuple, typename... Args&gt; </div>
+template&lt;typename OutputIterator , typename Value , template&lt; class... &gt; class Tuple, typename... Ts&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -224,7 +224,7 @@ template&lt;typename OutputIterator , typename Value , template&lt; class... &gt
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Tuple&lt; Args... &gt; const &amp;&#160;</td>
+          <td class="paramtype">Tuple&lt; Ts... &gt; const &amp;&#160;</td>
           <td class="paramname"><em>args</em>, </td>
         </tr>
         <tr>

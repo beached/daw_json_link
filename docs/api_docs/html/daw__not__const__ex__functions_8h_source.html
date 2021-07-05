@@ -127,9 +127,9 @@ $(function() {
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> index;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        _BitScanForward( &amp;index, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>( value ) );</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>( index );</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#elif</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#else</span></div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        (void)value;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        DAW_BUILTIN_UNREACHABLE( );</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        DAW_UNREACHABLE( );</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      }</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
