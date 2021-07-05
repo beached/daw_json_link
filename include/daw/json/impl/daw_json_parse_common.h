@@ -42,6 +42,9 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		template<typename ParseState>
+		class basic_json_value;
+
 		namespace json_details {
 			template<typename T>
 			using ordered_member_subtype_test = typename T::json_member;
@@ -340,71 +343,78 @@ namespace daw::json {
 			         json_details::json_options_t Options = class_opts_def>
 			struct json_class;
 
-			template<typename T>
-			using json_class_null = json_class<
-			  T, nullable_constructor<T>,
-			  json_details::class_opts_set<class_opts_def, JsonNullDefault>>;
+			template<typename T, typename Constructor = nullable_constructor<T>,
+			         json_details::json_options_t Options = class_opts_def>
+			using json_class_null =
+			  json_class<T, Constructor,
+			             json_details::class_opts_set<Options, JsonNullDefault>>;
 
 			template<typename JsonElement, typename Container,
 			         typename Constructor = default_constructor<Container>,
 			         JsonNullable Nullable = JsonNullable::MustExist>
 			struct json_array;
 
-			template<typename JsonElement, typename Container>
+			template<typename JsonElement, typename Container,
+			         typename Constructor = nullable_constructor<Container>>
 			using json_array_null =
-			  json_array<JsonElement, Container, nullable_constructor<Container>,
-			             JsonNullDefault>;
+			  json_array<JsonElement, Container, Constructor, JsonNullDefault>;
 
-			template<typename String,
+			template<typename T,
 			         json_details::json_options_t Options = string_raw_opts_def,
-			         typename Constructor = default_constructor<String>>
+			         typename Constructor = default_constructor<T>>
 			struct json_string_raw;
 
-			template<typename T>
+			template<typename T,
+			         json_details::json_options_t Options = string_raw_opts_def,
+			         typename Constructor = nullable_constructor<T>>
 			using json_string_raw_null = json_string_raw<
-			  T,
-			  json_details::string_raw_opts_set<string_raw_opts_def, JsonNullDefault>,
-			  nullable_constructor<T>>;
+			  T, json_details::string_raw_opts_set<Options, JsonNullDefault>,
+			  Constructor>;
 
-			template<typename String,
+			template<typename T,
 			         json_details::json_options_t Options = string_opts_def,
-			         typename Constructor = nullable_constructor<String>>
+			         typename Constructor = default_constructor<T>>
 			struct json_string;
 
-			template<typename T>
-			using json_string_null = json_string<
-			  T, json_details::string_opts_set<string_opts_def, JsonNullDefault>,
-			  nullable_constructor<T>>;
+			template<typename T,
+			         json_details::json_options_t Options = string_opts_def,
+			         typename Constructor = nullable_constructor<T>>
+			using json_string_null =
+			  json_string<T, json_details::string_opts_set<Options, JsonNullDefault>,
+			              Constructor>;
 
 			template<typename T, json_details::json_options_t Options = bool_opts_def,
 			         typename Constructor = default_constructor<T>>
 			struct json_bool;
 
-			template<typename T>
+			template<typename T, json_details::json_options_t Options = bool_opts_def,
+			         typename Constructor = nullable_constructor<T>>
 			using json_bool_null =
-			  json_bool<T,
-			            json_details::bool_opts_set<bool_opts_def, JsonNullDefault>,
-			            nullable_constructor<T>>;
+			  json_bool<T, json_details::bool_opts_set<Options, JsonNullDefault>,
+			            Constructor>;
 
 			template<typename T,
 			         json_details::json_options_t Options = number_opts_def,
 			         typename Constructor = default_constructor<T>>
 			struct json_number;
 
-			template<typename T>
-			using json_number_null = json_number<
-			  T, json_details::number_opts_set<number_opts_def, JsonNullDefault>,
-			  nullable_constructor<T>>;
+			template<typename T,
+			         json_details::json_options_t Options = number_opts_def,
+			         typename Constructor = nullable_constructor<T>>
+			using json_number_null =
+			  json_number<T, json_details::number_opts_set<Options, JsonNullDefault>,
+			              Constructor>;
 
 			template<typename Container, typename JsonValueType, typename JsonKeyType,
 			         typename Constructor = default_constructor<Container>,
 			         JsonNullable Nullable = JsonNullable::MustExist>
 			struct json_key_value;
 
-			template<typename Container, typename JsonValueType, typename JsonKeyType>
+			template<typename Container, typename JsonValueType, typename JsonKeyType,
+			         typename Constructor = nullable_constructor<Container>>
 			using json_key_value_null =
-			  json_key_value<Container, JsonValueType, JsonKeyType,
-			                 nullable_constructor<Container>, JsonNullDefault>;
+			  json_key_value<Container, JsonValueType, JsonKeyType, Constructor,
+			                 JsonNullDefault>;
 
 			template<typename Tuple,
 			         typename Constructor = default_constructor<Tuple>,
@@ -412,11 +422,18 @@ namespace daw::json {
 			struct json_tuple;
 
 			template<typename Tuple,
-			         typename Constructor = default_constructor<Tuple>,
+			         typename Constructor = nullable_constructor<Tuple>,
 			         json_details::json_options_t Options = class_opts_def>
 			using json_tuple_null =
 			  json_tuple<Tuple, Constructor,
 			             json_details::tuple_opts_set<Options, JsonNullDefault>>;
+
+			template<typename T, typename Constructor = default_constructor<T>,
+			         JsonNullable Nullable = JsonNullable::MustExist>
+			struct json_delayed;
+
+			template<typename T, typename Constructor = nullable_constructor<T>>
+			using json_delayed_null = json_delayed<T, Constructor, JsonNullDefault>;
 		} // namespace json_base
 
 		namespace json_details {
@@ -686,6 +703,14 @@ namespace daw::json {
 				static constexpr bool type_map_found = true;
 			};
 
+			template<typename ParseState>
+			struct json_deduced_type_map<basic_json_value<ParseState>> {
+				static constexpr bool is_null = false;
+				static constexpr JsonParseTypes parse_type = JsonParseTypes::Unknown;
+
+				static constexpr bool type_map_found = true;
+			};
+
 			template<typename T>
 			inline constexpr bool has_deduced_type_mapping_v =
 			  json_deduced_type_map<T>::type_map_found;
@@ -697,13 +722,19 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr auto json_link_quick_map( ) {
-				if constexpr( has_deduced_type_mapping_v<T> ) {
+				if constexpr( is_a_json_type_v<T> ) {
+					return json_link_quick_map_type<T>{ };
+				} else if constexpr( has_deduced_type_mapping_v<T> ) {
 					using mapped_type_t = json_deduced_type_map<T>;
 					constexpr auto mapped_type = mapped_type_t::parse_type;
 					constexpr bool is_null = mapped_type_t::is_null;
 					if constexpr( mapped_type == JsonParseTypes::Unknown ) {
-						// This is a json_ type
-						return json_link_quick_map_type<typename mapped_type_t::type>{ };
+						if constexpr( is_null ) {
+							return json_link_quick_map_type<
+							  json_base::json_delayed_null<T>>{ };
+						} else {
+							return json_link_quick_map_type<json_base::json_delayed<T>>{ };
+						}
 					} else if constexpr( mapped_type == JsonParseTypes::StringRaw ) {
 						if constexpr( is_null ) {
 							return json_link_quick_map_type<
