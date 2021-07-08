@@ -813,6 +813,7 @@ namespace daw::json {
 			  maybe_unused]] DAW_ATTRIB_INLINE inline constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::VariantTagged> ) {
+				/*
 				using tag_member = dependent_member_t<JsonMember>;
 				auto [is_found, parse_state2] = find_range<ParseState>(
 				  ParseState( parse_state.class_first, parse_state.last ),
@@ -822,6 +823,55 @@ namespace daw::json {
 				                 parse_state );
 				auto index = typename JsonMember::switcher{ }( parse_value<tag_member>(
 				  parse_state2, ParseTag<tag_member::expected_type>{ } ) );
+
+				return parse_visit<json_result<JsonMember>,
+				                   typename JsonMember::json_elements::element_map_t>(
+				  index, parse_state );
+				*/
+
+				auto const index = [&] {
+					using tag_member = typename JsonMember::tag_member;
+					using class_wrapper_t = typename JsonMember::tag_member_class_wrapper;
+					auto parse_state2 =
+					  ParseState( parse_state.class_first, parse_state.class_last );
+					using switcher_t = typename JsonMember::switcher;
+					if constexpr( is_an_ordered_member_v<tag_member> ) {
+						return switcher_t{ }( std::get<0>( parse_value<class_wrapper_t>(
+						  parse_state2, ParseTag<class_wrapper_t::expected_type>{ } ) ) );
+					} else {
+						return switcher_t{ }( std::get<0>(
+						  parse_value<class_wrapper_t>(
+						    parse_state2, ParseTag<class_wrapper_t::expected_type>{ } )
+						    .members ) );
+					}
+				}( );
+
+				return parse_visit<json_result<JsonMember>,
+				                   typename JsonMember::json_elements::element_map_t>(
+				  index, parse_state );
+			}
+
+			template<typename JsonMember, bool /*KnownBounds*/, typename ParseState>
+			[[nodiscard,
+			  maybe_unused]] DAW_ATTRIB_INLINE inline constexpr json_result<JsonMember>
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::VariantIntrusive> ) {
+				auto const index = [&] {
+					using tag_submember = typename JsonMember::tag_submember;
+					using class_wrapper_t =
+					  typename JsonMember::tag_submember_class_wrapper;
+					auto parse_state2 = parse_state;
+					using switcher_t = typename JsonMember::switcher;
+					if constexpr( is_an_ordered_member_v<tag_submember> ) {
+						return switcher_t{ }( std::get<0>( parse_value<class_wrapper_t>(
+						  parse_state2, ParseTag<class_wrapper_t::expected_type>{ } ) ) );
+					} else {
+						return switcher_t{ }( std::get<0>(
+						  parse_value<class_wrapper_t>(
+						    parse_state2, ParseTag<class_wrapper_t::expected_type>{ } )
+						    .members ) );
+					}
+				}( );
 
 				return parse_visit<json_result<JsonMember>,
 				                   typename JsonMember::json_elements::element_map_t>(
@@ -884,6 +934,37 @@ namespace daw::json {
 				}
 			};
 
+			namespace pocm_details {
+				/***
+				 * Maybe skip json members
+				 * @tparam ParseState see IteratorRange
+				 * @param parse_state JSON data
+				 * @param current_position current member index
+				 * @param desired_position desired member index
+				 */
+				template<bool Nullable, typename ParseState>
+				DAW_ATTRIB_INLINE inline constexpr void
+				maybe_skip_members( ParseState &parse_state,
+				                    std::size_t &current_position,
+				                    std::size_t desired_position ) {
+
+					daw_json_assert_weak( current_position <= desired_position,
+					                      ErrorReason::OutOfOrderOrderedMembers,
+					                      parse_state );
+					constexpr bool skip_check_end =
+					  ParseState::is_unchecked_input and Nullable;
+					while( ( current_position < desired_position ) &
+					       ( skip_check_end or parse_state.front( ) != ']' ) ) {
+						(void)skip_value( parse_state );
+						parse_state.move_next_member_or_end( );
+						++current_position;
+						daw_json_assert_weak( parse_state.has_more( ),
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
+					}
+				}
+			} // namespace pocm_details
+
 			template<typename JsonMember, bool KnownBounds, typename ParseState,
 			         std::size_t... Is>
 			DAW_ATTRIB_FLATINLINE constexpr json_result<JsonMember>
@@ -892,34 +973,51 @@ namespace daw::json {
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, parse_state );
 				parse_state.remove_prefix( );
-
+				parse_state.move_next_member_or_end( );
 				using tuple_t = typename JsonMember::base_type;
 
-				auto const parse_value_help = [&]( auto Idx ) {
-					parse_state.move_next_member_or_end( );
-					constexpr std::size_t index = decltype( Idx )::value;
-					using element_pack = tuple_elements_pack<tuple_t>;
-					using T =
-#if defined( _MSC_VER ) and not defined( __clang__ )
-					  // Bug in MSVC refuses to work here with typename
-					  json_deduced_type<element_pack::template element_t<index>>;
-#else
-					  json_deduced_type<typename element_pack::template element_t<index>>;
-#endif
-					return parse_value<T>( parse_state, ParseTag<T::expected_type>{ } );
+				auto const parse_value_help = [&]( auto PackIdx,
+				                                   std::size_t &ClassIdx ) {
+					constexpr std::size_t index = decltype( PackIdx )::value;
+					using CurrentMember =
+					  std::tuple_element_t<index, typename JsonMember::sub_member_list>;
+
+					using json_member_t = ordered_member_subtype_t<CurrentMember>;
+					if constexpr( is_an_ordered_member_v<CurrentMember> ) {
+						pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
+						  parse_state, ClassIdx, CurrentMember::member_index );
+					} else {
+						daw_json_assert_weak( parse_state.has_more( ),
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
+					}
+					++ClassIdx;
+					if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+						auto const run_after_parse = daw::on_exit_success(
+						  [&] { parse_state.move_next_member_or_end( ); } );
+						(void)run_after_parse;
+						return parse_value<without_name<json_member_t>>(
+						  parse_state, ParseTag<json_member_t::expected_type>{ } );
+					} else {
+						auto result = parse_value<without_name<json_member_t>>(
+						  parse_state, ParseTag<json_member_t::expected_type>{ } );
+						parse_state.move_next_member_or_end( );
+						return result;
+					}
 				};
 
 				static_assert( is_a_json_type<JsonMember>::value );
 				using Constructor = typename JsonMember::constructor_t;
-
 				static_assert(
-				  std::is_invocable<Constructor, decltype( parse_value_help(
-				                                   std::integral_constant<
-				                                     std::size_t, Is>{ } ) )...>::value,
+				  std::is_invocable<Constructor,
+				                    decltype( parse_value_help(
+				                      std::integral_constant<std::size_t, Is>{ },
+				                      std::declval<std::size_t &>( ) ) )...>::value,
 				  "Supplied types cannot be used for construction of this type" );
 
 				parse_state.trim_left( );
 
+				std::size_t class_idx = 0;
 				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 					auto const run_after_parse = ordered_class_cleanup<
 					  json_details::all_json_members_must_exist_v<JsonMember, ParseState>,
@@ -927,23 +1025,23 @@ namespace daw::json {
 					(void)run_after_parse;
 					if constexpr( force_aggregate_construction_v<JsonMember> ) {
 						return tuple_t{ parse_value_help(
-						  std::integral_constant<std::size_t, Is>{ } )... };
+						  std::integral_constant<std::size_t, Is>{ }, class_idx )... };
 					} else {
 						return construct_value_tp<tuple_t, Constructor>(
 						  parse_state,
 						  fwd_pack{ parse_value_help(
-						    std::integral_constant<std::size_t, Is>{ } )... } );
+						    std::integral_constant<std::size_t, Is>{ }, class_idx )... } );
 					}
 				} else {
 					auto result = [&] {
 						if constexpr( force_aggregate_construction_v<JsonMember> ) {
 							return tuple_t{ parse_value_help(
-							  std::integral_constant<std::size_t, Is>{ } )... };
+							  std::integral_constant<std::size_t, Is>{ }, class_idx )... };
 						} else {
 							return construct_value_tp<tuple_t, Constructor>(
-							  parse_state,
-							  fwd_pack{ parse_value_help(
-							    std::integral_constant<std::size_t, Is>{ } )... } );
+							  parse_state, fwd_pack{ parse_value_help(
+							                 std::integral_constant<std::size_t, Is>{ },
+							                 class_idx )... } );
 						}
 					}( );
 					if constexpr( json_details::all_json_members_must_exist_v<
@@ -963,11 +1061,12 @@ namespace daw::json {
 			template<typename JsonMember, bool KnownBounds, typename ParseState>
 			DAW_ATTRIB_FLATINLINE constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state, ParseTag<JsonParseTypes::Tuple> ) {
-				using tuple_t = typename JsonMember::base_type;
-				using element_pack = tuple_elements_pack<tuple_t>;
+				using element_pack =
+				  typename JsonMember::sub_member_list; // tuple_elements_pack<tuple_t>;
 
 				return parse_tuple_value<JsonMember, KnownBounds>(
-				  parse_state, std::make_index_sequence<element_pack::size>{ } );
+				  parse_state,
+				  std::make_index_sequence<std::tuple_size_v<element_pack>>{ } );
 			}
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState>

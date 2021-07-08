@@ -204,6 +204,12 @@ namespace daw::json {
 			to_json_schema( ParseTag<JsonParseTypes::VariantTagged>,
 			                OutputIterator out_it );
 
+			template<typename JsonMember, bool is_root = false,
+			         typename OutputIterator>
+			constexpr OutputIterator
+			to_json_schema( ParseTag<JsonParseTypes::VariantIntrusive>,
+			                OutputIterator out_it );
+
 			template<typename, typename>
 			struct json_class_processor;
 
@@ -542,6 +548,21 @@ namespace daw::json {
 				return out_it;
 			}
 
+			template<typename JsonMember, bool is_root, typename OutputIterator>
+			constexpr OutputIterator
+			to_json_schema( ParseTag<JsonParseTypes::VariantIntrusive>,
+			                OutputIterator out_it ) {
+				static_assert( not is_root,
+				               "Attempt to have a tagged variant as root object.  This "
+				               "is unsupported" );
+				*out_it++ = '{';
+				out_it = utils::copy_to_iterator( out_it, R"("oneOf":[)" );
+				using elements_t = typename JsonMember::json_elements;
+				out_it = variant_element_types<elements_t>::output_elements( out_it );
+				*out_it++ = ']';
+				*out_it++ = '}';
+				return out_it;
+			}
 		} // namespace json_details
 
 		template<typename T, typename OutputIterator>

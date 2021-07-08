@@ -627,6 +627,16 @@ namespace daw::json {
 				return it;
 			}
 
+			template<typename JsonMember, typename OutputIterator,
+			         typename parse_to_t>
+			[[nodiscard]] inline constexpr OutputIterator
+			to_daw_json_string( ParseTag<JsonParseTypes::VariantIntrusive>,
+			                    OutputIterator it, parse_to_t const &value ) {
+
+				to_variant_string<0, JsonMember>( it, value );
+				return it;
+			}
+
 			template<typename T>
 			[[maybe_unused]] constexpr auto deref_detect( T &&value )
 			  -> decltype( *value );

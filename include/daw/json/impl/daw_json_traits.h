@@ -437,8 +437,11 @@ namespace daw::json {
 			using ordered_member_t = typename T::i_am_an_ordered_member;
 
 			template<typename T>
+			using is_an_ordered_member = daw::is_detected<ordered_member_t, T>;
+
+			template<typename T>
 			inline constexpr bool is_an_ordered_member_v =
-			  daw::is_detected_v<ordered_member_t, T>;
+			  is_an_ordered_member<T>::value;
 
 			template<typename T>
 			using is_a_json_tagged_variant_test =
@@ -679,5 +682,6 @@ namespace daw::json {
 			template<typename T>
 			inline constexpr bool is_tuple_v = is_tuple<T>::value;
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -8,4 +8,6 @@
 
 #pragma once
 
+/// The version string used in namespace definitions.  Must be a valid namespace
+/// name
 #define DAW_JSON_VER v3_0_0

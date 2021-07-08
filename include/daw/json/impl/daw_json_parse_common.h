@@ -42,6 +42,9 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+
+		struct json_deduce_type;
+
 		template<typename ParseState>
 		class basic_json_value;
 
@@ -418,15 +421,18 @@ namespace daw::json {
 
 			template<typename Tuple,
 			         typename Constructor = default_constructor<Tuple>,
-			         json_details::json_options_t Options = tuple_opts_def>
+			         json_details::json_options_t Options = tuple_opts_def,
+			         typename JsonTupleTypesList = json_deduce_type>
 			struct json_tuple;
 
 			template<typename Tuple,
 			         typename Constructor = nullable_constructor<Tuple>,
-			         json_details::json_options_t Options = class_opts_def>
+			         json_details::json_options_t Options = class_opts_def,
+			         typename JsonTupleTypesList = json_deduce_type>
 			using json_tuple_null =
 			  json_tuple<Tuple, Constructor,
-			             json_details::tuple_opts_set<Options, JsonNullDefault>>;
+			             json_details::tuple_opts_set<Options, JsonNullDefault>,
+			             JsonTupleTypesList>;
 
 			/***
 			 * json_raw allows for raw JSON access to the member data. It requires a
@@ -862,15 +868,23 @@ namespace daw::json {
 			inline constexpr bool is_json_class_map_v =
 			  daw::is_detected_v<is_json_class_map_test, JsonType>;
 
-			template<typename T, bool Contract, bool JsonType, bool QuickMap,
-			         bool Container>
+			template<typename T, bool Ordered, bool Contract, bool JsonType,
+			         bool QuickMap, bool Container>
 			struct json_type_deducer {
 				using type = missing_json_data_contract_for<T>;
 			};
 
+			template<typename T, /* typename Ordered, */ bool Contract, bool JsonType,
+			         bool QuickMap, bool Container>
+			struct json_type_deducer<T, true, Contract, JsonType, QuickMap,
+			                         Container> {
+
+				using type = T;
+			};
+
 			template<typename T, /*typename Contract,*/ bool JsonType, bool QuickMap,
 			         bool Container>
-			struct json_type_deducer<T, true, JsonType, QuickMap, Container> {
+			struct json_type_deducer<T, false, true, JsonType, QuickMap, Container> {
 
 				static_assert( not std::is_same_v<T, void> );
 				using type = json_base::json_class<
@@ -884,7 +898,7 @@ namespace daw::json {
 
 			template<typename T,
 			         /*bool Contract, bool JsonType,*/ bool QuickMap, bool Container>
-			struct json_type_deducer<T, false, true, QuickMap, Container> {
+			struct json_type_deducer<T, false, false, true, QuickMap, Container> {
 				static_assert( not std::is_same_v<T, void> );
 				using type =
 				  typename std::conditional_t<is_json_class_map_v<T>,
@@ -899,7 +913,7 @@ namespace daw::json {
 
 			template<typename T /*bool Contract, bool JsonType, bool QuickMap*/,
 			         bool Container>
-			struct json_type_deducer<T, false, false, true, Container> {
+			struct json_type_deducer<T, false, false, false, true, Container> {
 				static_assert( not std::is_same_v<T, void> );
 				using type = json_link_quick_map_t<T>;
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
@@ -913,7 +927,7 @@ namespace daw::json {
 
 			template<typename T
 			         /*bool Contract, bool JsonType, bool QuickMap,bool Container*/>
-			struct json_type_deducer<T, false, false, false, true> {
+			struct json_type_deducer<T, false, false, false, false, true> {
 				static_assert( not std::is_same_v<T, void> );
 				using type = json_base::json_array<typename T::value_type, T>;
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
@@ -927,8 +941,9 @@ namespace daw::json {
 
 			template<typename T>
 			using json_deduced_type = typename json_type_deducer<
-			  T, has_json_data_contract_trait_v<T>, json_details::is_a_json_type_v<T>,
-			  has_json_link_quick_map_v<T>, is_container_v<T>>::type;
+			  T, is_an_ordered_member_v<T>, has_json_data_contract_trait_v<T>,
+			  json_details::is_a_json_type_v<T>, has_json_link_quick_map_v<T>,
+			  is_container_v<T>>::type;
 
 			template<typename T>
 			using has_json_deduced_type = daw::not_trait<

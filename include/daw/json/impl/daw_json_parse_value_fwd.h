@@ -109,6 +109,12 @@ namespace daw::json {
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::VariantTagged> );
 
+			template<typename JsonMember, bool KnownBounds = false,
+			         typename ParseState>
+			[[nodiscard, maybe_unused]] constexpr json_result<JsonMember>
+			parse_value( ParseState &parse_state,
+			             ParseTag<JsonParseTypes::VariantIntrusive> );
+
 			template<typename JsonMember, bool KnownBounds = false, std::size_t N,
 			         typename ParseState, bool B>
 			[[nodiscard]] constexpr json_result<JsonMember>

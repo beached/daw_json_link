@@ -29,36 +29,7 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			namespace pocm_details {
-				/***
-				 * Maybe skip json members
-				 * @tparam ParseState see IteratorRange
-				 * @param parse_state JSON data
-				 * @param current_position current member index
-				 * @param desired_position desired member index
-				 */
-				template<bool Nullable, typename ParseState>
-				DAW_ATTRIB_INLINE inline constexpr void
-				maybe_skip_members( ParseState &parse_state,
-				                    std::size_t &current_position,
-				                    std::size_t desired_position ) {
 
-					daw_json_assert_weak( current_position <= desired_position,
-					                      ErrorReason::OutOfOrderOrderedMembers,
-					                      parse_state );
-					constexpr bool skip_check_end =
-					  ParseState::is_unchecked_input and Nullable;
-					while( ( current_position < desired_position ) &
-					       ( skip_check_end or parse_state.front( ) != ']' ) ) {
-						(void)skip_value( parse_state );
-						parse_state.move_next_member_or_end( );
-						++current_position;
-						daw_json_assert_weak( parse_state.has_more( ),
-						                      ErrorReason::UnexpectedEndOfData,
-						                      parse_state );
-					}
-				}
-			} // namespace pocm_details
 
 			/***
 			 * Parse a class member in an order json class(class as array)

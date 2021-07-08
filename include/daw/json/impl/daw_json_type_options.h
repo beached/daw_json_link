@@ -134,8 +134,9 @@ namespace daw::json {
 		 * quotes \" we can stop at the first double quote
 		 */
 		enum class AllowEscapeCharacter : unsigned {
-			/*Full string processing to skip escaped characters*/ Allow,
-			/*There will never be a \" sequence inside the string*/ NotBeforeDblQuote
+			Allow,             /// Full string processing to skip escaped characters
+			NotBeforeDblQuote, /// There will never be a \" sequence inside the
+			                   /// string.  This allows very fast parsing
 		};
 		namespace json_details {
 			template<>

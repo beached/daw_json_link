@@ -19,13 +19,13 @@
 #include <variant>
 
 struct Bar {
-	int a;
-	int b;
+	int a = 9;
+	int type = 0;
 };
 
 struct Umm {
-	double a;
-	int b;
+	double a = 12.1;
+	int type = 1;
 };
 
 struct Foo {
@@ -42,6 +42,7 @@ struct Foo {
 	std::unique_ptr<int[]> l = std::unique_ptr<int[]>( new int[0] );
 	int k;
 	std::tuple<int, double> m{ 99, 98.8 };
+	std::variant<Bar, Umm> n{ Umm{} };
 };
 
 struct IdentitySwitcher {
@@ -81,7 +82,7 @@ namespace daw::json {
 		using type = json_ordered_member_list<int, int>;
 
 		static inline auto to_json_data( Bar const &b ) {
-			return std::forward_as_tuple( b.a, b.b );
+			return std::forward_as_tuple( b.a, b.type );
 		}
 	};
 
@@ -90,7 +91,7 @@ namespace daw::json {
 		using type = json_ordered_member_list<double, int>;
 
 		static inline auto to_json_data( Umm const &b ) {
-			return std::forward_as_tuple( b.a, b.b );
+			return std::forward_as_tuple( b.a, b.type );
 		}
 	};
 
@@ -113,6 +114,7 @@ namespace daw::json {
 		static constexpr char const k[] = "k";
 		static constexpr char const l[] = "l";
 		static constexpr char const m[] = "m";
+		static constexpr char const n[] = "n";
 		using type = json_member_list<
 		  json_link<a, int>, json_link<b, double>, json_link<c, std::string>,
 		  json_link<d, std::vector<int>>, json_link<e, Bar>,
@@ -125,12 +127,16 @@ namespace daw::json {
 		  json_link<j, std::optional<int>>,
 		  json_sized_array<l, int, json_link<k, int>, std::unique_ptr<int[]>,
 		                   UniquePtrArrayCtor<int>>,
-		  json_link<k, int>, json_tuple<m, std::tuple<int, double>>>;
+		  json_link<k, int>, json_tuple<m, std::tuple<int, double>>,
+		  json_intrusive_variant<n, std::variant<Bar, Umm>,
+		                         ordered_json_member<1, std::size_t>,
+		                         IdentitySwitcher>>;
 
 		static inline auto to_json_data( Foo const &v ) {
 			return daw::forward_nonrvalue_as_tuple(
 			  v.a, v.b, v.c, v.d, v.e, v.f, v.g, v.h, v.i, v.j,
-			  daw::span( v.l.get( ), static_cast<std::size_t>( v.k ) ), v.k, v.m );
+			  daw::span( v.l.get( ), static_cast<std::size_t>( v.k ) ), v.k, v.m,
+			  v.n );
 		}
 	};
 } // namespace daw::json

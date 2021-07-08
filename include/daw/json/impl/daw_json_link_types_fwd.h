@@ -330,12 +330,10 @@ namespace daw::json {
 		 * are supported
 		 * @tparam Nullable Can the member be missing or have a null value
 		 */
-		template<
-		  JSONNAMETYPE Name, typename JsonElement,
-		  typename Container = std::vector<
-		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
-		  typename Constructor = default_constructor<Container>,
-		  JsonNullable Nullable = JsonNullable::MustExist>
+		template<JSONNAMETYPE Name, typename JsonElement,
+		         typename Container = json_deduce_type,
+		         typename Constructor = json_deduce_type,
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_array;
 
 		/** Link to a nullable JSON array
@@ -348,11 +346,9 @@ namespace daw::json {
 		 * default will use the Containers constructor.  Both normal and aggregate
 		 * are supported
 		 */
-		template<
-		  JSONNAMETYPE Name, typename JsonElement,
-		  typename Container = std::vector<
-		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
-		  typename Constructor = nullable_constructor<Container>>
+		template<JSONNAMETYPE Name, typename JsonElement,
+		         typename Container = json_deduce_type,
+		         typename Constructor = json_deduce_type>
 		using json_array_null =
 		  json_array<Name, JsonElement, Container, Constructor, JsonNullDefault>;
 
@@ -434,14 +430,15 @@ namespace daw::json {
 		         json_details::json_options_t Options = json_custom_opts_def>
 		using json_custom_null =
 		  json_custom<Name, T, FromJsonConverter, ToJsonConverter,
-		           json_details::json_custom_opts_set<Options, JsonNullDefault>>;
+		              json_details::json_custom_opts_set<Options, JsonNullDefault>>;
 
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
 		         typename ToJsonConverter = default_to_json_converter_t<T>,
 		         json_details::json_options_t Options = json_custom_opts_def>
-		using json_custom_lit = json_custom<Name, T, FromJsonConverter, ToJsonConverter,
-		           json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal>>;
+		using json_custom_lit = json_custom<
+		  Name, T, FromJsonConverter, ToJsonConverter,
+		  json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal>>;
 
 		template<JSONNAMETYPE Name, typename T,
 		         typename FromJsonConverter = default_from_json_converter_t<T>,
@@ -449,8 +446,8 @@ namespace daw::json {
 		         json_details::json_options_t Options = json_custom_opts_def>
 		using json_custom_lit_null =
 		  json_custom<Name, T, FromJsonConverter, ToJsonConverter,
-		           json_details::json_custom_opts_set<Options, JsonCustomTypes::Literal,
-		                                           JsonNullDefault>>;
+		              json_details::json_custom_opts_set<
+		                Options, JsonCustomTypes::Literal, JsonNullDefault>>;
 
 		namespace json_details {
 
@@ -492,27 +489,72 @@ namespace daw::json {
 			  std::remove_reference_t<daw::detected_t<underlying_nullable_type, T>>;
 
 			template<typename T>
-			inline constexpr bool is_nullable_type =
-			  daw::is_detected<underlying_nullable_type, T>::value;
+			using is_nullable_type = daw::is_detected<underlying_nullable_type, T>;
+
+			template<typename T>
+			inline constexpr bool is_nullable_type_v = is_nullable_type<T>::value;
 
 			template<typename T>
 			[[maybe_unused]] constexpr unknown_variant_type<T>
 			get_variant_type_list( T const * );
+
+			/// Allow specialization of variant like types to extract the alternative
+			/// pack
+			template<typename, typename = void>
+			struct variant_alternatives_list;
+
+			template<typename... Ts>
+			struct variant_alternatives_list<std::variant<Ts...>> {
+				using type = std::conditional_t<
+				  std::conjunction<has_json_deduced_type<Ts>...>::value,
+				  json_variant_type_list<json_deduced_type<Ts>...>,
+				  missing_default_type_mapping<json_deduced_type<Ts>...>>;
+			};
+
+			template<typename, typename = void>
+			struct tuple_types_list;
+
+			template<typename... Ts>
+			struct tuple_types_list<std::tuple<Ts...>> {
+				static_assert( ( has_json_deduced_type<Ts>::value and ... ),
+				               "Missing mapping for type in tuple" );
+
+				using types = std::tuple<json_deduced_type<Ts>...>;
+			};
+
+			template<typename... Ts>
+			struct tuple_types_list<daw::fwd_pack<Ts...>> {
+				static_assert( ( has_json_deduced_type<Ts>::value and ... ),
+				               "Missing mapping for type in tuple" );
+
+				using types = std::tuple<json_deduced_type<Ts>...>;
+			};
 
 			template<JsonNullable, typename>
 			struct cannot_deduce_variant_element_types;
 
 			template<JsonNullable Nullable, typename Variant>
 			using determine_variant_element_types = std::conditional_t<
-			  not is_nullable_json_value_v<Nullable> or not is_nullable_type<Variant>,
-			  std::remove_reference_t<decltype( get_variant_type_list(
-			    std::declval<Variant const *>( ) ) )>,
+			  std::disjunction_v<daw::not_trait<is_nullable_json_value<Nullable>>,
+			                     daw::not_trait<is_nullable_type<Variant>>>,
+			  variant_alternatives_list<Variant>,
 			  std::conditional_t<
-			    is_nullable_type<Variant>,
-			    std::remove_reference_t<decltype( get_variant_type_list(
-			      std::declval<
-			        detected_underlying_nullable_type<Variant> const *>( ) ) )>,
+			    is_nullable_type_v<Variant>,
+			    variant_alternatives_list<detected_underlying_nullable_type<Variant>>,
 			    cannot_deduce_variant_element_types<Nullable, Variant>>>;
+
+			template<JsonNullable, typename>
+			struct cannot_deduce_tuple_types_list;
+
+			template<JsonNullable Nullable, typename Tuple>
+			using determine_tuple_element_types = std::conditional_t<
+			  std::disjunction_v<daw::not_trait<is_nullable_json_value<Nullable>>,
+			                     daw::not_trait<is_nullable_type<Tuple>>>,
+			  typename tuple_types_list<Tuple>::type,
+			  std::conditional_t<is_nullable_type_v<Tuple>,
+			                     typename tuple_types_list<
+			                       detected_underlying_nullable_type<Tuple>>::type,
+			                     cannot_deduce_tuple_types_list<Nullable, Tuple>>>;
 		} // namespace json_details
 
 		/***
@@ -527,12 +569,10 @@ namespace daw::json {
 		 * default supports normal and aggregate construction
 		 * @tparam Nullable Can the member be missing or have a null value	 *
 		 */
-		template<
-		  JSONNAMETYPE Name, typename T,
-		  typename JsonElements =
-		    json_details::determine_variant_element_types<JsonNullDefault, T>,
-		  typename Constructor = default_constructor<T>,
-		  JsonNullable Nullable = JsonNullable::MustExist>
+		template<JSONNAMETYPE Name, typename Variant,
+		         typename JsonElements = json_deduce_type,
+		         typename Constructor = default_constructor<Variant>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_variant;
 
 		/***
@@ -544,13 +584,11 @@ namespace daw::json {
 		 * @tparam Constructor A callable used to construct T.  The
 		 * default supports normal and aggregate construction
 		 */
-		template<
-		  JSONNAMETYPE Name, typename T,
-		  typename JsonElements =
-		    json_details::determine_variant_element_types<JsonNullDefault, T>,
-		  typename Constructor = nullable_constructor<T>>
+		template<JSONNAMETYPE Name, typename Variant,
+		         typename JsonElements = json_deduce_type,
+		         typename Constructor = nullable_constructor<Variant>>
 		using json_variant_null =
-		  json_variant<Name, T, JsonElements, Constructor, JsonNullDefault>;
+		  json_variant<Name, Variant, JsonElements, Constructor, JsonNullDefault>;
 
 		/***
 		 * Link to a variant like data type that is discriminated via another
@@ -567,25 +605,15 @@ namespace daw::json {
 		 * default supports normal and aggregate construction
 		 * @tparam Nullable Can the member be missing or have a null value	 *
 		 */
-		template<
-		  JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
-		  typename JsonElements = json_details::determine_variant_element_types<
-		    JsonNullable::MustExist, T>,
-		  typename Constructor = default_constructor<T>,
-		  JsonNullable Nullable = JsonNullable::MustExist>
+		template<JSONNAMETYPE Name, typename T, typename TagMember,
+		         typename Switcher, typename JsonElements = json_deduce_type,
+		         typename Constructor = default_constructor<T>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
 		struct json_tagged_variant;
 
-		template<
-		  JSONNAMETYPE Name, typename JsonElement, typename SizeMember,
-		  typename Container = std::vector<
-		    typename json_details::json_deduced_type<JsonElement>::parse_to_t>,
-		  typename Constructor = default_constructor<Container>,
-		  JsonNullable Nullable = JsonNullable::MustExist>
-		struct json_sized_array;
-
 		/***
-		 * Link to a nullable variant like data type that is discriminated via
-		 * another member.
+		 * Link to a variant like data type that is discriminated via another
+		 * member.
 		 * @tparam Name name of JSON member to link to
 		 * @tparam T type of value to construct
 		 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
@@ -596,28 +624,70 @@ namespace daw::json {
 		 * elements of T when T is a std::variant and they are all auto mappable
 		 * @tparam Constructor A callable used to construct T.  The
 		 * default supports normal and aggregate construction
+		 * @tparam Nullable Can the member be missing or have a null value	 *
 		 */
-		template<
-		  JSONNAMETYPE Name, typename T, typename TagMember, typename Switcher,
-		  typename JsonElements =
-		    json_details::determine_variant_element_types<JsonNullDefault, T>,
-		  typename Constructor = nullable_constructor<T>>
+		template<JSONNAMETYPE Name, typename Variant, typename TagMember,
+		         typename Switcher, typename JsonElements = json_deduce_type,
+		         typename Constructor = default_constructor<Variant>,
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		struct json_intrusive_variant;
+
+		template<JSONNAMETYPE Name, typename JsonElement, typename SizeMember,
+		         typename Container =
+		           json_deduce_type, /* std::vector<
+typename json_details::json_deduced_type<JsonElement>::parse_to_t>,*/
+		         typename Constructor =
+		           json_deduce_type, /* default_constructor<Container>,*/
+		         JsonNullable Nullable = JsonNullable::MustExist>
+		struct json_sized_array;
+
+		/***
+		 * Link to a nullable variant like data type that is discriminated via
+		 * another member.
+		 * @tparam Name name of JSON member to link to
+		 * @tparam T type of value to construct
+		 * @tparam TagMember JSON element to pass to Switcher. Does not have to be
+		 * @tparam Switcher A callable that returns an index into JsonElements when
+		 * passed the TagMember object in parent member list
+		 * @tparam JsonElements a json_tagged_variant_type_list, defaults to type
+		 * elements of T when T is a std::variant and they are all auto mappable
+		 * @tparam Constructor A callable used to construct T.  The
+		 * default supports normal and aggregate construction
+		 */
+		template<JSONNAMETYPE Name, typename Variant, typename TagMember,
+		         typename Switcher, typename JsonElements = json_deduce_type,
+		         typename Constructor = nullable_constructor<Variant>>
 		using json_tagged_variant_null =
-		  json_tagged_variant<Name, T, TagMember, Switcher, JsonElements,
+		  json_tagged_variant<Name, Variant, TagMember, Switcher, JsonElements,
 		                      Constructor, JsonNullDefault>;
 
+		template<typename... Ts>
+		struct json_tuple_types_list {
+			static_assert( ( json_details::has_json_deduced_type<Ts>::value and ... ),
+			               "Missing mapping for type in tuple" );
+			using types = std::tuple<json_details::json_deduced_type<Ts>...>;
+		};
+
+		/// Map a tuple like type to a a JSON tuple/heterogeneous array
+		/// \tparam Name JSON member name to map to
+		/// \tparam Tuple tuple like type to parse to
+		/// \tparam Constructor
+		/// \tparam Options
+		/// \tparam JsonTupleTypesList either deduced or a json_tuple_type_list
 		template<JSONNAMETYPE Name, typename Tuple,
-		         typename Constructor = default_constructor<Tuple>,
-		         json_details::json_options_t Options = tuple_opts_def>
+		         typename Constructor = json_deduce_type,
+		         json_details::json_options_t Options = tuple_opts_def,
+		         typename JsonTupleTypesList = json_deduce_type>
 		struct json_tuple;
 
 		template<JSONNAMETYPE Name, typename Tuple,
-		         typename Constructor = default_constructor<Tuple>,
-		         json_details::json_options_t Options = tuple_opts_def>
-
+		         typename Constructor = json_deduce_type,
+		         json_details::json_options_t Options = tuple_opts_def,
+		         typename JsonTupleTypesList = json_deduce_type>
 		using json_tuple_null =
 		  json_tuple<Name, Tuple, Constructor,
-		             json_details::tuple_opts_set<Options, JsonNullDefault>>;
+		             json_details::tuple_opts_set<Options, JsonNullDefault>,
+		             JsonTupleTypesList>;
 
 		namespace json_details {
 			template<typename T>
