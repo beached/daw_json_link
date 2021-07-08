@@ -663,7 +663,7 @@ typename json_details::json_deduced_type<JsonElement>::parse_to_t>,*/
 
 		template<typename... Ts>
 		struct json_tuple_types_list {
-			static_assert( ( json_details::has_json_deduced_type<Ts>::value and ... ),
+			static_assert( std::conjunction_v<json_details::has_json_deduced_type<Ts>...>,
 			               "Missing mapping for type in tuple" );
 			using types = std::tuple<json_details::json_deduced_type<Ts>...>;
 		};
