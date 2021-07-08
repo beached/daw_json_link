@@ -516,7 +516,7 @@ namespace daw::json {
 
 			template<typename... Ts>
 			struct tuple_types_list<std::tuple<Ts...>> {
-				static_assert( ( ( has_json_deduced_type<Ts>::value ) and ... ),
+				static_assert( std::conjunction_v<has_json_deduced_type<Ts>...>,
 				               "Missing mapping for type in tuple" );
 
 				using types = std::tuple<json_deduced_type<Ts>...>;
@@ -524,7 +524,7 @@ namespace daw::json {
 
 			template<typename... Ts>
 			struct tuple_types_list<daw::fwd_pack<Ts...>> {
-				static_assert( ( ( has_json_deduced_type<Ts>::value ) and ... ),
+				static_assert( std::conjunction_v<has_json_deduced_type<Ts>...>,
 				               "Missing mapping for type in tuple" );
 
 				using types = std::tuple<json_deduced_type<Ts>...>;
