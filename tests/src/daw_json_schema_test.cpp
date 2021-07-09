@@ -43,6 +43,7 @@ struct Foo {
 	int k;
 	std::tuple<int, double> m{ 99, 98.8 };
 	std::variant<Bar, Umm> n{ Umm{} };
+	std::tuple<double, std::string, int, std::variant<Bar, Umm>> o{ };
 };
 
 struct IdentitySwitcher {
@@ -115,6 +116,7 @@ namespace daw::json {
 		static constexpr char const l[] = "l";
 		static constexpr char const m[] = "m";
 		static constexpr char const n[] = "n";
+		static constexpr char const o[] = "o";
 		using type = json_member_list<
 		  json_link<a, int>, json_link<b, double>, json_link<c, std::string>,
 		  json_link<d, std::vector<int>>, json_link<e, Bar>,
@@ -130,13 +132,21 @@ namespace daw::json {
 		  json_link<k, int>, json_tuple<m, std::tuple<int, double>>,
 		  json_intrusive_variant<n, std::variant<Bar, Umm>,
 		                         ordered_json_member<1, std::size_t>,
-		                         IdentitySwitcher>>;
+		                         IdentitySwitcher>,
+		  json_tuple<
+		    o, std::tuple<double, std::string, int, std::variant<Bar, Umm>>,
+		    json_deduce_type, tuple_opts_def,
+		    json_tuple_types_list<
+		      double, std::string, int,
+		      json_tagged_variant_no_name<std::variant<Bar, Umm>,
+		                                  ordered_json_member<2, std::size_t>,
+		                                  IdentitySwitcher>>>>;
 
 		static inline auto to_json_data( Foo const &v ) {
 			return daw::forward_nonrvalue_as_tuple(
 			  v.a, v.b, v.c, v.d, v.e, v.f, v.g, v.h, v.i, v.j,
-			  daw::span( v.l.get( ), static_cast<std::size_t>( v.k ) ), v.k, v.m,
-			  v.n );
+			  daw::span( v.l.get( ), static_cast<std::size_t>( v.k ) ), v.k, v.m, v.n,
+			  v.o );
 		}
 	};
 } // namespace daw::json

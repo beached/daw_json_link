@@ -972,6 +972,7 @@ namespace daw::json {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, parse_state );
+				parse_state.set_class_position( );
 				parse_state.remove_prefix( );
 				parse_state.move_next_member_or_end( );
 				using tuple_t = typename JsonMember::base_type;
@@ -1008,12 +1009,6 @@ namespace daw::json {
 
 				static_assert( is_a_json_type<JsonMember>::value );
 				using Constructor = typename JsonMember::constructor_t;
-				static_assert(
-				  std::is_invocable<Constructor,
-				                    decltype( parse_value_help(
-				                      std::integral_constant<std::size_t, Is>{ },
-				                      std::declval<std::size_t &>( ) ) )...>::value,
-				  "Supplied types cannot be used for construction of this type" );
 
 				parse_state.trim_left( );
 

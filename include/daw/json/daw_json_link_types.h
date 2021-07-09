@@ -999,9 +999,9 @@ namespace daw::json {
 				static_assert( json_details::is_a_json_type_v<TagMember>,
 				               "The TagMember type must have a name and be a "
 				               "member of the same object as this" );
-				static_assert( json_details::is_nullability_compatable_v<
-				                 nullable, TagMember::nullable>,
-				               "The TagMember nullability nullable type" );
+				/*				static_assert( json_details::is_nullability_compatable_v<
+				                         nullable, TagMember::nullable>,
+				                       "The TagMember nullability nullable type" );*/
 				using dependent_member = TagMember;
 
 				using tag_member = typename std::conditional_t<
@@ -1652,7 +1652,8 @@ namespace daw::json {
 				using sub_member_list = typename std::conditional_t<
 				  std::is_same<JsonTupleTypesList, json_deduce_type>::value,
 				  daw::traits::identity<json_details::tuple_types_list<Tuple>>,
-				  daw::traits::identity<JsonTupleTypesList>>::type::types;
+				  daw::traits::identity<
+				    json_details::tuple_types_list<JsonTupleTypesList>>>::type::types;
 
 				using constructor_t = std::conditional_t<
 				  std::is_same<Constructor, json_deduce_type>::value,
@@ -1685,7 +1686,8 @@ namespace daw::json {
 
 		template<JSONNAMETYPE Name, typename Tuple, typename Constructor,
 		         json_details::json_options_t Options, typename JsonTupleTypesList>
-		struct json_tuple : json_base::json_tuple<Tuple, Constructor, Options> {
+		struct json_tuple
+		  : json_base::json_tuple<Tuple, Constructor, Options, JsonTupleTypesList> {
 			static constexpr daw::string_view name = Name;
 #if not defined( DAW_JSON_NO_FAIL_ON_NO_NAME_NAME )
 			static_assert( name != no_name,
@@ -1694,27 +1696,30 @@ namespace daw::json {
 #endif
 
 			template<JSONNAMETYPE NewName>
-			using with_name = json_tuple<NewName, Tuple, Constructor, Options>;
+			using with_name =
+			  json_tuple<NewName, Tuple, Constructor, Options, JsonTupleTypesList>;
 
-			using without_name = json_base::json_tuple<Tuple, Constructor, Options>;
+			using without_name =
+			  json_base::json_tuple<Tuple, Constructor, Options, JsonTupleTypesList>;
 		};
 
 		template<typename Tuple, typename Constructor = default_constructor<Tuple>,
 		         json_details::json_options_t Options = tuple_opts_def,
-		         typename JsonTupleTypesList =
-		           json_details::tuple_types_list<Tuple>>
+		         typename JsonTupleTypesList = json_deduce_type>
 		using json_tuple_no_name =
 		  json_base::json_tuple<Tuple, Constructor, Options, JsonTupleTypesList>;
 
 		template<typename Tuple, typename Constructor = default_constructor<Tuple>,
-		         json_details::json_options_t Options = tuple_opts_def>
+		         json_details::json_options_t Options = tuple_opts_def,
+		         typename JsonTupleTypesList = json_deduce_type>
 		using json_tuple_null_no_name = json_base::json_tuple<
 		  Tuple, Constructor,
-		  json_details::tuple_opts_set<Options, JsonNullDefault>>;
+		  json_details::tuple_opts_set<Options, JsonNullDefault>,
+		  JsonTupleTypesList>;
 
 		namespace json_base {
-			template<typename T, typename TagMember, typename Switcher,
-			         typename JsonElements, typename Constructor,
+			template<typename Variant, typename TagMember, typename Switcher,
+			         typename AlternativeMappings, typename Constructor,
 			         JsonNullable Nullable>
 			struct json_intrusive_variant {
 				using i_am_a_json_type = void;
@@ -1723,16 +1728,17 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 
 				using json_elements = typename std::conditional_t<
-				  std::is_same<JsonElements, json_deduce_type>::value,
-				  json_details::determine_variant_element_types<nullable, T>,
-				  daw::traits::identity<JsonElements>>::type;
+				  std::is_same_v<AlternativeMappings, json_deduce_type>,
+				  json_details::determine_variant_element_types<nullable, Variant>,
+				  daw::traits::identity<AlternativeMappings>>::type;
+
 				static_assert(
 				  std::is_same<typename json_elements::i_am_variant_type_list,
 				               void>::value,
 				  "Expected a json_variant_type_list or could not deduce alternatives "
 				  "from Variant" );
 
-				using wrapped_type = T;
+				using wrapped_type = Variant;
 
 				using tag_submember = typename std::conditional_t<
 				  json_details::is_an_ordered_member<TagMember>::value,
@@ -1758,12 +1764,12 @@ namespace daw::json {
 				             json_tuple_types_list<tag_submember>>,
 				  json_details::json_deduced_type<tuple_json_mapping<tag_submember>>>;
 
-				using base_type = json_details::unwrap_type<T, nullable>;
+				using base_type = json_details::unwrap_type<Variant, nullable>;
 				using constructor_t =
-				  json_details::json_class_constructor_t<T, Constructor>;
+				  json_details::json_class_constructor_t<Variant, Constructor>;
 				static_assert( traits::not_same<void, base_type>::value,
 				               "Failed to detect base type" );
-				using parse_to_t = T;
+				using parse_to_t = Variant;
 				static constexpr daw::string_view name = no_name;
 				static constexpr JsonParseTypes expected_type =
 				  get_parse_type_v<JsonParseTypes::VariantIntrusive, nullable>;
@@ -1786,8 +1792,10 @@ namespace daw::json {
 				  tuple_json_mapping<tag_submember>>;
 
 				template<JSONNAMETYPE NewName>
-				using with_name = daw::json::json_intrusive_variant<
-				  NewName, T, TagMember, Switcher, JsonElements, Constructor, nullable>;
+				using with_name =
+				  daw::json::json_intrusive_variant<NewName, Variant, TagMember,
+				                                    Switcher, AlternativeMappings,
+				                                    Constructor, nullable>;
 				using without_name = json_intrusive_variant;
 			};
 		} // namespace json_base

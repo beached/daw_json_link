@@ -12,6 +12,7 @@
 /// name
 #define DAW_JSON_VER v3_0_0
 
-#if defined( __GNUC__ ) and not defined( __clang__ ) and not defined( DAW_JSON_FLATTEN )
+#if defined( __GNUC__ ) and not defined( __clang__ ) and \
+  not defined( DAW_JSON_FLATTEN ) and not defined( DAW_NO_FLATTEN )
 #define DAW_NO_FLATTEN
 #endif

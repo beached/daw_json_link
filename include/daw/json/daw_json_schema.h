@@ -388,7 +388,8 @@ namespace daw::json {
 					if constexpr( not is_root ) {
 						*out_it++ = '{';
 					}
-
+					out_it =
+					  utils::copy_to_iterator( out_it, R"("type":"array","items":[)" );
 					bool is_first = true;
 					auto const process_member = [&]( auto Idx ) {
 						if( not is_first ) {
@@ -410,7 +411,7 @@ namespace daw::json {
 					    daw::Empty{ } )...,
 					  daw::Empty{} };
 					(void)expander;
-
+					*out_it++ = ']';
 					if constexpr( not is_root ) {
 						*out_it++ = '}';
 					}
@@ -421,7 +422,7 @@ namespace daw::json {
 			template<typename JsonMember, bool is_root, typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Tuple>,
 			                                         OutputIterator out_it ) {
-				using tuple_t = typename JsonMember::base_type;
+				using tuple_t = typename JsonMember::sub_member_list;
 				return json_details::to_json_tuple_schema<tuple_t, is_root>(
 				  out_it,
 				  std::make_index_sequence<tuple_elements_pack<tuple_t>::size>{ } );
@@ -552,15 +553,16 @@ namespace daw::json {
 			constexpr OutputIterator
 			to_json_schema( ParseTag<JsonParseTypes::VariantIntrusive>,
 			                OutputIterator out_it ) {
-				static_assert( not is_root,
-				               "Attempt to have a tagged variant as root object.  This "
-				               "is unsupported" );
-				*out_it++ = '{';
+				if constexpr( not is_root ) {
+					*out_it++ = '{';
+				}
 				out_it = utils::copy_to_iterator( out_it, R"("oneOf":[)" );
 				using elements_t = typename JsonMember::json_elements;
 				out_it = variant_element_types<elements_t>::output_elements( out_it );
 				*out_it++ = ']';
-				*out_it++ = '}';
+				if constexpr( not is_root ) {
+					*out_it++ = '}';
+				}
 				return out_it;
 			}
 		} // namespace json_details

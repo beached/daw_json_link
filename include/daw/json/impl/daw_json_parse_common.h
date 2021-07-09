@@ -729,6 +729,10 @@ namespace daw::json {
 			};
 
 			template<typename T>
+			using has_deduced_type_mapping =
+			  std::bool_constant<json_deduced_type_map<T>::type_map_found>;
+
+			template<typename T>
 			inline constexpr bool has_deduced_type_mapping_v =
 			  json_deduced_type_map<T>::type_map_found;
 

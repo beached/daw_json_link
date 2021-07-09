@@ -1086,7 +1086,9 @@ namespace daw::json {
 					constexpr std::size_t index = decltype( Idx )::value;
 					using pack_element = tuple_elements_pack<parse_to_t>;
 					using T =
-					  json_deduced_type<typename pack_element::template element_t<index>>;
+					  std::tuple_element_t<index, typename JsonMember::sub_member_list>;
+					//					  json_deduced_type<typename pack_element::template
+					// element_t<index>>;
 
 					if( is_first ) {
 						is_first = false;
