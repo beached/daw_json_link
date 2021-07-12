@@ -813,27 +813,12 @@ namespace daw::json {
 			  maybe_unused]] DAW_ATTRIB_INLINE inline constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::VariantTagged> ) {
-				/*
-				using tag_member = dependent_member_t<JsonMember>;
-				auto [is_found, parse_state2] = find_range<ParseState>(
-				  ParseState( parse_state.class_first, parse_state.last ),
-				  tag_member::name );
-
-				daw_json_assert( is_found, ErrorReason::TagMemberNotFound,
-				                 parse_state );
-				auto index = typename JsonMember::switcher{ }( parse_value<tag_member>(
-				  parse_state2, ParseTag<tag_member::expected_type>{ } ) );
-
-				return parse_visit<json_result<JsonMember>,
-				                   typename JsonMember::json_elements::element_map_t>(
-				  index, parse_state );
-				*/
-
 				auto const index = [&] {
 					using tag_member = typename JsonMember::tag_member;
 					using class_wrapper_t = typename JsonMember::tag_member_class_wrapper;
 					auto parse_state2 =
-					  ParseState( parse_state.class_first, parse_state.class_last );
+					  ParseState( parse_state.class_first, parse_state.class_last,
+					              parse_state.class_first, parse_state.class_last );
 					using switcher_t = typename JsonMember::switcher;
 					if constexpr( is_an_ordered_member_v<tag_member> ) {
 						return switcher_t{ }( std::get<0>( parse_value<class_wrapper_t>(

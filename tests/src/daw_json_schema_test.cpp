@@ -43,11 +43,14 @@ struct Foo {
 	int k;
 	std::tuple<int, double> m{ 99, 98.8 };
 	std::variant<Bar, Umm> n{ Umm{} };
-	std::tuple<double, std::string, int, std::variant<Bar, Umm>> o{ };
+	std::tuple<double, std::string, int, std::variant<Bar, Umm>> o{ 1.1, "2", 1,
+	                                                                Umm{} };
 };
 
+template<typename... Ts>
 struct IdentitySwitcher {
 	constexpr std::size_t operator( )( std::size_t n ) const {
+		assert( n < sizeof...( Ts ) );
 		return n;
 	}
 
@@ -125,14 +128,15 @@ namespace daw::json {
 		                       json_link<gkey, int>>,
 		  json_variant<h, std::variant<int, std::string, bool>>,
 		  json_tagged_variant<i, std::variant<int, std::string, bool, Bar, Umm>,
-		                      json_link<type_mem, std::size_t>, IdentitySwitcher>,
+		                      json_link<type_mem, std::size_t>,
+		                      IdentitySwitcher<int, std::string, bool, Bar, Umm>>,
 		  json_link<j, std::optional<int>>,
 		  json_sized_array<l, int, json_link<k, int>, std::unique_ptr<int[]>,
 		                   UniquePtrArrayCtor<int>>,
 		  json_link<k, int>, json_tuple<m, std::tuple<int, double>>,
 		  json_intrusive_variant<n, std::variant<Bar, Umm>,
 		                         ordered_json_member<1, std::size_t>,
-		                         IdentitySwitcher>,
+		                         IdentitySwitcher<Bar, Umm>>,
 		  json_tuple<
 		    o, std::tuple<double, std::string, int, std::variant<Bar, Umm>>,
 		    json_deduce_type, tuple_opts_def,
@@ -140,7 +144,7 @@ namespace daw::json {
 		      double, std::string, int,
 		      json_tagged_variant_no_name<std::variant<Bar, Umm>,
 		                                  ordered_json_member<2, std::size_t>,
-		                                  IdentitySwitcher>>>>;
+		                                  IdentitySwitcher<Bar, Umm>>>>>;
 
 		static inline auto to_json_data( Foo const &v ) {
 			return daw::forward_nonrvalue_as_tuple(
