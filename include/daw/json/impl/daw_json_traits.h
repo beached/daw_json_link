@@ -633,7 +633,6 @@ namespace daw::json {
 		struct is_pointer_like
 		  : std::disjunction<std::is_pointer<T>,
 		                     json_details::has_element_type<T>> {};
-		;
 
 		/// Allow tuple like types to be used in json_tuple
 		/// \tparam Tuple tuple like type to

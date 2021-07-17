@@ -808,29 +808,38 @@ namespace daw::json {
 				}
 			}
 
+			template<typename JsonMember, typename ParseState>
+			constexpr auto find_index( ParseState parse_state ) {
+				using tag_member = typename JsonMember::tag_member;
+				using class_wrapper_t = typename JsonMember::tag_member_class_wrapper;
+
+				using switcher_t = typename JsonMember::switcher;
+				auto parse_state2 =
+				  ParseState( parse_state.class_first, parse_state.class_last,
+				              parse_state.class_first, parse_state.class_last );
+				if constexpr( is_an_ordered_member_v<tag_member> ) {
+					// This is an ordered class, class must start with '['
+					daw_json_assert_weak( parse_state2.is_opening_bracket_checked( ),
+					                      ErrorReason::InvalidArrayStart, parse_state );
+					return switcher_t{ }( std::get<0>( parse_value<class_wrapper_t>(
+					  parse_state2, ParseTag<class_wrapper_t::expected_type>{ } ) ) );
+				} else {
+					// This is an regular class, class must start with '{'
+					daw_json_assert_weak( parse_state2.is_opening_brace_checked( ),
+					                      ErrorReason::InvalidClassStart, parse_state );
+					return switcher_t{ }( std::get<0>(
+					  parse_value<class_wrapper_t>(
+					    parse_state2, ParseTag<class_wrapper_t::expected_type>{ } )
+					    .members ) );
+				}
+			}
+
 			template<typename JsonMember, bool /*KnownBounds*/, typename ParseState>
 			[[nodiscard,
 			  maybe_unused]] DAW_ATTRIB_INLINE inline constexpr json_result<JsonMember>
 			parse_value( ParseState &parse_state,
 			             ParseTag<JsonParseTypes::VariantTagged> ) {
-				auto const index = [&] {
-					using tag_member = typename JsonMember::tag_member;
-					using class_wrapper_t = typename JsonMember::tag_member_class_wrapper;
-					auto parse_state2 =
-					  ParseState( parse_state.class_first, parse_state.class_last,
-					              parse_state.class_first, parse_state.class_last );
-					using switcher_t = typename JsonMember::switcher;
-					if constexpr( is_an_ordered_member_v<tag_member> ) {
-						return switcher_t{ }( std::get<0>( parse_value<class_wrapper_t>(
-						  parse_state2, ParseTag<class_wrapper_t::expected_type>{ } ) ) );
-					} else {
-						return switcher_t{ }( std::get<0>(
-						  parse_value<class_wrapper_t>(
-						    parse_state2, ParseTag<class_wrapper_t::expected_type>{ } )
-						    .members ) );
-					}
-				}( );
-
+				auto const index = find_index<JsonMember>( parse_state );
 				return parse_visit<json_result<JsonMember>,
 				                   typename JsonMember::json_elements::element_map_t>(
 				  index, parse_state );
@@ -886,6 +895,9 @@ namespace daw::json {
 			template<bool AllMembersMustExist, typename ParseState>
 			struct ordered_class_cleanup {
 				ParseState &parse_state;
+				using CharT = typename ParseState::CharT;
+				CharT *old_class_first;
+				CharT *old_class_last;
 
 				DAW_ATTRIB_INLINE
 				CPP20CONSTEXPR inline ~ordered_class_cleanup( ) noexcept( false ) {
@@ -900,6 +912,8 @@ namespace daw::json {
 						} else {
 							(void)parse_state.skip_array( );
 						}
+						parse_state.class_first = old_class_first;
+						parse_state.class_last = old_class_last;
 					} else {
 #endif
 						if( std::uncaught_exceptions( ) == 0 ) {
@@ -909,6 +923,8 @@ namespace daw::json {
 								                      ErrorReason::UnknownMember, parse_state );
 								parse_state.remove_prefix( );
 								parse_state.trim_left_checked( );
+								parse_state.class_first = old_class_first;
+								parse_state.class_last = old_class_last;
 							} else {
 								(void)parse_state.skip_array( );
 							}
@@ -957,6 +973,9 @@ namespace daw::json {
 				parse_state.trim_left( );
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, parse_state );
+
+				auto const old_class_first = parse_state.class_first;
+				auto const old_class_last = parse_state.class_last;
 				parse_state.set_class_position( );
 				parse_state.remove_prefix( );
 				parse_state.move_next_member_or_end( );
@@ -1001,7 +1020,7 @@ namespace daw::json {
 				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 					auto const run_after_parse = ordered_class_cleanup<
 					  json_details::all_json_members_must_exist_v<JsonMember, ParseState>,
-					  ParseState>{ parse_state };
+					  ParseState>{ parse_state, old_class_first, old_class_last };
 					(void)run_after_parse;
 					if constexpr( force_aggregate_construction_v<JsonMember> ) {
 						return tuple_t{ parse_value_help(
@@ -1034,6 +1053,8 @@ namespace daw::json {
 					} else {
 						(void)parse_state.skip_array( );
 					}
+					parse_state.class_first = old_class_first;
+					parse_state.class_last = old_class_last;
 					return result;
 				}
 			}

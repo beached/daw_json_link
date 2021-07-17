@@ -670,9 +670,11 @@ add_dependencies(full daw_json_schema_test)
 # JSON Benchmark
 # **************************************************
 
+include(./cmake/git_properties.cmake)
+if( GIT_FOUND )
 message("Git revision: ${SOURCE_CONTROL_REVISION}")
 add_executable(json_benchmark src/json_benchmark.cpp)
-include(./cmake/git_properties.cmake)
+target_compile_definitions( json_benchmark PRIVATE -DSOURCE_CONTROL_REVISION="${BUILD_VERSION}" )
 target_link_libraries(json_benchmark apache_builds_parser_cx_ch apache_builds_parser_rn_ch apache_builds_parser_si_ch apache_builds_parser_cx_unch apache_builds_parser_rn_unch apache_builds_parser_si_unch twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test json_test)
 if (DEFINED MSVC AND NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     add_compile_options("/bigobj")
@@ -695,5 +697,6 @@ target_compile_definitions(json_benchmark PRIVATE -DOS_RELEASE="${_os_rel}")
 target_compile_definitions(json_benchmark PRIVATE -DOS_VERSION="${_os_ver}")
 target_compile_definitions(json_benchmark PRIVATE -DOS_PLATFORM="${_os_plat}")
 target_compile_definitions(json_benchmark PRIVATE -DBUILD_TYPE="${CMAKE_BUILD_TYPE}")
+endif( )
 # **************************************************
  

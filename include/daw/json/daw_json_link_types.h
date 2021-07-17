@@ -1004,6 +1004,15 @@ namespace daw::json {
 				                       "The TagMember nullability nullable type" );*/
 				using dependent_member = TagMember;
 
+				static_assert(
+				  std::disjunction_v<
+				    json_details::is_an_ordered_member<TagMember>,
+				    std::conjunction<
+				      json_details::is_a_json_type<TagMember>,
+				      daw::not_trait<json_details::is_no_name<TagMember>>>>,
+				  "Must specify the location in tuple or name of member "
+				  "for TagMember" );
+
 				using tag_member = typename std::conditional_t<
 				  json_details::is_an_ordered_member<TagMember>::value,
 				  daw::traits::identity<TagMember>,
@@ -1011,7 +1020,7 @@ namespace daw::json {
 				  type;
 
 				using tag_member_class_wrapper = std::conditional_t<
-				  json_details::is_an_ordered_member<tag_member>::value,
+				  json_details::is_an_ordered_member_v<tag_member>,
 				  json_tuple<std::tuple<typename tag_member::parse_to_t>,
 				             json_deduce_type, tuple_opts_def,
 				             json_tuple_types_list<tag_member>>,

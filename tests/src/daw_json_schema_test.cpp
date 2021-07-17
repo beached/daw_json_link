@@ -13,6 +13,7 @@
 
 #include <cassert>
 #include <cstdio>
+#include <iostream>
 #include <map>
 #include <string>
 #include <tuple>
@@ -47,6 +48,21 @@ struct Foo {
 	                                                                Umm{} };
 };
 
+struct FooBoo {
+	int a = 1;
+	double b = 2.2;
+	std::string_view c = "3";
+	Bar e{ };
+	std::variant<int, std::string_view, bool> h{ 5 };
+	std::variant<int, std::string_view, bool, Bar, Umm> i{ bool{} };
+	std::optional<int> j{ };
+	int k{ };
+	std::tuple<int, double> m{ 99, 98.8 };
+	std::variant<Bar, Umm> n{ Umm{} };
+	std::tuple<double, std::string_view, int, std::variant<Bar, Umm>> o{
+	  1.1, "2", 1, Umm{} };
+};
+
 template<typename... Ts>
 struct IdentitySwitcher {
 	constexpr std::size_t operator( )( std::size_t n ) const {
@@ -55,6 +71,10 @@ struct IdentitySwitcher {
 	}
 
 	inline std::size_t operator( )( Foo const &f ) const {
+		return f.i.index( );
+	}
+
+	inline std::size_t operator( )( FooBoo const &f ) const {
 		return f.i.index( );
 	}
 };
@@ -81,6 +101,25 @@ struct UniquePtrArrayCtor {
 };
 
 namespace daw::json {
+	inline constexpr char const mem_a[] = "a";
+	inline constexpr char const mem_b[] = "b";
+	inline constexpr char const mem_c[] = "c";
+	inline constexpr char const mem_d[] = "d";
+	inline constexpr char const mem_e[] = "e";
+	inline constexpr char const mem_f[] = "f";
+	inline constexpr char const mem_g[] = "g";
+	inline constexpr char const gkey[] = "k";
+	inline constexpr char const gvalue[] = "v";
+	inline constexpr char const mem_h[] = "h";
+	inline constexpr char const mem_type[] = "type";
+	inline constexpr char const mem_i[] = "i";
+	inline constexpr char const mem_j[] = "j";
+	inline constexpr char const mem_k[] = "k";
+	inline constexpr char const mem_l[] = "l";
+	inline constexpr char const mem_m[] = "m";
+	inline constexpr char const mem_n[] = "n";
+	inline constexpr char const mem_o[] = "o";
+
 	template<>
 	struct json_data_contract<Bar> {
 		using type = json_ordered_member_list<int, int>;
@@ -102,43 +141,26 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<Foo> {
 		using force_aggregate_construction = void;
-		static constexpr char const a[] = "a";
-		static constexpr char const b[] = "b";
-		static constexpr char const c[] = "c";
-		static constexpr char const d[] = "d";
-		static constexpr char const e[] = "e";
-		static constexpr char const f[] = "f";
-		static constexpr char const g[] = "g";
-		static constexpr char const gkey[] = "k";
-		static constexpr char const gvalue[] = "v";
-		static constexpr char const h[] = "h";
-		static constexpr char const type_mem[] = "type";
-		static constexpr char const i[] = "i";
-		static constexpr char const j[] = "j";
-		static constexpr char const k[] = "k";
-		static constexpr char const l[] = "l";
-		static constexpr char const m[] = "m";
-		static constexpr char const n[] = "n";
-		static constexpr char const o[] = "o";
+
 		using type = json_member_list<
-		  json_link<a, int>, json_link<b, double>, json_link<c, std::string>,
-		  json_link<d, std::vector<int>>, json_link<e, Bar>,
-		  json_link<f, std::map<std::string, Bar>>,
-		  json_key_value_array<g, std::map<int, float>, json_link<gvalue, float>,
-		                       json_link<gkey, int>>,
-		  json_variant<h, std::variant<int, std::string, bool>>,
-		  json_tagged_variant<i, std::variant<int, std::string, bool, Bar, Umm>,
-		                      json_link<type_mem, std::size_t>,
+		  json_link<mem_a, int>, json_link<mem_b, double>,
+		  json_link<mem_c, std::string>, json_link<mem_d, std::vector<int>>,
+		  json_link<mem_e, Bar>, json_link<mem_f, std::map<std::string, Bar>>,
+		  json_key_value_array<mem_g, std::map<int, float>,
+		                       json_link<gvalue, float>, json_link<gkey, int>>,
+		  json_variant<mem_h, std::variant<int, std::string, bool>>,
+		  json_tagged_variant<mem_i, std::variant<int, std::string, bool, Bar, Umm>,
+		                      json_link<mem_type, std::size_t>,
 		                      IdentitySwitcher<int, std::string, bool, Bar, Umm>>,
-		  json_link<j, std::optional<int>>,
-		  json_sized_array<l, int, json_link<k, int>, std::unique_ptr<int[]>,
-		                   UniquePtrArrayCtor<int>>,
-		  json_link<k, int>, json_tuple<m, std::tuple<int, double>>,
-		  json_intrusive_variant<n, std::variant<Bar, Umm>,
+		  json_link<mem_j, std::optional<int>>,
+		  json_sized_array<mem_l, int, json_link<mem_k, int>,
+		                   std::unique_ptr<int[]>, UniquePtrArrayCtor<int>>,
+		  json_link<mem_k, int>, json_tuple<mem_m, std::tuple<int, double>>,
+		  json_intrusive_variant<mem_n, std::variant<Bar, Umm>,
 		                         ordered_json_member<1, std::size_t>,
 		                         IdentitySwitcher<Bar, Umm>>,
 		  json_tuple<
-		    o, std::tuple<double, std::string, int, std::variant<Bar, Umm>>,
+		    mem_o, std::tuple<double, std::string, int, std::variant<Bar, Umm>>,
 		    json_deduce_type, tuple_opts_def,
 		    json_tuple_types_list<
 		      double, std::string, int,
@@ -153,6 +175,40 @@ namespace daw::json {
 			  v.o );
 		}
 	};
+
+	template<>
+	struct json_data_contract<FooBoo> {
+		using force_aggregate_construction = void;
+
+		using type = json_member_list<
+		  json_link<mem_a, int>, json_link<mem_b, double>,
+		  json_link<mem_c, std::string_view>, json_link<mem_e, Bar>,
+		  json_variant<mem_h, std::variant<int, std::string_view, bool>>,
+		  json_tagged_variant<
+		    mem_i, std::variant<int, std::string_view, bool, Bar, Umm>,
+		    json_link<mem_type, std::size_t>,
+		    IdentitySwitcher<int, std::string_view, bool, Bar, Umm>>,
+		  json_link<mem_j, std::optional<int>>,
+
+		  json_link<mem_k, int>, json_tuple<mem_m, std::tuple<int, double>>,
+		  json_intrusive_variant<mem_n, std::variant<Bar, Umm>,
+		                         ordered_json_member<1, std::size_t>,
+		                         IdentitySwitcher<Bar, Umm>>,
+		  json_tuple<
+		    mem_o,
+		    std::tuple<double, std::string_view, int, std::variant<Bar, Umm>>,
+		    json_deduce_type, tuple_opts_def,
+		    json_tuple_types_list<
+		      double, std::string_view, int,
+		      json_tagged_variant_no_name<std::variant<Bar, Umm>,
+		                                  ordered_json_member<2, std::size_t>,
+		                                  IdentitySwitcher<Bar, Umm>>>>>;
+
+		static inline auto to_json_data( FooBoo const &v ) {
+			return daw::forward_nonrvalue_as_tuple( v.a, v.b, v.c, v.e, v.h, v.i, v.j,
+			                                        v.k, v.m, v.n, v.o );
+		}
+	};
 } // namespace daw::json
 
 int main( ) {
@@ -160,9 +216,15 @@ int main( ) {
 	std::string result = daw::json::to_json_schema<Foo>( "", "Foo" );
 	puts( result.c_str( ) );
 	puts( "----\n" );
-	std::string json_str = daw::json::to_json( Foo{ } );
-	puts( json_str.c_str( ) );
+	//std::string json_str = daw::json::to_json( Foo{ } );
+	//puts( json_str.c_str( ) );
 
-	auto foo2 = daw::json::from_json<Foo>( json_str );
-	(void)foo2;
+	//auto foo2 = daw::json::from_json<Foo>( json_str );
+
+	std::string json_str = daw::json::to_json( FooBoo{ } );
+	puts( json_str.c_str( ) );
+	auto fooboo = daw::json::from_json<FooBoo>( json_str );
+	std::cout << "----------------------------------------\n"
+	          << daw::json::to_json( fooboo );
+	//(void)foo2;
 }
