@@ -181,7 +181,8 @@ namespace daw::json {
 					CPP20CONSTEXPR inline ~class_cleanup( ) noexcept( false ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
-							class_cleanup_now<AllMembersMustExist>( parse_state );
+							class_cleanup_now<AllMembersMustExist>(
+							  parse_state, old_class_first, old_class_last );
 						} else {
 #endif
 							if( std::uncaught_exceptions( ) == 0 ) {
