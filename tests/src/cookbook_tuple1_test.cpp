@@ -44,28 +44,28 @@ int main( int argc, char **argv )
 #endif
 {
 
+	// This works around a bug in MSVC and an error about
+	// '__builtin_array_init_helper' not being defined or constexpr during
+	// constexpr evaluation
+#if DAW_CXX_STANDARD != 20 and defined( _MSC_VER ) and not defined( __clang__ )
 	static constexpr std::string_view json_data = R"(
 {
 	"a":[1,"Hi ♥️ ", true, 55]
 }
 )";
-	if( argc <= 1 ) {
-		puts( "Must supply path to cookbook_tuple1.json file\n" );
-		exit( EXIT_FAILURE );
-	}
-	// This works around a bug in MSVC and an error about
-	// '__builtin_array_init_helper' not being defined or constexpr during
-	// constexpr evaluation
-#if DAW_CXX_STANDARD != 20 and defined( _MSC_VER ) and not defined( __clang__ )
+
 	static constexpr auto const cxf = daw::json::from_json<Foo>( json_data );
 	assert( std::get<3>( cxf.a ) == 55 );
 	Foo f = daw::json::from_json<Foo>(
 	  json_data ); // This does not evaluate the pack in the correct order during
 	               // runtime evaluation but does work at compile time when cxf
 	               // is evaluated
-	(void)
-	assert( cxf == f );
+	(void)assert( cxf == f );
 #endif
+	if( argc <= 1 ) {
+		puts( "Must supply path to cookbook_tuple1.json file\n" );
+		exit( EXIT_FAILURE );
+	}
 	auto data = daw::read_file( argv[1] );
 	assert( data and not data->empty( ) );
 	Foo foo1 = daw::json::from_json<Foo>( *data );
