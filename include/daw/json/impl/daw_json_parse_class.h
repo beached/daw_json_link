@@ -146,11 +146,11 @@ namespace daw::json {
 			}
 
 			inline namespace {
-				template<bool IsExactClass, typename ParseState, typename CharT>
+				template<bool IsExactClass, typename ParseState, typename OldClassPos>
 				DAW_ATTRIB_INLINE inline constexpr void
 
-				class_cleanup_now( ParseState &parse_state, CharT *old_class_first,
-				                   CharT *old_class_last ) noexcept( false ) {
+				class_cleanup_now( ParseState &parse_state,
+				                   OldClassPos const &old_class_pos ) {
 					daw_json_assert_weak( parse_state.has_more( ),
 					                      ErrorReason::UnexpectedEndOfData, parse_state );
 					parse_state.move_next_member_or_end( );
@@ -166,28 +166,26 @@ namespace daw::json {
 						// the 2nd try, give up
 					}
 					parse_state.trim_left_checked( );
-					parse_state.class_first = old_class_first;
-					parse_state.class_last = old_class_last;
+					parse_state.set_class_position( old_class_pos );
 				}
 
-				template<bool AllMembersMustExist, typename ParseState>
+				template<bool AllMembersMustExist, typename ParseState,
+				         typename OldClassPos>
 				struct class_cleanup {
 					ParseState &parse_state;
-					using CharT = typename ParseState::CharT;
-					CharT *old_class_first;
-					CharT *old_class_last;
+					OldClassPos const &old_class_pos;
 
 					DAW_ATTRIB_INLINE
 					CPP20CONSTEXPR inline ~class_cleanup( ) noexcept( false ) {
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 						if( DAW_IS_CONSTANT_EVALUATED( ) ) {
-							class_cleanup_now<AllMembersMustExist>(
-							  parse_state, old_class_first, old_class_last );
+							class_cleanup_now<AllMembersMustExist>( parse_state,
+							                                        old_class_pos );
 						} else {
 #endif
 							if( std::uncaught_exceptions( ) == 0 ) {
-								class_cleanup_now<AllMembersMustExist>(
-								  parse_state, old_class_first, old_class_last );
+								class_cleanup_now<AllMembersMustExist>( parse_state,
+								                                        old_class_pos );
 							}
 #if defined( DAW_HAS_CONSTEXPR_SCOPE_GUARD )
 						}
@@ -233,8 +231,7 @@ namespace daw::json {
 				daw_json_assert_weak( parse_state.is_opening_brace_checked( ),
 				                      ErrorReason::InvalidClassStart, parse_state );
 
-				auto const old_class_first = parse_state.class_first;
-				auto const old_class_last = parse_state.class_last;
+				auto const old_class_pos = parse_state.get_class_position( );
 				parse_state.set_class_position( );
 				parse_state.remove_prefix( );
 				parse_state.trim_left( );
@@ -243,7 +240,7 @@ namespace daw::json {
 					// Clang-CL with MSVC has issues if we don't do empties this way
 					class_cleanup_now<
 					  json_details::all_json_members_must_exist_v<T, ParseState>>(
-					  parse_state, old_class_first, old_class_last );
+					  parse_state, old_class_pos );
 
 					return construct_value( template_args<T, Constructor>, parse_state );
 				} else {
@@ -260,7 +257,8 @@ namespace daw::json {
 					if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 						auto const run_after_parse = class_cleanup<
 						  json_details::all_json_members_must_exist_v<T, ParseState>,
-						  ParseState>{ parse_state, old_class_last, old_class_last };
+						  ParseState, decltype( old_class_pos )>{ parse_state,
+						                                          old_class_pos };
 						(void)run_after_parse;
 
 						/*
@@ -289,7 +287,7 @@ namespace daw::json {
 
 							class_cleanup_now<
 							  json_details::all_json_members_must_exist_v<T, ParseState>>(
-							  parse_state, old_class_first, old_class_last );
+							  parse_state, old_class_pos );
 							return result;
 						} else {
 							auto result = construct_value_tp<T, Constructor>(
@@ -301,7 +299,7 @@ namespace daw::json {
 
 							class_cleanup_now<
 							  json_details::all_json_members_must_exist_v<T, ParseState>>(
-							  parse_state, old_class_first, old_class_last );
+							  parse_state, old_class_pos );
 							return result;
 						}
 					}
@@ -328,8 +326,7 @@ namespace daw::json {
 				parse_state.trim_left( ); // Move to array start '['
 				daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 				                      ErrorReason::InvalidArrayStart, parse_state );
-				auto const old_class_first = parse_state.class_first;
-				auto const old_class_last = parse_state.class_last;
+				auto const old_class_pos = parse_state.get_class_position( );
 				parse_state.set_class_position( );
 				parse_state.remove_prefix( );
 				parse_state.trim_left( );
@@ -339,7 +336,8 @@ namespace daw::json {
 				if constexpr( is_guaranteed_rvo_v<ParseState> ) {
 					auto const run_after_parse = ordered_class_cleanup<
 					  json_details::all_json_members_must_exist_v<T, ParseState>,
-					  ParseState>{ parse_state, old_class_first, old_class_last };
+					  ParseState, decltype( old_class_pos )>{ parse_state,
+					                                          old_class_pos };
 					(void)run_after_parse;
 					if constexpr( force_aggregate_construction_v<T> ) {
 						return T{ parse_ordered_class_member(
@@ -372,8 +370,7 @@ namespace daw::json {
 					} else {
 						(void)parse_state.skip_array( );
 					}
-					parse_state.class_first = old_class_first;
-					parse_state.class_last = old_class_last;
+					parse_state.set_class_position( old_class_pos );
 					return result;
 				}
 			}

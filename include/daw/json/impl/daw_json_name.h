@@ -23,7 +23,7 @@ namespace daw::json {
 		// contracts.  Both support passing local char const[], but the type is
 		// different.  To keep old behaviour when using C++20, define
 		// DAW_USE_CPP17_ABI
-#if defined( __cpp_nontype_template_parameter_class ) and \
+#if false and defined( __cpp_nontype_template_parameter_class ) and \
   not defined( DAW_USE_CPP17_ABI )
 		// C++ 20 Non-Type Class Template Arguments
 

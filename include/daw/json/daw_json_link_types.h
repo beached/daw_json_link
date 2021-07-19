@@ -86,6 +86,7 @@ namespace daw::json {
 			  nodiscard]] DAW_ATTRIB_FLATTEN static inline constexpr json_details::
 			  json_result<JsonClass>
 			  parse_to_class( ParseState &parse_state, template_param<JsonClass> ) {
+
 				static_assert( json_details::is_no_name_v<JsonClass> );
 				static_assert( json_details::is_a_json_type_v<JsonClass> );
 				static_assert( json_details::has_json_data_contract_trait_v<
@@ -1006,15 +1007,15 @@ namespace daw::json {
 
 				static_assert(
 				  std::disjunction_v<
-				    json_details::is_an_ordered_member<TagMember>,
+				    json_details::is_an_ordered_member<dependent_member>,
 				    std::conjunction<
-				      json_details::is_a_json_type<TagMember>,
+				      json_details::is_a_json_type<dependent_member>,
 				      daw::not_trait<json_details::is_no_name<TagMember>>>>,
 				  "Must specify the location in tuple or name of member "
 				  "for TagMember" );
 
 				using tag_member = typename std::conditional_t<
-				  json_details::is_an_ordered_member<TagMember>::value,
+				  json_details::is_a_json_type<TagMember>::value,
 				  daw::traits::identity<TagMember>,
 				  daw::traits::identity<json_details::json_deduced_type<TagMember>>>::
 				  type;

@@ -382,6 +382,20 @@ namespace daw::json {
 				class_last = last;
 			}
 
+			struct class_pos_t {
+				CharT *f;
+				CharT *l;
+			};
+
+			inline constexpr void set_class_position( class_pos_t new_pos ) {
+				class_first = new_pos.f;
+				class_last = new_pos.l;
+			}
+
+			inline constexpr class_pos_t get_class_position( ) const {
+				return { class_first, class_last };
+			}
+
 			inline constexpr void trim_left_checked( ) {
 				return CommentPolicy::trim_left_checked( *this );
 			}
