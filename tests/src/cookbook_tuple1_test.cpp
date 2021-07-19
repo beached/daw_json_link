@@ -47,7 +47,11 @@ int main( int argc, char **argv )
 	// This works around a bug in MSVC and an error about
 	// '__builtin_array_init_helper' not being defined or constexpr during
 	// constexpr evaluation
-#if DAW_CXX_STANDARD != 20 and defined( _MSC_VER ) and not defined( __clang__ )
+#if defined( _MSC_VER ) and not defined( __clang__ ) and DAW_CXX_STANDARD == 20
+#define NO_CX_TEST
+#endif
+
+#if not defined( NO_CX_TEST )
 	static constexpr std::string_view json_data = R"(
 {
 	"a":[1,"Hi ♥️ ", true, 55]
