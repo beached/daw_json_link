@@ -44,7 +44,7 @@ namespace daw::json {
 	};
 } // namespace daw::json
 
-// This isn't necessary to parse the values as but allows for direcly
+// This isn't necessary to parse the values as but allows for directly
 // constructing the object
 struct MyDelayedClass {
 	int a;

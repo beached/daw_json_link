@@ -162,7 +162,7 @@ namespace daw::json {
 		} // namespace json_details
 		/***
 		 * This trait can be specialized such that when class being returned has
-		 * non-move/copyable members the construction can be done with { } instead
+		 * non-move/copiable members the construction can be done with { } instead
 		 * of a callable.  This is a blunt object and probably should not be used
 		 * add a type alias named force_aggregate_construction to your
 		 * json_data_contract specialization
@@ -461,9 +461,8 @@ namespace daw::json {
 			};
 
 			template<typename T>
-			using has_json_data_constract_constructor_test =
-			  decltype( decltype( std::declval<
-			                      json_data_contract_trait_t<T>> )::constructor );
+			using has_json_data_constract_constructor_test = decltype(
+			  decltype( std::declval<json_data_contract_trait_t<T>> )::constructor );
 
 			template<typename T>
 			struct json_data_contract_constructor_impl<T, true, true> {

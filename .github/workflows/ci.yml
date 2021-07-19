@@ -1,0 +1,186 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - release
+    - feature/*
+
+  pull_request:
+    branches:
+    - develop
+
+env:
+  NANOBENCH_SUPPRESS_WARNINGS: "1"
+  VCPKG_COMMIT: 110c89fc6ada7bc9fad715eaf8211f20aad084f5
+
+jobs:
+  spell-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - uses: actions/setup-python@v2
+      with: { python-version: "3.8" }
+
+    - name: Install codespell
+      run: pip3 install codespell
+
+    - name: Spell check
+      run: cmake -P cmake/spell.cmake
+
+  coverage:
+    needs: [spell-check]
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        std: [17, 20]
+
+    # To enable coverage, go to https://codecov.io/, acquire a token, put it
+    # into your secrets (Settings > Secrets > New repository secret), delete
+    # the last line from the conditional below and edit the "<name>"
+    # placeholder to your GitHub name.
+    # If you do not wish to use codecov, then simply delete this job from the
+    # workflow.
+    if: github.repository_owner == 'beached'
+      && false
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install LCov
+      run: sudo apt-get update -q
+        && sudo apt-get install lcov -q -y
+
+    - name: Install vcpkg
+      uses: friendlyanon/setup-vcpkg@v1
+      with:
+        committish: ${{ env.VCPKG_COMMIT }}
+
+    - name: Configure
+      env: { CXX: g++-10 }
+      run: cmake --preset=ci-coverage -D CMAKE_CXX_STANDARD=${{ matrix.std }}
+        -D DAW_NO_FLATTEN=YES
+
+    - name: Build
+      run: cmake --build build/coverage -j 2
+
+    - name: Test
+      working-directory: build/coverage
+      run: ctest --output-on-failure -j 2
+
+    - name: Process coverage info
+      run: cmake --build build/coverage -t coverage
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: coverage-${{ matrix.std }}
+        path: build/coverage/coverage.info
+        retention-days: 5
+
+  codecov:
+    needs: [coverage]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install LCov
+      run: sudo apt-get update -q
+        && sudo apt-get install lcov -q -y
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: coverage-17
+        path: "17"
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: coverage-20
+        path: "20"
+
+    - name: Combine coverage reports
+      run: lcov -o coverage.info -a 17/coverage.info -a 20/coverage.info
+
+    - name: Submit to codecov.io
+      uses: codecov/codecov-action@v1
+      with:
+        file: coverage.info
+
+  sanitize:
+    needs: [spell-check]
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        std: [17, 20]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install vcpkg
+      uses: friendlyanon/setup-vcpkg@v1
+      with:
+        committish: ${{ env.VCPKG_COMMIT }}
+
+    - name: Configure
+      env: { CXX: clang++-12 }
+      run: cmake --preset=ci-sanitize -D CMAKE_CXX_STANDARD=${{ matrix.std }}
+
+    - name: Build
+      run: cmake --build build/sanitize -j 2
+
+    - name: Test
+      working-directory: build/sanitize
+      env:
+        ASAN_OPTIONS: "strict_string_checks=1:\
+          detect_stack_use_after_return=1:\
+          check_initialization_order=1:\
+          strict_init_order=1:\
+          detect_leaks=1"
+        UBSAN_OPTIONS: print_stacktrace=1
+      run: ctest --output-on-failure -LE excluded -j 2
+
+  test:
+    needs: [spell-check]
+
+    strategy:
+      matrix:
+        os: [macos, ubuntu, windows]
+
+        std: [17, 20]
+
+        include:
+        - os: ubuntu
+          env: '{ "CXX": "g++-10" }'
+          flags: -D DAW_NO_FLATTEN=YES
+        - os: windows
+          env: '{ "VCPKG_DEFAULT_TRIPLET": "x64-windows" }'
+
+    runs-on: ${{ matrix.os }}-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install vcpkg
+      uses: friendlyanon/setup-vcpkg@v1
+      with:
+        committish: ${{ env.VCPKG_COMMIT }}
+
+    - name: Configure
+      env: ${{ fromJson(matrix.env || '{}') }}
+      run: cmake --preset=ci-${{ matrix.os }} ${{ matrix.flags }}
+        -D CMAKE_CXX_STANDARD=${{ matrix.std }}
+
+    - name: Build
+      run: cmake --build build --config Release -j 2
+
+    - name: Install
+      run: cmake --install build --config Release --prefix prefix
+
+    - name: Test
+      working-directory: build
+      run: ctest --output-on-failure -LE excluded -C Release -j 2

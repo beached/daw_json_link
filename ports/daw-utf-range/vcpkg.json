@@ -1,0 +1,11 @@
+{
+  "name": "daw-utf-range",
+  "version-semver": "1.2.2",
+  "dependencies": [
+    "daw-header-libraries",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    }
+  ]
+}

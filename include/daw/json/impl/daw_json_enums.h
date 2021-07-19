@@ -26,7 +26,7 @@ namespace daw::json {
 			StringEscaped, /// String - Fully processed string
 			Date,          /// ISO 8601 Timestamp
 			Class,         /// A class type with named members
-			Array,         /// An array type with homogenous members
+			Array,         /// An array type with homogeneous members
 			SizedArray,    /// An array with a fixed size.  This allows for size_t/ptr
 			               /// like combinations
 			Null,          /// A null member

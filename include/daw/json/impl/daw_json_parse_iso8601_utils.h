@@ -126,7 +126,8 @@ namespace daw::json {
 				// for the return value, it will be zero and should be removed by the
 				// compiler
 				auto result = calc( yr, mo, dy, hr, mn, se, ms );
-#if false and /* TODO Fix */ defined( __cpp_lib_chrono ) and __cpp_lib_chrono >= 201907
+#if false and /* TODO Fix */ defined( __cpp_lib_chrono ) and \
+  __cpp_lib_chrono >= 201907
 				// We have clock_cast
 				return std::chrono::duration_cast<Duration>(
 				  std::chrono::clock_cast<Clock>( result ) );

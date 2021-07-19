@@ -177,3 +177,6 @@ cmake-build-*/*
 CMakeSettings.json
 .vs/
 **/.DS_Store
+prefix/
+vcpkg/
+CMakeUserPresets.json
