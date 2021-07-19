@@ -12,6 +12,7 @@
 
 #include <daw/daw_read_file.h>
 
+#include <string>
 #include <string_view>
 #include <tuple>
 
@@ -51,16 +52,19 @@ int main( int argc, char **argv )
 		puts( "Must supply path to cookbook_tuple1.json file\n" );
 		exit( EXIT_FAILURE );
 	}
-  static constexpr auto cxf = daw::json::from_json<Foo>( json_data );
-  static_assert( std::get<3>( cxf.a ) == 55 );
+	static constexpr auto cxf = daw::json::from_json<Foo>( json_data );
+	static_assert( std::get<3>( cxf.a ) == 55 );
+	Foo f = daw::json::from_json<Foo>(
+	  json_data ); // This does not evaluate the pack in the correct order during
+	               // runtime evaluation but does work at compile time when cxf
+	               // is evaluated
+	assert( cxf == f );
 	auto data = daw::read_file( argv[1] );
 	assert( data and not data->empty( ) );
-	Foo foo1 = daw::json::from_json<Foo>( json_data );
-	std::string_view data2 = daw::json::to_json( foo1 );
+	Foo foo1 = daw::json::from_json<Foo>( *data );
+	std::string data2 = daw::json::to_json( foo1 );
 	Foo foo2 = daw::json::from_json<Foo>( data2 );
 	assert( foo1 == foo2 );
-
-
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {
