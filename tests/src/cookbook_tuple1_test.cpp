@@ -59,12 +59,17 @@ int main( int argc, char **argv )
 )";
 
 	static constexpr auto const cxf = daw::json::from_json<Foo>( json_data );
-	assert( std::get<3>( cxf.a ) == 55 );
+
+	if( not( std::get<3>( cxf.a ) == 55 ) ) {
+		assert( std::get<3>( cxf.a ) == 55 );
+	}
 	Foo f = daw::json::from_json<Foo>(
 	  json_data ); // This does not evaluate the pack in the correct order during
 	               // runtime evaluation but does work at compile time when cxf
 	               // is evaluated
-	(void)assert( cxf == f );
+	if( not( cxf == f ) ) {
+		assert( cxf == f );
+	}
 #endif
 	if( argc <= 1 ) {
 		puts( "Must supply path to cookbook_tuple1.json file\n" );
