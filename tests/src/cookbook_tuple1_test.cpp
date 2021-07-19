@@ -58,12 +58,15 @@ int main( int argc, char **argv )
 	  json_data ); // This does not evaluate the pack in the correct order during
 	               // runtime evaluation but does work at compile time when cxf
 	               // is evaluated
+  (void)f;
 	assert( cxf == f );
 	auto data = daw::read_file( argv[1] );
 	assert( data and not data->empty( ) );
 	Foo foo1 = daw::json::from_json<Foo>( *data );
+  (void)foo1;
 	std::string data2 = daw::json::to_json( foo1 );
 	Foo foo2 = daw::json::from_json<Foo>( data2 );
+  (void)foo2;
 	assert( foo1 == foo2 );
 }
 #ifdef DAW_USE_EXCEPTIONS
