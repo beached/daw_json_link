@@ -921,7 +921,6 @@ namespace daw::json {
 								                      ErrorReason::UnknownMember, parse_state );
 								parse_state.remove_prefix( );
 								parse_state.trim_left_checked( );
-								parse_state.set_class_position( old_class_pos );
 							} else {
 								(void)parse_state.skip_array( );
 							}
