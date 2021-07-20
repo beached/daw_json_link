@@ -37,11 +37,13 @@
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
 
-struct Empty {};
+namespace test_details_parse_value_class {
+	struct Empty {};
+} // namespace test_details_parse_value_class
 
 namespace daw::json {
 	template<>
-	struct json_data_contract<Empty> {
+	struct json_data_contract<test_details_parse_value_class::Empty> {
 		using type = json_member_list<>;
 
 		[[nodiscard, maybe_unused]] static inline auto
@@ -58,8 +60,9 @@ bool empty_class_empty_json_class( ) {
 	std::string_view sv = "{}";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_class<no_name, Empty>>(
-	  ParseTag<JsonParseTypes::Class>{ }, rng );
+	auto v =
+	  parse_value<json_class<no_name, test_details_parse_value_class::Empty>>(
+	    ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
 	return true;
 }
@@ -71,7 +74,8 @@ bool empty_class_nonempty_json_class( ) {
 	std::string_view sv = R"({ "a": 12345, "b": {} })";
 	daw::do_not_optimize( sv );
 	auto rng = DefaultParsePolicy( sv.data( ), sv.data( ) + sv.size( ) );
-	auto v = parse_value<json_class<no_name, Empty>>(
+	auto v = daw::json::json_details::parse_value<daw::json::json_class<
+	  daw::json::no_name, test_details_parse_value_class::Empty>>(
 	  ParseTag<JsonParseTypes::Class>{ }, rng );
 	daw::do_not_optimize( v );
 	return true;
@@ -168,8 +172,7 @@ int main( int, char ** )
 	do_fail_test( unexpected_eof_in_class1_fail( ) );
 	 */
 	do_fail_test( wrong_member_stored_pos_fail( ) );
-}
-catch( daw::json::json_exception const &jex ) {
+} catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
 	exit( 1 );
 }
