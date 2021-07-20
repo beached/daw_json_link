@@ -120,7 +120,7 @@ namespace daw::json::datetime {
 		                std::is_same<Duration, std::chrono::milliseconds>,
 		                std::is_same<Clock, std::chrono::system_clock>> ) {
 			return result;
-		} else if constexpr( std::is_same<Clock, std::chrono::system_clock> ) {
+		} else if constexpr( std::is_same_v<Clock, std::chrono::system_clock> ) {
 			return std::chrono::duration_cast<Duration>( result );
 		} else {
 #if defined( __cpp_lib_chrono ) and __cpp_lib_chrono >= 201907

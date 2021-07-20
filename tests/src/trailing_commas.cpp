@@ -64,7 +64,7 @@ DAW_CONSTEXPR bool test_string_raw_trail( ) {
 	DAW_CONSTEXPR std::string_view json_data =
 	  R"({"b": 5, "c": true, "a": "hello", } )";
 
-	auto const result = daw::json::from_json<string_raw_trail>( json_data );
+	DAW_CONSTEXPR auto const result = daw::json::from_json<string_raw_trail>( json_data );
 
 	test_assert( result.a == "hello", "Unexpected result" );
 	return true;

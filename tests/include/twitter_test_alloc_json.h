@@ -601,7 +601,7 @@ namespace daw::json {
 #ifdef __cpp_nontype_template_parameter_class
 		using type = json_member_list<
 		  json_number<"id", int64_t>, json_string<"id_str", daw::twitter::String>,
-		  json_array<indices, int64_t, daw::twitter::Vector<int64_t>>,
+		  json_array<"indices", int64_t, daw::twitter::Vector<int64_t>>,
 		  json_string<"media_url", daw::twitter::String>,
 		  json_string<"media_url_https", daw::twitter::String>,
 		  json_string<"url", daw::twitter::String>,

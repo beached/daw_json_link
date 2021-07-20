@@ -15,6 +15,12 @@
 
 #include <ciso646>
 
+#if defined( __cpp_lib_is_constant_evaluated ) and defined( HAS_CPP20CONSTEXPR )
+#define DAW_JSON_CXDTOR constexpr
+#else
+#define DAW_JSON_CXDTOR
+#endif
+
 namespace daw::json::json_details {
 	template<typename Range, bool>
 	struct json_parse_array_iterator_base {
@@ -38,6 +44,26 @@ namespace daw::json::json_details {
 				return static_cast<difference_type>( rhs.rng->counter ) + 1;
 			}
 			return 0;
+		}
+	};
+
+	template<typename Range>
+	struct json_array_iterator_cleanup_t {
+		Range *ptr;
+		std::size_t counter;
+
+		DAW_JSON_CXDTOR inline ~json_array_iterator_cleanup_t( ) noexcept( false ) {
+#if defined( __cpp_lib_is_constant_evaluated )
+			if( std::is_constant_evaluated( ) ) {
+#endif
+				if( std::uncaught_exceptions( ) == 0 ) {
+					ptr->counter = counter;
+				}
+#if defined( __cpp_lib_is_constant_evaluated )
+			} else {
+				ptr->counter = counter;
+			}
+#endif
 		}
 	};
 
@@ -75,34 +101,11 @@ namespace daw::json::json_details {
 			                      ErrorReason::UnexpectedEndOfData, *base::rng );
 			at_first = false;
 			if constexpr( KnownBounds ) {
-				if constexpr( is_guaranteed_rvo_v<Range> ) {
-					struct cleanup_t {
-						Range *ptr;
-						std::size_t counter;
-						CPP20CONSTEXPR inline ~cleanup_t( ) noexcept( false ) {
-#ifdef HAS_CPP20CONSTEXPR
-							if( std::is_constant_evaluated( ) ) {
-#endif
-								if( std::uncaught_exceptions( ) == 0 ) {
-									ptr->counter = counter;
-								}
-#ifdef HAS_CPP20CONSTEXPR
-							} else {
-								ptr->counter = counter;
-							}
-#endif
-						}
-					} const run_after_parse{ base::rng, base::rng->counter };
-					(void)run_after_parse;
-					return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
-					                               *base::rng );
-				} else {
-					auto const cnt = base::rng->counter;
-					auto result = parse_value<element_t>(
-					  ParseTag<element_t::expected_type>{ }, *base::rng );
-					base::rng->counter = cnt;
-					return result;
-				}
+				auto const cnt = base::rng->counter;
+				auto result = parse_value<element_t>(
+				  ParseTag<element_t::expected_type>{ }, *base::rng );
+				base::rng->counter = cnt;
+				return result;
 			} else {
 				return parse_value<element_t>( ParseTag<element_t::expected_type>{ },
 				                               *base::rng );
