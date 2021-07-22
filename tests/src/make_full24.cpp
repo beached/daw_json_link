@@ -8,7 +8,7 @@
 
 #include "defines.h"
 
-#include <utf8/checked.h>
+#include <daw/utf8/checked.h>
 
 #include <array>
 #include <cstdint>
@@ -360,11 +360,11 @@ std::string output_hex( uint16_t c ) {
 void output_item( uint32_t cp ) {
 	std::cout << "\n\t{\n";
 	std::cout << "\t\t\"escaped\": ";
-	uint32_t tmp32[]{ cp, 0 };
-	uint16_t tmp8[]{ 0, 0, 0, 0, 0, 0, 0, 0 };
+	std::uint32_t tmp32[]{ cp, 0 };
+	std::uint16_t tmp8[]{ 0, 0, 0, 0, 0, 0, 0, 0 };
 	std::vector<uint16_t> tmp16{ };
-	auto last8 = utf8::utf32to8( tmp32, tmp32 + 1, tmp8 );
-	utf8::utf8to16( tmp8, last8, std::back_inserter( tmp16 ) );
+	auto last8 = daw::utf8::utf32to8( tmp32, tmp32 + 1, tmp8 );
+	daw::utf8::utf8to16( tmp8, last8, std::back_inserter( tmp16 ) );
 	std::cout << "\"";
 	for( uint16_t u : tmp16 ) {
 		std::cout << output_hex( u );
@@ -383,7 +383,7 @@ int main( int, char ** ) {
 		std::cerr << "Block " << c.name << " from " << std::hex << c.low << " to "
 		          << std::hex << c.high << '\n';
 		last = c.high;
-		for( uint32_t cp = c.low; cp <= c.high; ++cp ) {
+		for( std::uint32_t cp = c.low; cp <= c.high; ++cp ) {
 			if( not is_first ) {
 				std::cout << ',';
 			} else {
@@ -392,7 +392,7 @@ int main( int, char ** ) {
 			output_item( cp );
 		}
 	}
-	for( size_t n = 1; n < codes.size( ); ++n ) {
+	for( std::size_t n = 1; n < codes.size( ); ++n ) {
 		auto const &c = codes[n];
 		std::cerr << "Block " << c.name << " from " << std::hex << c.low << " to "
 		          << std::hex << c.high << '\n';
