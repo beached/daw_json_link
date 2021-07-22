@@ -74,7 +74,6 @@ endif ()
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-add_library(daw::daw-json-link ALIAS ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} INTERFACE daw::header_libraries daw::utf_range)
 
