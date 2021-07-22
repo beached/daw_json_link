@@ -126,15 +126,23 @@ namespace daw::json {
 				// for the return value, it will be zero and should be removed by the
 				// compiler
 				auto result = calc( yr, mo, dy, hr, mn, se, ms );
-#if false and /* TODO Fix */ defined( __cpp_lib_chrono ) and \
-  __cpp_lib_chrono >= 201907
-				// We have clock_cast
-				return std::chrono::duration_cast<Duration>(
-				  std::chrono::clock_cast<Clock>( result ) );
-#else
-				if constexpr( std::is_same<Clock, std::chrono::system_clock>::value ) {
+
+				if constexpr( std::conjunction_v<
+				                std::is_same<Duration, std::chrono::milliseconds>,
+				                std::is_same<Clock, std::chrono::system_clock>> ) {
 					return result;
+				} else if constexpr( std::is_same_v<Clock,
+				                                    std::chrono::system_clock> ) {
+					return std::chrono::duration_cast<Duration>( result );
 				} else {
+#if defined( __cpp_lib_chrono ) and __cpp_lib_chrono >= 201907
+					// We have clock_cast
+					auto const match_duration =
+					  std::chrono::time_point_cast<Duration>( result );
+					auto const match_clock =
+					  std::chrono::clock_cast<Clock>( match_duration );
+					return match_clock;
+#else
 					// This is a guess and will not be constexpr
 
 					// System epoch is unix epoch on(gcc/clang/msvc)
@@ -148,8 +156,8 @@ namespace daw::json {
 					  std::chrono::duration_cast<std::chrono::milliseconds>(
 					    clock_epoch - system_epoch );
 					return std::chrono::duration_cast<Duration>( result + offset );
-				}
 #endif
+				}
 			}
 
 			struct date_parts {
