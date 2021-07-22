@@ -26,7 +26,7 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<json_alt<Thing>> {
 		static constexpr char const a[] = "a";
-		using type = json_ordered_member_list<int>;
+		using type = json_tuple_member_list<int>;
 	};
 } // namespace daw::json
 

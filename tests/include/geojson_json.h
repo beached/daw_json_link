@@ -24,7 +24,7 @@
 namespace daw::json {
 	template<>
 	struct DAW_ATTRIB_HIDDEN json_data_contract<daw::geojson::Point> {
-		using type = json_ordered_member_list<double, double>;
+		using type = json_tuple_member_list<double, double>;
 		using exact_class_mapping = void;
 
 		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto

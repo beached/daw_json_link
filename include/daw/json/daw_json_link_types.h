@@ -167,13 +167,13 @@ namespace daw::json {
 		};
 
 		/***
-		 * In a json_ordered_member_list, this allows specifying the position in the
+		 * In a json_tuple_member_list, this allows specifying the position in the
 		 * array to parse this member from
 		 * @tparam Index Position in array where member is
 		 * @tparam JsonMember type of value( e.g. int, json_string )
 		 */
 		template<std::size_t Index, typename JsonMember>
-		struct ordered_json_member {
+		struct json_tuple_member {
 			using i_am_an_ordered_member = void;
 			using i_am_a_json_type = void;
 			static constexpr JSONNAMETYPE name = no_name;
@@ -186,9 +186,14 @@ namespace daw::json {
 			using parse_to_t = typename json_member::parse_to_t;
 		};
 
+		template<std::size_t Index, typename JsonMember>
+		using ordered_json_member
+		  [[deprecated( "Use json_tuple_member, removal in v4" )]] =
+		    json_tuple_member<Index, JsonMember>;
+
 		namespace json_details {
 			template<typename JsonMember>
-			using ordered_member_wrapper =
+			using json_tuple_member_wrapper =
 			  std::conditional_t<is_an_ordered_member_v<JsonMember>, JsonMember,
 			                     json_deduced_type<JsonMember>>;
 		} // namespace json_details
@@ -202,12 +207,12 @@ namespace daw::json {
 		 * previous item in the list.  All items must have an index greater than the
 		 * previous. In Javascript these are also called tuples.
 		 * @tparam JsonMembers A list of json_TYPE mappings or a json_TYPE mapping
-		 * wrapped into a ordered_json_member
+		 * wrapped into a json_tuple_member
 		 */
 		template<typename... JsonMembers>
-		struct json_ordered_member_list {
+		struct json_tuple_member_list {
 			using i_am_a_json_member_list = void;
-			using i_am_a_ordered_member_list = void;
+			using i_am_a_json_tuple_member_list = void;
 
 			/**
 			 * Serialize a C++ class to JSON data
@@ -231,10 +236,10 @@ namespace daw::json {
 				  "store the temporaries" );
 				static_assert(
 				  std::conjunction<json_details::is_a_json_type<
-				    json_details::ordered_member_wrapper<JsonMembers>>...>::value,
+				    json_details::json_tuple_member_wrapper<JsonMembers>>...>::value,
 				  "Only value JSON types can be used" );
 				return json_details::serialize_ordered_json_class<
-				  json_details::ordered_member_wrapper<JsonMembers>...>(
+				  json_details::json_tuple_member_wrapper<JsonMembers>...>(
 				  it, args, v, std::index_sequence_for<Ts...>{ } );
 			}
 
@@ -260,12 +265,17 @@ namespace daw::json {
 				                 typename JsonClass::base_type>,
 				               "Unexpected type" );
 
-				return json_details::parse_ordered_json_class(
-				  template_args<JsonClass,
-				                json_details::ordered_member_wrapper<JsonMembers>...>,
+				return json_details::parse_json_tuple_class(
+				  template_args<
+				    JsonClass, json_details::json_tuple_member_wrapper<JsonMembers>...>,
 				  parse_state );
 			}
 		};
+
+		template<typename... JsonMembers>
+		using json_ordered_member_list
+		  [[deprecated( "Use json_tuple_member_list, removal in v4" )]] =
+		    json_tuple_member_list<JsonMembers...>;
 
 		/***
 		 * Parse a tagged variant like class where the tag member is in the same
@@ -851,7 +861,7 @@ namespace daw::json {
 		 */
 		template<typename... JsonElements>
 		using json_tagged_variant_type_list
-		  [[deprecated( "Use json_variant_type list, removal in v4" )]] =
+		  [[deprecated( "Use json_variant_type_list, removal in v4" )]] =
 		    json_variant_type_list<JsonElements...>;
 
 		template<typename>

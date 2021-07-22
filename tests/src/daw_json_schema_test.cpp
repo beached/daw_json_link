@@ -122,7 +122,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<Bar> {
-		using type = json_ordered_member_list<int, int>;
+		using type = json_tuple_member_list<int, int>;
 
 		static inline auto to_json_data( Bar const &b ) {
 			return std::forward_as_tuple( b.a, b.type );
@@ -131,7 +131,7 @@ namespace daw::json {
 
 	template<>
 	struct json_data_contract<Umm> {
-		using type = json_ordered_member_list<double, int>;
+		using type = json_tuple_member_list<double, int>;
 
 		static inline auto to_json_data( Umm const &b ) {
 			return std::forward_as_tuple( b.a, b.type );
@@ -157,7 +157,7 @@ namespace daw::json {
 		                   std::unique_ptr<int[]>, UniquePtrArrayCtor<int>>,
 		  json_link<mem_k, int>, json_tuple<mem_m, std::tuple<int, double>>,
 		  json_intrusive_variant<mem_n, std::variant<Bar, Umm>,
-		                         ordered_json_member<1, std::size_t>,
+		                         json_tuple_member<1, std::size_t>,
 		                         IdentitySwitcher<Bar, Umm>>,
 		  json_tuple<
 		    mem_o, std::tuple<double, std::string, int, std::variant<Bar, Umm>>,
@@ -165,7 +165,7 @@ namespace daw::json {
 		    json_tuple_types_list<
 		      double, std::string, int,
 		      json_tagged_variant_no_name<std::variant<Bar, Umm>,
-		                                  ordered_json_member<2, std::size_t>,
+		                                  json_tuple_member<2, std::size_t>,
 		                                  IdentitySwitcher<Bar, Umm>>>>>;
 
 		static inline auto to_json_data( Foo const &v ) {
@@ -192,7 +192,7 @@ namespace daw::json {
 
 		  json_link<mem_k, int>, json_tuple<mem_m, std::tuple<int, double>>,
 		  json_intrusive_variant<mem_n, std::variant<Bar, Umm>,
-		                         ordered_json_member<1, std::size_t>,
+		                         json_tuple_member<1, std::size_t>,
 		                         IdentitySwitcher<Bar, Umm>>,
 		  json_tuple<
 		    mem_o,
@@ -201,7 +201,7 @@ namespace daw::json {
 		    json_tuple_types_list<
 		      double, std::string_view, int,
 		      json_tagged_variant_no_name<std::variant<Bar, Umm>,
-		                                  ordered_json_member<2, std::size_t>,
+		                                  json_tuple_member<2, std::size_t>,
 		                                  IdentitySwitcher<Bar, Umm>>>>>;
 
 		static inline auto to_json_data( FooBoo const &v ) {

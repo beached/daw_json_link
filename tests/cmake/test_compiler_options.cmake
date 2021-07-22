@@ -81,13 +81,13 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 		-Wextra 
 		-pedantic
 		-Wconversion
-		-Wno-deprecated-declarations
 		-Wduplicated-cond 
 		-Wlogical-op 
 		-Wold-style-cast 
 		-Wshadow 
 		-Wzero-as-null-pointer-constant
 	)
+#-Wno-deprecated-declarations
 	if( DAW_WERROR ) 
 		add_compile_options( -Werror -pedantic-errors )
 	endif( )

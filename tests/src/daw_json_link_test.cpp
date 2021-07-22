@@ -383,7 +383,7 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<OptionalOrdered> {
 		using type =
-		  json_ordered_member_list<int,
+		  json_tuple_member_list<int,
 		                           json_number_null_no_name<std::optional<int>>>;
 
 		static DAW_CONSTEXPR auto to_json_data( OptionalOrdered const &v ) {
@@ -641,7 +641,7 @@ struct empty_ordered {};
 namespace daw::json {
 	template<>
 	struct json_data_contract<empty_ordered> {
-		using type = json_ordered_member_list<>;
+		using type = json_tuple_member_list<>;
 
 		static constexpr std::tuple<> to_json_data( empty_ordered ) {
 			return { };

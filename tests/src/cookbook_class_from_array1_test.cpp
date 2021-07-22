@@ -35,7 +35,7 @@ namespace daw::cookbook_class_from_array1 {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::cookbook_class_from_array1::Point> {
-		using type = json_ordered_member_list<double, double>;
+		using type = json_tuple_member_list<double, double>;
 
 		static inline auto
 		to_json_data( daw::cookbook_class_from_array1::Point const &p ) {

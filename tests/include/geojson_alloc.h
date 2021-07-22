@@ -57,7 +57,7 @@ namespace daw::geojson {
 namespace daw::json {
 	template<>
 	struct json_data_contract<daw::geojson::Point> {
-		using type = json_ordered_member_list<double, double>;
+		using type = json_tuple_member_list<double, double>;
 
 		[[nodiscard, maybe_unused]] static DAW_CONSTEXPR auto
 		to_json_data( daw::geojson::Point const &p ) {

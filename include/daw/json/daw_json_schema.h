@@ -320,7 +320,7 @@ namespace daw::json {
 
 			template<typename OutputIterator, typename... JsonMembers>
 			struct json_class_processor<OutputIterator,
-			                            json_ordered_member_list<JsonMembers...>> {
+			                            json_tuple_member_list<JsonMembers...>> {
 
 				static constexpr OutputIterator process( OutputIterator out_it ) {
 

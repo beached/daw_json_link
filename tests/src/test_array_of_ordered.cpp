@@ -36,7 +36,7 @@ struct Change {
 namespace daw::json {
 	template<>
 	struct json_data_contract<Change> {
-		using type = json_ordered_member_list<json_fixed8, json_fixed8>;
+		using type = json_tuple_member_list<json_fixed8, json_fixed8>;
 	};
 } // namespace daw::json
 
