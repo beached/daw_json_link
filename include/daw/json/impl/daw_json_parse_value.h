@@ -961,6 +961,63 @@ namespace daw::json {
 						                      parse_state );
 					}
 				}
+
+#if defined( _MSC_VER ) and not defined( __clang__ )
+				template<typename ParseState>
+				struct position_info {
+					std::size_t index;
+					ParseState state{ };
+
+					constexpr explicit operator bool( ) const {
+						return not state.is_null( );
+					}
+				};
+
+				/***
+				 * Maybe skip json members
+				 * @tparam ParseState see IteratorRange
+				 * @param parse_state JSON data
+				 * @param current_position current member index
+				 * @param desired_position desired member index
+				 */
+				template<bool Nullable, typename ParseState, std::size_t N>
+				DAW_ATTRIB_INLINE inline constexpr ParseState maybe_skip_members(
+				  ParseState &parse_state, std::size_t &current_position,
+				  std::size_t desired_position,
+				  std::array<position_info<ParseState>, N> &parse_locations ) {
+
+					auto const desired = std::find_if(
+					  std::data( parse_locations ), daw::data_end( parse_locations ),
+					  [desired_position]( position_info<ParseState> const &loc ) {
+						  return loc.index == desired_position;
+					  } );
+
+#if not defined( NDEBUG )
+					daw_json_assert( desired != daw::data_end( parse_locations ),
+					                 ErrorReason::UnexpectedEndOfData, parse_state );
+#endif
+					constexpr bool skip_check_end =
+					  ParseState::is_unchecked_input and Nullable;
+					while( ( current_position < desired_position ) &
+					       ( skip_check_end or parse_state.front( ) != ']' ) ) {
+						auto const current = std::find_if(
+						  std::data( parse_locations ), daw::data_end( parse_locations ),
+						  [current_position]( position_info<ParseState> const &loc ) {
+							  return loc.index == current_position;
+						  } );
+						auto state = skip_value( parse_state );
+						if( current != daw::data_end( parse_locations ) ) {
+							current->state = state;
+						}
+						parse_state.move_next_member_or_end( );
+						++current_position;
+						daw_json_assert_weak( parse_state.has_more( ),
+						                      ErrorReason::UnexpectedEndOfData,
+						                      parse_state );
+					}
+					return parse_state;
+				}
+#endif
 			} // namespace pocm_details
 
 			template<typename JsonMember, bool KnownBounds, typename ParseState,
@@ -976,17 +1033,38 @@ namespace daw::json {
 				parse_state.remove_prefix( );
 				parse_state.move_next_member_or_end( );
 				using tuple_t = typename JsonMember::base_type;
+				using tuple_members = typename JsonMember::sub_member_list;
 
+#if defined( _MSC_VER ) and not defined( __clang__ )
+				using position_info_t = pocm_details::position_info<ParseState>;
+				std::array<position_info_t, sizeof...( Is )> parse_locations{
+				  [last_index =
+				     std::size_t( 0 )]( auto Index ) mutable -> position_info_t {
+					  constexpr std::size_t index = decltype( Index )::value;
+					  using member_t = std::tuple_element_t<index, tuple_members>;
+					  if constexpr( is_an_ordered_member_v<member_t> ) {
+						  last_index = member_t::member_index;
+						  return { member_t::member_index };
+					  } else {
+						  return { last_index++ };
+					  }
+				  }( std::integral_constant<std::size_t, Is>{ } )... };
+#endif
 				auto const parse_value_help = [&]( auto PackIdx,
 				                                   std::size_t &ClassIdx ) {
 					constexpr std::size_t index = decltype( PackIdx )::value;
-					using CurrentMember =
-					  std::tuple_element_t<index, typename JsonMember::sub_member_list>;
+					using CurrentMember = std::tuple_element_t<index, tuple_members>;
 
 					using json_member_t = ordered_member_subtype_t<CurrentMember>;
 					if constexpr( is_an_ordered_member_v<CurrentMember> ) {
+#if defined( _MSC_VER ) and not defined( __clang__ )
+						pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
+						  parse_state, ClassIdx, CurrentMember::member_index,
+						  parse_locations );
+#else
 						pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
 						  parse_state, ClassIdx, CurrentMember::member_index );
+#endif
 					} else {
 						daw_json_assert_weak( parse_state.has_more( ),
 						                      ErrorReason::UnexpectedEndOfData,
