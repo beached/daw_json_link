@@ -6,10 +6,10 @@
 # Official repository: https://github.com/beached/daw_json_link
 #
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
 project("json_link"
-        VERSION "2.9.6"
+        VERSION "2.9.7"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
         LANGUAGES C CXX)
@@ -18,7 +18,11 @@ set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requ
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_subdirectory(extern)
+option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
+if( NOT DAW_USE_PACKAGE_MANAGEMENT ) 
+	add_subdirectory(extern)
+endif( )
+
 option(DAW_ENABLE_TESTING "Build unit tests" OFF)
 
 include(GNUInstallDirs)

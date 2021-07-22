@@ -17,14 +17,14 @@
 #include <daw/daw_bounded_vector.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
-#include <utf8/unchecked.h>
+#include <daw/utf8/unchecked.h>
 
 #include <ciso646>
 #include <optional>
 #include <sstream>
 #include <string>
 #ifndef DAW_JSON_CUSTOM_D2S
-#include <third_party/dragonbox/dragonbox.h>
+#include <daw/third_party/dragonbox/dragonbox.h>
 #elif __has_include( "custom_d2s.h" )
 #include "custom_d2s.h"
 #else
