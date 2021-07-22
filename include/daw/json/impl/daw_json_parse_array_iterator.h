@@ -53,6 +53,7 @@ namespace daw::json {
 					// rhs is the iterator with the parser in it.  We should know how many
 					// items are in play because we already counted them in the skip_array
 					// call.
+
 					return rhs.counter;
 				}
 			};
