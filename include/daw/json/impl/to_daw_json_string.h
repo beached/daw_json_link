@@ -1100,6 +1100,7 @@ namespace daw::json {
 					  to_daw_json_string<T>( ParseTag<T::expected_type>{ }, it,
 					                         pack_element::template get<index>( value ) );
 				};
+				(void)to_daw_json_string_help;
 
 				bool is_first = true;
 				daw::Empty const expander[]{
