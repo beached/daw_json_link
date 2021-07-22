@@ -23,6 +23,7 @@
 #include "daw_json_parse_value_fwd.h"
 #include "daw_json_traits.h"
 
+#include <daw/daw_algorithm.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_traits.h>
 
@@ -986,12 +987,14 @@ namespace daw::json {
 				  std::size_t desired_position,
 				  std::array<position_info<ParseState>, N> &parse_locations ) {
 
-					auto const desired = std::find_if(
+					auto const desired = daw::algorithm::find_if(
 					  std::data( parse_locations ), daw::data_end( parse_locations ),
 					  [desired_position]( position_info<ParseState> const &loc ) {
 						  return loc.index == desired_position;
 					  } );
-
+					if( *desired ) {
+						return desired->state;
+					}
 #if not defined( NDEBUG )
 					daw_json_assert( desired != daw::data_end( parse_locations ),
 					                 ErrorReason::UnexpectedEndOfData, parse_state );
@@ -1000,7 +1003,7 @@ namespace daw::json {
 					  ParseState::is_unchecked_input and Nullable;
 					while( ( current_position < desired_position ) &
 					       ( skip_check_end or parse_state.front( ) != ']' ) ) {
-						auto const current = std::find_if(
+						auto const current = daw::algorithm::find_if(
 						  std::data( parse_locations ), daw::data_end( parse_locations ),
 						  [current_position]( position_info<ParseState> const &loc ) {
 							  return loc.index == current_position;
@@ -1037,16 +1040,16 @@ namespace daw::json {
 
 #if defined( _MSC_VER ) and not defined( __clang__ )
 				using position_info_t = pocm_details::position_info<ParseState>;
+				std::size_t parse_locations_last_index = 0U;
 				std::array<position_info_t, sizeof...( Is )> parse_locations{
-				  [last_index =
-				     std::size_t( 0 )]( auto Index ) mutable -> position_info_t {
+				  [&]( auto Index ) mutable -> position_info_t {
 					  constexpr std::size_t index = decltype( Index )::value;
 					  using member_t = std::tuple_element_t<index, tuple_members>;
 					  if constexpr( is_an_ordered_member_v<member_t> ) {
-						  last_index = member_t::member_index;
+						  parse_locations_last_index = member_t::member_index;
 						  return { member_t::member_index };
 					  } else {
-						  return { last_index++ };
+						  return { parse_locations_last_index++ };
 					  }
 				  }( std::integral_constant<std::size_t, Is>{ } )... };
 #endif
@@ -1056,33 +1059,57 @@ namespace daw::json {
 					using CurrentMember = std::tuple_element_t<index, tuple_members>;
 
 					using json_member_t = ordered_member_subtype_t<CurrentMember>;
-					if constexpr( is_an_ordered_member_v<CurrentMember> ) {
 #if defined( _MSC_VER ) and not defined( __clang__ )
-						pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
-						  parse_state, ClassIdx, CurrentMember::member_index,
-						  parse_locations );
-#else
-						pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
-						  parse_state, ClassIdx, CurrentMember::member_index );
+					ParseState parse_state2 =
+					  pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
+					    parse_state, ClassIdx, index, parse_locations );
+					if constexpr( sizeof...( Is ) > 1 ) {
+						++ClassIdx;
+						if( parse_state2.first == parse_state.first ) {
+							if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+								auto const run_after_parse = daw::on_exit_success(
+								  [&] { parse_state.move_next_member_or_end( ); } );
+								(void)run_after_parse;
+								return parse_value<without_name<json_member_t>>(
+								  parse_state, ParseTag<json_member_t::expected_type>{ } );
+							} else {
+								auto result = parse_value<without_name<json_member_t>>(
+								  parse_state, ParseTag<json_member_t::expected_type>{ } );
+								parse_state.move_next_member_or_end( );
+								return result;
+							}
+						} else {
+							// Known Bounds
+							return parse_value<without_name<json_member_t>, true>(
+							  parse_state2, ParseTag<json_member_t::expected_type>{ } );
+						}
+					} else {
 #endif
-					} else {
-						daw_json_assert_weak( parse_state.has_more( ),
-						                      ErrorReason::UnexpectedEndOfData,
-						                      parse_state );
+						if constexpr( is_an_ordered_member_v<CurrentMember> ) {
+							pocm_details::maybe_skip_members<
+							  is_json_nullable_v<json_member_t>>(
+							  parse_state, ClassIdx, CurrentMember::member_index );
+						} else {
+							daw_json_assert_weak( parse_state.has_more( ),
+							                      ErrorReason::UnexpectedEndOfData,
+							                      parse_state );
+						}
+						++ClassIdx;
+						if constexpr( is_guaranteed_rvo_v<ParseState> ) {
+							auto const run_after_parse = daw::on_exit_success(
+							  [&] { parse_state.move_next_member_or_end( ); } );
+							(void)run_after_parse;
+							return parse_value<without_name<json_member_t>>(
+							  parse_state, ParseTag<json_member_t::expected_type>{ } );
+						} else {
+							auto result = parse_value<without_name<json_member_t>>(
+							  parse_state, ParseTag<json_member_t::expected_type>{ } );
+							parse_state.move_next_member_or_end( );
+							return result;
+						}
+#if defined( _MSC_VER ) and not defined( __clang__ )
 					}
-					++ClassIdx;
-					if constexpr( is_guaranteed_rvo_v<ParseState> ) {
-						auto const run_after_parse = daw::on_exit_success(
-						  [&] { parse_state.move_next_member_or_end( ); } );
-						(void)run_after_parse;
-						return parse_value<without_name<json_member_t>>(
-						  parse_state, ParseTag<json_member_t::expected_type>{ } );
-					} else {
-						auto result = parse_value<without_name<json_member_t>>(
-						  parse_state, ParseTag<json_member_t::expected_type>{ } );
-						parse_state.move_next_member_or_end( );
-						return result;
-					}
+#endif
 				};
 
 				static_assert( is_a_json_type<JsonMember>::value );
