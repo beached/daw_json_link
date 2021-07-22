@@ -8,8 +8,8 @@
 
 cmake_minimum_required(VERSION 3.14)
 
-project("json_link"
-        VERSION "2.9.7"
+project("daw-json-link"
+        VERSION "2.9.8"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
         LANGUAGES C CXX)
@@ -75,7 +75,9 @@ endif ()
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-target_link_libraries(${PROJECT_NAME} INTERFACE daw::header_libraries daw::utf_range)
+add_library(daw::json_link ALIAS ${PROJECT_NAME})
+
+target_link_libraries(${PROJECT_NAME} INTERFACE daw::daw-header-libraries daw::daw-utf-range)
 
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 target_include_directories(${PROJECT_NAME}
@@ -93,7 +95,7 @@ install(TARGETS ${PROJECT_NAME}
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-        "${PROJECT_SOURCE_DIR}/cmake/daw_${PROJECT_NAME}Config.cmake.in"
+        "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
         "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
         INSTALL_DESTINATION
         ${json_link_INSTALL_CMAKEDIR})
