@@ -1103,6 +1103,7 @@ namespace daw::json {
 				(void)to_daw_json_string_help;
 
 				bool is_first = true;
+				(void)is_first;
 				daw::Empty const expander[]{
 				  ( to_daw_json_string_help( std::integral_constant<std::size_t, Is>{ },
 				                             is_first ),
