@@ -44,7 +44,7 @@
 #include <intrin.h> // this includes immintrin.h as well
 #endif
 
-namespace jkj::dragonbox {
+namespace daw::jkj::dragonbox {
 	namespace detail {
 		template<class T>
 		constexpr std::size_t
@@ -321,18 +321,18 @@ namespace jkj::dragonbox {
 				int count = int( value_bits<UInt> );
 
 				auto n32 = std::uint32_t( n );
-				if constexpr( value_bits<UInt> > 32 ) {
+				if constexpr( value_bits < UInt >> 32 ) {
 					if( n32 == 0 ) {
 						n32 = std::uint32_t( n >> 32 );
 					} else if( n == n32 ) {
 						count -= ( value_bits<UInt> - 32 );
 					}
 				}
-				if constexpr( value_bits<UInt> > 16 ) {
+				if constexpr( value_bits < UInt >> 16 ) {
 					if( ( n32 & 0x0000ffff ) != 0 )
 						count -= 16;
 				}
-				if constexpr( value_bits<UInt> > 8 ) {
+				if constexpr( value_bits < UInt >> 8 ) {
 					if( ( n32 & 0x00ff00ff ) != 0 )
 						count -= 8;
 				}
@@ -356,7 +356,7 @@ namespace jkj::dragonbox {
 			struct uint128 {
 				uint128( ) = default;
 
-#if( defined( __GNUC__ ) || defined( __clang__ ) ) &&                          \
+#if( defined( __GNUC__ ) || defined( __clang__ ) ) && \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -417,7 +417,7 @@ namespace jkj::dragonbox {
 			// Get 128-bit result of multiplication of two 64-bit unsigned integers
 			JKJ_SAFEBUFFERS inline uint128 umul128( std::uint64_t x,
 			                                        std::uint64_t y ) noexcept {
-#if( defined( __GNUC__ ) || defined( __clang__ ) ) &&                          \
+#if( defined( __GNUC__ ) || defined( __clang__ ) ) && \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -454,7 +454,7 @@ namespace jkj::dragonbox {
 
 			JKJ_SAFEBUFFERS inline std::uint64_t
 			umul128_upper64( std::uint64_t x, std::uint64_t y ) noexcept {
-#if( defined( __GNUC__ ) || defined( __clang__ ) ) &&                          \
+#if( defined( __GNUC__ ) || defined( __clang__ ) ) && \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -487,8 +487,8 @@ namespace jkj::dragonbox {
 #endif
 			}
 
-			// Get upper 64-bits of multiplication of a 64-bit unsigned integer and a
-			// 128-bit unsigned integer
+			// Get upper 64-bits of multiplication of a 64-bit unsigned integer and
+			// a 128-bit unsigned integer
 			JKJ_SAFEBUFFERS inline std::uint64_t
 			umul192_upper64( std::uint64_t x, uint128 y ) noexcept {
 				auto g0 = umul128( x, y.high( ) );
@@ -496,15 +496,15 @@ namespace jkj::dragonbox {
 				return g0.high( );
 			}
 
-			// Get upper 32-bits of multiplication of a 32-bit unsigned integer and a
-			// 64-bit unsigned integer
+			// Get upper 32-bits of multiplication of a 32-bit unsigned integer and
+			// a 64-bit unsigned integer
 			inline std::uint32_t umul96_upper32( std::uint32_t x,
 			                                     std::uint64_t y ) noexcept {
 				return std::uint32_t( umul128_upper64( x, y ) );
 			}
 
-			// Get middle 64-bits of multiplication of a 64-bit unsigned integer and a
-			// 128-bit unsigned integer
+			// Get middle 64-bits of multiplication of a 64-bit unsigned integer and
+			// a 128-bit unsigned integer
 			JKJ_SAFEBUFFERS inline std::uint64_t
 			umul192_middle64( std::uint64_t x, uint128 y ) noexcept {
 				auto g01 = x * y.high( );
@@ -512,8 +512,8 @@ namespace jkj::dragonbox {
 				return g01 + g10;
 			}
 
-			// Get middle 32-bits of multiplication of a 32-bit unsigned integer and a
-			// 64-bit unsigned integer
+			// Get middle 32-bits of multiplication of a 32-bit unsigned integer and
+			// a 64-bit unsigned integer
 			inline std::uint64_t umul96_lower64( std::uint32_t x,
 			                                     std::uint64_t y ) noexcept {
 				return x * y;
@@ -558,7 +558,8 @@ namespace jkj::dragonbox {
 				return shift_amount == 0
 				         ? static_cast<std::int32_t>( integer_part )
 				         : static_cast<std::int32_t>(
-				             ( integer_part << static_cast<std::uint32_t>( shift_amount ) ) |
+				             ( integer_part
+				               << static_cast<std::uint32_t>( shift_amount ) ) |
 				             ( fractional_digits >> ( 64U - shift_amount ) ) );
 			}
 
@@ -2412,8 +2413,9 @@ namespace jkj::dragonbox {
 				constexpr auto small_divisor =
 				  compute_power<kappa>( std::uint32_t( 10 ) );
 
-				// Using an upper bound on zi, we might be able to optimize the division
-				// better than the compiler; we are computing zi / big_divisor here
+				// Using an upper bound on zi, we might be able to optimize the
+				// division better than the compiler; we are computing zi /
+				// big_divisor here
 				ret_value.significand =
 				  div::divide_by_pow10<kappa + 1, significand_bits + kappa + 2,
 				                       kappa + 1>( zi );
@@ -2471,9 +2473,9 @@ namespace jkj::dragonbox {
 				              policy_impl::correct_rounding::tag_t::do_not_care ) {
 					// Normally, we want to compute
 					// ret_value.significand += r / small_divisor
-					// and return, but we need to take care of the case that the resulting
-					// value is exactly the right endpoint, while that is not included in
-					// the interval
+					// and return, but we need to take care of the case that the
+					// resulting value is exactly the right endpoint, while that is not
+					// included in the interval
 					if( !interval_type.include_right_endpoint( ) ) {
 						// Is r divisible by 2^kappa?
 						if( ( r & mask ) == 0 ) {
@@ -2510,16 +2512,17 @@ namespace jkj::dragonbox {
 							// Check z^(f) >= epsilon^(f)
 							// We have either yi == zi - epsiloni or yi == (zi - epsiloni) -
 							// 1, where yi == zi - epsiloni if and only if z^(f) >=
-							// epsilon^(f) Since there are only 2 possibilities, we only need
-							// to care about the parity Also, zi and r should have the same
-							// parity since the divisor is an even number
+							// epsilon^(f) Since there are only 2 possibilities, we only
+							// need to care about the parity Also, zi and r should have the
+							// same parity since the divisor is an even number
 							if( compute_mul_parity( two_fc, cache, beta_minus_1 ) !=
 							    approx_y_parity ) {
 								--ret_value.significand;
 							} else {
 								// If z^(f) >= epsilon^(f), we might have a tie
 								// when z^(f) == epsilon^(f), or equivalently, when y is an
-								// integer For tie-to-up case, we can just choose the upper one
+								// integer For tie-to-up case, we can just choose the upper
+								// one
 								if constexpr( CorrectRoundingPolicy::tag !=
 								              policy_impl::correct_rounding::tag_t::
 								                away_from_zero ) {
@@ -2661,8 +2664,9 @@ namespace jkj::dragonbox {
 				constexpr auto small_divisor =
 				  compute_power<kappa>( std::uint32_t( 10 ) );
 
-				// Using an upper bound on xi, we might be able to optimize the division
-				// better than the compiler; we are computing xi / big_divisor here
+				// Using an upper bound on xi, we might be able to optimize the
+				// division better than the compiler; we are computing xi /
+				// big_divisor here
 				ret_value.significand =
 				  div::divide_by_pow10<kappa + 1, significand_bits + kappa + 2,
 				                       kappa + 1>( xi );
@@ -2752,8 +2756,9 @@ namespace jkj::dragonbox {
 				constexpr auto small_divisor =
 				  compute_power<kappa>( std::uint32_t( 10 ) );
 
-				// Using an upper bound on zi, we might be able to optimize the division
-				// better than the compiler; we are computing zi / big_divisor here
+				// Using an upper bound on zi, we might be able to optimize the
+				// division better than the compiler; we are computing zi /
+				// big_divisor here
 				ret_value.significand =
 				  div::divide_by_pow10<kappa + 1, significand_bits + kappa + 2,
 				                       kappa + 1>( zi );
@@ -2868,8 +2873,10 @@ namespace jkj::dragonbox {
 					}
 
 					// Otherwise, work with the remainder
-					auto quotient = static_cast<std::uint32_t>( div::divide_by_pow10<8, 54, 0>( n ) );
-					auto remainder = static_cast<std::uint32_t>( static_cast<unsigned>( n ) - 1'0000'0000 * quotient );
+					auto quotient =
+					  static_cast<std::uint32_t>( div::divide_by_pow10<8, 54, 0>( n ) );
+					auto remainder = static_cast<std::uint32_t>(
+					  static_cast<unsigned>( n ) - 1'0000'0000 * quotient );
 
 					constexpr auto mod_inverse = std::uint32_t( divtable.mod_inv[1] );
 					constexpr auto max_quotient =
@@ -3064,21 +3071,22 @@ namespace jkj::dragonbox {
 		////////////////////////////////////////////////////////////////////////////////////////
 
 		namespace policy_impl {
-			// The library will specify a list of accepted kinds of policies and their
-			// defaults, and the user will pass a list of policies. The aim of helper
-			// classes/functions here is to do the following:
+			// The library will specify a list of accepted kinds of policies and
+			// their defaults, and the user will pass a list of policies. The aim of
+			// helper classes/functions here is to do the following:
 			//   1. Check if the policy parameters given by the user are all valid;
 			//   that means,
 			//      each of them should be of the kinds specified by the library.
 			//      If that's not the case, then the compilation fails.
-			//   2. Check if multiple policy parameters for the same kind is specified
-			//   by the user.
+			//   2. Check if multiple policy parameters for the same kind is
+			//   specified by the user.
 			//      If that's the case, then the compilation fails.
-			//   3. Build a class deriving from all policies the user have given, and
-			//   also from
+			//   3. Build a class deriving from all policies the user have given,
+			//   and also from
 			//      the default policies if the user did not specify one for some
 			//      kinds.
-			// A policy belongs to a certain kind if it is deriving from a base class.
+			// A policy belongs to a certain kind if it is deriving from a base
+			// class.
 
 			// For a given kind, find a policy belonging to that kind.
 			// Check if there are more than one such policies.
@@ -3280,7 +3288,7 @@ namespace jkj::dragonbox {
 			}
 		} );
 	}
-} // namespace jkj::dragonbox
+} // namespace daw::jkj::dragonbox
 
 #undef JKJ_HAS_COUNTR_ZERO_INTRINSIC
 #undef JKJ_FORCEINLINE

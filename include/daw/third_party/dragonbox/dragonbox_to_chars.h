@@ -20,7 +20,7 @@
 
 #include "dragonbox_to_decimal.h"
 
-namespace jkj::dragonbox {
+namespace daw::jkj::dragonbox {
 	namespace to_chars_detail {
 		char *to_chars( unsigned_fp_t<float> v, char *buffer );
 		char *to_chars( unsigned_fp_t<double> v, char *buffer );
@@ -29,7 +29,7 @@ namespace jkj::dragonbox {
 	// Returns the next-to-end position
 	template<class Float, class... Policies>
 	inline char *to_chars_n( Float x, char *buffer, Policies... policies ) {
-		using namespace jkj::dragonbox::detail::policy_impl;
+		using namespace daw::jkj::dragonbox::detail::policy_impl;
 		using policy_holder = decltype( make_policy_holder(
 		  base_default_pair_list<
 		    base_default_pair<trailing_zero::base, trailing_zero::remove>,
@@ -85,6 +85,6 @@ namespace jkj::dragonbox {
 		*ptr = '\0';
 		return ptr;
 	}
-} // namespace jkj::dragonbox
+} // namespace daw::jkj::dragonbox
 
 #endif

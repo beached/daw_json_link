@@ -40,9 +40,9 @@ namespace daw::json {
 	                                   OutputIterator out_it ) {
 #ifndef DAW_JSON_CUSTOM_D2S
 		if constexpr( std::is_same_v<Real, float> ) {
-			return jkj::dragonbox::to_chars_n( value, out_it );
+			return daw::jkj::dragonbox::to_chars_n( value, out_it );
 		} else {
-			return jkj::dragonbox::to_chars_n( static_cast<double>( value ), out_it );
+			return daw::jkj::dragonbox::to_chars_n( static_cast<double>( value ), out_it );
 		}
 #else
 		if constexpr( std::is_same_v<Real, float> ) {

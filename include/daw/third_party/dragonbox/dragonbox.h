@@ -39,7 +39,7 @@
 
 #include "dragonbox_to_chars.h"
 
-namespace jkj::dragonbox {
+namespace daw::jkj::dragonbox {
 	namespace to_chars_detail {
 		static constexpr char radix_100_table[] = {
 		  '0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6', '0',
@@ -239,11 +239,15 @@ namespace jkj::dragonbox {
 			if constexpr( sizeof( Float ) == 8 ) {
 				if( exp >= 100 ) {
 					const std::int32_t c = exp % 10;
-					memcpy( buffer, radix_100_table + static_cast<std::ptrdiff_t>( 2 * ( exp / 10 )), 2 );
+					memcpy( buffer,
+					        radix_100_table +
+					          static_cast<std::ptrdiff_t>( 2 * ( exp / 10 ) ),
+					        2 );
 					buffer[2] = static_cast<char>( '0' + c );
 					buffer += 3;
 				} else if( exp >= 10 ) {
-					memcpy( buffer, radix_100_table + static_cast<std::ptrdiff_t>( 2 * exp), 2 );
+					memcpy( buffer,
+					        radix_100_table + static_cast<std::ptrdiff_t>( 2 * exp ), 2 );
 					buffer += 2;
 				} else {
 					*buffer = static_cast<char>( '0' + exp );
@@ -251,7 +255,8 @@ namespace jkj::dragonbox {
 				}
 			} else {
 				if( exp >= 10 ) {
-					memcpy( buffer, radix_100_table + static_cast<std::ptrdiff_t>(2 * exp), 2 );
+					memcpy( buffer,
+					        radix_100_table + static_cast<std::ptrdiff_t>( 2 * exp ), 2 );
 					buffer += 2;
 				} else {
 					*buffer = static_cast<char>( '0' + exp );
@@ -269,4 +274,4 @@ namespace jkj::dragonbox {
 			return to_chars_impl( v, buffer );
 		}
 	} // namespace to_chars_detail
-} // namespace jkj::dragonbox
+} // namespace daw::jkj::dragonbox
