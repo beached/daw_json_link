@@ -383,8 +383,7 @@ namespace daw::json {
 	template<>
 	struct json_data_contract<OptionalOrdered> {
 		using type =
-		  json_tuple_member_list<int,
-		                           json_number_null_no_name<std::optional<int>>>;
+		  json_tuple_member_list<int, json_number_null_no_name<std::optional<int>>>;
 
 		static DAW_CONSTEXPR auto to_json_data( OptionalOrdered const &v ) {
 			return std::forward_as_tuple( v.a, v.b );
@@ -559,7 +558,7 @@ unsigned long long test_dblparse2( std::string_view num, double orig,
 }
 
 template<bool KnownBounds = false, bool Precise = false,
-         int NUM_VALS = 1'000'000>
+         int NUM_VALS = 1'000'000, int exp_min = -308, int exp_max = +308>
 void test_lots_of_doubles( ) {
 	auto rd = std::random_device( );
 	auto rng = std::mt19937_64( rd( ) );
@@ -583,7 +582,7 @@ void test_lots_of_doubles( ) {
 	for( int i = 0; i < NUM_VALS; ++i ) {
 		unsigned long long x1 = rng( );
 		unsigned long long x2 = rng( );
-		int x3 = std::uniform_int_distribution<>( -308, +308 )( rng );
+		int x3 = std::uniform_int_distribution<>( exp_min, exp_max )( rng );
 		char buffer[128];
 		std::sprintf( buffer, "%llu.%llue%d", x1, x2, x3 );
 
@@ -598,6 +597,36 @@ void test_lots_of_doubles( ) {
 		          << " from [" << p.second.min_value << ',' << p.second.max_value
 		          << "]\n";
 	}
+}
+
+template<int NUM_VALS = 100, int exp_min = -5, int exp_max = 6>
+void test_show_lots_of_doubles( ) {
+	auto rd = std::random_device( );
+	auto rng = std::mt19937_64( rd( ) );
+	std::cout << "Compare output of doubles\n";
+	std::cout << "*************************\n";
+	for( int i = 0; i < NUM_VALS; ++i ) {
+		unsigned long long x1 = rng( );
+		unsigned long long x2 = rng( );
+		/*
+		auto x1 =
+		  std::uniform_int_distribution<unsigned long long>( 1, 100 )( rng );
+		auto x2 =
+		  std::uniform_int_distribution<unsigned long long>( 1, 100 )( rng );
+		  */
+		int x3 = std::uniform_int_distribution<>( exp_min, exp_max )( rng );
+		char buffer[128]{ };
+		std::sprintf( buffer, "%llu.%llue%d", x1, x2, x3 );
+
+		char *nend = nullptr;
+		double const strod_parse_dbl = std::strtod( buffer, &nend );
+		std::cout << std::string_view( buffer ) << ": "
+		          << daw::json::to_json( strod_parse_dbl ) << ": ";
+		printf( "%g\n", strod_parse_dbl );
+		/*
+		          << std::to_string( strod_parse_dbl ) << '\n';*/
+	}
+	std::cout << "*************************\n";
 }
 
 bool test_optional_array( ) {
@@ -914,7 +943,7 @@ int main( int, char ** )
 		double d2 = 0.89;
 		std::cout << to_json( d2 ) << '\n';
 	}
-
+	test_show_lots_of_doubles( );
 	test_optional_array( );
 	test_key_value( );
 	test_vector_of_bool( );

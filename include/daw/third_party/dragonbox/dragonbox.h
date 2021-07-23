@@ -153,9 +153,12 @@ namespace jkj::dragonbox {
 		}
 
 		template<class Float>
-		inline char *to_chars_impl( unsigned_fp_t<Float> v, char *buffer ) {
+		inline char *to_chars_impl( unsigned_fp_t<Float> v, char *buffer,
+		                            std::uint32_t olength ) {
 			auto output = v.significand;
-			auto const olength = decimal_length( output );
+			if( olength == 0 ) {
+				olength = decimal_length( output );
+			}
 
 			// Print the decimal digits.
 			// The following code is equivalent to:
@@ -239,7 +242,7 @@ namespace jkj::dragonbox {
 			}
 
 			// Print the exponent.
-			*buffer = 'E';
+			*buffer = 'e';
 			++buffer;
 			std::int32_t exp = v.exponent + static_cast<std::int32_t>( olength ) - 1;
 			if( exp < 0 ) {
@@ -279,11 +282,13 @@ namespace jkj::dragonbox {
 			return buffer;
 		}
 
-		inline char *to_chars( unsigned_fp_t<float> v, char *buffer ) {
-			return to_chars_impl( v, buffer );
+		inline char *to_chars( unsigned_fp_t<float> v, char *buffer,
+		                       std::uint32_t digit_count = 0 ) {
+			return to_chars_impl( v, buffer, digit_count );
 		}
-		inline char *to_chars( unsigned_fp_t<double> v, char *buffer ) {
-			return to_chars_impl( v, buffer );
+		inline char *to_chars( unsigned_fp_t<double> v, char *buffer,
+		                       std::uint32_t digit_count = 0 ) {
+			return to_chars_impl( v, buffer, digit_count );
 		}
 	} // namespace to_chars_detail
 } // namespace jkj::dragonbox

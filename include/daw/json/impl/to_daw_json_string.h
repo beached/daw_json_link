@@ -43,17 +43,25 @@
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace json_details {
+			template<typename OutputIterator, typename Real>
+			constexpr OutputIterator to_chars( Real const &value,
+			                                   OutputIterator out_it );
+		} // namespace json_details
+
 		template<typename Real, typename OutputIterator>
 		constexpr OutputIterator real2string( Real const &value,
 		                                      OutputIterator out_it ) {
 			// TODO: Customization point, add to readme
 #ifndef DAW_JSON_CUSTOM_D2S
+			return json_details::to_chars( value, out_it );
+			/*
 			if constexpr( std::is_same<Real, float>::value ) {
-				return jkj::dragonbox::to_chars_n( value, out_it );
+			  return jkj::dragonbox::to_chars_n( value, out_it );
 			} else {
-				return jkj::dragonbox::to_chars_n( static_cast<double>( value ),
-				                                   out_it );
-			}
+			  return jkj::dragonbox::to_chars_n( static_cast<double>( value ),
+			                                     out_it );
+			}*/
 #else
 			if constexpr( std::is_same<Real, float>::value ) {
 				return d2s( value, out_it );
@@ -1441,6 +1449,67 @@ namespace daw::json {
 				it = member_to_string( template_arg<json_member_type>, it,
 				                       get<TupleIdx>( tp ) );
 				++array_idx;
+			}
+
+			template<typename OutputIterator, typename Real>
+			constexpr OutputIterator to_chars( Real const &value,
+			                                   OutputIterator out_it ) {
+				jkj::dragonbox::unsigned_fp_t<Real> dec = jkj::dragonbox::to_decimal(
+				  value, jkj::dragonbox::policy::sign::ignore );
+				if( dec.significand == 0 ) {
+					*out_it++ = '0';
+					return out_it;
+				}
+				auto const digits =
+				  jkj::dragonbox::to_chars_detail::decimal_length( dec.significand );
+				
+				auto whole_dig = static_cast<std::int32_t>( digits ) + dec.exponent;
+
+				if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
+					return jkj::dragonbox::to_chars_detail::to_chars( dec, out_it,
+					                                                  digits );
+				}
+				auto const br = [&] {
+					if constexpr( std::is_same_v<Real, float> ) {
+						return jkj::dragonbox::ieee754_bits( value );
+					} else {
+						return jkj::dragonbox::ieee754_bits( static_cast<double>( value ) );
+					}
+				}( );
+				if( br.is_negative( ) ) {
+					*out_it++ = '-';
+				}
+
+				if( dec.exponent < 0 ) {
+
+					if( whole_dig < 0 ) {
+						*out_it++ = '0';
+						*out_it++ = '.';
+						do {
+							*out_it++ = '0';
+							++whole_dig;
+						} while( whole_dig < 0 );
+						out_it = utils::integer_to_string( out_it, dec.significand );
+						return out_it;
+					}
+					auto const p1pow =
+					  daw::cxmath::pow10( static_cast<std::size_t>( -dec.exponent ) );
+					auto const p1val = dec.significand / p1pow;
+					out_it = utils::integer_to_string( out_it, p1val );
+					if( p1pow == 1 ) {
+						return out_it;
+					}
+					*out_it++ = '.';
+					auto const p2val = dec.significand - ( p1val * p1pow );
+					out_it = utils::integer_to_string( out_it, p2val );
+					return out_it;
+				}
+				out_it = utils::integer_to_string( out_it, dec.significand );
+				while( dec.exponent > 0 ) {
+					*out_it++ = '0';
+					--dec.exponent;
+				}
+				return out_it;
 			}
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
