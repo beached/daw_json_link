@@ -8,7 +8,7 @@
 
 cmake_minimum_required(VERSION 3.14)
 
-project("json_link"
+project("daw-json-link"
         VERSION "3.0.0"
         DESCRIPTION "Static JSON parsing in C++"
         HOMEPAGE_URL "https://github.com/beached/daw_json_link"
@@ -18,15 +18,19 @@ set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requ
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_compile_definitions( DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD} )
+add_compile_definitions(DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD})
 
-add_subdirectory(extern)
+option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
+if (NOT DAW_USE_PACKAGE_MANAGEMENT)
+    add_subdirectory(extern)
+endif ()
+
 option(DAW_ENABLE_TESTING "Build unit tests" OFF)
 option(DAW_JSON_PARSER_DIAGNOSTICS "Output debug info while parsing" OFF)
-if( DAW_JSON_PARSER_DIAGNOSTICS )
-    message( "Building with parser diagnostics enabled" )
-    add_compile_definitions( DAW_JSON_PARSER_DIAGNOSTICS )
-endif( )
+if (DAW_JSON_PARSER_DIAGNOSTICS)
+    message("Building with parser diagnostics enabled")
+    add_compile_definitions(DAW_JSON_PARSER_DIAGNOSTICS)
+endif ()
 
 include(GNUInstallDirs)
 set(json_link_INSTALL_CMAKEDIR
@@ -56,17 +60,17 @@ endif ()
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     # G++ has difficulty and takes too long to compile
-    option(DAW_NO_FLATTEN "Disable function flattening optimization" ON )
-else( )
-    option(DAW_NO_FLATTEN "Disable function flattening optimization" OFF )
-endif()
+    option(DAW_NO_FLATTEN "Disable function flattening optimization" ON)
+else ()
+    option(DAW_NO_FLATTEN "Disable function flattening optimization" OFF)
+endif ()
 
 if (DAW_NO_FLATTEN)
     message("DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
     add_definitions(-DDAW_NO_FLATTEN)
 endif ()
 
-option(DAW_JSON_NO_FAIL_ON_NO_NAME_NAME "Ensure that no named mapping uses no_name as it's name.  Using it can slow down compilation" ON )
+option(DAW_JSON_NO_FAIL_ON_NO_NAME_NAME "Ensure that no named mapping uses no_name as it's name.  Using it can slow down compilation" ON)
 if (DAW_JSON_NO_FAIL_ON_NO_NAME_NAME)
     message("DAW_JSON_NO_FAIL_ON_NO_NAME_NAME=ON: Disabling check for no_name named members")
     add_definitions(-DDAW_JSON_NO_FAIL_ON_NO_NAME_NAME)
@@ -74,8 +78,11 @@ endif ()
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+add_library(daw::json_link ALIAS ${PROJECT_NAME})
 
-target_link_libraries(${PROJECT_NAME} INTERFACE daw::header_libraries daw::utf_range)
+if (NOT DAW_USE_PACKAGE_MANAGEMENT)
+    target_link_libraries(${PROJECT_NAME} INTERFACE daw::daw-header-libraries daw::daw-utf-range)
+endif ()
 
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 target_include_directories(${PROJECT_NAME}
@@ -93,7 +100,7 @@ install(TARGETS ${PROJECT_NAME}
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-        "${PROJECT_SOURCE_DIR}/cmake/daw_${PROJECT_NAME}Config.cmake.in"
+        "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
         "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
         INSTALL_DESTINATION
         ${json_link_INSTALL_CMAKEDIR})

@@ -362,8 +362,8 @@ void output_item( uint32_t cp ) {
 	uint32_t tmp32[]{ cp, 0 };
 	uint16_t tmp8[]{ 0, 0, 0, 0, 0, 0, 0, 0 };
 	std::vector<uint16_t> tmp16{ };
-	auto *last8 = utf8::utf32to8( tmp32, tmp32 + 1, tmp8 );
-	utf8::utf8to16( tmp8, last8, std::back_inserter( tmp16 ) );
+	auto *last8 = daw::utf8::utf32to8( tmp32, tmp32 + 1, tmp8 );
+	daw::utf8::utf8to16( tmp8, last8, std::back_inserter( tmp16 ) );
 	std::cout << "\"";
 	for( uint16_t u : tmp16 ) {
 		std::cout << output_hex( u );
