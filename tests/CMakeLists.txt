@@ -24,7 +24,12 @@ endif ()
 include(cmake/test_compiler_options.cmake)
 
 add_library(json_test INTERFACE)
-target_link_libraries(json_test INTERFACE daw::json_link daw::header_libraries daw::utf_range ${COMPILER_SPECIFIC_LIBS})
+if( NOT DAW_USE_PACKAGE_MANAGEMENT ) 
+target_link_libraries(json_test INTERFACE daw::daw-json-link daw::daw-header-libraries daw::daw-utf-range ${COMPILER_SPECIFIC_LIBS})
+else( ) 
+target_link_libraries(json_test INTERFACE ${COMPILER_SPECIFIC_LIBS})
+endif( )
+
 target_include_directories(json_test INTERFACE include/)
 
 add_custom_target(full)
