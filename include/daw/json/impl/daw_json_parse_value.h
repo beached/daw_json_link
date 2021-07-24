@@ -87,12 +87,13 @@ namespace daw::json {
 						    parse_state.starts_with( "Inf" ) ) {
 
 							parse_state.first += 3;
-							if( parse_state.size( ) >= 6 and
-							    parse_state.starts_with( R"(inity")" ) ) {
+							if( parse_state.front( ) == '"' ) {
+								parse_state.first++;
+							} else if( parse_state.size( ) >= 6 and
+							           parse_state.starts_with( R"(inity")" ) ) {
 								parse_state.first += 6;
 							} else {
-								daw_json_assert_weak( parse_state.front( ) == '"',
-								                      ErrorReason::InvalidString, parse_state );
+								daw_json_error( ErrorReason::InvalidString, parse_state );
 								parse_state.first++;
 							}
 							daw_json_assert_weak(
