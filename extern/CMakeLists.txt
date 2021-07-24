@@ -13,7 +13,8 @@ if( DAW_ENABLE_TESTING )
 endif( )
 
 include( FetchContent )
-set( FETCHCONTENT_UPDATES_DISCONNECTED ON)
+#set( FETCHCONTENT_UPDATES_DISCONNECTED ON)
+set( FETCHCONTENT_UPDATES_DISCONNECTED OFF )
 
 FetchContent_Declare(
 	daw_header_libraries

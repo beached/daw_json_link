@@ -18,29 +18,39 @@ set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requ
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Options used. Those tagged with Define are also the name of the source definition
+option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
+option(DAW_ENABLE_TESTING "Build unit tests and examples" OFF)
+option(DAW_JSON_PARSER_DIAGNOSTICS "Define: Output debug info while parsing" OFF)
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  # gcc has difficulty and takes too long to compile
+	option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" ON)
+else ()
+	option(DAW_NO_FLATTEN "Define: Disable function flattening optimization" OFF)
+endif ()
+option(DAW_JSON_NO_FAIL_ON_NO_NAME_NAME "Define: Ensure that no named mapping uses no_name as it's name.  Using it can slow down compilation" ON)
+option(DAW_JSON_FORCE_INT128 "Define: Force support for 128bit int" OFF )
+option(DAW_USE_EXCEPTIONS "Define: Throw exceptions when json errors occur or terminate" ON )
+
+set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+set(json_link_INSTALL_CMAKEDIR
+        "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
+        CACHE STRING
+        "The install directory to use for CMake package config files")
+
+
 add_compile_definitions(DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD})
 
-option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
 if (NOT DAW_USE_PACKAGE_MANAGEMENT)
     add_subdirectory(extern)
 endif ()
 
-option(DAW_ENABLE_TESTING "Build unit tests" OFF)
-option(DAW_JSON_PARSER_DIAGNOSTICS "Output debug info while parsing" OFF)
 if (DAW_JSON_PARSER_DIAGNOSTICS)
     message("Building with parser diagnostics enabled")
     add_compile_definitions(DAW_JSON_PARSER_DIAGNOSTICS)
 endif ()
 
 include(GNUInstallDirs)
-set(json_link_INSTALL_CMAKEDIR
-        "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
-        CACHE STRING
-        "The install directory to use for CMake package config files")
-
-set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-
-set(DAW_JSON_FORCE_INT128 OFF CACHE STRING "Force support for 128bit int")
 if (DAW_JSON_FORCE_INT128)
     if (DAW_JSON_NO_INT128)
     else ()
@@ -49,7 +59,6 @@ if (DAW_JSON_FORCE_INT128)
     endif ()
 endif ()
 
-set(DAW_USE_EXCEPTIONS ON CACHE STRING "Throw exceptions when json errors occur")
 if (DAW_USE_EXCEPTIONS)
     message("DAW_USE_EXCEPTIONS=ON: Errors throw json_exception")
     add_definitions(-DDAW_USE_EXCEPTIONS=true)
@@ -58,19 +67,11 @@ else ()
     add_definitions(-DDAW_DONT_USE_EXCEPTIONS=true)
 endif ()
 
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    # G++ has difficulty and takes too long to compile
-    option(DAW_NO_FLATTEN "Disable function flattening optimization" ON)
-else ()
-    option(DAW_NO_FLATTEN "Disable function flattening optimization" OFF)
-endif ()
-
 if (DAW_NO_FLATTEN)
     message("DAW_NO_FLATTEN=ON: Disabling function flattening optimization")
     add_definitions(-DDAW_NO_FLATTEN)
 endif ()
 
-option(DAW_JSON_NO_FAIL_ON_NO_NAME_NAME "Ensure that no named mapping uses no_name as it's name.  Using it can slow down compilation" ON)
 if (DAW_JSON_NO_FAIL_ON_NO_NAME_NAME)
     message("DAW_JSON_NO_FAIL_ON_NO_NAME_NAME=ON: Disabling check for no_name named members")
     add_definitions(-DDAW_JSON_NO_FAIL_ON_NO_NAME_NAME)

@@ -7,7 +7,11 @@ find_package(Boost 1.72.0 COMPONENTS container)
 
 add_subdirectory(extern)
 
-option(DAW_JSON_NO_CONST_EXPR "Ensure guaranteed copy elision in array/class types" OFF)
+option(DAW_JSON_NO_CONST_EXPR "Define: Ensure guaranteed copy elision in array/class types" OFF)
+set(DAW_NUM_RUNS OFF CACHE STRING "Define: Change the number of runs of some tests")
+option(CMAKE_INTERPROCEDURAL_OPTIMIZATION "Enable LTO" OFF)
+option(DAW_JSON_USE_SANITIZERS "Enable address and undefined behaviour sanitizers" OFF)
+
 if (DAW_JSON_NO_CONST_EXPR)
     message("DAW_JSON_NO_CONST_EXPR=ON: Guaranteed copy elision in class/array types is ON")
     add_definitions(-DDAW_JSON_NO_CONST_EXPR)
@@ -15,19 +19,16 @@ else ()
     message("DAW_JSON_NO_CONST_EXPR=OFF: Guaranteed copy elision in class/array types is OFF")
 endif ()
 
-option(CMAKE_INTERPROCEDURAL_OPTIMIZATION "Enable LTO" OFF)
 if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
     message("CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON: LTO is enabled")
 endif ()
 message("CMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}")
 
-set(DAW_NUM_RUNS OFF CACHE STRING "Change the number of runs of some tests")
 if (DAW_NUM_RUNS)
     message("DAW_NUM_RUNS=${DAW_NUM_RUNS}: Overriding number of test runs")
     add_definitions(-DDAW_NUM_RUNS=${DAW_NUM_RUNS})
 endif ()
 
-option(DAW_JSON_USE_SANITIZERS "Enable address and undefined behaviour sanitizers" OFF)
 if (DAW_JSON_USE_SANITIZERS)
     message("DAW_JSON_USE_SANITIZERS=ON: compiler sanitizers enabled")
     add_definitions(-DDAW_JSON_NO_INT128)

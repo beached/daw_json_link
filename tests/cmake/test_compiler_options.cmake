@@ -1,5 +1,6 @@
-set(DAW_JSON_USE_SANITIZERS OFF CACHE STRING "Enable address and undefined sanitizers")
-set(DAW_WERROR OFF CACHE STRING "Enable WError for test builds")
+
+option(DAW_JSON_USE_SANITIZERS "Enable address and undefined sanitizers" OFF )
+option(DAW_WERROR "Enable WError for test builds" OFF )
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
     if (MSVC)
