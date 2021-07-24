@@ -99,11 +99,18 @@ int main( int, char ** )
 #endif
 {
 	do_test( test_zero_untrusted( ) );
-	do_test( test_positive_zero_untrusted( ) );
+	do_fail_test( test_positive_zero_untrusted( ) );
 	do_test( test_negative_zero_untrusted( ) );
 	do_fail_test( test_missing_untrusted( ) );
 	do_fail_test( test_real_untrusted( ) );
 } catch( daw::json::json_exception const &jex ) {
-	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;
+	std::cerr << "Unexpected json_exception thrown by parser: " << jex.reason( )
+	          << std::endl;
 	exit( 1 );
+} catch( std::exception const &ex ) {
+	std::cerr << "Unexpected exception: '" << ex.what( ) << "'\n";
+	exit( 2 );
+} catch( ... ) {
+	std::cerr << "Unexpected unknown exception\n";
+	throw;
 }
