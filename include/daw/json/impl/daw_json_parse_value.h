@@ -77,25 +77,31 @@ namespace daw::json {
 					                JsonNumberErrors::AllowInf or
 					              JsonMember::allow_number_errors ==
 					                JsonNumberErrors::AllowNanInf ) {
+						element_t sign = element_t( 1.0 );
 						if( parse_state.front( ) == '-' ) {
+							sign = element_t( -1.0 );
 							parse_state.first++;
-							if( parse_state.starts_with( "Infinity" ) ) {
-								parse_state.template move_to_next_of<'"'>( );
-								parse_state.remove_prefix( );
-								daw_json_assert_weak(
-								  parse_policy_details::at_end_of_item( parse_state.front( ) ),
-								  ErrorReason::InvalidEndOfValue, parse_state );
-								return -daw::numeric_limits<element_t>::infinity( );
+						}
+						// Looking for Inf as that will match Infinity too.
+						if( parse_state.size( ) >= 4 and
+						    parse_state.starts_with( "Inf" ) ) {
+
+							parse_state.first += 3;
+							if( parse_state.size( ) >= 6 and
+							    parse_state.starts_with( R"(inity")" ) ) {
+								parse_state.first += 6;
 							} else {
-								parse_state.first--;
+								daw_json_assert_weak( parse_state.front( ) == '"',
+								                      ErrorReason::InvalidString, parse_state );
+								parse_state.first++;
 							}
-						} else if( parse_state.starts_with( "Infinity" ) ) {
-							parse_state.template move_to_next_of<'"'>( );
-							parse_state.remove_prefix( );
 							daw_json_assert_weak(
 							  parse_policy_details::at_end_of_item( parse_state.front( ) ),
 							  ErrorReason::InvalidEndOfValue, parse_state );
-							return daw::numeric_limits<element_t>::infinity( );
+							return daw::cxmath::copy_sign(
+							  daw::numeric_limits<element_t>::infinity( ), sign );
+						} else if( sign < element_t( 0 ) ) {
+							parse_state.first--;
 						}
 					}
 					if constexpr( JsonMember::allow_number_errors ==
