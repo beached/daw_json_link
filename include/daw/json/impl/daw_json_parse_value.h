@@ -69,16 +69,54 @@ namespace daw::json {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
 
+				if constexpr( JsonMember::literal_as_string !=
+				              LiteralAsStringOpt::Never ) {
+					skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
+					  parse_state );
+					if constexpr( JsonMember::allow_number_errors ==
+					                JsonNumberErrors::AllowInf or
+					              JsonMember::allow_number_errors ==
+					                JsonNumberErrors::AllowNanInf ) {
+						if( parse_state.front( ) == '-' ) {
+							parse_state.first++;
+							if( parse_state.starts_with( "Infinity" ) ) {
+								parse_state.template move_to_next_of<'"'>( );
+								parse_state.remove_prefix( );
+								daw_json_assert_weak(
+								  parse_policy_details::at_end_of_item( parse_state.front( ) ),
+								  ErrorReason::InvalidEndOfValue, parse_state );
+								return -daw::numeric_limits<element_t>::infinity( );
+							} else {
+								parse_state.first--;
+							}
+						} else if( parse_state.starts_with( "Infinity" ) ) {
+							parse_state.template move_to_next_of<'"'>( );
+							parse_state.remove_prefix( );
+							daw_json_assert_weak(
+							  parse_policy_details::at_end_of_item( parse_state.front( ) ),
+							  ErrorReason::InvalidEndOfValue, parse_state );
+							return daw::numeric_limits<element_t>::infinity( );
+						}
+					}
+					if constexpr( JsonMember::allow_number_errors ==
+					                JsonNumberErrors::AllowNaN or
+					              JsonMember::allow_number_errors ==
+					                JsonNumberErrors::AllowNanInf ) {
+						if( parse_state.starts_with( "NaN" ) ) {
+							parse_state.template move_to_next_of<'"'>( );
+							parse_state.remove_prefix( );
+							daw_json_assert_weak(
+							  parse_policy_details::at_end_of_item( parse_state.front( ) ),
+							  ErrorReason::InvalidEndOfValue, parse_state );
+							return daw::numeric_limits<element_t>::quiet_NaN( );
+						}
+					}
+				}
 				if constexpr( KnownBounds ) {
 					return construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
 					  parse_real<element_t, true>( parse_state ) );
 				} else {
-					if constexpr( JsonMember::literal_as_string !=
-					              LiteralAsStringOpt::Never ) {
-						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
-						  parse_state );
-					}
 					daw_json_assert_weak(
 					  parse_state.has_more( ) and
 					    parse_policy_details::is_number_start( parse_state.front( ) ),
@@ -92,6 +130,7 @@ namespace daw::json {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(
 						  parse_state );
 					}
+
 					daw_json_assert_weak(
 					  parse_policy_details::at_end_of_item( parse_state.front( ) ),
 					  ErrorReason::InvalidEndOfValue, parse_state );

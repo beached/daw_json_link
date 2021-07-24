@@ -692,7 +692,11 @@ namespace daw::json {
 				                typename JsonMember::parse_to_t>::value ) {
 					if( daw::cxmath::is_nan( value ) ) {
 						if constexpr( JsonMember::literal_as_string ==
-						              LiteralAsStringOpt::Never ) {
+						                LiteralAsStringOpt::Never or
+						              JsonMember::allow_number_errors ==
+						                JsonNumberErrors::None or
+						              JsonMember::allow_number_errors ==
+						                JsonNumberErrors::AllowInf ) {
 							daw_json_error( ErrorReason::NumberIsNaN );
 						} else {
 							*it++ = '"';
@@ -702,10 +706,17 @@ namespace daw::json {
 						}
 					} else if( daw::cxmath::is_inf( value ) ) {
 						if constexpr( JsonMember::literal_as_string ==
-						              LiteralAsStringOpt::Never ) {
+						                LiteralAsStringOpt::Never or
+						              JsonMember::allow_number_errors ==
+						                JsonNumberErrors::None or
+						              JsonMember::allow_number_errors ==
+						                JsonNumberErrors::AllowNaN ) {
 							daw_json_error( ErrorReason::NumberIsInf );
 						} else {
 							*it++ = '"';
+							if( value < 0 ) {
+								*it++ = '-';
+							}
 							it = utils::copy_to_iterator( it, "Infinity" );
 							*it++ = '"';
 							return it;
@@ -1454,32 +1465,42 @@ namespace daw::json {
 			template<typename OutputIterator, typename Real>
 			constexpr OutputIterator to_chars( Real const &value,
 			                                   OutputIterator out_it ) {
-				daw::jkj::dragonbox::unsigned_fp_t<Real> dec = daw::jkj::dragonbox::to_decimal(
-				  value, daw::jkj::dragonbox::policy::sign::ignore );
-				if( dec.significand == 0 ) {
-					*out_it++ = '0';
-					return out_it;
-				}
+				daw::jkj::dragonbox::unsigned_fp_t<Real> dec =
+				  daw::jkj::dragonbox::to_decimal(
+				    value, daw::jkj::dragonbox::policy::sign::ignore );
+
 				auto const digits =
-				  daw::jkj::dragonbox::to_chars_detail::decimal_length( dec.significand );
-				
+				  daw::jkj::dragonbox::to_chars_detail::decimal_length(
+				    dec.significand );
+
 				auto whole_dig = static_cast<std::int32_t>( digits ) + dec.exponent;
 
-				if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
-					return daw::jkj::dragonbox::to_chars_detail::to_chars( dec, out_it,
-					                                                  digits );
-				}
 				auto const br = [&] {
 					if constexpr( std::is_same_v<Real, float> ) {
 						return daw::jkj::dragonbox::ieee754_bits( value );
 					} else {
-						return daw::jkj::dragonbox::ieee754_bits( static_cast<double>( value ) );
+						return daw::jkj::dragonbox::ieee754_bits(
+						  static_cast<double>( value ) );
 					}
 				}( );
+				if( dec.significand == 0 ) {
+					if( br.is_negative( ) ) {
+						*out_it++ = '-';
+					}
+					*out_it++ = '0';
+					return out_it;
+				}
+				if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
+					return daw::jkj::dragonbox::to_chars_detail::to_chars( dec, out_it,
+					                                                       digits );
+				}
 				if( br.is_negative( ) ) {
 					*out_it++ = '-';
 				}
-
+				if( dec.significand == 0 ) {
+					*out_it++ = '0';
+					return out_it;
+				}
 				if( dec.exponent < 0 ) {
 
 					if( whole_dig < 0 ) {

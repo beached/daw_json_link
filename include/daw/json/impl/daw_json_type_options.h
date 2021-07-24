@@ -60,10 +60,30 @@ namespace daw::json {
 			  JsonRangeCheck::Never;
 		} // namespace json_details
 
+		enum class JsonNumberErrors : unsigned {
+			/* Do not allow serialization/parsing of NaN/Inf */
+			None,
+			/* Allow NaN to be expressed/parsed if number can be a string */
+			AllowNaN,
+			/* Allow Inf/-Inf to be expressed/parsed if number can be a string */
+			AllowInf,
+			/* Allow NaN/Inf/-Inf to be expressed/parsed if number can be a string */
+			AllowNanInf
+		};
+
+		namespace json_details {
+			template<>
+			inline constexpr unsigned json_option_bits_width<JsonNumberErrors> = 2;
+
+			template<>
+			inline constexpr auto default_json_option_value<JsonNumberErrors> =
+			  JsonNumberErrors::None;
+		} // namespace json_details
+
 		// json_number
 		using number_opts_t =
 		  json_details::JsonOptionList<JsonNullable, LiteralAsStringOpt,
-		                               JsonRangeCheck>;
+		                               JsonRangeCheck, JsonNumberErrors>;
 
 		inline constexpr auto number_opts = number_opts_t{ };
 		inline constexpr json_details::json_options_t number_opts_def =

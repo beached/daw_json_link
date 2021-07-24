@@ -31,7 +31,7 @@ namespace daw::json {
 		 */
 		template<typename... JsonMembers>
 		struct json_member_list {
-			using i_am_a_json_member_list = void;
+			using i_am_a_json_member_list = daw::fwd_pack<JsonMembers...>;
 			static_assert(
 			  std::conjunction_v<json_details::is_a_json_type<JsonMembers>...>,
 			  "Only JSON Link mapping types can appear in a "
@@ -97,6 +97,13 @@ namespace daw::json {
 			}
 		};
 
+		/***
+		 * Allow the JsonMember type to parse like JsonMember.  This is required to
+		 * be aliased to type in a json_data_contract specialization.  Assuming T is
+		 * the specialized type, it's constructor must have an overload for that of
+		 * what would be expected for the JsonMember's parse_to_t
+		 * @tparam JsonMember This is the json_ type to be aliased
+		 */
 		template<typename JsonMember>
 		struct json_class_map {
 			using i_am_a_json_member_list = void;
@@ -211,7 +218,7 @@ namespace daw::json {
 		 */
 		template<typename... JsonMembers>
 		struct json_tuple_member_list {
-			using i_am_a_json_member_list = void;
+			using i_am_a_json_member_list = daw::fwd_pack<JsonMembers...>;
 			using i_am_a_json_tuple_member_list = void;
 
 			/**
@@ -400,6 +407,14 @@ namespace daw::json {
 
 				static constexpr JsonRangeCheck range_check =
 				  json_details::get_bits_for<JsonRangeCheck>( number_opts, Options );
+
+				static constexpr JsonNumberErrors allow_number_errors =
+				  json_details::get_bits_for<JsonNumberErrors>( number_opts, Options );
+
+				static_assert( allow_number_errors == JsonNumberErrors::None or
+				                 literal_as_string != LiteralAsStringOpt::Never,
+				               "Cannot allow NaN/Inf/-Inf when numbers cannot be "
+				               "serialized/parsed as a string" );
 
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::Number;
@@ -795,6 +810,7 @@ namespace daw::json {
 				using constructor_t =
 				  json_details::json_class_constructor_t<base_type, Constructor>;
 
+				using json_member_list = json_data_contract_trait_t<base_type>;
 				static_assert( traits::not_same<void, base_type>::value,
 				               "Failed to detect base type" );
 
