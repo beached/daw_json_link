@@ -9,6 +9,7 @@
 #pragma once
 
 #include "impl/daw_json_link_types_fwd.h"
+#include "impl/daw_json_serialize_policy.h"
 #include "impl/version.h"
 
 namespace daw::json {
@@ -40,7 +41,8 @@ namespace daw::json {
 		 */
 		template<
 		  typename Result = std::string, typename Value,
-		  typename JsonClass = typename json_details::json_deduced_type<Value>>
+		  typename JsonClass = typename json_details::json_deduced_type<Value>,
+		  typename SerializationPolicy = use_default_serialization_policy>
 		[[maybe_unused, nodiscard]] constexpr Result to_json( Value const &value );
 
 		namespace json_details {
@@ -75,6 +77,7 @@ namespace daw::json {
 		 */
 		template<typename Result = std::string,
 		         typename JsonElement = json_details::auto_detect_array_element,
+		         typename SerializationPolicy = use_default_serialization_policy,
 		         typename Container>
 		[[maybe_unused, nodiscard]] constexpr Result to_json_array( Container &&c );
 	} // namespace DAW_JSON_VER
