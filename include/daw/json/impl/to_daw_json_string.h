@@ -164,18 +164,19 @@ namespace daw::json {
 					return to_string( value );
 				} else if constexpr( std::is_enum_v<U> ) {
 					return to_string( static_cast<std::underlying_type_t<U>>( value ) );
-				} else if constexpr( json_details::can_deref_v<U> ) {
+				} else if constexpr( json_details::is_dereferenceable_v<U> ) {
 					static_assert( json_details::has_op_bool_v<U>,
 					               "default_to_converter cannot work with type" );
-					using deref_t = DAW_TYPEOF( *value );
-					if constexpr( json_details::is_string_view_like_v<deref_t> ) {
+					using dereferenced_type = json_details::dereferenced_t<U>;
+					if constexpr( json_details::is_string_view_like_v<
+					                dereferenced_type> ) {
 						if( value ) {
 							auto const &v = *value;
 							return std::string_view( std::data( v ), std::size( v ) );
 						}
 						return std::string_view( "null", 4 );
 					} else if constexpr( json_details::to_strings::has_to_string_v<
-					                       deref_t> ) {
+					                       dereferenced_type> ) {
 						if( value ) {
 							using json_details::to_strings::to_string;
 							return to_string( *value );
@@ -183,13 +184,14 @@ namespace daw::json {
 							using result_t = DAW_TYPEOF( to_string( *value ) );
 							return result_t{ "null" };
 						}
-					} else if constexpr( std::is_convertible_v<deref_t,
+					} else if constexpr( std::is_convertible_v<dereferenced_type,
 					                                           std::string_view> ) {
 						if( value ) {
 							return static_cast<std::string_view>( value );
 						}
 						return std::string_view{ "null" };
-					} else if constexpr( std::is_convertible_v<deref_t, std::string> ) {
+					} else if constexpr( std::is_convertible_v<dereferenced_type,
+					                                           std::string> ) {
 						if( value ) {
 							return static_cast<std::string>( value );
 						}
@@ -664,24 +666,11 @@ namespace daw::json {
 				return it;
 			}
 
-			template<typename T>
-			[[maybe_unused]] constexpr auto deref_detect( T &&value )
-			  -> decltype( *value );
-
-			[[maybe_unused]] inline constexpr void deref_detect( ... ) {}
-
-			template<typename T>
-			using deref_t = DAW_TYPEOF( deref_detect( std::declval<T>( ) ) );
-
-			template<typename Optional>
-			inline constexpr bool is_valid_optional_v =
-			  daw::is_detected<deref_t, Optional>::value;
-
 			template<typename JsonMember, typename OutputIterator, typename Optional>
 			[[nodiscard]] inline constexpr OutputIterator
 			to_daw_json_string( ParseTag<JsonParseTypes::Null>, OutputIterator it,
 			                    Optional const &value ) {
-				static_assert( is_valid_optional_v<Optional> );
+				static_assert( is_dereferenceable_v<Optional> );
 
 				if( not json_details::has_value( value ) ) {
 					return utils::copy_to_iterator( it, "null" );

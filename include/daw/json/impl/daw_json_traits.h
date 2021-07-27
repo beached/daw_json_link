@@ -680,7 +680,45 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool is_tuple_v = is_tuple<T>::value;
-		} // namespace json_details
 
-	} // namespace DAW_JSON_VER
+			namespace deref_t_impl {
+				template<typename>
+				using unable_to_dereference = void;
+
+				template<typename T>
+				using deref_type_detect = DAW_TYPEOF( *std::declval<T>( ) );
+
+				template<typename T>
+				struct deref_type_impl {
+					using type =
+					  daw::detected_or_t<unable_to_dereference<T>, deref_type_detect, T>;
+				};
+
+				template<typename T>
+				struct deref_type_impl<T *> {
+					using type = std::remove_cv_t<T>;
+				};
+
+				template<typename T>
+				struct deref_type_impl<std::unique_ptr<T>> {
+					using type = std::remove_cv_t<T>;
+				};
+
+				template<typename T>
+				struct deref_type_impl<std::optional<T>> {
+					using type = std::remove_cv_t<T>;
+				};
+			} // namespace deref_t_impl
+			template<typename T>
+			using dereferenced_t = typename deref_t_impl::deref_type_impl<T>::type;
+
+			template<typename T>
+			using is_dereferenceable =
+			  daw::not_trait<std::is_same<dereferenced_t<T>,
+			                              deref_t_impl::unable_to_dereference<T>>>;
+
+			template<typename T>
+			inline constexpr bool is_dereferenceable_v = is_dereferenceable<T>::value;
+		} // namespace json_details
+	}   // namespace DAW_JSON_VER
 } // namespace daw::json

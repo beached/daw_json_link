@@ -296,16 +296,14 @@ namespace daw::json {
 			  is_json_nullable<JsonType>::value;
 
 			template<typename T>
-			using dereffed_type_impl = DAW_TYPEOF( *( std::declval<T &>( ) ) );
-
-			template<typename T>
-			using dereffed_type =
-			  typename daw::detected_or<T, dereffed_type_impl, T>::type;
+			using unwrap_type_impl =
+			  std::conditional_t<std::is_same_v<dereferenced_t<T>, void>, T,
+			                     dereferenced_t<T>>;
 
 			template<typename T, JsonNullable Nullable>
 			using unwrap_type =
 			  typename std::conditional_t<is_nullable_json_value_v<Nullable>,
-			                              dereffed_type<T>, T>;
+			                              unwrap_type_impl<T>, T>;
 
 			/***
 			 * Helpers to set options on json_ types
@@ -461,16 +459,6 @@ namespace daw::json {
 		} // namespace json_base
 
 		namespace json_details {
-			template<typename T>
-			using can_deref =
-			  typename std::bool_constant<daw::is_detected_v<dereffed_type_impl, T>>;
-
-			template<typename T>
-			using cant_deref = daw::not_trait<can_deref<T>>;
-
-			template<typename T>
-			inline constexpr bool can_deref_v = can_deref<T>::value;
-
 			template<typename T>
 			inline constexpr JsonParseTypes number_parse_type_impl_v = [] {
 				static_assert( daw::is_arithmetic<T>::value, "Unexpected non-number" );

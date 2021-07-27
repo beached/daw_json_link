@@ -59,14 +59,14 @@ namespace daw::json {
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using policy_t =
+			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 			auto parse_state =
-			  policy_t( std::data( json_data ), daw::data_end( json_data ) );
+			  ParseState( std::data( json_data ), daw::data_end( json_data ) );
 
-			if constexpr( policy_t::must_verify_end_of_data_is_valid ) {
+			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
@@ -123,13 +123,13 @@ namespace daw::json {
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using policy_t =
+			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 
-			auto parse_state = policy_t::with_allocator( f, l, a );
-			if constexpr( policy_t::must_verify_end_of_data_is_valid ) {
+			auto parse_state = ParseState::with_allocator( f, l, a );
+			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
@@ -185,12 +185,12 @@ namespace daw::json {
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using policy_t =
+			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 
-			auto [is_found, parse_state] = json_details::find_range<policy_t>(
+			auto [is_found, parse_state] = json_details::find_range<ParseState>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
@@ -200,7 +200,7 @@ namespace daw::json {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 			}
 
-			if constexpr( policy_t::must_verify_end_of_data_is_valid ) {
+			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
@@ -258,12 +258,12 @@ namespace daw::json {
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using policy_t =
+			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 
-			auto [is_found, parse_state] = json_details::find_range<policy_t>(
+			auto [is_found, parse_state] = json_details::find_range<ParseState>(
 			  json_data, { std::data( member_path ), std::size( member_path ) }, a );
 			if constexpr( json_member::expected_type == JsonParseTypes::Null ) {
 				if( not is_found ) {
@@ -273,7 +273,7 @@ namespace daw::json {
 				daw_json_assert( is_found, ErrorReason::JSONPathNotFound );
 			}
 
-			if constexpr( policy_t::must_verify_end_of_data_is_valid ) {
+			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<json_member, KnownBounds>(
 				  parse_state, ParseTag<json_member::expected_type>{ } );
 				parse_state.trim_left( );
@@ -399,12 +399,12 @@ namespace daw::json {
 			 * In cases where we own the buffer or when requested and can, allow
 			 * temporarily mutating it to reduce search costs
 			 */
-			using policy_t =
+			using ParseState =
 			  json_details::apply_mutable_policy<policy_zstring_t, String,
 			                                     TemporarilyMutateBuffer::yes,
 			                                     TemporarilyMutateBuffer::no>;
 
-			auto [is_found, parse_state] = json_details::find_range<policy_t>(
+			auto [is_found, parse_state] = json_details::find_range<ParseState>(
 			  json_data, { std::data( member_path ), std::size( member_path ) } );
 
 			if constexpr( parser_t::expected_type == JsonParseTypes::Null ) {
@@ -420,11 +420,10 @@ namespace daw::json {
 			daw_json_assert( parse_state.is_opening_bracket_checked( ),
 			                 ErrorReason::InvalidArrayStart, parse_state );
 #else
-			using ParseState = DAW_TYPEOF( parse_state );
 			daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 			                      ErrorReason::InvalidArrayStart, parse_state );
 #endif
-			if constexpr( policy_t::must_verify_end_of_data_is_valid ) {
+			if constexpr( ParseState::must_verify_end_of_data_is_valid ) {
 				auto result = json_details::parse_value<parser_t, KnownBounds>(
 				  parse_state, ParseTag<JsonParseTypes::Array>{ } );
 				parse_state.trim_left( );
