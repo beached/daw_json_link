@@ -29,9 +29,8 @@ namespace daw::json {
 				daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 			}
 			if constexpr( is_serialization_policy<OutputIterator>::value ) {
-				out_it = json_details::member_to_string( template_arg<JsonClass>,
-				                                         out_it, value )
-				           .get( );
+				auto state = json_details::member_to_string( template_arg<JsonClass>,
+				                                         out_it, value );
 			} else {
 				out_it = json_details::member_to_string(
 				           template_arg<JsonClass>,
@@ -78,11 +77,15 @@ namespace daw::json {
 				daw_json_assert( out_it, ErrorReason::NullOutputIterator );
 			}
 			*out_it++ = '[';
-			bool is_first = true;
+			out_it.add_indent( );
 			// Not const & as some types(vector<bool>::const_reference are not ref
 			// types
-			for( auto &&v : c ) {
-				using v_type = daw::remove_cvref_t<decltype( v )>;
+			auto first = std::begin( c );
+			auto last = std::end( c );
+			bool const has_elements = first != last;
+			while( first != last ) {
+				auto const &v = *first;
+				using v_type = DAW_TYPEOF( v );
 				constexpr bool is_auto_detect_v =
 				  std::is_same<JsonElement,
 				               json_details::auto_detect_array_element>::value;
@@ -96,15 +99,20 @@ namespace daw::json {
 				                     missing_json_data_contract_for<JsonElement>>,
 				  "Unable to detect unnamed mapping" );
 				// static_assert( not std::is_same_v<JsonElement, JsonMember> );
-				if( is_first ) {
-					is_first = false;
-				} else {
-					*out_it++ = ',';
-				}
+				out_it.next_member( );
+
 				out_it =
 				  json_details::member_to_string( template_arg<JsonMember>, out_it, v );
+				++first;
+				if( first != last ) {
+					*out_it++ = ',';
+				}
 			}
 			// The last character will be a ',' prior to this
+			out_it.del_indent( );
+			if( has_elements ) {
+				out_it.output_newline( );
+			}
 			*out_it++ = ']';
 			return out_it.get( );
 		}

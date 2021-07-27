@@ -81,12 +81,16 @@ namespace daw::json {
 			 * @return The OutputIterator it at the final position
 			 */
 			template<typename... JsonMembers, typename OutputIterator,
-			         std::size_t... Is, typename Tuple, typename Value>
-			[[nodiscard]] inline constexpr OutputIterator
-			serialize_json_class( OutputIterator it, Tuple const &args,
-			                      Value const &value, std::index_sequence<Is...> ) {
+			         json_options_t SerializationOptions, std::size_t... Is,
+			         typename Tuple, typename Value>
+			[[nodiscard]] inline constexpr serialization_policy<OutputIterator,
+			                                                    SerializationOptions>
+			serialize_json_class(
+			  serialization_policy<OutputIterator, SerializationOptions> it,
+			  Tuple const &args, Value const &value, std::index_sequence<Is...> ) {
 
 				*it++ = '{';
+				it.add_indent( );
 
 				using visit_size = std::integral_constant<
 				  std::size_t,
@@ -125,28 +129,46 @@ namespace daw::json {
 					  daw::Empty{} };
 					(void)expander;
 				}
+				it.del_indent( );
+				if constexpr( sizeof...( Is ) > 0 ) {
+					if constexpr( it.output_trailing_comma == OutputTrailingComma::Yes ) {
+						*it++ = ',';
+					}
+					it.next_member( );
+				}
 				*it++ = '}';
 				return it;
 			}
 
-			template<typename... JsonMembers, typename OutputIterator, typename Tuple,
-			         typename Value, std::size_t... Is>
-			[[nodiscard]] inline constexpr OutputIterator
-			serialize_ordered_json_class( OutputIterator it, Tuple const &args,
-			                              Value const &value,
-			                              std::index_sequence<Is...> ) {
+			template<typename... JsonMembers, typename OutputIterator,
+			         json_options_t SerializerOptions, typename Tuple, typename Value,
+			         std::size_t... Is>
+			[[nodiscard]] inline constexpr serialization_policy<OutputIterator,
+			                                                    SerializerOptions>
+			serialize_ordered_json_class(
+			  serialization_policy<OutputIterator, SerializerOptions> it,
+			  Tuple const &args, Value const &value, std::index_sequence<Is...> ) {
 
 				*it++ = '[';
+				it.add_indent( );
+				it.next_member( );
 				size_t array_idx = 0;
 				(void)array_idx; // gcc was complaining on empty pack
 				Unused( value );
 				{
 					daw::Empty const expander[]{
 					  ( to_json_ordered_str<Is, traits::nth_element<Is, JsonMembers...>>(
-					      array_idx, it, args ),
+					      array_idx, sizeof...( Is ), it, args ),
 					    daw::Empty{ } )...,
 					  daw::Empty{} };
 					(void)expander;
+				}
+				it.del_indent( );
+				if constexpr( sizeof...( Is ) != 0 ) {
+					if constexpr( it.output_trailing_comma == OutputTrailingComma::Yes ) {
+						*it++ = ',';
+					}
+					it.next_member( );
 				}
 				*it++ = ']';
 				return it;

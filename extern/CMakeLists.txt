@@ -13,6 +13,7 @@ if( DAW_ENABLE_TESTING )
 endif( )
 
 include( FetchContent )
+# TODO: Enable in Release
 #set( FETCHCONTENT_UPDATES_DISCONNECTED ON)
 set( FETCHCONTENT_UPDATES_DISCONNECTED OFF )
 

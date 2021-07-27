@@ -39,6 +39,8 @@ namespace daw::json {
 		enum class IndentationType : unsigned {
 			/* Use tabs for indentation */
 			Tab,
+			/* Use 0 spaces for indentation */
+			Space0,
 			/* Use 1 space for indentation */
 			Space1,
 			/* Use 2 spaces for indentation */
@@ -49,8 +51,6 @@ namespace daw::json {
 			Space4,
 			/* Use 5 spaces for indentation */
 			Space5,
-			/* Use 6 spaces for indentation */
-			Space6,
 			/* Use 8 spaces for indentation */
 			Space8,
 		};
@@ -71,24 +71,42 @@ namespace daw::json {
 			/* Do not impose any extra restrictions on string output during
 			   serialization */
 			None,
-			/* Restrict all string member values to 7bits.  This will result in
-			   escaping all values >= 0x7FS */
-			OnlyAllow7bitsStrings,
 			/* Restrict all string member values and all member names to 7bits.  This
 			   will result in escaping all values >= 0x7FS.  This can affect round
 			   trips where the name contains high bits set*/
-			OnlyAllow7bitsAllStrings,
+			OnlyAllow7bitsStrings
 		};
 
 		namespace json_details {
 			template<>
 			inline constexpr unsigned json_option_bits_width<RestrictedStringOutput> =
-			  2;
+			  1;
 
 			template<>
 			inline constexpr auto default_json_option_value<RestrictedStringOutput> =
 			  RestrictedStringOutput::None;
-
 		} // namespace json_details
-	}   // namespace DAW_JSON_VER
+
+		enum class NewLineDelimiter : unsigned { n, rn };
+
+		namespace json_details {
+			template<>
+			inline constexpr unsigned json_option_bits_width<NewLineDelimiter> = 1;
+
+			template<>
+			inline constexpr auto default_json_option_value<NewLineDelimiter> =
+			  NewLineDelimiter::n;
+		} // namespace json_details
+
+		enum class OutputTrailingComma : unsigned { No, Yes };
+		namespace json_details {
+			template<>
+			inline constexpr unsigned json_option_bits_width<OutputTrailingComma> = 1;
+
+			template<>
+			inline constexpr auto default_json_option_value<OutputTrailingComma> =
+			  OutputTrailingComma::No;
+		} // namespace json_details
+
+	} // namespace DAW_JSON_VER
 } // namespace daw::json

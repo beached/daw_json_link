@@ -24,6 +24,17 @@ namespace daw::json {
 				inline constexpr OutputIterator get( ) const {
 					return *this;
 				}
+
+				static constexpr bool is_pointer = false;
+
+				inline constexpr void set( OutputIterator it ) {
+					*static_cast<OutputIterator *>( this ) = it;
+				}
+
+			protected:
+				inline constexpr OutputIterator &raw_it( ) {
+					return *this;
+				}
 			};
 
 			template<typename CharT>
@@ -37,8 +48,20 @@ namespace daw::json {
 
 				CharT *ptr;
 
-				inline constexpr CharT *get( ) {
+				static constexpr bool is_pointer = true;
+
+			protected:
+				inline constexpr CharT *raw_it( ) {
 					return ptr;
+				}
+
+			public:
+				inline constexpr CharT *get( ) const {
+					return ptr;
+				}
+
+				inline constexpr void set( CharT *p ) {
+					ptr = p;
 				}
 
 				inline constexpr reference operator*( ) {
@@ -139,7 +162,8 @@ namespace daw::json {
 		namespace json_details::serialization {
 			using policy_list =
 			  typename option_list_impl<SerializationFormat, IndentationType,
-			                            RestrictedStringOutput>::type;
+			                            RestrictedStringOutput, NewLineDelimiter,
+			                            OutputTrailingComma>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =
@@ -221,6 +245,45 @@ namespace daw::json {
 				value >>= policy_bits_start<Policy>;
 				return static_cast<Result>( Policy{ value } );
 			}
+
+			template<SerializationFormat, IndentationType>
+			inline constexpr std::string_view generate_indent{ };
+
+			template<>
+			inline constexpr std::string_view
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Tab> =
+			    "\t";
+
+			template<>
+			inline constexpr std::string_view
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space1> =
+			    " ";
+
+			template<>
+			inline constexpr std::string_view
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space2> =
+			    "  ";
+
+			template<>
+			inline constexpr std::string_view
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space3> =
+			    "   ";
+
+			template<>
+			inline constexpr std::string_view
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space4> =
+			    "    ";
+
+			template<>
+			inline constexpr std::string_view
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space5> =
+			    "     ";
+
+			template<>
+			inline constexpr std::string_view
+			  generate_indent<SerializationFormat::Pretty, IndentationType::Space8> =
+			    "        ";
+
 		} // namespace json_details::serialization
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

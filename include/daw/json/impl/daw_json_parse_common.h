@@ -296,8 +296,7 @@ namespace daw::json {
 			  is_json_nullable<JsonType>::value;
 
 			template<typename T>
-			using dereffed_type_impl =
-			  daw::remove_cvref_t<decltype( *( std::declval<T &>( ) ) )>;
+			using dereffed_type_impl = DAW_TYPEOF( *( std::declval<T &>( ) ) );
 
 			template<typename T>
 			using dereffed_type =

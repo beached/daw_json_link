@@ -311,7 +311,7 @@ namespace daw::json {
 			serialize( OutputIterator it, Value const &v ) {
 
 				return daw::visit_nt( v, [&]( auto const &alternative ) {
-					using Alternative = daw::remove_cvref_t<decltype( alternative )>;
+					using Alternative = DAW_TYPEOF( alternative );
 					static_assert(
 					  std::disjunction_v<std::is_same<Alternative, JsonClasses>...>,
 					  "Unexpected alternative type" );

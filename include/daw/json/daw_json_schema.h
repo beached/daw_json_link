@@ -9,20 +9,39 @@
 #pragma once
 
 #include "daw_json_link_types.h"
+#include "impl/daw_json_serialize_policy.h"
 #include "impl/to_daw_json_string.h"
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
+		namespace utils {
+			template<typename OutputIterator>
+			inline constexpr OutputIterator output_kv( OutputIterator it,
+			                                           std::string_view key,
+			                                           std::string_view value ) {
+				it = copy_to_iterator( it, key );
+				*it++ = ':';
+				it.output_space( );
+				it = copy_to_iterator( it, value );
+				return it;
+			}
+		} // namespace utils
 		namespace json_details {
-
 			template<typename JsonMember, bool is_root = false,
 			         typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Bool>,
 			                                         OutputIterator out_it ) {
+
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
+					out_it.next_member( );
 				}
-				out_it = utils::copy_to_iterator( out_it, R"("type":"boolean")" );
+				out_it = utils::output_kv( out_it, R"("type")", R"("boolean")" );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -39,8 +58,14 @@ namespace daw::json {
 				               JsonCustomTypes::String );
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
+					out_it.next_member( );
 				}
-				out_it = utils::copy_to_iterator( out_it, R"("type":"string")" );
+				out_it = utils::output_kv( out_it, R"("type")", R"("string")" );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -54,9 +79,17 @@ namespace daw::json {
 
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
+					out_it.next_member( );
 				}
-				out_it = utils::copy_to_iterator(
-				  out_it, R"("type":"string","format":"date-time")" );
+				out_it = utils::output_kv( out_it, R"("type")", R"("string")" );
+				*out_it++ = ',';
+				out_it.next_member( );
+				out_it = utils::output_kv( out_it, R"("format")", R"("date-time")" );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -70,8 +103,14 @@ namespace daw::json {
 
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
+					out_it.next_member( );
 				}
-				out_it = utils::copy_to_iterator( out_it, R"("type":"number")" );
+				out_it = utils::output_kv( out_it, R"("type")", R"("number")" );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -85,8 +124,14 @@ namespace daw::json {
 
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
+					out_it.next_member( );
 				}
-				out_it = utils::copy_to_iterator( out_it, R"("type":"integer")" );
+				out_it = utils::output_kv( out_it, R"("type")", R"("integer")" );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -101,8 +146,14 @@ namespace daw::json {
 
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
+					out_it.next_member( );
 				}
-				out_it = utils::copy_to_iterator( out_it, R"("type":"string")" );
+				out_it = utils::output_kv( out_it, R"("type")", R"("string")" );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -117,8 +168,14 @@ namespace daw::json {
 
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
+					out_it.next_member( );
 				}
-				out_it = utils::copy_to_iterator( out_it, R"("type":"string")" );
+				out_it = utils::output_kv( out_it, R"("type")", R"("string")" );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -132,9 +189,17 @@ namespace daw::json {
 			                OutputIterator out_it ) {
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
+					out_it.next_member( );
 				}
-				out_it =
-				  utils::copy_to_iterator( out_it, R"("type":"integer","minimum":0)" );
+				out_it = utils::output_kv( out_it, R"("type")", R"("integer")" );
+				*out_it++ = ',';
+				out_it.next_member( );
+				out_it = utils::output_kv( out_it, R"("minimum")", "0" );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -217,22 +282,47 @@ namespace daw::json {
 			struct json_class_processor<OutputIterator,
 			                            json_member_list<JsonMembers...>> {
 
+				static constexpr std::size_t size = sizeof...( JsonMembers );
 				static constexpr OutputIterator process( OutputIterator out_it ) {
-					out_it = utils::copy_to_iterator(
-					  out_it, R"("type":"object","properties":{)" );
-					out_it = output_member_types(
-					  out_it, std::index_sequence_for<JsonMembers...>{ } );
-					out_it = utils::copy_to_iterator( out_it, R"(},"required":[)" );
-					out_it = output_required_members( out_it );
+					out_it = utils::output_kv( out_it, R"("type")", R"("object")" );
+					*out_it++ = ',';
+					out_it.next_member( );
+					out_it = utils::output_kv( out_it, R"("properties")", "{" );
+					if constexpr( sizeof...( JsonMembers ) > 0 ) {
+						out_it.add_indent( );
+						out_it.next_member( );
+						out_it = output_member_types(
+						  out_it, std::index_sequence_for<JsonMembers...>{ } );
+						out_it.del_indent( );
+						out_it.next_member( );
+					}
+					*out_it++ = '}';
+					*out_it++ = ',';
+					out_it.next_member( );
+					out_it = utils::output_kv( out_it, R"("required")", "[" );
+					if constexpr( sizeof...( JsonMembers ) != 0 ) {
+						out_it.add_indent( );
+						out_it = output_required_members( out_it );
+						out_it.del_indent( );
+						out_it.next_member( );
+					}
 					*out_it++ = ']';
 					if constexpr( ( has_dependent_member_v<JsonMembers> or ... ) ) {
-						out_it = utils::copy_to_iterator( out_it, R"(,"dependencies":{)" );
+						*out_it++ = ',';
+						out_it.next_member( );
+						out_it = utils::output_kv( out_it, R"("dependencies")", "{" );
+						out_it.add_indent( );
 						bool is_first = true;
 						out_it = static_cast<OutputIterator>(
 						  ( output_dependency<
 						      json_link_no_name<json_link_no_name<JsonMembers>>>(
 						      out_it, is_first ),
 						    ... ) );
+						out_it.del_indent( );
+						if( not is_first ) {
+							// If we have at least 1 dependent member, is_first will be false
+							out_it.next_member( );
+						}
 						*out_it++ = '}';
 					}
 					return out_it;
@@ -244,22 +334,23 @@ namespace daw::json {
 
 				template<typename JsonMember, std::size_t Idx>
 				static constexpr OutputIterator
-				output_member_type( OutputIterator &out_it, bool &is_first,
-				                    bool *seen ) {
+				output_member_type( OutputIterator &out_it, bool *seen ) {
 					if( seen[Idx] ) {
 						return out_it;
-					}
-					seen[Idx] = true;
-					if( not is_first ) {
-						*out_it++ = ',';
 					} else {
-						is_first = false;
+						seen[Idx] = true;
 					}
+
 					*out_it++ = '"';
 					out_it = utils::copy_to_iterator( out_it, JsonMember::name );
 					out_it = utils::copy_to_iterator( out_it, R"(":)" );
+					out_it.output_space( );
 					out_it = to_json_schema<JsonMember>(
 					  ParseTag<JsonMember::base_expected_type>{ }, out_it );
+					if constexpr( Idx + 1 < sizeof...( JsonMembers ) ) {
+						*out_it++ = ',';
+						out_it.next_member( );
+					}
 					return out_it;
 				}
 
@@ -267,11 +358,9 @@ namespace daw::json {
 				static constexpr OutputIterator
 				output_member_types( OutputIterator &out_it,
 				                     std::index_sequence<Is...> ) {
-					bool is_first = true;
 					bool seen[sizeof...( JsonMembers )]{ };
 					return static_cast<OutputIterator>(
-					  ( output_member_type<JsonMembers, Is>( out_it, is_first, seen ),
-					    ... ) );
+					  ( output_member_type<JsonMembers, Is>( out_it, seen ), ... ) );
 				}
 
 				template<typename JsonMember>
@@ -283,6 +372,7 @@ namespace daw::json {
 						} else {
 							is_first = false;
 						}
+						out_it.next_member( );
 						*out_it++ = '"';
 						out_it = utils::copy_to_iterator( out_it, JsonMember::name );
 						*out_it++ = '"';
@@ -299,12 +389,21 @@ namespace daw::json {
 						} else {
 							is_first = false;
 						}
+						out_it.next_member( );
 						*out_it++ = '"';
 						out_it = utils::copy_to_iterator( out_it, JsonMember::name );
-						out_it = utils::copy_to_iterator( out_it, R"(":[")" );
+						out_it = utils::copy_to_iterator( out_it, R"(":)" );
+						out_it.output_space( );
+						*out_it++ = '[';
+						out_it.add_indent( );
+						out_it.next_member( );
+						*out_it++ = '"';
 						out_it = utils::copy_to_iterator(
 						  out_it, dependent_member_t<JsonMember>::name );
-						out_it = utils::copy_to_iterator( out_it, R"("])" );
+						*out_it++ = '"';
+						out_it.del_indent( );
+						out_it.next_member( );
+						*out_it++ = ']';
 					}
 					return out_it;
 				}
@@ -322,18 +421,26 @@ namespace daw::json {
 			struct json_class_processor<OutputIterator,
 			                            json_tuple_member_list<JsonMembers...>> {
 
+				static constexpr std::size_t size = sizeof...( JsonMembers );
 				static constexpr OutputIterator process( OutputIterator out_it ) {
 
-					out_it =
-					  utils::copy_to_iterator( out_it, R"("type":"array","items":[)" );
-					out_it = output_member_types( out_it );
+					out_it = utils::output_kv( out_it, R"("type")", R"("array",)" );
+					out_it.next_member( );
+					out_it = utils::output_kv( out_it, R"("items")", "[" );
+					if constexpr( sizeof...( JsonMembers ) > 0 ) {
+						out_it.add_indent( );
+						out_it = output_member_types( out_it );
+						out_it.del_indent( );
+						out_it.next_member( );
+					}
 					*out_it++ = ']';
 
 					static_assert(
 					  not( ( json_link_no_name<JsonMembers>::base_expected_type ==
 					         JsonParseTypes::VariantTagged ) or
 					       ... ),
-					  "A tagged variant is not supported in a tuple/ordered json class" );
+					  "A tagged variant is not supported in a tuple/ordered json "
+					  "class" );
 					return out_it;
 				}
 
@@ -354,6 +461,7 @@ namespace daw::json {
 					} else {
 						is_first = false;
 					}
+					out_it.next_member( );
 					out_it = to_json_schema<JsonMember>(
 					  ParseTag<JsonMember::base_expected_type>{ }, out_it );
 					return out_it;
@@ -363,17 +471,23 @@ namespace daw::json {
 			template<typename JsonMember, bool is_root, typename OutputIterator>
 			constexpr OutputIterator to_json_schema( ParseTag<JsonParseTypes::Class>,
 			                                         OutputIterator out_it ) {
-				if constexpr( not is_root ) {
-					*out_it++ = '{';
-				}
-
 				using json_class_processor_t = json_class_processor<
 				  OutputIterator,
 				  json_data_contract_trait_t<typename JsonMember::base_type>>;
 
-				out_it = json_class_processor_t::process( out_it );
-
 				if constexpr( not is_root ) {
+					*out_it++ = '{';
+					out_it.add_indent( );
+				}
+				if constexpr( json_class_processor_t::size > 0 ) {
+					out_it.next_member( );
+					out_it = json_class_processor_t::process( out_it );
+				}
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				if constexpr( not is_root ) {
+					out_it.next_member( );
 					*out_it++ = '}';
 				}
 				return out_it;
@@ -387,31 +501,44 @@ namespace daw::json {
 				                      std::index_sequence<Is...> ) {
 					if constexpr( not is_root ) {
 						*out_it++ = '{';
+						out_it.add_indent( );
 					}
-					out_it =
-					  utils::copy_to_iterator( out_it, R"("type":"array","items":[)" );
-					bool is_first = true;
-					auto const process_member = [&]( auto Idx ) {
-						if( not is_first ) {
-							*out_it++ = ',';
-						} else {
-							is_first = false;
-						}
-						static constexpr std::size_t index = decltype( Idx )::value;
-						using pack_element = tuple_elements_pack<Tuple>;
-						using JsonMember = json_deduced_type<
-						  typename pack_element::template element_t<index>>;
+					out_it.next_member( );
+					out_it = utils::output_kv( out_it, R"("type")", R"("array",)" );
+					out_it.next_member( );
+					out_it = utils::output_kv( out_it, R"("items")", "[" );
+					if constexpr( sizeof...( Is ) > 0 ) {
+						out_it.add_indent( );
+						bool is_first = true;
+						auto const process_member = [&]( auto Idx ) {
+							if( not is_first ) {
+								*out_it++ = ',';
+							} else {
+								is_first = false;
+							}
+							out_it.next_member( );
+							static constexpr std::size_t index = decltype( Idx )::value;
+							using pack_element = tuple_elements_pack<Tuple>;
+							using JsonMember = json_deduced_type<
+							  typename pack_element::template element_t<index>>;
 
-						out_it = to_json_schema<JsonMember>(
-						  ParseTag<JsonMember::base_expected_type>{ }, out_it );
-					};
+							out_it = to_json_schema<JsonMember>(
+							  ParseTag<JsonMember::base_expected_type>{ }, out_it );
+						};
 
-					daw::Empty expander[] = {
-					  ( process_member( std::integral_constant<std::size_t, Is>{ } ),
-					    daw::Empty{ } )...,
-					  daw::Empty{} };
-					(void)expander;
+						daw::Empty expander[] = {
+						  ( process_member( std::integral_constant<std::size_t, Is>{ } ),
+						    daw::Empty{ } )...,
+						  daw::Empty{} };
+						(void)expander;
+						out_it.del_indent( );
+						out_it.next_member( );
+					}
 					*out_it++ = ']';
+					if constexpr( not is_root ) {
+						out_it.del_indent( );
+					}
+					out_it.next_member( );
 					if constexpr( not is_root ) {
 						*out_it++ = '}';
 					}
@@ -433,12 +560,20 @@ namespace daw::json {
 			                                         OutputIterator out_it ) {
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
 				}
-				out_it =
-				  utils::copy_to_iterator( out_it, R"("type":"array","items":)" );
+				out_it.next_member( );
+				out_it = utils::output_kv( out_it, R"("type")", R"("array",)" );
+				out_it.next_member( );
+				out_it = utils::copy_to_iterator( out_it, R"("items":)" );
+				out_it.output_space( );
 				using element_t = typename JsonMember::json_element_t;
 				out_it = to_json_schema<element_t>(
 				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -459,12 +594,20 @@ namespace daw::json {
 			                OutputIterator out_it ) {
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
 				}
-				out_it = utils::copy_to_iterator(
-				  out_it, R"("type":"object","additionalProperties":)" );
+				out_it.next_member( );
+				out_it = utils::output_kv( out_it, R"("type")", R"("object")" );
+				*out_it++ = ',';
+				out_it.next_member( );
+				out_it = utils::output_kv( out_it, R"("additionalProperties")", "" );
 				using element_t = typename JsonMember::json_element_t;
 				out_it = to_json_schema<element_t>(
 				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -477,12 +620,20 @@ namespace daw::json {
 			                OutputIterator out_it ) {
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
 				}
-				out_it =
-				  utils::copy_to_iterator( out_it, R"("type":"array","items":)" );
+				out_it.next_member( );
+				out_it = utils::output_kv( out_it, R"("type")", R"("array",)" );
+				out_it.next_member( );
+				out_it = utils::copy_to_iterator( out_it, R"("items":)" );
+				out_it.output_space( );
 				using element_t = typename JsonMember::json_class_t;
 				out_it = to_json_schema<element_t>(
 				  ParseTag<element_t::base_expected_type>{ }, out_it );
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -503,6 +654,7 @@ namespace daw::json {
 					} else {
 						is_first = false;
 					}
+					out_it.next_member( );
 					return to_json_schema<JsonElement>(
 					  ParseTag<JsonElement::base_expected_type>{ }, out_it );
 				}
@@ -522,11 +674,22 @@ namespace daw::json {
 			                OutputIterator out_it ) {
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
 				}
-				out_it = utils::copy_to_iterator( out_it, R"("oneOf":[)" );
+				out_it.next_member( );
+				out_it = utils::output_kv( out_it, R"("oneOf")", "[" );
 				using elements_t = typename JsonMember::json_elements;
-				out_it = variant_element_types<elements_t>::output_elements( out_it );
+				if constexpr( daw::pack_size_v<elements_t> != 0 ) {
+					out_it.add_indent( );
+					out_it = variant_element_types<elements_t>::output_elements( out_it );
+					out_it.del_indent( );
+					out_it.next_member( );
+				}
 				*out_it++ = ']';
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -541,10 +704,19 @@ namespace daw::json {
 				               "Attempt to have a tagged variant as root object.  This "
 				               "is unsupported" );
 				*out_it++ = '{';
-				out_it = utils::copy_to_iterator( out_it, R"("oneOf":[)" );
+				out_it.add_indent( );
+				out_it.next_member( );
+				out_it = utils::output_kv( out_it, R"("oneOf")", "[" );
 				using elements_t = typename JsonMember::json_elements;
-				out_it = variant_element_types<elements_t>::output_elements( out_it );
+				if constexpr( daw::pack_size_v<elements_t> != 0 ) {
+					out_it.add_indent( );
+					out_it = variant_element_types<elements_t>::output_elements( out_it );
+					out_it.del_indent( );
+					out_it.next_member( );
+				}
 				*out_it++ = ']';
+				out_it.del_indent( );
+				out_it.next_member( );
 				*out_it++ = '}';
 				return out_it;
 			}
@@ -555,11 +727,22 @@ namespace daw::json {
 			                OutputIterator out_it ) {
 				if constexpr( not is_root ) {
 					*out_it++ = '{';
+					out_it.add_indent( );
 				}
-				out_it = utils::copy_to_iterator( out_it, R"("oneOf":[)" );
+				out_it.next_member( );
+				out_it = utils::output_kv( out_it, R"("oneOf")", "[" );
 				using elements_t = typename JsonMember::json_elements;
-				out_it = variant_element_types<elements_t>::output_elements( out_it );
+				if constexpr( daw::pack_size_v<elements_t> != 0 ) {
+					out_it.add_indent( );
+					out_it = variant_element_types<elements_t>::output_elements( out_it );
+					out_it.del_indent( );
+					out_it.next_member( );
+				}
 				*out_it++ = ']';
+				if constexpr( not is_root ) {
+					out_it.del_indent( );
+				}
+				out_it.next_member( );
 				if constexpr( not is_root ) {
 					*out_it++ = '}';
 				}
@@ -568,30 +751,49 @@ namespace daw::json {
 		} // namespace json_details
 
 		template<typename T, typename OutputIterator>
-		constexpr OutputIterator to_json_schema( OutputIterator out_it,
+		constexpr OutputIterator to_json_schema( OutputIterator it,
 		                                         std::string_view id,
 		                                         std::string_view title ) {
+
+			using iter_t =
+			  std::conditional_t<is_serialization_policy<OutputIterator>::value,
+			                     OutputIterator,
+			                     serialization_policy<OutputIterator>>;
+			auto out_it = iter_t( it );
 			*out_it++ = '{';
-			out_it = utils::copy_to_iterator(
-			  out_it,
-			  R"("$schema":"https://json-schema.org/draft/2020-12/schema",)" );
-			out_it = utils::copy_to_iterator( out_it, R"("$id":")" );
+			out_it.add_indent( );
+			out_it.next_member( );
+			out_it = utils::output_kv(
+			  out_it, R"("$schema")",
+			  R"("https://json-schema.org/draft/2020-12/schema",)" );
+			out_it.next_member( );
+			out_it = utils::output_kv( out_it, R"("$id")", "\"" );
 			out_it = utils::copy_to_iterator( out_it, id );
-			out_it = utils::copy_to_iterator( out_it, R"(","title":")" );
+			out_it = utils::copy_to_iterator( out_it, R"(",)" );
+			out_it.next_member( );
+			out_it = utils::output_kv( out_it, R"("title")", "\"" );
 			out_it = utils::copy_to_iterator( out_it, title );
 			out_it = utils::copy_to_iterator( out_it, R"(",)" );
-
 			using json_type = json_link_no_name<T>;
 			out_it = json_details::to_json_schema<json_type, true>(
 			  ParseTag<json_type::base_expected_type>{ }, out_it );
+			out_it.del_indent( );
+			out_it.next_member( );
 			*out_it++ = '}';
 			return out_it;
 		}
 
-		template<typename T>
-		std::string to_json_schema( std::string_view id, std::string_view title ) {
-			auto result = std::string( );
-			(void)to_json_schema<T>( std::back_inserter( result ), id, title );
+		template<typename T,
+		         typename SerializationPolicy = use_default_serialization_policy,
+		         typename Result = std::string>
+		Result to_json_schema( std::string_view id, std::string_view title ) {
+			auto result = Result( );
+			using iter_t = std::back_insert_iterator<Result>;
+			using policy = std::conditional_t<
+			  std::is_same_v<SerializationPolicy, use_default_serialization_policy>,
+			  serialization_policy<iter_t>, SerializationPolicy>;
+
+			(void)to_json_schema<T>( policy( iter_t( result ) ), id, title );
 			return result;
 		}
 	} // namespace DAW_JSON_VER

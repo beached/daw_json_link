@@ -159,14 +159,14 @@ namespace daw::json {
 		  json_intrusive_variant<mem_n, std::variant<Bar, Umm>,
 		                         json_tuple_member<1, std::size_t>,
 		                         IdentitySwitcher<Bar, Umm>>,
-		  json_tuple<
-		    mem_o, std::tuple<double, std::string, int, std::variant<Bar, Umm>>,
-		    json_deduce_type, tuple_opts_def,
-		    json_tuple_types_list<
-		      double, std::string, int,
-		      json_tagged_variant_no_name<std::variant<Bar, Umm>,
-		                                  json_tuple_member<2, std::size_t>,
-		                                  IdentitySwitcher<Bar, Umm>>>>>;
+		  json_tuple<mem_o,
+		             std::tuple<double, std::string, int, std::variant<Bar, Umm>>,
+		             json_deduce_type, tuple_opts_def,
+		             json_tuple_types_list<
+		               double, std::string, int,
+		               json_tagged_variant_no_name<
+		                 std::variant<Bar, Umm>, json_tuple_member<2, std::size_t>,
+		                 IdentitySwitcher<Bar, Umm>>>>>;
 
 		static inline auto to_json_data( Foo const &v ) {
 			return daw::forward_nonrvalue_as_tuple(
@@ -216,15 +216,16 @@ int main( ) {
 	std::string result = daw::json::to_json_schema<Foo>( "", "Foo" );
 	puts( result.c_str( ) );
 	puts( "----\n" );
-	//std::string json_str = daw::json::to_json( Foo{ } );
-	//puts( json_str.c_str( ) );
+	std::string json_str1 = daw::json::to_json( Foo{ } );
+	puts( json_str1.c_str( ) );
+	puts( "\n----\n\n");
 
-	//auto foo2 = daw::json::from_json<Foo>( json_str );
+	auto foo2 = daw::json::from_json<Foo>( json_str1 );
+	(void)foo2;
 
-	std::string json_str = daw::json::to_json( FooBoo{ } );
-	puts( json_str.c_str( ) );
-	auto fooboo = daw::json::from_json<FooBoo>( json_str );
-	std::cout << "----------------------------------------\n"
-	          << daw::json::to_json( fooboo );
-	//(void)foo2;
+	std::string json_str2 = daw::json::to_json( FooBoo{ } );
+	puts( json_str2.c_str( ) );
+	auto fooboo = daw::json::from_json<FooBoo>( json_str2 );
+	std::cout << "\n----------------------------------------\n"
+	          << daw::json::to_json( fooboo ) << '\n';
 }

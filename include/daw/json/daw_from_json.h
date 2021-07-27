@@ -420,7 +420,7 @@ namespace daw::json {
 			daw_json_assert( parse_state.is_opening_bracket_checked( ),
 			                 ErrorReason::InvalidArrayStart, parse_state );
 #else
-			using ParseState = daw::remove_cvref_t<decltype( parse_state )>;
+			using ParseState = DAW_TYPEOF( parse_state );
 			daw_json_assert_weak( parse_state.is_opening_bracket_checked( ),
 			                      ErrorReason::InvalidArrayStart, parse_state );
 #endif

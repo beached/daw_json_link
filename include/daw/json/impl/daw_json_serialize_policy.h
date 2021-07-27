@@ -47,8 +47,11 @@ namespace daw::json {
 		  : json_details::iterator_wrapper<OutputIterator> {
 			using i_am_a_serialization_policy = void;
 
+			std::size_t indentation_level = 0;
+
 			constexpr serialization_policy( OutputIterator it )
-			  : json_details::iterator_wrapper<OutputIterator>{ {DAW_MOVE( it )} } {}
+			  : json_details::iterator_wrapper<OutputIterator>{ { DAW_MOVE( it ) } } {
+			}
 
 			static constexpr SerializationFormat serialization_format =
 			  json_details::serialization::get_bits_for<SerializationFormat>(
@@ -61,6 +64,53 @@ namespace daw::json {
 			static constexpr RestrictedStringOutput restricted_string_output =
 			  json_details::serialization::get_bits_for<RestrictedStringOutput>(
 			    PolicyFlags );
+
+			static constexpr NewLineDelimiter newline_delimiter =
+			  json_details::serialization::get_bits_for<NewLineDelimiter>(
+			    PolicyFlags );
+
+			static constexpr OutputTrailingComma output_trailing_comma =
+			  json_details::serialization::get_bits_for<OutputTrailingComma>(
+			    PolicyFlags );
+
+			inline constexpr void add_indent( ) {
+				++indentation_level;
+			}
+
+			inline constexpr void del_indent( ) {
+				--indentation_level;
+			}
+
+			inline constexpr void output_indent( ) {
+				constexpr std::string_view ident =
+				  json_details::serialization::generate_indent<serialization_format,
+				                                               indentation_type>;
+				for( std::size_t n = 0; n < indentation_level; ++n ) {
+					daw::algorithm::copy( std::data( ident ), daw::data_end( ident ),
+					                      this->raw_it( ) );
+				}
+			}
+
+			inline constexpr void output_newline( ) {
+				if constexpr( serialization_format != SerializationFormat::Minified ) {
+					if constexpr( newline_delimiter == NewLineDelimiter::n ) {
+						*( *this )++ = '\n';
+					} else {
+						*( *this )++ = '\r';
+						*( *this )++ = '\n';
+					}
+				}
+			}
+			inline constexpr void next_member( ) {
+				output_newline( );
+				output_indent( );
+			}
+
+			inline constexpr void output_space( ) {
+				if constexpr( serialization_format != SerializationFormat::Minified ) {
+					*( *this )++ = ' ';
+				}
+			}
 		};
 
 		struct use_default_serialization_policy;
