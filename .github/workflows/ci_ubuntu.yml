@@ -19,7 +19,7 @@ jobs:
     - name: Download & Build Dependencies
       run: |        
         sudo apt update
-        sudo apt install clang-12 libc++-12-dev libc++abi-12-dev
+        sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
     - name: Build Dependencies
       run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17
     - name: Build
