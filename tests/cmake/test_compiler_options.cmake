@@ -44,7 +44,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-newline-eof
 			)
 			if( DAW_WERROR ) 
-				add_compile_options( -Werror -pedantic-errors )
+				add_compile_options( -Werror -pedantic-errors -ftrapv )
 			endif( )
 			if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
 				if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
@@ -81,6 +81,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 		-Wall 
 		-Wextra 
 		-pedantic
+		-Wpedantic
 		-Wconversion
 		-Wduplicated-cond 
 		-Wlogical-op 
@@ -90,7 +91,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	)
 #-Wno-deprecated-declarations
 	if( DAW_WERROR ) 
-		add_compile_options( -Werror -pedantic-errors )
+		add_compile_options( -Werror -pedantic-errors -ftrapv )
 	endif( )
 	#-Wdisabled-optimization)
     if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")

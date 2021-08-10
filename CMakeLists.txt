@@ -15,8 +15,6 @@ project("daw-json-link"
         LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested.")
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Options used. Those tagged with Define are also the name of the source definition
 option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
@@ -80,7 +78,6 @@ endif ()
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 add_library(daw::json_link ALIAS ${PROJECT_NAME})
-
 if (NOT DAW_USE_PACKAGE_MANAGEMENT)
     target_link_libraries(${PROJECT_NAME} INTERFACE daw::daw-header-libraries daw::daw-utf-range)
 endif ()

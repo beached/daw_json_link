@@ -47,6 +47,7 @@ int main( int argc, char **argv )
 	MyClass c0 = daw::json::from_json<MyClass>( *data );
 	std::string json0 = daw::json::to_json( c0 );
 	std::cout << json0 << '\n';
+	(void)c0;
 }
 #ifdef DAW_USE_EXCEPTIONS
 catch( daw::json::json_exception const &jex ) {

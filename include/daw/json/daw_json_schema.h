@@ -300,7 +300,7 @@ namespace daw::json {
 					*out_it++ = ',';
 					out_it.next_member( );
 					out_it = utils::output_kv( out_it, R"("required")", "[" );
-					if constexpr( sizeof...( JsonMembers ) != 0 ) {
+					if constexpr( not is_empty_pack_v<JsonMembers...> ) {
 						out_it.add_indent( );
 						out_it = output_required_members( out_it );
 						out_it.del_indent( );

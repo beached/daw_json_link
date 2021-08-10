@@ -176,22 +176,26 @@ namespace daw::json {
 				auto const sign = static_cast<int_type>(
 				  parse_policy_details::validate_signed_first( parse_state ) );
 
+				auto parsed_val = static_cast<int_type>(
+				  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
+				    ParseState::exec_tag, parse_state ) );
+
+				if constexpr( daw::is_integral_v<int_type> ) {
+					if( ( sign < 0 ) & ( parsed_val > 0 ) ) {
+						parsed_val = static_cast<int_type>(
+						  -static_cast<daw::make_unsigned_t<int_type>>( parsed_val ) );
+					}
+				} else {
+					parsed_val *= sign;
+				}
 				if constexpr( KnownBounds ) {
 					return construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
-					  static_cast<element_t>(
-					    sign * static_cast<int_type>(
-					             unsigned_parser<element_t, JsonMember::range_check,
-					                             KnownBounds>( ParseState::exec_tag,
-					                                           parse_state ) ) ) );
+					  static_cast<element_t>( parsed_val ) );
 				} else {
 					auto result = construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
-					  static_cast<element_t>(
-					    sign * static_cast<int_type>(
-					             unsigned_parser<element_t, JsonMember::range_check,
-					                             KnownBounds>( ParseState::exec_tag,
-					                                           parse_state ) ) ) );
+					  static_cast<element_t>( parsed_val ) );
 					if constexpr( JsonMember::literal_as_string !=
 					              LiteralAsStringOpt::Never ) {
 						skip_quote_when_literal_as_string<JsonMember::literal_as_string>(

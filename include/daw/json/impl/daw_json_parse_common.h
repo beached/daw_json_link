@@ -90,9 +90,7 @@ namespace daw::json {
 					static_assert(
 					  std::is_invocable<Constructor, Args...>::value,
 					  "Unable to construct value with the supplied arguments" );
-					if constexpr( std::is_invocable<Constructor, Args...>::value ) {
-						return Constructor{ }( DAW_FWD2( Args, args )... );
-					}
+					return Constructor{ }( DAW_FWD2( Args, args )... );
 				}
 			}
 
@@ -294,17 +292,6 @@ namespace daw::json {
 			template<typename JsonType>
 			static inline constexpr bool is_json_nullable_v =
 			  is_json_nullable<JsonType>::value;
-
-			template<typename T>
-			using unwrap_type_impl =
-			  std::conditional_t<std::is_same_v<dereferenced_t<T>, void>, T,
-			                     dereferenced_t<T>>;
-
-			template<typename T, JsonNullable Nullable>
-			using unwrap_type =
-			  typename std::conditional_t<is_nullable_json_value_v<Nullable>,
-			                              unwrap_type_impl<T>, T>;
-
 			/***
 			 * Helpers to set options on json_ types
 			 */
@@ -848,16 +835,24 @@ namespace daw::json {
 			  std::bool_constant<vector_detect::vector_test<T>::value>;
 
 			template<typename JsonType>
-			using is_json_class_map_test = typename JsonType::json_member;
-
-			template<typename JsonType>
 			struct json_class_map_type {
-				using type = typename JsonType::json_member;
+				using type = typename json_data_contract_trait_t<JsonType>::json_member;
 			};
 
 			template<typename JsonType>
+			using json_class_map_type_t =
+			  typename json_class_map_type<JsonType>::type;
+
+			template<typename JsonType>
+			using json_class_map_type_test = typename JsonType::json_member;
+
+			template<typename>
+			struct is_json_class_map : std::false_type {};
+
+			template<typename T>
 			inline constexpr bool is_json_class_map_v =
-			  daw::is_detected_v<is_json_class_map_test, JsonType>;
+			  std::conjunction_v<has_json_data_contract_trait<T>,
+			                     is_json_class_map<json_data_contract_trait_t<T>>>;
 
 			template<typename T, bool Ordered, bool Contract, bool JsonType,
 			         bool QuickMap, bool Container>
@@ -873,13 +868,28 @@ namespace daw::json {
 				using type = T;
 			};
 
+			template<typename T>
+			using parse_to_t_test = typename T::parse_to_t;
+
+			template<typename T>
+			struct as_json_class {
+				using type = json_base::json_class<
+				  T, json_class_constructor_t<T, default_constructor<T>>>;
+			};
+
 			template<typename T, /*typename Contract,*/ bool JsonType, bool QuickMap,
 			         bool Container>
 			struct json_type_deducer<T, false, true, JsonType, QuickMap, Container> {
 
 				static_assert( not std::is_same_v<T, void> );
+				/*
+				using type = typename std::conditional_t<is_json_class_map_v<T>,
+				                                         json_class_map_type<T>,
+				                                         as_json_class<T>>::type;
+				                                         */
 				using type = json_base::json_class<
 				  T, json_class_constructor_t<T, default_constructor<T>>>;
+
 				static_assert( not std::is_same_v<daw::remove_cvref_t<type>, void>,
 				               "Detection failure" );
 				static_assert(

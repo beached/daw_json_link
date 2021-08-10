@@ -80,10 +80,29 @@ namespace daw::json {
 			  JsonNumberErrors::None;
 		} // namespace json_details
 
+		enum class FPOutputFormat : unsigned {
+			/* Automatically choose between decimal and scientific output formats */
+			Auto,
+			/* Always format in terms of an exponent <whole>[.fraction]e<exponent> */
+			Scientific,
+			/* Always format in <whole>.<fraction> */
+			//Decimal
+		};
+
+		namespace json_details {
+			template<>
+			inline constexpr unsigned json_option_bits_width<FPOutputFormat> = 2;
+
+			template<>
+			inline constexpr auto default_json_option_value<FPOutputFormat> =
+			  FPOutputFormat::Auto;
+		} // namespace json_details
+
 		// json_number
 		using number_opts_t =
 		  json_details::JsonOptionList<JsonNullable, LiteralAsStringOpt,
-		                               JsonRangeCheck, JsonNumberErrors>;
+		                               JsonRangeCheck, JsonNumberErrors,
+		                               FPOutputFormat>;
 
 		inline constexpr auto number_opts = number_opts_t{ };
 		inline constexpr json_details::json_options_t number_opts_def =

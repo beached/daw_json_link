@@ -166,6 +166,11 @@ namespace daw::json {
 			         typename... OptionList>
 			constexpr Result get_bits_for( JsonOptionList<OptionList...>,
 			                               json_options_t value ) {
+				static_assert( std::is_enum_v<Option>,
+				               "Only enum options are allowed" );
+				static_assert( std::is_same_v<unsigned, std::underlying_type_t<Option>>,
+				               "Looks like option was no specified correctly.  "
+				               "Underlying type should be unsigned" );
 				static_assert( is_option_flag<Option>,
 				               "Only registered option types are allowed" );
 				constexpr unsigned mask =

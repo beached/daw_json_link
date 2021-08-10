@@ -28,50 +28,22 @@
 
 #include <array>
 #include <ciso646>
+#include <daw/third_party/dragonbox/dragonbox.h>
 #include <optional>
 #include <sstream>
 #include <string>
 #include <tuple>
-
-#ifndef DAW_JSON_CUSTOM_D2S
-#include <daw/third_party/dragonbox/dragonbox.h>
-#elif DAW_HAS_INCLUDE( "custom_d2s.h" )
-#include "custom_d2s.h"
-#else
-#error Request for local d2s, but no custom_d2s.h supplied with char * d2s( Real const & value, char * ); declaration/definition in namespace daw::json
-#endif
 #include <type_traits>
 #include <variant>
 
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
-			template<typename OutputIterator, typename Real>
+			template<FPOutputFormat fp_output_format, typename OutputIterator,
+			         typename Real>
 			constexpr OutputIterator to_chars( Real const &value,
 			                                   OutputIterator out_it );
 		} // namespace json_details
-
-		template<typename Real, typename OutputIterator>
-		constexpr OutputIterator real2string( Real const &value,
-		                                      OutputIterator out_it ) {
-			// TODO: Customization point, add to readme
-#ifndef DAW_JSON_CUSTOM_D2S
-			return json_details::to_chars( value, out_it );
-			/*
-			if constexpr( std::is_same<Real, float>::value ) {
-			  return daw::jkj::dragonbox::to_chars_n( value, out_it );
-			} else {
-			  return daw::jkj::dragonbox::to_chars_n( static_cast<double>( value ),
-			                                     out_it );
-			}*/
-#else
-			if constexpr( std::is_same<Real, float>::value ) {
-				return d2s( value, out_it );
-			} else {
-				return d2s( static_cast<double>( value ), out_it );
-			}
-#endif
-		}
 
 		namespace json_details::to_strings {
 			using std::to_string;
@@ -737,12 +709,13 @@ namespace daw::json {
 				if constexpr( daw::is_floating_point_v<parse_to_t> ) {
 					static_assert( sizeof( parse_to_t ) <= sizeof( double ) );
 					if constexpr( it.is_pointer ) {
-						it.set( real2string( value, it.get( ) ) );
+						it.set(
+						  to_chars<JsonMember::fp_output_format>( value, it.get( ) ) );
 					} else {
 						char buff[50]{ };
 						buff[49] = 0;
 						char *ptr = buff;
-						ptr = real2string( value, ptr );
+						ptr = to_chars<JsonMember::fp_output_format>( value, ptr );
 						std::copy( buff, ptr, it );
 					}
 				} else {
@@ -1547,7 +1520,8 @@ namespace daw::json {
 				}
 			}
 
-			template<typename OutputIterator, typename Real>
+			template<FPOutputFormat fp_output_fmt, typename OutputIterator,
+			         typename Real>
 			constexpr OutputIterator to_chars( Real const &value,
 			                                   OutputIterator out_it ) {
 				daw::jkj::dragonbox::unsigned_fp_t<Real> dec =
@@ -1575,9 +1549,14 @@ namespace daw::json {
 					*out_it++ = '0';
 					return out_it;
 				}
-				if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
+				if constexpr( true and fp_output_fmt == FPOutputFormat::Scientific ) {
 					return daw::jkj::dragonbox::to_chars_detail::to_chars( dec, out_it,
 					                                                       digits );
+				} else /*if constexpr( fp_output_fmt != FPOutputFormat::Decimal )*/ {
+					if( ( whole_dig < -4 ) | ( whole_dig > 6 ) ) {
+						return daw::jkj::dragonbox::to_chars_detail::to_chars( dec, out_it,
+						                                                       digits );
+					}
 				}
 				if( br.is_negative( ) ) {
 					*out_it++ = '-';
@@ -1598,6 +1577,7 @@ namespace daw::json {
 						out_it = utils::integer_to_string( out_it, dec.significand );
 						return out_it;
 					}
+					// TODO allow for decimal output for all
 					auto const p1pow =
 					  daw::cxmath::pow10( static_cast<std::size_t>( -dec.exponent ) );
 					auto const p1val = dec.significand / p1pow;

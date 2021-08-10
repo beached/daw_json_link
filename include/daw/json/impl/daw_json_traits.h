@@ -10,6 +10,8 @@
 
 #include "version.h"
 
+#include "daw_json_enums.h"
+
 #include <daw/cpp_17.h>
 #include <daw/daw_fwd_pack_apply.h>
 #include <daw/daw_move.h>
@@ -181,6 +183,13 @@ namespace daw::json {
 			template<typename T>
 			T uneval_func( );
 		}
+
+		template<typename... Ts>
+		using is_empty_pack = std::bool_constant<( sizeof...( Ts ) == 0 )>;
+
+		template<typename... Ts>
+		inline constexpr bool is_empty_pack_v = is_empty_pack<Ts...>::value;
+
 		/***
 		 * Default Constructor for a type.  It accounts for aggregate types and uses
 		 * brace construction for them
@@ -193,22 +202,24 @@ namespace daw::json {
 				return T{ };
 			}
 
-			template<typename... Args,
-			         std::enable_if_t<( std::is_constructible<T, Args...>::value and
-			                            sizeof...( Args ) > 0 ),
-			                          std::nullptr_t> = nullptr>
+			template<
+			  typename... Args,
+			  std::enable_if_t<std::conjunction_v<std::is_constructible<T, Args...>,
+			                                      not_trait<is_empty_pack<Args...>>>,
+			                   std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr T
 			operator( )( Args &&...args ) const {
 
 				return T( DAW_FWD2( Args, args )... );
 			}
 
-			template<typename... Args,
-			         typename std::enable_if_t<
-			           std::conjunction<
-			             daw::not_trait<std::is_constructible<T, Args...>>,
-			             daw::traits::is_list_constructible<T, Args...>>::value,
-			           std::nullptr_t> = nullptr>
+			template<
+			  typename... Args,
+			  typename std::enable_if_t<
+			    std::conjunction_v<daw::not_trait<std::is_constructible<T, Args...>>,
+			                       daw::not_trait<is_empty_pack<Args...>>,
+			                       daw::traits::is_list_constructible<T, Args...>>,
+			    std::nullptr_t> = nullptr>
 			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr T
 			operator( )( Args &&...args ) const
 			  noexcept( noexcept( T{ DAW_FWD2( Args, args )... } ) ) {
@@ -480,11 +491,20 @@ namespace daw::json {
 			using json_data_contract_constructor_t =
 			  typename json_data_contract_constructor<T>::type;
 
-			template<typename T, typename Default>
+			// DAW 20210801
+			/*template<typename T, typename Default>
 			using json_class_constructor_t = typename std::conditional_t<
 			  daw::is_detected<json_data_contract_constructor_t, T>::value,
 			  json_data_contract_constructor<T>,
-			  daw::traits::identity<Default>>::type;
+			  daw::traits::identity<Default>>::type;*/
+
+			template<typename T>
+			using json_class_constructor_t_impl =
+			  typename json_data_contract<T>::constructor;
+
+			template<typename T, typename Default>
+			using json_class_constructor_t =
+			  daw::detected_or_t<Default, json_class_constructor_t_impl, T>;
 
 			namespace is_string_like_impl {
 				template<typename T>
@@ -719,6 +739,17 @@ namespace daw::json {
 
 			template<typename T>
 			inline constexpr bool is_dereferenceable_v = is_dereferenceable<T>::value;
+
+			namespace unwrapped_impl {
+				template<typename T>
+				using unwrapped_t_impl =
+				  std::conditional_t<is_dereferenceable_v<T>, dereferenced_t<T>, T>;
+			}
+
+			template<typename T, JsonNullable Nullable>
+			using unwrapped_t =
+			  typename std::conditional_t<is_nullable_json_value_v<Nullable>,
+			                              unwrapped_impl::unwrapped_t_impl<T>, T>;
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER
 } // namespace daw::json

@@ -149,6 +149,10 @@ namespace daw::json {
 			}
 		};
 
+		template<typename JsonType>
+		struct json_details::is_json_class_map<json_class_map<JsonType>>
+		  : std::true_type {};
+
 		/***
 		 *
 		 * Allows specifying an unnamed json mapping where the
@@ -377,7 +381,7 @@ namespace daw::json {
 
 				static constexpr JsonNullable nullable =
 				  json_details::get_bits_for<JsonNullable>( number_opts, Options );
-				using base_type = json_details::unwrap_type<T, nullable>;
+				using base_type = json_details::unwrapped_t<T, nullable>;
 				static_assert( traits::not_same<void, base_type>::value,
 				               "Failed to detect base type" );
 
@@ -407,6 +411,9 @@ namespace daw::json {
 
 				static constexpr JsonRangeCheck range_check =
 				  json_details::get_bits_for<JsonRangeCheck>( number_opts, Options );
+
+				static constexpr FPOutputFormat fp_output_format =
+				  json_details::get_bits_for<FPOutputFormat>( number_opts, Options );
 
 				static constexpr JsonNumberErrors allow_number_errors =
 				  json_details::get_bits_for<JsonNumberErrors>( number_opts, Options );
@@ -506,7 +513,7 @@ namespace daw::json {
 				  json_details::get_bits_for<JsonNullable>( bool_opts, Options );
 				static constexpr bool must_be_class_member = false;
 				using wrapped_type = T;
-				using base_type = json_details::unwrap_type<T, nullable>;
+				using base_type = json_details::unwrapped_t<T, nullable>;
 				static_assert( traits::not_same<void, base_type>::value,
 				               "Failed to detect base type" );
 
@@ -578,7 +585,7 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 				using constructor_t = Constructor;
 				using wrapped_type = String;
-				using base_type = json_details::unwrap_type<String, nullable>;
+				using base_type = json_details::unwrapped_t<String, nullable>;
 				static_assert( traits::not_same<void, base_type>::value,
 				               "Failed to detect base type" );
 
@@ -666,7 +673,7 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 				using constructor_t = Constructor;
 				using wrapped_type = String;
-				using base_type = json_details::unwrap_type<String, nullable>;
+				using base_type = json_details::unwrapped_t<String, nullable>;
 				static_assert( traits::not_same<void, base_type>::value,
 				               "Failed to detect base type" );
 
@@ -741,7 +748,7 @@ namespace daw::json {
 				using constructor_t = Constructor;
 				using wrapped_type = T;
 				static constexpr bool must_be_class_member = false;
-				using base_type = json_details::unwrap_type<T, Nullable>;
+				using base_type = json_details::unwrapped_t<T, Nullable>;
 				static_assert( traits::not_same<void, base_type>::value,
 				               "Failed to detect base type" );
 
@@ -806,7 +813,7 @@ namespace daw::json {
 				static constexpr bool must_be_class_member = false;
 				static constexpr JsonNullable nullable =
 				  json_details::get_bits_for<JsonNullable>( class_opts, Options );
-				using base_type = json_details::unwrap_type<T, nullable>;
+				using base_type = json_details::unwrapped_t<T, nullable>;
 				using constructor_t =
 				  json_details::json_class_constructor_t<base_type, Constructor>;
 
@@ -937,7 +944,7 @@ namespace daw::json {
 				  "from Variant" );
 
 				using wrapped_type = Variant;
-				using base_type = json_details::unwrap_type<Variant, nullable>;
+				using base_type = json_details::unwrapped_t<Variant, nullable>;
 				using constructor_t =
 				  json_details::json_class_constructor_t<Variant, Constructor>;
 				static_assert( traits::not_same<void, base_type>::value,
@@ -1054,7 +1061,7 @@ namespace daw::json {
 				  json_details::json_deduced_type<tuple_json_mapping<tag_member>>>;
 
 				using switcher = Switcher;
-				using base_type = json_details::unwrap_type<T, nullable>;
+				using base_type = json_details::unwrapped_t<T, nullable>;
 				using constructor_t =
 				  json_details::json_class_constructor_t<T, Constructor>;
 				static_assert( traits::not_same<void, base_type>::value,
@@ -1143,7 +1150,7 @@ namespace daw::json {
 				static constexpr JsonNullable nullable =
 				  json_details::get_bits_for<JsonNullable>( json_custom_opts, Options );
 
-				using base_type = json_details::unwrap_type<T, nullable>;
+				using base_type = json_details::unwrapped_t<T, nullable>;
 				static_assert( traits::not_same<void, base_type>::value,
 				               "Failed to detect base type" );
 
@@ -1265,7 +1272,7 @@ namespace daw::json {
 				                     nullable_constructor<container_t>>,
 				  Constructor>;
 
-				using base_type = json_details::unwrap_type<container_t, nullable>;
+				using base_type = json_details::unwrapped_t<container_t, nullable>;
 				static_assert( traits::not_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
@@ -1374,7 +1381,7 @@ namespace daw::json {
 				               "The SizeMember cannot be a nullable type" );
 				using dependent_member = SizeMember;
 
-				using base_type = json_details::unwrap_type<Container, nullable>;
+				using base_type = json_details::unwrapped_t<Container, nullable>;
 				static_assert( traits::not_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
@@ -1447,7 +1454,7 @@ namespace daw::json {
 			struct json_key_value {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
-				using base_type = json_details::unwrap_type<Container, Nullable>;
+				using base_type = json_details::unwrapped_t<Container, Nullable>;
 				using constructor_t =
 				  json_details::json_class_constructor_t<base_type, Constructor>;
 
@@ -1477,12 +1484,14 @@ namespace daw::json {
 				static_assert( json_details::is_no_name_v<json_key_t>,
 				               "Key member name must be the default no_name" );
 
-				using parse_to_t = typename json_details::construction_result<
-				  Nullable != JsonNullable::MustExist, Constructor,
-				  std::pair<typename json_key_t::parse_to_t const,
-				            typename json_element_t::parse_to_t> const *,
-				  std::pair<typename json_key_t::parse_to_t const,
-				            typename json_element_t::parse_to_t> const *>::type;
+				using parse_to_t =
+				  Container; /*typename json_details::construction_result<
+Nullable != JsonNullable::MustExist, Constructor,
+
+std::pair<typename json_key_t::parse_to_t const,
+	 typename json_element_t::parse_to_t> const *,
+std::pair<typename json_key_t::parse_to_t const,
+	 typename json_element_t::parse_to_t> const *>::type;*/
 
 				static constexpr daw::string_view name = no_name;
 				static constexpr JsonParseTypes expected_type =
@@ -1559,7 +1568,7 @@ namespace daw::json {
 			struct json_key_value_array {
 				using i_am_a_json_type = void;
 				static constexpr bool must_be_class_member = false;
-				using base_type = json_details::unwrap_type<Container, Nullable>;
+				using base_type = json_details::unwrapped_t<Container, Nullable>;
 				using constructor_t =
 				  json_details::json_class_constructor_t<base_type, Constructor>;
 				static_assert( traits::not_same_v<void, base_type>,
@@ -1683,7 +1692,7 @@ namespace daw::json {
 				static constexpr JsonNullable nullable =
 				  json_details::get_bits_for<JsonNullable>( tuple_opts, Options );
 
-				using base_type = json_details::unwrap_type<Tuple, nullable>;
+				using base_type = json_details::unwrapped_t<Tuple, nullable>;
 
 				using sub_member_list = typename std::conditional_t<
 				  std::is_same<JsonTupleTypesList, json_deduce_type>::value,
@@ -1800,7 +1809,7 @@ namespace daw::json {
 				             json_tuple_types_list<tag_submember>>,
 				  json_details::json_deduced_type<tuple_json_mapping<tag_submember>>>;
 
-				using base_type = json_details::unwrap_type<Variant, nullable>;
+				using base_type = json_details::unwrapped_t<Variant, nullable>;
 				using constructor_t =
 				  json_details::json_class_constructor_t<Variant, Constructor>;
 				static_assert( traits::not_same<void, base_type>::value,
@@ -1938,7 +1947,7 @@ namespace daw::json {
 				using wrapped_type = json_value;
 				using constructor_t = Constructor;
 				static constexpr JsonNullable nullable = Nullable;
-				using base_type = json_details::unwrap_type<T, nullable>;
+				using base_type = json_details::unwrapped_t<T, nullable>;
 				static_assert( traits::not_same_v<void, base_type>,
 				               "Failed to detect base type" );
 
