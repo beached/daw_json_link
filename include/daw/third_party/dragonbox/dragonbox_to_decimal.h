@@ -332,7 +332,7 @@ namespace daw::jkj::dragonbox {
 						if( n32 == 0 ) {
 							n32 = std::uint32_t( n >> 32 );
 						} else if( n == n32 ) {
-							count -= ( value_bits<UInt> - 32 );
+							count -= static_cast<int>( value_bits<UInt> - 32 );
 						}
 					}
 					if constexpr( value_bits < UInt >> 16 ) {

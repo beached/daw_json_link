@@ -1,4 +1,4 @@
-name: Ubuntu(clang/libc++)
+name: Ubuntu(gcc)
 
 on:
   push:
@@ -14,14 +14,12 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
     - uses: actions/checkout@v1
-    - name: Add LLVM Repo
-      run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
     - name: Download & Build Dependencies
       run: |        
         sudo apt update
-        sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev 
+        sudo apt install gcc-10 g++-10
     - name: Build Dependencies
-      run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 clang-12 clang++-12 -stdlib=libc++
+      run: ./ci_scripts/ci_ubuntu_deps.sh Debug 17 gcc-10 g++-10
     - name: Build
       run: ./ci_scripts/ci_ubuntu_build.sh Debug
     - name: Test
@@ -30,14 +28,12 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
+          sudo apt install gcc-10 g++-10
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 clang-12 clang++-12 -stdlib=libc++ 
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 17 gcc-10 g++-10
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
@@ -46,14 +42,12 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
+          sudo apt install gcc-10 g++-10
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 clang-12 clang++-12 -stdlib=libc++
+        run: ./ci_scripts/ci_ubuntu_deps.sh Debug 20 gcc-10 g++-10
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
@@ -62,14 +56,12 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v1
-      - name: Add LLVM Repo
-        run: sudo sh ./ci_scripts/ci_ubuntu_install_clang.sh
       - name: Download & Build Dependencies
         run: |
           sudo apt update
-          sudo apt install clang-12 libc++-12-dev libc++abi-12-dev libunwind-dev
+          sudo apt install gcc-10 g++-10
       - name: Build Dependencies
-        run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 clang-12 clang++-12 -stdlib=libc++
+        run: ./ci_scripts/ci_ubuntu_deps.sh Release 20 gcc-10 g++-10
       - name: Build
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
