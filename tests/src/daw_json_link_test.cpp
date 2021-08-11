@@ -1049,7 +1049,7 @@ int main( int, char ** )
 catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << '\n';
 	exit( 1 );
-} catch( std::exception cont &ex ) {
+} catch( std::exception const &ex ) {
 	std::cerr << "Unknown exception thrown during testing: " << ex.what( )
 	          << '\n';
 	exit( 1 );
