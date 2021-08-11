@@ -674,11 +674,24 @@ target_link_libraries(int_ptr_test json_test)
 add_test(NAME int_ptr_test COMMAND int_ptr_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full int_ptr_test)
 
-add_executable(daw_json_schema_test src/daw_json_schema_test.cpp)
-target_link_libraries(daw_json_schema_test json_test)
-add_test(NAME daw_json_schema_test COMMAND daw_json_schema_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
-add_dependencies(full daw_json_schema_test)
+set( DAW_JSON_BUILD_SCHEMA_TEST ON )
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+   if( CLANG_VERSION_MAJOR VERSION_LESS 10 )
+       set( DAW_JSON_BUILD_SCHEMA_TEST OFF )
+   endif( )
+endif( )
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
+    if( CLANG_VERSION_MAJOR VERSION_LESS 9 )
+        set( DAW_JSON_BUILD_SCHEMA_TEST OFF )
+    endif( )
+endif( )
 
+if( DAW_JSON_BUILD_SCHEMA_TEST )
+    add_executable(daw_json_schema_test src/daw_json_schema_test.cpp)
+    target_link_libraries(daw_json_schema_test json_test)
+    add_test(NAME daw_json_schema_test COMMAND daw_json_schema_test WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
+    add_dependencies(full daw_json_schema_test)
+endif( )
 # **************************************************
 # JSON Benchmark
 # **************************************************
