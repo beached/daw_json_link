@@ -1410,16 +1410,13 @@ namespace daw::json {
 						return;
 					}
 				}
-				constexpr auto dependent_member_name =
-				  daw::string_view( std::data( dependent_member::name ),
-				                    std::size( dependent_member::name ) );
 				if( daw::algorithm::contains( std::data( visited_members ),
 				                              daw::data_end( visited_members ),
-				                              dependent_member_name ) ) {
+				                              dependent_member::name ) ) {
 					// Already outputted this member
 					return;
 				}
-				visited_members.push_back( dependent_member_name );
+				visited_members.push_back( dependent_member::name );
 				if( not is_first ) {
 					*it++ = ',';
 				}
@@ -1427,18 +1424,18 @@ namespace daw::json {
 				is_first = false;
 				*it++ = '"';
 				it = utils::copy_to_iterator<false, EightBitModes::AllowFull>(
-				  it, dependent_member_name );
+				  it, dependent_member::name );
 				*it++ = '"';
 				*it++ = ':';
 				it.output_space( );
 
 				if constexpr( has_switcher_v<JsonMember> ) {
-				  it = member_to_string( template_arg<dependent_member>, it,
-				                         typename JsonMember::switcher{ }( v ) );
+					it = member_to_string( template_arg<dependent_member>, it,
+					                       typename JsonMember::switcher{ }( v ) );
 				} else {
-				  constexpr auto idx = find_names_in_pack_v<dependent_member, NamePack>;
-				  it = member_to_string( template_arg<dependent_member>, it,
-				                         get<idx>( args ) );
+					constexpr auto idx = find_names_in_pack_v<dependent_member, NamePack>;
+					it = member_to_string( template_arg<dependent_member>, it,
+					                       get<idx>( args ) );
 				}
 				(void)it;
 			}
