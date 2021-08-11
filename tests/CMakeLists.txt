@@ -574,10 +574,21 @@ target_link_libraries(test_details_parse_value_class json_test)
 add_test(test_details_parse_value_class_test test_details_parse_value_class)
 add_dependencies(full test_details_parse_value_class)
 
+#DAW
+
+set( DAW_JSON_BUILD_TEST_DET_PARSE_VAL_ARY ON )
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" )
+    if( CLANG_VERSION_MAJOR VERSION_LESS 9 )
+        set( DAW_JSON_BUILD_TEST_DET_PARSE_VAL_ARY OFF )
+    endif( )
+endif( )
+
+if( DAW_JSON_BUILD_TEST_DET_PARSE_VAL_ARY )
 add_executable(test_details_parse_value_array src/test_details_parse_value_array.cpp)
 target_link_libraries(test_details_parse_value_array json_test)
 add_test(test_details_parse_value_array_test test_details_parse_value_array)
 add_dependencies(full test_details_parse_value_array)
+endif( )
 
 add_executable(test_details_parse_value_custom src/test_details_parse_value_custom.cpp)
 target_link_libraries(test_details_parse_value_custom json_test)
