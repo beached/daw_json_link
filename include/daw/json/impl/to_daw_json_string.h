@@ -1433,13 +1433,12 @@ namespace daw::json {
 				it.output_space( );
 
 				if constexpr( has_switcher_v<JsonMember> ) {
-					it = member_to_string( template_arg<dependent_member>, it,
-					                       typename JsonMember::switcher{ }( v ) );
+				  it = member_to_string( template_arg<dependent_member>, it,
+				                         typename JsonMember::switcher{ }( v ) );
 				} else {
-					it = member_to_string(
-					  template_arg<dependent_member>, it,
-					  std::get<find_names_in_pack_v<dependent_member, NamePack>>(
-					    args ) );
+				  constexpr auto idx = find_names_in_pack_v<dependent_member, NamePack>;
+				  it = member_to_string( template_arg<dependent_member>, it,
+				                         get<idx>( args ) );
 				}
 				(void)it;
 			}

@@ -109,7 +109,7 @@ namespace daw::json {
 
 			template<typename JsonMember, JSONNAMETYPE NewName>
 			using copy_name_when_noname =
-			  copy_name_when<JsonMember, NewName, JsonMember::name == no_name>;
+			  copy_name_when<JsonMember, NewName, is_no_name_v<JsonMember>>;
 		} // namespace json_details
 		/***
 		 * This class is used as a way to indicate that a json_data_contract

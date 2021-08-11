@@ -1289,7 +1289,7 @@ namespace daw::json {
 				static constexpr JsonParseTypes base_expected_type =
 				  JsonParseTypes::Array;
 
-				static_assert( json_element_t::name == no_name,
+				static_assert( json_element_t::name == no_name_sv,
 				               "All elements of json_array must be have no_name" );
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::Array;
@@ -1398,7 +1398,7 @@ namespace daw::json {
 				static constexpr JsonParseTypes base_expected_type =
 				  JsonParseTypes::SizedArray;
 
-				static_assert( json_element_t::name == no_name,
+				static_assert( json_element_t::name == no_name_sv,
 				               "All elements of json_array must be have no_name" );
 				static constexpr JsonBaseParseTypes underlying_json_type =
 				  JsonBaseParseTypes::Array;
@@ -1470,7 +1470,7 @@ namespace daw::json {
 
 				static_assert( traits::not_same_v<json_element_t, void>,
 				               "Unknown JsonValueType type." );
-				static_assert( json_element_t::name == no_name,
+				static_assert( json_element_t::name == no_name_sv,
 				               "Value member name must be the default no_name" );
 				static_assert(
 				  json_details::has_unnamed_default_type_mapping_v<JsonKeyType>,

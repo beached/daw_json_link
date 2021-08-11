@@ -12,6 +12,7 @@
 
 #include <daw/daw_cpp_feature_check.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_string_view.h>
 
 #include <cstddef>
 #include <string_view>
@@ -97,6 +98,7 @@ namespace daw::json {
 #define JSONNAMETYPE ::daw::json::json_name
 		// Convenience for array members that are required to be unnamed
 		inline constexpr JSONNAMETYPE no_name{ "\a" };
+		inline constexpr daw::string_view no_name_sv = daw::string_view( no_name );
 
 		namespace json_details {
 			inline constexpr JSONNAMETYPE default_key_name{ "key" };
@@ -107,6 +109,7 @@ namespace daw::json {
 #define JSONNAMETYPE char const *
 		// Convenience for array members that are required to be unnamed
 		inline constexpr char const no_name[] = "\a";
+		inline constexpr daw::string_view no_name_sv = daw::string_view( no_name );
 		namespace json_details {
 
 			inline constexpr char const default_key_name[] = "key";
@@ -116,7 +119,7 @@ namespace daw::json {
 #endif
 		namespace json_details {
 			template<typename JsonMember>
-			using is_no_name = std::bool_constant<JsonMember::name == no_name>;
+			using is_no_name = std::bool_constant<( JsonMember::name == no_name_sv )>;
 
 			template<typename JsonMember>
 			inline constexpr bool is_no_name_v = is_no_name<JsonMember>::value;
