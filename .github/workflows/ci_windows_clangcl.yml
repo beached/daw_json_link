@@ -7,12 +7,36 @@ on:
     branches-ignore: dev
 
 jobs:
-  build:
+  debug17:
     runs-on: [windows-latest]
     steps:
       - uses: actions/checkout@v1
       - name: Build
-        run: .\ci_scripts\ci_windows_build_clangcl.cmd
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd Debug 17
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd
+  release17:
+    runs-on: [windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd Release 17
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd
+  debug20:
+    runs-on: [windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd Debug 20
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd
+  release20:
+    runs-on: [windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd Release 20
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd
 
