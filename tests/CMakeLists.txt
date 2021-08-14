@@ -146,10 +146,12 @@ target_link_libraries(float_array_test json_test)
 add_test(NAME float_array_test COMMAND float_array_test)
 add_dependencies(full float_array_test)
 
-add_executable(float_array_basic_test src/float_array_basic_test.cpp)
-target_link_libraries(float_array_basic_test json_test nanobench)
-add_test(NAME float_array_basic_test COMMAND float_array_basic_test)
-add_dependencies(full float_array_basic_test)
+if (NOT (DEFINED MSVC AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang") )
+	add_executable(float_array_basic_test src/float_array_basic_test.cpp)
+	target_link_libraries(float_array_basic_test json_test nanobench)
+	add_test(NAME float_array_basic_test COMMAND float_array_basic_test)
+	add_dependencies(full float_array_basic_test)
+endif( )
 
 add_executable(simple_test src/simple_test.cpp)
 target_link_libraries(simple_test json_test)
@@ -202,8 +204,11 @@ target_link_libraries(nativejson_bench_basic twitter_parser_cx_ch geojson_parser
 add_test(NAME nativejson_bench_basic COMMAND nativejson_bench_basic ./twitter.json ./citm_catalog.json ./canada.json WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test_data/")
 add_dependencies(full nativejson_bench_basic)
 
-add_executable(nativejson_bench_nanobench src/nativejson_bench_nanobench.cpp)
-target_link_libraries(nativejson_bench_nanobench twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test nanobench fmt::fmt)
+
+if (NOT (DEFINED MSVC AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang") )
+	add_executable(nativejson_bench_nanobench src/nativejson_bench_nanobench.cpp)
+	target_link_libraries(nativejson_bench_nanobench twitter_parser_cx_ch twitter_parser_rn_ch twitter_parser_si_ch twitter_parser_cx_unch twitter_parser_rn_unch twitter_parser_si_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test nanobench fmt::fmt)
+endif( )
 
 add_executable(nativejson_bench_basic2 src/nativejson_bench_basic2.cpp)
 target_link_libraries(nativejson_bench_basic2 twitter2_parser_cx_ch twitter2_parser_cx_unch geojson_parser_cx_ch geojson_parser_rn_ch geojson_parser_si_ch geojson_parser_cx_unch geojson_parser_rn_unch geojson_parser_si_unch citm_parser_cx_ch citm_parser_rn_ch citm_parser_si_ch citm_parser_cx_unch citm_parser_rn_unch citm_parser_si_unch json_test)
