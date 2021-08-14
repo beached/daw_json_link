@@ -1,0 +1,18 @@
+name: Windows_ClangCl
+
+on:
+  push:
+    branches-ignore: dev
+  pull_request:
+    branches-ignore: dev
+
+jobs:
+  build:
+    runs-on: [windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd
+

@@ -229,18 +229,22 @@ namespace daw::jkj::dragonbox {
 			inline constexpr explicit ieee754_bits( T x ) noexcept
 			  : u{ ieee754_traits<T>::float_to_carrier( x ) } {}
 
-			inline constexpr T to_float( ) const noexcept {
+			[[nodiscard]] inline constexpr T to_float( ) const noexcept {
 				return ieee754_traits<T>::carrier_to_float( u );
 			}
 
-			inline constexpr carrier_uint extract_significand_bits( ) const noexcept {
+			[[nodiscard]] inline constexpr carrier_uint
+			extract_significand_bits( ) const noexcept {
 				return ieee754_traits<T>::extract_significand_bits( u );
 			}
-			inline constexpr unsigned extract_exponent_bits( ) const noexcept {
+
+			[[nodiscard]] inline constexpr unsigned
+			extract_exponent_bits( ) const noexcept {
 				return ieee754_traits<T>::extract_exponent_bits( u );
 			}
 
-			inline constexpr carrier_uint binary_significand( ) const noexcept {
+			[[nodiscard]] inline constexpr carrier_uint
+			binary_significand( ) const noexcept {
 				using format_info = ieee754_format_info<ieee754_traits<T>::format>;
 				auto s = extract_significand_bits( );
 				if( extract_exponent_bits( ) == 0 ) {
@@ -249,7 +253,8 @@ namespace daw::jkj::dragonbox {
 					return s | ( carrier_uint( 1 ) << format_info::significand_bits );
 				}
 			}
-			inline constexpr int binary_exponent( ) const noexcept {
+
+			[[nodiscard]] inline constexpr int binary_exponent( ) const noexcept {
 				using format_info = ieee754_format_info<ieee754_traits<T>::format>;
 				auto e = extract_exponent_bits( );
 				if( e == 0 ) {
@@ -259,36 +264,40 @@ namespace daw::jkj::dragonbox {
 				}
 			}
 
-			inline constexpr bool is_finite( ) const noexcept {
+			[[nodiscard]] inline constexpr bool is_finite( ) const noexcept {
 				return ieee754_traits<T>::is_finite( u );
 			}
-			inline constexpr bool is_nonzero( ) const noexcept {
+
+			[[nodiscard]] inline constexpr bool is_nonzero( ) const noexcept {
 				return ieee754_traits<T>::is_nonzero( u );
 			}
 			// Allows positive and negative zeros
-			inline constexpr bool is_subnormal( ) const noexcept {
+			[[nodiscard]] inline constexpr bool is_subnormal( ) const noexcept {
 				return ieee754_traits<T>::is_subnormal( u );
 			}
 			// Allows positive zero and positive NaN's, but not allow negative zero
-			inline constexpr bool is_positive( ) const noexcept {
+			[[nodiscard]] inline constexpr bool is_positive( ) const noexcept {
 				return ieee754_traits<T>::is_positive( u );
 			}
 			// Allows negative zero and negative NaN's, but not allow positive zero
-			inline constexpr bool is_negative( ) const noexcept {
+			[[nodiscard]] inline constexpr bool is_negative( ) const noexcept {
 				return ieee754_traits<T>::is_negative( u );
 			}
-			inline constexpr bool is_positive_infinity( ) const noexcept {
+
+			[[nodiscard]] inline constexpr bool
+			is_positive_infinity( ) const noexcept {
 				return ieee754_traits<T>::is_positive_infinity( u );
 			}
 
-			inline constexpr bool is_negative_infinity( ) const noexcept {
+			[[nodiscard]] inline constexpr bool
+			is_negative_infinity( ) const noexcept {
 				return ieee754_traits<T>::is_negative_infinity( u );
 			}
 			// Allows both plus and minus infinities
-			inline constexpr bool is_infinity( ) const noexcept {
+			[[nodiscard]] inline constexpr bool is_infinity( ) const noexcept {
 				return ieee754_traits<T>::is_infinity( u );
 			}
-			inline constexpr bool is_nan( ) const noexcept {
+			[[nodiscard]] inline constexpr bool is_nan( ) const noexcept {
 				return ieee754_traits<T>::is_nan( u );
 			}
 		};
@@ -303,7 +312,7 @@ namespace daw::jkj::dragonbox {
 
 			namespace bits {
 				template<class UInt>
-				inline int countr_zero( UInt n ) noexcept {
+				[[nodiscard]] inline int countr_zero( UInt n ) noexcept {
 					static_assert( std::is_unsigned_v<UInt> && value_bits<UInt> <= 64 );
 #if( defined( __GNUC__ ) || defined( __clang__ ) ) && defined( __x86_64__ )
 #define JKJ_HAS_COUNTR_ZERO_INTRINSIC 1
@@ -381,10 +390,11 @@ namespace daw::jkj::dragonbox {
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-					constexpr std::uint64_t high( ) const noexcept {
+					[[nodiscard]] constexpr std::uint64_t high( ) const noexcept {
 						return std::uint64_t( internal_ >> 64 );
 					}
-					constexpr std::uint64_t low( ) const noexcept {
+
+					[[nodiscard]] constexpr std::uint64_t low( ) const noexcept {
 						return std::uint64_t( internal_ );
 					}
 
@@ -400,10 +410,11 @@ namespace daw::jkj::dragonbox {
 					  : high_{ high }
 					  , low_{ low } {}
 
-					constexpr std::uint64_t high( ) const noexcept {
+					[[nodiscard]] constexpr std::uint64_t high( ) const noexcept {
 						return high_;
 					}
-					constexpr std::uint64_t low( ) const noexcept {
+
+					[[nodiscard]] constexpr std::uint64_t low( ) const noexcept {
 						return low_;
 					}
 
@@ -423,8 +434,8 @@ namespace daw::jkj::dragonbox {
 				};
 
 				// Get 128-bit result of multiplication of two 64-bit unsigned integers
-				JKJ_SAFEBUFFERS inline uint128 umul128( std::uint64_t x,
-				                                        std::uint64_t y ) noexcept {
+				[[nodiscard]] JKJ_SAFEBUFFERS inline uint128
+				umul128( std::uint64_t x, std::uint64_t y ) noexcept {
 #if( defined( __GNUC__ ) || defined( __clang__ ) ) && \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
 #ifdef __GNUC__
@@ -461,7 +472,7 @@ namespace daw::jkj::dragonbox {
 #endif
 				}
 
-				JKJ_SAFEBUFFERS inline std::uint64_t
+				[[nodiscard]] JKJ_SAFEBUFFERS inline std::uint64_t
 				umul128_upper64( std::uint64_t x, std::uint64_t y ) noexcept {
 #if( defined( __GNUC__ ) || defined( __clang__ ) ) && \
   defined( __SIZEOF_INT128__ ) && defined( __x86_64__ )
@@ -499,7 +510,7 @@ namespace daw::jkj::dragonbox {
 
 				// Get upper 64-bits of multiplication of a 64-bit unsigned integer and
 				// a 128-bit unsigned integer
-				JKJ_SAFEBUFFERS inline std::uint64_t
+				[[nodiscard]] JKJ_SAFEBUFFERS inline std::uint64_t
 				umul192_upper64( std::uint64_t x, uint128 y ) noexcept {
 					auto g0 = umul128( x, y.high( ) );
 					g0 += umul128_upper64( x, y.low( ) );
@@ -508,14 +519,14 @@ namespace daw::jkj::dragonbox {
 
 				// Get upper 32-bits of multiplication of a 32-bit unsigned integer and
 				// a 64-bit unsigned integer
-				inline std::uint32_t umul96_upper32( std::uint32_t x,
-				                                     std::uint64_t y ) noexcept {
+				[[nodiscard]] inline std::uint32_t
+				umul96_upper32( std::uint32_t x, std::uint64_t y ) noexcept {
 					return std::uint32_t( umul128_upper64( x, y ) );
 				}
 
 				// Get middle 64-bits of multiplication of a 64-bit unsigned integer and
 				// a 128-bit unsigned integer
-				JKJ_SAFEBUFFERS inline std::uint64_t
+				[[nodiscard]] JKJ_SAFEBUFFERS inline std::uint64_t
 				umul192_middle64( std::uint64_t x, uint128 y ) noexcept {
 					auto g01 = x * y.high( );
 					auto g10 = umul128_upper64( x, y.low( ) );
@@ -524,14 +535,14 @@ namespace daw::jkj::dragonbox {
 
 				// Get middle 32-bits of multiplication of a 32-bit unsigned integer and
 				// a 64-bit unsigned integer
-				inline std::uint64_t umul96_lower64( std::uint32_t x,
-				                                     std::uint64_t y ) noexcept {
+				[[nodiscard]] inline std::uint64_t
+				umul96_lower64( std::uint32_t x, std::uint64_t y ) noexcept {
 					return x * y;
 				}
 			} // namespace wuint
 
 			template<int k, class Int>
-			inline constexpr Int compute_power( Int a ) noexcept {
+			[[nodiscard]] inline constexpr Int compute_power( Int a ) noexcept {
 				static_assert( k >= 0 );
 				Int p = 1;
 				for( int i = 0; i < k; ++i ) {
@@ -541,7 +552,7 @@ namespace daw::jkj::dragonbox {
 			}
 
 			template<int a, class UInt>
-			inline constexpr int count_factors( UInt n ) noexcept {
+			[[nodiscard]] inline constexpr int count_factors( UInt n ) noexcept {
 				static_assert( a > 1 );
 				int c = 0;
 				while( n % a == 0 ) {
@@ -556,7 +567,7 @@ namespace daw::jkj::dragonbox {
 			////////////////////////////////////////////////////////////////////////////////////////
 
 			namespace log {
-				inline constexpr std::int32_t
+				[[nodiscard]] inline constexpr std::int32_t
 				floor_shift( std::uint32_t integer_part,
 				             std::uint64_t fractional_digits,
 				             std::size_t shift_amount ) noexcept {
@@ -579,7 +590,7 @@ namespace daw::jkj::dragonbox {
 				         std::uint64_t c_fractional_digits, std::size_t shift_amount,
 				         std::int32_t max_exponent, std::uint32_t s_integer_part = 0,
 				         std::uint64_t s_fractional_digits = 0>
-				inline constexpr int compute( int e ) noexcept {
+				[[nodiscard]] inline constexpr int compute( int e ) noexcept {
 					assert( e <= max_exponent && e >= -max_exponent );
 					constexpr auto c =
 					  floor_shift( c_integer_part, c_fractional_digits, shift_amount );
@@ -608,7 +619,7 @@ namespace daw::jkj::dragonbox {
 				// For constexpr computation
 				// Returns -1 when n = 0
 				template<class UInt>
-				inline constexpr int floor_log2( UInt n ) noexcept {
+				[[nodiscard]] inline constexpr int floor_log2( UInt n ) noexcept {
 					int count = -1;
 					while( n != 0 ) {
 						++count;
@@ -617,32 +628,33 @@ namespace daw::jkj::dragonbox {
 					return count;
 				}
 
-				inline constexpr int floor_log10_pow2( int e ) noexcept {
+				[[nodiscard]] inline constexpr int floor_log10_pow2( int e ) noexcept {
 					using namespace log;
 					return compute<0, log10_2_fractional_digits,
 					               floor_log10_pow2_shift_amount, 1700>( e );
 				}
 
-				inline constexpr int floor_log2_pow10( int e ) noexcept {
+				[[nodiscard]] inline constexpr int floor_log2_pow10( int e ) noexcept {
 					using namespace log;
 					return compute<3, log2_10_fractional_digits,
 					               floor_log2_pow10_shift_amount, 1233>( e );
 				}
 
-				inline constexpr int floor_log5_pow2( int e ) noexcept {
+				[[nodiscard]] inline constexpr int floor_log5_pow2( int e ) noexcept {
 					using namespace log;
 					return compute<0, log5_2_fractional_digits,
 					               floor_log5_pow2_shift_amount, 1492>( e );
 				}
 
-				inline constexpr int floor_log5_pow2_minus_log5_3( int e ) noexcept {
+				[[nodiscard]] inline constexpr int
+				floor_log5_pow2_minus_log5_3( int e ) noexcept {
 					using namespace log;
 					return compute<0, log5_2_fractional_digits,
 					               floor_log5_pow2_shift_amount, 2427, 0,
 					               log5_3_fractional_digits>( e );
 				}
 
-				inline constexpr int
+				[[nodiscard]] inline constexpr int
 				floor_log10_pow2_minus_log10_4_over_3( int e ) noexcept {
 					using namespace log;
 					return compute<0, log10_2_fractional_digits,
@@ -657,7 +669,7 @@ namespace daw::jkj::dragonbox {
 
 			namespace div {
 				template<class UInt, UInt a>
-				inline constexpr UInt modular_inverse(
+				[[nodiscard]] inline constexpr UInt modular_inverse(
 				  int bit_width = static_cast<int>( value_bits<UInt> ) ) noexcept {
 					// By Euler's theorem, a^phi(2^n) == 1 (mod 2^n),
 					// where phi(2^n) = 2^(n-1), so the modular inverse of a is
@@ -706,8 +718,8 @@ namespace daw::jkj::dragonbox {
 				};
 
 				template<std::size_t table_size, class UInt>
-				inline constexpr bool divisible_by_power_of_5( UInt x,
-				                                               unsigned exp ) noexcept {
+				[[nodiscard]] inline constexpr bool
+				divisible_by_power_of_5( UInt x, unsigned exp ) noexcept {
 					auto const &table =
 					  table_holder<UInt, 5, static_cast<int>( table_size )>::table;
 					assert( exp < static_cast<unsigned>( table.size ) );
@@ -715,8 +727,8 @@ namespace daw::jkj::dragonbox {
 				}
 
 				template<class UInt>
-				inline constexpr bool divisible_by_power_of_2( UInt x,
-				                                               unsigned exp ) noexcept {
+				[[nodiscard]] inline constexpr bool
+				divisible_by_power_of_2( UInt x, unsigned exp ) noexcept {
 					assert( exp >= 1 );
 					assert( x != 0 );
 #if JKJ_HAS_COUNTR_ZERO_INTRINSIC
@@ -752,7 +764,7 @@ namespace daw::jkj::dragonbox {
 				};
 
 				template<int N>
-				inline constexpr bool
+				[[nodiscard]] inline constexpr bool
 				check_divisibility_and_divide_by_pow5( std::uint32_t &n ) noexcept {
 					// Make sure the computation for max_n does not overflow
 					static_assert( N + 1 <= log::floor_log5_pow2( 31 ) );
@@ -793,7 +805,7 @@ namespace daw::jkj::dragonbox {
 				};
 
 				template<int N>
-				inline constexpr std::uint32_t
+				[[nodiscard]] inline constexpr std::uint32_t
 				small_division_by_pow10( std::uint32_t n ) noexcept {
 					assert( n <= compute_power<N + 1>( std::uint32_t( 10 ) ) );
 					return ( n * small_division_by_pow10_info<N>::magic_number ) >>
@@ -803,7 +815,7 @@ namespace daw::jkj::dragonbox {
 				// Compute floor(n / 10^N) for small N
 				// Precondition: n <= 2^a * 5^b (a = max_pow2, b = max_pow5)
 				template<int N, int max_pow2, int max_pow5, class UInt>
-				inline constexpr UInt divide_by_pow10( UInt n ) noexcept {
+				[[nodiscard]] inline constexpr UInt divide_by_pow10( UInt n ) noexcept {
 					static_assert( N >= 0 );
 
 					// Ensure no overflow
@@ -1578,8 +1590,8 @@ namespace daw::jkj::dragonbox {
 				static constexpr pow5_holder_t pow5 = [] {
 					pow5_holder_t res{ };
 					std::uint64_t p = 1;
-					for( std::size_t i = 0; i < compression_ratio; ++i ) {
-						res.table[i] = p;
+					for( std::uint64_t &item : res.table ) {
+						item = p;
 						p *= 5;
 					}
 					return res;
@@ -1691,56 +1703,70 @@ namespace daw::jkj::dragonbox {
 						struct symmetric_boundary {
 							static constexpr bool is_symmetric = true;
 							bool is_closed;
-							inline constexpr bool include_left_endpoint( ) const noexcept {
+							[[nodiscard]] inline constexpr bool
+							include_left_endpoint( ) const noexcept {
 								return is_closed;
 							}
-							inline constexpr bool include_right_endpoint( ) const noexcept {
+
+							[[nodiscard]] inline constexpr bool
+							include_right_endpoint( ) const noexcept {
 								return is_closed;
 							}
 						};
 						struct asymmetric_boundary {
 							static constexpr bool is_symmetric = false;
 							bool is_left_closed;
-							inline constexpr bool include_left_endpoint( ) const noexcept {
+							[[nodiscard]] inline constexpr bool
+							include_left_endpoint( ) const noexcept {
 								return is_left_closed;
 							}
-							inline constexpr bool include_right_endpoint( ) const noexcept {
+
+							[[nodiscard]] inline constexpr bool
+							include_right_endpoint( ) const noexcept {
 								return !is_left_closed;
 							}
 						};
 						struct closed {
 							static constexpr bool is_symmetric = true;
-							static inline constexpr bool include_left_endpoint( ) noexcept {
+							[[nodiscard]] static inline constexpr bool
+							include_left_endpoint( ) noexcept {
 								return true;
 							}
-							static inline constexpr bool include_right_endpoint( ) noexcept {
+							[[nodiscard]] static inline constexpr bool
+							include_right_endpoint( ) noexcept {
 								return true;
 							}
 						};
 						struct open {
 							static constexpr bool is_symmetric = true;
-							static inline constexpr bool include_left_endpoint( ) noexcept {
+							[[nodiscard]] static inline constexpr bool
+							include_left_endpoint( ) noexcept {
 								return false;
 							}
-							static inline constexpr bool include_right_endpoint( ) noexcept {
+							[[nodiscard]] static inline constexpr bool
+							include_right_endpoint( ) noexcept {
 								return false;
 							}
 						};
 						struct left_closed_right_open {
 							static constexpr bool is_symmetric = false;
-							static inline constexpr bool include_left_endpoint( ) noexcept {
+							[[nodiscard]] static inline constexpr bool
+							include_left_endpoint( ) noexcept {
 								return true;
 							}
-							static inline constexpr bool include_right_endpoint( ) noexcept {
+							[[nodiscard]] static inline constexpr bool
+							include_right_endpoint( ) noexcept {
 								return false;
 							}
 						};
 						struct right_closed_left_open {
 							static constexpr bool is_symmetric = false;
-							static inline constexpr bool include_left_endpoint( ) noexcept {
+							[[nodiscard]] static inline constexpr bool
+							include_left_endpoint( ) noexcept {
 								return false;
 							}
-							static inline constexpr bool include_right_endpoint( ) noexcept {
+							[[nodiscard]] static inline constexpr bool
+							include_right_endpoint( ) noexcept {
 								return true;
 							}
 						};
@@ -1751,18 +1777,19 @@ namespace daw::jkj::dragonbox {
 						static constexpr auto tag = tag_t::to_nearest;
 
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float>,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float>,
+						                                           Func &&f ) noexcept {
 							return f( nearest_to_even{ } );
 						}
 
 						template<class Float>
-						static inline constexpr interval_type::symmetric_boundary
-						interval_type_normal( ieee754_bits<Float> br ) noexcept {
+						[[nodiscard]] static inline constexpr interval_type::
+						  symmetric_boundary
+						  interval_type_normal( ieee754_bits<Float> br ) noexcept {
 							return { br.u % 2 == 0 };
 						}
 						template<class Float>
-						static inline constexpr interval_type::closed
+						[[nodiscard]] static inline constexpr interval_type::closed
 						interval_type_shorter( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
@@ -1772,18 +1799,19 @@ namespace daw::jkj::dragonbox {
 						static constexpr auto tag = tag_t::to_nearest;
 
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float>,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float>,
+						                                           Func &&f ) noexcept {
 							return f( nearest_to_odd{ } );
 						}
 
 						template<class Float>
-						static inline constexpr interval_type::symmetric_boundary
-						interval_type_normal( ieee754_bits<Float> br ) noexcept {
+						[[nodiscard]] static inline constexpr interval_type::
+						  symmetric_boundary
+						  interval_type_normal( ieee754_bits<Float> br ) noexcept {
 							return { br.u % 2 != 0 };
 						}
 						template<class Float>
-						static inline constexpr interval_type::closed
+						[[nodiscard]] static inline constexpr interval_type::closed
 						interval_type_shorter( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
@@ -1793,19 +1821,21 @@ namespace daw::jkj::dragonbox {
 						static constexpr auto tag = tag_t::to_nearest;
 
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float>,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float>,
+						                                           Func &&f ) noexcept {
 							return f( nearest_toward_plus_infinity{ } );
 						}
 
 						template<class Float>
-						static inline constexpr interval_type::asymmetric_boundary
-						interval_type_normal( ieee754_bits<Float> br ) noexcept {
+						[[nodiscard]] static inline constexpr interval_type::
+						  asymmetric_boundary
+						  interval_type_normal( ieee754_bits<Float> br ) noexcept {
 							return { !br.is_negative( ) };
 						}
 						template<class Float>
-						static inline constexpr interval_type::asymmetric_boundary
-						interval_type_shorter( ieee754_bits<Float> br ) noexcept {
+						[[nodiscard]] static inline constexpr interval_type::
+						  asymmetric_boundary
+						  interval_type_shorter( ieee754_bits<Float> br ) noexcept {
 							return { !br.is_negative( ) };
 						}
 					};
@@ -1814,19 +1844,21 @@ namespace daw::jkj::dragonbox {
 						static constexpr auto tag = tag_t::to_nearest;
 
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float>,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float>,
+						                                           Func &&f ) noexcept {
 							return f( nearest_toward_minus_infinity{ } );
 						}
 
 						template<class Float>
-						static inline constexpr interval_type::asymmetric_boundary
-						interval_type_normal( ieee754_bits<Float> br ) noexcept {
+						[[nodiscard]] static inline constexpr interval_type::
+						  asymmetric_boundary
+						  interval_type_normal( ieee754_bits<Float> br ) noexcept {
 							return { br.is_negative( ) };
 						}
 						template<class Float>
-						static inline constexpr interval_type::asymmetric_boundary
-						interval_type_shorter( ieee754_bits<Float> br ) noexcept {
+						[[nodiscard]] static inline constexpr interval_type::
+						  asymmetric_boundary
+						  interval_type_shorter( ieee754_bits<Float> br ) noexcept {
 							return { br.is_negative( ) };
 						}
 					};
@@ -1835,18 +1867,20 @@ namespace daw::jkj::dragonbox {
 						static constexpr auto tag = tag_t::to_nearest;
 
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float>,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float>,
+						                                           Func &&f ) noexcept {
 							return f( nearest_toward_zero{ } );
 						}
 						template<class Float>
-						static inline constexpr interval_type::right_closed_left_open
-						interval_type_normal( ieee754_bits<Float> ) noexcept {
+						[[nodiscard]] static inline constexpr interval_type::
+						  right_closed_left_open
+						  interval_type_normal( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
 						template<class Float>
-						static inline constexpr interval_type::right_closed_left_open
-						interval_type_shorter( ieee754_bits<Float> ) noexcept {
+						[[nodiscard]] static inline constexpr interval_type::
+						  right_closed_left_open
+						  interval_type_shorter( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
 					};
@@ -1855,18 +1889,20 @@ namespace daw::jkj::dragonbox {
 						static constexpr auto tag = tag_t::to_nearest;
 
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float>,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float>,
+						                                           Func &&f ) noexcept {
 							return f( nearest_away_from_zero{ } );
 						}
 						template<class Float>
-						static inline constexpr interval_type::left_closed_right_open
-						interval_type_normal( ieee754_bits<Float> ) noexcept {
+						[[nodiscard]] static inline constexpr interval_type::
+						  left_closed_right_open
+						  interval_type_normal( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
 						template<class Float>
-						static inline constexpr interval_type::left_closed_right_open
-						interval_type_shorter( ieee754_bits<Float> ) noexcept {
+						[[nodiscard]] static inline constexpr interval_type::
+						  left_closed_right_open
+						  interval_type_shorter( ieee754_bits<Float> ) noexcept {
 							return { };
 						}
 					};
@@ -1876,12 +1912,12 @@ namespace daw::jkj::dragonbox {
 							static constexpr auto tag = tag_t::to_nearest;
 
 							template<class Float>
-							static inline constexpr interval_type::closed
+							[[nodiscard]] static inline constexpr interval_type::closed
 							interval_type_normal( ieee754_bits<Float> ) noexcept {
 								return { };
 							}
 							template<class Float>
-							static inline constexpr interval_type::closed
+							[[nodiscard]] static inline constexpr interval_type::closed
 							interval_type_shorter( ieee754_bits<Float> ) noexcept {
 								return { };
 							}
@@ -1891,12 +1927,12 @@ namespace daw::jkj::dragonbox {
 							static constexpr auto tag = tag_t::to_nearest;
 
 							template<class Float>
-							static inline constexpr interval_type::open
+							[[nodiscard]] static inline constexpr interval_type::open
 							interval_type_normal( ieee754_bits<Float> ) noexcept {
 								return { };
 							}
 							template<class Float>
-							static inline constexpr interval_type::open
+							[[nodiscard]] static inline constexpr interval_type::open
 							interval_type_shorter( ieee754_bits<Float> ) noexcept {
 								return { };
 							}
@@ -1906,8 +1942,8 @@ namespace daw::jkj::dragonbox {
 					struct nearest_to_even_static_boundary : base {
 						using rounding_mode_policy = nearest_to_even_static_boundary;
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float> br,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float> br,
+						                                           Func &&f ) noexcept {
 							if( br.u % 2 == 0 ) {
 								return f( detail::nearest_always_closed{ } );
 							} else {
@@ -1919,8 +1955,8 @@ namespace daw::jkj::dragonbox {
 					struct nearest_to_odd_static_boundary : base {
 						using rounding_mode_policy = nearest_to_odd_static_boundary;
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float> br,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float> br,
+						                                           Func &&f ) noexcept {
 							if( br.u % 2 == 0 ) {
 								return f( detail::nearest_always_open{ } );
 							} else {
@@ -1933,8 +1969,8 @@ namespace daw::jkj::dragonbox {
 						using rounding_mode_policy =
 						  nearest_toward_plus_infinity_static_boundary;
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float> br,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float> br,
+						                                           Func &&f ) noexcept {
 							if( br.is_negative( ) ) {
 								return f( nearest_toward_zero{ } );
 							} else {
@@ -1947,8 +1983,8 @@ namespace daw::jkj::dragonbox {
 						using rounding_mode_policy =
 						  nearest_toward_minus_infinity_static_boundary;
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float> br,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float> br,
+						                                           Func &&f ) noexcept {
 							if( br.is_negative( ) ) {
 								return f( nearest_away_from_zero{ } );
 							} else {
@@ -1962,8 +1998,9 @@ namespace daw::jkj::dragonbox {
 							static constexpr auto tag = tag_t::left_closed_directed;
 
 							template<class Float>
-							static inline constexpr interval_type::left_closed_right_open
-							interval_type_normal( ieee754_bits<Float> ) noexcept {
+							[[nodiscard]] static inline constexpr interval_type::
+							  left_closed_right_open
+							  interval_type_normal( ieee754_bits<Float> ) noexcept {
 								return { };
 							}
 						};
@@ -1971,8 +2008,9 @@ namespace daw::jkj::dragonbox {
 							static constexpr auto tag = tag_t::right_closed_directed;
 
 							template<class Float>
-							static inline constexpr interval_type::right_closed_left_open
-							interval_type_normal( ieee754_bits<Float> ) noexcept {
+							[[nodiscard]] static inline constexpr interval_type::
+							  right_closed_left_open
+							  interval_type_normal( ieee754_bits<Float> ) noexcept {
 								return { };
 							}
 						};
@@ -1981,8 +2019,8 @@ namespace daw::jkj::dragonbox {
 					struct toward_plus_infinity : base {
 						using rounding_mode_policy = toward_plus_infinity;
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float> br,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float> br,
+						                                           Func &&f ) noexcept {
 							if( br.is_negative( ) ) {
 								return f( detail::left_closed_directed{ } );
 							} else {
@@ -1994,8 +2032,8 @@ namespace daw::jkj::dragonbox {
 					struct toward_minus_infinity : base {
 						using rounding_mode_policy = toward_minus_infinity;
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float> br,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float> br,
+						                                           Func &&f ) noexcept {
 							if( br.is_negative( ) ) {
 								return f( detail::right_closed_directed{ } );
 							} else {
@@ -2007,8 +2045,8 @@ namespace daw::jkj::dragonbox {
 					struct toward_zero : base {
 						using rounding_mode_policy = toward_zero;
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float>,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float>,
+						                                           Func &&f ) noexcept {
 							return f( detail::left_closed_directed{ } );
 						}
 					};
@@ -2016,8 +2054,8 @@ namespace daw::jkj::dragonbox {
 					struct away_from_zero : base {
 						using rounding_mode_policy = away_from_zero;
 						template<class Float, class Func>
-						static inline auto delegate( ieee754_bits<Float>,
-						                             Func &&f ) noexcept {
+						[[nodiscard]] static inline auto delegate( ieee754_bits<Float>,
+						                                           Func &&f ) noexcept {
 							return f( detail::right_closed_directed{ } );
 						}
 					};
@@ -2091,7 +2129,7 @@ namespace daw::jkj::dragonbox {
 					struct normal : base {
 						using cache_policy = normal;
 						template<ieee754_format format>
-						static inline constexpr
+						[[nodiscard]] static inline constexpr
 						  typename cache_holder<format>::cache_entry_type
 						  get_cache( int k ) noexcept {
 							assert( k >= cache_holder<format>::min_k &&
@@ -2104,7 +2142,7 @@ namespace daw::jkj::dragonbox {
 					struct compressed : base {
 						using cache_policy = compressed;
 						template<ieee754_format format>
-						static inline constexpr
+						[[nodiscard]] static inline constexpr
 						  typename cache_holder<format>::cache_entry_type
 						  get_cache( int k ) noexcept {
 							assert( k >= cache_holder<format>::min_k &&
@@ -2376,7 +2414,7 @@ namespace daw::jkj::dragonbox {
 				template<class ReturnType, class IntervalTypeProvider, class SignPolicy,
 				         class TrailingZeroPolicy, class CorrectRoundingPolicy,
 				         class CachePolicy>
-				JKJ_SAFEBUFFERS static inline ReturnType
+				[[nodiscard]] JKJ_SAFEBUFFERS static inline ReturnType
 				compute_nearest( ieee754_bits<Float> const br ) noexcept {
 					//////////////////////////////////////////////////////////////////////
 					// Step 1: integer promotion & Schubfach multiplier calculation
@@ -2642,7 +2680,7 @@ namespace daw::jkj::dragonbox {
 
 				template<class ReturnType, class SignPolicy, class TrailingZeroPolicy,
 				         class CachePolicy>
-				JKJ_SAFEBUFFERS static inline ReturnType
+				[[nodiscard]] JKJ_SAFEBUFFERS static inline ReturnType
 				compute_left_closed_directed( ieee754_bits<Float> const br ) noexcept {
 					//////////////////////////////////////////////////////////////////////
 					// Step 1: integer promotion & Schubfach multiplier calculation
@@ -2733,7 +2771,7 @@ namespace daw::jkj::dragonbox {
 
 				template<class ReturnType, class SignPolicy, class TrailingZeroPolicy,
 				         class CachePolicy>
-				JKJ_SAFEBUFFERS static inline ReturnType
+				[[nodiscard]] JKJ_SAFEBUFFERS static inline ReturnType
 				compute_right_closed_directed( ieee754_bits<Float> const br ) noexcept {
 					//////////////////////////////////////////////////////////////////////
 					// Step 1: integer promotion & Schubfach multiplier calculation
@@ -2827,7 +2865,7 @@ namespace daw::jkj::dragonbox {
 				}
 
 				// Remove trailing zeros from n and return the number of zeros removed
-				JKJ_FORCEINLINE static int
+				[[nodiscard]] JKJ_FORCEINLINE static int
 				remove_trailing_zeros( carrier_uint &n ) noexcept {
 					constexpr auto max_power = [] {
 						auto max_possible_significand =
@@ -2958,7 +2996,7 @@ namespace daw::jkj::dragonbox {
 					}
 				}
 
-				static inline constexpr carrier_uint
+				[[nodiscard]] static inline constexpr carrier_uint
 				compute_mul( carrier_uint u, cache_entry_type const &cache ) noexcept {
 					if constexpr( format == ieee754_format::binary32 ) {
 						return wuint::umul96_upper32( u, cache );
@@ -2967,7 +3005,7 @@ namespace daw::jkj::dragonbox {
 					}
 				}
 
-				static inline std::uint32_t constexpr compute_delta(
+				[[nodiscard]] static inline std::uint32_t constexpr compute_delta(
 				  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
 					if constexpr( format == ieee754_format::binary32 ) {
 						return std::uint32_t( cache >> ( cache_bits - 1 - beta_minus_1 ) );
@@ -2977,7 +3015,7 @@ namespace daw::jkj::dragonbox {
 					}
 				}
 
-				static inline constexpr bool
+				[[nodiscard]] static inline constexpr bool
 				compute_mul_parity( carrier_uint two_f, cache_entry_type const &cache,
 				                    int beta_minus_1 ) noexcept {
 					assert( beta_minus_1 >= 1 );
@@ -2994,7 +3032,7 @@ namespace daw::jkj::dragonbox {
 					}
 				}
 
-				static inline constexpr carrier_uint
+				[[nodiscard]] static inline constexpr carrier_uint
 				compute_left_endpoint_for_shorter_interval_case(
 				  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
 					if constexpr( format == ieee754_format::binary32 ) {
@@ -3008,7 +3046,7 @@ namespace daw::jkj::dragonbox {
 					}
 				}
 
-				static inline constexpr carrier_uint
+				[[nodiscard]] static inline constexpr carrier_uint
 				compute_right_endpoint_for_shorter_interval_case(
 				  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
 					if constexpr( format == ieee754_format::binary32 ) {
@@ -3022,7 +3060,7 @@ namespace daw::jkj::dragonbox {
 					}
 				}
 
-				static inline constexpr carrier_uint
+				[[nodiscard]] static inline constexpr carrier_uint
 				compute_round_up_for_shorter_interval_case(
 				  cache_entry_type const &cache, int beta_minus_1 ) noexcept {
 					if constexpr( format == ieee754_format::binary32 ) {
@@ -3038,7 +3076,7 @@ namespace daw::jkj::dragonbox {
 					}
 				}
 
-				static inline constexpr bool
+				[[nodiscard]] static inline constexpr bool
 				is_right_endpoint_integer_shorter_interval( int exponent ) noexcept {
 					return exponent >=
 					         case_shorter_interval_right_endpoint_lower_threshold &&
@@ -3046,7 +3084,7 @@ namespace daw::jkj::dragonbox {
 					         case_shorter_interval_right_endpoint_upper_threshold;
 				}
 
-				static inline constexpr bool
+				[[nodiscard]] static inline constexpr bool
 				is_left_endpoint_integer_shorter_interval( int exponent ) noexcept {
 					return exponent >=
 					         case_shorter_interval_left_endpoint_lower_threshold &&
@@ -3056,7 +3094,7 @@ namespace daw::jkj::dragonbox {
 
 				enum class integer_check_case_id { fc_pm_half, fc };
 				template<integer_check_case_id case_id>
-				static inline constexpr bool
+				[[nodiscard]] static inline constexpr bool
 				is_product_integer( carrier_uint two_f, int exponent,
 				                    int minus_k ) noexcept {
 					// Case I: f = fc +- 1/2
@@ -3135,12 +3173,13 @@ namespace daw::jkj::dragonbox {
 					using base = Base;
 
 					template<class FoundPolicyInfo>
-					static constexpr FoundPolicyInfo get_policy_impl( FoundPolicyInfo ) {
+					[[nodiscard]] static constexpr FoundPolicyInfo
+					get_policy_impl( FoundPolicyInfo ) {
 						return { };
 					}
 					template<class FoundPolicyInfo, class FirstPolicy,
 					         class... RemainingPolicies>
-					static constexpr auto
+					[[nodiscard]] static constexpr auto
 					get_policy_impl( FoundPolicyInfo, FirstPolicy,
 					                 RemainingPolicies... remainings ) {
 						if constexpr( std::is_base_of_v<Base, FirstPolicy> ) {
@@ -3161,7 +3200,8 @@ namespace daw::jkj::dragonbox {
 					}
 
 					template<class... Policies>
-					static constexpr auto get_policy( Policies... policies ) {
+					[[nodiscard]] static constexpr auto
+					get_policy( Policies... policies ) {
 						return get_policy_impl(
 						  found_policy_pair<DefaultPolicy, policy_found_info::not_found>{ },
 						  policies... );
@@ -3173,13 +3213,13 @@ namespace daw::jkj::dragonbox {
 				// Check if a given policy belongs to one of the kinds specified by the
 				// library
 				template<class Policy>
-				constexpr bool check_policy_validity( Policy,
-				                                      base_default_pair_list<> ) {
+				[[nodiscard]] constexpr bool
+				check_policy_validity( Policy, base_default_pair_list<> ) {
 					return false;
 				}
 				template<class Policy, class FirstBaseDefaultPair,
 				         class... RemainingBaseDefaultPairs>
-				constexpr bool check_policy_validity(
+				[[nodiscard]] constexpr bool check_policy_validity(
 				  Policy, base_default_pair_list<FirstBaseDefaultPair,
 				                                 RemainingBaseDefaultPairs...> ) {
 					return std::is_base_of_v<typename FirstBaseDefaultPair::base,
@@ -3190,13 +3230,14 @@ namespace daw::jkj::dragonbox {
 				}
 
 				template<class BaseDefaultPairList>
-				constexpr bool check_policy_list_validity( BaseDefaultPairList ) {
+				[[nodiscard]] constexpr bool
+				check_policy_list_validity( BaseDefaultPairList ) {
 					return true;
 				}
 
 				template<class BaseDefaultPairList, class FirstPolicy,
 				         class... RemainingPolicies>
-				constexpr bool
+				[[nodiscard]] constexpr bool
 				check_policy_list_validity( BaseDefaultPairList, FirstPolicy,
 				                            RemainingPolicies... remaining_policies ) {
 					return check_policy_validity( FirstPolicy{ },
@@ -3215,7 +3256,7 @@ namespace daw::jkj::dragonbox {
 				struct policy_holder : Policies... {};
 
 				template<bool repeated, class... FoundPolicyPairs, class... Policies>
-				constexpr auto make_policy_holder_impl(
+				[[nodiscard]] constexpr auto make_policy_holder_impl(
 				  base_default_pair_list<>,
 				  found_policy_pair_list<repeated, FoundPolicyPairs...>, Policies... ) {
 					return found_policy_pair_list<repeated, FoundPolicyPairs...>{ };
@@ -3223,7 +3264,7 @@ namespace daw::jkj::dragonbox {
 
 				template<class FirstBaseDefaultPair, class... RemainingBaseDefaultPairs,
 				         bool repeated, class... FoundPolicyPairs, class... Policies>
-				constexpr auto make_policy_holder_impl(
+				[[nodiscard]] constexpr auto make_policy_holder_impl(
 				  base_default_pair_list<FirstBaseDefaultPair,
 				                         RemainingBaseDefaultPairs...>,
 				  found_policy_pair_list<repeated, FoundPolicyPairs...>,
@@ -3239,7 +3280,7 @@ namespace daw::jkj::dragonbox {
 				}
 
 				template<bool repeated, class... RawPolicies>
-				constexpr auto
+				[[nodiscard]] constexpr auto
 				convert_to_policy_holder( found_policy_pair_list<repeated>,
 				                          RawPolicies... ) {
 					return policy_holder<RawPolicies...>{ };
@@ -3247,7 +3288,7 @@ namespace daw::jkj::dragonbox {
 
 				template<bool repeated, class FirstFoundPolicyPair,
 				         class... RemainingFoundPolicyPairs, class... RawPolicies>
-				constexpr auto convert_to_policy_holder(
+				[[nodiscard]] constexpr auto convert_to_policy_holder(
 				  found_policy_pair_list<repeated, FirstFoundPolicyPair,
 				                         RemainingFoundPolicyPairs...>,
 				  RawPolicies... policies ) {
@@ -3257,8 +3298,8 @@ namespace daw::jkj::dragonbox {
 				}
 
 				template<class BaseDefaultPairList, class... Policies>
-				constexpr auto make_policy_holder( BaseDefaultPairList,
-				                                   Policies... policies ) {
+				[[nodiscard]] constexpr auto
+				make_policy_holder( BaseDefaultPairList, Policies... policies ) {
 					static_assert( check_policy_list_validity( BaseDefaultPairList{ },
 					                                           Policies{ }... ),
 					               "jkj::dragonbox: an invalid policy is specified" );
@@ -3281,8 +3322,8 @@ namespace daw::jkj::dragonbox {
 		////////////////////////////////////////////////////////////////////////////////////////
 
 		template<class Float, class... Policies>
-		JKJ_SAFEBUFFERS JKJ_FORCEINLINE auto to_decimal( Float x,
-		                                                 Policies... policies ) {
+		[[nodiscard]] JKJ_SAFEBUFFERS JKJ_FORCEINLINE auto
+		to_decimal( Float x, Policies... policies ) {
 			// Build policy holder type
 			using namespace detail::policy_impl;
 			using policy_holder = decltype( make_policy_holder(

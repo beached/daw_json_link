@@ -875,7 +875,7 @@ namespace daw::json {
 					return switcher_t{ }( std::get<0>( parse_value<class_wrapper_t>(
 					  parse_state2, ParseTag<class_wrapper_t::expected_type>{ } ) ) );
 				} else {
-					// This is an regular class, class must start with '{'
+					// This is a regular class, class must start with '{'
 					daw_json_assert_weak( parse_state2.is_opening_brace_checked( ),
 					                      ErrorReason::InvalidClassStart, parse_state );
 					return switcher_t{ }( std::get<0>(
@@ -1105,14 +1105,15 @@ namespace daw::json {
 #endif
 				auto const parse_value_help = [&]( auto PackIdx,
 				                                   std::size_t &ClassIdx ) {
-					constexpr std::size_t index = decltype( PackIdx )::value;
-					using CurrentMember = std::tuple_element_t<index, tuple_members>;
+					using index_t = decltype( PackIdx );
+					using CurrentMember =
+					  std::tuple_element_t<index_t::value, tuple_members>;
 
 					using json_member_t = ordered_member_subtype_t<CurrentMember>;
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					ParseState parse_state2 =
 					  pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
-					    parse_state, ClassIdx, index, parse_locations );
+					  	parse_state, ClassIdx, index_t::value, parse_locations );
 					if constexpr( sizeof...( Is ) > 1 ) {
 						++ClassIdx;
 						if( parse_state2.first == parse_state.first ) {

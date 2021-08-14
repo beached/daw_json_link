@@ -61,20 +61,18 @@ namespace daw::json {
 
 				Unsigned value = v;
 				if constexpr( skip_end_check ) {
-					auto dig = parse_digit( *first );
-					while( dig < 10U ) {
+					for( auto dig = parse_digit( *first ); dig < 10U;
+					     ++first, dig = parse_digit( *first ) ) {
 						value *= 10U;
 						value += dig;
-						++first;
-						dig = parse_digit( *first );
 					}
 				} else {
 					unsigned dig = 0;
-					while( DAW_LIKELY( first < last ) and
-					       ( dig = parse_digit( *first ) ) < 10U ) {
+					for( ; DAW_LIKELY( first < last ) and
+					       ( dig = parse_digit( *first ) ) < 10U;
+					     ++first ) {
 						value *= 10U;
 						value += dig;
-						++first;
 					}
 				}
 				v = value;
@@ -112,14 +110,16 @@ namespace daw::json {
 					fract_last = parse_state.last;
 				}
 
-				constexpr auto max_storage_digits = static_cast<std::ptrdiff_t>(
-				  daw::numeric_limits<std::uint64_t>::digits10 );
+				using max_storage_digits = std::integral_constant<
+				  std::ptrdiff_t, static_cast<std::ptrdiff_t>(
+				                    daw::numeric_limits<std::uint64_t>::digits10 )>;
 				bool use_strtod = [&] {
 					if constexpr( std::is_floating_point_v<Result> and
 					              ParseState::precise_ieee754 ) {
-						return DAW_UNLIKELY( ( ( whole_last - whole_first ) +
-						                       ( fract_first ? fract_last - fract_first
-						                                     : 0 ) ) > max_storage_digits );
+						return DAW_UNLIKELY(
+						  ( ( whole_last - whole_first ) +
+						    ( fract_first ? fract_last - fract_first : 0 ) ) >
+						  max_storage_digits::value );
 					} else {
 						return false;
 					}
@@ -132,25 +132,27 @@ namespace daw::json {
 					}
 					return static_cast<Result>( 1.0 );
 				}( );
-				constexpr auto max_exponent = static_cast<std::ptrdiff_t>(
-				  daw::numeric_limits<Result>::max_digits10 + 1 );
+				using max_exponent = std::integral_constant<
+				  std::ptrdiff_t, static_cast<std::ptrdiff_t>(
+				                    daw::numeric_limits<Result>::max_digits10 + 1 )>;
 				using unsigned_t =
-				  std::conditional_t<max_storage_digits >= max_exponent, std::uint64_t,
-				                     Result>;
+				  std::conditional_t<max_storage_digits::value >= max_exponent::value,
+				                     std::uint64_t, Result>;
 
 				std::ptrdiff_t whole_exponent_available = whole_last - whole_first;
 				std::ptrdiff_t fract_exponent_available =
 				  fract_first ? fract_last - fract_first : 0;
 				std::ptrdiff_t exponent = 0;
 
-				if( whole_exponent_available > max_exponent ) {
-					whole_last = whole_first + max_exponent;
-					whole_exponent_available -= max_exponent;
+				if( whole_exponent_available > max_exponent::value ) {
+					whole_last = whole_first + max_exponent::value;
+					whole_exponent_available -= max_exponent::value;
 					fract_exponent_available = 0;
 					fract_first = nullptr;
 					exponent = whole_exponent_available;
 				} else {
-					whole_exponent_available = max_exponent - whole_exponent_available;
+					whole_exponent_available =
+					  max_exponent::value - whole_exponent_available;
 					if constexpr( ParseState::precise_ieee754 ) {
 						use_strtod |= DAW_UNLIKELY( fract_exponent_available >
 						                            whole_exponent_available );
@@ -189,14 +191,14 @@ namespace daw::json {
 						}
 					}( );
 					exponent += exp_sign * [&] {
-						std::ptrdiff_t r = 0;
+						std::ptrdiff_t exp_result = 0;
 						// TODO use zstringopt
 						if constexpr( ParseState::is_zero_terminated_string ) {
 							auto dig = parse_digit( *exp_first );
 							while( dig < 10U ) {
 								++exp_first;
-								r *= 10U;
-								r += dig;
+								exp_result *= 10U;
+								exp_result += dig;
 								dig = parse_digit( *exp_first );
 							}
 						} else {
@@ -207,8 +209,8 @@ namespace daw::json {
 										break;
 									}
 									++exp_first;
-									r *= 10U;
-									r += dig;
+									exp_result *= 10U;
+									exp_result += dig;
 									if( exp_first >= exp_last ) {
 										break;
 									}
@@ -216,14 +218,15 @@ namespace daw::json {
 								} while( true );
 							}
 						}
-						return r;
+						return exp_result;
 					}( );
 				}
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754 ) {
 					use_strtod |= DAW_UNLIKELY( exponent > 22 );
 					use_strtod |= DAW_UNLIKELY( exponent < -22 );
-					use_strtod |= DAW_UNLIKELY( significant_digits > 9007199254740992 );
+					use_strtod |=
+					  DAW_UNLIKELY( significant_digits > 9007199254740992ULL );
 					if( DAW_UNLIKELY( use_strtod ) ) {
 						return json_details::parse_with_strtod<Result>( parse_state.first,
 						                                                parse_state.last );
@@ -353,8 +356,8 @@ namespace daw::json {
 							switch( *first ) {
 							case '+':
 								++first;
-								daw_json_assert_weak( first < parse_state.last and
-								                        parse_digit( *first ) < 10U,
+								daw_json_assert_weak( ( first < parse_state.last ) and
+								                        ( parse_digit( *first ) < 10U ),
 								                      ErrorReason::InvalidNumber );
 								return false;
 							case '-':

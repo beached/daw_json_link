@@ -47,35 +47,40 @@ namespace daw::json {
 			  1e290, 1e291, 1e292, 1e293, 1e294, 1e295, 1e296, 1e297, 1e298, 1e299,
 			  1e300, 1e301, 1e302, 1e303, 1e304, 1e305, 1e306, 1e307, 1e308 };
 
+			inline constexpr int max_dbl_exp =
+			  std::numeric_limits<double>::max_exponent10;
+
+			template<typename Result>
+			inline constexpr int max_exp =
+			  std::is_same_v<Result, float>
+			    ? std::min( max_dbl_exp, std::numeric_limits<float>::max_exponent10 )
+			    : max_dbl_exp;
+
 			template<typename Result, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE static inline constexpr Result
 			power10( constexpr_exec_tag, Result result, Unsigned p ) {
 				// We only have a double table, of which float is a subset.  Long double
 				// will be calculated in terms of that
-				constexpr int max_dbl_exp = std::numeric_limits<double>::max_exponent10;
-				constexpr int max_exp =
-				  std::is_same<Result, float>::value
-				    ? std::min( max_dbl_exp,
-				                std::numeric_limits<float>::max_exponent10 )
-				    : max_dbl_exp;
-				constexpr auto max_v = static_cast<Result>( dpow10_tbl[max_exp] );
 
-				if( DAW_UNLIKELY( p > max_exp ) ) {
+				constexpr auto max_v =
+				  static_cast<Result>( dpow10_tbl[max_exp<Result>] );
+
+				if( DAW_UNLIKELY( p > max_exp<Result> ) ) {
 					Result exp2 = max_v;
-					p -= max_exp;
-					while( p > max_exp ) {
+					p -= max_exp<Result>;
+
+					for( ; p > max_exp<Result>; p -= max_exp<Result> ) {
 						exp2 *= max_v;
-						p -= max_exp;
 					}
 					return static_cast<Result>( result ) *
 					       ( exp2 * static_cast<Result>(
 					                  dpow10_tbl[static_cast<std::size_t>( p )] ) );
-				} else if( DAW_UNLIKELY( p < -max_exp ) ) {
+				} else if( DAW_UNLIKELY( p < -max_exp<Result> ) ) {
 					Result exp2 = max_v;
-					p += max_exp;
-					while( p < -max_exp ) {
+					p += max_exp<Result>;
+
+					for( ; p < -max_exp<Result>; p += max_exp<Result> ) {
 						result /= max_v;
-						p += max_exp;
 					}
 					return ( static_cast<Result>( result ) /
 					         static_cast<Result>(
