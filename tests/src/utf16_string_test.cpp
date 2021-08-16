@@ -27,7 +27,8 @@ struct ToConverter {
 		char const *last = daw::data_end( sv );
 		auto result = std::u16string( );
 		result.resize( sv.size( ) );
-		auto *olast = daw::utf8::unchecked::utf8to16( first, last, std::data( result ) );
+		auto *olast =
+		  daw::utf8::unchecked::utf8to16( first, last, std::data( result ) );
 		result.resize(
 		  static_cast<std::size_t>( std::distance( std::data( result ), olast ) ) );
 		return result;
@@ -40,7 +41,8 @@ struct FromConverter {
 		char16_t const *last = daw::data_end( str );
 		auto result = std::string( );
 		result.resize( str.size( ) * 3 );
-		auto *olast = daw::utf8::unchecked::utf16to8( first, last, std::data( result ) );
+		auto *olast =
+		  daw::utf8::unchecked::utf16to8( first, last, std::data( result ) );
 		result.resize(
 		  static_cast<std::size_t>( std::distance( std::data( result ), olast ) ) );
 		return result;

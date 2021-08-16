@@ -82,8 +82,8 @@ int main( int argc, char *argv[] )
 	std::cout << "twitter roundtrip: "
 	          << ( twitter_out == twitter_out2 ? "good" : "bad" ) << '\n';
 
-//	std::cout << twitter_out << "\n\n\n";
-//	std::cerr << twitter_out2 << "\n\n\n";
+	//	std::cout << twitter_out << "\n\n\n";
+	//	std::cerr << twitter_out2 << "\n\n\n";
 	if( twitter_out != twitter_out2 ) {
 		if( twitter_out.size( ) != twitter_out2.size( ) ) {
 			std::cout << "\tsize mismatch";

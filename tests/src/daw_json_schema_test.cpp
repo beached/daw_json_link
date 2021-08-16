@@ -218,7 +218,7 @@ int main( ) {
 	puts( "----\n" );
 	std::string json_str1 = daw::json::to_json( Foo{ } );
 	puts( json_str1.c_str( ) );
-	puts( "\n----\n\n");
+	puts( "\n----\n\n" );
 	/*
 
 	auto foo2 = daw::json::from_json<Foo>( json_str1 );
