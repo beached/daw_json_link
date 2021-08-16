@@ -297,7 +297,7 @@ namespace daw::json {
 				return result;
 			}
 			auto const previous_char_count =
-			  std::min( static_cast<std::size_t>( 50 ),
+			  (std::min)( static_cast<std::size_t>( 50 ),
 			            static_cast<std::size_t>( std::distance(
 			              json_document, je.parse_location( ) + 1 ) ) );
 			auto const loc_data = std::string_view(

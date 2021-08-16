@@ -53,7 +53,7 @@ namespace daw::json {
 			template<typename Result>
 			inline constexpr int max_exp =
 			  std::is_same_v<Result, float>
-			    ? std::min( max_dbl_exp, std::numeric_limits<float>::max_exponent10 )
+			    ? (std::min)( max_dbl_exp, std::numeric_limits<float>::max_exponent10 )
 			    : max_dbl_exp;
 
 			template<typename Result, typename Unsigned>

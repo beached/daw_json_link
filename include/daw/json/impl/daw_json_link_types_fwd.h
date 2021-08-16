@@ -461,7 +461,7 @@ namespace daw::json {
 					}
 					++idx;
 				}
-				return daw::numeric_limits<std::size_t>::max( );
+				return (daw::numeric_limits<std::size_t>::max)( );
 			}
 
 			template<typename T>

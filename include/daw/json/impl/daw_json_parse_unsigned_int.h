@@ -41,7 +41,7 @@ namespace daw::json {
 				              daw::is_system_integral_v<Signed> and
 				              sizeof( Signed ) == sizeof( Unsigned ) ) {
 					if( DAW_UNLIKELY( u == ( static_cast<Unsigned>(
-					                           daw::numeric_limits<Signed>::max( ) ) +
+					                           ( daw::numeric_limits<Signed>::max )( ) ) +
 					                         1 ) ) ) {
 						// the bits of static_cast<Unsigned>( limits<Signed>::max( ) ) + 1
 						// are the same as limits<Signed>::min( ).  We can just cast
@@ -170,7 +170,7 @@ namespace daw::json {
 					                   std::size( parse_state );
 					daw_json_assert(
 					  ( ( result <= static_cast<uresult_t>(
-					                  daw::numeric_limits<result_t>::max( ) ) ) &
+					                  ( daw::numeric_limits<result_t>::max )( ) ) ) &
 					    ( count >= 0 ) ),
 					  ErrorReason::NumberOutOfRange, parse_state );
 				}
@@ -361,7 +361,7 @@ namespace daw::json {
 			    auto const count =
 			      static_cast<intmax_t>( daw::numeric_limits<Unsigned>::digits10 + 1 )
 			- ( first - orig_first ); daw_json_assert( (count >= 0) & (result <=
-			static_cast<result_t>( daw::numeric_limits<Unsigned>::max( ) )),
+			static_cast<result_t>( (daw::numeric_limits<Unsigned>::max)( ) )),
 			                                   ErrorReason::NumberOutOfRange,
 			parse_state
 			);

@@ -230,7 +230,7 @@ namespace daw::json {
 				switch( current_type ) {
 				case JsonBaseParseTypes::Array:
 				case JsonBaseParseTypes::Class:
-					return move_to( daw::numeric_limits<std::size_t>::max( ) );
+					return move_to( (daw::numeric_limits<std::size_t>::max)( ) );
 				default:
 					return 0;
 				}
