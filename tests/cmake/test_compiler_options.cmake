@@ -44,7 +44,10 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-newline-eof
 			)
 			if( DAW_WERROR ) 
-				add_compile_options( -Werror -pedantic-errors -ftrapv )
+				add_compile_options( -Werror -pedantic-errors )
+				# Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
+				# https://bugs.llvm.org/show_bug.cgi?id=16404
+				# -ftrapv )
 			endif( )
 			if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
 				if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
@@ -59,7 +62,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				add_compile_options(-march=native)
  			endif( )
 			set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG")
-			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -DNDEBUG")
+			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
 
 			if (DAW_JSON_USE_SANITIZERS)
 				message( "Using sanitizers" )
