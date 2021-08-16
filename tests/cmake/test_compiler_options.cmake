@@ -47,7 +47,10 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				add_compile_options( -Werror -pedantic-errors )
 				# Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
 				# https://bugs.llvm.org/show_bug.cgi?id=16404
-				# -ftrapv )
+				string( FIND "$ENV{CXXFLAGS}" "-stdlib=libc++" HAS_LIBCXX )
+				if( HAS_LIBCXX EQUAL -1 ) 
+					add_compile_options( -ftrapv )
+				endif( )
 			endif( )
 			if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
 				if( NOT CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
