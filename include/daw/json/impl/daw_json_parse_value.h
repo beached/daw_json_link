@@ -175,19 +175,15 @@ namespace daw::json {
 				}
 				auto const sign = static_cast<int_type>(
 				  parse_policy_details::validate_signed_first( parse_state ) );
+				using uint_type =
+				  typename std::conditional_t<daw::is_system_integral_v<int_type>,
+				                              daw::make_unsigned<int_type>,
+				                              daw::traits::identity<int_type>>::type;
+				auto parsed_val = to_signed(
+				  unsigned_parser<uint_type, JsonMember::range_check, KnownBounds>(
+				    ParseState::exec_tag, parse_state ),
+				  sign );
 
-				auto parsed_val = static_cast<int_type>(
-				  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
-				    ParseState::exec_tag, parse_state ) );
-
-				if constexpr( daw::is_integral_v<int_type> ) {
-					if( ( sign < 0 ) & ( parsed_val > 0 ) ) {
-						parsed_val = static_cast<int_type>(
-						  -static_cast<daw::make_unsigned_t<int_type>>( parsed_val ) );
-					}
-				} else {
-					parsed_val *= sign;
-				}
 				if constexpr( KnownBounds ) {
 					return construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
@@ -1113,7 +1109,7 @@ namespace daw::json {
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					ParseState parse_state2 =
 					  pocm_details::maybe_skip_members<is_json_nullable_v<json_member_t>>(
-					  	parse_state, ClassIdx, index_t::value, parse_locations );
+					    parse_state, ClassIdx, index_t::value, parse_locations );
 					if constexpr( sizeof...( Is ) > 1 ) {
 						++ClassIdx;
 						if( parse_state2.first == parse_state.first ) {

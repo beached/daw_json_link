@@ -34,6 +34,25 @@
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
+			template<typename Signed, typename Unsigned>
+			constexpr Signed to_signed( Unsigned &&u, Signed sign ) {
+				if constexpr( sizeof( Signed ) >= sizeof( intmax_t ) and
+				              daw::is_system_integral_v<Unsigned> and
+				              daw::is_system_integral_v<Signed> and
+				              sizeof( Signed ) == sizeof( Unsigned ) ) {
+					if( DAW_UNLIKELY( u == ( static_cast<Unsigned>(
+					                           daw::numeric_limits<Signed>::max( ) ) +
+					                         1 ) ) ) {
+						// the bits of static_cast<Unsigned>( limits<Signed>::max( ) ) + 1
+						// are the same as limits<Signed>::min( ).  We can just cast
+						return static_cast<Signed>( u );
+					}
+					return sign * static_cast<Signed>( u );
+				} else {
+					return sign * static_cast<Signed>( u );
+				}
+			}
+
 			[[nodiscard]] static inline constexpr bool
 			is_made_of_eight_digits_cx( const char *ptr ) {
 				// The copy to local buffer is to get the compiler to treat it like a
