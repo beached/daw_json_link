@@ -86,7 +86,7 @@ namespace daw::json {
 			/* Always format in terms of an exponent <whole>[.fraction]e<exponent> */
 			Scientific,
 			/* Always format in <whole>.<fraction> */
-			//Decimal
+			// Decimal
 		};
 
 		namespace json_details {

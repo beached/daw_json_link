@@ -51,10 +51,11 @@ namespace daw::json {
 			  std::numeric_limits<double>::max_exponent10;
 
 			template<typename Result>
-			inline constexpr int max_exp =
-			  std::is_same_v<Result, float>
-			    ? (std::min)( max_dbl_exp, std::numeric_limits<float>::max_exponent10 )
-			    : max_dbl_exp;
+			inline constexpr int
+			  max_exp = std::is_same_v<Result, float>
+			              ? ( std::min )( max_dbl_exp,
+			                              std::numeric_limits<float>::max_exponent10 )
+			              : max_dbl_exp;
 
 			template<typename Result, typename Unsigned>
 			DAW_ATTRIB_FLATINLINE static inline constexpr Result

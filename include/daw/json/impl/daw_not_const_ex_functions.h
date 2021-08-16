@@ -60,7 +60,7 @@ namespace daw::json {
 				if( value == 0 ) {
 					return -1;
 				}
-				while( (value & 1) == 0 ) {
+				while( ( value & 1 ) == 0 ) {
 					value >>= 1;
 					++result;
 				}

@@ -158,7 +158,7 @@ namespace daw::json {
 						                            whole_exponent_available );
 					}
 					fract_exponent_available =
-					  (std::min)( fract_exponent_available, whole_exponent_available );
+					  ( std::min )( fract_exponent_available, whole_exponent_available );
 					exponent = -fract_exponent_available;
 					fract_last = fract_first + fract_exponent_available;
 				}
@@ -272,7 +272,7 @@ namespace daw::json {
 				CharT *first = parse_state.first;
 				CharT *const whole_last =
 				  parse_state.first +
-				  (std::min)( parse_state.last - parse_state.first, max_exponent );
+				  ( std::min )( parse_state.last - parse_state.first, max_exponent );
 
 				unsigned_t significant_digits = 0;
 				CharT *last_char =
@@ -319,9 +319,9 @@ namespace daw::json {
 					} else {
 						CharT *fract_last =
 						  first +
-						  (std::min)( parse_state.last - first,
-						            static_cast<std::ptrdiff_t>(
-						              max_exponent - ( first - parse_state.first ) ) );
+						  ( std::min )( parse_state.last - first,
+						                static_cast<std::ptrdiff_t>(
+						                  max_exponent - ( first - parse_state.first ) ) );
 
 						last_char = parse_digits_while_number<(
 						  ParseState::is_zero_terminated_string or

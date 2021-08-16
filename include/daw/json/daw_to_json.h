@@ -30,7 +30,7 @@ namespace daw::json {
 			}
 			if constexpr( is_serialization_policy<OutputIterator>::value ) {
 				auto state = json_details::member_to_string( template_arg<JsonClass>,
-				                                         out_it, value );
+				                                             out_it, value );
 			} else {
 				out_it = json_details::member_to_string(
 				           template_arg<JsonClass>,

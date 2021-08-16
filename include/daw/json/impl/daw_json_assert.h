@@ -120,13 +120,14 @@ namespace daw::json {
 							    location.class_last == nullptr ) {
 								return 0;
 							}
-							return (std::min)( static_cast<std::size_t>( std::distance(
-							                   location.class_first, location.class_last ) ),
-							                 max_len );
+							return ( std::min )(
+							  static_cast<std::size_t>(
+							    std::distance( location.class_first, location.class_last ) ),
+							  max_len );
 						}
-						return (std::min)( static_cast<std::size_t>( std::distance(
-						                   location.class_first, location.first + 1 ) ),
-						                 max_len );
+						return ( std::min )( static_cast<std::size_t>( std::distance(
+						                       location.class_first, location.first + 1 ) ),
+						                     max_len );
 					}( );
 					throw json_exception( reason,
 					                      std::string_view( location.class_first, len ) );

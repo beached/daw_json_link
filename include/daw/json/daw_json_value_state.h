@@ -230,7 +230,7 @@ namespace daw::json {
 				switch( current_type ) {
 				case JsonBaseParseTypes::Array:
 				case JsonBaseParseTypes::Class:
-					return move_to( (daw::numeric_limits<std::size_t>::max)( ) );
+					return move_to( ( daw::numeric_limits<std::size_t>::max )( ) );
 				default:
 					return 0;
 				}
@@ -255,8 +255,7 @@ namespace daw::json {
 			 * @return true if the member is present
 			 */
 			[[nodiscard]] constexpr bool contains( std::string_view key ) {
-				auto const k =
-				  std::string_view( std::data( key ), std::size( key ) );
+				auto const k = std::string_view( std::data( key ), std::size( key ) );
 				return move_to( k ) < std::size( m_locs );
 			}
 

@@ -164,7 +164,7 @@ namespace daw::json {
 					(void)expander;
 				}
 				it.del_indent( );
-				if constexpr(  sizeof...( Is ) != 0 ) {
+				if constexpr( sizeof...( Is ) != 0 ) {
 					if constexpr( it.output_trailing_comma == OutputTrailingComma::Yes ) {
 						*it++ = ',';
 					}
