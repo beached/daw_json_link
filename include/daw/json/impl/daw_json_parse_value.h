@@ -212,6 +212,10 @@ namespace daw::json {
 			             ParseTag<JsonParseTypes::Unsigned> ) {
 				using constructor_t = typename JsonMember::constructor_t;
 				using element_t = typename JsonMember::base_type;
+				using uint_type =
+				  typename std::conditional_t<std::is_enum_v<element_t>,
+				                              std::underlying_type<element_t>,
+				                              daw::traits::identity<element_t>>::type;
 
 				if constexpr( KnownBounds ) {
 					if constexpr( JsonMember::literal_as_string !=
@@ -223,7 +227,7 @@ namespace daw::json {
 
 					return construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
-					  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
+					  unsigned_parser<uint_type, JsonMember::range_check, KnownBounds>(
 					    ParseState::exec_tag, parse_state ) );
 				} else {
 					if constexpr( JsonMember::literal_as_string !=
@@ -245,7 +249,7 @@ namespace daw::json {
 					  ErrorReason::InvalidNumber, parse_state );
 					auto result = construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
-					  unsigned_parser<element_t, JsonMember::range_check, KnownBounds>(
+					  unsigned_parser<uint_type, JsonMember::range_check, KnownBounds>(
 					    ParseState::exec_tag, parse_state ) );
 					if constexpr( JsonMember::literal_as_string !=
 					              LiteralAsStringOpt::Never ) {

@@ -262,7 +262,7 @@ namespace daw::json {
 				}
 			}
 
-#ifdef DAW_ALLOW_SSE42
+#if false and defined( DAW_ALLOW_SSE42 )
 			/*
 			// Adapted from
 			//

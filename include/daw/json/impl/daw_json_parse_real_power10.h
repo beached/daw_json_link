@@ -67,15 +67,19 @@ namespace daw::json {
 				  static_cast<Result>( dpow10_tbl[max_exp<Result>] );
 
 				if( DAW_UNLIKELY( p > max_exp<Result> ) ) {
-					Result exp2 = max_v;
-					p -= max_exp<Result>;
+					if constexpr( std::is_floating_point_v<Result> ) {
+						return std::numeric_limits<Result>::infinity();
+					} else {
+						Result exp2 = max_v;
+						p -= max_exp<Result>;
 
-					for( ; p > max_exp<Result>; p -= max_exp<Result> ) {
-						exp2 *= max_v;
+						for( ; p > max_exp<Result>; p -= max_exp<Result> ) {
+							exp2 *= max_v;
+						}
+						return static_cast<Result>( result ) *
+						       ( exp2 * static_cast<Result>(
+						                  dpow10_tbl[static_cast<std::size_t>( p )] ) );
 					}
-					return static_cast<Result>( result ) *
-					       ( exp2 * static_cast<Result>(
-					                  dpow10_tbl[static_cast<std::size_t>( p )] ) );
 				} else if( DAW_UNLIKELY( p < -max_exp<Result> ) ) {
 					Result exp2 = max_v;
 					p += max_exp<Result>;
