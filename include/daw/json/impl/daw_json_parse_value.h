@@ -94,7 +94,6 @@ namespace daw::json {
 								parse_state.first += 6;
 							} else {
 								daw_json_error( ErrorReason::InvalidString, parse_state );
-								parse_state.first++;
 							}
 							daw_json_assert_weak(
 							  parse_policy_details::at_end_of_item( parse_state.front( ) ),
