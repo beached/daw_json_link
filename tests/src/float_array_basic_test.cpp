@@ -27,27 +27,6 @@ static inline constexpr std::size_t DAW_NUM_RUNS = 3000;
 #endif
 static_assert( DAW_NUM_RUNS > 0 );
 
-struct Number {
-	float a{ };
-};
-#ifdef __cpp_nontype_template_parameter_class
-[[maybe_unused]] static DAW_CONSTEXPR auto
-json_data_contract_for( Number ) noexcept {
-	using namespace daw::json;
-	return json_member_list<json_number<"a", float>>{ };
-}
-#else
-namespace symbols_Number {
-	static constexpr char const a[] = "a";
-}
-
-[[maybe_unused]] static DAW_CONSTEXPR auto
-json_data_contract_for( Number ) noexcept {
-	using namespace daw::json;
-	return json_member_list<json_number<symbols_Number::a, float>>{ };
-}
-#endif
-
 template<typename Float>
 Float rand_float( ) {
 	static DAW_CONSTEXPR Float fmin = 0;

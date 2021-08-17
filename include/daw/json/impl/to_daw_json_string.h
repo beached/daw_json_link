@@ -1092,7 +1092,7 @@ namespace daw::json {
 					it =
 					  to_daw_json_string<T>( ParseTag<T::expected_type>{ }, it,
 					                         pack_element::template get<index>( value ) );
-					if( index + 1 < sizeof...( Is ) ) {
+					if constexpr( index + 1 < sizeof...( Is ) ) {
 						*it++ = ',';
 						it.next_member( );
 					}
