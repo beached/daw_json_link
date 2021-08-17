@@ -17,6 +17,11 @@
 #include <optional>
 #include <string_view>
 
+// MSVC is warning on unreachable code because the evaluation is at compile time
+#if defined( _MSCVER_ ) and defined( DAW_CONSTEXPR )
+#undef DAW_CONSTEXPR
+#endif
+
 bool test_zero_untrusted( ) {
 	using namespace daw::json;
 	using namespace daw::json::json_details;
