@@ -207,10 +207,6 @@ namespace daw::json {
 				// silencing gcc9 warning as these are selectively used
 				(void)is_nullable;
 				(void)member_name;
-				if( pos == 12 ) {
-					auto P = pos;
-					(void)P;
-				}
 
 				daw_json_assert_weak( is_nullable | ( not locations[pos].missing( ) ) |
 				                        ( not parse_state.is_closing_brace_checked( ) ),
