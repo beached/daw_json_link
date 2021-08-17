@@ -3345,16 +3345,16 @@ namespace daw::jkj::dragonbox {
 			policy_holder::validate_input( br );
 
 			return policy_holder::delegate( br, [br]( auto interval_type_provider ) {
-				constexpr auto tag = decltype( interval_type_provider )::tag;
+				constexpr auto tag_tmp = decltype( interval_type_provider )::tag;
 
-				if constexpr( tag == rounding_mode::tag_t::to_nearest ) {
+				if constexpr( tag_tmp == rounding_mode::tag_t::to_nearest ) {
 					return detail::impl<Float>::template compute_nearest<
 					  return_type, decltype( interval_type_provider ),
 					  typename policy_holder::sign_policy,
 					  typename policy_holder::trailing_zero_policy,
 					  typename policy_holder::correct_rounding_policy,
 					  typename policy_holder::cache_policy>( br );
-				} else if constexpr( tag ==
+				} else if constexpr( tag_tmp ==
 				                     rounding_mode::tag_t::left_closed_directed ) {
 					return detail::impl<Float>::template compute_left_closed_directed<
 					  return_type, typename policy_holder::sign_policy,
