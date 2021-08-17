@@ -17,9 +17,9 @@
 #include <optional>
 #include <string_view>
 
-// MSVC is warning on unreachable code because the evaluation is at compile time
-#if defined( _MSCVER_ ) and defined( DAW_CONSTEXPR )
-#undef DAW_CONSTEXPR
+// MSVC is warning on unreachable code in test harness
+#if defined( _MSC_VER )
+#pragma warning( disable : 4702 )
 #endif
 
 bool test_zero_untrusted( ) {
