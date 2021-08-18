@@ -123,13 +123,12 @@ int main( int, char ** )
   try
 #endif
 {
-	/*
 	do_test( test_zero_untrusted( ) );
 	do_fail_test( test_positive_zero_untrusted( ) );
 	do_test( test_negative_zero_untrusted( ) );
 	do_fail_test( test_missing_untrusted( ) );
 	do_test( test_real_untrusted( ) );
-	do_fail_test( test_bad_real_untrusted( ) );*/
+	do_fail_test( test_bad_real_untrusted( ) );
 	do_fail_test( test_bad_real_untrusted2( ) );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

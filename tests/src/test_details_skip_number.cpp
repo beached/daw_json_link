@@ -53,6 +53,7 @@ bool test_number_space( ) {
 	do {                                                                   \
 	} while( false )
 
+/*
 #define do_fail_test( ... )                                   \
 	do {                                                        \
 		try {                                                     \
@@ -61,6 +62,7 @@ bool test_number_space( ) {
 		std::cerr << "Expected exception, but none thrown in '"   \
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
+*/
 
 int main( int, char ** )
 #ifdef DAW_USE_EXCEPTIONS

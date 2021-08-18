@@ -83,6 +83,7 @@ bool test_null_number_untrusted_known( ) {
 	do {                                                                   \
 	} while( false )
 
+/*
 #define do_fail_test( ... )                                   \
 	do {                                                        \
 		try {                                                     \
@@ -91,6 +92,7 @@ bool test_null_number_untrusted_known( ) {
 		std::cerr << "Expected exception, but none thrown in '"   \
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
+*/
 
 int main( )
 #ifdef DAW_USE_EXCEPTIONS

@@ -156,14 +156,12 @@ int main( int, char ** )
   try
 #endif
 {
-	/*
 	do_test( empty_class_empty_json_class( ) );
 	do_test( empty_class_nonempty_json_class( ) );
 	do_fail_test( missing_members_fail( ) );
 	do_fail_test( wrong_member_type_fail( ) );
 	do_fail_test( wrong_member_number_type_fail( ) );
 	do_fail_test( unexpected_eof_in_class1_fail( ) );
-	 */
 	do_fail_test( wrong_member_stored_pos_fail( ) );
 } catch( daw::json::json_exception const &jex ) {
 	std::cerr << "Exception thrown by parser: " << jex.reason( ) << std::endl;

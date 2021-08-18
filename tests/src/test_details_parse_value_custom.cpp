@@ -45,6 +45,7 @@ bool empty_array_empty_json_array( ) {
 	do {                                                                   \
 	} while( false )
 
+/*
 #define do_fail_test( ... )                                   \
 	do {                                                        \
 		try {                                                     \
@@ -53,6 +54,7 @@ bool empty_array_empty_json_array( ) {
 		std::cerr << "Expected exception, but none thrown in '"   \
 		          << "" #__VA_ARGS__ << "'\n";                    \
 	} while( false )
+*/
 
 int main( int, char ** )
 #ifdef DAW_USE_EXCEPTIONS

@@ -28,22 +28,12 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
 				-Wno-c++98-compat 
 				-Wno-covered-switch-default 
 				-Wno-padded 
-				-Wno-exit-time-destructors 
+				-Wno-exit-time-destructors
 				-Wno-c++98-compat-pedantic 
-				-Wno-unused-parameter 
-				-Wno-missing-prototypes 
-				-Wno-disabled-macro-expansion 
-				-Wno-missing-braces 
-				-Wno-unneeded-internal-declaration 
-				-Wno-tautological-type-limit-compare 
-				-Wno-return-std-move-in-c++11 
-				-Wno-float-equal 
-				-Wno-unused-macros 
-				-Wno-global-constructors 
-				-Wno-used-but-marked-unused 
-				-Wno-weak-vtables 
-				-Wno-documentation 
-				-Wno-undefined-inline 
+				-Wno-missing-prototypes
+				-Wno-return-std-move-in-c++11
+				-Wno-float-equal
+				-Wno-documentation
 				-Wno-poison-system-directories
 				-Wno-newline-eof
 			)

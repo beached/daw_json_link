@@ -231,7 +231,7 @@ int main( int argc, char **argv )
   try
 #endif
 {
-	static auto alloc = AllocType( 10'000'000ULL );
+	auto alloc = AllocType( 10'000'000ULL );
 	using namespace daw::json;
 	if( argc < 2 ) {
 		std::cerr << "Must supply a filenames to open\n";

@@ -267,7 +267,7 @@ int main( int argc, char **argv )
   try
 #endif
 {
-	static auto alloc = AllocType( 100'000'000ULL );
+	auto alloc = AllocType( 100'000'000ULL );
 #ifdef DAW_USE_EXCEPTIONS
 	try {
 #endif
