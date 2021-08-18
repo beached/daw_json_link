@@ -52,6 +52,8 @@ namespace daw::json {
 			[[nodiscard]] static constexpr char *
 			decode_utf16( ParseState &parse_state, char *it ) {
 				constexpr bool is_unchecked_input = ParseState::is_unchecked_input;
+				daw_json_assert_weak( parse_state.size( ) >= 5,
+				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				char const *first = parse_state.first;
 				++first;
 				UInt32 cp = to_uint32( byte_from_nibbles<is_unchecked_input>( first ) )
@@ -68,7 +70,8 @@ namespace daw::json {
 					cp = ( cp - 0xD800U ) * 0x400U;
 					++first;
 					daw_json_assert_weak(
-					  *first == 'u', ErrorReason::InvalidUTFEscape,
+						(parse_state.last - first >= 5) and *first == 'u',
+					  ErrorReason::InvalidUTFEscape,
 					  parse_state ); // Expected parse_state to start with a \\u
 					++first;
 					auto trailing =
@@ -213,7 +216,7 @@ namespace daw::json {
 					if constexpr( ParseState::is_unchecked_input ) {
 						return DAW_LIKELY( r.front( ) != '"' );
 					} else {
-						return DAW_LIKELY( r.has_more( ) ) & ( r.front( ) != '"' );
+						return DAW_LIKELY( r.has_more( ) ) and ( r.front( ) != '"' );
 					}
 				};
 

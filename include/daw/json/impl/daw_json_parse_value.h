@@ -137,9 +137,9 @@ namespace daw::json {
 						  parse_state );
 					}
 
-					daw_json_assert_weak(
-					  parse_policy_details::at_end_of_item( parse_state.front( ) ),
-					  ErrorReason::InvalidEndOfValue, parse_state );
+					daw_json_assert_weak( parse_policy_details::at_end_of_item(
+					                        parse_state.front_checked( ) ),
+					                      ErrorReason::InvalidEndOfValue, parse_state );
 					return result;
 				}
 			}

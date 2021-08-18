@@ -28,6 +28,12 @@
 #include <string_view>
 #include <vector>
 
+#define AS_CONSTEXPR( ... ) \
+	[&]( ) constexpr {        \
+		return __VA_ARGS__;     \
+	}                         \
+	( )
+
 /***
 Temporarily disable the constexpr tests in MSVC when C++20
 */
@@ -835,29 +841,51 @@ int main( int, char ** )
 
 	std::cout << "5E-324 -> " << from_json<double>( "5E-324" ) << '\n';
 	std::cout << "1.1125369292536007E-308 -> "
-	          << from_json<double>( "1.1125369292536007E-308" ) << '\n';
+	          << AS_CONSTEXPR( from_json<double>( "1.1125369292536007E-308" ) )
+	          << '\n';
 
 	std::cout << "min double: " << to_json( std::numeric_limits<double>::min( ) )
 	          << '\n';
 	std::cout << "2.2250738585072014E-308 -> "
-	          << from_json<double>( "2.2250738585072014E-308" ) << '\n';
+	          << AS_CONSTEXPR( from_json<double>( "2.2250738585072014E-308" ) )
+	          << '\n';
 	std::cout << "2.2250738585072014E-307 -> "
-	          << from_json<double>( "2.2250738585072014E-307" ) << '\n';
+	          << AS_CONSTEXPR( from_json<double>( "2.2250738585072014E-307" ) )
+	          << '\n';
 	std::cout << "0.22250738585072014E-307 -> "
-	          << from_json<double>( "0.22250738585072014E-307" ) << '\n';
+	          << AS_CONSTEXPR( from_json<double>( "0.22250738585072014E-307" ) )
+	          << '\n';
 
-	std::cout << from_json<double>( "5E-324" ) << '\n';
+	std::cout << AS_CONSTEXPR( from_json<double>( "5E-324" ) ) << '\n';
 	std::cout << "max double: " << to_json( std::numeric_limits<double>::max( ) )
 	          << '\n';
 	std::cout << "1.7976931348623157E308 -> "
-	          << from_json<double>( "1.7976931348623157E308" ) << '\n';
+	          << AS_CONSTEXPR( from_json<double>( "1.7976931348623157E308" ) )
+	          << '\n';
 
 	std::cout << "1.7976931348623157E307 -> "
-	          << from_json<double>( "1.7976931348623157E307" ) << '\n';
-	std::cout << "10.7976931348623157E307 -> "
-	          << from_json<double>( "10.7976931348623157E307" ) << '\n';
-	std::cout << "9e2147483609 -> " << from_json<double>( "9e2147483609" )
+	          << AS_CONSTEXPR( from_json<double>( "1.7976931348623157E307" ) )
 	          << '\n';
+	std::cout << "10.7976931348623157E307 -> "
+	          << AS_CONSTEXPR( from_json<double>( "10.7976931348623157E307" ) )
+	          << '\n';
+	std::cout << "9e2147483609 -> "
+	          << AS_CONSTEXPR( from_json<double>( "9e2147483609" ) ) << '\n';
+	std::cout
+	  << "0."
+	     "00000000000000000000000000000000000000000000000000000000000000000000000"
+	     "00000000000000000000000000000000000000000000000000000000000000000000000"
+	     "00000000000000000000000000000000000000000000000000000000000000000000000"
+	     "00000000000000000000000000000000000000000000000000000000000000000000000"
+	     "0000000000000000000000000 -> "
+	  << AS_CONSTEXPR( from_json<double>(
+	       "0."
+	       "000000000000000000000000000000000000000000000000000000000000000000000"
+	       "000000000000000000000000000000000000000000000000000000000000000000000"
+	       "000000000000000000000000000000000000000000000000000000000000000000000"
+	       "000000000000000000000000000000000000000000000000000000000000000000000"
+	       "000000000000000000000000000000000" ) )
+	  << '\n';
 
 	std::cout << "DAW***********************************\n";
 	test_dblparse2( "1217.2772861138403", 1217.2772861138403, true );
@@ -1039,10 +1067,11 @@ int main( int, char ** )
 	    R"({"a":0,"b":1})" )[1]
 	    .second == 1 );
 
-	auto v = from_json<tuple_json_mapping<>>( std::string_view( "{}" ) );
+	constexpr auto v =
+	  from_json<tuple_json_mapping<>>( std::string_view( "{}" ) );
 	auto vstr = to_json( v );
 	(void)vstr;
-	auto v1 = from_json<empty_ordered>( std::string_view( "[]" ) );
+	constexpr auto v1 = from_json<empty_ordered>( std::string_view( "[]" ) );
 	auto v1str = to_json( v1 );
 	(void)v1str;
 	std::cout << "done";

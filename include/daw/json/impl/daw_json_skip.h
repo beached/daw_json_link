@@ -251,12 +251,14 @@ namespace daw::json {
 					}
 				}
 				CharT *exp = nullptr;
+				if constexpr( not( ParseState::is_zero_terminated_string or
+				                   ParseState::is_unchecked_input ) ) {
+					daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData,
+					                 parse_state );
+				}
 				unsigned dig = parse_digit( *first );
-				if( ( ( ParseState::is_zero_terminated_string or
-				        ParseState::is_unchecked_input ) or
-				      ( first < last ) ) &
-				    ( ( dig == parsed_constants::e_char ) |
-				      ( dig == parsed_constants::E_char ) ) ) {
+				if( ( dig == parsed_constants::e_char ) |
+				    ( dig == parsed_constants::E_char ) ) {
 					exp = first;
 					++first;
 					daw_json_assert_weak( first < last, ErrorReason::UnexpectedEndOfData,

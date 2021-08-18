@@ -360,6 +360,11 @@ namespace daw::json {
 				return *first;
 			}
 
+			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr char front_checked( ) const {
+				daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData, *this );
+				return *first;
+			}
+
 			[[nodiscard]] inline constexpr std::size_t size( ) const {
 				return static_cast<std::size_t>( last - first );
 			}
@@ -653,8 +658,7 @@ namespace daw::json {
 
 		using ConformancePolicy = BasicParsePolicy<parse_options(
 		  AllowEscapedNames::yes, MustVerifyEndOfDataIsValid::yes,
-		  IEEE754Precise::yes, AllowEscapedNames::yes,
-		  ExcludeSpecialEscapes::yes )>;
+		  IEEE754Precise::yes, ExcludeSpecialEscapes::yes )>;
 
 		namespace json_details {
 			/***

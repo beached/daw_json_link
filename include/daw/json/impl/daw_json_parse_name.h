@@ -29,7 +29,7 @@ namespace daw::json {
 				trim_end_of_name( ParseState &parse_state ) {
 					parse_state.trim_left( );
 					// TODO: should we check for end
-					daw_json_assert_weak( parse_state.front( ) == ':',
+					daw_json_assert_weak( parse_state.front_checked( ) == ':',
 					                      ErrorReason::InvalidMemberName, parse_state );
 					parse_state.remove_prefix( );
 					parse_state.trim_left( );
