@@ -419,7 +419,7 @@ namespace daw::json {
 						if( DAW_UNLIKELY( r >
 						                  static_cast<unsigned_t>(
 						                    daw::numeric_limits<signed_t>::max( ) ) ) ) {
-							daw::numeric_limits<signed_t>::max( );
+							return daw::numeric_limits<signed_t>::max( );
 						}
 						return static_cast<signed_t>( r );
 					}
