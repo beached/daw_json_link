@@ -96,7 +96,8 @@ namespace daw::json {
 								daw_json_error( ErrorReason::InvalidString, parse_state );
 							}
 							daw_json_assert_weak(
-							  parse_policy_details::at_end_of_item( parse_state.front( ) ),
+							  not parse_state.has_more( ) or
+							    parse_policy_details::at_end_of_item( parse_state.front( ) ),
 							  ErrorReason::InvalidEndOfValue, parse_state );
 							return daw::cxmath::copy_sign(
 							  daw::numeric_limits<element_t>::infinity( ), sign );
@@ -112,7 +113,8 @@ namespace daw::json {
 							parse_state.template move_to_next_of<'"'>( );
 							parse_state.remove_prefix( );
 							daw_json_assert_weak(
-							  parse_policy_details::at_end_of_item( parse_state.front( ) ),
+							  not parse_state.has_more( ) or
+							    parse_policy_details::at_end_of_item( parse_state.front( ) ),
 							  ErrorReason::InvalidEndOfValue, parse_state );
 							return daw::numeric_limits<element_t>::quiet_NaN( );
 						}
@@ -199,7 +201,8 @@ namespace daw::json {
 					}
 					parse_state.trim_left( );
 					daw_json_assert_weak(
-					  parse_policy_details::at_end_of_item( parse_state.front( ) ),
+					  not parse_state.has_more( ) or
+					    parse_policy_details::at_end_of_item( parse_state.front( ) ),
 					  ErrorReason::InvalidEndOfValue, parse_state );
 					return result;
 				}
@@ -262,7 +265,8 @@ namespace daw::json {
 						}
 					}
 					daw_json_assert_weak(
-					  parse_policy_details::at_end_of_item( parse_state.front( ) ),
+					  not parse_state.has_more( ) or
+					    parse_policy_details::at_end_of_item( parse_state.front( ) ),
 					  ErrorReason::InvalidEndOfValue, parse_state );
 					return result;
 				}
@@ -314,7 +318,8 @@ namespace daw::json {
 					if( parse_state.starts_with( "null" ) ) {
 						parse_state.remove_prefix( 4 );
 						daw_json_assert_weak(
-						  parse_policy_details::at_end_of_item( parse_state.front( ) ),
+						  not parse_state.has_more( ) or
+						    parse_policy_details::at_end_of_item( parse_state.front( ) ),
 						  ErrorReason::InvalidLiteral, parse_state );
 						parse_state.trim_left_checked( );
 						return construct_value(
@@ -382,7 +387,8 @@ namespace daw::json {
 					}
 					parse_state.trim_left( );
 					daw_json_assert_weak(
-					  parse_policy_details::at_end_of_item( parse_state.front( ) ),
+					  not parse_state.has_more( ) or
+					    parse_policy_details::at_end_of_item( parse_state.front( ) ),
 					  ErrorReason::InvalidEndOfValue, parse_state );
 					return construct_value(
 					  template_args<json_result<JsonMember>, constructor_t>, parse_state,
