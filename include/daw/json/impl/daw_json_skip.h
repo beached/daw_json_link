@@ -80,7 +80,8 @@ namespace daw::json {
 				}
 				result.last = parse_state.first;
 				parse_state.trim_left( );
-				daw_json_assert_weak( parse_state.is_at_token_after_value( ),
+				daw_json_assert_weak( not parse_state.has_more( ) or
+				                        parse_state.is_at_token_after_value( ),
 				                      ErrorReason::InvalidEndOfValue, parse_state );
 				result.counter = static_cast<bool>( true );
 				return result;
@@ -100,7 +101,8 @@ namespace daw::json {
 				}
 				result.last = parse_state.first;
 				parse_state.trim_left( );
-				daw_json_assert_weak( parse_state.is_at_token_after_value( ),
+				daw_json_assert_weak( not parse_state.has_more( ) or
+				                        parse_state.is_at_token_after_value( ),
 				                      ErrorReason::InvalidEndOfValue, parse_state );
 				result.counter = static_cast<bool>( false );
 				return result;
@@ -120,7 +122,8 @@ namespace daw::json {
 				daw_json_assert_weak( parse_state.has_more( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				parse_state.trim_left( );
-				daw_json_assert_weak( parse_state.is_at_token_after_value( ),
+				daw_json_assert_weak( not parse_state.has_more( ) or
+				                        parse_state.is_at_token_after_value( ),
 				                      ErrorReason::UnexpectedEndOfData, parse_state );
 				auto result = parse_state;
 				result.first = nullptr;
