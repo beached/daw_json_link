@@ -139,10 +139,14 @@ namespace daw::json {
 				  std::conditional_t<max_storage_digits::value >= max_exponent::value,
 				                     std::uint64_t, Result>;
 
-				std::ptrdiff_t whole_exponent_available = whole_last - whole_first;
-				std::ptrdiff_t fract_exponent_available =
+				using signed_t =
+				  typename std::conditional_t<std::is_floating_point_v<unsigned_t>,
+				                              daw::traits::identity<unsigned_t>,
+				                              std::make_signed<unsigned_t>>::type;
+				std::intmax_t whole_exponent_available = whole_last - whole_first;
+				std::intmax_t fract_exponent_available =
 				  fract_first ? fract_last - fract_first : 0;
-				std::ptrdiff_t exponent = 0;
+				signed_t exponent = 0;
 
 				if( whole_exponent_available > max_exponent::value ) {
 					whole_last = whole_first + max_exponent::value;
@@ -174,7 +178,7 @@ namespace daw::json {
 				}
 
 				if( exp_first and ( exp_last - exp_first ) > 0 ) {
-					int const exp_sign = [&] {
+					signed_t const exp_sign = [&] {
 						switch( *exp_first ) {
 						case '-':
 							++exp_first;
@@ -190,36 +194,38 @@ namespace daw::json {
 							return 1;
 						}
 					}( );
-					exponent += exp_sign * [&] {
-						std::ptrdiff_t exp_result = 0;
-						// TODO use zstringopt
-						if constexpr( ParseState::is_zero_terminated_string ) {
-							auto dig = parse_digit( *exp_first );
-							while( dig < 10U ) {
-								++exp_first;
-								exp_result *= 10U;
-								exp_result += dig;
-								dig = parse_digit( *exp_first );
-							}
-						} else {
-							if( exp_first < exp_last ) {
-								auto dig = parse_digit( *exp_first );
-								do {
-									if( dig >= 10U ) {
-										break;
-									}
-									++exp_first;
-									exp_result *= 10U;
-									exp_result += dig;
-									if( exp_first >= exp_last ) {
-										break;
-									}
-									dig = parse_digit( *exp_first );
-								} while( true );
-							}
-						}
-						return exp_result;
-					}( );
+					exponent += to_signed(
+					  [&] {
+						  unsigned_t exp_result = 0;
+						  // TODO use zstringopt
+						  if constexpr( ParseState::is_zero_terminated_string ) {
+							  auto dig = parse_digit( *exp_first );
+							  while( dig < 10U ) {
+								  ++exp_first;
+								  exp_result *= 10U;
+								  exp_result += dig;
+								  dig = parse_digit( *exp_first );
+							  }
+						  } else {
+							  if( exp_first < exp_last ) {
+								  auto dig = parse_digit( *exp_first );
+								  do {
+									  if( dig >= 10U ) {
+										  break;
+									  }
+									  ++exp_first;
+									  exp_result *= 10U;
+									  exp_result += dig;
+									  if( exp_first >= exp_last ) {
+										  break;
+									  }
+									  dig = parse_digit( *exp_first );
+								  } while( true );
+							  }
+						  }
+						  return exp_result;
+					  }( ),
+					  exp_sign );
 				}
 				if constexpr( std::is_floating_point_v<Result> and
 				              ParseState::precise_ieee754 ) {
@@ -259,20 +265,21 @@ namespace daw::json {
 				auto const sign = static_cast<Result>(
 				  parse_policy_details::validate_signed_first( parse_state ) );
 
-				constexpr auto max_storage_digits = static_cast<std::ptrdiff_t>(
+				constexpr auto max_storage_digits = static_cast<std::int64_t>(
 				  daw::numeric_limits<std::uint64_t>::digits10 );
-				constexpr auto max_exponent = static_cast<std::ptrdiff_t>(
+				constexpr auto max_exponent = static_cast<std::int64_t>(
 				  daw::numeric_limits<Result>::max_digits10 + 1 );
 				using unsigned_t =
 				  std::conditional_t<max_storage_digits >= max_exponent, std::uint64_t,
 				                     Result>;
-				using signed_t =
-				  std::conditional_t<max_storage_digits >= max_exponent, int, Result>;
+				using signed_t = std::conditional_t<max_storage_digits >= max_exponent,
+				                                    std::int64_t, Result>;
 
 				CharT *first = parse_state.first;
 				CharT *const whole_last =
 				  parse_state.first +
-				  ( std::min )( parse_state.last - parse_state.first, max_exponent );
+				  ( std::min )( parse_state.last - parse_state.first,
+				                static_cast<std::ptrdiff_t>( max_exponent ) );
 
 				unsigned_t significant_digits = 0;
 				CharT *last_char =
@@ -283,7 +290,7 @@ namespace daw::json {
 				bool use_strtod = std::is_floating_point_v<Result> and
 				                  ParseState::precise_ieee754 and
 				                  DAW_UNLIKELY( sig_digit_count > max_storage_digits );
-				signed_t exponent = [&] {
+				signed_t exponent_p1 = [&] {
 					if( DAW_UNLIKELY( last_char >= whole_last ) ) {
 						if constexpr( std::is_floating_point_v<Result> and
 						              ParseState::precise_ieee754 ) {
@@ -297,20 +304,21 @@ namespace daw::json {
 						auto const diff = ptr - last_char;
 
 						last_char = ptr;
+						if( significant_digits == 0 ) {
+							return signed_t{ 0 };
+						}
 						return static_cast<signed_t>( diff );
 					}
-					return static_cast<signed_t>( 0 );
+					return signed_t{ 0 };
 				}( );
-				if( significant_digits == 0 ) {
-					exponent = 0;
-				}
+
 				first = last_char;
 				if( ( ParseState::is_zero_terminated_string or
 				      ParseState::is_unchecked_input or
 				      DAW_LIKELY( first < parse_state.last ) ) and
 				    *first == '.' ) {
 					++first;
-					if( exponent != 0 ) {
+					if( exponent_p1 != 0 ) {
 						if( first < parse_state.last ) {
 							first = skip_digits<( ParseState::is_zero_terminated_string or
 							                      ParseState::is_unchecked_input )>(
@@ -328,7 +336,7 @@ namespace daw::json {
 						  ParseState::is_unchecked_input )>( first, fract_last,
 						                                     significant_digits );
 						sig_digit_count += last_char - first;
-						exponent -= static_cast<signed_t>( last_char - first );
+						exponent_p1 -= static_cast<signed_t>( last_char - first );
 						first = last_char;
 						if( ( first >= fract_last ) & ( first < parse_state.last ) ) {
 							auto new_first =
@@ -344,11 +352,11 @@ namespace daw::json {
 					}
 				}
 
-				exponent += [&] {
+				signed_t const exponent_p2 = [&] {
 					if( ( ParseState::is_unchecked_input or first < parse_state.last ) and
 					    ( ( *first | 0x20 ) == 'e' ) ) {
 						++first;
-						bool const exp_sign = [&] {
+						signed_t const exp_sign = [&] {
 							daw_json_assert_weak( ( ParseState::is_zero_terminated_string or
 							                        first < parse_state.last ),
 							                      ErrorReason::UnexpectedEndOfData,
@@ -359,17 +367,17 @@ namespace daw::json {
 								daw_json_assert_weak( ( first < parse_state.last ) and
 								                        ( parse_digit( *first ) < 10U ),
 								                      ErrorReason::InvalidNumber );
-								return false;
+								return signed_t{ 1 };
 							case '-':
 								++first;
 								daw_json_assert_weak( first < parse_state.last and
 								                        parse_digit( *first ) < 10U,
 								                      ErrorReason::InvalidNumber );
-								return true;
+								return signed_t{ -1 };
 							default:
 								daw_json_assert_weak( parse_policy_details::is_number( *first ),
 								                      ErrorReason::InvalidNumber );
-								return false;
+								return signed_t{ 1 };
 							}
 						}( );
 						daw_json_assert_weak( first < parse_state.last,
@@ -381,12 +389,40 @@ namespace daw::json {
 						  ParseState::is_unchecked_input )>( first, parse_state.last,
 						                                     exp_tmp );
 						first = last_char;
-						if( exp_sign ) {
-							return -static_cast<signed_t>( exp_tmp );
-						}
-						return static_cast<signed_t>( exp_tmp );
+						return to_signed( exp_tmp, exp_sign );
 					}
-					return static_cast<signed_t>( 0 );
+					return signed_t{ 0 };
+				}( );
+				signed_t const exponent = [&] {
+					if constexpr( ParseState::is_unchecked_input or
+					              not std::is_floating_point_v<Result> ) {
+						return exponent_p1 + exponent_p2;
+					} else {
+						if( bool matching_signs =
+						      ( exponent_p1 < 0 ) == ( exponent_p2 < 0 );
+						    not matching_signs ) {
+
+							return exponent_p1 + exponent_p2;
+						}
+						auto const s = exponent_p1 < 0 ? signed_t{ -1 } : signed_t{ 1 };
+						if( s < 0 ) {
+							if( DAW_UNLIKELY( ( daw::numeric_limits<signed_t>::min( ) -
+							                    exponent_p1 ) > exponent_p2 ) ) {
+								// We don't have inf, but we can just saturate it to min as it
+								// will be 0 anyways for the other result
+								return daw::numeric_limits<signed_t>::min( );
+							}
+							return exponent_p1 + exponent_p2;
+						}
+						auto r = static_cast<unsigned_t>( exponent_p1 ) +
+						         static_cast<unsigned_t>( exponent_p2 );
+						if( DAW_UNLIKELY( r >
+						                  static_cast<unsigned_t>(
+						                    daw::numeric_limits<signed_t>::max( ) ) ) ) {
+							daw::numeric_limits<signed_t>::max( );
+						}
+						return static_cast<signed_t>( r );
+					}
 				}( );
 				parse_state.first = first;
 
