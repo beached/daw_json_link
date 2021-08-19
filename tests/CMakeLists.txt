@@ -703,10 +703,12 @@ target_link_libraries(daw_json_fuzzing_replay PRIVATE json_test)
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
     target_link_libraries(daw_json_fuzzing_replay PRIVATE json_test "-fsanitize=address")
     target_compile_options(daw_json_fuzzing_replay PRIVATE -fsanitize=address -fno-sanitize-recover=undefined -g)
-elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
     target_link_libraries(daw_json_fuzzing_replay PRIVATE json_test "-fsanitize=fuzzer,address")
     target_compile_options(daw_json_fuzzing_replay PRIVATE -fsanitize=address,undefined -fno-sanitize-recover=undefined -g)
 else ()
+		# MSVC is not supported here and Gcc(at least at v10.3.0) has issues with sanitzers and constexpr.  
+		# This is often char_ptr == nullptr is not a constant expression type error
     target_link_libraries(daw_json_fuzzing_replay PRIVATE json_test)
 endif ()
 
