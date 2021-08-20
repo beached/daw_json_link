@@ -43,7 +43,7 @@ namespace daw::json {
 
 		[[nodiscard, maybe_unused]] static inline auto
 		to_json_data( daw::Empty const & ) {
-			return std::tuple( );
+			return std::tuple<>( );
 		}
 	};
 } // namespace daw::json
