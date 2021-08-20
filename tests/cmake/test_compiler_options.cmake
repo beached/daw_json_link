@@ -40,9 +40,11 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-return-std-move-in-c++11
                 -Wno-float-equal
                 -Wno-documentation
-                -Wno-poison-system-directories
                 -Wno-newline-eof
         )
+        if (CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 8.0.0)
+            add_compile_options(-Wno-poison-system-directories)
+        endif ()
         if (DAW_WERROR)
             add_compile_options(-Werror -pedantic-errors)
             # Cannot add trapv for testing, it breaks 128bit processing on clang/libc++
@@ -142,8 +144,8 @@ elseif (MSVC)
         add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     endif ()
     if (DAW_JSON_USE_SANITIZERS)
-			add_compile_options( /fsanitize=address )
-		endif( )	
+        add_compile_options(/fsanitize=address)
+    endif ()
 else ()
     message("Unknown compiler id ${CMAKE_CXX_COMPILER_ID}")
 endif ()
