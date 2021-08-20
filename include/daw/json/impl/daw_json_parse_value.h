@@ -26,6 +26,7 @@
 #include <daw/daw_algorithm.h>
 #include <daw/daw_attributes.h>
 #include <daw/daw_traits.h>
+#include <daw/daw_utility.h>
 
 #include <ciso646>
 #include <cstddef>
@@ -1107,7 +1108,7 @@ namespace daw::json {
 					  } else {
 						  return { parse_locations_last_index++ };
 					  }
-				  }( std::integral_constant<std::size_t, Is>{ } )... };
+				  }( daw::constant<Is>{ } )... };
 #endif
 				auto const parse_value_help = [&]( auto PackIdx,
 				                                   std::size_t &ClassIdx ) {
@@ -1182,24 +1183,22 @@ namespace daw::json {
 					                                          old_class_pos };
 					(void)run_after_parse;
 					if constexpr( force_aggregate_construction_v<JsonMember> ) {
-						return tuple_t{ parse_value_help(
-						  std::integral_constant<std::size_t, Is>{ }, class_idx )... };
+						return tuple_t{
+						  parse_value_help( daw::constant<Is>{ }, class_idx )... };
 					} else {
 						return construct_value_tp<tuple_t, Constructor>(
-						  parse_state,
-						  fwd_pack{ parse_value_help(
-						    std::integral_constant<std::size_t, Is>{ }, class_idx )... } );
+						  parse_state, fwd_pack{ parse_value_help( daw::constant<Is>{ },
+						                                           class_idx )... } );
 					}
 				} else {
 					auto result = [&] {
 						if constexpr( force_aggregate_construction_v<JsonMember> ) {
-							return tuple_t{ parse_value_help(
-							  std::integral_constant<std::size_t, Is>{ }, class_idx )... };
+							return tuple_t{
+							  parse_value_help( daw::constant<Is>{ }, class_idx )... };
 						} else {
 							return construct_value_tp<tuple_t, Constructor>(
-							  parse_state, fwd_pack{ parse_value_help(
-							                 std::integral_constant<std::size_t, Is>{ },
-							                 class_idx )... } );
+							  parse_state, fwd_pack{ parse_value_help( daw::constant<Is>{ },
+							                                           class_idx )... } );
 						}
 					}( );
 					if constexpr( json_details::all_json_members_must_exist_v<

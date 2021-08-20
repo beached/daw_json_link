@@ -17,6 +17,7 @@
 #include "daw_json_traits.h"
 
 #include <daw/daw_move.h>
+#include <daw/daw_utility.h>
 
 #include <ciso646>
 #include <cstddef>

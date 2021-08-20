@@ -141,6 +141,7 @@ extern "C" int LLVMFuzzerTestOneInput( std::uint8_t const *data,
 	auto ofile = std::ofstream( "/dev/null", std::ios::trunc | std::ios::binary );
 	auto json_doc =
 	  std::string_view( reinterpret_cast<char const *>( data ), size );
+
 	try {
 		auto jv =
 		  daw::json::basic_json_value<daw::json::ConformancePolicy>( json_doc );

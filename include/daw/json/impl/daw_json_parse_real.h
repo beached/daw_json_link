@@ -17,6 +17,7 @@
 
 #include <daw/daw_cxmath.h>
 #include <daw/daw_likely.h>
+#include <daw/daw_utility.h>
 
 #include <ciso646>
 #include <cstddef>
@@ -110,9 +111,8 @@ namespace daw::json {
 					fract_last = parse_state.last;
 				}
 
-				using max_storage_digits = std::integral_constant<
-				  std::ptrdiff_t, static_cast<std::ptrdiff_t>(
-				                    daw::numeric_limits<std::uint64_t>::digits10 )>;
+				using max_storage_digits = daw::constant<static_cast<std::ptrdiff_t>(
+				  daw::numeric_limits<std::uint64_t>::digits10 )>;
 				bool use_strtod = [&] {
 					if constexpr( std::is_floating_point_v<Result> and
 					              ParseState::precise_ieee754 ) {
@@ -132,9 +132,8 @@ namespace daw::json {
 					}
 					return static_cast<Result>( 1.0 );
 				}( );
-				using max_exponent = std::integral_constant<
-				  std::ptrdiff_t, static_cast<std::ptrdiff_t>(
-				                    daw::numeric_limits<Result>::max_digits10 + 1 )>;
+				using max_exponent = daw::constant<static_cast<std::ptrdiff_t>(
+				  daw::numeric_limits<Result>::max_digits10 + 1 )>;
 				using unsigned_t =
 				  std::conditional_t<max_storage_digits::value >= max_exponent::value,
 				                     std::uint64_t, Result>;

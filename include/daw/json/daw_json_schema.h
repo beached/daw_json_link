@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <daw/daw_utility.h>
+
 #include "daw_json_link_types.h"
 #include "impl/daw_json_serialize_policy.h"
 #include "impl/to_daw_json_string.h"
@@ -278,11 +280,20 @@ namespace daw::json {
 			template<typename, typename>
 			struct json_class_processor;
 
+			/// Specialization for processing json_class types that have a
+			/// json_member_list of members.  This is for regular JSON objects
+			/// \tparam OutputIterator Type that fulfills OutputIterator concept
+			/// \tparam JsonMembers The member mappings for this class
 			template<typename OutputIterator, typename... JsonMembers>
 			struct json_class_processor<OutputIterator,
 			                            json_member_list<JsonMembers...>> {
 
 				static constexpr std::size_t size = sizeof...( JsonMembers );
+
+				/// Output the schema for each member mapped in JsonMembers
+				/// \param out_it The output iterator to write string data to
+				/// \result The output iterator object after processing
+				/// \pre out_it != nullptr if it is a pointer
 				static constexpr OutputIterator process( OutputIterator out_it ) {
 					out_it = utils::output_kv( out_it, R"("type")", R"("object")" );
 					*out_it++ = ',';
@@ -332,6 +343,12 @@ namespace daw::json {
 				static constexpr auto indexer =
 				  std::index_sequence_for<JsonMembers...>{ };
 
+				/// 
+				/// \tparam JsonMember
+				/// \tparam Idx
+				/// \param out_it
+				/// \param seen
+				/// \return
 				template<typename JsonMember, std::size_t Idx>
 				static constexpr OutputIterator
 				output_member_type( OutputIterator &out_it, bool *seen ) {
@@ -527,8 +544,7 @@ namespace daw::json {
 						};
 
 						daw::Empty expander[] = {
-						  ( process_member( std::integral_constant<std::size_t, Is>{ } ),
-						    daw::Empty{ } )...,
+						  ( process_member( daw::constant<Is>{ } ), daw::Empty{ } )...,
 						  daw::Empty{} };
 						(void)expander;
 						out_it.del_indent( );

@@ -7,8 +7,11 @@
 //
 #pragma once
 
-#include "to_daw_json_string.h"
 #include "version.h"
+
+#include "to_daw_json_string.h"
+
+#include <daw/daw_utility.h>
 
 #include <array>
 #include <ciso646>
@@ -92,11 +95,10 @@ namespace daw::json {
 				*it++ = '{';
 				it.add_indent( );
 
-				using visit_size = std::integral_constant<
-				  std::size_t,
-				  ( sizeof...( JsonMembers ) +
-				    ( static_cast<std::size_t>( has_dependent_member_v<JsonMembers> ) +
-				      ... + 0 ) )>;
+				using visit_size = daw::constant<(
+				  sizeof...( JsonMembers ) +
+				  ( static_cast<std::size_t>( has_dependent_member_v<JsonMembers> ) +
+				    ... + 0 ) )>;
 				auto visited_members =
 				  basic_array_t<std::string_view, visit_size::value>{ };
 

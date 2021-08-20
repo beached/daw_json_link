@@ -10,6 +10,8 @@
 
 #include "version.h"
 
+#include <daw/daw_utility.h>
+
 #include <cstdint>
 #include <string_view>
 #include <utility>
@@ -114,7 +116,7 @@ namespace daw::json {
 		 * Tag lookup for parsing overload selection
 		 */
 		template<JsonParseTypes v>
-		using ParseTag = std::integral_constant<JsonParseTypes, v>;
+		using ParseTag = daw::constant<v>;
 
 	} // namespace DAW_JSON_VER
 } // namespace daw::json

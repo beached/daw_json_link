@@ -30,14 +30,18 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 
-			/***
-			 * Parse a class member in an order json class(class as array)
-			 * @tparam JsonMember type description of member to parse
-			 * @tparam ParseState see IteratorRange
-			 * @param member_index current position in array
-			 * @param parse_state JSON data
-			 * @return A reified value of type JsonMember::parse_to_t
-			 */
+			///
+			/// Parse a class member in an ordered json class(class as array).  These
+			/// are often referred to as JSON tuples
+			/// @tparam JsonMember type mapping of member to parse
+			/// @tparam ParseState The state/policy type for current parse @link
+			/// daw_json_parse_policy.h @endlink
+			/// @param member_index current position in array
+			/// @param parse_state JSON data
+			/// @return A reified value of type JsonMember::parse_to_t
+			/// @pre parse_state.has_more( ) == true
+			/// @pre parse_state.front( ) == '['
+			///
 			template<typename JsonMember, typename ParseState>
 			[[nodiscard]] constexpr json_result<JsonMember>
 			parse_ordered_class_member( template_param<JsonMember>,

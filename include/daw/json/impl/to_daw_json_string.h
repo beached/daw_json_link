@@ -23,6 +23,7 @@
 #include <daw/daw_likely.h>
 #include <daw/daw_move.h>
 #include <daw/daw_traits.h>
+#include <daw/daw_utility.h>
 #include <daw/daw_visit.h>
 #include <daw/utf8/unchecked.h>
 
@@ -1100,9 +1101,7 @@ namespace daw::json {
 				(void)to_daw_json_string_help;
 
 				daw::Empty const expander[]{
-				  ( to_daw_json_string_help(
-				      std::integral_constant<std::size_t, Is>{ } ),
-				    daw::Empty{ } )...,
+				  ( to_daw_json_string_help( daw::constant<Is>{ } ), daw::Empty{ } )...,
 				  daw::Empty{} };
 				(void)expander;
 
