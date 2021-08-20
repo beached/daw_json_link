@@ -147,15 +147,22 @@ namespace daw::json {
 				  fract_first ? fract_last - fract_first : 0;
 				signed_t exponent = 0;
 
-				if( whole_exponent_available > max_exponent::value ) {
-					whole_last = whole_first + max_exponent::value;
-					whole_exponent_available -= max_exponent::value;
+				// Bug in gcc-7 requires the casts here, it looses track of the type of
+				// max_exponent::value and thinks it's an unrelated enum in the error.
+				// Casting fixes build error
+				if( whole_exponent_available >
+				    static_cast<std::intmax_t>( max_exponent::value ) ) {
+					whole_last =
+					  whole_first + static_cast<std::intmax_t>( max_exponent::value );
+					whole_exponent_available -=
+					  static_cast<std::intmax_t>( max_exponent::value );
 					fract_exponent_available = 0;
 					fract_first = nullptr;
 					exponent = whole_exponent_available;
 				} else {
 					whole_exponent_available =
-					  max_exponent::value - whole_exponent_available;
+					  static_cast<std::intmax_t>( max_exponent::value ) -
+					  whole_exponent_available;
 					if constexpr( ParseState::precise_ieee754 ) {
 						use_strtod |= DAW_UNLIKELY( fract_exponent_available >
 						                            whole_exponent_available );

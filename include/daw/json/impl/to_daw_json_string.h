@@ -1085,15 +1085,15 @@ namespace daw::json {
 			  parse_to_t const &value, std::index_sequence<Is...> ) {
 
 				auto const to_daw_json_string_help = [&]( auto Idx ) {
-					constexpr std::size_t index = decltype( Idx )::value;
+					using index = daw::remove_cvref_t<decltype( Idx )>;
 					using pack_element = tuple_elements_pack<parse_to_t>;
-					using T =
-					  std::tuple_element_t<index, typename JsonMember::sub_member_list>;
+					using T = std::tuple_element_t<index::value,
+					                               typename JsonMember::sub_member_list>;
 
-					it =
-					  to_daw_json_string<T>( ParseTag<T::expected_type>{ }, it,
-					                         pack_element::template get<index>( value ) );
-					if constexpr( index + 1 < sizeof...( Is ) ) {
+					it = to_daw_json_string<T>(
+					  ParseTag<T::expected_type>{ }, it,
+					  pack_element::template get<index::value>( value ) );
+					if constexpr( index::value + 1 < sizeof...( Is ) ) {
 						*it++ = ',';
 						it.next_member( );
 					}
