@@ -1013,8 +1013,9 @@ int main( int, char ** )
 	static_assert( not from_json<bool>( "false" ) );
 	static_assert( not *from_json<std::optional<bool>>( "false" ) );
 	static_assert( not from_json<std::optional<bool>>( "null" ) );
-	static_assert( from_json<signed char>( "-1" ) == -1 );
-	static_assert( from_json<short>( "-1" ) == -1 );
+	static_assert( from_json<signed char>( "-1" ) ==
+	               static_cast<signed char>( -1 ) );
+	static_assert( from_json<short>( "-1" ) == static_cast<short>( -1 ) );
 	static_assert( from_json<int>( "-1" ) == -1 );
 	static_assert( from_json<long>( "-1" ) == -1 );
 	static_assert( from_json<long long>( "-1" ) == -1 );

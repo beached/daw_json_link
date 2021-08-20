@@ -48,9 +48,9 @@ namespace daw::json {
 						// are the same as limits<Signed>::min( ).  We can just cast
 						return static_cast<Signed>( u );
 					}
-					return sign * static_cast<Signed>( u );
+					return static_cast<Signed>( sign * static_cast<Signed>( u ) );
 				} else {
-					return sign * static_cast<Signed>( u );
+					return static_cast<Signed>( sign * static_cast<Signed>( u ) );
 				}
 			}
 
