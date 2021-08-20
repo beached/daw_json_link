@@ -5,7 +5,7 @@ mkdir build
 cd build
 
 echo "Configuring project"
-cmake -DCMAKE_BUILD_TYPE=$1 -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DCMAKE_CXX_STANDARD=$2 ..
+cmake -DCMAKE_BUILD_TYPE=$1 -DDAW_NUM_RUNS=1 -DDAW_ENABLE_TESTING=ON -DDAW_WERROR=ON -DDAW_ALLOW_SSE42=ON -DCMAKE_CXX_STANDARD=$2 ..
 
 echo "Starting dep build"
 cmake --build . --config $1 -j 2
