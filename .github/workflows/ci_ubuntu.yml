@@ -42,6 +42,8 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Release
+      - name: Run fuzz test
+        run: ./ci_scripts/ci_ubuntu_fuzz.sh
   debug20:
     runs-on: [ubuntu-latest]
     steps:
@@ -58,6 +60,16 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Debug
+      - name: Archive any crashes as an artifact
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: crashes
+          path: |
+            crash-*
+            leak-*
+            timeout-*
+          if-no-files-found: ignore
   release20:
     runs-on: [ubuntu-latest]
     steps:
@@ -74,5 +86,16 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Release
-
+      - name: Run fuzz test
+        run: ./ci_scripts/ci_ubuntu_fuzz.sh
+      - name: Archive any crashes as an artifact
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: crashes
+          path: |
+            crash-*
+            leak-*
+            timeout-*
+          if-no-files-found: ignore
 
