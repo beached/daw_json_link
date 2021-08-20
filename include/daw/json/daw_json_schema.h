@@ -343,7 +343,7 @@ namespace daw::json {
 				static constexpr auto indexer =
 				  std::index_sequence_for<JsonMembers...>{ };
 
-				/// 
+				///
 				/// \tparam JsonMember
 				/// \tparam Idx
 				/// \param out_it
