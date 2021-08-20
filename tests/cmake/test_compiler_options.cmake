@@ -42,7 +42,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-documentation
                 -Wno-newline-eof
         )
-        if (CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 8.0.0)
+				if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 8.0.0)
             add_compile_options(-Wno-poison-system-directories)
         endif ()
         if (DAW_WERROR)

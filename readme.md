@@ -24,7 +24,9 @@
   * [Parsing Individual Members](docs/cookbook/parsing_individual_members.md)
   * [Parser Options](docs/cookbook/parser_policies.md)
   * [Strings](docs/cookbook/strings.md)
-  * [Unknown JSON and Delayed Parsing](docs/cookbook/unknown_types_and_delayed_parsing.md) - Browsing the JSON Document and delaying of parsing of specified members
+  * [Unknown JSON and Raw Parsing](docs/cookbook/unknown_types_and_raw_parsing.
+  * md) - 
+  * Browsing the JSON Document and delaying of parsing of specified members
   * [Variant](docs/cookbook/variant.md)
   * [Automatic Code Generation](docs/cookbook/automated_code_generation.md)
   * [Intro](#intro)
@@ -214,7 +216,8 @@ After the build there the individual examples can be tested too. ```city_test_bi
 The order of the members in the data structures should generally match that of the JSON data. The parser is faster if it doesn't have to back track for values. Optional values, when missing in the JSON data, can slow down the parsing too. If possible have them sent as null. The parser does not allocate. The parsed to data types may and this allows one to use custom allocators or a mix as their data structures will do the allocation. The defaults for arrays is to use the std::vector<T> and if this isn't desirable, you must supply the type.
 
 ### Benchmarks
-* [Kostya results](kostya_benchmark_results.md) using [test_dawjsonlink.cpp](tests/src/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks#json) for latest results.
+* [Kostya results](docs/kostya_benchmark_results.md) using [test_dawjsonlink.
+* cpp](tests/src/test_dawjsonlink.cpp) See [Kostya Benchmarks](https://github.com/kostya/benchmarks#json) for latest results.
 
 ![chart describing kostya benmark results](docs/images/kostya_bench_chart_2021_04_03.png)
 
@@ -589,11 +592,11 @@ There are a few defines that affect how JSON Link operates
 ###### [Top](#content)
 
 * C++ 17 compiler 
-* GCC(8/9/10/11)/Clang(8(*)/9/10/11/12) have been tested. 
-  * older compilers may have bugs.  testing is building clean on them.
-  * clang-8 has some errors with complicated tests and may ICE
-  * gcc-7 may work in some cases 
-  * Newer compilers should work
+* GCC(8/9/10/11) have been tested
+	* gcc-7 may work in some cases
+* Clang(8/9/10/11/12) have been tested. 
+* Nlder compilers may have bugs.  testing is building clean on ones listed.
+* Newer compilers should work
 * MSVC 19.29 has been tested. 
 
 ### For building tests
