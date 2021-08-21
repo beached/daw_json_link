@@ -89,17 +89,14 @@ std::size_t test( std::string_view json_data ) {
 	  from_json_array<JString, std::vector<std::string_view>,
 	                  daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
 	    json_data );
-	daw::do_not_optimize( values );
 	auto const v2 = values;
 	clear( values );
-	daw::do_not_optimize( values );
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "strings.json checked", json_data.size( ),
 	  []( auto sv, auto ptr ) {
 		  auto range = json_array_range<
 		    JString, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( sv );
-		  for( auto v : range ) {
-			  daw::do_not_optimize( v );
+			for( auto v : range ) {
 			  *ptr++ = v;
 		  }
 	  },
