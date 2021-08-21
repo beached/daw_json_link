@@ -55,7 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
-        run: .\ci_scripts\ci_windows_deps_x64.cmd Debug 17
+        run: .\ci_scripts\ci_windows_deps_x86.cmd Debug 17
       - name: Build
         run: .\ci_scripts\ci_windows_build.cmd Debug
       - name: Test
@@ -90,7 +90,7 @@ jobs:
         run: .\ci_scripts\ci_windows_build.cmd Release
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd Release
-  windows2019_clangcl_debug_17:
+  windows2019_clangcl_x64_debug_17:
     runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
@@ -98,7 +98,7 @@ jobs:
         run: .\ci_scripts\ci_windows_build_clangcl.cmd Debug 17
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd
-  windows2019_clangcl_release_17:
+  windows2019_clangcl_x64_release_17:
     runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
@@ -106,7 +106,7 @@ jobs:
         run: .\ci_scripts\ci_windows_build_clangcl.cmd Release 17
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd
-  windows2019_clangcl_debug_20:
+  windows2019_clangcl_x64_debug_20:
     runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
@@ -114,7 +114,7 @@ jobs:
         run: .\ci_scripts\ci_windows_build_clangcl.cmd Debug 20
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd
-  wwindows2019_clangcl_release_20:
+  wwindows2019_clangcl_x64_release_20:
     runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
