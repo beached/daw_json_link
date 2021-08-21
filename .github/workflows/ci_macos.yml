@@ -30,26 +30,6 @@ jobs:
         run: ./ci_scripts/ci_macos_build.sh Release
       - name: Test
         run: ./ci_scripts/ci_macos_test.sh Release
-  catalina_debug_20:
-    runs-on: [macOS-10.15]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_macos_deps.sh Debug 20
-      - name: Build
-        run: ./ci_scripts/ci_macos_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_macos_test.sh Debug
-  catalina_release_20:
-    runs-on: [macOS-10.15]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_macos_deps.sh Release 20
-      - name: Build
-        run: ./ci_scripts/ci_macos_build.sh Release
-      - name: Test
-        run: ./ci_scripts/ci_macos_test.sh Release
   bigsur_debug_17:
     runs-on: [macOS-11]
     steps:
@@ -66,26 +46,6 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build Dependencies
         run: ./ci_scripts/ci_macos_deps.sh Release 17
-      - name: Build
-        run: ./ci_scripts/ci_macos_build.sh Release
-      - name: Test
-        run: ./ci_scripts/ci_macos_test.sh Release
-  bigsur_debug_20:
-    runs-on: [macOS-11]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_macos_deps.sh Debug 20
-      - name: Build
-        run: ./ci_scripts/ci_macos_build.sh Debug
-      - name: Test
-        run: ./ci_scripts/ci_macos_test.sh Debug
-  bigsur_release_20:
-    runs-on: [macOS-11]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Dependencies
-        run: ./ci_scripts/ci_macos_deps.sh Release 20
       - name: Build
         run: ./ci_scripts/ci_macos_build.sh Release
       - name: Test
