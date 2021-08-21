@@ -717,7 +717,7 @@ int main( int, char ** )
 		daw::expecting( not v.b );
 	}
 
-#if defined( __GNUC__ ) and __GNUC__ <= 9
+#if (defined( __GNUC__ ) and __GNUC__ <= 9) or (defined(_MSC_VER))
 #define CX
 #elif defined( DAW_JSON_NO_CONST_EXPR )
 #define CX

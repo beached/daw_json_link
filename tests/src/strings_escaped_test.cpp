@@ -38,7 +38,7 @@ constexpr void clear( Container &c ) {
 }
 
 template<typename ExecTag>
-std::size_t test( std::string_view json_data ) {
+auto test( std::string_view json_data ) {
 	std::cout << "Using " << ExecTag::name
 	          << " exec model\n*********************************************\n";
 	using namespace daw::json;
