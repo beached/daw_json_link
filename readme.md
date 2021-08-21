@@ -594,9 +594,7 @@ There are a few defines that affect how JSON Link operates
 * C++ 17 compiler 
 * GCC(8/9/10/11) have been tested
 	* gcc-7 may work in some cases
-* Clang(8/9/10/11/12) have been tested. 
-* Nlder compilers may have bugs.  testing is building clean on ones listed.
-* Newer compilers should work
+* Clang(7/8/9/10/11/12) have been tested. 
 * MSVC 19.29 has been tested. 
 
 ### For building tests
