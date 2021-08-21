@@ -1,4 +1,4 @@
-name: Ubuntu20_04
+name: Ubuntu
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
       branches-ignore: develop
 
 jobs:
-  clang12_debug_17:
+  ubuntu2004_clang12_debug_17:
     runs-on: [ ubuntu-20.04 ]
     steps:
       - uses: actions/checkout@v1
@@ -26,7 +26,7 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  clang_release_17:
+  ubuntu2004_clang_release_17:
     runs-on: [ ubuntu-20.04 ]
     steps:
       - uses: actions/checkout@v1
@@ -44,7 +44,7 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_test.sh Release
       - name: Run fuzz test
         run: ./ci_scripts/ci_ubuntu_fuzz.sh
-  clang_debug_20:
+  ubuntu2004_clang_debug_20:
     runs-on: [ ubuntu-20.04 ]
     steps:
       - uses: actions/checkout@v1
@@ -70,7 +70,7 @@ jobs:
             leak-*
             timeout-*
           if-no-files-found: ignore
-  clang_release_20:
+  ubuntu2004_clang_release_20:
     runs-on: [ ubuntu-20.04 ]
     steps:
       - uses: actions/checkout@v1
@@ -98,7 +98,7 @@ jobs:
             leak-*
             timeout-*
           if-no-files-found: ignore
-  gcc10_debug_17:
+  ubuntu2004_gcc10_debug_17:
     runs-on: [ ubuntu-20.04 ]
     steps:
       - uses: actions/checkout@v1
@@ -112,7 +112,7 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  gcc10_release_17:
+  ubuntu2004_gcc10_release_17:
     runs-on: [ ubuntu-20.04 ]
     steps:
       - uses: actions/checkout@v1
@@ -126,7 +126,7 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Release
-  gcc10_debug_20:
+  ubuntu2004_gcc10_debug_20:
     runs-on: [ ubuntu-20.04 ]
     steps:
       - uses: actions/checkout@v1
@@ -140,7 +140,7 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Debug
-  gcc10_release_20:
+  ubuntu2004_gcc10_release_20:
     runs-on: [ ubuntu-20.04 ]
     steps:
       - uses: actions/checkout@v1

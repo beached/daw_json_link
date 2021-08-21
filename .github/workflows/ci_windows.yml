@@ -1,8 +1,8 @@
-name: Windows
+name: Windows2019
 
 on:
   push:
-    branches: [release, develop]
+    branches: [ release, develop ]
   pull_request:
     push:
       branches-ignore: develop
@@ -10,8 +10,8 @@ on:
       branches-ignore: develop
 
 jobs:
-  debug17:
-    runs-on: [windows-latest]
+  windows2019_msvc2019_debug_17:
+    runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
@@ -20,8 +20,8 @@ jobs:
         run: .\ci_scripts\ci_windows_build.cmd Debug
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd Debug
-  release17:
-    runs-on: [windows-latest]
+  windows2019_msvc2019_release_17:
+    runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
@@ -30,8 +30,8 @@ jobs:
         run: .\ci_scripts\ci_windows_build.cmd Release
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd Release
-  debug20:
-    runs-on: [windows-latest]
+  windows2019_msvc2019_debug_20:
+    runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
@@ -40,8 +40,8 @@ jobs:
         run: .\ci_scripts\ci_windows_build.cmd Debug
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd Debug
-  release20:
-    runs-on: [windows-latest]
+  windows2019_msvc2019_release_20:
+    runs-on: [ windows-2019 ]
     steps:
       - uses: actions/checkout@v1
       - name: Build Dependencies
@@ -50,3 +50,35 @@ jobs:
         run: .\ci_scripts\ci_windows_build.cmd Release
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd Release
+  windows2019_clangcl_debug_17:
+    runs-on: [ windows-2019 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd Debug 17
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd
+  windows2019_clangcl_release_17:
+    runs-on: [ windows-2019 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd Release 17
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd
+  windows2019_clangcl_debug_20:
+    runs-on: [ windows-2019 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd Debug 20
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd
+  wwindows2019_clangcl_release_20:
+    runs-on: [ windows-2019 ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build
+        run: .\ci_scripts\ci_windows_build_clangcl.cmd Release 20
+      - name: Test
+        run: .\ci_scripts\ci_windows_test.cmd
