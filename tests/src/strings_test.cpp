@@ -98,11 +98,12 @@ std::size_t test( std::string_view json_data ) {
 	};
 	checked_tst( json_data, values.data( ) );
 	test_equal( v2, values, "Expected them to parse the same" );
-	auto const h0 = std::accumulate(
-	  values.begin( ), values.end( ), 0ULL, []( auto old, auto current ) {
-		  return old +=
-		         std::hash<std::string>{ }( static_cast<std::string>( current ) );
-	  } );
+	auto const h0 =
+	  std::accumulate( values.begin( ), values.end( ), std::size_t{ 0 },
+	                   []( auto old, auto current ) {
+		                   return old += std::hash<std::string>{ }(
+		                            static_cast<std::string>( current ) );
+	                   } );
 	std::vector<std::string_view> values2 =
 	  from_json_array<JString, std::vector<std::string_view>,
 	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
@@ -116,11 +117,12 @@ std::size_t test( std::string_view json_data ) {
 		}
 	};
 	unchecked_tst( json_data, values2.data( ) );
-	auto const h1 = std::accumulate(
-	  values2.begin( ), values2.end( ), 0ULL, []( auto old, auto current ) {
-		  return old +=
-		         std::hash<std::string>{ }( static_cast<std::string>( current ) );
-	  } );
+	auto const h1 =
+	  std::accumulate( values2.begin( ), values2.end( ), std::size_t{ 0 },
+	                   []( auto old, auto current ) {
+		                   return old += std::hash<std::string>{ }(
+		                            static_cast<std::string>( current ) );
+	                   } );
 	test_equal( values, values2, "Parses don't match" );
 	test_equal( h0, h1, "Hashes don't match" );
 	return h1;
