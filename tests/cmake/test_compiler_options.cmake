@@ -41,7 +41,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
                 -Wno-float-equal
                 -Wno-documentation
                 -Wno-newline-eof
-                # This is for when specializing thigns like tuple_size and each implementer gets to choose struct/class
+                # This is for when specializing things like tuple_size and each implementer gets to choose struct/class
                 -Wno-mismatched-tags
         )
         if (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang" OR CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10.0.0)
