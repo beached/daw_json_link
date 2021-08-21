@@ -38,10 +38,25 @@ constexpr void clear( Container &c ) {
 }
 
 template<typename T>
-using can_ostream_test = decltype( std::declval<std::ostream &>( ) << std::declval<T>( ) );
+using can_ostream_test =
+  decltype( std::declval<std::ostream &>( ) << std::declval<T>( ) );
 
 template<typename T>
 inline constexpr bool can_ostream_v = daw::is_detected_v<can_ostream_test, T>;
+
+template<typename T, typename A>
+auto operator<<( std::ostream &os, std::vector<T, A> const &rhs )
+  -> std::enable_if_t<can_ostream_v<T>, std::ostream &> {
+	os << '[';
+	if( not rhs.empty( ) ) {
+		os << rhs.front( );
+		for( std::size_t n = 1; n < rhs.size( ); ++n ) {
+			os << ", " << rhs[n];
+		}
+	}
+	os << ']';
+	return os;
+}
 
 template<typename T, typename U>
 inline constexpr void test_equal( T const &lhs, U const &rhs,
