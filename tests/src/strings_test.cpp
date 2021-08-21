@@ -11,7 +11,6 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
-#include <daw/daw_benchmark.h>
 #include <daw/daw_read_file.h>
 
 #include <cstddef>
@@ -75,8 +74,7 @@ inline constexpr void test_equal( T const &lhs, U const &rhs,
 
 template<typename ExecTag>
 std::size_t test( std::string_view json_data ) {
-	std::cout << "Using " << ExecTag::name
-	          << " exec model\n*********************************************\n";
+	std::cout << "Using " << ExecTag::name << " exec model\n";
 	using namespace daw::json;
 	using JString =
 	  json_string_raw_no_name<std::string_view,
@@ -91,43 +89,33 @@ std::size_t test( std::string_view json_data ) {
 	    json_data );
 	auto const v2 = values;
 	clear( values );
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "strings.json checked", json_data.size( ),
-	  []( auto sv, auto ptr ) {
-		  auto range = json_array_range<
-		    JString, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( sv );
-			for( auto v : range ) {
-			  *ptr++ = v;
-		  }
-	  },
-	  json_data, values.data( ) );
-	daw::do_not_optimize( values );
+	auto checked_tst = []( auto sv, auto ptr ) {
+		auto range = json_array_range<
+		  JString, daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( sv );
+		for( auto v : range ) {
+			*ptr++ = v;
+		}
+	};
+	checked_tst( json_data, values.data( ) );
 	test_equal( v2, values, "Expected them to parse the same" );
 	auto const h0 = std::accumulate(
 	  values.begin( ), values.end( ), 0ULL, []( auto old, auto current ) {
 		  return old +=
 		         std::hash<std::string>{ }( static_cast<std::string>( current ) );
 	  } );
-	daw::do_not_optimize( json_data );
 	std::vector<std::string_view> values2 =
 	  from_json_array<JString, std::vector<std::string_view>,
 	                  daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
 	    json_data );
 
-	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
-	  "strings.json unchecked", json_data.size( ),
-	  []( auto sv, auto ptr ) mutable {
-		  auto range = json_array_range<
-		    JString, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    sv );
-		  for( auto v : range ) {
-			  daw::do_not_optimize( v );
-			  *ptr++ = v;
-		  }
-	  },
-	  json_data, values2.data( ) );
-	daw::do_not_optimize( json_data );
-	daw::do_not_optimize( values2 );
+	auto unchecked_tst = []( auto sv, auto ptr ) {
+		auto range = json_array_range<
+		  JString, daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( sv );
+		for( auto v : range ) {
+			*ptr++ = v;
+		}
+	};
+	unchecked_tst( json_data, values2.data( ) );
 	auto const h1 = std::accumulate(
 	  values2.begin( ), values2.end( ), 0ULL, []( auto old, auto current ) {
 		  return old +=
