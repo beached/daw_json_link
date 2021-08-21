@@ -7,7 +7,9 @@
 //
 //  This test will benchmark the performance of parsing apache_builds.json file
 //  in the test_data folder.  This is one of the many common JSON parsing
-//  benchmark files
+//  benchmark files.  It also shows how to enable parsing of documents with
+//  C/C++ style comments.  Note that it is the same parser mappings as the other
+//  apache builds tests, but the parse options with from_json have changed
 //
 
 #include "defines.h"

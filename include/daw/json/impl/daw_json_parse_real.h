@@ -264,21 +264,22 @@ namespace daw::json {
 				auto const sign = static_cast<Result>(
 				  parse_policy_details::validate_signed_first( parse_state ) );
 
-				constexpr auto max_storage_digits = static_cast<std::int64_t>(
-				  daw::numeric_limits<std::uint64_t>::digits10 );
-				constexpr auto max_exponent = static_cast<std::int64_t>(
-				  daw::numeric_limits<Result>::max_digits10 + 1 );
+				using max_storage_digits = daw::constant<static_cast<std::int64_t>(
+				  daw::numeric_limits<std::uint64_t>::digits10 )>;
+				using max_exponent = daw::constant<static_cast<std::int64_t>(
+				  daw::numeric_limits<Result>::max_digits10 + 1 )>;
 				using unsigned_t =
-				  std::conditional_t<max_storage_digits >= max_exponent, std::uint64_t,
-				                     Result>;
-				using signed_t = std::conditional_t<max_storage_digits >= max_exponent,
-				                                    std::int64_t, Result>;
+				  std::conditional_t<max_storage_digits::value >= max_exponent::value,
+				                     std::uint64_t, Result>;
+				using signed_t =
+				  std::conditional_t<max_storage_digits::value >= max_exponent::value,
+				                     std::int64_t, Result>;
 
 				CharT *first = parse_state.first;
 				CharT *const whole_last =
 				  parse_state.first +
 				  ( std::min )( parse_state.last - parse_state.first,
-				                static_cast<std::ptrdiff_t>( max_exponent ) );
+				                static_cast<std::ptrdiff_t>( max_exponent::value ) );
 
 				unsigned_t significant_digits = 0;
 				CharT *last_char =
@@ -286,9 +287,9 @@ namespace daw::json {
 				                              ParseState::is_unchecked_input )>(
 				    first, whole_last, significant_digits );
 				std::ptrdiff_t sig_digit_count = last_char - parse_state.first;
-				bool use_strtod = std::is_floating_point_v<Result> and
-				                  ParseState::precise_ieee754 and
-				                  DAW_UNLIKELY( sig_digit_count > max_storage_digits );
+				bool use_strtod =
+				  std::is_floating_point_v<Result> and ParseState::precise_ieee754 and
+				  DAW_UNLIKELY( sig_digit_count > max_storage_digits::value );
 				signed_t exponent_p1 = [&] {
 					if( DAW_UNLIKELY( last_char >= whole_last ) ) {
 						if constexpr( std::is_floating_point_v<Result> and
@@ -325,10 +326,10 @@ namespace daw::json {
 						}
 					} else {
 						CharT *fract_last =
-						  first +
-						  ( std::min )( parse_state.last - first,
-						                static_cast<std::ptrdiff_t>(
-						                  max_exponent - ( first - parse_state.first ) ) );
+						  first + ( std::min )( parse_state.last - first,
+						                        static_cast<std::ptrdiff_t>(
+						                          max_exponent::value -
+						                          ( first - parse_state.first ) ) );
 
 						last_char = parse_digits_while_number<(
 						  ParseState::is_zero_terminated_string or

@@ -34,12 +34,6 @@
 #include <string_view>
 #include <vector>
 
-#if defined( __cpp_constexpr_dynamic_alloc )
-#define CPP20CONSTEXPR constexpr
-#else
-#define CPP20CONSTEXPR
-#endif
-
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 
@@ -542,6 +536,7 @@ namespace daw::json {
 			template<>
 			struct json_deduced_type_map<
 			  typename std::vector<bool>::const_reference> {
+
 				static constexpr bool is_null = false;
 				static constexpr JsonParseTypes parse_type = JsonParseTypes::Bool;
 
@@ -715,57 +710,68 @@ namespace daw::json {
 				using mapped_type = Mapped;
 			};
 
+			template<auto Value, auto... Values>
+			using equal_to_one_of =
+			  std::bool_constant<( ( Value == Values ) or ... )>;
+
+			template<auto Value, auto... Values>
+			inline constexpr bool equal_to_one_of_v =
+			  equal_to_one_of<Value, Values...>::value;
+
 			template<typename T>
 			inline constexpr auto json_link_quick_map( ) {
 				if constexpr( is_a_json_type_v<T> ) {
 					return json_link_quick_map_type<T>{ };
 				} else if constexpr( has_deduced_type_mapping_v<T> ) {
 					using mapped_type_t = json_deduced_type_map<T>;
-					constexpr auto mapped_type = mapped_type_t::parse_type;
-					constexpr bool is_null = mapped_type_t::is_null;
-					if constexpr( mapped_type == JsonParseTypes::Unknown ) {
-						if constexpr( is_null ) {
+					using parse_type = daw::constant<mapped_type_t::parse_type>;
+					using is_null = daw::constant<mapped_type_t::is_null>;
+					if constexpr( parse_type::value == JsonParseTypes::Unknown ) {
+						if constexpr( is_null::value ) {
 							return json_link_quick_map_type<json_base::json_raw_null<T>>{ };
 						} else {
 							return json_link_quick_map_type<json_base::json_raw<T>>{ };
 						}
-					} else if constexpr( mapped_type == JsonParseTypes::StringRaw ) {
-						if constexpr( is_null ) {
+					} else if constexpr( parse_type::value ==
+					                     JsonParseTypes::StringRaw ) {
+						if constexpr( is_null::value ) {
 							return json_link_quick_map_type<
 							  json_base::json_string_raw_null<T>>{ };
 						} else {
 							return json_link_quick_map_type<json_base::json_string_raw<T>>{ };
 						}
-					} else if constexpr( mapped_type == JsonParseTypes::StringEscaped ) {
-						if constexpr( is_null ) {
+					} else if constexpr( parse_type::value ==
+					                     JsonParseTypes::StringEscaped ) {
+						if constexpr( is_null::value ) {
 							return json_link_quick_map_type<
 							  json_base::json_string_null<T>>{ };
 						} else {
 							return json_link_quick_map_type<json_base::json_string<T>>{ };
 						}
-					} else if constexpr( mapped_type == JsonParseTypes::Bool ) {
-						if constexpr( is_null ) {
+					} else if constexpr( parse_type::value == JsonParseTypes::Bool ) {
+						if constexpr( is_null::value ) {
 							return json_link_quick_map_type<json_base::json_bool_null<T>>{ };
 						} else {
 							return json_link_quick_map_type<json_base::json_bool<T>>{ };
 						}
-					} else if constexpr( ( mapped_type == JsonParseTypes::Signed ) |
-					                     ( mapped_type == JsonParseTypes::Unsigned ) |
-					                     ( mapped_type == JsonParseTypes::Real ) ) {
-						if constexpr( is_null ) {
+					} else if constexpr( equal_to_one_of_v<parse_type::value,
+					                                       JsonParseTypes::Signed,
+					                                       JsonParseTypes::Unsigned,
+					                                       JsonParseTypes::Real> ) {
+						if constexpr( is_null::value ) {
 							return json_link_quick_map_type<
 							  json_base::json_number_null<T>>{ };
 						} else {
 							return json_link_quick_map_type<json_base::json_number<T>>{ };
 						}
-					} else if constexpr( mapped_type == JsonParseTypes::Tuple ) {
-						if constexpr( is_null ) {
+					} else if constexpr( parse_type::value == JsonParseTypes::Tuple ) {
+						if constexpr( is_null::value ) {
 							return json_link_quick_map_type<json_base::json_tuple_null<T>>{ };
 						} else {
 							return json_link_quick_map_type<json_base::json_tuple<T>>{ };
 						}
-					} else if constexpr( mapped_type == JsonParseTypes::KeyValue ) {
-						if constexpr( is_null ) {
+					} else if constexpr( parse_type::value == JsonParseTypes::KeyValue ) {
+						if constexpr( is_null::value ) {
 							using b_t = typename mapped_type_t::base_type;
 							using k_t = typename b_t::key;
 							using v_t = typename b_t::value;
@@ -777,8 +783,8 @@ namespace daw::json {
 							return json_link_quick_map_type<
 							  json_base::json_key_value<T, v_t, k_t>>{ };
 						}
-					} else if constexpr( mapped_type == JsonParseTypes::Array ) {
-						if constexpr( is_null ) {
+					} else if constexpr( parse_type::value == JsonParseTypes::Array ) {
+						if constexpr( is_null::value ) {
 							using b_t = typename mapped_type_t::base_type;
 							using v_t = typename b_t::value;
 							return json_link_quick_map_type<

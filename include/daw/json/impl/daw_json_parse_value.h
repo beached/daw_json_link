@@ -34,6 +34,12 @@
 #include <iterator>
 #include <tuple>
 
+#if defined( __cpp_constexpr_dynamic_alloc )
+#define CPP20CONSTEXPR constexpr
+#else
+#define CPP20CONSTEXPR
+#endif
+
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
@@ -489,15 +495,18 @@ namespace daw::json {
 
 				using constructor_t = typename JsonMember::constructor_t;
 				if constexpr( can_parse_to_stdstring_fast<JsonMember>::value ) {
-					constexpr bool AllowHighEightbits =
-					  JsonMember::eight_bit_mode != EightBitModes::DisallowHigh;
+					using AllowHighEightbits =
+					  std::bool_constant<JsonMember::eight_bit_mode !=
+					                     EightBitModes::DisallowHigh>;
 					auto parse_state2 =
 					  KnownBounds ? parse_state : skip_string( parse_state );
 					// FIXME this needs std::string, fix
-					if( not AllowHighEightbits or needs_slow_path( parse_state2 ) ) {
+					if( not AllowHighEightbits::value or
+					    needs_slow_path( parse_state2 ) ) {
 						// There are escapes in the string
-						return parse_string_known_stdstring<AllowHighEightbits, JsonMember,
-						                                    true>( parse_state2 );
+						return parse_string_known_stdstring<AllowHighEightbits::value,
+						                                    JsonMember, true>(
+						  parse_state2 );
 					}
 					// There are no escapes in the string, we can just use the ptr/size
 					// ctor
@@ -507,12 +516,15 @@ namespace daw::json {
 				} else {
 					auto parse_state2 =
 					  KnownBounds ? parse_state : skip_string( parse_state );
-					constexpr bool AllowHighEightbits =
-					  JsonMember::eight_bit_mode != EightBitModes::DisallowHigh;
-					if( not AllowHighEightbits or needs_slow_path( parse_state2 ) ) {
+					using AllowHighEightbits =
+					  std::bool_constant<JsonMember::eight_bit_mode !=
+					                     EightBitModes::DisallowHigh>;
+					if( not AllowHighEightbits::value or
+					    needs_slow_path( parse_state2 ) ) {
 						// There are escapes in the string
-						return parse_string_known_stdstring<AllowHighEightbits, JsonMember,
-						                                    true>( parse_state2 );
+						return parse_string_known_stdstring<AllowHighEightbits::value,
+						                                    JsonMember, true>(
+						  parse_state2 );
 					}
 					// There are no escapes in the string, we can just use the ptr/size
 					// ctor
@@ -782,12 +794,13 @@ namespace daw::json {
 			  maybe_unused]] DAW_ATTRIB_FLATTEN constexpr json_result<JsonMembers>
 			parse_variant_value( ParseState &parse_state ) {
 				using element_t = typename JsonMembers::json_elements;
-				constexpr std::size_t idx =
-				  JsonMembers::base_map::base_map[static_cast<int_fast8_t>( BPT )];
+				using idx = daw::constant<(
+				  JsonMembers::base_map::base_map[static_cast<int_fast8_t>( BPT )] )>;
 
-				if constexpr( idx < pack_size_v<typename element_t::element_map_t> ) {
+				if constexpr( idx::value <
+				              pack_size_v<typename element_t::element_map_t> ) {
 					using JsonMember =
-					  pack_element_t<idx, typename element_t::element_map_t>;
+					  pack_element_t<idx::value, typename element_t::element_map_t>;
 					return parse_value<JsonMember>(
 					  parse_state, ParseTag<JsonMember::base_expected_type>{ } );
 				} else {
@@ -1007,10 +1020,10 @@ namespace daw::json {
 					daw_json_assert_weak( current_position <= desired_position,
 					                      ErrorReason::OutOfOrderOrderedMembers,
 					                      parse_state );
-					constexpr bool skip_check_end =
-					  ParseState::is_unchecked_input and Nullable;
+					using skip_check_end =
+					  std::bool_constant<( ParseState::is_unchecked_input and Nullable )>;
 					while( ( current_position < desired_position ) &
-					       ( skip_check_end or parse_state.front( ) != ']' ) ) {
+					       ( skip_check_end::value or parse_state.front( ) != ']' ) ) {
 						(void)skip_value( parse_state );
 						parse_state.move_next_member_or_end( );
 						++current_position;
@@ -1056,10 +1069,10 @@ namespace daw::json {
 					daw_json_assert( desired != daw::data_end( parse_locations ),
 					                 ErrorReason::UnexpectedEndOfData, parse_state );
 #endif
-					constexpr bool skip_check_end =
-					  ParseState::is_unchecked_input and Nullable;
+					using skip_check_end =
+					  std::bool_constant<( ParseState::is_unchecked_input and Nullable )>;
 					while( ( current_position < desired_position ) &
-					       ( skip_check_end or parse_state.front( ) != ']' ) ) {
+					       ( skip_check_end::value or parse_state.front( ) != ']' ) ) {
 						auto const current = daw::algorithm::find_if(
 						  std::data( parse_locations ), daw::data_end( parse_locations ),
 						  [current_position]( position_info<ParseState> const &loc ) {
