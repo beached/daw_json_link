@@ -181,7 +181,7 @@ namespace daw::json {
 			                                            U32 &result ) {
 				static_assert( sizeof( U32 ) <= sizeof( unsigned long long ) );
 				static_assert( sizeof( U32 ) == 4 );
-#if DAW_HAS_BUILTIN( __builtin_uadd_overflow ) and \
+#if (defined( __GNUC__ ) and __GNUC__ >= 8) or DAW_HAS_BUILTIN( __builtin_uadd_overflow ) and \
   DAW_HAS_BUILTIN( __builtin_uaddl_overflow ) and  \
   DAW_HAS_BUILTIN( __builtin_uaddll_overflow )
 				if constexpr( sizeof( unsigned ) == sizeof( U32 ) ) {
