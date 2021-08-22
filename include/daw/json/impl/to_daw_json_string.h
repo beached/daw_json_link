@@ -318,7 +318,6 @@ namespace daw::json {
 			to_daw_json_string( ParseTag<JsonParseTypes::Bool>, OutputIterator it,
 			                    parse_to_t const &value );
 
-			//************************************************
 			template<typename Char>
 			constexpr char to_nibble_char( Char c ) {
 				auto const u = static_cast<unsigned>( static_cast<unsigned char>( c ) );

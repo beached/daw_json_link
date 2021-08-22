@@ -117,8 +117,10 @@ namespace daw::json {
 					return MemberCount;
 				}
 
-				[[nodiscard]] constexpr std::size_t
-				find_name( std::size_t start_pos, daw::string_view key ) const {
+				template<std::size_t start_pos>
+				DAW_ATTRIB_INLINE [[nodiscard]] inline constexpr std::size_t
+				find_name( daw::template_vals_t<start_pos>,
+				           daw::string_view key ) const {
 					UInt32 const hash = name_hash( key );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					// MSVC has a bug where the list initialization isn't sequenced in
@@ -218,8 +220,8 @@ namespace daw::json {
 					// TODO: fully unescape name
 					// parse_name checks if we have more and are quotes
 					auto const name = parse_name( parse_state );
-					auto const name_pos =
-					  locations.find_name( from_start ? 0 : pos, name );
+					auto const name_pos = locations.find_name(
+					  template_vals<( from_start ? 0 : pos )>, name );
 					if constexpr( must_exist == AllMembersMustExist::yes ) {
 						daw_json_assert_weak( name_pos < std::size( locations ),
 						                      ErrorReason::UnknownMember, parse_state );

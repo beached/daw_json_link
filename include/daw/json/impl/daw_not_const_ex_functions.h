@@ -153,15 +153,17 @@ namespace daw::json {
 			template<bool is_unchecked_input, char... keys, typename CharT>
 			DAW_ATTRIB_INLINE inline CharT *
 			mem_move_to_next_not_of( sse42_exec_tag tag, CharT *first, CharT *last ) {
-				static constexpr int keys_len = static_cast<int>( sizeof...( keys ) );
-				static_assert( keys_len <= 16 );
+				using keys_len = daw::constant<static_cast<int>( sizeof...( keys ) )>;
+				using compare_mode = daw::constant<static_cast<int>(
+				  _SIDD_SBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_NEGATIVE_POLARITY )>;
+				static_assert( keys_len::value <= 16 );
+
 				__m128i const a = set_reverse( keys... );
-				static constexpr int compare_mode =
-				  _SIDD_SBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_NEGATIVE_POLARITY;
 
 				while( last - first >= 16 ) {
 					auto const b = uload16_char_data( tag, first );
-					int const result = _mm_cmpestri( a, keys_len, b, 16, compare_mode );
+					int const result =
+					  _mm_cmpestri( a, keys_len::value, b, 16, compare_mode::value );
 					first += result;
 					if( result < 16 ) {
 						return first;
@@ -169,7 +171,8 @@ namespace daw::json {
 				}
 				__m128i b{ };
 				auto const max_pos = last - first;
-				int const result = _mm_cmpestri( a, keys_len, b, 16, compare_mode );
+				int const result =
+				  _mm_cmpestri( a, keys_len::vlaue, b, 16, compare_mode::value );
 				if( result < max_pos ) {
 					return first + result;
 				}
@@ -181,9 +184,10 @@ namespace daw::json {
 			                                            U32 &result ) {
 				static_assert( sizeof( U32 ) <= sizeof( unsigned long long ) );
 				static_assert( sizeof( U32 ) == 4 );
-#if (defined( __GNUC__ ) and __GNUC__ >= 8) or DAW_HAS_BUILTIN( __builtin_uadd_overflow ) and \
-  DAW_HAS_BUILTIN( __builtin_uaddl_overflow ) and  \
-  DAW_HAS_BUILTIN( __builtin_uaddll_overflow )
+#if( defined( __GNUC__ ) and __GNUC__ >= 8 ) or defined( __clang__ ) or \
+  ( DAW_HAS_BUILTIN( __builtin_uadd_overflow ) and                      \
+    DAW_HAS_BUILTIN( __builtin_uaddl_overflow ) and                     \
+    DAW_HAS_BUILTIN( __builtin_uaddll_overflow ) )
 				if constexpr( sizeof( unsigned ) == sizeof( U32 ) ) {
 					return __builtin_uadd_overflow(
 					  static_cast<unsigned>( value1 ), static_cast<unsigned>( value2 ),
@@ -213,10 +217,10 @@ namespace daw::json {
 			                         UInt32 backslashes ) {
 				backslashes &= ~prev_escaped;
 				UInt32 follow_escape = ( backslashes << 1 ) | prev_escaped;
-				constexpr UInt32 even_bits = 0x5555'5555_u32;
+				using even_bits = daw::constant<0x5555'5555_u32>;
 
 				UInt32 const odd_seq_start =
-				  backslashes & ( ~even_bits ) & ( ~follow_escape );
+				  backslashes & ( ~even_bits::value ) & ( ~follow_escape );
 				UInt32 seq_start_on_even_bits = 0_u32;
 				prev_escaped = [&] {
 					auto r = odd_seq_start + backslashes;
@@ -226,7 +230,7 @@ namespace daw::json {
 				}( );
 				UInt32 invert_mask = seq_start_on_even_bits << 1U;
 
-				return ( even_bits ^ invert_mask ) & follow_escape;
+				return ( even_bits::value ^ invert_mask ) & follow_escape;
 			}
 
 			DAW_ATTRIB_INLINE inline UInt32 prefix_xor( sse42_exec_tag,

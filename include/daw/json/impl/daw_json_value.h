@@ -117,7 +117,7 @@ namespace daw::json {
 		private:
 			ParseState m_state{ };
 
-			constexpr basic_json_value_iterator( ParseState parse_state )
+			explicit constexpr basic_json_value_iterator( ParseState parse_state )
 			  : m_state( parse_state ) {}
 
 			friend class basic_json_value<ParseState>;
@@ -158,12 +158,15 @@ namespace daw::json {
 			 */
 			[[nodiscard]] constexpr basic_json_pair<ParseState> operator*( ) {
 				if( is_array( ) ) {
-					return { { }, ParseState( m_state.first, m_state.last ) };
+					return {
+					  { },
+					  basic_json_value( ParseState( m_state.first, m_state.last ) ) };
 				}
 				auto parse_state = m_state;
 				auto name = json_details::parse_name( parse_state );
 				return { std::string_view( std::data( name ), std::size( name ) ),
-				         ParseState( parse_state.first, parse_state.last ) };
+				         basic_json_value(
+				           ParseState( parse_state.first, parse_state.last ) ) };
 			}
 
 			/***
@@ -328,7 +331,7 @@ namespace daw::json {
 			 * Construct from IteratorRange
 			 * @param parse_state string data where start is the start of our value
 			 */
-			inline constexpr basic_json_value( ParseState parse_state )
+			explicit inline constexpr basic_json_value( ParseState parse_state )
 			  : m_parse_state( DAW_MOVE( parse_state ) ) {
 				// Ensure we are at the actual value
 				m_parse_state.trim_left( );
@@ -337,9 +340,13 @@ namespace daw::json {
 			/***
 			 * Construct from std::string_view
 			 */
-			template<typename String,
-			         std::enable_if_t<json_details::is_string_view_like_v<String>,
-			                          std::nullptr_t> = nullptr>
+			template<
+			  typename String,
+			  std::enable_if_t<
+			    std::disjunction_v<daw::traits::not_same<basic_json_value,
+			                                             daw::remove_cvref_t<String>>,
+			                       json_details::is_string_view_like<String>>,
+			    std::nullptr_t> = nullptr>
 			explicit inline constexpr basic_json_value( String &&sv )
 			  : m_parse_state( std::data( sv ), daw::data_end( sv ) ) {}
 
@@ -581,6 +588,8 @@ namespace daw::json {
 				return basic_json_value<NewParseState>( DAW_MOVE( new_range ) );
 			}
 		};
+		template<typename ParseState>
+		basic_json_value( ParseState ) -> basic_json_value<ParseState>;
 
 		namespace json_details {
 			template<typename T>

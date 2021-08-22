@@ -15,6 +15,7 @@
 #include "daw/json/daw_json_iterator.h"
 #include "daw/json/daw_json_link.h"
 
+#include <daw/daw_memory_mapped_file.h>
 #include <daw/daw_read_file.h>
 
 #include <cstdint>
@@ -67,6 +68,7 @@ int main( int, char ** )
 	  }
 	*/
 	auto const json_data = *daw::read_file( "/tmp/1.json" );
+	//auto json_data = daw::filesystem::memory_mapped_file_t<>( "/tmp/1.json" );
 
 	using range_t =
 	  daw::json::json_array_range<coordinate_t, NoCommentSkippingPolicyUnchecked>;
@@ -77,11 +79,13 @@ int main( int, char ** )
 	uint_fast32_t sz = 0U;
 
 	// first will be json_array_iterator to the array coordinates in root object
-	for( auto c : range_t( json_data, "coordinates" ) ) {
-		++sz;
-		x += c.x;
-		y += c.y;
-		z += c.z;
+	for( std::size_t n=0; n<10; ++n ) {
+		for( auto c : range_t( json_data, "coordinates" ) ) {
+			++sz;
+			x += c.x;
+			y += c.y;
+			z += c.z;
+		}
 	}
 
 	auto const dsz = static_cast<double>( sz );

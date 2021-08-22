@@ -21,9 +21,11 @@ namespace daw {
 	namespace murmur3_details {
 		[[nodiscard]] DAW_ATTRIB_FLATTEN inline constexpr UInt32
 		murmur3_32_scramble( UInt32 k ) {
-			k *= 0xcc9e'2d51_u32;
+			using prime1 = daw::constant<0xcc9e'2d51_u32>;
+			using prime2 = daw::constant<0x1b87'3593_u32>;
+			k *= prime1::value;
 			k = rotate_left<15>( k );
-			k *= 0x1b87'3593_u32;
+			k *= prime2::value;
 			return k;
 		}
 	} // namespace murmur3_details
@@ -42,15 +44,17 @@ namespace daw {
 	}
 
 	template<typename StringView>
-	[[nodiscard]] constexpr UInt32 name_hash( StringView const &key,
-	                                          std::uint32_t seed = 0 ) {
-		(void)seed;
-		auto const Sz = std::size( key );
-		if( Sz <= sizeof( UInt32 ) ) {
+	[[nodiscard]] DAW_ATTRIB_FLATTEN inline constexpr auto
+	name_hash( StringView key )
+	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
+	                      UInt32> {
+		if( auto const Sz = std::size( key );
+		    DAW_LIKELY( Sz <= sizeof( UInt32 ) ) ) {
 			auto result = 0_u32;
+			auto const *ptr = std::data( key );
 			for( std::size_t n = 0; n < Sz; ++n ) {
 				result <<= 8U;
-				result |= static_cast<unsigned char>( key[n] );
+				result |= static_cast<unsigned char>( ptr[n] );
 			}
 			return result;
 		}
