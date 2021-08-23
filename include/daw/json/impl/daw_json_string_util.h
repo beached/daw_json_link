@@ -53,6 +53,11 @@ namespace daw::json {
 						  std::memchr( static_cast<void const *>( first ), '"',
 						               static_cast<std::size_t>( last - first ) ) );
 					}
+					(void)last;
+					while( *first != c ) {
+						++first;
+					}
+					return first;
 				} else
 #endif
 				{
@@ -90,6 +95,10 @@ namespace daw::json {
 						  std::memchr( static_cast<void const *>( first ), '"',
 						               static_cast<std::size_t>( last - first ) ) );
 					}
+					while( DAW_LIKELY( first < last ) and *first != c ) {
+						++first;
+					}
+					return first;
 				} else
 #endif
 				{
@@ -124,7 +133,12 @@ namespace daw::json {
 						daw_json_assert( res != nullptr, ErrorReason::UnexpectedEndOfData );
 #endif
 						return res;
-					} else
+					}
+					while( not parse_policy_details::in<chars...>( *first ) ) {
+						++first;
+					}
+					return first;
+				} else
 #endif
 				{
 					while( not parse_policy_details::in<chars...>( *first ) ) {
@@ -145,6 +159,11 @@ namespace daw::json {
 
 						return mem_move_to_next_of<false, chars...>( first, last );
 					}
+					while( DAW_LIKELY( first < last ) and
+					       not parse_policy_details::in<chars...>( *first ) ) {
+						++first;
+					}
+					return first;
 				} else {
 					while( DAW_LIKELY( first < last ) and
 					       not parse_policy_details::in<chars...>( *first ) ) {
