@@ -29,6 +29,7 @@ namespace daw::json {
 			template<char c, typename ExecTag, typename CharT>
 			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
 			memchr_unchecked( CharT *first, CharT *last ) {
+				(void)last;
 				// These are slower for most things in testing
 				/*
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
