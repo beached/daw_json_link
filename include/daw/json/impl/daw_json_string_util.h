@@ -19,7 +19,8 @@
 #include <cstring>
 
 #if defined( __GNUC__ )
-#define DAW_CAN_CONSTANT_EVAL( ... ) (__builtin_constant_p( __VA_ARGS__ ) == 1)
+#define DAW_CAN_CONSTANT_EVAL( ... ) \
+	( __builtin_constant_p( __VA_ARGS__ ) == 1 )
 #else
 #define DAW_CAN_CONSTANT_EVAL( ... ) true
 #endif
@@ -47,12 +48,12 @@ namespace daw::json {
 #else
 #if defined( DAW_IS_CONSTANT_EVALUATED )
 				bool is_cxeval =
-				  not( DAW_IS_CONSTANT_EVALUATED( ) ) | DAW_CAN_CONSTANT_EVAL( first );
+				  DAW_IS_CONSTANT_EVALUATED( ) | DAW_CAN_CONSTANT_EVAL( first );
 #else
 				bool is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
 #endif
 				if constexpr( expect_long ) {
-					if( is_cxeval |
+					if( ( not is_cxeval ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 						return static_cast<CharT *>(
 						  std::memchr( static_cast<void const *>( first ), '"',
@@ -94,12 +95,12 @@ namespace daw::json {
 #else
 #if defined( DAW_IS_CONSTANT_EVALUATED )
 				bool is_cxeval =
-				  not( DAW_IS_CONSTANT_EVALUATED( ) ) | DAW_CAN_CONSTANT_EVAL( first );
+				  DAW_IS_CONSTANT_EVALUATED( ) | DAW_CAN_CONSTANT_EVAL( first );
 #else
 				bool is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
 #endif
 				if constexpr( expect_long ) {
-					if( is_cxeval |
+					if( ( not is_cxeval ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 						return static_cast<CharT *>(
 						  std::memchr( static_cast<void const *>( first ), '"',
@@ -135,12 +136,12 @@ namespace daw::json {
 #else
 #if defined( DAW_IS_CONSTANT_EVALUATED )
 				bool is_cxeval =
-				  not( DAW_IS_CONSTANT_EVALUATED( ) ) | DAW_CAN_CONSTANT_EVAL( first );
+				  DAW_IS_CONSTANT_EVALUATED( ) | DAW_CAN_CONSTANT_EVAL( first );
 #else
 				bool is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
 #endif
 				if constexpr( expect_long ) {
-					if( is_cxeval |
+					if( ( not is_cxeval ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 						constexpr char const needles[]{ chars..., '\0' };
 						CharT *res = std::strpbrk( first, needles );
@@ -169,12 +170,12 @@ namespace daw::json {
 			mempbrk_checked( CharT *first, CharT *last ) {
 				if constexpr( expect_long ) {
 #if defined( DAW_IS_CONSTANT_EVALUATED )
-					bool is_cxeval = not( DAW_IS_CONSTANT_EVALUATED( ) ) |
-					                       DAW_CAN_CONSTANT_EVAL( first );
+					bool is_cxeval =
+					  DAW_IS_CONSTANT_EVALUATED( ) | DAW_CAN_CONSTANT_EVAL( first );
 #else
 					bool is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
 #endif
-					if( is_cxeval |
+					if( ( not is_cxeval ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 
 						return mem_move_to_next_of<false, chars...>( first, last );
