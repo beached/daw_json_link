@@ -117,11 +117,11 @@ namespace daw::json {
 					return MemberCount;
 				}
 
-				template<std::size_t start_pos>
+				template<bool expect_long_strings, std::size_t start_pos>
 				DAW_ATTRIB_INLINE [[nodiscard]] inline constexpr std::size_t
 				find_name( daw::template_vals_t<start_pos>,
 				           daw::string_view key ) const {
-					UInt32 const hash = name_hash( key );
+					UInt32 const hash = name_hash<expect_long_strings>( key );
 #if defined( _MSC_VER ) and not defined( __clang__ )
 					// MSVC has a bug where the list initialization isn't sequenced in
 					// order of appearance.
@@ -147,7 +147,7 @@ namespace daw::json {
 			template<typename... MemberNames>
 			inline constexpr bool do_hashes_collide( ) {
 				daw::UInt32 hashes[sizeof...( MemberNames )]{
-				  name_hash( MemberNames::name )... };
+				  name_hash<false>( MemberNames::name )... };
 
 				daw::sort( std::data( hashes ), daw::data_end( hashes ) );
 				return daw::algorithm::adjacent_find( std::data( hashes ),
@@ -166,7 +166,7 @@ namespace daw::json {
 				constexpr bool do_full_name_match = true;
 				return locations_info_t<sizeof...( JsonMembers ), CharT,
 				                        do_full_name_match>{
-				  { daw::name_hash( JsonMembers::name )... },
+				  { daw::name_hash<false>( JsonMembers::name )... },
 				  { location_info_t<do_full_name_match, CharT>{
 				    JsonMembers::name }... } };
 #else
@@ -177,13 +177,13 @@ namespace daw::json {
 				if constexpr( do_full_name_match ) {
 					return locations_info_t<sizeof...( JsonMembers ), CharT,
 					                        do_full_name_match>{
-					  { daw::name_hash( JsonMembers::name )... },
+					  { daw::name_hash<false>( JsonMembers::name )... },
 					  { location_info_t<do_full_name_match, CharT>{
 					    JsonMembers::name }... } };
 				} else {
 					return locations_info_t<sizeof...( JsonMembers ), CharT,
 					                        do_full_name_match>{
-					  { daw::name_hash( JsonMembers::name )... }, {} };
+					  { daw::name_hash<false>( JsonMembers::name )... }, {} };
 				}
 #endif
 			}
@@ -220,8 +220,9 @@ namespace daw::json {
 					// TODO: fully unescape name
 					// parse_name checks if we have more and are quotes
 					auto const name = parse_name( parse_state );
-					auto const name_pos = locations.find_name(
-					  template_vals<( from_start ? 0 : pos )>, name );
+					auto const name_pos =
+					  locations.template find_name<ParseState::expect_long_strings>(
+					    template_vals<( from_start ? 0 : pos )>, name );
 					if constexpr( must_exist == AllMembersMustExist::yes ) {
 						daw_json_assert_weak( name_pos < std::size( locations ),
 						                      ErrorReason::UnknownMember, parse_state );

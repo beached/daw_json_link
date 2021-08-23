@@ -47,13 +47,15 @@ void test( char **argv ) {
 	std::optional<daw::twitter::twitter_object_t> twitter_result{ };
 	std::optional<daw::citm::citm_object_t> citm_result{ };
 	std::optional<daw::geojson::Polygon> canada_result{ };
+	using checked_policy_t = daw::json::BasicParsePolicy<daw::json::parse_options(
+	  daw::json::ExpectLongStrings::yes,
+	  daw::json::json_details::exec_mode_from_tag<ExecTag> )>;
 	try {
 		daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 		  "nativejson_twitter bench", std::size( json_sv1 ),
 		  [&twitter_result]( auto const &f1 ) {
-			  twitter_result = daw::json::from_json<
-			    daw::twitter::twitter_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
+			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t,
+			                                        checked_policy_t>( f1 );
 		  },
 		  json_sv1 );
 		daw::do_not_optimize( twitter_result );
@@ -76,9 +78,8 @@ void test( char **argv ) {
 	  "nativejson_twitter bench trusted", std::size( json_sv1 ),
 	  [&twitter_result]( auto const &f1 ) {
 		  {
-			  twitter_result = daw::json::from_json<
-			    daw::twitter::twitter_object_t,
-			    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
+			  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t,
+			                                        checked_policy_t>( f1 );
 		  }
 	  },
 	  json_sv1 );
@@ -95,9 +96,8 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_citm bench", std::size( json_sv2 ),
 	  [&citm_result]( auto const &f2 ) {
-		  citm_result = daw::json::from_json<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2 );
+		  citm_result =
+		    daw::json::from_json<daw::citm::citm_object_t, checked_policy_t>( f2 );
 	  },
 	  json_sv2 );
 	daw::do_not_optimize( citm_result );
@@ -114,9 +114,8 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_citm bench trusted", std::size( json_sv2 ),
 	  [&citm_result]( auto const &f2 ) {
-		  citm_result = daw::json::from_json<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2 );
+		  citm_result =
+		    daw::json::from_json<daw::citm::citm_object_t, checked_policy_t>( f2 );
 	  },
 	  json_sv2 );
 	test_assert( citm_result, "Missing value" );
@@ -132,10 +131,9 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_canada bench", std::size( json_sv3 ),
 	  [&canada_result]( auto const &f3 ) {
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+		  canada_result =
+		    daw::json::from_json<daw::geojson::Polygon, checked_policy_t>(
+		      f3, "features[0].geometry" );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -147,10 +145,9 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson_canada bench trusted", std::size( json_sv3 ),
 	  [&canada_result]( auto const &f3 ) {
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+		  canada_result =
+		    daw::json::from_json<daw::geojson::Polygon, checked_policy_t>(
+		      f3, "features[0].geometry" );
 	  },
 	  json_sv3 );
 	daw::do_not_optimize( canada_result );
@@ -162,16 +159,14 @@ void test( char **argv ) {
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench", sz,
 	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
-		  twitter_result = daw::json::from_json<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f1 );
-		  citm_result = daw::json::from_json<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>( f2 );
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyChecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+		  twitter_result =
+		    daw::json::from_json<daw::twitter::twitter_object_t, checked_policy_t>(
+		      f1 );
+		  citm_result =
+		    daw::json::from_json<daw::citm::citm_object_t, checked_policy_t>( f2 );
+		  canada_result =
+		    daw::json::from_json<daw::geojson::Polygon, checked_policy_t>(
+		      f3, "features[0].geometry" );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 
@@ -196,19 +191,21 @@ void test( char **argv ) {
 	citm_result.reset( );
 	canada_result.reset( );
 
+	using unchecked_policy_t =
+	  daw::json::BasicParsePolicy<daw::json::parse_options(
+	    daw::json::CheckedParseMode::no, daw::json::ExpectLongStrings::yes,
+	    daw::json::json_details::exec_mode_from_tag<ExecTag> )>;
 	daw::bench_n_test_mbs<DAW_NUM_RUNS>(
 	  "nativejson bench trusted", sz,
 	  [&]( auto const &f1, auto const &f2, auto const &f3 ) {
-		  twitter_result = daw::json::from_json<
-		    daw::twitter::twitter_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f1 );
-		  citm_result = daw::json::from_json<
-		    daw::citm::citm_object_t,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>( f2 );
-		  canada_result = daw::json::from_json<
-		    daw::geojson::Polygon,
-		    daw::json::SIMDNoCommentSkippingPolicyUnchecked<ExecTag>>(
-		    f3, "features[0].geometry" );
+		  twitter_result = daw::json::from_json<daw::twitter::twitter_object_t,
+		                                        unchecked_policy_t>( f1 );
+		  citm_result =
+		    daw::json::from_json<daw::citm::citm_object_t, unchecked_policy_t>(
+		      f2 );
+		  canada_result =
+		    daw::json::from_json<daw::geojson::Polygon, unchecked_policy_t>(
+		      f3, "features[0].geometry" );
 	  },
 	  json_sv1, json_sv2, json_sv3 );
 

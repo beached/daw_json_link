@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <daw/daw_do_n.h>
 #include <daw/daw_endian.h>
 #include <daw/daw_string_view.h>
 #include <daw/daw_uint_buffer.h>
@@ -30,13 +31,35 @@ namespace daw {
 		}
 	} // namespace murmur3_details
 
-	template<typename StringView>
+	template<std::size_t N, typename CharT>
+	[[nodiscard]] DAW_ATTRIB_INLINE constexpr UInt32
+	fnv1a_32_N( CharT *first, UInt32 hash = 0x811c'9dc5_u32 ) {
+		daw::algorithm::do_n_arg<N>( [&]( std::size_t n ) {
+			hash ^= static_cast<UInt32>( first[n] );
+			hash *= 0x0100'0193_u32;
+		} );
+		return hash;
+	}
+
+	template<bool expect_long_strings, typename StringView>
 	[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr auto fnv1a_32( StringView key )
 	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
 	                      UInt32> {
-		std::size_t const len = std::size( key );
-		UInt32 hash = 0x811c'9dc5_u32;
-		char const *ptr = std::data( key );
+		std::size_t len = std::size( key );
+		auto *ptr = std::data( key );
+		auto hash = 0x811c'9dc5_u32;
+		if constexpr( expect_long_strings ) {
+			while( len >= 8 ) {
+				hash = fnv1a_32_N<8>( ptr, hash );
+				len -= 8;
+				ptr += 8;
+			}
+			while( len >= 4 ) {
+				hash = fnv1a_32_N<4>( ptr, hash );
+				len -= 4;
+				ptr += 4;
+			}
+		}
 		for( std::size_t n = 0; n < len; ++n ) {
 			hash ^= static_cast<unsigned char>( ptr[n] );
 			hash *= 0x0100'0193_u32;
@@ -44,7 +67,7 @@ namespace daw {
 		return hash;
 	}
 
-	template<typename StringView>
+	template<bool expect_long_strings, typename StringView>
 	[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr auto
 	name_hash( StringView key )
 	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
@@ -59,7 +82,7 @@ namespace daw {
 			}
 			return result;
 		}
-		return fnv1a_32( key );
+		return fnv1a_32<expect_long_strings>( key );
 	}
 
 	template<typename StringView>

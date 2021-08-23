@@ -11,6 +11,7 @@
 #include "daw_json_assert.h"
 #include "daw_json_parse_common.h"
 #include "daw_json_parse_policy_policy_details.h"
+#include "daw_json_string_util.h"
 #include "daw_not_const_ex_functions.h"
 #include "version.h"
 
@@ -101,9 +102,14 @@ namespace daw::json {
 				if constexpr( traits::not_same<typename ParseState::exec_tag_t,
 				                               constexpr_exec_tag>::value ) {
 					parse_state.first =
+					  json_details::mempbrk<ParseState::is_unchecked_input,
+					                        typename ParseState::exec_tag_t,
+					                        ParseState::expect_long_strings, keys...>(
+					    parse_state.first, parse_state.last );
+					/*
 					  json_details::mem_move_to_next_of<ParseState::is_unchecked_input,
 					                                    keys...>(
-					    ParseState::exec_tag, parse_state.first, parse_state.last );
+					    ParseState::exec_tag, parse_state.first, parse_state.last );*/
 				} else {
 					CharT *first = parse_state.first;
 					CharT *const last = parse_state.last;

@@ -36,7 +36,8 @@ namespace daw::json {
 				explicit constexpr basic_stateful_json_value_state(
 				  daw::string_view Name, basic_json_value_iterator<ParseState> val )
 				  : name( Name )
-				  , hash_value( daw::name_hash( Name ) )
+				  , hash_value(
+				      daw::name_hash<ParseState::expect_long_strings>( Name ) )
 				  , location( DAW_MOVE( val ) ) {}
 
 				[[nodiscard]] constexpr bool is_match( daw::string_view Name ) const {
@@ -59,7 +60,7 @@ namespace daw::json {
 
 			constexpr json_member_name( std::string_view Name )
 			  : name( std::data( Name ), std::size( Name ) )
-			  , hash_value( daw::name_hash( name ) ) {}
+			  , hash_value( daw::name_hash<false>( name ) ) {}
 		};
 
 		/**
