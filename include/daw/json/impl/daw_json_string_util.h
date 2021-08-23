@@ -24,6 +24,12 @@
 #define DAW_CAN_CONSTANT_EVAL( ... ) true
 #endif
 
+#if defined( DAW_IS_CONSTANT_EVALUATED )
+#define DAW_HAS_IS_CONSTANT_EVALUATED true
+#else
+#define DAW_HAS_IS_CONSTANT_EVALUATED false
+#endif
+
 namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
@@ -46,8 +52,9 @@ namespace daw::json {
 				} else
 #else
 				if constexpr( expect_long ) {
-					if( ( not( DAW_IS_CONSTANT_EVALUATED( ) |
-					           DAW_CAN_CONSTANT_EVAL( first ) ) ) |
+					if( ( ( DAW_HAS_IS_CONSTANT_EVALUATED and
+					        not( DAW_IS_CONSTANT_EVALUATED( ) ) |
+					          DAW_CAN_CONSTANT_EVAL( first ) ) ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 						return static_cast<CharT *>(
 						  std::memchr( static_cast<void const *>( first ), '"',
@@ -88,8 +95,9 @@ namespace daw::json {
 				} else
 #else
 				if constexpr( expect_long ) {
-					if( ( not( DAW_IS_CONSTANT_EVALUATED( ) |
-					           DAW_CAN_CONSTANT_EVAL( first ) ) ) |
+					if( ( DAW_HAS_IS_CONSTANT_EVALUATED and
+					      ( not( DAW_IS_CONSTANT_EVALUATED( ) ) |
+					        DAW_CAN_CONSTANT_EVAL( first ) ) ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 						return static_cast<CharT *>(
 						  std::memchr( static_cast<void const *>( first ), '"',
@@ -124,8 +132,9 @@ namespace daw::json {
 				} else
 #else
 				if constexpr( expect_long ) {
-					if( ( not( DAW_IS_CONSTANT_EVALUATED( ) |
-					           DAW_CAN_CONSTANT_EVAL( first ) ) ) |
+					if( ( ( DAW_HAS_IS_CONSTANT_EVALUATED and
+					        not( DAW_IS_CONSTANT_EVALUATED( ) ) |
+					          DAW_CAN_CONSTANT_EVAL( first ) ) ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 						constexpr char const needles[]{ chars..., '\0' };
 						CharT *res = std::strpbrk( first, needles );
@@ -153,8 +162,9 @@ namespace daw::json {
 			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
 			mempbrk_checked( CharT *first, CharT *last ) {
 				if constexpr( expect_long ) {
-					if( ( not( DAW_IS_CONSTANT_EVALUATED( ) |
-					           DAW_CAN_CONSTANT_EVAL( first ) ) ) |
+					if( ( ( DAW_HAS_IS_CONSTANT_EVALUATED and
+					        not( DAW_IS_CONSTANT_EVALUATED( ) ) |
+					          DAW_CAN_CONSTANT_EVAL( first ) ) ) |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
 
 						return mem_move_to_next_of<false, chars...>( first, last );
