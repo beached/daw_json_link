@@ -19,7 +19,7 @@
 #include <cstring>
 
 #if defined( __GNUC__ )
-#define DAW_CAN_CONSTANT_EVAL( ... ) __builtin_constant_p( __VA_ARGS__ )
+#define DAW_CAN_CONSTANT_EVAL( ... ) (__builtin_constant_p( __VA_ARGS__ ) == 1)
 #else
 #define DAW_CAN_CONSTANT_EVAL( ... ) true
 #endif
