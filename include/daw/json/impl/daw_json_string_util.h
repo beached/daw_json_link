@@ -46,10 +46,10 @@ namespace daw::json {
 				} else
 #else
 #if defined( DAW_IS_CONSTANT_EVALUATED )
-				bool const is_cxeval =
+				bool is_cxeval =
 				  not( DAW_IS_CONSTANT_EVALUATED( ) ) | DAW_CAN_CONSTANT_EVAL( first );
 #else
-				bool const is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
+				bool is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
 #endif
 				if constexpr( expect_long ) {
 					if( is_cxeval |
@@ -93,10 +93,10 @@ namespace daw::json {
 				} else
 #else
 #if defined( DAW_IS_CONSTANT_EVALUATED )
-				bool const is_cxeval =
+				bool is_cxeval =
 				  not( DAW_IS_CONSTANT_EVALUATED( ) ) | DAW_CAN_CONSTANT_EVAL( first );
 #else
-				bool const is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
+				bool is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
 #endif
 				if constexpr( expect_long ) {
 					if( is_cxeval |
@@ -134,10 +134,10 @@ namespace daw::json {
 				} else
 #else
 #if defined( DAW_IS_CONSTANT_EVALUATED )
-				bool const is_cxeval =
+				bool is_cxeval =
 				  not( DAW_IS_CONSTANT_EVALUATED( ) ) | DAW_CAN_CONSTANT_EVAL( first );
 #else
-				bool const is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
+				bool is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
 #endif
 				if constexpr( expect_long ) {
 					if( is_cxeval |
@@ -169,10 +169,10 @@ namespace daw::json {
 			mempbrk_checked( CharT *first, CharT *last ) {
 				if constexpr( expect_long ) {
 #if defined( DAW_IS_CONSTANT_EVALUATED )
-					bool const is_cxeval = not( DAW_IS_CONSTANT_EVALUATED( ) ) |
+					bool is_cxeval = not( DAW_IS_CONSTANT_EVALUATED( ) ) |
 					                       DAW_CAN_CONSTANT_EVAL( first );
 #else
-					bool const is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
+					bool is_cxeval = DAW_CAN_CONSTANT_EVAL( first );
 #endif
 					if( is_cxeval |
 					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
