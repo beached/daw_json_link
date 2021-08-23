@@ -16,6 +16,7 @@
 #include "daw_json_parse_policy_hash_comments.h"
 #include "daw_json_parse_policy_no_comments.h"
 #include "daw_json_parse_policy_policy_details.h"
+#include "daw_json_string_util.h"
 
 #include "version.h"
 #include <daw/cpp_17.h>
@@ -319,32 +320,12 @@ namespace daw::json {
 
 			template<char c>
 			DAW_ATTRIB_FLATINLINE inline constexpr void move_to_next_of_unchecked( ) {
-
-				if constexpr( traits::not_same_v<ParseState::exec_tag_t,
-				                                 constexpr_exec_tag> ) {
-					first = reinterpret_cast<CharT *>( std::memchr(
-					  first, c, static_cast<std::size_t>( class_last - first ) ) );
-				} else {
-					while( *first != c ) {
-						++first;
-					}
-				}
+				first = json_details::memchr_unchecked<c, exec_tag_t>( first, last );
 			}
 
 			template<char c>
 			DAW_ATTRIB_FLATINLINE inline constexpr void move_to_next_of_checked( ) {
-
-				if constexpr( traits::not_same_v<ParseState::exec_tag_t,
-				                                 constexpr_exec_tag> ) {
-					first = reinterpret_cast<CharT *>( std::memchr(
-					  first, c, static_cast<std::size_t>( class_last - first ) ) );
-					daw_json_assert( first != nullptr, json_details::missing_token( c ),
-					                 *this );
-				} else {
-					while( DAW_LIKELY( first < last ) and *first != c ) {
-						++first;
-					}
-				}
+				first = json_details::memchr_checked<c, exec_tag_t>( first, last );
 			}
 
 			template<char c>
@@ -356,16 +337,19 @@ namespace daw::json {
 				}
 			}
 
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr char front( ) const {
+			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr char front( ) const {
 				return *first;
 			}
 
-			[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr char front_checked( ) const {
-				daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData, *this );
+			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr char
+			front_checked( ) const {
+				daw_json_assert( first < last, ErrorReason::UnexpectedEndOfData,
+				                 *this );
 				return *first;
 			}
 
-			[[nodiscard]] inline constexpr std::size_t size( ) const {
+			[[nodiscard]] DAW_ATTRIB_INLINE inline constexpr std::size_t
+			size( ) const {
 				return static_cast<std::size_t>( last - first );
 			}
 
@@ -373,11 +357,11 @@ namespace daw::json {
 				return first == nullptr;
 			}
 
-			DAW_ATTRIB_FLATINLINE inline constexpr void remove_prefix( ) {
+			DAW_ATTRIB_INLINE inline constexpr void remove_prefix( ) {
 				++first;
 			}
 
-			DAW_ATTRIB_FLATINLINE inline constexpr void
+			DAW_ATTRIB_INLINE inline constexpr void
 			remove_prefix( std::size_t n ) {
 				first += static_cast<std::ptrdiff_t>( n );
 			}
@@ -430,7 +414,7 @@ namespace daw::json {
 				return CommentPolicy::is_literal_end( *first );
 			}
 
-			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr bool
+			DAW_ATTRIB_INLINE [[nodiscard]] inline constexpr bool
 			is_space_checked( ) const {
 				daw_json_assert_weak( has_more( ), ErrorReason::UnexpectedEndOfData,
 				                      *this );
@@ -438,7 +422,7 @@ namespace daw::json {
 				         1U ) <= 0x1FU;
 			}
 
-			DAW_ATTRIB_FLATINLINE [[nodiscard]] inline constexpr bool
+			DAW_ATTRIB_INLINE [[nodiscard]] inline constexpr bool
 			is_space_unchecked( ) const {
 				return ( static_cast<unsigned>( static_cast<unsigned char>( *first ) ) -
 				         1U ) <= 0x1FU;

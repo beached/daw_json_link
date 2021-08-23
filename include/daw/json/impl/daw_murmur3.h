@@ -31,11 +31,12 @@ namespace daw {
 	} // namespace murmur3_details
 
 	template<typename StringView>
-	[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr UInt32
-	fnv1a_32( StringView &&key ) {
+	[[nodiscard]] DAW_ATTRIB_FLATTEN constexpr auto fnv1a_32( StringView key )
+	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
+	                      UInt32> {
 		std::size_t const len = std::size( key );
-		char const *ptr = std::data( key );
 		UInt32 hash = 0x811c'9dc5_u32;
+		char const *ptr = std::data( key );
 		for( std::size_t n = 0; n < len; ++n ) {
 			hash ^= static_cast<unsigned char>( ptr[n] );
 			hash *= 0x0100'0193_u32;
@@ -62,8 +63,10 @@ namespace daw {
 	}
 
 	template<typename StringView>
-	[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr UInt32
-	murmur3_32( StringView &&key, std::uint32_t seed = 0 ) {
+	[[nodiscard]] DAW_ATTRIB_FLATINLINE inline constexpr auto
+	murmur3_32( StringView key, std::uint32_t seed = 0 )
+	  -> std::enable_if_t<daw::traits::is_string_view_like_v<StringView>,
+	                      UInt32> {
 		UInt32 h = to_uint32( seed );
 		UInt32 k = 0_u32;
 		char const *first = std::data( key );
