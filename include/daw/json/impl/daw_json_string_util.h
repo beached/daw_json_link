@@ -26,53 +26,58 @@ namespace daw::json {
 	inline namespace DAW_JSON_VER {
 		namespace json_details {
 
-			template<char c, typename ExecTag, typename CharT>
+			template<char c, typename ExecTag, bool expect_long, typename CharT>
 			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
 			memchr_unchecked( CharT *first, CharT *last ) {
-				(void)last;
-				// These are slower for most things in testing
-				/*
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
-				return __builtin_char_memchr(
-				  first, '"', static_cast<std::size_t>( last - first ) );
+				if constexpr( expect_long ) {
+					return __builtin_char_memchr(
+					  first, '"', static_cast<std::size_t>( last - first ) );
+				} else
 #else
-				if( ( not( DAW_IS_CONSTANT_EVALUATED( ) |
-				           DAW_CAN_CONSTANT_EVAL( first ) ) ) |
-				    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
-				  return static_cast<CharT *>(
-				    std::memchr( static_cast<void const *>( first ), '"',
-				                 static_cast<std::size_t>( last - first ) ) );
+				if constexpr( expect_long ) {
+					if( ( not( DAW_IS_CONSTANT_EVALUATED( ) |
+					           DAW_CAN_CONSTANT_EVAL( first ) ) ) |
+					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
+						return static_cast<CharT *>(
+						  std::memchr( static_cast<void const *>( first ), '"',
+						               static_cast<std::size_t>( last - first ) ) );
+					}
+				} else
+#endif
+				{
+					while( *first != c ) {
+						++first;
+					}
+					return first;
 				}
-				*/
-				while( *first != c ) {
-					++first;
-				}
-				return first;
-				//#endif
 			}
 
-			template<char c, typename ExecTag, typename CharT>
+			template<char c, typename ExecTag, bool expect_long, typename CharT>
 			DAW_ATTRIB_FLATINLINE inline constexpr CharT *
 			memchr_checked( CharT *first, CharT *last ) {
-				// These are slower for most things in testing
-				/*
 #if DAW_HAS_BUILTIN( __builtin_char_memchr )
-				return __builtin_char_memchr(
-				  first, '"', static_cast<std::size_t>( last - first ) );
+				if constexpr( expect_long ) {
+					return __builtin_char_memchr(
+					  first, '"', static_cast<std::size_t>( last - first ) );
+				} else
 #else
-				if( ( not( DAW_IS_CONSTANT_EVALUATED( ) |
-				           DAW_CAN_CONSTANT_EVAL( first ) ) ) |
-				    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
-				  return static_cast<CharT *>(
-				    std::memchr( static_cast<void const *>( first ), '"',
-				                 static_cast<std::size_t>( last - first ) ) );
+				if constexpr( expect_long ) {
+					if( ( not( DAW_IS_CONSTANT_EVALUATED( ) |
+					           DAW_CAN_CONSTANT_EVAL( first ) ) ) |
+					    daw::traits::not_same_v<ExecTag, constexpr_exec_tag> ) {
+						return static_cast<CharT *>(
+						  std::memchr( static_cast<void const *>( first ), '"',
+						               static_cast<std::size_t>( last - first ) ) );
+					}
+				} else
+#endif
+				{
+					while( DAW_LIKELY( first < last ) and *first != c ) {
+						++first;
+					}
+					return first;
 				}
-				 */
-				while( DAW_LIKELY( first < last ) and *first != c ) {
-					++first;
-				}
-				return first;
-				//#endif
 			}
 		} // namespace json_details
 	}   // namespace DAW_JSON_VER

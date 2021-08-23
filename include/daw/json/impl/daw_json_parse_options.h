@@ -181,6 +181,16 @@ namespace daw::json {
 			    MustVerifyEndOfDataIsValid::no;
 		} // namespace json_details
 
+		enum class ExpectLongStrings : unsigned { no, yes };
+		namespace json_details {
+			template<>
+			inline constexpr unsigned json_option_bits_width<ExpectLongStrings> = 1;
+
+			template<>
+			inline constexpr auto default_json_option_value<ExpectLongStrings> =
+			  ExpectLongStrings::no;
+		} // namespace json_details
+
 		/***
 		 * When enabled, the parser can temporarily set a character to the desired
 		 * token. This allows for safe searching without bounds checking.  If the
@@ -218,7 +228,8 @@ namespace daw::json {
 			  ExecModeTypes, ZeroTerminatedString, PolicyCommentTypes,
 			  CheckedParseMode, AllowEscapedNames, IEEE754Precise, ForceFullNameCheck,
 			  MinifiedDocument, UseExactMappingsByDefault, TemporarilyMutateBuffer,
-			  MustVerifyEndOfDataIsValid, ExcludeSpecialEscapes>::type;
+			  MustVerifyEndOfDataIsValid, ExcludeSpecialEscapes,
+			  ExpectLongStrings>::type;
 
 			template<typename Policy, typename Policies>
 			inline constexpr unsigned basic_policy_bits_start =

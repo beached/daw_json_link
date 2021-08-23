@@ -136,6 +136,10 @@ namespace daw::json {
 			  json_details::get_bits_for<MustVerifyEndOfDataIsValid>( PolicyFlags ) ==
 			  MustVerifyEndOfDataIsValid::yes;
 
+			static constexpr bool expect_long_strings =
+			  json_details::get_bits_for<ExpectLongStrings>( PolicyFlags ) ==
+			  ExpectLongStrings::yes;
+
 			using CommentPolicy =
 			  switch_t<json_details::get_bits_for<PolicyCommentTypes, std::size_t>(
 			             PolicyFlags ),
@@ -320,12 +324,16 @@ namespace daw::json {
 
 			template<char c>
 			DAW_ATTRIB_FLATINLINE inline constexpr void move_to_next_of_unchecked( ) {
-				first = json_details::memchr_unchecked<c, exec_tag_t>( first, last );
+				first =
+				  json_details::memchr_unchecked<c, exec_tag_t, expect_long_strings>(
+				    first, last );
 			}
 
 			template<char c>
 			DAW_ATTRIB_FLATINLINE inline constexpr void move_to_next_of_checked( ) {
-				first = json_details::memchr_checked<c, exec_tag_t>( first, last );
+				first =
+				  json_details::memchr_checked<c, exec_tag_t, expect_long_strings>(
+				    first, last );
 			}
 
 			template<char c>
@@ -361,8 +369,7 @@ namespace daw::json {
 				++first;
 			}
 
-			DAW_ATTRIB_INLINE inline constexpr void
-			remove_prefix( std::size_t n ) {
+			DAW_ATTRIB_INLINE inline constexpr void remove_prefix( std::size_t n ) {
 				first += static_cast<std::ptrdiff_t>( n );
 			}
 
