@@ -152,6 +152,7 @@ namespace daw::json {
 			 * ParseState
 			 */
 
+			// DAW TODO: This branch has a bug that shows up in twitter_test2
 #if false and defined( DAW_CX_BIT_CAST )
 			template<typename ParseState,
 			         std::enable_if_t<( ParseState::is_unchecked_input or

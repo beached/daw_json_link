@@ -83,12 +83,10 @@ namespace daw::json {
 			template<typename ParseState>
 			DAW_ATTRIB_FLATINLINE static constexpr void
 			move_next_member_unchecked( ParseState &parse_state ) {
-				using CharT = typename ParseState::CharT;
-				CharT *first = parse_state.first;
-				while( *first != '"' ) {
-					++first;
-				}
-				parse_state.first = first;
+				parse_state.first =
+				  json_details::memchr_unchecked<'"', typename ParseState::exec_tag_t,
+				                                 ParseState::expect_long_strings>(
+				    parse_state.first, parse_state.last );
 			}
 
 			template<char... keys, typename ParseState>
@@ -106,10 +104,6 @@ namespace daw::json {
 					                        typename ParseState::exec_tag_t,
 					                        ParseState::expect_long_strings, keys...>(
 					    parse_state.first, parse_state.last );
-					/*
-					  json_details::mem_move_to_next_of<ParseState::is_unchecked_input,
-					                                    keys...>(
-					    ParseState::exec_tag, parse_state.first, parse_state.last );*/
 				} else {
 					CharT *first = parse_state.first;
 					CharT *const last = parse_state.last;
@@ -140,7 +134,7 @@ namespace daw::json {
 				}
 			}
 
-			DAW_ATTRIB_FLATINLINE static constexpr bool is_literal_end( char c ) {
+			DAW_ATTRIB_INLINE static constexpr bool is_literal_end( char c ) {
 				return ( c == '\0' ) | ( c == ',' ) | ( c == ']' ) | ( c == '}' );
 			}
 
