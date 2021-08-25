@@ -44,8 +44,6 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Release
-      - name: Run fuzz test
-        run: ./ci_scripts/ci_ubuntu_fuzz.sh
   ubuntu2004_clang12_debug_20:
     runs-on: [ ubuntu-20.04 ]
     steps:
@@ -62,16 +60,6 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Debug
-      - name: Archive any crashes as an artifact
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: crashes
-          path: |
-            crash-*
-            leak-*
-            timeout-*
-          if-no-files-found: ignore
   ubuntu2004_clang12_release_20:
     runs-on: [ ubuntu-20.04 ]
     steps:
@@ -88,16 +76,4 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Release
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Release
-      - name: Run fuzz test
-        run: ./ci_scripts/ci_ubuntu_fuzz.sh
-      - name: Archive any crashes as an artifact
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: crashes
-          path: |
-            crash-*
-            leak-*
-            timeout-*
-          if-no-files-found: ignore
 
