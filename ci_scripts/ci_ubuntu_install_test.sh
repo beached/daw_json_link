@@ -12,4 +12,4 @@ mkdir build
 cd build
 cmake ..
 cmake --build .
-ctest -C Debug -VV
+ctest -C $1 -VV

@@ -20,6 +20,8 @@ jobs:
         run: .\ci_scripts\ci_windows_build.cmd Debug
       - name: Test
         run: .\ci_scripts\ci_windows_test.cmd Debug
+      - name: InstallTest
+        run: .\ci_scripts\ci_windows_install_test.cmd Debug
   release:
     runs-on: [windows-latest]
     steps:

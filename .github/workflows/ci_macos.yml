@@ -20,6 +20,8 @@ jobs:
         run: ./ci_scripts/ci_macos_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_macos_test.sh Debug
+      - name: InstallTest
+        run: ./ci_scripts/ci_macos_install_test.sh Debug
   release:
     runs-on: [macOS-latest]
     steps:

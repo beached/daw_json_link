@@ -26,6 +26,8 @@ jobs:
       run: ./ci_scripts/ci_ubuntu_build.sh Debug
     - name: Test
       run: ./ci_scripts/ci_ubuntu_test.sh Debug
+    - name: InstallTest
+      run: ./ci_scripts/ci_ubuntu_install_test.sh Debug
   release17:
     runs-on: [ubuntu-latest]
     steps:
@@ -58,6 +60,8 @@ jobs:
         run: ./ci_scripts/ci_ubuntu_build.sh Debug
       - name: Test
         run: ./ci_scripts/ci_ubuntu_test.sh Debug
+      - name: InstallTest
+        run: ./ci_scripts/ci_ubuntu_install_test.sh Debug
   release20:
     runs-on: [ubuntu-latest]
     steps:
