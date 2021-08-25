@@ -1,1 +1,9 @@
 @PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency( daw-header-libraries )
+find_dependency( daw-utf-range )
+
+include("${CMAKE_CURRENT_LIST_DIR}/daw-json-linkTargets.cmake")
+
+check_required_components( daw-json-link )
