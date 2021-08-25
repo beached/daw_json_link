@@ -41,6 +41,9 @@ add_compile_definitions(DAW_CXX_STANDARD=${CMAKE_CXX_STANDARD})
 
 if (NOT DAW_USE_PACKAGE_MANAGEMENT)
     add_subdirectory(extern)
+else( )
+	find_package( daw-header-libraries REQUIRED )
+	find_package( daw-utf-range REQUIRED )
 endif ()
 
 if (DAW_JSON_PARSER_DIAGNOSTICS)
